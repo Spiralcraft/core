@@ -35,8 +35,8 @@ and subsystems to cleanly expose functionality to application developers.&nbsp;<
   <li><b>spiralcraft.stream<br>
       </b>(Planned) Abstraction of 'stream resources' provides an interface
 for applications  to retrieve low level InputStreams or OutputStreams from
-arbitrary sources  using a URL based naming convention. Includes support for
-relative paths,  containership, and capabilities inquiry. Most components
+arbitrary sources  using a URL based naming convention. Includes support
+for relative paths,  containership, and capabilities inquiry. Most components
 which need to open  streams and traverse resource container hierarchies can
 be implemented against  these interfaces for transparent support of present
 and future 'stream resources',  for example files, jar archives, web servers,
@@ -56,14 +56,15 @@ platform independent manner.</li>
 mechanism  for instantiating application components, setting their properties,
 and connecting  them together into assemblies. Assemblies can contain, extend
 and reference  other assemblies within a hierarchical namespace to completely
-define an application. Aspects of application structure can be conditioned
-on deployment specific environment properties to support hassle free deployments.</li>
+define an application. Aspects of application structure can be derived from
+a deployment specific environment to support hassle free deployments.</li>
   <li><b>spiralcraft.telemetry<br>
       </b>(Planned) Interface which provides a standard means for components
 to report  operational statistics while ensuring minimum impact on the runtime
-system  profile. System is composed of a tree of 'Meters', each of which contains
- 'Logs' for capuring events and 'Registers' for capturing statistics.</li>
+system  profile. System is composed of a tree of 'Meters', each of which
+contains  'Logs' for capuring events and 'Registers' for capturing statistics.</li>
 </ul>
+<br>
 <br>
 </body>
 </html>
