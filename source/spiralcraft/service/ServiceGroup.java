@@ -111,6 +111,10 @@ public class ServiceGroup
     { _parentResolver=resolver;
     }
 
+    if (_services==null)
+    { return;
+    }
+
     for (int i=0;i<_services.length;i++)
     { 
       try
@@ -142,6 +146,10 @@ public class ServiceGroup
   public void destroy()
     throws ServiceException
   {
+    if (_services==null)
+    { return;
+    }
+
     ServiceException exception=null;
     for (int i=_services.length;i-->0;)
     { 
