@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.HashMap;
 
 /**
  * An AssemblyClass defines the behavior and content of an Assembly. One
@@ -25,11 +26,13 @@ public class AssemblyClass
   private AssemblyClass _baseClass;
   private Class _javaClass;
   private LinkedList _propertySpecifiers;
-  private LinkedList _compositePropertySpecifiers;
+  private LinkedList _compositeMembers;
   private AssemblyLoader _loader;
   private String[] _singletonNames;
   private Class[] _localSingletons;
   private Class[] _singletons;
+  private LinkedList _members;
+  private HashMap _memberMap;
 
   public AssemblyClass
     (URI sourceUri
@@ -46,22 +49,56 @@ public class AssemblyClass
     _loader=loader;
   }
 
+  void registerMember(String name,PropertySpecifier prop)
+  { 
+    if (_members==null)
+    { 
+      _members=new LinkedList();
+      _memberMap=new HashMap();
+    }
+    else
+    {
+      PropertySpecifier oldProp=(PropertySpecifier) _memberMap.get(name);
+      if (oldProp!=null)
+      { 
+        _members.remove(oldProp);
+        _memberMap.remove(name);
+      }
+    }
+
+    _memberMap.put(name,prop);
+    _members.add(prop);
+  }
+
+  PropertySpecifier getMember(String name)
+  { 
+    if (_memberMap!=null)
+    { return (PropertySpecifier) _memberMap.get(name);
+    }
+    else
+    { return null;
+    }
+  }
 
   PropertyBinding[] bindProperties(Assembly container)
     throws BuildException
   { 
-    PropertyBinding[] bindings
-      =new PropertyBinding[_compositePropertySpecifiers.size()];
-
-    
-    Iterator it=_compositePropertySpecifiers.iterator();
-    int i=0;
-    while (it.hasNext())
+    if (_compositeMembers!=null)
     {
-      PropertySpecifier prop=(PropertySpecifier) it.next();
-      bindings[i++]=prop.bind(container);
+      PropertyBinding[] bindings
+        =new PropertyBinding[_compositeMembers.size()];
+  
+      
+      Iterator it=_compositeMembers.iterator();
+      int i=0;
+      while (it.hasNext())
+      {
+        PropertySpecifier prop=(PropertySpecifier) it.next();
+        bindings[i++]=new PropertyBinding(prop,container);
+      }
+      return bindings;
     }
-    return bindings;
+    return null;
   }
 
   public void resolve()
@@ -118,18 +155,35 @@ public class AssemblyClass
       }
     }
     
-    _compositePropertySpecifiers=new LinkedList();
-    composePropertySpecifiers(_compositePropertySpecifiers);
-
+    _compositeMembers=new LinkedList();
+    composeMembers(_compositeMembers,new HashMap());
+    
   }
 
-  public void composePropertySpecifiers(LinkedList list)
-  { 
+  /**
+   * Compose the list of members, overriding members with the same target name
+   */
+  private void composeMembers(LinkedList list,HashMap map)
+  {
     if (_baseClass!=null)
-    { _baseClass.composePropertySpecifiers(list);
+    { _baseClass.composeMembers(list,map);
     }
-    if (_propertySpecifiers!=null)
-    { list.addAll(_propertySpecifiers);
+    if (_members!=null)
+    { 
+      Iterator it=_members.iterator();
+      while (it.hasNext())
+      { 
+        PropertySpecifier prop=(PropertySpecifier) it.next();
+        PropertySpecifier oldProp
+          =(PropertySpecifier) map.get(prop.getTargetName());
+        if (oldProp!=null)
+        { 
+          map.remove(prop.getTargetName());
+          list.remove(oldProp);
+        }
+        list.add(prop);
+        map.put(prop.getTargetName(),prop);
+      }
     }
   }
 

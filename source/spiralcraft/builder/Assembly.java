@@ -20,7 +20,6 @@ public class Assembly
   private final AssemblyClass _assemblyClass;
   private final Assembly _parent;
   private final Optic _optic;
-  private final Environment _environment;
   private final PropertyBinding[] _propertyBindings;
   private HashMap _singletons;
 
@@ -47,12 +46,6 @@ public class Assembly
         (new SimpleOptic(instance)
         );
       
-      if (instance instanceof Focus)
-      { _environment=((Focus) instance).getEnvironment();
-      }
-      else
-      { _environment=null;
-      }
     }
     catch (InstantiationException x)
     { throw new BuildException("Error instantiating assembly",x);
@@ -76,13 +69,7 @@ public class Assembly
    * Focus.getEnvironment()
    */
   public Environment getEnvironment()
-  { 
-    if (_environment==null)
-    { return this;
-    }
-    else
-    { return _environment;
-    }
+  { return this;
   }
 
   /**
@@ -142,19 +129,12 @@ public class Assembly
    */
   public Optic resolve(String name)
   { 
-    if (_environment==null)
-    { 
-      try
-      { return _optic.resolve(this,name,null);
-      }
-      catch (BindException x)
-      { x.printStackTrace();
-      }
+    try
+    { return _optic.resolve(this,name,null);
     }
-    else
-    { return _environment.resolve(name);
+    catch (BindException x)
+    { x.printStackTrace();
     }
-
     return null;
   }
 
@@ -163,12 +143,8 @@ public class Assembly
    */
   public Attribute[] getAttributes()
   { 
-    if (_environment==null)
-    { return null;
-    }
-    else
-    { return _environment.getAttributes();
-    }
+    // XXX Translate Optic names into attributes
+    return null;
   }
 
 }

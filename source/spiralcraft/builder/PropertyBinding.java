@@ -22,7 +22,7 @@ public class PropertyBinding
   private Assembly _container;
   private PropertySpecifier _specifier;
 
-  private Channel _target;
+  private Optic _target;
   private Optic _sourceOptic;
   private Focus _focus;
   private Object _source;
@@ -63,13 +63,11 @@ public class PropertyBinding
   private void resolveTarget()
     throws BuildException
   {
-    try    
-    { _target=_specifier.getTargetExpression().createChannel(_container);
-    }
-    catch (BindException x)
-    { 
+    _target=_container.resolve(_specifier.getTargetName());
+    if (_target==null)
+    {
       throw new BuildException
-        ("Error binding "+_specifier.getTargetExpression().getText(),x);
+        ("Property '"+_specifier.getTargetName()+"' not found");
     }
   }
   
@@ -88,7 +86,7 @@ public class PropertyBinding
         if (!_target.getTargetClass().isArray())
         { 
           throw new BuildException
-            (_target.getExpression().getText()
+            (_specifier.getTargetName()
             +" in "+_container.getAssemblyClass().getJavaClass()
             +" cannot have multiple values"
             );
@@ -171,7 +169,7 @@ public class PropertyBinding
     throws BuildException
   { 
     if (!_target.set(_source))
-    { throw new BuildException("Could not write "+_target.getExpression().getText());
+    { throw new BuildException("Could not write "+_specifier.getTargetName());
     }
   }
 

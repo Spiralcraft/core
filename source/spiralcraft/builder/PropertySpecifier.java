@@ -2,6 +2,8 @@ package spiralcraft.builder;
 
 import java.util.ArrayList;
 
+import spiralcraft.util.StringUtil;
+
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Focus;
@@ -13,19 +15,19 @@ import java.util.List;
 /**
  * Specifies a property to be defined in the context of an AssemblyClass
  *
- * The 'specifier' of the property is a name expression (spiralcraft.lang)
- *   evaluated in the context of the containing Assembly which identifies
- *   a property in the containing Assembly or SubAssemblies that is to
- *   be assigned a value or modified in some way.
+ * The 'specifier' of the property is a dotted name which specifies a
+ *   path through contained assemblies to an Optic (spiralcraft.lang)
+ *   that is to be assigned a value or modified in some way.
  */
 public class PropertySpecifier
 {
   private final AssemblyClass _container;
-  private final String _specifier;
+  private final String[] _specifier;
   private StringBuffer _textContent;
   private String _textData;
   private ArrayList _contents;
-  private Expression _targetExpression;
+  private String _targetName;
+  private AssemblyClass _targetAssemblyClass;
   private Expression _sourceExpression;
   private boolean _literalWhitespace;
   private String _focus;
@@ -37,7 +39,7 @@ public class PropertySpecifier
     )
   {
     _container=container;
-    _specifier=specifier;
+    _specifier=StringUtil.tokenize(specifier,".");
   }
 
   /** 
@@ -125,12 +127,6 @@ public class PropertySpecifier
       }
     }
 
-    try
-    { _targetExpression=Expression.parse(_specifier);
-    }
-    catch (Exception x)
-    { throw new BuildException("Error parsing "+_specifier,x);
-    }
 
     if (_contents!=null)
     {
@@ -142,16 +138,39 @@ public class PropertySpecifier
         assemblyClass.resolve();
       }
     }
-    
+
+    _targetName=_specifier[_specifier.length-1];
+
+    AssemblyClass targetAssemblyClass=_container;
+    // Register specifier with appropriate assembly or subassembly
+    for (int i=0;i<_specifier.length-1;i++)
+    { 
+      PropertySpecifier targetAssemblyPropertySpecifier
+        =targetAssemblyClass.getMember(_specifier[i]);
+
+      if (targetAssemblyPropertySpecifier==null)
+      { throw new BuildException("Member assembly '"+_specifier[i]+"' not found");
+      }
+      
+      List contents=targetAssemblyPropertySpecifier.getContents();
+      if (contents==null || contents.size()==0)
+      { throw new BuildException("Property '"+_specifier[i]+"' does not contain any Assemblies");
+      }
+
+      // Add feature to index contents
+      if (contents.size()>1)
+      { throw new BuildException("Property '"+_specifier[i]+"' contains more than one Assembly");
+      }
+      else
+      { targetAssemblyClass=(AssemblyClass) contents.get(0);
+      }
+    }
+    _targetAssemblyClass=targetAssemblyClass;
+    _targetAssemblyClass.registerMember(_targetName,this);
   }
 
-  public Expression getTargetExpression()
-  { return _targetExpression;
-  }
-
-  PropertyBinding bind(Assembly container)
-    throws BuildException
-  { return new PropertyBinding(this,container);
+  public String getTargetName()
+  { return _targetName;
   }
 
   public void addAssemblyClass(AssemblyClass assembly)
