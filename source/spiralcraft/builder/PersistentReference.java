@@ -29,10 +29,13 @@ public class PersistentReference
   implements Registrant
 {
   private final Preferences _preferences;
-  private final Assembly _assembly;
   private final String _assemblyClassURI;
+  private final AssemblyClass _assemblyClass;
+  private Assembly _assembly;
+  private RegistryNode _registryNode;
   
-  public PersistentReference(Preferences prefs,Assembly parent)
+  
+  public PersistentReference(Preferences prefs)
     throws BuildException
   {
     _preferences=prefs;
@@ -45,11 +48,10 @@ public class PersistentReference
     try
     { 
       URI uri=new URI(_assemblyClassURI+".assembly.xml");
-      AssemblyClass assemblyClass=AssemblyLoader.getInstance().findAssemblyDefinition(uri);
-      if (assemblyClass==null)
+      _assemblyClass=AssemblyLoader.getInstance().findAssemblyDefinition(uri);
+      if (_assemblyClass==null)
       { throw new PersistenceException("AssemblyClass definition '"+uri+"' not found");
       }
-      _assembly=assemblyClass.newInstance(parent);
       
     }
     catch (URISyntaxException x)
@@ -62,12 +64,19 @@ public class PersistentReference
   
   public void register(RegistryNode node)
   {
-    node.registerInstance(Preferences.class,_preferences);
-    _assembly.register(node.createChild("instance"));
+    _registryNode=node;
+    _registryNode.registerInstance(Preferences.class,_preferences);
   }
   
   public Object get()
-  { return _assembly.getSubject().get();
+    throws BuildException
+  { 
+    if (_assembly==null)
+    {
+      _assembly=_assemblyClass.newInstance((Assembly) _registryNode.findInstance(Assembly.class));
+      _assembly.register(_registryNode.createChild("instance"));
+    }
+    return _assembly.getSubject().get();
   }
   
   public void flush()
