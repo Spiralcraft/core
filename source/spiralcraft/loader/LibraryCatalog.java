@@ -157,6 +157,7 @@ public class LibraryCatalog
       library.open();
       _myLibraries.add(library);
       _resources.putAll(library.resources);
+      // XXX Resolve dependencies
     }
 
     public void resolveLibrariesForResource(String resourcePath)

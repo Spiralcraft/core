@@ -23,11 +23,11 @@ public class ApplicationEnvironment
   }
 
   /**
-   * Execute the main method of the class specified in args[0],
-   *   with the remaning parameters in args[].
+   * Execute the main method of the specified target class (args[0])
+   *   passing along the additional arguments.
    */
-  public int execMain(String[] args)
-  {
+  public int exec(String[] args)
+  { 
     ClassLoader oldLoader=Thread.currentThread().getContextClassLoader();
     try
     {
@@ -47,7 +47,7 @@ public class ApplicationEnvironment
       }
       else
       { 
-        x.printStackTrace();
+        x.getTargetException().printStackTrace();
         return 1;
       }
     }
@@ -60,8 +60,5 @@ public class ApplicationEnvironment
     { Thread.currentThread().setContextClassLoader(oldLoader);
     }
   }
-
-  
-  
 
 }
