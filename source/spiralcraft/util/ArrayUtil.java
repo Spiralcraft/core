@@ -33,7 +33,7 @@ public class ArrayUtil
    * Format a String array into a String using the specified separator and delimiter.
    * No escape processing is performed by this method.
    */
-  public static String formatToString(String[] array,String separator,String delimiter)
+  public static String formatToString(Object[] array,String separator,String delimiter)
   {
     StringBuffer buf=new StringBuffer();
     for (int i=0;i<array.length;i++)
