@@ -51,6 +51,12 @@ public class OpticFactory
     }
   }
 
+  public Focus focus(Object object)
+    throws BindException
+  { return new DefaultFocus(box(object));
+  } 
+  
+  
   /**
    * Find a Prism which provides a namespace for the specified binding
    */
