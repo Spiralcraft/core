@@ -104,12 +104,12 @@ public class Binding
     //
     // Handle default string conversions
     //
-    if (_modelChannel.getTargetClass().isAssignableFrom(_uiChannel.getTargetClass()))
+    if (_modelChannel.getContentType().isAssignableFrom(_uiChannel.getContentType()))
     { _updateToModel=true;
     }
-    else if (_uiChannel.getTargetClass()==String.class)
+    else if (_uiChannel.getContentType()==String.class)
     { 
-      _modelStringConverter=StringConverter.getInstance(_modelChannel.getTargetClass());
+      _modelStringConverter=StringConverter.getInstance(_modelChannel.getContentType());
       if (_modelStringConverter!=null)
       { _updateToModel=true;
       }
@@ -120,11 +120,11 @@ public class Binding
         _modelStringConverter=StringConverter.getOneWayInstance();
       }
     }
-    else if (_modelChannel.getTargetClass()==String.class)
+    else if (_modelChannel.getContentType()==String.class)
     { 
-      _uiStringConverter=StringConverter.getInstance(_uiChannel.getTargetClass());
+      _uiStringConverter=StringConverter.getInstance(_uiChannel.getContentType());
       if (_uiStringConverter==null)
-      { throw new BindException("Cannot convert a String to a "+_uiChannel.getTargetClass());
+      { throw new BindException("Cannot convert a String to a "+_uiChannel.getContentType());
       }
       _updateToModel=true;
     }
