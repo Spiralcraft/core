@@ -5,8 +5,13 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.OpticFactory;
 
 /**
- * Associates a UI component with a set of Bindings which bind
+ * Associates a UI component with a group of Bindings which bind
  *   properties of the UI component with the application data model.
+ *
+ * The BindingGroup is used by Controls to coordinates a number of individual
+ *   bindings which all respond to the same events, are associated with
+ *   the same UI component and/or are associated with the same model 
+ *   component.
  *
  * Subclasses should call updateFromModel() when they
  *   want to manually refresh the UI outside the presence
@@ -18,7 +23,7 @@ import spiralcraft.lang.OpticFactory;
  *   be propogated from the UI into the model, presumably
  *   upon receiving an appropriate event.
  */
-public abstract class BindingContext
+public abstract class BindingGroup
 {
 
   private Binding[] _bindings;
