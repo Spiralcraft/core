@@ -8,11 +8,15 @@ import java.io.BufferedInputStream;
 
 import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
+import java.util.jar.Manifest;
+import java.util.jar.Attributes;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -50,6 +54,30 @@ public class LibraryCatalog
    */
   public LibraryClasspath createLibraryClasspath()
   { return new LibraryClasspathImpl();
+  }
+
+  public Library findLibrary(String fileName)
+  {
+    Library library
+      =getLibrary
+        (new File(_masterLibraryPath+File.separator+fileName)
+          .getAbsolutePath()
+        );
+    return library;
+
+  }
+
+  private Library getLibrary(String fullPath)
+  { 
+    Iterator it=_libraries.iterator();
+    while (it.hasNext())
+    { 
+      Library library=(Library) it.next();
+      if (library.path.equals(fullPath))
+      { return library;
+      }
+    }
+    return null;
   }
 
   /**
@@ -128,6 +156,31 @@ public class LibraryCatalog
       return resource.getData();
     }
 
+    /**
+     * Adds the libraries which contain the specified module 
+     *   and its dependents to the set of libraries available
+     *   to the classloader.
+     */
+    public void addModule(String name)
+      throws IOException
+    { 
+      LinkedList libraries=new LinkedList();
+      Iterator it=_libraries.iterator();
+      while (it.hasNext())
+      {
+        Library library=(Library) it.next();
+        if (library.isModule(name))
+        { libraries.add(library);
+        }
+      }
+      
+      if (libraries.size()==0)
+      { throw new IOException("Module not found: "+name);
+      }
+      
+      addLibrary((Library) libraries.get(0));
+    }
+
     public void addLibrary(String path)
       throws IOException
     { 
@@ -154,33 +207,52 @@ public class LibraryCatalog
     private void addLibrary(Library library)
       throws IOException
     {
+      
       library.open();
       _myLibraries.add(library);
       _resources.putAll(library.resources);
-      // XXX Resolve dependencies
+      
+      String[] dependencies
+        =library.getLibraryDependencies();
+
+      if (dependencies!=null)
+      {
+        for (int i=0;i<dependencies.length;i++)
+        { 
+          Library depends=findLibrary(dependencies[i]);
+          if (depends!=null)
+          { addLibrary(depends);
+          }
+          else
+          { 
+            throw new IOException
+              ("Unsatisified dependency "+dependencies[i]);
+          }
+        }
+      }
+            
     }
 
     public void resolveLibrariesForResource(String resourcePath)
       throws IOException
     { 
+      List libraries=new LinkedList();
+
       Iterator it=_libraries.iterator();
-      boolean found=false;
       while (it.hasNext())
       { 
         Library library=(Library) it.next();
 
-        // Use versioning logic to find the best
-        //   library in the future
         if (library.resources.get(resourcePath)!=null)
-        { 
-          addLibrary(library);
-          found=true;
-          break;
+        { libraries.add(library);
         }
       }
-      if (!found)
+
+      if (libraries.size()==0)
       { throw new IOException("Not found: "+resourcePath);
       }
+      
+      addLibrary((Library) libraries.get(0));
       
     }
   }
@@ -197,6 +269,7 @@ class CatalogEntry
 abstract class Library
 {
   String path;
+  String name;
   long lastModified;
   HashMap resources=new HashMap();
 
@@ -204,9 +277,22 @@ abstract class Library
     throws IOException
   { 
     path=file.getAbsolutePath();
+    name=file.getName();
     lastModified=file.lastModified();
     catalogResources();
   }
+
+  /**
+   * Indicate whether the library is a release of the
+   *   specified module
+   */
+  public boolean isModule(String moduleName)
+  { 
+    // XXX For now, use exact name = HACK
+    return name.equals(moduleName);
+  }
+
+  public abstract String[] getLibraryDependencies();
 
   public abstract void open()
     throws IOException;
@@ -225,10 +311,17 @@ class JarLibrary
 
   int openCount=0;
   JarFile jarFile;
+  Manifest manifest;
 
   public JarLibrary(File file)
     throws IOException
-  { super(file);
+  { 
+    super(file);
+
+    name=file.getName();
+    if (name.endsWith(".jar"))
+    { name=name.substring(0,name.length()-4);
+    }
   }
 
   public void catalogResources()
@@ -265,7 +358,9 @@ class JarLibrary
     throws IOException
   { 
     if (openCount==0)
-    { jarFile=new JarFile(path);
+    { 
+      jarFile=new JarFile(path);
+      readManifest();
     }
     openCount++;
   }
@@ -305,6 +400,31 @@ class JarLibrary
       throw x;
     }
   }
+
+  private void readManifest()
+    throws IOException
+  { manifest=jarFile.getManifest();
+  }
+
+  /**
+   * Return the list of libraries that this library depends on
+   */
+  public String[] getLibraryDependencies()
+  {
+    if (manifest==null)
+    { return null;
+    }
+    
+    String classpath
+      =manifest.getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
+    if (classpath!=null)
+    { 
+      String[] classpathArray
+        =StringUtil.tokenize(classpath," ");
+      return classpathArray;
+    }
+    return null;
+  }
 }
 
 class FileLibrary
@@ -325,6 +445,10 @@ class FileLibrary
 
   public void close()
   {
+  }
+
+  public String[] getLibraryDependencies()
+  { return null;
   }
 }
 

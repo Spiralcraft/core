@@ -62,4 +62,13 @@ public class LibraryClassLoader
     String resourceName=className.replace('.','/')+".class";
     _libraryClasspath.resolveLibrariesForResource(resourceName);
   }
+
+  /**
+   * Adds the libraries associated with this module and its
+   *   dependents to the classpath
+   */
+  public void addModule(String moduleName)
+    throws IOException
+  { _libraryClasspath.addModule(moduleName);
+  }
 }
