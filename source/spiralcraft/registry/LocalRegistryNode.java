@@ -1,0 +1,103 @@
+package spiralcraft.registry;
+
+import java.util.HashMap;
+
+/**
+ * A RegistryNode which resides in the local VM and
+ *   is accessed via an object reference.
+ */
+public class LocalRegistryNode
+  implements RegistryNode
+{
+  private HashMap _instances;
+  private HashMap _children;
+  private final RegistryNode _parent;
+  private final String _name;
+  private final String _absolutePath;
+
+  public LocalRegistryNode(RegistryNode parent,String name)
+  { 
+    _parent=parent;
+    _name=name;
+    if (_parent==null)
+    { _absolutePath="/";
+    }
+    else if (_parent.getAbsolutePath().equals("/"))
+    { _absolutePath="/"+_name;
+    }
+    else
+    { _absolutePath=_parent.getAbsolutePath()+"/"+_name;
+    }
+  }
+
+  public String getName()
+  { return _name;
+  }
+
+  public String getAbsolutePath()
+  { return _absolutePath;
+  }
+
+  public Object findInstance(Class instanceClass)
+  { 
+    Object instance=null;
+    if (_instances!=null)
+    { instance=_instances.get(instanceClass);
+    }
+    
+    if (instance==null && _parent!=null)
+    { 
+      instance=_parent.findInstance(instanceClass);
+      if (instance!=null && instance instanceof RegistryPathObject)
+      { 
+        instance=((RegistryPathObject) instance).registryPathObject(this);
+        registerInstance(instanceClass,instance);
+      }
+    }
+    return instance;
+  }
+
+  public RegistryNode getChild(String name)
+  { 
+    if (_children!=null)
+    { return (RegistryNode) _children.get(name);
+    }
+    return null;
+  }
+
+  public void registerInstance(Class instanceClass,Object instance)
+  { 
+    if (_instances==null)
+    { _instances=new HashMap();
+    }
+    _instances.put(instanceClass,instance);
+  }
+
+  public RegistryNode createChild(String name)
+  { 
+    RegistryNode child=new LocalRegistryNode(this,name);
+    if (_children==null)
+    { _children=new HashMap();
+    }
+    _children.put(name,child);
+    return child;
+  }
+
+  public String toString()
+  { 
+    StringBuffer out=new StringBuffer();
+    out.append(super.toString());
+    out.append(": path=").append(_absolutePath);
+    if (_instances!=null)
+    { 
+      out.append(" :Instances=").append(_instances.keySet().toString());
+      Object primary=_instances.get(Object.class);
+      if (primary!=null)
+      { out.append(" :Object=").append(primary.getClass().getName());
+      }
+    }
+    return out.toString();
+  }
+
+  
+}

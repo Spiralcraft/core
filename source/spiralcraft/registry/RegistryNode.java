@@ -18,10 +18,30 @@ package spiralcraft.registry;
 public interface RegistryNode
 {
   /**
-   * Obtain the node associated with this RegistryNode of
-   *   a specific service.
+   * Return the name of this node relative to its parent node.
+   * The name of the root node is ""
    */
-  public Object obtainServiceNode(Class serviceInterface);
+  public String getName();
+
+  /**
+   * Return the absolute path of this node relative to the ClassLoader
+   *   to which the Registry package is scoped.
+   */
+  public String getAbsolutePath();
+
+  /**
+   * Obtain the instance of the specified class 
+   *   that has been registered with this RegistryNode or
+   *   its ancestors. 
+   */
+  public Object findInstance(Class instanceClass);
+
+  /**
+   * Register an instance that will be visible from
+   *   this RegistryNode and its descendants.
+   */
+  public void registerInstance(Class instanceClass,Object instance);
+
 
   /** 
    * Create a child RegistryNode and register it with this node
