@@ -1,14 +1,21 @@
 package spiralcraft.lang.optics;
 
+import spiralcraft.lang.OpticFactory;
+import spiralcraft.lang.BindException;
+
 import java.lang.reflect.Field;
 
 class BeanFieldLense
   implements Lense
 {
   private final Field _field;
+  private final Prism _prism;
   
   public BeanFieldLense(Field field)
-  { _field=field;
+    throws BindException
+  { 
+    _field=field;
+    _prism=OpticFactory.getInstance().findPrism(_field.getType());
   }
 
   public Field getField()
@@ -29,8 +36,8 @@ class BeanFieldLense
   { throw new UnsupportedOperationException();
   }
 
-  public Class getTargetClass()
-  { return _field.getType();
+  public Prism getPrism()
+  { return _prism;
   }
 
 }

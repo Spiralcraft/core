@@ -33,6 +33,7 @@ public class ExpressionParser
   {
     _tokenizer=new StreamTokenizer(new StringReader(expression));
     _tokenizer.parseNumbers();
+
     _tokenizer.ordinaryChar((int) '.');
     _tokenizer.ordinaryChar((int) '!');
     _tokenizer.ordinaryChar((int) '=');
@@ -51,7 +52,11 @@ public class ExpressionParser
     _tokenizer.ordinaryChar((int) '/');
     _tokenizer.ordinaryChar((int) '[');
     _tokenizer.ordinaryChar((int) ']');
+
     _tokenizer.quoteChar((int) '"');
+
+    _tokenizer.wordChars((int) '_',(int) '_');
+    
     _progressBuffer=new StringBuffer();
     _pos=0;
   }

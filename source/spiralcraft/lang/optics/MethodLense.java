@@ -1,5 +1,8 @@
 package spiralcraft.lang.optics;
 
+import spiralcraft.lang.OpticFactory;
+import spiralcraft.lang.BindException;
+
 import java.beans.PropertyDescriptor;
 
 import java.lang.reflect.Method;
@@ -10,9 +13,13 @@ class MethodLense
 {
 
   private final Method _method;
+  private final Prism _prism;
   
   public MethodLense(Method method)
-  { _method=method;
+    throws BindException
+  { 
+    _method=method;
+    _prism=OpticFactory.getInstance().findPrism(method.getReturnType());
   }
 
   public Method getMethod()
@@ -43,8 +50,8 @@ class MethodLense
   { throw new UnsupportedOperationException();
   }
 
-  public Class getTargetClass()
-  { return _method.getReturnType();
+  public Prism getPrism()
+  { return _prism;
   }
 
   public String toString()

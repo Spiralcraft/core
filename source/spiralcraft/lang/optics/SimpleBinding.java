@@ -3,6 +3,8 @@ package spiralcraft.lang.optics;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.OpticFactory;
+import spiralcraft.lang.BindException;
 
 import java.beans.PropertyChangeSupport;
 
@@ -10,78 +12,37 @@ import java.beans.PropertyChangeSupport;
  * An Binding bound to a self-contained Object 
  */
 public class SimpleBinding
-  implements Binding
+  extends AbstractBinding
 {
  
-  private Class _class;
   private Object _object;
-  private PropertyChangeSupport _propertyChangeSupport;
-  private final boolean _static;
-  private WeakBindingCache _cache;
-  
-  public synchronized WeakBindingCache getCache()
-  {
-    if (_cache==null)
-    { _cache=new WeakBindingCache();
-    }
-    return _cache;
-  }
   
   /**
    * Create a SimpleOptic with the specified Object as its target
    *   and with a targetClass equals to the Object's class.
    */
   public SimpleBinding(Object val,boolean isStatic)
+    throws BindException
   { 
+    super(OpticFactory.getInstance().findPrism(val.getClass()),isStatic);
     _object=val;
-    _class=_object.getClass();
-    _static=isStatic;
   }
 
   public SimpleBinding(Class clazz,Object val,boolean isStatic)
+    throws BindException
   { 
+    super(OpticFactory.getInstance().findPrism(clazz),isStatic);
     _object=val;
-    _class=clazz;
-    _static=isStatic;
   }
-
-  public Object get()
+  
+  protected Object retrieve()
   { return _object;
   }
-
-  public synchronized boolean set(Object value)
+  
+  protected boolean store(Object val)
   { 
-    if (_static)
-    { return false;
-    }
-    else
-    {
-      Object oldValue=_object;
-      _object=value;
-      
-      if (_propertyChangeSupport!=null)
-      { _propertyChangeSupport.firePropertyChange("",oldValue,value);
-      }
-      return true;
-    }
+    _object=val;
+    return true;
   }
 
-  public Class getTargetClass()
-  { return _class;
-  }
-
-  public boolean isStatic()
-  { return _static;
-  }
-
-  public synchronized PropertyChangeSupport propertyChangeSupport()
-  { 
-    if (_static)
-    { return null;
-    }
-    else if (_propertyChangeSupport==null)
-    { _propertyChangeSupport=new PropertyChangeSupport(this);
-    }
-    return _propertyChangeSupport;
-  }
 }

@@ -28,10 +28,10 @@ public class BeanPrism
   implements Prism
 {
   private static final BeanInfoCache _BEAN_INFO_CACHE
-    =new BeanInfoCache(Introspector.IGNORE_ALL_BEANINFO);
+    =BeanInfoCache.getInstance(Introspector.IGNORE_ALL_BEANINFO);
 
 
-  private MappedBeanInfo _beanInfo;
+  private final MappedBeanInfo _beanInfo;
   private HashMap _properties;
   private HashMap _fields;
   private HashMap _methods;
@@ -53,6 +53,10 @@ public class BeanPrism
     }
   }
 
+  public Class getJavaClass()
+  { return _targetClass;
+  }
+  
   public synchronized Binding resolve(Binding source,Focus focus,String name,Expression[] params)
     throws BindException
   { 
@@ -76,6 +80,7 @@ public class BeanPrism
   }
 
   private synchronized Binding getField(Binding source,String name)
+    throws BindException
   {
     BeanFieldLense fieldLense=null;
     if (_fields==null)
@@ -109,6 +114,7 @@ public class BeanPrism
   }
 
   private synchronized Binding getProperty(Binding source,String name)
+    throws BindException
   {
     BeanPropertyLense lense=null;
     if (_properties==null)

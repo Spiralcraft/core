@@ -4,7 +4,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.optics.SimpleOptic;
 import spiralcraft.lang.optics.SimpleBinding;
 
 
@@ -14,12 +13,12 @@ public class LiteralNode
   extends Node
 {
 
-  private final SimpleOptic _optic;
+  private final SimpleBinding _optic;
 
   public LiteralNode(Object value,Class valueClass)
   { 
     try
-    { _optic=new SimpleOptic(new SimpleBinding(valueClass,value,true));
+    { _optic=new SimpleBinding(valueClass,value,true);
     }
     catch (BindException x)
     { throw new IllegalArgumentException(x.toString());

@@ -7,6 +7,9 @@ import java.lang.reflect.InvocationTargetException;
 
 import spiralcraft.beans.MappedBeanInfo;
 
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.OpticFactory;
+
 class BeanPropertyLense
   implements Lense
 {
@@ -15,12 +18,15 @@ class BeanPropertyLense
   private final PropertyDescriptor _property;
   private final Method _readMethod;
   private final MappedBeanInfo _beanInfo;
+  private final Prism _prism;
   
   public BeanPropertyLense(PropertyDescriptor property,MappedBeanInfo beanInfo)
+    throws BindException
   { 
     _property=property;
     _readMethod=property.getReadMethod();
     _beanInfo=beanInfo;
+    _prism=OpticFactory.getInstance().findPrism(_property.getPropertyType());
     
   }
 
@@ -71,8 +77,8 @@ class BeanPropertyLense
   { throw new UnsupportedOperationException();
   }
 
-  public Class getTargetClass()
-  { return _property.getPropertyType();
+  public Prism getPrism()
+  { return _prism;
   }
 
 }

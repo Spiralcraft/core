@@ -11,7 +11,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.optics.SimpleOptic;
 import spiralcraft.lang.optics.SimpleBinding;
 
 
@@ -80,7 +79,7 @@ public class ExpressionResolverTest
           new Attribute[] 
             {new Attribute
               ("test"
-              ,new SimpleOptic(new SimpleBinding("testValue",true))
+              ,new SimpleBinding("testValue",true)
               )
             }
         );

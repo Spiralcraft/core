@@ -2,7 +2,6 @@ package spiralcraft.lang;
 
 import java.util.HashMap;
 
-import spiralcraft.lang.optics.SimpleOptic;
 import spiralcraft.lang.optics.SimpleBinding;
 import spiralcraft.lang.optics.Binding;
 import spiralcraft.lang.optics.Prism;
@@ -47,7 +46,7 @@ public class OpticFactory
     { return (Optic) object;
     }
     else
-    { return new SimpleOptic(new SimpleBinding(object,true),this);
+    { return new SimpleBinding(object,true);
     }
   }
 
@@ -58,12 +57,11 @@ public class OpticFactory
   
   
   /**
-   * Find a Prism which provides a namespace for the specified binding
+   * Find a Prism which provides an interface into the specified Java class
    */
-  public synchronized Prism findPrism(Binding binding)
+  public synchronized Prism findPrism(Class clazz)
     throws BindException
   { 
-    Class clazz=binding.getTargetClass();
     Prism result=(Prism) _prismMap.get(clazz);
     if (result==null)
     {

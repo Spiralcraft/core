@@ -91,10 +91,24 @@ public  class LenseBinding
   { return false;
   }
 
-  public final Class getTargetClass()
-  { return _lense.getTargetClass();
+  public final Prism getPrism()
+  { return _lense.getPrism();
   }
 
+  public Optic resolve(Focus focus,String name,Expression[] params)
+    throws BindException
+  { 
+    Binding binding=_lense.getPrism().resolve(this,focus,name,params);
+    if (binding==null)
+    { throw new BindException("'"+name+"' not found in "+_lense.getPrism().toString());
+    }
+    return binding;
+  }
+  
+  public Class getTargetClass()
+  { return _lense.getPrism().getJavaClass();
+  }
+  
   /**
    * Override if standard definition of isStatic is false
    */

@@ -1,6 +1,5 @@
 package spiralcraft.lang;
 
-import spiralcraft.lang.optics.SimpleOptic;
 import spiralcraft.lang.optics.SimpleBinding;
 
 /**
@@ -58,7 +57,7 @@ public class Attribute
     if (_optic==null)
     { 
       try
-      { _optic=new SimpleOptic(new SimpleBinding(_type,null,false));
+      { _optic=new SimpleBinding(_type,null,false);
       }
       catch (BindException x)
       { x.printStackTrace();

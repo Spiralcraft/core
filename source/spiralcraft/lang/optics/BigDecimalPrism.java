@@ -13,10 +13,12 @@ import java.math.BigDecimal;
 public class BigDecimalPrism
   extends BeanPrism
 {
-  private static final Lense _BIG_DECIMAL_DIVIDE_LENSE=new BigDecimalDivideLense();
+  private final Lense _divideLense;
 
   public BigDecimalPrism()
-  { super(BigDecimal.class);
+  { 
+    super(BigDecimal.class);
+    _divideLense=new BigDecimalDivideLense(this);
   }
   
   public Binding resolve(Binding source,Focus focus,String name,Expression[] params)
@@ -26,7 +28,7 @@ public class BigDecimalPrism
     {   
       return new LenseBinding
         (source
-        ,_BIG_DECIMAL_DIVIDE_LENSE
+        ,_divideLense
         ,new Optic[] {focus.bind(params[0])}
         );
     }
@@ -37,10 +39,12 @@ public class BigDecimalPrism
 class BigDecimalDivideLense
   implements Lense
 {
-  public Class getTargetClass()
-  { return BigDecimal.class;
+  private final Prism _prism;
+  
+  public BigDecimalDivideLense(Prism prism)
+  { _prism=prism;
   }
-
+  
   public Object translateForGet(Object source,Object[] modifiers)
   { 
     BigDecimal nsource=(BigDecimal) source;
@@ -53,6 +57,10 @@ class BigDecimalDivideLense
     BigDecimal result=(BigDecimal) source;
     BigDecimal divisor=(BigDecimal) modifiers[0];
     return result.multiply(divisor);
+  }
+  
+  public Prism getPrism()
+  { return _prism;
   }
 
 }

@@ -12,10 +12,12 @@ import spiralcraft.lang.BindException;
 public class NumberPrism
   extends BeanPrism
 {
-  private static final Lense _NUMBER_DIVIDE_LENSE=new NumberDivideLense();
+  private final Lense _divideLense;
 
   public NumberPrism()
-  { super(Number.class);
+  { 
+    super(Number.class);
+    _divideLense=new NumberDivideLense(this);
   }
   
   public synchronized Binding resolve(Binding source,Focus focus,String name,Expression[] params)
@@ -25,7 +27,7 @@ public class NumberPrism
     { 
       return new LenseBinding
         (source
-        ,_NUMBER_DIVIDE_LENSE
+        ,_divideLense
         ,new Optic[] {focus.bind(params[0])}
         );
     }
@@ -38,10 +40,12 @@ class NumberDivideLense
   implements Lense
 {
 
-  public Class getTargetClass()
-  { return Number.class;
+  private final Prism _prism;
+  
+  public NumberDivideLense(Prism prism)
+  { _prism=prism;
   }
-
+  
   public Object translateForGet(Object source,Object[] modifiers)
   { 
     Number nsource=(Number) source;
@@ -54,5 +58,9 @@ class NumberDivideLense
     Number result=(Number) source;
     Number divisor=(Number) modifiers[0];
     return new Double(result.doubleValue()*divisor.doubleValue());
+  }
+  
+  public Prism getPrism()
+  { return _prism;
   }
 }

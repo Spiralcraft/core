@@ -2,10 +2,13 @@ package spiralcraft.lang.optics;
 
 import java.beans.PropertyChangeSupport;
 
+import spiralcraft.lang.Optic;
+
 /**
  * Provides bidirectional access to an aribitrary data source
  */
 public interface Binding
+  extends Optic
 {
   /**
    * Return the bound object
@@ -19,9 +22,11 @@ public interface Binding
   public boolean set(Object value);
 
   /**
-   * Indicate the Java Class of the bound object
+   * Indicate the Prism associated with the bound Object. The Prism
+   *   is the means by which further Bindings are resolved against
+   *   this Binding.
    */
-  public Class getTargetClass();
+  public Prism getPrism();
 
   /** 
    * Indicates whether the bound object is guaranteed to

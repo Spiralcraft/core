@@ -15,5 +15,8 @@ public interface Lense
    */
   public Object translateForSet(Object source,Object[] modifiers);
 
-  public Class getTargetClass();
+  /**
+   * Return the Prism associated with the target Object.
+   */
+  public Prism getPrism();
 }

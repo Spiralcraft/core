@@ -12,10 +12,12 @@ import spiralcraft.lang.BindException;
 public class StringPrism
   extends BeanPrism
 {
-  private static final Lense _STRING_CONCAT_LENSE=new StringConcatLense();
+  private final Lense _concatLense;
 
   public StringPrism()
-  { super(String.class);
+  { 
+    super(String.class);
+    _concatLense=new StringConcatLense(this);
   }
   
   public synchronized Binding resolve(Binding source,Focus focus,String name,Expression[] params)
@@ -25,7 +27,7 @@ public class StringPrism
     { 
       return new LenseBinding
         (source
-        ,_STRING_CONCAT_LENSE
+        ,_concatLense
         ,new Optic[] {focus.bind(params[0])}
         );
     }
@@ -37,9 +39,14 @@ public class StringPrism
 class StringConcatLense
   implements Lense
 {
-
-  public Class getTargetClass()
-  { return String.class;
+  private final Prism _prism;
+  
+  public StringConcatLense(Prism prism)
+  { _prism=prism;
+  }
+  
+  public Prism getPrism()
+  { return _prism;
   }
 
   public Object translateForGet(Object source,Object[] modifiers)
