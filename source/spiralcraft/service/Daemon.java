@@ -3,6 +3,7 @@ package spiralcraft.service;
 import spiralcraft.util.Arguments;
 
 import spiralcraft.exec.Executable;
+import spiralcraft.exec.ExecutionContext;
 
 import spiralcraft.ui.Command;
 import spiralcraft.ui.AbstractCommand;
@@ -113,7 +114,7 @@ public class Daemon
 
   }
 
-  public final void execute(String[] args)
+  public final void execute(ExecutionContext context,String[] args)
   {
     try
     { 
