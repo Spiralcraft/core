@@ -5,7 +5,6 @@ import java.net.URI;
 import java.io.IOException;
 
 import java.util.LinkedList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.HashMap;
 
@@ -35,14 +34,18 @@ public class AssemblyClass
   private final AssemblyLoader _loader;
   private String _declarationName;
   private Class _javaClass;
-  private LinkedList _propertySpecifiers;
-  private LinkedList _compositeMembers;
-  private String[] _singletonNames;
-  private Class[] _localSingletons;
+  private LinkedList<PropertySpecifier> _propertySpecifiers;
+  private LinkedList<PropertySpecifier> _compositeMembers;
+  
+  private boolean _singleton;
+  private Assembly _singletonInstance;
+  
   private Class[] _singletons;
-  private LinkedList _members;
-  private HashMap _memberMap;
+  private LinkedList<PropertySpecifier> _members;
+  private HashMap<String,PropertySpecifier> _memberMap;
   private boolean _resolved;
+  private String _id;
+  private String _constructorText;
 
   /**
    * Construct a new AssemblyClass from a definition
@@ -81,6 +84,27 @@ public class AssemblyClass
     }
   }
 
+  public String toString()
+  { return super.toString()+":"+_sourceUri+":"+_basePackage+":"+_baseName;
+  }
+
+  public void setConstructor(String constructor)
+  { _constructorText=constructor;
+  }
+  
+  public String getConstructor()
+  {
+    if (_constructorText!=null)
+    { return _constructorText;
+    }
+    else if (_baseAssemblyClass!=null)
+    { return _baseAssemblyClass.getConstructor();
+    }
+    else
+    { return null;
+    }
+  }
+  
   /**
    * Construct a new AssemblyClass from a referenced base class
    *
@@ -135,12 +159,12 @@ public class AssemblyClass
     
     if (_members==null)
     { 
-      _members=new LinkedList();
-      _memberMap=new HashMap();
+      _members=new LinkedList<PropertySpecifier>();
+      _memberMap=new HashMap<String,PropertySpecifier>();
     }
     else
     {
-      PropertySpecifier oldProp=(PropertySpecifier) _memberMap.get(name);
+      PropertySpecifier oldProp=_memberMap.get(name);
       if (oldProp!=null)
       { 
         
@@ -170,7 +194,7 @@ public class AssemblyClass
   { 
     PropertySpecifier member=null;
     if (_memberMap!=null)
-    { member=(PropertySpecifier) _memberMap.get(name);
+    { member=_memberMap.get(name);
     }
     
     if (member==null && _baseAssemblyClass!=null)
@@ -189,12 +213,9 @@ public class AssemblyClass
         =new PropertyBinding[_compositeMembers.size()];
   
       
-      Iterator it=_compositeMembers.iterator();
       int i=0;
-      while (it.hasNext())
-      {
-        PropertySpecifier prop=(PropertySpecifier) it.next();
-        bindings[i++]=new PropertyBinding(prop,container);
+      for (PropertySpecifier prop: _compositeMembers)
+      { bindings[i++]=new PropertyBinding(prop,container);
       }
       return bindings;
     }
@@ -229,7 +250,6 @@ public class AssemblyClass
     { resolveExternalBaseClass();
     }
     resolveProperties();
-    resolveSingletons();
     _resolved=true;
   }
   
@@ -244,14 +264,19 @@ public class AssemblyClass
 
   public boolean isFocusNamed(String name)
   { 
-    if (_declarationName.equals(name))
+    if (_id!=null && _id.equals(name))
     { return true;
     }
     else if (_baseAssemblyClass!=null)
     { return _baseAssemblyClass.isFocusNamed(name);
     }
     else if (_javaClass!=null)
-    { return _javaClass.getName().equals(name);
+    { 
+      name=name.intern();
+      Class[] singletons=getSingletons();
+      for (Class clazz:singletons)
+      { return clazz.getName()==name;
+      }
     }
     return false;
   }
@@ -262,41 +287,36 @@ public class AssemblyClass
     _declarationName=val;
   }
 
-  public void setSingletonNames(String[] interfaceNames)
+  public void setId(String val)
   { 
     assertUnresolved();
-    _singletonNames=interfaceNames;
+    _id=val;
   }
 
-  private void resolveSingletons()
-    throws BuildException
+  /**
+   * Whether this AssemblyClass should generate a global shared instance
+   */
+  public void setSingleton(boolean val)
+  { _singleton=val;
+  }
+  
+  /**
+   *@return Whether this AssemblyClass will generate a global shared instance
+   */
+  public boolean isSingleton()
+  { return _singleton;
+  }
+  
+  /**
+   *@return Whether this AssemblyClass references a superclass but does not
+   *  modify the instance in any way.
+   */
+  public boolean isUnmodifiedSubclass()
   { 
-    if (_singletonNames!=null)
-    {
-      _localSingletons=new Class[_singletonNames.length];
-      for (int i=0;i<_singletonNames.length;i++)
-      { 
-        try
-        {
-          _localSingletons[i]
-            =Class.forName
-              (_singletonNames[i]
-              ,false
-              ,Thread.currentThread().getContextClassLoader()
-              );
-        }
-        catch (ClassNotFoundException x)
-        { throw new BuildException("Class not found: "+_singletonNames[i],x);
-        }
-      }
-    }
-
-    LinkedList singletons=new LinkedList();
-    composeSingletons(singletons);
-    _singletons=new Class[singletons.size()];
-    singletons.toArray(_singletons);
+    return _baseAssemblyClass!=null 
+      && _propertySpecifiers==null;
   }
-
+  
   private void resolveProperties()
     throws BuildException
   {
@@ -310,15 +330,18 @@ public class AssemblyClass
       }
     }
     
-    _compositeMembers=new LinkedList();
-    composeMembers(_compositeMembers,new HashMap());
+    _compositeMembers=new LinkedList<PropertySpecifier>();
+    composeMembers(_compositeMembers,new HashMap<String,PropertySpecifier>());
     
   }
 
   /**
    * Compose the list of members, overriding members with the same target name
    */
-  private void composeMembers(LinkedList list,HashMap map)
+  private void composeMembers
+    (LinkedList<PropertySpecifier> list
+    ,HashMap<String,PropertySpecifier> map
+    )
     throws BuildException
   {
     if (_baseAssemblyClass!=null)
@@ -326,13 +349,10 @@ public class AssemblyClass
     }
     if (_members!=null)
     { 
-      Iterator it=_members.iterator();
-      while (it.hasNext())
-      { 
-        
-        PropertySpecifier prop=(PropertySpecifier) it.next();
+      for (PropertySpecifier prop:_members)
+      {
         PropertySpecifier oldProp
-          =(PropertySpecifier) map.get(prop.getTargetName());
+          =map.get(prop.getTargetName());
         if (oldProp!=null)
         { 
           map.remove(prop.getTargetName());
@@ -341,19 +361,6 @@ public class AssemblyClass
         }
         list.add(prop);
         map.put(prop.getTargetName(),prop);
-      }
-    }
-  }
-
-  public void composeSingletons(LinkedList list)
-  { 
-    if (_baseAssemblyClass!=null)
-    { _baseAssemblyClass.composeSingletons(list);
-    }
-    if (_localSingletons!=null)
-    { 
-      for (int i=0;i<_singletons.length;i++)
-      { list.add(_localSingletons[i]);
       }
     }
   }
@@ -416,7 +423,20 @@ public class AssemblyClass
           );
     }
     catch (ClassNotFoundException x)
-    { throwBuildException("Class not found: '"+className+"'",x);
+    { 
+      String langClassName="java.lang."+_baseName;
+      try
+      {
+        _javaClass
+          =Class.forName
+            (langClassName
+            ,false
+            ,Thread.currentThread().getContextClassLoader()
+            );
+      }
+      catch (ClassNotFoundException y)
+      { throwBuildException("Class not found: '"+className+"'",x);
+      }
     }
   }
 
@@ -470,9 +490,49 @@ public class AssemblyClass
   }
 
   public Class[] getSingletons()
-  { return _singletons;
+  { 
+    if (_baseAssemblyClass!=null)
+    { return _baseAssemblyClass.getSingletons();
+    }
+    else
+    {
+      if (_singletons==null)
+      { resolveSingletons();
+      }
+      return _singletons;
+    }
   }
 
+  /**
+   * Create the list of interfaces and classes exposed by the
+   *   Java class that defines this Assembly.
+   */
+  private void resolveSingletons()
+  {
+
+    LinkedList singletons=new LinkedList();
+    Class javaClass=_javaClass;
+    Class[] interfaces=javaClass.getInterfaces();
+    
+    while (javaClass!=null && javaClass!=Object.class)
+    { 
+      singletons.add(javaClass);
+      javaClass=javaClass.getSuperclass();
+    }
+    
+    for (Class clazz: interfaces)
+    { 
+      while (clazz!=null)
+      { 
+        singletons.add(clazz);
+        clazz=clazz.getSuperclass();
+      }
+      
+    }
+    _singletons=new Class[singletons.size()];
+    singletons.toArray(_singletons);
+  }
+  
   /**
    * Ensure that the given test class is defined within the scope of this
    *   assembly class. If it isn't, define an inner subclass under the 
@@ -497,13 +557,51 @@ public class AssemblyClass
     { return testClass;
     }
   }
+
+  /**
+   * Create an unbound assembly (if not a singleton), for later binding
+   */
+  Assembly newInstance()
+    throws BuildException
+  {
+    if (_singleton)
+    { 
+      synchronized (this)
+      {
+        if (_singletonInstance!=null)
+        { return _singletonInstance;
+        }
+        else
+        { 
+          _singletonInstance=new Assembly(this);
+          _singletonInstance.bind((Assembly) null);
+          return _singletonInstance;
+        }
+      }
+    }
+    else if (isUnmodifiedSubclass() && _baseAssemblyClass.isSingleton())
+    { 
+      // Reference to a singleton
+      return _baseAssemblyClass.newInstance();
+    }
+    else
+    { return new Assembly(this);
+    }
+  }
   
   public Assembly newInstance(Assembly parent)
     throws BuildException
   { 
-    // Instantiate the assembly
-    Assembly assembly=new Assembly(this,parent);
-    
-    return assembly;
+    Assembly assembly=newInstance();
+    if (!assembly.isBound())
+    { assembly.bind(parent);
+    }
+    if (!assembly.isResolved())
+    { assembly.resolve();
+    }
+    if (!assembly.isApplied())
+    { assembly.applyProperties();
+    }
+    return assembly;    
   }
 }

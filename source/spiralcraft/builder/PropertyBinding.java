@@ -12,7 +12,6 @@ import spiralcraft.lang.DefaultFocus;
 
 import spiralcraft.builder.persist.PersistentReference;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,12 +66,42 @@ public class PropertyBinding
     _container=container;
     _focus=container;
 
-    instantiateContents();
+    // Resolve the target first to determine how we are to interpret
+    //   the contents/source information
     resolveTarget();
+    instantiateContents();
+  }
+
+  public void resolve()
+    throws BuildException
+  {
+    if (_contents!=null)
+    {
+      for (Assembly assembly:_contents)
+      { 
+        if (!assembly.isResolved())
+        { assembly.resolve();
+        }
+      }
+    }
     resolveSource();
     apply();
   }
 
+  public void applyProperties()
+    throws BuildException
+  { 
+    if (_contents!=null)
+    {
+      for (Assembly assembly:_contents)
+      { 
+        if (!assembly.isApplied())
+        { assembly.applyProperties();
+        }
+      }
+    }
+  }
+  
   /**
    * Write persistent data to the associated Tuple field
    */
@@ -177,15 +206,21 @@ public class PropertyBinding
       // Register all sub-assemblies 
       RegistryNode propertyNode=node.createChild(_specifier.getTargetName());
       if (!_target.getContentType().isArray())
-      { _contents[0].register(propertyNode);
+      { 
+        if (!_contents[0].getAssemblyClass().isSingleton())
+        { _contents[0].register(propertyNode);
+        }
       }
       else
       {
         for (int i=0;i<_contents.length;i++)
         { 
-          _contents[i].register
-            (propertyNode.createChild(Integer.toString(i))
-            );
+          if (!_contents[i].getAssemblyClass().isSingleton())
+          {
+            _contents[i].register
+              (propertyNode.createChild(Integer.toString(i))
+              );
+          }
         }
       }
     }
@@ -344,29 +379,61 @@ public class PropertyBinding
   private void instantiateContents()
     throws BuildException
   {
-    List contents=_specifier.getContents();
+    List<AssemblyClass> contents;
+    if (isAggregate())
+    { contents=_specifier.getCombinedContents();
+    }
+    else
+    { 
+      contents=_specifier.getContents();
+      if (contents!=null && contents.size()>1)
+      { 
+        throw new BuildException
+          (_specifier.getTargetName()
+          +" in "+_container.getAssemblyClass().getJavaClass()
+          +" cannot have multiple values"
+          );
+      } 
+    }
+    
     if (contents!=null)
     { 
       _contents=new Assembly[contents.size()];
-      Iterator it=contents.iterator();
+      
       int i=0;
-      while (it.hasNext())
+      for (AssemblyClass assemblyClass : contents)
       { 
-        AssemblyClass assemblyClass=(AssemblyClass) it.next();
-        _contents[i++]=assemblyClass.newInstance(_container);
+        Assembly assembly=assemblyClass.newInstance();
+        if (_specifier.getExport())
+        { exportSingletons(assembly);
+        }
+        _contents[i++]=assembly;
       }
+      
+      for (Assembly assembly:_contents)
+      { 
+        if (!assembly.isBound())
+        { assembly.bind(_container);
+        }
+      }
+
     }
   }
 
   private void resolveTarget()
     throws BuildException
   {
-    _target=_container.resolve(_specifier.getTargetName());
-    if (_target==null)
+    try
+    {
+      _target=_container.getSubject()
+        .resolve(_container,_specifier.getTargetName(),null);
+    }
+    catch (BindException x)
     {
       throw new BuildException
         ("Property '"+_specifier.getTargetName()+"' not found"
         +" ("+_specifier.getSourceCodeLocation()+")"
+        ,x
         );
     }
   }
@@ -389,9 +456,7 @@ public class PropertyBinding
       {
         // Source is a single object
         if (_contents.length==1)
-        { 
-          _source=_contents[0].getSubject().get();
-          registerSingletons(_contents[0]);
+        { _source=_contents[0].getSubject().get();
         }
         else
         {
@@ -446,7 +511,9 @@ public class PropertyBinding
         for (int i=0;i<_contents.length;i++)
         { 
           source.add(_contents[i].getSubject().get());
-          registerSingletons(_contents[i]);
+          if (_specifier.getExport())
+          { exportSingletons(_contents[i]);
+          }
         }
         _source=source;
         
@@ -461,7 +528,9 @@ public class PropertyBinding
         for (int i=0;i<_contents.length;i++)
         { 
           Array.set(_source,i,_contents[i].getSubject().get());
-          registerSingletons(_contents[i]);
+          if (_specifier.getExport())
+          { exportSingletons(_contents[i]);
+          }
         }
       }
     }
@@ -539,11 +608,14 @@ public class PropertyBinding
           // This feature effectively allows components to evaluate expressions
           //   at runtime against the containing assembly hierarchy or any
           //   object accessible from it.
+          
           _source=new DefaultFocus
             (OpticFactory.getInstance().createOptic
               (sourceChannel.get()
               )
             );
+          _source=new DefaultFocus
+            (sourceChannel);
         }
         else if (_target.getContentType()==Channel.class
             && !Channel.class.isAssignableFrom
@@ -591,7 +663,12 @@ public class PropertyBinding
     try
     {
       if (_source!=null && !_target.set(_source))
-      { throwBuildException("Could not write property "+_specifier.getTargetName(),null);
+      { 
+        throwBuildException
+          ("Could not write ["+_source.toString()+"] value to property \""
+          +_specifier.getTargetName()+"\""
+          ,null
+          );
       }
     }
     catch (RuntimeException x)
@@ -618,7 +695,7 @@ public class PropertyBinding
     }
   }
 
-  private void registerSingletons(Assembly source)
+  private void exportSingletons(Assembly source)
     throws BuildException
   {
     Class[] interfaces=source.getSingletons();

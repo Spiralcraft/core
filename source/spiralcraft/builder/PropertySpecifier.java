@@ -11,7 +11,6 @@ import spiralcraft.lang.Optic;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -27,7 +26,7 @@ public class PropertySpecifier
   private final String[] _specifier;
   private StringBuffer _textContent;
   private String _textData;
-  private ArrayList _contents;
+  private ArrayList<AssemblyClass> _contents;
   private String _targetName;
   private AssemblyClass _targetAssemblyClass;
   private Expression _sourceExpression;
@@ -40,6 +39,7 @@ public class PropertySpecifier
   private PropertySpecifier _baseMember;
   private String _collectionClassName;
   private Class _collectionClass;
+  private boolean _export;
   
   public PropertySpecifier
     (AssemblyClass container
@@ -93,6 +93,14 @@ public class PropertySpecifier
       ;
   }
 
+  public void setExport(boolean export)
+  { _export=export;
+  }
+  
+  public boolean getExport()
+  { return _export;
+  }
+  
   public void setCollectionClassName(String name)
   { _collectionClassName=name;
   }
@@ -291,12 +299,8 @@ public class PropertySpecifier
   {
     if (_contents!=null)
     {
-      Iterator it=_contents.iterator();
-      while (it.hasNext())
-      { 
-        AssemblyClass assemblyClass
-          =(AssemblyClass) it.next();
-        assemblyClass.resolve();
+      for (AssemblyClass assemblyClass:_contents)
+      { assemblyClass.resolve();
       }
     }
   }
@@ -304,7 +308,6 @@ public class PropertySpecifier
   private final void resolveCollection()
     throws BuildException
   {
-    System.out.println(toString()+" resolve collection");
     if (getCollectionClassName()!=null)
     { 
       try
@@ -315,7 +318,6 @@ public class PropertySpecifier
             ,false
             ,Thread.currentThread().getContextClassLoader()
             );
-        System.out.println(toString()+_collectionClass);
       }
       catch (ClassNotFoundException x)
       { 
@@ -341,7 +343,13 @@ public class PropertySpecifier
   { 
     _baseMember=prop;
     resolveCollection();
-    System.out.println(toString()+" overriding "+prop.toString());
+  }
+  
+  /**
+   * The member which this member overrides
+   */
+  public PropertySpecifier getBaseMember()
+  { return _baseMember;
   }
   
   public String getTargetName()
@@ -351,7 +359,7 @@ public class PropertySpecifier
   public void addAssemblyClass(AssemblyClass assembly)
   { 
     if (_contents==null)
-    { _contents=new ArrayList(1);
+    { _contents=new ArrayList<AssemblyClass>(1);
     }
     _contents.add(assembly);
     
@@ -365,8 +373,21 @@ public class PropertySpecifier
     _textContent.append(characters);
   }
 
-  public List getContents()
+  public List<AssemblyClass> getContents()
   { return _contents;
+  }
+
+  
+  public List<AssemblyClass> getCombinedContents()
+  { 
+    List<AssemblyClass> ret=new ArrayList<AssemblyClass>();
+    if (_baseMember!=null)
+    { ret.addAll(_baseMember.getCombinedContents());
+    }
+    if (_contents!=null)
+    { ret.addAll(_contents);
+    }
+    return ret;
   }
 
   public String getTextData()

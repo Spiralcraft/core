@@ -9,6 +9,7 @@ import spiralcraft.util.StringUtil;
 import spiralcraft.util.Path;
 
 import java.io.IOException;
+import java.io.FileNotFoundException;
 
 import spiralcraft.sax.ParseTreeFactory;
 import spiralcraft.sax.ParseTree;
@@ -104,11 +105,7 @@ public class AssemblyLoader
     if (ret==null)
     { 
       ret=loadAssemblyDefinition(resourceUri);
-      if (ret!=null)
-      { _cache.put(resourceUri,ret);
-      }
-      
-      
+
     }
     return ret;
   }
@@ -117,7 +114,7 @@ public class AssemblyLoader
    * Load an AssemblyClass from the XML document obtained from the
    *   specified resource.
    */
-  public AssemblyClass loadAssemblyDefinition(Resource resource)
+  private AssemblyClass loadAssemblyDefinition(Resource resource)
     throws BuildException
   {
     ParseTree parseTree=null;
@@ -164,7 +161,7 @@ public class AssemblyLoader
     catch (IOException x)
     { throw new BuildException("Error reading "+resourceUri.toString(),x);
     }
-
+    
     if (parseTree==null)
     { return null;
     }
@@ -178,6 +175,7 @@ public class AssemblyLoader
   {
     Element root=parseTree.getDocument().getRootElement();
     AssemblyClass assemblyClass=readAssemblyClass(resourceUri,root,null);
+    _cache.put(resourceUri,assemblyClass);
     assemblyClass.resolve();
     return assemblyClass;
   }
@@ -214,7 +212,7 @@ public class AssemblyLoader
         ,this
         );
         
-    assemblyClass.setDeclarationName(node.getLocalName());
+    assemblyClass.setDeclarationName(node.getQName());
 
     Attribute[] attribs
       =node.getAttributes();
@@ -223,15 +221,41 @@ public class AssemblyLoader
       for (int i=0;i<attribs.length;i++)
       {
         String name=attribs[i].getLocalName().intern();
-        if (name=="singletons")
+
+//        XXX Deprecated- shouldn't make developer state names of
+//              interfaces to export
+//      
+//        if (name=="singletons")
+//        { 
+//          String value=attribs[i].getValue();
+//          String[] interfaceNames=
+//            StringUtil.tokenize(value,",");
+//          assemblyClass.setSingletonNames(interfaceNames);
+//        }
+//        else
+
+
+//        XXX Deprecated- declaration name should always be the QName of
+//          the tag.
+//
+//        if (name=="name")
+//        { assemblyClass.setDeclarationName(attribs[i].getValue());
+//        }
+//        else
+
+
+
+        if (name=="singleton")
         { 
-          String value=attribs[i].getValue();
-          String[] interfaceNames=
-            StringUtil.tokenize(value,",");
-          assemblyClass.setSingletonNames(interfaceNames);
+          if (containerClass!=null)
+          { 
+            throw new BuildException
+              ("Only top level assembly classes can be declared as singletons");
+          }
+          assemblyClass.setSingleton(readBoolean(attribs[i]));
         }
-        else if (name=="name")
-        { assemblyClass.setDeclarationName(attribs[i].getValue());
+        else if (name=="id")
+        { assemblyClass.setId(attribs[i].getValue());
         }
         else
         { 
@@ -243,13 +267,45 @@ public class AssemblyLoader
 
     if (node.hasChildren())
     { 
+      StringBuilder constructorBuff=new StringBuilder();
+      boolean readProperties=false;
+      
       Iterator it=node.getChildren().iterator();
       while (it.hasNext())
       { 
         Node child = (Node) it.next();
         if (child instanceof Element)
-        { readProperty(sourceUri,(Element) child,assemblyClass);
+        { 
+          if (constructorBuff.length()>0)
+          { 
+            throw new BuildException
+              ("Assembly definition cannot contain both constructor text"
+              +" and property specifiers"
+              );
+          }    
+          readProperty(sourceUri,(Element) child,assemblyClass);
+          readProperties=true;
         }
+        else if (child instanceof Characters)
+        { 
+          String characterString
+            =new String(((Characters) child).getCharacters()).trim();
+          if (characterString.length()>0)
+          {
+            if (readProperties)
+            {
+              throw new BuildException
+                ("Assembly definition cannot contain both constructor text"
+                +" and property specifiers"
+                );
+              
+            }
+            constructorBuff.append(characterString);
+          }
+        }
+      }
+      if (constructorBuff.length()>0)
+      { assemblyClass.setConstructor(constructorBuff.toString());
       }
     }
     return assemblyClass;
@@ -283,6 +339,9 @@ public class AssemblyLoader
         }
         else if (name=="collection")
         { prop.setCollectionClassName(attribs[i].getValue());
+        }
+        else if (name=="export")
+        { prop.setExport(readBoolean(attribs[i]));
         }
         else
         { 

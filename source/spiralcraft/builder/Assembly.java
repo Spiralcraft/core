@@ -19,29 +19,33 @@ import spiralcraft.registry.Registrant;
 
 import java.lang.reflect.Proxy;
 
+import spiralcraft.util.StringConverter;
+
 /**
  * Assemblies are 'instances' of AssemblyClasses.
  */
 public class Assembly
-  implements Focus,Context,Registrant
+  implements Focus,Registrant
 {
   private final AssemblyClass _assemblyClass;
-  private final Assembly _parent;
+  private Assembly _parent;
   private final Optic _optic;
-  private final PropertyBinding[] _propertyBindings;
-  private HashMap _singletons;
-  private HashMap _channels;
-
-
+  private PropertyBinding[] _propertyBindings;
+  private HashMap<String,Assembly> _importedSingletons;
+  private HashMap<Expression,Channel> _channels;
+  private Context _context;
+  private boolean bound=false;
+  private boolean resolved=false;
+  private boolean applied=false;
+  
   /**
-   * Construct an instance of the specified AssemblyClass
+   * Construct an instance of the specified AssemblyClass,
+   *   without binding properties
    */
-  Assembly(AssemblyClass assemblyClass,Assembly parent)
+  Assembly(AssemblyClass assemblyClass)
     throws BuildException
-  { 
+  {
     _assemblyClass=assemblyClass;
-    _parent=parent;
-
     try
     {
       Class javaClass=_assemblyClass.getJavaClass();
@@ -52,11 +56,22 @@ public class Assembly
       if (javaClass.isInterface())
       { _optic=new TupleDelegate(javaClass);
       }
-      else
-      { _optic=new SimpleBinding(javaClass.newInstance(),true);
+      else 
+      { 
+        String constructor=_assemblyClass.getConstructor();
+        Object instance;
+        if (constructor!=null)
+        { instance=construct(javaClass,constructor);
+        }
+        else
+        { instance=javaClass.newInstance();
+        }
+        if (Context.class.isAssignableFrom(instance.getClass()))
+        { _context=(Context) instance;
+        }
+        _optic=new SimpleBinding(instance,true);
       }
 
-      registerSingletons(javaClass);
     }
     catch (InstantiationException x)
     { throw new BuildException("Error instantiating assembly",x);
@@ -67,12 +82,88 @@ public class Assembly
     catch (BindException x)
     { throw new BuildException("Error binding instance",x);
     }
-    
-    
-    _propertyBindings=_assemblyClass.bindProperties(this);
-    
   }
 
+  Object construct(Class clazz,String constructor)
+    throws BuildException
+  {
+    StringConverter converter=StringConverter.getInstance(clazz);
+    if (converter!=null)
+    { return converter.fromString(constructor);
+    }
+    else
+    { throw new BuildException("Can't construct a "+clazz+" from text"); 
+    }
+  }
+  
+  /**
+   * Construct an instance of the specified AssemblyClass
+   */
+  Assembly(AssemblyClass assemblyClass,Assembly parent)
+    throws BuildException
+  { 
+    this(assemblyClass);
+    bind(parent);
+  }
+
+  /**
+   *@return Whether this Assembly's properties have been bound
+   */
+  boolean isBound()
+  { return bound;
+  }
+  
+  void bind(Assembly parent)
+    throws BuildException
+  {
+    if (bound)
+    { throw new BuildException("Already bound properties");
+    }
+    bound=true;
+    _parent=parent;
+    _propertyBindings=_assemblyClass.bindProperties(this);
+  }
+
+  boolean isResolved()
+  { return resolved;
+  }
+  
+  void resolve()
+    throws BuildException
+  {
+    if (resolved)
+    { throw new BuildException("Already resolved");
+    }
+    resolved=true;
+    
+    if (_propertyBindings!=null)
+    {
+      for (PropertyBinding binding: _propertyBindings)
+      { binding.resolve();
+      }
+    }
+  }
+  
+  boolean isApplied()
+  { return applied;
+  }
+  
+  void applyProperties()
+    throws BuildException
+  {
+    if (applied)
+    { throw new BuildException("Already applied");
+    }
+    applied=true;
+    if (_propertyBindings!=null)
+    {
+      for (PropertyBinding binding: _propertyBindings)
+      { binding.applyProperties();
+      }
+    }
+    
+  }
+  
   /**
    * Descend the tree and write all preference properties to
    *   their respective Preferences node.
@@ -120,33 +211,28 @@ public class Assembly
   public void registerSingletons(Class[] singletonInterfaces,Assembly singleton)
     throws BuildException
   { 
-    if (_singletons==null)
-    { _singletons=new HashMap();
+    if (_importedSingletons==null)
+    { _importedSingletons=new HashMap<String,Assembly>();
     }
     for (int i=0;i<singletonInterfaces.length;i++)
-    { _singletons.put(singletonInterfaces[i].getName(),singleton);
+    { _importedSingletons.put(singletonInterfaces[i].getName(),singleton);
     }
     
   }
   
   /**
-   * Register this assembly as a singleton for all interfaces and subclasses
-   *   of the specified class
+   * Return the singleton interfaces exported by this
+   *   Assembly. 
+   *
+   * Called by PropertyBinding when it exports singletons from a
+   *   'child' assembly in a property up to its parent assembly.
    */
-  private void registerSingletons(Class clazz)
-    throws BuildException
-  { 
-    Class[] interfaces=clazz.getInterfaces();
-    registerSingletons(interfaces,this);
-    while (clazz!=null && clazz!=Object.class)
-    { 
-      _singletons.put(clazz.getName(),this);
-      clazz=clazz.getSuperclass();
-    }
-  }
-
   public Class[] getSingletons()
-  { return _assemblyClass.getSingletons();
+  { 
+    // XXX Should we export the imported singletons as well? We would have
+    //   to change that interface to map Classes to objects as opposed to
+    //   names in order to do this.
+    return _assemblyClass.getSingletons();
   }
 
   public AssemblyClass getAssemblyClass()
@@ -177,7 +263,7 @@ public class Assembly
    * implement Focus.getContext()
    */
   public Context getContext()
-  { return this;
+  { return _context;
   }
 
   /**
@@ -192,16 +278,17 @@ public class Assembly
    */
   public Focus findFocus(String name)
   { 
-    if (_assemblyClass.isFocusNamed(name))
-    { return this;
-    }
     
-    if (_singletons!=null)
+    if (_importedSingletons!=null)
     { 
-      Assembly assembly=(Assembly) _singletons.get(name);
+      Assembly assembly=_importedSingletons.get(name);
       if (assembly!=null)
       { return assembly;
       }
+    }
+    
+    if (_assemblyClass.isFocusNamed(name))
+    { return this;
     }
 
     if (_parent!=null)
@@ -220,10 +307,10 @@ public class Assembly
   { 
     Channel channel=null;
     if (_channels==null)
-    { _channels=new HashMap();
+    { _channels=new HashMap<Expression,Channel>();
     }
     else
-    { channel=(Channel) _channels.get(expression);
+    { channel=_channels.get(expression);
     }
     if (channel==null)
     { 
@@ -233,33 +320,5 @@ public class Assembly
     return channel;
   }
 
-  //////////////////////////////////////////////////
-  //
-  // Implementation of spiralcraft.lang.Context
-  //
-  //////////////////////////////////////////////////  
-
-  /**
-   * Context.resolve()
-   */
-  public Optic resolve(String name)
-  { 
-    try
-    { return _optic.resolve(this,name,null);
-    }
-    catch (BindException x)
-    { x.printStackTrace();
-    }
-    return null;
-  }
-
-  /**
-   * Context.resolve()
-   */
-  public String[] getNames()
-  { 
-    // XXX Get the names in the optic
-    return null;
-  }
 
 }
