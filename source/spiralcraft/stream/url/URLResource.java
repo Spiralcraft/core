@@ -49,4 +49,14 @@ public class URLResource
   public boolean supportsWrite()
   { return true;
   }
+  
+  public boolean exists()
+    throws IOException
+  {
+    URLConnection connection=_url.openConnection();
+    connection.setDoInput(false);
+    connection.setDoOutput(false);
+    connection.connect();
+    return connection.getDate()>0;
+  }
 }

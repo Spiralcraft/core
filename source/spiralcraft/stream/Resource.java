@@ -27,7 +27,8 @@ public interface Resource
 
 
   /**
-   * Indicate whether this type of resource supports read operations.
+   * Indicate whether this type of resource supports read operations, regardless
+   *   of the actual validity or status of the specific URI.
    *@return true if this type of resource supports reading
    */
   public boolean supportsRead();
@@ -43,7 +44,8 @@ public interface Resource
     throws IOException;
 
   /**
-   * Indicate whether this type of resource supports write operations.
+   * Indicate whether this type of resource supports write operations, regardless
+   *   of the actual validity or status of the specific URI.
    *@return true if this type of resource supports writing
    */
   public boolean supportsWrite();
@@ -59,4 +61,11 @@ public interface Resource
    * Return the enclosing or containing Resource.
    */
   public Resource getParent();
+  
+  /**
+   * Indicate whether the resource exists (ie. operations against
+   *   it are likely to succeed barring any other problems)
+   */
+  public boolean exists()
+    throws IOException;
 }

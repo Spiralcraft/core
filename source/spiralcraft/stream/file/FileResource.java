@@ -115,4 +115,8 @@ public class FileResource
     { x.printStackTrace();
     }
   }
+  
+  public boolean exists()
+  { return _file.exists();
+  }
 }

@@ -54,4 +54,15 @@ public class ClasspathResource
   { return true;
   }
 
+  public boolean exists()
+    throws IOException
+  {
+    InputStream in=_classLoader.getResourceAsStream(_path);
+    if (in!=null)
+    { 
+      in.close();
+      return true;
+    }
+    return false; 
+  }
 }

@@ -67,4 +67,12 @@ public abstract class AbstractResource
   public String toString()
   { return super.toString()+":"+_uri.toString();
   }
+  
+  /**
+   * Abstract resources don't exist
+   */
+  public boolean exists()
+    throws IOException
+  { return false;
+  }
 }
