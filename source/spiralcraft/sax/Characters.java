@@ -11,6 +11,10 @@ public class Characters
     System.arraycopy(ch,start,_characters,0,length);
   }
 
+  public char[] getCharacters()
+  { return _characters;
+  }
+
   public String toString()
   { return super.toString()+"["+new String(_characters)+"]";
   }
