@@ -1,0 +1,5 @@
+<tuple:Type
+  xmlns:tuple="java:/spiralcraft/tuple"
+  >
+  <javaClass>java.lang.String</javaClass>
+</tuple:Type>
