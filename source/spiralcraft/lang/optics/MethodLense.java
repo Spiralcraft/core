@@ -47,5 +47,8 @@ class MethodLense
   { return _method.getReturnType();
   }
 
+  public String toString()
+  { return getClass().getName()+":"+_method.toString();
+  }
 }
 
