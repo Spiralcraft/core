@@ -1,0 +1,315 @@
+package spiralcraft.task;
+
+import java.beans.PropertyChangeSupport;
+import java.beans.PropertyChangeListener;
+
+import spiralcraft.util.ArrayUtil;
+
+import spiralcraft.time.Scheduler;
+
+/**
+ * An abstract implementation of a Task which handles progress tracking,
+ *   and synchronization, running the actual work routine in a separate thread.
+ *
+ * Subclasses need to implement the execute() method which is called to perform
+ *   actual task work. This abstract base class will only allow one Thread at a
+ *   time into the execute() method by virtue of a synchronized Runnable.run()
+ *   implementation.
+ *
+ * The execute() method should update the metrics and progress of the task.
+ *
+ * Stoppable tasks should check isStopRequested() at convenient points to determine whether the
+ *   execute() method should continue running. If the execute() method needs to wait at some point
+ *   in time, it should synchronize on the object returned by the getLock() method, which will be
+ *   notified if a stop request is received. Stoppable tasks should also prepare for the Thread running
+ *   the execute() method to be interrupted (to be implemented at a later date).
+ * 
+ * Most tasks will allow their context to supply configuration information to the task before the
+ *   task is started. When this information should be prevented from being changed while the task
+ *   is running, the subclass should call assertStoppedState(), which throws an IllegalStateException
+ *   if the task is running.
+ */
+public abstract class AbstractTask
+  implements Task
+{
+  private int _opsInUnit;
+  private int _opsCompletedInUnit;
+  private int _unitsInTask;
+  private int _unitsCompletedInTask;
+  private String _currentOpTitle;
+  private String _currentUnitTitle;
+  private boolean _startable=false;
+  private boolean _stoppable=false;
+  private boolean _running=false;
+  private boolean _stopRequested=false;
+
+  private Thread _runThread;
+  
+  private PropertyChangeSupport _propertyChangeSupport;
+  private final Object _lock=new Object();
+
+  private TaskListener[] _taskListeners=new TaskListener[0];
+  private final TaskEvent _taskEvent=new TaskEvent(this);
+  
+  /**
+   * Perform the work specified by the task
+   */
+  protected abstract void execute();
+
+  public int getOpsInUnit()
+  { return _opsInUnit;
+  }
+  
+  public int getOpsCompletedInUnit()
+  { return _opsCompletedInUnit;
+  }
+
+  public int getUnitsInTask()
+  { return _unitsInTask;
+  }
+
+  public int getUnitsCompletedInTask()
+  { return _unitsCompletedInTask;
+  }
+
+  public String getCurrentOpTitle()
+  { return _currentOpTitle;
+  }
+
+  public String getCurrentUnitTitle()
+  { return _currentUnitTitle;
+  }
+  
+  public boolean isStartable()
+  { return _startable;
+  }
+  
+  public boolean isStoppable()
+  { return _stoppable;
+  }
+    
+  public boolean isRunning()
+  { return _running;
+  }
+
+  public boolean isStopRequested()
+  { return _stopRequested;
+  }
+  
+  public void start()
+  {
+    synchronized (_lock)
+    {
+      if (_startable)
+      {
+        setStartable(false);
+        Scheduler.instance().scheduleNow(this);
+      }
+    }
+  }
+  
+  public final synchronized void run()
+  {
+    synchronized (_lock)
+    { 
+      if (_running)
+      { throw new IllegalStateException("Task is already running");
+      }
+      setStartable(false);
+      setRunning(true);
+      _runThread=Thread.currentThread();
+      setStopRequested(false);
+      fireTaskStarted();
+    }
+    
+    try
+    { execute();
+    }
+    finally
+    { 
+      synchronized(_lock)
+      { 
+        setRunning(false);
+        setStartable(true);
+        setStopRequested(false);
+        _runThread=null;
+        fireTaskCompleted();
+      }
+    }
+  }
+  
+  public void stop()
+  {
+    synchronized (_lock)
+    {
+      if (_stoppable && !_stopRequested)
+      { setStopRequested(true);
+      }
+      _lock.notifyAll();
+    }
+    
+  }
+
+  protected Object getLock()
+  { return _lock;
+  }
+  
+  protected void setOpsCompletedInUnit(int val)
+  { 
+    firePropertyChange
+      ("opsCompletedInUnit"
+      ,new Integer(_opsCompletedInUnit)
+      ,new Integer(_opsCompletedInUnit=val)
+      );
+  }
+
+  protected void setUnitsCompletedInTask(int val)
+  { 
+    firePropertyChange
+      ("unitsCompletedInTask"
+      ,new Integer(_unitsCompletedInTask)
+      ,new Integer(_unitsCompletedInTask=val)
+      );
+  }
+
+  protected void setUnitsInTask(int val)
+  { 
+    firePropertyChange
+      ("unitsInTask"
+      ,new Integer(_unitsInTask)
+      ,new Integer(_unitsInTask=val)
+      );
+  }
+
+  protected void setOpsInUnit(int val)
+  { 
+    firePropertyChange
+      ("opsInUnit"
+      ,new Integer(_opsInUnit)
+      ,new Integer(_opsInUnit=val)
+      );
+  }
+
+  protected void setCurrentOpTitle(String val)
+  { 
+    firePropertyChange
+      ("currentOpTitle"
+      ,_currentOpTitle
+      ,_currentOpTitle=val
+      );
+  }
+
+  protected void setCurrentUnitTitle(String val)
+  { 
+    firePropertyChange
+      ("currentUnitTitle"
+      ,_currentUnitTitle
+      ,_currentUnitTitle=val
+      );
+  }
+
+  protected void setStartable(boolean val)
+  {
+    firePropertyChange
+      ("startable"
+      ,_startable?Boolean.TRUE:Boolean.FALSE
+      ,(_startable=val)?Boolean.TRUE:Boolean.FALSE
+      );
+  }
+
+  protected void setStoppable(boolean val)
+  {
+    firePropertyChange
+      ("stoppable"
+      ,_stoppable?Boolean.TRUE:Boolean.FALSE
+      ,(_stoppable=val)?Boolean.TRUE:Boolean.FALSE
+      );
+  }
+  
+  protected void setRunning(boolean val)
+  {
+    firePropertyChange
+      ("running"
+      ,_running?Boolean.TRUE:Boolean.FALSE
+      ,(_running=val)?Boolean.TRUE:Boolean.FALSE
+      );
+  }
+
+  protected void setStopRequested(boolean val)
+  {
+    firePropertyChange
+      ("stopRequested"
+      ,_stopRequested?Boolean.TRUE:Boolean.FALSE
+      ,(_stopRequested=val)?Boolean.TRUE:Boolean.FALSE
+      );
+  }
+
+  /**
+   * Throw an IllegalStateException if the task is running.
+   */
+  protected void assertStoppedState()
+  {
+    synchronized (_lock)
+    {
+      if (_running)
+      { throw new IllegalStateException("Task is running");
+      }
+    }
+  }
+  
+  /**
+   * Add a listener to be notified when enabled state changes.
+   */
+  public void addPropertyChangeListener
+    (PropertyChangeListener listener)
+  {
+    if (_propertyChangeSupport==null)
+    { _propertyChangeSupport=new PropertyChangeSupport(this);
+    }
+    _propertyChangeSupport.addPropertyChangeListener(listener);    
+  }
+
+  public void removePropertyChangeListener
+    (PropertyChangeListener listener)
+  {
+    if (_propertyChangeSupport!=null)
+    {
+      _propertyChangeSupport
+        .removePropertyChangeListener(listener);
+    }
+  }
+
+  protected void firePropertyChange(String name,Object oldVal,Object newVal)
+  {
+    if (_propertyChangeSupport!=null)
+    { _propertyChangeSupport.firePropertyChange(name,oldVal,newVal);
+    }
+  }
+  
+
+  public void addTaskListener(TaskListener listener)
+  { 
+    _taskListeners
+      =(TaskListener[]) ArrayUtil.append(_taskListeners,listener);
+  }
+  
+  public void removeTaskListener(TaskListener listener)
+  { 
+    _taskListeners
+      =(TaskListener[]) ArrayUtil.remove(_taskListeners,listener);
+  }
+
+  private void fireTaskStarted()
+  { 
+    for (int i=0;i<_taskListeners.length;i++)
+    { _taskListeners[i].taskStarted(_taskEvent);
+    }
+  }
+  
+  private void fireTaskCompleted()
+  {
+    for (int i=0;i<_taskListeners.length;i++)
+    { _taskListeners[i].taskCompleted(_taskEvent);
+    }
+  }
+}
