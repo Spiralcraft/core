@@ -3,7 +3,9 @@ package spiralcraft.beans;
 import java.util.HashMap;
 
 import java.beans.PropertyDescriptor;
+import java.beans.EventSetDescriptor;
 import java.beans.BeanInfo;
+import java.beans.PropertyChangeListener;
 
 import java.lang.reflect.Field;
 
@@ -13,12 +15,29 @@ public class MappedBeanInfo
   private HashMap _propertyMap;
   private HashMap _fieldMap;
   private Field[] _fields;
+  private EventSetDescriptor _propertyChangeEventSetDescriptor=null;
 
   public MappedBeanInfo(BeanInfo binf)
   { 
     super(binf);
     mapProperties();
     mapFields();
+
+    EventSetDescriptor[] events
+      =beanInfo.getEventSetDescriptors();
+    
+    for (int i=0;i<events.length;i++)
+    { 
+      if (events[i].getListenerType()==PropertyChangeListener.class)
+      { 
+        _propertyChangeEventSetDescriptor=events[i];
+        break;
+      }
+    }
+  }
+  
+  public EventSetDescriptor getPropertyChangeEventSetDescriptor()
+  { return _propertyChangeEventSetDescriptor;
   }
 
   private void mapProperties()
