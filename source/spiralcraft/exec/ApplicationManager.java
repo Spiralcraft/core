@@ -24,7 +24,7 @@ import java.net.URISyntaxException;
 
 
 /**
- * Controls the execution of application via one or more ApplicationEnvironments 
+ * Controls the execution of applications via one or more ApplicationEnvironments 
  */
 public class ApplicationManager
 {
@@ -114,6 +114,13 @@ public class ApplicationManager
     }
   }
 
+  /**
+   * Search for the named environment, in order of priority:
+   *   
+   *   1. The system environment path
+   *   2. The user environment path
+   *   3. The user directory
+   */
   private URI findEnvironment(String name)
   {
     URI nameURI=URI.create(name+".environment.xml");

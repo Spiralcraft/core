@@ -62,7 +62,7 @@ public class Executor
     processArguments(args);
 
     if (_uri==null)
-    { throw new IllegalArgumentException("No URI specified");
+    { throw new IllegalArgumentException("No URI specified. Nothing to execute.");
     }
     
     URI uri=URI.create(_uri);
@@ -104,10 +104,16 @@ public class Executor
     if (_uri.endsWith(".assembly.xml"))
     { return new XmlObject(null,null,_uri.substring(0,_uri.indexOf(".assembly.xml")));
     }
+    
       
     return new XmlObject(_uri,null,null);
   } 
   
+  /**
+   * Process arguments. The first non-option argument is treated as the URI
+   *   of the target to invoke, if the URI hasn't been preset programmatically.
+   *   The remaining arguments are passed through the the Executable.
+   */
   private void processArguments(String[] args)
   {
     new Arguments()
