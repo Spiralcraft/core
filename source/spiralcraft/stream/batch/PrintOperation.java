@@ -4,6 +4,8 @@ import spiralcraft.util.Arguments;
 
 import spiralcraft.stream.Resource;
 
+import spiralcraft.exec.ExecutionContext;
+
 public class PrintOperation
   implements Operation
 {
@@ -17,7 +19,7 @@ public class PrintOperation
   public void invoke(Resource resource)
     throws OperationException
   { 
-    System.out.println(resource.getURI());
+    ExecutionContext.getInstance().out().println(resource.getURI());
     if (_nextOperation!=null)
     { _nextOperation.invoke(resource);
     }

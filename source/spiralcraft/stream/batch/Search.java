@@ -1,6 +1,7 @@
 package spiralcraft.stream.batch;
 
 import spiralcraft.exec.Executable;
+import spiralcraft.exec.ExecutionContext;
 
 import spiralcraft.util.Arguments;
 
@@ -43,16 +44,11 @@ public class Search
   /**
    * Execute a search specified by arguments
    */
-  public void execute(String[] args)
+  public void execute(ExecutionContext context,String[] args)
   { 
     configure(args);
     if (getRootURI()==null)
-    { 
-      // XXX Deal properly with environment, requires Executable API change
-      setRootURI(new File(new File(".").getAbsolutePath()).toURI());
-    }
-    else if (!getRootURI().isAbsolute())
-    { setRootURI(new File(new File(".").getAbsolutePath()).toURI().resolve(getRootURI()));
+    { setRootURI(context.focusURI());
     }
     run();
   }
