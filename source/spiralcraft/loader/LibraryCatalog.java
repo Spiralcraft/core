@@ -29,7 +29,7 @@ import spiralcraft.command.CommandContext;
 
 /**
  * Catalog of the code and resource libraries available for use by 
- * this process.
+ * this process. 
  */
 public class LibraryCatalog
 {
@@ -437,6 +437,7 @@ class JarLibrary
       jarFile=null;
     }
     
+   
   }
 
   public synchronized void open()

@@ -12,14 +12,24 @@ import spiralcraft.security.SystemSecurityManager;
 import spiralcraft.command.interpreter.SystemConsole;
 
 /**
- * Main class which creates an application specific ClassLoader to run application functionality
- *   in a managed environment which controls class library resolution and security policy.
- * 
- * Note: This class designed to be loaded in a classloader other than the System classloader,
- *   for example, in a classloader created by the spiralcraft-main package by
- *   invoking the spiralcraft.main.Spiralcraft class (the 'bootstrap loader') from the command line.
+ * Standard entry point for launching managed applications. 
  *
- * If the ClassLoader for this class is the System classLoader, an exception will be thrown.
+ * This class sets up a "global" ApplicationManager and gives it control
+ *   of the process.
+ *
+ * Note: In order for the ApplicationManager to run properly, this class
+ *   must NOT be loaded into the system classloader (ie. called directly from
+ *   the OS), as this will prevent applications which use different versions
+ *   of the Spiralcraft core module and other shared modules from loading
+ *   classes. 
+ *  
+ *   This class designed to be loaded in a classloader other than the System
+ *   classloader, for example, in the classloader created by the
+ *   spiralcraft-main package by invoking the spiralcraft.main.Spiralcraft
+ *   class (the 'bootstrap loader') from the command line.
+ *
+ *   If the ClassLoader for this class is the System classLoader, an exception
+ *   will be thrown.
  */
 public class Main
 {

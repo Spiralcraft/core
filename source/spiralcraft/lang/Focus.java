@@ -28,7 +28,7 @@ public interface Focus
   Optic getSubject();
 
   /**
-   * Find a Focus using its well know name.
+   * Find a Focus using its well known name.
    */
   Focus findFocus(String name);
 
