@@ -47,7 +47,11 @@ public class Expression
    */
   public Channel bind(Focus focus)
     throws BindException
-  { return new Channel(focus,_root.bind(focus),this); 
+  { 
+    if (_root==null)
+    { throw new BindException("No way to bind expresion '"+_text+"'");
+    }
+    return new Channel(focus,_root.bind(focus),this); 
   }
 
   public void dumpParseTree(StringBuffer out)
