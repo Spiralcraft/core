@@ -5,7 +5,8 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 import spiralcraft.util.ArrayUtil;
- 
+
+import java.util.List;
 
 /**
  * Represents an Element in an XML document
@@ -66,6 +67,21 @@ public class Element
     }
   }
 
+  /**
+   * A concatenation of the character data in this element
+   */
+  public String getCharacters()
+  { 
+    List<Characters> children
+      = getChildren(Characters.class);
+
+    StringBuilder buf=new StringBuilder();
+    for (Characters c: children)
+    { buf.append(c.getCharacters());
+    }
+    return buf.toString();
+  }
+  
   public void removeAttribute(Attribute attribute)
   { _attributes=(Attribute[]) ArrayUtil.remove(_attributes,attribute);
   }
