@@ -3,6 +3,7 @@ package spiralcraft.framework;
 import spiralcraft.builder.Assembly;
 import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.AssemblyLoader;
+import spiralcraft.builder.BuildException;
 
 import java.io.IOException;
 
@@ -19,18 +20,14 @@ public class Executor
   public static final void main(String[] args)
     throws IOException
             ,URISyntaxException
-            ,InstantiationException
-            ,ClassNotFoundException
-            ,IllegalAccessException
+            ,BuildException
   { new Executor().exec(args);
   }
 
   public void exec(String[] args)
     throws IOException
             ,URISyntaxException
-            ,InstantiationException
-            ,ClassNotFoundException
-            ,IllegalAccessException
+            ,BuildException
   {
     URI uri=new URI(args[0]);    
     AssemblyClass assemblyClass
@@ -38,8 +35,8 @@ public class Executor
 
     if (assemblyClass!=null)
     { 
-      Assembly assembly=assemblyClass.newInstance();
-      Executable executable=(Executable) assembly.getObject();
+      Assembly assembly=assemblyClass.newInstance(null);
+      Executable executable=(Executable) assembly.getSubject().get();
       executable.exec((String[]) ArrayUtil.truncateBefore(args,1));
     }
     else
