@@ -192,6 +192,9 @@ public class AssemblyLoader
         else if (name=="preference")
         { prop.setPreference(readBoolean(attribs[i]));
         }
+        else if (name=="dynamic")
+        { prop.setDynamic(true);
+        }
         else
         { 
           throw new BuildException
