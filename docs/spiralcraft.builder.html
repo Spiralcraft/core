@@ -3,398 +3,203 @@
 <head>
   <title>spiralcraft.builder</title>
 </head>
-<body text="#000000" bgcolor="#ffffff" link="#000099" vlink="#990099"
- alink="#000099">
+<body alink="#000099" bgcolor="#ffffff" link="#000099" text="#000000"
+ vlink="#990099">
 <h1>Spiralcraft</h1>
-<hr width="100%" size="2">
+<hr size="2" width="100%">
 <h2>spiralcraft.builder package</h2>
-The spiralcraft.builder package provides a mechanism for defining and
-instantiating interconnected graphs of Java objects. A developer
-defines compound units of Java objects called "Assemblies" using a
-human and machine readable declarative
-XML syntax. Through this declaration, known as an "Assembly Class", a
-developer can specify initialization data, persistence qualities,
-compositional makeup, and interrelationships of a set of Java objects
-and other Assemblies. Like Java classes, Assembly Classes can be
-extended through a single inheritance mechanism which supports "inner
-Assemblies", which allow a generic assembly to be customized within the
-context of a containing Assembly. This mechanism of simultaneous
-composition and extension permits the construction of larger and larger
-reusable components to support the rapid assembly and customization of
-applications without creating and debugging behavioral code (ie. Java
-classes). <br>
-<h3>Application Architecture</h3>
-To maximize reusability and implementation flexibility without
-sacrificing
-long term maintainablity or increasing development complexity,
-application
-components are typically factored across multiple dimensions. For
-convenience
-we'll refer to these dimensions as Composition, Stack and Specificity.
-Spiralcraft.builder
-provides a mechanism for integrating these components along the lines
-of these
-dimensions which follows the HMVC (Hierarchical Model/View/Controller)
-design
-pattern.&nbsp;
-<h4>Composition</h4>
-Composition refers to the definition of a 'high level' application
-component
-in terms of one or more 'lower level' application components.
-Expressing composition
-is a natural part of the top-down aspect of the application development
-process.
-A simple example is a GUI frame which contains sub-panels which in turn
-contain
-controls for user interaction. In real world applications, where the
-ultimate
-goal is to provide some sort of user or machine interface to as set of
-services,
-the following composition patterns are common:<br>
-<ul>
-  <li>Application:</li>
-  <ul>
-    <li>User Sessions</li>
-    <ul>
-      <li>User Interfaces</li>
-      <ul>
-        <li>Panels</li>
-        <ul>
-          <li>Controls</li>
-          <li>Panels<br>
-          </li>
-        </ul>
-      </ul>
-    </ul>
-    <li>Services</li>
-    <ul>
-      <li>Service components</li>
-      <ul>
-        <li>Support components</li>
-        <ul>
-          <li>Support components<br>
-          </li>
-        </ul>
-      </ul>
-    </ul>
-  </ul>
-</ul>
-<h4>Stack</h4>
-The Stack dimension divides an application into the various structural
-layers
-associated with connecting specific implementations of user interfaces
-with
-specific implementations of services via one or more layers of generic
-functionality.
-The migration steps of monolithic applications to client/server and
-eventually
-n-tier are good examples of the evolving concept of the Stack
-dimension. By
-separating elements of the stack dimension from one another, it becomes
-easier
-to customize and re-use components and even replace entire layers of
-the
-stack with new implementations. The taxonomy of a full blown Stack
-dimension
-may look like the following:<br>
-<ul>
-  <li>UI implementation layer</li>
-  <ul>
-    <li>GUI system, such as Swing, AWT, Motif, qt, gtk</li>
-    <li>HTML using a web browser/web server</li>
-    <li>Command line interface<br>
-    </li>
-  </ul>
-  <li>UI integration layer<br>
-Binds the UI implementation with the user experience layer. Can itself
-contain
-other layers, such as:</li>
-  <ul>
-    <li>Style system (fonts, colors, images)</li>
-    <li>Layout system (methods for placing components within containers)<br>
-    </li>
-  </ul>
-  <li>User experience layer<br>
-Manages a user's experience by defining the containership, behavior and
-data
-model associations of UI components.<br>
-  </li>
-  <li>Services integration layer<br>
-Exposes application services and data in a generic way to the User
-experience
-layer</li>
-  <li>Services implementation layer</li>
-  <ul>
-    <li>Third party APIs</li>
-    <li>Object Relational Middleware</li>
-    <li>Database middleware</li>
-  </ul>
-  <li>Data integration layer<br>
-Provides a means for services to interact with persistent or external
-data.</li>
-  <li>Data implementation layer</li>
-  <ul>
-    <li>SQL</li>
-    <li>LDAP</li>
-    <li>XML</li>
-    <li>file system<br>
-    </li>
-  </ul>
-</ul>
-<b>Specificity<br>
-</b><br>
-The Specificity dimension divides components according to their degree
-of
-application specificity. Application specific components extend generic
-components
-to encapsulate invariants that are manifested as generic frameworks are
-derived
-into specific applications. An example taxonomy of the Specificity
-dimension
-is as follows:<br>
-<ul>
-  <li>Generic framework</li>
-  <li>Specific function (eg. sales order tracking)</li>
-  <li>Specific vertical (eg. electronics wholesale)</li>
-  <li>Specific customer (ABC electronics)</li>
-  <li>Specific use case (VP of sales, data entry clerk)</li>
-</ul>
-<h4>HMVC<br>
-</h4>
-The HMVC (Hierarchical Model/View/Controller) design pattern is the
-basis
-for how spiralcraft.builder integrates application components along
-dimensional
-lines. In the HMVC pattern, a hierarchy of Controllers implements the
-'backbone'
-of an object model. Each Controller associates a View with a Model. The
-View
-presents information from the Model in an appropriate format, and the
-Controller
-is responsible for coordinating user actions by communicating with the
-Model,
-the View, or its parent or child Controllers. The separation of Model
-and
-View provided by the HMVC pattern serves to separate the layers of the
-Stack
-dimension, and the Controller hierarchy separates components along
-Compositional
-lines.<br>
+The spiralcraft.builder package is an inversion-of-control (IoC)
+framework which helps assemble independently developed components into
+cohesive applications. It uses a declarative mechanism to describe the
+interdependencies, configuration and lifecycles of the components which
+make up an application, freeing the components themselves from being
+dependent on the context in which they are used.<br>
 <br>
-To accomplish separation along the lines of application Specificity,
-spiralcraft.builder
-supports a mechanism for application specific components and assemblies
-to
-extend generic components and assemblies to allow application specific
-functionality
-to override and augment generic functionality.
-<h3>Assemblies</h3>
-Assemblies provide a means to interconnect Java objects and other
-Assemblies
-into re-usable units of functionality, on a scale of granularity
-ranging from
-simple objects with customized property values to multi-tiered
-applications.
-The spiralcraft.builder mechanism for connecting Assemblies together
-serves
-as a backplane for routing object references, properties, and events
-between
-application components. Assemblies can extend one another to achieve
-application
-specific frameworks.<br>
+Spiralcraft.builder assembles components into units called Assemblies.
+An Assembly is composed of a single instance of a Java component, its
+configuration properties and other Assemblies on which the component
+depends.<br>
 <br>
-A developer uses Assemblies to encode declarative aspects of a system
-for
-which handwritten Java code is less appropriate. These declarative
-aspects
-include the following:<br>
-<ul>
-  <li>Interface implementations<br>
-By specifiying implementation classes in Assemblies, Java components
-can
-be built to depend on interfaces or base classes, allowing implementers
-the
-flexibility to substitute alternate implementations and combine objects
-in
-new ways.</li>
-  <li>Composition<br>
-Assemblies can populate single and multi-valued properties of an object
-with
-literal values or other objects of compatible type. Java classes can be
-simplified
-when they do not have to know how to create their 'children'. By
-declaring
-children as properties they are open to further customization via
-Assembly
-extension. &nbsp; &nbsp;</li>
-  <li>Interconnection<br>
-Assemblies free Java classes from having to query specific
-configuration
-systems for information stored under hard-coded names. All external
-associations
-are coded in Assemblies, specified as references to the exported names
-or
-Singleton objects of other Assemblies. This permits objects to be
-shared
-among different parts of an application and repurposed for use in
-different
-contexts.</li>
-</ul>
-<h3>Names</h3>
-Spiralcraft.builder uses the spiralcraft.lang package to interconnect
-Assemblies
-using expressions. An Assembly serves as an expression resolution
-context
-with a public, protected, private and import namespace. The namespace
-provides
-access to Assembly properties declared or defaulted to have the
-respective
-scope. The actual names depend on the properties of the root object of
-the
-Assembly.<br>
+All Assemblies are defined by Assembly Classes, in much the same
+fashion as Java Objects are defined by Java Classes. The primary
+purpose of an Assembly Class is to associate the Java Bean properties
+of a single Java Class with configuration values, expressions, and/or
+other Assembly Classes, defining a compositional unit of an
+application. Once an Assembly Class is loaded into memory, many
+Assemblies can be instantiated efficiently.<br>
 <br>
-The public namespace of an Assembly can be accessed from any other
-Assembly
-in the hierarchy. Names are published in the public namespace when a
-property
-has public scope.<br>
+Assembly Classes can subclass other Assembly Classes. Since Assembly
+Classes define units of application composition, to subclass an
+Assembly Class is to further specialize and extend a composition for a
+given context by including or overriding dependencies, configuration
+values and other Assembly Classes.<br>
 <br>
-The protected namespace of an Assembly can be accessed from any
-properties
-or descendants of an Assembly as well as from subclasses of an
-Assembly.
+Assembly Classes are defined using a compact XML syntax. An XML
+document contains a tree of Assembly Class definitions, which reference
+external entities such as Java classes and assorted other XML Assembly
+Class definitions. To maintain order within this modular approach, the
+XML tag and file naming semantics are closely associated with the Java
+semantics for class and package naming, and source code and class file
+resolution.<br>
 <br>
+<h3>XML Assembly Class Definitions</h3>
+XML Assembly Class definition files contain one or more Assembly Class
+Definitions: a root definition, and possible one or more definitions
+associated with the Java bean properties of a parent definition. Tags
+are used either to identify an Assembly Class definition, or to define
+a specific property within an Assembly Class definition. In the former
+case, tag names identify the Java Class or base Assembly Class from
+which a given Assembly Class is derived, and the element contains a set
+of property definitions. In the latter case, tag names identify the
+bean property being defined and the element can contains a value or one
+or more Assembly Class definitions to inject into the property at
+configuration time.<br>
 <br>
-The private namespace of an Assembly can be accessed only from
-properties
-and descendants of an Assembly.<br>
+<h3>Name Resolution</h3>
+All Assembly Classes are defined with respect to their base Java class
+or Assembly Class, specified in the form of a URI with no filename
+extension. For example <span style="font-family: monospace;">&lt;auto:Car
+xmlns:auto="java:/com/myco/automotive"&gt;</span> translates to the URI
+"<span style="font-family: monospace;">java:/com/myco/automotive/Car</span>".
+This URI is constructed using the XML namespace name and the tag name.
+If a resource of the pattern &lt;URI&gt;.assembly.xml exists, it will
+be used as the base Assembly Class for this Assembly. Otherwise, the
+URI will be converted to a class name according to the Java language
+convention (eg. "<span style="font-family: monospace;">com.myco.automotive.Car</span>").<br>
 <br>
-The import namespace of an Assembly allows a subclass of an
-AssemblyClass
-to bind local names in the base class to names visible to the subclass.<br>
+<h3>Expressions in property specifiers</h3>
+spiralcraft.lang expressions can be used within property specifiers to
+inject values defined elsewhere. A tree of Assembly Class definitions
+define a hierarchical context for the resolution of the "focus"
+specifier in the spiralcraft.lang package. For instance, if an ancestor
+of an Assembly Class is named "<span style="font-family: monospace;">CacheConfiguration</span>",
+the tag <span style="font-family: monospace;">&lt;timeToLive
+expression="[CacheConfiguration].defaultTimeToLive"/&gt;</span> will
+resolve a reference to the <span style="font-family: monospace;">CacheConfiguration</span>
+Java object generated by that Assembly and inject the value of its <span
+ style="font-family: monospace;">defaultTimeToLive</span> property into
+the <span style="font-family: monospace;">timeToLive </span>property
+of the Java object generated by the Assembly Class.<br>
 <br>
-Since Assembly definitions cannot contain unresolved references, the
-upward
-scope of name resolution is limited to the root assembly of a given
-spiralcraft.builder
-XML document.<br>
-<h3>XML Syntax</h3>
-Builder defines an object model using an XML syntax where the tag names
-of
-elements are defined by the context in which they appear.
-<h4>Assembly Definitions</h4>
-An Assembly definition element defines or extends an Assembly. The root
-element
-in the spiralcraft.builder XML document. syntax is always an Assembly
-definition
-element.<br>
+<h3>API</h3>
+The following code instantiates a Java object model from an Assembly
+Class definition.<br>
 <br>
-The namespace qualified tag name of the assembly definition element
-indicates
-the specific Assembly or Java class extended by the Assembly being
-declared.
-The namespace URI is resolved to a Java package, and the local name
-part
-of the tag identifies the Assembly or Java class within the package to
-extend.
-Specifically, a tag named 'Foo' in a namespace /bar/baz would cause a
-resource
-bar/baz/Foo.assembly.xml to be requested from the local ClassLoader. If
-not found, the Java class bar.baz.Foo would be used as basis for the
-Assembly.<br>
+<span style="font-family: monospace;">import
+spiralcraft.builder.AssemblyLoader;<br>
+import spiralcraft.builder.AssemblyClass;<br>
+import spiralcraft.buolder.Assembly;<br>
 <br>
-<b>Properties</b><br>
+import java.net.URI;<br>
 <br>
-An Assembly definition element may contain Property elements. The tag
-name
-of the Property element is derived from the containing Assembly, and is
-completely
-application specific. A property element provides a means for
-publishing
-or binding other objects to an Assembly.<br>
+import com.myco.automotive.Car;<br>
 <br>
-<hr width="100%" size="2"><br>
+URI uri=URI.create("java:/com/myco/automotive/Car.assembly.xml");<br>
 <br>
-Assembl<br>
+// Obtain the default instance of the AssemblyLoader<br>
+AssemblyLoader loader = AssemblyLoader.getInstance();<br>
 <br>
-An Assembly adapts one or more component <br>
+// Load the Assembly Class<br>
+AssemblyClass assemblyClass =&nbsp; loader.findAssemblyDefinition(uri);<br>
 <br>
-element names are dynamically defined according to the defined by the
-immediate
-context in which they are used, resulting in a very concise and
-intuitive
-format. Element names fall into two basic categories; Definitions and
-Associations.
-A Definition specifies the creation of an object, the extension of
-another
-definition, or a reference to another definition, and contains a set of
-Associations.
-An Association associates a property of an object with a primitive
-value
-or one or more Definitions.<br>
+// Instantiate the assembly- the null parameter indicates that<br>
+//&nbsp;&nbsp; this assembly is stand-alone (not contained within a
+parent<br>
+//&nbsp;&nbsp; assembly).<br>
+Assembly assembly=assemblyClass.newInstance(null);<br>
 <br>
-The tag names in Definitions are ultimately resolved to a specific
-implementation
-class or another assembly. <br>
-<br>
-The outermost element in the assembly XML is always a Definition. This
-element
-defines the namespace that will be exposed to clients who use the
-assembly
-as well as that exposed to components contained in the assembly.
+// Return a fully configured Car<br>
+Car car=(Car) assembly.getObject();<br>
+</span><br>
+<h3>Examples</h3>
+The following examples illustrate the basic features of the
+spiralcraft.builder framework using a automobile analogy.. <br>
 <h4>Example 1.</h4>
-<tt>&lt;com.myco.Widget&gt;<br>
-&nbsp; &lt;name value="A Widget"/&gt;<br>
-</tt><tt>&nbsp; &lt;size value="10"/&gt;<br>
-</tt><tt>&lt;/com.myco.Widget</tt><tt>&gt;</tt><br>
+<tt>File: com/myco/automotive/Car.assembly.xml<br>
 <br>
-In this example, the assembly consists of a com.myco.Widget, with some
-properties
-specified. The CDATA attribute values for the properties 'name' and
-'size'
-are converted to an appropriate type, determined by
-introspection.&nbsp;
+&lt;auto:Car<br>
+&nbsp; xmlns:auto="java:/com/myco/automotive"<br>
+/&gt;<br>
+</tt><br>
+In this trivial example, an instance of class com.myco.automotive.Car
+will be created.
 <h4>Example 2.</h4>
-<tt>&lt;My</tt><tt>Widget</tt><tt>&gt;<br>
-&nbsp; &lt;aProperty&gt;<br>
-&nbsp;&nbsp;&nbsp; &lt;AnotherObject/&gt;<br>
-&nbsp; &lt;/aProperty&gt;<br>
-&lt;/My</tt><tt>Widget</tt><tt>&gt;</tt><br>
+<tt>File: com/myco/automotive/CarModelOne.assembly.xml<br>
 <br>
-In this example, an object named MyObject is defined, and its property
-'aProperty'
-is set to be an instance of AnotherObject.<br>
+&lt;auto:Car<br>
+&nbsp; xmlns:auto="java:/com/myco/automotive"<br>
+&nbsp; &gt;<br>
+&nbsp; &lt;color&gt;blue&lt;/color&gt;<br>
+&nbsp; &lt;engine&gt;<br>
+&nbsp;&nbsp;&nbsp; &lt;auto:SixCylinderEngine&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;capacityLiters&gt;4.2&lt;/capacityLiters&gt;<br>
+&nbsp;&nbsp;&nbsp; &lt;/auto:SixCylinderEngine&gt;<br>
+&nbsp; &lt;/engine&gt;<br>
+&lt;/auto:Car&gt;<br>
+</tt><tt></tt><br>
+In this example, an assembly called CarModelOne is defined. An instance
+of class com.myco.automotive.Car will be created, and the
+setColor(String color) method will be called with a String parameter
+"blue". An instance of com.myco.automotive.SixCylinderEngine (which
+implements the com.myco.automotive.Engine interface) will be created
+and injected into the setEngine(com.myco.automotive.Engine) method. The
+setCapacityLiters(float liters) method on SixCylinderEngine will
+receive a value of 4.2.<br>
 <h4>Example 3.</h4>
-<tt>&lt;MyObject&gt;<br>
-&nbsp; &lt;aProperty&gt;<br>
-&nbsp;&nbsp;&nbsp; &lt;AnotherObject&gt;<br>
-&nbsp;&nbsp;&nbsp; &nbsp; &lt;name value="first"/&gt;<br>
-&nbsp;&nbsp;&nbsp; &lt;/AnotherObject&gt;<br>
-</tt><tt>&nbsp;&nbsp;&nbsp; &lt;AnotherObject&gt;<br>
-&nbsp;&nbsp;&nbsp; &nbsp; &lt;name value="second"/&gt;<br>
-&nbsp;&nbsp;&nbsp; &lt;/AnotherObject&gt;<br>
-</tt><tt>&nbsp;&nbsp;&nbsp; &lt;AnotherObject&gt;<br>
-&nbsp;&nbsp;&nbsp; &nbsp; &lt;name value="thirdfirst"/&gt;<br>
-&nbsp;&nbsp;&nbsp; &lt;/AnotherObject&gt;<br>
-</tt><tt>&nbsp; &lt;/aProperty&gt;<br>
-&lt;/MyObject&gt;</tt><br>
+<tt>File: com/myco/automotive/CustomCar.assembly.xml<br>
 <br>
-In this example, an object named MyObject is defined, and its property
-'aProperty'
-is set to be a list of instances of AnotherObject, with their name
-property
-set to a relevent value.<br>
+&lt;auto:CarModelOne<br>
+&nbsp; xmlns:auto="java:/com/myco/automotive"<br>
+&nbsp; &gt;<br>
+&nbsp; &lt;color&gt;red&lt;/color&gt;<br>
+&nbsp; &lt;engine.capacityLiters&gt;5.0&lt;/engine.capacityLiters&gt;<br>
+&lt;/auto:CarModelOne&gt;</tt><br>
 <br>
-<h3>Assemblies</h3>
-The Assembly is the focus of the spiralcraft.builder functionality.
-Assemblies
-are read from XML definition files.<br>
+In this example, an assembly called CustomCar is defined. It is based
+on CarModelOne, but the color is changed to red and the capacity of the
+engine is changed to 5.0 liters. The dot notation in the
+"engine.capacityLiters" property provides access to a property of the
+engine subassembly.<br>
 <br>
-<h3>Notes</h3>
-<h4>Application</h4>
-The different layers of the Stack dimension must be 'rooted' somewhere.
-While
-containership <br>
+<h4>Example 4.</h4>
+<tt>File: com/myco/automotive/MyFleet.assembly.xml<br>
+<br>
+&lt;auto:Fleet<br>
+&nbsp; xmlns:auto="java:/com/myco/automotive"<br>
+&nbsp; &gt;<br>
+&nbsp; &lt;owner&gt;me&lt;/owner&gt;<br>
+&nbsp; &lt;cars&gt;<br>
+&nbsp;&nbsp;&nbsp; &lt;auto:CarModelOne&gt;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &lt;vin&gt;abc&lt;/vin&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;owner
+expression="[Fleet].owner"/&gt;<br>
+&nbsp;&nbsp;&nbsp; &lt;/auto:CarModelOne&gt;<br>
+</tt><tt>&nbsp;&nbsp;&nbsp; &lt;auto:CarModelOne&gt;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &lt;vin&gt;def&lt;/vin&gt;<br>
+</tt><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;owner
+expression="[Fleet].owner"/&gt;<br>
+</tt><tt>
+&nbsp;&nbsp;&nbsp; &lt;/auto:CarModelOne&gt;<br>
+</tt><tt>&nbsp;&nbsp;&nbsp; &lt;auto:CustomCar&gt;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &lt;vin&gt;ghi&lt;/vin&gt;<br>
+</tt><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;owner
+expression="[Fleet].owner"/&gt;<br>
+</tt><tt>
+&nbsp;&nbsp;&nbsp; &lt;/auto:CustomCar&gt;<br>
+</tt><tt>&nbsp; &lt;/cars&gt;<br>
+&lt;/auto:Fleet&gt;</tt><br>
+<br>
+In this example, an Fleet called MyFleet is created, with 2 distinct
+instances of CarModelOne and one instance of a CustomCar. The owner
+propery of all the cars is set to the owner of the Fleet via a
+spiralcraft.lang expression. This expression indicates that within the
+Fleet context (ie. "<span style="font-family: monospace;">[Fleet]</span>"),
+the <span style="font-family: monospace;">owner</span> property is to
+be bound to the Car.owner property..<br>
+<br>
+<br>
+<br>
 <br>
 </body>
 </html>

@@ -2,91 +2,128 @@
 <html>
 <head>
   <title>spiralcraft.lang Use Cases</title>
-     
   <meta http-equiv="content-type"
  content="text/html; charset=ISO-8859-1">
-  
   <meta name="author" content="Mike Toth">
 </head>
-<body text="#000000" bgcolor="#ffffff" link="#000099" vlink="#990099"
- alink="#000099">
+<body alink="#000099" bgcolor="#ffffff" link="#000099" text="#000000"
+ vlink="#990099">
 <h1>Spiralcraft</h1>
-<hr width="100%" size="2">
+<hr size="2" width="100%">
 <h2>spiralcraft.lang package<br>
 </h2>
-The spiralcraft.lang package provides an expression language facility to help
-developers perform common tasks such as integrating application components
-and binding user interfaces to data sources. The language permits 'data sinks'
-to be bound to 'data sources' by using dotted name expressions to reference
-them via an 'environment'.<br>
+The spiralcraft.lang package provides a high performance expression
+language facility to help
+developers perform tasks such as integrating application components,
+binding user interfaces to data sources, and performing computations
+across large amounts of data. <br>
 <br>
-At its core, spiralcraft.lang provides facilities for API users to parse expressions,
-bind them to a Focus, and evaluate them as required. Likewise, it provides
-facilities for SPI implementers to define namespaces which expose useful
-information and interfaces. 
+Expressions composed in a syntax based on the Java language are
+compiled into a set of "data pipes" called a Channel which combine
+multiple data sources into a single computed result. Expressions are
+evaluated against a Focus, which exposes a namespace of data sources
+called a Context, as well as a 'default' data source called a Subject. <br>
+<br>
+Developers can implement custom namespaces and operations to expose
+arbitrary object models to the expression evaluation mechanism. A Java
+beans implementation is built into the the language facility, exposing
+all Java object graphs for evaluation.<br>
 <h3>Architecture<br>
 </h3>
 <h4>Expression</h4>
-A sequence of names, literal values and operators which resolve to a target
-object (an application component or data value) when evaluated within the
-context of a Focus. Users and integrators of applications which expose the
-spiralcraft.lang syntax can use the language alone to customize a wide variety
+A sequence of names, literal values and operators which resolve to a
+target
+object (an application component or data value) when evaluated within
+the
+context of a Focus. Users and integrators of applications which expose
+the
+spiralcraft.lang syntax can use the language alone to customize a wide
+variety
 of behavioral and presentation elements.<br>
 <br>
-Programmatically, an Expression is the compiled form of the language syntax
-encoded to facilitate efficient binding.<br>
+Programmatically, an Expression object is the compiled form of the
+language syntax.<br>
 <h4>Channel</h4>
-A Channel provides bidirectional access to a target object reachable from
-a Focus, in a manner specified by an Expression. Application components can
-use channels to reference their interaction peers or to read and modify data
-points.<br>
+A Channel provides bidirectional access to a target object reachable
+from
+a Focus, in a manner specified by an Expression. Application components
+can
+use channels to reference their interaction peers or to read and modify
+data
+points. Channels provide support for property change notifications, and
+can be used as a basis for data propogation in a system.<br>
 <br>
-Channels are composed of Optics, which are chained together into a tree which
-composes a path from one or more aspects of the Focus the target of the channel.
+Channels are composed of Optics, which are chained together into a tree
+which
+composes a path from one or more aspects of the Focus the target of the
+channel.
 <h4>Optic</h4>
-An Optic provides a view of an application object or data value that is related
-in some way to one or more source Opics. Optics are implemented by the spiralcraft.lang
-package and by applications which implement the spiralcraft.lang SPI, providing
-a broad array of functionality for navigating application object models and
+An Optic is a "data pipe" which provides a view of an application
+object or data value. Many Optics are bidirectional, for example, a
+bean property Optic can both get and set a bean property value. Optics
+are implemented by the spiralcraft.lang
+package and by applications which implement the spiralcraft.lang SPI,
+providing
+a broad array of functionality for navigating application object models
+and
 transforming data.
 <h4>Focus</h4>
-A Focus represents the subject and environment  of expression evaluation.<br>
+A Focus represents the Subject and Context of expression evaluation.<br>
 <br>
-A Focus is associated with an Environment, which gives Channels access to
-application or service provider specific namespaces.<br>
+A Focus is associated with an Context, which gives Channels access to
+application or service provider specific namespaces. The Context
+provides a set of names that can be defined by within an application
+and referenced by an expression. For example, the expression "<span
+ style="font-family: monospace;">customer.id</span>" will use the
+Context to look up the name "<span style="font-family: monospace;">customer</span>".
 <br>
-A Focus is optionally associated with a source Channel which represents the
-subject of evaluation. This value may change over the course of time as application
-behavior dictates the flow of focus by responding to user navigation or by
-traversing a data structure such as a list, table, tree, etc,. As the target
-of the source Channel changes, the changes will be propogated to the Channels
-bound to the Focus.
+<br>
+A Focus is optionally associated with a Subject which represents the
+default target of expression evaluation. A Subject is normally used
+when computations are performed against a set of data items. For
+example, when the Subject is, say, a sales order, the expression "<span
+ style="font-family: monospace;">.amount*exchangeRate</span>" will
+evaluate the "<span style="font-family: monospace;">amount</span>" name
+against the implicit sales order object, and will dervice the value
+of&nbsp; "<span style="font-family: monospace;">exchangeRate</span>"
+from the context.<br>
+<br>
+A Focus can be incorporated into a hierarchy associated with various
+layers of an application. A Focus resolution mechanism in the language
+syntax exposes this hierarchy to the expression writer. For example,
+the expression "<span style="font-family: monospace;">[Application]
+status.displayName</span>" will resolve a Focus named "<span
+ style="font-family: monospace;">Application</span>" by searching up
+the Focus hierarchy, will resolve the name "<span
+ style="font-family: monospace;">status</span>" within the Context of
+that Focus, and will resolve "<span style="font-family: monospace;">displayName</span>"
+against the status object.<br>
 <h4></h4>
 <h3>Examples<br>
 </h3>
-<h4>Spreadsheet</h4>
-User wants to provide an expression for a data value in a cell.<br>
-<ul>
-  <li>worksheet.paymentTable.columns.amount.sum<br>
-Sum the amount column of this worksheet's payment table</li>
-  <li>.left(5)&nbsp;<br>
-The fifth cell to the left</li>
-  <li><br>
-  </li>
-</ul>
-<h4>Data Model</h4>
-User wants to navigate a custom application data model.<br>
-<ul>
-  <li>customer.name<br>
-Reference the customer name</li>
-  <li>order.date.format("mm/dd/yyyy")<br>
-Format the order date</li>
-  <li>order.customer.region.title<br>
-Obtain the title of the order customer's region</li>
-  <li>order.customer.name + " : " + order.orderNumber<br>
-Concatenate the customer's name and order number<br>
-  </li>
-</ul>
+<span style="font-family: monospace;">1+1<br>
 <br>
+[Application] status.displayName<br>
+<br>
+order.customer.name<br>
+<br>
+order.customer.name.substring(order.customer.name.indexOf("Mr.")+1)<br>
+<br>
+[Math] sin(.x)<br>
+<br>
+[Math] exp(.x,computation.exponentConstant)<br>
+<br>
+.firstName+.lastName<br>
+<br>
+"Dear" + .firstName+" "+.lastName<br>
+<br>
+([ProcessingTask] progress/[ProcessingTask] total) * 100<br>
+<br>
+customer.orders[2]<br>
+<br>
+customer.orders[.amount&gt;storePolicy.goodCustomerThreshold]<br>
+<br>
+<br>
+</span>
 </body>
 </html>
