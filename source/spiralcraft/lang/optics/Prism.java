@@ -6,22 +6,15 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 
 /**
- * Defines the type of view provided by an Optic.
- *
- * Defines the Java class of the content provided by the view.
- * 
- * Defines a set of named transformations that can be derived from an
- *   associated Optic to create a new Optic that provides a view of some aspect
- *   of the original Optic. 
- *
+ * Exposes parts of an object model to access by Expressions by creating
+ *   transformations based on elements of Expression syntax.
  */
 public interface Prism
 {
 
   /**
    * Generate a new Binding which resolves the name and the given parameter 
-   *   expressions against the source Binding within the context of the supplied
-   *   Focus.
+   *   expressions against the source Binding and the supplied Focus.
    */
   public Binding resolve(Binding source,Focus focus,String name,Expression[] params)
     throws BindException;

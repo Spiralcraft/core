@@ -5,7 +5,7 @@ import java.beans.PropertyChangeSupport;
 import spiralcraft.lang.Optic;
 
 /**
- * Standard internal basis for implementation of the Optic interface, which
+ * A unit of transformationStandard internal basis for implementation of the Optic interface, which
  *   requires a local cache to eliminate redundant object creation.
  *
  * To summarize, a Binding provides an updateable "view" of a piece of 
@@ -26,9 +26,9 @@ public interface Binding
   public boolean set(Object value);
 
   /**
-   * Indicate the Prism associated with the bound Object. The Prism
-   *   is the means by which further Bindings are resolved against
-   *   this Binding.
+   * The Prism associated with the bound Object, against which
+   *   
+   *   
    */
   public Prism getPrism();
 
