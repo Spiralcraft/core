@@ -21,6 +21,18 @@ import java.util.prefs.Preferences;
 /**
  * Associates a PropertySpecifier with a some value in the context of
  *   an instantiated Assembly
+ *
+ * If the property is indicated as being a 'preference' to be loaded from 
+ *   and saved to a Preferences object, one of the following cases apply:
+ *
+ * If the target class is a String, the value is transferred literally
+ * If the target class can be associated with a StringConverter, the 
+ *    value is run through the converter before loading and saving.
+ * If the Preferences object holds a persistent reference, the reference will
+ *    be instantiated and applied to the property, and will be flushed
+ *    when the preferences are saved
+ * If the Preferences object holds an XmlEncoded object, the object will
+ *    be decoded and encoded on load/save.
  */
 public class PropertyBinding
 {
@@ -113,43 +125,48 @@ public class PropertyBinding
     { 
       Preferences preferences=(Preferences) node.findInstance(Preferences.class);
       if (preferences!=null)
-      {
-        String value=preferences.get(_specifier.getTargetName(),null);
-        if (value!=null)
-        {
-          if (_target.getTargetClass().isAssignableFrom(String.class))
-          { applySafe(value);
-          }
-          else if (_converter!=null)
-          { applySafe(_converter.fromString(value));
-          }
-          else
-          { 
-            Object ovalue=null;
-            try
-            { ovalue=StringConverter.decodeFromXml(value);
-            }
-            catch (Exception x)
-            { x.printStackTrace();
-            }
-            if (ovalue!=null)
-            { applySafe(ovalue);
-            }
-            else
-            {
-              System.err.println
-                ("Can't convert preference value '"
-                +value
-                +"' to "
-                +_target.getTargetClass()
-                );
-            }
-          }
-        }
+      { applyPreferences(preferences);
       }
     }
   }
 
+  public void applyPreferences(Preferences preferences)
+  {
+    String value=preferences.get(_specifier.getTargetName(),null);
+    
+    if (value!=null)
+    {
+      if (_target.getTargetClass().isAssignableFrom(String.class))
+      { applySafe(value);
+      }
+      else if (_converter!=null)
+      { applySafe(_converter.fromString(value));
+      }
+      else
+      { 
+        Object ovalue=null;
+        try
+        { ovalue=StringConverter.decodeFromXml(value);
+        }
+        catch (Exception x)
+        { x.printStackTrace();
+        }
+        if (ovalue!=null)
+        { applySafe(ovalue);
+        }
+        else
+        {
+          System.err.println
+            ("Can't convert preference value '"
+            +value
+            +"' to "
+            +_target.getTargetClass()
+            );
+        }
+      }
+    }
+  }
+  
   private void instantiateContents()
     throws BuildException
   {
