@@ -7,7 +7,7 @@ import spiralcraft.lang.BindException;
 
 
 /**
- * An abstract Optic for representing a Number
+ * An abstract Optic for representing a String
  */
 public class StringPrism
   extends BeanPrism

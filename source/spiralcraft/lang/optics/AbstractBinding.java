@@ -5,6 +5,7 @@ import spiralcraft.lang.Optic;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Decorator;
 
 import java.beans.PropertyChangeSupport;
 
@@ -16,6 +17,9 @@ import java.beans.PropertyChangeSupport;
  *
  * Storage and retrieval is accomplished by abstract methods defined in the
  *   subclass.
+ *
+ * To summarize, a Binding provides an updateable "view" of a piece of 
+ *   information from an underlying data source or data container.
  */
 public abstract class AbstractBinding
   implements Binding
@@ -54,8 +58,8 @@ public abstract class AbstractBinding
     _static=isStatic;
   }
 
-  public Class getTargetClass()
-  { return _prism.getJavaClass();
+  public Class getContentType()
+  { return _prism.getContentType();
   }
   
   public Optic resolve(Focus focus,String name,Expression[] params)
@@ -75,6 +79,16 @@ public abstract class AbstractBinding
   protected abstract Object retrieve();
   
   protected abstract boolean store(Object val);
+
+  public Decorator decorate(Class decoratorInterface)
+  { 
+    try
+    { return _prism.decorate(this,decoratorInterface);
+    }
+    catch (BindException x)
+    { throw new RuntimeException("Error decorating",x);
+    }
+  }
   
   public synchronized boolean set(Object value)
   { 
@@ -97,6 +111,9 @@ public abstract class AbstractBinding
     }
   }
 
+  /**
+   * Return the Prism ("type" model/name resolver) for this Binding
+   */
   public Prism getPrism()
   { return _prism;
   }

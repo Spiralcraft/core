@@ -4,6 +4,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Decorator;
 
 import java.beans.PropertyChangeSupport;
 
@@ -38,10 +39,13 @@ public class ProxyOptic
   { return _optic.set(value);
   }
 
-  public Class getTargetClass()
-  { return _optic.getTargetClass();
+  public Class getContentType()
+  { return _optic.getContentType();
   }
 
+  public Decorator decorate(Class decoratorInterface)
+  { return _optic.decorate(decoratorInterface);
+  }
 
   public PropertyChangeSupport propertyChangeSupport()
   { return _optic.propertyChangeSupport();
@@ -51,6 +55,10 @@ public class ProxyOptic
   { return _optic.isStatic();
   }
 
+  public Prism getPrism()
+  { return _optic.getPrism();
+  }
+  
   public String toString()
   { return super.toString()+":"+_optic.toString();
   }

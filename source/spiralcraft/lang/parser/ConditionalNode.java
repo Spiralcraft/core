@@ -1,5 +1,12 @@
 package spiralcraft.lang.parser;
 
+import spiralcraft.lang.optics.ConditionalBinding;
+import spiralcraft.lang.optics.Binding;
+
+import spiralcraft.lang.Optic;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.BindException;
+
 public class ConditionalNode
   extends Node
 {
@@ -19,6 +26,17 @@ public class ConditionalNode
     _falseResult=falseResult;
   }
 
+  public Optic bind(Focus focus)
+    throws BindException
+  { 
+    Optic condition=_condition.bind(focus);
+    Optic trueResult=_trueResult.bind(focus);
+    Optic falseResult=_falseResult.bind(focus);
+    
+    return new ConditionalBinding
+      (condition,trueResult,falseResult);
+  }
+  
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append("Condition");

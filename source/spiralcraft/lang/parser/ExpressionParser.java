@@ -434,6 +434,7 @@ public class ExpressionParser
       case '.':
         nextToken();
         IdentifierNode idNode=parseIdentifier();
+        nextToken();
         Node resolveNode=new ResolveNode(primary,idNode);
         return parsePostfixExpressionRest(resolveNode);
       default:
@@ -497,10 +498,10 @@ public class ExpressionParser
         { node=new LiteralNode(Boolean.FALSE,Boolean.class);
         }
         else if (_tokenizer.sval.equals("null"))
-        { node=new LiteralNode(null,Object.class);
+        { node=new LiteralNode(null,Void.class);
         }
         else
-        { throwUnexpected();
+        { node=parseIdentifier();
         }
         nextToken();
         break;
@@ -531,7 +532,6 @@ public class ExpressionParser
     { 
       ret=
         new IdentifierNode(_tokenizer.sval);
-      nextToken();
     }
     return ret;
   }
@@ -592,7 +592,13 @@ public class ExpressionParser
         }
         return null;
       case StreamTokenizer.TT_WORD:
-        return new FocusResolveNode(focusNode,parseIdentifier());
+        Node primaryNode=parsePrimaryExpression();
+        if (primaryNode instanceof IdentifierNode)
+        { return new FocusResolveNode(focusNode,(IdentifierNode) primaryNode);
+        }
+        else
+        { return primaryNode;
+        }
       case '.':
         nextToken();
         return parseFocusRelativeExpression(focusNode);

@@ -18,6 +18,6 @@ public class BeanFocus
   
   public void setBean(Object bean)
     throws BindException
-  { setSubject(OpticFactory.getInstance().box(bean));
+  { setSubject(OpticFactory.getInstance().createOptic(bean));
   }
 }

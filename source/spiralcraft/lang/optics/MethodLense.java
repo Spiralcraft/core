@@ -28,6 +28,20 @@ class MethodLense
 
   public Object translateForGet(Object value,Object[] params)
   { 
+    if (params==null)
+    { throw new IllegalArgumentException
+        ("No parameters for "
+        +_method.toString()
+        );
+
+    }
+    if (params.length!=_method.getParameterTypes().length)
+    { 
+      throw new IllegalArgumentException
+        ("Wrong number of parameters ("+params.length+") for "
+        +_method.toString()
+        );
+    }
     if (value==null)
     { return null;
     }

@@ -34,6 +34,7 @@ public class SimpleBinding
     super(OpticFactory.getInstance().findPrism(clazz),isStatic);
     _object=val;
   }
+
   
   protected Object retrieve()
   { return _object;

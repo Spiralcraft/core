@@ -4,6 +4,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Decorator;
 
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
@@ -20,7 +21,7 @@ public  class LenseBinding
   
   protected final String id;
 
-  private final Binding _source;
+  private final Optic _source;
   private final Lense _lense;
   private final Optic[] _modifiers;
   private final boolean _static;
@@ -28,7 +29,11 @@ public  class LenseBinding
   private PropertyChangeListener _modifierListener;
   private WeakBindingCache _cache;
 
-  public LenseBinding(Binding source,Lense lense,Optic[] modifiers)
+  /**
+   * Create a Lense binding which translates values bidirectionally,
+   *   through the specified lense.
+   */
+  public LenseBinding(Optic source,Lense lense,Optic[] modifiers)
   { 
     _source=source;
     _lense=lense;
@@ -105,8 +110,18 @@ public  class LenseBinding
     return binding;
   }
   
-  public Class getTargetClass()
-  { return _lense.getPrism().getJavaClass();
+  public Class getContentType()
+  { return _lense.getPrism().getContentType();
+  }
+  
+  public Decorator decorate(Class decoratorInterface)
+  { 
+    try
+    { return _lense.getPrism().decorate(this,decoratorInterface);
+    }
+    catch (BindException x)
+    { throw new RuntimeException("Error decorating",x);
+    }
   }
   
   /**

@@ -9,6 +9,9 @@ import java.util.HashMap;
  *
  * This Focus inherits the Context of the source Focus and has a subject
  *   that corresponds to the data pathway specifed by the expression.
+ *
+ * Channels cache the expressions bound to them to avoid duplication of
+ *   effort and to minimize memory consumption
  */
 public class Channel
   extends ProxyOptic
@@ -16,6 +19,8 @@ public class Channel
 {
   private final Expression _expression;
   private final Focus _source;
+  
+  // XXX These should be weak or soft refs
   private HashMap _channels;
 
   public Channel(Focus source,Optic optic,Expression expression)
@@ -48,6 +53,9 @@ public class Channel
   public synchronized Channel bind(Expression expression)
     throws BindException
   { 
+    // XXX These should be weak or soft refs so we don't hang on to unused 
+    // XXX   channels
+    
     Channel channel=null;
     if (_channels==null)
     { _channels=new HashMap();

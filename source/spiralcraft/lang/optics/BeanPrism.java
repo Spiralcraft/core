@@ -4,6 +4,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Decorator;
 
 import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
@@ -36,6 +37,7 @@ public class BeanPrism
   private HashMap _fields;
   private HashMap _methods;
   private Class _targetClass;
+  private MethodResolver _methodResolver;
   
   public BeanPrism(Class clazz)
   { 
@@ -53,7 +55,7 @@ public class BeanPrism
     }
   }
 
-  public Class getJavaClass()
+  public Class getContentType()
   { return _targetClass;
   }
   
@@ -79,6 +81,14 @@ public class BeanPrism
     return binding;
   }
 
+  public Decorator decorate(Binding source,Class decoratorInterface)
+    throws BindException
+  { 
+    // Look up the target class in the map of decorators for 
+    //   the specified interface. 
+    return null;
+  }
+  
   private synchronized Binding getField(Binding source,String name)
     throws BindException
   {
@@ -151,13 +161,20 @@ public class BeanPrism
   private synchronized Binding getMethod(Binding source,String name,Optic[] params)
     throws BindException
   { 
+    if (_methodResolver==null)
+    { _methodResolver=new MethodResolver(_targetClass);
+    }
+    
     StringBuffer sigbuf=new StringBuffer();
     Class[] classSig=new Class[params.length];
     sigbuf.append(name);
     for (int i=0;i<params.length;i++)
     {   
       sigbuf.append(":");
-      classSig[i]=params[i].getTargetClass();
+      classSig[i]=params[i].getContentType();
+      if (classSig[i]==Void.class)
+      { classSig[i]=Object.class;
+      }
       sigbuf.append(classSig[i].getName());
     }
     String sig=sigbuf.toString();
@@ -175,7 +192,7 @@ public class BeanPrism
       try
       {
         Method method
-          =_targetClass.getMethod(name,classSig);
+          =_methodResolver.findMethod(name,classSig);
         
         if (method!=null)
         { 
@@ -188,7 +205,7 @@ public class BeanPrism
         throw new BindException
           ("Method "
           +name
-          +"("+ArrayUtil.formatToString(classSig,",","")
+          +"("+ArrayUtil.format(classSig,",","")
           +") not found in "+_targetClass
           ,x
           );
@@ -199,7 +216,7 @@ public class BeanPrism
       Binding binding=source.getCache().get(lense);
       if (binding==null)
       { 
-        binding=new MethodBinding(source,lense);
+        binding=new MethodBinding(source,lense,params);
         source.getCache().put(lense,binding);
       }
       return binding;

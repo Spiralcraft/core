@@ -5,7 +5,11 @@ import java.beans.PropertyChangeSupport;
 import spiralcraft.lang.Optic;
 
 /**
- * Provides bidirectional access to an aribitrary data source
+ * Standard internal basis for implementation of the Optic interface, which
+ *   requires a local cache to eliminate redundant object creation.
+ *
+ * To summarize, a Binding provides an updateable "view" of a piece of 
+ *   information from an underlying data source or data container.
  */
 public interface Binding
   extends Optic

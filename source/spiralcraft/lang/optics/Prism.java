@@ -3,16 +3,17 @@ package spiralcraft.lang.optics;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Decorator;
 
 /**
- * Defines a data type used for Expression evaluation.
+ * Defines the type of view provided by an Optic.
+ *
+ * Defines the Java class of the content provided by the view.
  * 
- * Represents the 'interface' exposed by a Binding by mapping names and
- *   parameter sets to other Bindings which expose properties and methods of
- *   the data object accessible through this binding.
- * 
- * Prisms are used to support Optic.resolve() for a specific data 'type' (java
- *   class or other type mechanism) independently of the actual source of data.
+ * Defines a set of named transformations that can be derived from an
+ *   associated Optic to create a new Optic that provides a view of some aspect
+ *   of the original Optic. 
+ *
  */
 public interface Prism
 {
@@ -26,8 +27,15 @@ public interface Prism
     throws BindException;
 
   /**
+   * Decorate the specified optic with a decorator that implements the
+   *   specified interface
+   */
+  public Decorator decorate(Binding source,Class decoratorInterface)
+    throws BindException;
+  
+  /**
    * Return the Java class of the data object accessible through Bindings 
    *   associated with this Prism
    */
-  public Class getJavaClass();
+  public Class getContentType();
 }

@@ -9,6 +9,7 @@ import spiralcraft.lang.optics.BeanPrism;
 import spiralcraft.lang.optics.StringPrism;
 import spiralcraft.lang.optics.NumberPrism;
 import spiralcraft.lang.optics.BigDecimalPrism;
+import spiralcraft.lang.optics.VoidPrism;
 
 import java.beans.IntrospectionException;
 
@@ -38,8 +39,10 @@ public class OpticFactory
     _prismMap.put(String.class,_stringPrism);
   }
 
-
-  public Optic box(Object object)
+  /**
+   * Create an Optic which provides view of an arbitrary Java object.
+   */
+  public Optic createOptic(Object object)
     throws BindException
   { 
     if (object instanceof Optic)
@@ -50,11 +53,6 @@ public class OpticFactory
     }
   }
 
-  public Focus focus(Object object)
-    throws BindException
-  { return new DefaultFocus(box(object));
-  } 
-  
   
   /**
    * Find a Prism which provides an interface into the specified Java class
@@ -65,16 +63,16 @@ public class OpticFactory
     Prism result=(Prism) _prismMap.get(clazz);
     if (result==null)
     {
-      result=new BeanPrism(clazz);
+      if (clazz==Void.class)
+      { result=new VoidPrism();
+      }
+      else
+      { result=new BeanPrism(clazz);
+      }
       _prismMap.put(clazz,result);
     }
     return result;
   }
 }
 
-abstract class OpticCreator
-{
-  public abstract Optic createOptic(Optic source)
-    throws BindException;
-}
 

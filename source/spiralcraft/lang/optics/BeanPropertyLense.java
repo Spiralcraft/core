@@ -10,6 +10,10 @@ import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.OpticFactory;
 
+/**
+ * A lense associated with a single bean property. The 'get' transformation
+ *   simply retrieves the value of the property from the supplied bean.
+ */
 class BeanPropertyLense
   implements Lense
 {

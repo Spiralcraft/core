@@ -1,28 +1,43 @@
 package spiralcraft.lang.parser;
 
+import spiralcraft.lang.Optic;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Expression;
+
+import spiralcraft.lang.optics.ProxyOptic;
 
 public class EqualityNode
-  extends Node
+  extends LogicalNode
 {
 
   private final boolean _negate;
-  private final Node _op1;
-  private final Node _op2;
 
   public EqualityNode(boolean negate,Node op1,Node op2)
   { 
+    super(op1,op2);
     _negate=negate;
-    _op1=op1;
-    _op2=op2;
   }
 
-  public void dumpTree(StringBuffer out,String prefix)
+  public Object translateForGet(Object val,Object[] mods)
   { 
-    out.append(prefix).append("Equals");
-    prefix=prefix+"  ";
-    _op1.dumpTree(out,prefix);
-    out.append(prefix).append(_negate?"!=":"==");
-    _op2.dumpTree(out,prefix);
+    if (val==mods[0])
+    { return _negate?Boolean.FALSE:Boolean.TRUE;
+    }
+    else if (val!=null && val.equals(mods[0]))
+    { return _negate?Boolean.FALSE:Boolean.TRUE;
+    }
+    return _negate?Boolean.TRUE:Boolean.FALSE;
+  }
+  
+  public Object translateForSet(Object val,Object[] mods)
+  { 
+    // Not reversible
+    throw new UnsupportedOperationException();
+  }
+  
+  public String getSymbol()
+  { return _negate?"!=":"==";
   }
 
 }

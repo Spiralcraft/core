@@ -19,7 +19,7 @@ public class Attribute
   { 
     _name=name;
     _optic=optic;
-    _type=optic.getTargetClass();
+    _type=optic.getContentType();
   }
 
   public Attribute(String name,Class type)
