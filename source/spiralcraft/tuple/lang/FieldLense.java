@@ -3,6 +3,7 @@ package spiralcraft.tuple.lang;
 import spiralcraft.tuple.Field;
 import spiralcraft.tuple.Tuple;
 
+import spiralcraft.lang.Optic;
 import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.BindException;
 
@@ -38,11 +39,11 @@ public class FieldLense
   { return _field;
   }
   
-  public Object translateForGet(Object value,Object[] modifiers)
+  public Object translateForGet(Object value,Optic[] modifiers)
   { return ((Tuple) value).get(_field.getIndex());
   }
 
-  public Object translateForSet(Object val,Object[] modifiers)
+  public Object translateForSet(Object val,Optic[] modifiers)
   { 
     // We can't turn the value into a Tuple
     throw new UnsupportedOperationException();
