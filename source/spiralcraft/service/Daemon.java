@@ -71,43 +71,49 @@ public class Daemon
   { return _args;
   }
 
-  protected void processArguments()
+  protected DaemonArguments newArgumentProcessor()
+  { return new DaemonArguments();
+  }
+  
+  private void processArguments()
+  { newArgumentProcessor().process(_args,'-');
+  }
+  
+  protected class DaemonArguments
+    extends Arguments
   {
-    new Arguments()
-    {
-      protected boolean processOption(String option)
+    protected boolean processOption(String option)
+    { 
+      if (option=="logLevel")
       { 
-        if (option=="logLevel")
-        { 
-          String level=nextArgument();
-          try
-          {
-            Field field=Level.class.getField(level);
-            if (field!=null)
-            { _logger.setLevel((Level) field.get(null));
-            }
-            else
-            { throw new IllegalArgumentException("Unknown log level '"+level+"'");
-            }
+        String level=nextArgument();
+        try
+        {
+          Field field=Level.class.getField(level);
+          if (field!=null)
+          { _logger.setLevel((Level) field.get(null));
           }
-          catch (Exception x)
+          else
           { throw new IllegalArgumentException("Unknown log level '"+level+"'");
           }
         }
-        else
-        { return super.processOption(option);
+        catch (Exception x)
+        { throw new IllegalArgumentException("Unknown log level '"+level+"'");
         }
-        return true;
       }
-
-      protected boolean processArgument(String argument)
-      { return super.processArgument(argument);
+      else
+      { return super.processOption(option);
       }
+      return true;
+    }
 
-    }.process(_args,'-');
+    protected boolean processArgument(String argument)
+    { return super.processArgument(argument);
+    }
+
   }
 
-  public void execute(String[] args)
+  public final void execute(String[] args)
   {
     try
     { 
