@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.HashMap;
 
 import spiralcraft.stream.url.URLResourceFactory;
+import spiralcraft.stream.classpath.ClasspathResourceFactory;
 
 /**
  * Resolves URIs into Resources
@@ -22,6 +23,15 @@ public class Resolver
     { 
       _INSTANCE=new Resolver();
       _INSTANCE.setDefaultFactory(new URLResourceFactory());
+      try
+      {
+        _INSTANCE.registerResourceFactory("java",new ClasspathResourceFactory());
+      }
+      catch (AlreadyRegisteredException x)
+      { 
+        // Should never happen
+        x.printStackTrace();
+      }
     }
     return _INSTANCE;
   }

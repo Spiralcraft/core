@@ -8,6 +8,7 @@ import java.net.URI;
 
 public class URLResourceFactory
   implements ResourceFactory
+
 {
 
   public Resource resolve(URI uri)
