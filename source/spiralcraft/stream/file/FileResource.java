@@ -63,6 +63,30 @@ public class FileResource
     return null;
   }
 
+  public Container ensureContainer()
+    throws IOException
+  {
+    if (!_file.exists())
+    { 
+      if (_file.mkdir())
+      { return this;
+      }
+      else
+      { throw new IOException("Could not create directory "+_file.getPath());
+      }
+    }
+    else
+    {
+      if (_file.isDirectory())
+      { return this;
+      }
+      else
+      { throw new IOException("File "+_file.getPath()+" is not a directory");
+      }
+    }
+    
+  }
+  
   public Resource getParent()
   { 
     try

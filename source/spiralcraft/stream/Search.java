@@ -70,7 +70,7 @@ public class Search
     run();
   }
 
-  public void run()
+  public synchronized void run()
   { 
     final Stack stack=new Stack();
 

@@ -58,6 +58,18 @@ public interface Resource
   public Container asContainer();
 
   /**
+   * Return the Container aspect of this Resource,
+   *   if that aspect applies to the specific Resource (ie.
+   *   the resource is a directory), and create that aspect
+   *   if it does not exist.
+   *
+   *@throws IOException if for some reason the Container aspect
+   *  is not applicable or incomatible with this specific resource
+   */
+  public Container ensureContainer()
+    throws IOException;
+  
+  /**
    * Return the enclosing or containing Resource.
    */
   public Resource getParent();
@@ -67,5 +79,18 @@ public interface Resource
    *   it are likely to succeed barring any other problems)
    */
   public boolean exists()
+    throws IOException;
+    
+  /**
+   * Copy this resource from the source resource in the
+   *   most efficient way possible.
+   */
+  public void copyFrom(Resource source)
+    throws IOException;
+  
+  /**
+   * Write the InputStream to the resource
+   */
+  public long write(InputStream in)
     throws IOException;
 }

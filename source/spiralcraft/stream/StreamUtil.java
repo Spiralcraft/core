@@ -5,6 +5,9 @@ import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+/**
+ * A collection of static methods useful for Stream manipulation
+ */
 public class StreamUtil
 {
   public static final int DEFAULT_BUFFER_SIZE=65536;
@@ -30,6 +33,35 @@ public class StreamUtil
     
   }
 
+  /**
+   * Copy (len) bytes from an InputStream to an OutputStream 
+   *   using a buffer of the specified size.
+   */
+  public static long copyRaw
+    (InputStream in
+    ,OutputStream out
+    ,int bufferSize
+    ,long len
+    )
+    throws IOException
+  { 
+    byte[] buffer=new byte[bufferSize];
+    long count=0;
+    for (;;)
+    { 
+      int read=in.read(buffer,0,(int) Math.min(buffer.length,len-count));
+      if (read<0)
+      { break;
+      }
+      out.write(buffer,0,read);
+      count+=read;
+      if (count==len)
+      { break;
+      }
+    }
+    return count;
+  }
+  
   public static byte[] readBytes(InputStream in)
     throws IOException
   {
