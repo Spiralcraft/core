@@ -4,10 +4,11 @@ import java.util.Map;
 
 
 /**
- * Provides an interface to a Map which maps keys to arrays.
+ * A MultiMap which uses Arrays to store collections of values for a key
  */
 public class ArrayMap
   extends MapWrapper
+  implements MultiMap
 {
 
   private final Class _arrayComponentClass;
@@ -41,10 +42,18 @@ public class ArrayMap
     }
   }
 
+  public void remove(Object key,Object value)
+  {
+    Object array=map.get(key);
+    if (array!=null)
+    { map.put(key,ArrayUtil.remove(array,value));
+    }
+  }
+  
   /**
    * Return the first element of the array mapped to the specified key
    */
-  public Object getValue(Object key)
+  public Object getOne(Object key)
   { return ArrayUtil.getFirstElement(map.get(key));
   }
 
