@@ -13,6 +13,11 @@ import java.util.List;
 
 import java.lang.reflect.Array;
 
+
+import spiralcraft.registry.RegistryNode;
+
+import java.util.prefs.Preferences;
+
 /**
  * Associates a PropertySpecifier with a some value in the context of
  *   an instantiated Assembly
@@ -29,6 +34,7 @@ public class PropertyBinding
 
   private Assembly[] _contents;
   private StringConverter _converter;
+  private RegistryNode _registryNode;
 
   public PropertyBinding(PropertySpecifier specifier,Assembly container)
     throws BuildException
@@ -41,6 +47,107 @@ public class PropertyBinding
     resolveTarget();
     resolveSource();
     apply();
+  }
+
+  public void savePreferences()
+  {
+    if (_contents!=null && _contents.length>0)
+    { 
+      for (int i=0;i<_contents.length;i++)
+      { _contents[i].savePreferences();
+      }
+    }
+    else if (_specifier.isPreference())
+    { 
+      Preferences preferences=(Preferences) _registryNode.findInstance(Preferences.class);
+      if (preferences!=null)
+      {
+        Object value=_target.get();
+        if (value==null)
+        { preferences.remove(_specifier.getTargetName());
+        }
+        else if (_target.getTargetClass().isAssignableFrom(String.class))
+        { preferences.put(_specifier.getTargetName(),(String) value);
+        }
+        else if (_converter!=null)
+        { preferences.put(_specifier.getTargetName(),_converter.toString(value));
+        }
+        else
+        { 
+          String xml=StringConverter.encodeToXml(value);
+          if (xml!=null && xml.length()>0)
+          { preferences.put(_specifier.getTargetName(),xml);
+          }
+          else
+          {
+            System.err.println
+              ("Can't convert preference value '"
+              +_specifier.getTargetName()
+              +"' ("+_target.getTargetClass()+") to a String");
+          }
+        }
+      }
+    }
+  }
+
+  public void register(RegistryNode node)
+  {
+    _registryNode=node;
+    if (_contents!=null && _contents.length>0)
+    { 
+      RegistryNode propertyNode=node.createChild(_specifier.getTargetName());
+      if (!_target.getTargetClass().isArray())
+      { _contents[0].register(propertyNode);
+      }
+      else
+      {
+        for (int i=0;i<_contents.length;i++)
+        { 
+          _contents[i].register
+            (propertyNode.createChild(Integer.toString(i))
+            );
+        }
+      }
+    }
+    else if (_specifier.isPreference())
+    { 
+      Preferences preferences=(Preferences) node.findInstance(Preferences.class);
+      if (preferences!=null)
+      {
+        String value=preferences.get(_specifier.getTargetName(),null);
+        if (value!=null)
+        {
+          if (_target.getTargetClass().isAssignableFrom(String.class))
+          { applySafe(value);
+          }
+          else if (_converter!=null)
+          { applySafe(_converter.fromString(value));
+          }
+          else
+          { 
+            Object ovalue=null;
+            try
+            { ovalue=StringConverter.decodeFromXml(value);
+            }
+            catch (Exception x)
+            { x.printStackTrace();
+            }
+            if (ovalue!=null)
+            { applySafe(ovalue);
+            }
+            else
+            {
+              System.err.println
+                ("Can't convert preference value '"
+                +value
+                +"' to "
+                +_target.getTargetClass()
+                );
+            }
+          }
+        }
+      }
+    }
   }
 
   private void instantiateContents()
@@ -67,7 +174,9 @@ public class PropertyBinding
     if (_target==null)
     {
       throw new BuildException
-        ("Property '"+_specifier.getTargetName()+"' not found");
+        ("Property '"+_specifier.getTargetName()+"' not found"
+        +" ("+_specifier.getSourceCodeLocation()+")"
+        );
     }
   }
   
@@ -153,7 +262,7 @@ public class PropertyBinding
     {
       try
       {
-        Channel sourceChannel=_specifier.getSourceExpression().createChannel(_focus);
+        Channel sourceChannel=_focus.bind(_specifier.getSourceExpression());
         _source=sourceChannel.get();
       }
       catch (BindException x)
@@ -168,8 +277,33 @@ public class PropertyBinding
   private void apply()
     throws BuildException
   { 
-    if (!_target.set(_source))
-    { throw new BuildException("Could not write "+_specifier.getTargetName());
+    try
+    {
+      if (_source!=null && !_target.set(_source))
+      { throwBuildException("Could not write "+_specifier.getTargetName(),null);
+      }
+    }
+    catch (RuntimeException x)
+    { throwBuildException(x.toString()+" writing "+_specifier.getTargetName(),x);
+    }
+  }
+
+  private void throwBuildException(String message,Exception source)
+    throws BuildException
+  { throw new BuildException(message+" ("+_specifier.getSourceCodeLocation()+")",source);
+  }
+
+  private void applySafe(Object value)
+  {
+    Object osource=_source;
+    _source=value;
+    try
+    { apply();
+    }
+    catch (Exception x)
+    { 
+      x.printStackTrace();
+      _source=osource;
     }
   }
 

@@ -3,6 +3,7 @@ package spiralcraft.builder;
 import java.util.ArrayList;
 
 import spiralcraft.util.StringUtil;
+import spiralcraft.util.ArrayUtil;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Optic;
@@ -32,6 +33,7 @@ public class PropertySpecifier
   private boolean _literalWhitespace;
   private String _focus;
   private String _expression;
+  private boolean _preference;
 
   public PropertySpecifier
     (AssemblyClass container
@@ -40,6 +42,32 @@ public class PropertySpecifier
   {
     _container=container;
     _specifier=StringUtil.tokenize(specifier,".");
+  }
+
+  public String getSourceCodeLocation()
+  { 
+    return 
+      ArrayUtil.formatToString(_container.getInnerPath(),"/",null)
+      +"."
+      +ArrayUtil.formatToString(_specifier,".",null)
+      +" in "
+      +_container.getSourceURI().toString();
+  }
+
+  /**
+   * Indicate whether the value for this property should be persisted within
+   *   the preferences subsystem
+   */
+  public boolean isPreference()
+  { return _preference;
+  }
+
+  /**
+   * Indicate whether the value for this property should be persisted within
+   *   the preferences subsystem
+   */
+  public void setPreference(boolean val)
+  { _preference=val;
   }
 
   /** 

@@ -70,18 +70,10 @@ public class AssemblyLoader
   {
     
 
-    ParseTree parseTree;
-    InputStream in=null;
-
+    ParseTree parseTree=null;
+    
     try
-    { 
-      Resource resource=Resolver.getInstance().resolve(resourceUri);
-      in=resource.getInputStream();
-      if (in==null)
-      { return null;
-      }
-
-      parseTree=ParseTreeFactory.fromInputStream(in);
+    { parseTree=ParseTreeFactory.fromURI(resourceUri);
     }
     catch (SAXException x)
     { throw new BuildException("Error parsing "+resourceUri.toString(),x);
@@ -89,16 +81,9 @@ public class AssemblyLoader
     catch (IOException x)
     { throw new BuildException("Error reading "+resourceUri.toString(),x);
     }
-    finally
-    { 
-      if (in!=null)
-      {
-        try
-        { in.close();
-        }
-        catch (IOException x)
-        { }
-      }
+
+    if (parseTree==null)
+    { return null;
     }
 
     Element root=parseTree.getDocument().getRootElement();
@@ -140,6 +125,8 @@ public class AssemblyLoader
         ,this
         );
         
+    assemblyClass.setDeclarationName(node.getLocalName());
+
     Attribute[] attribs
       =node.getAttributes();
     if (attribs!=null)
@@ -153,6 +140,9 @@ public class AssemblyLoader
           String[] interfaceNames=
             StringUtil.tokenize(value,",");
           assemblyClass.setSingletonNames(interfaceNames);
+        }
+        else if (name=="name")
+        { assemblyClass.setDeclarationName(attribs[i].getValue());
         }
         else
         { 
@@ -194,21 +184,10 @@ public class AssemblyLoader
         { prop.setExpression(attribs[i].getValue());
         }
         else if (name=="whitespace")
-        { 
-          String value=attribs[i].getValue();
-          if (value.equals("true"))
-          { prop.setLiteralWhitespace(true);
-          }
-          else if (value.equals("false"))
-          { prop.setLiteralWhitespace(false);
-          }
-          else
-          { 
-            throw new BuildException
-              ("Unexpected value for 'whitespace' attribute."
-              +"Either 'true' or 'false' required"
-              );
-          }
+        { prop.setLiteralWhitespace(readBoolean(attribs[i]));
+        }
+        else if (name=="preference")
+        { prop.setPreference(readBoolean(attribs[i]));
         }
         else
         { 
@@ -237,4 +216,22 @@ public class AssemblyLoader
     }
   }
 
+  private static final boolean readBoolean(Attribute attrib)
+    throws BuildException
+  {
+    String value=attrib.getValue();
+    if (value.equals("true"))
+    { return true;
+    }
+    else if (value.equals("false"))
+    { return false;
+    }
+    else
+    { 
+      throw new BuildException
+        ("Unexpected value '"+attrib.getValue()+"' for '"+attrib.getLocalName()+"' attribute."
+        +"Either 'true' or 'false' required"
+        );
+    }
+  }
 }

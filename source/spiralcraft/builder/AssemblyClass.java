@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.HashMap;
 
+import spiralcraft.util.ArrayUtil;
+
 /**
  * An AssemblyClass defines the behavior and content of an Assembly. One
  *   instance of an AssemblyClass is created within a given ClassLoader
@@ -23,6 +25,7 @@ public class AssemblyClass
   private final URI _derivationPackage;
   private final String _derivationName;
   private final AssemblyClass _outerClass;
+  private String _declarationName;
   private AssemblyClass _baseClass;
   private Class _javaClass;
   private LinkedList _propertySpecifiers;
@@ -68,6 +71,9 @@ public class AssemblyClass
 
     _memberMap.put(name,prop);
     _members.add(prop);
+    if (_compositeMembers!=null)
+    { _compositeMembers.add(prop);
+    }
   }
 
   PropertySpecifier getMember(String name)
@@ -76,8 +82,15 @@ public class AssemblyClass
     { return (PropertySpecifier) _memberMap.get(name);
     }
     else
-    { return null;
+    { 
+      if (_baseClass!=null)
+      { return _baseClass.getMember(name);
+      }
+      else
+      { return null;
+      }
     }
+    
   }
 
   PropertyBinding[] bindProperties(Assembly container)
@@ -100,6 +113,19 @@ public class AssemblyClass
     }
     return null;
   }
+  
+  /**
+   * Return the path from the root of the declaration unit.
+   */
+  public String[] getInnerPath()
+  { 
+    if (_outerClass!=null)
+    { return (String[]) ArrayUtil.append(_outerClass.getInnerPath(),_declarationName);
+    }
+    else
+    { return new String[] {_declarationName};
+    }
+  }
 
   public void resolve()
     throws BuildException
@@ -107,6 +133,24 @@ public class AssemblyClass
     resolveExternalBaseClass();
     resolveProperties();
     resolveSingletons();
+  }
+
+  public boolean isFocusNamed(String name)
+  { 
+    if (_declarationName.equals(name))
+    { return true;
+    }
+    else if (_baseClass!=null)
+    { return _baseClass.isFocusNamed(name);
+    }
+    else if (_javaClass!=null)
+    { return _javaClass.getName().equals(name);
+    }
+    return false;
+  }
+
+  public void setDeclarationName(String val)
+  { _declarationName=val;
   }
 
   public void setSingletonNames(String[] interfaceNames)
@@ -173,6 +217,7 @@ public class AssemblyClass
       Iterator it=_members.iterator();
       while (it.hasNext())
       { 
+        
         PropertySpecifier prop=(PropertySpecifier) it.next();
         PropertySpecifier oldProp
           =(PropertySpecifier) map.get(prop.getTargetName());
@@ -198,6 +243,10 @@ public class AssemblyClass
       { list.add(_localSingletons[i]);
       }
     }
+  }
+
+  public URI getSourceURI()
+  { return _sourceUri;
   }
 
   private void resolveExternalBaseClass()
@@ -236,8 +285,16 @@ public class AssemblyClass
           );
     }
     catch (ClassNotFoundException x)
-    { throw new BuildException("Class not found: "+className,x);
+    { throwBuildException("Class not found: '"+className+"'",x);
     }
+  }
+
+  /**
+   * Throw a build exception and add location information
+   */
+  private void throwBuildException(String message,Exception cause)
+    throws BuildException
+  { throw new BuildException(message+" ("+_sourceUri.toString()+")",cause);
   }
 
   private String qualifyRelativeJavaClassName(String name)
