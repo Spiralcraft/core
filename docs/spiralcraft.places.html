@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>spiralcraft.loader package</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <meta name="author" content="Mike Toth">
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#000099" vlink="#990099"
+ alink="#000099">
+<h1>Spiralcraft</h1>
+<hr width="100%" size="2">
+<h2>spiralcraft.places package</h2>
+The spiralcraft.places package is a framework for user navigation and
+interaction within complex information systems. The concept of "place"
+is a natural and pervasive means of organizing the world of information
+regardless of whether or not it is formally applied to the design of
+specific information systems. This package formalizes some aspects of
+"place" to create interoperability between vehicles of user navigation
+("UserAgents") and foci of user interaction within applications
+("Places") to enable a global web of experience.<br>
+<br>
+<h3>Definitions</h3>
+<h4>Place</h4>
+A Place is a focal point of user interaction. Places can be visited via
+Gates, which control access to them. Places offer one or more types of
+Views so they can be accessed by different kinds of UserAgents. Places
+contain arbitrary items, which are accessed via the View. Places may
+contain and link to other Places. Places may be uniquely identified to
+support such external referencing.<br>
+<br>
+Some existing concepts which map well to the concept of Place are:<br>
+<ul>
+  <li>Web Site</li>
+  <li>Directory Tree</li>
+  <li>Chat Room</li>
+  <li>Forum or Bulletin Board</li>
+  <li>Digital "listening room"</li>
+  <li>On-line game arena</li>
+  <li>Collaboration workspace<br>
+  </li>
+</ul>
+A single Place may have multiple aspects- ie. Chat Room can be a place
+within a Web Site and can be associated with a Directory Tree on the
+host filesystem. <br>
+<h4>UserAgent</h4>
+A UserAgent is a representation of an end user's vehicle of system
+interaction. From the perspective of the spiralcraft.places package,
+the UserAgent provides information about the identity of the user and
+the capabilities of various aspects of the interface they are using to
+navigate and interact with a particular Place. A Gate will use the
+interface capability information to provide the best View possible to a
+given UserAgent, and will use security related information from the
+UserAgent to control access to the Place.<br>
+<br>
+Some examples of UserAgents are:<br>
+<ul>
+  <li>Graphical Web Browsers</li>
+  <li>Command Line Interfaces</li>
+  <li>Graphical User Interfaces<br>
+  </li>
+  <li>Cell Phone Browsers</li>
+  <li>Voice Telephones</li>
+  <li>Automated Processes (Task Robots)</li>
+</ul>
+<h4>View</h4>
+A View is a means for a UserAgent to interact with a Place. Different
+typs of UserAgents will be able to use different types of Views. All
+Places provide a primitive View which permits access by command line
+syle interfaces which all UserAgents can implement. Most Places will
+provide more sophisticated Views geared towards the functional
+capabilities of common UserAgents.<br>
+<br>
+<h4>Gate</h4>
+A Gate provides access to a Place by providing an appropriate View to
+the UserAgent based on security information and user interface
+capabilities. A Place always has at least one Gate. <br>
+<br>
+Sometimes Places have additional Gates which provide Views of different
+aspects- ie. a Web Site may offer a primary View of its content as well
+as an administrative view of the filesystem where the content resides
+and even perhaps an administrative view of traffic patterns for the
+site. Different Gates are likely to have different security criteria as
+well. <br>
+<br>
+<h3>Place Resolution Protocol</h3>
+A simple protocol which defines how a UserAgent establishes an
+interface with a Place is required to ensure interoperability.<br>
+<br>
+<h4>Gate Resolution</h4>
+A reference to the Gate is obtained somehow<br>
+<br>
+<h4>Gate Open Request</h4>
+The User Agent requests that the gate open for it.<br>
+<br>
+<h4>Authentication</h4>
+The Gate obtains authentication information from the User Agent via one
+of the methods supported by both the User Agent and the Gate<br>
+<br>
+<h4>View Negotiation</h4>
+The Gate enumerates the View interfaces supported by the User Agent and
+instantiates a View instance according to the highest scored preference
+of the UserAgent and the View.<br>
+<br>
+<h4>View Incorporation.</h4>
+The UserAgent incorporates the new View into the relevent part of the
+user interface.<br>
+</body>
+</html>
