@@ -22,6 +22,10 @@ public class LibraryClassLoader
   { _libraryClasspath=libraryCatalog.createLibraryClasspath();
   }
 
+  protected String findLibrary(String name)
+  { return _libraryClasspath.findNativeLibrary(name);
+  }
+  
   protected String getRepositoryName()
   { return _libraryClasspath.toString();
   }

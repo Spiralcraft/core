@@ -20,6 +20,12 @@ public interface LibraryClasspath
     throws IOException;
 
   /**
+   * Return the path of the native library in the catalog with the
+   *   specified name
+   */
+  public String findNativeLibrary(String name);
+  
+  /**
    * Resolve the most recent library which contains the resource, and
    *   all the other libraries on which that library depends.
    */

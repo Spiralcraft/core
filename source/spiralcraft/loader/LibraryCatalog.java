@@ -117,21 +117,26 @@ public class LibraryCatalog
   private void discoverLibraries()
     throws IOException
   { 
-    File[] jars
+    File[] libs
       =new File(_masterLibraryPath)
         .listFiles
           (new FilenameFilter()
           {
             public boolean accept(File dir,String name)
-            { return name.endsWith(".jar");
+            { 
+              return name.endsWith(".jar")
+                || name.endsWith(".dll")
+                || name.endsWith(".so")
+                ;
             }
           }
           );
-    
+
     _libraries.clear();
 
-    for (int i=0;i<jars.length;i++)
-    { catalogLibrary(jars[i]);
+
+    for (int i=0;i<libs.length;i++)
+    { catalogLibrary(libs[i]);
 
     }
 
@@ -147,6 +152,11 @@ public class LibraryCatalog
     Library lib;
     if (file.getName().endsWith(".jar"))
     { lib=new JarLibrary(file);
+    }
+    else if (file.getName().endsWith(".dll")
+            || file.getName().endsWith(".so")
+            )
+    { lib=new NativeLibrary(file);
     }
     else
     { lib=new FileLibrary(file);
@@ -270,7 +280,7 @@ public class LibraryCatalog
           else
           { 
             throw new IOException
-              ("Unsatisified dependency "+dependencies[i]);
+              ("Unsatisified dependency "+dependencies[i]+" loading "+library.path);
           }
         }
       }
@@ -297,6 +307,25 @@ public class LibraryCatalog
       }
       
       addLibrary((Library) libraries.get(0));
+      
+    }
+    
+    public String findNativeLibrary(String name)
+    {
+      List libraries=new LinkedList();
+
+      Iterator it=_libraries.iterator();
+      while (it.hasNext())
+      { 
+        Library library=(Library) it.next();
+
+        if ((library instanceof NativeLibrary)
+            && library.name.equals(name)
+           )
+        { return library.path;
+        }
+      }
+      return null;
       
     }
   }
@@ -333,7 +362,7 @@ abstract class Library
   public boolean isModule(String moduleName)
   { 
     // XXX For now, use exact name = HACK
-    return name.equals(moduleName);
+    return name.equals(moduleName) && !(this instanceof NativeLibrary);
   }
 
   public abstract String[] getLibraryDependencies();
@@ -481,6 +510,50 @@ class JarLibrary
     return null;
   }
   
+
+}
+
+class NativeLibrary
+  extends Library
+{
+
+
+  public NativeLibrary(File file)
+    throws IOException
+  { 
+    super(file);
+    name=file.getName();
+    if (name.endsWith(".dll"))
+    { name=name.substring(0,name.length()-4);
+    }
+    else if (name.endsWith(".so"))
+    { name=name.substring(0,name.length()-3);
+    }
+  }
+
+  public void catalogResources()
+    throws IOException
+  {
+  }
+
+  public synchronized void open()
+    throws IOException
+  { 
+  }
+
+  public synchronized void close()
+    throws IOException
+  {
+  }
+
+  public synchronized void forceClose()
+    throws IOException
+  { 
+  }
+  
+  public String[] getLibraryDependencies()
+  { return null;
+  }
 
 }
 
