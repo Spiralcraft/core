@@ -31,6 +31,20 @@ public class ArrayUtil
     return array;
   }
 
+  /** 
+   * Return the first element of the specified array. If the array is null
+   *   or has no elements, return null
+   */
+  public static Object getFirstElement(Object array)
+  {
+    if (array==null || Array.getLength(array)==0)
+    { return null;
+    }
+    else
+    { return Array.get(array,0);
+    }
+  }
+
   /**
    * Append an array to an array
    */
@@ -55,6 +69,17 @@ public class ArrayUtil
     Object[] result=treeSet.toArray();
     System.arraycopy(result, 0, array3, 0, result.length);
     return array3;
+  }
+
+  /**
+   * Create single element array of the specified class which contains the
+   *   specified value
+   */
+  public static Object newInstance(Class arrayComponentClass,Object value)
+  { 
+    Object array=Array.newInstance(arrayComponentClass,1);
+    Array.set(array,0,value);
+    return array;
   }
 
   /**

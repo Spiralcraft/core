@@ -15,6 +15,8 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import java.lang.reflect.Field;
+
 import spiralcraft.log.RegistryLogger;
 import spiralcraft.log.DefaultFormatter;
 
@@ -75,8 +77,22 @@ public class Daemon
     {
       protected boolean processOption(String option)
       { 
-        if (option=="verbose")
-        { _logger.setLevel(Level.FINE);
+        if (option=="logLevel")
+        { 
+          String level=nextArgument();
+          try
+          {
+            Field field=Level.class.getField(level);
+            if (field!=null)
+            { _logger.setLevel((Level) field.get(null));
+            }
+            else
+            { throw new IllegalArgumentException("Unknown log level '"+level+"'");
+            }
+          }
+          catch (Exception x)
+          { throw new IllegalArgumentException("Unknown log level '"+level+"'");
+          }
         }
         else
         { return super.processOption(option);

@@ -37,4 +37,26 @@ public class StreamUtil
     copyRaw(in,out,DEFAULT_BUFFER_SIZE);
     return out.toByteArray();
   }
+
+  /**
+   * Discard [bytes] bytes of the input stream
+   */
+  public static long discard(InputStream in,long bytes)
+    throws IOException
+  { 
+    long count=0;
+    while (count<bytes)
+    {
+      long ret=in.skip(bytes);
+      if (ret==-1)
+      { break;
+      }
+      else
+      { count+=ret;
+      }
+    }
+    return count;
+  }
+
+
 }

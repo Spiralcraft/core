@@ -10,6 +10,8 @@ import java.beans.XMLDecoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import java.net.URI;
+
 /**
  * Converts a String to an object of a specific type. Provides a means for registering
  *   StringConverters for custom types.
@@ -40,6 +42,7 @@ public abstract class StringConverter
     _MAP.put(BigInteger.class.getName(),new BigIntegerToString());
     _MAP.put(BigDecimal.class.getName(),new BigDecimalToString());
     _MAP.put(Class.class.getName(),new ClassToString());
+    _MAP.put(URI.class.getName(),new URIToString());
   }
 
   /**
@@ -229,5 +232,17 @@ final class ClassToString
     { x.printStackTrace();
     }
     return null;
+  }
+}
+
+final class URIToString
+  extends StringConverter
+{
+  public String toString(Object val)
+  { return val!=null?((URI) val).toString():null;
+  }
+
+  public Object fromString(String val)
+  { return URI.create(val);
   }
 }

@@ -71,4 +71,16 @@ public class StringUtil
     result.toArray(ret);
     return ret;
   }
+
+  /**
+   * Efficiently turn a string into an ascii byte array
+   */
+  public static byte[] asciiBytes(String string)
+  {
+    byte[] bytes=new byte[string.length()];
+    for (int i=0;i<bytes.length;i++)
+    { bytes[i]=(byte) string.charAt(i);
+    }
+    return bytes;
+  }
 }

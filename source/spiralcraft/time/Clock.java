@@ -1,35 +1,34 @@
 package spiralcraft.time;
 
+import spiralcraft.util.ArrayUtil;
+
 /**
  * Updates time from the System clock at a specified
- *   precision (defaults to 250ms).
+ *   precision. The static instance is set to a precision
+ *   of 250ms.
  */
 public final class Clock
   implements Runnable
 {
 
-  private static final Clock _INSTANCE=new Clock();
+  private static final Clock _INSTANCE=new Clock(250);
 
-  private int _precision=250;
+  private final int _precision;
   private final Thread _thread=new Thread(this,"Clock");
   private long _time=System.currentTimeMillis();
   private Object _lock=new Object();
 
-  Clock()
-  {
+  private ClockListener[] _clockListeners;
+
+  Clock(int precisionMillis)
+  { 
+    _precision=precisionMillis;
     _thread.setDaemon(true);
     _thread.start();
   }
 
   public static final Clock instance()
   { return _INSTANCE;
-  }
-
-  /**
-   * Specify the precision of the clock.
-   */
-  public final void setPrecision(int millis)
-  { _precision=millis;
   }
 
   /**
@@ -42,15 +41,27 @@ public final class Clock
     }
   }
 
+  public synchronized void addClockListener(ClockListener listener)
+  { 
+    if (_clockListeners!=null)
+    { _clockListeners=new ClockListener[] {listener};
+    }
+    else
+    { _clockListeners=(ClockListener[]) ArrayUtil.append(_clockListeners,listener);
+    }
+  }
+
+  public synchronized void removeClockListener(ClockListener listener)
+  { _clockListeners=(ClockListener[]) ArrayUtil.remove(_clockListeners,listener);
+  }
+
   public final void run()
   {
     try
     {
       while (true)
       {
-        synchronized (_lock)
-        { _time=System.currentTimeMillis();
-        }
+        update();
         Thread.currentThread().sleep(_precision);
       }
     }
@@ -58,5 +69,21 @@ public final class Clock
     { x.printStackTrace();
     }
 
+  }
+
+  private final void update()
+  {
+    long time;
+    synchronized (_lock)
+    { 
+      _time=System.currentTimeMillis();
+      time=_time;
+    }
+    if (_clockListeners!=null)
+    { 
+      for (int i=0;i<_clockListeners.length;i++)
+      { _clockListeners[i].timeChanged(time);
+      }
+    }
   }
 }

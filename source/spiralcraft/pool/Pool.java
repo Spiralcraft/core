@@ -450,7 +450,6 @@ public class Pool
 
   private void add()
   {
-    logFine("Adding resource");
     Reference ref=new Reference();
     try
     { ref.resource=_factory.createResource();
@@ -467,6 +466,10 @@ public class Pool
         _monitor.notify();
       }
       _addsCount++;
+
+      if (_log!=null && _log.isLoggable(Level.FINE))
+      { _log.fine("Added resource "+ref.resource.getClass().getName());
+      }
     }
   }
 
