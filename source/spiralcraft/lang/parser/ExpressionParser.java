@@ -487,9 +487,6 @@ public class ExpressionParser
         else
         { throwUnexpected();
         }
-//        else
-//        { node=new IdentifierNode(_tokenizer.sval);
-//        }
         nextToken();
         break;
       case '"':
@@ -555,7 +552,7 @@ public class ExpressionParser
 
   /**
    * FocusExpression -> ( "[" FocusSpecifier "]" ) 
-   *                    ( "." Identifier 
+   *                    ( "." RelativeFocusExpression 
    *                      | Identifier
    *                      | PrimaryExpression
    */
@@ -573,15 +570,35 @@ public class ExpressionParser
     switch (_tokenizer.ttype)
     {
       case StreamTokenizer.TT_WORD:
-        IdentifierNode id=new IdentifierNode(_tokenizer.sval);
-        nextToken();
-        return new FocusResolveNode(focusNode,id);
+        return new FocusResolveNode(focusNode,parseIdentifier());
       case '.':
         nextToken();
-        IdentifierNode idNode=parseIdentifier();
-        return new ResolveNode(focusNode,idNode);
+        return parseFocusRelativeExpression(focusNode);
       default:
         return parsePrimaryExpression();
+    }
+  }
+
+  /**
+   * FocusRelativeExpression -> "." FocusRelativeExpression 
+   *                            | Identifier
+   */
+  private Node parseFocusRelativeExpression(FocusNode focusNode)
+    throws ParseException
+  { 
+    switch (_tokenizer.ttype)
+    {
+      case StreamTokenizer.TT_WORD:
+        IdentifierNode id=new IdentifierNode(_tokenizer.sval);
+        nextToken();
+        return new ResolveNode(focusNode,id);
+      case '.':
+        nextToken();
+        FocusNode parentFocusNode=new ParentFocusNode(focusNode);
+        return parseFocusRelativeExpression(parentFocusNode);
+      default:
+        throwUnexpected();
+        return null;
     }
   }
 
@@ -598,12 +615,12 @@ public class ExpressionParser
       switch (_tokenizer.ttype)
       {
         case ']':
-          return new FocusNode(focusName.toString(),null);
+          return new AbsoluteFocusNode(focusName.toString(),null);
         case StreamTokenizer.TT_EOF:
           throwUnexpected();
         case ':':
           nextToken();
-          return new FocusNode(focusName.toString(),parseExpression());
+          return new AbsoluteFocusNode(focusName.toString(),parseExpression());
         case StreamTokenizer.TT_WORD:
         case StreamTokenizer.TT_NUMBER:
           focusName.append(_tokenizer.sval);
