@@ -1,7 +1,7 @@
 package spiralcraft.lang;
 
 /**
- * Delegates to another Focus.
+ * Simply delegates to another Focus.
  */
 public class ProxyFocus
   implements Focus
@@ -12,10 +12,10 @@ public class ProxyFocus
   { _focus=val;
   }
 
-  public Environment getEnvironment()
+  public Context getContext()
   { 
     if (_focus!=null)
-    { return _focus.getEnvironment(); 
+    { return _focus.getContext(); 
     }
     else
     { return null;

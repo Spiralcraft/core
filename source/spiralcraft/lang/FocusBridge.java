@@ -17,16 +17,16 @@ public abstract class FocusBridge
   extends ProxyFocus
 {
 
-  private DefaultEnvironment _environment;
+  private DefaultContext _context;
   private Attribute[] _attributes;
   private HashMap _channels;
 
   protected void decorate()
   {
-    if (_environment==null)
-    { _environment=new DefaultEnvironment(super.getEnvironment());
+    if (_context==null)
+    { _context=new DefaultContext(super.getContext());
     }
-    _environment.setAttributes(_attributes);
+    _context.setAttributes(_attributes);
   }
 
   public synchronized Channel bind(Expression expression)
@@ -47,8 +47,8 @@ public abstract class FocusBridge
     return channel;
   }
 
-  public Environment getEnvironment()
-  { return _environment;
+  public Context getContext()
+  { return _context;
   }
 
   public void setAttributes(Attribute[] attribs)
