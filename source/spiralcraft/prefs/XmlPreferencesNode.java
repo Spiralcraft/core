@@ -32,6 +32,16 @@ public class XmlPreferencesNode
   private HashMap _childMap;
   private HashMap _entryMap;
 
+  public XmlPreferencesNode()
+    throws BackingStoreException
+  { 
+    super(null,"");
+    _resourceUri=null;
+    _parseTree=ParseTree.createTree(new Element("node",new Attribute[0]));
+    _nodeElement=_parseTree.getDocument().getRootElement();
+    resolveChildren();    
+  }
+  
   XmlPreferencesNode(URI resourceUri)
     throws BackingStoreException
   { 
@@ -43,16 +53,19 @@ public class XmlPreferencesNode
     catch (SAXException x)
     { 
       x.printStackTrace();
-      throw new BackingStoreException("SAX exception reading "+resourceUri);
+      throw new BackingStoreFormatException(x.toString(),_resourceUri);
     }
     catch (IOException x)
-    { System.err.println("Creating new preferences store "+resourceUri);
+    { 
+      // XXX Need a 'create' mode
+      throw new BackingStoreException(x.toString()+"(reading "+_resourceUri+")");
     }
     
     if (_parseTree==null)
     { _parseTree=ParseTree.createTree(new Element("node",new Attribute[0]));
     }
     _nodeElement=_parseTree.getDocument().getRootElement();
+    resolveChildren();
   }
 
   XmlPreferencesNode(XmlPreferencesNode parent,String name,Element nodeElement)
@@ -72,20 +85,23 @@ public class XmlPreferencesNode
   { 
     if (parent()==null)
     { 
-      synchronized (lock)
-      { 
-        try
-        { ParseTreeFactory.toURI(_parseTree,_resourceUri);
-        }
-        catch (IOException x)
+      if (_resourceUri!=null)
+      {
+        synchronized (lock)
         { 
-          throw new BackingStoreException
-            (x.toString()+" (writing "+_resourceUri+")");
-        }
-        catch (SAXException x)
-        { 
-          throw new BackingStoreException
-            (x.toString()+" (writing "+_resourceUri+")");
+          try
+          { ParseTreeFactory.toURI(_parseTree,_resourceUri);
+          }
+          catch (IOException x)
+          { 
+            throw new BackingStoreException
+              (x.toString()+" (writing "+_resourceUri+")");
+          }
+          catch (SAXException x)
+          { 
+            throw new BackingStoreFormatException
+              (x.toString(),_resourceUri);
+          }
         }
       }
     }
@@ -107,7 +123,8 @@ public class XmlPreferencesNode
   protected final void syncSpi()
   { }
 
-  private final void resolveChildren()
+  public final void resolveChildren()
+    throws BackingStoreException
   { 
     _childMap=new HashMap();
     _entryMap=new HashMap();
@@ -122,24 +139,19 @@ public class XmlPreferencesNode
         if (element.getLocalName().equals("map"))
         { 
           _mapElement=element;
-          try
-          { loadEntries();
-          }
-          catch (BackingStoreException x)
-          { System.err.println(x.toString());
-          }
+          loadEntries();
         }
         else if (element.getLocalName().equals("node"))
-        { 
-          try
-          { loadChild(element);
-          }
-          catch (BackingStoreException x)
-          { System.err.println(x.toString());
-          }
+        { loadChild(element);
         }
         else
-        { System.err.println(new BackingStoreException("Unknown element '"+element.getLocalName()+"'"));
+        { 
+          throw new BackingStoreFormatException
+            ("Unknown element '"
+            +element.getLocalName()
+            +"'"
+            ,_resourceUri
+            );
         }
       }
     }
@@ -161,7 +173,13 @@ public class XmlPreferencesNode
           _entryMap.put(entry.getKey(),entry);
         }
         else
-        { throw new BackingStoreException("Unknown tag '"+element.getLocalName()+"' in map");
+        { 
+          throw new BackingStoreFormatException
+            ("Unknown tag '"
+            +element.getLocalName()
+            +"' in map"
+            ,_resourceUri
+            );
         }
       }
     }
@@ -180,17 +198,19 @@ public class XmlPreferencesNode
       }
     }
     if (name==null)
-    { throw new BackingStoreException("Name not defined for node");
+    { 
+      throw new BackingStoreFormatException
+        ("Name not defined for node"
+        ,_resourceUri
+        );
     }
     XmlPreferencesNode child=new XmlPreferencesNode(this,name,element);
     _childMap.put(name,child);
+    child.resolveChildren();
   }
 
   protected final String getSpi(String key)
   {
-    if (_entryMap==null)
-    { resolveChildren();
-    }
     Entry entry=(Entry) _entryMap.get(key);
     if (entry!=null)
     { return entry.getValue();
@@ -200,9 +220,6 @@ public class XmlPreferencesNode
 
   protected final void putSpi(String key,String value)
   {
-    if (_entryMap==null)
-    { resolveChildren();
-    }
     Entry entry=(Entry) _entryMap.get(key);
     if (entry==null)
     { 
@@ -217,9 +234,6 @@ public class XmlPreferencesNode
 
   protected final void removeSpi(String key)
   {
-    if (_entryMap==null)
-    { resolveChildren();
-    }
     Entry entry=(Entry) _entryMap.get(key);
     if (entry!=null)
     { entry.remove();
@@ -239,9 +253,6 @@ public class XmlPreferencesNode
   protected final String[] keysSpi()
     throws BackingStoreException
   {
-    if (_entryMap==null)
-    { resolveChildren();
-    }
     String[] result=new String[_entryMap.size()];
     _entryMap.keySet().toArray(result);
     return result;
@@ -250,9 +261,6 @@ public class XmlPreferencesNode
   protected final String[] childrenNamesSpi()
     throws BackingStoreException
   {
-    if (_childMap==null)
-    { resolveChildren();
-    }
     String[] result=new String[_childMap.size()];
     _childMap.keySet().toArray(result);
     return result;
@@ -260,9 +268,6 @@ public class XmlPreferencesNode
 
   protected final AbstractPreferences childSpi(String name)
   {
-    if (_childMap==null)
-    { resolveChildren();
-    }
     AbstractPreferences child=(AbstractPreferences) _childMap.get(name);
     if (child==null)
     { 
@@ -303,7 +308,11 @@ public class XmlPreferencesNode
         { _value=attribs[i];
         }
         else
-        { throw new BackingStoreException("Unknown attribute '"+attribs[i].getLocalName()+"' in entry");
+        { 
+          throw new BackingStoreFormatException
+            ("Unknown attribute '"+attribs[i].getLocalName()+"' in entry"
+            ,_resourceUri
+            );
         }
       }
     }

@@ -48,6 +48,19 @@ public class XmlPreferencesFactory
     
   }
 
+  public static Preferences resourceRoot(URI resourceUri,URI baseUri)
+    throws BackingStoreException
+  {
+    Preferences prefs=resourceRoot(resourceUri);
+    if (baseUri!=null)
+    { 
+      prefs=new ProxyPreferencesNode
+        (prefs,resourceRoot(baseUri)
+        );
+    }
+    return prefs;
+  }
+  
   /**
    * Obtain a Preferences interface backed by the specified resource URI
    */
