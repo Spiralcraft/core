@@ -24,6 +24,12 @@ public class SimpleOptic
     _class=_object.getClass();
   }
 
+  public SimpleOptic(Class clazz,Object val)
+  { 
+    _object=val;
+    _class=clazz;
+  }
+
   public Optic resolve(Focus focus,String name,Expression[] params)
   { return null;
   }
