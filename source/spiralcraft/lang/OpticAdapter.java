@@ -10,7 +10,7 @@ public class OpticAdapter
   /**
    * Return null. no names exposed
    */
-  public Optic resolve(String name,Expression[] parameters)
+  public Optic resolve(Focus focus,String name,Expression[] parameters)
   { return null;
   }
 

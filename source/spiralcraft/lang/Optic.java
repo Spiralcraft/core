@@ -2,16 +2,17 @@ package spiralcraft.lang;
 
 
 /**
- * A part of a Channel which provides a view of an application object or data element, potentially derived from one or
- *   more views provided by related Optics.
+ * Provides a view of an application object or data element. Optics are combined
+ *   using an Expression syntax to form Channels which navigate object models of
+ *   arbitrary nature.
  */
 public interface Optic
 {
   /**
-   * Resolve the name and optional set of parameters to provide another Optic 
-   *   based on this one. 
+   * Resolve the name and optional set of parameter expressions to provide a
+   *   related Optic. 
    */
-  Optic resolve(String name,Expression[] parameters);
+  Optic resolve(Focus focus,String name,Expression[] parameters);
 
   /**
    * Return the application object or data value referenced by this DataPipe as evaluated against
