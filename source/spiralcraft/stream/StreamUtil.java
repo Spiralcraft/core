@@ -70,6 +70,7 @@ public class StreamUtil
     return out.toByteArray();
   }
 
+ 
   /**
    * Discard [bytes] bytes of the input stream
    */
