@@ -42,9 +42,7 @@ public class LibraryCatalog
   private ArrayList _libraries=new ArrayList();
 
   public LibraryCatalog()
-  {
-    System.err.println("Master library path "+_masterLibraryPath);
-    loadCatalog();
+  { loadCatalog();
   }
 
   /**
