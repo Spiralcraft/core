@@ -18,14 +18,18 @@ public class LogicalOrNode
   { super(op1,op2);
   }
 
-  public Object translateForGet(Object val,Object[] mods)
+  public Object translateForGet(Object val,Optic[] mods)
   { 
     boolean val1=val!=null?((Boolean) val).booleanValue():false;
-    boolean val2=mods[0]!=null?((Boolean) mods[0]).booleanValue():false;
-    return (val1 || val2)?Boolean.TRUE:Boolean.FALSE;
+    if (val1)
+    { return Boolean.TRUE;
+    }
+    Object mod=mods[0].get();
+    boolean val2=mod!=null?((Boolean) mod).booleanValue():false;
+    return val2?Boolean.TRUE:Boolean.FALSE;
   }
   
-  public Object translateForSet(Object val,Object[] mods)
+  public Object translateForSet(Object val,Optic[] mods)
   { 
     // Not reversible
     throw new UnsupportedOperationException();

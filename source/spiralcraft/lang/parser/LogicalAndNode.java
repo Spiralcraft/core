@@ -1,26 +1,42 @@
 package spiralcraft.lang.parser;
 
+import spiralcraft.lang.Optic;
+import spiralcraft.lang.OpticFactory;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.Expression;
+
+import spiralcraft.lang.optics.Lense;
+import spiralcraft.lang.optics.Prism;
+import spiralcraft.lang.optics.LenseBinding;
 
 public class LogicalAndNode
-  extends Node
+  extends LogicalNode
 {
 
-  private final Node _op1;
-  private final Node _op2;
-
   public LogicalAndNode(Node op1,Node op2)
-  { 
-    _op1=op1;
-    _op2=op2;
+  { super(op1,op2);
   }
 
-  public void dumpTree(StringBuffer out,String prefix)
+  public Object translateForGet(Object val,Optic[] mods)
   { 
-    out.append(prefix).append("And");
-    prefix=prefix+"  ";
-    _op1.dumpTree(out,prefix);
-    out.append(prefix).append("&&");
-    _op2.dumpTree(out,prefix);
+    boolean val1=val!=null?((Boolean) val).booleanValue():false;
+    if (!val1)
+    { return Boolean.FALSE;
+    }
+    Object mod=mods[0].get();
+    boolean val2=mod!=null?((Boolean) mod).booleanValue():false;
+    return val2?Boolean.TRUE:Boolean.FALSE;
+  }
+  
+  public Object translateForSet(Object val,Optic[] mods)
+  { 
+    // Not reversible
+    throw new UnsupportedOperationException();
+  }
+  
+  public String getSymbol()
+  { return "&&";
   }
 
 }
