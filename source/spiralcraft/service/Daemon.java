@@ -18,7 +18,7 @@ public class Daemon
   {
     try
     { 
-      init();
+      init(this);
       handleEvents();
       destroy();
     }
