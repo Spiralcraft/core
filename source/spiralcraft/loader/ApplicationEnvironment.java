@@ -28,6 +28,7 @@ public class ApplicationEnvironment
    */
   public int execMain(String[] args)
   {
+    ClassLoader oldLoader=Thread.currentThread().getContextClassLoader();
     try
     {
       _classLoader.resolveLibrariesForClass(args[0]);
@@ -35,6 +36,7 @@ public class ApplicationEnvironment
       Method mainMethod=clazz.getMethod("main",new Class[] {String[].class});
       String[] newArgs=new String[args.length-1];
       System.arraycopy(args,1,newArgs,0,newArgs.length);
+      Thread.currentThread().setContextClassLoader(_classLoader);
       mainMethod.invoke(null,new Object[] {newArgs});
       return 0;
     }
@@ -53,6 +55,9 @@ public class ApplicationEnvironment
     { 
       x.printStackTrace();
       return 1;
+    }
+    finally
+    { Thread.currentThread().setContextClassLoader(oldLoader);
     }
   }
 
