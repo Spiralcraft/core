@@ -1,0 +1,149 @@
+package spiralcraft.time;
+
+import spiralcraft.pool.ThreadPool;
+
+/**
+ * Schedules Runnable items to be executed at
+ *   specific points in time.
+ */
+public class Scheduler
+{
+
+  private static final Scheduler _INSTANCE=new Scheduler();
+  private ScheduledItem _nextItem;
+  private final Object _sync=new Object();
+  private final Thread _thread=new Thread(new Dispatcher(),"Scheduler");
+  private ThreadPool _pool=new ThreadPool();
+  private boolean _started=false;
+  
+  public static Scheduler instance()
+  { return _INSTANCE;
+  }
+
+
+  Scheduler()
+  { 
+    _thread.setDaemon(true);
+    _thread.start();
+  }
+
+  public void scheduleIn(Runnable runnable,long msFromNow)
+  { scheduleAt(runnable,Clock.instance().approxTimeMillis()+msFromNow);
+  }
+
+  public void scheduleNow(Runnable runnable)
+  { scheduleIn(runnable,0);
+  }
+
+  public void scheduleAt(Runnable runnable,long duetime)
+  {
+    synchronized (_sync)
+    {
+
+      ScheduledItem thisItem=new ScheduledItem(runnable,duetime);
+
+      if (_nextItem==null || duetime<_nextItem.duetime)
+      { 
+        // Insert earlier due task at the head of the queue.
+        // Notify dispatcher.
+        thisItem.nextItem=_nextItem;
+        _nextItem=thisItem;
+        _sync.notify();
+      }
+      else
+      {
+        ScheduledItem next=_nextItem;
+        while (next!=null)
+        {
+          if (next.nextItem==null || duetime<next.nextItem.duetime)
+          { 
+            // Insert at this point.
+            thisItem.nextItem=next.nextItem;
+            next.nextItem=thisItem;
+            next=null;
+          }
+          else
+          { next=next.nextItem;
+          }
+        }
+      }
+    }
+  }
+
+
+  protected void runNext()
+    throws InterruptedException
+  {
+    ScheduledItem next=null;
+    synchronized (_sync)
+    {
+      if (!_started)
+      { 
+        _pool.init();
+        _started=true;
+      }
+
+      long time=0;
+      while (_nextItem==null 
+             || _nextItem.duetime> (time=Clock.instance().approxTimeMillis()) 
+             )
+      { 
+        if (_nextItem==null)
+        { _sync.wait();
+        }
+        else
+        { _sync.wait(_nextItem.duetime-time);
+        }
+      }
+      next=_nextItem;
+      _nextItem=_nextItem.nextItem;
+    }
+
+    if (next!=null)
+    {
+      try
+      { dispatch(next.runnable);
+      }
+      catch (Throwable x)
+      { x.printStackTrace();
+      }
+    }
+  }
+
+  protected void dispatch(Runnable runnable)
+  { _pool.run(runnable);
+  }
+
+  class Dispatcher
+    implements Runnable
+  {
+    public void run()
+    {
+      try
+      {
+        while (true)
+        { runNext();
+        }
+      }
+      catch (InterruptedException x)
+      { x.printStackTrace(); 
+      }
+    }
+  }
+
+  private class ScheduledItem
+  {
+    public final long duetime;
+    public final Runnable runnable;
+    public ScheduledItem nextItem;
+
+    public ScheduledItem(Runnable runnable,long duetime)
+    { 
+      this.duetime=duetime;
+      this.runnable=runnable;
+    }
+
+  }
+
+  
+}
