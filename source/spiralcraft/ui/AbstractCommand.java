@@ -6,14 +6,17 @@ import java.beans.PropertyChangeEvent;
 
 /**
  * An abstract implementation of the Command interface.
+ *
+ * Provides built-in support for implementing 'enabled' property
+ *   changes.
  */
 public abstract class AbstractCommand
   implements Command
 {
 
   private final CommandInfo _commandInfo;
-
   private PropertyChangeSupport _propertyChangeSupport;
+  private boolean _wasEnabled;
 
   public AbstractCommand()
   { _commandInfo=null;
@@ -43,16 +46,31 @@ public abstract class AbstractCommand
   public abstract boolean isEnabled();
 
   /**
+   * Called by Command containers to allow a Command
+   *   to reset its state when the context changes.
+   *
+   * Overriding methods should call super.reset() after
+   *   any changes are made which would affect the enabled
+   *   state of the command.
+   */
+  public void reset()
+  { enabledChanged();
+  }
+  
+  /**
    * Called by subclass to indicate that the enabled state
    *   has changed- fires an appropriate PropertyChangeEvent.
    */
   protected final void enabledChanged()
   {
-    if (_propertyChangeSupport!=null)
+    boolean isEnabled=isEnabled();
+    if (_propertyChangeSupport!=null
+        && _wasEnabled!=isEnabled
+       )
     { 
       _propertyChangeSupport
         .firePropertyChange
-          (isEnabled()
+          (isEnabled
           ?new PropertyChangeEvent
             (this
             ,"enabled"
@@ -67,6 +85,7 @@ public abstract class AbstractCommand
             )
           );
     }
+    _wasEnabled=isEnabled;
   }
 
   /**

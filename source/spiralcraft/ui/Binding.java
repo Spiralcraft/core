@@ -2,7 +2,6 @@ package spiralcraft.ui;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.DefaultFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.BindException;
@@ -22,23 +21,23 @@ import java.beans.PropertyChangeSupport;
  *
  * Expressions (spiralcraft.lang) are evaluated at runtime.
  *
- * At configuration-time a Focus is supplied which references
+ * At configuration-time a model Focus is supplied which references
  *   a point in the application data model against which the
  *   modelExpression will be evaluated.
  *
- * At runtime, the UI object to bind against is supplied through
- *   the bind() method, and both Expressions are resolved.
+ * At configuration time, a UI focus is supplied which
+ *   references a point in the UI to bind the UI expression to. 
+ *
+ * At runtime, the bind() method causes both Expressions to be resolved.
  * 
  * For example, a Binding can be used to associate a text
  *   property in a UI text field with a String field
  *   of an object in the data model (the model property)
- *   exposed by an editor component (the Focus).
+ *   exposed by an editor component (the model Focus).
  *
  *   modelExpression (against the editor): data.customer.name
  *   uiExpression (against a text field): text
  *   
- * Bindings are usually coupled with UI specific controls
- *   which can trigger updates based on application events.
  */
 public class Binding
   implements PropertyChangeListener
@@ -46,21 +45,22 @@ public class Binding
   private Expression _modelExpression;
   private Channel _modelChannel;
   private StringConverter _modelStringConverter;
+  private Focus _modelFocus;
 
   private Expression _uiExpression;
   private Channel _uiChannel;
+  private Focus _uiFocus;
   private StringConverter _uiStringConverter;
 
   private boolean _updateToModel;
 
-  private Focus _focus;
 
   /**
-   * Supply the Focus against which the Expression will be
+   * Supply the Focus against which the model Expression will be
    *   resolved.
    */
-  public void setFocus(Focus val)
-  { _focus=val;
+  public void setModelFocus(Focus val)
+  { _modelFocus=val;
   }
 
   /**
@@ -73,6 +73,14 @@ public class Binding
   }
 
   /**
+   * Supply the Focus against which the UI Expression will be
+   *   resolved (optional).
+   */
+  public void setUiFocus(Focus val)
+  { _uiFocus=val;
+  }
+
+  /**
    * The Expression which identifies the
    *   property in the user interface component
    */
@@ -82,12 +90,11 @@ public class Binding
   }
 
   
-  public void bind(Object uiBean)
+  public void bind()
     throws BindException
-  { 
-    _modelChannel=_focus.bind(_modelExpression);
-    Focus uiFocus=new DefaultFocus(OpticFactory.getInstance().box(uiBean));
-    _uiChannel=uiFocus.bind(_uiExpression);
+  {
+    _modelChannel=_modelFocus.bind(_modelExpression);
+    _uiChannel=_uiFocus.bind(_uiExpression);
 
     PropertyChangeSupport pcs=_modelChannel.propertyChangeSupport();
     if (pcs!=null)
