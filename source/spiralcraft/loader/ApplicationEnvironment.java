@@ -26,20 +26,34 @@ public class ApplicationEnvironment
    * Execute the main method of the class specified in args[0],
    *   with the remaning parameters in args[].
    */
-  public void execMain(String[] args)
-    throws
-      IOException
-      ,ClassNotFoundException
-      ,NoSuchMethodException
-      ,IllegalAccessException
-      ,InvocationTargetException
+  public int execMain(String[] args)
   {
-    _classLoader.resolveLibrariesForClass(args[0]);
-    Class clazz=_classLoader.loadClass(args[0]);
-    Method mainMethod=clazz.getMethod("main",new Class[] {String[].class});
-    String[] newArgs=new String[args.length-1];
-    System.arraycopy(args,1,newArgs,0,newArgs.length);
-    mainMethod.invoke(null,new Object[] {newArgs});
+    try
+    {
+      _classLoader.resolveLibrariesForClass(args[0]);
+      Class clazz=_classLoader.loadClass(args[0]);
+      Method mainMethod=clazz.getMethod("main",new Class[] {String[].class});
+      String[] newArgs=new String[args.length-1];
+      System.arraycopy(args,1,newArgs,0,newArgs.length);
+      mainMethod.invoke(null,new Object[] {newArgs});
+      return 0;
+    }
+    catch (InvocationTargetException x)
+    {
+      if (x.getTargetException() instanceof RuntimeException)
+      { throw (RuntimeException) x.getTargetException();
+      }
+      else
+      { 
+        x.printStackTrace();
+        return 1;
+      }
+    }
+    catch (Exception x)
+    { 
+      x.printStackTrace();
+      return 1;
+    }
   }
 
   

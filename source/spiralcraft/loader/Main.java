@@ -12,7 +12,7 @@ public class Main
   /**
    * Called by the bootstrap loader to handle command-line invocation of the VM
    */
-  public void exec(String[] args)
+  public int exec(String[] args)
   {
     if (_verbose)
     { System.err.println("Core loader: Main.exec("+ArrayUtil.formatToString(args,",","\"")+")");
@@ -28,12 +28,12 @@ public class Main
     { 
       String[] newArgs=new String[args.length-1];
       System.arraycopy(args,1,newArgs,0,newArgs.length);
-      try
-      { environment.execMain(newArgs);
-      }
-      catch (Exception x)
-      { x.printStackTrace();
-      }
+      return environment.execMain(newArgs);
+    }
+    else
+    { 
+      System.err.println("Unrecognized argument "+args[0]);
+      return 1;
     }
     
   }
