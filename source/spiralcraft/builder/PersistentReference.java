@@ -25,6 +25,11 @@ import java.net.URISyntaxException;
  * When the PersistentReference is flushed, the properties are saved into the
  *   Preferences subtree.
  */
+
+// XXX
+// XXX Move all persistent reference code to non-preferences XML format
+// XXX
+
 public class PersistentReference
   implements Registrant
 {

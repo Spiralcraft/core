@@ -6,6 +6,8 @@ import java.net.URISyntaxException;
 
 import spiralcraft.builder.AssemblyLoader;
 import spiralcraft.builder.AssemblyClass;
+import spiralcraft.builder.Assembly;
+
 
 
 import spiralcraft.util.Arguments;
@@ -66,6 +68,22 @@ public class AssemblyFactoryTest
       }
       else
       { System.err.println("AssemblyClass is null");
+      }
+      
+      Assembly assembly=assemblyClass.newInstance(null);
+      if (assembly!=null)
+      { System.err.println(assembly.toString());
+      }
+      else
+      { System.err.println("Assembly is null");
+      }
+      
+      Object o=assembly.getSubject().get();
+      if (o!=null)
+      { System.err.println(o.toString());
+      }
+      else
+      { System.err.println("Subject is null");
       }
     }
     catch (Exception x)

@@ -8,13 +8,16 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.optics.SimpleOptic;
 import spiralcraft.lang.optics.SimpleBinding;
+
+import spiralcraft.tuple.lang.TupleDelegate;
 
 import java.util.HashMap;
 
 import spiralcraft.registry.RegistryNode;
 import spiralcraft.registry.Registrant;
+
+import java.lang.reflect.Proxy;
 
 /**
  * Assemblies are 'instances' of AssemblyClasses.
@@ -46,8 +49,13 @@ public class Assembly
       { throw new BuildException("No java class defined for assembly");
       }
       
-      Object instance=javaClass.newInstance();
-      _optic=new SimpleOptic(new SimpleBinding(instance,true));
+      if (javaClass.isInterface())
+      { _optic=new TupleDelegate(javaClass);
+      }
+      else
+      { _optic=new SimpleBinding(javaClass.newInstance(),true);
+      }
+
       registerSingletons(javaClass);
     }
     catch (InstantiationException x)

@@ -112,6 +112,8 @@ public class PropertyBinding
     _registryNode=node;
     if (_contents!=null && _contents.length>0)
     { 
+      // Sub-assemblies (contents) are specified in definition.
+      // Register all sub-assemblies 
       RegistryNode propertyNode=node.createChild(_specifier.getTargetName());
       if (!_target.getTargetClass().isArray())
       { _contents[0].register(propertyNode);
@@ -128,10 +130,26 @@ public class PropertyBinding
     }
     else if (_specifier.isPreference())
     { 
+      // Contents are not specified in definition, and property has been tagged
+      //   as being a preference. Read property valye from preferences.
       Preferences preferences=(Preferences) node.findInstance(Preferences.class);
       if (preferences!=null)
       { applyPreferences(preferences);
       }
+    }
+  }
+
+  /**
+   * Read the value for this property from the preferences object and
+   *   apply the value.
+   */
+  public void applyPreferences(Preferences preferences)
+  {
+    if (_target.getTargetClass().isArray())
+    { applyArrayPreferences(preferences);
+    }
+    else
+    { applySinglePreferences(preferences);
     }
   }
 
@@ -221,15 +239,6 @@ public class PropertyBinding
 
   }
   
-  public void applyPreferences(Preferences preferences)
-  {
-    if (_target.getTargetClass().isArray())
-    { applyArrayPreferences(preferences);
-    }
-    else
-    { applySinglePreferences(preferences);
-    }
-  }
   
   private void instantiateContents()
     throws BuildException
@@ -260,28 +269,52 @@ public class PropertyBinding
         );
     }
   }
+
+  /**
+   * Indicate whether the target is a List or an array
+   */
+  private boolean isSequence()
+  { 
+    return _target.getTargetClass().isArray()
+      || _target.getTargetClass()==List.class;
+  }
   
   private void resolveSource()
     throws BuildException
   {
     if (_contents!=null && _contents.length>0)
     {
-      if (_contents.length==1 && !_target.getTargetClass().isArray())
-      { 
-        _source=_contents[0].getSubject().get();
-        registerSingletons(_contents[0]);
-      }
-      else
-      { 
-        if (!_target.getTargetClass().isArray())
+      if (!isSequence())
+      {
+        // Source is a single object
+        if (_contents.length==1)
         { 
+          _source=_contents[0].getSubject().get();
+          registerSingletons(_contents[0]);
+        }
+        else
+        {
           throw new BuildException
             (_specifier.getTargetName()
             +" in "+_container.getAssemblyClass().getJavaClass()
             +" cannot have multiple values"
             );
         }
-        
+      }
+      else if (_target.getTargetClass()==List.class)
+      { 
+        // Source is a list
+        ArrayList source=new ArrayList(_contents.length);
+        for (int i=0;i<_contents.length;i++)
+        { 
+          source.add(_contents[i].getSubject().get());
+          registerSingletons(_contents[i]);
+        }
+        _source=source;
+      }
+      else
+      {
+        // Source is an Array
         _source=Array.newInstance
           (_target.getTargetClass().getComponentType()
           ,_contents.length
