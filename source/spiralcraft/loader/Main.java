@@ -31,12 +31,16 @@ public class Main
   {
 
     if (Spiralcraft.DEBUG)
-    { System.err.println("Core loader: Main.main("+ArrayUtil.formatToString(args,",","\"")+")");
+    { System.err.println("spiralcraft.loader.Main.main("+ArrayUtil.formatToString(args,",","\"")+")");
     }
      
     ApplicationManager applicationManager
       =ApplicationManager.getInstance();
 
+    if (Spiralcraft.DEBUG)
+    { applicationManager.setDebug(true);
+    }
+    
     try
     { applicationManager.exec(args);
     }
