@@ -72,7 +72,11 @@ public class AssemblyClass
     _memberMap.put(name,prop);
     _members.add(prop);
     if (_compositeMembers!=null)
-    { _compositeMembers.add(prop);
+    { 
+      // XXX Should override more intelligently,
+      //   if property exists instead of double
+      //   setting.
+      _compositeMembers.add(prop);
     }
   }
 

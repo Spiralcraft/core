@@ -22,6 +22,9 @@ public class DefaultFocus
   { _subject=subject;
   }
 
+  /**
+   * Environment.resolve(String name)
+   */
   public Optic resolve(String name)
   { 
     try
