@@ -24,6 +24,10 @@ public class Node
     child.setParent(this);
   }
 
+  public boolean hasChildren()
+  { return _children!=null;
+  }
+
   public boolean canHaveChildren()
   { return false;
   }
