@@ -1,9 +1,11 @@
 package spiralcraft.builder;
 
 import spiralcraft.lang.Environment;
+import spiralcraft.lang.Attribute;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.OpticFactory;
+import spiralcraft.lang.BindException;
 
 import spiralcraft.lang.optics.SimpleOptic;
 
@@ -16,9 +18,10 @@ public class Assembly
   implements Focus,Environment
 {
   private final AssemblyClass _assemblyClass;
-  private Assembly _parent;
-  private Optic _optic;
-  private PropertyBinding[] _propertyBindings;
+  private final Assembly _parent;
+  private final Optic _optic;
+  private final Environment _environment;
+  private final PropertyBinding[] _propertyBindings;
   private HashMap _singletons;
 
 
@@ -38,10 +41,18 @@ public class Assembly
       { throw new BuildException("No java class defined for assembly");
       }
       
-  
+      Object instance=javaClass.newInstance();
+      
       _optic=OpticFactory.decorate
-        (new SimpleOptic(javaClass.newInstance())
+        (new SimpleOptic(instance)
         );
+      
+      if (instance instanceof Focus)
+      { _environment=((Focus) instance).getEnvironment();
+      }
+      else
+      { _environment=null;
+      }
     }
     catch (InstantiationException x)
     { throw new BuildException("Error instantiating assembly",x);
@@ -53,25 +64,57 @@ public class Assembly
     _propertyBindings=_assemblyClass.bindProperties(this);
   }
 
+  public Assembly getParent()
+  { return _parent;
+  }
+
+  public Focus getParentFocus()
+  { return _parent;
+  }
+
   /**
-   * Instantiate contained assemblies
+   * Focus.getEnvironment()
    */
-  private void instantiateMetaStructure()
-    throws BuildException
-  {
-    
-  }
-
   public Environment getEnvironment()
-  { return this;
+  { 
+    if (_environment==null)
+    { return this;
+    }
+    else
+    { return _environment;
+    }
   }
 
+  /**
+   * Focus.getSubject()
+   */
   public Optic getSubject()
   { return _optic;
   }
  
-  public Optic resolve(String name)
-  { return _optic.resolve(this,name,null);
+  /**
+   * Focus.findFocus()
+   */
+  public Focus findFocus(String name)
+  { 
+    if (_assemblyClass.getJavaClass().getName().equals(name))
+    { return this;
+    }
+
+    if (_singletons!=null)
+    { 
+      Assembly assembly=(Assembly) _singletons.get(name);
+      if (assembly!=null)
+      { return assembly;
+      }
+    }
+
+    if (_parent!=null)
+    { return _parent.findFocus(name);
+    }
+    
+    return null;
+
   }
 
   public void registerSingletons(Class[] singletonInterfaces,Assembly singleton)
@@ -81,7 +124,7 @@ public class Assembly
     { _singletons=new HashMap();
     }
     for (int i=0;i<singletonInterfaces.length;i++)
-    { _singletons.put(singletonInterfaces[i],singleton);
+    { _singletons.put(singletonInterfaces[i].getName(),singleton);
     }
     
   }
@@ -90,24 +133,42 @@ public class Assembly
   { return _assemblyClass.getSingletons();
   }
 
-  public Focus findFocus(Class focusInterface)
+  public AssemblyClass getAssemblyClass()
+  { return _assemblyClass;
+  }
+
+  /**
+   * Environment.resolve()
+   */
+  public Optic resolve(String name)
   { 
-    if (_assemblyClass.getJavaClass()==focusInterface)
-    { return this;
-    }
-    
-    if (_singletons!=null)
+    if (_environment==null)
     { 
-      Assembly focus=(Assembly) _singletons.get(focusInterface);
-      if (focus!=null)
-      { return focus;
+      try
+      { return _optic.resolve(this,name,null);
+      }
+      catch (BindException x)
+      { x.printStackTrace();
       }
     }
-
-    if (_parent!=null)
-    { return _parent.findFocus(focusInterface);
+    else
+    { return _environment.resolve(name);
     }
-    
+
     return null;
   }
+
+  /**
+   * Environment.resolve()
+   */
+  public Attribute[] getAttributes()
+  { 
+    if (_environment==null)
+    { return null;
+    }
+    else
+    { return _environment.getAttributes();
+    }
+  }
+
 }
