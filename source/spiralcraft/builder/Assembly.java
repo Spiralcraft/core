@@ -47,8 +47,8 @@ public class Assembly
       }
       
       Object instance=javaClass.newInstance();
-      
       _optic=new SimpleOptic(new SimpleBinding(instance,true));
+      registerSingletons(javaClass);
     }
     catch (InstantiationException x)
     { throw new BuildException("Error instantiating assembly",x);
@@ -59,6 +59,7 @@ public class Assembly
     catch (BindException x)
     { throw new BuildException("Error binding instance",x);
     }
+    
     
     _propertyBindings=_assemblyClass.bindProperties(this);
     
@@ -107,6 +108,22 @@ public class Assembly
     { _singletons.put(singletonInterfaces[i].getName(),singleton);
     }
     
+  }
+  
+  /**
+   * Register this assembly as a singleton for all interfaces and subclasses
+   *   of the specified class
+   */
+  private void registerSingletons(Class clazz)
+    throws BuildException
+  { 
+    Class[] interfaces=clazz.getInterfaces();
+    registerSingletons(interfaces,this);
+    while (clazz!=null && clazz!=Object.class)
+    { 
+      _singletons.put(clazz.getName(),this);
+      clazz=clazz.getSuperclass();
+    }
   }
 
   public Class[] getSingletons()
