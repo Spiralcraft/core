@@ -8,7 +8,19 @@
       srcdir="source" 
       debug="on"
     />
+  </target>
 
+  
+  <target name="jar" depends="build">
+    <jar 
+      destfile="../../lib/spiralcraft-core.jar" 
+      basedir="source"
+      includes="spiralcraft/**/*.class,spiralcraft/**/*.xml"
+      >
+    </jar>
+  </target>
+
+  <target name="doc" depends="build">
 		<javadoc 
       classpath="source:${classpath}"
 			sourcepath="source"
@@ -25,15 +37,6 @@
 			failonerror="true">
 			<bottom>Copyright 2000, Spiralcraft, Inc.</bottom>
 		</javadoc>
-  </target>
-
-  <target name="jar" depends="build">
-    <jar 
-      destfile="../../lib/spiralcraft-core.jar" 
-      basedir="source"
-      includes="spiralcraft/**/*.class,spiralcraft/**/*.xml"
-      >
-    </jar>
   </target>
 
 </project>
