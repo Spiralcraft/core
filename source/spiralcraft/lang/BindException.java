@@ -7,4 +7,7 @@ public class BindException
   { super(message);
   }
 
+  public BindException(String message,Throwable cause)
+  { super(message,cause);
+  }
 }
