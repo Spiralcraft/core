@@ -1,11 +1,22 @@
 package spiralcraft.util;
 
+import java.lang.reflect.Array;
+
 /**
  * Static methods for array manipulation
  */
 public class ArrayUtil
 {
 
+  /**
+   * Expand an array by adding the specified number of elements
+   */
+  public static Object expandBy(Object array,int expandBy)
+  {
+    Object newArray = Array.newInstance(array.getClass().getComponentType(), Array.getLength(array)+expandBy);
+    System.arraycopy(array, 0, newArray, 0, Array.getLength(array));
+    return newArray;
+  }
 
   /**
    * Format a String array into a String using the specified separator and delimiter.
