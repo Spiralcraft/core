@@ -6,8 +6,9 @@ import spiralcraft.lang.Optic;
 import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
-
 import spiralcraft.lang.BindException;
+
+import spiralcraft.builder.persist.PersistentReference;
 
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +23,8 @@ import java.beans.PropertyChangeEvent;
 import spiralcraft.registry.RegistryNode;
 
 import java.util.prefs.Preferences;
+
+import spiralcraft.tuple.Tuple;
 
 /**
  * Associates a PropertySpecifier with a some value in the context of
@@ -67,6 +70,59 @@ public class PropertyBinding
     apply();
   }
 
+  /**
+   * Write persistent data to the associated Tuple field
+   */
+  public void updatePersistentData()
+  { 
+    if (_contents!=null && _contents.length>0)
+    { 
+      for (int i=0;i<_contents.length;i++)
+      { _contents[i].savePreferences();
+      }
+    }
+    else if (_specifier.isPersistent())
+    { 
+      PersistentReference ref
+        =(PersistentReference) _registryNode.findInstance
+          (PersistentReference.class);
+        
+      if (ref!=null)
+      {
+        Tuple tuple = ref.getTuple();
+        
+        Object value=_target.get();
+
+        // XXX To implement- write value tuple and flush
+        /*
+        if (value==null)
+        { preferences.remove(_specifier.getTargetName());
+        }
+        else if (_target.getTargetClass().isAssignableFrom(String.class))
+        { preferences.put(_specifier.getTargetName(),(String) value);
+        }
+        else if (_converter!=null)
+        { preferences.put(_specifier.getTargetName(),_converter.toString(value));
+        }
+        else
+        { 
+          String xml=StringConverter.encodeToXml(value);
+          if (xml!=null && xml.length()>0)
+          { preferences.put(_specifier.getTargetName(),xml);
+          }
+          else
+          {
+            System.err.println
+              ("Can't convert preference value '"
+              +_specifier.getTargetName()
+              +"' ("+_target.getTargetClass()+") to a String");
+          }
+        }
+        */
+      }
+    }
+  }
+  
   public void savePreferences()
   {
     if (_contents!=null && _contents.length>0)

@@ -84,6 +84,17 @@ public class Assembly
     }
   }
 
+  /**
+   * Descend the tree and write all persistent properties
+   *   to their respective Tuple field.
+   */
+  public void updatePersistentData()
+  {
+    for (int i=0;i<_propertyBindings.length;i++)
+    { _propertyBindings[i].updatePersistentData();
+    }
+  }
+  
   public void register(RegistryNode node)
   {
     node.registerInstance(Assembly.class,this);
