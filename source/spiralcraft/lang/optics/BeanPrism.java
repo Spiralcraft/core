@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * An Optic which uses Java Beans introspection and reflection
+ * A Prism which uses Java Beans introspection and reflection
  *   to navigate a Java object provided by a source optic.
  */
 public class BeanPrism
