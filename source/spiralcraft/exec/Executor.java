@@ -29,7 +29,7 @@ public class Executor
             ,URISyntaxException
             ,BuildException
   {
-    URI uri=new URI(args[0]);    
+    URI uri=new URI(args[0]+".assembly.xml");
     AssemblyClass assemblyClass
       =AssemblyLoader.getInstance().findAssemblyDefinition(uri);
 
