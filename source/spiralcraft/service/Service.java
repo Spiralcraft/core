@@ -17,11 +17,12 @@ package spiralcraft.service;
 public interface Service
 {
 
+  
   /**
-   * Return the key which differentiates this Service from others of the
+   * Return the selector which differentiates this Service from others of the
    *   same type.
    */
-  public Object getKey();
+  public Object getSelector();
 
   /**
    * Indicate whether the Service provides the specified interface

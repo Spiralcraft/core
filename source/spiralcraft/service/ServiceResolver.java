@@ -29,12 +29,12 @@ public interface ServiceResolver
 
   /**
    * Find the service which implements the specified interface
-   *   and has the specified key.
+   *   and has the specified selector.
    *
    *@throws AmbiguousServiceException if multiple services in the same scope with
-   *  the same key provide the same interface
+   *  the same selector provide the same interface
    */
-  public Service findService(Class serviceInterface,Object key)
+  public Service findService(Class serviceInterface,Object selector)
     throws AmbiguousServiceException;
 
 }

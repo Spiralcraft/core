@@ -4,7 +4,7 @@ public class ServiceAdapter
   implements Service
 {
 
-  private Object _key;
+  private Object _selector;
 
   public void init(ServiceResolver resolver)
     throws ServiceException
@@ -30,12 +30,12 @@ public class ServiceAdapter
     }
   }
 
-  public Object getKey()
-  { return _key;
+  public Object getSelector()
+  { return _selector;
   }
 
-  public void setKey(Object val)
-  { _key=val;
+  public void setSelector(Object val)
+  { _selector=val;
   }
 
 }

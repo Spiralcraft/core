@@ -6,38 +6,26 @@ import spiralcraft.service.ServiceException;
 import spiralcraft.service.ServiceResolver;
 
 /**
- * Generic UI service
+ * Generic UI service, typically subclassed for a soecific View, 
+ *   such as Swing or WebUI. 
  */
 public class UiService
   extends ServiceAdapter
 {
-  private Controller[] _rootControllers;
+  private Control _rootControl;
 
-  public void setRootControllers(Controller[] val)
-  { _rootControllers=val;
+  public void setRootControl(Control val)
+  { _rootControl=val;
   }
 
   public void init(ServiceResolver resolver)
     throws ServiceException
-  {
-    if (_rootControllers!=null)
-    { 
-      for (int i=0;i<_rootControllers.length;i++)
-      { _rootControllers[i].init();
-      } 
-    }
+  { _rootControl.init();
   }
 
   public void destroy()
     throws ServiceException
-  {
-    if (_rootControllers!=null)
-    { 
-      for (int i=0;i<_rootControllers.length;i++)
-      { _rootControllers[i].destroy();
-      } 
-    }
+  { _rootControl.destroy();
   }
-
 
 }

@@ -2,6 +2,9 @@ package spiralcraft.service;
 
 import spiralcraft.exec.Executable;
 
+import spiralcraft.ui.Command;
+import spiralcraft.ui.AbstractCommand;
+
 /**
  * An executable that starts, responds to events, and terminates
  *   upon receipt of an applicable signal.
@@ -13,11 +16,30 @@ public class Daemon
   implements Executable
 {
   private Object _eventMonitor=new Object();
+  private boolean _running=true;
+  private String[] _args;
 
-  public void exec(String[] args)
+  private Command _terminateCommand
+    =new AbstractCommand()
+  { 
+    public boolean isEnabled()
+    { return _running;
+    }
+
+    public void execute()
+    { terminate();
+    }
+  };
+
+  public String[] getArguments()
+  { return _args;
+  }
+
+  public void execute(String[] args)
   {
     try
     { 
+      _args=args;
       init(this);
       handleEvents();
       destroy();
@@ -27,8 +49,13 @@ public class Daemon
     }
   }
 
+  public Command getTerminateCommand()
+  { return _terminateCommand;
+  }
+
   public void terminate()
   { 
+    _running=false;
     synchronized (_eventMonitor)
     { _eventMonitor.notify();
     }
@@ -37,15 +64,19 @@ public class Daemon
 
   private void handleEvents()
   {
-    synchronized (_eventMonitor)
+    try
     { 
-      try
-      { _eventMonitor.wait();
-      }
-      catch (InterruptedException x)
-      { x.printStackTrace();
+      while (_running)
+      {
+        synchronized (_eventMonitor)
+        { _eventMonitor.wait();
+        }
       }
     }
+    catch (InterruptedException x)
+    { x.printStackTrace();
+    }
+    
   }
 
 }

@@ -10,15 +10,15 @@ public class ServiceGroup
 {
   private Service[] _services;
   private ServiceResolver _parentResolver;
-  private Object _key;
+  private Object _selector;
 
-  private static boolean serviceHasKey(Service service,Object key)
+  private static boolean serviceHasSelector(Service service,Object selector)
   {
-    if (key==null)
-    { return service.getKey()==null;
+    if (selector==null)
+    { return service.getSelector()==null;
     }
     else
-    { return key.equals(service.getKey());
+    { return selector.equals(service.getSelector());
     }
   }
 
@@ -59,10 +59,10 @@ public class ServiceGroup
     for (int i=0;i<parents.length;i++)
     {
       boolean masked=false;
-      Object parentKey=parents[i].getKey();
+      Object parentSelector=parents[i].getSelector();
       for (int j=0;j<locals.length;j++)
       { 
-        if (serviceHasKey(locals[j],parentKey))
+        if (serviceHasSelector(locals[j],parentSelector))
         {   
           masked=true;
           break;
@@ -75,18 +75,18 @@ public class ServiceGroup
     return (Service[]) ArrayUtil.appendArrays(locals,ArrayUtil.truncate(inherited,k));    
   }
 
-  public Service findService(Class serviceInterface,Object key)
+  public Service findService(Class serviceInterface,Object selector)
     throws AmbiguousServiceException
   { 
     Service ret=null;
     for (int i=0;i<_services.length;i++)
     { 
       if (_services[i].providesInterface(serviceInterface)
-          && serviceHasKey(_services[i],key)
+          && serviceHasSelector(_services[i],selector)
          )
       {
         if (ret!=null)
-        { throw new AmbiguousServiceException(serviceInterface,key);
+        { throw new AmbiguousServiceException(serviceInterface,selector);
         }
         else
         { ret=_services[i];
@@ -94,7 +94,7 @@ public class ServiceGroup
       }
     }
     if (ret==null && _parentResolver!=null)
-    { ret=_parentResolver.findService(serviceInterface,key);
+    { ret=_parentResolver.findService(serviceInterface,selector);
     }
     return ret;
   }
@@ -143,7 +143,7 @@ public class ServiceGroup
     throws ServiceException
   {
     ServiceException exception=null;
-    for (int i=_services.length;i>0;--i)
+    for (int i=_services.length;i-->0;)
     { 
       try
       { _services[i].destroy();
@@ -161,12 +161,12 @@ public class ServiceGroup
     }
   }
 
-  public Object getKey()
-  { return _key;
+  public Object getSelector()
+  { return _selector;
   }
   
-  public void setKey(Object val)
-  { _key=val;
+  public void setSelector(Object val)
+  { _selector=val;
   }
 
   public boolean providesInterface(Class serviceInterface)
