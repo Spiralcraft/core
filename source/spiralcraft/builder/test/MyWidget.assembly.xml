@@ -2,34 +2,34 @@
   Create an assembly which exposes a JavaBean naming context for
     access to the properties of SimpleWidget. 
     
-  New instances of the assembly will configure MyWidget with the
+  New instances of the assembly will configure SimpleWidget with the
     specified properties.
     
   Assemblies which extend this assembly will inherit the property
-    settings for MyWidget  
+    settings for SimpleWidget  
 -->
 
-<MyWidget class="SimpleWidget">
+<SimpleWidget>
 
-  <title>Some title</title>
+  <title>My Widget</title>
   <id>3</id>
   <on>false</on>
   <amount>17.43</amount>
   <milliseconds>123456789012345</milliseconds>
-  <otherWidget>
-    <MyWidget>
-      <title>Other title</title>
-    </MyWidget>
-  </otherWidget>
+  <friend>
+    <SimpleWidget>
+      <title>My Friend</title>
+    </SimpleWidget>
+  </friend>
   <children>
-    <MyWidget>
+    <SimpleWidget>
       <title>Child 1</title>
-    </MyWidget>
-    <MyWidget>
+    </SimpleWidget>
+    <SimpleWidget>
       <title>Child 2</title>
-    </MyWidget>
-    <MyWidget>
+    </SimpleWidget>
+    <SimpleWidget>
       <title>Child 3</title>
-    </MyWidget>
+    </SimpleWidget>
   </children>  
-</MyWidget>
+</SimpleWidget>

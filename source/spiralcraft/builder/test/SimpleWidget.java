@@ -66,4 +66,8 @@ public class SimpleWidget
   public void say(String text)
   { System.err.println(super.toString()+"."+text);
   }
+  
+  public String toString()
+  { return super.toString()+":\""+_title+"\"";
+  }
 }

@@ -8,7 +8,5 @@
 -->
 
 <SimpleWidget>
-  <name>MyWidget</name>
-  <title>Mike's Widget</title>
-
+  <title>A Simple Widget</title>
 </SimpleWidget>

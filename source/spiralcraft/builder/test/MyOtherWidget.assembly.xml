@@ -9,20 +9,11 @@
     settings for MyWidget and its 'friend' widget.
 -->
 
-<SimpleWidget>
+<MyWidget>
 
-  <title>A widget</title>
+  <title>My other widget</title>
 
-  <friend>
-    <AnotherWidget class="SimpleWidget">
-      <title>A widget's friend</title>
-    </AnotherWidget>
-  </friend>
+  <friend.title>My renamed friend</friend.title>
   
-  <children>
-    <AnotherWidget class="SimpleWidget">
-      <title>A widget's friend</title>
-    </AnotherWidget>
-  </children>
 
-</SimpleWidget>
+</MyWidget>
