@@ -1,0 +1,22 @@
+<project name="spiralcraft" default="build" basedir=".">
+
+
+  <target name="build">
+    <echo>Beginning build for core module</echo>
+    <echo message="Building against ${spiralcraft-main.jar}"/>
+    <javac srcdir="source" classpath="${spiralcraft-main.jar}"/>
+    <echo>Finished build for core module</echo>
+  </target>
+
+  <target name="jar" depends="build">
+    <echo>Beginning jar for core module</echo>
+    <jar 
+      destfile="../../lib/spiralcraft-core.jar" 
+      basedir="source"
+      includes="spiralcraft/**/*.class"
+      >
+    </jar>
+    <echo>Finished jar for core module</echo>
+  </target>
+
+</project>
