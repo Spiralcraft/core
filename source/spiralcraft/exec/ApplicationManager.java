@@ -13,6 +13,7 @@ import spiralcraft.builder.XmlObject;
 import spiralcraft.builder.BuildException;
 
 import spiralcraft.stream.Resolver;
+import spiralcraft.stream.Resource;
 import spiralcraft.stream.UnresolvableURIException;
 
 import java.io.File;
@@ -45,6 +46,8 @@ public class ApplicationManager
     =new File(System.getProperty("user.home")).toURI().resolve(".spiralcraft/env/");
 
   private int _nextEnvironmentId=0;
+
+  private boolean DEBUG=false;
   
   /**
    * Obtain the singleton instance of the ApplicationManager.
@@ -65,6 +68,10 @@ public class ApplicationManager
     _registryNode=_REGISTRY_ROOT.createChild(_userId);
   }
 
+  public void setDebug(boolean val)
+  { DEBUG=val;
+  }
+  
   public void shutdown()
   { _catalog.close();
   }
@@ -137,8 +144,23 @@ public class ApplicationManager
 
   private boolean isEnvironment(URI uri)
   {
+    if (DEBUG)
+    { System.err.println("Searching for "+uri);
+    }
+    
     try
-    { return Resolver.getInstance().resolve(uri).exists();
+    { 
+      Resource resource = Resolver.getInstance().resolve(uri);
+      if (resource.exists())
+      { 
+        if (DEBUG)
+        { System.err.println("Found "+uri);
+        }
+        return true;
+      }
+      else
+      { return false;
+      }
     }
     catch (UnresolvableURIException x)
     { System.err.println(x.toString());

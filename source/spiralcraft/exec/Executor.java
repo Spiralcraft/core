@@ -51,7 +51,8 @@ public class Executor
   
   /**
    * Locate and execute an application or assembly appropriate
-   *   for the specified URI.
+   *   for the specified URI. The URI must be specified as either
+   *   the first argument or via the setURI() method.
    */
   public void execute(String[] args)
     throws IOException
@@ -83,6 +84,20 @@ public class Executor
     executable.execute(_arguments);
   }
 
+  /**
+   * Create the XmlObject which represents the runtime image of the application
+   *   specified in the URI.
+   *
+   * If the URI ends with ".assembly.xml", the root of the specified Assembly 
+   *   must be an Executable, which will be instantiated.
+   *
+   * If the URI ends with a registered extension, the appropriate Assembly will
+   *   be instantiated and the URI will be passed as the first argument to
+   *   the Executable.
+   *
+   * In the default case, the URI will be assumed to point to persistent
+   *   object data. The object will be restored and executed.
+   */
   private XmlObject resolveApplication()
     throws BuildException
   { 
