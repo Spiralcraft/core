@@ -5,6 +5,8 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
+import spiralcraft.beans.MappedBeanInfo;
+
 class BeanPropertyLense
   implements Lense
 {
@@ -12,13 +14,20 @@ class BeanPropertyLense
 
   private final PropertyDescriptor _property;
   private final Method _readMethod;
+  private final MappedBeanInfo _beanInfo;
   
-  public BeanPropertyLense(PropertyDescriptor property)
+  public BeanPropertyLense(PropertyDescriptor property,MappedBeanInfo beanInfo)
   { 
     _property=property;
     _readMethod=property.getReadMethod();
+    _beanInfo=beanInfo;
+    
   }
 
+  public MappedBeanInfo getBeanInfo()
+  { return _beanInfo;
+  }
+  
   public PropertyDescriptor getProperty()
   { return _property;
   }
@@ -28,11 +37,21 @@ class BeanPropertyLense
     try
     {
       if (_readMethod!=null)
-      { return _readMethod.invoke(value,EMPTY_PARAMS);
+      { 
+        if (value!=null)
+        { return _readMethod.invoke(value,EMPTY_PARAMS);
+        }
+        else
+        { return null;
+        }
       }
       else
       { 
-        System.err.println("Cannot read "+value.getClass()+"."+_property.getName());
+        System.err.println
+          ("Cannot read property '"
+          +value.getClass().getName()
+          +"."+_property.getName()+"'"
+          );
         return null;
       }
     }

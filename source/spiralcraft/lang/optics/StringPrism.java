@@ -47,6 +47,9 @@ class StringConcatLense
     if (modifiers[0]==null)
     { return source;
     }
+    if (source==null)
+    { return (String) modifiers[0];
+    }
     return ((String) source).concat((String) modifiers[0]);
   }
 
