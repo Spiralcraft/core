@@ -9,6 +9,16 @@ public class ArrayUtil
 {
 
   /**
+   * Append a value to an array
+   */
+  public static Object append(Object array,Object value)
+  { 
+    array=expandBy(array,1);
+    Array.set(array,Array.getLength(array)-1,value);
+    return array;
+  }
+
+  /**
    * Expand an array by adding the specified number of elements
    */
   public static Object expandBy(Object array,int expandBy)
