@@ -34,7 +34,7 @@ public class ArrayTuple
   { return _scheme;
   }
   
-  public Object getID()
+  public Object getId()
   { return this;
   }
   
@@ -70,7 +70,7 @@ public class ArrayTuple
     return new ArrayTuple(this);
   }
   
-  public boolean isBuffer()
+  public boolean isVolatile()
   { return _buffer!=null;
   }
   
