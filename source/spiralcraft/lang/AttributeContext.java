@@ -5,6 +5,8 @@ import java.util.Map;
 
 import spiralcraft.util.ArrayUtil;
 
+import spiralcraft.lang.optics.SimpleBinding;
+
 /**
  * A Context defined by a set of Attributes
  */
@@ -13,37 +15,36 @@ public class AttributeContext
 {
   private Map _names;
   private Attribute[] _attributes;
-  private final Context _primary;
+  private final Context _parent;
 
   public AttributeContext()
-  { _primary=null;
+  { _parent=null;
   }
 
   /**
-   * Construct a Context which augments
-   *   the supplied primary Context. Names
-   *   that already exist in the primary Context cannot be
-   *   overridden in this Context. 
+   * Construct a Context which adds to the namespace of a parent
+   *   Context.
    */
-  public AttributeContext(Context primary)
-  { _primary=primary;
+  public AttributeContext(Context parent)
+  { _parent=parent;
   }
 
   public Optic resolve(String name)
   { 
     Optic optic=null;
-    if (_primary!=null)
-    { optic=_primary.resolve(name);
+    if (_names!=null) 
+    { 
+      Attribute attrib=(Attribute) _names.get(name);
+      if (attrib!=null)
+      { optic=attrib.getOptic();
+      }
     }
+
     
     if (optic==null)
-    {      
-      if (_names!=null) 
-      { 
-        Attribute attrib=(Attribute) _names.get(name);
-        if (attrib!=null)
-        { optic=attrib.getOptic();
-        }
+    { 
+      if (_parent!=null)
+      { optic=_parent.resolve(name);
       }
     }
     return optic;
@@ -66,7 +67,7 @@ public class AttributeContext
         if (_names.get(name)!=null)
         { throw new IllegalArgumentException("Duplicate name "+name);
         }
-        if (_primary!=null && _primary.resolve(name)!=null)
+        if (_parent!=null && _parent.resolve(name)!=null)
         { throw new IllegalArgumentException("Duplicate name "+name);
         }
         _names.put(name,_attributes[i]);
@@ -88,16 +89,47 @@ public class AttributeContext
       _names.keySet().toArray(names);
     }
 
-    if (_primary!=null)
+    if (_parent!=null)
     { 
       if (names==null)
-      { return _primary.getNames();
+      { return _parent.getNames();
       }
       else
-      { return (String[]) ArrayUtil.appendArrays(_primary.getNames(),names);
+      { return (String[]) ArrayUtil.appendArrays(_parent.getNames(),names);
       }
     }
     return names;
+  }
+  
+  /**
+   * Put specified Optic into the Context 
+   */
+  public void putOptic(String name,Optic optic)
+  {
+    if (_names==null)
+    { setAttributes(new Attribute[] {new Attribute(name,optic)});
+    }
+    else
+    { 
+      Attribute attrib=(Attribute) _names.get(name);
+      if (attrib==null)
+      { 
+        attrib=new Attribute(name,optic);
+        _attributes=(Attribute[]) ArrayUtil.append(_attributes,attrib);
+        _names.put(name,attrib);
+      }
+      else
+      { attrib.setOptic(optic);
+      }
+    }
+  }
+  
+  /**
+   * Put a Java object into the context under the specified name
+   */
+  public void putObject(String name,Object val)
+    throws BindException
+  { putOptic(name,new SimpleBinding(val,true));
   }
   
 }
