@@ -7,12 +7,12 @@ import java.util.Collection;
 /**
  * A base class for map decorators
  */
-public class MapWrapper
-  implements Map
+public class MapWrapper<K,V>
+  implements Map<K,V>
 {
-  protected final Map map;
+  protected final Map<K,V> map;
 
-  protected MapWrapper(Map map)
+  protected MapWrapper(Map<K,V> map)
   { this.map=map;
   }
 
@@ -32,15 +32,15 @@ public class MapWrapper
   { return map.containsValue(value);
   }
 
-  public Object get(Object key)
+  public V get(Object key)
   { return map.get(key);
   }
 
-  public Object put(Object key,Object value)
+  public V put(K key,V value)
   { return map.put(key,value);
   }
 
-  public Object remove(Object key)
+  public V remove(Object key)
   { return map.remove(key);
   }
 

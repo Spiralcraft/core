@@ -183,9 +183,9 @@ public class ArrayUtil
    * Format a String array into a String using the specified separator and delimiter.
    * No escape processing is performed by this method.
    */
-  public static String formatToString(Object[] array,String separator,String delimiter)
+  public static String format(Object[] array,String separator,String delimiter)
   {
-    StringBuffer buf=new StringBuffer();
+    StringBuilder buf=new StringBuilder();
     for (int i=0;i<array.length;i++)
     { 
       if (i>0)
@@ -203,6 +203,96 @@ public class ArrayUtil
     }
     return buf.toString();
     
+  }
+
+  /**
+   * Format a String array into a String using the specified separator and delimiter.
+   * No escape processing is performed by this method.
+   *@deprecated Use format instead
+   */
+  public static String formatToString(Object[] array,String separator,String delimiter)
+  {
+    StringBuilder buf=new StringBuilder();
+    for (int i=0;i<array.length;i++)
+    { 
+      if (i>0)
+      { buf.append(separator);
+      }
+      if (array[i]!=null)
+      { 
+        if (delimiter!=null)
+        { buf.append(delimiter).append(array[i]).append(delimiter);
+        }
+        else
+        { buf.append(array[i]);
+        }
+      }
+    }
+    return buf.toString();
+    
+  }
+  /**
+   * Format an Object array into a String using the specified separator
+   *   and displaying the class of each object.
+   * No escape processing is performed by this method.
+   */
+  public static String formatWithClassNames(Object[] array,String separator)
+  {
+    StringBuilder buf=new StringBuilder();
+    for (int i=0;i<array.length;i++)
+    { 
+      if (i>0)
+      { buf.append(separator);
+      }
+      if (array[i]!=null)
+      { 
+        buf.append("(")
+          .append(array[i].getClass().getName())
+          .append(") \"")
+          .append(array[i])
+          .append("\"");
+      }
+    }
+    return buf.toString();
+    
+  }
+
+  public static final int arrayCompare(final Object[] a,final Object[] b)
+  {
+    if (a==b)
+    { return 0;
+    }
+    if (a==null && b!=null)
+    { return -1;
+    }
+    if (b==null && a!=null)
+    { return 1;
+    }
+
+    for (int i=0;i<a.length;i++)
+    {
+      if (i==b.length)
+      { return 1;
+      }
+
+      if (a[i]!=b[i])
+      {
+        if (a[i]==null && b[i]!=null)
+        { return -1;
+        }
+        if (b[i]==null && a[i]!=null)
+        { return 1;
+        }
+        int result=((Comparable) a[i]).compareTo(b[i]);
+        if (result!=0)
+        { return result;
+        }
+      }
+    }
+    if (b.length>a.length)
+    { return -1;
+    }
+    return 0;
   }
 
   public static final boolean arrayEquals(final Object[] a,final Object[] b)

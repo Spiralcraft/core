@@ -39,6 +39,8 @@ public abstract class StringConverter
     _MAP.put(Short.TYPE.getName(),new ShortToString());
     _MAP.put(Byte.class.getName(),new ByteToString());
     _MAP.put(Byte.TYPE.getName(),new ByteToString());
+    _MAP.put(Character.class.getName(),new CharacterToString());
+    _MAP.put(Character.TYPE.getName(),new CharacterToString());
     _MAP.put(BigInteger.class.getName(),new BigIntegerToString());
     _MAP.put(BigDecimal.class.getName(),new BigDecimalToString());
     _MAP.put(Class.class.getName(),new ClassToString());
@@ -51,7 +53,14 @@ public abstract class StringConverter
   public static StringConverter getInstance(Class type)
   { 
     synchronized (_MAP)
-    { return (StringConverter) _MAP.get(type.getName());
+    { 
+      StringConverter ret=(StringConverter) _MAP.get(type.getName());
+      if (ret==null)
+      { 
+        // Discover single argument constructor and create a new
+        //   stringConverter for the class
+      }
+      return ret;
     }
     
   }
@@ -187,6 +196,14 @@ final class ShortToString
   }
 }
 
+final class CharacterToString
+  extends StringConverter
+{
+  public Object fromString(String val)
+  { return (val!=null && val.length()==1)?new Character(val.charAt(0)):null;
+  }
+}
+
 final class ByteToString
   extends StringConverter
 {
@@ -218,10 +235,92 @@ final class ClassToString
   { return val!=null?((Class) val).getName():null;
   }
 
+  /**
+   * Convert a ClassName to a String by loading the class.
+   *
+   * Packageless classes are resolved to the java.lang package
+   *   first, then the 'null' package.
+   *
+   * Names of primitive types and primitive array types 
+   *  resolve to their primitive class.
+   */
   public Object fromString(String val)
   { 
+    val=val.intern();    
+    if (!val.contains("."))
+    {
+      if (val=="boolean")
+      { return boolean.class;
+      }
+      if (val=="boolean[]")
+      { return boolean[].class;
+      }
+      if (val=="byte")
+      { return byte.class;
+      }
+      if (val=="byte[]")
+      { return byte[].class;
+      }
+      if (val=="short")
+      { return short.class;
+      }
+      if (val=="short[]")
+      { return short[].class;
+      }
+      if (val=="char")
+      { return char.class;
+      }
+      if (val=="char[]")
+      { return char[].class;
+      }
+      if (val=="int")
+      { return int.class;
+      }
+      if (val=="int[]")
+      { return int[].class;
+      }
+      if (val=="long")
+      { return long.class;
+      }
+      if (val=="long[]")
+      { return long[].class;
+      }
+      if (val=="double")
+      { return double.class;
+      }
+      if (val=="double[]")
+      { return double[].class;
+      }
+      if (val=="float")
+      { return float.class;
+      }
+      if (val=="float[]")
+      { return float[].class;
+      }
+      if (val=="String")
+      { return String.class;
+      }
+      if (val=="String[]")
+      { return String[].class;
+      }
+      if (val=="Class")
+      { return Class.class;
+      }
+      if (val=="Class[]")
+      { return Class[].class;
+      }
+      
+      try
+      { return Class.forName("java.lang."+val);
+      }
+      catch (ClassNotFoundException x)
+      { }
+      
+    }
+      
     try
     {
+      
       return Class.forName
         (val
         ,false

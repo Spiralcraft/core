@@ -8,9 +8,9 @@ import java.util.List;
  * Provides an interface to a Map which maps keys to Lists for the purpose
  *   of associating multiple values with a single key
  */
-public class ListMap
-  extends MapWrapper
-  implements MultiMap
+public class ListMap<K,T>
+  extends MapWrapper<K,List<T>>
+  implements MultiMap<K,T>
 {
 
   public ListMap(Map map)
@@ -21,9 +21,9 @@ public class ListMap
    * Associates a key with single element array containing the
    *   specified value
    */
-  public void set(Object key,Object value)
+  public void set(K key,T value)
   { 
-    List list=new LinkedList();
+    List<T> list=new LinkedList<T>();
     list.add(value);
     put(key,list);
   } 
@@ -32,9 +32,9 @@ public class ListMap
    * Append the value to the array indexed to the specified key.
    * If the array does not exist, it will be created
    */
-  public void add(Object key,Object value)
+  public void add(K key,T value)
   { 
-    List list=(List) get(key);
+    List<T> list=get(key);
     if (list==null)
     { set(key,value);
     }
@@ -43,9 +43,9 @@ public class ListMap
     }
   }
 
-  public void remove(Object key,Object value)
+  public void remove(K key,T value)
   { 
-    List list=(List) get(key);
+    List<T> list=get(key);
     if (list!=null)
     { list.remove(value);
     }
@@ -57,9 +57,9 @@ public class ListMap
   /**
    * Return the first element of the array mapped to the specified key
    */
-  public Object getOne(Object key)
+  public T getOne(K key)
   { 
-    List list=(List) get(key);
+    List<T> list=get(key);
     if (list==null || list.size()==0)
     { return null;
     }

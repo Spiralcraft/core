@@ -8,6 +8,7 @@ import java.util.LinkedList;
  */ 
 public class Path
 {
+  private boolean _absolute=false;
   private final String[] _elements;
   private final int _hashCode;
   
@@ -19,22 +20,26 @@ public class Path
   
   public Path(String source,char delimiter)
   { 
+    if (source.startsWith(Character.toString(delimiter)))
+    { _absolute=true;
+    }
     _elements=StringUtil.tokenize(source,Character.toString(delimiter));
-    _hashCode=ArrayUtil.arrayHashCode(_elements);
+    _hashCode=ArrayUtil.arrayHashCode(_elements)*(_absolute?13:1);
   }
   
-  public Path(String[] elements)
+  public Path(String[] elements,boolean absolute)
   { 
+    _absolute=absolute;
     _elements=elements;
-    _hashCode=ArrayUtil.arrayHashCode(_elements);
+    _hashCode=ArrayUtil.arrayHashCode(_elements)*(_absolute?13:1);
   }
 
   public Path append(String[] elements)
-  { return new Path( (String[]) ArrayUtil.appendArrays(_elements,elements));
+  { return new Path( (String[]) ArrayUtil.appendArrays(_elements,elements),_absolute);
   }
 
   public Path append(String element)
-  { return new Path( (String[]) ArrayUtil.append(_elements,element));
+  { return new Path( (String[]) ArrayUtil.append(_elements,element),_absolute);
   }
   
   public String lastElement()
@@ -47,6 +52,18 @@ public class Path
     }
   }
   
+  public Path parentPath()
+  { 
+    if (_elements.length>1)
+    { 
+      String[] newElements=new String[_elements.length-1];
+      System.arraycopy(_elements,0,newElements,0,newElements.length);
+      return new Path(newElements,_absolute);
+    }
+    else
+    { return new Path();
+    }
+  }
   
   public String getElement(int index)
   { return _elements[index];
@@ -70,6 +87,10 @@ public class Path
     { return false;
     }
     return ArrayUtil.arrayEquals(_elements,path.elements());
+  }
+  
+  public String format(String delimiter)
+  { return (_absolute?delimiter:"")+ArrayUtil.formatToString(_elements,"/",null);
   }
   
   public String toString()

@@ -8,12 +8,12 @@ import java.util.Collection;
 /**
  * A base class for List decorators
  */
-public abstract class ListWrapper
-  implements List
+public  class ListWrapper<T>
+  implements List<T>
 {
-  private final List _list;
+  private final List<T> _list;
   
-  public ListWrapper(List impl)
+  public ListWrapper(List<T> impl)
   { _list=impl; 
   }
   
@@ -21,11 +21,11 @@ public abstract class ListWrapper
   { return _list.toArray();
   }
   
-  public Object[] toArray(Object[] array)
+  public <T> T[] toArray(T[] array)
   { return _list.toArray(array);
   }
   
-  public Object set(int pos,Object value)
+  public T set(int pos,T value)
   { return _list.set(pos,value);
   }
   
@@ -41,7 +41,7 @@ public abstract class ListWrapper
   { return _list.subList(start,end);
   }
 
-  public Iterator iterator()
+  public Iterator<T> iterator()
   { return _list.iterator();
   }
   
@@ -73,11 +73,11 @@ public abstract class ListWrapper
   { return _list.addAll(start,c);
   }
   
-  public boolean add(Object o)
+  public boolean add(T o)
   { return _list.add(o);
   }
   
-  public void add(int at,Object o)
+  public void add(int at,T o)
   { _list.add(at,o);
   }
 
@@ -89,11 +89,11 @@ public abstract class ListWrapper
   { return _list.indexOf(o);
   }
   
-  public Object remove(int pos)
+  public T remove(int pos)
   { return _list.remove(pos);
   }
   
-  public Object get(int pos)
+  public T get(int pos)
   { return _list.get(pos);
   }
   
