@@ -22,34 +22,56 @@ import spiralcraft.util.ArrayUtil;
 public class AssemblyClass
 {
   private final URI _sourceUri;
-  private final URI _derivationPackage;
-  private final String _derivationName;
+  private final URI _basePackage;
+  private final String _baseName;
   private final AssemblyClass _outerClass;
+  private final AssemblyLoader _loader;
   private String _declarationName;
   private AssemblyClass _baseClass;
   private Class _javaClass;
   private LinkedList _propertySpecifiers;
   private LinkedList _compositeMembers;
-  private AssemblyLoader _loader;
   private String[] _singletonNames;
   private Class[] _localSingletons;
   private Class[] _singletons;
   private LinkedList _members;
   private HashMap _memberMap;
 
+  /**
+   * Construct a new AssemblyClass
+   *
+   *@param sourceUri The URI of the resource which defines this AssemblyClass,
+   *   or null of the AssemblyClass is being defined programmatically.
+   *
+   *@param basePackage The package which contains the base AssemblyClass or 
+   *   Java class from which this AssemblyClass is derived
+   *
+   *@param baseName The name of the Java class or AssemblyClass resource within
+   *   the basePackage
+   *
+   *@param outerClass The AssemblyClass in which this AssemblyClass is being
+   *   defined, if any.
+   *
+   *@param loader The AssemblyLoader which loaded this AssemblyClass, if any
+   */
   public AssemblyClass
     (URI sourceUri
-    ,URI derivationPackage
-    ,String derivationName
+    ,URI basePackage
+    ,String baseName
     ,AssemblyClass outerClass
     ,AssemblyLoader loader
     )
   { 
     _sourceUri=sourceUri;
-    _derivationPackage=derivationPackage;
-    _derivationName=derivationName;
+    _basePackage=basePackage;
+    _baseName=baseName;
     _outerClass=outerClass;
-    _loader=loader;
+    if (loader!=null)
+    { _loader=loader;
+    }
+    else
+    { _loader=AssemblyLoader.getInstance();
+    }
   }
 
   void registerMember(String name,PropertySpecifier prop)
@@ -257,7 +279,7 @@ public class AssemblyClass
     throws BuildException
   {
     URI baseUri
-      =_derivationPackage.resolve(_derivationName+".assembly.xml");
+      =_basePackage.resolve(_baseName+".assembly.xml");
 
     if (baseUri.equals(_sourceUri) && _outerClass==null)
     { 
@@ -278,7 +300,7 @@ public class AssemblyClass
     throws BuildException
   { 
     String className
-      =_derivationPackage.getPath().substring(1).replace('/','.')+_derivationName;
+      =_basePackage.getPath().substring(1).replace('/','.')+_baseName;
     try
     {
       _javaClass
@@ -298,13 +320,23 @@ public class AssemblyClass
    */
   private void throwBuildException(String message,Exception cause)
     throws BuildException
-  { throw new BuildException(message+" ("+_sourceUri.toString()+")",cause);
+  { 
+    if (_sourceUri!=null)
+    { throw new BuildException(message+" ("+_sourceUri.toString()+")",cause);
+    }
+    else
+    { throw new BuildException(message,cause);
+    }
   }
 
   private String qualifyRelativeJavaClassName(String name)
-  { return _derivationPackage.getPath().substring(1).replace('/','.')+name;
+  { return _basePackage.getPath().substring(1).replace('/','.')+name;
   }
 
+  /**
+   * Add a PropertySpecifier which defines the value of a
+   *   property of one of the objects in the assembly
+   */
   public void addPropertySpecifier(PropertySpecifier prop)
   { 
     if (_propertySpecifiers==null)
