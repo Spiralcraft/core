@@ -9,7 +9,7 @@ public class HelloWorld
 {
   private Object _testObject;
 
-  public void exec(String[] args)
+  public void execute(String[] args)
   { 
     System.out.println("HelloWorld");
     System.out.println("args: "+ArrayUtil.formatToString(args," ","\""));
