@@ -5,6 +5,8 @@ import java.net.URI;
 import spiralcraft.stream.Resolver;
 import spiralcraft.stream.Resource;
 
+import spiralcraft.util.StringUtil;
+
 import java.io.IOException;
 
 import spiralcraft.sax.ParseTreeFactory;
@@ -12,6 +14,7 @@ import spiralcraft.sax.ParseTree;
 import spiralcraft.sax.Node;
 import spiralcraft.sax.Element;
 import spiralcraft.sax.Characters;
+import spiralcraft.sax.Attribute;
 
 import org.xml.sax.SAXException;
 
@@ -109,6 +112,7 @@ public class AssemblyLoader
    * Define an AssemblyClass based on the information in an XML Element
    */
   public AssemblyClass readAssemblyClass(URI localUri,Element node,AssemblyClass containerClass)
+    throws BuildException
   {
     String packageUriString = node.getURI();
     if (packageUriString!=null)
@@ -136,6 +140,28 @@ public class AssemblyLoader
         ,this
         );
         
+    Attribute[] attribs
+      =node.getAttributes();
+    if (attribs!=null)
+    {
+      for (int i=0;i<attribs.length;i++)
+      {
+        String name=attribs[i].getLocalName().intern();
+        if (name=="singletons")
+        { 
+          String value=attribs[i].getValue();
+          String[] interfaceNames=
+            StringUtil.tokenize(value,",");
+          assemblyClass.setSingletonNames(interfaceNames);
+        }
+        else
+        { 
+          throw new BuildException
+            ("Unknown attribute '"+name+"'");
+        }
+      }
+    }
+
     if (node.hasChildren())
     { 
       Iterator it=node.getChildren().iterator();
@@ -151,8 +177,47 @@ public class AssemblyLoader
   }
 
   public void readProperty(URI localUri,Element node,AssemblyClass containerClass)
+    throws BuildException
   {
     PropertySpecifier prop=new PropertySpecifier(containerClass,node.getLocalName());
+
+    Attribute[] attribs = node.getAttributes();
+    if (attribs!=null)
+    {
+      for (int i=0;i<attribs.length;i++)
+      {
+        String name=attribs[i].getLocalName().intern();
+        if (name=="focus")
+        { prop.setFocus(attribs[i].getValue());
+        }
+        else if (name=="expression")
+        { prop.setExpression(attribs[i].getValue());
+        }
+        else if (name=="whitespace")
+        { 
+          String value=attribs[i].getValue();
+          if (value.equals("true"))
+          { prop.setLiteralWhitespace(true);
+          }
+          else if (value.equals("false"))
+          { prop.setLiteralWhitespace(false);
+          }
+          else
+          { 
+            throw new BuildException
+              ("Unexpected value for 'whitespace' attribute."
+              +"Either 'true' or 'false' required"
+              );
+          }
+        }
+        else
+        { 
+          throw new BuildException
+            ("Unknown attribute '"+name+"'");
+            
+        }
+      }
+    }
     
     containerClass.addPropertySpecifier(prop);
     if (node.hasChildren())

@@ -24,6 +24,26 @@ public class Attribute
     _value=value;
   }
 
+  public String getLocalName()
+  { return _localName;
+  }
+
+  public String getQName()
+  { return _qName;
+  }
+
+  public String getType()
+  { return _type;
+  }
+
+  public String getURI()
+  { return _uri;
+  }
+
+  public String getValue()
+  { return _value;
+  }
+
   public String toString()
   { 
     return super.toString()

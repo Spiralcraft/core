@@ -3,6 +3,7 @@ package spiralcraft.builder;
 import spiralcraft.util.StringConverter;
 
 import spiralcraft.lang.Optic;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 
 import spiralcraft.lang.BindException;
@@ -23,6 +24,7 @@ public class PropertyBinding
 
   private Channel _target;
   private Optic _sourceOptic;
+  private Focus _focus;
   private Object _source;
 
   private Assembly[] _contents;
@@ -33,6 +35,7 @@ public class PropertyBinding
   { 
     _specifier=specifier;
     _container=container;
+    _focus=container;
 
     instantiateContents();
     resolveTarget();
@@ -75,21 +78,26 @@ public class PropertyBinding
   {
     if (_contents!=null && _contents.length>0)
     {
-      if (_contents.length==1)
-      { _source=_contents[0].getSubject().get();
+      if (_contents.length==1 && !_target.getTargetClass().isArray())
+      { 
+        _source=_contents[0].getSubject().get();
+        registerSingletons(_contents[0]);
       }
       else
       { 
+        
         _source=Array.newInstance
           (_target.getTargetClass().getComponentType()
           ,_contents.length
           );
         for (int i=0;i<_contents.length;i++)
-        { Array.set(_source,i,_contents[i].getSubject().get());
+        { 
+          Array.set(_source,i,_contents[i].getSubject().get());
+          registerSingletons(_contents[i]);
         }
       }
     }
-    else
+    else if (_specifier.getTextData()!=null)
     {
       String text=_specifier.getTextData();
       _converter=StringConverter.getInstance(_target.getTargetClass());
@@ -102,24 +110,49 @@ public class PropertyBinding
       }
       _source=_converter.fromString(text);
     }
-    
-    /**
-    Focus sourceFocus=container;
+    else if (_specifier.getFocus()!=null)
+    { 
+      
+      Class focusInterface;
+      if (_specifier.getFocus().equals("auto"))
+      { focusInterface=_target.getTargetClass();
+      }
+      else
+      { 
+        try
+        {
+          focusInterface
+            =Class.forName
+              (_specifier.getFocus()
+              ,false
+              ,Thread.currentThread().getContextClassLoader()
+              );
+        }
+        catch (ClassNotFoundException x)
+        { throw new BuildException("Unknown Focus interface",x);
+        }
+      }
 
-    Optic sourceOptic=null;        
-
-    try
-    {
-      if (_sourceExpression!=null)
-      { sourceOptic=_sourceExpression.createChannel(sourceFocus);
+      _focus=_container.findFocus(focusInterface);
+      if (_focus==null)
+      { throw new BuildException("Focus "+focusInterface+" not found in this Assembly or its ancestors");
       }
     }
-    catch (BindException x)
-    { throw new BuildException("Error binding "+_sourceExpression.getText(),x);
+    
+    if (_specifier.getSourceExpression()!=null)
+    {
+      try
+      {
+        Channel sourceChannel=_specifier.getSourceExpression().createChannel(_focus);
+        _source=sourceChannel.get();
+      }
+      catch (BindException x)
+      { 
+        throw new BuildException
+          ("Error binding "+_specifier.getSourceExpression().getText(),x);
+      }
+      
     }
-
-    return new PropertyBinding(targetOptic,sourceOptic);
-    */
   }
   
   private void apply()
@@ -128,5 +161,15 @@ public class PropertyBinding
     if (!_target.set(_source))
     { throw new BuildException("Could not write "+_target.getExpression().getText());
     }
+  }
+
+  private void registerSingletons(Assembly source)
+    throws BuildException
+  {
+    Class[] interfaces=source.getSingletons();
+    if (interfaces!=null)
+    { _container.registerSingletons(interfaces,source);
+    }
+    
   }
 }

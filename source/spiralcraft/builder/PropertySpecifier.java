@@ -28,6 +28,8 @@ public class PropertySpecifier
   private Expression _targetExpression;
   private Expression _sourceExpression;
   private boolean _literalWhitespace;
+  private String _focus;
+  private String _expression;
 
   public PropertySpecifier
     (AssemblyClass container
@@ -49,6 +51,32 @@ public class PropertySpecifier
   }
 
   /**
+   * Specify the interface name of the local singleton that will serve as the focus
+   *   for resolving expressions.
+   *
+   */
+  public void setFocus(String val)
+  { _focus=val;
+  }
+
+  public String getFocus()
+  { return _focus;
+  }
+
+  /**
+   * Specify the expression that supplies the value of the property when evaluated in the context
+   *   of the specified Focus. If the Focus is not specified, it will default to the Assembly containing
+   *   the property specifier.
+   */
+  public void setExpression(String val)
+  { _expression=val;
+  }
+
+  public Expression getSourceExpression()
+  { return _sourceExpression;
+  }
+
+  /**
    * Resolve anything required and recurse into contents
    */
   void resolve()
@@ -66,6 +94,34 @@ public class PropertySpecifier
       }
       else if (trimmedText.length()>0)
       { _textData=trimmedText;
+      }
+    }
+
+      
+    if (_focus!=null)
+    { 
+      if (_contents!=null)
+      { throw new BuildException("Properties cannot have both a focus and Assembly definitions");
+      }
+      if (_textData!=null)
+      { throw new BuildException("Properties cannot have both expressions and text data");
+      }
+    }
+      
+    if (_expression!=null)
+    { 
+      if (_contents!=null)
+      { throw new BuildException("Properties cannot have both expressions and Assembly definitions");
+      }
+      if (_textData!=null)
+      { throw new BuildException("Properties cannot have both expressions and text data");
+      }
+
+      try
+      { _sourceExpression=Expression.parse(_expression);
+      }
+      catch (Exception x)
+      { throw new BuildException("Error parsing "+_specifier,x);
       }
     }
 

@@ -27,6 +27,9 @@ public class AssemblyClass
   private LinkedList _propertySpecifiers;
   private LinkedList _compositePropertySpecifiers;
   private AssemblyLoader _loader;
+  private String[] _singletonNames;
+  private Class[] _localSingletons;
+  private Class[] _singletons;
 
   public AssemblyClass
     (URI sourceUri
@@ -66,6 +69,40 @@ public class AssemblyClass
   { 
     resolveExternalBaseClass();
     resolveProperties();
+    resolveSingletons();
+  }
+
+  public void setSingletonNames(String[] interfaceNames)
+  { _singletonNames=interfaceNames;
+  }
+
+  private void resolveSingletons()
+    throws BuildException
+  { 
+    if (_singletonNames!=null)
+    {
+      _localSingletons=new Class[_singletonNames.length];
+      for (int i=0;i<_singletonNames.length;i++)
+      { 
+        try
+        {
+          _localSingletons[i]
+            =Class.forName
+              (_singletonNames[i]
+              ,false
+              ,Thread.currentThread().getContextClassLoader()
+              );
+        }
+        catch (ClassNotFoundException x)
+        { throw new BuildException("Class not found: "+_singletonNames[i],x);
+        }
+      }
+    }
+
+    LinkedList singletons=new LinkedList();
+    composeSingletons(singletons);
+    _singletons=new Class[singletons.size()];
+    singletons.toArray(_singletons);
   }
 
   private void resolveProperties()
@@ -93,6 +130,19 @@ public class AssemblyClass
     }
     if (_propertySpecifiers!=null)
     { list.addAll(_propertySpecifiers);
+    }
+  }
+
+  public void composeSingletons(LinkedList list)
+  { 
+    if (_baseClass!=null)
+    { _baseClass.composeSingletons(list);
+    }
+    if (_localSingletons!=null)
+    { 
+      for (int i=0;i<_singletons.length;i++)
+      { list.add(_localSingletons[i]);
+      }
     }
   }
 
@@ -168,6 +218,10 @@ public class AssemblyClass
 
   public List getPropertySpecifiers()
   { return _propertySpecifiers;
+  }
+
+  public Class[] getSingletons()
+  { return _singletons;
   }
 
   public Assembly newInstance(Assembly parent)

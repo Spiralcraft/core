@@ -2,8 +2,7 @@ package spiralcraft.sax;
 
 import org.xml.sax.Attributes;
 
-import java.util.ArrayList;
-
+ 
 /**
  * Represents an Element in an XML document
  */
@@ -13,7 +12,7 @@ public class Element
   private String _uri;
   private String _localName;
   private String _qName;
-  private ArrayList _attributes;
+  private Attribute[] _attributes;
 
   public Element
     (String uri
@@ -29,21 +28,25 @@ public class Element
     int numAttributes=attributes.getLength();
     if (numAttributes>0)
     { 
-      _attributes=new ArrayList(numAttributes);
+      _attributes=new Attribute[numAttributes];
       for (int i=0;i<numAttributes;i++)
       { 
-        _attributes.add
-          (new Attribute
+        _attributes[i]=
+          new Attribute
             (attributes.getLocalName(i)
             ,attributes.getQName(i)
             ,attributes.getType(i)
             ,attributes.getURI(i)
             ,attributes.getValue(i)
             )
-          );
+            ;
         
       }
     }
+  }
+
+  public Attribute[] getAttributes()
+  { return _attributes;
   }
 
   public String getURI()
