@@ -1,61 +1,54 @@
 package spiralcraft.loader;
 
-import spiralcraft.main.LoaderDelegate;
 import spiralcraft.main.Spiralcraft;
 
 import spiralcraft.util.ArrayUtil;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
- * Native OS shell interface to Spiralcraft managed code. Handles external command line
- *   arguments passed to the VM by resolving command aliases and passing the translated
- *   command line to a new ApplicationEnvironment for execution.
+ * Main class which creates an application specific ClassLoader to run application functionality
+ *   in a managed environment which controls class library resolution and security policy.
+ * 
+ * Note: This class designed to be loaded in a classloader other than the System classloader,
+ *   for example, in a classloader created by the spiralcraft-main package by
+ *   invoking the spiralcraft.main.Spiralcraft class (the 'bootstrap loader') from the command line.
  *
- * Aliases are used to simplify invoking Spiralcraft managed code from a native OS command
- *   line. An alias maps the first parameter of a command to a fragment of a command line
- *   which is substituted for the alias. 
- *
- * Aliases are the primary mechanism to expose Spiralcraft managed functionality to the native
- *   OS command line. As such, a flexible yet predictable mechanism for resolving aliases is
- *   provided.
- *
- * Aliases fall into 4 categories: built-in aliases,  module aliases, host aliases and user aliases.
- *
- * Built-in aliases simply provide a means for querying and setting up other aliases.
- *
- * Module aliases are provided by Spiralcraft modules to simplify invoking application
- *   functionality contained in Spiralcraft managed modules.
- *
- * Host aliases provide a means for system administrators to run functionality localized to a specific host.
- *
- * User aliases allow users to simplify commonly invoked functionality.
+ * If the ClassLoader for this class is the System classLoader, an exception will be thrown.
  */
 public class Main
-  implements  LoaderDelegate
 {
-
-  /**
-   * Called by the bootstrap loader to handle command-line invocation of the VM
-   * 
-   * Translates aliases and delegates execution to a new application manager
-   */
-  public int exec(String[] args)
+  static
   {
-    if (Spiralcraft.DEBUG)
-    { System.err.println("Core loader: Main.exec("+ArrayUtil.formatToString(args,",","\"")+")");
+    if (Main.class.getClassLoader()==ClassLoader.getSystemClassLoader())
+    { throw new IllegalStateException("This class cannot be loaded into the System ClassLoader");
     }
-    
+  }
+
+  public static void main(String[] args)
+    throws Throwable
+  {
+
+    if (Spiralcraft.DEBUG)
+    { System.err.println("Core loader: Main.main("+ArrayUtil.formatToString(args,",","\"")+")");
+    }
+     
     ApplicationManager applicationManager
       =ApplicationManager.getInstance();
 
     ApplicationEnvironment environment
       =applicationManager.createApplicationEnvironment();
 
-    args=resolveAliases(args);
-    return environment.exec(args);
+    try
+    { environment.exec(args);
+    }
+    catch (InvocationTargetException x)
+    { 
+      while (x.getTargetException() instanceof InvocationTargetException)
+      { x=(InvocationTargetException) x.getTargetException();
+      }
+      throw x.getTargetException();
+    }
   }
 
-
-  public String[] resolveAliases(String[] args)
-  { return args;
-  }
 }
