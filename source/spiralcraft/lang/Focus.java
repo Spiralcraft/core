@@ -1,8 +1,9 @@
 package spiralcraft.lang;
 
 /**
- * Provides a means for a channel to access the environment and 
- *   the subject in focus.
+ * Provides a mechanism for the expression evaluation system
+ *   to access a subject, an Environment, and other points of
+ *   Focus relevent to expression evaluation.
  */
 public interface Focus
 {
@@ -18,4 +19,13 @@ public interface Focus
    */
   Optic getSubject();
 
+  /**
+   * Find a Focus using its well know name.
+   */
+  Focus findFocus(String name);
+
+  /**
+   * Return this Focus's parent Focus.
+   */
+  Focus getParentFocus();
 }
