@@ -25,6 +25,7 @@ import java.net.URL;
 
 import spiralcraft.util.StringUtil;
 
+import spiralcraft.command.CommandContext;
 
 /**
  * Catalog of the code and resource libraries available for use by 
@@ -52,6 +53,14 @@ public class LibraryCatalog
   { loadCatalog();
   }
 
+  public List listLibraries()
+  { return _libraries;
+  }
+  
+  public CommandContext newCommandContext()
+  { return new LibraryCatalogCommandContext(this);
+  }
+  
   public void close()
   {
     Iterator it=_libraries.iterator();

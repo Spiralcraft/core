@@ -7,6 +7,10 @@ import spiralcraft.util.ArrayUtil;
 import spiralcraft.exec.ApplicationManager;
 import spiralcraft.exec.ExecutionTargetException;
 
+import spiralcraft.security.SystemSecurityManager;
+
+import spiralcraft.command.interpreter.SystemConsole;
+
 /**
  * Main class which creates an application specific ClassLoader to run application functionality
  *   in a managed environment which controls class library resolution and security policy.
@@ -19,11 +23,13 @@ import spiralcraft.exec.ExecutionTargetException;
  */
 public class Main
 {
+  
   static
   {
     if (Main.class.getClassLoader()==ClassLoader.getSystemClassLoader())
     { throw new IllegalStateException("This class cannot be loaded into the System ClassLoader");
     }
+    // System.setSecurityManager(new SystemSecurityManager());
   }
 
   public static void main(String[] args)
@@ -42,7 +48,22 @@ public class Main
     }
     
     try
-    { applicationManager.exec(args);
+    {
+      if (args.length>0)
+      { 
+        // Execute a single command, then exit
+        applicationManager.exec(args);
+      }
+      else
+      { 
+        // Execute the command interpreter- the 
+        //   initial context assumes a user in a file system directory
+        SystemConsole console=new SystemConsole();
+        console.setFocus(applicationManager.newCommandContext());
+        console.run();
+
+        //        System.err.println(new Usage().toString());
+      }
     }
     catch (ExecutionTargetException x)
     { throw x.getTargetException();
