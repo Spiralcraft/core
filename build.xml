@@ -6,7 +6,7 @@
     <javac 
       classpath="${classpath}"
       srcdir="source" 
-      debug="on"
+      debug="true"
     />
   </target>
 
