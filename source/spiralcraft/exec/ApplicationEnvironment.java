@@ -37,6 +37,10 @@ public class ApplicationEnvironment
     
   }
 
+  public void setCommandLine(String val)
+  { _mainArguments=StringUtil.tokenizeCommandLine(val);
+  }
+  
   public void setMainClass(String val)
   { _mainClass=val;
   }

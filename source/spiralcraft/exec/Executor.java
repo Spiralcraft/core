@@ -1,68 +1,125 @@
 package spiralcraft.exec;
 
-import spiralcraft.builder.Assembly;
-import spiralcraft.builder.AssemblyClass;
-import spiralcraft.builder.AssemblyLoader;
+import spiralcraft.builder.XmlObject;
 import spiralcraft.builder.BuildException;
 
-import java.io.IOException;
+import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.Arguments;
+
+import spiralcraft.registry.Registry;
+import spiralcraft.registry.Registrant;
+import spiralcraft.registry.RegistryNode;
+
+import spiralcraft.stream.Resolver;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import spiralcraft.util.ArrayUtil;
+import java.util.prefs.Preferences;
+import java.util.prefs.BackingStoreException;
 
-import spiralcraft.registry.Registry;
-import spiralcraft.registry.RegistryNode;
+import java.io.IOException;
+import java.io.File;
+
 
 /**
- * Loads and executes an Executable defined in an Assembly (spiralcraft.builder).
- *
- * The Executor is the root of the structural tree of the application, and thus
- *   registers itself as a child named 'executor' of the Registry root. 
- *
- * The Executor registers the executable as a Registry child of it's own named 'executable'.
- *   
+ * Loads and activates an Executable based on a URI.
  */
 public class Executor
+  implements Registrant
 {
-  private static RegistryNode _REGISTRY_ROOT
-    =Registry.getLocalRoot().createChild("executor");
-
+  private String _uri;
+  private String _applicationUri;
+  private String[] _arguments=new String[0];
+  private Preferences _prefs;
+  private RegistryNode _registryNode;  
+  
   public static final void main(String[] args)
     throws IOException
             ,URISyntaxException
             ,BuildException
-  { 
-    if (args.length<1)
-    { throw new IllegalArgumentException("No Assembly URI specified");
-    }
-    new Executor().execute(args[0],(String[]) ArrayUtil.truncateBefore(args,1));
+  { new Executor().execute(args);
   }
 
+  public void register(RegistryNode registryNode)
+  { _registryNode=registryNode;
+  }
+  
+  public void setURI(String uri)
+  { _uri=uri;
+  }
+  
   /**
-   * Execute the executable found 
+   * Locate and execute an application or assembly appropriate
+   *   for the specified URI.
    */
-  public void execute(String assemblyName,String[] args)
+  public void execute(String[] args)
     throws IOException
             ,URISyntaxException
             ,BuildException
   {
-    URI uri=new URI(assemblyName+".assembly.xml");
-    AssemblyClass assemblyClass
-      =AssemblyLoader.getInstance().findAssemblyDefinition(uri);
+    processArguments(args);
 
-    if (assemblyClass!=null)
+    if (_uri==null)
+    { throw new IllegalArgumentException("No URI specified");
+    }
+    
+    URI uri=URI.create(_uri);
+    if (!uri.isAbsolute())
     { 
-      Assembly assembly=assemblyClass.newInstance(null);
-      assembly.register(_REGISTRY_ROOT.createChild("executable"));
-
-      Executable executable=(Executable) assembly.getSubject().get();
-      executable.execute(args);
-    }
-    else
-    { throw new IOException("Assembly "+uri+" not found");
+      // XXX Get user context
+      _uri=new File(new File(".").getAbsolutePath()).toURI().resolve(uri).toString();
     }
 
+    XmlObject application=resolveApplication();
+      
+    if (_registryNode==null)
+    { _registryNode=Registry.getLocalRoot();
+    }
+
+    application.register(_registryNode);
+
+    Executable executable=(Executable) application.get();
+    executable.execute(_arguments);
   }
+
+  private XmlObject resolveApplication()
+    throws BuildException
+  { 
+    if (_uri.endsWith(".assembly.xml"))
+    { return new XmlObject(null,null,_uri.substring(0,_uri.indexOf(".assembly.xml")));
+    }
+      
+    return new XmlObject(_uri,null,null);
+  } 
+  
+  private void processArguments(String[] args)
+  {
+    new Arguments()
+    {
+      public boolean processArgument(String argument)
+      { 
+        if (_uri==null)
+        { _uri=argument;
+        }
+        else
+        { _arguments=(String[]) ArrayUtil.append(_arguments,argument);
+        }
+        return true;
+      }
+
+      public boolean processOption(String option)
+      { 
+        if (_uri==null)
+        { return false;
+        }
+        else
+        { _arguments=(String[]) ArrayUtil.append(_arguments,"-"+option);
+        }
+        return true;
+      }
+
+    }.process(args,'-');
+  }    
+
 }

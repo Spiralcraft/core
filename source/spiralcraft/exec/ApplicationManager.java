@@ -9,7 +9,7 @@ import spiralcraft.loader.LibraryCatalog;
 
 import spiralcraft.util.ArrayUtil;
 
-import spiralcraft.builder.PersistentReference;
+import spiralcraft.builder.XmlObject;
 import spiralcraft.builder.BuildException;
 
 import spiralcraft.stream.Resolver;
@@ -20,9 +20,6 @@ import java.io.IOException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import java.util.prefs.Preferences;
-import java.util.prefs.BackingStoreException;
 
 
 /**
@@ -56,13 +53,22 @@ public class ApplicationManager
   { return _INSTANCE;
   }
 
+  public static void  shutdownInstance()
+  { 
+    _INSTANCE.shutdown();
+    _INSTANCE=null;
+  } 
+  
   public ApplicationManager(String userId)
   { 
     _userId=userId;
     _registryNode=_REGISTRY_ROOT.createChild(_userId);
   }
 
-
+  public void shutdown()
+  { _catalog.close();
+  }
+  
   public LibraryCatalog getLibraryCatalog()
   { return _catalog;
   }
@@ -87,17 +93,14 @@ public class ApplicationManager
 
     try
     {
-      Preferences prefs=XmlPreferencesFactory.resourceRoot(applicationURI);
-      PersistentReference environmentRef=new PersistentReference(prefs,null);
+
+      XmlObject environmentRef=new XmlObject(applicationURI.toString(),null,null);
       environmentRef.register(_registryNode.createChild(Integer.toString(_nextEnvironmentId++)));
       
       ApplicationEnvironment environment=(ApplicationEnvironment) environmentRef.get();
       environment.setApplicationManager(this);
     
       environment.exec(args);
-    }
-    catch (BackingStoreException x)
-    { throw new ExecutionTargetException(x);
     }
     catch (BuildException x)
     { throw new ExecutionTargetException(x);

@@ -1,3 +1,5 @@
 <ApplicationEnvironment>
   <mainClass preference="true"/>
+  <commandLine preference="true"/>
+  <modules preference="true"/>
 </ApplicationEnvironment>
