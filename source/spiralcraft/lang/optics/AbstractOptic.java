@@ -3,6 +3,7 @@ package spiralcraft.lang.optics;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.BindException;
 
 /**
  * An abstract Optic for implementing base types
@@ -12,6 +13,7 @@ public abstract class AbstractOptic
 {
  
   public Optic resolve(Focus focus,String name,Expression[] params)
+    throws BindException
   { return null;
   }
 
