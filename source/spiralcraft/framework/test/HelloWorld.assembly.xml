@@ -1,2 +1,18 @@
 <HelloWorld>
+  <testObject>
+    <bld:SimpleWidget xmlns:bld="java:/spiralcraft/builder/test">
+      <title>This is the title</title>
+      <id>1</id>
+      <on>true</on>
+      <friend focus="spiralcraft.webui.Form" expression="someWidget">
+        <bld:SimpleWidget/>
+      </friend>
+      <children>
+        <bld:SimpleWidget/>
+        <bld:SimpleWidget/>
+        <bld:SimpleWidget/>
+      </children>
+      
+    </bld:SimpleWidget>
+  </testObject>
 </HelloWorld>
