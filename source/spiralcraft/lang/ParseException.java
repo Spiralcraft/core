@@ -1,4 +1,4 @@
-package spiralcraft.lang.parser;
+package spiralcraft.lang;
 
 public class ParseException
   extends Exception

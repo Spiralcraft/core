@@ -1,16 +1,18 @@
 package spiralcraft.lang.test;
 
 import spiralcraft.lang.parser.ExpressionParser;
-import spiralcraft.lang.parser.ParseException;
 
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.ParseException;
 import spiralcraft.lang.DefaultFocus;
 import spiralcraft.lang.DefaultEnvironment;
+import spiralcraft.lang.Attribute;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.optics.StringOptic;
+import spiralcraft.lang.optics.SimpleOptic;
+import spiralcraft.lang.optics.SimpleBinding;
 
 
 import spiralcraft.util.Arguments;
@@ -73,20 +75,21 @@ public class ExpressionResolverTest
 
       DefaultFocus focus=new DefaultFocus();
       DefaultEnvironment environment=new DefaultEnvironment();
-      environment.bind
-        ("test"
-        ,new StringOptic()
-        {
-          public Object get()
-          { return "testValue";
-          }
-        }
+      environment.setAttributes
+        (
+          new Attribute[] 
+            {new Attribute
+              ("test"
+              ,new SimpleOptic(new SimpleBinding("testValue",true))
+              )
+            }
         );
+
       focus.setEnvironment(environment);
 
       time=System.currentTimeMillis();
 
-      Channel channel=expression.createChannel(focus);
+      Channel channel=expression.bind(focus);
 
       System.err.println("Bind time "+(System.currentTimeMillis()-time));
 
@@ -94,7 +97,7 @@ public class ExpressionResolverTest
       {
         time=System.currentTimeMillis();      
         for (int i=0;i<_bindRepeats;i++)
-        { expression.createChannel(focus);
+        { expression.bind(focus);
         }
         System.err.println(_bindRepeats+" repeats bind time "+(System.currentTimeMillis()-time));
       }

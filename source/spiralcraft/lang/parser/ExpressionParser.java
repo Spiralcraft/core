@@ -1,6 +1,7 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.ParseException;
 
 import java.io.StreamTokenizer;
 import java.io.StringReader;
@@ -414,8 +415,9 @@ public class ExpressionParser
         nextToken();
         Node methodCallNode
           =new MethodCallNode
-            ((ResolveNode) primary
-            ,parseExpressionList()
+            ( ((ResolveNode) primary).getSource()
+            , ((ResolveNode) primary).getIdentifierName()
+            , parseExpressionList()
             );
         expect(')');
         return parsePostfixExpressionRest(methodCallNode);
@@ -443,8 +445,12 @@ public class ExpressionParser
     throws ParseException
   {
     List list=new LinkedList();
-    list.add(parseExpression());
-    parseExpressionListRest(list);
+    Node node=parseExpression();
+    if (node!=null)
+    { 
+      list.add(node);
+      parseExpressionListRest(list);
+    }
     return list;
   }
 
@@ -454,7 +460,11 @@ public class ExpressionParser
     if (_tokenizer.ttype==',')
     {
       nextToken();
-      list.add(parseExpression());
+      Node node=parseExpression();
+      if (node==null)
+      { throwUnexpected();
+      }
+      list.add(node);
       parseExpressionListRest(list);
     }
     return;
@@ -501,8 +511,6 @@ public class ExpressionParser
         node=parseExpression();
         expect(')');
         break;
-      default:
-        throwUnexpected();
     }
     return node;
   }
@@ -555,6 +563,7 @@ public class ExpressionParser
    *                    ( "." RelativeFocusExpression 
    *                      | Identifier
    *                      | PrimaryExpression
+   *                    )
    */
   private Node parseFocusExpression()
     throws ParseException
@@ -569,6 +578,14 @@ public class ExpressionParser
 
     switch (_tokenizer.ttype)
     {
+      case StreamTokenizer.TT_EOF:
+        if (focusNode!=null)
+        { return focusNode;
+        }
+        else
+        { throwUnexpected();
+        }
+        return null;
       case StreamTokenizer.TT_WORD:
         return new FocusResolveNode(focusNode,parseIdentifier());
       case '.':
@@ -588,6 +605,8 @@ public class ExpressionParser
   { 
     switch (_tokenizer.ttype)
     {
+      case StreamTokenizer.TT_EOF:
+        return focusNode;
       case StreamTokenizer.TT_WORD:
         IdentifierNode id=new IdentifierNode(_tokenizer.sval);
         nextToken();

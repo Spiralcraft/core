@@ -5,8 +5,8 @@ import spiralcraft.lang.Optic;
 import spiralcraft.lang.BindException;
 
 import spiralcraft.lang.optics.SimpleOptic;
+import spiralcraft.lang.optics.SimpleBinding;
 
-import spiralcraft.lang.OpticAdapter;
 
 import java.math.BigDecimal;
 
@@ -17,7 +17,13 @@ public class LiteralNode
   private final SimpleOptic _optic;
 
   public LiteralNode(Object value,Class valueClass)
-  { _optic=new SimpleOptic(valueClass,value);
+  { 
+    try
+    { _optic=new SimpleOptic(new SimpleBinding(valueClass,value,true));
+    }
+    catch (BindException x)
+    { throw new IllegalArgumentException(x.toString());
+    }
   }
 
   public void dumpTree(StringBuffer out,String prefix)
@@ -28,7 +34,7 @@ public class LiteralNode
       ;
   }
 
-  public Optic bind(final Focus focus)
+  public synchronized Optic bind(final Focus focus)
     throws BindException
   { return _optic;
   }

@@ -1,5 +1,7 @@
 package spiralcraft.lang;
 
+import java.beans.PropertyChangeSupport;
+
 
 /**
  * Default implementation of an Optic.
@@ -28,8 +30,22 @@ public class OpticAdapter
   { return false;
   }
 
+  /**
+   * The underlying value is not guaranteed to remain unchanged
+   */
+  public boolean isStatic()
+  { return false;
+  }
+
   public Class getTargetClass()
   { return Object.class;
+  }
+
+  /**
+   * Property change not supported by default
+   */
+  public PropertyChangeSupport propertyChangeSupport()
+  { return null;
   }
 
 }

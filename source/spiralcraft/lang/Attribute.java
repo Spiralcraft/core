@@ -1,15 +1,33 @@
 package spiralcraft.lang;
 
 import spiralcraft.lang.optics.SimpleOptic;
+import spiralcraft.lang.optics.SimpleBinding;
 
 /**
- * Maps a name to an Optic
+ * Maps a name to an Optic in an Environment
  */
 public class Attribute
 {
   private String _name;
   private Optic _optic;
   private Class _type;
+
+  public Attribute()
+  {
+  }
+
+  public Attribute(String name,Optic optic)
+  { 
+    _name=name;
+    _optic=optic;
+    _type=optic.getTargetClass();
+  }
+
+  public Attribute(String name,Class type)
+  { 
+    _name=name;
+    _type=type;
+  }
 
   public Optic getOptic()
   { 
@@ -38,7 +56,13 @@ public class Attribute
   private synchronized void createOptic()
   { 
     if (_optic==null)
-    { _optic=OpticFactory.decorate(new SimpleOptic(_type));
+    { 
+      try
+      { _optic=new SimpleOptic(new SimpleBinding(_type,null,false));
+      }
+      catch (BindException x)
+      { x.printStackTrace();
+      }
     }
   }
 }

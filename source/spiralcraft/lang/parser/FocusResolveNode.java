@@ -32,7 +32,10 @@ public class FocusResolveNode
     else
     { environment=focus.getEnvironment();
     }
-    
+    if (environment==null)
+    { throw new BindException("Focus has no environment");
+    }
+
     Optic ret=environment.resolve(identifier);
     if (ret==null)
     { throw new BindException("Name '"+identifier+"' not found.");

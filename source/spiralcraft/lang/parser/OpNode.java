@@ -5,12 +5,15 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 
+import spiralcraft.lang.OpticFactory;
+
 public class OpNode
   extends Node
 {
 
   private final Node _op1;
   private final Node _op2;
+  private final Expression[] _params;
   private final String _op;
 
   public OpNode(Node op1,Node op2,char op)
@@ -18,6 +21,7 @@ public class OpNode
     _op1=op1;
     _op2=op2;
     _op=new String(new char[]{op}).intern();
+    _params=new Expression[] {new Expression(_op2,null)};
   }
 
   public Optic bind(final Focus focus)
@@ -28,7 +32,7 @@ public class OpNode
     Optic ret=op1
       .resolve(focus
               ,_op
-              ,new Expression[] {new Expression(_op2,null)}
+              ,_params
               );
     if (ret==null)
     { throw new BindException("Could not bind '"+_op+"' operator in "+op1.toString());

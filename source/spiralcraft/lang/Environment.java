@@ -24,7 +24,7 @@ public interface Environment
   public Optic resolve(String name);
 
   /**
-   * Return a list of attributes 
+   * Return the attribute names in this Environment
    */
-  public Attribute[] getAttributes();  
+  public String[] getNames();  
 }

@@ -1,10 +1,12 @@
 package spiralcraft.lang;
 
+import java.beans.PropertyChangeSupport;
 
 /**
  * Provides a view of an application object or data element. Optics are combined
  *   using an Expression syntax to form Channels which navigate object models of
  *   arbitrary nature.
+ *
  */
 public interface Optic
 {
@@ -32,4 +34,17 @@ public interface Optic
    */
   Class getTargetClass();
 
+  /**
+   * Provide a reference to the PropertyChangeSupport object
+   *   which fires a PropertyChangeEvent when the referenced data
+   *   value changes. Returns null if the referenced data value does not support
+   *   property change notification, or is guaranteed to never change..
+   */
+  PropertyChangeSupport propertyChangeSupport();
+
+  /** 
+   * Indicates whether the referenced data value is guaranteed to
+   *   remain unchanged.
+   */
+  boolean isStatic();
 }

@@ -18,7 +18,14 @@ public class ResolveNode
     _identifier=identifier;
   }
 
-  
+  public String getIdentifierName()
+  { return _identifier.getIdentifier();
+  }
+
+  public Node getSource()
+  { return _source;
+  }
+
   public Optic bind(final Focus focus)
     throws BindException
   { 

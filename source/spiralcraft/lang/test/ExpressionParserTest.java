@@ -1,8 +1,8 @@
 package spiralcraft.lang.test;
 
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.ParseException;
 import spiralcraft.lang.parser.ExpressionParser;
-import spiralcraft.lang.parser.ParseException;
 
 
 import spiralcraft.util.Arguments;

@@ -28,4 +28,10 @@ public interface Focus
    * Return this Focus's parent Focus.
    */
   Focus getParentFocus();
+
+  /**
+   * Return a Channel, which binds the expression to this Focus.
+   */
+  Channel bind(Expression expression)
+    throws BindException;
 }

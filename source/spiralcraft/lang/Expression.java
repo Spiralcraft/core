@@ -3,7 +3,6 @@ package spiralcraft.lang;
 import spiralcraft.lang.parser.Node;
 
 import spiralcraft.lang.parser.ExpressionParser;
-import spiralcraft.lang.parser.ParseException;
 
 import java.util.HashMap;
 
@@ -39,7 +38,13 @@ public class Expression
   { return _text;
   }
 
-  public Channel createChannel(Focus focus)
+  /**
+   * Create a Channel by binding this Expression to a Focus. This method
+   *   is intended to be used by Focus implementors. Users should use
+   *   Focus.bind(Expression exp) to permit the Focus to re-use Channels
+   *   defined by the same Expression.
+   */
+  public Channel bind(Focus focus)
     throws BindException
   { return new Channel(_root.bind(focus),this); 
   }

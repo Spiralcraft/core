@@ -5,6 +5,8 @@ import spiralcraft.lang.Optic;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 
+import java.beans.PropertyChangeSupport;
+
 /**
  * An Optic which delegates to another Optic, usually in order to
  *   decorate the namespace.
@@ -38,6 +40,15 @@ public class ProxyOptic
 
   public Class getTargetClass()
   { return _optic.getTargetClass();
+  }
+
+
+  public PropertyChangeSupport propertyChangeSupport()
+  { return _optic.propertyChangeSupport();
+  }
+
+  public boolean isStatic()
+  { return _optic.isStatic();
   }
 
   public String toString()
