@@ -12,7 +12,7 @@ public class DefaultFormatter
   extends Formatter
 {
   private SimpleDateFormat _dateFormat
-    =new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss.SZ");
+    =new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss.SSSZ");
   private String _cr=System.getProperty("line.separator");
 
   public synchronized String format(LogRecord record)
@@ -25,14 +25,12 @@ public class DefaultFormatter
     out.append(Integer.toString(record.getThreadID()));
     out.append(" ");
     out.append(record.getLoggerName());
+    out.append(" (");
+    out.append(record.getSourceClassName());
+    out.append(".");
+    out.append(record.getSourceMethodName());
+    out.append(")");
     out.append(_cr);
-    if (record.getLevel().intValue()<=Level.FINE.intValue())
-    { 
-      out.append(record.getSourceClassName());
-      out.append(".");
-      out.append(record.getSourceMethodName());
-      out.append(_cr);
-    }
     out.append("  ");
     out.append(formatMessage(record));
     out.append(_cr);
