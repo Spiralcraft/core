@@ -12,9 +12,26 @@ import java.util.HashMap;
  */
 public class BeanInfoCache
 {
+  private static final HashMap _SINGLETONS=new HashMap(); 
+
   private HashMap _cache=new HashMap();
   private int _introspectorFlags;
+  
+  public static synchronized BeanInfoCache getInstance(int introspectorFlags)
+  { 
+    Integer flags=new Integer(introspectorFlags);
 
+    BeanInfoCache cache=
+      (BeanInfoCache) _SINGLETONS.get(flags);
+    
+    if (cache==null)
+    { 
+      cache=new BeanInfoCache(introspectorFlags);
+      _SINGLETONS.put(cache,flags);
+    }
+    return cache;
+  }
+  
   public BeanInfoCache()
   {
   }
