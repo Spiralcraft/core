@@ -19,6 +19,17 @@ public class ArrayUtil
   }
 
   /**
+   * Truncate an array by removing the specified number of elements from
+   *   the head of the array.
+   */
+  public static Object truncateBefore(Object array,int numElements)
+  {
+    Object newArray = Array.newInstance(array.getClass().getComponentType(), Array.getLength(array)-numElements);
+    System.arraycopy(array, numElements, newArray, 0, Array.getLength(newArray));
+    return newArray;
+  }
+  
+  /**
    * Format a String array into a String using the specified separator and delimiter.
    * No escape processing is performed by this method.
    */
