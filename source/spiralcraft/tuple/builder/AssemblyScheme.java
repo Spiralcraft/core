@@ -1,7 +1,5 @@
 package spiralcraft.tuple.builder;
 
-import spiralcraft.stream.Resource;
-
 import spiralcraft.builder.Assembly;
 import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.AssemblyLoader;
@@ -11,6 +9,7 @@ import spiralcraft.tuple.Scheme;
 
 import spiralcraft.tuple.spi.SchemeImpl;
 
+import java.net.URI;
 
 /**
  * A Scheme explicitly constructed using an AssemblyClass definition, where
@@ -31,16 +30,16 @@ public class AssemblyScheme
   extends SchemeImpl
 {
   
-  public AssemblyScheme(Resource resource)
+  public AssemblyScheme(URI uri)
     throws BuildException
-  { super(loadScheme(resource));
+  { super(loadScheme(uri));
   }
 
-  private static final Scheme loadScheme(Resource resource)
+  private static final Scheme loadScheme(URI uri)
     throws BuildException
   {
     AssemblyClass assemblyClass
-      =AssemblyLoader.getInstance().loadAssemblyDefinition(resource);
+      =AssemblyLoader.getInstance().findAssemblyDefinition(uri);
     
     Assembly assembly
       =assemblyClass.newInstance(null);
