@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>spiralcraft.lang Use Cases</title>
+     
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  
+  <meta name="author" content="Mike Toth">
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#000099" vlink="#990099"
+ alink="#000099">
+<h1>Spiralcraft</h1>
+<hr width="100%" size="2">
+<h2>spiralcraft.lang package<br>
+</h2>
+The spiralcraft.lang package provides an expression language facility to help
+developers perform common tasks such as integrating application components
+and binding user interfaces to data sources. The language permits 'data sinks'
+to be bound to 'data sources' by using dotted name expressions to reference
+them via an 'environment'.<br>
+<br>
+At its core, spiralcraft.lang provides facilities for API users to parse expressions,
+bind them to a Focus, and evaluate them as required. Likewise, it provides
+facilities for SPI implementers to define namespaces which expose useful
+information and interfaces. 
+<h3>Architecture<br>
+</h3>
+<h4>Expression</h4>
+A sequence of names, literal values and operators which resolve to a target
+object (an application component or data value) when evaluated within the
+context of a Focus. Users and integrators of applications which expose the
+spiralcraft.lang syntax can use the language alone to customize a wide variety
+of behavioral and presentation elements.<br>
+<br>
+Programmatically, an Expression is the compiled form of the language syntax
+encoded to facilitate efficient binding.<br>
+<h4>Channel</h4>
+A Channel provides bidirectional access to a target object reachable from
+a Focus, in a manner specified by an Expression. Application components can
+use channels to reference their interaction peers or to read and modify data
+points.<br>
+<br>
+Channels are composed of Optics, which are chained together into a tree which
+composes a path from one or more aspects of the Focus the target of the channel.
+<h4>Optic</h4>
+An Optic provides a view of an application object or data value that is related
+in some way to one or more source Opics. Optics are implemented by the spiralcraft.lang
+package and by applications which implement the spiralcraft.lang SPI, providing
+a broad array of functionality for navigating application object models and
+transforming data.
+<h4>Focus</h4>
+A Focus represents the subject and environment  of expression evaluation.<br>
+<br>
+A Focus is associated with an Environment, which gives Channels access to
+application or service provider specific namespaces.<br>
+<br>
+A Focus is optionally associated with a source Channel which represents the
+subject of evaluation. This value may change over the course of time as application
+behavior dictates the flow of focus by responding to user navigation or by
+traversing a data structure such as a list, table, tree, etc,. As the target
+of the source Channel changes, the changes will be propogated to the Channels
+bound to the Focus.
+<h4></h4>
+<h3>Examples<br>
+</h3>
+<h4>Spreadsheet</h4>
+User wants to provide an expression for a data value in a cell.<br>
+<ul>
+  <li>worksheet.paymentTable.columns.amount.sum<br>
+Sum the amount column of this worksheet's payment table</li>
+  <li>.left(5)&nbsp;<br>
+The fifth cell to the left</li>
+  <li><br>
+  </li>
+</ul>
+<h4>Data Model</h4>
+User wants to navigate a custom application data model.<br>
+<ul>
+  <li>customer.name<br>
+Reference the customer name</li>
+  <li>order.date.format("mm/dd/yyyy")<br>
+Format the order date</li>
+  <li>order.customer.region.title<br>
+Obtain the title of the order customer's region</li>
+  <li>order.customer.name + " : " + order.orderNumber<br>
+Concatenate the customer's name and order number<br>
+  </li>
+</ul>
+<br>
+</body>
+</html>

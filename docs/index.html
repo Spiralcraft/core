@@ -31,26 +31,27 @@ XML utilities based on SAX (simple API for XML). Contains a parse tree to
 help cache SAX event sequences.</li>
   <li><b><a href="spiralcraft.builder.html">spiralcraft.builder</a><br>
     </b>A system that defines and instantiates interconnected graphs of Java
-objects by defining 'assemblies' using an XML dialect. Using a human and machine
-readable declarative XML syntax to define the context (configurable properties,
-containership, and composition) of an application component or assembly simplifies
-the development and maintenance of complex applications over using Java method
-code for this purpose. This makes Java classes more reusable by allowing
-them to focus on their behavior instead of their 'configuration'. This also
-helps reap the benefits of polymorphism by making it easy to substitute different
-implementations of individual application components at integration time.<br>
+objects by defining 'assemblies' using an XML dialect. Using a human and
+machine readable declarative XML syntax to define the context (configurable
+properties, containership, and composition) of an application component or
+assembly simplifies the development and maintenance of complex applications
+over using Java method code for this purpose. This makes Java classes more
+reusable by allowing them to focus on their behavior instead of their 'configuration'.
+This also helps reap the benefits of polymorphism by making it easy to substitute
+different implementations of individual application components at integration
+time.<br>
   </li>
   <li><b>spiralcraft.versioning</b><br>
   (Planned) Encapsulates the versioning and dependency system used by Spiralcraft
 to  track and load the set of modules required by any given deployment. Provides
  facilities to allow different versions of modules to share the same virtual
  machine.</li>
-  <li><b>spiralcraft.lang<br>
-      </b>(Planned) Expression language toolkit. Provides ability to expose
-and access  dynamic data models at runtime using path expressions that are
-compiled into  strongly typed bindings in order to support high performance
-repeated evaluation.  Supports applications such as dynamic content generation
-and runtime integration  of components by allowing developers who write components
+  <li><b><a href="spiralcraft.lang.html">spiralcraft.lang</a><br>
+      </b>Expression language toolkit. Provides ability to expose and access
+ dynamic data models at runtime using path expressions that are compiled
+into  strongly typed bindings in order to support high performance repeated
+evaluation.  Supports applications such as dynamic content generation and
+runtime integration  of components by allowing developers who write components
 and subsystems to cleanly expose functionality to application developers.&nbsp;</li>
   <li><b>spiralcraft.stream<br>
       </b>Abstraction of 'stream resources' provides an interface for applications
@@ -73,9 +74,10 @@ platform independent manner.</li>
   <li><b>spiralcraft.telemetry<br>
       </b>(Planned) Interface which provides a standard means for components
 to report  operational statistics while ensuring minimum impact on the runtime
-system  profile. System is composed of a tree of 'Meters', each of which
-contains  'Logs' for capuring events and 'Registers' for capturing statistics.</li>
+system  profile. System is composed of a tree of 'Meters', each of which contains
+ 'Logs' for capuring events and 'Registers' for capturing statistics.</li>
 </ul>
+<br>
 <br>
 <br>
 <br>
