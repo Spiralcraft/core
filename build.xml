@@ -1,12 +1,30 @@
 <project name="spiralcraft-core" default="build" basedir=".">
 
+  <property name="classpath" value="${spiralcraft-main.jar}"/>
 
   <target name="build">
     <javac 
+      classpath="${classpath}"
       srcdir="source" 
-      classpath="${spiralcraft-main.jar}"
       debug="on"
     />
+
+		<javadoc 
+      classpath="source:${classpath}"
+			sourcepath="source"
+      packagenames="spiralcraft.**.**"
+        
+			header="spiralcraft-core API"
+			destdir="docs/api"
+			author="Spiralcraft, Inc."
+			version="v1.0-dev0"
+			use="true"
+			windowtitle="spiralcraft-core API"
+			doctitle="&lt;h1&gt;spiralcraft-core API&lt;/h1&gt;"
+			maxmemory="90M"
+			failonerror="true">
+			<bottom>Copyright 2000, Spiralcraft, Inc.</bottom>
+		</javadoc>
   </target>
 
   <target name="jar" depends="build">
