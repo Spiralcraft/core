@@ -5,7 +5,7 @@ import spiralcraft.lang.parser.ExpressionParser;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.DefaultFocus;
-import spiralcraft.lang.DefaultEnvironment;
+import spiralcraft.lang.AttributeContext;
 import spiralcraft.lang.Attribute;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
@@ -74,8 +74,8 @@ public class ExpressionResolverTest
       }
 
       DefaultFocus focus=new DefaultFocus();
-      DefaultEnvironment environment=new DefaultEnvironment();
-      environment.setAttributes
+      AttributeContext context=new AttributeContext();
+      context.setAttributes
         (
           new Attribute[] 
             {new Attribute
@@ -85,7 +85,7 @@ public class ExpressionResolverTest
             }
         );
 
-      focus.setEnvironment(environment);
+      focus.setContext(context);
 
       time=System.currentTimeMillis();
 

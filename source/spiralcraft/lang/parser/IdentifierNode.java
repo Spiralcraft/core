@@ -2,7 +2,7 @@ package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.Environment;
+import spiralcraft.lang.Context;
 import spiralcraft.lang.BindException;
 
 public class IdentifierNode
@@ -26,14 +26,14 @@ public class IdentifierNode
   public Optic bind(Focus focus)
     throws BindException
   { 
-    Environment environment=focus.getEnvironment();
-    if (environment==null)
-    { throw new BindException("No environment to resolve '"+_identifier+"'");
+    Context context=focus.getContext();
+    if (context==null)
+    { throw new BindException("No Context to resolve '"+_identifier+"'");
     }
 
-    Optic ret=environment.resolve(_identifier);
+    Optic ret=context.resolve(_identifier);
     if (ret==null)
-    { throw new BindException("Name '"+_identifier+"' not found in environment");
+    { throw new BindException("Name '"+_identifier+"' not found in Context");
     }
     return ret;
   }

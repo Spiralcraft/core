@@ -4,6 +4,12 @@ import spiralcraft.lang.optics.ProxyOptic;
 
 import java.util.HashMap;
 
+/**
+ * A new Focus created as a result of binding an Expression to a source Focus.
+ *
+ * This Focus inherits the Context of the source Focus and has a subject
+ *   that corresponds to the data pathway specifed by the expression.
+ */
 public class Channel
   extends ProxyOptic
   implements Focus
@@ -35,8 +41,8 @@ public class Channel
   { return _source.findFocus(name);
   }
   
-  public Environment getEnvironment()
-  { return _source.getEnvironment();
+  public Context getContext()
+  { return _source.getContext();
   }
   
   public synchronized Channel bind(Expression expression)

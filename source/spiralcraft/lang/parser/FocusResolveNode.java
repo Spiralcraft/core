@@ -3,7 +3,7 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Environment;
+import spiralcraft.lang.Context;
 
 
 public class FocusResolveNode
@@ -24,21 +24,21 @@ public class FocusResolveNode
     throws BindException
   { 
     String identifier=_identifier.getIdentifier();
-    Environment environment;
+    Context context;
     
     if (_source!=null)
-    { environment=_source.findFocus(focus).getEnvironment();
+    { context=_source.findFocus(focus).getContext();
     }
     else
-    { environment=focus.getEnvironment();
+    { context=focus.getContext();
     }
-    if (environment==null)
-    { throw new BindException("Focus has no environment");
+    if (context==null)
+    { throw new BindException("Focus has no Context");
     }
 
-    Optic ret=environment.resolve(identifier);
+    Optic ret=context.resolve(identifier);
     if (ret==null)
-    { throw new BindException("Name '"+identifier+"' not found.");
+    { throw new BindException("Name '"+identifier+"' not found in Context.");
     }
     return ret;
   }

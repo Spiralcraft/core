@@ -4,7 +4,7 @@ import spiralcraft.lang.optics.SimpleOptic;
 import spiralcraft.lang.optics.SimpleBinding;
 
 /**
- * Maps a name to an Optic in an Environment
+ * Maps a name to an Optic. Used primarily in an AttributeContext
  */
 public class Attribute
 {

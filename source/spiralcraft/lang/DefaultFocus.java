@@ -6,10 +6,10 @@ import java.util.HashMap;
  * Simple implementation of Focus
  */
 public class DefaultFocus
-  implements Focus,Environment
+  implements Focus,Context
 {
 
-  private Environment _environment;
+  private Context _context;
   private Optic _subject;
   private Focus _parent;
   private HashMap _channels;
@@ -23,7 +23,7 @@ public class DefaultFocus
   }
 
   /**
-   * Environment.resolve(String name)
+   * Context.resolve(String name)
    */
   public Optic resolve(String name)
   { 
@@ -49,8 +49,8 @@ public class DefaultFocus
   { return _parent;
   }
 
-  public void setEnvironment(Environment val)
-  { _environment=val;
+  public void setContext(Context val)
+  { _context=val;
   }
     
   public synchronized void setSubject(Optic val)
@@ -60,17 +60,16 @@ public class DefaultFocus
   }
 
   /**
-   * Return the Environment which resolves
-   *   names for this Focus. If no environment
-   *   was configured, Environment names will be resolved
-   *   against the subject.
+   * Return the Context for this Focus. If no specific Context was supplied,
+   *   the Context returned will be one which resolves names against the
+   *   subject.
    */
-  public Environment getEnvironment()
+  public Context getContext()
   { 
-    if (_environment==null)
-    { _environment=this;
+    if (_context==null)
+    { _context=this;
     }
-    return _environment;
+    return _context;
   }
 
   /**

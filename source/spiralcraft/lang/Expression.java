@@ -40,9 +40,10 @@ public class Expression
 
   /**
    * Create a Channel by binding this Expression to a Focus. This method
-   *   is intended to be used by Focus implementors. Users should use
-   *   Focus.bind(Expression exp) to permit the Focus to re-use Channels
-   *   defined by the same Expression.
+   *   is intended to be used by Focus implementors.
+   *
+   * Users should use Focus.bind(Expression exp) to permit the Focus to 
+   *   re-use Channels defined by the same Expression.
    */
   public Channel bind(Focus focus)
     throws BindException
