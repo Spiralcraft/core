@@ -1,5 +1,7 @@
 package spiralcraft.builder;
 
+import java.util.ArrayList;
+
 /**
  * Specifies a property to be defined in the context of an AssemblyClass
  *
@@ -7,21 +9,35 @@ package spiralcraft.builder;
  *   evaluated in the context of the containing Assembly which identifies
  *   a property in the containing Assembly or SubAssemblies that is to
  *   be assigned a value or modified in some way.
- *   
  */
 public class PropertySpecifier
 {
-  private final AssemblyClass _assemblyClass;
+  private final AssemblyClass _container;
   private final String _specifier;
-  
-  public PropertySpecifier(AssemblyClass assemblyClass,String specifier)
+  private StringBuffer _textContent;
+  private ArrayList _contents;
+
+  public PropertySpecifier(AssemblyClass container,String specifier)
   {
-    _assemblyClass=assemblyClass;
+    _container=container;
     _specifier=specifier;
   }
 
-  public String toString()
-  { return super.toString()+"[specifier="+_specifier+"]";
+  public void addAssemblyClass(AssemblyClass assembly)
+  { 
+    if (_contents==null)
+    { _contents=new ArrayList(1);
+    }
+    _contents.add(assembly);
+    
+  }
+
+  public void addCharacters(char[] characters)
+  {
+    if (_textContent==null)
+    { _textContent=new StringBuffer();
+    }
+    _textContent.append(characters);
   }
 
 }

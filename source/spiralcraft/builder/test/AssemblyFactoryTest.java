@@ -4,11 +4,15 @@ package spiralcraft.builder.test;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import spiralcraft.builder.AssemblyFactory;
+import spiralcraft.builder.AssemblyLoader;
 import spiralcraft.builder.AssemblyClass;
 
 
 import spiralcraft.util.Arguments;
+
+import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
+import java.io.IOException;
 
 public class AssemblyFactoryTest
 {
@@ -23,19 +27,24 @@ public class AssemblyFactoryTest
   
   public void run(String[] args)
   {
+    try
+    { 
+      _uri=
+        new URI
+          ("java:/spiralcraft/builder/test/test1.assembly.xml"
+          );
+    }
+    catch (URISyntaxException x)
+    { throw new IllegalArgumentException(x.toString());
+    }
+
     new Arguments()
     {
 
       protected boolean processOption(String option)
       {
         if (option=="uri")
-        { 
-          try
-          { _uri=new URI(nextArgument());
-          }
-          catch (URISyntaxException x)
-          { throw new IllegalArgumentException(x.toString());
-          }
+        { _uri=_uri.resolve(nextArgument());
         }
         else if (option=="repeats")
         { _repeats=Integer.parseInt(nextArgument());
@@ -47,16 +56,11 @@ public class AssemblyFactoryTest
       }
     }.process(args,'-');
 
-    if (_uri==null)
-    { 
-      System.err.println("uri cannot be null");
-      return;
-    }
-      
+     
     try
     {
       AssemblyClass assemblyClass
-        = AssemblyFactory.loadAssemblyDefinition(_uri);
+        = AssemblyLoader.getInstance().findAssemblyDefinition(_uri);
       if (assemblyClass!=null)
       { System.err.println(assemblyClass.toString());
       }
@@ -65,7 +69,12 @@ public class AssemblyFactoryTest
       }
     }
     catch (Exception x)
-    { System.err.println(x.toString());
+    { x.printStackTrace();
     }
   }
+
+  public void dump(PrintWriter writer,String linePrefix)
+  {
+  }
+
 }

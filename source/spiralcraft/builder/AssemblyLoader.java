@@ -11,6 +11,7 @@ import spiralcraft.sax.ParseTreeFactory;
 import spiralcraft.sax.ParseTree;
 import spiralcraft.sax.Node;
 import spiralcraft.sax.Element;
+import spiralcraft.sax.Characters;
 
 import org.xml.sax.SAXException;
 
@@ -19,19 +20,50 @@ import java.io.InputStream;
 
 import java.util.List;
 import java.util.Iterator;
+import java.util.HashMap;
 
 /**
  * Reads an assembly from an XML resource
  */
-public class AssemblyFactory
+public class AssemblyLoader
 {
+  private static final AssemblyLoader _INSTANCE=new AssemblyLoader();
+  
+  private final HashMap _cache=new HashMap();
+  
+  /**
+   * Return the singleton instance of the AssemblyLoader
+   */
+  public static AssemblyLoader getInstance()
+  { return _INSTANCE;
+  }
 
   /** 
-   * Instantiate an assembly defined by the XML document obtained
+   * Retrieve an AssemblyClass defined by the XML document obtained
+   *   from the specified resource. The AssemblyClass will be retrieved
+   *   from a cache if it has not been loaded, otherwise it will be
+   *   loaded.
+   */
+  public synchronized AssemblyClass findAssemblyDefinition(URI resourceUri)
+    throws IOException,ClassNotFoundException
+  { 
+    AssemblyClass ret=(AssemblyClass) _cache.get(resourceUri);
+    if (ret==null)
+    { 
+      ret=loadAssemblyDefinition(resourceUri);
+      if (ret!=null)
+      { _cache.put(resourceUri,ret);
+      }
+    }
+    return ret;
+  }
+
+  /** 
+   * Load an AssemblyClass defined by the XML document obtained
    *   from the specified resource.
    */
-  public static AssemblyClass loadAssemblyDefinition(URI resourceUri)
-    throws IOException
+  private AssemblyClass loadAssemblyDefinition(URI resourceUri)
+    throws IOException,ClassNotFoundException
   {
     Resource resource=Resolver.getInstance().resolve(resourceUri);
     
@@ -53,7 +85,7 @@ public class AssemblyFactory
 
     Element root=parseTree.getDocument().getRootElement();
     AssemblyClass assemblyClass=readAssemblyClass(resourceUri,root,null);
-    
+    assemblyClass.resolve();
     
     return assemblyClass;
   }
@@ -61,10 +93,8 @@ public class AssemblyFactory
   /**
    * Define an AssemblyClass based on the information in an XML Element
    */
-  public static AssemblyClass readAssemblyClass(URI localUri,Element node,AssemblyClass containerClass)
+  public AssemblyClass readAssemblyClass(URI localUri,Element node,AssemblyClass containerClass)
   {
-    System.out.println(node.toString());
-
     String packageUriString = node.getURI();
     if (packageUriString!=null)
     {
@@ -88,6 +118,7 @@ public class AssemblyFactory
         ,packageUri
         ,node.getLocalName()
         ,containerClass
+        ,this
         );
         
     if (node.hasChildren())
@@ -101,15 +132,29 @@ public class AssemblyFactory
         }
       }
     }
-
     return assemblyClass;
   }
 
-  public static void readProperty(URI localUri,Element node,AssemblyClass containerClass)
+  public void readProperty(URI localUri,Element node,AssemblyClass containerClass)
   {
     PropertySpecifier prop=new PropertySpecifier(containerClass,node.getLocalName());
     
     containerClass.addPropertySpecifier(prop);
+    if (node.hasChildren())
+    {
+      Iterator it=node.getChildren().iterator();
+      while (it.hasNext())
+      { 
+        Node child = (Node) it.next();
+        if (child instanceof Element)
+        { prop.addAssemblyClass(readAssemblyClass(localUri,(Element) child,containerClass));
+        }
+        else if (child instanceof Characters)
+        { prop.addCharacters( ((Characters) child).getCharacters());
+        }
+      }
+
+    }
   }
 
 }

@@ -24,22 +24,32 @@ public class AssemblyClass
   private AssemblyClass _baseClass;
   private Class _javaClass;
   private LinkedList _propertySpecifiers;
+  private AssemblyLoader _loader;
 
   public AssemblyClass
     (URI sourceUri
     ,URI derivationPackage
     ,String derivationName
     ,AssemblyClass outerClass
+    ,AssemblyLoader loader
     )
   { 
     _sourceUri=sourceUri;
     _derivationPackage=derivationPackage;
     _derivationName=derivationName;
     _outerClass=outerClass;
+    _loader=loader;
+  }
+
+  public void resolve()
+    throws IOException,ClassNotFoundException
+  { 
+    resolveExternalBaseClass();
+
   }
 
   private void resolveExternalBaseClass()
-    throws IOException
+    throws IOException,ClassNotFoundException
   {
     URI baseUri
       =_derivationPackage.resolve(_derivationName+".assembly.xml");
@@ -48,11 +58,28 @@ public class AssemblyClass
     { 
       // Circular definition
       // Use Java class instead
-      return;
+      resolveJavaClass();
     }
+    else
+    {
+      _baseClass=_loader.findAssemblyDefinition(baseUri);
+      if (_baseClass==null)
+      { resolveJavaClass();
+      }
+    }
+  }
 
-    // Use the AssemblyLoader here
-    _baseClass=AssemblyFactory.loadAssemblyDefinition(baseUri);
+  private void resolveJavaClass()
+    throws ClassNotFoundException
+  { 
+    String className
+      =_derivationPackage.getPath().substring(1).replace('/','.')+_derivationName;
+    _javaClass
+      =Class.forName
+        (className
+        ,false
+        ,Thread.currentThread().getContextClassLoader()
+        );
   }
 
   private String qualifyRelativeJavaClassName(String name)
@@ -67,25 +94,26 @@ public class AssemblyClass
     _propertySpecifiers.add(prop);
   }
 
-  public String toString()
+  public Class getJavaClass()
   {
-    StringBuffer out=new StringBuffer();
-    out.append(super.toString());
-    out.append("[uri="+_sourceUri);
-    if (_propertySpecifiers!=null)
-    {
-      out.append(",properties=[");
-      Iterator it=_propertySpecifiers.iterator();
-      while (it.hasNext())
-      { 
-        out.append(it.next().toString());
-        if (it.hasNext())
-        { out.append(",");
-        }
-      }
-      out.append("]");
+    if (_javaClass!=null)
+    { return _javaClass;
     }
-    out.append("]");
-    return out.toString();
+    else if (_baseClass!=null)
+    { return _baseClass.getJavaClass();
+    }
+    else
+    { return null;
+    }
+    
+  }
+
+
+  public Assembly newInstance()
+    throws InstantiationException,ClassNotFoundException,IllegalAccessException
+  { 
+    // Instantiate the assembly
+    Assembly assembly=new Assembly(this);
+    return assembly;
   }
 }
