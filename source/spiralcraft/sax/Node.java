@@ -15,7 +15,25 @@ public abstract class Node
 {
   private LinkedList _children;
   private Node _parent;
+  private Object _peer;
 
+  /**
+   * Associate an application specific Object with this
+   *   node.
+   */
+  public void setPeer(Object peer)
+  { _peer=peer;
+  }
+  
+  /**
+   * Return the application specific Object
+   *   associated with this node.
+   *   
+   */
+  public Object getPeer()
+  { return _peer;
+  }
+  
   public void removeChild(Node child)
   { _children.remove(child);
   }
