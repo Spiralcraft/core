@@ -1,5 +1,7 @@
 package spiralcraft.util;
 
+import spiralcraft.text.Filter;
+
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.io.IOException;
@@ -7,8 +9,6 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
 
-
-import java.util.ArrayList;
 
 /**
  * Useful static methods for String manipulation
@@ -82,5 +82,29 @@ public class StringUtil
     { bytes[i]=(byte) string.charAt(i);
     }
     return bytes;
+  }
+  
+  /**
+   * Remove the specified chars from the source string
+   */
+  public static String removeChars(CharSequence source,String chars)
+  {
+    Filter filter=new Filter(chars);
+    return filter.filter(source);
+  }
+
+  /**
+   * Find an instance of any of the specified chars
+   */
+  public static int findAny(CharSequence source,int start,String chars)
+  {
+    for (int i=start;i<source.length();i++)
+    { 
+      if (chars.indexOf(source.charAt(i))>-1)
+      { return i;
+      }
+    }
+    return -1;
+    
   }
 }
