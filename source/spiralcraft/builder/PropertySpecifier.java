@@ -30,11 +30,13 @@ public class PropertySpecifier
   private String _targetName;
   private AssemblyClass _targetAssemblyClass;
   private Expression _sourceExpression;
+  private Expression _focusExpression;
   private boolean _literalWhitespace;
   private String _focus;
   private String _expression;
   private boolean _preference;
-
+  private boolean _dynamic;
+  
   public PropertySpecifier
     (AssemblyClass container
     ,String specifier
@@ -44,6 +46,17 @@ public class PropertySpecifier
     _specifier=StringUtil.tokenize(specifier,".");
   }
 
+  public PropertySpecifier
+    (AssemblyClass container
+    ,String specifier
+    ,String value
+    )
+  {
+    this(container,specifier);
+    addCharacters(value.toCharArray());
+  }
+
+  
   public String getSourceCodeLocation()
   { 
     return 
@@ -70,6 +83,14 @@ public class PropertySpecifier
   { _preference=val;
   }
 
+  public boolean isDynamic()
+  { return _dynamic;
+  }
+  
+  public void setDynamic(boolean val)
+  { _dynamic=val;
+  }
+  
   /** 
    * Indicate whether whitespace is to be treated literally or 
    *   trimmed.
@@ -81,9 +102,8 @@ public class PropertySpecifier
   }
 
   /**
-   * Specify the interface name of the local singleton that will serve as the focus
-   *   for resolving expressions.
-   *
+   * Specify the expression that will be bound at built-time to provide
+   *   
    */
   public void setFocus(String val)
   { _focus=val;
@@ -94,9 +114,8 @@ public class PropertySpecifier
   }
 
   /**
-   * Specify the expression that supplies the value of the property when evaluated in the context
-   *   of the specified Focus. If the Focus is not specified, it will default to the Assembly containing
-   *   the property specifier.
+   * Specify the expression that will be bound and evaluated at build-time when the
+   *   Assembly is instantiated to provide a value for the property.
    */
   public void setExpression(String val)
   { _expression=val;
@@ -104,6 +123,10 @@ public class PropertySpecifier
 
   public Expression getSourceExpression()
   { return _sourceExpression;
+  }
+  
+  public Expression getFocusExpression()
+  { return _focusExpression;
   }
 
   /**
@@ -136,6 +159,13 @@ public class PropertySpecifier
       if (_textData!=null)
       { throw new BuildException("Properties cannot have both expressions and text data");
       }
+
+      try
+      { _focusExpression=Expression.parse(_focus);
+      }
+      catch (Exception x)
+      { throw new BuildException("Error parsing focus "+_focus,x);
+      }
     }
       
     if (_expression!=null)
@@ -151,7 +181,7 @@ public class PropertySpecifier
       { _sourceExpression=Expression.parse(_expression);
       }
       catch (Exception x)
-      { throw new BuildException("Error parsing "+_specifier,x);
+      { throw new BuildException("Error parsing expression: "+_expression,x);
       }
     }
 
@@ -213,7 +243,7 @@ public class PropertySpecifier
   public void addCharacters(char[] characters)
   {
     if (_textContent==null)
-    { _textContent=new StringBuffer();
+    { _textContent=new StringBuffer(characters.length);
     }
     _textContent.append(characters);
   }
