@@ -1,7 +1,10 @@
 package spiralcraft.sax;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
+import spiralcraft.util.ArrayUtil;
  
 /**
  * Represents an Element in an XML document
@@ -14,6 +17,23 @@ public class Element
   private String _qName;
   private Attribute[] _attributes;
 
+  /**
+   * Constructor for no-namespace client use
+   */
+  public Element
+    (String name
+    ,Attribute[] attributes
+    )
+  { 
+    _uri="";
+    _localName=name;
+    _qName=name;
+    _attributes=attributes;
+  }
+
+  /**
+   * Constructor for SAX use
+   */
   public Element
     (String uri
     ,String localName
@@ -45,6 +65,14 @@ public class Element
     }
   }
 
+  public void removeAttribute(Attribute attribute)
+  { _attributes=(Attribute[]) ArrayUtil.remove(_attributes,attribute);
+  }
+
+  public void addAttribute(Attribute attribute)
+  { _attributes=(Attribute[]) ArrayUtil.append(_attributes,attribute);
+  }
+
   public Attribute[] getAttributes()
   { return _attributes;
   }
@@ -53,8 +81,29 @@ public class Element
   { return _uri;
   }
 
+  public String getQName()
+  { return _qName;
+  }
+
   public String getLocalName()
   { return _localName;
+  }
+
+  public void playEvents(ContentHandler handler)
+    throws SAXException
+  { 
+    handler.startElement
+      (_uri
+      ,_localName
+      ,_qName
+      ,new ArrayAttributes(_attributes)
+      );
+    playChildEvents(handler);
+    handler.endElement
+      (_uri
+      ,_localName
+      ,_qName
+      );
   }
 
   public String toString()

@@ -3,6 +3,9 @@ package spiralcraft.sax;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+
+import java.io.IOException;
 
 /**
  * A lightweight parse tree of an XML document which captures and preserves SAX events.
@@ -19,6 +22,23 @@ public class ParseTree
   private Document _document;
   private Node _currentNode;
   
+  public static ParseTree createTree(Element root)
+  { return new ParseTree(new Document(root));
+  }
+
+  public ParseTree()
+  {
+  }
+
+  public ParseTree(Document document)
+  { _document=document;
+  }
+
+  public void playEvents(ContentHandler handler)
+    throws SAXException
+  { _document.playEvents(handler);
+  }
+
   public Document getDocument()
   { return _document;
   }

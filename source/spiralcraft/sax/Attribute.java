@@ -9,6 +9,22 @@ public class Attribute
   private String _uri;
   private String _value;
 
+  /**
+   * Simple constructor for no-namespace client use
+   */
+  public Attribute
+    (String name
+    ,String value
+    )
+  { 
+    _localName=name;
+    _qName=name;
+    _type="";
+    _uri="";
+    _value=value;
+
+  }
+
   public Attribute
     (String localName
     ,String qName
@@ -42,6 +58,10 @@ public class Attribute
 
   public String getValue()
   { return _value;
+  }
+
+  public void setValue(String value)
+  { _value=value;
   }
 
   public String toString()

@@ -7,12 +7,14 @@ import javax.xml.parsers.SAXParser;
 import org.xml.sax.SAXException;
 
 import spiralcraft.sax.ParseTree;
+import spiralcraft.sax.ParseTreeFactory;
 import spiralcraft.sax.Node;
 import spiralcraft.sax.Element;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.OutputStreamWriter;
+import java.io.FileOutputStream;
 import java.io.File;
 
 import java.util.Iterator;
@@ -25,6 +27,7 @@ public class ParseTreeTest
   private File _file=null;
   private boolean _dump=false;
   private int _repeats=0;
+  private File _outputFile=null;
 
   public static void main(String[] args)
   {
@@ -46,6 +49,9 @@ public class ParseTreeTest
         }
         else if (option=="dump")
         { _dump=true;
+        }
+        else if (option=="outputFile")
+        { _outputFile=new File(nextArgument());
         }
         else if (option=="repeats")
         { _repeats=Integer.parseInt(nextArgument());
@@ -82,6 +88,13 @@ public class ParseTreeTest
         dump(out,parseTree.getDocument(),null);
       }
 
+      if (_outputFile!=null)
+      { 
+        FileOutputStream out=new FileOutputStream(_outputFile);
+        ParseTreeFactory.toOutputStream(parseTree,out);
+        out.close();
+      }
+
       if (_repeats>0)
       {
         time=System.currentTimeMillis();      
@@ -92,9 +105,17 @@ public class ParseTreeTest
           {
             String resourceName="test1.xml";
             saxParser.parse(ParseTreeTest.class.getResourceAsStream(resourceName),parseTree);
+            
           }
           else
           { saxParser.parse(_file,parseTree);
+          }
+
+          if (_outputFile!=null)
+          { 
+            FileOutputStream out=new FileOutputStream(_outputFile);
+            ParseTreeFactory.toOutputStream(parseTree,out);
+            out.close();
           }
         }
         System.err.println(_repeats+" repeats time "+(System.currentTimeMillis()-time));

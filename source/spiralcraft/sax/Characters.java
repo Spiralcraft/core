@@ -1,5 +1,8 @@
 package spiralcraft.sax;
 
+import org.xml.sax.SAXException;
+import org.xml.sax.ContentHandler;
+
 public class Characters
   extends Node
 {
@@ -13,6 +16,11 @@ public class Characters
 
   public char[] getCharacters()
   { return _characters;
+  }
+
+  public void playEvents(ContentHandler handler)
+    throws SAXException
+  { handler.characters(_characters,0,_characters.length);
   }
 
   public String toString()

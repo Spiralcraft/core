@@ -1,5 +1,8 @@
 package spiralcraft.sax;
 
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
 public class IgnorableWhitespace
   extends Node
 {
@@ -9,6 +12,11 @@ public class IgnorableWhitespace
   { 
     _characters=new char[length];
     System.arraycopy(ch,start,_characters,0,length);
+  }
+
+  public void playEvents(ContentHandler handler)
+    throws SAXException
+  { handler.ignorableWhitespace(_characters,0,_characters.length);
   }
 
 }

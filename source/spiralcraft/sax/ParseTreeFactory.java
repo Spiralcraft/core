@@ -7,6 +7,7 @@ import java.net.URI;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -27,7 +28,14 @@ public class ParseTreeFactory
     throws SAXException,IOException
   { return fromResource(Resolver.getInstance().resolve(uri));
   }
-     
+
+  /**
+   * Write a ParseTree to a URI
+   */     
+  public static void toURI(ParseTree parseTree,URI uri)
+    throws SAXException,IOException
+  { toResource(parseTree,Resolver.getInstance().resolve(uri));
+  }
 
   /**
    * Load a ParseTree from a resource. 
@@ -48,8 +56,28 @@ public class ParseTreeFactory
       { in.close();
       }
     }
+  }
 
+  /**
+   * Write a ParseTree to a resource. 
+   */
+  public static void toResource(ParseTree parseTree,Resource resource)
+    throws SAXException,IOException
+  { 
+    OutputStream out=resource.getOutputStream();
+    if (out==null)
+    { throw new IOException("Resource '"+resource+"' cannot be written to");
+    }
 
+    try
+    { toOutputStream(parseTree,out);
+    }
+    finally
+    { 
+      if (out!=null)
+      { out.close();
+      }
+    }
   }
 
   /**
@@ -80,4 +108,15 @@ public class ParseTreeFactory
     parser.parse(in,parseTree);
     return parseTree;
   }
+
+  /**
+   * Write a parse tree to an OutputStream.
+   */
+  public static void toOutputStream(ParseTree tree,OutputStream out)
+    throws SAXException,IOException
+  {
+    XmlWriter writer=new XmlWriter(out);
+    tree.playEvents(writer);
+  }
+
 }
