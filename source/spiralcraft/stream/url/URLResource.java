@@ -15,8 +15,14 @@ import java.io.OutputStream;
 public class URLResource
   extends AbstractResource
 {
-  private URL _url;
+  private final URL _url;
 
+  public URLResource(URL url)
+  { 
+    super(URI.create(url.toString()));
+    _url=url;
+  }
+  
   public URLResource(URI uri)
     throws UnresolvableURIException
   { 
