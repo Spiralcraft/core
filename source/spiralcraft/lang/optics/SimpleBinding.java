@@ -17,7 +17,16 @@ public class SimpleBinding
   private Object _object;
   private PropertyChangeSupport _propertyChangeSupport;
   private final boolean _static;
-
+  private WeakBindingCache _cache;
+  
+  public synchronized WeakBindingCache getCache()
+  {
+    if (_cache==null)
+    { _cache=new WeakBindingCache();
+    }
+    return _cache;
+  }
+  
   /**
    * Create a SimpleOptic with the specified Object as its target
    *   and with a targetClass equals to the Object's class.

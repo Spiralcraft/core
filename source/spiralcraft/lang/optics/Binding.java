@@ -37,4 +37,10 @@ public interface Binding
    */
   PropertyChangeSupport propertyChangeSupport();
 
+  /**
+   * Return the cache which hold bindings which derive their value from
+   *   this binding.
+   */
+  WeakBindingCache getCache();
+  
 }
