@@ -15,10 +15,30 @@
     </b>Loads and invokes Spiralcraft applications using a custom classloader,
 in conjunction with the version and dependency management functionality contained
 within the spiralcraft.versioning package.</li>
-  <li><b>spiralcraft.reference<br>
-    </b>A set of interfaces which supplies domain independent object referencing
-functionality, allowing unrelated services to export and import references
-to each others objects.<br>
+  <li><b>spiralcraft.util</b><br>
+Utilities to assist common programming tasks. Contains tools to manipulate
+strings, arrays, and command line arguments.<br>
+  </li>
+  <li><b><a href="spiralcraft.reference.html">spiralcraft.reference</a><br>
+    </b>A set of interfaces which allows different object stores (filesystems,
+databases, directories, web sites) to reference each other's objects within
+a well defined local group of systems. Assists the integration of file systems,
+archives, databases and other object stores by supporting the import, export
+and storage of object references using locally unique identifiers (LUIDs)
+generated from the native keying mechanism of the store.&nbsp;</li>
+  <li><b>spiralcraft.sax</b><br>
+XML utilities based on SAX (simple API for XML). Contains a parse tree to
+help cache SAX event sequences.</li>
+  <li><b><a href="spiralcraft.builder.html">spiralcraft.builder</a><br>
+    </b>A system that defines and instantiates interconnected graphs of Java
+objects by defining 'assemblies' using an XML dialect. Using a human and machine
+readable declarative XML syntax to define the context (configurable properties,
+containership, and composition) of an application component or assembly simplifies
+the development and maintenance of complex applications over using Java method
+code for this purpose. This makes Java classes more reusable by allowing
+them to focus on their behavior instead of their 'configuration'. This also
+helps reap the benefits of polymorphism by making it easy to substitute different
+implementations of individual application components at integration time.<br>
   </li>
   <li><b>spiralcraft.versioning</b><br>
   (Planned) Encapsulates the versioning and dependency system used by Spiralcraft
@@ -33,15 +53,14 @@ repeated evaluation.  Supports applications such as dynamic content generation
 and runtime integration  of components by allowing developers who write components
 and subsystems to cleanly expose functionality to application developers.&nbsp;</li>
   <li><b>spiralcraft.stream<br>
-      </b>(Planned) Abstraction of 'stream resources' provides an interface
-for applications  to retrieve low level InputStreams or OutputStreams from
-arbitrary sources  using a URL based naming convention. Includes support
-for relative paths,  containership, and capabilities inquiry. Most components
-which need to open  streams and traverse resource container hierarchies can
-be implemented against  these interfaces for transparent support of present
-and future 'stream resources',  for example files, jar archives, web servers,
-cvs repositories, and devices.  Also contains utilities to help with various
-aspects of dealing with streams.<br>
+      </b>Abstraction of 'stream resources' provides an interface for applications
+ to retrieve low level InputStreams or OutputStreams from arbitrary sources
+ using URIs. Includes support for relative paths,  containership, and capabilities
+inquiry. Most components which need to open  streams and traverse resource
+container hierarchies can be implemented against  these interfaces for transparent
+support of present and future 'stream resources',  for example files, jar
+archives, web servers, cvs repositories, and devices.  Also contains utilities
+to help with various aspects of dealing with streams.<br>
     </li>
   <li><b>spiralcraft.task<br>
       </b>(Planned) Abstraction of 'tasks' which can run asynchronously and
@@ -51,19 +70,14 @@ report progress.</li>
 based parameter passing mechanism, and input/output stream piping. Allows
 modules to expose catalogs of functionality to end users in a flexible and
 platform independent manner.</li>
-  <li><b>spiralcraft.builder<br>
-      </b>(Planned) XML based application scaffolding provides a declarative
-mechanism  for instantiating application components, setting their properties,
-and connecting  them together into assemblies. Assemblies can contain, extend
-and reference  other assemblies within a hierarchical namespace to completely
-define an application. Aspects of application structure can be derived from
-a deployment specific environment to support hassle free deployments.</li>
   <li><b>spiralcraft.telemetry<br>
       </b>(Planned) Interface which provides a standard means for components
 to report  operational statistics while ensuring minimum impact on the runtime
 system  profile. System is composed of a tree of 'Meters', each of which
 contains  'Logs' for capuring events and 'Registers' for capturing statistics.</li>
 </ul>
+<br>
+<br>
 <br>
 <br>
 </body>
