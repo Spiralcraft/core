@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import spiralcraft.command.CommandContext;
 
 /**
  * Controls the execution of applications via one or more ApplicationEnvironments 
@@ -68,6 +69,10 @@ public class ApplicationManager
     _registryNode=_REGISTRY_ROOT.createChild(_userId);
   }
 
+  public CommandContext newCommandContext()
+  { return new ApplicationManagerCommandContext(this);
+  }
+  
   public void setDebug(boolean val)
   { DEBUG=val;
   }
