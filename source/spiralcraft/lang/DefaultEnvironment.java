@@ -49,19 +49,25 @@ public class DefaultEnvironment
   public void setAttributes(Attribute[] val)
   { 
     _attributes=val;
-    if (_names==null)
-    { _names=new HashMap();
+    if (_attributes==null)
+    { _names=null;
     }
-    for (int i=0;i<_attributes.length;i++)
-    { 
-      String name=_attributes[i].getName();
-      if (_names.get(name)!=null)
-      { throw new IllegalArgumentException("Duplicate name "+name);
+    else
+    {
+      if (_names==null)
+      { _names=new HashMap();
       }
-      if (_primary!=null && _primary.resolve(name)!=null)
-      { throw new IllegalArgumentException("Duplicate name "+name);
+      for (int i=0;i<_attributes.length;i++)
+      { 
+        String name=_attributes[i].getName();
+        if (_names.get(name)!=null)
+        { throw new IllegalArgumentException("Duplicate name "+name);
+        }
+        if (_primary!=null && _primary.resolve(name)!=null)
+        { throw new IllegalArgumentException("Duplicate name "+name);
+        }
+        _names.put(name,_attributes[i]);
       }
-      _names.put(name,_attributes[i]);
     }
   }
 
