@@ -12,7 +12,8 @@ public interface Optic
    * Resolve the name and optional set of parameter expressions to provide a
    *   related Optic. 
    */
-  Optic resolve(Focus focus,String name,Expression[] parameters);
+  Optic resolve(Focus focus,String name,Expression[] parameters)
+    throws BindException;
 
   /**
    * Return the application object or data value referenced by this DataPipe as evaluated against
