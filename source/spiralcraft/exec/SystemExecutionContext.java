@@ -26,6 +26,11 @@ public class SystemExecutionContext
   }
   
   public URI focusURI()
-  { return new File(".").toURI();
+  { 
+    return 
+      new File(new File(System.getProperty("user.dir")).getAbsolutePath())
+        .toURI();
   }
+  
+  
 }

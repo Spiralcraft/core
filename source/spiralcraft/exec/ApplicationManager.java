@@ -3,8 +3,6 @@ package spiralcraft.exec;
 import spiralcraft.registry.Registry;
 import spiralcraft.registry.RegistryNode;
 
-import spiralcraft.prefs.XmlPreferencesFactory;
-
 import spiralcraft.loader.LibraryCatalog;
 
 import spiralcraft.util.ArrayUtil;
@@ -25,7 +23,21 @@ import java.net.URISyntaxException;
 import spiralcraft.command.CommandContext;
 
 /**
- * Controls the execution of applications via one or more ApplicationEnvironments 
+ * Controls the execution of applications via one or more ApplicationEnvironments.
+ *
+ * An ApplicationEnvironment defines the code modules (.jar or directory trees)
+ *   and an entry point necessary to run an application.
+ *
+ * ApplicationEnvironments are stored in Resources identified by a URI, which
+ *   is provided to the exec() method.
+ *
+ * If the URI is relative, the ApplicationManager will search for the
+ *   Resource according to the following rules:
+ *
+ *   1. System environment path (<spiralcraft-home>/env)
+ *   2. User environment path (<user-home>/.spiralcraft/env)
+ *   3. "user.dir" Java system property
+ *
  */
 public class ApplicationManager
 {
@@ -34,14 +46,16 @@ public class ApplicationManager
   private static RegistryNode _REGISTRY_ROOT
     =Registry.getLocalRoot().createChild("applicationManager");
 
-  private static ApplicationManager _INSTANCE=new ApplicationManager("boot");
-
-  private LibraryCatalog _catalog=new LibraryCatalog();
+    
+  private final File _codebase;
+      
+  private final LibraryCatalog _catalog;
+  
   private final String _userId;
   private final RegistryNode _registryNode;
 
-  private final URI _systemHomeEnvironmentURI
-    =new File(System.getProperty("spiralcraft.home")).toURI().resolve("env/");
+  private final URI _codebaseEnvironmentURI;
+
 
   private final URI _userHomeEnvironmentURI
     =new File(System.getProperty("user.home")).toURI().resolve(".spiralcraft/env/");
@@ -50,22 +64,16 @@ public class ApplicationManager
 
   private boolean DEBUG=false;
   
-  /**
-   * Obtain the singleton instance of the ApplicationManager.
-   */
-  public static ApplicationManager getInstance()
-  { return _INSTANCE;
-  }
 
-  public static void  shutdownInstance()
-  { 
-    _INSTANCE.shutdown();
-    _INSTANCE=null;
-  } 
-  
-  public ApplicationManager(String userId)
+  public ApplicationManager(String userId,File codebase)
   { 
     _userId=userId;
+    _codebase=codebase;
+    _codebaseEnvironmentURI=_codebase.toURI().resolve("env/");
+    _catalog=
+      new LibraryCatalog
+        (new File(_codebase,"lib")
+        );
     _registryNode=_REGISTRY_ROOT.createChild(_userId);
   }
 
@@ -125,6 +133,7 @@ public class ApplicationManager
    *   1. The system environment path
    *   2. The user environment path
    *   3. The user directory
+   *
    */
   private URI findEnvironment(String name)
   {
@@ -136,7 +145,7 @@ public class ApplicationManager
     { return nameURI;
     }
 
-    searchURI=_systemHomeEnvironmentURI.resolve(nameURI);
+    searchURI=_codebaseEnvironmentURI.resolve(nameURI);
     if (isEnvironment(searchURI))
     { return searchURI;
     }
@@ -183,3 +192,34 @@ public class ApplicationManager
     return false;
   }
 }
+
+/*
+10/25/2004
+
+The search for ApplicationEnvironments falls under the concern of context. Our
+'search' is aware of three contexts- a 'global' system context, a 'user' context
+and a 'current directory' context.
+
+The behavior of the current system is such that no lesser priveleged context
+can override a greater privelaged context by substituting an execution
+environment with the same name. This is accomplished simply be ordering the
+search.
+
+This creates ambiguity when a developer creates a new environment that is
+duplicated elsewhere, and the expected code doesn't run. 
+
+The problem we are trying to solve by the search and resolution is primarily
+associated with the 'shorthand' invocation of functionality, say, from the
+command line.
+
+The command line carries much context information though, in the form of the
+directory structure that is being navigated. By creating some association with
+parent directories, it may be possible to derive a set of nested contexts.
+
+If this occurs, some deterministic way of getting info about the available
+ApplicationEnvironments must be worked out. Perhaps cataloging the
+environments is a good way to do this.
+
+
+*/
+

@@ -14,26 +14,37 @@ import spiralcraft.util.ArrayUtil;
 
 import spiralcraft.loader.LibraryClassLoader;
 
-import spiralcraft.prefs.XmlPreferencesFactory;
-
-import java.util.prefs.Preferences;
 
 /**
- * Provides necessary context for running application code.
+ * Provides necessary context for running application code. 
  *
  * Specifically, the ApplicationEnvironment creates a ClassLoader which
  *   references an appropriate set of code libraries, and resolves and executes
  *   a suitable entry point.
  *
- * The entry point is always a "main" class (a class with the Java standard
- *   main method). The class name can be specified using the 
- *   "-main &lt;classname&gt;" option. If unspecified, the entry point will
- *   default to the class  "spiralcraft.exec.Executor".
+ * The standard Spiralcraft entry point is the spiralcraft.exec.Executor class,
+ *   which loads and executes an application specified by a URI.
  *
- * The ClassLoader created by the ApplicationEnvironment is constructed without
- *   a parent. This preserves forward compatability by allowing the target
+ * An alternate class with the Java standard "main" method can be invoked
+ *   using the "-main &lt;classname&gt;" option.
+ *
+ * The "-exec &lt;classname&gt;" option invokes the 
+ *   spiralcraft.exec.ClassExecutor entry point, which accepts a class name
+ *   as an argument. The specified class must implement 
+ *   the spiralcraft.exec.Executable interface.
+ *
+ * The "-module" option specifies one or more code libraries (.jar names or
+ *   directories containing code) which will be available to the target
+ *   application ClassLoader. 
+ *
+ * An ApplicationEnvironment must be associated with an ApplicationManager,
+ *   which provides access to the available codebase.
+ * 
+ * Note: The ClassLoader created by the ApplicationEnvironment is constructed
+ *   so that it's parent is the Java system application classloader. 
+ *   This preserves forward compatability by allowing the target
  *   application to use different versions of the libraries which compose this
- *   "boot" loading system.
+ *   "boot" loading system. 
  */
 public class ApplicationEnvironment
 {
@@ -75,7 +86,11 @@ public class ApplicationEnvironment
    *   These arguments will preceed any arguments passed to the exec() method.
    */
   public void setMainArguments(String[] val)
-  { _mainArguments=val;
+  { 
+    if (val==null || val.length==0)
+    { new Exception().printStackTrace();
+    }
+    _mainArguments=val;
   }
   
   /**

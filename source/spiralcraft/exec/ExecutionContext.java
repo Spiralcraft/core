@@ -40,5 +40,18 @@ public abstract class ExecutionContext
    */
   public abstract URI focusURI();
   
+  /**
+   * Convert a relative or context-mapped URI to an absolute URI. Other
+   *   URIs are passed through unchanged.
+   */
+  public URI canonicalize(URI relativeURI)
+  {
+    if (!relativeURI.isAbsolute())
+    { return focusURI().resolve(relativeURI);
+    }
+    else
+    { return relativeURI;
+    }
+  }
 }
 
