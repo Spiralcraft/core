@@ -56,7 +56,7 @@ public class AssemblyFactoryTest
     try
     {
       AssemblyClass assemblyClass
-        = AssemblyFactory.loadAssemblyClass(_uri);
+        = AssemblyFactory.loadAssemblyDefinition(_uri);
       if (assemblyClass!=null)
       { System.err.println(assemblyClass.toString());
       }

@@ -16,6 +16,10 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.util.List;
+import java.util.Iterator;
+
 /**
  * Reads an assembly from an XML resource
  */
@@ -26,8 +30,8 @@ public class AssemblyFactory
    * Instantiate an assembly defined by the XML document obtained
    *   from the specified resource.
    */
-  public static AssemblyClass loadAssemblyClass(URI resourceUri)
-    throws IOException,ClassNotFoundException
+  public static AssemblyClass loadAssemblyDefinition(URI resourceUri)
+    throws IOException
   {
     Resource resource=Resolver.getInstance().resolve(resourceUri);
     
@@ -48,9 +52,20 @@ public class AssemblyFactory
     }
 
     Element root=parseTree.getDocument().getRootElement();
-    System.out.println(root.toString());
+    AssemblyClass assemblyClass=readAssemblyClass(resourceUri,root,null);
+    
+    
+    return assemblyClass;
+  }
 
-    String packageUriString = root.getURI();
+  /**
+   * Define an AssemblyClass based on the information in an XML Element
+   */
+  public static AssemblyClass readAssemblyClass(URI localUri,Element node,AssemblyClass containerClass)
+  {
+    System.out.println(node.toString());
+
+    String packageUriString = node.getURI();
     if (packageUriString!=null)
     {
       if (packageUriString.equals(""))
@@ -63,45 +78,38 @@ public class AssemblyFactory
 
     URI packageUri
       =packageUriString!=null
-      ?resourceUri.resolve(packageUriString)
-      :resourceUri.resolve("./").normalize();
+      ?localUri.resolve(packageUriString)
+      :localUri.resolve("./").normalize();
       ;
 
-    URI baseUri
-      =packageUri.resolve(root.getLocalName()+".assembly.xml");
-      
-    String className
-      =packageUri.getPath().substring(1).replace('/','.')+root.getLocalName();
-
-    System.err.println("Base URI="+baseUri);
-    System.err.println("ClassName="+className);
-
-    
-    AssemblyClass baseClass=null;
-
-    // Recursive descent resolution of inheritance hierarchy-
-    if (!baseUri.equals(resourceUri))
-    { baseClass=loadAssemblyClass(baseUri);
-    }
-
-    AssemblyClass assemblyClass;
-
-    if (baseClass!=null)
-    { assemblyClass = new AssemblyClass(resourceUri,baseClass);
-    }
-    else
+    AssemblyClass assemblyClass
+      =new AssemblyClass
+        (localUri
+        ,packageUri
+        ,node.getLocalName()
+        ,containerClass
+        );
+        
+    if (node.hasChildren())
     { 
-      Class javaClass
-        =Class.forName
-          (className
-          ,false
-          ,Thread.currentThread().getContextClassLoader()
-          );
-      assemblyClass = new AssemblyClass(resourceUri,javaClass);
-      
+      Iterator it=node.getChildren().iterator();
+      while (it.hasNext())
+      { 
+        Node child = (Node) it.next();
+        if (child instanceof Element)
+        { readProperty(localUri,(Element) child,assemblyClass);
+        }
+      }
     }
-       
+
     return assemblyClass;
+  }
+
+  public static void readProperty(URI localUri,Element node,AssemblyClass containerClass)
+  {
+    PropertySpecifier prop=new PropertySpecifier(containerClass,node.getLocalName());
+    
+    containerClass.addPropertySpecifier(prop);
   }
 
 }

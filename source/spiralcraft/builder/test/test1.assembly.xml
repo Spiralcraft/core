@@ -7,4 +7,8 @@
     identified by the URI of this file.
 -->
 
-<SimpleWidget />
+<SimpleWidget>
+  <name>MyWidget</name>
+  <title>Mike's Widget</title>
+
+</SimpleWidget>
