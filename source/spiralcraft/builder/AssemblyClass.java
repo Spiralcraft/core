@@ -145,7 +145,9 @@ public class AssemblyClass
   AssemblyClass innerSubclass(AssemblyClass baseClass)
   { return new AssemblyClass(_sourceUri,baseClass,this,_loader);
   }
-  
+
+
+
   /**
    * Register a PropertySpecifier as member of this assembly class.
    * 
@@ -162,23 +164,23 @@ public class AssemblyClass
       _members=new LinkedList<PropertySpecifier>();
       _memberMap=new HashMap<String,PropertySpecifier>();
     }
+    
+    PropertySpecifier oldProp=_memberMap.get(name);
+    if (oldProp!=null)
+    { 
+      // Property has been set multiple times in the same definition
+      _memberMap.put(name,prop);
+      _members.set(_members.indexOf(oldProp),prop);
+    }
     else
     {
-      PropertySpecifier oldProp=_memberMap.get(name);
-      if (oldProp!=null)
-      { 
-        
-        // Silently replace the old member. The registering PropertySpecifier
-        //   should check for an old member before replacing it.
-        _members.remove(oldProp);
-        _memberMap.remove(name);
-      }
+      _memberMap.put(name,prop);
+      _members.add(prop);
     }
 
-    _memberMap.put(name,prop);
-    _members.add(prop);
     if (_compositeMembers!=null)
     { 
+      System.err.println("Recomposing "+prop);
       // XXX Should override more intelligently,
       //   if property exists instead of double
       //   setting.
@@ -355,12 +357,16 @@ public class AssemblyClass
           =map.get(prop.getTargetName());
         if (oldProp!=null)
         { 
-          map.remove(prop.getTargetName());
-          list.remove(oldProp);
+          // Replace without reordering
           prop.setBaseMember(oldProp);
+          list.set(list.indexOf(oldProp),prop);
+          map.put(prop.getTargetName(),prop);
         }
-        list.add(prop);
-        map.put(prop.getTargetName(),prop);
+        else
+        {
+          list.add(prop);
+          map.put(prop.getTargetName(),prop);
+        }
       }
     }
   }
@@ -534,12 +540,15 @@ public class AssemblyClass
   }
   
   /**
-   * Ensure that the given test class is defined within the scope of this
-   *   assembly class. If it isn't, define an inner subclass under the 
-   *   specified property name.
+   * Ensure that the given test class is defined within the scope of -this-
+   *   assembly class, as opposed to its base class, for the purpose of
+   *   overriding a property of some nested class of the base class.
+   *
+   * If it isn't, define an inner subclass under the specified property name
+   *   that extends the nested class within the base class.
    *
    * This is part of the algorithm for determining the AssemblyClass associated
-   *   with the path in a property specifier.
+   *   with the dot-separated path in a property specifier.
    */
   AssemblyClass ensureLocalClass(String propertyName,AssemblyClass testClass)
     throws BuildException
