@@ -17,7 +17,9 @@ import spiralcraft.tuple.spi.SchemeImpl;
  *
  * A deep copy is made of the Scheme contained in an Assembly. For ease of
  *   writing these Assemblies, it is assumed that the Scheme found in the 
- *   Assembly is not necessarily an efficient implmentation.
+ *   Assembly is not necessarily an efficient implmentation (typically
+ *   the Scheme found in the Assembly will be a proxy implementation of
+ *   the Scheme interfaces using Tuples).
  */
 public class AssemblyScheme
   extends SchemeImpl

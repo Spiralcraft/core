@@ -10,10 +10,10 @@ import java.io.IOException;
 /**
  * A lightweight parse tree of an XML document which captures and preserves SAX events.
  *
- * Intended as a convenient alternative for applications that would ordinarily
- *   use SAX directly in leu of the more complex DOM- ie. applications that do not need to
- *   manipulate portions of the XML document, but that may have multiple uses for or a need for
- *   multiple iterations over the document without incurring the overhead of re-parsing.
+ * Intended as a convenient non-event-driven alternative for applications that
+ *   wish to avoid the complexity of DOM- ie. applications that are oriented
+ *   more towards manipulating the information contained in XML documents
+ *   as opposed to the specific textual representation of that information.
  */
 public class ParseTree
   extends DefaultHandler

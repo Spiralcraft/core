@@ -1,7 +1,3 @@
-//
-// Copyright 2002,2003 Spiralcraft, Inc. 
-// All Rights Reserved
-//
 package spiralcraft.sax;
 
 import org.xml.sax.ContentHandler;
@@ -17,7 +13,10 @@ import java.io.OutputStream;
 
 
 /**
- * Writes XML as events are fired through the ContentHandler interface
+ * Writes XML as SAX events are fired through the ContentHandler interface
+ * 
+ * When connected to a SAX parser, this class should write an exact copy
+ *   of the document being read.
  */
 public class XmlWriter
   implements ContentHandler
