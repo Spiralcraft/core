@@ -1,19 +1,24 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <title></title>
+  <title>spiralcraft-core module</title>
 </head>
-<body>
+<body text="#000000" bgcolor="#ffffff" link="#000099" vlink="#990099"
+ alink="#000099">
 <h1>Spiralcraft</h1>
 <hr width="100%" size="2">
 <h2>spiralcraft-core module</h2>
 <h3>Packages<br>
 </h3>
 <ul>
-  <li><b>spiralcraft.loader<br>
+  <li><b><a href="spiralcraft.loader.html">spiralcraft.loader</a><br>
     </b>Loads and invokes Spiralcraft applications using a custom classloader,
 in conjunction with the version and dependency management functionality contained
-within the spiralcraft.versioning package.<br>
+within the spiralcraft.versioning package.</li>
+  <li><b>spiralcraft.reference<br>
+    </b>A set of interfaces which supplies domain independent object referencing
+functionality, allowing unrelated services to export and import references
+to each others objects.<br>
   </li>
   <li><b>spiralcraft.versioning</b><br>
   (Planned) Encapsulates the versioning and dependency system used by Spiralcraft
@@ -30,8 +35,8 @@ and subsystems to cleanly expose functionality to application developers.&nbsp;<
   <li><b>spiralcraft.stream<br>
       </b>(Planned) Abstraction of 'stream resources' provides an interface
 for applications  to retrieve low level InputStreams or OutputStreams from
-arbitrary sources  using a URL based naming convention. Includes support
-for relative paths,  containership, and capabilities inquiry. Most components
+arbitrary sources  using a URL based naming convention. Includes support for
+relative paths,  containership, and capabilities inquiry. Most components
 which need to open  streams and traverse resource container hierarchies can
 be implemented against  these interfaces for transparent support of present
 and future 'stream resources',  for example files, jar archives, web servers,
@@ -56,8 +61,9 @@ on deployment specific environment properties to support hassle free deployments
   <li><b>spiralcraft.telemetry<br>
       </b>(Planned) Interface which provides a standard means for components
 to report  operational statistics while ensuring minimum impact on the runtime
-system  profile. System is composed of a tree of 'Meters', each of which
-contains  'Logs' for capuring events and 'Registers' for capturing statistics.</li>
+system  profile. System is composed of a tree of 'Meters', each of which contains
+ 'Logs' for capuring events and 'Registers' for capturing statistics.</li>
 </ul>
+<br>
 </body>
 </html>
