@@ -1,0 +1,22 @@
+<!--
+  Create an assembly which exposes a JavaBean naming context for
+    access to the properties of SimpleWidget. 
+    
+  New instances of the assembly will configure SimpleWidget with the
+    specified properties.
+    
+  Assemblies which extend this assembly will inherit the property
+    settings for SimpleWidget  
+-->
+
+<test:SimpleWidget
+  xmlns:test="java:/spiralcraft/builder/test/"
+  xmlns:jtext="java:/java/text/"
+  singleton="true"
+  >
+
+  <title>Singleton Widget 2</title>
+  <friend>
+    <test:SingletonWidget1/>
+  </friend>
+</test:SimpleWidget>

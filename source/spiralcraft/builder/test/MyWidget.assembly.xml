@@ -9,7 +9,10 @@
     settings for SimpleWidget  
 -->
 
-<SimpleWidget>
+<test:SimpleWidget
+  xmlns:test="java:/spiralcraft/builder/test/"
+  xmlns:jtext="java:/java/text/"
+  >
 
   <title>My Widget</title>
   <id>3</id>
@@ -17,19 +20,33 @@
   <amount>17.43</amount>
   <milliseconds>123456789012345</milliseconds>
   <friend>
-    <SimpleWidget>
+    <test:SimpleWidget>
       <title>My Friend</title>
-    </SimpleWidget>
+      <friend>
+        <test:SimpleWidget>
+          <title expression="...title"/>
+        </test:SimpleWidget>
+      </friend>
+    </test:SimpleWidget>
   </friend>
   <children>
-    <SimpleWidget>
+    <test:SimpleWidget>
       <title>Child 1</title>
-    </SimpleWidget>
-    <SimpleWidget>
+    </test:SimpleWidget>
+    <test:SimpleWidget>
       <title>Child 2</title>
-    </SimpleWidget>
-    <SimpleWidget>
-      <title>Child 3</title>
-    </SimpleWidget>
+    </test:SimpleWidget>
+    <test:SimpleWidget>
+      <title><String>Child 3</String></title>
+    </test:SimpleWidget>
   </children>  
-</SimpleWidget>
+  <aliases>
+    <String>alias 1</String>
+    <String>alias 2</String>
+    <String>alias 3</String>
+  </aliases>
+
+  <dateFormat>
+    <jtext:SimpleDateFormat>MM/dd/yy hh:mm:ss.S</jtext:SimpleDateFormat>
+  </dateFormat>
+</test:SimpleWidget>

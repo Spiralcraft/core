@@ -8,26 +8,24 @@ import spiralcraft.builder.AssemblyLoader;
 import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.Assembly;
 
-
-
 import spiralcraft.util.Arguments;
 
 import java.io.PrintWriter;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 
+import spiralcraft.exec.Executable;
+import spiralcraft.exec.ExecutionContext;
+
 public class AssemblyFactoryTest
+  implements Executable
 {
 
   private URI _uri;
   private boolean _dump=false;
   private int _repeats=0;
 
-  public static void main(String[] args)
-  { new AssemblyFactoryTest().run(args);
-  }
-  
-  public void run(String[] args)
+  public void execute(final ExecutionContext context,String[] args)
   {
     try
     { 
@@ -46,7 +44,7 @@ public class AssemblyFactoryTest
       protected boolean processOption(String option)
       {
         if (option=="uri")
-        { _uri=_uri.resolve(nextArgument());
+        { _uri=context.canonicalize(URI.create(nextArgument()));
         }
         else if (option=="repeats")
         { _repeats=Integer.parseInt(nextArgument());
