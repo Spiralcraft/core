@@ -12,7 +12,7 @@ public class IdentifierNode
   private final String _identifier;
 
   public IdentifierNode(String identifier)
-  {  _identifier=identifier.intern();
+  { _identifier=identifier.intern();
   }
 
   public String getIdentifier()
@@ -27,13 +27,25 @@ public class IdentifierNode
     throws BindException
   { 
     Context context=focus.getContext();
-    if (context==null)
-    { throw new BindException("No Context to resolve '"+_identifier+"'");
+    
+    Optic ret=null;
+    if (context!=null)
+    { ret=context.resolve(_identifier);
     }
 
-    Optic ret=context.resolve(_identifier);
     if (ret==null)
-    { throw new BindException("Name '"+_identifier+"' not found in Context");
+    { 
+      try
+      { ret=focus.getSubject().resolve(focus,_identifier,null);
+      }
+      catch (BindException x)
+      { 
+        throw new BindException
+          ("Could not resolve identifier '"
+          +_identifier
+          +"' in Context or Subject of Focus"
+          );
+      }
     }
     return ret;
   }

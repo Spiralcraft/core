@@ -24,23 +24,45 @@ public class FocusResolveNode
     throws BindException
   { 
     String identifier=_identifier.getIdentifier();
-    Context context;
+
+    Focus specifiedFocus
+      =_source!=null?_source.findFocus(focus):focus;
+
+    Context context=specifiedFocus.getContext();
     
-    if (_source!=null)
-    { context=_source.findFocus(focus).getContext();
-    }
-    else
-    { context=focus.getContext();
-    }
-    if (context==null)
-    { throw new BindException("Focus has no Context");
+    Optic ret=null;
+    if (context!=null)
+    { ret=context.resolve(_identifier.getIdentifier());
     }
 
-    Optic ret=context.resolve(identifier);
     if (ret==null)
-    { throw new BindException("Name '"+identifier+"' not found in Context.");
+    { 
+      try
+      { 
+        Optic subject=specifiedFocus.getSubject();
+        if (subject!=null)
+        { ret=subject.resolve(specifiedFocus,_identifier.getIdentifier(),null);
+        }
+      }
+      catch (BindException x)
+      { 
+        throw new BindException
+          ("Could not resolve identifier '"
+          +_identifier.getIdentifier()
+          +"' in Context or Subject of Focus"
+          );
+      }
     }
-    return ret;
+    
+    if (ret==null)
+    {
+      throw new BindException
+        ("Could not resolve identifier '"
+        +_identifier.getIdentifier()
+        +"' in Context or Subject of Focus"
+        );
+    }
+    return ret;  
   }
 
   public void dumpTree(StringBuffer out,String prefix)
