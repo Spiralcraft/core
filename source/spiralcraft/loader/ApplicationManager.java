@@ -23,4 +23,14 @@ public class ApplicationManager
     return _INSTANCE;
   }
 
+  /**
+   * Create a default application environment.
+   */
+  public ApplicationEnvironment createApplicationEnvironment()
+  { return new ApplicationEnvironment(this);
+  }
+
+  public LibraryCatalog getLibraryCatalog()
+  { return _catalog;
+  }
 }

@@ -3,10 +3,16 @@ package spiralcraft.loader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.BufferedInputStream;
+
+import java.util.jar.JarFile;
+import java.util.jar.JarEntry;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -39,6 +45,13 @@ public class LibraryCatalog
   {
     System.err.println("Master library path "+_masterLibraryPath);
     loadCatalog();
+  }
+
+  /**
+   * Create a LibraryClasspath to access a subset of the catalog
+   */
+  public LibraryClasspath createLibraryClasspath()
+  { return new LibraryClasspathImpl();
   }
 
   /**
@@ -87,64 +100,92 @@ public class LibraryCatalog
   private void catalogLibrary(File file)
     throws IOException
   {
-    Library lib=new Library();
-    lib.path=file.getAbsolutePath();
-    lib.jar=lib.path.endsWith(".jar");
-    lib.lastModified=file.lastModified();
-    _libraries.add(lib);
-    catalogResources(lib);
-    
-    System.err.println(lib.path+" : "+lib.lastModified);
-    
-  }
-
-  private void catalogResources(Library library)
-    throws IOException
-  {
-    if (library.jar)
-    { catalogJar(library);
+    Library lib;
+    if (file.getName().endsWith(".jar"))
+    { lib=new JarLibrary(file);
     }
     else
-    { catalogDirectory(library);
+    { lib=new FileLibrary(file);
     }
+    _libraries.add(lib);
   }
 
-  private void catalogJar(Library library)
-    throws IOException
+  /**
+   * Implemetation of LibraryClasspath- uses a subset of the LibraryCatalog
+   *   to load classes and resources.
+   */
+  class LibraryClasspathImpl
+    implements LibraryClasspath
   {
-    
-    JarFile jarFile=
-      new JarFile(library.path);
-    try
+    private HashMap _resources=new HashMap();
+    private ArrayList _myLibraries=new ArrayList();
+
+    public byte[] loadData(String path)
+      throws IOException
     {
-      Enumeration entries=jarFile.entries();
-  
-      while (entries.hasMoreElements())
-      {
-        JarEntry jarEntry
-          =(JarEntry) entries.nextElement();
-        Resource resource
-          =new Resource();
-        resource.name=jarEntry.getName();
-        resource.library=library;
-        library.resources.put(resource.name,resource);
-        catalogResource(resource);
+      Resource resource=(Resource) _resources.get(path);
+      if (resource==null)
+      { throw new IOException("Not found: "+path);
+      }
+      return resource.getData();
+    }
+
+    public void addLibrary(String path)
+      throws IOException
+    { 
+      Iterator it=_libraries.iterator();
+      boolean found=false;
+      while (it.hasNext())
+      { 
+        Library library=(Library) it.next();
+
+        // Use versioning logic to find the best
+        //   library in the future
+        if (library.path.equals(path))
+        { 
+          addLibrary(library);
+          found=true;
+          break;
+        }
+      }
+      if (!found)
+      { throw new IOException("Not found: "+path);
       }
     }
-    finally
-    { jarFile.close();
+
+    private void addLibrary(Library library)
+      throws IOException
+    {
+      library.open();
+      _myLibraries.add(library);
+      _resources.putAll(library.resources);
     }
-    
+
+    public void resolveLibrariesForResource(String resourcePath)
+      throws IOException
+    { 
+      Iterator it=_libraries.iterator();
+      boolean found=false;
+      while (it.hasNext())
+      { 
+        Library library=(Library) it.next();
+
+        // Use versioning logic to find the best
+        //   library in the future
+        if (library.resources.get(resourcePath)!=null)
+        { 
+          addLibrary(library);
+          found=true;
+          break;
+        }
+      }
+      if (!found)
+      { throw new IOException("Not found: "+resourcePath);
+      }
+      
+    }
   }
 
-  private void catalogDirectory(Library library)
-  {
-  }
-
-  private void catalogResource(Resource resource)
-  { 
-    
-  }
 }
 
 class CatalogEntry
@@ -154,18 +195,169 @@ class CatalogEntry
   
 }
 
-class Library
+abstract class Library
 {
   String path;
   long lastModified;
-  boolean jar;
   HashMap resources=new HashMap();
+
+  public Library(File file)
+    throws IOException
+  { 
+    path=file.getAbsolutePath();
+    lastModified=file.lastModified();
+    catalogResources();
+  }
+
+  public abstract void open()
+    throws IOException;
+
+  public abstract void close()
+    throws IOException;
+
+  public abstract void catalogResources()
+    throws IOException;
+
 }
 
-class Resource
+class JarLibrary
+  extends Library
+{
+
+  int openCount=0;
+  JarFile jarFile;
+
+  public JarLibrary(File file)
+    throws IOException
+  { super(file);
+  }
+
+  public void catalogResources()
+    throws IOException
+  {
+    
+    jarFile=
+      new JarFile(path);
+    try
+    {
+      Enumeration entries=jarFile.entries();
+  
+      while (entries.hasMoreElements())
+      {
+        JarEntry jarEntry
+          =(JarEntry) entries.nextElement();
+        JarResource resource
+          =new JarResource();
+        resource.entry=jarEntry;
+        resource.name=jarEntry.getName();
+        resource.library=this;
+        resources.put(resource.name,resource);
+      }
+    }
+    finally
+    { 
+      jarFile.close();
+      jarFile=null;
+    }
+    
+  }
+
+  public synchronized void open()
+    throws IOException
+  { 
+    if (openCount==0)
+    { jarFile=new JarFile(path);
+    }
+    openCount++;
+  }
+
+  public synchronized void close()
+    throws IOException
+  {
+    openCount--;
+    if (openCount==0)
+    { jarFile.close();
+    }
+  }
+
+  public byte[] getData(JarEntry entry)
+    throws IOException
+  {
+    BufferedInputStream in=null;
+    try
+    {
+      in = new BufferedInputStream(jarFile.getInputStream(entry));
+
+      byte[] data = new byte[(int) entry.getSize()];
+      in.read(data);
+      in.close();
+      return data;
+    }
+    catch (IOException x)
+    { 
+      if (in!=null)
+      {
+        try
+        { in.close();
+        }
+        catch (IOException y)
+        { }
+      }
+      throw x;
+    }
+  }
+}
+
+class FileLibrary
+  extends Library
+{
+  public FileLibrary(File file)
+    throws IOException
+  { super(file);
+  }
+
+  public void catalogResources()
+  {
+  }
+
+  public void open()
+  {
+  }
+
+  public void close()
+  {
+  }
+}
+
+abstract class Resource
 {
   Library library;
   String name;
+
+  public abstract byte[] getData()
+    throws IOException;
+}
+
+class JarResource
+  extends Resource
+{
+  JarEntry entry;
+  
+  public byte[] getData()
+    throws IOException
+  { return ((JarLibrary) library).getData(entry);
+  }
+
+}
+
+class FileResource
+  extends Resource
+{
+  File file;
+
+  public byte[] getData()
+  { return null;
+  }
 }
 
 class ApplicationInfo
