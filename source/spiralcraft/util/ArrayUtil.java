@@ -107,6 +107,10 @@ public class ArrayUtil
     return -1;
   }
 
+  public static boolean contains(Object array,final Object target)
+  { return indexOf(array,target)>=0;
+  }
+
   /**
    * Expand an array by adding the specified number of elements
    */
