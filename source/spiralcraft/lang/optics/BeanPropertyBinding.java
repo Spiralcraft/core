@@ -1,9 +1,14 @@
 package spiralcraft.lang.optics;
 
 import java.beans.PropertyDescriptor;
+import java.beans.PropertyChangeSupport;
+import java.beans.EventSetDescriptor;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+
 
 public class BeanPropertyBinding
   extends LenseBinding
@@ -13,6 +18,8 @@ public class BeanPropertyBinding
   private final PropertyDescriptor _property;
   private final Method _readMethod;
   private final boolean _static;
+  private final EventSetDescriptor _propertyChangeEventSetDescriptor;
+  private final Object[] _beanPropertyChangeListenerParams;
 
   public BeanPropertyBinding
     (Binding source
@@ -23,20 +30,105 @@ public class BeanPropertyBinding
     _property=lense.getProperty();
     _readMethod=_property.getReadMethod();
 
-    if (_property.getWriteMethod()==null
-        && isSourceStatic()
-        )
-    { _static=true;
+
+    _propertyChangeEventSetDescriptor
+      =lense.getBeanInfo().getPropertyChangeEventSetDescriptor();
+
+    if (_propertyChangeEventSetDescriptor!=null)
+    { 
+      _beanPropertyChangeListenerParams
+        =new Object[] {new BeanPropertyChangeListener()};
     }
     else
-    { _static=false;
+    { _beanPropertyChangeListenerParams=null;
     }
+
+    _static=
+      (_property.getWriteMethod()==null
+        && _propertyChangeEventSetDescriptor==null
+        && isSourceStatic()
+      );
+      
   }
 
   public boolean isStatic()
   { return _static;
   }
 
+  public PropertyChangeSupport propertyChangeSupport()
+  {
+    // Install a propertyChangeListener for the specific property we are watching in
+    //   addition to the one that listens for changes to the source object reference
+    
+    PropertyChangeSupport support;
+    if (!isPropertyChangeSupportActive())
+    {
+      support=super.propertyChangeSupport();
+      if (support!=null && _beanPropertyChangeListenerParams!=null)
+      { 
+        Object target=getSourceValue();
+        try
+        {
+          if (target!=null)
+          { 
+            _propertyChangeEventSetDescriptor.getAddListenerMethod().invoke
+              (target
+              ,_beanPropertyChangeListenerParams
+              );
+          }
+        }
+        catch (IllegalAccessException x)
+        { x.printStackTrace();
+        }
+        catch (InvocationTargetException x)
+        { x.getTargetException().printStackTrace();
+        }
+      }
+    }
+    else
+    { support=super.propertyChangeSupport();
+    }
+    return support;
+  }
+  
+  /**
+   * Extend behavior to transfer the beanPropertyChangeListener over
+   *   from the old source value to the new source value
+   */
+  public void propertyChanged(PropertyChangeEvent event)
+  { 
+    if (_beanPropertyChangeListenerParams!=null)
+    { 
+      try
+      {
+        if (event.getOldValue()!=null)
+        { 
+          _propertyChangeEventSetDescriptor.getRemoveListenerMethod().invoke
+            (event.getOldValue()
+            ,_beanPropertyChangeListenerParams
+            );
+        }
+        super.propertyChange(event);
+        if (event.getNewValue()!=null)
+        { 
+          _propertyChangeEventSetDescriptor.getAddListenerMethod().invoke
+            (event.getNewValue()
+            ,_beanPropertyChangeListenerParams
+            );
+        }
+      }
+      catch (IllegalAccessException x)
+      { x.printStackTrace();
+      }
+      catch (InvocationTargetException x)
+      { x.getTargetException().printStackTrace();
+      }
+    }
+    else
+    { super.propertyChange(event);
+    }
+  }
+  
   public synchronized boolean set(Object val)
   {
     if (_static)
@@ -58,7 +150,13 @@ public class BeanPropertyBinding
       { 
         _params[0]=val;
         method.invoke(target,_params);
-        firePropertyChange("",oldValue,val);
+        // System.out.println(toString()+".set: "+val);
+        if (_propertyChangeEventSetDescriptor==null)
+        { 
+          // Only fire propertyChange if the bean has no facility 
+          //   to do so itself
+          firePropertyChange(_property.getName(),oldValue,val);
+        }
         return true;
       }
       else
@@ -81,8 +179,18 @@ public class BeanPropertyBinding
   public String toString()
   { 
     return super.toString()
-      +":"+super.toString()
       +":[property="+_property.getName()+" ("+_property.getPropertyType()+")]";
+  }
+  
+  class BeanPropertyChangeListener
+    implements PropertyChangeListener
+  {
+    public void propertyChange(PropertyChangeEvent event)
+    {
+      if (event.getPropertyName().equals(_property.getName()))
+      { firePropertyChange(event);
+      }
+    }    
   }
 }
 
