@@ -26,10 +26,6 @@ import spiralcraft.tuple.Tuple;
  *   subcomponents. Upon activation of the PersistentReference, the referred
  *   to object will be composed by recursively instantiating the Assembly and
  *   applying the Tuple data to it.
- * 
- * This approach allows application code and object structure change over time
- *   during the development process without rendering long lived objects
- *   obsolete.
  */
  
 public class PersistentReference
@@ -47,7 +43,7 @@ public class PersistentReference
   {
     _tuple=tuple;
     
-    _assemblyClassURI=_tuple.getScheme().getPeerURI();
+    _assemblyClassURI=_tuple.getScheme().getURI();
     if (_assemblyClassURI==null)
     { 
       throw new PersistenceException
@@ -56,7 +52,7 @@ public class PersistentReference
 
     
     _assemblyClass
-      =AssemblyLoader.getInstance().findAssemblyDefinition(_assemblyClassURI);
+      =AssemblyLoader.getInstance().findAssemblyClass(_assemblyClassURI);
     if (_assemblyClass==null)
     { 
       throw new PersistenceException
@@ -84,7 +80,7 @@ public class PersistentReference
       _assembly=_assemblyClass.newInstance((Assembly) _registryNode.findInstance(Assembly.class));
       _assembly.register(_registryNode);
     }
-    return _assembly.getSubject().get();
+    return _assembly.getObject();
   }
   
   public void flush()
@@ -92,7 +88,7 @@ public class PersistentReference
   { 
     
     // XXX Wrap with a transaction so everything can commit at once
-    _assembly.updatePersistentData();
+    _assembly.storePersistentData();
 
   }
   
