@@ -41,6 +41,9 @@ public class ContentRegexFilter
     try
     {
       in=resource.getInputStream();
+      if (in==null)
+      { return false;
+      }
       CharSequence charSequence=null;
   
       if (in instanceof FileInputStream)

@@ -31,7 +31,11 @@ public class FileResource
 
   public InputStream getInputStream()
     throws IOException
-  { return new FileInputStream(_file);
+  { 
+    if (_file.isDirectory())
+    { return null;
+    }
+    return new FileInputStream(_file);
   }
 
   public boolean supportsRead()
@@ -40,7 +44,11 @@ public class FileResource
 
   public OutputStream getOutputStream()
     throws IOException
-  { return new FileOutputStream(_file);
+  { 
+    if (_file.isDirectory())
+    { return null;
+    }
+    return new FileOutputStream(_file);
   }
 
   public boolean supportsWrite()
