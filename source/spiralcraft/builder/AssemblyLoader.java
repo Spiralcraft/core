@@ -45,7 +45,7 @@ public class AssemblyLoader
    *   loaded.
    */
   public synchronized AssemblyClass findAssemblyDefinition(URI resourceUri)
-    throws IOException,ClassNotFoundException
+    throws BuildException
   { 
     AssemblyClass ret=(AssemblyClass) _cache.get(resourceUri);
     if (ret==null)
@@ -63,24 +63,39 @@ public class AssemblyLoader
    *   from the specified resource.
    */
   private AssemblyClass loadAssemblyDefinition(URI resourceUri)
-    throws IOException,ClassNotFoundException
+    throws BuildException
   {
-    Resource resource=Resolver.getInstance().resolve(resourceUri);
     
-    InputStream in=resource.getInputStream();
-    if (in==null)
-    { return null;
-    }
 
     ParseTree parseTree;
+    InputStream in=null;
+
     try
-    { parseTree=ParseTreeFactory.fromInputStream(in);
+    { 
+      Resource resource=Resolver.getInstance().resolve(resourceUri);
+      in=resource.getInputStream();
+      if (in==null)
+      { return null;
+      }
+
+      parseTree=ParseTreeFactory.fromInputStream(in);
     }
     catch (SAXException x)
-    { throw new IOException(x.toString());
+    { throw new BuildException("Error parsing "+resourceUri.toString(),x);
+    }
+    catch (IOException x)
+    { throw new BuildException("Error reading "+resourceUri.toString(),x);
     }
     finally
-    { in.close();
+    { 
+      if (in!=null)
+      {
+        try
+        { in.close();
+        }
+        catch (IOException x)
+        { }
+      }
     }
 
     Element root=parseTree.getDocument().getRootElement();

@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * An AssemblyClass defines the behavior and content of an Assembly. One
@@ -24,6 +25,7 @@ public class AssemblyClass
   private AssemblyClass _baseClass;
   private Class _javaClass;
   private LinkedList _propertySpecifiers;
+  private LinkedList _compositePropertySpecifiers;
   private AssemblyLoader _loader;
 
   public AssemblyClass
@@ -41,15 +43,61 @@ public class AssemblyClass
     _loader=loader;
   }
 
+
+  PropertyBinding[] bindProperties(Assembly container)
+    throws BuildException
+  { 
+    PropertyBinding[] bindings
+      =new PropertyBinding[_compositePropertySpecifiers.size()];
+
+    
+    Iterator it=_compositePropertySpecifiers.iterator();
+    int i=0;
+    while (it.hasNext())
+    {
+      PropertySpecifier prop=(PropertySpecifier) it.next();
+      bindings[i++]=prop.bind(container);
+    }
+    return bindings;
+  }
+
   public void resolve()
-    throws IOException,ClassNotFoundException
+    throws BuildException
   { 
     resolveExternalBaseClass();
+    resolveProperties();
+  }
+
+  private void resolveProperties()
+    throws BuildException
+  {
+    if (_propertySpecifiers!=null)
+    {
+      Iterator it=_propertySpecifiers.iterator();
+      while (it.hasNext())
+      { 
+        PropertySpecifier prop=(PropertySpecifier) it.next();
+        prop.resolve();
+      }
+    }
+    
+    _compositePropertySpecifiers=new LinkedList();
+    composePropertySpecifiers(_compositePropertySpecifiers);
 
   }
 
+  public void composePropertySpecifiers(LinkedList list)
+  { 
+    if (_baseClass!=null)
+    { _baseClass.composePropertySpecifiers(list);
+    }
+    if (_propertySpecifiers!=null)
+    { list.addAll(_propertySpecifiers);
+    }
+  }
+
   private void resolveExternalBaseClass()
-    throws IOException,ClassNotFoundException
+    throws BuildException
   {
     URI baseUri
       =_derivationPackage.resolve(_derivationName+".assembly.xml");
@@ -70,16 +118,22 @@ public class AssemblyClass
   }
 
   private void resolveJavaClass()
-    throws ClassNotFoundException
+    throws BuildException
   { 
     String className
       =_derivationPackage.getPath().substring(1).replace('/','.')+_derivationName;
-    _javaClass
-      =Class.forName
-        (className
-        ,false
-        ,Thread.currentThread().getContextClassLoader()
-        );
+    try
+    {
+      _javaClass
+        =Class.forName
+          (className
+          ,false
+          ,Thread.currentThread().getContextClassLoader()
+          );
+    }
+    catch (ClassNotFoundException x)
+    { throw new BuildException("Class not found: "+className,x);
+    }
   }
 
   private String qualifyRelativeJavaClassName(String name)
@@ -108,12 +162,20 @@ public class AssemblyClass
     
   }
 
+  public AssemblyClass getBaseClass()
+  { return _baseClass;
+  }
 
-  public Assembly newInstance()
-    throws InstantiationException,ClassNotFoundException,IllegalAccessException
+  public List getPropertySpecifiers()
+  { return _propertySpecifiers;
+  }
+
+  public Assembly newInstance(Assembly parent)
+    throws BuildException
   { 
     // Instantiate the assembly
-    Assembly assembly=new Assembly(this);
+    Assembly assembly=new Assembly(this,parent);
+    
     return assembly;
   }
 }
