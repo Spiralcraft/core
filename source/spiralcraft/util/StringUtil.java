@@ -8,6 +8,8 @@ import java.io.IOException;
 
 import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -15,6 +17,25 @@ import java.util.ArrayList;
  */
 public class StringUtil
 {
+
+  /**
+   * Tokenize a String into a List
+   */
+  public static int tokenize(String input,String tokens,List output)
+  {
+    if (input==null)
+    { return 0;
+    }
+
+    StringTokenizer tok=new StringTokenizer(input,tokens);
+    int count=0;
+    while (tok.hasMoreTokens())
+    { 
+      count++;
+      output.add(tok.nextToken());
+    }
+    return count;
+  }
 
   /**
    * Tokenize a String to a String[]
@@ -25,11 +46,8 @@ public class StringUtil
     { return new String[0];
     }
 
-    StringTokenizer tok=new StringTokenizer(input,tokens);
-    ArrayList tokenList=new ArrayList();
-    while (tok.hasMoreTokens())
-    { tokenList.add(tok.nextToken());
-    }
+    List tokenList=new LinkedList();
+    tokenize(input,tokens,tokenList);
     String[] ret=new String[tokenList.size()];
     tokenList.toArray(ret);
     return ret;
@@ -38,8 +56,18 @@ public class StringUtil
   /**
    * Tokenize a String as a command line
    *
-   * Command lines ignore whitespace, except within double quoted
-   *   strings.
+   * Each command line is composed of several tokens separated
+   * by whitespace. 
+   *
+   * A double quoted string is a single token, whether or not it
+   * contains internal whitespace.
+   * 
+   * A token which contains double quotes can escape the double quotes by
+   *   prefixing them with a backslash ('\') character.
+   *
+   *XXX Make this more reliable for embedded quotes and escape chars
+   *XXX We might want to dispense with the StreamTokenizer and take care
+   *XXX of this simple task by hand.
    */
   public static String[] tokenizeCommandLine(String input)
   {
