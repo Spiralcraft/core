@@ -1,5 +1,6 @@
 package spiralcraft.lang.optics;
 
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Expression;
 
@@ -10,7 +11,7 @@ public abstract class AbstractOptic
   implements Optic
 {
  
-  public Optic resolve(String name,Expression[] params)
+  public Optic resolve(Focus focus,String name,Expression[] params)
   { return null;
   }
 

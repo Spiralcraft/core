@@ -1,5 +1,6 @@
 package spiralcraft.lang.optics;
 
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Expression;
 
@@ -17,8 +18,8 @@ public class ProxyOptic
   { _optic=delegate;
   }
 
-  public Optic resolve(String name,Expression[] params)
-  { return _optic.resolve(name,params);
+  public Optic resolve(Focus focus,String name,Expression[] params)
+  { return _optic.resolve(focus,name,params);
   }
 
   public Object get()
