@@ -6,7 +6,7 @@ import java.util.HashMap;
  * Simple implementation of Focus
  */
 public class DefaultFocus
-  implements Focus,Context
+  implements Focus
 {
 
   private Context _context;
@@ -20,25 +20,6 @@ public class DefaultFocus
 
   public DefaultFocus(Optic subject)
   { _subject=subject;
-  }
-
-  /**
-   * Context.resolve(String name)
-   */
-  public Optic resolve(String name)
-  { 
-    try
-    { return _subject.resolve(this,name,null);
-    }
-    catch (BindException x)
-    { return null;
-    }
-  }
-
-  public String[] getNames()
-  { 
-    // XXX Get names from the subject
-    return null;
   }
 
   public void setParentFocus(Focus parent)
@@ -60,16 +41,21 @@ public class DefaultFocus
   }
 
   /**
-   * Return the Context for this Focus. If no specific Context was supplied,
-   *   the Context returned will be one which resolves names against the
-   *   subject.
+   * Return the Context for this Focus, or if there is none associated,
+   *   return the Context for the parent Focus.
    */
   public Context getContext()
   { 
-    if (_context==null)
-    { _context=this;
+    if (_context!=null)
+    { return _context;
     }
-    return _context;
+    else if (_parent!=null)
+    { return _parent.getContext();
+    }
+    else
+    { return null;
+    }
+    
   }
 
   /**
@@ -80,7 +66,13 @@ public class DefaultFocus
   }
 
   public Focus findFocus(String name)
-  { return _parent.findFocus(name);
+  { 
+    if (_parent!=null)
+    { return _parent.findFocus(name);
+    }
+    else
+    { return null;
+    }
   }
 
   public synchronized Channel bind(Expression expression)
