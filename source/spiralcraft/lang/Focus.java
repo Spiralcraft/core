@@ -1,21 +1,21 @@
 package spiralcraft.lang;
 
 /**
- * Provides access to a specific set of source values a DataPipe
- *   will be evaluated against.
+ * Provides a means for a channel to access the environment and 
+ *   the subject in focus.
  */
 public interface Focus
 {
-  
+    
   /**
    * Return the Environment which resolves
    *   names for this Focus.
    */
-  Environment getEnvironment();  
+  Environment getEnvironment();
 
   /**
    * Return the subject of expression evaluation
    */
-  Object getSubject();
+  Optic getSubject();
 
 }

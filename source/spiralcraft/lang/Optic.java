@@ -11,7 +11,7 @@ public interface Optic
    * Resolve the name and optional set of parameters to provide another Optic 
    *   based on this one. 
    */
-  Optic derive(String name,Expression[] parameters);
+  Optic resolve(String name,Expression[] parameters);
 
   /**
    * Return the application object or data value referenced by this DataPipe as evaluated against

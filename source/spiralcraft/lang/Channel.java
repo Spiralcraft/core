@@ -1,7 +1,12 @@
 package spiralcraft.lang;
 
-public class Channel
-{
+import spiralcraft.lang.optics.ProxyOptic;
 
+public class Channel
+  extends ProxyOptic
+{
+  public Channel(Optic optic)
+  { super(optic);
+  }
   
 }
