@@ -7,6 +7,8 @@ import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.DefaultFocus;
+
 
 import spiralcraft.builder.persist.PersistentReference;
 
@@ -25,6 +27,7 @@ import spiralcraft.registry.RegistryNode;
 import java.util.prefs.Preferences;
 
 import spiralcraft.tuple.Tuple;
+import spiralcraft.tuple.Field;
 
 /**
  * Associates a PropertySpecifier with a some value in the context of
@@ -73,7 +76,7 @@ public class PropertyBinding
   /**
    * Write persistent data to the associated Tuple field
    */
-  public void updatePersistentData()
+  public void storePersistentData()
   { 
     if (_contents!=null && _contents.length>0)
     { 
@@ -98,7 +101,7 @@ public class PropertyBinding
         if (value==null)
         { preferences.remove(_specifier.getTargetName());
         }
-        else if (_target.getTargetClass().isAssignableFrom(String.class))
+        else if (_target.getContentType().isAssignableFrom(String.class))
         { preferences.put(_specifier.getTargetName(),(String) value);
         }
         else if (_converter!=null)
@@ -115,7 +118,7 @@ public class PropertyBinding
             System.err.println
               ("Can't convert preference value '"
               +_specifier.getTargetName()
-              +"' ("+_target.getTargetClass()+") to a String");
+              +"' ("+_target.getContentType()+") to a String");
           }
         }
         */
@@ -123,6 +126,7 @@ public class PropertyBinding
     }
   }
   
+  // XXX Deprecated- use tuples
   public void savePreferences()
   {
     if (_contents!=null && _contents.length>0)
@@ -140,7 +144,7 @@ public class PropertyBinding
         if (value==null)
         { preferences.remove(_specifier.getTargetName());
         }
-        else if (_target.getTargetClass().isAssignableFrom(String.class))
+        else if (_target.getContentType().isAssignableFrom(String.class))
         { preferences.put(_specifier.getTargetName(),(String) value);
         }
         else if (_converter!=null)
@@ -157,7 +161,7 @@ public class PropertyBinding
             System.err.println
               ("Can't convert preference value '"
               +_specifier.getTargetName()
-              +"' ("+_target.getTargetClass()+") to a String");
+              +"' ("+_target.getContentType()+") to a String");
           }
         }
       }
@@ -172,7 +176,7 @@ public class PropertyBinding
       // Sub-assemblies (contents) are specified in definition.
       // Register all sub-assemblies 
       RegistryNode propertyNode=node.createChild(_specifier.getTargetName());
-      if (!_target.getTargetClass().isArray())
+      if (!_target.getContentType().isArray())
       { _contents[0].register(propertyNode);
       }
       else
@@ -196,13 +200,45 @@ public class PropertyBinding
     }
   }
 
+  public void applyPersistentData()
+  {
+    if (_contents!=null && _contents.length>0)
+    { 
+      // How to recurse int contents?
+      
+      // for (int i=0;i<_contents.length;i++)
+      // { _contents[i].applyPersistentData();
+      // }
+    }
+    else if (_specifier.isPersistent())
+    { 
+      PersistentReference ref
+        =(PersistentReference) _registryNode.findInstance
+          (PersistentReference.class);
+        
+      if (ref!=null)
+      {
+        Tuple tuple = ref.getTuple();
+        // XXX Verify that the tuple Scheme is compatible.
+        
+        Field field = 
+          tuple.getScheme().getFields()
+            .findFirstByName(_specifier.getTargetName());
+        
+        Object value=tuple.get(field.getIndex());
+        
+      }
+    }
+  }
+  
   /**
    * Read the value for this property from the preferences object and
    *   apply the value.
    */
+  // XXX Deprecated- use tuples
   public void applyPreferences(Preferences preferences)
   {
-    if (_target.getTargetClass().isArray())
+    if (_target.getContentType().isArray())
     { applyArrayPreferences(preferences);
     }
     else
@@ -213,9 +249,10 @@ public class PropertyBinding
   /**
    * Array preferences are represented in the store in to form &lt;name&gt;.&lt;arrayIndex&gt;
    */
+  // deprecated- use tuples
   private void applyArrayPreferences(Preferences preferences)
   {
-    Class componentType=_target.getTargetClass().getComponentType();
+    Class componentType=_target.getContentType().getComponentType();
     if (_converter==null)
     { _converter=StringConverter.getInstance(componentType);
     }
@@ -249,22 +286,29 @@ public class PropertyBinding
       }
 
     }
-    Object targetValue=Array.newInstance(componentType,prefs.size());
-    for (int i=0;i<prefs.size();i++)
-    { Array.set(targetValue,i,prefs.get(i));
+    
+    // Don't specify empty arrays
+    // XXX Need a better test for null or zero length array
+    if (prefs.size()>0)
+    {
+      Object targetValue=Array.newInstance(componentType,prefs.size());
+      for (int i=0;i<prefs.size();i++)
+      { Array.set(targetValue,i,prefs.get(i));
+      }
+      applySafe(targetValue);
     }
-    applySafe(targetValue);
   }
   
+  // deprecated- use tuples
   public void applySinglePreferences(Preferences preferences)
   {
     if (_converter==null)
-    { _converter=StringConverter.getInstance(_target.getTargetClass());
+    { _converter=StringConverter.getInstance(_target.getContentType());
     }
     String value=preferences.get(_specifier.getTargetName(),null);
     if (value!=null)
     {
-      if (_target.getTargetClass().isAssignableFrom(String.class))
+      if (_target.getContentType().isAssignableFrom(String.class))
       { applySafe(value);
       }
       else if (_converter!=null)
@@ -288,7 +332,7 @@ public class PropertyBinding
             ("Can't convert preference value '"
             +value
             +"' to "
-            +_target.getTargetClass()
+            +_target.getContentType()
             );
         }
       }
@@ -332,8 +376,8 @@ public class PropertyBinding
    */
   private boolean isAggregate()
   { 
-    return _target.getTargetClass().isArray()
-      || Collection.class.isAssignableFrom(_target.getTargetClass());
+    return _target.getContentType().isArray()
+      || Collection.class.isAssignableFrom(_target.getContentType());
   }
   
   private void resolveSource()
@@ -358,7 +402,7 @@ public class PropertyBinding
             );
         }
       }
-      else if (Collection.class.isAssignableFrom(_target.getTargetClass()))
+      else if (Collection.class.isAssignableFrom(_target.getContentType()))
       { 
         Collection source;
         if (_specifier.getCollectionClass()!=null)
@@ -374,27 +418,27 @@ public class PropertyBinding
               ("Error instantiating "+_specifier.getCollectionClass(),x);
           }
         }
-        else if (_target.getTargetClass()==List.class)
+        else if (_target.getContentType()==List.class)
         { source=new ArrayList(_contents.length);
         }
-        else if (!_target.getTargetClass().isInterface())
+        else if (!_target.getContentType().isInterface())
         { 
           try
           { 
             source
-              =(Collection) _target.getTargetClass().newInstance();
+              =(Collection) _target.getContentType().newInstance();
           }
           catch (Exception x)
           { 
             throw new BuildException
-              ("Error instantiating "+_target.getTargetClass(),x);
+              ("Error instantiating "+_target.getContentType(),x);
           }
         }
         else
         {
           throw new BuildException
             ("Not enough information to instantiate a Collection suitable"
-            +" to implement "+_target.getTargetClass()
+            +" to implement "+_target.getContentType()
             );
         }
            
@@ -411,7 +455,7 @@ public class PropertyBinding
       {
         // Source is an Array
         _source=Array.newInstance
-          (_target.getTargetClass().getComponentType()
+          (_target.getContentType().getComponentType()
           ,_contents.length
           );
         for (int i=0;i<_contents.length;i++)
@@ -424,12 +468,12 @@ public class PropertyBinding
     else if (_specifier.getTextData()!=null)
     {
       String text=_specifier.getTextData();
-      _converter=StringConverter.getInstance(_target.getTargetClass());
+      _converter=StringConverter.getInstance(_target.getContentType());
       if (_converter==null)
       { 
         throw new BuildException
           ("No StringConverter registered for "
-          +_target.getTargetClass().getName()
+          +_target.getContentType().getName()
           );
       }
       _source=_converter.fromString(text);
@@ -437,11 +481,28 @@ public class PropertyBinding
     else if (_specifier.getFocusExpression()!=null)
     { 
       // Focus on the specific result of evaluating the focus expression
+      
+      // Focus expressions in Assembly definitions are intended to permit the 
+      //   developer to specify a alternate component in the assembly hierarchy
+      //   against which to resolve an expression. By default, expressions
+      //   resolve against the containing Assembly. 
+      //
+      // The focus expression is evaluated only once, as opposed to the source
+      //   expression, which is evaluated every time a property update is 
+      //   triggered. This -may- help performance.
+      // 
+      // This particular feature remains under evaluation, as it can be
+      //   confusing.
       try
       { 
         Object focusObject=_focus.bind(_specifier.getFocusExpression()).get();
         if (focusObject!=null)
-        { _focus=OpticFactory.getInstance().focus(focusObject);
+        { 
+          // Consider supplying a parent focus here, since we may want to
+          //   resolve something from this container.
+          _focus=new DefaultFocus
+            (OpticFactory.getInstance().createOptic(focusObject)
+            );
         }
         else
         { 
@@ -457,27 +518,44 @@ public class PropertyBinding
           ("Error binding focus "+_specifier.getFocusExpression().getText(),x);
       }
     }
+    else
+    { 
+    }
     
     if (_specifier.getSourceExpression()!=null)
     {
       try
       {
         Channel sourceChannel=_focus.bind(_specifier.getSourceExpression());
-        if (_target.getTargetClass()==Focus.class
+        if (_target.getContentType()==Focus.class
             && !Focus.class.isAssignableFrom
-              (sourceChannel.getTargetClass())
+              (sourceChannel.getContentType())
            )
         {
           // Property is looking for a Focus for further expression
-          //   bindings
-          _source=OpticFactory.getInstance().focus(sourceChannel.get());
+          //   bindings. Convert the source value into a Focus and pass the
+          //   Focus to the property.
+          //
+          // This feature effectively allows components to evaluate expressions
+          //   at runtime against the containing assembly hierarchy or any
+          //   object accessible from it.
+          _source=new DefaultFocus
+            (OpticFactory.getInstance().createOptic
+              (sourceChannel.get()
+              )
+            );
         }
-        else if (_target.getTargetClass()==Channel.class
+        else if (_target.getContentType()==Channel.class
             && !Channel.class.isAssignableFrom
-              (sourceChannel.getTargetClass())
+              (sourceChannel.getContentType())
            )
         {
           // Property is looking for a Channel 
+          //
+          // This is another special case- components looking for a Channel
+          //   are looking for a view on a property, not a property itself,
+          //   primarily so the components can subscribe to property change
+          //   events and manage updates.
           _source=sourceChannel;
         }
         else

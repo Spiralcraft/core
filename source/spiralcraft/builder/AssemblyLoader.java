@@ -6,6 +6,7 @@ import spiralcraft.stream.Resolver;
 import spiralcraft.stream.Resource;
 
 import spiralcraft.util.StringUtil;
+import spiralcraft.util.Path;
 
 import java.io.IOException;
 
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.HashMap;
 
+
 /**
  * Reads an assembly from an XML resource
  */
@@ -33,6 +35,7 @@ public class AssemblyLoader
   private static final AssemblyLoader _INSTANCE=new AssemblyLoader();
   
   private final HashMap _cache=new HashMap();
+  private final HashMap _classCache=new HashMap();
   
   /**
    * Return the singleton instance of the AssemblyLoader
@@ -41,6 +44,52 @@ public class AssemblyLoader
   { return _INSTANCE;
   }
 
+  /**
+   * Retrieve the AssemblyClass identified by the specified URI. The URI
+   *   identifies an abstract resource- ie. if <uri>.assembly.xml does
+   *   not exists, a default assembly for the Java class associated with
+   *   the URI will be returned.
+   */
+  public synchronized AssemblyClass findAssemblyClass(URI classUri)
+    throws BuildException
+  {
+    AssemblyClass ret=(AssemblyClass) _classCache.get(classUri);
+    if (ret==null)
+    {
+      ret=findAssemblyDefinition
+        (URI.create(classUri.toString()+".assembly.xml"));
+        
+      if (ret!=null)
+      { _classCache.put(classUri,ret);
+      }
+    }
+    
+    
+    if (ret==null)
+    { 
+      Path path=new Path(classUri.getPath(),'/');
+      
+      URI packageUri=classUri.resolve(URI.create(path.parentPath().format("/")+"/"));
+      String className=packageUri.relativize(classUri).toString();
+      System.out.println(classUri.toString());
+      System.out.println(packageUri.toString());
+      System.out.println(className.toString());
+      
+      ret=new AssemblyClass
+        (null
+        ,packageUri
+        ,className
+        ,null
+        ,this
+        );
+      ret.resolve();  
+      _classCache.put(classUri,ret);
+    }
+
+    return ret;
+    
+  }
+  
   /** 
    * Retrieve the AssemblyClass defined by the XML document obtained
    *   from the specified resource. The AssemblyClass will be retrieved

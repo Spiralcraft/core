@@ -73,9 +73,9 @@ public class PropertySpecifier
   public String getSourceCodeLocation()
   { 
     return 
-      ArrayUtil.formatToString(_container.getInnerPath(),"/",null)
+      ArrayUtil.format(_container.getInnerPath(),"/",null)
       +"."
-      +ArrayUtil.formatToString(_specifier,".",null)
+      +ArrayUtil.format(_specifier,".",null)
       +" in "
       +_container.getSourceURI().toString();
   }
@@ -376,7 +376,7 @@ public class PropertySpecifier
   public String toString()
   { 
     return super.toString()
-      +":"+ArrayUtil.formatToString(_container.getInnerPath(),".","")
-      +"."+ArrayUtil.formatToString(_specifier,".","");
+      +":"+ArrayUtil.format(_container.getInnerPath(),".","")
+      +"."+ArrayUtil.format(_specifier,".","");
   }
 }

@@ -7,7 +7,7 @@ public class BuildException
   { super(message);
   }
 
-  public BuildException(String message,Exception nested)
+  public BuildException(String message,Throwable nested)
   { super(message,nested);
   }
 }

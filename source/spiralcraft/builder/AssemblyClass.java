@@ -25,11 +25,11 @@ public class AssemblyClass
 
   // _basePackage and _baseName are used
   //   to resolve external base class or java class
-  //   if _baseClass hasn't been supplied at construction
+  //   if _baseAssemblyClass hasn't been supplied at construction
   private final URI _basePackage;
   private final String _baseName;
   
-  private AssemblyClass _baseClass;
+  private AssemblyClass _baseAssemblyClass;
 
   private final AssemblyClass _outerClass;
   private final AssemblyLoader _loader;
@@ -104,7 +104,7 @@ public class AssemblyClass
     _sourceUri=sourceUri;
     _basePackage=null;
     _baseName=null;
-    _baseClass=baseClass;
+    _baseAssemblyClass=baseClass;
     _outerClass=outerClass;
     if (loader!=null)
     { _loader=loader;
@@ -173,8 +173,8 @@ public class AssemblyClass
     { member=(PropertySpecifier) _memberMap.get(name);
     }
     
-    if (member==null && _baseClass!=null)
-    { member=_baseClass.getMember(name);
+    if (member==null && _baseAssemblyClass!=null)
+    { member=_baseAssemblyClass.getMember(name);
     }
     
     return member;
@@ -225,7 +225,7 @@ public class AssemblyClass
     throws BuildException
   { 
     assertUnresolved();
-    if (_baseClass==null)
+    if (_baseAssemblyClass==null)
     { resolveExternalBaseClass();
     }
     resolveProperties();
@@ -247,8 +247,8 @@ public class AssemblyClass
     if (_declarationName.equals(name))
     { return true;
     }
-    else if (_baseClass!=null)
-    { return _baseClass.isFocusNamed(name);
+    else if (_baseAssemblyClass!=null)
+    { return _baseAssemblyClass.isFocusNamed(name);
     }
     else if (_javaClass!=null)
     { return _javaClass.getName().equals(name);
@@ -321,8 +321,8 @@ public class AssemblyClass
   private void composeMembers(LinkedList list,HashMap map)
     throws BuildException
   {
-    if (_baseClass!=null)
-    { _baseClass.composeMembers(list,map);
+    if (_baseAssemblyClass!=null)
+    { _baseAssemblyClass.composeMembers(list,map);
     }
     if (_members!=null)
     { 
@@ -347,8 +347,8 @@ public class AssemblyClass
 
   public void composeSingletons(LinkedList list)
   { 
-    if (_baseClass!=null)
-    { _baseClass.composeSingletons(list);
+    if (_baseAssemblyClass!=null)
+    { _baseAssemblyClass.composeSingletons(list);
     }
     if (_localSingletons!=null)
     { 
@@ -358,6 +358,9 @@ public class AssemblyClass
     }
   }
 
+  /**
+   * The URI of the defining resource for this assembly class
+   */
   public URI getSourceURI()
   { return _sourceUri;
   }
@@ -370,10 +373,13 @@ public class AssemblyClass
   private void resolveExternalBaseClass()
     throws BuildException
   {
-    URI baseUri
+    URI baseResource
       =_basePackage.resolve(_baseName+".assembly.xml");
 
-    if (baseUri.equals(_sourceUri) && _outerClass==null)
+    URI baseUri
+      =_basePackage.resolve(_baseName);
+      
+    if (baseResource.equals(_sourceUri) && _outerClass==null)
     { 
       // Circular definition
       // Use Java class instead
@@ -381,8 +387,8 @@ public class AssemblyClass
     }
     else
     {
-      _baseClass=_loader.findAssemblyDefinition(baseUri);
-      if (_baseClass==null)
+      _baseAssemblyClass=_loader.findAssemblyDefinition(baseResource);
+      if (_baseAssemblyClass==null)
       { resolveJavaClass();
       }
     }
@@ -391,6 +397,9 @@ public class AssemblyClass
   /**
    * Resolve the Java class- called when the top of the AssemblyClass tree is
    *   reached during resolveExternalBaseClass
+   *
+   * XXX Use the whole URI to load classes from the network, and shortcut
+   *     the java: scheme to work from the classpath.
    */
   private void resolveJavaClass()
     throws BuildException
@@ -443,8 +452,8 @@ public class AssemblyClass
     if (_javaClass!=null)
     { return _javaClass;
     }
-    else if (_baseClass!=null)
-    { return _baseClass.getJavaClass();
+    else if (_baseAssemblyClass!=null)
+    { return _baseAssemblyClass.getJavaClass();
     }
     else
     { return null;
@@ -453,7 +462,7 @@ public class AssemblyClass
   }
 
   public AssemblyClass getBaseClass()
-  { return _baseClass;
+  { return _baseAssemblyClass;
   }
 
   public List getPropertySpecifiers()
@@ -468,6 +477,9 @@ public class AssemblyClass
    * Ensure that the given test class is defined within the scope of this
    *   assembly class. If it isn't, define an inner subclass under the 
    *   specified property name.
+   *
+   * This is part of the algorithm for determining the AssemblyClass associated
+   *   with the path in a property specifier.
    */
   AssemblyClass ensureLocalClass(String propertyName,AssemblyClass testClass)
     throws BuildException

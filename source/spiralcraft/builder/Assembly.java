@@ -88,10 +88,10 @@ public class Assembly
    * Descend the tree and write all persistent properties
    *   to their respective Tuple field.
    */
-  public void updatePersistentData()
+  public void storePersistentData()
   {
     for (int i=0;i<_propertyBindings.length;i++)
-    { _propertyBindings[i].updatePersistentData();
+    { _propertyBindings[i].storePersistentData();
     }
   }
   
@@ -153,6 +153,13 @@ public class Assembly
   { return _assemblyClass;
   }
 
+  /**
+   *@return the Java object managed by this Assembly
+   */
+  public Object getObject()
+  { return _optic.get();
+  }
+  
   //////////////////////////////////////////////////  
   //
   // Implementation of spiralcraft.lang.Focus

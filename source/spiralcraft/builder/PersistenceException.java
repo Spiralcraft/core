@@ -7,7 +7,7 @@ public class PersistenceException
   { super(message);
   }
 
-  public PersistenceException(String message,Exception nested)
+  public PersistenceException(String message,Throwable nested)
   { super(message,nested);
   }
 }
