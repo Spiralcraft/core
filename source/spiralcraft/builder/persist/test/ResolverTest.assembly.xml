@@ -1,0 +1,12 @@
+<test:Test
+  xmlns:test="java:/spiralcraft/builder/persist/test"
+  >
+  
+  <tupleReader>
+    <tuple-sax:TupleReader
+      xmlns:tuple-sax="java:/spiralcraft/tuple/xml"
+      >
+      
+    </tuple-sax:TupleReader>
+  </tupleReader>
+</test:Test>
