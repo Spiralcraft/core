@@ -30,7 +30,7 @@ public abstract class Arguments
       }
       else
       { 
-        if (!processArgument(arg))
+        if (!processArgument(arg.intern()))
         {
           throw new IllegalArgumentException
             ("Unknown argument "+arg);
