@@ -5,10 +5,12 @@ import spiralcraft.stream.UnresolvableURIException;
 
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.MalformedURLException;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class URLResource
   extends AbstractResource
@@ -32,21 +34,19 @@ public class URLResource
   { return _url.openStream();
   }
 
-  public boolean canRead()
-    throws IOException
-  { 
-    InputStream in=getInputStream();
-    if (in!=null)
-    { 
-      in.close();
-      return true;
-    }
-    return false;
-  }
-
   public boolean supportsRead()
   { return true;
   }
 
+  public OutputStream getOutputStream()
+    throws IOException
+  { 
+    URLConnection connection=_url.openConnection();
+    connection.setDoOutput(true);
+    return connection.getOutputStream();
+  }
 
+  public boolean supportsWrite()
+  { return true;
+  }
 }

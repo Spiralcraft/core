@@ -4,6 +4,7 @@ import java.net.URI;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public abstract class AbstractResource
   implements Resource
@@ -20,33 +21,50 @@ public abstract class AbstractResource
   }
 
 	/**
-	 * Read the resource data.
-   *
-   *@return An InputStream, or null if the resource can't be read.
-   *@throws IOException if there was an unexpected problem reading.
+   * Read not supported, throw an IOException
 	 */	
   public InputStream getInputStream()
     throws IOException
-  { return null;
+  { throw new IOException("Resource cannot be read");
   }
 
   /**
-   * Indicate whether the specific data encapsulated by this Resource
-   *   can be read. This operation may involved network IO.
-   *@return Whether the data can be read
-   *@throws IOException if there was an unexpected problem finding this out
-   */
-  public boolean canRead()
-    throws IOException
-  { return false;
-  }
-
-  /**
-   * Indicate whether this type of resource supports read operations.
-   *@return true if this type of resource supports reading
+   * Read not supported by default
    */
   public boolean supportsRead()
   { return false;
   }
 
+	/**
+   * Throw an IOException, can't write
+	 */	
+  public OutputStream getOutputStream()
+    throws IOException
+  { throw new IOException("Resource cannot be written to");
+  }
+
+  /**
+   * Doesn't know about parents
+   */
+  public Resource getParent()
+  { return null;
+  }
+
+  /**
+   * Write not supported by default
+   */
+  public boolean supportsWrite()
+  { return false;
+  }
+
+  /**
+   * Containership not supported
+   */
+  public Container asContainer()
+  { return null;
+  }    
+
+  public String toString()
+  { return super.toString()+":"+_uri.toString();
+  }
 }

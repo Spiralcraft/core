@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import spiralcraft.stream.url.URLResourceFactory;
 import spiralcraft.stream.classpath.ClasspathResourceFactory;
+import spiralcraft.stream.file.FileResourceFactory;
 
 /**
  * Resolves URIs into Resources
@@ -26,6 +27,7 @@ public class Resolver
       try
       {
         _INSTANCE.registerResourceFactory("java",new ClasspathResourceFactory());
+        _INSTANCE.registerResourceFactory("file",new FileResourceFactory());
       }
       catch (AlreadyRegisteredException x)
       { 
