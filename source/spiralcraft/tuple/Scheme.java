@@ -8,8 +8,8 @@ import java.util.List;
 public interface Scheme
 {
   /**
-   * Return an immutable List of the Fields contained in Tuples associated with
-   *   this Scheme
+   * Return an immutable Collection of the Fields contained in Tuples associated with
+   *   this Scheme. The list will be ordered by the field index.
    */ 
   List getFields();
 }

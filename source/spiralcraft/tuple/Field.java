@@ -6,12 +6,25 @@ package spiralcraft.tuple;
 public interface Field
 {
   /**
-   * Return the Scheme to which this Field belongs
+   * The Scheme to which this Field belongs
    */
   Scheme getScheme();
   
   /**
-   * Return the index of the Field within the Scheme.
+   * The index of the Field within the Scheme, which corresponds to the
+   *   ordinal position of the associated value within the Tuple
    */
   int getIndex();
+  
+  /**
+   * The name of the Field, to be used for the programmatic binding of
+   *   data consumers and producers to Tuples of this Scheme.
+   */
+  String getName();
+  
+  /**
+   * The Type of the Field
+   */
+  Type getType();
+  
 }
