@@ -19,6 +19,18 @@ public class ArrayUtil
   }
 
   /**
+   * Append an array to an array
+   */
+  public static Object appendArrays(Object array1,Object array2)
+  { 
+    int appendPoint=Array.getLength(array1);
+    int appendElements=Array.getLength(array2);
+    array1=expandBy(array1,appendElements);
+    System.arraycopy(array2, 0, array1, appendPoint, appendElements);
+    return array1;
+  }
+
+  /**
    * Expand an array by adding the specified number of elements
    */
   public static Object expandBy(Object array,int expandBy)
@@ -39,6 +51,16 @@ public class ArrayUtil
     return newArray;
   }
   
+  /**
+   * Truncate an array to the specified number of elements.
+   */
+  public static Object truncate(Object array,int numElements)
+  {
+    Object newArray = Array.newInstance(array.getClass().getComponentType(), numElements);
+    System.arraycopy(array, 0, newArray, 0, numElements);
+    return newArray;
+  }
+
   /**
    * Format a String array into a String using the specified separator and delimiter.
    * No escape processing is performed by this method.
