@@ -19,18 +19,19 @@ public class EqualityNode
     _negate=negate;
   }
 
-  public Object translateForGet(Object val,Object[] mods)
+  public Object translateForGet(Object val,Optic[] mods)
   { 
-    if (val==mods[0])
+    Object mod=mods[0].get();
+    if (val==mod)
     { return _negate?Boolean.FALSE:Boolean.TRUE;
     }
-    else if (val!=null && val.equals(mods[0]))
+    else if (val!=null && val.equals(mod))
     { return _negate?Boolean.FALSE:Boolean.TRUE;
     }
     return _negate?Boolean.TRUE:Boolean.FALSE;
   }
   
-  public Object translateForSet(Object val,Object[] mods)
+  public Object translateForSet(Object val,Optic[] mods)
   { 
     // Not reversible
     throw new UnsupportedOperationException();
