@@ -6,15 +6,31 @@ import java.util.Map;
 public class DefaultEnvironment
   implements Environment
 {
-  private final Map _names=new HashMap();
+  private Map _names;
+  private Attribute[] _attributes;
 
   public Optic resolve(String name)
-  { return (Optic) _names.get(name);
+  { 
+    if (_names!=null)
+    { 
+      Attribute attrib=(Attribute) _names.get(name);
+      if (attrib!=null)
+      { return attrib.getOptic();
+      }
+    }
+    return null;
   }
 
-  public void bind(String name,Optic val)
-  { _names.put(name,val);
+  public void setAttributes(Attribute[] val)
+  { 
+    _attributes=val;
+    for (int i=0;i<_attributes.length;i++)
+    { _names.put(_attributes[i].getName(),_attributes[i]);
+    }
   }
 
+  public Attribute[] getAttributes()
+  { return _attributes;
+  }
   
 }
