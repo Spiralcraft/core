@@ -33,8 +33,12 @@ public class LibraryClassLoader
 
   protected URL findResource(String path)
   { 
-    System.out.println(path);
-    new Exception().printStackTrace();
+    try
+    { return _libraryClasspath.getResource(path);
+    }
+    catch (IOException x)
+    { x.printStackTrace();
+    }
     return null;
   }
   

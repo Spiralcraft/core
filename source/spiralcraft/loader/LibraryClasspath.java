@@ -1,6 +1,7 @@
 package spiralcraft.loader;
 
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * Resolves class and resource data from a set of libraries
@@ -12,6 +13,9 @@ public interface LibraryClasspath
   public byte[] loadData(String path)
     throws IOException;
   
+  public URL getResource(String path)
+    throws IOException;
+
   public void addLibrary(String path)
     throws IOException;
 

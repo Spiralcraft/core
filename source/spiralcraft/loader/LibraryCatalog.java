@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import java.net.URL;
+
 import spiralcraft.util.StringUtil;
 
 
@@ -154,6 +156,16 @@ public class LibraryCatalog
       { throw new IOException("Not found: "+path);
       }
       return resource.getData();
+    }
+
+    public URL getResource(String path)
+      throws IOException
+    {
+      Resource resource=(Resource) _resources.get(path);
+      if (resource==null)
+      { return null;
+      }
+      return resource.getResource();
     }
 
     /**
@@ -459,6 +471,9 @@ abstract class Resource
 
   public abstract byte[] getData()
     throws IOException;
+
+  public abstract URL getResource()
+    throws IOException;
 }
 
 class JarResource
@@ -471,6 +486,10 @@ class JarResource
   { return ((JarLibrary) library).getData(entry);
   }
 
+  public URL getResource()
+    throws IOException
+  { return new URL("jar:file:///"+library.path.replace('\\','/')+"!/"+name);
+  }
 }
 
 class FileResource
@@ -481,6 +500,12 @@ class FileResource
   public byte[] getData()
   { return null;
   }
+
+  public URL getResource()
+    throws IOException
+  { return new URL("file:/"+library.path+"/"+name);
+  }
+
 }
 
 class ApplicationInfo

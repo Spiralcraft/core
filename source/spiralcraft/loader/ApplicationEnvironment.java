@@ -8,6 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.NoSuchMethodException;
 
 import spiralcraft.util.Arguments;
+import spiralcraft.util.StringUtil;
+import spiralcraft.util.ArrayUtil;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,8 +44,7 @@ public class ApplicationEnvironment
           ,NoSuchMethodException
           ,IllegalAccessException
   { 
-    args=resolveAliases(args);
-
+    args=expandAliases(args);
 
     new Arguments()
     {
@@ -112,7 +113,14 @@ public class ApplicationEnvironment
     }
   }
 
-  private String[] resolveAliases(String[] args)
-  { return args;
+  private String[] expandAliases(String[] args)
+  { 
+    Aliases aliases=_applicationManager.getAliases();
+    if (aliases!=null)
+    { return aliases.expand(args);
+    }
+    else
+    { return args;
+    }
   }
 }
