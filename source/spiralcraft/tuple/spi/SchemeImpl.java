@@ -17,7 +17,7 @@ public class SchemeImpl
   implements Scheme
 {
   private FieldList _fields;
-  private URI _peer;
+  private URI _uri;
   
   public SchemeImpl()
   { }
@@ -28,39 +28,32 @@ public class SchemeImpl
    */
   public SchemeImpl(Scheme scheme)
   {
-    _peer=scheme.getPeerURI();
-    
-    FieldList fields=scheme.getFields();
-    FieldList newFields=new FieldListImpl(fields.size());
-
-    Iterator it=fields.iterator();
-    while (it.hasNext())
-    { 
-      Field field=(Field) it.next();
-      newFields.add(new FieldImpl(field)); 
-    }
-    setFields(newFields);
+    _uri=scheme.getURI();
+    setFields(new FieldListImpl(scheme.getFields()));
   }
   
-  public URI getPeerURI()
-  { return _peer;
+  public URI getURI()
+  { return _uri;
   }
   
-  public void setPeerURI(URI uri)
-  { _peer=uri;
+  public void setURI(URI uri)
+  { _uri=uri;
   }
 
   public FieldList getFields()
   { return _fields;
   }
 
-  
-  public void setFields(FieldList fields)
+  /**
+   * Specify the FieldList for this Scheme.
+   *
+   * Fields in the list will be indexed and bound to this Scheme.
+   */
+  protected void setFields(FieldListImpl<FieldImpl> fields)
   { 
     int i=0;
-    for (Iterator it=fields.iterator();it.hasNext();)
+    for (FieldImpl field: fields)
     { 
-      FieldImpl field=(FieldImpl) it.next();
       field.setIndex(i++);
       field.setScheme(this);
     }

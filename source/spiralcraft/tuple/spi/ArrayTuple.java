@@ -1,6 +1,7 @@
 package spiralcraft.tuple.spi;
 
 import spiralcraft.tuple.Tuple;
+import spiralcraft.tuple.TupleId;
 import spiralcraft.tuple.Scheme;
 import spiralcraft.tuple.Field;
 import spiralcraft.tuple.BufferConflictException;
@@ -34,18 +35,18 @@ public class ArrayTuple
   { return _scheme;
   }
   
-  public Object getId()
-  { return this;
+  public TupleId getId()
+  { return null;
   }
   
-  public Object get(Field field)
-  { return _data[field.getIndex()];
+  public Object get(int index)
+  { return _data[index];
   }
   
-  public synchronized void set(Field field,Object value)
+  public synchronized void set(int index,Object value)
   { 
     assertBuffer();
-    _data[field.getIndex()]=value;
+    _data[index]=value;
   }
 
   public synchronized Tuple commitBuffer()

@@ -13,8 +13,8 @@ import spiralcraft.tuple.spi.SchemeImpl;
 
 
 /**
- * A Scheme constructed by using an AssemblyClass definition to construct
- *   data Objects out of the Scheme, Field, and Type interfaces.
+ * A Scheme explicitly constructed using an AssemblyClass definition, where
+ *   the Scheme, Entity, Field, etc. Objects are explicity described.
  *
  * AssemblyClasses can instantiate interfaces as well as classes. When an
  *   interface is instantiated, a proxy object is created which implements

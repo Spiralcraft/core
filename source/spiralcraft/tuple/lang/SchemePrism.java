@@ -6,6 +6,7 @@ import spiralcraft.lang.optics.Binding;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Decorator;
 
 import spiralcraft.tuple.Scheme;
 import spiralcraft.tuple.Tuple;
@@ -16,6 +17,9 @@ import java.util.Iterator;
 
 /**
  * Maps a Scheme into the spiralcraft.lang binding mechanism
+ *
+ * This allows object models of Tuples (defined by Schemes) to be
+ *   fully utilized by the language facilities.
  */
 public class SchemePrism
   implements Prism
@@ -99,8 +103,15 @@ public class SchemePrism
     
     return null;
   }
+
+  public Decorator decorate(Binding binding,Class decoratorInterface)
+  { 
+    // This depends on a system for registering and mapping decorators
+    //   to Tuple constructs.
+    return null;
+  }
   
-  public Class getJavaClass()
+  public Class getContentType()
   { return Tuple.class;
   }
   

@@ -1,7 +1,7 @@
 package spiralcraft.tuple;
 
 public class BufferConflictException
-  extends Exception
+  extends TupleException
 {
   private final Tuple _conflictedVersion;
   

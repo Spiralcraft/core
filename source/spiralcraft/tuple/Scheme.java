@@ -15,11 +15,11 @@ public interface Scheme
    *   or Interfaces that synchronize the state of external entities with
    *   Tuple data.
    */
-  URI getPeerURI();
+  URI getURI();
   
   /**
-   * Return an immutable Collection of the Fields contained in Tuples associated with
-   *   this Scheme. The list will be ordered by the field index.
+   * Return an immutable Collection of the Fields contained in Tuples
+   *   associated with this Scheme. The list will be ordered by the field index.
    */ 
-  FieldList getFields();
+  FieldList<Field> getFields();
 }

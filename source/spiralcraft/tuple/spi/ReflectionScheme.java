@@ -113,4 +113,8 @@ public class ReflectionScheme
   public Field getField(Method method)
   { return (Field) _methodMap.get(method);
   }
+  
+  public String toString()
+  { return super.toString()+":"+_interface.toString();
+  }
 }

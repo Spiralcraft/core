@@ -5,13 +5,18 @@ import java.util.List;
 /**
  * A list of Fields 
  */
-public interface FieldList
-  extends List
+public interface FieldList<F extends Field>
+  extends List<F>
 {
   /**
-   *@return The first field with the specified name, or  null
-   *   if none was foud
+   *@return The first Field with the specified name, or  null
+   *   if none was found
    */
-  Field findFirstByName(String name);
+  F findFirstByName(String name);
+  
+  /**
+   *@return The Field at the given position.
+   */
+  F getField(int pos);
   
 }

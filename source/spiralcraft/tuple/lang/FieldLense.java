@@ -39,11 +39,13 @@ public class FieldLense
   }
   
   public Object translateForGet(Object value,Object[] modifiers)
-  { return ((Tuple) value).get(_field);
+  { return ((Tuple) value).get(_field.getIndex());
   }
 
   public Object translateForSet(Object val,Object[] modifiers)
-  { throw new UnsupportedOperationException();
+  { 
+    // We can't turn the value into a Tuple
+    throw new UnsupportedOperationException();
   }
     
   public Prism getPrism()

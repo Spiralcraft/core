@@ -15,7 +15,8 @@ import spiralcraft.tuple.Scheme;
 import java.beans.PropertyChangeSupport;
 
 /**
- * A spiralcraft.lang binding for Tuples
+ * A spiralcraft.lang binding for Tuples, which uses the Tuple's Scheme
+ *   as the type model for binding expressions.
  */
 public class TupleBinding
   extends AbstractBinding

@@ -17,10 +17,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationTargetException;
 
-
 /**
- * Implements the 'properties' portion of a Java interface via a Proxy,
- *   using a Tuple to delegate actual data storage.
+ * Implements the Java Beans 'properties' portion of a Java interface via a 
+ *   Proxy, delegating to a Tuple for data storage.
  */
 public class TupleDelegate
   extends DelegateBinding
@@ -30,6 +29,13 @@ public class TupleDelegate
   private final Object _proxy;
   private final TupleBinding _binding;
   
+  /**
+   * Create a new TupleDelegate which implements the specified interface.
+   *
+   * The Scheme for the Tuple is determined by reflection the interface.
+   *
+   * A default Tuple implementation is used.
+   */
   public TupleDelegate(Class iface)
     throws BindException
   { 
@@ -49,11 +55,23 @@ public class TupleDelegate
   }
 
 
-  
+  /**
+   * Return the Binding for this Tuple
+   */
   public Binding getBinding()
   { return _binding;
   }
  
+  /**
+   * InvocationHandler.invoke
+   * 
+   * Looks up the field associated with the bean method and performs the
+   *   appropriate set() or get() operation.
+   *
+   * If no 'field' is associated with the method...
+   *   XXX We need to implement 'methods' by delegating to some functionality
+   *       associated with the Tuple.
+   */
   public Object invoke
     (Object proxy,
     Method method,
@@ -70,13 +88,13 @@ public class TupleDelegate
       {
         System.out.println(args[0]);
         // Write
-        ((Tuple) _binding.get()).set(field,args[0]);
+        ((Tuple) _binding.get()).set(field.getIndex(),args[0]);
         return null;
       }
       else
       {
         // Read
-        return ((Tuple) _binding.get()).get(field);
+        return ((Tuple) _binding.get()).get(field.getIndex());
       }
     }
     else
@@ -93,10 +111,16 @@ public class TupleDelegate
     }
   }
   
+  /**
+   * Return the proxy interface
+   */ 
   protected Object retrieve()
   { return _proxy;
   }
   
+  /**
+   * We can't change the proxy here, as our implementation is fixed
+   */
   public boolean store(Object val)
   { return false;
   }

@@ -1,75 +1,46 @@
 package spiralcraft.tuple;
 
 /**
- * A Tuple is a collection of related data values associated with something
- *   in a problem domain.
+ * A Tuple represents a single version of a sequence of related data elements. 
  *
- * A Tuple is defined by a Scheme, which defines the name, data type,
- *   ordinal position and constraints associated with each data value in the
- *   Tuple as well as the Tuple as a whole. 
+ * A Tuple is defined by a Scheme, which describes the data element at each
+ *   position in the Tuple. At a minimum, the Scheme contains a set of 
+ *   Fields, which define the type of data at each position,
+ *   and associate a programmatic name with the data element that is unique
+ *   within the Scheme. 
  *
  * The primary function of a Tuple is to provide a uniform means of access
- *   to data regardless of the physical storage mechanism which contains that
- *   data. As such, the Tuple interface provides support for data modification
- *   in a manner consistent with the ACID properties of transactional databases. 
+ *   to data regardless of the physical representation of that data. In that
+ *   respect, this interface maximizes the portability of data-centric logic
+ *   and functionality.
+ *   
+ * The Tuple interface separates data-centric logic and functionality from
+ *   physical representation. The implementation of physical representation is 
+ *   provided by a container. A wide variety of implementations are possible,
+ *   and are ultimately dependent on device capacity and application scale.
  *
- * A Tuple is different than a Java object in the following ways:
- *  
- *   Data Storage:
- *
- *     A Java object is a self-contained construct which associates code in a
- *     Java class with binary data stored on a heap in RAM allocated to the
- *     Java Virtual Machine.
- *
- *     A Tuple is an interface which associates a Scheme with binary data stored
- *     in an implementation specific location, such as a database, a file, or
- *     across a network.
+ * For example, Tuple implementations may store data in an array of Objects,
+ *   in a packed buffer of bytes, in page buffers memory mapped to disk, in
+ *   OS kernel structures, in relational database implementations, etc.
  * 
- *   Domain Specific Methods:
+ * The Tuple interface provides a versioning facility which groups multiple 
+ *   changes to a Tuple into an atomic unit, which produces a new
+ *   version of the Tuple. Tuples modified in this way link to their new
+ *   versions.
  *
- *     A Java object exposes problem domain specific methods which perform
- *     computations against the data contained in the object. 
+ * A particular Tuple can be modified only once in its lifetime. Once a set
+ *   of changes is committed, the Tuple becomes immutable, and a new version
+ *   must be created in order to make further changes.
  *
- *     A Tuple contains no problem domain specific methods. All the methods
- *     exposed by a Tuple are specific to the retrieval, storage and
- *     modification of data. However, a Scheme may contain metadata which
- *     can associate problem domain specific code with a Tuple.
- * 
- *   Data Modification: 
+ * A Tuple often represents an object in a problem domain. A Tuple's Identity
+ *   is defined by its association with a particular problem domain object. A
+ *   Tuple's TupleId uniquely identifies this problem domain object within a
+ *   given Scheme.
  *
- *     A Java object's methods allow instantaneous modification of individual
- *     data elements. The changes are immediately visible to all accessors.
- *     
- *     Tuples provides a journalling facility which supports the atomic
- *     modification of data, to support situations where a group of changes
- *     only make sense when applied as a unit. Each Tuple instance represents 
- *     a single version of the data, and contains a link to a Tuple which
- *     represents the next version of the data, if one exists.
- *
- *   Identity:
- *
- *     A Java object contains no intrinsic concept of identity other than the
- *     comparison of Java language references using the == operator. The
- *     design contract associated with the "equals" and "hashCode" methods
- *     is useful for determining the "identicalness" of two objects, but it
- *     does not provide sufficiently  support the notion of identity within
- *     a problem domain.
- *
- *     A Tuple provides support for the concept of identity as it applies to
- *     a problem domains. A single tuple identifies a specific version of
- *     a problem domain object. Two tuples identify different versions of
- *     the -same- problem domain object as long as they have the same Scheme
- *     and return equal values from the getId() method. 
- *
- *   Capacity:
- *
- *     The number of Java objects that can be simultaneously referenced by a
- *     running application is a function of the size of the object data.
- *
- *     The number of Tuples that can be simultaneously referenced by a running
- *     application is a function of the amount of per-Tuple RAM overhead 
- *     introduced by the Tuple implementation, which can theoretically be
- *     minimized to be a single pointer into an external data store.
+ * Multiple Tuples that have the same TupleId and the same
+ *   Scheme represent different versions of the same problem domain object. In
+ *   a given container, only one of these Tuples will represent the latest 
+ *   version, and the others will be forwardly linked to this Tuple.
  *
  * Life Cycle:
  *
@@ -119,26 +90,25 @@ public interface Tuple
   Scheme getScheme();
   
   /**
-   * Return the ID of this Tuple. If the Tuple does not support an
-   *   identification method, the implementation should return a self
-   *   reference (ie. return this).
+   * Return the Id of this Tuple, which is an opaque association with some
+   *   problem domain object. Not all Tuples have an Id.
    *
-   * The Object returned must be immutable, and must support the
+   * If non-null, the TupleId returned must be immutable, and must support the
    *   the equals()/hashCode() design contract.
    */
-  Object getId();
+  TupleId getId();
   
   /**
-   * Return the Object identified by the specified Field.
+   * Return the Object in the specified Field position.
    */
-  Object get(Field field);
+  Object get(int pos);
   
   /**
    * Replace the Object identified by the specified Field.
    *
    *@throws IllegalStateException If the Tuple is not in a buffered state
    */
-  void set(Field field,Object value);
+  void set(int pos,Object value);
   
   /**
    * Commit the data in a buffered Tuple and render the Tuple immutable.

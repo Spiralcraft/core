@@ -11,5 +11,6 @@ public interface SchemeResolver
   /**
    * Return the Scheme associated with the specified URI
    */
-  Scheme resolveScheme(URI uri);
+  Scheme resolveScheme(URI uri)
+    throws TupleException;
 }

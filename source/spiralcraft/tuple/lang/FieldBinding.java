@@ -33,7 +33,7 @@ public class FieldBinding
     Tuple tuple=(Tuple) getSourceValue();
     if (tuple!=null)
     { 
-      tuple.set(_lense.getField(),val);
+      tuple.set(_lense.getField().getIndex(),val);
       return true;
     }
     return false;
