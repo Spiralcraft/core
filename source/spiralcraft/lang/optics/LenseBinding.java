@@ -16,20 +16,24 @@ import java.beans.PropertyChangeEvent;
 public  class LenseBinding
   implements Binding,PropertyChangeListener
 {
-    
+  private static int _ID=0;
+  
+  protected final String id;
+
   private final Binding _source;
   private final Lense _lense;
   private final Optic[] _modifiers;
   private final boolean _static;
   private PropertyChangeSupport _propertyChangeSupport;
   private PropertyChangeListener _modifierListener;
+  private WeakBindingCache _cache;
 
   public LenseBinding(Binding source,Lense lense,Optic[] modifiers)
   { 
     _source=source;
     _lense=lense;
     _modifiers=modifiers;
-
+    
     // Determine default static by checking source, modifiers.
     // If all dependencies are static, this is static
     boolean isStatic=true;
@@ -48,13 +52,30 @@ public  class LenseBinding
       }
     }
     _static=isStatic;
+    id=getClass().getName()+":"+_ID++;  
 
   }
 
+  public synchronized WeakBindingCache getCache()
+  {
+    if (_cache==null)
+    { _cache=new WeakBindingCache();
+    }
+    return _cache;
+  }
+  
   public final Object get()
   { return _lense.translateForGet(_source.get(),resolveModifiers());
   }
 
+  /**
+   * Indicates that downstream bindings have requested property change
+   *   notifications
+   */
+  protected boolean isPropertyChangeSupportActive()
+  { return _propertyChangeSupport!=null;
+  }
+  
   protected final Object getSourceValue()
   { return _source.get();
   }
@@ -83,8 +104,10 @@ public  class LenseBinding
 
   public void propertyChange(PropertyChangeEvent event)
   {
+    // System.out.println(toString()+".propertyChange");
     if (_propertyChangeSupport!=null)
     {
+      // System.out.println(toString()+".propertyChange2");
       Object oldValue=null;
       Object newValue=null;
 
@@ -98,13 +121,16 @@ public  class LenseBinding
       }
 
       if (oldValue!=newValue)
-      { _propertyChangeSupport.firePropertyChange("",oldValue,newValue);
+      { 
+        // System.out.println(toString()+".propertyChange3");
+        _propertyChangeSupport.firePropertyChange("",oldValue,newValue);
       }
     }
   }
 
   public void modifierChanged()
   {
+    // System.out.println(toString()+".modifierChanged");
     if (_propertyChangeSupport!=null)
     {
       Object newValue=null;
@@ -115,6 +141,7 @@ public  class LenseBinding
       if (sourceValue!=null)
       { newValue=_lense.translateForGet(sourceValue,modifiers);
       }
+      // System.out.println(toString()+".modifierChanged:"+newValue);
       _propertyChangeSupport.firePropertyChange("",null,newValue);
     }
   }
@@ -127,6 +154,8 @@ public  class LenseBinding
     
     if (_propertyChangeSupport==null)
     { 
+      // System.out.println(toString()+" propertyChangeSupport");
+      
       _propertyChangeSupport=new PropertyChangeSupport(this);
       PropertyChangeSupport pcs=_source.propertyChangeSupport();
       if (pcs!=null)
@@ -147,7 +176,9 @@ public  class LenseBinding
         { 
           pcs=_modifiers[i].propertyChangeSupport();
           if (pcs!=null)
-          { pcs.addPropertyChangeListener(_modifierListener);
+          { 
+            // System.out.println(toString()+" added modifier listener");
+            pcs.addPropertyChangeListener(_modifierListener);
           }
         }
       }
@@ -170,9 +201,22 @@ public  class LenseBinding
 
   protected final void firePropertyChange(String name,Object oldValue,Object newValue)
   {
+    // System.out.println(toString()+".firePropertyChange: "+newValue);
     if (_propertyChangeSupport!=null)
-    { _propertyChangeSupport.firePropertyChange(name,oldValue,newValue);
+    { 
+      // System.out.println(toString()+".firePropertyChange2: "+newValue);
+      _propertyChangeSupport.firePropertyChange(name,oldValue,newValue);
     }
   }
 
+  protected final void firePropertyChange(PropertyChangeEvent event)
+  {
+    if (_propertyChangeSupport!=null)
+    { _propertyChangeSupport.firePropertyChange(event);
+    }
+  }
+
+  public String toString()
+  { return getClass().getName()+":"+id+"["+_lense.toString()+"]";
+  }
 }
