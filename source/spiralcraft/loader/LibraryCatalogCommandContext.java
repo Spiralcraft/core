@@ -18,7 +18,8 @@ public class LibraryCatalogCommandContext
   private static final LinkedHashMap _COMMANDS=new LinkedHashMap(); 
   
   static
-  { _COMMANDS.put("modules",new ModulesCommand());
+  { 
+    _COMMANDS.put("modules",new ModulesCommand());
   }
 
   public LibraryCatalogCommandContext(LibraryCatalog catalog)

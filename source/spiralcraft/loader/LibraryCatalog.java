@@ -35,24 +35,19 @@ public class LibraryCatalog
 {
 
 
-  private String _masterLibraryPath
-    =System.getProperty("spiralcraft.home")
-    +File.separator
-    +"lib";
-
-  private String[] _additionalLibraryPaths
-    =StringUtil.tokenize
-      (System.getProperty("spiralcraft.class.path")
-      ,File.pathSeparator
-      );
+  private final String _masterLibraryPath;
 
   private ArrayList _libraries=new ArrayList();
-
   
-  public LibraryCatalog()
-  { loadCatalog();
+  /**
+   * File libraryDir
+   */
+  public LibraryCatalog(File path)
+  { 
+    _masterLibraryPath=path.getAbsolutePath();
+    loadCatalog();
   }
-
+  
   public List listLibraries()
   { return _libraries;
   }
@@ -143,14 +138,12 @@ public class LibraryCatalog
 
     _libraries.clear();
 
-
-    for (int i=0;i<libs.length;i++)
-    { catalogLibrary(libs[i]);
-
-    }
-
-    for (int i=0;i<_additionalLibraryPaths.length;i++)
-    { catalogLibrary(new File(_additionalLibraryPaths[i]));
+    if (libs!=null)
+    {
+      for (int i=0;i<libs.length;i++)
+      { catalogLibrary(libs[i]);
+  
+      }
     }
 
   }
