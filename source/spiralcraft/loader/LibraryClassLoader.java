@@ -75,4 +75,8 @@ public class LibraryClassLoader
     throws IOException
   { _libraryClasspath.addModule(moduleName);
   }
+  
+  public void shutdown()
+  { _libraryClasspath.release();
+  }
 }

@@ -47,10 +47,26 @@ public class LibraryCatalog
 
   private ArrayList _libraries=new ArrayList();
 
+  
   public LibraryCatalog()
   { loadCatalog();
   }
 
+  public void close()
+  {
+    Iterator it=_libraries.iterator();
+    while (it.hasNext())
+    { 
+      try
+      { 
+        Library library=(Library) it.next();
+        library.forceClose();
+      }
+      catch (IOException x)
+      { }
+    }
+  }
+  
   /**
    * Create a LibraryClasspath to access a subset of the catalog
    */
@@ -145,9 +161,25 @@ public class LibraryCatalog
   class LibraryClasspathImpl
     implements LibraryClasspath
   {
-    private HashMap _resources=new HashMap();
-    private ArrayList _myLibraries=new ArrayList();
+    private final HashMap _resources=new HashMap();
+    private final ArrayList _myLibraries=new ArrayList();
 
+    public void release()
+    {
+      Iterator it=_myLibraries.iterator();
+      while (it.hasNext())
+      {
+        Library library=(Library) it.next();
+        try
+        { library.close();
+        }
+        catch (IOException x)
+        { }
+      }
+      _myLibraries.clear();
+      _resources.clear();
+    }
+    
     public byte[] loadData(String path)
       throws IOException
     {
@@ -312,6 +344,9 @@ abstract class Library
   public abstract void close()
     throws IOException;
 
+  public abstract void forceClose()
+    throws IOException;
+
   public abstract void catalogResources()
     throws IOException;
 
@@ -386,6 +421,14 @@ class JarLibrary
     }
   }
 
+  public synchronized void forceClose()
+    throws IOException
+  { 
+    if (jarFile!=null)
+    { jarFile.close();
+    }
+  }
+  
   public byte[] getData(JarEntry entry)
     throws IOException
   {
@@ -437,6 +480,8 @@ class JarLibrary
     }
     return null;
   }
+  
+
 }
 
 class FileLibrary
@@ -459,6 +504,10 @@ class FileLibrary
   {
   }
 
+  public void forceClose()
+  { 
+  }
+  
   public String[] getLibraryDependencies()
   { return null;
   }

@@ -43,6 +43,10 @@ public class Main
     catch (ExecutionTargetException x)
     { throw x.getTargetException();
     }
+    finally
+    { ApplicationManager.shutdownInstance();
+    }
+    
   }
 
 }

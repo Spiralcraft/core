@@ -32,4 +32,9 @@ public interface LibraryClasspath
    */
   public void addModule(String moduleName)
     throws IOException;
+    
+  /**
+   * Release any resources we have allocated, such as open libraries
+   */
+  public void release();
 }
