@@ -4,7 +4,8 @@ import spiralcraft.main.Spiralcraft;
 
 import spiralcraft.util.ArrayUtil;
 
-import java.lang.reflect.InvocationTargetException;
+import spiralcraft.exec.ApplicationManager;
+import spiralcraft.exec.ExecutionTargetException;
 
 /**
  * Main class which creates an application specific ClassLoader to run application functionality
@@ -36,18 +37,11 @@ public class Main
     ApplicationManager applicationManager
       =ApplicationManager.getInstance();
 
-    ApplicationEnvironment environment
-      =applicationManager.createApplicationEnvironment();
-
     try
-    { environment.exec(args);
+    { applicationManager.exec(args);
     }
-    catch (InvocationTargetException x)
-    { 
-      while (x.getTargetException() instanceof InvocationTargetException)
-      { x=(InvocationTargetException) x.getTargetException();
-      }
-      throw x.getTargetException();
+    catch (ExecutionTargetException x)
+    { throw x.getTargetException();
     }
   }
 
