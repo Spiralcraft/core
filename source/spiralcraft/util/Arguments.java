@@ -40,11 +40,11 @@ public abstract class Arguments
         
   }
 
-  protected boolean hasMoreArguments()
+  public boolean hasMoreArguments()
   { return _pos<_args.length;
   }
 
-  protected String nextArgument()
+  public String nextArgument()
   { return _args[_pos++];
   }
 
