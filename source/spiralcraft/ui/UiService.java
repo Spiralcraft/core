@@ -1,13 +1,15 @@
 package spiralcraft.ui;
 
 import spiralcraft.service.Service;
+import spiralcraft.service.ServiceAdapter;
 import spiralcraft.service.ServiceException;
+import spiralcraft.service.ServiceResolver;
 
 /**
  * Generic UI service
  */
 public class UiService
-  implements Service
+  extends ServiceAdapter
 {
   private Controller[] _rootControllers;
 
@@ -15,7 +17,7 @@ public class UiService
   { _rootControllers=val;
   }
 
-  public void init()
+  public void init(ServiceResolver resolver)
     throws ServiceException
   {
     if (_rootControllers!=null)
@@ -36,4 +38,6 @@ public class UiService
       } 
     }
   }
+
+
 }
