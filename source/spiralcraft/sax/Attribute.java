@@ -1,6 +1,8 @@
 package spiralcraft.sax;
   
-
+/**
+ * Represents an XML Attribute (a name-value pair specified within an element)
+ */
 public class Attribute
 {
   private String _localName;

@@ -6,6 +6,7 @@ import org.xml.sax.SAXException;
 
 import spiralcraft.util.ArrayUtil;
  
+
 /**
  * Represents an Element in an XML document
  */
@@ -16,7 +17,7 @@ public class Element
   private String _localName;
   private String _qName;
   private Attribute[] _attributes;
-
+  
   /**
    * Constructor for no-namespace client use
    */

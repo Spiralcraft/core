@@ -2,6 +2,10 @@ package spiralcraft.sax;
 
 import org.xml.sax.Attributes;
 
+/**
+ * An implementation of the SAX Attributes interface
+ *   using an Array as a backing store
+ */
 public class ArrayAttributes
   implements Attributes
 {

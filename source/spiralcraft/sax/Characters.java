@@ -3,6 +3,9 @@ package spiralcraft.sax;
 import org.xml.sax.SAXException;
 import org.xml.sax.ContentHandler;
 
+/**
+ * Represents a sequence of characters in an XML document
+ */
 public class Characters
   extends Node
 {
