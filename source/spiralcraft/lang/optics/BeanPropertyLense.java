@@ -9,6 +9,7 @@ import spiralcraft.beans.MappedBeanInfo;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.OpticFactory;
+import spiralcraft.lang.Optic;
 
 /**
  * A lense associated with a single bean property. The 'get' transformation
@@ -42,7 +43,7 @@ class BeanPropertyLense
   { return _property;
   }
 
-  public Object translateForGet(Object value,Object[] modifiers)
+  public Object translateForGet(Object value,Optic[] modifiers)
   { 
     try
     {
@@ -77,7 +78,7 @@ class BeanPropertyLense
     }
   }
 
-  public Object translateForSet(Object val,Object[] modifiers)
+  public Object translateForSet(Object val,Optic[] modifiers)
   { throw new UnsupportedOperationException();
   }
 

@@ -1,6 +1,7 @@
 package spiralcraft.lang.optics;
 
 import spiralcraft.lang.OpticFactory;
+import spiralcraft.lang.Optic;
 import spiralcraft.lang.BindException;
 
 import java.lang.reflect.Field;
@@ -22,7 +23,7 @@ class BeanFieldLense
   { return _field;
   }
 
-  public Object translateForGet(Object value,Object[] modifiers)
+  public Object translateForGet(Object value,Optic[] modifiers)
   { 
     try
     { return _field.get(value);
@@ -32,7 +33,7 @@ class BeanFieldLense
     }
   }
 
-  public Object translateForSet(Object val,Object[] modifiers)
+  public Object translateForSet(Object val,Optic[] modifiers)
   { throw new UnsupportedOperationException();
   }
 
