@@ -46,6 +46,9 @@ public class ParseTreeFactory
   public static ParseTree fromResource(Resource resource)
     throws SAXException,IOException
   { 
+    if (!resource.exists())
+    { return null;
+    }
     InputStream in=resource.getInputStream();
     try
     { return fromInputStream(in);

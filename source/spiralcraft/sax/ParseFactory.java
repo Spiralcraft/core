@@ -23,9 +23,6 @@ public class ParseFactory
   
   /**
    * Parse from a URI. 
-   *
-   *@return The ParseTree, or null if the target of the URI does
-   *  not exist.
    */
   public void parseURI(URI uri,DefaultHandler handler)
     throws SAXException,IOException
@@ -33,10 +30,7 @@ public class ParseFactory
   }
 
   /**
-   * Load a ParseTree from a resource. 
-   *
-   *@return The ParseTree, or null if the target of the resource does
-   *  not exist.
+   * Parse from a resource. 
    */
   public void parseResource(Resource resource,DefaultHandler handler)
     throws SAXException,IOException
@@ -57,8 +51,7 @@ public class ParseFactory
   }
 
   /**
-   * Load a parse tree from an InputStream.
-   *@return The ParseTree, or null if the supplied InputStream is null.
+   * Parse from an InputStream.
    */
   public void parseInputStream(InputStream in,DefaultHandler handler)
     throws SAXException,IOException
