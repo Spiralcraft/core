@@ -204,4 +204,36 @@ public class ArrayUtil
     return buf.toString();
     
   }
+
+  public static final boolean arrayEquals(final Object[] a,final Object[] b)
+  {
+    if (a==b)
+    { return true;
+    }
+    if (a==null || b==null || a.length!=b.length)
+    { return false;
+    }
+    for (int i=0;i<a.length;i++)
+    {
+      if (a[i]!=b[i]
+          && (a[i]==null
+              || b[i]==null
+              || !a[i].equals(b[i])
+             )
+         )
+      { return false;
+      }
+    }
+    return true;
+  }
+  
+  public static final int arrayHashCode(final Object[] a)
+  {
+    int multiplier=31+(a.length*2);
+    int hashCode=7*multiplier+(a.length*2);
+    for (int i=0;i<a.length;i++)
+      hashCode=multiplier*hashCode + (a[i]==null ? 0: a[i].hashCode());
+    
+    return hashCode;
+  }
 }
