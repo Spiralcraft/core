@@ -198,10 +198,9 @@ public class Search
   public void addOperation(Operation op)
   { 
     if (_currentOperation!=null)
-    { 
-      _currentOperation.setNextOperation(op);
-      _currentOperation=op;
+    { _currentOperation.setNextOperation(op);
     }
+    _currentOperation=op;
     if (_operation==null)
     { _operation=op;
     }

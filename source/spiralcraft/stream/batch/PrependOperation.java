@@ -12,6 +12,7 @@ import spiralcraft.stream.StreamUtil;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.io.File;
 
 
 public class PrependOperation
@@ -53,6 +54,10 @@ public class PrependOperation
       resourceOut.write(resourceBytes);
       resourceOut.flush();
       resourceOut.close();
+      
+      if (_nextOperation!=null)
+      { _nextOperation.invoke(resource);
+      }
     }
     catch (UnresolvableURIException x)
     { throw new OperationException(this,"Content "+_contentUri+" not resolvable.",x);
@@ -64,8 +69,14 @@ public class PrependOperation
   
   public boolean processOption(Arguments args,String option)
   { 
-    if (option=="content")
-    { _contentUri=URI.create(args.nextArgument());
+    if (option.equals("content"))
+    { 
+      _contentUri=URI.create(args.nextArgument());
+      if (!_contentUri.isAbsolute())
+      {  
+        // XXX Get user context
+        _contentUri=new File(new File(".").getAbsolutePath()).toURI().resolve(_contentUri);
+      }
     }
     else
     { return false;
