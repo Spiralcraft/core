@@ -64,6 +64,9 @@ public class Search
       // XXX Deal properly with environment, requires Executable API change
       setRootURI(new File(new File(".").getAbsolutePath()).toURI());
     }
+    else if (!getRootURI().isAbsolute())
+    { setRootURI(new File(new File(".").getAbsolutePath()).toURI().resolve(getRootURI()));
+    }
     run();
   }
 
