@@ -4,6 +4,12 @@ import java.util.HashMap;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import java.beans.XMLEncoder;
+import java.beans.XMLDecoder;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 /**
  * Converts a String to an object of a specific type. Provides a means for registering
  *   StringConverters for custom types.
@@ -12,6 +18,7 @@ public abstract class StringConverter
 {
 
   private static final HashMap _MAP=new HashMap();
+  private static final StringConverter _ONE_WAY_INSTANCE=new ToString();
   
   static
   {
@@ -32,6 +39,7 @@ public abstract class StringConverter
     _MAP.put(Byte.TYPE.getName(),new ByteToString());
     _MAP.put(BigInteger.class.getName(),new BigIntegerToString());
     _MAP.put(BigDecimal.class.getName(),new BigDecimalToString());
+    _MAP.put(Class.class.getName(),new ClassToString());
   }
 
   /**
@@ -45,6 +53,10 @@ public abstract class StringConverter
     
   }
 
+  public static StringConverter getOneWayInstance()
+  { return _ONE_WAY_INSTANCE;
+  }
+
   /**
    * Register an instance of a StringConverter to be used for the specified type
    */
@@ -55,10 +67,29 @@ public abstract class StringConverter
     }
   }
 
+  public static Object decodeFromXml(String xml)
+  {
+    XMLDecoder decoder
+      =new XMLDecoder(new ByteArrayInputStream(xml.getBytes()));
+    return decoder.readObject();
+    
+  }
+
+  public static String encodeToXml(Object object)
+  {
+    ByteArrayOutputStream out=new ByteArrayOutputStream();
+    XMLEncoder encoder=new XMLEncoder(out);
+    encoder.writeObject(object);
+    encoder.close();
+    return out.toString();
+  }
+
   /**
    * Convert an Object to a String
    */
-  public abstract String toString(Object val);
+  public String toString(Object val)
+  { return val!=null?val.toString():null;
+  }
 
   /**
    * Convert a String to an Object
@@ -66,6 +97,15 @@ public abstract class StringConverter
   public abstract Object fromString(String val);
 
   
+}
+
+final class ToString
+  extends StringConverter
+{
+  
+  public Object fromString(String val)
+  { throw new UnsupportedOperationException();
+  }
 }
 
 final class StringToString
@@ -83,10 +123,6 @@ final class StringToString
 final class IntToString
   extends StringConverter
 {
-  public String toString(Object val)
-  { return val!=null?((Integer) val).toString():null;
-  }
-
   public Object fromString(String val)
   { return val!=null?new Integer(val):null;
   }
@@ -119,10 +155,6 @@ final class BooleanToString
 final class FloatToString
   extends StringConverter
 {
-  public String toString(Object val)
-  { return val!=null?((Float) val).toString():null;
-  }
-
   public Object fromString(String val)
   { return val!=null?new Float(val):null;
   }
@@ -131,10 +163,6 @@ final class FloatToString
 final class LongToString
   extends StringConverter
 {
-  public String toString(Object val)
-  { return val!=null?((Long) val).toString():null;
-  }
-
   public Object fromString(String val)
   { return val!=null?new Long(val):null;
   }
@@ -143,10 +171,6 @@ final class LongToString
 final class DoubleToString
   extends StringConverter
 {
-  public String toString(Object val)
-  { return val!=null?((Double) val).toString():null;
-  }
-
   public Object fromString(String val)
   { return val!=null?new Double(val):null;
   }
@@ -155,10 +179,6 @@ final class DoubleToString
 final class ShortToString
   extends StringConverter
 {
-  public String toString(Object val)
-  { return val!=null?((Short) val).toString():null;
-  }
-
   public Object fromString(String val)
   { return val!=null?new Short(val):null;
   }
@@ -167,10 +187,6 @@ final class ShortToString
 final class ByteToString
   extends StringConverter
 {
-  public String toString(Object val)
-  { return val!=null?((Byte) val).toString():null;
-  }
-
   public Object fromString(String val)
   { return val!=null?new Byte(val):null;
   }
@@ -179,10 +195,6 @@ final class ByteToString
 final class BigDecimalToString
   extends StringConverter
 {
-  public String toString(Object val)
-  { return val!=null?((BigDecimal) val).toString():null;
-  }
-
   public Object fromString(String val)
   { return val!=null?new BigDecimal(val):null;
   }
@@ -191,12 +203,31 @@ final class BigDecimalToString
 final class BigIntegerToString
   extends StringConverter
 {
-  public String toString(Object val)
-  { return val!=null?((BigInteger) val).toString():null;
-  }
-
   public Object fromString(String val)
   { return val!=null?new BigInteger(val):null;
   }
 }
 
+final class ClassToString
+  extends StringConverter
+{
+  public String toString(Object val)
+  { return val!=null?((Class) val).getName():null;
+  }
+
+  public Object fromString(String val)
+  { 
+    try
+    {
+      return Class.forName
+        (val
+        ,false
+        ,Thread.currentThread().getContextClassLoader()
+        );
+    }
+    catch (ClassNotFoundException x)
+    { x.printStackTrace();
+    }
+    return null;
+  }
+}
