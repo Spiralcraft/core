@@ -46,7 +46,7 @@ public class Expression
    */
   public Channel bind(Focus focus)
     throws BindException
-  { return new Channel(_root.bind(focus),this); 
+  { return new Channel(focus,_root.bind(focus),this); 
   }
 
   public void dumpParseTree(StringBuffer out)
