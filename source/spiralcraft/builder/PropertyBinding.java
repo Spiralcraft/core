@@ -12,6 +12,7 @@ import spiralcraft.lang.BindException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import java.lang.reflect.Array;
 
@@ -74,7 +75,7 @@ public class PropertyBinding
       { _contents[i].savePreferences();
       }
     }
-    else if (_specifier.isPreference())
+    else if (_specifier.isPersistent())
     { 
       Preferences preferences=(Preferences) _registryNode.findInstance(Preferences.class);
       if (preferences!=null)
@@ -128,7 +129,7 @@ public class PropertyBinding
         }
       }
     }
-    else if (_specifier.isPreference())
+    else if (_specifier.isPersistent())
     { 
       // Contents are not specified in definition, and property has been tagged
       //   as being a preference. Read property valye from preferences.
@@ -271,12 +272,12 @@ public class PropertyBinding
   }
 
   /**
-   * Indicate whether the target is a List or an array
+   * Indicate whether the target is an aggregate type
    */
-  private boolean isSequence()
+  private boolean isAggregate()
   { 
     return _target.getTargetClass().isArray()
-      || _target.getTargetClass()==List.class;
+      || Collection.class.isAssignableFrom(_target.getTargetClass());
   }
   
   private void resolveSource()
@@ -284,7 +285,7 @@ public class PropertyBinding
   {
     if (_contents!=null && _contents.length>0)
     {
-      if (!isSequence())
+      if (!isAggregate())
       {
         // Source is a single object
         if (_contents.length==1)
@@ -301,16 +302,54 @@ public class PropertyBinding
             );
         }
       }
-      else if (_target.getTargetClass()==List.class)
+      else if (Collection.class.isAssignableFrom(_target.getTargetClass()))
       { 
-        // Source is a list
-        ArrayList source=new ArrayList(_contents.length);
+        Collection source;
+        if (_specifier.getCollectionClass()!=null)
+        {
+          try
+          { 
+            source
+              =(Collection) _specifier.getCollectionClass().newInstance();
+          }
+          catch (Exception x)
+          { 
+            throw new BuildException
+              ("Error instantiating "+_specifier.getCollectionClass(),x);
+          }
+        }
+        else if (_target.getTargetClass()==List.class)
+        { source=new ArrayList(_contents.length);
+        }
+        else if (!_target.getTargetClass().isInterface())
+        { 
+          try
+          { 
+            source
+              =(Collection) _target.getTargetClass().newInstance();
+          }
+          catch (Exception x)
+          { 
+            throw new BuildException
+              ("Error instantiating "+_target.getTargetClass(),x);
+          }
+        }
+        else
+        {
+          throw new BuildException
+            ("Not enough information to instantiate a Collection suitable"
+            +" to implement "+_target.getTargetClass()
+            );
+        }
+           
+        
         for (int i=0;i<_contents.length;i++)
         { 
           source.add(_contents[i].getSubject().get());
           registerSingletons(_contents[i]);
         }
         _source=source;
+        
       }
       else
       {

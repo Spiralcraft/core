@@ -319,6 +319,7 @@ public class AssemblyClass
    * Compose the list of members, overriding members with the same target name
    */
   private void composeMembers(LinkedList list,HashMap map)
+    throws BuildException
   {
     if (_baseClass!=null)
     { _baseClass.composeMembers(list,map);

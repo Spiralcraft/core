@@ -1,5 +1,6 @@
 package spiralcraft.builder;
 
+import java.util.Collection;
 import java.util.ArrayList;
 
 import spiralcraft.util.StringUtil;
@@ -34,7 +35,7 @@ public class PropertySpecifier
   private boolean _literalWhitespace;
   private String _focus;
   private String _expression;
-  private boolean _preference;
+  private boolean _persistent;
   private boolean _dynamic;
   private PropertySpecifier _baseMember;
   private String _collectionClassName;
@@ -80,15 +81,29 @@ public class PropertySpecifier
   }
 
   /**
-   * Indicate whether the value for this property should be persisted within
-   *   the preferences subsystem
+   * Indicate whether the value for this property should be persisted to
+   *   non-volatile storage
    */
-  public boolean isPreference()
-  { return _preference;
+  public boolean isPersistent()  
+  {
+    return 
+      (!_persistent && _baseMember!=null)
+      ?_baseMember.isPersistent()
+      :_persistent
+      ;
   }
 
   public void setCollectionClassName(String name)
   { _collectionClassName=name;
+  }
+  
+  public String getCollectionClassName()
+  { 
+    return 
+      (_collectionClassName==null && _baseMember!=null)
+      ?_baseMember.getCollectionClassName()
+      :_collectionClassName
+      ;
   }
   
   /**
@@ -96,22 +111,15 @@ public class PropertySpecifier
    *   used to hold the contents for this property.
    */
   public Class getCollectionClass()
-  { 
-    if (_collectionClass!=null)
-    { return _collectionClass;
-    }
-    if (_baseMember!=null)
-    { return _baseMember.getCollectionClass();
-    }
-    return null;
+  { return _collectionClass;
   }
   
   /**
-   * Indicate whether the value for this property should be persisted within
-   *   the preferences subsystem
+   * Indicate whether the value for this property should be persisted to
+   *   non-volatile storage.
    */
-  public void setPreference(boolean val)
-  { _preference=val;
+  public void setPersistent(boolean val)
+  { _persistent=val;
   }
 
   public boolean isDynamic()
@@ -215,18 +223,19 @@ public class PropertySpecifier
       { throw new BuildException("Error parsing expression: "+_expression,x);
       }
     }
+    
+    resolveContents();
+    
+    resolveTarget();
+    
+  }
 
-    if (_contents!=null)
-    {
-      Iterator it=_contents.iterator();
-      while (it.hasNext())
-      { 
-        AssemblyClass assemblyClass
-          =(AssemblyClass) it.next();
-        assemblyClass.resolve();
-      }
-    }
-
+  /**
+   * Resolve the target spec (property pathname string)
+   */
+  private final void resolveTarget()
+    throws BuildException
+  {
     _targetName=_specifier[_specifier.length-1];
 
     AssemblyClass targetAssemblyClass=_container;
@@ -274,15 +283,64 @@ public class PropertySpecifier
     
     // Keep the target around for future reference (not critical right now)
     _targetAssemblyClass=targetAssemblyClass;
-  }
 
+  }
+  
+  private final void resolveContents()
+    throws BuildException
+  {
+    if (_contents!=null)
+    {
+      Iterator it=_contents.iterator();
+      while (it.hasNext())
+      { 
+        AssemblyClass assemblyClass
+          =(AssemblyClass) it.next();
+        assemblyClass.resolve();
+      }
+    }
+  }
+  
+  private final void resolveCollection()
+    throws BuildException
+  {
+    System.out.println(toString()+" resolve collection");
+    if (getCollectionClassName()!=null)
+    { 
+      try
+      { 
+        _collectionClass
+          =Class.forName
+            (getCollectionClassName()
+            ,false
+            ,Thread.currentThread().getContextClassLoader()
+            );
+        System.out.println(toString()+_collectionClass);
+      }
+      catch (ClassNotFoundException x)
+      { 
+        throw new BuildException
+          ("Collection class not found: '"+getCollectionClassName()+"'",x);
+      }
+      
+      if (!Collection.class.isAssignableFrom(_collectionClass))
+      { 
+        throw new BuildException
+          ("Collection class '"+getCollectionClassName()+"' "
+          +"does not implement interface java.util.Collection"
+          );
+      }
+    }
+  }
       
   /**
    * A pre-existing  member which this member overrides
    */
   void setBaseMember(PropertySpecifier prop)
+    throws BuildException
   { 
     _baseMember=prop;
+    resolveCollection();
     System.out.println(toString()+" overriding "+prop.toString());
   }
   

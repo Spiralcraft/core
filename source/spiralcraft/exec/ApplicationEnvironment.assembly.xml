@@ -1,5 +1,5 @@
 <ApplicationEnvironment>
-  <mainClass preference="true"/>
-  <commandLine preference="true"/>
-  <modules preference="true"/>
+  <mainClass persistent="true"/>
+  <commandLine persistent="true"/>
+  <modules persistent="true"/>
 </ApplicationEnvironment>

@@ -226,16 +226,19 @@ public class AssemblyLoader
         else if (name=="whitespace")
         { prop.setLiteralWhitespace(readBoolean(attribs[i]));
         }
-        else if (name=="preference")
-        { prop.setPreference(readBoolean(attribs[i]));
+        else if (name=="persistent")
+        { prop.setPersistent(readBoolean(attribs[i]));
         }
         else if (name=="dynamic")
         { prop.setDynamic(true);
         }
+        else if (name=="collection")
+        { prop.setCollectionClassName(attribs[i].getValue());
+        }
         else
         { 
           throw new BuildException
-            ("Unknown attribute '"+name+"'");
+            ("Unknown attribute '"+name+"' in "+sourceUri);
             
         }
       }
