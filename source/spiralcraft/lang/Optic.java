@@ -3,7 +3,7 @@ package spiralcraft.lang;
 
 /**
  * A part of a Channel which provides a view of an application object or data element, potentially derived from one or
- *   more views from related Optics.
+ *   more views provided by related Optics.
  */
 public interface Optic
 {
@@ -24,5 +24,10 @@ public interface Optic
    *@return Whether the modification was successful or not.
    */
   boolean set(Object value);
+
+  /**
+   * Indicate the Java Class of the target object.
+   */
+  Class getTargetClass();
 
 }

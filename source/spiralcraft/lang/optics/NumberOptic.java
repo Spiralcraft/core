@@ -10,5 +10,7 @@ public abstract class NumberOptic
   extends AbstractOptic
 {
   
-
+  public Class getTargetClass()
+  { return Number.class;
+  }
 }

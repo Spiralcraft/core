@@ -28,4 +28,8 @@ public class OpticAdapter
   { return false;
   }
 
+  public Class getTargetClass()
+  { return Object.class;
+  }
+
 }

@@ -28,4 +28,8 @@ public class ProxyOptic
   public boolean set(Object value)
   { return _optic.set(value);
   }
+
+  public Class getTargetClass()
+  { return _optic.getTargetClass();
+  }
 }

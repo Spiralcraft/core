@@ -20,4 +20,8 @@ public abstract class AbstractOptic
   { return false;
   }
 
+  public Class getTargetClass()
+  { return Object.class;
+  }
+
 }

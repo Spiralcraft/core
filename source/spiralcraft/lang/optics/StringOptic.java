@@ -10,5 +10,7 @@ public abstract class StringOptic
   extends AbstractOptic
 {
   
-
+  public Class getTargetClass()
+  { return String.class;
+  }
 }
