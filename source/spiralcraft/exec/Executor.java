@@ -30,14 +30,19 @@ public class Executor
 {
   private String _uri;
   private String _applicationUri;
-  private String[] _arguments=new String[0];
   private Preferences _prefs;
   private RegistryNode _registryNode;  
   
-  public static final void main(String[] args)
+  protected ExecutionContext _context
+    =new SystemExecutionContext();
+    
+  protected String[] _arguments=new String[0];
+  
+  public static void main(String[] args)
     throws IOException
             ,URISyntaxException
             ,BuildException
+            ,ExecutionException
   { new Executor().execute(args);
   }
 
@@ -55,7 +60,8 @@ public class Executor
    *   the first argument or via the setURI() method.
    */
   public void execute(String[] args)
-    throws IOException
+    throws ExecutionException
+            ,IOException
             ,URISyntaxException
             ,BuildException
   {
@@ -72,6 +78,14 @@ public class Executor
       _uri=new File(new File(".").getAbsolutePath()).toURI().resolve(uri).toString();
     }
 
+
+    Executable executable=resolveExecutable(); 
+    executable.execute(_context,_arguments);
+  }
+
+  private Executable resolveExecutable()
+    throws BuildException
+  {
     XmlObject application=resolveApplication();
       
     if (_registryNode==null)
@@ -79,11 +93,9 @@ public class Executor
     }
 
     application.register(_registryNode);
-
-    Executable executable=(Executable) application.get();
-    executable.execute(_arguments);
+    return (Executable) application.get();
   }
-
+  
   /**
    * Create the XmlObject which represents the runtime image of the application
    *   specified in the URI.
@@ -101,6 +113,8 @@ public class Executor
   private XmlObject resolveApplication()
     throws BuildException
   { 
+    
+    // XXX This seems kind of ugly. We need to revisit the resolution protocol.
     if (_uri.endsWith(".assembly.xml"))
     { return new XmlObject(null,null,_uri.substring(0,_uri.indexOf(".assembly.xml")));
     }

@@ -2,4 +2,5 @@
   <mainClass persistent="true"/>
   <commandLine persistent="true"/>
   <modules persistent="true"/>
+  <mainArguments persistent="true"/>
 </ApplicationEnvironment>

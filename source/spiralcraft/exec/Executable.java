@@ -15,6 +15,7 @@ public interface Executable
   /**
    * Execute the application
    */
-  public void execute(String[] args);
+  public void execute(ExecutionContext context,String[] args)
+    throws ExecutionException;
 
 }

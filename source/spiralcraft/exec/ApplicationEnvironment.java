@@ -19,8 +19,21 @@ import spiralcraft.prefs.XmlPreferencesFactory;
 import java.util.prefs.Preferences;
 
 /**
- * Manages the execution of an Application by resolving the appropriate set of class libraries
- *   and loading the 'main' class in its own classloader.
+ * Provides necessary context for running application code.
+ *
+ * Specifically, the ApplicationEnvironment creates a ClassLoader which
+ *   references an appropriate set of code libraries, and resolves and executes
+ *   a suitable entry point.
+ *
+ * The entry point is always a "main" class (a class with the Java standard
+ *   main method). The class name can be specified using the 
+ *   "-main &lt;classname&gt;" option. If unspecified, the entry point will
+ *   default to the class  "spiralcraft.exec.Executor".
+ *
+ * The ClassLoader created by the ApplicationEnvironment is constructed without
+ *   a parent. This preserves forward compatability by allowing the target
+ *   application to use different versions of the libraries which compose this
+ *   "boot" loading system.
  */
 public class ApplicationEnvironment
 {
@@ -30,6 +43,10 @@ public class ApplicationEnvironment
   private String[] _mainArguments=new String[0];
   private String[] _modules;
 
+  /**
+   * The ApplicationManager provides access to the entire installed
+   *   codebase.
+   */
   public void setApplicationManager(ApplicationManager manager)
   { 
     _applicationManager=manager;
@@ -37,26 +54,42 @@ public class ApplicationEnvironment
     
   }
 
+  /**
+   * Standard arguments to the main class, as a String to be tokenized.
+   *   These arguments will preceed any arguments passed to the exec() method.
+   */
   public void setCommandLine(String val)
   { _mainArguments=StringUtil.tokenizeCommandLine(val);
   }
   
+  /**
+   * The main class, to run. This will be overridden if the main class is
+   *   specified as an option in the arguments passed to the exec() method
+   */
   public void setMainClass(String val)
   { _mainClass=val;
   }
-  
+
+  /**
+   * Standard arguments to the main class.
+   *   These arguments will preceed any arguments passed to the exec() method.
+   */
   public void setMainArguments(String[] val)
   { _mainArguments=val;
   }
   
+  /**
+   * A list of additional modules to load. These modules will normally contain
+   *   classes that are to be dynamically loaded but cannot be resolved
+   *   automatically by the LibraryClassloader.
+   */
   public void setModules(String[] val)
   { _modules=val;
   }
   
   
   /**
-   * Parse relevent information from the arguments and execute the main method of the specified 
-   *   target class passing along the additional arguments.
+   * Load the codebase and execute a command. 
    */
   public void exec(String[] args)
     throws ExecutionTargetException
@@ -107,6 +140,9 @@ public class ApplicationEnvironment
       
   }
 
+  /**
+   * Process arguments. Any options specified
+   */
   private void processArguments(String[] args)
   {
     new Arguments()
@@ -114,11 +150,9 @@ public class ApplicationEnvironment
       public boolean processArgument(String argument)
       { 
         if (_mainClass==null)
-        { _mainClass=argument;
+        { _mainClass="spiralcraft.exec.Executor";
         }
-        else
-        { _mainArguments=(String[]) ArrayUtil.append(_mainArguments,argument);
-        }
+        _mainArguments=(String[]) ArrayUtil.append(_mainArguments,argument);
         return true;
       }
 
@@ -128,6 +162,13 @@ public class ApplicationEnvironment
         {
           if (option=="module")
           { _modules=(String[]) ArrayUtil.append(_modules,nextArgument());
+          }
+          else if (option=="main")
+          { _mainClass=nextArgument();
+            //XXX Figure out what to do if null
+          }
+          else if (option=="exec")
+          { _mainClass="spiralcraft.exec.ClassExecutor";
           }
           else
           { return false;
@@ -143,3 +184,104 @@ public class ApplicationEnvironment
   }    
   
 }
+
+/* Notes and ramblings
+
+2003-02-??
+
+This class is basically responsible for setting up an appropriate classloader
+and then running an entry point in code loaded from that classloader.
+
+Currently, all configuration options are specified externally through
+  "persistent object" files which represent a given environment config.
+  
+Typically, each module provides an environment file to make it easy to run
+  entry points in the module from 'outside'. 
+  
+The entry point is assumed to be a 'main' method. This is the simplest way
+  of doing things, but by design does not solve the problem of providing
+  much context for execution as a true shell environment would. As a standard
+  default, using the main method leaves much to be desired. THERE IS A
+  COMPETING GOAL HERE, WHICH IS TO STANDARDIZE ON A MORE FUNCTIONAL ENTRY
+  POINT.
+  
+  Due to classloader separation, we can't share interfaces beyond the 
+  Java standard class libraries. But the highlight of a more functional entry
+  point is a useful IO system, which seems almost impossible to accomplish
+  without having the client refer to classes not loaded in its loader set, and
+  would be difficult if the server can only pass opaque objects to the client.
+  
+  On the other hand, a 'useful IO system' can go to the extent of the Command
+    framework, which is a much more complex system. So we need to revisit what
+    exactly we need to build here.
+    
+  The immediate requirement is driven from wanting to create invocable
+    functionality that can be accessed from a simple command line. Currently,
+    it goes like this:
+      1. Write a class with a 'main' method
+      2. Make sure there is an environment definition set up for the module
+      3. Invoke "spiralcraft <env> <className>"
+      
+  Problems with the above: No opportunity for IO redirection- this means that
+    we can't use our classes from anything but a command line to output to
+    a command line. We don't have a good concept of a URI context for relative
+    path resolution either. We just have the static File(".") user current 
+    directory.
+    
+  General solution: We need to be able to code at least the client side of
+    executables with a more robust sense of context. Specifically, redirection
+    of standard streams and contextualization for resources.
+    
+  An ExecutionContext might be a good compromise- it can have standard IO
+    stream management and provide a "user.dir" type of property. This is
+    essentially a VirtualSystem class. Maybe we should call it that. 
+  
+  Observation- these enhancements fall under the category of abstracting what
+    is normally provided to a main() method by making it less environment
+    specific- ie. generic streams instead of global system out,in,err, and a
+    URI based resource context instead of a file based context. It does not
+    add any functionality.
+    
+  The assumption of the ExecutionContext is that we are really building a
+    rudimentary user interface mechanism, and we want to stick with universally
+    correct assumptions about the basic things that we need to handle. One by
+    one:
+    
+    System.out: 
+      This is primarily used to send output. No assumptions are made
+      about the output format here- that is application specific. The 
+      destination should be managed by the context, however.
+    System.err: 
+      This is primarily used to send error or control information.
+      Again, the format is application specific, depending on the ultimate
+      receiver. Most of the time, formatted user messages go through this 
+      channel, but it seems like this would be application specific as well.
+      The destination should be managed by the context, however.
+    System.in:
+      This is used to read input. Once again, application specific. The source
+      should be managed by the context, however.
+    System.getProperty("user.dir"):
+      This is used as a context for finding resources when relative paths
+      are specified on the command line. The relevent URI resolution system
+      should be determined by the context.
+    Arguments/Parameters:
+      A String[] is minimally functional. Parameters are essentially pointers
+        to more information. Would an Object[] be better? A user can enter
+        parameters on a command line. Commands can be stored as text in code.
+        It might be presumptive to enforce a standard interpretation of 
+        command line arguments. We don't need to do this. If we want to
+        pass in named objects, perhaps a better way is to have the 'invoker'
+        configure things itself using beans and leave the parameters alone.
+    Environment:
+      "Global" properties need to have some control of scope. We need to provide
+      some kind of dictionary, again, with Strings. Arguments are preferred, but
+      'properties' are a mechanism that stays the same from execution
+      to execution.
+    
+  
+  
+
+
+
+
+*/
