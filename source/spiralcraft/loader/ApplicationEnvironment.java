@@ -7,13 +7,22 @@ import java.lang.reflect.InvocationTargetException;
 
 import java.lang.NoSuchMethodException;
 
+import spiralcraft.util.Arguments;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
- * Encapsulates an Application, its state and its resources
+ * Manages the execution of an Application by resolving the appropriate set of class libraries
+ *   and loading the 'main' class in its own classloader.
  */
 public class ApplicationEnvironment
 {
   private LibraryClassLoader _classLoader;
   private ApplicationManager _applicationManager;
+  private String _mainClass;
+  private ArrayList _mainArguments;
+  private ArrayList _modules=new ArrayList();
 
   public ApplicationEnvironment(ApplicationManager manager)
   { 
@@ -23,42 +32,87 @@ public class ApplicationEnvironment
   }
 
   /**
-   * Execute the main method of the specified target class (args[0])
-   *   passing along the additional arguments.
+   * Parse relevent information from the arguments and execute the main method of the specified 
+   *   target class passing along the additional arguments.
    */
-  public int exec(String[] args)
+  public void exec(String[] args)
+    throws InvocationTargetException
+          ,ClassNotFoundException
+          ,IOException
+          ,NoSuchMethodException
+          ,IllegalAccessException
   { 
+    args=resolveAliases(args);
+
+
+    new Arguments()
+    {
+      public boolean processArgument(String argument)
+      { 
+        if (_mainClass==null)
+        { 
+          _mainClass=argument;
+          _mainArguments=new ArrayList();
+        }
+        else
+        { _mainArguments.add(argument);
+        }
+        return true;
+      }
+
+      public boolean processOption(String option)
+      { 
+        if (_mainClass==null)
+        {
+          if (option=="module")
+          { _modules.add(nextArgument());
+          }
+          else
+          { return false;
+          }
+        }
+        else
+        { _mainArguments.add("-"+option);
+        }
+        return true;
+      }
+
+    }.process(args,'-');
+
+    if (_mainClass==null)
+    { 
+      System.err.println("Nothing to execute. Please specify a class.");
+      return;
+    }
+
+    if (_modules.size()>0)
+    {
+      Iterator it=_modules.iterator();
+      while (it.hasNext())
+      { _classLoader.addModule((String) it.next());
+      }
+    }
+    else
+    { _classLoader.resolveLibrariesForClass(_mainClass);
+    }
+
+    Class clazz=_classLoader.loadClass(_mainClass);
+    Method mainMethod=clazz.getMethod("main",new Class[] {String[].class});
+    String[] newArgs=new String[_mainArguments.size()];
+    _mainArguments.toArray(newArgs);
+    
     ClassLoader oldLoader=Thread.currentThread().getContextClassLoader();
     try
     {
-      _classLoader.resolveLibrariesForClass(args[0]);
-      Class clazz=_classLoader.loadClass(args[0]);
-      Method mainMethod=clazz.getMethod("main",new Class[] {String[].class});
-      String[] newArgs=new String[args.length-1];
-      System.arraycopy(args,1,newArgs,0,newArgs.length);
       Thread.currentThread().setContextClassLoader(_classLoader);
       mainMethod.invoke(null,new Object[] {newArgs});
-      return 0;
-    }
-    catch (InvocationTargetException x)
-    {
-      if (x.getTargetException() instanceof RuntimeException)
-      { throw (RuntimeException) x.getTargetException();
-      }
-      else
-      { 
-        x.getTargetException().printStackTrace();
-        return 1;
-      }
-    }
-    catch (Exception x)
-    { 
-      x.printStackTrace();
-      return 1;
     }
     finally
     { Thread.currentThread().setContextClassLoader(oldLoader);
     }
   }
 
+  private String[] resolveAliases(String[] args)
+  { return args;
+  }
 }
