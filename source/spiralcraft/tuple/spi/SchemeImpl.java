@@ -2,19 +2,19 @@ package spiralcraft.tuple.spi;
 
 import spiralcraft.tuple.Scheme;
 import spiralcraft.tuple.Field;
+import spiralcraft.tuple.FieldList;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * A basic implementation of a Scheme for the manual construction of Schemes 
- *  (progammatically or via an Assembly)
+ * A basic, efficient implementation of a Scheme
  */
 public class SchemeImpl
   implements Scheme
 {
-  private List _fields;
+  private FieldList _fields;
   
   public SchemeImpl()
   { }
@@ -24,8 +24,8 @@ public class SchemeImpl
    */
   public SchemeImpl(Scheme scheme)
   {
-    List fields=scheme.getFields();
-    List newFields=new ArrayList(fields.size());
+    FieldList fields=scheme.getFields();
+    FieldList newFields=new FieldListImpl(fields.size());
 
     Iterator it=fields.iterator();
     while (it.hasNext())
@@ -36,11 +36,11 @@ public class SchemeImpl
     setFields(newFields);
   }
   
-  public List getFields()
+  public FieldList getFields()
   { return _fields;
   }
   
-  public void setFields(List fields)
+  public void setFields(FieldList fields)
   { 
     int i=0;
     for (Iterator it=fields.iterator();it.hasNext();)

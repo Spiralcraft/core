@@ -19,7 +19,9 @@ import java.util.HashMap;
 
 /**
  * A Scheme derived from reflecting the bean properties defined in a
- *   Java interface. Provides a means to define Tuples which implement
+ *   Java class or interface.
+ *
+ * Provides a means to define Tuples which implement
  *   Java interfaces via proxy, or which manage property sets 
  *   for Java objects.
  */
@@ -40,6 +42,9 @@ public class ReflectionScheme
   private final HashMap _methodMap=new HashMap();
 
   
+  /**
+   * Return the Scheme which corresponds to this Java interface
+   */
   public static synchronized ReflectionScheme getInstance(Class iface)
   { 
     ReflectionScheme instance=(ReflectionScheme) _SINGLETONS.get(iface);
@@ -79,7 +84,7 @@ public class ReflectionScheme
     PropertyDescriptor[] props=
       _beanInfo.getPropertyDescriptors();
     
-    List fields=new ArrayList(props.length);
+    FieldListImpl fields=new FieldListImpl(props.length);
 
     for (int i=0;i<props.length;i++)
     { 
