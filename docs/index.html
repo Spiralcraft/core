@@ -8,32 +8,36 @@
 <h1>Spiralcraft</h1>
 <hr width="100%" size="2">
 <h2>spiralcraft-core module</h2>
-<h3>Packages<br>
-</h3>
+The spiralcraft-core module contains functionality on which all
+Spiralcraft modules depend.<br>
+<br>
+<h3>Functional group</h3>
+<h4>Runtime control<br>
+</h4>
+Packages associated with tracking and running code in a managed
+execution environment.
 <ul>
   <li><b><a href="spiralcraft.loader.html">spiralcraft.loader</a><br>
     </b>Loads and invokes applications in a version and dependency
 aware manner. Uses information maintained by the spiralcraft.versioning
-package and shipped with modules to select the appropriate set of .jar
-libraries and other code paths which will comprise the application
-runtime.</li>
-  <li><b>spiralcraft.util</b><br>
-Utilities to assist common programming tasks. Contains tools to
-manipulate Strings, Arrays, and command line arguments and perform
-common data conversions. <br>
+package and shipped with modules to select the appropriate set of class
+libraries which will comprise the application runtime.</li>
+  <li><span style="font-weight: bold;">spiralcraft.exec</span><br>
+Provides a method for command line invocation of spiralcraft.builder
+assemblies.<br>
   </li>
-  <li><b><a href="spiralcraft.reference.html">spiralcraft.reference</a><br>
-    </b>A set of interfaces which allows different object stores
-(filesystems, databases, directories, web sites) to reference each
-other's objects within a well defined local group of systems. Assists
-the integration of file systems, archives, databases and other object
-stores by supporting the import, export and storage of object
-references using locally unique identifiers (LUIDs) generated from the
-native keying mechanism of the store.&nbsp;</li>
-  <li><b>spiralcraft.sax</b><br>
-XML utilities based on SAX (simple API for XML). Contains a parse tree
-to help cache SAX event sequences.</li>
-  <li><b><a href="spiralcraft.builder.html">spiralcraft.builder<br>
+  <li><b>spiralcraft.versioning</b><br>
+(Planned) Encapsulates the versioning and dependency system used by
+Spiralcraft to  track and load the set of modules required by any given
+deployment. Provides  facilities to allow different versions of modules
+to share the same virtual  machine.</li>
+</ul>
+<h4>Application foundation&nbsp;</h4>
+Packages which implement framework methodologies that underpin
+Spiralcraft applications..<br>
+<ul>
+  <li><b><a
+ href="file:///c:/work/dev/spiralcraft/modules/core/docs/spiralcraft.builder.html">spiralcraft.builder<br>
     </a></b>A system for composing applications by defining
 'Assemblies' using an XML dialect.<br>
     <ul>
@@ -46,38 +50,43 @@ complexity of Java components.&nbsp;</li>
 customization of Assemblies.&nbsp;</li>
       <li>Provides local-singleton and expression based mechanisms to
 simplify the interconnection of components, the resolution of
-configuration parameters, and the seamless integration of add-on
-systems.</li>
+configuration parameters, and the seamless integration of add-on systems.</li>
       <li>Forms a stable namespace hierarchy which makes application
 components reachable for purposes of design, configuration and
 monitoring.</li>
     </ul>
   </li>
-  <li><b>spiralcraft.versioning</b><br>
-(Planned) Encapsulates the versioning and dependency system used by
-Spiralcraft to  track and load the set of modules required by any given
-deployment. Provides  facilities to allow different versions of modules
-to share the same virtual  machine.</li>
-  <li><b><a href="spiralcraft.lang.html">spiralcraft.lang</a><br>
+  <li><b><a
+ href="file:///c:/work/dev/spiralcraft/modules/core/docs/spiralcraft.lang.html">spiralcraft.lang</a><br>
     </b>Expression language toolkit. Provides ability to expose and
-access  dynamic data models at runtime using an intuitive Java-like
-path expression syntax. Provides an API to allow developers to use
-expressions, and an SPI for developers to bring their own object models
-with the reach of expressions.&nbsp;</li>
-  <li><b>spiralcraft.stream<br>
-    </b>Abstraction of 'stream resources' provides an interface for
-applications  to retrieve low level InputStreams or OutputStreams from
-arbitrary sources  using URIs. Includes support for relative paths, 
-containership, and capabilities inquiry. Most components which need to
-open  streams and traverse resource container hierarchies can be
-implemented against  these interfaces for transparent support of
-present and future 'stream resources',  for example files, jar
-archives, web servers, cvs repositories, and devices.  Also contains
-utilities to help with various aspects of dealing with streams.<br>
-  </li>
-  <li><b>spiralcraft.task<br>
-    </b>(Planned) Abstraction of 'tasks' which can run asynchronously
-and report progress.</li>
+access dynamic data models at runtime using an intuitive Java-like path
+expression syntax. Provides an API to allow developers to use
+expressions, and an SPI for developers to express their own object
+models.</li>
+  <li><span style="font-weight: bold;"></span><span
+ style="font-weight: bold;">spiralcraft.service</span><br>
+Implements the root of the application object model by providing a
+framework for the setup, interconnection, and teardown of Services&nbsp;</li>
+  <li><span style="font-weight: bold;">spiralcraft.ui<br>
+    </span>A User Interface abstraction which provides a common set of
+interfaces and abstract classes for implementing the Controller role
+within the Hierarchical Model/View/Controller design pattern. The UI
+package is extended by toolkit specific View implementations and
+business logic specific Model implementations, enabling a many-to-many
+relationship between them in order to maximize code re-use.</li>
+  <li><span style="font-weight: bold;">spiralcraft.registry</span><br>
+Facilitates management by providing a unified means of bidirectional
+access from application object models to management tools for purposes
+of configuration, monitoring and control.</li>
+  <li><b><a
+ href="file:///c:/work/dev/spiralcraft/modules/core/docs/spiralcraft.reference.html">spiralcraft.reference</a><br>
+    </b>A set of interfaces which allows different object stores
+(filesystems, databases, directories, web sites) to reference each
+other's objects within a well defined local group of systems. Assists
+the integration of file systems, archives, databases and other object
+stores by supporting the import, export and storage of object references
+using locally unique identifiers (LUIDs) generated from the native
+keying mechanism of the store.</li>
   <li><b>spiralcraft.command<br>
     </b>(Planned) Scripting interface with a shell style syntax,
 expression based parameter passing mechanism, and input/output stream
@@ -89,6 +98,40 @@ components to report  operational statistics while ensuring minimum
 impact on the runtime system  profile. System is composed of a tree of
 'Meters', each of which contains  'Logs' for capuring events and
 'Registers' for capturing statistics.</li>
+  <li><b>spiralcraft.task<br>
+    </b>(Planned) Abstraction of 'tasks' which can run asynchronously
+and report progress.</li>
+</ul>
+<h4>Input/Output<br>
+</h4>
+<ul>
+  <li><b>spiralcraft.sax</b><br>
+XML utilities based on SAX (simple API for XML). Contains a parse tree
+to help cache SAX event sequences.</li>
+  <li><b>spiralcraft.stream<br>
+    </b>Abstraction of 'stream resources' provides an interface for
+applications to retrieve low level InputStreams or OutputStreams from
+arbitrary sources  using URIs. Includes support for relative paths,
+containership, and capabilities inquiry. Most components which need to
+open streams and traverse resource container hierarchies can be
+implemented against  these interfaces for transparent support of present
+and future 'stream resources',  for example files, jar archives, web
+servers, cvs repositories, and devices.  Also contains utilities to
+help with various aspects of programming streams.</li>
+  <li><span style="font-weight: bold;">spiralcraft.prefs</span><br>
+Tools based on the java.util.prefs API to support the loading and
+storing of user and installation specific configuration data.</li>
+</ul>
+<h4>Utility</h4>
+Packages which facilitate common programming tasks
+<ul>
+  <li><b>spiralcraft.util</b><br>
+Utilities to assist common programming tasks. Contains tools to
+manipulate Strings, Arrays, and command line arguments and perform
+common data conversions.&nbsp;</li>
+  <li><span style="font-weight: bold;">spiralcraft.beans</span><br>
+Tools to manipulate and augment the java.beans API.<br>
+  </li>
 </ul>
 <br>
 <br>
