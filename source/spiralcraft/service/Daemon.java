@@ -5,6 +5,16 @@ import spiralcraft.exec.Executable;
 import spiralcraft.ui.Command;
 import spiralcraft.ui.AbstractCommand;
 
+import spiralcraft.registry.Registrant;
+import spiralcraft.registry.RegistryNode;
+
+import java.util.logging.Handler;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Logger;
+
+import spiralcraft.log.RegistryLogger;
+import spiralcraft.log.DefaultFormatter;
+
 /**
  * An executable that starts, responds to events, and terminates
  *   upon receipt of an applicable signal.
@@ -13,11 +23,17 @@ import spiralcraft.ui.AbstractCommand;
  */
 public class Daemon
   extends ServiceGroup
-  implements Executable
+  implements Executable,Registrant
 {
   private Object _eventMonitor=new Object();
   private boolean _running=true;
   private String[] _args;
+
+  private Handler _logHandler=new ConsoleHandler();
+  { _logHandler.setFormatter(new DefaultFormatter());
+  }
+
+  private Logger _logger;
 
   private Command _terminateCommand
     =new AbstractCommand()
@@ -30,6 +46,19 @@ public class Daemon
     { terminate();
     }
   };
+
+  public void register(RegistryNode node)
+  {
+    Logger logger=(Logger) node.findInstance(Logger.class);    
+    if (logger==null)
+    { 
+      logger=new RegistryLogger();
+      logger.addHandler(_logHandler);
+      node.registerInstance(Logger.class,logger);
+    }
+    _logger=logger;
+    _logger.config("Registered root logger");
+  }
 
   public String[] getArguments()
   { return _args;
