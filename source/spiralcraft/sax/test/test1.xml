@@ -1,0 +1,14 @@
+<someTag>
+
+  <someOtherTag>
+  </someOtherTag>
+    Text
+  <someOtherTag anAttribute="attributeValue"
+    anotherAttribute="attributeValue"
+    >Some text
+    Some more text&lt;
+    <ns:namespaceTag/>
+  </someOtherTag>
+
+  <closedTag myAttrib="myAttribValue&gt;"/>
+</someTag>
