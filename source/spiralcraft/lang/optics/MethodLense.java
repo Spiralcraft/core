@@ -1,5 +1,6 @@
 package spiralcraft.lang.optics;
 
+import spiralcraft.lang.Optic;
 import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.BindException;
 
@@ -26,7 +27,7 @@ class MethodLense
   { return _method;
   }
 
-  public Object translateForGet(Object value,Object[] params)
+  public Object translateForGet(Object value,Optic[] params)
   { 
     if (params==null)
     { throw new IllegalArgumentException
@@ -46,7 +47,13 @@ class MethodLense
     { return null;
     }
     try
-    { return _method.invoke(value,params);
+    { 
+      Object[] paramValues=new Object[params.length];
+      int i=0;
+      for (Optic optic:params)
+      { paramValues[i++]=optic.get();
+      }
+      return _method.invoke(value,paramValues);
     }
     catch (IllegalAccessException x)
     { 
@@ -55,12 +62,11 @@ class MethodLense
     }
     catch (InvocationTargetException x)
     { 
-      x.getTargetException().printStackTrace();
-      return null;
+      throw new RuntimeException("Error invoking method:",x.getTargetException());
     }
   }
 
-  public Object translateForSet(Object val,Object[] modifiers)
+  public Object translateForSet(Object val,Optic[] modifiers)
   { throw new UnsupportedOperationException();
   }
 

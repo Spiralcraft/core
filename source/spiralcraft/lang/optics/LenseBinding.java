@@ -19,7 +19,7 @@ public  class LenseBinding
 {
   private static int _ID=0;
   
-  protected final String id;
+  protected final int id;
 
   private final Optic _source;
   private final Lense _lense;
@@ -57,7 +57,7 @@ public  class LenseBinding
       }
     }
     _static=isStatic;
-    id=getClass().getName()+":"+_ID++;  
+    id=_ID++;  
 
   }
 
@@ -70,7 +70,7 @@ public  class LenseBinding
   }
   
   public final Object get()
-  { return _lense.translateForGet(_source.get(),resolveModifiers());
+  { return _lense.translateForGet(_source.get(),_modifiers);
   }
 
   /**
@@ -140,13 +140,12 @@ public  class LenseBinding
       Object oldValue=null;
       Object newValue=null;
 
-      Object[] modifiers=resolveModifiers();
 
       if (event.getOldValue()!=null)
-      { oldValue=_lense.translateForGet(event.getOldValue(),modifiers);
+      { oldValue=_lense.translateForGet(event.getOldValue(),_modifiers);
       }
       if (event.getNewValue()!=null)
-      { newValue=_lense.translateForGet(event.getNewValue(),modifiers);
+      { newValue=_lense.translateForGet(event.getNewValue(),_modifiers);
       }
 
       if (oldValue!=newValue)
@@ -164,11 +163,9 @@ public  class LenseBinding
     {
       Object newValue=null;
 
-      Object[] modifiers=resolveModifiers();
-
       Object sourceValue=_source.get();
       if (sourceValue!=null)
-      { newValue=_lense.translateForGet(sourceValue,modifiers);
+      { newValue=_lense.translateForGet(sourceValue,_modifiers);
       }
       // System.out.println(toString()+".modifierChanged:"+newValue);
       _propertyChangeSupport.firePropertyChange("",null,newValue);
@@ -213,19 +210,6 @@ public  class LenseBinding
       }
     }
     return _propertyChangeSupport;
-  }
-
-  private final Object[] resolveModifiers()
-  {
-    if (_modifiers!=null)
-    { 
-      Object[] modifiers=new Object[_modifiers.length];
-      for (int i=0;i<modifiers.length;i++)
-      { modifiers[i]=_modifiers[i].get();
-      }
-      return modifiers;
-    }
-    return null;
   }
 
   protected final void firePropertyChange(String name,Object oldValue,Object newValue)
