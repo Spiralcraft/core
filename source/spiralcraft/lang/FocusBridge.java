@@ -3,9 +3,17 @@ package spiralcraft.lang;
 import java.util.HashMap;
 
 /**
- * Decorates the Environment of another focus
+ * Provides a means for a 'client' component system (normally some sort of UI 
+ *   or API client) to access a Focus exposed by another component system.
+ *
+ * Allows additional attributes to be associated with the Focus that are
+ *   specific to the client component system.
+ *
+ * This allows the concrete implementation of this class to serve as
+ *   a language binding 'bridge' between a user interface and the objects
+ *   being manipulated by that interface.
  */
-public abstract class FocusDecorator
+public abstract class FocusBridge
   extends ProxyFocus
 {
 
