@@ -2,7 +2,7 @@ package spiralcraft.builder;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.Environment;
+import spiralcraft.lang.Context;
 import spiralcraft.lang.Attribute;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
@@ -20,7 +20,7 @@ import spiralcraft.registry.Registrant;
  * Assemblies are 'instances' of AssemblyClasses.
  */
 public class Assembly
-  implements Focus,Environment,Registrant
+  implements Focus,Context,Registrant
 {
   private final AssemblyClass _assemblyClass;
   private final Assembly _parent;
@@ -148,9 +148,9 @@ public class Assembly
   }
 
   /**
-   * implement Focus.getEnvironment()
+   * implement Focus.getContext()
    */
-  public Environment getEnvironment()
+  public Context getContext()
   { return this;
   }
 
@@ -209,12 +209,12 @@ public class Assembly
 
   //////////////////////////////////////////////////
   //
-  // Implementation of spiralcraft.lang.Environment
+  // Implementation of spiralcraft.lang.Context
   //
   //////////////////////////////////////////////////  
 
   /**
-   * Environment.resolve()
+   * Context.resolve()
    */
   public Optic resolve(String name)
   { 
@@ -228,7 +228,7 @@ public class Assembly
   }
 
   /**
-   * Environment.resolve()
+   * Context.resolve()
    */
   public String[] getNames()
   { 
