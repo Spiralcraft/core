@@ -2,14 +2,18 @@
 
 
   <target name="build">
-    <javac srcdir="source" classpath="${spiralcraft-main.jar}"/>
+    <javac 
+      srcdir="source" 
+      classpath="${spiralcraft-main.jar}"
+      debug="on"
+    />
   </target>
 
   <target name="jar" depends="build">
     <jar 
       destfile="../../lib/spiralcraft-core.jar" 
       basedir="source"
-      includes="spiralcraft/**/*.class"
+      includes="spiralcraft/**/*.class,spiralcraft/**/*.xml"
       >
     </jar>
   </target>
