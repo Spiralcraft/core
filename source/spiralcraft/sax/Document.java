@@ -12,4 +12,14 @@ public class Document
   public void complete()
   { _completed=true;
   }
+
+  public Element getRootElement()
+  { 
+    if (getChildren().size()>0)
+    { return (Element) getChildren().get(0);
+    }
+    else
+    { return null;
+    }
+  }
 }

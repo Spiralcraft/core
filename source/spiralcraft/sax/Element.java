@@ -46,6 +46,14 @@ public class Element
     }
   }
 
+  public String getURI()
+  { return _uri;
+  }
+
+  public String getLocalName()
+  { return _localName;
+  }
+
   public String toString()
   { 
     return super.toString()
