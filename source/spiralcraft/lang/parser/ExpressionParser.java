@@ -25,7 +25,7 @@ public class ExpressionParser
   { 
     createTokenizer(text);
     nextToken();
-    return new Expression(parseExpression());    
+    return new Expression(parseExpression(),text);    
   }
 
   private void createTokenizer(String expression)
