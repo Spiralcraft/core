@@ -5,12 +5,6 @@ package spiralcraft.ui;
  */
 public abstract class Controller
 {
-  private Controller _parent;
-
-  public void setParent(Controller parent)
-  { _parent=parent;
-  }
-
   public void init()
   {
   }
