@@ -69,6 +69,9 @@ public class AssemblyLoader
     throws BuildException
   {
     
+    if (!resourceUri.isAbsolute())
+    { throw new BuildException("The assembly URI '"+resourceUri+"' is not absolute and cannot be resolved");
+    }
 
     ParseTree parseTree=null;
     
@@ -96,7 +99,7 @@ public class AssemblyLoader
   /**
    * Define an AssemblyClass based on the information in an XML Element
    */
-  public AssemblyClass readAssemblyClass(URI localUri,Element node,AssemblyClass containerClass)
+  private AssemblyClass readAssemblyClass(URI localUri,Element node,AssemblyClass containerClass)
     throws BuildException
   {
     String packageUriString = node.getURI();
@@ -166,7 +169,7 @@ public class AssemblyLoader
     return assemblyClass;
   }
 
-  public void readProperty(URI localUri,Element node,AssemblyClass containerClass)
+  private void readProperty(URI localUri,Element node,AssemblyClass containerClass)
     throws BuildException
   {
     PropertySpecifier prop=new PropertySpecifier(containerClass,node.getLocalName());
