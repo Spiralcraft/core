@@ -45,6 +45,11 @@ public class ExpressionParser
     _tokenizer.ordinaryChar((int) '?');
     _tokenizer.ordinaryChar((int) ':');
     _tokenizer.ordinaryChar((int) '+');
+    _tokenizer.ordinaryChar((int) '-');
+    _tokenizer.ordinaryChar((int) '*');
+    _tokenizer.ordinaryChar((int) '/');
+    _tokenizer.ordinaryChar((int) '[');
+    _tokenizer.ordinaryChar((int) ']');
     _tokenizer.quoteChar((int) '"');
     _progressBuffer=new StringBuffer();
     _pos=0;
@@ -107,6 +112,7 @@ public class ExpressionParser
     throws ParseException
   { return parseConditionalExpression();
   }
+
 
   /**
    * ConditionalExpression -> LogicalOrExpression 
@@ -304,13 +310,15 @@ public class ExpressionParser
     switch (_tokenizer.ttype)
     {
       case '-':
-        nextToken();
-        operation = new SubtractNode(firstOperand,parseMultiplicativeExpression());
-        node=parseAdditiveExpressionRest(operation);
-        break;
       case '+':
+        char ttype=(char) _tokenizer.ttype;
         nextToken();
-        operation = new AddNode(firstOperand,parseMultiplicativeExpression());
+        operation 
+          = new OpNode
+            (firstOperand
+            ,parseMultiplicativeExpression()
+            ,ttype
+            );
         node=parseAdditiveExpressionRest(operation);
         break;
       default:
@@ -340,18 +348,16 @@ public class ExpressionParser
     switch (_tokenizer.ttype)
     {
       case '/':
-        nextToken();
-        operation = new DivideNode(firstOperand,parseUnaryExpression());
-        node = parseMultiplicativeExpressionRest(operation);
-        break;
       case '*':
-        nextToken();
-        operation = new MultiplyNode(firstOperand,parseUnaryExpression());
-        node = parseMultiplicativeExpressionRest(operation);
-        break;
       case '%':
+        char ttype=(char) _tokenizer.ttype;
         nextToken();
-        operation = new ModulusNode(firstOperand,parseUnaryExpression());
+        operation 
+          = new OpNode
+            (firstOperand
+            ,parseUnaryExpression()
+            ,ttype
+            );
         node = parseMultiplicativeExpressionRest(operation);
         break;
       default:
@@ -383,15 +389,16 @@ public class ExpressionParser
   }
 
   /**
-   * PostfixExpression -> PrimaryExpression
+   * PostfixExpression -> FocusExpression
    *                     ( "(" ExpressionList ")" 
-   *                     | "." PrimaryExpression
+   *                     |  "[" Expression "]"
+   *                     | "." IdentifierExpression
    *                     ) *
    */
   private Node parsePostfixExpression()
     throws ParseException
   {
-    Node node = parsePrimaryExpression();
+    Node node = parseFocusExpression();
     return parsePostfixExpressionRest(node);
   }
   
@@ -412,13 +419,15 @@ public class ExpressionParser
             );
         expect(')');
         return parsePostfixExpressionRest(methodCallNode);
+      case '[':
+        nextToken();
+        Node subscriptNode=new SubscriptNode(primary,parseExpression());
+        expect(']');
+        return parsePostfixExpressionRest(subscriptNode);
       case '.':
         nextToken();
-        Node primaryExpression=parsePrimaryExpression();
-        if (!(primaryExpression instanceof IdentifierNode))
-        { throwUnexpected();
-        }
-        Node resolveNode=new ResolveNode(primary,(IdentifierNode) primaryExpression);
+        IdentifierNode idNode=parseIdentifier();
+        Node resolveNode=new ResolveNode(primary,idNode);
         return parsePostfixExpressionRest(resolveNode);
       default:
         return primary;
@@ -452,13 +461,12 @@ public class ExpressionParser
   }
 
   /**
-   * PrimaryExpression -> Identifier 
-   *                    | Number
+   * PrimaryExpression -> Number
    *                    | String 
    *                    | "true" 
    *                    | "false" 
    *                    | "null"
-   *                    | "(" expression ")"
+   *                    | "(" Expression ")"
    */
   private Node parsePrimaryExpression()
     throws ParseException
@@ -477,8 +485,11 @@ public class ExpressionParser
         { node=new LiteralNode(null,Object.class);
         }
         else
-        { node=new IdentifierNode(_tokenizer.sval);
+        { throwUnexpected();
         }
+//        else
+//        { node=new IdentifierNode(_tokenizer.sval);
+//        }
         nextToken();
         break;
       case '"':
@@ -497,6 +508,22 @@ public class ExpressionParser
         throwUnexpected();
     }
     return node;
+  }
+
+  private IdentifierNode parseIdentifier()
+    throws ParseException
+  { 
+    IdentifierNode ret=null;
+    if (_tokenizer.ttype!=StreamTokenizer.TT_WORD)
+    { throwUnexpected();
+    }
+    else
+    { 
+      ret=
+        new IdentifierNode(_tokenizer.sval);
+      nextToken();
+    }
+    return ret;
   }
 
   private Node parseNumber()
@@ -526,5 +553,68 @@ public class ExpressionParser
     
   }
 
+  /**
+   * FocusExpression -> ( "[" FocusSpecifier "]" ) 
+   *                    ( "." Identifier 
+   *                      | Identifier
+   *                      | PrimaryExpression
+   */
+  private Node parseFocusExpression()
+    throws ParseException
+  { 
+    FocusNode focusNode=null;
+    if (_tokenizer.ttype=='[')
+    {
+      nextToken();
+      focusNode=parseFocusSpecifier();
+      expect(']');
+    }
+
+    switch (_tokenizer.ttype)
+    {
+      case StreamTokenizer.TT_WORD:
+        IdentifierNode id=new IdentifierNode(_tokenizer.sval);
+        nextToken();
+        return new FocusResolveNode(focusNode,id);
+      case '.':
+        nextToken();
+        IdentifierNode idNode=parseIdentifier();
+        return new ResolveNode(focusNode,idNode);
+      default:
+        return parsePrimaryExpression();
+    }
+  }
+
+  /**
+   * FocusExpression -> FocusName ( ":" Expression )
+   */
+  private FocusNode parseFocusSpecifier()
+    throws ParseException
+  {
+    StringBuffer focusName=new StringBuffer();
+    
+    while (true)
+    {
+      switch (_tokenizer.ttype)
+      {
+        case ']':
+          return new FocusNode(focusName.toString(),null);
+        case StreamTokenizer.TT_EOF:
+          throwUnexpected();
+        case ':':
+          nextToken();
+          return new FocusNode(focusName.toString(),parseExpression());
+        case StreamTokenizer.TT_WORD:
+        case StreamTokenizer.TT_NUMBER:
+          focusName.append(_tokenizer.sval);
+          nextToken();
+          break;
+        default:
+          focusName.append((char) _tokenizer.ttype);
+          nextToken();
+          break;
+      }
+    }
+  }
 
 }

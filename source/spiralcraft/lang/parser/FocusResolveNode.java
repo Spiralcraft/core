@@ -3,16 +3,17 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Environment;
 
 
-public class ResolveNode
+public class FocusResolveNode
   extends Node
 {
 
-  private final Node _source;
+  private final FocusNode _source;
   private final IdentifierNode _identifier;
 
-  public ResolveNode(Node source,IdentifierNode identifier)
+  public FocusResolveNode(FocusNode source,IdentifierNode identifier)
   { 
     _source=source;
     _identifier=identifier;
@@ -22,16 +23,17 @@ public class ResolveNode
   public Optic bind(final Focus focus)
     throws BindException
   { 
-    Optic sourceOptic;
+    String identifier=_identifier.getIdentifier();
+    Environment environment;
+    
     if (_source!=null)
-    { sourceOptic=_source.bind(focus);
+    { environment=_source.findFocus(focus).getEnvironment();
     }
     else
-    { sourceOptic=focus.getSubject();
+    { environment=focus.getEnvironment();
     }
-    String identifier=_identifier.getIdentifier();
-
-    Optic ret=sourceOptic.resolve(focus,identifier,null);
+    
+    Optic ret=environment.resolve(identifier);
     if (ret==null)
     { throw new BindException("Name '"+identifier+"' not found.");
     }
@@ -40,12 +42,11 @@ public class ResolveNode
 
   public void dumpTree(StringBuffer out,String prefix)
   { 
-    out.append(prefix).append("Resolve");
+    out.append(prefix).append("FocusResolve");
     prefix=prefix+"  ";
     if (_source!=null)
     { _source.dumpTree(out,prefix);
     }
-    out.append(prefix).append(".");
     _identifier.dumpTree(out,prefix);
   }
   

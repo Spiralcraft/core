@@ -15,6 +15,10 @@ public class IdentifierNode
   {  _identifier=identifier.intern();
   }
 
+  public String getIdentifier()
+  { return _identifier;
+  }
+
   public void dumpTree(StringBuffer out,String prefix)
   { out.append(prefix).append("Identifier:").append(_identifier);
   }
