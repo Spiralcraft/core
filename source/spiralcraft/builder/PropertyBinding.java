@@ -85,6 +85,14 @@ public class PropertyBinding
       }
       else
       { 
+        if (!_target.getTargetClass().isArray())
+        { 
+          throw new BuildException
+            (_target.getExpression().getText()
+            +" in "+_container.getAssemblyClass().getJavaClass()
+            +" cannot have multiple values"
+            );
+        }
         
         _source=Array.newInstance
           (_target.getTargetClass().getComponentType()
@@ -133,9 +141,13 @@ public class PropertyBinding
         }
       }
 
-      _focus=_container.findFocus(focusInterface);
+      _focus=_container.findFocus(focusInterface.getName());
+      if (_focus==_container && _container.getParent()!=null)
+      { _focus=_container.getParent().findFocus(focusInterface.getName());
+      }
+
       if (_focus==null)
-      { throw new BuildException("Focus "+focusInterface+" not found in this Assembly or its ancestors");
+      { throw new BuildException("Singleton "+focusInterface.getName()+" not found in this Assembly or its ancestors");
       }
     }
     
