@@ -1,0 +1,10 @@
+<!--
+  Trivial example. 
+
+  This AssemblyClass extends the Java class SimpleWidget.
+  
+  The name 'SimpleWidget' is interpreted as a class name in the package
+    identified by the URI of this file.
+-->
+
+<SimpleWidget />

@@ -1,0 +1,96 @@
+<!--
+  Create an assembly which exposes a JavaBean naming context for
+    access to the properties of SimpleWidget
+-->
+<Kit>
+
+  <EditForm>
+
+    <data>customer</data>
+    <contents>
+
+      <TextFieldEditor>
+        <data>name</data>
+      </TextFieldEditor>
+
+      <CheckBoxEditor>
+        <data>address</data>
+      </CheckBoxEditor>
+
+      <SaveButton>
+        <text>Save</text>
+      </SaveButton>
+
+    </contents>
+  </EditForm>
+
+
+
+  <Assembly>
+
+    <aspects>
+      <SpiralData>
+        
+      </SpiralData>
+
+      
+      <WebUI>
+        <TextField>
+          <model>
+            <Binding aspect="SpiralData" name="customer.title"/>
+          </model>
+        </TextField>
+      </WebUI>
+    </aspects>
+
+    <packages>spiralcraft.toDoList,spiralcraft.desktop</packages>
+
+    <interface
+      extends="/spiralcraft/swing/DataPanel"
+      >
+      <Input name="toDoList" type="ToDoList"/>
+      <Output name="selection" type="Entity"/>
+      <Output name="component" reference="myWidget"/>
+    </interface>
+
+    <objects>
+
+      <DateBookDisplay>
+        <name>Widget</name>
+        <description binding="toDoList.description"/>
+      </DateBookDisplay>
+
+    </object>
+
+  </Assembly>
+
+
+
+  <Assembly
+    extends="someOtherAssembly.xml"
+    >
+    <declarations>
+      <Import assembly="declarations.assembly.xml"/>
+  
+      <Define name="MyObject" class="SimpleWidget"/>
+      <Define name="MyThingie" assembly="test2.assembly.xml"/>
+  
+      <Input name="tableData" required="true"/>
+      <Output name="selection" binding="friend.something.selection"/>
+      <Local name="something" binding="friend.something"/>
+  
+    </declarations>
+    
+    <root>
+      <MyObject>
+        <friend>
+          <MyThingie>
+            <something.text>text</something.text>
+            <data binding="tableData"/>
+            <date binding="System.today.startOfDay"/>
+          </MyThingie>
+        </friend>
+      </MyObject>
+    </root>
+  </Assembly>
+</Kit>

@@ -1,0 +1,20 @@
+<!--
+  Create an assembly which exposes a JavaBean naming context for
+    access to the properties of SimpleWidget. 
+    
+  New instances of the assembly will configure MyWidget with the
+    specified properties.
+    
+  Assemblies which extend this assembly will inherit the property
+    settings for MyWidget  
+-->
+
+<MyWidget class="SimpleWidget">
+
+  <title>Some title</title>
+  <id>3</id>
+  <on>false</on>
+  <amount>17.43</amount>
+  <milliseconds>123456789012345</milliseconds>
+  
+</MyObject>
