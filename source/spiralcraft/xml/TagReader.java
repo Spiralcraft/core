@@ -1,7 +1,9 @@
 package spiralcraft.xml;
 
+import spiralcraft.util.ArrayUtil;
+
 /**
- * Reads and XML tag (name and attributes)
+ * Reads an XML tag (name and attributes)
  */
 public class TagReader
 {
@@ -17,6 +19,7 @@ public class TagReader
   private Attribute[] _attributes;
   private String _tagName;
 
+  
   public String getTagName()
   { return _tagName;
   }
@@ -25,6 +28,15 @@ public class TagReader
   { return _attributesReader.getAttributes();
   }
 
+  /**
+   * Read a Tag from the markup sequence provided. The provided
+   *   markup sequence must not contain the tag delimiters.
+   */
+  public void readTag(CharSequence markup)
+    throws ParseException
+  { readTag(new ParserContext(markup));
+  }
+  
   /**
    * Read a tag. The context should be
    *   positioned on the first character of the
@@ -40,5 +52,12 @@ public class TagReader
     _attributes=_attributesReader.getAttributes();
   }
 
-
+  public String toString()
+  { 
+    return 
+      super.toString()
+        +"[name='"+_tagName
+        +"',attributes="+ArrayUtil.formatToString(getAttributes(),",","")+"]"
+        ;
+  }
 }

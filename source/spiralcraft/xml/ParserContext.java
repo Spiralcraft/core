@@ -1,8 +1,9 @@
 package spiralcraft.xml;
 
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.IOException;
+
+import spiralcraft.text.io.CharSequenceReader;
 
 /**
  * Encapsulates the state of parsing an XML document
@@ -20,10 +21,10 @@ public class ParserContext
     advance();
   }
 
-  public ParserContext(String text)
+  public ParserContext(CharSequence text)
     throws ParseException
   { 
-    _reader=new StringReader(text);
+    _reader=new CharSequenceReader(text);
     advance();
   }
 

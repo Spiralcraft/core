@@ -5,6 +5,17 @@ package spiralcraft.xml;
  */
 public class AttributeReader
 {
+  private NameTokenReader _nameTokenReader
+    =new NameTokenReader();
+  
+  private WhitespaceReader _whitespaceReader
+    =new WhitespaceReader();
+ 
+  private LiteralReader _literalReader
+    =new LiteralReader();
+
+  private Attribute _attribute;
+
   /**
    * Read an attribute/value. The context should be
    *   positioned on the first character of the
@@ -34,15 +45,6 @@ public class AttributeReader
   { return _attribute;
   }
 
-  private NameTokenReader _nameTokenReader
-    =new NameTokenReader();
   
-  private WhitespaceReader _whitespaceReader
-    =new WhitespaceReader();
- 
-  private LiteralReader _literalReader
-    =new LiteralReader();
-
-  private Attribute _attribute;
   
 }

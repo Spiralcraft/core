@@ -20,7 +20,7 @@ public class Attribute
   }
 
   public String toString()
-  { return "["+_name+"="+_value+"]";
+  { return "["+_name+"=\""+_value+"\"]";
   }
 
   private String _name;
