@@ -136,30 +136,30 @@ public class AssemblyLoader
   /**
    * Define an AssemblyClass based on the information in an XML Element
    */
-  private AssemblyClass readAssemblyClass(URI localUri,Element node,AssemblyClass containerClass)
+  private AssemblyClass readAssemblyClass(URI sourceUri,Element node,AssemblyClass containerClass)
     throws BuildException
   {
-    String packageUriString = node.getURI();
-    if (packageUriString!=null)
+    String baseUriString = node.getURI();
+    if (baseUriString!=null)
     {
-      if (packageUriString.equals(""))
-      { packageUriString=null;
+      if (baseUriString.equals(""))
+      { baseUriString=null;
       }
-      else if (!packageUriString.endsWith("/"))
-      { packageUriString=packageUriString.concat("/");
+      else if (!baseUriString.endsWith("/"))
+      { baseUriString=baseUriString.concat("/");
       }
     }
 
-    URI packageUri
-      =packageUriString!=null
-      ?localUri.resolve(packageUriString)
-      :localUri.resolve("./").normalize();
+    URI baseUri
+      =baseUriString!=null
+      ?sourceUri.resolve(baseUriString)
+      :sourceUri.resolve("./").normalize();
       ;
 
     AssemblyClass assemblyClass
       =new AssemblyClass
-        (localUri
-        ,packageUri
+        (sourceUri
+        ,baseUri
         ,node.getLocalName()
         ,containerClass
         ,this
@@ -199,14 +199,14 @@ public class AssemblyLoader
       { 
         Node child = (Node) it.next();
         if (child instanceof Element)
-        { readProperty(localUri,(Element) child,assemblyClass);
+        { readProperty(sourceUri,(Element) child,assemblyClass);
         }
       }
     }
     return assemblyClass;
   }
 
-  private void readProperty(URI localUri,Element node,AssemblyClass containerClass)
+  private void readProperty(URI sourceUri,Element node,AssemblyClass containerClass)
     throws BuildException
   {
     PropertySpecifier prop=new PropertySpecifier(containerClass,node.getLocalName());
@@ -249,7 +249,7 @@ public class AssemblyLoader
       { 
         Node child = (Node) it.next();
         if (child instanceof Element)
-        { prop.addAssemblyClass(readAssemblyClass(localUri,(Element) child,containerClass));
+        { prop.addAssemblyClass(readAssemblyClass(sourceUri,(Element) child,containerClass));
         }
         else if (child instanceof Characters)
         { prop.addCharacters( ((Characters) child).getCharacters());

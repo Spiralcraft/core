@@ -22,12 +22,18 @@ import spiralcraft.util.ArrayUtil;
 public class AssemblyClass
 {
   private final URI _sourceUri;
+
+  // _basePackage and _baseName are used
+  //   to resolve external base class or java class
+  //   if _baseClass hasn't been supplied at construction
   private final URI _basePackage;
   private final String _baseName;
+  
+  private AssemblyClass _baseClass;
+
   private final AssemblyClass _outerClass;
   private final AssemblyLoader _loader;
   private String _declarationName;
-  private AssemblyClass _baseClass;
   private Class _javaClass;
   private LinkedList _propertySpecifiers;
   private LinkedList _compositeMembers;
@@ -36,9 +42,10 @@ public class AssemblyClass
   private Class[] _singletons;
   private LinkedList _members;
   private HashMap _memberMap;
+  private boolean _resolved;
 
   /**
-   * Construct a new AssemblyClass
+   * Construct a new AssemblyClass from a definition
    *
    *@param sourceUri The URI of the resource which defines this AssemblyClass,
    *   or null of the AssemblyClass is being defined programmatically.
@@ -74,8 +81,58 @@ public class AssemblyClass
     }
   }
 
-  void registerMember(String name,PropertySpecifier prop)
+  /**
+   * Construct a new AssemblyClass from a referenced base class
+   *
+   *@param sourceUri The URI of the resource which defines this AssemblyClass,
+   *   or null of the AssemblyClass is being defined programmatically.
+   *
+   *@param baseClass The base class 
+   *
+   *@param outerClass The AssemblyClass in which this AssemblyClass is being
+   *   defined, if any.
+   *
+   *@param loader The AssemblyLoader which loaded this AssemblyClass, if any
+   */
+  public AssemblyClass
+    (URI sourceUri
+    ,AssemblyClass baseClass
+    ,AssemblyClass outerClass
+    ,AssemblyLoader loader
+    )
   { 
+    _sourceUri=sourceUri;
+    _basePackage=null;
+    _baseName=null;
+    _baseClass=baseClass;
+    _outerClass=outerClass;
+    if (loader!=null)
+    { _loader=loader;
+    }
+    else
+    { _loader=AssemblyLoader.getInstance();
+    }
+  }
+
+  /**
+   * Create a new inner AssemblyClass in this AssemblyClass which subclasses 
+   *   the specified baseClass.
+   */
+  AssemblyClass innerSubclass(AssemblyClass baseClass)
+  { return new AssemblyClass(_sourceUri,baseClass,this,_loader);
+  }
+  
+  /**
+   * Register a PropertySpecifier as member of this assembly class.
+   * 
+   * If a PropertySpecifier has already been registered with the specified
+   *   name, replace it with the new one.
+   */
+  void registerMember(String name,PropertySpecifier prop)
+    throws BuildException
+  { 
+    assertUnresolved();
+    
     if (_members==null)
     { 
       _members=new LinkedList();
@@ -86,6 +143,9 @@ public class AssemblyClass
       PropertySpecifier oldProp=(PropertySpecifier) _memberMap.get(name);
       if (oldProp!=null)
       { 
+        
+        // Silently replace the old member. The registering PropertySpecifier
+        //   should check for an old member before replacing it.
         _members.remove(oldProp);
         _memberMap.remove(name);
       }
@@ -102,21 +162,22 @@ public class AssemblyClass
     }
   }
 
+  /**
+   * Return the specified member of this AssemblyClass or its inheritance
+   *   chain.
+   */
   PropertySpecifier getMember(String name)
   { 
+    PropertySpecifier member=null;
     if (_memberMap!=null)
-    { return (PropertySpecifier) _memberMap.get(name);
-    }
-    else
-    { 
-      if (_baseClass!=null)
-      { return _baseClass.getMember(name);
-      }
-      else
-      { return null;
-      }
+    { member=(PropertySpecifier) _memberMap.get(name);
     }
     
+    if (member==null && _baseClass!=null)
+    { member=_baseClass.getMember(name);
+    }
+    
+    return member;
   }
 
   PropertyBinding[] bindProperties(Assembly container)
@@ -141,6 +202,13 @@ public class AssemblyClass
   }
   
   /**
+   * Return the AssemblyClass, if any, in which this class was defined
+   */
+  public AssemblyClass getDefiningClass()
+  { return _outerClass;
+  }
+  
+  /**
    * Return the path from the root of the declaration unit.
    */
   public String[] getInnerPath()
@@ -153,12 +221,25 @@ public class AssemblyClass
     }
   }
 
-  public void resolve()
+  public synchronized void resolve()
     throws BuildException
   { 
-    resolveExternalBaseClass();
+    assertUnresolved();
+    if (_baseClass==null)
+    { resolveExternalBaseClass();
+    }
     resolveProperties();
     resolveSingletons();
+    _resolved=true;
+  }
+  
+  private void assertUnresolved()
+  {
+    if (_resolved)
+    { 
+      throw new IllegalStateException
+        ("AssemblyClass has already been resolved and cannot be modified");
+    }
   }
 
   public boolean isFocusNamed(String name)
@@ -176,11 +257,15 @@ public class AssemblyClass
   }
 
   public void setDeclarationName(String val)
-  { _declarationName=val;
+  { 
+    assertUnresolved();
+    _declarationName=val;
   }
 
   public void setSingletonNames(String[] interfaceNames)
-  { _singletonNames=interfaceNames;
+  { 
+    assertUnresolved();
+    _singletonNames=interfaceNames;
   }
 
   private void resolveSingletons()
@@ -217,10 +302,10 @@ public class AssemblyClass
   {
     if (_propertySpecifiers!=null)
     {
-      Iterator it=_propertySpecifiers.iterator();
-      while (it.hasNext())
+      while (_propertySpecifiers.size()>0)
       { 
-        PropertySpecifier prop=(PropertySpecifier) it.next();
+        PropertySpecifier prop
+          =(PropertySpecifier) _propertySpecifiers.removeFirst();
         prop.resolve();
       }
     }
@@ -251,6 +336,7 @@ public class AssemblyClass
         { 
           map.remove(prop.getTargetName());
           list.remove(oldProp);
+          prop.setBaseMember(oldProp);
         }
         list.add(prop);
         map.put(prop.getTargetName(),prop);
@@ -275,6 +361,11 @@ public class AssemblyClass
   { return _sourceUri;
   }
 
+  /**
+   * Resolve the external base class for this AssemblyClass. Called during
+   *   resolution when the assembly hasn't been constructed with an existing
+   *   base class.
+   */
   private void resolveExternalBaseClass()
     throws BuildException
   {
@@ -296,6 +387,10 @@ public class AssemblyClass
     }
   }
 
+  /**
+   * Resolve the Java class- called when the top of the AssemblyClass tree is
+   *   reached during resolveExternalBaseClass
+   */
   private void resolveJavaClass()
     throws BuildException
   { 
@@ -329,16 +424,13 @@ public class AssemblyClass
     }
   }
 
-  private String qualifyRelativeJavaClassName(String name)
-  { return _basePackage.getPath().substring(1).replace('/','.')+name;
-  }
-
   /**
    * Add a PropertySpecifier which defines the value of a
    *   property of one of the objects in the assembly
    */
   public void addPropertySpecifier(PropertySpecifier prop)
   { 
+    assertUnresolved();
     if (_propertySpecifiers==null)
     { _propertySpecifiers=new LinkedList();
     }
@@ -371,6 +463,28 @@ public class AssemblyClass
   { return _singletons;
   }
 
+  /**
+   * Ensure that the given test class is defined within the scope of this
+   *   assembly class. If it isn't, define an inner subclass under the 
+   *   specified property name.
+   */
+  AssemblyClass ensureLocalClass(String propertyName,AssemblyClass testClass)
+    throws BuildException
+  {
+    if (testClass.getDefiningClass()!=this)
+    {
+      AssemblyClass localClass=innerSubclass(testClass);
+      PropertySpecifier overrideSpecifier
+        =new PropertySpecifier(this,propertyName,localClass);
+      registerMember(propertyName,overrideSpecifier);
+      addPropertySpecifier(overrideSpecifier);
+      return localClass;
+    }
+    else
+    { return testClass;
+    }
+  }
+  
   public Assembly newInstance(Assembly parent)
     throws BuildException
   { 

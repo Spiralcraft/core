@@ -36,6 +36,9 @@ public class PropertySpecifier
   private String _expression;
   private boolean _preference;
   private boolean _dynamic;
+  private PropertySpecifier _baseMember;
+  private String _collectionClassName;
+  private Class _collectionClass;
   
   public PropertySpecifier
     (AssemblyClass container
@@ -56,6 +59,15 @@ public class PropertySpecifier
     addCharacters(value.toCharArray());
   }
 
+  public PropertySpecifier
+    (AssemblyClass container
+    ,String specifier
+    ,AssemblyClass content
+    )
+  {
+    this(container,specifier);
+    addAssemblyClass(content);
+  }
   
   public String getSourceCodeLocation()
   { 
@@ -75,6 +87,25 @@ public class PropertySpecifier
   { return _preference;
   }
 
+  public void setCollectionClassName(String name)
+  { _collectionClassName=name;
+  }
+  
+  /**
+   * Return the implementation of java.util.Collection which should be
+   *   used to hold the contents for this property.
+   */
+  public Class getCollectionClass()
+  { 
+    if (_collectionClass!=null)
+    { return _collectionClass;
+    }
+    if (_baseMember!=null)
+    { return _baseMember.getCollectionClass();
+    }
+    return null;
+  }
+  
   /**
    * Indicate whether the value for this property should be persisted within
    *   the preferences subsystem
@@ -185,7 +216,6 @@ public class PropertySpecifier
       }
     }
 
-
     if (_contents!=null)
     {
       Iterator it=_contents.iterator();
@@ -201,32 +231,61 @@ public class PropertySpecifier
 
     AssemblyClass targetAssemblyClass=_container;
     // Register specifier with appropriate assembly or subassembly
+
     for (int i=0;i<_specifier.length-1;i++)
     { 
+      // When a path is specified, a subassembly override is indicated (paths are
+      //   merely shorthand for overriding a series of nested assemblies to
+      //   chain the overridden property to the context in which it was specifed). 
+      
+      AssemblyClass localContainer=targetAssemblyClass;
+      String pathElement=_specifier[i];
+      
       PropertySpecifier targetAssemblyPropertySpecifier
-        =targetAssemblyClass.getMember(_specifier[i]);
+        =targetAssemblyClass.getMember(pathElement);
 
       if (targetAssemblyPropertySpecifier==null)
-      { throw new BuildException("Member assembly '"+_specifier[i]+"' not found");
+      { throw new BuildException("Member assembly '"+pathElement+"' not found");
       }
+      
       
       List contents=targetAssemblyPropertySpecifier.getContents();
       if (contents==null || contents.size()==0)
-      { throw new BuildException("Property '"+_specifier[i]+"' does not contain any Assemblies");
+      { throw new BuildException("Property '"+pathElement+"' does not contain any Assemblies");
       }
 
       // Add feature to index contents
       if (contents.size()>1)
-      { throw new BuildException("Property '"+_specifier[i]+"' contains more than one Assembly");
+      { throw new BuildException("Property '"+pathElement+"' contains more than one Assembly");
       }
       else
       { targetAssemblyClass=(AssemblyClass) contents.get(0);
       }
+      
+      // When we recurse, make sure we are dealing with a local class,
+      //  not a base class
+      targetAssemblyClass=localContainer.ensureLocalClass
+        (pathElement,targetAssemblyClass);
+        
+      
     }
+    
+    targetAssemblyClass.registerMember(_targetName,this);
+    
+    // Keep the target around for future reference (not critical right now)
     _targetAssemblyClass=targetAssemblyClass;
-    _targetAssemblyClass.registerMember(_targetName,this);
   }
 
+      
+  /**
+   * A pre-existing  member which this member overrides
+   */
+  void setBaseMember(PropertySpecifier prop)
+  { 
+    _baseMember=prop;
+    System.out.println(toString()+" overriding "+prop.toString());
+  }
+  
   public String getTargetName()
   { return _targetName;
   }
@@ -254,5 +313,12 @@ public class PropertySpecifier
 
   public String getTextData()
   { return _textData;
+  }
+
+  public String toString()
+  { 
+    return super.toString()
+      +":"+ArrayUtil.formatToString(_container.getInnerPath(),".","")
+      +"."+ArrayUtil.formatToString(_specifier,".","");
   }
 }
