@@ -20,6 +20,9 @@ public class AbsoluteFocusNode
   public Focus findFocus(final Focus focus)
     throws BindException
   { 
+    if (_focusName==null)
+    { return focus;
+    }
     Focus newFocus=focus.findFocus(_focusName);
     if (newFocus!=null)
     { return newFocus;
@@ -33,7 +36,7 @@ public class AbsoluteFocusNode
   { 
     out.append(prefix).append("Focus");
     prefix=prefix+"  ";
-    out.append(prefix).append("name="+_focusName);
+    out.append(prefix).append("name="+(_focusName!=null?_focusName:"(default)"));
     if (_selector!=null)
     { _selector.dumpTree(out,prefix);
     }
