@@ -12,6 +12,9 @@ import java.io.ByteArrayOutputStream;
 
 import java.net.URI;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Converts a String to an object of a specific type. Provides a means for registering
  *   StringConverters for custom types.
@@ -19,32 +22,34 @@ import java.net.URI;
 public abstract class StringConverter
 {
 
-  private static final HashMap _MAP=new HashMap();
+  private static final HashMap<Class,StringConverter> _MAP
+    =new HashMap<Class,StringConverter>();
+    
   private static final StringConverter _ONE_WAY_INSTANCE=new ToString();
   
   static
   {
-    _MAP.put(String.class.getName(),new StringToString());
-    _MAP.put(Integer.class.getName(),new IntToString());
-    _MAP.put(Integer.TYPE.getName(),new IntToString());
-    _MAP.put(Boolean.class.getName(),new BooleanToString());
-    _MAP.put(Boolean.TYPE.getName(),new BooleanToString());
-    _MAP.put(Float.class.getName(),new FloatToString());
-    _MAP.put(Float.TYPE.getName(),new FloatToString());
-    _MAP.put(Long.class.getName(),new LongToString());
-    _MAP.put(Long.TYPE.getName(),new LongToString());
-    _MAP.put(Double.class.getName(),new DoubleToString());
-    _MAP.put(Double.TYPE.getName(),new DoubleToString());
-    _MAP.put(Short.class.getName(),new ShortToString());
-    _MAP.put(Short.TYPE.getName(),new ShortToString());
-    _MAP.put(Byte.class.getName(),new ByteToString());
-    _MAP.put(Byte.TYPE.getName(),new ByteToString());
-    _MAP.put(Character.class.getName(),new CharacterToString());
-    _MAP.put(Character.TYPE.getName(),new CharacterToString());
-    _MAP.put(BigInteger.class.getName(),new BigIntegerToString());
-    _MAP.put(BigDecimal.class.getName(),new BigDecimalToString());
-    _MAP.put(Class.class.getName(),new ClassToString());
-    _MAP.put(URI.class.getName(),new URIToString());
+    _MAP.put(String.class,new StringToString());
+    _MAP.put(Integer.class,new IntToString());
+    _MAP.put(int.class,new IntToString());
+    _MAP.put(Boolean.class,new BooleanToString());
+    _MAP.put(boolean.class,new BooleanToString());
+    _MAP.put(Float.class,new FloatToString());
+    _MAP.put(float.class,new FloatToString());
+    _MAP.put(Long.class,new LongToString());
+    _MAP.put(long.class,new LongToString());
+    _MAP.put(Double.class,new DoubleToString());
+    _MAP.put(double.class,new DoubleToString());
+    _MAP.put(Short.class,new ShortToString());
+    _MAP.put(short.class,new ShortToString());
+    _MAP.put(Byte.class,new ByteToString());
+    _MAP.put(byte.class,new ByteToString());
+    _MAP.put(Character.class,new CharacterToString());
+    _MAP.put(char.class,new CharacterToString());
+    _MAP.put(BigInteger.class,new BigIntegerToString());
+    _MAP.put(BigDecimal.class,new BigDecimalToString());
+    _MAP.put(Class.class,new ClassToString());
+    _MAP.put(URI.class,new URIToString());
   }
 
   /**
@@ -54,11 +59,26 @@ public abstract class StringConverter
   { 
     synchronized (_MAP)
     { 
-      StringConverter ret=(StringConverter) _MAP.get(type.getName());
+      StringConverter ret=_MAP.get(type);
       if (ret==null)
       { 
         // Discover single argument constructor and create a new
         //   stringConverter for the class
+
+        Constructor constructor=null;
+        try
+        { constructor=type.getConstructor(new Class[] {String.class});
+        }
+        catch (Exception x)
+        { }
+
+        if (constructor!=null)
+        { ret=new ConstructFromString(constructor);
+        }
+        
+        if (ret!=null)
+        { _MAP.put(type,ret);
+        }
       }
       return ret;
     }
@@ -75,7 +95,7 @@ public abstract class StringConverter
   public static void registerInstance(Class type,StringConverter converter)
   {
     synchronized (_MAP)
-    { _MAP.put(type.getName(),converter);
+    { _MAP.put(type,converter);
     }
   }
 
@@ -109,6 +129,37 @@ public abstract class StringConverter
   public abstract Object fromString(String val);
 
   
+}
+
+final class ConstructFromString
+  extends StringConverter
+{
+  private Constructor _constructor;
+
+  public ConstructFromString(Constructor constructor)
+  { _constructor=constructor;
+  }
+  
+  public Object fromString(String val)
+  { 
+    try
+    { return _constructor.newInstance(new Object[] {val});
+    }
+    catch (InvocationTargetException x)
+    { 
+      throw new IllegalArgumentException
+        ("Error constructing object"
+        ,x.getTargetException()
+        );
+    }
+    catch (Exception x)
+    {
+      throw new IllegalArgumentException
+        ("Error constructing object"
+        ,x
+        );
+    }
+  }
 }
 
 final class ToString

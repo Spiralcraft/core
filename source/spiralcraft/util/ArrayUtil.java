@@ -84,7 +84,7 @@ public class ArrayUtil
 
   /**
    * Add the contents of the array to a collection
-   *@returns The number of elements successfully added
+   *@return The number of elements successfully added
    */
   public static int addToCollection(Collection c,Object array)
   {
