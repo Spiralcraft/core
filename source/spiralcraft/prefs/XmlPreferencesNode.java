@@ -122,7 +122,12 @@ public class XmlPreferencesNode
         if (element.getLocalName().equals("map"))
         { 
           _mapElement=element;
-          loadEntries();
+          try
+          { loadEntries();
+          }
+          catch (BackingStoreException x)
+          { System.err.println(x.toString());
+          }
         }
         else if (element.getLocalName().equals("node"))
         { 
@@ -130,14 +135,18 @@ public class XmlPreferencesNode
           { loadChild(element);
           }
           catch (BackingStoreException x)
-          { x.printStackTrace();
+          { System.err.println(x.toString());
           }
+        }
+        else
+        { System.err.println(new BackingStoreException("Unknown element '"+element.getLocalName()+"'"));
         }
       }
     }
   }
 
   private final void loadEntries()
+    throws BackingStoreException
   {
     List children=_mapElement.getChildren(Element.class);
     if (children!=null)
@@ -150,6 +159,9 @@ public class XmlPreferencesNode
         { 
           Entry entry=new Entry(element);
           _entryMap.put(entry.getKey(),entry);
+        }
+        else
+        { throw new BackingStoreException("Unknown tag '"+element.getLocalName()+"' in map");
         }
       }
     }
@@ -278,6 +290,7 @@ public class XmlPreferencesNode
      * Construct an entry from an existing element
      */
     public Entry(Element element)
+      throws BackingStoreException
     {
       _element=element;
       Attribute[] attribs=element.getAttributes();
@@ -288,6 +301,9 @@ public class XmlPreferencesNode
         }
         else if (attribs[i].getLocalName().equals("value"))
         { _value=attribs[i];
+        }
+        else
+        { throw new BackingStoreException("Unknown attribute '"+attribs[i].getLocalName()+"' in entry");
         }
       }
     }
