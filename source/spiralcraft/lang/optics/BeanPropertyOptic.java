@@ -11,10 +11,9 @@ public class BeanPropertyOptic
   extends AbstractOptic
 {
   private static final Object[] EMPTY_PARAMS=new Object[0];
-
-  private Optic _source;
-  private PropertyDescriptor _property;
-  private Object[] _params=new Object[1];
+  private final Object[] _params=new Object[1];
+  private final Optic _source;
+  private final PropertyDescriptor _property;
 
   public BeanPropertyOptic
     (Optic source
@@ -69,5 +68,12 @@ public class BeanPropertyOptic
         return false;
       }
     }
+  }
+
+  public String toString()
+  { 
+    return super.toString()
+      +":"+_source.toString()
+      +":[property="+_property.getName()+" ("+_property.getPropertyType()+")]";
   }
 }

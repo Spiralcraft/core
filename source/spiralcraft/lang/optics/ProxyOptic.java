@@ -3,6 +3,7 @@ package spiralcraft.lang.optics;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.BindException;
 
 /**
  * An Optic which delegates to another Optic, usually in order to
@@ -15,10 +16,15 @@ public class ProxyOptic
   private final Optic _optic;
 
   public ProxyOptic(Optic delegate)
-  { _optic=delegate;
+  { 
+    if (delegate==null)
+    { throw new IllegalArgumentException("Delegate cannot be null");
+    }
+    _optic=delegate;
   }
 
   public Optic resolve(Focus focus,String name,Expression[] params)
+    throws BindException
   { return _optic.resolve(focus,name,params);
   }
 
@@ -32,5 +38,9 @@ public class ProxyOptic
 
   public Class getTargetClass()
   { return _optic.getTargetClass();
+  }
+
+  public String toString()
+  { return super.toString()+":"+_optic.toString();
   }
 }
