@@ -8,6 +8,8 @@ import spiralcraft.lang.BindException;
 import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
 
+import spiralcraft.util.ArrayUtil;
+
 import java.beans.Introspector;
 import java.beans.IntrospectionException;
 import java.beans.BeanInfo;
@@ -94,7 +96,14 @@ public class BeanPrism
       }
     }
     if (fieldLense!=null)
-    { return new BeanFieldBinding(source,fieldLense);
+    { 
+      Binding binding=source.getCache().get(fieldLense);
+      if (binding==null)
+      { 
+        binding=new BeanFieldBinding(source,fieldLense);
+        source.getCache().put(fieldLense,binding);
+      }
+      return binding;
     }
     return null;
   }
@@ -116,12 +125,19 @@ public class BeanPrism
       
       if (prop!=null)
       { 
-        lense=new BeanPropertyLense(prop);
+        lense=new BeanPropertyLense(prop,_beanInfo);
         _properties.put(name,lense);
       }
     }
     if (lense!=null)
-    { return new BeanPropertyBinding(source,lense);
+    { 
+      Binding binding=source.getCache().get(lense);
+      if (binding==null)
+      { 
+        binding=new BeanPropertyBinding(source,lense);
+        source.getCache().put(lense,binding);
+      }
+      return binding;
     }
     return null;
   }
@@ -162,11 +178,25 @@ public class BeanPrism
         }
       }
       catch (NoSuchMethodException x)
-      { throw new BindException("Binding to "+_targetClass,x);
+      { 
+        throw new BindException
+          ("Method "
+          +name
+          +"("+ArrayUtil.formatToString(classSig,",","")
+          +") not found in "+_targetClass
+          ,x
+          );
       }
     }
     if (lense!=null)
-    { return new MethodBinding(source,lense);
+    { 
+      Binding binding=source.getCache().get(lense);
+      if (binding==null)
+      { 
+        binding=new MethodBinding(source,lense);
+        source.getCache().put(lense,binding);
+      }
+      return binding;
     }
     return null;
 
