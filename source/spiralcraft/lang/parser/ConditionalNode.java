@@ -85,15 +85,15 @@ class ConditionalLense
   { return prism;
   }
   
-  public Object translateForGet(Object val,Object[] modifiers)
+  public Object translateForGet(Object val,Optic[] modifiers)
   { 
     if (val==null)
-    { return modifiers[1];
+    { return modifiers[1].get();
     }
-    return ((Boolean) val).booleanValue()?modifiers[0]:modifiers[1];
+    return ((Boolean) val).booleanValue()?modifiers[0].get():modifiers[1].get();
   }
 
-  public Object translateForSet(Object val,Object[] modifiers)
+  public Object translateForSet(Object val,Optic[] modifiers)
   { throw new UnsupportedOperationException();
   }
 }
