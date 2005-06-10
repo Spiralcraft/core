@@ -1,3 +1,17 @@
+//
+// Copyright (c) 1998,2005 Michael Toth
+// Spiralcraft Inc., All Rights Reserved
+//
+// This package is part of the Spiralcraft project and is licensed under
+// a multiple-license framework.
+//
+// You may not use this file except in compliance with the terms found in the
+// SPIRALCRAFT-LICENSE.txt file at the top of this distribution, or available
+// at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
+//
+// Unless otherwise agreed to in writing, this software is distributed on an
+// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+//
 package spiralcraft.builder;
 
 import java.net.URI;
@@ -12,10 +26,10 @@ import spiralcraft.util.ArrayUtil;
 
 /**
  * An AssemblyClass defines the behavior and content of an Assembly. One
- *   instance of an AssemblyClass is created within a given ClassLoader
- *   for each assembly definition, which is uniquely named.
+ *   instance of an AssemblyClass is created within a given ClassLoader for
+ *   each unique URI used to reference an assembly definition.
  * 
- * An AssemblyClass is associated with one or more instances of type
+ * An AssemblyClass instantiates one or more instances of an 
  *   Assembly.
  */
 public class AssemblyClass

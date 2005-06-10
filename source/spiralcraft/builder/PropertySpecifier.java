@@ -1,3 +1,17 @@
+//
+// Copyright (c) 1998,2005 Michael Toth
+// Spiralcraft Inc., All Rights Reserved
+//
+// This package is part of the Spiralcraft project and is licensed under
+// a multiple-license framework.
+//
+// You may not use this file except in compliance with the terms found in the
+// SPIRALCRAFT-LICENSE.txt file at the top of this distribution, or available
+// at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
+//
+// Unless otherwise agreed to in writing, this software is distributed on an
+// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+//
 package spiralcraft.builder;
 
 import java.util.Collection;
@@ -17,8 +31,9 @@ import java.util.List;
  * Specifies a property to be defined in the context of an AssemblyClass
  *
  * The 'specifier' of the property is a dotted name which specifies a
- *   path through contained assemblies to an Optic (spiralcraft.lang)
- *   that is to be assigned a value or modified in some way.
+ *   path through referenced assemblies to a specific
+ *   bean property that is to be assigned a value
+ *   or modified in some way- eg. "connection.password"
  */
 public class PropertySpecifier
 {

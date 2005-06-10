@@ -1,3 +1,17 @@
+//
+// Copyright (c) 1998,2005 Michael Toth
+// Spiralcraft Inc., All Rights Reserved
+//
+// This package is part of the Spiralcraft project and is licensed under
+// a multiple-license framework.
+//
+// You may not use this file except in compliance with the terms found in the
+// SPIRALCRAFT-LICENSE.txt file at the top of this distribution, or available
+// at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
+//
+// Unless otherwise agreed to in writing, this software is distributed on an
+// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+//
 package spiralcraft.builder;
 
 import java.util.prefs.Preferences;
@@ -11,21 +25,25 @@ import spiralcraft.prefs.BackingStoreFormatException;
 import java.net.URI;
 
 /**
- * A PersistentReference stored in an XML 'preferences' format. 
+ * A persistent object represented in an XML based portable data format.
  *
- * The preferences store contains a reference to the Assembly
- *   which defines the object and persistent state of the instance.
+ * Persistent objects are backed by Assembly Classes, which associate the 
+ *   persistence data with Java code in a developer manageable fashion.
  *
- * The XmlObject can inherit from a 'base' object. This allows
- *   for the definition of prototype objects which can be 
- *   tailored by the end user or application for specific
- *   use cases. In this scenario, a reference to the base object
- *   will be stored in the preference store.
+ * Persistent objects can have their state saved and restored at runtime.
  *
+ * An instance of a persistent object is tied to its non-volatile representation
+ *   in a storage medium.
+ * 
+ * Note: This class currently uses the Java preferences API, but is scheduled
+ *   to be converted to use the native Tuple persistence mechanism and will,
+ *   as a result, be vastly simplified.
  */
 public class XmlObject
   extends PersistentReference
 {
+  // XXX TO-DO: Convert to use Tuple interface, simplify API
+  
   private static final Preferences init(String store,String base,String assembly)
     throws BuildException
   {
