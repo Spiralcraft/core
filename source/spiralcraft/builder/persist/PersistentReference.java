@@ -1,3 +1,17 @@
+//
+// Copyright (c) 1998,2005 Michael Toth
+// Spiralcraft Inc., All Rights Reserved
+//
+// This package is part of the Spiralcraft project and is licensed under
+// a multiple-license framework.
+//
+// You may not use this file except in compliance with the terms found in the
+// SPIRALCRAFT-LICENSE.txt file at the top of this distribution, or available
+// at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
+//
+// Unless otherwise agreed to in writing, this software is distributed on an
+// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+//
 package spiralcraft.builder.persist;
 
 import spiralcraft.registry.Registrant;
@@ -26,6 +40,10 @@ import spiralcraft.tuple.Tuple;
  *   subcomponents. Upon activation of the PersistentReference, the referred
  *   to object will be composed by recursively instantiating the Assembly and
  *   applying the Tuple data to it.
+ *
+ * The Schema of the Tuples used to persist object data is fully defined by
+ *   the Assembly Class URI space- ie. each Tuple's Scheme is derived from a
+ *   specific Assembly Class / Java object.
  */
  
 public class PersistentReference

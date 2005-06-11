@@ -1,7 +1,8 @@
 <project name="spiralcraft-core" default="build" basedir=".">
 
   <property name="classpath" value="${spiralcraft-main.jar}"/>
-
+  <property name="module" value="core"/>
+  
   <target name="build">
     <javac 
       classpath="${classpath}"
@@ -38,5 +39,16 @@
 			<bottom>Copyright 2000, Spiralcraft, Inc.</bottom>
 		</javadoc>
   </target>
+  
+  <target name="source" depends="build">
+    <jar 
+      destfile="../../distrib/spiralcraft-${module}-source.jar" 
+      basedir="../../.."
+      includes="spiralcraft/modules/${module}/*.xml,spiralcraft/modules/${module}/source/spiralcraft/**/*.java,spiralcraft/modules/${module}/source/spiralcraft/**/*.xml"
+      >
+    </jar>
+
+  </target>
+
 
 </project>

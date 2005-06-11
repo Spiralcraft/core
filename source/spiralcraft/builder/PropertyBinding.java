@@ -626,13 +626,14 @@ public class PropertyBinding
           //   at runtime against the containing assembly hierarchy or any
           //   object accessible from it.
           
+          // !!! It is important to call get() to NARROW the type to that of
+          //   the actual object. Otherwise, the formal property type will
+          //   be used and some names will not resolve as expected.
           _source=new DefaultFocus
             (OpticFactory.getInstance().createOptic
               (sourceChannel.get()
               )
             );
-          _source=new DefaultFocus
-            (sourceChannel);
         }
         else if (_target.getContentType()==Channel.class
             && !Channel.class.isAssignableFrom
