@@ -2,53 +2,9 @@
 
   <property name="classpath" value="${spiralcraft-main.jar}"/>
   <property name="module" value="core"/>
+  <property name="version" value="1.0"/>
+    
+  <import file="build-common.xml"/>
   
-  <target name="build">
-    <javac 
-      classpath="${classpath}"
-      srcdir="source" 
-      debug="true"
-    />
-  </target>
-
-  
-  <target name="jar" depends="build">
-    <jar 
-      destfile="../../lib/spiralcraft-core.jar" 
-      basedir="source"
-      includes="spiralcraft/**/*.class,spiralcraft/**/*.xml"
-      >
-    </jar>
-  </target>
-
-  <target name="doc" depends="build">
-		<javadoc 
-      classpath="source:${classpath}"
-			sourcepath="source"
-      packagenames="spiralcraft.**.**"
-        
-			header="spiralcraft-core API"
-			destdir="docs/api"
-			author="Spiralcraft, Inc."
-			version="v1.0-dev0"
-			use="true"
-			windowtitle="spiralcraft-core API"
-			doctitle="&lt;h1&gt;spiralcraft-core API&lt;/h1&gt;"
-			maxmemory="90M"
-			failonerror="true">
-			<bottom>Copyright 2000, Spiralcraft, Inc.</bottom>
-		</javadoc>
-  </target>
-  
-  <target name="source" depends="build">
-    <jar 
-      destfile="../../distrib/spiralcraft-${module}-source.jar" 
-      basedir="../../.."
-      includes="spiralcraft/modules/${module}/*.xml,spiralcraft/modules/${module}/source/spiralcraft/**/*.java,spiralcraft/modules/${module}/source/spiralcraft/**/*.xml"
-      >
-    </jar>
-
-  </target>
-
 
 </project>

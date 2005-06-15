@@ -62,7 +62,7 @@ public class Binding
   private Focus _modelFocus;
 
   private Expression _uiExpression;
-  private Channel _uiChannel;
+  private Channel _uiChannel; 
   private Focus _uiFocus;
   private StringConverter _uiStringConverter;
 
