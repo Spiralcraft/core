@@ -1,5 +1,0 @@
-<testModel:SimpleWidget
-  xmlns:testModel="java:/spiralcraft/builder/test/"
-  >
-  <title>This is the title</title>
-</testModel:SimpleWidget>
