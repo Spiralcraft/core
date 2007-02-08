@@ -8,5 +8,11 @@
 -->
 
 <SimpleWidget>
-  <title>A Simple Widget</title>
+  <title persistent="true">A Simple Widget</title>
+  <children persistent="true"/>
+<!--
+  <id persistent="true">1</id>
+  <amount persistent="true"/>
+  <milliseconds persistent="true"/>
+-->
 </SimpleWidget>

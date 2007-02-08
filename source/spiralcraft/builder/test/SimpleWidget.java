@@ -35,6 +35,7 @@ public class SimpleWidget
   private SimpleWidget _friend;
   private SimpleWidget[] _children;
   private String[] _aliases;
+  private DateFormat _dateFormat;
   
   public SimpleWidget()
   { say("<init>");
@@ -58,16 +59,28 @@ public class SimpleWidget
     say("setId("+val+")");
   }
 
+  public int getId()
+  { return _id;
+  }
+  
   public void setOn(boolean val)
   { 
     _on=val;
     say("setOn("+(val?"true":"false")+")");
   }
 
+  public boolean getOn()
+  { return _on;
+  }
+  
   public void setAmount(float val)
   { 
     _amount=val;
     say("setAmount("+val+")");
+  }
+  
+  public float getAmount()
+  { return _amount;
   }
 
   public void setMilliseconds(long val)
@@ -76,29 +89,51 @@ public class SimpleWidget
     say("setMilliseconds("+val+")");
   }
 
+  public long getMilliseconds()
+  { return _milliseconds;
+  }
+  
   public void setFriend(SimpleWidget val)
   { 
     _friend=val;
     say("setFriend("+val+")");
   }
 
+  public SimpleWidget getFriend()
+  { return _friend;
+  }
+  
   public void setChildren(SimpleWidget[] val)
   { 
     _children=val;
-    say("setChildren("+ArrayUtil.formatToString(val,",",null)+")");
+    say("setChildren("+ArrayUtil.format(val,",",null)+")");
   }
 
+  public SimpleWidget[] getChildren()
+  { return _children;
+  }
+  
   public void setAliases(String[] aliases)
   { 
     _aliases=aliases;
-    say("setAliases("+ArrayUtil.formatToString(aliases,",","\"")+")");
+    say("setAliases("+ArrayUtil.format(aliases,",","\"")+")");
     
+  }
+
+  public String[] getAliases()
+  { return _aliases;
   }
   
   public void setDateFormat(DateFormat format)
   {
+    _dateFormat=format;
     say("Date is: "+format.format(new Date()));
   }
+
+  public DateFormat getDateFormat()
+  { return _dateFormat;
+  }
+  
   
   public void say(String text)
   { System.err.println(super.toString()+"."+text);
