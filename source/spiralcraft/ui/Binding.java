@@ -19,6 +19,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.WriteException;
 import spiralcraft.lang.OpticFactory;
 
 import spiralcraft.util.StringConverter;
@@ -149,14 +150,32 @@ public class Binding
   { 
     if (_updateToModel)
     {
-      if (!_modelChannel.set(translateToModel(_uiChannel.get())))
-      { updateFromModel();
+      try
+      {
+        if (!_modelChannel.set(translateToModel(_uiChannel.get())))
+        { updateFromModel();
+        }
       }
+      catch (WriteException x)
+      { 
+        // XXX Review what to do here- tell controller about error?
+        x.printStackTrace();
+        updateFromModel();
+      }
+      
     }
   }
 
   public void updateFromModel()
-  { _uiChannel.set(translateToUi(_modelChannel.get()));
+  { 
+    try
+    { _uiChannel.set(translateToUi(_modelChannel.get()));
+    }
+    catch (WriteException x)
+    { 
+      // XXX Review what to do here- tell controller about error?
+      x.printStackTrace();
+    }
   }
 
   private Object translateToUi(Object value)
@@ -186,7 +205,15 @@ public class Binding
   }
 
   public void propertyChange(PropertyChangeEvent event)
-  { _uiChannel.set(translateToUi(event.getNewValue()));
+  { 
+    try
+    { _uiChannel.set(translateToUi(event.getNewValue()));
+    }
+    catch (WriteException x)
+    { 
+      // XXX Review what to do here- tell controller about error?
+      x.printStackTrace();
+    }
   }
 
   public void release()
