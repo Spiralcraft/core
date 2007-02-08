@@ -40,6 +40,8 @@ public class Resolver
       _INSTANCE.setDefaultFactory(new URLResourceFactory());
       try
       {
+        // Consider auto-registering "class","classpath","class-resource",
+        //   or moving this mapping to a config mechanism
         _INSTANCE.registerResourceFactory("java",new ClasspathResourceFactory());
         _INSTANCE.registerResourceFactory("file",new FileResourceFactory());
       }
