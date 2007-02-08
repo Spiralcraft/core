@@ -1,0 +1,26 @@
+<meta:Type
+  xmlns:meta="java:/spiralcraft/data/types/meta/"
+  xmlns:example="java:/spiralcraft/data/test/example"
+  >
+  <scheme>
+    <meta:Scheme>
+      <fields>
+        <meta:Field>
+          <name>id</name>
+          <type><String.type/></type>
+        </meta:Field>
+        
+        <meta:Field>
+          <name>displayName</name>
+          <type><String.type/></type>
+        </meta:Field>
+
+        <meta:Field>
+          <name>address</name>
+          <type><example:Address.type/></type>
+        </meta:Field>
+      </fields>
+    </meta:Scheme>
+  </scheme>
+
+</meta:Type>

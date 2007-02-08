@@ -1,0 +1,107 @@
+show();
+tr=typeResolver=spiralcraft.data.TypeResolver.getTypeResolver();
+
+// Basic types
+t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Boolean"));
+t.toString(true);
+t.fromString("true");
+t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/String"));
+t.toString("test");
+t.fromString("test");
+t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Character"));
+t.toString('a');
+t.fromString("a");
+t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Byte"));
+t.toString(Byte.parseByte("127"));
+t.fromString("127");
+t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Short"));
+t.toString(Short.parseShort("12345"));
+t.fromString("12345");
+t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Integer"));
+t.toString(Integer.parseInt("12345"));
+t.fromString("12345");
+t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Long"));
+t.toString(Long.parseLong("12345"));
+t.fromString("12345");
+t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Float"));
+t.toString(Float.parseFloat("12345.6789"));
+t.fromString("12345.6789");
+t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Double"));
+t.toString(Double.parseDouble("12345.6789"));
+t.fromString("12345.6789");
+t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/BigDecimal"));
+t.toString(new java.math.BigDecimal("12345.6789"));
+t.fromString("12345.6789");
+
+"// Reflection Type of an Object (so we can parameterize a BigDecimal with a";
+"//   specific precision and scale";
+t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/BigDecimalType"));
+
+"// Raw XML Reading- String";
+result=new spiralcraft.data.sax.DataReader().readFromUri
+  (URI.create("java:/spiralcraft/data/test/1.data.xml")
+  ,typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/StringType"))
+  );
+result.getClass();
+
+
+"// Raw XML Reading- BigDecimal";
+result=new spiralcraft.data.sax.DataReader().readFromUri
+  (URI.create("java:/spiralcraft/data/test/2.data.xml")
+  ,typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/BigDecimalType"))
+  );
+result.getClass();
+
+"// Object construction using BuilderType";
+type=typeResolver.resolve(URI.create("java:/spiralcraft/builder/test/SimpleWidget"));
+
+"// Raw XML Reading- External Bean";
+result=new spiralcraft.data.sax.DataReader().readFromUri
+  (URI.create("java:/spiralcraft/data/test/3.data.xml")
+  ,type
+  );
+result.toText("|  ");
+
+"// Convert to Assembly";
+resultAssembly=type.fromData(result,null);
+resultObject=resultAssembly.getSubject().get();
+resultObject.getClass();
+
+"// Convert back to data";
+tuple=type.toData(resultAssembly);
+tuple.toText("|  ");
+
+"// Write to XML";
+out = new ByteArrayOutputStream();
+new spiralcraft.data.sax.DataWriter().writeDataToOutputStream(out,tuple);
+
+System.out.write(out.toByteArray());
+
+"// Read back in";
+"// Raw XML Reading- External Bean";
+result=new spiralcraft.data.sax.DataReader().readFromInputStream
+  (new ByteArrayInputStream(out.toByteArray())
+  ,type
+  );
+result.toText("|  ");
+
+"// Convert to Assembly";
+resultAssembly=type.fromData(result,null);
+resultObject=resultAssembly.getSubject().get();
+resultObject.getClass();
+
+"// Test primitive ProtoType";
+result=new spiralcraft.data.sax.DataReader().readFromUri
+  (URI.create("java:/spiralcraft/data/test/4.data.xml")
+  ,typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/String"))
+  );
+result.getClass();
+
+"// Test custom Scheme- 'Customer' data";
+customerType=typeResolver.resolve(URI.create("java:/spiralcraft/data/test/example/Customer"));
+result=new spiralcraft.data.sax.DataReader().readFromUri
+  (URI.create("java:/spiralcraft/data/test/5.data.xml")
+  ,customerType
+  );
+result.toText("|  ");
+
