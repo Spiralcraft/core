@@ -1,0 +1,15 @@
+
+<example:Customer
+  xmlns:example="java:/spiralcraft/data/test/example"
+  >
+  <id>1001</id>
+  <displayName>Johnny</displayName>
+  <address>
+    <example:Address>
+      <address1>1234 Example St.</address1>
+      <address2>Suite 123</address2>
+      <city>New York</city>
+    </example:Address>
+  </address>
+  <paymentTerms>net 30</paymentTerms>
+</example:Customer>

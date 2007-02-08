@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<dt:SimpleWidget
+  xmlns:dt="java:/spiralcraft/builder/test"
+  >
+  <title>My Simple Widget</title>
+  <id>456</id>
+  <amount>678.90</amount>
+  <milliseconds>99999999999</milliseconds>
+  <aliases>
+    <String>alias4</String>
+    <String>alias5</String>
+    <String>alias6</String>
+  </aliases>
+  <children>
+    <dt:SimpleWidget>
+      <title>First ChildWidget</title>
+    </dt:SimpleWidget>
+    <dt:SimpleWidget>
+      <title>Second ChildWidget</title>
+    </dt:SimpleWidget>
+  </children>
+</dt:SimpleWidget>

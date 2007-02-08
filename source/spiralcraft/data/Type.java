@@ -1,0 +1,167 @@
+//
+// Copyright (c) 1998,2007 Michael Toth
+// Spiralcraft Inc., All Rights Reserved
+//
+// This package is part of the Spiralcraft project and is licensed under
+// a multiple-license framework.
+//
+// You may not use this file except in compliance with the terms found in the
+// SPIRALCRAFT-LICENSE.txt file at the top of this distribution, or available
+// at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
+//
+// Unless otherwise agreed to in writing, this software is distributed on an
+// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+//
+package spiralcraft.data;
+
+import java.net.URI;
+
+
+/**
+ * Describes the data type of a data element. Root of the interface hierarchy
+ *   for describing types
+ */
+public interface Type
+{  
+  /**
+   * The TypeResolver which instantiated this particular Type.
+   */
+  TypeResolver getTypeResolver();
+
+  /**
+   * The canonical URI for this type.
+   */
+  URI getUri();
+  
+  /**
+   * The Type used to describe Type objects of this Type, to support the
+   *   defining of Type extensions using data.
+   */
+  Type getMetaType();
+  
+  /**
+   * The public Java class or interface used to programatically access or
+   *   manipulate this data element.
+   *
+   * @return A Class Or Interface, or null if the data element should be
+   *   manipulated as Tuple data.
+   */
+  Class<?> getNativeClass();
+
+  /**
+   * A primitive type is a 'leaf node' of a data tree. A DataComposite
+   *   which contains data of a primitive Type references a plain old Java
+   *   objects of this Types native type. 
+   *
+   * A DataComposite which contains non-primitive Types holds other
+   *   DataComposites (ie. Tuples and Aggregates)
+   * 
+   * @return Whether this is a primitive type.
+   */
+  boolean isPrimitive();
+  
+  /**
+   * @return The Scheme which describes the structure of this type, or null if
+   *   this type is not a complex type. 
+   */
+  Scheme getScheme();
+  
+  /**
+   * @return Whether this Type is an aggregate (array or collection) of another
+   *   type.
+   */
+  boolean isAggregate();
+   
+  /**
+   * @return The Type of data aggregated by this aggregate Type, or null if 
+   *   this is not an aggregate Type.
+   */
+  Type getContentType();
+  
+  /**
+   * @return The first non-aggregate returned by recursive calls to
+   *   getContentType(), or this type if not an aggregate.
+   */
+  Type getCoreType();
+  
+  /**
+   * Indicate whether Objects of this type can be encoded to and decoded from
+   *   String form. This will only return true if getNativeClass()!=null.
+   *
+   * @return Whether Objects of this type can be represented as a String.
+   */
+  boolean isStringEncodable();
+  
+  /**
+   * Translates the canonical String representation of a value of this Type to
+   *   an Object presenting a suitable interface.
+   *
+   * @return An object with a Java class compatible with the Class or Interface
+   *    returned from the getNativeClass() method.
+   *
+   * @throws IllegalArgumentException If the supplied String cannot be
+   *    translated.
+   */
+  Object fromString(String str)
+    throws DataException;
+  
+  /**
+   * Translates a native representation of a value of this Type to the 
+   *   canonical String representation.
+   *
+   * @return The canonical String representation of this Type for the specified
+   *    Object.
+   *
+   * @throws IllegalArgumentException If the supplied Object is not compatible
+   *    with the Class or Interface returned from the getNativeClass() method.
+   */
+  String toString(Object value);
+  
+  /**
+   * Translates a DataComposite representation of a value of this Type to an 
+   *   Object presenting a suitable interface. Optionally pass a context, which
+   *   Types can use to recursively construct parts of a complex object.
+   *   
+   * @return An object with a Java class compatible with the Class or Interface
+   *    returned from the getNativeClass() method.
+   *
+   * @throws IllegalArgumentException If the Tuple cannot be
+   *    translated.
+   *
+   * @throws DataException If an error occurs in the translation process.
+   */
+  Object fromData(DataComposite composite,InstanceResolver resolver)
+    throws DataException;
+  
+  /**
+   * Translates a native representation of a value of this Type to a
+   *   DataComposite representation of its composition.
+   *
+   * @return An DataComposite representation of this Object.
+   *
+   * @throws IllegalArgumentException If the supplied Object is not compatible
+   *    with the Class or Interface returned from the getNativeClass() method.
+   *
+   * @throws DataException If an error occurs in the translation process.
+   */
+  DataComposite toData(Object object)
+    throws DataException;
+  
+  
+  /**
+   * Determine whether a value is appropriate for the native type and 
+   *   other contraints of this Type.
+   *
+   * @return null, if the value is valid for this Type, or a ValidationResult
+   *   containing specifics of the failure.
+   */
+  ValidationResult validate(Object value);
+  
+  /**
+   * Called by the TypeResolver to allow the type to recursively resolve any
+   *   referenced Types. This method has no effect after it is called once
+   *   by the TypeResolver.
+   */
+  void link()
+    throws DataException;
+}

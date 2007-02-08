@@ -1,0 +1,222 @@
+
+<!--
+  Development prototype example Scheme. Implementing this fully should cover
+  most core functionality in the Data package
+-->
+
+<!--
+  Type resolution- in codebase namespace="java://" scheme, or default namespace:
+  - Load prototype from resource <namespace>/<name>.type.xml
+    Prototypes specify instances using reflection to override default props
+    with tuple values. This particular one reflects a Type interface impl to
+    further specify a type (format string, length, case sensitive, etc). This
+    will usually contain a root element <name>Type, which will cause the
+    reflective Type mechanism.
+  - Load Type implementation class <namespace-classpath>.<name>Type  
+    Directly implements the Type interface
+  - Load reflective Type based on arbitrary class <namespace-classpath>.<name>
+    Determines Scheme via reflection of properties of an arbitrary Java object,
+    which can then be used for 'prototyping' an instance of the object.
+  - Load generic Scheme based type from <namespace>/<name>.scheme.xml
+    This is used for most structured data objects that don't have Java type
+    analogs (just exposed as tuples).
+  
+  Type resolution: default type resolution operation:
+    1. class spiralcraft.data.types.<XXX>Type
+
+  Type resolution: generic type resolution operation:
+    1. class <namespace>.<XXX>Type
+    2. resource: <namespace>.<XXX>.scheme.xml
+    
+-->
+
+<!--
+  Scheme element- Scheme is in the 'data' namspace-
+  This element declares that we are creating a customized instance
+    of a Scheme type. Because a Scheme is a complex type (it has
+    members), there is a Scheme which defines it. 
+  Scheme is in the 'core' type namespace, because although it is not
+    usually used within 'data', most 'data' is will actually be Scheme
+    definitions.
+  The intent of the consumer of this file is to instantiate a
+    spiralcraft.data.Scheme from a data definition. 
+    
+  A spiralcraft.data.types.SchemeType specifies that the Java native type
+    is a spiralcraft.data.Scheme, and not just a raw Tuple.
+    
+  There is also a Scheme.scheme.xml, which specifies the internal data 
+    structure of a Scheme.
+    
+  A proxy will be instantiated which maps the Scheme to the Tuple.
+  This proxy can be subclassed to 
+-->
+
+<!-- POJO Reflective Types
+  Given a Java class, a Scheme can be reflected from its properties.
+  
+  For each property a Field can be created which contains the Property name,
+     and the Java type will be mapped to an analouge Type. We might need to
+     use a map for primitives, otherwise we recurse and create other POJO
+     reflective types.
+  
+  We can instantiate the Object by populating its fields through its external
+     interface.
+ 
+-->
+
+<!-- Type is probably spiralcraft.data.types.SchemeType -->
+<Scheme>
+  <fields>
+    <Field>
+      <name>username</name>
+      <type>String</type>
+    </Field>
+    
+  <fields>
+</Scheme>
+
+<PhoneNumberType>
+  <format>(XXX) XXX-XXXX</format>
+</PhoneNumberType>
+
+<Customer>
+  <name>John</name>
+</Customer>
+
+
+<!-- Beans and Tuples
+
+Goal:
+
+* Immutable Bean with getters and methods- after configuration
+* Configuration through metadata mechanism
+
+Option 1: Metadata as constructor
+-- Requires that Bean be aware of metadata mechanism
+
+Option 2: Immutable interface, mutable class
+-- Requires two hand-coded Java files
+
+Option 3: Immutable interface, proxy impl
+-- Proxy cannot implement methods, unless a mutable class extends it (same prob as #2)
+
+
+Scenario 1: 
+-- Type name points to XXXType.class
+-- Single public handwritten class
+-- No 'set' methods
+-- Tuple constructor
+-- Tuple copied to properties by hand !!! COMPLEX AND INEFFICIENT !!!
+
+Scenario 2: 
+-- Type name points to XXXType.class
+-- Single public handwritten class
+-- Set methods in inner class
+-- Tuple constructor
+-- Calls helper class to map tuple to inner class set methods
+-- !!! MUST KNOW ABOUT TUPLES- MAYBE NOT SO BAD- BUT NOT IOC FRIENDLY !!!
+
+Scenario 3:
+-- Type name points to XXXType.class INTERFACE
+-- Handwritten implementation class (XXXTypeImpl) which has set methods
+-- !!! REDUNDANT EFFORT, Impl MUST BE ASSOCIATED BY NAMING CONVENTION
+
+Scenario 4:
+-- Type name points to XXXType.class INTERFACE
+-- Handwritten ABSTRACT implementation class (XXXTypeImpl) which has functional
+--   part of interface implementation- optional.
+-- Dynamic proxy which provides Bean part of implementation and delegates
+     functional part to TypeImpl XXX IMPOSSIBLE - TypeImpl is abstract, cannot
+     be instantiated
+-- Instantiate by
+     Proxy.newProxyInstance(<classLoader>,<type-interface>,<handler>)
+     new <handler>(XXXTypeImpl)
+
+
+
+
+-->
+
+<!-- How to map Tuples to Objects
+
+Method 1: Construct an Object with a Tuple
+-- Not very IOC compatible
+-- Atomic
+-- Intrusive
+
+Method 2: Use reflection to set IOC
+-- With setAccessible() will work ok, hopefully
+-- Non-atomic
+-- Non-intrusive
+
+Method 3: Define a new paradigm
+-- Immutable Objects constructed with Tuples
+-- Implements TupleBacked
+-- No API Based Sets in non-editable object (though EditableXXX may support
+--   buffers and EditableTuples.
+-- Sole function of strongly typed interface is to support methods/actions/
+--   behaviors that must be hand-coded (ie. Types, other structural components)
+
+
+-->
+
+<!-- Type interface vs. classes
+
+-- Scenarios where we want to re-implement Type 'functionality'
+---- Value verification- DB logic vs Java logic? Far fetched, because
+----   goes beyond the concept of 'interface' vs. 'implementation'.
+
+-- Scenarios where we want to re-implement Type definition from a property
+     standpoint.
+---- From Tuple
+---- From IOC
+---- Static
+
+-- But a -given- type will normally have only one property setup mechanism.
+
+-- We -need- to use Tuple type based definitions, however this is accomplished
+
+-- Type class makes the most sense, from a simplicity and usage standpoint.
+
+-->
+
+
+<!-- Tuple with Java front-end
+
+public abstract Class XXX
+{
+  public abstract getFaaa();
+  
+  public abstract getFbbb();
+  
+  abstract setFbbb(..)
+    throws ValidationException;
+  
+  doXYZ()
+  {
+    setFbbb(...getFaaa()....)
+  }
+}
+
+class XXXData
+  extends XXX
+{
+  
+  public getFaaa()
+  { return tuple.get(FaaaField.getIndex());
+  }
+  
+  public getFbbb()
+  { return tuple.get(FbbbField.getIndex());
+  }
+
+  setFbbb()
+    throws ValidationException
+  { 
+    FbbbField.getType().validate(value);
+    tuple.set(FbbbField.getIndex(),value);
+  }
+}
+
+
+-->
