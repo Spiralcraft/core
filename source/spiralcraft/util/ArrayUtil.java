@@ -18,6 +18,7 @@ import java.lang.reflect.Array;
 
 import java.util.TreeSet;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Static methods for array manipulation
@@ -339,5 +340,34 @@ public class ArrayUtil
       hashCode=multiplier*hashCode + (a[i]==null ? 0: a[i].hashCode());
     
     return hashCode;
+  }
+  
+  public static final Iterable iterable(final Object array)
+  {
+    return new Iterable()
+    {
+      public Iterator iterator()
+      {
+        return new Iterator()
+        {
+          private int index=0;
+          private int length=Array.getLength(array);
+
+          public boolean hasNext()
+          { return index<length;
+          }
+          
+          public Object next()
+          { return Array.get(array,index++);
+          }
+          
+          public void remove()
+          { 
+            throw new UnsupportedOperationException
+              ("Can't remove from array");
+          }
+        };
+      }
+    };
   }
 }
