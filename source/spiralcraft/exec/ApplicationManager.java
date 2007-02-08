@@ -21,8 +21,8 @@ import spiralcraft.loader.LibraryCatalog;
 
 import spiralcraft.util.ArrayUtil;
 
-import spiralcraft.builder.XmlObject;
-import spiralcraft.builder.BuildException;
+import spiralcraft.data.persist.XmlObject;
+import spiralcraft.data.persist.PersistenceException;
 
 import spiralcraft.stream.Resolver;
 import spiralcraft.stream.Resource;
@@ -113,30 +113,37 @@ public class ApplicationManager
     if (args.length==0)
     { 
       // Show environments in-scope
-      throw new IllegalArgumentException("Please specify an application environment");
+      throw new IllegalArgumentException
+        ("Please specify an application environment");
     }
 
     URI applicationURI=findEnvironment(args[0]);
     if (applicationURI==null)
     { 
       // Show environments in-scope
-      throw new IllegalArgumentException("Unknown application environment '"+args[0]+"'");
+      throw new IllegalArgumentException
+        ("Unknown application environment '"+args[0]+"'");
     }
         
     args=(String[]) ArrayUtil.truncateBefore(args,1);
 
     try
     {
-
-      XmlObject environmentRef=new XmlObject(applicationURI.toString(),null,null);
-      environmentRef.register(_registryNode.createChild(Integer.toString(_nextEnvironmentId++)));
+      URI environmentTypeRef
+        =URI.create("java:/spiralcraft/exec/ApplicationEnvironment");
+        
+      XmlObject environmentRef
+        =new XmlObject(applicationURI,environmentTypeRef);
+      
+      environmentRef.register
+        (_registryNode.createChild(Integer.toString(_nextEnvironmentId++)));
       
       ApplicationEnvironment environment=(ApplicationEnvironment) environmentRef.get();
       environment.setApplicationManager(this);
     
       environment.exec(args);
     }
-    catch (BuildException x)
+    catch (PersistenceException x)
     { throw new ExecutionTargetException(x);
     }
   }

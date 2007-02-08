@@ -14,8 +14,8 @@
 //
 package spiralcraft.exec;
 
-import spiralcraft.builder.XmlObject;
-import spiralcraft.builder.BuildException;
+import spiralcraft.data.persist.XmlObject;
+import spiralcraft.data.persist.PersistenceException;
 
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.Arguments;
@@ -29,9 +29,6 @@ import spiralcraft.stream.Resolver;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import java.util.prefs.Preferences;
-import java.util.prefs.BackingStoreException;
-
 import java.io.IOException;
 import java.io.File;
 
@@ -44,7 +41,6 @@ public class Executor
 {
   private String _uri;
   private String _applicationUri;
-  private Preferences _prefs;
   private RegistryNode _registryNode;  
   
   protected ExecutionContext _context
@@ -55,7 +51,7 @@ public class Executor
   public static void main(String[] args)
     throws IOException
             ,URISyntaxException
-            ,BuildException
+            ,PersistenceException
             ,ExecutionException
   { new Executor().execute(args);
   }
@@ -77,7 +73,7 @@ public class Executor
     throws ExecutionException
             ,IOException
             ,URISyntaxException
-            ,BuildException
+            ,PersistenceException
   {
     processArguments(args);
 
@@ -98,7 +94,7 @@ public class Executor
   }
 
   private Executable resolveExecutable()
-    throws BuildException
+    throws PersistenceException
   {
     XmlObject application=resolveApplication();
       
@@ -125,16 +121,21 @@ public class Executor
    *   object data. The object will be restored and executed.
    */
   private XmlObject resolveApplication()
-    throws BuildException
+    throws PersistenceException
   { 
     
     // XXX This seems kind of ugly. We need to revisit the resolution protocol.
     if (_uri.endsWith(".assembly.xml"))
-    { return new XmlObject(null,null,_uri.substring(0,_uri.indexOf(".assembly.xml")));
+    {
+      // We have a Type but no data file = non-persistent application
+      return new XmlObject
+        (null
+        ,URI.create(_uri.substring(0,_uri.indexOf(".assembly.xml")))
+        );
     }
     
       
-    return new XmlObject(_uri,null,null);
+    return new XmlObject(URI.create(_uri),null);
   } 
   
   /**
