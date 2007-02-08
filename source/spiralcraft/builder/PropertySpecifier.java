@@ -44,6 +44,7 @@ public class PropertySpecifier
   private ArrayList<AssemblyClass> _contents;
   private String _targetName;
   private AssemblyClass _targetAssemblyClass;
+  private int _targetSequence;
   private Expression _sourceExpression;
   private Expression _focusExpression;
   private boolean _literalWhitespace;
@@ -191,6 +192,24 @@ public class PropertySpecifier
   { return _focusExpression;
   }
 
+  public PropertyBinding getPropertyBinding(Assembly assembly)
+  { 
+    if (assembly.getAssemblyClass()!=_targetAssemblyClass)
+    { 
+      throw new IllegalArgumentException
+        ("Assembly is not instance of specifier target");
+    }
+    return assembly.getPropertyBinding(_targetSequence);
+  }
+  
+  void setTargetSequence(int sequence)
+  { _targetSequence=sequence;
+  }
+  
+  int getTargetSequence()
+  { return _targetSequence;
+  }
+  
   /**
    * Resolve anything required and recurse into contents
    */
@@ -357,6 +376,7 @@ public class PropertySpecifier
     throws BuildException
   { 
     _baseMember=prop;
+    _targetSequence=prop.getTargetSequence();
     resolveCollection();
   }
   
@@ -405,6 +425,7 @@ public class PropertySpecifier
     return ret;
   }
 
+ 
   public String getTextData()
   { return _textData;
   }
