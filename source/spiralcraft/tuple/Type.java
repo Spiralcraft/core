@@ -15,9 +15,7 @@
 package spiralcraft.tuple;
 
 /**
- * Metadata for data stored in Tuples. All Fields are associated with
- *   a Type. The Metadata identifies the representation, static attributes 
- *   and constraints of a given class of data. 
+ * Describes the data type of a data element. 
  *
  * Data of any Type has a representation which corresponds to single Java
  *   class.
@@ -27,13 +25,14 @@ package spiralcraft.tuple;
  */
 public interface Type
 {
+  
   /**
    * The Scheme of the compound data for this Type.
    */
   Scheme getScheme();
   
   /**
-   * The public Java class or interface of data of this Type
+   * The public Java class or interface used to access the data element
    */
   Class getJavaClass();
 }

@@ -16,6 +16,7 @@ package spiralcraft.tuple.spi;
 
 import spiralcraft.tuple.TupleFactory;
 import spiralcraft.tuple.Tuple;
+import spiralcraft.tuple.Buffer;
 import spiralcraft.tuple.Scheme;
 
 /**
@@ -24,7 +25,7 @@ import spiralcraft.tuple.Scheme;
 public class ArrayTupleFactory
   implements TupleFactory
 {
-  public Tuple createTuple(Scheme scheme)
-  { return new ArrayTuple(scheme);
+  public Buffer createBuffer(Scheme scheme)
+  { return new ArrayBuffer(scheme);
   }
 }

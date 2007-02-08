@@ -16,6 +16,7 @@ package spiralcraft.tuple.lang;
 
 import spiralcraft.tuple.Field;
 import spiralcraft.tuple.Tuple;
+import spiralcraft.tuple.Buffer;
 import spiralcraft.tuple.Scheme;
 
 import spiralcraft.tuple.spi.ArrayTuple;
@@ -34,6 +35,10 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Implements the Java Beans 'properties' portion of a Java interface via a 
  *   Proxy, delegating to a Tuple for data storage.
+ *
+ * Effectively allows a Tuple to automatically implement a "data container" 
+ *  Java interface.
+ *
  */
 public class TupleDelegate
   extends DelegateBinding
@@ -102,7 +107,7 @@ public class TupleDelegate
       {
         System.out.println(args[0]);
         // Write
-        ((Tuple) _binding.get()).set(field.getIndex(),args[0]);
+        ((Buffer) _binding.get()).set(field.getIndex(),args[0]);
         return null;
       }
       else
@@ -117,6 +122,8 @@ public class TupleDelegate
       { 
         // We should run this on a 'peer' of the Tuple
         //   instead of on the Tuple itself
+        //
+        // Also consider when methods/actions are implemented in Schemes/Tuples.
         return method.invoke(_binding.get(),args);
       }
       catch (InvocationTargetException x)

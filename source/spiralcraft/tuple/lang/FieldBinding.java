@@ -15,6 +15,7 @@
 package spiralcraft.tuple.lang;
 
 import spiralcraft.tuple.Tuple;
+import spiralcraft.tuple.Buffer;
 
 import spiralcraft.lang.optics.LenseBinding;
 import spiralcraft.lang.optics.Binding;
@@ -42,12 +43,12 @@ public class FieldBinding
   }
   
   public boolean set(Object val)
-  { 
+  {
     
     Tuple tuple=(Tuple) getSourceValue();
-    if (tuple!=null)
+    if (tuple!=null && (tuple instanceof Buffer))
     { 
-      tuple.set(_lense.getField().getIndex(),val);
+      ((Buffer) tuple).set(_lense.getField().getIndex(),val);
       return true;
     }
     return false;

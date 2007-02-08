@@ -18,6 +18,8 @@ import spiralcraft.tuple.TupleFactory;
 import spiralcraft.tuple.SchemeResolver;
 import spiralcraft.tuple.Scheme;
 import spiralcraft.tuple.Tuple;
+import spiralcraft.tuple.Buffer;
+
 import spiralcraft.tuple.Field;
 import spiralcraft.tuple.TupleException;
 
@@ -44,10 +46,27 @@ import java.util.LinkedList;
  * 
  * Tuples are represented in XML as follows:
  *
+ * XXX TO IMPLEMENT
+ * The outermost XML element read by this reader always represents a Typed 
+ *   data object (ie. a Tuple, a Collection or a Primitive). 
+ *
+ * If the containing element represents a Tuple, the contained elements will
+ *   be Field names. Each field will contain zero, one, or more Typed data
+ *   objects.
+ *
+ * If the containing element represents a Collection, the contained element
+ *   will be named "values", which will contain zero, on or more Typed data
+ *   objects.
+ *
+ * If the containing element represents a Primitive, it will contain a textual
+ *   representation of the value of the Primitive.
+ *
+ * XXX TO DEPRECATE
  * The outermost XML element read by this reader always represents a Tuple. The
  *   elements contained within the outermost element represent the field values
  *   for the Tuple. An element that represents a field value may contain either
  *   a data value, or one or more Tuples, represented as other elements.
+ * /XXX TO DEPRECATE
  *
  * An element which represents a Tuple has a namespace qualified tag name which
  *   resolves to the Scheme of the Tuple in a manner specific to the supplied
@@ -192,7 +211,7 @@ public class TupleReader
     { throw new SAXException("Cannot resolve a Scheme for URI "+schemeUri);
     }
     
-    _context.tuple=_factory.createTuple(scheme);
+    _context.tuple=_factory.createBuffer(scheme);
   }
 
   private void startField    
@@ -316,7 +335,7 @@ public class TupleReader
     StringBuilder buffer=new StringBuilder();
     List<Tuple> tupleData = new LinkedList<Tuple>();
 
-    Tuple tuple;
+    Buffer tuple;
     Field field;
     
     

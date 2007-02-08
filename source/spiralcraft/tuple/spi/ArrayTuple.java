@@ -15,6 +15,7 @@
 package spiralcraft.tuple.spi;
 
 import spiralcraft.tuple.Tuple;
+import spiralcraft.tuple.Buffer;
 import spiralcraft.tuple.TupleId;
 import spiralcraft.tuple.Scheme;
 import spiralcraft.tuple.Field;
@@ -26,27 +27,30 @@ import spiralcraft.tuple.BufferConflictException;
 public class ArrayTuple
   implements Tuple
 {
-  private final Scheme _scheme;
-  private final Object[] _data;
-  private Buffer _buffer;
-  private boolean _deleted;
+  protected final Scheme scheme;
+  protected boolean deleted;
+  protected final Object[] data;
   private ArrayTuple _nextVersion;
   
   public ArrayTuple(Scheme scheme)
   { 
-    _scheme=scheme;
-    _data=new Object[scheme.getFields().size()];
-    _buffer=new Buffer();
+    this.scheme=scheme;
+    data=new Object[scheme.getFields().size()];
   }
   
-  public ArrayTuple(ArrayTuple original)
+  /**
+   * Create a new Tuple from a buffer commit
+   */
+  ArrayTuple(ArrayBuffer buffer)
   { 
-    this(original.getScheme());
-    _buffer.original=original;
+    this(buffer.getScheme());
+    for (Field field : scheme.getFields())
+    { data[field.getIndex()]=buffer.get(field.getIndex());
+    }
   }
   
   public Scheme getScheme()
-  { return _scheme;
+  { return scheme;
   }
   
   public TupleId getId()
@@ -54,44 +58,20 @@ public class ArrayTuple
   }
   
   public Object get(int index)
-  { return _data[index];
+  { return data[index];
   }
   
-  public synchronized void set(int index,Object value)
+  public synchronized Buffer createBuffer()
   { 
-    assertBuffer();
-    _data[index]=value;
-  }
-
-  public synchronized Tuple commitBuffer()
-    throws BufferConflictException
-  { 
-    assertBuffer();
-    if (_buffer.original!=null)
-    { _buffer.original.newVersion(this);
+    if (deleted)
+    { throw new IllegalStateException("deleted");
     }
-    _buffer=null;
-    return this;
+    return new ArrayBuffer(this);
   }
-
-  public synchronized Tuple createBuffer()
-  { 
-    if (_deleted)
-    { throw new IllegalStateException("Tuple has been deleted");
-    }
-    if (_buffer!=null)
-    { throw new IllegalStateException("Tuple is already a buffer");
-    }
-    return new ArrayTuple(this);
-  }
-  
-  public boolean isVolatile()
-  { return _buffer!=null;
-  }
-  
+    
   public synchronized Tuple currentVersion()
   { 
-    if (_deleted)
+    if (deleted)
     { return null;
     }
     
@@ -105,47 +85,31 @@ public class ArrayTuple
   { return _nextVersion;
   }
   
-  public synchronized Tuple original()
-  {
-    if (_buffer!=null)
-    { return _buffer.original;
-    }
-    return null;
-  }
-  
-  public synchronized void delete()
-    throws BufferConflictException
-  { 
-    assertBuffer();
-    _deleted=true;
-    commitBuffer();
-  }
-  
-  public boolean isDeleted()
-  { return _deleted;
+  public boolean isDeletedVersion()
+  { return deleted;
   }
 
-  synchronized void newVersion(ArrayTuple nextVersion)
+  synchronized void spiDelete()
+    throws BufferConflictException
+  { 
+    if (_nextVersion!=null)
+    { throw new BufferConflictException(_nextVersion);
+    }
+    deleted=true;
+  }
+
+  synchronized ArrayTuple commitBuffer(ArrayBuffer buffer)
     throws BufferConflictException
   {
     if (_nextVersion!=null)
     { throw new BufferConflictException(_nextVersion);
     }
-    _nextVersion=nextVersion;
-  }
-  
-  private void assertBuffer()
-  { 
-    if (_buffer==null)
-    { throw new IllegalStateException("Tuple is not buffered");
+    if (deleted)
+    { throw new BufferConflictException("deleted");
     }
+    _nextVersion=new ArrayTuple(buffer);
+    return _nextVersion;
   }
   
 }
 
-class Buffer
-{
-  
-  ArrayTuple original;
- 
-}

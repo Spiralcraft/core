@@ -23,6 +23,13 @@ public class BufferConflictException
   { _conflictedVersion=conflictedVersion;
   }
 
+  public BufferConflictException(String message)
+  { 
+    super(message);
+    _conflictedVersion=null;
+
+  }
+  
   /**
    * Return the version of the Tuple that was committed before the
    *   Tuple generating the exception. 

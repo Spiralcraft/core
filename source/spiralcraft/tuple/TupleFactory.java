@@ -21,11 +21,8 @@ package spiralcraft.tuple;
 public interface TupleFactory
 {
   /**
-   * Create a Tuple with the specified scheme.
-   *
-   * The Tuple will be in a buffered state and will be
-   *   ready to accept data.
-   *   
+   * Create a Buffer with the specified scheme.
    */
-  public Tuple createTuple(Scheme scheme);
+  public Buffer createBuffer(Scheme scheme);
+  
 }
