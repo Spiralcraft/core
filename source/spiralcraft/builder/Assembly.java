@@ -24,19 +24,38 @@ import spiralcraft.lang.BindException;
 
 import spiralcraft.lang.optics.SimpleBinding;
 
-import spiralcraft.tuple.lang.TupleDelegate;
+import spiralcraft.data.lang.TupleDelegate;
+import spiralcraft.data.DataException;
 
 import java.util.HashMap;
 
 import spiralcraft.registry.RegistryNode;
 import spiralcraft.registry.Registrant;
 
-import java.lang.reflect.Proxy;
 
 import spiralcraft.util.StringConverter;
 
 /**
- * Assemblies are 'instances' of AssemblyClasses.
+ * An Assembly is an 'instance' of an AssemblyClass. It is a scaffold which
+ *   supports a unique Java Object instance.
+ *
+ * The instantiation sequence is as follows:
+ *
+ * 1. new Assembly(AssemblyClass class)
+ *    Internal Java class is resolved and the Object is instantiated.
+ * 2. bind(parent) is called 
+ *    Links this Assembly to its parent
+ *    Binds all of the parent's properties into an array of _propertyBindings
+ *    Property source expressions are compiled
+ *    Nested Assemblies are instantiated and bound
+ * 3. resolve() is called
+ *    All properties are resolved
+ *      Any nested Assemblies are resolved
+ *      Property expressions are evaluated
+ *      All values are applied
+ *
+ * After instantiation, the register(RegistryNode node) method is invoked 
+ *   to provide context.
  */
 public class Assembly
   implements Focus,Registrant
@@ -50,7 +69,7 @@ public class Assembly
   private Context _context;
   private boolean bound=false;
   private boolean resolved=false;
-  private boolean applied=false;
+  
   
   /**
    * Construct an instance of the specified AssemblyClass,
@@ -68,10 +87,14 @@ public class Assembly
       }
       
       if (javaClass.isInterface())
-      { _optic=new TupleDelegate(javaClass);
+      { 
+        // Build a automatic container to back the Bean interface with a Tuple
+         _optic=new TupleDelegate(javaClass);
       }
       else 
       { 
+        // Construct the an instance of the class
+        
         String constructor=_assemblyClass.getConstructor();
         Object instance;
         if (constructor!=null)
@@ -94,6 +117,9 @@ public class Assembly
     { throw new BuildException("Error instantiating assembly",x);
     }
     catch (BindException x)
+    { throw new BuildException("Error binding instance",x);
+    }
+    catch (DataException x)
     { throw new BuildException("Error binding instance",x);
     }
   }
@@ -137,7 +163,11 @@ public class Assembly
     _parent=parent;
     _propertyBindings=_assemblyClass.bindProperties(this);
   }
-
+  
+  PropertyBinding getPropertyBinding(int index)
+  { return _propertyBindings[index];
+  }
+  
   boolean isResolved()
   { return resolved;
   }
@@ -158,47 +188,8 @@ public class Assembly
     }
   }
   
-  boolean isApplied()
-  { return applied;
-  }
-  
-  void applyProperties()
-    throws BuildException
-  {
-    if (applied)
-    { throw new BuildException("Already applied");
-    }
-    applied=true;
-    if (_propertyBindings!=null)
-    {
-      for (PropertyBinding binding: _propertyBindings)
-      { binding.applyProperties();
-      }
-    }
-    
-  }
-  
-  /**
-   * Descend the tree and write all preference properties to
-   *   their respective Preferences node.
-   */
-  public void savePreferences()
-  {
-    for (int i=0;i<_propertyBindings.length;i++)
-    { _propertyBindings[i].savePreferences();
-    }
-  }
 
-  /**
-   * Descend the tree and write all persistent properties
-   *   to their respective Tuple field.
-   */
-  public void storePersistentData()
-  {
-    for (int i=0;i<_propertyBindings.length;i++)
-    { _propertyBindings[i].storePersistentData();
-    }
-  }
+  
   
   public void register(RegistryNode node)
   {
@@ -336,3 +327,5 @@ public class Assembly
 
 
 }
+
+

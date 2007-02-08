@@ -49,6 +49,9 @@ public class AssemblyClass
   private String _declarationName;
   private Class _javaClass;
   private LinkedList<PropertySpecifier> _propertySpecifiers;
+  
+  // The rolled-up list of PropertySpecifiers which apply to the specific
+  //   Bean that is the root of this AssemblyClass and its base classes
   private LinkedList<PropertySpecifier> _compositeMembers;
   
   private boolean _singleton;
@@ -203,10 +206,20 @@ public class AssemblyClass
   }
 
   /**
+   * Return an Iterable of the members of this AssemblyClass. The members
+   *   include declared PropertySpecifiers for the root Bean of this
+   *   AssemblyClass and its base classes. Bean properties not explicitly
+   *   declared in the AssemblyClass definition are not included.
+   */
+  public Iterable<PropertySpecifier> memberIterable()
+  { return _compositeMembers;
+  }
+  
+  /**
    * Return the specified member of this AssemblyClass or its inheritance
    *   chain.
    */
-  PropertySpecifier getMember(String name)
+  public PropertySpecifier getMember(String name)
   { 
     PropertySpecifier member=null;
     if (_memberMap!=null)
@@ -378,6 +391,7 @@ public class AssemblyClass
         }
         else
         {
+          prop.setTargetSequence(list.size());
           list.add(prop);
           map.put(prop.getTargetName(),prop);
         }
@@ -476,7 +490,9 @@ public class AssemblyClass
 
   /**
    * Add a PropertySpecifier which defines the value of a
-   *   property of one of the objects in the assembly
+   *   property of one of the objects in the assembly. The PropertySpecifier
+   *   can refer to a bean property in the root object, or in any nested
+   *   object defined in this or any base AssemblyClass definition.
    */
   public void addPropertySpecifier(PropertySpecifier prop)
   { 
@@ -485,6 +501,13 @@ public class AssemblyClass
     { _propertySpecifiers=new LinkedList();
     }
     _propertySpecifiers.add(prop);
+  }
+
+  /**
+   *@return the list of Property specifiers declared in this definition
+   */
+  public List<PropertySpecifier> getPropertySpecifiers()
+  { return _propertySpecifiers;
   }
 
   public Class getJavaClass()
@@ -505,9 +528,6 @@ public class AssemblyClass
   { return _baseAssemblyClass;
   }
 
-  public List getPropertySpecifiers()
-  { return _propertySpecifiers;
-  }
 
   public Class[] getSingletons()
   { 
@@ -612,6 +632,10 @@ public class AssemblyClass
     }
   }
   
+  /**
+   * Create a new instance of this AssemblyClass in the context of the
+   *   optional specified parent Assembly.
+   */
   public Assembly newInstance(Assembly parent)
     throws BuildException
   { 
@@ -621,9 +645,6 @@ public class AssemblyClass
     }
     if (!assembly.isResolved())
     { assembly.resolve();
-    }
-    if (!assembly.isApplied())
-    { assembly.applyProperties();
     }
     return assembly;    
   }
