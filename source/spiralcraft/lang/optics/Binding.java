@@ -17,6 +17,7 @@ package spiralcraft.lang.optics;
 import java.beans.PropertyChangeSupport;
 
 import spiralcraft.lang.Optic;
+import spiralcraft.lang.WriteException;
 
 /**
  * A unit of transformationStandard internal basis for implementation of the Optic interface, which
@@ -37,7 +38,8 @@ public interface Binding
    * Update the bound object.
    *@return Whether the modification was successful or not.
    */
-  public boolean set(Object value);
+  public boolean set(Object value)
+    throws WriteException;
 
   /**
    * The Prism associated with the bound Object, against which

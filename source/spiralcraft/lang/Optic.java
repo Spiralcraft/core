@@ -72,8 +72,10 @@ public interface Optic
    *   this Optic and its data sources is reversible.
    *
    *@return Whether the modification was successful or not.
+   *@throws WriteException if the target of the write throws an exception
    */
-  boolean set(Object value);
+  boolean set(Object value)
+    throws WriteException;
 
   /**
    * Indicate the Java Class of the content of this View.

@@ -18,6 +18,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.WriteException;
 import spiralcraft.lang.Decorator;
 
 import java.beans.PropertyChangeSupport;
@@ -107,6 +108,7 @@ public  class LenseBinding
    * Override if value can be set
    */
   public boolean set(Object value)
+    throws WriteException
   { return false;
   }
 

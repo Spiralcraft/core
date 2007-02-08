@@ -15,6 +15,7 @@
 package spiralcraft.lang.optics;
 
 import spiralcraft.lang.Optic;
+import spiralcraft.lang.WriteException;
 
 
 import java.lang.reflect.Field;
@@ -41,6 +42,7 @@ public class BeanFieldBinding
   }
 
   public synchronized boolean set(Object val)
+    throws WriteException
   {
     try
     { 
@@ -48,7 +50,9 @@ public class BeanFieldBinding
       return true;
     }
     catch (IllegalAccessException x)
-    { return false;
+    { 
+      throw new WriteException
+        (x.toString()+" writing bean field '"+_field.getName()+"'",x);
     }
   }
 

@@ -23,6 +23,7 @@ import java.beans.PropertyChangeListener;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
+import spiralcraft.lang.WriteException;
 
 public class BeanPropertyBinding
   extends LenseBinding
@@ -144,6 +145,7 @@ public class BeanPropertyBinding
   }
   
   public synchronized boolean set(Object val)
+    throws WriteException
   {
     if (_static)
     { return false;
@@ -179,13 +181,15 @@ public class BeanPropertyBinding
     }
     catch (IllegalAccessException x)
     { 
-      x.printStackTrace();
-      return false;
+      throw new WriteException
+        (x.toString()+" writing bean property '"+_property.getName()+"'",x);
     }
     catch (InvocationTargetException x)
     { 
-      x.getTargetException().printStackTrace();
-      return false;
+      throw new WriteException
+        (x.toString()+":"+x.getTargetException().toString()
+        +" writing bean property '"+_property.getName()+"'"
+        ,x);
     }
   }
 
