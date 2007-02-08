@@ -62,6 +62,30 @@ public class AssemblyLoader
   }
 
   /**
+   * Instantiate a standalone Object from the specified URI.
+   */
+  public Object instantiateObject(URI classUri)
+    throws BuildException
+  { 
+    AssemblyClass assemblyClass=findAssemblyClass(classUri);
+    Assembly assembly=assemblyClass.newInstance(null);
+    return assembly.getObject();
+    
+  }
+  
+  /**
+   * Instantiate an Assembly from the specified URI, in the context of the
+   *   specified parent.
+   */
+  public Assembly instantiateAssembly(URI classUri,Assembly parent)
+    throws BuildException
+  { 
+    AssemblyClass assemblyClass=findAssemblyClass(classUri);
+    Assembly assembly=assemblyClass.newInstance(parent);
+    return assembly;
+  }
+
+  /**
    * Retrieve the AssemblyClass identified by the specified URI. The URI
    *   identifies an abstract resource- ie. if <uri>.assembly.xml does
    *   not exists, a default assembly for the Java class associated with
