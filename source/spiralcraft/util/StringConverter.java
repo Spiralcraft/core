@@ -201,7 +201,7 @@ final class IntToString
   extends StringConverter
 {
   public Object fromString(String val)
-  { return val!=null?new Integer(val):null;
+  { return val!=null?Integer.parseInt(val):null;
   }
 }
 
@@ -209,7 +209,7 @@ final class BooleanToString
   extends StringConverter
 {
   public String toString(Object val)
-  { return val!=null?((Boolean) val).booleanValue()?"true":"false":null;
+  { return val!=null?val.toString():null;
   }
 
   public Object fromString(String val)
@@ -233,7 +233,7 @@ final class FloatToString
   extends StringConverter
 {
   public Object fromString(String val)
-  { return val!=null?new Float(val):null;
+  { return val!=null?Float.parseFloat(val):null;
   }
 }
 
@@ -241,7 +241,7 @@ final class LongToString
   extends StringConverter
 {
   public Object fromString(String val)
-  { return val!=null?new Long(val):null;
+  { return val!=null?Long.parseLong(val):null;
   }
 }
 
@@ -249,7 +249,7 @@ final class DoubleToString
   extends StringConverter
 {
   public Object fromString(String val)
-  { return val!=null?new Double(val):null;
+  { return val!=null?Double.parseDouble(val):null;
   }
 }
 
@@ -257,7 +257,7 @@ final class ShortToString
   extends StringConverter
 {
   public Object fromString(String val)
-  { return val!=null?new Short(val):null;
+  { return val!=null?Short.parseShort(val):null;
   }
 }
 
@@ -273,7 +273,7 @@ final class ByteToString
   extends StringConverter
 {
   public Object fromString(String val)
-  { return val!=null?new Byte(val):null;
+  { return val!=null?Byte.parseByte(val):null;
   }
 }
 
@@ -393,9 +393,9 @@ final class ClassToString
         );
     }
     catch (ClassNotFoundException x)
-    { x.printStackTrace();
+    { throw new IllegalArgumentException("Class "+val+" not found.");
     }
-    return null;
+
   }
 }
 
