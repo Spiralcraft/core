@@ -23,9 +23,20 @@ public interface Scheme
 {
 
   /**
-   *@return the Type associated with this Scheme.
+   *@return the Type associated with this Scheme, or null if there is no
+   *  Type associated with this Scheme
    */
   Type getType();
+  
+  /**
+   * A Scheme's archetype is usually equivalent to
+   *   the result of getType().getArchetype().getScheme(). Schemes
+   *   that do not have Types, however, usually have archetype Schemes that
+   *   are associated with a Type.
+   *
+   *@return Whether this Scheme is derived from the specified Scheme
+   */
+  boolean hasArchetype(Scheme scheme);
   
   /**
    *@return the Field that corresponds to the specified index. Fields are

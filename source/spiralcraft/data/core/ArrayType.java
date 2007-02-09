@@ -41,81 +41,25 @@ import java.net.URI;
  * An Array version of a base type
  */
 public class ArrayType
+  extends AbstractAggregateType
   implements Type
 {  
-  private final Type contentType;
-  private final URI uri;
-  private final Class nativeType;
   
   public ArrayType(Type contentType,URI uri)
   { 
+    super(uri);
     this.contentType=contentType;
-    this.uri=uri;
     if (contentType.getNativeClass()!=null)
-    { 
-      this.nativeType=Array.newInstance(contentType.getNativeClass(),0).getClass();
+    { nativeClass=Array.newInstance(contentType.getNativeClass(),0).getClass();
     }
     else
-    { nativeType=null;
+    { nativeClass=null;
     }
   }
 
-  public Type getMetaType()
-  {
-    try
-    { return getTypeResolver().resolve(ReflectionType.canonicalUri(getClass()));
-    }
-    catch (TypeNotFoundException x)
-    { throw new RuntimeException(x);
-    }
-  }
-  
-  /**
-   * The public Java class or interface used to programatically access or
-   *   manipulate this data element.
-   */
-  public Class getNativeClass()
-  { return nativeType;
-  }
-  
-  /**
-   * Arrays are always represented by aggregates
-   */
-  public boolean isPrimitive()
-  { return false;
-  }
   
   public TypeResolver getTypeResolver()
   { return contentType.getTypeResolver();
-  }
-  
-  public URI getUri()
-  { return uri;
-  }
-  
-  /**
-   * @return The Scheme which describes the structure of this type, or null if
-   *   this type is not a complex type. 
-   */
-  public Scheme getScheme()
-  { return contentType.getScheme();
-  }
-  
-  public boolean isAggregate()
-  { return true;
-  }
-  
-  public Type getContentType()
-  { return contentType;
-  }
-  
-  public Type getCoreType()
-  {
-    Type ret=this;
-    while (ret.isAggregate())
-    { ret=ret.getContentType();
-    }
-    return ret;
   }
   
   public ValidationResult validate(Object value)
@@ -126,22 +70,8 @@ public class ArrayType
     return null;
   }
   
-  public void link()
-    throws DataException
-  { contentType.link();
-  }
   
-  public boolean isStringEncodable()
-  { return true;
-  }
-  
-  public Object fromString(String val)
-  { return null;
-  }
-  
-  public String toString(Object val)
-  { return null;
-  }
+
   
   public Object fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
@@ -203,8 +133,4 @@ public class ArrayType
     return aggregate;
   }
   
-    
-  public String toString()
-  { return super.toString()+":"+uri.toString();
-  }
 }

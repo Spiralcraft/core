@@ -12,22 +12,20 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.types.standard;
-
-import spiralcraft.data.Type;
-import spiralcraft.data.TypeResolver;
-
-import spiralcraft.data.core.PrimitiveTypeImpl;
+package spiralcraft.data;
 
 import java.net.URI;
 
-public class ObjectType
-  extends PrimitiveTypeImpl
-  implements Type
+/**
+ * Creates Type objects for a specific namespace
+ */
+public interface TypeFactory
 {
-  public ObjectType(TypeResolver resolver,URI uri)
-  { super(resolver,uri,Object.class);
-  }
+  /**
+   *@return A new instance of the specified Type that is not yet linked,
+   *  or null, if this TypeFactory does not apply to the specified URI.
+   */
+  public Type createType(TypeResolver resolver,URI typeUri)
+    throws DataException;
   
-
 }

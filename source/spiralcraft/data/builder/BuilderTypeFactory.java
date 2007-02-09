@@ -12,22 +12,30 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.types.standard;
-
-import spiralcraft.data.Type;
-import spiralcraft.data.TypeResolver;
-
-import spiralcraft.data.core.PrimitiveTypeImpl;
+package spiralcraft.data.builder;
 
 import java.net.URI;
 
-public class ObjectType
-  extends PrimitiveTypeImpl
-  implements Type
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+
+import spiralcraft.data.TypeResolver;
+import spiralcraft.data.TypeFactory;
+import spiralcraft.data.Type;
+import spiralcraft.data.DataException;
+
+public class BuilderTypeFactory
+  implements TypeFactory
 {
-  public ObjectType(TypeResolver resolver,URI uri)
-  { super(resolver,uri,Object.class);
+  
+  public Type createType(TypeResolver resolver,URI uri)
+    throws DataException
+  {
+    if (!BuilderType.isApplicable(uri))
+    { return null;
+    }
+    return new BuilderType(resolver,uri);
   }
   
-
 }

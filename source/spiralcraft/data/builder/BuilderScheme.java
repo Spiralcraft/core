@@ -17,6 +17,7 @@ package spiralcraft.data.builder;
 
 import spiralcraft.data.TypeResolver;
 
+import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.EditableTuple;
@@ -68,8 +69,11 @@ public class BuilderScheme
   public void depersistBeanProperties(Tuple tuple,Object assembly)
     throws DataException
   {
-    for (FieldImpl field: fields)
-    { ((BuilderField) field).depersistBeanProperty(tuple,assembly);
+    for (Field field: fields)
+    { 
+      if (field instanceof BuilderField)
+      { ((BuilderField) field).depersistBeanProperty(tuple,assembly);
+      }
     }
   }
   
@@ -79,8 +83,11 @@ public class BuilderScheme
   public void persistBeanProperties(Object assembly,EditableTuple tuple)
     throws DataException
   {
-    for (FieldImpl field: fields)
-    { ((BuilderField) field).persistBeanProperty(assembly,tuple);
+    for (Field field: fields)
+    { 
+      if (field instanceof BuilderField)
+      { ((BuilderField) field).persistBeanProperty(assembly,tuple);
+      }
     }
   }
 }

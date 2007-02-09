@@ -75,8 +75,8 @@ public class ReflectionScheme
   }
   
   public void resolve()
+    throws DataException
   {
-    super.resolve();
     List<? extends ReflectionField> fieldList
       =generateFields(beanInfo.getPropertyDescriptors());
 
@@ -96,6 +96,7 @@ public class ReflectionScheme
       { methodMap.put(method,field);
       }
     }
+    super.resolve();
     
   }
   
@@ -152,8 +153,11 @@ public class ReflectionScheme
   public void persistBeanProperties(Object bean,EditableTuple tuple)
     throws DataException
   {
-    for (FieldImpl field: fields)
-    { ((ReflectionField) field).persistBeanProperty(bean,tuple);
+    for (Field field: fields)
+    { 
+      if (field instanceof ReflectionField)
+      { ((ReflectionField) field).persistBeanProperty(bean,tuple);
+      }
     }
   }
   
@@ -164,8 +168,11 @@ public class ReflectionScheme
   public void depersistBeanProperties(Tuple tuple,Object bean)
     throws DataException
   {
-    for (FieldImpl field: fields)
-    { ((ReflectionField) field).depersistBeanProperty(tuple,bean);
+    for (Field field: fields)
+    { 
+      if (field instanceof ReflectionField)
+      { ((ReflectionField) field).depersistBeanProperty(tuple,bean);
+      }
     }
   }
   

@@ -34,10 +34,11 @@ public class TypeImpl
   implements Type
 {  
   protected Class nativeType;
-  protected Scheme scheme;
+  protected SchemeImpl scheme;
   protected final TypeResolver resolver;
   protected final URI uri;
   protected boolean linked;
+  protected Type archetype;
   
   public TypeImpl(TypeResolver resolver,URI uri)
   { 
@@ -45,21 +46,33 @@ public class TypeImpl
     this.uri=uri;
   }
   
+  public Type getArchetype()
+  { return archetype;
+  }
+  
+  public void setArchetype(Type archetype)
+  { 
+    if (linked)
+    { throw new IllegalStateException("Type already linked");
+    }
+    this.archetype=archetype;
+  }
+  
+  public boolean hasArchetype(Type type)
+  {
+    if (type==this)
+    { return true;
+    }
+    else if (archetype!=null)
+    { return archetype.hasArchetype(type);
+    }
+    else
+    { return false;
+    }
+  }
   
   public Type getMetaType()
   { 
-    
-    // XXX When do we want to get a meta type
-    //   from the .type tag operator-
-    //   for the type extender
-    //  
-    // .type
-    //    fromData() method should instantiate Type interface
-    // 
-    // prototype definitions (.type.xml)
-    //    just data, until resolved through TypeResolver
-    //    Won't instantiate on it's own
-    // 
     try
     { return resolver.resolve(URI.create(uri.toString().concat(".type")));
     }
@@ -91,6 +104,11 @@ public class TypeImpl
     { return;
     }
     linked=true;
+    scheme.setType(this);
+    if (archetype!=null && archetype.getScheme()!=null)
+    { scheme.setArchetypeScheme(archetype.getScheme());
+    }
+    scheme.resolve();
   }
   
   /**
@@ -107,9 +125,7 @@ public class TypeImpl
     { throw new IllegalStateException("Type already linked");
     }
     // System.out.println("SETTING SCHEME");
-    this.scheme=scheme;
-    ((SchemeImpl) scheme).setType(this);
-    ((SchemeImpl) scheme).resolve();
+    this.scheme=(SchemeImpl) scheme;
   }
   
   public ValidationResult validate(Object o)

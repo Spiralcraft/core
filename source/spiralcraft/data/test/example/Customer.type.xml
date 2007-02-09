@@ -2,25 +2,23 @@
   xmlns:meta="java:/spiralcraft/data/types/meta/"
   xmlns:example="java:/spiralcraft/data/test/example"
   >
-  <baseType>
-    <example:Contact.type/>
-  </baseType>
+  <archetype><example:Contact.type/>
+  </archetype>
   <scheme>
     <meta:Scheme>
       <fields>
         <meta:Field>
-          <name>id</name>
-          <type><String.type/></type>
+          <name>id
+          </name>
+          <type><String.type/>
+          </type>
         </meta:Field>
         
         <meta:Field>
-          <name>displayName</name>
-          <type><String.type/></type>
-        </meta:Field>
-
-        <meta:Field>
-          <name>address</name>
-          <type><example:Address.type/></type>
+          <name>paymentTerms
+          </name>
+          <type><String.type/>
+          </type>
         </meta:Field>
       </fields>
     </meta:Scheme>

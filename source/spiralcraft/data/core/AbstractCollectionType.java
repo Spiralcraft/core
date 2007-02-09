@@ -42,20 +42,19 @@ import java.util.Collection;
  * Base type for Collections
  */
 public class AbstractCollectionType
+  extends AbstractAggregateType
   implements Type
 {  
   private final TypeResolver resolver;
-  private final Type contentType;
-  private final URI uri;
-  private final Class nativeType;
   
   public AbstractCollectionType
     (TypeResolver resolver
     ,Type contentType
     ,URI uri
-    ,Class<? extends Collection> nativeType
+    ,Class<? extends Collection> nativeClass
     )
   { 
+    super(uri);
     this.resolver=resolver;
     if (contentType==null)
     { 
@@ -71,67 +70,16 @@ public class AbstractCollectionType
     else
     { this.contentType=contentType;
     }
-    this.uri=uri;
-    this.nativeType=nativeType;
+    this.nativeClass=nativeClass;
   }
 
-  public Type getMetaType()
-  {
-    try
-    { return getTypeResolver().resolve(ReflectionType.canonicalUri(getClass()));
-    }
-    catch (TypeNotFoundException x)
-    { throw new RuntimeException(x);
-    }
-  }
   
-  /**
-   * The public Java class or interface used to programatically access or
-   *   manipulate this data element.
-   */
-  public Class getNativeClass()
-  { return nativeType;
-  }
   
-  /**
-   * Arrays are always represented by aggregates
-   */
-  public boolean isPrimitive()
-  { return false;
-  }
   
   public TypeResolver getTypeResolver()
   { return resolver;
   }
   
-  public URI getUri()
-  { return uri;
-  }
-  
-  /**
-   * @return The Scheme which describes the structure of this type, or null if
-   *   this type is not a complex type. 
-   */
-  public Scheme getScheme()
-  { return contentType.getScheme();
-  }
-  
-  public boolean isAggregate()
-  { return true;
-  }
-  
-  public Type getContentType()
-  { return contentType;
-  }
-  
-  public Type getCoreType()
-  {
-    Type ret=this;
-    while (ret.isAggregate())
-    { ret=ret.getContentType();
-    }
-    return ret;
-  }
   
   public ValidationResult validate(Object value)
   { 
@@ -141,22 +89,6 @@ public class AbstractCollectionType
     return null;
   }
   
-  public void link()
-    throws DataException
-  { contentType.link();
-  }
-  
-  public boolean isStringEncodable()
-  { return true;
-  }
-  
-  public Object fromString(String val)
-  { return null;
-  }
-  
-  public String toString(Object val)
-  { return null;
-  }
   
   public Object fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
@@ -166,19 +98,19 @@ public class AbstractCollectionType
     Collection collection=null;
     
     if (resolver!=null)
-    { collection=(Collection) resolver.resolve(nativeType);
+    { collection=(Collection) resolver.resolve(nativeClass);
     }
     
     if (collection==null)
     { 
       try
-      { collection=(Collection) nativeType.newInstance();
+      { collection=(Collection) nativeClass.newInstance();
       }
       catch (InstantiationException x)
       { 
         throw new DataException
           ("Error instantiating collection "
-          +nativeType.getName()+": "+x.toString()
+          +nativeClass.getName()+": "+x.toString()
           ,x
           );
       }
@@ -186,7 +118,7 @@ public class AbstractCollectionType
       { 
         throw new DataException
           ("Error instantiating collection "
-          +nativeType.getName()+": "+x.toString()
+          +nativeClass.getName()+": "+x.toString()
           ,x
           );
       }
@@ -234,7 +166,5 @@ public class AbstractCollectionType
   }
   
     
-  public String toString()
-  { return super.toString()+":"+uri.toString();
-  }
+
 }

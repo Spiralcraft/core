@@ -62,7 +62,9 @@ public class BuilderType
   
   private boolean linked;
   private BuilderScheme scheme;
+  private Type archetype;
   private Field classField;
+  
   
   public static final boolean isApplicable(URI uri)
     throws DataException
@@ -116,6 +118,23 @@ public class BuilderType
   
   public TypeResolver getTypeResolver()
   { return resolver;
+  }
+  
+  public Type getArchetype()
+  { return archetype;
+  }
+  
+  public boolean hasArchetype(Type type)
+  {
+    if (this==type)
+    { return true;
+    }
+    else if (archetype!=null)
+    { return archetype.hasArchetype(type);
+    }
+    else
+    { return false;
+    }
   }
   
   public Type getMetaType()
@@ -175,12 +194,29 @@ public class BuilderType
   }  
   
   public void link()
+    throws DataException
   {
     if (linked)
     { return;
     }
     linked=true;
+    
+    AssemblyClass baseAssemblyClass=targetAssemblyClass.getBaseClass();
+    if (baseAssemblyClass!=null && baseAssemblyClass.getDefiningClass()==null)
+    { 
+      archetype
+        =resolver.resolve
+          (resolver.desuffix
+            (baseAssemblyClass.getSourceURI()
+            ,".assembly.xml"
+            )
+          );
+    }
+    
     scheme=new BuilderScheme(resolver,this,targetAssemblyClass);
+    if (archetype!=null && archetype.getScheme()!=null)
+    { scheme.setArchetypeScheme(archetype.getScheme());
+    }    
     scheme.resolve();
     classField=scheme.getFieldByName("class");
 

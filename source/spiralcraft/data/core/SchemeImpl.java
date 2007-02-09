@@ -21,6 +21,7 @@ import java.util.List;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Field;
+import spiralcraft.data.DataException;
 
 /**
  * Core implementation of a Scheme
@@ -29,14 +30,41 @@ public class SchemeImpl
   implements Scheme
 {
   protected Type type;
-  protected final ArrayList<FieldImpl> fields
+  protected final ArrayList<FieldImpl> localFields
     =new ArrayList<FieldImpl>();
-  protected final HashMap<String,FieldImpl> fieldMap
+  protected final HashMap<String,FieldImpl> localFieldMap
     =new HashMap<String,FieldImpl>();
+
+  protected final ArrayList<Field> fields
+    =new ArrayList<Field>();
+  protected final HashMap<String,Field> fieldMap
+    =new HashMap<String,Field>();
+
   private boolean resolved;
+
+  private Scheme archetypeScheme;
   
   public Type getType()
   { return type;
+  }
+  
+  public void setArchetypeScheme(Scheme scheme)
+  { 
+    assertUnresolved();
+    archetypeScheme=scheme;
+  }
+  
+  public boolean hasArchetype(Scheme scheme)
+  {
+    if (this==scheme)
+    { return true;
+    }
+    else if (archetypeScheme!=null)
+    { return archetypeScheme.hasArchetype(scheme);
+    }
+    else
+    { return false;
+    }
   }
   
   public void setType(Type type)
@@ -52,15 +80,25 @@ public class SchemeImpl
   public Field getFieldByName(String name)
   { return fieldMap.get(name);
   }
-
+  
+  /**
+   *@return An Iterable that iterates through all fields of this Type and its
+   *  archetype.
+   */
   public Iterable<? extends Field> fieldIterable()
   { return fields;
   }
-  
+
+  /**
+   * Get the list of local fields
+   */
   public List<FieldImpl> getFields()
-  { return (List<FieldImpl>) fields.clone();
+  { return (List<FieldImpl>) localFields.clone();
   }
   
+  /**
+   * Set the list of local fields
+   */
   public void setFields(List<FieldImpl> fields)
   { 
     assertUnresolved();
@@ -72,31 +110,34 @@ public class SchemeImpl
     }
   }
 
+  /**
+   * Add a local Field
+   */
   protected void addField(FieldImpl field)
   { 
-    
-    if (fieldMap.get(field.getName())!=null)
+    assertUnresolved();
+    if (localFieldMap.get(field.getName())!=null)
     { 
       throw new IllegalArgumentException
         ("Field name '"+field.getName()+"' is not unique"
         );
     }
-    field.setIndex(fields.size());
-    field.setScheme(this);
-    field.lock();
-    fields.add(field);
-    fieldMap.put(field.getName(),field);
+    localFields.add(field);
+    localFieldMap.put(field.getName(),field);
   }
   
-  public int getFieldCount()
-  { return fields.size();
-  }
-  
+  /**
+   * Clear the set of local fields
+   */
   private void clearFields()
   { 
     assertUnresolved();
-    fields.clear();
-    fieldMap.clear();
+    localFields.clear();
+    localFieldMap.clear();
+  }
+
+  public int getFieldCount()
+  { return fields.size();
   }
   
   public String toString()
@@ -104,7 +145,7 @@ public class SchemeImpl
     StringBuilder fieldList=new StringBuilder();
     fieldList.append("[");
     boolean first=true;
-    for (FieldImpl field:fields)
+    for (Field field:fields)
     { 
       if (!first)
       { fieldList.append(",");
@@ -119,9 +160,61 @@ public class SchemeImpl
   }
   
   public void resolve()
+    throws DataException
   {
-    if (!resolved)
-    { resolved=true;
+    if (resolved)
+    { return;
+    }
+    resolved=true;
+
+    int fieldIndex=0;
+    if (archetypeScheme!=null)
+    { 
+      fieldIndex=archetypeScheme.getFieldCount();
+      for (Field field: archetypeScheme.fieldIterable())
+      { 
+        fields.add(field);
+        fieldMap.put(field.getName(),field);
+      }
+    }
+    
+    
+    for (FieldImpl field:localFields)
+    {
+      Field archetypeField=null;
+      if (archetypeScheme!=null)
+      { 
+        archetypeField=
+          archetypeScheme.getFieldByName(field.getName());
+      }
+      
+      if (archetypeField!=null)
+      { 
+        if (field.isFunctionalEquivalent(archetypeField))
+        {
+          // Field is redundant. Don't replace archetype field, which is
+          //   already mapped
+          continue;
+        }
+        
+        // Field with same name will have same index as archetype field,
+        //   extending field functionality in compatible way
+        field.setArchetypeField(archetypeField);
+        fields.set(field.getIndex(),field);
+        System.err.println
+          ("Field '"+field.getName()+"' in "+getType().getUri()
+          +" overriding field of same name in "+archetypeScheme.getType().getUri()
+          );
+      }
+      else
+      { 
+        field.setIndex(fieldIndex++);
+        fields.add(field);
+      }
+      field.setScheme(this);
+      field.lock();
+      fieldMap.put(field.getName(),field);
+      
     }
   }
   

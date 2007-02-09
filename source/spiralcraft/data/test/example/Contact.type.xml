@@ -6,11 +6,6 @@
     <meta:Scheme>
       <fields>
         <meta:Field>
-          <name>id</name>
-          <type><String.type/></type>
-        </meta:Field>
-        
-        <meta:Field>
           <name>displayName</name>
           <type><String.type/></type>
         </meta:Field>

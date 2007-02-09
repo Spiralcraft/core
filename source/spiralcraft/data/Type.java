@@ -85,6 +85,27 @@ public interface Type
   Type getCoreType();
   
   /**
+   * An Archetype is a Type which is extended by this type. An Archetype will
+   *   typically define a basic data structure recognized by common data-aware
+   *   components, and this subtype will augment the archetype with extra 
+   *   data and operations, usually in the context of a more specific data
+   *   model.
+   *
+   * A Type and all its archetypes are represented by a single Tuple. The
+   *   sequence of Fields in the Scheme will start with the Archetype's Fields
+   *   and end with the Fields declared in this Type.
+   *
+   * @return The archetype of this Type
+   */
+  Type getArchetype();
+  
+  /**
+   * @return Whether this Type or any of its archetypes (recursively) is the
+   *   the specified Type.
+   */
+  boolean hasArchetype(Type type);
+  
+  /**
    * Indicate whether Objects of this type can be encoded to and decoded from
    *   String form. This will only return true if getNativeClass()!=null.
    *

@@ -90,7 +90,7 @@ public class ReflectionType
   private Constructor tupleConstructor;
   
   private Field classField;
- 
+  private Type archetype;
 
   private static void mapStandardClass(Class ... classes)
   {
@@ -205,6 +205,24 @@ public class ReflectionType
   { return resolver;
   }
   
+  public Type getArchetype()
+  { return archetype;
+  }
+  
+  public boolean hasArchetype(Type type)
+  {
+    if (this==type)
+    { return true;
+    }
+    else if (archetype!=null)
+    { return archetype.hasArchetype(type);
+    }
+    else
+    { return false;
+    }
+  }
+  
+  
   public Type getMetaType()
   {
     try
@@ -262,6 +280,7 @@ public class ReflectionType
   }
   
   public void link()
+    throws DataException
   {
     if (linked)
     { return;
@@ -286,8 +305,15 @@ public class ReflectionType
       }
         
     }
+
+    if (reflectedClass.getSuperclass()!=null)
+    { archetype=resolver.resolve(canonicalUri(reflectedClass.getSuperclass()));
+    }
     
     scheme=new ReflectionScheme(resolver,this,reflectedClass);
+    if (archetype!=null && archetype.getScheme()!=null)
+    { scheme.setArchetypeScheme(archetype.getScheme());
+    }
     scheme.resolve();
     
     classField=scheme.getFieldByName("class");

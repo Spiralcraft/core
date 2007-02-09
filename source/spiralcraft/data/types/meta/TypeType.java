@@ -83,7 +83,7 @@ public class TypeType
     throws DataException
   { 
     super(resolver,uri,baseTypeImplClass,baseTypeImplClass);
-    System.out.println("New TypeType MetaType: "+uri+" of "+baseUri+"="+super.toString());
+    // System.out.println("New TypeType MetaType: "+uri+" of "+baseUri+"="+super.toString());
     instanceResolver
       =new StaticInstanceResolver
         (resolver.resolve(baseUri));

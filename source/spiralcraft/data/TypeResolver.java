@@ -21,22 +21,22 @@ import java.util.ArrayList;
 
 import java.lang.ref.WeakReference;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 import spiralcraft.util.ClassLoaderLocal;
 
-import spiralcraft.data.wrapper.ReflectionType;
 
-import spiralcraft.data.core.TypeImpl;
 import spiralcraft.data.core.ArrayType;
 import spiralcraft.data.core.AbstractCollectionType;
+import spiralcraft.data.core.CoreTypeFactory;
 
-import spiralcraft.data.builder.BuilderType;
-
-import spiralcraft.data.meta.ProtoType;
+import spiralcraft.data.builder.BuilderTypeFactory;
 
 import spiralcraft.data.types.meta.TypeType;
+
+import spiralcraft.data.sax.XmlTypeFactory;
+
+import spiralcraft.data.wrapper.ReflectionType;
+import spiralcraft.data.wrapper.ReflectionTypeFactory;
 
 /**
  * Resolves Type references to singleton instances of the Type interface. 
@@ -69,6 +69,8 @@ public class TypeResolver
   protected final TypeResolver parent;
   private final HashMap<URI,Type> map=new HashMap<URI,Type>();
   private final WeakReference<ClassLoader> classLoaderRef;
+
+  private final ArrayList<TypeFactory> factories=new ArrayList<TypeFactory>();
   
   public static synchronized final TypeResolver getTypeResolver()
   { 
@@ -83,6 +85,17 @@ public class TypeResolver
     return resolver;
   }
   
+  /**
+   * Remove the specified suffix from the specified URI
+   */
+  public static final URI desuffix(URI uri,String suffix)
+  { 
+    String uriStr=uri.toString();
+    return URI.create(uriStr.substring(0,uriStr.length()-(suffix.length())));
+  }
+  
+
+  
   public TypeResolver()
   { this(getTypeResolver());
   }
@@ -94,17 +107,15 @@ public class TypeResolver
       (Thread.currentThread().getContextClassLoader()
       );
       
+    
+    factories.add(new XmlTypeFactory());
+    factories.add(new CoreTypeFactory());
+    factories.add(new BuilderTypeFactory());
+    factories.add(new ReflectionTypeFactory());
     if (parent==null)
-    { 
-      try
-      { resolve(TYPE_TYPE_URI);
-      }
-      catch (TypeNotFoundException x)
-      { 
-        throw new RuntimeException
-          ("TypeResolver cannot resolve "+TYPE_TYPE_URI);
-      }
+    { getMetaType();
     }
+    
   }
 
   public final Type resolve(URI typeUri)
@@ -144,6 +155,28 @@ public class TypeResolver
     }
   }
   
+  /**
+   * Return the ClassLoader associated with this TypeResolver
+   */
+  public final ClassLoader getClassLoader()
+  { return classLoaderRef.get();  
+  }
+
+  /**
+   * Return the Type that describes a Type
+   */
+  public final Type getMetaType()
+  { 
+    try
+    { return resolve(TYPE_TYPE_URI);
+    }
+    catch (TypeNotFoundException x)
+    { 
+      throw new RuntimeException
+        ("TypeResolver cannot resolve "+TYPE_TYPE_URI);
+    }
+  }
+
   private final Type findLoadedType(URI typeUri)
   {
     
@@ -169,11 +202,6 @@ public class TypeResolver
     return null;
   }
 
-  private final URI desuffix(URI uri,String suffix)
-  { 
-    String uriStr=uri.toString();
-    return URI.create(uriStr.substring(0,uriStr.length()-(suffix.length())));
-  }
 
   /**
    * Find a type in the local classloader that is a derivative of another
@@ -273,131 +301,37 @@ public class TypeResolver
   
   /**
    * Called when a Type is not already loaded and needs to be found.
-   *
-   * This method can be overridden to extend the Type system namespace.
    */
-  protected Type findType(URI typeUri)
+  protected final Type findType(URI typeUri)
     throws DataException
   { 
     Type type=null;
-    if (type==null)
-    { type=loadProtoType(typeUri);
-    }
-    if (type==null)
-    { type=loadTypeFromTypeClass(typeUri);
-    }
-    if (type==null)
-    { type=loadBuilderType(typeUri);
-    }
-    if (type==null)
-    { type=loadReflectiveType(typeUri);
-    }
-    
-    return type;
-  }
-  
-  /**
-   * Load a Type via a data file which customizes some other Type.
-   */
-  private Type loadProtoType(URI typeUri)
-    throws DataException
-  {
-    if (!ProtoType.isApplicable(typeUri))
-    { return null;
-    }
-    else
-    { return new ProtoType(this,typeUri);
-    }
-  }
-  
-  /**
-   * Load a class which implements the Type interface directly
-   */
-  private Type loadTypeFromTypeClass(URI typeUri)
-  {
-    //
-    // This method should require that Type classes extend a specific
-    //   abstract class so we can pass in a reference to the TypeManager.
-    //
-    
-    String path=typeUri.getPath().substring(1);
-
-    String className
-        =path.replace('/','.').concat("Type");
-    
-    ClassLoader loader=classLoaderRef.get();
-    
-    try
+    for (TypeFactory factory: factories)
     { 
-      Class<Type> clazz = (Class<Type>) loader.loadClass(className);
-      Constructor<Type> constructor 
-        = clazz.getConstructor
-          (TypeResolver.class
-          ,URI.class
-          );
-      if (constructor==null)
-      { return null;
+      type=factory.createType(this,typeUri);
+      if (type!=null)
+      { break;
       }
-      return constructor.newInstance(this,typeUri);
     }
-    catch (NoSuchMethodException x)
-    { System.err.println(x);
-    }
-    catch (InvocationTargetException x)
-    { System.err.println(x);
-    }
-    catch (ClassNotFoundException x)
-    { // System.err.println(x);
-    }
-    catch (InstantiationException x)
-    { System.err.println(x);
-    }
-    catch (IllegalAccessException x)
-    { System.err.println(x);
-    }
-    return null;
+    return type;
+    
+    
+    //if (type==null)
+    //{ type=loadProtoType(typeUri);
+    //}
+    //if (type==null)
+    //{ type=loadTypeFromTypeClass(typeUri);
+    //}
+    //if (type==null)
+    //{ type=loadBuilderType(typeUri);
+    //}
+    //if (type==null)
+    //{ type=loadReflectiveType(typeUri);
+    //}
+    //return type;
   }
   
-  
-  /**
-   * Load a Type for data associated with the properties of native objects 
-   *   according to a spiralcraft.builder.AssemblyClass definition.
-   */
-  private Type loadBuilderType(URI typeUri)
-    throws DataException
-  {
-    if (!BuilderType.isApplicable(typeUri))
-    { return null;
-    }
-    return new BuilderType(this,typeUri);
-    
-  }
 
-  /**
-   * Load a Type for data associated with the properties of native objects 
-   *   using reflection.
-   */
-  private Type loadReflectiveType(URI typeUri)
-  {
-    String path=typeUri.getPath().substring(1);
-
-    String className
-        =path.replace('/','.');
-    
-    ClassLoader loader=classLoaderRef.get();
-    
-    Class clazz=null;
-    try
-    { clazz = loader.loadClass(className);
-    }
-    catch (ClassNotFoundException x)
-    { 
-      System.err.println(x);
-      return null;
-    }
-    
-    return new ReflectionType(this,typeUri,clazz);
-  }
   
   /**
    * Indicate whether the URI is resolved through the local classloader

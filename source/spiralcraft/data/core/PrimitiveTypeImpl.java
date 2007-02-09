@@ -33,16 +33,17 @@ public abstract class PrimitiveTypeImpl
   implements Type
 {
   protected boolean linked;
-  protected final StringConverter converter;
+  protected StringConverter converter;
     
   public PrimitiveTypeImpl(TypeResolver resolver,URI uri,Class nativeType)
   { 
     super(resolver,uri);
     this.nativeType=nativeType;
     this.converter=StringConverter.getInstance(nativeType);
-    if (this.converter==null)
-    { System.err.println("No StringConverter for "+nativeType);
-    }
+  }
+  
+  protected void setStringConverter(StringConverter converter)
+  { this.converter=converter;    
   }
   
   public boolean isPrimitive()
@@ -103,7 +104,7 @@ public abstract class PrimitiveTypeImpl
    * Primitive types should always be String encodable
    */
   public boolean isStringEncodable()
-  { return true;
+  { return converter!=null;
   }
   
   /**

@@ -32,6 +32,7 @@ public class FieldImpl
   private int index;
   private String name;
   private Type type;
+  private Field archetypeField;
   
   /**
    * Set the scheme
@@ -42,6 +43,23 @@ public class FieldImpl
     this.scheme=scheme;
   }
   
+  void setArchetypeField(Field field)
+    throws DataException
+  {
+    archetypeField=field;
+    this.index=archetypeField.getIndex();
+    if (!this.type.hasArchetype(archetypeField.getType()))
+    { 
+      throw new DataException
+        ("Field '"+getName()+"' in "+getScheme().getType().getUri()
+        +" cannot extend field of same name in "
+        +archetypeField.getScheme().getType().getUri()
+        +": type "+archetypeField.getType()+" is not an archetype of "
+        +this.type
+        );
+    }
+  }
+  
   /**
    * Return the Scheme
    */
@@ -49,6 +67,14 @@ public class FieldImpl
   { return scheme;
   }
 
+  /**
+   *@return Whether this field has the same type, constraints and attributes
+   *   as the specified field.
+   */
+  boolean isFunctionalEquivalent(Field field)
+  { return field.getType()==getType();
+  }
+  
   /**
    * Set the index
    */
@@ -93,10 +119,10 @@ public class FieldImpl
   
   public Object getValue(Tuple t)
   { 
-    if (t.getScheme()!=scheme)
+    if (!t.getScheme().hasArchetype(scheme))
     { 
       throw new IllegalArgumentException
-        ("Field '"+name+"' not in Tuple Scheme");
+        ("Field '"+name+"' not in Tuple Scheme "+scheme.toString());
     }
     return t.get(index);
   }
@@ -104,10 +130,10 @@ public class FieldImpl
   public void setValue(EditableTuple t,Object value)
     throws DataException
   { 
-    if (t.getScheme()!=scheme)
+    if (!t.getScheme().hasArchetype(scheme))
     { 
       throw new IllegalArgumentException
-        ("Field '"+name+"' not in Tuple Scheme");
+        ("Field '"+name+"' not in Tuple Scheme "+scheme.toString());
     }
     t.set(index,value);
   }
