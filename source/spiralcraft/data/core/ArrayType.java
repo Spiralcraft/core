@@ -83,7 +83,12 @@ public class ArrayType
     int index=0;
     for (Object val: aggregate)
     { 
-      if (contentType.isPrimitive())
+      Type type=contentType;
+      if (val instanceof DataComposite)
+      { type=((DataComposite) val).getType();
+      }
+      
+      if (type.isPrimitive())
       { 
         try
         { Array.set(array,index++,val);
@@ -98,7 +103,7 @@ public class ArrayType
       }
       else
       { 
-        Object convertedVal=contentType.fromData((DataComposite) val,resolver);
+        Object convertedVal=type.fromData((DataComposite) val,resolver);
         try
         { Array.set(array,index++,convertedVal);
         }
