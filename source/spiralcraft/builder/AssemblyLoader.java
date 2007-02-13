@@ -223,7 +223,11 @@ public class AssemblyLoader
   /**
    * Define an AssemblyClass based on the information in an XML Element
    */
-  private AssemblyClass readAssemblyClass(URI sourceUri,Element node,AssemblyClass containerClass)
+  private AssemblyClass readAssemblyClass
+    (URI sourceUri
+    ,Element node
+    ,AssemblyClass containerClass
+    )
     throws BuildException
   {
     String baseUriString = node.getURI();
@@ -261,29 +265,6 @@ public class AssemblyLoader
       for (int i=0;i<attribs.length;i++)
       {
         String name=attribs[i].getLocalName().intern();
-
-//        XXX Deprecated- shouldn't make developer state names of
-//              interfaces to export
-//      
-//        if (name=="singletons")
-//        { 
-//          String value=attribs[i].getValue();
-//          String[] interfaceNames=
-//            StringUtil.tokenize(value,",");
-//          assemblyClass.setSingletonNames(interfaceNames);
-//        }
-//        else
-
-
-//        XXX Deprecated- declaration name should always be the QName of
-//          the tag.
-//
-//        if (name=="name")
-//        { assemblyClass.setDeclarationName(attribs[i].getValue());
-//        }
-//        else
-
-
 
         if (name=="singleton")
         { 

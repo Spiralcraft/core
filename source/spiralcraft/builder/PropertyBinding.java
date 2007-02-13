@@ -431,11 +431,14 @@ public class PropertyBinding
     {
       if (_source!=null && !_target.set(_source))
       { 
-        throwBuildException
-          ("Could not write ["+_source.toString()+"] value to property \""
-          +_specifier.getTargetName()+"\"- not a writable property"
-          ,null
-          );
+        // Log something here- value didn't didn't need to change
+        
+        //        System.err.println(_source.toSt
+        //        throwBuildException
+        //          ("Could not write ["+_source.toString()+"] value to property \""
+        //          +_specifier.getTargetName()+"\"- not a writable property"
+        //          ,null
+        //          );
       }
     }
     catch (WriteException x)

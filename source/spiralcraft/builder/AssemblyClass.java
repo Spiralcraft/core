@@ -63,7 +63,8 @@ public class AssemblyClass
   private boolean _resolved;
   private String _id;
   private String _constructorText;
-
+  private PropertySpecifier _containingProperty;
+  
   /**
    * Construct a new AssemblyClass from a definition
    *
@@ -80,6 +81,7 @@ public class AssemblyClass
    *   defined, if any.
    *
    *@param loader The AssemblyLoader which loaded this AssemblyClass, if any
+   *
    */
   public AssemblyClass
     (URI sourceUri
@@ -233,6 +235,16 @@ public class AssemblyClass
     return member;
   }
 
+  public PropertySpecifier getContainingProperty()
+  { return _containingProperty;
+  }
+  
+  void setContainingProperty(PropertySpecifier specifier)
+  { 
+    assertUnresolved();
+    _containingProperty=specifier;
+  }
+  
   PropertyBinding[] bindProperties(Assembly container)
     throws BuildException
   { 
@@ -258,6 +270,7 @@ public class AssemblyClass
   { return _outerClass;
   }
   
+
   /**
    * Return the path from the root of the declaration unit.
    */
@@ -271,6 +284,10 @@ public class AssemblyClass
     }
   }
 
+  public String getDeclarationName()
+  { return _declarationName;
+  }
+  
   public synchronized void resolve()
     throws BuildException
   { 
@@ -320,6 +337,10 @@ public class AssemblyClass
   { 
     assertUnresolved();
     _id=val;
+  }
+
+  public String getId()
+  { return _id;
   }
 
   /**
@@ -584,7 +605,10 @@ public class AssemblyClass
    * This is part of the algorithm for determining the AssemblyClass associated
    *   with the dot-separated path in a property specifier.
    */
-  AssemblyClass ensureLocalClass(String propertyName,AssemblyClass testClass)
+  AssemblyClass ensureLocalClass
+    (String propertyName
+    ,AssemblyClass testClass
+    )
     throws BuildException
   {
     if (testClass.getDefiningClass()!=this)

@@ -196,8 +196,27 @@ public class PropertySpecifier
   { 
     if (assembly.getAssemblyClass()!=_targetAssemblyClass)
     { 
-      throw new IllegalArgumentException
-        ("Assembly is not instance of specifier target");
+      if (assembly.getAssemblyClass().getBaseClass()!=_targetAssemblyClass)
+      {
+        
+        throw new IllegalArgumentException
+          ("Assembly "
+          +assembly.getAssemblyClass()
+          +" is not instance of specifier '"+_targetName+"' target "
+          +_targetAssemblyClass
+          );
+      }
+      else
+      {
+//        throw new IllegalArgumentException
+//          ("Assembly "
+//          +assembly.getAssemblyClass()
+//          +" is not instance of specifier '"+_targetName+"' target "
+//          +_targetAssemblyClass
+//          +" but extends it- use PropertyDescriptor in subAssemblyClass instead"
+//          );
+        
+      }
     }
     return assembly.getPropertyBinding(_targetSequence);
   }
@@ -397,6 +416,7 @@ public class PropertySpecifier
     { _contents=new ArrayList<AssemblyClass>(1);
     }
     _contents.add(assembly);
+    assembly.setContainingProperty(this);
     
   }
 
