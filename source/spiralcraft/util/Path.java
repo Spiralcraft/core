@@ -104,7 +104,7 @@ public class Path
   }
   
   public String format(String delimiter)
-  { return (_absolute?delimiter:"")+ArrayUtil.format(_elements,"/",null);
+  { return (_absolute?delimiter:"")+ArrayUtil.format(_elements,delimiter,null);
   }
   
   public String toString()
