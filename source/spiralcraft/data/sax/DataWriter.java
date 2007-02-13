@@ -17,6 +17,7 @@ package spiralcraft.data.sax;
 import spiralcraft.stream.Resolver;
 import spiralcraft.stream.Resource;
 
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Field;
@@ -44,37 +45,27 @@ import java.util.HashMap;
 public class DataWriter
 { 
     
-  public void writeObjectToUri
-    (URI resourceUri
-    ,Type type
-    ,Object object
-    )
-    throws IOException,DataException
-  {
-    
-    writeDataToUri(resourceUri,type.toData(object).asTuple());
-  }
-    
-  public void writeDataToUri
+   
+  public void writeToUri
     (URI resourceUri
     ,Tuple data
     )
     throws IOException,DataException
   {
-    writeDataToResource
+    writeToResource
       (Resolver.getInstance().resolve(resourceUri)
       ,data
       );
   }
 
-  public void writeDataToResource
+  public void writeToResource
     (Resource resource
     ,Tuple tuple
     )
     throws IOException,DataException
   {
     OutputStream out=resource.getOutputStream();
-    writeDataToOutputStream(out,tuple);
+    writeToOutputStream(out,tuple);
     if (out!=null)
     {
       out.flush();
@@ -82,7 +73,7 @@ public class DataWriter
     }
   }
   
-  public void writeDataToOutputStream
+  public void writeToOutputStream
     (OutputStream out
     ,Tuple tuple
     )
@@ -180,7 +171,10 @@ class Context
     
     protected void writeString(String str)
       throws SAXException
-    { writer.characters(str.toCharArray(),0,str.length());
+    { 
+      if (str!=null)
+      { writer.characters(str.toCharArray(),0,str.length());
+      }
     }
   }
 
@@ -320,6 +314,7 @@ class Context
       { endType(false);
       }
       finish();
+      return;
     }
   }
   
@@ -350,7 +345,7 @@ class Context
         if (field.getType().isAggregate())
         { currentFrame=new AggregateFieldFrame(tuple,field);
         }
-        else if (field.getType().isPrimitive())
+        else
         { currentFrame=new SimpleFieldFrame(tuple,field);
         }
       }
@@ -358,6 +353,7 @@ class Context
       {
         endType(true);
         finish();
+        return;
       }
     }
     
@@ -435,17 +431,19 @@ class Context
       {
         hasOne=true;
         Object item=iterator.next();
-        if (componentType.isPrimitive())
-        { currentFrame=new PrimitiveFrame(componentType,item,false);
+        System.out.println("Aggregate Field: iterating "+item);
+        if (item instanceof DataComposite)
+        { currentFrame=new TupleFrame(((DataComposite) item).asTuple());
         }
         else
-        { currentFrame=new TupleFrame((Tuple) item);
+        { currentFrame=new PrimitiveFrame(componentType,item,false);
         }
       }
       else
       {
         closeField(hasOne);
         finish();
+        return;
       }
     }
   }
@@ -453,6 +451,8 @@ class Context
   class SimpleFieldFrame
     extends FieldFrame
   {
+    
+    private boolean primitive;
     
     public SimpleFieldFrame(Tuple tuple,Field field)
     { super(tuple,field);
@@ -463,25 +463,31 @@ class Context
     {
       Object value=field.getValue(tuple);
       if (value==null)
-      { finish();
+      { 
+        finish();
+        return;
       }
       
       if (!opened)
       {
         opened=true;
         openField();
+
         
-        if (field.getType().isPrimitive())
-        { currentFrame=new PrimitiveFrame(field.getType(),value,true);
+        if (value instanceof DataComposite)
+        { currentFrame=new TupleFrame((Tuple) value);
         }
         else
-        { currentFrame=new TupleFrame((Tuple) value);
+        { 
+          primitive=true;
+          currentFrame=new PrimitiveFrame(field.getType(),value,true);
         }
       }
       else
       {
-        closeField(!field.getType().isPrimitive());
+        closeField(!primitive);
         finish();
+        return;
       }
     }
   }
