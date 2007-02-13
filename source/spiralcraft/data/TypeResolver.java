@@ -121,6 +121,9 @@ public class TypeResolver
   public final Type resolve(URI typeUri)
     throws TypeNotFoundException
   { 
+    if (typeUri==null)
+    { return null;
+    }
     Type type=null;
     try
     { type=load(typeUri);
