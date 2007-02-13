@@ -73,7 +73,7 @@ tuple.toText("|  ");
 
 "// Write to XML";
 out = new ByteArrayOutputStream();
-new spiralcraft.data.sax.DataWriter().writeDataToOutputStream(out,tuple);
+new spiralcraft.data.sax.DataWriter().writeToOutputStream(out,tuple);
 
 System.out.write(out.toByteArray());
 

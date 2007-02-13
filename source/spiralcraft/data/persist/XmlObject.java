@@ -149,7 +149,12 @@ public class XmlObject
       DataWriter writer=new DataWriter();
       try
       {
-        writer.writeObjectToUri(resourceUri,type,assembly);
+        Tuple tuple=(Tuple)
+          BuilderType.canonicalType
+            (assembly.getAssemblyClass())
+            .toData(assembly);
+        // System.out.println(tuple.toText("|  "));
+        writer.writeToUri(resourceUri,tuple);
       }
       catch (IOException x)
       { throw new PersistenceException("Error writing "+resourceUri+": "+x,x);
