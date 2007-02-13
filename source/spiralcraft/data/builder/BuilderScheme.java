@@ -60,7 +60,26 @@ public class BuilderScheme
   }
   
   protected BuilderField generateField(PropertyDescriptor prop)
-  { return new BuilderField(prop,memberMap.get(prop.getName()));
+    throws DataException
+  { 
+    Type defaultType=null;
+    try
+    { defaultType=findType(prop.getPropertyType());
+    }
+    catch (DataException x)
+    { 
+      // This should NEVER happen- there always exists a Type for
+      //   every java class
+      x.printStackTrace();
+    }
+      
+    BuilderField field=new BuilderField
+      (prop
+      ,memberMap.get(prop.getName())
+      ,defaultType
+      );
+
+    return field;
   }
   
   /**
@@ -71,8 +90,8 @@ public class BuilderScheme
   {
     for (Field field: fields)
     { 
-      if (field instanceof BuilderField)
-      { ((BuilderField) field).depersistBeanProperty(tuple,assembly);
+      if (field instanceof ReflectionField)
+      { ((ReflectionField) field).depersistBeanProperty(tuple,assembly);
       }
     }
   }
@@ -85,8 +104,8 @@ public class BuilderScheme
   {
     for (Field field: fields)
     { 
-      if (field instanceof BuilderField)
-      { ((BuilderField) field).persistBeanProperty(assembly,tuple);
+      if (field instanceof ReflectionField)
+      { ((ReflectionField) field).persistBeanProperty(assembly,tuple);
       }
     }
   }

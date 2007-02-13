@@ -26,6 +26,8 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.InstanceResolver;
 
+import spiralcraft.data.core.ArrayType;
+
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.StaticInstanceResolver;
 
@@ -34,6 +36,7 @@ import spiralcraft.data.wrapper.ReflectionType;
 import spiralcraft.builder.AssemblyLoader;
 import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.Assembly;
+import spiralcraft.builder.PropertySpecifier;
 import spiralcraft.builder.PropertyBinding;
 import spiralcraft.builder.BuildException;
 
@@ -41,7 +44,12 @@ import spiralcraft.stream.Resource;
 import spiralcraft.stream.Resolver;
 import spiralcraft.stream.UnresolvableURIException;
 
+import spiralcraft.util.Path;
+
 import java.net.URI;
+
+import java.util.HashMap;
+import java.util.List;
 
 import java.io.IOException;
 
@@ -53,12 +61,20 @@ import java.io.IOException;
 public class BuilderType
   implements Type
 {
+  public static final char INNER_PATH_SEPARATOR='_';
+  public static final URI GENERIC_BUILDER_TYPE_URI
+    =URI.create("java:/spiralcraft/builder/Object");
+    
+  public static final URI GENERIC_BUILDER_ARRAY_TYPE_URI
+    =URI.create("java:/spiralcraft/builder/Object.array");
+  
   private final TypeResolver resolver;
   private final URI uri;
-  private final AssemblyClass baseAssemblyClass;
   private final AssemblyClass targetAssemblyClass;
   private final boolean aggregate=false;
-  private final Class nativeClass;
+  private final Class nativeClass=Assembly.class;
+  private final HashMap<String,Type> pathMap
+    =new HashMap<String,Type>();
   
   private boolean linked;
   private BuilderScheme scheme;
@@ -69,7 +85,13 @@ public class BuilderType
   public static final boolean isApplicable(URI uri)
     throws DataException
   { 
-    URI resourceUri=URI.create(uri.toString()+".assembly.xml");
+    String uriString=uri.toString();
+    int bangPos=uriString.indexOf(INNER_PATH_SEPARATOR);
+    if (bangPos>=0)
+    { uriString=uriString.substring(0,bangPos);
+    }
+    
+    URI resourceUri=URI.create(uriString+".assembly.xml");
     Resource resource=null;
     
     try
@@ -91,6 +113,140 @@ public class BuilderType
     }
   }
 
+  public static URI canonicalUri(AssemblyClass assemblyClass)
+  {
+    if (assemblyClass!=null)
+    {
+      URI baseUri=
+        TypeResolver.desuffix(assemblyClass.getSourceURI(),".assembly.xml");
+      
+      String path="";
+      
+      while (assemblyClass!=null && assemblyClass.getDefiningClass()!=null)
+      { 
+        if (path.length()>0)
+        { path="/".concat(path);
+        }
+        if (assemblyClass.getId()!=null)
+        { path=".".concat(assemblyClass.getId()).concat(path);
+        }
+        if (assemblyClass.getContainingProperty()==null)
+        { 
+          System.err.println("Null containing property "
+            +assemblyClass.toString()+" defined in "
+            +assemblyClass.getDefiningClass().toString());
+        }
+        path=assemblyClass.getContainingProperty().getTargetName().concat(path);
+        assemblyClass=assemblyClass.getDefiningClass();
+      }
+      if (path.length()>0)
+      { return URI.create(baseUri.toString()+INNER_PATH_SEPARATOR+path);
+      }
+      else
+      { return baseUri;
+      }
+    }
+    else
+    { return null;
+    }
+  }
+  
+  public static Type canonicalType(AssemblyClass assemblyClass)
+    throws DataException
+  { return (TypeResolver.getTypeResolver().resolve(canonicalUri(assemblyClass)));
+  }
+  
+  public static Type genericBuilderType()
+    throws DataException
+  { return TypeResolver.getTypeResolver().resolve(GENERIC_BUILDER_TYPE_URI);
+  }
+  
+  public static Type genericBuilderArrayType()
+    throws DataException
+  { return TypeResolver.getTypeResolver().resolve(GENERIC_BUILDER_ARRAY_TYPE_URI);
+  }
+  
+  
+  public BuilderType
+    (BuilderType outerType
+    ,String pathElement
+    )
+    throws DataException
+  { 
+    this.resolver=outerType.getTypeResolver();
+    
+    String propertyName;
+    String objectId;
+    
+    int dotPos=pathElement.indexOf(".");
+    if (dotPos>=0)
+    { 
+      propertyName=pathElement.substring(0,dotPos);
+      objectId=pathElement.substring(dotPos+1);
+    }
+    else
+    {
+      propertyName=pathElement;
+      objectId=null;
+    }
+      
+    AssemblyClass containingClass
+      =outerType.getAssemblyClass();
+    PropertySpecifier containingProperty
+      =containingClass.getMember(propertyName);
+    if (containingProperty==null)
+    { 
+      throw new DataException
+        ("Creating inner type "+pathElement+" in "+outerType.toString()+": PropertySpecifier '"+propertyName+"' not found in AssemblyClass "
+        +containingClass
+        );
+    }
+
+    
+    List<AssemblyClass> contents=containingProperty.getContents();
+    if (objectId==null)
+    { 
+      if (contents.size()==1)
+      { targetAssemblyClass=contents.get(0);
+      }
+      else
+      {
+        throw new DataException
+          ("PropertySpecifier '"+propertyName+"' is ambiguous in AssemblyClass "
+          +containingClass
+          );
+      }
+    }
+    else
+    { 
+      AssemblyClass target=null;
+      for (AssemblyClass candidate: contents)
+      {
+        if (objectId.equals(candidate.getId()))
+        { 
+          target=candidate;
+          break;
+        }
+      }
+      if (target!=null)
+      { targetAssemblyClass=target;
+      }
+      else
+      {
+        throw new DataException
+          ("AssemblyClass with id '"+objectId+"'"
+          +" in property '"+propertyName+"' "
+          +"not found in AssemblyClass "
+          +containingClass
+          );
+      }
+      
+      
+    }
+    this.uri=canonicalUri(targetAssemblyClass);
+    System.err.println("Created Builder Type "+uri);
+  }
+  
   public BuilderType(TypeResolver resolver,URI uri)
     throws DataException
   {
@@ -99,8 +255,7 @@ public class BuilderType
     
     try
     {
-      // XXX Adapt to using Fragment to reference inner definitions
-      baseAssemblyClass
+      targetAssemblyClass
         =AssemblyLoader.getInstance()
           .findAssemblyDefinition(URI.create(uri.toString()+".assembly.xml"));
     }
@@ -108,8 +263,6 @@ public class BuilderType
     { throw new DataException(x.toString(),x);
     }
     
-    targetAssemblyClass=baseAssemblyClass;
-    nativeClass=Assembly.class;
   }
 
   public URI getUri()
@@ -145,6 +298,10 @@ public class BuilderType
     catch (TypeNotFoundException x)
     { throw new RuntimeException(x);
     }
+  }
+  
+  AssemblyClass getAssemblyClass()
+  { return targetAssemblyClass;
   }
   
   public Class getNativeClass()
@@ -202,14 +359,11 @@ public class BuilderType
     linked=true;
     
     AssemblyClass baseAssemblyClass=targetAssemblyClass.getBaseClass();
-    if (baseAssemblyClass!=null && baseAssemblyClass.getDefiningClass()==null)
+    if (baseAssemblyClass!=null)
     { 
       archetype
         =resolver.resolve
-          (resolver.desuffix
-            (baseAssemblyClass.getSourceURI()
-            ,".assembly.xml"
-            )
+          (canonicalUri(baseAssemblyClass)
           );
     }
     
@@ -266,11 +420,14 @@ public class BuilderType
         if (contextBinding.isAggregate())
         { 
           // Disambiguate by Class
+          // XXX now we have better typing- make sure this is appropriate
           Class tupleClass=(Class) classField.getValue(t);
           for (Assembly assembly: contextBinding.getContents())
           { 
+            System.out.println("Checking "+tupleClass+" = "+assembly.getSubject().get().getClass());
             if (assembly.getSubject().get().getClass().equals(tupleClass))
             { 
+              System.out.println("Found");
               instance=assembly;
               break;
             }
@@ -310,9 +467,25 @@ public class BuilderType
     if (!(obj instanceof Assembly))
     { throw new DataException(obj.getClass().getName()+" is not an Assembly");
     }
-    EditableTuple t=new EditableArrayTuple(scheme);
-    scheme.persistBeanProperties( (Assembly) obj ,t);
-    return t;
+    
+    Assembly assembly=(Assembly) obj;
+    
+    if (assembly.getAssemblyClass()!=targetAssemblyClass)
+    { 
+      // System.out.println("Narrowing "+getUri());
+      Type targetType
+        =getTypeResolver().resolve
+          (canonicalUri(assembly.getAssemblyClass())
+          );
+      return targetType.toData(assembly);    
+    }
+    else
+    {
+      // System.out.println("Not narrowing "+getUri());
+      EditableTuple t=new EditableArrayTuple(scheme);
+      scheme.persistBeanProperties( assembly ,t);
+      return t;
+    }
   }
   
   public String toString()

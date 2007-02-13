@@ -16,9 +16,9 @@ package spiralcraft.data.builder;
 
 import java.net.URI;
 
-import org.xml.sax.SAXException;
+import java.util.List;
 
-import java.io.IOException;
+import spiralcraft.util.Path;
 
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.TypeFactory;
@@ -35,7 +35,40 @@ public class BuilderTypeFactory
     if (!BuilderType.isApplicable(uri))
     { return null;
     }
-    return new BuilderType(resolver,uri);
+    
+    String uriString=uri.toString();
+    int bangPos=uriString.indexOf(BuilderType.INNER_PATH_SEPARATOR);
+    Path path;
+    if (bangPos>=0)
+    { 
+      path=new Path(uriString.substring(bangPos+1),'/');
+      uriString=uriString.substring(0,bangPos);
+    }
+    else
+    { path=null;
+    }
+    
+    if (path==null)
+    { return new BuilderType(resolver,uri);
+    }
+    else
+    { 
+      String childName=path.lastElement();
+      String parentPath=path.parentPath().format("/");
+      URI parentUri;
+      if (parentPath.length()>0)
+      { 
+        parentUri=URI.create
+          (uriString+BuilderType.INNER_PATH_SEPARATOR+parentPath);
+      }
+      else
+      { parentUri=URI.create(uriString);
+      }
+      Type parentType=resolver.resolve(parentUri);
+      
+      return new BuilderType((BuilderType) parentType,childName);
+    }
+    
   }
   
 }

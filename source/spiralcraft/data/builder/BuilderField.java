@@ -17,20 +17,27 @@ package spiralcraft.data.builder;
 import java.lang.reflect.Method;
 import java.lang.reflect.Array;
 
+import java.util.List;
+
 import java.beans.PropertyDescriptor;
 
+import spiralcraft.data.TypeResolver;
+import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 
+import spiralcraft.data.wrapper.ReflectionType;
 import spiralcraft.data.wrapper.ReflectionField;
 
 import spiralcraft.data.spi.StaticInstanceResolver;
+import spiralcraft.data.spi.EditableArrayListAggregate;
 
 import spiralcraft.builder.PropertySpecifier;
 import spiralcraft.builder.PropertyBinding;
 import spiralcraft.builder.Assembly;
+import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.BuildException;
 
 public class BuilderField
@@ -39,33 +46,63 @@ public class BuilderField
  
   private final PropertySpecifier specifier;
   
-  public BuilderField(PropertyDescriptor prop,PropertySpecifier specifier)
+  public BuilderField
+    (PropertyDescriptor prop
+    ,PropertySpecifier specifier
+    ,Type defaultType
+    )
+    throws DataException
   { 
     super(prop);
     this.specifier=specifier;
+    if (specifier!=null)
+    {
+      List<AssemblyClass> contents=specifier.getContents();
+      if (contents!=null && contents.size()>0)
+      {
+        if (defaultType.isAggregate())
+        { setType(BuilderType.genericBuilderArrayType());
+        }
+        else
+        { setType(BuilderType.canonicalType(contents.get(0)));
+        }
+      }
+      else
+      { setType(defaultType);
+      }
+    }
+    else
+    { setType(defaultType);
+    }
   }
   
-  public void depersistBeanProperty(Tuple tuple,Object val)
+  public void depersistBeanProperty(Tuple tuple,Object subject)
     throws DataException
   {
     Object fieldValue=getValue(tuple);
-    if (fieldValue!=null)
+    Type type=getType();
+
+    if (fieldValue!=null) // We only depersist non-null data
     {
+      
+      if (fieldValue instanceof DataComposite)
+      { type=((DataComposite) fieldValue).getType();
+      }
       
       try
       {
-        Assembly assembly=(Assembly) val;
+        Assembly assembly=(Assembly) subject;
         if (specifier!=null)
         {
           PropertyBinding binding=specifier.getPropertyBinding(assembly);
           StaticInstanceResolver resolver=new StaticInstanceResolver(binding);
           
-          if (getType().getCoreType() instanceof BuilderType)
+          if (type.getCoreType() instanceof BuilderType)
           { 
-            if (getType().isAggregate())
+            if (type.isAggregate())
             {
               Assembly[] valueAssemblies
-                =(Assembly[]) getType().fromData
+                =(Assembly[]) type.fromData
                   ((DataComposite) fieldValue,resolver);
                   
               if (valueAssemblies!=null)
@@ -75,7 +112,7 @@ public class BuilderField
             else
             { 
               Assembly valueAssembly
-                =(Assembly) getType().fromData
+                =(Assembly) type.fromData
                   ((DataComposite) fieldValue,resolver);
                   
               if (valueAssembly!=null)
@@ -83,14 +120,17 @@ public class BuilderField
               }
             }
             
-          }
+          } // Is a builder type
           else
           {
+            System.out.println("Not a builder type "+type.getCoreType());
             // Use bean method to depersist
             Object bean=assembly.getSubject().get();
             super.depersistBeanProperty(tuple,bean);
           }
-        }
+          
+          
+        } // specifier!=null
         else
         {
           if (getType().getCoreType() instanceof BuilderType)
@@ -116,7 +156,7 @@ public class BuilderField
           ,x
           );
       }
-    }
+    } // Don't depersist null (use the null) type instead.
   }
 
   
@@ -127,16 +167,58 @@ public class BuilderField
     if (specifier!=null)
     {
       // Use Assembly scaffold to persist
-      if (specifier.isPersistent())
+      if (specifier.isPersistent() && assembly!=null)
       { 
         PropertyBinding binding=specifier.getPropertyBinding(assembly);
-        if (getType().getCoreType() instanceof BuilderType)
-        { 
+        Assembly[] assemblies=binding.getContents();
+        if (assemblies!=null && assemblies.length > 0)
+        {
+          // We definitely have a builder subtype here
           if (getType().isAggregate())
-          { setValue(tuple,getType().toData(binding.getContents()));
+          { 
+            // Even though specifier is present, we don't have a Builder type
+            //   for aggregates, so getType() will return probably a reflection
+            //   type aggregate. getType() doesn't help us much.
+            
+            EditableArrayListAggregate aggregate
+              =new EditableArrayListAggregate(getType());
+            for (Assembly subAssembly: assemblies)
+            { 
+              Type type=BuilderType.canonicalType(subAssembly.getAssemblyClass());
+              
+              if (type instanceof BuilderType)
+              { 
+                // Narrow the data conversion
+                System.err.println("Adding "+type);
+                aggregate.add(type.toData(subAssembly));
+              }
+              else
+              {
+                System.out.println("Unpacking "+subAssembly);
+                // Not a builder type, and can't get type from assembly
+                // Unpackage the assembly and store as a reflection type
+                Object subjectBean=subAssembly.getSubject().get();
+                type=
+                  TypeResolver.getTypeResolver().resolve
+                    (ReflectionType.canonicalUri(subjectBean.getClass()));
+                // Narrow the data conversion
+                aggregate.add(type.toData(subjectBean));
+                
+              }
+              
+            } // for
+            setValue(tuple,aggregate);
           }
           else
-          { setValue(tuple,getType().toData(binding.getContents()[0]));
+          { 
+            Type type=BuilderType.canonicalType(assemblies[0].getAssemblyClass());
+            if (type instanceof BuilderType)
+            {
+              setValue(tuple,type.toData(assemblies[0]));
+            }
+            else 
+            { super.persistBeanProperty(assembly.getSubject().get(),tuple);
+            }
           }
         }
         else
@@ -144,8 +226,8 @@ public class BuilderField
           Object bean=assembly.getSubject().get();
           super.persistBeanProperty(bean,tuple);
         }
-      }
-    }
+      } // if (specifier.isPersistent() && assembly!=null);
+    } // if (specifier!=null);
     else
     {
       if (!(getType().getCoreType() instanceof BuilderType))
@@ -157,4 +239,5 @@ public class BuilderField
   }
   
 
+    
 }
