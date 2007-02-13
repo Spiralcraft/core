@@ -29,6 +29,7 @@ import spiralcraft.data.InstanceResolver;
 import spiralcraft.data.spi.EditableArrayTuple;
 
 import spiralcraft.util.ClassUtil;
+import spiralcraft.util.CycleDetector;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -91,6 +92,14 @@ public class ReflectionType
   
   private Field classField;
   private Type archetype;
+  
+  private ThreadLocal<CycleDetector> cycleDetectorLocal
+    =new ThreadLocal<CycleDetector>()
+    {
+      protected synchronized CycleDetector initialValue()
+      { return new CycleDetector();
+      }
+    };
 
   private static void mapStandardClass(Class ... classes)
   {
@@ -143,7 +152,10 @@ public class ReflectionType
       }
     }
     else
-    { uriBuilder.append("java:/").append(iface.getName().replace('.','/'));
+    { 
+      uriBuilder
+        .append("java:/")
+        .append(iface.getName().replace('.','/').replace("$","__s_"));
     }
 
     uriBuilder.append(arraySuffix.toString());    
@@ -407,10 +419,14 @@ public class ReflectionType
       return bean;
     }
     catch (InstantiationException x)
-    { throw new DataException("Error instantiating bean from Tuple '"+tuple+"':"+x.toString(),x);
+    { 
+      throw new DataException
+        (getUri().toString()+": Error instantiating bean from Tuple '"+tuple+"':"+x.toString(),x);
     }
     catch (IllegalAccessException x)
-    { throw new DataException("Error instantiating bean from Tuple '"+tuple+"':"+x.toString(),x);
+    { 
+      throw new DataException
+        (getUri().toString()+"Error instantiating bean from Tuple '"+tuple+"':"+x.toString(),x);
     }
   }
   
@@ -454,30 +470,51 @@ public class ReflectionType
   public DataComposite toData(Object val)
     throws DataException
   {
-    if (nativeType==null)
-    { 
-      throw new UnsupportedOperationException
-        ("Type is already represented as a Tuple");
-    }
-    
-    if (val==null)
+    if (cycleDetectorLocal.get().detectOrPush(val))
     { return null;
     }
-
-    if (!nativeType.isAssignableFrom(val.getClass()))
-    { 
-      throw new IllegalArgumentException
-        (nativeType.getName()
-        +" cannot be assigned a "
-        +val.getClass().getName()
-        );
+    try
+    {
+      
+      if (nativeType==null)
+      { 
+        throw new UnsupportedOperationException
+          ("Type is already represented as a Tuple");
+      }
+      
+      if (val==null)
+      { return null;
+      }
+  
+      if (!nativeType.isAssignableFrom(val.getClass()))
+      { 
+        throw new IllegalArgumentException
+          (nativeType.getName()
+          +" cannot be assigned a "
+          +val.getClass().getName()
+          );
+      }
+      
+      if (val.getClass()!=nativeType)
+      {
+        // System.out.println("Narrowing "+val.getClass());
+        Type type=resolver.resolve(canonicalUri(val.getClass()));
+        return type.toData(val);
+      }
+      else
+      {
+        // System.out.println("Not narrowing "+val.getClass()+":"+ val.toString());
+        EditableTuple tuple=new EditableArrayTuple(scheme);
+        scheme.persistBeanProperties(val,tuple);
+        return tuple;
+      }
     }
-    
-    EditableTuple tuple=new EditableArrayTuple(scheme);
-    scheme.persistBeanProperties(val,tuple);
-    return tuple;
+    finally
+    { cycleDetectorLocal.get().pop();
+    }
       
   }
+  
   
   public String toString()
   { return super.toString()+":"+uri.toString();

@@ -101,11 +101,25 @@ public class ReflectionScheme
   }
   
   protected ReflectionField generateField(PropertyDescriptor prop)
-  { return new ReflectionField(prop);
+    throws DataException
+  { 
+    ReflectionField field=new ReflectionField(prop);
+    
+    try
+    { field.setType(findType(prop.getPropertyType()));
+    }
+    catch (TypeNotFoundException x)
+    { 
+      // This should NEVER happen- there always exists a Type for
+      //   every java class
+      x.printStackTrace();
+    }
+    return field;
   }
   
   protected List<? extends ReflectionField>
     generateFields(PropertyDescriptor[] propertyDescriptors)
+      throws DataException
   {
     List<ReflectionField> fieldList=new ArrayList<ReflectionField>();
     
@@ -114,16 +128,6 @@ public class ReflectionScheme
       if (prop.getPropertyType()!=null)
       {
         ReflectionField field=generateField(prop);
-        
-        try
-        { field.setType(findType(prop.getPropertyType()));
-        }
-        catch (TypeNotFoundException x)
-        { 
-          // This should NEVER happen- there always exists a Type for
-          //   every java class
-          x.printStackTrace();
-        }
         fieldList.add(field);
         
       }
@@ -131,7 +135,7 @@ public class ReflectionScheme
     return fieldList;
   }
   
-  private Type findType(Class iface)
+  protected Type findType(Class iface)
     throws TypeNotFoundException
   { 
     URI uri=ReflectionType.canonicalUri(iface);

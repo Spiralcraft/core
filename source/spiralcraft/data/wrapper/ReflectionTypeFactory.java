@@ -41,7 +41,7 @@ public class ReflectionTypeFactory
     String path=uri.getPath().substring(1);
 
     String className
-        =path.replace('/','.');
+        =path.replace('/','.').replace("__s_","$");
     
     ClassLoader loader=resolver.getClassLoader();
     

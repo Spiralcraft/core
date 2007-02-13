@@ -27,6 +27,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
+import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.InstanceResolver;
 
@@ -74,6 +75,10 @@ public class ReflectionField
     
     Object value=getValue(tuple);
     Type type=getType();
+    
+    if (value instanceof DataComposite)
+    { type=((DataComposite) value).getType();
+    }
     
     if (value!=null && writeMethod!=null)
     {
@@ -151,7 +156,7 @@ public class ReflectionField
       if (value!=null && writeMethod==null)
       { 
         System.err.println
-          ("Field '"+getName()+"' is not depersistable: "
+          ("Field '"+getName()+"' is not depersistable- no 'set' method: "
           +getScheme().getType().getUri()
           );
       }
@@ -170,12 +175,30 @@ public class ReflectionField
     {
       try
       {
-        Object value=readMethod.invoke(bean);
-        if (value!=null && !type.isPrimitive() && type.getNativeClass()!=null)
-        { setValue(tuple,type.toData(value));
+        Object value=readMethod.invoke(bean);;
+        if (value!=null)
+        {
+          type=TypeResolver.getTypeResolver().resolve
+            (ReflectionType.canonicalUri(value.getClass()));
+          if (!type.isPrimitive())
+          { 
+            if (type.getNativeClass()!=null)
+            { setValue(tuple,type.toData(value));
+            }
+            else
+            { setValue(tuple,getType().toData(value));
+            }
+          }
+          else
+          { 
+            // Value itself is of primitive type
+            setValue(tuple,value);
+          }
         }
         else
-        { setValue(tuple,value);
+        { 
+          // Persist null value
+          setValue(tuple,value);
         }
       }
       catch (IllegalAccessException x)
@@ -184,6 +207,14 @@ public class ReflectionField
       catch (InvocationTargetException x)
       { throw new DataException("Error depersisting field '"+getName()+"'",x);
       }
+    }
+    
+    if (readMethod==null && writeMethod!=null)
+    { 
+      System.err.println
+        ("Write only property: field '"+getName()+" in "
+        +getScheme().getType().getUri()
+        );
     }
   }
   
