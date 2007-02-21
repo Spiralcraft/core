@@ -23,8 +23,8 @@ import spiralcraft.data.core.PrimitiveTypeImpl;
 import java.net.URI;
 
 public class StringType
-  extends PrimitiveTypeImpl
-  implements Type
+  extends PrimitiveTypeImpl<String>
+  implements Type<String>
 {
   private int maxLength=-1;
   
@@ -33,7 +33,7 @@ public class StringType
   }
   
   
-  public Object fromString(String val)
+  public String fromString(String val)
   { return val;
   }
 

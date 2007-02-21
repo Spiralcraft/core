@@ -28,5 +28,11 @@ public interface EditableTuple
    */
   void set(int index,Object data)
     throws DataException;
-  
+
+  /**
+   *@return the extent Tuple associated with an ancestor base Type of
+   *  this Tuple's extent Type.
+   */
+  EditableTuple widen(Type type)
+    throws DataException;
 }

@@ -18,19 +18,15 @@ import spiralcraft.data.Type;
 import spiralcraft.data.Field;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
-import spiralcraft.data.Scheme;
 import spiralcraft.data.TypeResolver;
-import spiralcraft.data.ValidationResult;
 import spiralcraft.data.InstanceResolver;
 import spiralcraft.data.Tuple;
 
 import spiralcraft.data.core.TypeImpl;
-import spiralcraft.data.core.FieldImpl;
 
 import spiralcraft.data.spi.ConstructorInstanceResolver;
 import spiralcraft.data.spi.StaticInstanceResolver;
 
-import spiralcraft.data.wrapper.ReflectionScheme;
 import spiralcraft.data.wrapper.ReflectionType;
 
 import java.net.URI;
@@ -40,7 +36,7 @@ import java.net.URI;
  *   the purpose of examining and extending them.
  */
 public class TypeType
-  extends ReflectionType
+  extends ReflectionType<TypeImpl>
 {
   private final InstanceResolver instanceResolver;
   private boolean metaType;
@@ -79,10 +75,15 @@ public class TypeType
    *   will return the canonical instance of the base type. If any data is
    *   associated, an error in fromData() will result.
    */
+  @SuppressWarnings("unchecked")
   public TypeType(TypeResolver resolver,URI uri,URI baseUri,Class baseTypeImplClass)
     throws DataException
   { 
-    super(resolver,uri,baseTypeImplClass,baseTypeImplClass);
+    super(resolver
+          ,uri
+          ,(Class<TypeImpl>) baseTypeImplClass
+          ,(Class<TypeImpl>) baseTypeImplClass
+          );
     // System.out.println("New TypeType MetaType: "+uri+" of "+baseUri+"="+super.toString());
     instanceResolver
       =new StaticInstanceResolver
@@ -90,19 +91,19 @@ public class TypeType
     metaType=true;
   }
   
-  public Object fromString(String val)
+  public TypeImpl fromString(String val)
     throws DataException
-  { return getTypeResolver().resolve(URI.create(val));
+  { return (TypeImpl) getTypeResolver().resolve(URI.create(val));
   }
   
-  public String toString(Object val)
+  public String toString(TypeImpl val)
   { return ((Type) val).getUri().toString();
   } 
   
   /**
    * Helps the ReflectionType generate instances 
    */
-  protected Object obtainInstance(Tuple tuple,InstanceResolver instanceResolver)
+  protected TypeImpl obtainInstance(Tuple tuple,InstanceResolver instanceResolver)
     throws DataException
   {
     
@@ -110,12 +111,17 @@ public class TypeType
     
     // System.err.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
     // System.err.println("New-ing a "+getUri()+":"+super.toString());
-    Object instance=null;
-    instance=this.instanceResolver.resolve(getNativeClass());
-    return super.obtainInstance(tuple,instanceResolver);
+    TypeImpl instance=null;
+    instance=(TypeImpl) this.instanceResolver.resolve(getNativeClass());
+    if (instance!=null)
+    { return instance;
+    }
+    else
+    { return super.obtainInstance(tuple,instanceResolver);
+    }
   }
 
-  public Object fromData(DataComposite composite,InstanceResolver instanceResolver)
+  public TypeImpl fromData(DataComposite composite,InstanceResolver instanceResolver)
     throws DataException
   {
     if (metaType)
@@ -130,7 +136,7 @@ public class TypeType
         { throw new DataException("A MetaType cannot be customized");
         }
       } 
-      Object type=this.instanceResolver.resolve(Type.class);
+      TypeImpl type=(TypeImpl) this.instanceResolver.resolve(Type.class);
       // System.err.println("Returning metaType "+type.toString());
       return type;
     }

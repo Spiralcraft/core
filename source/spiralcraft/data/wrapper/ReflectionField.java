@@ -29,9 +29,6 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataComposite;
-import spiralcraft.data.InstanceResolver;
-
-import spiralcraft.util.ArrayUtil;
 
 public class ReflectionField
   extends FieldImpl
@@ -164,10 +161,11 @@ public class ReflectionField
   }
   
   
+  @SuppressWarnings("unchecked")
   public void persistBeanProperty(Object bean,EditableTuple tuple)
     throws DataException
   {
-    Type type=getType();
+    Type<? super Object> type=(Type<? super Object>) getType();
     
     if ( (readMethod!=null && writeMethod!=null)
           || getName().equals("class")
@@ -178,7 +176,7 @@ public class ReflectionField
         Object value=readMethod.invoke(bean);;
         if (value!=null)
         {
-          type=TypeResolver.getTypeResolver().resolve
+          type=(Type<? super Object>) TypeResolver.getTypeResolver().resolve
             (ReflectionType.canonicalUri(value.getClass()));
           if (!type.isPrimitive())
           { 
@@ -186,7 +184,7 @@ public class ReflectionField
             { setValue(tuple,type.toData(value));
             }
             else
-            { setValue(tuple,getType().toData(value));
+            { setValue(tuple, ((Type<? super Object>) getType()).toData(value));
             }
           }
           else

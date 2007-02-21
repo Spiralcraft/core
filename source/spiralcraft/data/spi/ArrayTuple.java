@@ -15,6 +15,8 @@
 package spiralcraft.data.spi;
 
 import spiralcraft.data.Aggregate;
+import spiralcraft.data.DataException;
+import spiralcraft.data.TypeMismatchException;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
@@ -31,6 +33,7 @@ public class ArrayTuple
 {
   protected final Scheme scheme;
   protected final Object[] data;
+  protected Tuple baseExtent;
   
   
   /**
@@ -62,6 +65,7 @@ public class ArrayTuple
    * Construct an ArrayTuple that is a copy of another Tuple
    */
   public ArrayTuple(Tuple original)
+    throws DataException
   { 
     this.scheme=original.getScheme();
     this.data=new Object[scheme.getFieldCount()];
@@ -71,12 +75,40 @@ public class ArrayTuple
     }
   }
   
-  public Type getType()
+  public Type<?> getType()
   { return scheme.getType();
   }
   
   public Scheme getScheme()
   { return scheme;
+  }
+  
+  public Tuple widen(Type type)
+    throws DataException
+  {
+    if (scheme.getType()!=null)
+    {
+      if (scheme.getType().hasArchetype(type))
+      { return this;
+      }
+      else
+      {
+        Tuple baseExtent=resolveBaseExtent();
+        if (baseExtent!=null)
+        { return baseExtent.widen(type);
+        }
+        else
+        { 
+          throw new TypeMismatchException
+            ("Type "+scheme.getType()+" has no base type compatible with "
+            +" wider type "+type
+            );
+        }
+      }
+    }
+    else
+    { return null;
+    }
   }
   
   public Object get(int index)
@@ -101,7 +133,7 @@ public class ArrayTuple
     for (Field field : scheme.fieldIterable())
     { 
       Object thisVal=data[field.getIndex()];
-      Object otherVal=field.getValue(t);
+      Object otherVal=t.get(field.getIndex());
       if (thisVal!=null)
       { 
         if (!thisVal.equals(otherVal))
@@ -136,7 +168,7 @@ public class ArrayTuple
     boolean first=true;
     for (Field field : scheme.fieldIterable())
     { 
-      Object val=field.getValue(this);
+      Object val=data[field.getIndex()];
       if (!(val instanceof DataComposite))
       {
         if (val!=null)
@@ -186,6 +218,7 @@ public class ArrayTuple
   }
   
   public String toText(String indent)
+    throws DataException
   { 
     StringBuilder sb=new StringBuilder();
     sb.append("\r\n").append(indent);
@@ -237,5 +270,13 @@ public class ArrayTuple
     sb.append("\r\n").append(indent); 
     sb.append("]");
     return sb.toString();
+  }
+  
+  protected Tuple resolveBaseExtent()
+  { 
+    if (baseExtent!=null)
+    { return baseExtent;
+    }
+    return null;
   }
 }

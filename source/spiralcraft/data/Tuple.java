@@ -45,6 +45,33 @@ public interface Tuple
   extends DataComposite
 {
   /**
+   *@return the Type associated with this extent, if any
+   */
+//  Type getExtentType();
+
+  /**
+   *@return the Type associated with the data instance this Tuple belongs to.
+   *  If this Tuple is an extent of some specific Type, the specific Type will
+   *  be returned, otherwise the Type returned will be the same as from
+   *  getExtentType().
+   */
+//  Type getSpecificType();
+
+  /**
+   *@return the extent Tuple associated with the specified base Type, or this
+   *  tuple if the specified type is this Tuple's type.
+   */
+  Tuple widen(Type type)
+    throws DataException;
+    
+  /**
+   *@return the extent Tuple associated with a Type that inherits from this
+   *  Tuple's extent type.
+   */
+//  Tuple narrow(Type type)
+//    throws DataException;
+  
+  /**
    * Return the Scheme of this Tuple
    */
   Scheme getScheme();
@@ -55,6 +82,7 @@ public interface Tuple
    */
   Object get(int index);
 
+  
   /**
    * Indicate whether the value returned by the get(int index) method may
    *   change at some point in the future. Some elements of data processing

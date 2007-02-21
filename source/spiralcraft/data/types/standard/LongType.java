@@ -22,8 +22,8 @@ import spiralcraft.data.core.PrimitiveTypeImpl;
 import java.net.URI;
 
 public class LongType
-  extends PrimitiveTypeImpl
-  implements Type
+  extends PrimitiveTypeImpl<Long>
+  implements Type<Long>
 {
   public LongType(TypeResolver resolver,URI uri)
   { super(resolver,uri,Long.class);

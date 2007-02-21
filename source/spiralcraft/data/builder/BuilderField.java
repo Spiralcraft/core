@@ -14,9 +14,6 @@
 //
 package spiralcraft.data.builder;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Array;
-
 import java.util.List;
 
 import java.beans.PropertyDescriptor;
@@ -160,6 +157,7 @@ public class BuilderField
   }
 
   
+  @SuppressWarnings("unchecked")
   public void persistBeanProperty(Object object,EditableTuple tuple)
     throws DataException
   {

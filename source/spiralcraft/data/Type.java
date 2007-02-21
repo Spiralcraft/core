@@ -14,14 +14,14 @@
 //
 package spiralcraft.data;
 
-import java.net.URI;
+import java.net.URI; 
 
 
 /**
  * Describes the data type of a data element. Root of the interface hierarchy
  *   for describing types
  */
-public interface Type
+public interface Type<T>
 {  
   /**
    * The TypeResolver which instantiated this particular Type.
@@ -85,11 +85,11 @@ public interface Type
   Type getCoreType();
   
   /**
-   * An Archetype is a Type which is extended by this type. An Archetype will
-   *   typically define a basic data structure recognized by common data-aware
-   *   components, and this subtype will augment the archetype with extra 
-   *   data and operations, usually in the context of a more specific data
-   *   model.
+   * An Archetype is a Type which defines a data structure and operations
+   *   inherited by this type. The Archetype will typically be recognized
+   *   by common data-aware components, and this subtype will augment the
+   *   Archetype with extra Fields and operations, usually in the context of
+   *   a more specific data model.
    *
    * A Type and all its archetypes are represented by a single Tuple. The
    *   sequence of Fields in the Scheme will start with the Archetype's Fields
@@ -104,6 +104,43 @@ public interface Type
    *   the specified Type.
    */
   boolean hasArchetype(Type type);
+  
+  /**
+   * A base Type is a means for this Type to inherit an identity, data structure
+   *   and operations from another Type, in order to further specify a variation
+   *   of the base Type. 
+   *
+   * A Type which extends a base Type has compound instances composed of extents.
+   *
+   * In a given compound instance, there is one extent per Type in the 
+   *   hierarchy which holds the data associated with the Type. The extents in
+   *   the instance are chained to each other. The most specific sub-type, when
+   *   instantiated, will cause the other extents to be created. Any deletion
+   *   will cause all the extents to be deleted. Each extent is aware of the
+   *   most specific extent in the heirarchy as well as its immediate base
+   *   extent.
+   * 
+   * Data structure and operation inheritance is realized via delegation. A more
+   *   specific extent will delegate field access and operations to its
+   *   immediate base extent if the operations are not relevant to the more
+   *   specific extent.
+   *
+   * Polymorphism via virtualization is realized by delegating virtual
+   *   operations on a general extent to the most specific extent.
+   *
+   * Tuples which participate as an extent in a class hierarchy require extra
+   *   storage to maintain their relationship to other Tuples of the same
+   *   instance.
+   */
+  Type getBaseType();
+  
+  
+  /**
+   * @return Whether this Type or any of its base Types (recursively) is the
+   *   the specified Type.
+   */
+  boolean hasBaseType(Type type);
+  
   
   /**
    * Indicate whether Objects of this type can be encoded to and decoded from
@@ -123,7 +160,7 @@ public interface Type
    * @throws IllegalArgumentException If the supplied String cannot be
    *    translated.
    */
-  Object fromString(String str)
+  T fromString(String str)
     throws DataException;
   
   /**
@@ -136,7 +173,7 @@ public interface Type
    * @throws IllegalArgumentException If the supplied Object is not compatible
    *    with the Class or Interface returned from the getNativeClass() method.
    */
-  String toString(Object value);
+  String toString(T value);
   
   /**
    * Translates a DataComposite representation of a value of this Type to an 
@@ -151,7 +188,7 @@ public interface Type
    *
    * @throws DataException If an error occurs in the translation process.
    */
-  Object fromData(DataComposite composite,InstanceResolver resolver)
+  T fromData(DataComposite composite,InstanceResolver resolver)
     throws DataException;
   
   /**
@@ -165,7 +202,7 @@ public interface Type
    *
    * @throws DataException If an error occurs in the translation process.
    */
-  DataComposite toData(Object object)
+  DataComposite toData(T object)
     throws DataException;
   
   

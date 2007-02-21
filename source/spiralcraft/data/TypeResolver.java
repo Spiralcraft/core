@@ -35,7 +35,6 @@ import spiralcraft.data.types.meta.TypeType;
 
 import spiralcraft.data.sax.XmlTypeFactory;
 
-import spiralcraft.data.wrapper.ReflectionType;
 import spiralcraft.data.wrapper.ReflectionTypeFactory;
 
 /**
@@ -118,13 +117,13 @@ public class TypeResolver
     
   }
 
-  public final Type resolve(URI typeUri)
+  public final Type<?> resolve(URI typeUri)
     throws TypeNotFoundException
   { 
     if (typeUri==null)
     { return null;
     }
-    Type type=null;
+    Type<?> type=null;
     try
     { type=load(typeUri);
     }
@@ -180,6 +179,7 @@ public class TypeResolver
     }
   }
 
+  @SuppressWarnings("unchecked")
   private final Type findLoadedType(URI typeUri)
   {
     
@@ -202,6 +202,7 @@ public class TypeResolver
         return type;
       }
     }
+    // XXX Add meta types and lists here?
     return null;
   }
 
@@ -210,6 +211,7 @@ public class TypeResolver
    * Find a type in the local classloader that is a derivative of another
    *   type (ie. an ArrayType based on the type, or the type's Type)
    */
+  @SuppressWarnings("unchecked")
   private final Type findTypeExtended(URI typeUri)
     throws DataException
   {
@@ -237,7 +239,7 @@ public class TypeResolver
       if (baseType!=null)
       {
         // Create and map the array type
-        type=new AbstractCollectionType
+        type=new AbstractCollectionType<ArrayList>
           (this
           ,baseType
           ,typeUri
@@ -339,12 +341,12 @@ public class TypeResolver
   /**
    * Indicate whether the URI is resolved through the local classloader
    */
-  private boolean isClassPathScheme(String scheme)
-  {
-    return scheme.equals("java") // Spiralcraft
-      || scheme.equals("classpath") // Cocoon
-      || scheme.equals("class") // common
-      || scheme.equals("class-resource") // GNU
-      ;
-  }
+//  private boolean isClassPathScheme(String scheme)
+//  {
+//    return scheme.equals("java") // Spiralcraft
+//      || scheme.equals("classpath") // Cocoon
+//      || scheme.equals("class") // common
+//      || scheme.equals("class-resource") // GNU
+//      ;
+//  }
 }

@@ -22,8 +22,8 @@ import spiralcraft.data.core.PrimitiveTypeImpl;
 import java.net.URI;
 
 public class BooleanType
-  extends PrimitiveTypeImpl
-  implements Type
+  extends PrimitiveTypeImpl<Boolean>
+  implements Type<Boolean>
 {
   public BooleanType(TypeResolver resolver,URI uri)
   { super(resolver,uri,Boolean.class);

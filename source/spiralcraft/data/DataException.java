@@ -21,6 +21,8 @@ package spiralcraft.data;
 public class DataException
   extends Exception
 {
+  private static final long serialVersionUID=1;
+  
   public DataException()
   { }
   

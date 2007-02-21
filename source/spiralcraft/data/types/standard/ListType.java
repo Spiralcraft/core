@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.types.standard;
 
-import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 
 import spiralcraft.data.core.AbstractCollectionType;
@@ -23,9 +22,8 @@ import java.util.List;
 
 import java.net.URI;
 
-public class ListType
-  extends AbstractCollectionType
-  implements Type
+public class ListType<T extends List<?>>
+  extends AbstractCollectionType<List<?>>
 {
   public ListType(TypeResolver resolver,URI uri)
   { super(resolver,null,uri,List.class);

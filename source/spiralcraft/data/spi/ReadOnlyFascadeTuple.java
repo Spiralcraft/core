@@ -18,6 +18,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Scheme;
+import spiralcraft.data.DataException;
 
 /**
  * A read-only fascade for a Tuple, designed to enforce the hiding of
@@ -36,7 +37,12 @@ public class ReadOnlyFascadeTuple
   { this.delegate=delegate;
   }
   
-  public Type getType()
+  public Tuple widen(Type type)
+    throws DataException
+  { return new ReadOnlyFascadeTuple(delegate.widen(type));
+  }
+  
+  public Type<?> getType()
   { return delegate.getType();
   }
   
@@ -65,6 +71,7 @@ public class ReadOnlyFascadeTuple
   }
   
   public String toText(String indent)
+    throws DataException
   { return delegate.toText(indent);
   }
   

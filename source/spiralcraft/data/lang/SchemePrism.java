@@ -27,7 +27,6 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Field;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * Maps a Scheme into the spiralcraft.lang binding mechanism
@@ -101,7 +100,7 @@ public class SchemePrism
     return null;
   }
   
-  public Class getContentType()
+  public Class<?> getContentType()
   { return Tuple.class;
   }
   

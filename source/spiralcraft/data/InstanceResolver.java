@@ -26,6 +26,6 @@ public interface InstanceResolver
    *@return the Object, or null if none is available that is derived from the
    *  specified class.
    */
-  Object resolve(Class clazz)
+  Object resolve(Class<?> clazz)
     throws DataException;
 }

@@ -18,6 +18,7 @@ import spiralcraft.data.DataComposite;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.DataException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,10 +26,10 @@ import java.util.Iterator;
 /**
  * Holds a aggregation of objects of a common type.
  */
-public class ArrayListAggregate
-  implements Aggregate
+public class ArrayListAggregate<T>
+  implements Aggregate<T>
 {
-  protected ArrayList list=new ArrayList();
+  protected ArrayList<T> list=new ArrayList<T>();
   private final Type type;
   
   public ArrayListAggregate(Type type)
@@ -52,7 +53,7 @@ public class ArrayListAggregate
   }
   
   
-  public Type getType()
+  public Type<?> getType()
   { return type;
   }
   
@@ -86,6 +87,7 @@ public class ArrayListAggregate
   }
   
   public String toText(String indent)
+    throws DataException
   {
     StringBuilder builder=new StringBuilder();
     builder.append("\r\n").append(indent);

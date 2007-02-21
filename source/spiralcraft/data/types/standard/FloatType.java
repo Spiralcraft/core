@@ -22,8 +22,8 @@ import spiralcraft.data.core.PrimitiveTypeImpl;
 import java.net.URI;
 
 public class FloatType
-  extends PrimitiveTypeImpl
-  implements Type
+  extends PrimitiveTypeImpl<Float>
+  implements Type<Float>
 {
   public FloatType(TypeResolver resolver,URI uri)
   { super(resolver,uri,Float.class);

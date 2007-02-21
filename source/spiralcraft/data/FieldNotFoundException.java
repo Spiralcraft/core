@@ -14,7 +14,6 @@
 //
 package spiralcraft.data;
 
-import java.net.URI;
 
 /**
  * Throws when a Type is not found by the TypeResolver
@@ -22,6 +21,8 @@ import java.net.URI;
 public class FieldNotFoundException
   extends DataException
 {
+  private static final long serialVersionUID=1;
+  
   private static final String makeFieldList(Type type)
   {
     StringBuilder fieldList=new StringBuilder();

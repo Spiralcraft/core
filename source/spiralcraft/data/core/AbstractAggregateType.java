@@ -16,15 +16,9 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeNotFoundException;
-import spiralcraft.data.Tuple;
-import spiralcraft.data.Aggregate;
-import spiralcraft.data.EditableAggregate;
-import spiralcraft.data.DataComposite;
+
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
-import spiralcraft.data.TypeResolver;
-import spiralcraft.data.ValidationResult;
-import spiralcraft.data.InstanceResolver;
 
 import spiralcraft.data.wrapper.ReflectionType;
 
@@ -33,14 +27,15 @@ import java.net.URI;
 /**
  * Implementation base class for common aggregate type functionality
  */
-public abstract class AbstractAggregateType
-  implements Type
+public abstract class AbstractAggregateType<T>
+  implements Type<T>
 {
   protected final URI uri;
   
-  protected Type contentType;
+  protected Type<? super Object> contentType;
   protected Class nativeClass;
   protected Type archetype;
+  protected Type baseType;
   protected boolean linked;
   
   protected AbstractAggregateType(URI uri)
@@ -64,6 +59,23 @@ public abstract class AbstractAggregateType
     }
   }
   
+  public Type getBaseType()
+  { return baseType;
+  }
+
+  public boolean hasBaseType(Type type)
+  {
+    if (this==type)
+    { return true;
+    }
+    else if (baseType!=null)
+    { return baseType.hasBaseType(type);
+    }
+    else
+    { return false;
+    }
+  }
+
   public Type getMetaType()
   {
     try
@@ -78,7 +90,7 @@ public abstract class AbstractAggregateType
    * The public Java class or interface used to programatically access or
    *   manipulate this data element.
    */
-  public Class getNativeClass()
+  public Class<?> getNativeClass()
   { return nativeClass;
   }
 
@@ -132,7 +144,20 @@ public abstract class AbstractAggregateType
     { 
       archetype
         =contentType.getTypeResolver().resolve
-          (URI.create(contentArchetype.getUri().toString().concat(".array"))
+          (URI.create(contentArchetype.getUri().toString()
+                      .concat(getAggregateQualifier())
+                     )
+          );
+    }
+    
+    Type contentBaseType=contentType.getBaseType();
+    if (contentBaseType!=null)
+    { 
+      baseType
+        =contentType.getTypeResolver().resolve
+          (URI.create(contentBaseType.getUri().toString()
+                      .concat(getAggregateQualifier())
+                     )
           );
     }
   }
@@ -141,15 +166,17 @@ public abstract class AbstractAggregateType
   { return false;
   }
   
-  public Object fromString(String val)
+  public T fromString(String val)
   { return null;
   }
   
-  public String toString(Object val)
+  public String toString(T val)
   { return null;
   }  
 
   public String toString()
   { return super.toString()+":"+uri.toString();
   }  
+  
+  protected abstract String getAggregateQualifier();
 }

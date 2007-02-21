@@ -17,16 +17,16 @@ package spiralcraft.data.wrapper;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.TypeResolver;
-import spiralcraft.data.Scheme;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.EditableTuple;
-import spiralcraft.data.ValidationResult;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.InstanceResolver;
 
 import spiralcraft.data.spi.EditableArrayTuple;
+
+import spiralcraft.data.core.TypeImpl;
 
 import spiralcraft.util.ClassUtil;
 import spiralcraft.util.CycleDetector;
@@ -51,8 +51,9 @@ import java.math.BigDecimal;
  * A Type based on a Java class. The Scheme is defined
  *   by reflection.
  */
-public class ReflectionType
-  implements Type
+public class ReflectionType<T>
+  extends TypeImpl<T>
+  implements Type<T>
 {
   private static final HashMap<Class,URI> CANONICAL_MAP
     =new HashMap<Class,URI>();
@@ -79,19 +80,10 @@ public class ReflectionType
   }
   
   
-  private final TypeResolver resolver;
-  private final URI uri;
   private final Class reflectedClass;
-  private final Class nativeType;
-  private final boolean aggregate;
-  private Type contentType;
-  private ReflectionScheme scheme;
-  private boolean linked=false;
-  private Constructor stringConstructor;
-  private Constructor tupleConstructor;
-  
+  private Constructor<T> stringConstructor;
+  private Constructor<T> tupleConstructor;
   private Field classField;
-  private Type archetype;
   
   private ThreadLocal<CycleDetector> cycleDetectorLocal
     =new ThreadLocal<CycleDetector>()
@@ -168,31 +160,29 @@ public class ReflectionType
    * Construct a ReflectionType which reflects 'clazz' and exposes itself
    *   as Tuple data.
    */
-  public ReflectionType(TypeResolver resolver,URI typeUri,Class clazz)
+  public ReflectionType(TypeResolver resolver,URI typeUri,Class<T> clazz)
   { 
-    this.resolver=resolver;
-    this.uri=typeUri;
+    super(resolver,typeUri);
     reflectedClass=clazz;
-    nativeType=clazz;
+    nativeClass=clazz;
     aggregate=checkAggregate(clazz);
   }
   
   
   /** 
    * Construct a ReflectionType which reflects 'clazz' and exposes itself
-   *   as the specified nativeType.
+   *   as the specified nativeClass.
    */
   public ReflectionType
     (TypeResolver resolver
     ,URI typeUri
-    ,Class clazz
-    ,Class nativeType
+    ,Class<T> clazz
+    ,Class<T> nativeClass
     )
   { 
-    this.resolver=resolver;
-    this.uri=typeUri;
+    super(resolver,typeUri);
     reflectedClass=clazz;
-    this.nativeType=nativeType;
+    this.nativeClass=nativeClass;
     aggregate=checkAggregate(clazz);
     
     try
@@ -209,87 +199,6 @@ public class ReflectionType
     
   }
 
-  public URI getUri()
-  { return uri;
-  }
-  
-  public TypeResolver getTypeResolver()
-  { return resolver;
-  }
-  
-  public Type getArchetype()
-  { return archetype;
-  }
-  
-  public boolean hasArchetype(Type type)
-  {
-    if (this==type)
-    { return true;
-    }
-    else if (archetype!=null)
-    { return archetype.hasArchetype(type);
-    }
-    else
-    { return false;
-    }
-  }
-  
-  
-  public Type getMetaType()
-  {
-    try
-    { return resolver.resolve(ReflectionType.canonicalUri(getClass()));
-    }
-    catch (TypeNotFoundException x)
-    { throw new RuntimeException(x);
-    }
-  }
-  
-  public Class getNativeClass()
-  { return nativeType;
-  }
-
-  public boolean isPrimitive()
-  { return false;
-  }
-
-  public boolean isAggregate()
-  { return aggregate;
-  }
-  
-  public Type getContentType()
-  { return contentType;
-  }
-
-  public Type getCoreType()
-  {
-    Type ret=this;
-    while (ret.isAggregate())
-    { ret=ret.getContentType();
-    }
-    return ret;
-  }
-  
-  public Scheme getScheme()
-  { return scheme;
-  }
-  
-  public ValidationResult validate(Object val)
-  { 
-    if (val!=null
-        && !(nativeType.isAssignableFrom(val.getClass()))
-       )
-    { 
-      return new ValidationResult
-        (val.getClass().getName()
-        +" cannot be assigned to "
-        +nativeType.getClass().getName()
-        );
-    }
-    else
-    { return null;
-    }
-  }
   
   public void link()
     throws DataException
@@ -297,7 +206,7 @@ public class ReflectionType
     if (linked)
     { return;
     }
-    linked=true;
+
     if (aggregate)
     { 
       Class contentClass;
@@ -323,11 +232,7 @@ public class ReflectionType
     }
     
     scheme=new ReflectionScheme(resolver,this,reflectedClass);
-    if (archetype!=null && archetype.getScheme()!=null)
-    { scheme.setArchetypeScheme(archetype.getScheme());
-    }
-    scheme.resolve();
-    
+    super.link();
     classField=scheme.getFieldByName("class");
   }
   
@@ -335,10 +240,10 @@ public class ReflectionType
   { return stringConstructor!=null;
   }
   
-  public Object fromString(String val)
+  public T fromString(String val)
     throws DataException
   {
-    if (nativeType==null)
+    if (nativeClass==null)
     { 
       throw new UnsupportedOperationException
         ("Type has no String representation");
@@ -363,9 +268,9 @@ public class ReflectionType
     
   }
   
-  public String toString(Object val)
+  public String toString(T val)
   {
-    if (nativeType==null)
+    if (nativeClass==null)
     { 
       throw new UnsupportedOperationException
         ("Type has no String representation");
@@ -375,7 +280,7 @@ public class ReflectionType
     { return null;
     }
     
-    if (!nativeType.getClass().isAssignableFrom(val.getClass()))
+    if (!nativeClass.getClass().isAssignableFrom(val.getClass()))
     { throw new IllegalArgumentException("Not type compatible");
     }
     
@@ -388,7 +293,8 @@ public class ReflectionType
    * Override this method in subclasses to provide alternative or context
    *   dependend constructors/resolvers
    */
-  protected Object obtainInstance(Tuple tuple,InstanceResolver context)
+  @SuppressWarnings("unchecked")
+  protected T obtainInstance(Tuple tuple,InstanceResolver context)
     throws DataException
   {
     try
@@ -398,23 +304,23 @@ public class ReflectionType
       if (classField==null)
       { 
         System.err.println("No classField in "+getUri());
-        referencedClass=nativeType;
+        referencedClass=nativeClass;
       }
       else if (classField.getValue(tuple)!=null)
       { referencedClass=(Class) classField.getValue(tuple);
       }
       else
-      { referencedClass=nativeType;
+      { referencedClass=nativeClass;
       }
      
-      Object bean=null;
+      T bean=null;
       
       if (context!=null)
-      { bean=context.resolve(referencedClass);
+      { bean=(T) context.resolve(referencedClass);
       }
       
       if (bean==null)
-      { bean=referencedClass.newInstance();
+      { bean=(T) referencedClass.newInstance();
       }
       return bean;
     }
@@ -433,11 +339,11 @@ public class ReflectionType
   /**
    * Construct an Object using reflection to inject Bean properties.
    */
-  public Object fromData(DataComposite val,InstanceResolver context)
+  public T fromData(DataComposite val,InstanceResolver context)
     throws DataException
   {
     // System.err.println("--- ReflectionType.fromData\r\nDataComposite: "+val+"\r\n");
-    if (nativeType==null)
+    if (nativeClass==null)
     { 
       throw new UnsupportedOperationException
         ("Type is already represented as a Tuple");
@@ -461,12 +367,13 @@ public class ReflectionType
       }
     }
 
-    Object bean=obtainInstance(tuple,context);    
-    scheme.depersistBeanProperties(tuple,bean);
+    T bean=obtainInstance(tuple,context);    
+    ((ReflectionScheme) scheme).depersistBeanProperties(tuple,bean);
     return bean;
   }
 
   
+  @SuppressWarnings("unchecked")
   public DataComposite toData(Object val)
     throws DataException
   {
@@ -476,7 +383,7 @@ public class ReflectionType
     try
     {
       
-      if (nativeType==null)
+      if (nativeClass==null)
       { 
         throw new UnsupportedOperationException
           ("Type is already represented as a Tuple");
@@ -486,26 +393,27 @@ public class ReflectionType
       { return null;
       }
   
-      if (!nativeType.isAssignableFrom(val.getClass()))
+      if (!nativeClass.isAssignableFrom(val.getClass()))
       { 
         throw new IllegalArgumentException
-          (nativeType.getName()
+          (nativeClass.getName()
           +" cannot be assigned a "
           +val.getClass().getName()
           );
       }
       
-      if (val.getClass()!=nativeType)
+      if (val.getClass()!=nativeClass)
       {
         // System.out.println("Narrowing "+val.getClass());
-        Type type=resolver.resolve(canonicalUri(val.getClass()));
+        Type<? super Object> type
+          =(Type<? super Object>) resolver.resolve(canonicalUri(val.getClass()));
         return type.toData(val);
       }
       else
       {
         // System.out.println("Not narrowing "+val.getClass()+":"+ val.toString());
         EditableTuple tuple=new EditableArrayTuple(scheme);
-        scheme.persistBeanProperties(val,tuple);
+        ((ReflectionScheme) scheme).persistBeanProperties(val,tuple);
         return tuple;
       }
     }
@@ -516,7 +424,4 @@ public class ReflectionType
   }
   
   
-  public String toString()
-  { return super.toString()+":"+uri.toString();
-  }
 }

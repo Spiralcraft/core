@@ -16,26 +16,18 @@ package spiralcraft.data.wrapper;
 
 import java.net.URI;
 
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
 
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.TypeFactory;
 import spiralcraft.data.Type;
-import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
-import spiralcraft.data.InstanceResolver;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 
 public class ReflectionTypeFactory
   implements TypeFactory
 {
   
-  public Type createType(TypeResolver resolver,URI uri)
+  @SuppressWarnings("unchecked")
+  public Type<?> createType(TypeResolver resolver,URI uri)
     throws DataException
   {
     String path=uri.getPath().substring(1);
@@ -45,9 +37,9 @@ public class ReflectionTypeFactory
     
     ClassLoader loader=resolver.getClassLoader();
     
-    Class clazz=null;
+    Class<Object> clazz=null;
     try 
-    { clazz = loader.loadClass(className);
+    { clazz = (Class<Object>) loader.loadClass(className);
     }
     catch (ClassNotFoundException x)
     { 
@@ -55,7 +47,7 @@ public class ReflectionTypeFactory
       return null;
     }
     
-    return new ReflectionType(resolver,uri,clazz);
+    return new ReflectionType<Object>(resolver,uri,clazz);
   }
 
   

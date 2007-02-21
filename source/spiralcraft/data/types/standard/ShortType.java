@@ -22,8 +22,8 @@ import spiralcraft.data.core.PrimitiveTypeImpl;
 import java.net.URI;
 
 public class ShortType
-  extends PrimitiveTypeImpl
-  implements Type
+  extends PrimitiveTypeImpl<Short>
+  implements Type<Short>
 {
   public ShortType(TypeResolver resolver,URI uri)
   { super(resolver,uri,Short.class);

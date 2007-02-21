@@ -14,8 +14,6 @@
 //
 package spiralcraft.data;
 
-import java.net.URI;
-
 /**
  * Describes a unit of structured data. 
  */

@@ -22,8 +22,8 @@ import spiralcraft.data.core.PrimitiveTypeImpl;
 import java.net.URI;
 
 public class CharacterType
-  extends PrimitiveTypeImpl
-  implements Type
+  extends PrimitiveTypeImpl<Character>
+  implements Type<Character>
 {
   public CharacterType(TypeResolver resolver,URI uri)
   { super(resolver,uri,Character.class);

@@ -14,18 +14,10 @@
 //
 package spiralcraft.data.types.meta;
 
-import spiralcraft.data.Type;
-import spiralcraft.data.DataComposite;
-import spiralcraft.data.DataException;
-import spiralcraft.data.Scheme;
 import spiralcraft.data.TypeResolver;
-import spiralcraft.data.ValidationResult;
-import spiralcraft.data.InstanceResolver;
 
-import spiralcraft.data.core.TypeImpl;
 import spiralcraft.data.core.SchemeImpl;
 
-import spiralcraft.data.wrapper.ReflectionScheme;
 import spiralcraft.data.wrapper.ReflectionType;
 
 import java.net.URI;
@@ -34,7 +26,7 @@ import java.net.URI;
  * A Type implementation that represents a Scheme
  */
 public class SchemeType
-  extends ReflectionType
+  extends ReflectionType<SchemeImpl>
 {
   public SchemeType(TypeResolver resolver,URI uri)
   { super(resolver,uri,SchemeImpl.class,SchemeImpl.class);

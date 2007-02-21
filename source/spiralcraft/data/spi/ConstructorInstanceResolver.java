@@ -43,7 +43,7 @@ public class ConstructorInstanceResolver
    *@return the Object, or null if none is available that is derived from the
    *  specified class.
    */
-  public Object resolve(Class clazz)
+  public Object resolve(Class<?> clazz)
     throws DataException
   {
     try

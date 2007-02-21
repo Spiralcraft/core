@@ -15,23 +15,15 @@
 package spiralcraft.data.core;
 
 import spiralcraft.data.Type;
-import spiralcraft.data.TypeNotFoundException;
-import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
-import spiralcraft.data.Scheme;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.ValidationResult;
 import spiralcraft.data.InstanceResolver;
 
-import spiralcraft.data.wrapper.ReflectionType;
-
 import spiralcraft.data.spi.EditableArrayListAggregate;
-
-import spiralcraft.util.ArrayUtil;
-
 
 import java.lang.reflect.Array;
 
@@ -41,11 +33,11 @@ import java.net.URI;
  * An Array version of a base type
  */
 public class ArrayType
-  extends AbstractAggregateType
-  implements Type
+  extends AbstractAggregateType<Object>
+  implements Type<Object>
 {  
   
-  public ArrayType(Type contentType,URI uri)
+  public ArrayType(Type<? super Object> contentType,URI uri)
   { 
     super(uri);
     this.contentType=contentType;
@@ -122,20 +114,33 @@ public class ArrayType
   public DataComposite toData(Object array)
     throws DataException
   { 
-    EditableAggregate aggregate=new EditableArrayListAggregate(this);
-
-    int len=Array.getLength(array);
-    for (int index=0;index<len;index++)
+    if (contentType.isPrimitive())
     {
-      if (contentType.isPrimitive())
+      EditableAggregate<Object> aggregate=new EditableArrayListAggregate<Object>(this);
+
+      int len=Array.getLength(array);
+      for (int index=0;index<len;index++)
       { aggregate.add(Array.get(array,index));
       }
-      else
-      { aggregate.add(contentType.toData(Array.get(array,index)));
+	    
+      return aggregate;
+    }
+    else
+    {
+      EditableAggregate<DataComposite> aggregate
+        =new EditableArrayListAggregate<DataComposite>(this);
+
+      int len=Array.getLength(array);
+      for (int index=0;index<len;index++)
+      { aggregate.add((DataComposite) Array.get(array,index));
       }
+      return aggregate;
     }
     
-    return aggregate;
+  }
+
+  protected String getAggregateQualifier()
+  { return ".list";
   }
   
 }

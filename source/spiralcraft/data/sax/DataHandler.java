@@ -30,13 +30,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 
-import java.io.IOException;
-
-import java.util.ArrayList;
-
 import java.net.URI;
-
-import java.lang.reflect.Array;
 
 /**
  * Reads SAX events into a Data graph.
@@ -47,9 +41,9 @@ public class DataHandler
   private static final String STANDARD_PATH
     ="java:/spiralcraft/data/types/standard/";
   
-  private final TypeResolver resolver=TypeResolver.getTypeResolver();
+  // private final TypeResolver resolver=TypeResolver.getTypeResolver();
   private Frame currentFrame;
-  private boolean createNativeObjects;
+  
   
   /**
    * Construct a new DataReader which expects to read the specified
@@ -290,7 +284,6 @@ public class DataHandler
     protected Type resolveType(String uri,String localName)
       throws TypeNotFoundException
     {
-      Type type;
       URI typeUri;
      
       if ( uri==null || uri.length()==0)
@@ -490,14 +483,14 @@ public class DataHandler
     extends ContainerFrame
   { 
     
-    private EditableArrayListAggregate aggregate;
+    private EditableArrayListAggregate<? super Object> aggregate;
     
     protected AggregateFrame(Type formalType)
     { 
       super(formalType);
       
       // XXX Must create new aggregation type
-      aggregate=new EditableArrayListAggregate(formalType);
+      aggregate=new EditableArrayListAggregate<Object>(formalType);
     }
     
     public Object getObject()
@@ -535,7 +528,6 @@ public class DataHandler
   class InitialFrame
     extends ObjectFrame
   {
-    private Object object;
     
     public InitialFrame(Type formalType)
     { super(formalType);

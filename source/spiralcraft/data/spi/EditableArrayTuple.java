@@ -15,12 +15,12 @@
 package spiralcraft.data.spi;
 
 import spiralcraft.data.EditableTuple;
+import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
-
 import spiralcraft.data.Scheme;
-import spiralcraft.data.Field;
+import spiralcraft.data.DataException;
 
-import spiralcraft.util.ArrayUtil;
+
 
 /**
  * Base class for a simple in-memory editable Tuple.
@@ -34,6 +34,7 @@ public class EditableArrayTuple
   }
   
   public EditableArrayTuple(Tuple original)
+    throws DataException
   { super(original);
   }
   
@@ -43,5 +44,10 @@ public class EditableArrayTuple
   
   public boolean isMutable()
   { return true;
+  }
+  
+  public EditableTuple widen(Type type)
+    throws DataException
+  { return (EditableTuple) super.widen(type);
   }
 }

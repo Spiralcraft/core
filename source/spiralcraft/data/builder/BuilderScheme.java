@@ -26,16 +26,11 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.wrapper.ReflectionScheme;
 import spiralcraft.data.wrapper.ReflectionField;
 
-import spiralcraft.data.core.FieldImpl;
 
 import spiralcraft.builder.AssemblyClass;
-import spiralcraft.builder.Assembly;
 import spiralcraft.builder.PropertySpecifier;
 
 import java.util.HashMap;
-import java.util.List;
-
-import java.net.URI;
 
 import java.beans.PropertyDescriptor;
 
@@ -46,14 +41,14 @@ public class BuilderScheme
   extends ReflectionScheme
 {
   
-  private final AssemblyClass assemblyClass;
+  // private final AssemblyClass assemblyClass;
   private final HashMap<String,PropertySpecifier> memberMap
     =new HashMap<String,PropertySpecifier>();
   
   public BuilderScheme(TypeResolver typeResolver,Type type,AssemblyClass assemblyClass)
   { 
     super(typeResolver,type,assemblyClass.getJavaClass());
-    this.assemblyClass=assemblyClass;
+    // this.assemblyClass=assemblyClass;
     for (PropertySpecifier specifier : assemblyClass.memberIterable())
     { memberMap.put(specifier.getTargetName(),specifier);
     }

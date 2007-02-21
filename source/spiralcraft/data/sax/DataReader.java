@@ -17,14 +17,10 @@ package spiralcraft.data.sax;
 import spiralcraft.stream.Resolver;
 import spiralcraft.stream.Resource;
 
-
-import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 
-
 import org.xml.sax.SAXException;
-
 
 import java.io.IOException;
 import java.io.InputStream;

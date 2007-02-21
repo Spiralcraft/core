@@ -22,8 +22,8 @@ import spiralcraft.data.core.PrimitiveTypeImpl;
 import java.net.URI;
 
 public class DoubleType
-  extends PrimitiveTypeImpl
-  implements Type
+  extends PrimitiveTypeImpl<Double>
+  implements Type<Double>
 {
   public DoubleType(TypeResolver resolver,URI uri)
   { super(resolver,uri,Double.class);

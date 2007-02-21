@@ -16,8 +16,6 @@ package spiralcraft.data.persist;
 
 import spiralcraft.registry.Registrant;
 
-import java.io.IOException;
-
 import java.net.URI;
 
 /**

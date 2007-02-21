@@ -22,7 +22,7 @@ public interface DataComposite
   /**
    * The Type of data this object represents.
    */
-  Type getType();
+  Type<?> getType();
   
   /**
    *@return Whether this DataComposite is a Tuple.
@@ -48,6 +48,7 @@ public interface DataComposite
    *@return A recursively generated textual representation of this data, for
    *  diagnostic and debugging purposes.
    */
-  String toText(String indent);
+  String toText(String indent)
+    throws DataException;
   
 }

@@ -31,7 +31,7 @@ public class FieldImpl
   private SchemeImpl scheme;
   private int index;
   private String name;
-  private Type type;
+  private Type<?> type;
   private Field archetypeField;
   
   /**
@@ -107,35 +107,49 @@ public class FieldImpl
   /**
    * Set the data Type
    */
-  public void setType(Type type)
+  public void setType(Type<?> type)
   { 
     assertUnlocked();
     this.type=type;
   }
   
-  public Type getType()
+  public Type<?> getType()
   { return type;
   }
   
   public Object getValue(Tuple t)
+    throws DataException
   { 
-    if (!t.getScheme().hasArchetype(scheme))
-    { 
-      throw new IllegalArgumentException
-        ("Field '"+name+"' not in Tuple Scheme "+scheme.toString());
+    // Find the Tuple which stores this field
+    if (scheme.getType()!=null)
+    { t=t.widen(scheme.getType());
     }
-    return t.get(index);
+    
+    if (t!=null)
+    { return t.get(index);
+    }
+    
+    throw new IllegalArgumentException
+      ("Field '"+name+"' not in Tuple Scheme "+scheme.toString());
   }
   
   public void setValue(EditableTuple t,Object value)
     throws DataException
   { 
-    if (!t.getScheme().hasArchetype(scheme))
-    { 
-      throw new IllegalArgumentException
-        ("Field '"+name+"' not in Tuple Scheme "+scheme.toString());
+    if (scheme.getType()!=null)
+    { t=t.widen(scheme.getType());
     }
-    t.set(index,value);
+    
+    if (t!=null)
+    { t.set(index,value);
+    } 
+    else
+    {
+      throw new IllegalArgumentException
+        ("Field '"+name+"' of type "+getScheme().getType()
+        +" not in Tuple Scheme "+scheme.toString()
+        );
+    }
   }
   
   void lock()

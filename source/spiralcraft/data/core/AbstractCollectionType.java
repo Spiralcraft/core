@@ -16,12 +16,10 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeNotFoundException;
-import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
-import spiralcraft.data.Scheme;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.ValidationResult;
 import spiralcraft.data.InstanceResolver;
@@ -30,26 +28,22 @@ import spiralcraft.data.wrapper.ReflectionType;
 
 import spiralcraft.data.spi.EditableArrayListAggregate;
 
-import spiralcraft.util.ArrayUtil;
-
-
-import java.lang.reflect.Array;
-
 import java.net.URI;
 import java.util.Collection;
 
 /**
  * Base type for Collections
  */
-public class AbstractCollectionType
-  extends AbstractAggregateType
-  implements Type
+public class AbstractCollectionType<T extends Collection<?>>
+  extends AbstractAggregateType<Collection<?>>
+  implements Type<Collection<?>>
 {  
   private final TypeResolver resolver;
   
+  @SuppressWarnings("unchecked")
   public AbstractCollectionType
     (TypeResolver resolver
-    ,Type contentType
+    ,Type<? super Object> contentType
     ,URI uri
     ,Class<? extends Collection> nativeClass
     )
@@ -60,7 +54,7 @@ public class AbstractCollectionType
     { 
       try
       {
-        this.contentType=getTypeResolver().resolve
+        this.contentType=(Type<? super Object>) getTypeResolver().resolve
           (ReflectionType.canonicalUri(Object.class));
       }
       catch (TypeNotFoundException x)
@@ -90,7 +84,8 @@ public class AbstractCollectionType
   }
   
   
-  public Object fromData(DataComposite data,InstanceResolver resolver)
+  @SuppressWarnings("unchecked")
+  public Collection fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
   { 
     Aggregate aggregate=data.asAggregate();
@@ -141,30 +136,38 @@ public class AbstractCollectionType
     return collection;
   }
   
-  public DataComposite toData(Object obj)
+  public DataComposite toData(Collection<?> obj)
     throws DataException
   { 
     if (!(obj instanceof Collection))
     { throw new IllegalArgumentException("Not a collection");
     }
     
-    Collection collection=(Collection) obj;
+    Collection<?> collection=(Collection<?>) obj;
     
-    EditableAggregate aggregate=new EditableArrayListAggregate(this);
-
-    for (Object o: collection)
+    if (contentType.isPrimitive())
     {
-      if (contentType.isPrimitive())
+      EditableAggregate<Object> aggregate
+      	=new EditableArrayListAggregate<Object>(this);
+    
+      for (Object o: collection)
       { aggregate.add(o);
       }
-      else
+      return aggregate;
+    }
+    else
+    {
+      EditableAggregate<DataComposite> aggregate
+      	=new EditableArrayListAggregate<DataComposite>(this);
+      for (Object o: collection)
       { aggregate.add(contentType.toData(o));
       }
+      return aggregate;
     }
-    
-    return aggregate;
   }
   
-    
+  protected String getAggregateQualifier()
+  { return ".list";
+  }
 
 }

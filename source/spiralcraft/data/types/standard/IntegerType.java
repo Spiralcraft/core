@@ -22,8 +22,8 @@ import spiralcraft.data.core.PrimitiveTypeImpl;
 import java.net.URI;
 
 public class IntegerType
-  extends PrimitiveTypeImpl
-  implements Type
+  extends PrimitiveTypeImpl<Integer>
+  implements Type<Integer>
 {
   public IntegerType(TypeResolver resolver,URI uri)
   { super(resolver,uri,Integer.class);

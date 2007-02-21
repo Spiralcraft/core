@@ -24,8 +24,8 @@ import java.math.BigDecimal;
 import java.net.URI;
 
 public class BigDecimalType
-  extends PrimitiveTypeImpl
-  implements Type
+  extends PrimitiveTypeImpl<BigDecimal>
+  implements Type<BigDecimal>
 {
   public BigDecimalType(TypeResolver resolver,URI uri)
   { super(resolver,uri,BigDecimal.class);

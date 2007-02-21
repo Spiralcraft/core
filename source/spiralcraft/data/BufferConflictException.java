@@ -19,17 +19,19 @@ package spiralcraft.data;
  *   changes made in another journal update.
  */
 public class BufferConflictException
-  extends Exception
+  extends DataException
 {
-  private BufferTuple buffer;
-  private JournalTuple journal;
+  private static final long serialVersionUID=1;
+  
+  // private BufferTuple buffer;
+  // private JournalTuple journal;
   
   public BufferConflictException
     (BufferTuple buffer, JournalTuple journal)
   { 
     super();
-    this.buffer=buffer;
-    this.journal=journal;
+    // this.buffer=buffer;
+    // this.journal=journal;
     // XXX Generate message for conflict
   }
   

@@ -25,6 +25,9 @@ import spiralcraft.data.TypeFactory;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 
+import spiralcraft.builder.AssemblyClass;
+import spiralcraft.builder.PropertySpecifier;
+
 public class BuilderTypeFactory
   implements TypeFactory
 {
@@ -64,11 +67,92 @@ public class BuilderTypeFactory
       else
       { parentUri=URI.create(uriString);
       }
-      Type parentType=resolver.resolve(parentUri);
+      BuilderType parentType=(BuilderType) resolver.resolve(parentUri);
       
-      return new BuilderType((BuilderType) parentType,childName);
+      return new BuilderType
+        (parentType
+        ,deriveInnerClass(parentType,childName)
+        );
     }
     
+  }
+  
+  private AssemblyClass deriveInnerClass
+    (BuilderType outerType
+    ,String pathElement
+    )
+    throws DataException
+  {
+    AssemblyClass targetAssemblyClass;
+    String propertyName;
+    String objectId;
+    
+    int dotPos=pathElement.indexOf(".");
+    if (dotPos>=0)
+    { 
+      propertyName=pathElement.substring(0,dotPos);
+      objectId=pathElement.substring(dotPos+1);
+    }
+    else
+    {
+      propertyName=pathElement;
+      objectId=null;
+    }
+      
+    AssemblyClass containingClass
+      =outerType.getAssemblyClass();
+    PropertySpecifier containingProperty
+      =containingClass.getMember(propertyName);
+    if (containingProperty==null)
+    { 
+      throw new DataException
+        ("Creating inner type "+pathElement+" in "+outerType.toString()+": PropertySpecifier '"+propertyName+"' not found in AssemblyClass "
+        +containingClass
+        );
+    }
+
+    
+    List<AssemblyClass> contents=containingProperty.getContents();
+    if (objectId==null)
+    { 
+      if (contents.size()==1)
+      { targetAssemblyClass=contents.get(0);
+      }
+      else
+      {
+        throw new DataException
+          ("PropertySpecifier '"+propertyName+"' is ambiguous in AssemblyClass "
+          +containingClass
+          );
+      }
+    }
+    else
+    { 
+      AssemblyClass target=null;
+      for (AssemblyClass candidate: contents)
+      {
+        if (objectId.equals(candidate.getId()))
+        { 
+          target=candidate;
+          break;
+        }
+      }
+      if (target!=null)
+      { targetAssemblyClass=target;
+      }
+      else
+      {
+        throw new DataException
+          ("AssemblyClass with id '"+objectId+"'"
+          +" in property '"+propertyName+"' "
+          +"not found in AssemblyClass "
+          +containingClass
+          );
+      }
+      
+      
+    }
+    return targetAssemblyClass;
   }
   
 }

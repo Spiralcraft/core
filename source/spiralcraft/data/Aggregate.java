@@ -17,7 +17,7 @@ package spiralcraft.data;
 /**
  * Holds a collection of objects of a common type.
  */
-public interface Aggregate
+public interface Aggregate<T>
   extends DataComposite,Iterable
 {
   

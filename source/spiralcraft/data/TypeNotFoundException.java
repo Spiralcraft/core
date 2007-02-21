@@ -22,6 +22,8 @@ import java.net.URI;
 public class TypeNotFoundException
   extends DataException
 {
+  private static final long serialVersionUID=1;	
+
   public TypeNotFoundException(URI typeUri)
   { super("Type not found: "+typeUri.toString());
   }

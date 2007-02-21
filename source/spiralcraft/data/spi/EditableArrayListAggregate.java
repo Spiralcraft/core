@@ -21,15 +21,15 @@ import spiralcraft.data.Type;
 /**
  * Holds a aggregation of objects of a common type.
  */
-public class EditableArrayListAggregate
-  extends ArrayListAggregate
-  implements EditableAggregate
+public class EditableArrayListAggregate<T>
+  extends ArrayListAggregate<T>
+  implements EditableAggregate<T>
 {
   public EditableArrayListAggregate(Type type)
   { super(type);
   }
   
-  public void add(Object val)
+  public void add(T val)
   { list.add(val);
   }
   

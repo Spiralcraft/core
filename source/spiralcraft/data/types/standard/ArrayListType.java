@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.types.standard;
 
-import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 
 import spiralcraft.data.core.AbstractCollectionType;
@@ -24,8 +23,7 @@ import java.util.ArrayList;
 import java.net.URI;
 
 public class ArrayListType
-  extends AbstractCollectionType
-  implements Type
+  extends AbstractCollectionType<ArrayList<?>>
 {
   public ArrayListType(TypeResolver resolver,URI uri)
   { super(resolver,null,uri,ArrayList.class);

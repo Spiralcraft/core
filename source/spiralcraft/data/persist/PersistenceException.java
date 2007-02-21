@@ -21,6 +21,8 @@ package spiralcraft.data.persist;
 public class PersistenceException
   extends Exception
 {
+  private static final long serialVersionUID=1;	
+
   public PersistenceException(String message)
   { super(message);
   }

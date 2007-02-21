@@ -28,8 +28,6 @@ import spiralcraft.util.StringUtil;
 
 import spiralcraft.sax.XmlWriter;
 
-
-import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import org.xml.sax.helpers.AttributesImpl;
@@ -108,7 +106,7 @@ class Context
   }
   
   public void write(Tuple tuple)
-    throws IOException,SAXException
+    throws IOException,SAXException,DataException
   {
     writer.startDocument();
     currentFrame=new TupleFrame(tuple);
@@ -128,7 +126,7 @@ class Context
     protected final String indentString;
 
     public abstract void next()
-      throws SAXException;
+      throws SAXException,DataException;
     
     public String getNamespace(URI uri)
     { 
@@ -181,7 +179,7 @@ class Context
   abstract class TypeFrame
     extends Frame
   {
-    protected final Type type;
+    protected final Type<?> type;
     protected final String typeName;
     protected final URI typeNamespace;
     protected final String qName;
@@ -191,7 +189,7 @@ class Context
       =new HashMap<String,URI>();
     protected AttributesImpl attributes=NULL_ATTRIBUTES;
     
-    public TypeFrame(Type type)
+    public TypeFrame(Type<?> type)
     {
       this.type=type;
       URI typeUri=type.getUri();
@@ -296,20 +294,21 @@ class Context
     private final Object value;
     private final boolean singleContext;
     
-    public PrimitiveFrame(Type type,Object value,boolean singleContext)
+    public PrimitiveFrame(Type<?> type,Object value,boolean singleContext)
     {
       super(type);
       this.value=value;
       this.singleContext=singleContext; 
     }
     
+    @SuppressWarnings("unchecked")
     public void next()
       throws SAXException
     {
       if (!singleContext)
       { startType();
       }
-      writeString(type.toString(value));      
+      writeString(((Type <? super Object>)type).toString(value));      
       if (!singleContext)
       { endType(false);
       }
@@ -412,7 +411,7 @@ class Context
     
     
     public void next()
-      throws SAXException
+      throws SAXException,DataException
     {
       Aggregate value=(Aggregate) field.getValue(tuple);
       if (value==null)
@@ -459,7 +458,7 @@ class Context
     }
     
     public void next()
-      throws SAXException
+      throws SAXException,DataException
     {
       Object value=field.getValue(tuple);
       if (value==null)

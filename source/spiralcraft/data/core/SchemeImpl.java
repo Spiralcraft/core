@@ -92,6 +92,7 @@ public class SchemeImpl
   /**
    * Get the list of local fields
    */
+  @SuppressWarnings("unchecked")
   public List<FieldImpl> getFields()
   { return (List<FieldImpl>) localFields.clone();
   }
@@ -156,7 +157,16 @@ public class SchemeImpl
       fieldList.append(field.toString());
     }
     fieldList.append("]");
-    return super.toString().concat(fieldList.toString());
+    
+    String typeUri="(untyped)";
+    if (getType()!=null)
+    { typeUri=getType().getUri().toString();
+    }
+    return super.toString()
+      .concat(":")
+      .concat(typeUri)
+      .concat(fieldList.toString())
+      ;
   }
   
   public void resolve()

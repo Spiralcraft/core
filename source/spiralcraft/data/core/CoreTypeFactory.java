@@ -16,16 +16,10 @@ package spiralcraft.data.core;
 
 import java.net.URI;
 
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.TypeFactory;
 import spiralcraft.data.Type;
-import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
-import spiralcraft.data.InstanceResolver;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -35,6 +29,7 @@ public class CoreTypeFactory
   implements TypeFactory
 {
   
+  @SuppressWarnings("unchecked")
   public Type createType(TypeResolver resolver,URI uri)
     throws DataException
   {

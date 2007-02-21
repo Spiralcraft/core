@@ -17,13 +17,13 @@ package spiralcraft.data;
 /**
  * Holds a aggregation of objects of a common type.
  */
-public interface EditableAggregate
-  extends Aggregate
+public interface EditableAggregate<T>
+  extends Aggregate<T>
 {
 
   /**
    * Add an Object to this aggregation
    */
-  public void add(Object val);
+  public void add(T val);
   
 }

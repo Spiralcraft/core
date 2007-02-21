@@ -17,32 +17,28 @@ package spiralcraft.data.core;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.TypeResolver;
-import spiralcraft.data.ValidationResult;
-import spiralcraft.data.DataException;
-import spiralcraft.data.Tuple;
 import spiralcraft.data.InstanceResolver;
-
-import spiralcraft.data.wrapper.ReflectionType;
 
 import spiralcraft.util.StringConverter;
 
 import java.net.URI;
 
-public abstract class PrimitiveTypeImpl
-  extends TypeImpl
-  implements Type
+public abstract class PrimitiveTypeImpl<T>
+  extends TypeImpl<T>
+  implements Type<T>
 {
   protected boolean linked;
-  protected StringConverter converter;
+  protected StringConverter<T> converter;
     
-  public PrimitiveTypeImpl(TypeResolver resolver,URI uri,Class nativeType)
+  @SuppressWarnings("unchecked")
+  public PrimitiveTypeImpl(TypeResolver resolver,URI uri,Class<T> nativeClass)
   { 
     super(resolver,uri);
-    this.nativeType=nativeType;
-    this.converter=StringConverter.getInstance(nativeType);
+    this.nativeClass=nativeClass;
+    this.converter=(StringConverter<T>) StringConverter.getInstance(nativeClass);
   }
   
-  protected void setStringConverter(StringConverter converter)
+  protected void setStringConverter(StringConverter<T> converter)
   { this.converter=converter;    
   }
   
@@ -60,41 +56,31 @@ public abstract class PrimitiveTypeImpl
   }
   
   
-  public ValidationResult validate(Object val)
-  {
-    if (val==null)
-    { return null;
-    }
-    if (nativeType.isAssignableFrom(val.getClass()))
-    { return null;
-    }
-    return new ValidationResult
-      (val.getClass()+" cannot be assigned to "+nativeType);
-  }
   
-  public String toString(Object val)
+  @SuppressWarnings("unchecked")
+  public String toString(T val)
   {
     if (val==null)
     { return null;
     }
-    if (nativeType.isAssignableFrom(val.getClass()))
+    if (nativeClass.isAssignableFrom(val.getClass()))
     { return converter.toString(val);
     }
     throw new IllegalArgumentException(val.getClass()+" is not an String");
 
   }
   
-  public Object fromString(String string)
-  { return converter.fromString(string);
+  public T fromString(String string)
+  { return (T) converter.fromString(string);
   }
   
-  public DataComposite toData(Object val)
+  public DataComposite toData(T val)
   { 
     throw new UnsupportedOperationException
       ("Type "+uri+" is primitive");
   }
   
-  public Object fromData(DataComposite t,InstanceResolver resolver)
+  public T fromData(DataComposite t,InstanceResolver resolver)
   {
     throw new UnsupportedOperationException
       ("Type "+uri+" is primitive");

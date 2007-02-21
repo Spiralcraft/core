@@ -190,7 +190,7 @@ class TuplePrism
     
   }
   
-  public Class getContentType()
+  public Class<?> getContentType()
   { return iface;
   }
 }

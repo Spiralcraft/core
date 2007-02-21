@@ -23,22 +23,24 @@ import spiralcraft.data.ValidationResult;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.InstanceResolver;
 
-import spiralcraft.data.wrapper.ReflectionType;
-
 import java.net.URI;
 
 /**
  * Core implementation of a Type
  */
-public class TypeImpl
-  implements Type
+public class TypeImpl<T>
+  implements Type<T>
 {  
-  protected Class nativeType;
+  protected Class<T> nativeClass;
   protected SchemeImpl scheme;
   protected final TypeResolver resolver;
   protected final URI uri;
   protected boolean linked;
   protected Type archetype;
+  protected Type baseType;
+  protected boolean aggregate=false;
+  protected Type contentType=null;
+  
   
   public TypeImpl(TypeResolver resolver,URI uri)
   { 
@@ -60,7 +62,7 @@ public class TypeImpl
   
   public boolean hasArchetype(Type type)
   {
-    if (type==this)
+    if (this==type)
     { return true;
     }
     else if (archetype!=null)
@@ -71,6 +73,31 @@ public class TypeImpl
     }
   }
   
+  public Type getBaseType()
+  { return baseType;
+  }
+  
+  public void setBaseType(Type baseType)
+  { 
+    if (linked)
+    { throw new IllegalStateException("Type already linked");
+    }
+    this.baseType=baseType;
+  }
+  
+  public boolean hasBaseType(Type type)
+  {
+    if (this==type)
+    { return true;
+    }
+    else if (baseType!=null)
+    { return baseType.hasBaseType(type);
+    }
+    else
+    { return false;
+    }
+  }
+
   public Type getMetaType()
   { 
     try
@@ -85,8 +112,8 @@ public class TypeImpl
    * The public Java class or interface used to programatically access or
    *   manipulate this data element.
    */
-  public Class getNativeClass()
-  { return nativeType;
+  public Class<T> getNativeClass()
+  { return nativeClass;
   }
   
   public TypeResolver getTypeResolver()
@@ -97,6 +124,11 @@ public class TypeImpl
   { return uri;
   }
 
+  
+  /**
+   * Default implementation is to set up the SchemeImpl scheme with 
+   *   arechetype and base type and resolve it.
+   */
   public void link()
     throws DataException
   { 
@@ -128,8 +160,30 @@ public class TypeImpl
     this.scheme=(SchemeImpl) scheme;
   }
   
+  /**
+   * Default implementation of validate is to ensure that the supplied object
+   *   is assignable to this Type's nativeClass.
+   */
+  @SuppressWarnings("unchecked")
   public ValidationResult validate(Object o)
-  { return null;
+  { 
+    if (nativeClass==null)
+    { return null;
+    }
+    
+    if (o!=null
+        && !(nativeClass.isAssignableFrom(o.getClass()))
+       )
+    { 
+      return new ValidationResult
+        (o.getClass().getName()
+        +" cannot be assigned to "
+        +nativeClass.getName()
+        );
+    }
+    else
+    { return null;
+    }    
   }
   
   /**
@@ -137,11 +191,16 @@ public class TypeImpl
    *   type.
    */
   public boolean isAggregate()
-  { return false;
+  { return aggregate;
   }
   
   public Type getCoreType()
-  { return this;
+  {
+    Type ret=this;
+    while (ret.isAggregate())
+    { ret=ret.getContentType();
+    }
+    return ret;
   }
 
   public boolean isPrimitive()
@@ -156,27 +215,27 @@ public class TypeImpl
   { return super.toString()+":"+(uri!=null?uri.toString():"(delegated)");
   }
   
-  public String toString(Object val)
+  public String toString(T val)
   { throw new UnsupportedOperationException("Not string encodable");
   }
   
-  public Object fromString(String val)
+  public T fromString(String val)
     throws DataException
   { throw new UnsupportedOperationException("Not string encodable");
   }
 
-  public Object fromData(DataComposite data,InstanceResolver resolver)
+  public T fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
   { throw new UnsupportedOperationException("Not depersistable");
   }
   
-  public DataComposite toData(Object val)
+  public DataComposite toData(T val)
     throws DataException
   { throw new UnsupportedOperationException("Not persistable");
   }
   
   public Type getContentType()
-  { return null;
+  { return contentType;
   }
   
 }

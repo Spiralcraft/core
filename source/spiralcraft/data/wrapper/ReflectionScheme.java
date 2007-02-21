@@ -27,9 +27,6 @@ import spiralcraft.data.core.SchemeImpl;
 import spiralcraft.data.core.FieldImpl;
 
 import spiralcraft.beans.BeanInfoCache;
-import spiralcraft.beans.MappedBeanInfo;
-
-import spiralcraft.util.ClassUtil;
 
 import java.beans.Introspector;
 import java.beans.IntrospectionException;

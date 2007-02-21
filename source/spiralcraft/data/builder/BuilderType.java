@@ -16,27 +16,21 @@ package spiralcraft.data.builder;
 
 import spiralcraft.data.Type;
 import spiralcraft.data.DataComposite;
-import spiralcraft.data.Scheme;
 import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.TypeResolver;
-import spiralcraft.data.ValidationResult;
 import spiralcraft.data.DataException;
-import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.InstanceResolver;
 
-import spiralcraft.data.core.ArrayType;
+import spiralcraft.data.core.TypeImpl;
 
 import spiralcraft.data.spi.EditableArrayTuple;
-import spiralcraft.data.spi.StaticInstanceResolver;
-
-import spiralcraft.data.wrapper.ReflectionType;
 
 import spiralcraft.builder.AssemblyLoader;
 import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.Assembly;
-import spiralcraft.builder.PropertySpecifier;
+
 import spiralcraft.builder.PropertyBinding;
 import spiralcraft.builder.BuildException;
 
@@ -44,12 +38,7 @@ import spiralcraft.stream.Resource;
 import spiralcraft.stream.Resolver;
 import spiralcraft.stream.UnresolvableURIException;
 
-import spiralcraft.util.Path;
-
 import java.net.URI;
-
-import java.util.HashMap;
-import java.util.List;
 
 import java.io.IOException;
 
@@ -59,7 +48,8 @@ import java.io.IOException;
  *   by a combination of the AssemblyClass members and Bean reflection.
  */
 public class BuilderType
-  implements Type
+  extends TypeImpl<Assembly>
+  implements Type<Assembly>
 {
   public static final char INNER_PATH_SEPARATOR='_';
   public static final URI GENERIC_BUILDER_TYPE_URI
@@ -68,19 +58,15 @@ public class BuilderType
   public static final URI GENERIC_BUILDER_ARRAY_TYPE_URI
     =URI.create("java:/spiralcraft/builder/Object.array");
   
-  private final TypeResolver resolver;
-  private final URI uri;
   private final AssemblyClass targetAssemblyClass;
-  private final boolean aggregate=false;
-  private final Class nativeClass=Assembly.class;
-  private final HashMap<String,Type> pathMap
-    =new HashMap<String,Type>();
+
+  //private final HashMap<String,Type> pathMap
+  //  =new HashMap<String,Type>();
   
-  private boolean linked;
-  private BuilderScheme scheme;
-  private Type archetype;
   private Field classField;
   
+  { nativeClass=Assembly.class;
+  }
   
   public static final boolean isApplicable(URI uri)
     throws DataException
@@ -151,9 +137,10 @@ public class BuilderType
     }
   }
   
-  public static Type canonicalType(AssemblyClass assemblyClass)
+  @SuppressWarnings("unchecked")
+  public static Type<Assembly> canonicalType(AssemblyClass assemblyClass)
     throws DataException
-  { return (TypeResolver.getTypeResolver().resolve(canonicalUri(assemblyClass)));
+  { return (Type<Assembly>) TypeResolver.getTypeResolver().resolve(canonicalUri(assemblyClass));
   }
   
   public static Type genericBuilderType()
@@ -169,89 +156,24 @@ public class BuilderType
   
   public BuilderType
     (BuilderType outerType
-    ,String pathElement
+    ,AssemblyClass innerClass
     )
     throws DataException
   { 
-    this.resolver=outerType.getTypeResolver();
-    
-    String propertyName;
-    String objectId;
-    
-    int dotPos=pathElement.indexOf(".");
-    if (dotPos>=0)
-    { 
-      propertyName=pathElement.substring(0,dotPos);
-      objectId=pathElement.substring(dotPos+1);
-    }
-    else
-    {
-      propertyName=pathElement;
-      objectId=null;
-    }
-      
-    AssemblyClass containingClass
-      =outerType.getAssemblyClass();
-    PropertySpecifier containingProperty
-      =containingClass.getMember(propertyName);
-    if (containingProperty==null)
-    { 
-      throw new DataException
-        ("Creating inner type "+pathElement+" in "+outerType.toString()+": PropertySpecifier '"+propertyName+"' not found in AssemblyClass "
-        +containingClass
-        );
-    }
+    super
+      (outerType.getTypeResolver()
+      ,canonicalUri(innerClass)
+      );
 
-    
-    List<AssemblyClass> contents=containingProperty.getContents();
-    if (objectId==null)
-    { 
-      if (contents.size()==1)
-      { targetAssemblyClass=contents.get(0);
-      }
-      else
-      {
-        throw new DataException
-          ("PropertySpecifier '"+propertyName+"' is ambiguous in AssemblyClass "
-          +containingClass
-          );
-      }
-    }
-    else
-    { 
-      AssemblyClass target=null;
-      for (AssemblyClass candidate: contents)
-      {
-        if (objectId.equals(candidate.getId()))
-        { 
-          target=candidate;
-          break;
-        }
-      }
-      if (target!=null)
-      { targetAssemblyClass=target;
-      }
-      else
-      {
-        throw new DataException
-          ("AssemblyClass with id '"+objectId+"'"
-          +" in property '"+propertyName+"' "
-          +"not found in AssemblyClass "
-          +containingClass
-          );
-      }
+    targetAssemblyClass=innerClass;
       
-      
-    }
-    this.uri=canonicalUri(targetAssemblyClass);
     System.err.println("Created Builder Type "+uri);
   }
   
   public BuilderType(TypeResolver resolver,URI uri)
     throws DataException
   {
-    this.resolver=resolver;
-    this.uri=uri;
+    super(resolver,uri);
     
     try
     {
@@ -265,90 +187,15 @@ public class BuilderType
     
   }
 
-  public URI getUri()
-  { return uri;
-  }
-  
-  public TypeResolver getTypeResolver()
-  { return resolver;
-  }
-  
-  public Type getArchetype()
-  { return archetype;
-  }
-  
-  public boolean hasArchetype(Type type)
-  {
-    if (this==type)
-    { return true;
-    }
-    else if (archetype!=null)
-    { return archetype.hasArchetype(type);
-    }
-    else
-    { return false;
-    }
-  }
-  
-  public Type getMetaType()
-  {
-    try
-    { return getTypeResolver().resolve(ReflectionType.canonicalUri(getClass()));
-    }
-    catch (TypeNotFoundException x)
-    { throw new RuntimeException(x);
-    }
-  }
-  
   AssemblyClass getAssemblyClass()
   { return targetAssemblyClass;
   }
-  
-  public Class getNativeClass()
-  { return nativeClass;
-  }
-  
-  public Type getContentType()
-  { return null;
-  }
-  
-  public Type getCoreType()
-  { return this;
-  }
-  
+
   public Class getTargetType()
   { return targetAssemblyClass.getJavaClass();
   }
   
 
-  public boolean isAggregate()
-  { return aggregate;
-  }
-
-  public boolean isPrimitive()
-  { return false;
-  }
-  
-  public Scheme getScheme()
-  { return scheme;
-  }
-
-  public ValidationResult validate(Object val)
-  { 
-    if (val!=null
-        && !(nativeClass.isAssignableFrom(val.getClass()))
-       )
-    { 
-      return new ValidationResult
-        (val.getClass().getName()
-        +" cannot be assigned to "
-        +nativeClass.getName()
-        );
-    }
-    else
-    { return null;
-    }
-  }  
   
   public void link()
     throws DataException
@@ -356,42 +203,21 @@ public class BuilderType
     if (linked)
     { return;
     }
-    linked=true;
     
     AssemblyClass baseAssemblyClass=targetAssemblyClass.getBaseClass();
     if (baseAssemblyClass!=null)
     { 
-      archetype
-        =resolver.resolve
+      archetype=
+        resolver.resolve
           (canonicalUri(baseAssemblyClass)
           );
     }
-    
     scheme=new BuilderScheme(resolver,this,targetAssemblyClass);
-    if (archetype!=null && archetype.getScheme()!=null)
-    { scheme.setArchetypeScheme(archetype.getScheme());
-    }    
-    scheme.resolve();
+    super.link();
     classField=scheme.getFieldByName("class");
 
   }
 
-  public boolean isStringEncodable()
-  { return false;
-  }
-  
-  public Object fromString(String str)
-  {
-    throw new UnsupportedOperationException
-      ("Type has no String representation");
-  }
-
-  public String toString(Object val)
-  {
-    throw new UnsupportedOperationException
-      ("Type has no String representation");
-  }
-  
   public Assembly newAssembly(Assembly parent)
     throws BuildException
   { return targetAssemblyClass.newInstance(parent);
@@ -402,7 +228,7 @@ public class BuilderType
    *   either a new Assembly or an existing one in the
    *   the specified PropertyBinding context.
    */
-  public Object fromData(DataComposite composite,InstanceResolver resolver)
+  public Assembly fromData(DataComposite composite,InstanceResolver resolver)
     throws DataException
   {
     
@@ -451,7 +277,7 @@ public class BuilderType
         }
         instance=newAssembly(parent);
       }
-      scheme.depersistBeanProperties(t,instance);
+      ((BuilderScheme) scheme).depersistBeanProperties(t,instance);
       return instance;
       
     }
@@ -461,7 +287,7 @@ public class BuilderType
 
   }
   
-  public DataComposite toData(Object obj)
+  public DataComposite toData(Assembly obj)
     throws DataException
   {
     if (!(obj instanceof Assembly))
@@ -473,8 +299,8 @@ public class BuilderType
     if (assembly.getAssemblyClass()!=targetAssemblyClass)
     { 
       // System.out.println("Narrowing "+getUri());
-      Type targetType
-        =getTypeResolver().resolve
+      Type<Assembly> targetType
+        =(BuilderType) getTypeResolver().resolve
           (canonicalUri(assembly.getAssemblyClass())
           );
       return targetType.toData(assembly);    
@@ -483,12 +309,9 @@ public class BuilderType
     {
       // System.out.println("Not narrowing "+getUri());
       EditableTuple t=new EditableArrayTuple(scheme);
-      scheme.persistBeanProperties( assembly ,t);
+      ((BuilderScheme) scheme).persistBeanProperties( assembly ,t);
       return t;
     }
   }
   
-  public String toString()
-  { return super.toString()+":"+uri.toString();
-  }
 }

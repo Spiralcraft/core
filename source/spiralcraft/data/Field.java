@@ -44,7 +44,8 @@ public interface Field
   /**
    * Retreive the value of this Field in the specified Tuple
    */
-  Object getValue(Tuple t);
+  Object getValue(Tuple t)
+    throws DataException;
   
   /**
    * Update the value of this Field in the specified Tuple
