@@ -1,0 +1,319 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>spiralcraft.data package</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <meta name="author" content="Mike Toth">
+</head>
+<body alink="#000099" bgcolor="#ffffff" link="#000099" text="#000000"
+ vlink="#990099">
+<h1>Spiralcraft</h1>
+<hr size="2" width="100%">
+<h2>spiralcraft.data package</h2>
+The spiralcraft.data package is a data management framework. It is
+designed to absorb the complexity of managing data in applications that
+have some data aspect.<br>
+<br>
+Most applications have some kind of data aspect, for example: <br>
+<ul>
+  <li>managing configuration data</li>
+  <li>processing data streams</li>
+  <li>providing data entry and reporting functionality</li>
+  <li>integrating other data systems</li>
+</ul>
+This data aspect contributes to a number of orthogonal design concerns
+including:<br>
+<ul>
+  <li>runtime data representation</li>
+  <li>data structure metadata</li>
+  <li>data storage mechanism</li>
+  <li>data format</li>
+  <li>input/output protocol</li>
+  <li>user interface (entry and presentation). </li>
+</ul>
+The spiralcraft.data package provides a common runtime data
+representation (the Tuple and the Aggregate), and a common data
+structure metadata representation (the Type and the Scheme). It serves
+as a hub (a "mediator pattern") to permit the development and rapid
+integration of dedicated, decoupled implementations of:<br>
+<ul>
+  <li>storage and i/o methods</li>
+  <li>format translators</li>
+  <li>data processing algorithms</li>
+  <li>presentation mechanisms</li>
+  <li>integration adapters</li>
+  <li>foreign type systems<br>
+  </li>
+</ul>
+<h3>Type System</h3>
+The spiralcraft.data.Type interface is the heart of metadata definition
+in the spiralcraft.data framework. Every data element is described by a
+Type. In addition, a Type contains some intelligence to validate
+instance data and to translate between different runtime
+representations.<br>
+<h4>Data Structure<br>
+</h4>
+A Type comes in one of three basic flavors; primitive, complex and
+aggregate. These three categories are sufficient to model most any data
+structure.<br>
+<ul>
+  <li>A primitive Type describes a data element that is indivisible
+within the spiralcraft.data system, such as a string, a number, a
+boolean value, etc. An instance of a primitive Type is represented at
+runtime as a native immutable Java object (ie. an instance of a String,
+Integer, Boolean, etc.).</li>
+  <li>A complex Type describes a data element that is composed of a
+specific sequence of distinctly named, closely related sub-elements,
+each of which is described by a Field. A Field describes the name and
+Type of the sub-element, as well as some additional constraints. The
+full set of Fields which describe a complex type is a Scheme. An
+instance of a complex type is represented at runtime as a
+spiralcraft.data.Tuple instance. A Tuple is somewhat equivalent to a
+row in a database, and can be used to represent the data values of some
+problem domain object.</li>
+  <li>An aggregate Type describes a data element that is an arbitrarily
+sized collection of sub-elements of a common base Type. An instance of
+an aggregate Type is represented at runtime as a
+spiralcraft.data.Aggregate instance. An Aggregate is similar to an
+array or a database relation, and can be used to represent a collection
+or container of some problem domain object.<br>
+  </li>
+</ul>
+<h4>Type Identity and Resolution<br>
+</h4>
+Types are identified by absolute URIs. Any Type that can be referenced
+through the spiralcraft.data framework is uniquely identifiable by a
+specific absolute URI.<br>
+<br>
+The spiralcraft.data.TypeResolver component is responsible for
+resolving these URIs into actual Types. The TypeResolver manages all of
+the Types used by the spiralcraft.data framework. <br>
+<h5>Runtime Identity<br>
+</h5>
+A Type is represented at runtime as an immutable object- an instance of
+the spiralcraft.data.Type interface- returned by the
+TypeResolver.resolve(URI typeUri) method. The type resolver will always
+resolve the same (identical) Type object for an <span
+ style="font-style: italic;">equivalent</span> URI. Formally: <code><br>
+<br>
+</code>
+<div style="margin-left: 40px;"><code>uri1.equals(uri2) -&gt;
+TypeResolver.resolve(uri1)==TypeResolver.resolve(uri2)</code> <br>
+<br>
+</div>
+This means that the == operator is useful when comparing two Types for
+identity. The Type.equals() method is useful to determine Type
+equivalence, and will determine whether all attributes of two Types are
+equivalent, regardless of whether or not they have equivalent URIs.<br>
+<h5>Type Resolution</h5>
+A URI for a given Type indirectly contains the information required to
+instantiate the Type object. Once instantiated, the Type object will be
+"loaded" into the TypeResolver and permanently associated with its URI
+for future retrieval.<br>
+<br>
+The operation of the TypeResolver parallels that of the Java
+ClassLoader. A TypeResolver instance is associated with each nested
+ClassLoader instance and is responsible for managing the Types defined
+by resources visible through its associated ClassLoader. The
+TypeResolver will always delegate to its parent TypeResolver
+(associated with the parent ClassLoader) first, and then try to resolve
+the URI itself if its parent was unsuccessful. This provides some
+stability by maintaining a 'steady-state' where standard Types resolved
+from parent TypeResolvers/ClassLoaders cannot
+be arbitrarily redefined.<br>
+<h4>Type Inheritance Mechanisms</h4>
+The spiralcraft.data framework supports three different Type
+inheritance mechanisms, each tailored to a specific design concern.<br>
+<ul>
+  <li>Domain inheritance provides a means for parameterization or
+configuration of a base Type. <br>
+  </li>
+  <li>Archetype inheritance provides a means for re-using generic
+implementation of data structure and functionality.</li>
+  <li>Extent inheritance provides a means to define polymorphism in
+data along with a degree of virtualization through the extension of
+identity.</li>
+</ul>
+<h5>Domain Inheritance<br>
+</h5>
+Domain inheritance is a facility which allows a new Type to
+parameterize the behavior of base Type in a manner pre-defined by the
+base Type. It is typically used to create a derivative Type which
+restricts the set of allowable values for a base Type by specifying a
+range of allowable values, an enumerated set of allowable values, a
+format, or some other data element that has been parameterized by the
+base Type.<br>
+<br>
+This mechanism is implemented by virtue of the fact that Types
+themselves are described by data. Every Type has a meta-Type, which is
+another Type that describes the data structure of the Type definition
+itself and provides a means for creating new instances of the Type with
+customized attributes. A single meta-Type can be used to define an
+unlimited number of more specific Types. <br>
+<br>
+For example, the metatype of the standard String type is a StringType.
+The StringType has a "maxLength" attribute, which allows us to create a
+new Type based on the String type, let's call it ShortString, for
+example to restrict the length of the values contained to, say, 256
+characters. <br>
+<h5>Archetype Inheritance<br>
+</h5>
+Archetype inheritance allows a sub-Type to inherit the data structure
+of another Type (the Archetype), as a means of reusing structure and
+generic functionality defined in terms of the Archetype. Archetypes are
+used when a common data structure, for example, an Address, has some
+associated generic functionality to display, edit, verify, or otherwise
+manipulate an Address, and there is a need to contextualize the Address
+into a specific data model by creating a sub-Type of, for example,
+CustomerShippingAddress which has an Address as its archetype. The
+CustomerShippingAddress behaves as an Address would, and is
+recognizable by the generic Address components, but adds fields such as
+the Customer id and other contextual information.<br>
+<h5>Extent Inheritance<br>
+</h5>
+Extent inheritance allows a sub-Type to inherit the identity, data
+structure, and functionality of a super-Type. When instantiated, a
+separate runtime representation called an "extent" is created for each
+Type in the inheritance hierarchy to form a compound instance. The
+extents for a given sub-Type are tightly coupled, especially for the
+purpose of modification, but are independently addressable. <br>
+<br>
+Extents are used when a general Type, for example, a Part, is referred
+to in the context of a broader data model, where each instance of a
+Part is also an instance of a more specific Type such as an BlockPart
+or a DiscPart, each of which have a specific set of Fields not relevant
+to the other specific Types. The BlockPart might have a height,width,
+and length, and a DiscPart might have a diameter, for instance. An
+Order, for instance, can refer to a collection of Parts in a general
+manner, but the Order printing functionality can select a format that
+is cognizant of the specific Type in order to output data specific to
+that type.<br>
+<br>
+Each extent within a compound instance maintains its own localized data
+as well as references to the most specific extent and to its more
+general parent extent. For instance, Part #150 is a BlockPart, and the
+compound instance has a Part extent and a BlockPart extent. The Part
+extent contains the part number (150), the unit price, and a reference
+to the BlockPart extent as its specific extent. The BlockPart extent
+contains the height, width, and length, and a reference to the Part
+extent as its parent extent.<br>
+<h5>Combining Archetype and Extent Inheritance</h5>
+The Archetype and Extent Inheritance methods are orthogonal and can be
+combined. In the above example, the BlockPart can extend Part, and have
+an archetype of Block. The Block archetype contributes the height,
+width, and length Fields, which the Part extent contributes the part
+number and unit price fields. <br>
+<br>
+If it happens that the same field name is defined in both an Archetype
+(or for that matter, any specific extent), as well as a general extent,
+no specific conflict occurs, though the specific extent and the general
+extent will each contain separate data for their own Field definition.
+When accessing the Field by unqualified name from the perspective of
+the specific extent, the specific data will be used, 'hiding' the
+general data. The general data is not hidden when accessing the Field
+from the perspective of the general extent. This situation may result
+in unexpected behavior in ad-hoc operations that reference the specific
+context and do not explicitly disambiguate the field reference.<br>
+<h4>Type Factories</h4>
+The TypeResolver relies on Type Factories
+(spiralcraft.data.TypeFactory) to create Types from URIs. When a
+TypeResolver first resolves a specific URI, the URI will be passed to a
+chain of Type Factories in sequence until one of them "recognizes" the
+URI and creates a Type. This type will become the "canonical" Type for
+the specified URI. <br>
+<br>
+A specific Type Factory defines how it "recognizes" a URI, but the
+process typically involves translating the URI into some kind of
+resource or external data reference which provides enough information
+to create an instance of the Type interface. Custom Type Factories can
+be added to the TypeResolver to map foreign type systems into the
+spiralcraft.data framework.<br>
+<br>
+The TypeResolver, by default, contains four built-in Type Factories
+which work together to "bootstrap" the spiralcraft.data type resolution
+mechanism. They are, in order of resolution sequence:<br>
+<ul>
+  <li>the XmlTypeFactory (spiralcraft.data.sax.XmlTypeFactory)</li>
+  <li>the CoreTypeFactory (spiralcraft.data.core.CoreTypeFactory)</li>
+  <li>the BuilderTypeFactory
+(spiralcraft.data.builder.BuilderTypeFactory)</li>
+  <li>the ReflectionTypeFactory
+(spiralcraft.data.wrapper.ReflectionTypeFactory)</li>
+</ul>
+The Type resolution mechanism implemented by the built-in Type
+Factories is designed to self-define its own extension mechanisms.
+Therefore, the following descriptions may involve some recursive logic.<br>
+<h5>XmlTypeFactory</h5>
+The XmlTypeFactory creates types by loading their definitions from an
+XML data file in a standard format. It locates a resource named
+&lt;TypeURI&gt;.type.xml which is expected to be in the standard
+spiralcraft.data internal XML data format, and to contain Tuple data
+where the root object is a meta-Type (a Type with a nativeClass that
+implements the Type interface). The XmlTypeFactory loads this data, and
+uses the meta-Type fromData() method to instantiate the Type.<br>
+<br>
+This is the primary mechanism for creating new Types through domain
+inheritance and for specifying the data structure of custom Types.<br>
+<br>
+The specific resource can be anything reachable through the
+spiralcraft.stream package, including classpath, file and network based
+URIs.<br>
+<h5>CoreTypeFactory</h5>
+The CoreTypeFactory creates types by instantiating a Java class that
+directly implements the spiralcraft.data.Type interface. It locates the
+Java class in the classpath using a specific transformation of the Type
+URI. This only considers URIs that reference the classpath. If the
+class is not found, the CoreTypeFactory will defer to the next
+TypeFactory in the chain. If the class does not implement the
+spiralcraf.data.Type interface, an exception will be thrown.<br>
+<br>
+The transformation is as follows: The path in the TypeURI is stripped
+of the leading '/', and all remaining '/' characters are replaced with
+'.'. The suffix "Type" is appended to the result. So a Type URI of
+"java:/mytree/mypackage/MyWidget" turns into a class name of
+"mytree.mypackage.MyWidgetType". <br>
+<br>
+This is the mechanism used for the standard types and the meta types.
+It serves to "ground" the Type resolution mechanism to a concrete Java
+class that implements the Type interface. These types are often
+extended using the XML data format / XmlTypeFactory mechanism to refer
+to a ReflectionType of this class as the "meta-Type".<br>
+<h5>BuilderTypeFactory</h5>
+The BuilderTypeFactory creates types that mirror the structure of
+spiralcraft.builder.AssemblyClass definitions. It locates a
+spiralcraft.builder AssemblyClass resource named
+&lt;TypeURI&gt;.assembly.xml. The BuilderType instance that is created
+has fields which reflect the structure defined in the specified
+AssemblyClass. It provides bi-directional transformations between data
+trees and spiralcraft.builder.Assembly trees, and is useful for
+persisting and depersisting application state in a managed fashion<br>
+<h5>ReflectionTypeFactory</h5>
+The ReflectionTypeFactory creates Types that mirror Java classes. It
+locates a Java class in the classpath using a specific transformation
+of the Type URI. This only considers URIs that reference the classpath.
+If the class is
+not found, the ReflectionTypeFactory will defer to the next TypeFactory
+in the chain.<br>
+<br>
+The class is treated as a Java bean, and the bean properties provide
+the basis for the Field definitions. The Type provides bi-directional
+transformations between trees of Java beans and trees of data. It is
+intended to represent an Object graph in data form.<br>
+<br>
+When the class target of a ReflectionType implements the Type interface
+itself (ie. a Core type), the result is a meta-Type, or a Type which
+describes a Type. Coupled with the built-in XML data format and the
+XmlTypeFactory, the Type definition and domain inheritance mechanism is
+realized.<br>
+<br>
+The Type URI to class name transformation is as follows: The path in
+the TypeURI is stripped
+of the leading '/', and all remaining '/' characters are replaced with
+'.'. So a Type URI of
+"java:/mytree/mypackage/MyWidget" turns into a class name of
+"mytree.mypackage.MyWidget". <br>
+<br>
+<br>
+</body>
+</html>
