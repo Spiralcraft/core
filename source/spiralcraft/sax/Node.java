@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
  */
 public abstract class Node
 {
-  private LinkedList _children;
+  private LinkedList<Node> _children;
   private Node _parent;
   private Object _peer;
 
@@ -59,17 +59,17 @@ public abstract class Node
     }
   }
 
-  public List getChildren()
+  public List<Node> getChildren()
   { return _children;
   }
 
-  public List getChildren(Class type)
+  public List<? super Node> getChildren(Class<?> type)
   { 
     if (_children==null)
     { return null;
     }
 
-    List ret=new ArrayList();
+    List<? super Node> ret=new ArrayList<Node>();
     Iterator it = _children.iterator();
     while (it.hasNext())
     {
@@ -84,7 +84,7 @@ public abstract class Node
   public void addChild(Node child)
   { 
     if (_children==null)
-    { _children=new LinkedList();
+    { _children=new LinkedList<Node>();
     }
     _children.add(child);
     child.setParent(this);

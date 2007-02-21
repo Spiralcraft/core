@@ -17,7 +17,6 @@ package spiralcraft.lang.optics;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Expression;
-import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 
@@ -72,7 +71,7 @@ public abstract class AbstractBinding
     _static=isStatic;
   }
 
-  public Class getContentType()
+  public Class<?> getContentType()
   { return _prism.getContentType();
   }
   

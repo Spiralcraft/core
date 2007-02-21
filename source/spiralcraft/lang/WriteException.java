@@ -20,7 +20,8 @@ package spiralcraft.lang;
 public class WriteException
   extends Exception
 {
- 
+  private static final long serialVersionUID=1;
+  
   public WriteException(String message,Throwable cause)
   {
     super(message,cause);

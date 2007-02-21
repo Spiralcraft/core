@@ -33,7 +33,8 @@ public class Aliases
   implements Registrant
 {
   private final Aliases _parent;
-  private final HashMap _map=new HashMap();
+  private final HashMap<String,String> _map
+    =new HashMap<String,String>();
   private RegistryNode _registryNode;
 
   public Aliases(Aliases parent)

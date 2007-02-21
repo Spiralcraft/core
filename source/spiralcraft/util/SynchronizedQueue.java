@@ -24,10 +24,10 @@ import java.util.LinkedList;
  * If a maxLength has been specified, add() operations will block
  *   when the Queue is full.
  */
-public class SynchronizedQueue
+public class SynchronizedQueue<T>
 {
 
-  private final LinkedList _list=new LinkedList();
+  private final LinkedList<T> _list=new LinkedList<T>();
   private int _maxLength;
   private boolean _full=false;
   private boolean _empty=true;
@@ -40,7 +40,7 @@ public class SynchronizedQueue
   { return _list.size();
   }
 
-  public synchronized void add(Object o)
+  public synchronized void add(T o)
     throws InterruptedException
   { 
     while (_full)
@@ -59,7 +59,7 @@ public class SynchronizedQueue
     }
   }
 
-  public synchronized void remove(Object o)
+  public synchronized void remove(T o)
   { 
     if (_list.remove(o))
     {
@@ -76,7 +76,7 @@ public class SynchronizedQueue
    * Obtain the next object in the queue. Blocks until
    *   an object is available.
    */
-  public synchronized Object next()
+  public synchronized T next()
     throws InterruptedException
   { 
     while (_empty)

@@ -37,7 +37,7 @@ public class AttributesReader
   public void read(ParserContext context)
     throws ParseException
   { 
-    LinkedList attributes=new LinkedList();
+    LinkedList<Attribute> attributes=new LinkedList<Attribute>();
     while (!context.isEof())
     {
       _attributeReader.readAttribute(context);

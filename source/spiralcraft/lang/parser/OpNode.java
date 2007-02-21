@@ -19,7 +19,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.OpticFactory;
 
 public class OpNode
   extends Node

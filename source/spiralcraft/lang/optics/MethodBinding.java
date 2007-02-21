@@ -17,8 +17,6 @@ package spiralcraft.lang.optics;
 import spiralcraft.lang.Optic;
 
 
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
 
 public class MethodBinding
   extends LenseBinding

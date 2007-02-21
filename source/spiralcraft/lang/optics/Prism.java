@@ -44,5 +44,5 @@ public interface Prism
    * Return the Java class of the data object accessible through Bindings 
    *   associated with this Prism
    */
-  public Class getContentType();
+  public Class<?> getContentType();
 }

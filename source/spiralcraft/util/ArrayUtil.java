@@ -101,8 +101,11 @@ public class ArrayUtil
    * Add the contents of the array to a collection
    *@return The number of elements successfully added
    */
+  @SuppressWarnings("unchecked")
   public static int addToCollection(Collection c,Object array)
   {
+    // Unchecked generics b/c in meta-land here
+
     int length=Array.getLength(array);
     int count=0;
     for (int i=0;i<length;i++)
@@ -272,8 +275,12 @@ public class ArrayUtil
     
   }
 
-  public static final int arrayCompare(final Object[] a,final Object[] b)
+  @SuppressWarnings("unchecked")
+  public static final <T extends Object & Comparable<? super T>>
+    int arrayCompare(final T[] a,final T[] b)
   {
+    // Supress unchecked generics- we're in meta-land here
+    
     if (a==b)
     { return 0;
     }
@@ -298,7 +305,7 @@ public class ArrayUtil
         if (b[i]==null && a[i]!=null)
         { return 1;
         }
-        int result=((Comparable) a[i]).compareTo(b[i]);
+        int result=a[i].compareTo(b[i]);
         if (result!=0)
         { return result;
         }

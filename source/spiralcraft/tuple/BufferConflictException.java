@@ -17,6 +17,9 @@ package spiralcraft.tuple;
 public class BufferConflictException
   extends TupleException
 {
+
+  private static final long serialVersionUID = 1L;
+
   private final Tuple _conflictedVersion;
   
   public BufferConflictException(Tuple conflictedVersion)

@@ -25,9 +25,10 @@ import java.net.URI;
  */
 public abstract class ExecutionContext
 {
-  private static ThreadLocal _INSTANCE = new ThreadLocal() 
+  private static ThreadLocal<ExecutionContext> _INSTANCE 
+    = new ThreadLocal<ExecutionContext>() 
   {
-     protected synchronized Object initialValue() 
+     protected synchronized ExecutionContext initialValue() 
      { return null;
      }
   };

@@ -108,7 +108,7 @@ public abstract class CommandConsole
   { 
     String[] focusPath=
       _context.getFocusPath();
-    return ArrayUtil.formatToString(focusPath,":","");
+    return ArrayUtil.format(focusPath,":","");
   }
   
   public String getUserID()
@@ -144,7 +144,7 @@ public abstract class CommandConsole
           if (i==tokens.length)
           { throw new IllegalArgumentException("Parameter '"+parameterName+"' requires a value");
           }
-          String valueString=tokens[i];
+          // String valueString=tokens[i];
           parameterSet.addValue(parameterName,tokens[i]);
         }
       }
@@ -153,7 +153,7 @@ public abstract class CommandConsole
         if (!parameterSet.getDefinition().isNameValid(""))
         { throw new IllegalArgumentException("This command does not accept unnamed parameters");
         }
-        String valueString=tokens[i];
+        // String valueString=tokens[i];
         parameterSet.addValue("",tokens[i]);
       }
     }

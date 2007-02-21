@@ -29,7 +29,8 @@ import java.util.LinkedList;
 public class ListFilter
   implements ResourceFilter
 {
-  private final LinkedList _list=new LinkedList();
+  private final LinkedList<Resource> _list
+    =new LinkedList<Resource>();
     
   public boolean accept(Resource resource)
   { 

@@ -17,6 +17,8 @@ package spiralcraft.exec;
 public class ExecutionException
   extends Exception
 {
+  private static final long serialVersionUID=1;
+  
   public ExecutionException(String message)
   { super(message);
   }

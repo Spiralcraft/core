@@ -27,7 +27,7 @@ import spiralcraft.lang.optics.SimpleBinding;
 public class AttributeContext
   implements Context
 {
-  private Map _names;
+  private Map<String,Attribute> _names;
   private Attribute[] _attributes;
   private final Context _parent;
 
@@ -73,7 +73,7 @@ public class AttributeContext
     else
     {
       if (_names==null)
-      { _names=new HashMap();
+      { _names=new HashMap<String,Attribute>();
       }
       for (int i=0;i<_attributes.length;i++)
       { 

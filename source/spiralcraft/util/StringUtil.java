@@ -35,7 +35,7 @@ public class StringUtil
   /**
    * Tokenize a String into a List
    */
-  public static int tokenize(String input,String tokens,List output)
+  public static int tokenize(String input,String tokens,List<String> output)
   {
     if (input==null)
     { return 0;
@@ -60,7 +60,7 @@ public class StringUtil
     { return new String[0];
     }
 
-    List tokenList=new LinkedList();
+    List<String> tokenList=new LinkedList<String>();
     tokenize(input,tokens,tokenList);
     String[] ret=new String[tokenList.size()];
     tokenList.toArray(ret);
@@ -85,7 +85,7 @@ public class StringUtil
    */
   public static String[] tokenizeCommandLine(String input)
   {
-    ArrayList result=new ArrayList(10);
+    ArrayList<String> result=new ArrayList<String>(10);
     StreamTokenizer st=new StreamTokenizer(new StringReader(input));
     st.resetSyntax();
     st.eolIsSignificant(false);
@@ -98,9 +98,9 @@ public class StringUtil
     try
     { 
       st.nextToken();	
-      while (st.ttype!=st.TT_EOF)
+      while (st.ttype!=StreamTokenizer.TT_EOF)
       {
-        if (st.ttype=='"' || st.ttype==st.TT_WORD)
+        if (st.ttype=='"' || st.ttype==StreamTokenizer.TT_WORD)
         {	result.add(st.sval);
         }
         st.nextToken();

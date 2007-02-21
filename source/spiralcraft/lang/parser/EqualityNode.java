@@ -15,11 +15,6 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Optic;
-import spiralcraft.lang.Focus;
-import spiralcraft.lang.BindException;
-import spiralcraft.lang.Expression;
-
-import spiralcraft.lang.optics.ProxyOptic;
 
 public class EqualityNode
   extends LogicalNode

@@ -55,7 +55,7 @@ public class ProxyOptic
   { return _optic.set(value);
   }
 
-  public Class getContentType()
+  public Class<?> getContentType()
   { return _optic.getContentType();
   }
 

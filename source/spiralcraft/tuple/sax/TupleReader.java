@@ -31,9 +31,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 
-
-import java.io.IOException;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 

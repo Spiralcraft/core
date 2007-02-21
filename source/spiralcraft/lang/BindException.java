@@ -17,6 +17,8 @@ package spiralcraft.lang;
 public class BindException
   extends Exception
 {
+  private static final long serialVersionUID=1;
+  
   public BindException(String message)
   { super(message);
   }

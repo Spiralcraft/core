@@ -34,5 +34,5 @@ public interface Type
   /**
    * The public Java class or interface used to access the data element
    */
-  Class getJavaClass();
+  Class<?> getJavaClass();
 }

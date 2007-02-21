@@ -27,7 +27,7 @@ public class HelloWorld
   public void execute(ExecutionContext context,String[] args)
   { 
     context.out().println("HelloWorld");
-    context.out().println("args: "+ArrayUtil.formatToString(args," ","\""));
+    context.out().println("args: "+ArrayUtil.format(args," ","\""));
     context.out().println("testObject:");
     
     if (_testObject!=null)

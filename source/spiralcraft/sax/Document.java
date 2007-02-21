@@ -24,7 +24,7 @@ public class Document
   extends Node
 {
 
-  private boolean _completed;
+  // private boolean _completed;
 
   public Document()
   {
@@ -35,7 +35,7 @@ public class Document
   }
 
   public void complete()
-  { _completed=true;
+  { // _completed=true;
   }
 
   public Element getRootElement()

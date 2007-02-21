@@ -33,7 +33,7 @@ public class StubTask
     {
       for (int i=0;i<100;i++)
       { 
-        Thread.currentThread().sleep(250);
+        Thread.sleep(250);
         setOpsCompletedInUnit(i);
         setCurrentOpTitle(Integer.toString(i));
       }

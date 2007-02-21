@@ -17,17 +17,19 @@ package spiralcraft.stream.batch;
 public class OperationException
   extends Exception
 {
-  private final Operation _operation;
-  
+  // private final Operation _operation;
+
+  private static final long serialVersionUID = 1L;
+
   public OperationException(Operation operation,String message)
   { 
     super(message);
-    _operation=operation;
+    // _operation=operation;
   }
   
   public OperationException(Operation operation,String message,Throwable cause)
   { 
     super(message,cause);
-    _operation=operation;
+    // _operation=operation;
   }
 }

@@ -14,8 +14,6 @@
 //
 package spiralcraft.loader;
 
-import spiralcraft.util.ArrayUtil;
-
 import spiralcraft.main.AbstractClassLoader;
 
 import java.io.IOException;

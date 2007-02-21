@@ -17,7 +17,6 @@ package spiralcraft.log;
 import java.text.SimpleDateFormat;
 
 import java.util.logging.Formatter;
-import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 import java.util.Date;

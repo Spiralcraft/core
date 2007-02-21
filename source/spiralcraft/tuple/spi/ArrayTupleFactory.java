@@ -15,7 +15,6 @@
 package spiralcraft.tuple.spi;
 
 import spiralcraft.tuple.TupleFactory;
-import spiralcraft.tuple.Tuple;
 import spiralcraft.tuple.Buffer;
 import spiralcraft.tuple.Scheme;
 

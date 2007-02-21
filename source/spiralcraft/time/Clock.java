@@ -76,7 +76,7 @@ public final class Clock
       while (true)
       {
         update();
-        Thread.currentThread().sleep(_precision);
+        Thread.sleep(_precision);
       }
     }
     catch (InterruptedException x)

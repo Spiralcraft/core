@@ -30,11 +30,11 @@ public class ServiceAdapter
   {
   }
 
-  public boolean providesInterface(Class serviceClass)
+  public boolean providesInterface(Class<?> serviceClass)
   { return serviceClass.isAssignableFrom(getClass());
   }
 
-  public Object getInterface(Class serviceClass)
+  public Object getInterface(Class<?> serviceClass)
   { 
     if (serviceClass.isAssignableFrom(getClass()))
     { return this;

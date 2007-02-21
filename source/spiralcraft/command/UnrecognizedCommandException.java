@@ -17,6 +17,8 @@ package spiralcraft.command;
 public class UnrecognizedCommandException
   extends Exception
 {
+  private static final long serialVersionUID=1;
+  
   public UnrecognizedCommandException(String name)
   { super(name);
   }

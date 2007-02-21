@@ -35,7 +35,7 @@ public  class ListWrapper<T>
   { return _list.toArray();
   }
   
-  public <T> T[] toArray(T[] array)
+  public <X> X[] toArray(X[] array)
   { return _list.toArray(array);
   }
   
@@ -43,15 +43,15 @@ public  class ListWrapper<T>
   { return _list.set(pos,value);
   }
   
-  public ListIterator listIterator()
+  public ListIterator<T> listIterator()
   { return _list.listIterator();
   }
 
-  public ListIterator listIterator(int start)
+  public ListIterator<T> listIterator(int start)
   { return _list.listIterator(start);
   }
   
-  public List subList(int start,int end)
+  public List<T> subList(int start,int end)
   { return _list.subList(start,end);
   }
 
@@ -79,11 +79,11 @@ public  class ListWrapper<T>
   { return _list.removeAll(c);
   }
 
-  public boolean addAll(Collection c)
+  public boolean addAll(Collection<? extends T> c)
   { return _list.addAll(c);
   }
 
-  public boolean addAll(int start,Collection c)
+  public boolean addAll(int start,Collection<? extends T> c)
   { return _list.addAll(start,c);
   }
   

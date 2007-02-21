@@ -14,7 +14,6 @@
 //
 package spiralcraft.text.markup;
 
-import spiralcraft.text.Trimmer;
 import spiralcraft.text.ParseException;
 
 
@@ -27,9 +26,9 @@ public abstract class MarkupCompiler
 {
   
   private final MarkupParser _parser;
-  private final Trimmer _trimmer=new Trimmer("\r\n\t ");
-  private final CharSequence _startDelimiter;
-  private final CharSequence _endDelimiter;
+  // private final Trimmer _trimmer=new Trimmer("\r\n\t ");
+  // private final CharSequence _startDelimiter;
+  // private final CharSequence _endDelimiter;
   private Unit _unit;
   
   
@@ -38,8 +37,8 @@ public abstract class MarkupCompiler
     ,CharSequence endDelimiter
     )
   { 
-    _startDelimiter=startDelimiter;
-    _endDelimiter=endDelimiter;
+    // _startDelimiter=startDelimiter;
+    // _endDelimiter=endDelimiter;
     _parser=new MarkupParser(startDelimiter,endDelimiter);
     _parser.setMarkupHandler(this);
   }

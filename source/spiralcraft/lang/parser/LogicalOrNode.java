@@ -15,14 +15,6 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Optic;
-import spiralcraft.lang.OpticFactory;
-import spiralcraft.lang.BindException;
-import spiralcraft.lang.Focus;
-import spiralcraft.lang.Expression;
-
-import spiralcraft.lang.optics.Lense;
-import spiralcraft.lang.optics.Prism;
-import spiralcraft.lang.optics.LenseBinding;
 
 public class LogicalOrNode
   extends LogicalNode

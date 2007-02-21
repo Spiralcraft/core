@@ -21,9 +21,6 @@ import spiralcraft.util.StringUtil;
 import spiralcraft.util.ArrayUtil;
 
 import spiralcraft.lang.Expression;
-import spiralcraft.lang.Optic;
-import spiralcraft.lang.Focus;
-import spiralcraft.lang.BindException;
 
 import java.util.List;
 
@@ -54,7 +51,7 @@ public class PropertySpecifier
   private boolean _dynamic;
   private PropertySpecifier _baseMember;
   private String _collectionClassName;
-  private Class _collectionClass;
+  private Class<? extends Collection<?>> _collectionClass;
   private boolean _export;
   
   public PropertySpecifier
@@ -134,7 +131,7 @@ public class PropertySpecifier
    * Return the implementation of java.util.Collection which should be
    *   used to hold the contents for this property.
    */
-  public Class getCollectionClass()
+  public Class<? extends Collection<?>> getCollectionClass()
   { return _collectionClass;
   }
   
@@ -358,6 +355,7 @@ public class PropertySpecifier
     }
   }
   
+  @SuppressWarnings("unchecked")
   private final void resolveCollection()
     throws BuildException
   {
@@ -366,7 +364,7 @@ public class PropertySpecifier
       try
       { 
         _collectionClass
-          =Class.forName
+          =(Class<? extends Collection<?>>) Class.forName
             (getCollectionClassName()
             ,false
             ,Thread.currentThread().getContextClassLoader()

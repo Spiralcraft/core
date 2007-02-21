@@ -126,7 +126,7 @@ public  class LenseBinding
     return binding;
   }
   
-  public Class getContentType()
+  public Class<?> getContentType()
   { return _lense.getPrism().getContentType();
   }
   

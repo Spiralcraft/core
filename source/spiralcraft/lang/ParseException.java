@@ -17,7 +17,8 @@ package spiralcraft.lang;
 public class ParseException
   extends Exception
 {
-
+  private static final long serialVersionUID=1;
+  
   private final String _progress;
   private final int _pos;
 

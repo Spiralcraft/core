@@ -42,7 +42,8 @@ public abstract class CommandContext
   private CommandContext _controllingContext;
   private CommandContext _focus;
   private String _focusName;
-  private final LinkedHashMap _contexts=new LinkedHashMap();
+  private final LinkedHashMap<String,CommandContext> _contexts
+  	=new LinkedHashMap<String,CommandContext>();
  
   /**
    * Construct a CommandContext where commands should operate on the
@@ -80,7 +81,7 @@ public abstract class CommandContext
    */
   public List listContexts()
   { 
-    LinkedList list=new LinkedList();
+    LinkedList<String> list=new LinkedList<String>();
     list.addAll(_contexts.keySet());
     return list;
   }
@@ -126,14 +127,14 @@ public abstract class CommandContext
    */
   public String[] getFocusPath()
   { 
-    LinkedList path=new LinkedList();
+    LinkedList<String> path=new LinkedList<String>();
     composeFocusPath(path);
     String[] ret=new String[path.size()];
     path.toArray(ret);
     return ret;
   }
   
-  void composeFocusPath(LinkedList previous)
+  void composeFocusPath(LinkedList<String> previous)
   { 
     if (_focusName!=null)
     { previous.add(_focusName);
@@ -200,9 +201,9 @@ public abstract class CommandContext
    *@return A list of commands available from this context, starting with the
    *  commands from the controlling CommandContext
    */
-  public List listCommands()
+  public List<Command> listCommands()
   { 
-    List commands;
+    List<Command> commands;
 
     if (_controllingContext!=null)
     { 
@@ -218,7 +219,7 @@ public abstract class CommandContext
   /**
    *@return A list of commands directly associated with this CommandContext
    */
-  protected abstract List listLocalCommands();
+  protected abstract List<Command> listLocalCommands();
   
   /**
    *@return The Command with the specified name that is

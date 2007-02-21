@@ -14,12 +14,8 @@
 //
 package spiralcraft.exec;
 
-import java.io.IOException;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
-
-import java.lang.NoSuchMethodException;
 
 import spiralcraft.util.Arguments;
 import spiralcraft.util.StringUtil;
@@ -63,7 +59,7 @@ import spiralcraft.loader.LibraryClassLoader;
 public class ApplicationEnvironment
 {
   private LibraryClassLoader _classLoader;
-  private ApplicationManager _applicationManager;
+  // private ApplicationManager _applicationManager;
   private String _mainClass;
   private String[] _mainArguments=new String[0];
   private String[] _modules;
@@ -74,7 +70,7 @@ public class ApplicationEnvironment
    */
   public void setApplicationManager(ApplicationManager manager)
   { 
-    _applicationManager=manager;
+    // _applicationManager=manager;
     _classLoader=new LibraryClassLoader(manager.getLibraryCatalog());
     
   }
@@ -143,7 +139,7 @@ public class ApplicationEnvironment
       { _classLoader.resolveLibrariesForClass(_mainClass);
       }
   
-      Class clazz=_classLoader.loadClass(_mainClass);
+      Class<?> clazz=_classLoader.loadClass(_mainClass);
       Method mainMethod=clazz.getMethod("main",new Class[] {String[].class});
       
       ClassLoader oldLoader=Thread.currentThread().getContextClassLoader();

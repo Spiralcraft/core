@@ -20,6 +20,8 @@ package spiralcraft.exec;
 public class ExecutionTargetException
   extends ExecutionException
 {
+  private static final long serialVersionUID=1;
+  
   private final Throwable _targetException;
   
   public ExecutionTargetException(Throwable targetException)

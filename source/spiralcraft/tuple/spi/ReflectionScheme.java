@@ -22,13 +22,10 @@ import spiralcraft.beans.MappedBeanInfo;
 
 import java.beans.Introspector;
 import java.beans.IntrospectionException;
-import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
 
 import java.lang.reflect.Method;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -45,15 +42,16 @@ public class ReflectionScheme
   private static final BeanInfoCache _BEAN_INFO_CACHE
     =BeanInfoCache.getInstance(Introspector.IGNORE_ALL_BEANINFO);
 
-  private static final HashMap _SINGLETONS
-    =new HashMap();
+  private static final HashMap<Class,ReflectionScheme> _SINGLETONS
+    =new HashMap<Class,ReflectionScheme>();
 
-  private static final HashMap _TYPES
-    =new HashMap();
+  private static final HashMap<Class,Type> _TYPES
+    =new HashMap<Class,Type>();
 
   private final Class _interface;
   private final MappedBeanInfo _beanInfo;
-  private final HashMap _methodMap=new HashMap();
+  private final HashMap<Method,FieldImpl> _methodMap
+    =new HashMap<Method,FieldImpl>();
 
   
   /**
@@ -98,7 +96,8 @@ public class ReflectionScheme
     PropertyDescriptor[] props=
       _beanInfo.getPropertyDescriptors();
     
-    FieldListImpl fields=new FieldListImpl(props.length);
+    FieldListImpl<FieldImpl> fields
+      =new FieldListImpl<FieldImpl>(props.length);
 
     for (int i=0;i<props.length;i++)
     { 

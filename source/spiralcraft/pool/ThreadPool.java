@@ -14,7 +14,6 @@
 //
 package spiralcraft.pool;
 
-import java.util.Stack;
 
 /**
  * Provides a means for dispatching Runnables on their

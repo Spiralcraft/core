@@ -14,7 +14,6 @@
 //
 package spiralcraft.util;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -28,17 +27,17 @@ public class KeyedList<T>
   extends ListWrapper<T>
 {
   
-  private ArrayList<Index> _keys;
+  private ArrayList<Index<Object,T>> _keys;
   private int _numKeys;
   
   public KeyedList(List<T> impl)
   { super(impl);
   }
   
-  public Index<Object,T> addMap(Map<?,T> implMap,KeyFunction<?,T> function)
+  public Index<Object,T> addMap(Map<Object,List<T>> implMap,KeyFunction<Object,T> function)
   { 
     if (_keys==null)
-    { _keys=new ArrayList();
+    { _keys=new ArrayList<Index<Object,T>>();
     }
     Index<Object,T> map=new Index<Object,T>(implMap,function);
     _keys.add(map);
@@ -99,19 +98,19 @@ public class KeyedList<T>
   /**
    * Provides access to an individual keying of a KeyedList 
    */
-  public class Index<K,T>
+  public class Index<Tkey,Tdata>
   { 
-    private final AutoListMap<K,T> _map;
+    private final AutoListMap<Tkey,Tdata> _map;
     
-    public Index(Map<?,T> impl,KeyFunction<?,T> function)
-    { _map=new AutoListMap<K,T>(impl,function);
+    public Index(Map<Tkey,List<Tdata>> impl,KeyFunction<Tkey,Tdata> function)
+    { _map=new AutoListMap<Tkey,Tdata>(impl,function);
     }
     
-    AutoListMap<K,T> getMap()
+    AutoListMap<Tkey,Tdata> getMap()
     { return _map;
     }
     
-    public T getOne(K key)
+    public Tdata getOne(Tkey key)
     { return _map.getOne(key);
     }
   }

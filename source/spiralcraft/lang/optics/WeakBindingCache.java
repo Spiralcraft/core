@@ -18,10 +18,11 @@ import java.util.HashMap;
 
 public class WeakBindingCache
 {
-  private HashMap _map=new HashMap();
+  private HashMap<Object,Binding> _map
+    =new HashMap<Object,Binding>();
   
   public synchronized Binding get(Object key)
-  { return (Binding) _map.get(key);
+  { return _map.get(key);
   }
   
   public synchronized void put(Object key,Binding value)

@@ -80,7 +80,7 @@ public interface Optic
   /**
    * Indicate the Java Class of the content of this View.
    */
-  Class getContentType();
+  Class<?> getContentType();
 
   /**
    * Decorate this Optic with a suitable implementation of a decoratorInterface

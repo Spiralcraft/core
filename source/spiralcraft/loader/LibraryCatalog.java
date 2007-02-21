@@ -17,7 +17,6 @@ package spiralcraft.loader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.BufferedInputStream;
 
 import java.util.jar.JarFile;
@@ -31,9 +30,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import java.net.URL;
 
@@ -51,7 +47,7 @@ public class LibraryCatalog
 
   private final String _masterLibraryPath;
 
-  private ArrayList _libraries=new ArrayList();
+  private ArrayList<Library> _libraries=new ArrayList<Library>();
   
   /**
    * File libraryDir
@@ -62,7 +58,7 @@ public class LibraryCatalog
     loadCatalog();
   }
   
-  public List listLibraries()
+  public List<Library> listLibraries()
   { return _libraries;
   }
   
@@ -187,8 +183,10 @@ public class LibraryCatalog
   class LibraryClasspathImpl
     implements LibraryClasspath
   {
-    private final HashMap _resources=new HashMap();
-    private final ArrayList _myLibraries=new ArrayList();
+    private final HashMap<String,Resource> _resources
+      =new HashMap<String,Resource>();
+    private final ArrayList<Library> _myLibraries
+      =new ArrayList<Library>();
 
     public void release()
     {
@@ -234,7 +232,8 @@ public class LibraryCatalog
     public void addModule(String name)
       throws IOException
     { 
-      LinkedList libraries=new LinkedList();
+      LinkedList<Library> libraries
+        =new LinkedList<Library>();
       Iterator it=_libraries.iterator();
       while (it.hasNext())
       {
@@ -306,12 +305,12 @@ public class LibraryCatalog
     public void resolveLibrariesForResource(String resourcePath)
       throws IOException
     { 
-      List libraries=new LinkedList();
+      List<Library> libraries=new LinkedList<Library>();
 
-      Iterator it=_libraries.iterator();
+      Iterator<Library> it=_libraries.iterator();
       while (it.hasNext())
       { 
-        Library library=(Library) it.next();
+        Library library=it.next();
 
         if (library.resources.get(resourcePath)!=null)
         { libraries.add(library);
@@ -328,7 +327,7 @@ public class LibraryCatalog
     
     public String findNativeLibrary(String name)
     {
-      List libraries=new LinkedList();
+      // List libraries=new LinkedList();
 
       Iterator it=_libraries.iterator();
       while (it.hasNext())
@@ -360,7 +359,8 @@ abstract class Library
   String path;
   String name;
   long lastModified;
-  HashMap resources=new HashMap();
+  HashMap<String,Resource> resources
+    =new HashMap<String,Resource>();
 
   public Library(File file)
     throws IOException

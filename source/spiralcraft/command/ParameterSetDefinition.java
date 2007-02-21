@@ -18,7 +18,8 @@ import java.util.LinkedHashMap;
 
 public class ParameterSetDefinition
 {
-  private LinkedHashMap _parameters=new LinkedHashMap();
+  private LinkedHashMap<String,ParameterDefinition> _parameters
+  	=new LinkedHashMap<String,ParameterDefinition>();
   
   public void addParameter(String name,int count,Class type,boolean required)
   { _parameters.put(name,new ParameterDefinition(name,count,type,required));

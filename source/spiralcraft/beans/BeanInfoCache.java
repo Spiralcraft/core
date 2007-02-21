@@ -14,7 +14,6 @@
 //
 package spiralcraft.beans;
 
-import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 
@@ -39,9 +38,11 @@ public class BeanInfoCache
   // XXX TO DO: Make Class keys weak so they can drop out of the map
   //            if they need to be unloaded.
   //
-  private static final HashMap _SINGLETONS=new HashMap(); 
+  private static final HashMap<Integer,BeanInfoCache> _SINGLETONS
+  	=new HashMap<Integer,BeanInfoCache>(); 
 
-  private HashMap _cache=new HashMap();
+  private HashMap<Class,MappedBeanInfo> _cache
+  	=new HashMap<Class,MappedBeanInfo>();
   private int _introspectorFlags;
   
   /**
@@ -52,13 +53,12 @@ public class BeanInfoCache
   { 
     Integer flags=new Integer(introspectorFlags);
 
-    BeanInfoCache cache=
-      (BeanInfoCache) _SINGLETONS.get(flags);
+    BeanInfoCache cache=_SINGLETONS.get(flags);
     
     if (cache==null)
     { 
       cache=new BeanInfoCache(introspectorFlags);
-      _SINGLETONS.put(cache,flags);
+      _SINGLETONS.put(flags,cache);
     }
     return cache;
   }
@@ -77,7 +77,7 @@ public class BeanInfoCache
   public synchronized MappedBeanInfo getBeanInfo(Class clazz)
     throws IntrospectionException
   {
-    MappedBeanInfo binf=(MappedBeanInfo) _cache.get(clazz);
+    MappedBeanInfo binf=_cache.get(clazz);
     if (binf==null)
     { 
       binf=new MappedBeanInfo

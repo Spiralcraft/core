@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import java.math.BigDecimal;
 
 /**
  * Create a parse tree for expression grammar
@@ -129,13 +128,13 @@ public class ExpressionParser
     }
     else
     { 
-      if (_tokenizer.ttype!=_tokenizer.TT_EOF)
+      if (_tokenizer.ttype!=StreamTokenizer.TT_EOF)
       { 
         _progressBuffer.append((char) _tokenizer.ttype);
         _pos++;
       }
     }
-    return _tokenizer.ttype!=_tokenizer.TT_EOF;
+    return _tokenizer.ttype!=StreamTokenizer.TT_EOF;
   }
 
 
@@ -476,10 +475,10 @@ public class ExpressionParser
   /**
    * ExpressionList -> Expression ("," Expression)*
    */
-  private List parseExpressionList()
+  private List<Node> parseExpressionList()
     throws ParseException
   {
-    List list=new LinkedList();
+    List<Node> list=new LinkedList<Node>();
     Node node=parseExpression();
     if (node!=null)
     { 
@@ -489,7 +488,7 @@ public class ExpressionParser
     return list;
   }
 
-  private void parseExpressionListRest(List list)
+  private void parseExpressionListRest(List<Node> list)
     throws ParseException
   {
     if (_tokenizer.ttype==',')
@@ -637,34 +636,6 @@ public class ExpressionParser
     }
   }
   
-  // Obsolete  
-  private Node parseNumberOld()
-    throws ParseException
-  {
-    double number=_tokenizer.nval;
-    System.out.println("Read number "+ _tokenizer.sval);
-    nextToken();
-    if (_tokenizer.ttype==StreamTokenizer.TT_WORD)
-    {
-      if (_tokenizer.sval.equals("L"))
-      { 
-        nextToken();
-        return new LiteralNode(new Long((long) number),Long.class);
-      }
-      else if (_tokenizer.sval.equals("D"))
-      {
-        nextToken();
-        return new LiteralNode(new Double(number),Double.class);
-      }
-      else if (_tokenizer.sval.equals("F"))
-      {
-        nextToken();
-        return new LiteralNode(new Float((float) number),Float.class);
-      }
-    }
-    return new LiteralNode(new BigDecimal(Double.toString(number)),BigDecimal.class);
-    
-  }
 
   /**
    * FocusExpression -> ( "[" FocusSpecifier "]" ) 

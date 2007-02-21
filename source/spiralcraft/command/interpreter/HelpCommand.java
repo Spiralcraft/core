@@ -41,9 +41,9 @@ public class HelpCommand
   
   public Object execute(CommandContext context,ParameterSet params)
   { 
-    List commands=context.listCommands();
+    List<Command> commands=context.listCommands();
 
-    List messageLines=new ArrayList(commands.size()+10);
+    List<String> messageLines=new ArrayList<String>(commands.size()+10);
     messageLines.add("Use help <command> for more information");
     messageLines.add("  about an individual command.");
     messageLines.add("");

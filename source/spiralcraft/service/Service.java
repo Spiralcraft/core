@@ -41,13 +41,13 @@ public interface Service
   /**
    * Indicate whether the Service provides the specified interface
    */
-  public boolean providesInterface(Class serviceInterface)
+  public boolean providesInterface(Class<?> serviceInterface)
     throws AmbiguousServiceException;
 
   /**
    * Obtain an instance of the specified interface from the service
    */
-  public Object getInterface(Class serviceInterface)
+  public Object getInterface(Class<?> serviceInterface)
     throws AmbiguousServiceException;
 
 

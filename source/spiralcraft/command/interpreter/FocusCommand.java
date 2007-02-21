@@ -14,9 +14,6 @@
 //
 package spiralcraft.command.interpreter;
 
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandContext;

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 import spiralcraft.command.CommandContext;
 import spiralcraft.command.Command;
-import spiralcraft.command.MessageHandler;
 
 /**
  * CommandContext which controls a CommandConsole
@@ -29,7 +28,8 @@ public class LibraryCatalogCommandContext
   extends CommandContext
 {
   
-  private static final LinkedHashMap _COMMANDS=new LinkedHashMap(); 
+  private static final LinkedHashMap<String,Command> _COMMANDS
+    =new LinkedHashMap<String,Command>(); 
   
   static
   { 
@@ -44,9 +44,9 @@ public class LibraryCatalogCommandContext
   { return (Command) _COMMANDS.get(commandName);
   }
 
-  protected List listLocalCommands()
+  protected List<Command> listLocalCommands()
   { 
-    List list=new ArrayList();
+    List<Command> list=new ArrayList<Command>();
     list.addAll(_COMMANDS.values());
     return list;
   }

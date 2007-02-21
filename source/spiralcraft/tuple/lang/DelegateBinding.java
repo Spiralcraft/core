@@ -72,7 +72,7 @@ class DelegatePrism
     
   }
   
-  public Class getContentType()
+  public Class<?> getContentType()
   { return _class;
   }
 }

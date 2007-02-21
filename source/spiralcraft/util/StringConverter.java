@@ -33,11 +33,11 @@ import java.lang.reflect.InvocationTargetException;
  * Converts a String to an object of a specific type. Provides a means for registering
  *   StringConverters for custom types.
  */
-public abstract class StringConverter
+public abstract class StringConverter<T>
 {
 
-  private static final HashMap<Class,StringConverter> _MAP
-    =new HashMap<Class,StringConverter>();
+  private static final HashMap<Class,StringConverter<?>> _MAP
+    =new HashMap<Class,StringConverter<?>>();
     
   private static final StringConverter _ONE_WAY_INSTANCE=new ToString();
   
@@ -69,11 +69,11 @@ public abstract class StringConverter
   /**
    * Get an appropriate instance of the StringConverter for the specified type
    */
-  public static StringConverter getInstance(Class type)
+  public static StringConverter<?> getInstance(Class<?> type)
   { 
     synchronized (_MAP)
     { 
-      StringConverter ret=_MAP.get(type);
+      StringConverter<?> ret=_MAP.get(type);
       if (ret==null)
       { 
         // Discover single argument constructor and create a new
@@ -99,7 +99,7 @@ public abstract class StringConverter
     
   }
 
-  public static StringConverter getOneWayInstance()
+  public static StringConverter<?> getOneWayInstance()
   { return _ONE_WAY_INSTANCE;
   }
 
@@ -133,20 +133,20 @@ public abstract class StringConverter
   /**
    * Convert an Object to a String
    */
-  public String toString(Object val)
+  public String toString(T val)
   { return val!=null?val.toString():null;
   }
 
   /**
    * Convert a String to an Object
    */
-  public abstract Object fromString(String val);
+  public abstract T fromString(String val);
 
   
 }
 
 final class ConstructFromString
-  extends StringConverter
+  extends StringConverter<Object>
 {
   private Constructor _constructor;
 
@@ -177,7 +177,7 @@ final class ConstructFromString
 }
 
 final class ToString
-  extends StringConverter
+  extends StringConverter<Object>
 {
   
   public Object fromString(String val)
@@ -278,9 +278,9 @@ final class ByteToString
 }
 
 final class BigDecimalToString
-  extends StringConverter
+  extends StringConverter<BigDecimal>
 {
-  public Object fromString(String val)
+  public BigDecimal fromString(String val)
   { return val!=null?new BigDecimal(val):null;
   }
 }

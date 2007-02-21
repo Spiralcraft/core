@@ -20,6 +20,9 @@ import java.io.IOException;
 public class UnresolvableURIException
   extends IOException
 {
+
+  private static final long serialVersionUID = 1L;
+
   public UnresolvableURIException(URI uri,String message)
   { super(message+": "+uri.toString());
   }

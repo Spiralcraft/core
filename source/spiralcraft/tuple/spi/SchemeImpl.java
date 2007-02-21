@@ -18,10 +18,6 @@ import spiralcraft.tuple.Scheme;
 import spiralcraft.tuple.Field;
 import spiralcraft.tuple.FieldList;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import java.net.URI;
 
 /**
@@ -30,7 +26,7 @@ import java.net.URI;
 public class SchemeImpl
   implements Scheme
 {
-  private FieldList _fields;
+  private FieldList<? super FieldImpl> _fields;
   private URI _uri;
   
   public SchemeImpl()
@@ -43,7 +39,7 @@ public class SchemeImpl
   public SchemeImpl(Scheme scheme)
   {
     _uri=scheme.getURI();
-    setFields(new FieldListImpl(scheme.getFields()));
+    setFields(new FieldListImpl<FieldImpl>(scheme.getFields()));
   }
   
   public URI getURI()
@@ -54,7 +50,7 @@ public class SchemeImpl
   { _uri=uri;
   }
 
-  public FieldList getFields()
+  public FieldList<? extends Field> getFields()
   { return _fields;
   }
 
@@ -63,7 +59,7 @@ public class SchemeImpl
    *
    * Fields in the list will be indexed and bound to this Scheme.
    */
-  protected void setFields(FieldListImpl<FieldImpl> fields)
+  protected void setFields(FieldListImpl<? super FieldImpl> fields)
   { 
     int i=0;
     for (FieldImpl field: fields)

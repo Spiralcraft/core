@@ -24,8 +24,6 @@ import spiralcraft.registry.Registry;
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
 
-import spiralcraft.stream.Resolver;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -40,7 +38,7 @@ public class Executor
   implements Registrant
 {
   private String _uri;
-  private String _applicationUri;
+  // private String _applicationUri;
   private RegistryNode _registryNode;  
   
   protected ExecutionContext _context

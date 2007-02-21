@@ -15,7 +15,6 @@
 package spiralcraft.loader;
 
 import java.util.List;
-import java.util.Iterator;
 import java.util.ArrayList;
 
 import spiralcraft.command.Command;
@@ -42,13 +41,13 @@ public class ModulesCommand
   { 
     LibraryCatalog catalog=(LibraryCatalog) context.getPeer();
     
-    List libraries=catalog.listLibraries();
+    List<Library> libraries=catalog.listLibraries();
     
-    List messageLines=new ArrayList(libraries.size()+10);
+    List<String> messageLines
+      =new ArrayList<String>(libraries.size()+10);
     
-    for (Iterator it=libraries.iterator();it.hasNext();)
-    { 
-      messageLines.add( ((Library) it.next()).path);
+    for (Library lib : libraries)
+    { messageLines.add(lib.path);
     }
     messageLines.add("");
     

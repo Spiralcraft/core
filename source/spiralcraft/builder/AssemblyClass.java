@@ -16,8 +16,6 @@ package spiralcraft.builder;
 
 import java.net.URI;
 
-import java.io.IOException;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
@@ -438,8 +436,8 @@ public class AssemblyClass
     URI baseResource
       =_basePackage.resolve(_baseName+".assembly.xml");
 
-    URI baseUri
-      =_basePackage.resolve(_baseName);
+    // URI baseUri
+    //  =_basePackage.resolve(_baseName);
       
     if (baseResource.equals(_sourceUri) && _outerClass==null)
     { 
@@ -519,7 +517,7 @@ public class AssemblyClass
   { 
     assertUnresolved();
     if (_propertySpecifiers==null)
-    { _propertySpecifiers=new LinkedList();
+    { _propertySpecifiers=new LinkedList<PropertySpecifier>();
     }
     _propertySpecifiers.add(prop);
   }
@@ -571,7 +569,7 @@ public class AssemblyClass
   private void resolveSingletons()
   {
 
-    LinkedList singletons=new LinkedList();
+    LinkedList<Class> singletons=new LinkedList<Class>();
     Class javaClass=_javaClass;
     Class[] interfaces=javaClass.getInterfaces();
     

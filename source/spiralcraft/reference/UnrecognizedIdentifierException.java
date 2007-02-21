@@ -23,5 +23,7 @@ public class UnrecognizedIdentifierException
   extends Exception
 {
 
+  private static final long serialVersionUID = 1;
+
 
 }

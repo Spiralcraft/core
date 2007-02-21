@@ -17,6 +17,9 @@ package spiralcraft.stream;
 public class AlreadyRegisteredException
   extends Exception
 {
+
+  private static final long serialVersionUID = 1L;
+
   public AlreadyRegisteredException(String scheme)
   { super(scheme);
   }

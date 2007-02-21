@@ -14,8 +14,6 @@
 //
 package spiralcraft.text;
 
-import java.util.HashMap;
-
 /**
  * Filters text from CharSequences 
  */

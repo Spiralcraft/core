@@ -14,13 +14,11 @@
 //
 package spiralcraft.command.interpreter;
 
-import spiralcraft.util.ArrayUtil;
 
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.InputStreamReader;
 
-import spiralcraft.command.CommandContext;
 
 /**
  * Interfaces the standard IO mechanism (System.in,System.out,System.err) to

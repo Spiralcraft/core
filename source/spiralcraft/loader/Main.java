@@ -23,9 +23,6 @@ import spiralcraft.stream.StreamUtil;
 import spiralcraft.exec.ApplicationManager;
 import spiralcraft.exec.ExecutionTargetException;
 
-import spiralcraft.security.SystemSecurityManager;
-
-import spiralcraft.command.interpreter.SystemConsole;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -71,7 +68,7 @@ public class Main
   {
 
     if (Spiralcraft.DEBUG)
-    { System.err.println("spiralcraft.loader.Main.main("+ArrayUtil.formatToString(args,",","\"")+")");
+    { System.err.println("spiralcraft.loader.Main.main("+ArrayUtil.format(args,",","\"")+")");
     }
      
     File codebase=findCodebaseContext();

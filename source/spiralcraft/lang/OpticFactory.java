@@ -17,14 +17,9 @@ package spiralcraft.lang;
 import java.util.HashMap;
 
 import spiralcraft.lang.optics.SimpleBinding;
-import spiralcraft.lang.optics.Binding;
 import spiralcraft.lang.optics.Prism;
 import spiralcraft.lang.optics.BeanPrism;
 import spiralcraft.lang.optics.VoidPrism;
-
-import java.beans.IntrospectionException;
-
-import java.math.BigDecimal;
 
 /**
  * Creates Optics
@@ -37,8 +32,8 @@ public class OpticFactory
   { return _INSTANCE;
   }
 
-  private final HashMap _prismMap
-    =new HashMap();
+  private final HashMap<Class,Prism> _prismMap
+    =new HashMap<Class,Prism>();
 
   /**
    * Create an Optic which provides view of an arbitrary Java object.

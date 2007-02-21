@@ -19,8 +19,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 
-import java.io.IOException;
-
 /**
  * A lightweight parse tree of an XML document which captures and preserves SAX events.
  *

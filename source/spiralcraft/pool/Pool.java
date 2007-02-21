@@ -18,12 +18,10 @@ import java.util.Stack;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Collection;
 
-import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
 
 import spiralcraft.time.Clock;
@@ -44,12 +42,14 @@ public class Pool
   private long _lastUse=0;
   private long _maintenanceInterval=500;
   private Keeper _keeper=new Keeper();
-  private Stack _available=new Stack();
-  private HashMap _out=new HashMap();
+  private Stack<Reference> _available
+    =new Stack<Reference>();
+  private HashMap<Object,Reference> _out
+    =new HashMap<Object,Reference>();
   private Object _monitor=new Object();
   private Logger _log;
   private boolean _started=false;
-  private Object _startLock=new Object();
+  // private Object _startLock=new Object();
   private boolean _conserve=false;
 
   private int _checkedInCount;
@@ -424,12 +424,12 @@ public class Pool
     Reference[] snapshot;
     synchronized (_monitor)
     { 
-      Collection collection=_out.values();
+      Collection<Reference> collection=_out.values();
       snapshot=new Reference[collection.size()];
       collection.toArray(snapshot);
     }
 
-    List discardList=null;
+    List<Object> discardList=null;
     long time=Clock.instance().approxTimeMillis();
 
     for (int i=0;i<snapshot.length;i++)
@@ -443,7 +443,7 @@ public class Pool
         if (ref!=null)
         { 
           if (discardList==null)
-          { discardList=new LinkedList();
+          { discardList=new LinkedList<Object>();
           }
           discardList.add(ref.resource);
         }
@@ -566,12 +566,12 @@ public class Pool
     }
   }
 
-  private void logFinest(String message)
-  { 
-    if (_log!=null)
-    { _log.finest(message);
-    }
-  }
+//  private void logFinest(String message)
+//  { 
+//    if (_log!=null)
+//    { _log.finest(message);
+//    }
+//  }
 }
 
 

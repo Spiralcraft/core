@@ -47,6 +47,10 @@ public class XmlWriter
   { _locator=locator;
   }
 
+  public Locator getDocumentLocator()
+  { return _locator;
+  }
+  
   public void startElement
     (String namespaceURI
     ,String localName

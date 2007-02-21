@@ -60,7 +60,7 @@ public abstract class OpticAdapter
   { return false;
   }
 
-  public final Class getContentType()
+  public final Class<?> getContentType()
   { return getPrism().getContentType();
   }
 

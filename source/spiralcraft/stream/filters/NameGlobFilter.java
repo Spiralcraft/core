@@ -16,7 +16,6 @@ package spiralcraft.stream.filters;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.util.regex.Matcher;
 
 import spiralcraft.stream.ResourceFilter;
 import spiralcraft.stream.Resource;

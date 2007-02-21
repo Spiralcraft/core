@@ -24,12 +24,12 @@ public class MarkupUnit
   extends Unit
 {
   
-  private final CharSequence _code;
+  // private final CharSequence _code;
   private boolean _open=true;
   
   public MarkupUnit(CharSequence code)
     throws MarkupException
-  { _code=code;
+  { // _code=code;
   }
   
   

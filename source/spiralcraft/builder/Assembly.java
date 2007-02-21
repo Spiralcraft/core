@@ -17,7 +17,6 @@ package spiralcraft.builder;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Context;
-import spiralcraft.lang.Attribute;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.BindException;

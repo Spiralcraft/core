@@ -41,18 +41,21 @@ public final class MethodResolver
    * Mapping from method name to the Methods in the target
    * class with that name.
    */
-  private final Map methodMap = new HashMap();
+  private final Map<String,List<Method>> methodMap
+    = new HashMap<String,List<Method>>();
 
   /**
    * List of the Constructors in the target class.
    */
-  private final List ctorList = new ArrayList();
+  private final List<Constructor<?>> constructorList
+    = new ArrayList<Constructor<?>>();
 
   /**
    * Mapping from a Constructor or Method object to the Class
    * objects representing its formal parameters.
    */
-  private final Map paramMap = new HashMap();
+  private final Map<Member,Class[]> parameterMap
+    = new HashMap<Member,Class[]>();
 
   /**
    * @param  clazz  Class in which I will look for methods and
@@ -114,7 +117,7 @@ public final class MethodResolver
     if (parameterTypes == null)
       parameterTypes = new Class[0];
 
-    return (Constructor) findMemberIn(ctorList, parameterTypes);
+    return (Constructor) findMemberIn(constructorList, parameterTypes);
   }
 
   /**
@@ -124,11 +127,11 @@ public final class MethodResolver
    */
   private Member findMemberIn(List memberList, Class[] parameterTypes)
   throws NoSuchMethodException {
-    List matchingMembers = new ArrayList();
+    List<Member> matchingMembers = new ArrayList<Member>();
 
     for (Iterator it = memberList.iterator(); it.hasNext();) {
       Member member = (Member) it.next();
-      Class[] methodParamTypes = (Class[]) paramMap.get(member);
+      Class[] methodParamTypes = (Class[]) parameterMap.get(member);
 
       if (Arrays.equals(methodParamTypes, parameterTypes))
         return member;
@@ -188,7 +191,7 @@ public final class MethodResolver
    */
   private Member findMostSpecificMemberIn(List memberList)
   throws NoSuchMethodException {
-    List mostSpecificMembers = new ArrayList();
+    List<Member> mostSpecificMembers = new ArrayList<Member>();
 
     for (Iterator memberIt = memberList.iterator(); memberIt.hasNext();)
     {
@@ -340,11 +343,11 @@ public final class MethodResolver
    * Loads up the data structures for my target class's constructors.
    */
   private void loadConstructors() {
-    Constructor[] ctors = clazz.getConstructors();
+    Constructor[] constructors = clazz.getConstructors();
 
-    for (int i = 0; i < ctors.length; ++i) {
-      ctorList.add(ctors[i]);
-      paramMap.put(ctors[i], ctors[i].getParameterTypes());
+    for (int i = 0; i < constructors.length; ++i) {
+      constructorList.add(constructors[i]);
+      parameterMap.put(constructors[i], constructors[i].getParameterTypes());
     }
   }
 
@@ -359,10 +362,10 @@ public final class MethodResolver
       String methodName = m.getName();
       Class[] paramTypes = m.getParameterTypes();
 
-      List list = (List) methodMap.get(methodName);
+      List<Method> list = methodMap.get(methodName);
 
       if (list == null) {
-        list = new ArrayList();
+        list = new ArrayList<Method>();
         methodMap.put(methodName, list);
       }
 
@@ -371,7 +374,7 @@ public final class MethodResolver
 
       if (m != null) {
         list.add(m);
-        paramMap.put(m, paramTypes);
+        parameterMap.put(m, paramTypes);
       }
     }
   }
@@ -384,8 +387,8 @@ public final class MethodResolver
    * procedure in the Java Language Specification, section 15.12.2.
    */
   private boolean memberIsMoreSpecific(Member first, Member second) {
-    Class[] firstParamTypes = (Class[]) paramMap.get(first);
-    Class[] secondParamTypes = (Class[]) paramMap.get(second);
+    Class[] firstParamTypes = (Class[]) parameterMap.get(first);
+    Class[] secondParamTypes = (Class[]) parameterMap.get(second);
 
     return ClassUtilities.compatibleClasses(secondParamTypes, firstParamTypes);
   }

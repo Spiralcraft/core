@@ -20,6 +20,8 @@ package spiralcraft.text;
 public class ParseException
   extends Exception
 {
+  private static final long serialVersionUID = 1L;
+
   private int _offset;
   
   public ParseException(String message, int offset)
@@ -38,5 +40,9 @@ public class ParseException
   {
     super(cause);
     _offset=offset;
+  }
+  
+  public int getOffset()
+  { return _offset;
   }
 }

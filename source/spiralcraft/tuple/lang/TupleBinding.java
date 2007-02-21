@@ -14,19 +14,13 @@
 //
 package spiralcraft.tuple.lang;
 
-import spiralcraft.lang.Focus;
-import spiralcraft.lang.Optic;
-import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.optics.Binding;
 import spiralcraft.lang.optics.AbstractBinding;
-import spiralcraft.lang.optics.Prism;
 
 import spiralcraft.tuple.Tuple;
 import spiralcraft.tuple.Scheme;
 
-import java.beans.PropertyChangeSupport;
 
 /**
  * A spiralcraft.lang binding for Tuples, which uses the Tuple's Scheme

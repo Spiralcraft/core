@@ -21,6 +21,8 @@ package spiralcraft.service;
 public class AmbiguousServiceException
   extends Exception
 {
+  private static final long serialVersionUID = 1L;
+  
   private Class _serviceInterface;
   private Object _key;
 

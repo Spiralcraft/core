@@ -16,7 +16,6 @@ package spiralcraft.stream.filters;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.util.regex.Matcher;
 
 import spiralcraft.stream.ResourceFilter;
 import spiralcraft.stream.Resource;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import java.io.FileInputStream;
 
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 
 import java.nio.channels.FileChannel;
 

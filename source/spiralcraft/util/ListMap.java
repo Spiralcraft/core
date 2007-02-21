@@ -27,7 +27,7 @@ public class ListMap<K,T>
   implements MultiMap<K,T>
 {
 
-  public ListMap(Map map)
+  public ListMap(Map<K,List<T>> map)
   { super(map);
   }
 

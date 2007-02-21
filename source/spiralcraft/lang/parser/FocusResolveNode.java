@@ -37,7 +37,7 @@ public class FocusResolveNode
   public Optic bind(final Focus focus)
     throws BindException
   { 
-    String identifier=_identifier.getIdentifier();
+//    String identifier=_identifier.getIdentifier();
 
     Focus specifiedFocus
       =_source!=null?_source.findFocus(focus):focus;

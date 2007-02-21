@@ -15,7 +15,6 @@
 package spiralcraft.text.io;
 
 import java.io.Reader;
-import java.io.IOException;
 
 public class CharSequenceReader
   extends Reader

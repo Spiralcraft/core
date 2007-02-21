@@ -14,7 +14,6 @@
 //
 package spiralcraft.ui;
 
-import spiralcraft.service.Service;
 import spiralcraft.service.ServiceAdapter;
 import spiralcraft.service.ServiceException;
 import spiralcraft.service.ServiceResolver;

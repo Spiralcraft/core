@@ -35,8 +35,6 @@ import java.beans.PropertyChangeEvent;
 
 import spiralcraft.registry.RegistryNode;
 
-import spiralcraft.tuple.Tuple;
-import spiralcraft.tuple.Field;
 
 /**
  * Associates a PropertySpecifier with some value or value source
@@ -49,13 +47,13 @@ public class PropertyBinding
   private PropertySpecifier _specifier;
 
   private Optic _target;
-  private Optic _sourceOptic;
+  // private Optic _sourceOptic;
   private Focus _focus;
   private Object _source;
 
   private Assembly[] _contents;
   private StringConverter _converter;
-  private RegistryNode _registryNode;
+  // private RegistryNode _registryNode;
   private RegistryNode propertyNode;
 
   public PropertyBinding(PropertySpecifier specifier,Assembly container)
@@ -126,7 +124,7 @@ public class PropertyBinding
   
   public void register(RegistryNode node)
   {
-    _registryNode=node;
+    // _registryNode=node;
     if (_contents!=null && _contents.length>0)
     { 
       // Sub-assemblies (contents) are specified in definition.
@@ -209,6 +207,7 @@ public class PropertyBinding
       || Collection.class.isAssignableFrom(_target.getContentType());
   }
   
+  @SuppressWarnings("unchecked")
   private void resolveSource()
     throws BuildException
   {
@@ -237,16 +236,16 @@ public class PropertyBinding
           try
           { 
             source
-              =(Collection) _specifier.getCollectionClass().newInstance();
+              =_specifier.getCollectionClass().newInstance();
           }
           catch (Exception x)
           { 
             throw new BuildException
               ("Error instantiating "+_specifier.getCollectionClass(),x);
-          }
+          } 
         }
         else if (_target.getContentType()==List.class)
-        { source=new ArrayList(_contents.length);
+        { source=new ArrayList<Object>(_contents.length);
         }
         else if (!_target.getContentType().isInterface())
         { 

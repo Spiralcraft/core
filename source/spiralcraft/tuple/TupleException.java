@@ -17,6 +17,8 @@ package spiralcraft.tuple;
 public class TupleException
   extends Exception
 {
+  private static final long serialVersionUID = 1L;
+
   public TupleException()
   { }
   

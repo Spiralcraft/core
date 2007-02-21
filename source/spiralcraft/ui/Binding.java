@@ -20,7 +20,6 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.WriteException;
-import spiralcraft.lang.OpticFactory;
 
 import spiralcraft.util.StringConverter;
 
@@ -124,7 +123,8 @@ public class Binding
     }
     else if (_uiChannel.getContentType()==String.class)
     { 
-      _modelStringConverter=StringConverter.getInstance(_modelChannel.getContentType());
+      _modelStringConverter
+        =StringConverter.getInstance(_modelChannel.getContentType());
       if (_modelStringConverter!=null)
       { _updateToModel=true;
       }
@@ -178,8 +178,11 @@ public class Binding
     }
   }
 
+  @SuppressWarnings("unchecked")
   private Object translateToUi(Object value)
   {
+    // Unchecked generics b/c in meta-land here
+    
     if (_modelStringConverter!=null)
     { return _modelStringConverter.toString(value);
     }
@@ -191,8 +194,11 @@ public class Binding
     }
   }
 
+  @SuppressWarnings("unchecked")
   private Object translateToModel(Object value)
   {
+    // Unchecked generics b/c in meta-land here
+
     if (_uiStringConverter!=null)
     { return _uiStringConverter.toString(value);
     }

@@ -47,7 +47,7 @@ public class LookCommand
     
     List contexts=targetContext.listContexts();
 
-    List messageLines=new ArrayList(contexts.size()+10);
+    List<String> messageLines=new ArrayList<String>(contexts.size()+10);
     messageLines.add(targetContext.getDescription());
     
     for (Iterator it=contexts.iterator();it.hasNext();)

@@ -15,7 +15,6 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.optics.LenseBinding;
-import spiralcraft.lang.optics.Binding;
 import spiralcraft.lang.optics.Prism;
 import spiralcraft.lang.optics.Lense;
 

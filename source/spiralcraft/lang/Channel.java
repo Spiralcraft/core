@@ -35,7 +35,7 @@ public class Channel
   private final Focus _source;
   
   // XXX These should be weak or soft refs
-  private HashMap _channels;
+  private HashMap<Expression,Channel> _channels;
 
   public Channel(Focus source,Optic optic,Expression expression)
   { 
@@ -72,7 +72,7 @@ public class Channel
     
     Channel channel=null;
     if (_channels==null)
-    { _channels=new HashMap();
+    { _channels=new HashMap<Expression,Channel>();
     }
     else
     { channel=(Channel) _channels.get(expression);

@@ -57,7 +57,7 @@ public abstract class AbstractTask
   private boolean _running=false;
   private boolean _stopRequested=false;
 
-  private Thread _runThread;
+  // private Thread _runThread;
   
   private PropertyChangeSupport _propertyChangeSupport;
   private final Object _lock=new Object();
@@ -131,7 +131,7 @@ public abstract class AbstractTask
       }
       setStartable(false);
       setRunning(true);
-      _runThread=Thread.currentThread();
+      // _runThread=Thread.currentThread();
       setStopRequested(false);
       fireTaskStarted();
     }
@@ -146,7 +146,7 @@ public abstract class AbstractTask
         setRunning(false);
         setStartable(true);
         setStopRequested(false);
-        _runThread=null;
+        // _runThread=null;
         fireTaskCompleted();
       }
     }

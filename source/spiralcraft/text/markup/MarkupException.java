@@ -17,6 +17,8 @@ package spiralcraft.text.markup;
 public class MarkupException
   extends Exception
 {
+  private static final long serialVersionUID = 1L;
+
   public MarkupException(String message)
   { super(message);
   }

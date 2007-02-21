@@ -17,6 +17,7 @@ package spiralcraft.xml;
 public class ParseException
   extends Exception
 {
+  private static final long serialVersionUID = 1;
 
   public ParseException(String message)
   { super(message);

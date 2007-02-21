@@ -21,7 +21,6 @@ import spiralcraft.lang.ParseException;
 import spiralcraft.lang.DefaultFocus;
 import spiralcraft.lang.AttributeContext;
 import spiralcraft.lang.Attribute;
-import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 

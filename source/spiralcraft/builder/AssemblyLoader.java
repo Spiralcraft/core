@@ -16,14 +16,11 @@ package spiralcraft.builder;
 
 import java.net.URI;
 
-import spiralcraft.stream.Resolver;
 import spiralcraft.stream.Resource;
 
-import spiralcraft.util.StringUtil;
 import spiralcraft.util.Path;
 
 import java.io.IOException;
-import java.io.FileNotFoundException;
 
 import spiralcraft.sax.ParseTreeFactory;
 import spiralcraft.sax.ParseTree;
@@ -34,10 +31,6 @@ import spiralcraft.sax.Attribute;
 
 import org.xml.sax.SAXException;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import java.util.List;
 import java.util.Iterator;
 import java.util.HashMap;
 
@@ -51,8 +44,10 @@ public class AssemblyLoader
 {
   private static final AssemblyLoader _INSTANCE=new AssemblyLoader();
   
-  private final HashMap _cache=new HashMap();
-  private final HashMap _classCache=new HashMap();
+  private final HashMap<URI,AssemblyClass> _classCache
+  	=new HashMap<URI,AssemblyClass>();
+  private final HashMap<URI,AssemblyClass> _cache
+  	=new HashMap<URI,AssemblyClass>();
   
   /**
    * Return the singleton instance of the AssemblyLoader
@@ -154,7 +149,7 @@ public class AssemblyLoader
    * Load an AssemblyClass from the XML document obtained from the
    *   specified resource.
    */
-  private AssemblyClass loadAssemblyDefinition(Resource resource)
+  public AssemblyClass loadAssemblyDefinition(Resource resource)
     throws BuildException
   {
     ParseTree parseTree=null;

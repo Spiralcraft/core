@@ -14,7 +14,6 @@
 //
 package spiralcraft.ui;
 
-import java.util.HashMap;
 
 /**
  * Controls a user interface component which presents a

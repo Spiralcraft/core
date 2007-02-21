@@ -18,8 +18,6 @@ import spiralcraft.lang.Optic;
 import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.BindException;
 
-import java.beans.PropertyDescriptor;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 

@@ -29,7 +29,8 @@ public class Resolver
 {
   private static Resolver _INSTANCE;
 
-  private HashMap _resourceFactories=new HashMap();
+  private HashMap<String,ResourceFactory> _resourceFactories
+    =new HashMap<String,ResourceFactory>();
   private ResourceFactory _defaultFactory;
 
   public static synchronized Resolver getInstance()
@@ -68,7 +69,7 @@ public class Resolver
     synchronized (_resourceFactories)
     { 
       factory
-        =(ResourceFactory) _resourceFactories.get(uri.getScheme());
+        =_resourceFactories.get(uri.getScheme());
     }
       
     if (factory==null)

@@ -14,14 +14,9 @@
 //
 package spiralcraft.stream.test;
 
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.OutputStreamWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 
 import java.net.URI;
@@ -38,8 +33,8 @@ public class ResolverTest
 
   private URI _uri;
   private File _file;
-  private boolean _dump=false;
-  private int _repeats=0;
+  // private boolean _dump=false;
+  // private int _repeats=0;
 
   public static void main(String[] args)
   { new ResolverTest().run(args);
@@ -65,7 +60,7 @@ public class ResolverTest
           }
         }
         else if (option=="repeats")
-        { _repeats=Integer.parseInt(nextArgument());
+        { // _repeats=Integer.parseInt(nextArgument());
         }
         else
         { return false;

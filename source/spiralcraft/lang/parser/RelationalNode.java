@@ -32,7 +32,7 @@ public class RelationalNode
 
   public Object translateForGet(Object val,Optic[] mods)
   { 
-    Comparable val1=(Comparable) val;
+    Comparable<? super Object> val1=(Comparable<? super Object>) val;
     Comparable val2=(Comparable) mods[0].get();
     
     if (val1==null)

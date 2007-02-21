@@ -84,10 +84,11 @@ public class Element
   /**
    * A concatenation of the character data in this element
    */
+  @SuppressWarnings("unchecked")
   public String getCharacters()
   { 
     List<Characters> children
-      = getChildren(Characters.class);
+      = (List<Characters>) getChildren(Characters.class);
 
     StringBuilder buf=new StringBuilder();
     for (Characters c: children)

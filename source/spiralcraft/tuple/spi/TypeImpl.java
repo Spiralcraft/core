@@ -44,7 +44,7 @@ public class TypeImpl
   { _scheme=val;
   }
   
-  public Class getJavaClass()
+  public Class<?> getJavaClass()
   { return _javaClass;
   }
   

@@ -56,7 +56,7 @@ public abstract class ClassUtil
     new HashMap<Class,Set>();
 
   static {
-    Set set = new HashSet();
+    Set<Class> set = new HashSet<Class>();
 
     set.add(Short.TYPE);
     set.add(Integer.TYPE);
@@ -65,7 +65,7 @@ public abstract class ClassUtil
     set.add(Double.TYPE);
     primitiveCompatabilityMap.put(Byte.TYPE, set);
 
-    set = new HashSet();
+    set = new HashSet<Class>();
 
     set.add(Integer.TYPE);
     set.add(Long.TYPE);
@@ -74,20 +74,20 @@ public abstract class ClassUtil
     primitiveCompatabilityMap.put(Short.TYPE, set);
     primitiveCompatabilityMap.put(Character.TYPE, set);
 
-    set = new HashSet();
+    set = new HashSet<Class>();
 
     set.add(Long.TYPE);
     set.add(Float.TYPE);
     set.add(Double.TYPE);
     primitiveCompatabilityMap.put(Integer.TYPE, set);
 
-    set = new HashSet();
+    set = new HashSet<Class>();
 
     set.add(Float.TYPE);
     set.add(Double.TYPE);
     primitiveCompatabilityMap.put(Long.TYPE, set);
 
-    set = new HashSet();
+    set = new HashSet<Class>();
 
     set.add(Double.TYPE);
     primitiveCompatabilityMap.put(Float.TYPE, set);
@@ -107,8 +107,11 @@ public abstract class ClassUtil
    *   class, taking into account primitive promotion and auto-boxing
    *   semantics.
    */
+  @SuppressWarnings("unchecked")
   public static boolean isClassAssignableFrom(Class formal,Class actual)
   {
+    // Suppress generic warnings b/c we're in meta-land here
+    
     if (formal==actual)
     { return true;
     }

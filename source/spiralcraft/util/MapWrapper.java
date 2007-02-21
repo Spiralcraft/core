@@ -58,23 +58,23 @@ public class MapWrapper<K,V>
   { return map.remove(key);
   }
 
-  public void putAll(Map map)
-  { map.putAll(map);
+  public void putAll(Map<? extends K,? extends V> map)
+  { this.map.putAll(map);
   }
 
   public void clear()
   { map.clear();
   }
 
-  public Set keySet()
+  public Set<K> keySet()
   { return map.keySet();
   }
 
-  public Collection values()
+  public Collection<V> values()
   { return map.values();
   }
 
-  public Set entrySet()
+  public Set<Map.Entry<K,V>> entrySet()
   { return map.entrySet();
   }
 }

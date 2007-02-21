@@ -19,6 +19,8 @@ import java.util.EventObject;
 public class TaskEvent
   extends EventObject
 {
+  private static final long serialVersionUID = 1L;
+
   public TaskEvent(Task source)
   { super(source);
   }

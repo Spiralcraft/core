@@ -36,7 +36,6 @@ import java.util.Stack;
 import java.util.List;
 
 import java.io.IOException;
-import java.io.File;
 
 import java.util.regex.PatternSyntaxException;
 
@@ -51,7 +50,7 @@ public class Search
   private ResourceFilter _filter;
   private ResourceFilter _nameFilter;
   private ResourceFilter _contentFilter;
-  private boolean _print;
+  // private boolean _print;
   private Operation _operation;
   private Operation _currentOperation;
 
@@ -119,7 +118,7 @@ public class Search
    */
   public synchronized void run()
   { 
-    final Stack stack=new Stack();
+    final Stack<Resource> stack=new Stack<Resource>();
 
     try
     { stack.push(Resolver.getInstance().resolve(_rootUri));
@@ -135,7 +134,7 @@ public class Search
 
       while (!stack.isEmpty())
       {
-        Resource resource=(Resource) stack.pop();
+        Resource resource=stack.pop();
         Container container=resource.asContainer();
         if (container!=null)
         { 

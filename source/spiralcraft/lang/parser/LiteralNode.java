@@ -20,9 +20,6 @@ import spiralcraft.lang.BindException;
 
 import spiralcraft.lang.optics.SimpleBinding;
 
-
-import java.math.BigDecimal;
-
 public class LiteralNode
   extends Node
 {

@@ -22,7 +22,8 @@ import java.util.HashMap;
 
 public class Expression
 {
-  private static final HashMap _CACHE=new HashMap();
+  private static final HashMap<String,Expression> _CACHE
+    =new HashMap<String,Expression>();
 
   private Node _root;
   private String _text;

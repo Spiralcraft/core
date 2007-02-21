@@ -18,11 +18,11 @@ import spiralcraft.tuple.FieldList;
 import spiralcraft.tuple.Field;
 
 import spiralcraft.util.KeyedList;
-import spiralcraft.util.AutoMap;
 import spiralcraft.util.KeyFunction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A basic, efficient implementation of a FieldList
@@ -34,7 +34,7 @@ public class FieldListImpl<F extends FieldImpl>
 
   private final KeyedList<F>.Index<Object,F> _nameMap
     =addMap
-      (new HashMap<Object,F>()
+      (new HashMap<Object,List<F>>()
       ,new KeyFunction<Object,F>()
         {
           public Object key(F value)
@@ -44,12 +44,13 @@ public class FieldListImpl<F extends FieldImpl>
       );
   
   public FieldListImpl(int capacity)
-  { super(new ArrayList(capacity));
+  { super(new ArrayList<F>(capacity));
   }
 
   /**
    * Copy constructor
    */
+  @SuppressWarnings("unchecked")
   public FieldListImpl(FieldList<? extends Field> fieldList)
   { 
     super(new ArrayList(fieldList.size()));
@@ -59,7 +60,7 @@ public class FieldListImpl<F extends FieldImpl>
   }
   
   public FieldListImpl()
-  { super(new ArrayList());
+  { super(new ArrayList<F>());
   }
   
   public F findFirstByName(String name)

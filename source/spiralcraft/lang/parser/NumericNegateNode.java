@@ -15,7 +15,6 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Optic;
-import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;

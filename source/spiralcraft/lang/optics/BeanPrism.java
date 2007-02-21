@@ -27,7 +27,6 @@ import spiralcraft.util.ArrayUtil;
 
 import java.beans.Introspector;
 import java.beans.IntrospectionException;
-import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
 
 import java.util.HashMap;
@@ -47,9 +46,9 @@ public class BeanPrism
 
 
   private final MappedBeanInfo _beanInfo;
-  private HashMap _properties;
-  private HashMap _fields;
-  private HashMap _methods;
+  private HashMap<String,BeanPropertyLense> _properties;
+  private HashMap<String,BeanFieldLense> _fields;
+  private HashMap<String,MethodLense> _methods;
   private Class _targetClass;
   private MethodResolver _methodResolver;
   
@@ -69,7 +68,7 @@ public class BeanPrism
     }
   }
 
-  public Class getContentType()
+  public Class<?> getContentType()
   { return _targetClass;
   }
   
@@ -108,10 +107,10 @@ public class BeanPrism
   {
     BeanFieldLense fieldLense=null;
     if (_fields==null)
-    { _fields=new HashMap();
+    { _fields=new HashMap<String,BeanFieldLense>();
     }
     else
-    { fieldLense=(BeanFieldLense) _fields.get(name);
+    { fieldLense=_fields.get(name);
     }
 
     if (fieldLense==null)
@@ -142,10 +141,10 @@ public class BeanPrism
   {
     BeanPropertyLense lense=null;
     if (_properties==null)
-    { _properties=new HashMap();
+    { _properties=new HashMap<String,BeanPropertyLense>();
     }
     else
-    { lense=(BeanPropertyLense) _properties.get(name);
+    { lense=_properties.get(name);
     }
 
     if (lense==null)
@@ -195,10 +194,10 @@ public class BeanPrism
 
     MethodLense lense=null;
     if (_methods==null)
-    { _methods=new HashMap();
+    { _methods=new HashMap<String,MethodLense>();
     }
     else
-    { lense=(MethodLense) _methods.get(sig);
+    { lense= _methods.get(sig);
     }
 
     if (lense==null)

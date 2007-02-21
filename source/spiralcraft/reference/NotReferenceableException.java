@@ -22,5 +22,7 @@ public class NotReferenceableException
   extends Exception
 {
 
+  private static final long serialVersionUID = 1;
+  
 
 }

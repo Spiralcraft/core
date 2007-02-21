@@ -30,7 +30,7 @@ public class TagReader
   private AttributesReader _attributesReader
     =new AttributesReader();
 
-  private Attribute[] _attributes;
+  // private Attribute[] _attributes;
   private String _tagName;
 
   
@@ -63,7 +63,7 @@ public class TagReader
     _tagName=_nameTokenReader.getBuffer();
     _whitespaceReader.readWhitespace(context);
     _attributesReader.read(context);
-    _attributes=_attributesReader.getAttributes();
+    // _attributes=_attributesReader.getAttributes();
   }
 
   public String toString()
@@ -71,7 +71,7 @@ public class TagReader
     return 
       super.toString()
         +"[name='"+_tagName
-        +"',attributes="+ArrayUtil.formatToString(getAttributes(),",","")+"]"
+        +"',attributes="+ArrayUtil.format(getAttributes(),",","")+"]"
         ;
   }
 }

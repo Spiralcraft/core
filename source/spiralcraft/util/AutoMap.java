@@ -20,26 +20,29 @@ import java.util.Map;
  * A Map which uses a KeyFunction to automatically generate Keys for
  *   inserted values.
  */
-public class AutoMap
-  extends MapWrapper
+public class AutoMap<K,V>
+  extends MapWrapper<K,V>
 {
-  private final KeyFunction _keyFunction;
+  private final KeyFunction<K,V> _keyFunction;
   
-  public AutoMap(Map impl,KeyFunction function)
+  public AutoMap(Map<K,V> impl,KeyFunction<K,V> function)
   { 
     super(impl);
     _keyFunction=function;
   }
   
-  public void put(Object value)
+  public void put(V value)
   { put(_keyFunction.key(value),value);
   }
   
-  public void removeValue(Object value)
+  public void removeValue(V value)
   { remove(_keyFunction.key(value));
   }
   
+  @SuppressWarnings("unchecked")
   public boolean containsValue(Object value)
-  { return containsKey(_keyFunction.key(value));
+  { 
+    // Can't use V as param b/c of Map interface
+    return containsKey(_keyFunction.key((V) value));
   }
 }

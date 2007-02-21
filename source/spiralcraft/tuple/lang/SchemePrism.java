@@ -38,12 +38,13 @@ import java.util.Iterator;
 public class SchemePrism
   implements Prism
 {
-  private static final HashMap _SINGLETONS
-    =new HashMap();
+  private static final HashMap<Scheme,Prism> _SINGLETONS
+    =new HashMap<Scheme,Prism>();
   
   private final Scheme _scheme;
-  private final HashMap _fields=new HashMap();
-  private HashMap _fieldLenses;
+  private final HashMap<String,Field> _fields
+    =new HashMap<String,Field>();
+  private HashMap<String,FieldLense> _fieldLenses;
 
   public synchronized static final SchemePrism getInstance(Scheme scheme)
   { 
@@ -85,7 +86,7 @@ public class SchemePrism
   {
     FieldLense lense=null;
     if (_fieldLenses==null)
-    { _fieldLenses=new HashMap();
+    { _fieldLenses=new HashMap<String,FieldLense>();
     }
     else
     { lense=(FieldLense) _fieldLenses.get(name);
@@ -125,7 +126,7 @@ public class SchemePrism
     return null;
   }
   
-  public Class getContentType()
+  public Class<?> getContentType()
   { return Tuple.class;
   }
   

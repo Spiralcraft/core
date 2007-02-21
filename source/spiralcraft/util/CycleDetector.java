@@ -20,17 +20,17 @@ import java.util.HashMap;
 /**
  * Detects cycles using hashCode() and equals()
  */
-public class CycleDetector
+public class CycleDetector<T>
 {
-  private final Stack stack=new Stack();
-  private final HashMap map=new HashMap();
+  private final Stack<T> stack=new Stack<T>();
+  private final HashMap<T,T> map=new HashMap<T,T>();
 
   /**
    * Detects a duplicate object in the stack. If there is no duplicate
    *   returns false and pushes the object into the stack. If there is
    *   a duplicate, returns true.
    */
-  public boolean detectOrPush(Object object)
+  public boolean detectOrPush(T object)
   { 
     if (map.get(object)!=null)
     { return true;

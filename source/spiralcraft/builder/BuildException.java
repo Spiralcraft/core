@@ -20,6 +20,9 @@ package spiralcraft.builder;
 public class BuildException
   extends Exception
 {
+
+  private static final long serialVersionUID = 1;
+
   public BuildException(String message)
   { super(message);
   }

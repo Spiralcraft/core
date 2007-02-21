@@ -14,10 +14,6 @@
 //
 package spiralcraft.text.markup;
 
-import java.io.Writer;
-import java.io.IOException;
-
-
 /**
  * A Unit which contains content only, and has no children.
  */

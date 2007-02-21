@@ -14,8 +14,6 @@
 //
 package spiralcraft.util;
 
-import java.lang.reflect.Array;
-import java.util.LinkedList;
 
 /**
  * An immutable sequence of Strings which represent elements in a hierarchy.

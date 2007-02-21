@@ -14,13 +14,9 @@
 //
 package spiralcraft.lang.optics;
 
-import spiralcraft.lang.Focus;
-import spiralcraft.lang.Optic;
-import spiralcraft.lang.Expression;
 import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.BindException;
 
-import java.beans.PropertyChangeSupport;
 
 /**
  * An Binding bound to a self-contained Object 

@@ -23,8 +23,8 @@ import java.util.HashMap;
 public class LocalRegistryNode
   implements RegistryNode
 {
-  private HashMap _instances;
-  private HashMap _children;
+  private HashMap<Class,Object> _instances;
+  private HashMap<String,RegistryNode> _children;
   private final RegistryNode _parent;
   private final String _name;
   private final String _absolutePath;
@@ -82,7 +82,7 @@ public class LocalRegistryNode
   public void registerInstance(Class instanceClass,Object instance)
   { 
     if (_instances==null)
-    { _instances=new HashMap();
+    { _instances=new HashMap<Class,Object>();
     }
     _instances.put(instanceClass,instance);
   }
@@ -91,7 +91,7 @@ public class LocalRegistryNode
   { 
     RegistryNode child=new LocalRegistryNode(this,name);
     if (_children==null)
-    { _children=new HashMap();
+    { _children=new HashMap<String,RegistryNode>();
     }
     _children.put(name,child);
     return child;

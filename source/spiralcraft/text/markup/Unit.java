@@ -16,17 +16,12 @@ package spiralcraft.text.markup;
 
 import java.util.LinkedList;
 
-import spiralcraft.builder.Assembly;
-import spiralcraft.builder.BuildException;
-
-import spiralcraft.lang.BindException;
-
 /**
  * A Unit of marked up text
  */
 public abstract class Unit
 {
-  private LinkedList _children;
+  private LinkedList<Unit> _children;
   private Unit _parent;
   private String _name;
   
@@ -34,7 +29,7 @@ public abstract class Unit
   public void addChild(Unit child)
   { 
     if (_children==null)
-    { _children=new LinkedList();
+    { _children=new LinkedList<Unit>();
     }
     _children.add(child);
     child.setParent(this);

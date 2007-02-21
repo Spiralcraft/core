@@ -30,7 +30,7 @@ public class MethodCallNode
   private final Expression[] _parameters;
   private final Node[] _parameterNodes;
 
-  public MethodCallNode(Node source,String identifierName,List parameterList)
+  public MethodCallNode(Node source,String identifierName,List<Node> parameterList)
   { 
     _source=source;
     _identifierName=identifierName;

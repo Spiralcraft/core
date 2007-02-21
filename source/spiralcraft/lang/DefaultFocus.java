@@ -26,7 +26,7 @@ public class DefaultFocus
   private Context _context;
   private Optic _subject;
   private Focus _parent;
-  private HashMap _channels;
+  private HashMap<Expression,Channel> _channels;
 
   public DefaultFocus()
   {
@@ -94,7 +94,7 @@ public class DefaultFocus
   { 
     Channel channel=null;
     if (_channels==null)
-    { _channels=new HashMap();
+    { _channels=new HashMap<Expression,Channel>();
     }
     else
     { channel=(Channel) _channels.get(expression);

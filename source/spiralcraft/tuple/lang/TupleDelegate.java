@@ -24,7 +24,6 @@ import spiralcraft.tuple.spi.ReflectionScheme;
 
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.optics.AbstractBinding;
 import spiralcraft.lang.optics.Binding;
 
 import java.lang.reflect.InvocationHandler;

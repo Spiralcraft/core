@@ -23,6 +23,8 @@ public class CommandInfo
   extends PropertyChangeSupport
 {
 
+  private static final long serialVersionUID = 1L;
+
   private String _codeName;
   private String _buttonName;
   private String _shortDescription;

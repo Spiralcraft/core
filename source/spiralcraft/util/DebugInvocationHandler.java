@@ -26,10 +26,10 @@ public class DebugInvocationHandler
 {
 
   
-  private final Class _interface;
+  // private final Class _interface;
   
   public DebugInvocationHandler(Class clazz)
-  { _interface=clazz;
+  { // _interface=clazz;
   }
   
   public Object invoke

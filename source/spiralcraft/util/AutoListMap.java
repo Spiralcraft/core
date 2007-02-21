@@ -26,7 +26,7 @@ public class AutoListMap<K,T>
 {
   private final KeyFunction<K,T> _keyFunction;
   
-  public AutoListMap(Map impl,KeyFunction function)
+  public AutoListMap(Map<K,List<T>> impl,KeyFunction<K,T> function)
   { 
     super(impl);
     _keyFunction=function;
@@ -44,9 +44,12 @@ public class AutoListMap<K,T>
   { add(_keyFunction.key(value),value);
   }
   
+  @SuppressWarnings("unchecked")
   public boolean containsValue(Object value)
   { 
-      
+    // We can't us T as a param because of java.util.Map
+    //   backwards compatability
+    
     List<T> list=get(_keyFunction.key((T) value));
     if (list==null)
     { return false;

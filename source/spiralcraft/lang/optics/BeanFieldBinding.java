@@ -14,7 +14,6 @@
 //
 package spiralcraft.lang.optics;
 
-import spiralcraft.lang.Optic;
 import spiralcraft.lang.WriteException;
 
 

@@ -23,7 +23,7 @@ import spiralcraft.util.ArrayUtil;
 public class ParameterSet
 {
   private final ParameterSetDefinition _definition;
-  private HashMap _values;
+  private HashMap<String,Object[]> _values;
   
   
   
@@ -40,7 +40,7 @@ public class ParameterSet
     if (_definition.isNameValid(name))
     {
       int count=_definition.getCount(name);
-      Class type=_definition.getType(name);
+      // Class type=_definition.getType(name);
     
       if (count!=0)
       {
@@ -66,7 +66,7 @@ public class ParameterSet
     if (_definition.isNameValid(name))
     {
       int count=_definition.getCount(name);
-      Class type=_definition.getType(name);
+      Class<?> type=_definition.getType(name);
     
       if (count==0)
       {
@@ -151,7 +151,7 @@ public class ParameterSet
   private void setValuesRaw(String name,Object[] values)
   {
     if (_values==null)
-    { _values=new HashMap();
+    { _values=new HashMap<String,Object[]>();
     }
     _values.put(name,values);
   }
