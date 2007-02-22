@@ -22,7 +22,7 @@ import spiralcraft.data.wrapper.ReflectionType;
 import java.net.URI;
 
 /**
- * A Type implementation that represents a Scheme
+ * A Type implementation that represents a Field
  */
 public class FieldType
   extends ReflectionType<FieldImpl>

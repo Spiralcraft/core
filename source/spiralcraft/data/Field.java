@@ -14,6 +14,8 @@
 //
 package spiralcraft.data;
 
+import java.net.URI;
+
 /**
  * A description of a single element of a Tuple.
  */
@@ -53,4 +55,9 @@ public interface Field
   void setValue(EditableTuple t,Object value)
     throws DataException;
   
+  /**
+   * @return This field's URI, which is this field's name in the context of
+   *   the Type that it belongs to. 
+   */
+  URI getUri();
 }

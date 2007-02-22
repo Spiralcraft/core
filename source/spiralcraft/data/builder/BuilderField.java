@@ -132,6 +132,8 @@ public class BuilderField
         {
           if (getType().getCoreType() instanceof BuilderType)
           { 
+            // Can't depersist an Assembly where there is no
+            //   declared PropertySpecifier to contain it
             throw new DataException
               ("Field '"+getName()+"' must be declared in Assembly: "
               +getScheme().getType().getUri()
@@ -140,6 +142,8 @@ public class BuilderField
           }
           else
           {
+            // We -can- depersist a bean value into a property
+            //   that has no descriptor
             Object bean=assembly.getSubject().get();
             super.depersistBeanProperty(tuple,bean);
           }
@@ -148,8 +152,7 @@ public class BuilderField
       catch (BuildException x)
       { 
         throw new DataException
-          ("Error depersisting field '"+getName()+"' in "
-          +getScheme().getType().getUri()+": "+x
+          ("Error depersisting field '"+getUri()+"':"+x
           ,x
           );
       }

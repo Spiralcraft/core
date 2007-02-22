@@ -16,29 +16,29 @@ package spiralcraft.data;
 
 /**
  * A Tuple provides read access to a unit of structured data consisting of 
- *   one or more closely related data elements (Fields).
+ *   one or more closely related data elements (Fields).<P>
  *
  * The data structure of a Tuple is defined by a Scheme, which names and 
  *   describes each Field in the Tuple. Each Field is assigned an index
- *   according to the sequence of its definition in the Scheme. 
+ *   according to the sequence of its definition in the Scheme.<P>
  *
  * The primary function of a Tuple is to provide a uniform means of access
  *   to data regardless of the source and external representation of that data,
  *   in order to increase the portability and scope of data presentation and
- *   processing components.
+ *   processing components.<P>
  *   
  * The implementation of the Tuple is tied to a given external representation.
  *   A given implementation will provide common components with access to data
  *   stored in a specific type of physical container, be it a simple array of
  *   Objects, a packed buffer of bytes, disk mapped buffers, OS kernel
- *   structures, relational database implementations, etc.
+ *   structures, relational database implementations, etc.<P>
  *
- * Identity:
+ * Identity:<P>
  *
  * Implementations of Tuple must implement the equals() and the hashCode()
  *   methods appropriately. A Tuple is considered equal to another tuple if
  *   and only if all of its data elements are equal. Two tuples which have
- *   different Schemes may be equal. 
+ *   different Schemes may be equal. <P>
  *
  */
 public interface Tuple

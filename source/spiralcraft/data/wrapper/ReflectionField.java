@@ -153,9 +153,7 @@ public class ReflectionField
       if (value!=null && writeMethod==null)
       { 
         System.err.println
-          ("Field '"+getName()+"' is not depersistable- no 'set' method: "
-          +getScheme().getType().getUri()
-          );
+          ("Field "+getUri()+" is not depersistable- no 'set' method: ");
       }
     }
   }
@@ -210,9 +208,7 @@ public class ReflectionField
     if (readMethod==null && writeMethod!=null)
     { 
       System.err.println
-        ("Write only property: field '"+getName()+" in "
-        +getScheme().getType().getUri()
-        );
+        ("Write only property: field "+getUri());
     }
   }
   

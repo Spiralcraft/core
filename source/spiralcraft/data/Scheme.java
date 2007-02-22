@@ -15,22 +15,27 @@
 package spiralcraft.data;
 
 /**
- * Describes a unit of structured data. 
+ * Describes a unit of structured data as a collection of Fields, Keys
+ *   Methods, and Constraints.
  */
 public interface Scheme
+  extends FieldSet
 {
 
   /**
+   *  A Scheme can be associated with a Type. 
+   *    
+   *  A Scheme without a Type usually indicates that is was created 
+   *    dynamically.
+   *
    *@return the Type associated with this Scheme, or null if there is no
-   *  Type associated with this Scheme
+   *  Type associated with this Scheme.<P>
    */
   Type getType();
   
   /**
    * A Scheme's archetype is usually equivalent to
-   *   the result of getType().getArchetype().getScheme(). Schemes
-   *   that do not have Types, however, usually have archetype Schemes that
-   *   are associated with a Type.
+   *   the result of getType().getArchetype().getScheme().<P>
    *
    *@return Whether this Scheme is derived from the specified Scheme
    */
@@ -55,7 +60,29 @@ public interface Scheme
   
   /**
    *@return an Iterable which provides access to 
-   *   fields in order of their indexes
+   *   fields in order of their indices
    */
   Iterable<? extends Field> fieldIterable();
+  
+  /**
+   *@return The primary key for this Scheme. 
+   */
+  Key getPrimaryKey();
+  
+  /**
+   * @return The Key at the specified index
+   */
+  Key getKeyByIndex(int index);
+  
+  /**
+   * @returnn Iterable which provides access to 
+   *   keys in the order in which they were defined
+   */
+  Iterable<? extends Key> keyIterable();
+  
+  /**
+   * @return The number of keys that have been defined for this Scheme
+   */
+  int getKeyCount();
+  
 }

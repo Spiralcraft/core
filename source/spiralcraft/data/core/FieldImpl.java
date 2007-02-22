@@ -21,6 +21,8 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 
+import java.net.URI;
+
 /**
  * Core implementation of a Field
  */
@@ -33,6 +35,7 @@ public class FieldImpl
   private String name;
   private Type<?> type;
   private Field archetypeField;
+  private URI uri;
   
   /**
    * Set the scheme
@@ -41,6 +44,19 @@ public class FieldImpl
   { 
     assertUnlocked();
     this.scheme=scheme;
+    if (scheme.getType()!=null)
+    { 
+      this.uri
+        =URI.create(scheme.getType().getUri().toString()+"#"+getName());
+    }
+    else
+    {
+      this.uri
+        =URI.create("untyped#"+getName());
+      
+    }
+      
+    
   }
   
   void setArchetypeField(Field field)
@@ -51,9 +67,8 @@ public class FieldImpl
     if (!this.type.hasArchetype(archetypeField.getType()))
     { 
       throw new DataException
-        ("Field '"+getName()+"' in "+getScheme().getType().getUri()
-        +" cannot extend field of same name in "
-        +archetypeField.getScheme().getType().getUri()
+        ("Field "+getUri()+"'"
+        +" cannot extend field "+archetypeField.getUri()
         +": type "+archetypeField.getType()+" is not an archetype of "
         +this.type
         );
@@ -67,6 +82,11 @@ public class FieldImpl
   { return scheme;
   }
 
+  public URI getUri()
+  { return uri;
+  }
+  
+  
   /**
    *@return Whether this field has the same type, constraints and attributes
    *   as the specified field.
@@ -146,7 +166,7 @@ public class FieldImpl
     else
     {
       throw new IllegalArgumentException
-        ("Field '"+name+"' of type "+getScheme().getType()
+        ("Field "+getUri()
         +" not in Tuple Scheme "+scheme.toString()
         );
     }
@@ -157,7 +177,7 @@ public class FieldImpl
   }
   
   public String toString()
-  { return super.toString()+":"+name+"("+type.getUri()+")";
+  { return super.toString()+":"+uri;
   }
   
   private final void assertUnlocked()

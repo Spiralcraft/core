@@ -18,8 +18,7 @@ import java.net.URI;
 
 
 /**
- * Describes the data type of a data element. Root of the interface hierarchy
- *   for describing types
+ * Describes the data type of a data element.<BR>
  */
 public interface Type<T>
 {  
@@ -89,11 +88,11 @@ public interface Type<T>
    *   inherited by this type. The Archetype will typically be recognized
    *   by common data-aware components, and this subtype will augment the
    *   Archetype with extra Fields and operations, usually in the context of
-   *   a more specific data model.
-   *
+   *   a more specific data model.<P>
+   * 
    * A Type and all its archetypes are represented by a single Tuple. The
    *   sequence of Fields in the Scheme will start with the Archetype's Fields
-   *   and end with the Fields declared in this Type.
+   *   and end with the Fields declared in this Type.<P>
    *
    * @return The archetype of this Type
    */
@@ -108,9 +107,9 @@ public interface Type<T>
   /**
    * A base Type is a means for this Type to inherit an identity, data structure
    *   and operations from another Type, in order to further specify a variation
-   *   of the base Type. 
+   *   of the base Type.<P>
    *
-   * A Type which extends a base Type has compound instances composed of extents.
+   * A Type which extends a base Type has compound instances composed of extents.<P>
    *
    * In a given compound instance, there is one extent per Type in the 
    *   hierarchy which holds the data associated with the Type. The extents in
@@ -118,19 +117,19 @@ public interface Type<T>
    *   instantiated, will cause the other extents to be created. Any deletion
    *   will cause all the extents to be deleted. Each extent is aware of the
    *   most specific extent in the heirarchy as well as its immediate base
-   *   extent.
+   *   extent.<P>
    * 
    * Data structure and operation inheritance is realized via delegation. A more
    *   specific extent will delegate field access and operations to its
    *   immediate base extent if the operations are not relevant to the more
-   *   specific extent.
+   *   specific extent.<P>
    *
    * Polymorphism via virtualization is realized by delegating virtual
-   *   operations on a general extent to the most specific extent.
+   *   operations on a general extent to the most specific extent.<P>
    *
    * Tuples which participate as an extent in a class hierarchy require extra
    *   storage to maintain their relationship to other Tuples of the same
-   *   instance.
+   *   instance.<P>
    */
   Type getBaseType();
   
@@ -151,8 +150,8 @@ public interface Type<T>
   boolean isStringEncodable();
   
   /**
-   * Translates the canonical String representation of a value of this Type to
-   *   an Object presenting a suitable interface.
+   * Translate the canonical String representation of a value of this Type to
+   *   an Object presenting a suitable interface.<P>
    *
    * @return An object with a Java class compatible with the Class or Interface
    *    returned from the getNativeClass() method.
@@ -164,8 +163,8 @@ public interface Type<T>
     throws DataException;
   
   /**
-   * Translates a native representation of a value of this Type to the 
-   *   canonical String representation.
+   * Translate a native representation of a value of this Type to the 
+   *   canonical String representation.<P>
    *
    * @return The canonical String representation of this Type for the specified
    *    Object.

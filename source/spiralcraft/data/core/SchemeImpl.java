@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import spiralcraft.data.Key;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Field;
@@ -30,6 +31,10 @@ public class SchemeImpl
   implements Scheme
 {
   protected Type type;
+  protected Key primaryKey;
+  private boolean resolved;
+  private Scheme archetypeScheme;
+
   protected final ArrayList<FieldImpl> localFields
     =new ArrayList<FieldImpl>();
   protected final HashMap<String,FieldImpl> localFieldMap
@@ -40,9 +45,11 @@ public class SchemeImpl
   protected final HashMap<String,Field> fieldMap
     =new HashMap<String,Field>();
 
-  private boolean resolved;
-
-  private Scheme archetypeScheme;
+  protected final ArrayList<KeyImpl> keys
+    =new ArrayList<KeyImpl>();
+  protected final HashMap<String,KeyImpl> keyMap
+    =new HashMap<String,KeyImpl>();
+  
   
   public Type getType()
   { return type;
@@ -192,6 +199,8 @@ public class SchemeImpl
     for (FieldImpl field:localFields)
     {
       Field archetypeField=null;
+      field.setScheme(this);
+      
       if (archetypeScheme!=null)
       { 
         archetypeField=
@@ -212,8 +221,8 @@ public class SchemeImpl
         field.setArchetypeField(archetypeField);
         fields.set(field.getIndex(),field);
         System.err.println
-          ("Field '"+field.getName()+"' in "+getType().getUri()
-          +" overriding field of same name in "+archetypeScheme.getType().getUri()
+          ("Field "+field.getUri()
+          +" overriding field "+archetypeField.getUri()
           );
       }
       else
@@ -221,11 +230,30 @@ public class SchemeImpl
         field.setIndex(fieldIndex++);
         fields.add(field);
       }
-      field.setScheme(this);
       field.lock();
       fieldMap.put(field.getName(),field);
       
     }
+    
+    int keyIndex=0;
+    for (KeyImpl key:keys)
+    {
+      key.setScheme(this);
+      key.setIndex(keyIndex++);
+      if (key.isPrimary())
+      { 
+        if (primaryKey!=null)
+        {
+          throw new DataException
+            ("Scheme can only have one primary key: "+toString());
+        }
+        else
+        { primaryKey=key;
+        }
+      }
+      key.resolve();
+    }
+    
   }
   
   public void assertUnresolved()
@@ -233,5 +261,21 @@ public class SchemeImpl
     if (resolved)
     { throw new IllegalStateException("Already resolved");
     }
+  }
+
+  public Key getKeyByIndex(int index)
+  { return keys.get(index);
+  }
+
+  public int getKeyCount()
+  { return keys.size();
+  }
+
+  public Key getPrimaryKey()
+  { return primaryKey;
+  }
+
+  public Iterable<? extends Key> keyIterable()
+  { return keys;
   }
 }
