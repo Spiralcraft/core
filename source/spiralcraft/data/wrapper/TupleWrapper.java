@@ -17,7 +17,7 @@ package spiralcraft.data.wrapper;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
-import spiralcraft.data.Scheme;
+import spiralcraft.data.FieldSet;
 
 /** 
  * Base Class for Objects which use a Tuple for their instance data.
@@ -27,15 +27,15 @@ import spiralcraft.data.Scheme;
  */
 public abstract class TupleWrapper
 {
-  private final Scheme scheme;
+  private final FieldSet fieldSet;
   private Tuple tuple;
   private boolean editable;
     
   /**
    * Create a TupleWrapper for Tuples of the specific Scheme
    */
-  protected TupleWrapper(Scheme scheme)
-  { this.scheme=scheme;
+  protected TupleWrapper(FieldSet fieldSet)
+  { this.fieldSet=fieldSet;
   }
   
   /**
@@ -46,7 +46,7 @@ public abstract class TupleWrapper
     tuple=t;
     if (t!=null)
     {
-      if (t.getScheme()!=scheme)
+      if (t.getFieldSet()!=fieldSet)
       { throw new IllegalArgumentException("Tuple does not match Scheme");
       }
       editable=t.isMutable();
