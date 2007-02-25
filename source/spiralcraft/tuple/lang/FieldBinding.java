@@ -22,12 +22,14 @@ import spiralcraft.lang.optics.Binding;
 
 /**
  * A binding to a value of a field
+ * @deprecated Now used by data package    
  */
 public class FieldBinding
   extends LenseBinding
 {
   private final FieldLense _lense;
   
+  @SuppressWarnings("unchecked") // Deprecated
   public FieldBinding(Binding source,FieldLense lense)
   { 
     super(source,lense,null);

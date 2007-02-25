@@ -30,7 +30,10 @@ import spiralcraft.lang.optics.Binding;
  *
  * XXX Evaluate utility of this class- only used to implement TupleBinding for
  *     now.
+ * @deprecated Use the spiralcraft.data package
  */ 
+
+@SuppressWarnings("unchecked") // Obsolete- deprecated
 public abstract class DelegateBinding
   extends AbstractBinding
 {
@@ -43,6 +46,10 @@ public abstract class DelegateBinding
 
 }
 
+/**
+ * @deprecated Use the spiralcraft.data package 
+ */
+@SuppressWarnings("unchecked") // Obsolete- deprecated
 class DelegatePrism
   implements Prism
 {
@@ -51,7 +58,7 @@ class DelegatePrism
   public DelegatePrism(Class clazz)
   { _class=clazz;
   }
-  
+
   public Binding resolve(Binding source,Focus focus,String name,Expression[] params)
     throws BindException
   { 

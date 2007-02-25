@@ -39,6 +39,7 @@ import java.lang.reflect.InvocationTargetException;
  *  Java interface.
  *
  */
+@SuppressWarnings("deprecation")
 public class TupleDelegate
   extends DelegateBinding
   implements InvocationHandler

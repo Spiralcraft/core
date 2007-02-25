@@ -24,12 +24,16 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.optics.Lense;
 import spiralcraft.lang.optics.Prism;
 
+/**
+ *@deprecated Use the spiralcraft.data package
+ */
 public class FieldLense
   implements Lense
 {
   private final Field _field;
   private final Prism _prism;
   
+  @SuppressWarnings("deprecation")
   public FieldLense(Field field)
     throws BindException
   { 

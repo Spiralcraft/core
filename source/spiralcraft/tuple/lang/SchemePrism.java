@@ -34,6 +34,7 @@ import java.util.Iterator;
  *
  * This allows object models of Tuples (defined by Schemes) to be
  *   fully utilized by the language facilities.
+ * @deprecated Use the spiralcraft.data package    
  */
 public class SchemePrism
   implements Prism

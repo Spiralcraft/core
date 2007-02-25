@@ -26,6 +26,7 @@ import spiralcraft.tuple.Scheme;
  * A spiralcraft.lang binding for Tuples, which uses the Tuple's Scheme
  *   as the type model for binding expressions.
  */
+@SuppressWarnings({ "unchecked", "deprecation" })
 public class TupleBinding
   extends AbstractBinding
 {
