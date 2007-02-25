@@ -25,8 +25,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import spiralcraft.lang.WriteException;
 
-public class BeanPropertyBinding
-  extends LenseBinding
+public class BeanPropertyBinding<T,S>
+  extends LenseBinding<T,S>
 {
   private static final Object[] EMPTY_PARAMS=new Object[0];
   private final Object[] _params=new Object[1];
@@ -37,8 +37,8 @@ public class BeanPropertyBinding
   private final Object[] _beanPropertyChangeListenerParams;
 
   public BeanPropertyBinding
-    (Binding source
-    ,BeanPropertyLense lense
+    (Binding<S> source
+    ,BeanPropertyLense<T,S> lense
     )
   {
     super(source,lense,null);

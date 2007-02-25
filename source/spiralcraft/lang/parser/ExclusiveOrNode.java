@@ -14,27 +14,49 @@
 //
 package spiralcraft.lang.parser;
 
+import spiralcraft.lang.Optic;
+
 
 public class ExclusiveOrNode
-  extends Node
+  extends LogicalNode<Boolean,Boolean>
 {
 
-  private final Node _op1;
-  private final Node _op2;
-
-  public ExclusiveOrNode(Node op1,Node op2)
-  { 
-    _op1=op1;
-    _op2=op2;
+  public ExclusiveOrNode(Node<Boolean> op1,Node<Boolean> op2)
+  { super(op1,op2);
+    
+    // debugTree();
+    // System.out.println("ExclusiveOrNode:"+op1.toString()+"\r\n"+op2.toString());
+    
   }
 
-  public void dumpTree(StringBuffer out,String prefix)
+  @SuppressWarnings("unchecked") // Heterogeneous Array
+  public Boolean translateForGet(Boolean val,Optic[] mods)
   { 
-    out.append(prefix).append("Xor");
-    prefix=prefix+"  ";
-    _op1.dumpTree(out,prefix);
-    out.append(prefix).append("^");
-    _op2.dumpTree(out,prefix);
-  }
+    if (val==null)
+    { return null;
+    }
+    boolean val1=val.booleanValue();
+//    System.out.println("val1="+val1);
 
+    Boolean mod=((Optic<Boolean>) mods[0]).get();
+    if (mod==null)
+    { return null;
+    }
+    boolean val2=mod.booleanValue();
+//    System.out.println("val2="+val2);
+    
+    return (val1 || val2) && !(val1 && val2);
+    
+    
+  }
+  
+  public Boolean translateForSet(Boolean val,Optic[] mods)
+  { 
+    // Not reversible
+    throw new UnsupportedOperationException();
+  }
+  
+  public String getSymbol()
+  { return "^";
+  }
 }

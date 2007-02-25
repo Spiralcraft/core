@@ -27,7 +27,7 @@ package spiralcraft.lang;
  *   and the Context into traversals, transformations and computations to
  *   create new subjects of Focus. 
  */
-public interface Focus
+public interface Focus<T>
 {
     
   /**
@@ -39,23 +39,23 @@ public interface Focus
   /**
    * Return the subject of expression evaluation
    */
-  Optic getSubject();
+  Optic<T> getSubject();
 
   /**
    * Find a Focus using its well known name.
    */
-  Focus findFocus(String name);
+  Focus<?> findFocus(String name);
 
   /**
    * Return this Focus's parent Focus.
    */
-  Focus getParentFocus();
+  Focus<?> getParentFocus();
 
   /**
    * Return a Channel, which binds the Expression to this Focus. It may be
    *   useful for implementations to cache Channels to avoid creating
    *   multiple channels for the same Expression.
    */
-  Channel bind(Expression expression)
+  <X> Channel<X> bind(Expression<X> expression)
     throws BindException;
 }

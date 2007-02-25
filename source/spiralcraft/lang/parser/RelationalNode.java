@@ -16,24 +16,25 @@ package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Optic;
 
-public class RelationalNode
-  extends LogicalNode
+public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
+  extends LogicalNode<T1,T2>
 {
 
   private final boolean _greaterThan;
   private final boolean _equals;
 
-  public RelationalNode(boolean greaterThan,boolean equals,Node op1,Node op2)
+  public RelationalNode(boolean greaterThan,boolean equals,Node<T1> op1,Node<T2> op2)
   { 
     super(op1,op2);
     _greaterThan=greaterThan;
     _equals=equals;
   }
 
-  public Object translateForGet(Object val,Optic[] mods)
+  @SuppressWarnings("unchecked") // Array is heterogeneous
+  public Boolean translateForGet(T1 val,Optic[] mods)
   { 
-    Comparable<? super Object> val1=(Comparable<? super Object>) val;
-    Comparable val2=(Comparable) mods[0].get();
+    Comparable<T1> val1= val;
+    T2 val2=((Optic<T2>) mods[0]).get();
     
     if (val1==null)
     { 
@@ -67,7 +68,7 @@ public class RelationalNode
     }
   }
   
-  public Object translateForSet(Object val,Optic[] mods)
+  public T1 translateForSet(Boolean val,Optic[] mods)
   { 
     // Not reversible
     throw new UnsupportedOperationException();

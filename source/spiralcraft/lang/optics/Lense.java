@@ -17,22 +17,24 @@ package spiralcraft.lang.optics;
 import spiralcraft.lang.Optic;
 
 /**
- * A bidirectional data translation associated with an Optic.
+ * A bidirectional data translation associated with an Optic. A "derived" Object is obtained
+ *   from the "origin" object in the "get" direction, and the "origin" object is obtained
+ *   from the "derived" object in the "set" direction.
  */
-public interface Lense
+public interface Lense<Tderived,Torigin>
 {
   /**
    * Transform the source object in the 'get' direction
    */
-  public Object translateForGet(Object source,Optic[] modifiers);
+  public Tderived translateForGet(Torigin source,Optic[] modifiers);
 
   /**
    * Transform the source object in the 'set' direction
    */
-  public Object translateForSet(Object source,Optic[] modifiers);
+  public Torigin translateForSet(Tderived source,Optic[] modifiers);
 
   /**
-   * Return the Prism associated with the target Object.
+   * Return the Prism associated with the derived Object.
    */
-  public Prism getPrism();
+  public Prism<Tderived> getPrism();
 }

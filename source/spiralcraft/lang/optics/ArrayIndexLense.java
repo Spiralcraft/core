@@ -19,43 +19,35 @@ import spiralcraft.lang.Optic;
 import spiralcraft.lang.optics.Lense;
 import spiralcraft.lang.optics.Prism;
 
-public class StringConcatLense
-  implements Lense<String,String>
+public class ArrayIndexLense<T>
+  implements Lense<T,T[]>
 {
-  private final Prism<String> _prism;
+  private final Prism<T> _prism;
   
-  public StringConcatLense(Prism<String> prism)
+  public ArrayIndexLense(Prism<T> prism)
   { _prism=prism;
   }
   
-  public Prism<String> getPrism()
+  public Prism<T> getPrism()
   { return _prism;
   }
 
   @SuppressWarnings("unchecked") // Upcast for expected modifiers
-  public String translateForGet(String source,Optic[] modifiers)
+  public T translateForGet(T[] source,Optic[] modifiers)
   { 
-    String modifier=((Optic<String>)modifiers[0]).get();
-    if (modifier==null)
-    { return source;
+    Number index=((Optic<Number>)modifiers[0]).get();
+    if (index==null)
+    { return null;
     }
     if (source==null)
-    { return modifier;
+    { return null;
     }
-    return source.concat(modifier);
+    return source[index.intValue()];
   }
 
   @SuppressWarnings("unchecked") // Upcast for expected modifiers
-  public String translateForSet(String string,Optic[] modifiers)
-  { 
-    String concat=((Optic<String>) modifiers[0]).get();
-    if (concat==null)
-    { return string;
-    }
-    if (string.endsWith(concat))
-    { return string.substring(0,string.indexOf(concat));
-    }
-    return null;
+  public T[] translateForSet(T value,Optic[] modifiers)
+  { throw new UnsupportedOperationException("Can't reverse array index");
   }
 
 

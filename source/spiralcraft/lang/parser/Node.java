@@ -25,24 +25,28 @@ import spiralcraft.lang.OpticAdapter;
 /**
  * A Node in an Expression parse tree
  */
-public abstract class Node
+public abstract class Node<T>
 {
 
+  public abstract Optic<T> bind(Focus<?> focus)
+    throws BindException;
+  
   /**
    * Stubbed bind method for unimplemented nodes.
    *
    *@return An optic with no functionality
    */
-  public Optic bind(Focus focus)
+  public Optic<Void> defaultBind(Focus<?> focus)
     throws BindException
   { 
     System.err.println(getClass().getName()+" not implemented");
-    return new OpticAdapter()
+    return new OpticAdapter<Void>()
     {
-      public Prism getPrism()
+      @SuppressWarnings("unchecked") // Cast to Prism<Void>
+      public Prism<Void> getPrism()
       { 
         try
-        { return OpticFactory.getInstance().findPrism(Void.class);
+        { return (Prism<Void>) OpticFactory.getInstance().findPrism(Void.class);
         }
         catch (BindException x)
         { // shouldn't happen
@@ -54,4 +58,11 @@ public abstract class Node
 
   public abstract void dumpTree(StringBuffer out,String prefix);
 
+  public void debugTree(java.io.PrintStream err)
+  {
+    StringBuffer out=new StringBuffer();
+    dumpTree(out,"\r\n  ");
+    err.println(out.toString());
+    
+  }
 }

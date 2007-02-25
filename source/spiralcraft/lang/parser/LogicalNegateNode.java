@@ -14,22 +14,43 @@
 //
 package spiralcraft.lang.parser;
 
+import spiralcraft.lang.Optic;
 
 public class LogicalNegateNode
-  extends Node
+  extends LogicalNode<Boolean,Void>
 {
 
-  private final Node _node;
-
-  public LogicalNegateNode(Node node)
-  {  _node=node;
+  public LogicalNegateNode(Node<Boolean> node)
+  { super(node,null);
   }
 
-  public void dumpTree(StringBuffer out,String prefix)
+  public Boolean translateForGet(Boolean val,Optic[] mods)
   { 
-    out.append(prefix).append("Not");
-    prefix=prefix+"  ";
-    _node.dumpTree(out,prefix);
+    if (val==null)
+    { return null;
+    }
+    else if (val)
+    { return Boolean.FALSE;
+    }
+    else
+    { return Boolean.TRUE;
+    }
   }
-
+  
+  public Boolean translateForSet(Boolean val,Optic[] mods)
+  { 
+    if (val==null)
+    { return null;
+    }
+    else if (val)
+    { return Boolean.FALSE;
+    }
+    else
+    { return Boolean.TRUE;
+    }
+  }
+  
+  public String getSymbol()
+  { return "!";
+  }
 }

@@ -27,13 +27,13 @@ import java.beans.PropertyChangeSupport;
  * An Optic which delegates to another Optic, usually in order to
  *   decorate the namespace.
  */
-public class ProxyOptic
-  implements Optic
+public class ProxyOptic<T>
+  implements Optic<T>
 {
 
-  private final Optic _optic;
+  private final Optic<T> _optic;
 
-  public ProxyOptic(Optic delegate)
+  public ProxyOptic(Optic<T> delegate)
   { 
     if (delegate==null)
     { throw new IllegalArgumentException("Delegate cannot be null");
@@ -41,25 +41,25 @@ public class ProxyOptic
     _optic=delegate;
   }
 
-  public Optic resolve(Focus focus,String name,Expression[] params)
+  public <X> Optic<X> resolve(Focus focus,String name,Expression[] params)
     throws BindException
   { return _optic.resolve(focus,name,params);
   }
 
-  public Object get()
+  public T get()
   { return _optic.get();
   }
 
-  public boolean set(Object value)
+  public boolean set(T value)
     throws WriteException
   { return _optic.set(value);
   }
 
-  public Class<?> getContentType()
+  public Class<T> getContentType()
   { return _optic.getContentType();
   }
 
-  public Decorator decorate(Class decoratorInterface)
+  public Decorator<T> decorate(Class decoratorInterface)
   { return _optic.decorate(decoratorInterface);
   }
 
@@ -71,7 +71,7 @@ public class ProxyOptic
   { return _optic.isStatic();
   }
 
-  public Prism getPrism()
+  public Prism<T> getPrism()
   { return _optic.getPrism();
   }
   

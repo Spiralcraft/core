@@ -28,7 +28,7 @@ public interface Context
   /**
    * Resolve the name by returning the Optic which corresponds to this name
    */
-  public Optic resolve(String name);
+  public <X> Optic<X> resolve(String name);
 
   /**
    * Return the attribute names in this Context

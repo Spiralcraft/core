@@ -19,30 +19,30 @@ import spiralcraft.lang.optics.SimpleBinding;
 /**
  * Maps a name to an Optic. Used primarily in an AttributeContext
  */
-public class Attribute
+public class Attribute<T>
 {
   private String _name;
-  private Optic _optic;
-  private Class _type;
+  private Optic<T> _optic;
+  private Class<T> _type;
 
   public Attribute()
   {
   }
 
-  public Attribute(String name,Optic optic)
+  public Attribute(String name,Optic<T> optic)
   { 
     _name=name;
     _optic=optic;
     _type=optic.getContentType();
   }
 
-  public Attribute(String name,Class type)
+  public Attribute(String name,Class<T> type)
   { 
     _name=name;
     _type=type;
   }
 
-  public Optic getOptic()
+  public Optic<T> getOptic()
   { 
     if (_optic==null)
     { createOptic();
@@ -58,11 +58,11 @@ public class Attribute
   { _name=name;
   }
 
-  public void setType(Class type)
+  public void setType(Class<T> type)
   { _type=type;
   }
 
-  public void setOptic(Optic val)
+  public void setOptic(Optic<T> val)
   { _optic=val;
   }
 
@@ -71,7 +71,7 @@ public class Attribute
     if (_optic==null)
     { 
       try
-      { _optic=new SimpleBinding(_type,null,false);
+      { _optic=new SimpleBinding<T>(_type,null,false);
       }
       catch (BindException x)
       { x.printStackTrace();

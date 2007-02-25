@@ -22,17 +22,17 @@ import spiralcraft.lang.Optic;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
-public class ConditionalNode
-  extends Node
+public class ConditionalNode<T>
+  extends Node<T>
 {
-  private final Node _condition;
-  private final Node _trueResult;
-  private final Node _falseResult;
+  private final Node<Boolean> _condition;
+  private final Node<T> _trueResult;
+  private final Node<T> _falseResult;
 
   public ConditionalNode
-    (Node condition
-    ,Node trueResult
-    ,Node falseResult
+    (Node<Boolean> condition
+    ,Node<T> trueResult
+    ,Node<T> falseResult
     )
   { 
     _condition=condition;
@@ -40,16 +40,16 @@ public class ConditionalNode
     _falseResult=falseResult;
   }
 
-  public Optic bind(Focus focus)
+  public Optic<T> bind(Focus<?> focus)
     throws BindException
   { 
-    Optic condition=_condition.bind(focus);
-    Optic trueResult=_trueResult.bind(focus);
-    Optic falseResult=_falseResult.bind(focus);
+    Optic<Boolean> condition=_condition.bind(focus);
+    Optic<T> trueResult=_trueResult.bind(focus);
+    Optic<T> falseResult=_falseResult.bind(focus);
     
-    return new LenseBinding
+    return new LenseBinding<T,Boolean>
       (condition
-      ,new ConditionalLense
+      ,new ConditionalLense<T>
         (trueResult.getPrism()
         ,falseResult.getPrism()
         )
@@ -69,12 +69,12 @@ public class ConditionalNode
   }
 }
 
-class ConditionalLense
-  implements Lense
+class ConditionalLense<T>
+  implements Lense<T,Boolean>
 {
-  private Prism prism;
+  private Prism<T> prism;
   
-  public ConditionalLense(Prism truePrism,Prism falsePrism)
+  public ConditionalLense(Prism<T> truePrism,Prism<T> falsePrism)
     throws BindException
   { 
     if (truePrism.getContentType()==Void.class)
@@ -94,19 +94,24 @@ class ConditionalLense
     }
   }
   
-  public Prism getPrism()
+  public Prism<T> getPrism()
   { return prism;
   }
   
-  public Object translateForGet(Object val,Optic[] modifiers)
+  @SuppressWarnings("unchecked") // Arrays and Generics issue
+  public T translateForGet(Boolean val,Optic[] modifiers)
   { 
     if (val==null)
-    { return modifiers[1].get();
+    { return ((Optic<T>) modifiers[1]).get();
     }
-    return ((Boolean) val).booleanValue()?modifiers[0].get():modifiers[1].get();
+    return val?((Optic<T>)modifiers[0]).get():((Optic<T>)modifiers[1]).get();
   }
 
-  public Object translateForSet(Object val,Optic[] modifiers)
-  { throw new UnsupportedOperationException();
+  public Boolean translateForSet(T val,Optic[] modifiers)
+  { 
+    // TODO: We can check which one of the modifiers "val" equals and
+    //   set the boolean value accordingly
+    
+    throw new UnsupportedOperationException();
   }
 }

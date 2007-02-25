@@ -17,6 +17,7 @@ package spiralcraft.lang.optics;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
+import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 
@@ -33,26 +34,32 @@ import java.util.HashMap;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Array;
 
 /**
  * A Prism which uses Java Beans introspection and reflection
  *   to navigate a Java object provided by a source optic.
  */
-public class BeanPrism
-  implements Prism
+public class BeanPrism<T>
+  implements Prism<T>
 {
+  private static final boolean ENABLE_METHOD_BINDING_CACHE=true;
+  
   private static final BeanInfoCache _BEAN_INFO_CACHE
     =BeanInfoCache.getInstance(Introspector.IGNORE_ALL_BEANINFO);
 
-
+  private static final ArrayLengthLense arrayLengthLense
+    =new ArrayLengthLense();
+  
+  
   private final MappedBeanInfo _beanInfo;
-  private HashMap<String,BeanPropertyLense> _properties;
-  private HashMap<String,BeanFieldLense> _fields;
-  private HashMap<String,MethodLense> _methods;
-  private Class _targetClass;
+  private HashMap<String,BeanPropertyLense<?,T>> _properties;
+  private HashMap<String,BeanFieldLense<?,T>> _fields;
+  private HashMap<String,MethodLense<?,T>> _methods;
+  private Class<T> _targetClass;
   private MethodResolver _methodResolver;
   
-  public BeanPrism(Class clazz)
+  public BeanPrism(Class<T> clazz)
   { 
     _targetClass=clazz;
     try
@@ -66,21 +73,27 @@ public class BeanPrism
       x.printStackTrace();
       throw new IllegalArgumentException("Error introspecting "+clazz);
     }
+
   }
 
-  public Class<?> getContentType()
+  public Class<T> getContentType()
   { return _targetClass;
   }
   
-  public synchronized Binding resolve(Binding source,Focus focus,String name,Expression[] params)
+  
+  @SuppressWarnings("unchecked") // Expression array params heterogeneous
+  public synchronized <X> Binding<X> resolve(Binding<T> source,Focus<?> focus,String name,Expression[] params)
     throws BindException
   { 
-    Binding binding=null;
+    Binding<X> binding=null;
     if (params==null)
     { 
-      binding=getProperty(source,name);
+      binding=this.<X>getProperty(source,name);
       if (binding==null)
-      { binding=getField(source,name);
+      { binding=this.<X>getField(source,name);
+      }
+      if (binding==null && _targetClass.isArray())
+      { binding=this.<X>getArrayProperty(source,name);
       }
     }
     else
@@ -89,12 +102,12 @@ public class BeanPrism
       for (int i=0;i<optics.length;i++)
       { optics[i]=focus.bind(params[i]);
       }
-      binding=getMethod(source,name,optics);
+      binding=this.<X>getMethod(source,name,optics);
     }
     return binding;
   }
 
-  public Decorator decorate(Binding source,Class decoratorInterface)
+  public Decorator<T> decorate(Binding<? extends T> source,Class decoratorInterface)
     throws BindException
   { 
     // Look up the target class in the map of decorators for 
@@ -102,15 +115,20 @@ public class BeanPrism
     return null;
   }
   
-  private synchronized Binding getField(Binding source,String name)
+  
+  @SuppressWarnings("unchecked") 
+  // We are narrowing a generic type with a cast
+  // When we pull the BeanFieldLense out of the map
+  
+  private synchronized <X> Binding<X> getField(Binding<T> source,String name)
     throws BindException
   {
-    BeanFieldLense fieldLense=null;
+    BeanFieldLense<X,T> fieldLense=null;
     if (_fields==null)
-    { _fields=new HashMap<String,BeanFieldLense>();
+    { _fields=new HashMap<String,BeanFieldLense<?,T>>();
     }
     else
-    { fieldLense=_fields.get(name);
+    { fieldLense=(BeanFieldLense<X,T>) _fields.get(name);
     }
 
     if (fieldLense==null)
@@ -119,16 +137,16 @@ public class BeanPrism
         =_beanInfo.findField(name);
       if (field!=null)
       { 
-        fieldLense=new BeanFieldLense(field);
+        fieldLense=new BeanFieldLense<X,T>(field);
         _fields.put(name,fieldLense);
       }
     }
     if (fieldLense!=null)
     { 
-      Binding binding=source.getCache().get(fieldLense);
+      Binding<X> binding=source.getCache().<X>get(fieldLense);
       if (binding==null)
       { 
-        binding=new BeanFieldBinding(source,fieldLense);
+        binding=new BeanFieldBinding<X,T>(source,fieldLense);
         source.getCache().put(fieldLense,binding);
       }
       return binding;
@@ -136,15 +154,16 @@ public class BeanPrism
     return null;
   }
 
-  private synchronized Binding getProperty(Binding source,String name)
+  @SuppressWarnings("unchecked") // Reading property from map
+  private synchronized <X> Binding<X> getProperty(Binding<T> source,String name)
     throws BindException
   {
-    BeanPropertyLense lense=null;
+    BeanPropertyLense<X,T> lense=null;
     if (_properties==null)
-    { _properties=new HashMap<String,BeanPropertyLense>();
+    { _properties=new HashMap<String,BeanPropertyLense<?,T>>();
     }
     else
-    { lense=_properties.get(name);
+    { lense=(BeanPropertyLense<X,T>) _properties.get(name);
     }
 
     if (lense==null)
@@ -154,16 +173,16 @@ public class BeanPrism
       
       if (prop!=null)
       { 
-        lense=new BeanPropertyLense(prop,_beanInfo);
+        lense=new BeanPropertyLense<X,T>(prop,_beanInfo);
         _properties.put(name,lense);
       }
     }
     if (lense!=null)
     { 
-      Binding binding=source.getCache().get(lense);
+      Binding<X> binding=source.getCache().<X>get(lense);
       if (binding==null)
       { 
-        binding=new BeanPropertyBinding(source,lense);
+        binding=new BeanPropertyBinding<X,T>(source,lense);
         source.getCache().put(lense,binding);
       }
       return binding;
@@ -171,7 +190,30 @@ public class BeanPrism
     return null;
   }
 
-  private synchronized Binding getMethod(Binding source,String name,Optic[] params)
+  @SuppressWarnings("unchecked") // Reading property from map
+  private synchronized <X> Binding<X> getArrayProperty(Binding<T> source,String name)
+    throws BindException
+  {
+    Lense<X,T> lense=null;
+    if (name.equals("length"))
+    { lense=arrayLengthLense;
+    }
+    
+    if (lense!=null)
+    { 
+      Binding<X> binding=source.getCache().<X>get(lense);
+      if (binding==null)
+      { 
+        binding=new LenseBinding<X,T>(source,lense,null);
+        source.getCache().put(lense,binding);
+      }
+      return binding;
+    }
+    return null;
+  }
+
+  @SuppressWarnings("unchecked") // HashMap is heterogeneous
+  private synchronized <X> Binding<X> getMethod(Binding<T> source,String name,Optic[] params)
     throws BindException
   { 
     if (_methodResolver==null)
@@ -192,12 +234,12 @@ public class BeanPrism
     }
     String sig=sigbuf.toString();
 
-    MethodLense lense=null;
+    MethodLense<X,T> lense=null;
     if (_methods==null)
-    { _methods=new HashMap<String,MethodLense>();
+    { _methods=new HashMap<String,MethodLense<?,T>>();
     }
     else
-    { lense= _methods.get(sig);
+    { lense= (MethodLense<X,T>) _methods.get(sig);
     }
 
     if (lense==null)
@@ -209,7 +251,7 @@ public class BeanPrism
         
         if (method!=null)
         { 
-          lense=new MethodLense(method);
+          lense=new MethodLense<X,T>(method);
           _methods.put(sig,lense);
         }
       }
@@ -226,13 +268,20 @@ public class BeanPrism
     }
     if (lense!=null)
     { 
-      Binding binding=source.getCache().get(lense);
-      if (binding==null)
+      if (ENABLE_METHOD_BINDING_CACHE)
       { 
-        binding=new MethodBinding(source,lense,params);
-        source.getCache().put(lense,binding);
+        MethodKey cacheKey=new MethodKey(lense,params);
+        Binding<X> binding=source.getCache().<X>get(cacheKey);
+        if (binding==null)
+        { 
+          binding=new MethodBinding<X,T>(source,lense,params);
+          source.getCache().put(cacheKey,binding);
+        }
+        return binding;
       }
-      return binding;
+      else
+      { return new MethodBinding<X,T>(source,lense,params);
+      }
     }
     return null;
 
@@ -242,4 +291,59 @@ public class BeanPrism
   { return super.toString()+":"+_targetClass.getName();
   }
 
+}
+
+class MethodKey
+{
+  private final Object instanceSig[];
+
+  public MethodKey(Lense lense,Optic[] params)
+  {
+    instanceSig=new Object[params.length+1];
+    instanceSig[0]=lense;
+    System.arraycopy(params,0,instanceSig,1,params.length);
+  }
+  
+  public boolean equals(Object o)
+  {
+    if (o instanceof Object[])
+    { return ArrayUtil.arrayEquals(instanceSig,(Object[]) o);
+    }
+    else
+    { return false;
+    }
+  }
+  
+  public int hashCode()
+  { return ArrayUtil.arrayHashCode(instanceSig);
+  }
+}
+
+class ArrayLengthLense<S>
+  implements Lense<Integer,S>
+{
+  private Prism<Integer> _prism;
+  
+  public ArrayLengthLense()
+  { 
+    try
+    { _prism=OpticFactory.getInstance().<Integer>findPrism(Integer.class);
+    }
+    catch (BindException x)
+    { x.printStackTrace();
+    }
+  }
+  
+  public Integer translateForGet(S source,Optic[] params)
+  { return Array.getLength(source);
+  }
+  
+  public S translateForSet(Integer length,Optic[] params)
+  { throw new UnsupportedOperationException("Cannot set array length");
+  }
+  
+  public Prism<Integer> getPrism()
+  { return _prism;
+  }
+  
 }

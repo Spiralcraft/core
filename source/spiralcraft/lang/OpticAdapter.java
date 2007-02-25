@@ -21,13 +21,13 @@ import spiralcraft.lang.optics.Prism;
 /**
  * Default implementation of an Optic.
  */
-public abstract class OpticAdapter
-  implements Optic
+public abstract class OpticAdapter<T>
+  implements Optic<T>
 {
   /**
    * Return null. no names exposed
    */
-  public Optic resolve(Focus focus,String name,Expression[] parameters)
+  public <X> Optic<X> resolve(Focus focus,String name,Expression[] parameters)
     throws BindException
   { return null;
   }
@@ -35,21 +35,21 @@ public abstract class OpticAdapter
   /**
    * The target is null
    */
-  public Object get()
+  public T get()
   { return null;
   };
 
   /**
    * The target cannot be modified 
    */
-  public boolean set(Object value)
+  public boolean set(T value)
   { return false;
   }
 
   /**
    * No immediate decorator support
    */
-  public Decorator decorate(Class decoratorInterface)
+  public Decorator<T> decorate(Class decoratorInterface)
   { return null;
   }
   
@@ -60,7 +60,7 @@ public abstract class OpticAdapter
   { return false;
   }
 
-  public final Class<?> getContentType()
+  public final Class<T> getContentType()
   { return getPrism().getContentType();
   }
 
@@ -74,5 +74,5 @@ public abstract class OpticAdapter
   /**
    * This needs to be implemented by the subclass
    */
-  public abstract Prism getPrism();
+  public abstract Prism<T> getPrism();
 }

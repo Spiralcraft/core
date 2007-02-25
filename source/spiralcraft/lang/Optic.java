@@ -22,50 +22,50 @@ import spiralcraft.lang.optics.Prism;
 /**
  * An Optic is a "data pipe" that provides a "view" of the contents of an 
  *   arbitrary data source or container, the "model-part", that exists within
- *   an arbitrary object model.
+ *   an arbitrary object model.<P>
  *
  * An Optic is able to track changes to the model-part over time, and in
- *   some cases may update the contents of the model-part.
+ *   some cases may update the contents of the model-part.<P>
  *
  * As a "view", the Optic is transformative- it provides a specific
  *   representation of the model-part contents which may consist of a subset
- *   or superset of the information contained within the model-part.
+ *   or superset of the information contained within the model-part.<P>
  *
  * Optics are combined using an expression language to form Channels. A Channel
  *   is a tree of Optics that results in the combination and transformation
- *   of a number of model-parts into a single representation.
+ *   of a number of model-parts into a single representation.<P>
  *
  * Optics are "typed"- they are associated with a content type
  *   (expressed as a Java class) and a set of named resolutions
  *   that provide "deeper" views into the object model, alternate
  *   representations of the model-part, or transformations of the model-part
- *   content controlled by other contextual elements
+ *   content controlled by other contextual elements.<P>
  *
  * Resolutions are handled by the resolve() method. A given resolution is
  *   specified by name and may be associated with a Focus and a set of
  *   Expression parameters. As such, transformations have access to the
  *   application context via the Focus and define the context
- *   in which the parameter expressions will be evaluated.
+ *   in which the parameter expressions will be evaluated.<P>
  *
  * Optics may be 'decorated' with interfaces that provide support for 
  *   certain operations, such as Iterator. The decorate() method will
  *   resolve an appropriate implementation of the desired interface and
  *   bind it to the Optic, if such an implementation exists and is 
- *   appropriately registered with the OpticFactory.
+ *   appropriately registered with the OpticFactory.<P>
  */
-public interface Optic
+public interface Optic<T>
 {
   /**
    * Resolve the name and optional set of parameter expressions to provide
    *   new views derived from this one.
    */
-  Optic resolve(Focus focus,String name,Expression[] parameters)
+  <X> Optic<X> resolve(Focus<?> focus,String name,Expression[] parameters)
     throws BindException;
 
   /**
    * Return the content of this view.
    */
-  Object get();
+  T get();
 
   /**
    * Update the content this view, if the transformation associated with
@@ -74,13 +74,13 @@ public interface Optic
    *@return Whether the modification was successful or not.
    *@throws WriteException if the target of the write throws an exception
    */
-  boolean set(Object value)
+  boolean set(T value)
     throws WriteException;
 
   /**
    * Indicate the Java Class of the content of this View.
    */
-  Class<?> getContentType();
+  Class<T> getContentType();
 
   /**
    * Decorate this Optic with a suitable implementation of a decoratorInterface
@@ -88,7 +88,7 @@ public interface Optic
    *return The decorator that implements the decoratorInterface, or null if
    *  the decoratorInterface is not supported
    */
-  Decorator decorate(Class decoratorInterface);
+  Decorator<T> decorate(Class decoratorInterface);
  
   /**
    * Provide a reference to the PropertyChangeSupport object
@@ -108,5 +108,5 @@ public interface Optic
   /**
    * Return the spiralcraft.lang type of the referenced data 
    */
-  Prism getPrism();
+  Prism<T> getPrism();
 }

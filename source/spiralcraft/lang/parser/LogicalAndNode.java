@@ -18,25 +18,26 @@ import spiralcraft.lang.Optic;
 
 
 public class LogicalAndNode
-  extends LogicalNode
+  extends LogicalNode<Boolean,Boolean>
 {
 
-  public LogicalAndNode(Node op1,Node op2)
+  public LogicalAndNode(Node<Boolean> op1,Node<Boolean> op2)
   { super(op1,op2);
   }
 
-  public Object translateForGet(Object val,Optic[] mods)
+  @SuppressWarnings("unchecked") // Non-generic array
+  public Boolean translateForGet(Boolean val,Optic[] mods)
   { 
-    boolean val1=val!=null?((Boolean) val).booleanValue():false;
+    boolean val1=val!=null?val.booleanValue():false;
     if (!val1)
     { return Boolean.FALSE;
     }
-    Object mod=mods[0].get();
-    boolean val2=mod!=null?((Boolean) mod).booleanValue():false;
+    Boolean mod=((Optic<Boolean>)mods[0]).get();
+    boolean val2=mod!=null?mod.booleanValue():false;
     return val2?Boolean.TRUE:Boolean.FALSE;
   }
   
-  public Object translateForSet(Object val,Optic[] mods)
+  public Boolean translateForSet(Boolean val,Optic[] mods)
   { 
     // Not reversible
     throw new UnsupportedOperationException();

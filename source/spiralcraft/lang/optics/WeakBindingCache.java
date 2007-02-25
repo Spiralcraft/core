@@ -18,14 +18,15 @@ import java.util.HashMap;
 
 public class WeakBindingCache
 {
-  private HashMap<Object,Binding> _map
-    =new HashMap<Object,Binding>();
+  private HashMap<Object,Binding<?>> _map
+    =new HashMap<Object,Binding<?>>();
   
-  public synchronized Binding get(Object key)
-  { return _map.get(key);
+  @SuppressWarnings("unchecked") // Map has heterogeneous types
+  public synchronized <X> Binding<X> get(Object key)
+  { return (Binding<X>) _map.get(key);
   }
   
-  public synchronized void put(Object key,Binding value)
+  public synchronized void put(Object key,Binding<?> value)
   { _map.put(key,value);
   }
 }

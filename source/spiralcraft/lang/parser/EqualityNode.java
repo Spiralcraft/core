@@ -16,19 +16,19 @@ package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Optic;
 
-public class EqualityNode
-  extends LogicalNode
+public class EqualityNode<X>
+  extends LogicalNode<X,X>
 {
 
   private final boolean _negate;
 
-  public EqualityNode(boolean negate,Node op1,Node op2)
+  public EqualityNode(boolean negate,Node<X> op1,Node<X> op2)
   { 
     super(op1,op2);
     _negate=negate;
   }
 
-  public Object translateForGet(Object val,Optic[] mods)
+  public Boolean translateForGet(X val,Optic[] mods)
   { 
     Object mod=mods[0].get();
     if (val==mod)
@@ -40,7 +40,7 @@ public class EqualityNode
     return _negate?Boolean.TRUE:Boolean.FALSE;
   }
   
-  public Object translateForSet(Object val,Optic[] mods)
+  public X translateForSet(Boolean val,Optic[] mods)
   { 
     // Not reversible
     throw new UnsupportedOperationException();

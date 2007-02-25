@@ -29,15 +29,15 @@ import java.beans.PropertyChangeEvent;
  * An Binding which translates get() and source property changes
  *   through a lense.
  */
-public  class LenseBinding
-  implements Binding,PropertyChangeListener
+public  class LenseBinding<T,S>
+  implements Binding<T>,PropertyChangeListener
 {
   private static int _ID=0;
   
   protected final int id;
 
-  private final Optic _source;
-  private final Lense _lense;
+  private final Optic<S> _source;
+  private final Lense<T,? super S> _lense;
   private final Optic[] _modifiers;
   private final boolean _static;
   private PropertyChangeSupport _propertyChangeSupport;
@@ -48,7 +48,7 @@ public  class LenseBinding
    * Create a Lense binding which translates values bidirectionally,
    *   through the specified lense.
    */
-  public LenseBinding(Optic source,Lense lense,Optic[] modifiers)
+  public LenseBinding(Optic<S> source,Lense<T,S> lense,Optic[] modifiers)
   { 
     _source=source;
     _lense=lense;
@@ -84,7 +84,7 @@ public  class LenseBinding
     return _cache;
   }
   
-  public final Object get()
+  public final T get()
   { return _lense.translateForGet(_source.get(),_modifiers);
   }
 
@@ -96,7 +96,7 @@ public  class LenseBinding
   { return _propertyChangeSupport!=null;
   }
   
-  protected final Object getSourceValue()
+  protected final S getSourceValue()
   { return _source.get();
   }
 
@@ -107,30 +107,30 @@ public  class LenseBinding
   /**
    * Override if value can be set
    */
-  public boolean set(Object value)
+  public boolean set(T value)
     throws WriteException
   { return false;
   }
 
-  public final Prism getPrism()
+  public final Prism<T> getPrism()
   { return _lense.getPrism();
   }
 
-  public Optic resolve(Focus focus,String name,Expression[] params)
+  public <X> Optic<X> resolve(Focus<?> focus,String name,Expression[] params)
     throws BindException
   { 
-    Binding binding=_lense.getPrism().resolve(this,focus,name,params);
+    Binding<X> binding=_lense.getPrism().resolve(this,focus,name,params);
     if (binding==null)
     { throw new BindException("'"+name+"' not found in "+_lense.getPrism().toString());
     }
     return binding;
   }
   
-  public Class<?> getContentType()
+  public Class<T> getContentType()
   { return _lense.getPrism().getContentType();
   }
   
-  public Decorator decorate(Class decoratorInterface)
+  public Decorator<T> decorate(Class decoratorInterface)
   { 
     try
     { return _lense.getPrism().decorate(this,decoratorInterface);
@@ -147,21 +147,22 @@ public  class LenseBinding
   { return _static;
   }
 
+  @SuppressWarnings("unchecked") // PropertyChange is not generic- values are Object type
   public void propertyChange(PropertyChangeEvent event)
   {
     // System.out.println(toString()+".propertyChange");
     if (_propertyChangeSupport!=null)
     {
       // System.out.println(toString()+".propertyChange2");
-      Object oldValue=null;
-      Object newValue=null;
+      T oldValue=null;
+      T newValue=null;
 
 
       if (event.getOldValue()!=null)
-      { oldValue=_lense.translateForGet(event.getOldValue(),_modifiers);
+      { oldValue=(T) _lense.translateForGet((S) event.getOldValue(),_modifiers);
       }
       if (event.getNewValue()!=null)
-      { newValue=_lense.translateForGet(event.getNewValue(),_modifiers);
+      { newValue=(T) _lense.translateForGet((S) event.getNewValue(),_modifiers);
       }
 
       if (oldValue!=newValue)
@@ -177,9 +178,9 @@ public  class LenseBinding
     // System.out.println(toString()+".modifierChanged");
     if (_propertyChangeSupport!=null)
     {
-      Object newValue=null;
+      T newValue=null;
 
-      Object sourceValue=_source.get();
+      S sourceValue=_source.get();
       if (sourceValue!=null)
       { newValue=_lense.translateForGet(sourceValue,_modifiers);
       }
@@ -246,6 +247,23 @@ public  class LenseBinding
   }
 
   public String toString()
-  { return getClass().getName()+":"+id+"["+_lense.toString()+"]";
+  { 
+    StringBuilder out=new StringBuilder();
+    out.append
+      (super.toString()+":"+id+"("+_lense.toString()+"):"+_source.toString()+"(");
+    boolean first=true;
+    for (Optic o: _modifiers)
+    { 
+      if (!first)
+      { out.append(",");
+      }
+      else
+      { first=false;
+      }
+      out.append(o.toString());
+    }
+    out.append(")");
+    return out.toString();
+    
   }
 }

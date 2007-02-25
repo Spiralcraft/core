@@ -18,19 +18,19 @@ import spiralcraft.lang.Optic;
 
 
 
-public class MethodBinding
-  extends LenseBinding
+public class MethodBinding<Tprop,Tbean>
+  extends LenseBinding<Tprop,Tbean>
 {
   public MethodBinding
-    (Binding source
-    ,MethodLense lense
+    (Binding<Tbean> source
+    ,MethodLense<Tprop,Tbean> lense
     )
   { super(source,lense,null);
   }
 
   public MethodBinding
-    (Binding source
-    ,MethodLense lense
+    (Binding<Tbean> source
+    ,MethodLense<Tprop,Tbean> lense
     ,Optic[] params
     )
   { super(source,lense,params);

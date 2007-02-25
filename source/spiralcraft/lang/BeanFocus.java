@@ -17,21 +17,21 @@ package spiralcraft.lang;
 /**
  * A Focus where the subject is a java Bean
  */
-public class BeanFocus
-  extends DefaultFocus
+public class BeanFocus<T>
+  extends DefaultFocus<T>
 {
   
   public BeanFocus()
   {
   }
   
-  public BeanFocus(Object bean)
+  public BeanFocus(T bean)
     throws BindException
   { setBean(bean);
   }
   
-  public void setBean(Object bean)
+  public void setBean(T bean)
     throws BindException
-  { setSubject(OpticFactory.getInstance().createOptic(bean));
+  { setSubject((Optic<T>)OpticFactory.getInstance().createOptic(bean));
   }
 }

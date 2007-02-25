@@ -21,36 +21,44 @@ import spiralcraft.lang.BindException;
 /**
  * An Binding bound to a self-contained Object 
  */
-public class SimpleBinding
-  extends AbstractBinding
+public class SimpleBinding<T>
+  extends AbstractBinding<T>
 {
  
-  private Object _object;
+  private T _object;
   
   /**
    * Create a SimpleOptic with the specified Object as its target
    *   and with a targetClass equals to the Object's class.
    */
-  public SimpleBinding(Object val,boolean isStatic)
+  @SuppressWarnings("unchecked") // does not return properly scoped class
+  public SimpleBinding(T val,boolean isStatic)
     throws BindException
   { 
-    super(OpticFactory.getInstance().findPrism(val.getClass()),isStatic);
+    super(OpticFactory.getInstance().<T>findPrism((Class<T>) val.getClass()),isStatic);
     _object=val;
+
+    // System.out.println("SimpleBinding- noclass:"+super.toString()+":["+val+"]");
   }
 
-  public SimpleBinding(Class clazz,Object val,boolean isStatic)
+  public SimpleBinding(Class<T> clazz,T val,boolean isStatic)
     throws BindException
   { 
     super(OpticFactory.getInstance().findPrism(clazz),isStatic);
     _object=val;
+
+    //System.out.println("SimpleBinding- with class:"+super.toString()+":["+val+"]");
   }
 
   
-  protected Object retrieve()
-  { return _object;
+  protected T retrieve()
+  { 
+    // System.out.println("SimpleBinding "+super.toString()+" - returning "+_object);
+
+    return _object;
   }
   
-  protected boolean store(Object val)
+  protected boolean store(T val)
   { 
     _object=val;
     return true;

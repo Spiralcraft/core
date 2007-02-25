@@ -14,33 +14,41 @@
 //
 package spiralcraft.lang.optics;
 
+
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.BindException;
 
+// import spiralcraft.util.ArrayUtil;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
-class MethodLense
-  implements Lense
+
+class MethodLense<Tprop,Tbean>
+  implements Lense<Tprop,Tbean>
 {
 
   private final Method _method;
-  private final Prism _prism;
+  private final Prism<Tprop> _prism;
   
+  @SuppressWarnings("unchecked") // Method is not parameterized
   public MethodLense(Method method)
     throws BindException
   { 
     _method=method;
-    _prism=OpticFactory.getInstance().findPrism(method.getReturnType());
+    _prism=OpticFactory.getInstance().<Tprop>findPrism((Class<Tprop>)method.getReturnType());
   }
 
   public Method getMethod()
   { return _method;
   }
 
-  public Object translateForGet(Object value,Optic[] params)
+  @SuppressWarnings("unchecked") // Method is not generic
+  public Tprop translateForGet(Tbean value,Optic[] params)
   { 
+//    System.out.println("MethodLense "+toString()+" translateForGet: ["+value+"]");
+    
     if (params==null)
     { throw new IllegalArgumentException
         ("No parameters for "
@@ -48,6 +56,7 @@ class MethodLense
         );
 
     }
+    
     if (params.length!=_method.getParameterTypes().length)
     { 
       throw new IllegalArgumentException
@@ -63,9 +72,20 @@ class MethodLense
       Object[] paramValues=new Object[params.length];
       int i=0;
       for (Optic optic:params)
-      { paramValues[i++]=optic.get();
+      { 
+//        System.out.println("MethodLense "+toString()+" translateForGet: parameter["+i+"] "+optic);
+
+        paramValues[i++]=optic.get();
       }
-      return _method.invoke(value,paramValues);
+
+//      System.out.println
+//        ("MethodLense invoke: ["+value+"]."
+//        +_method.getName()
+//        +"("+ArrayUtil.format(paramValues,",","")+")"
+//        );
+      
+      return (Tprop) _method.invoke(value,paramValues);
+      
     }
     catch (IllegalAccessException x)
     { 
@@ -78,16 +98,16 @@ class MethodLense
     }
   }
 
-  public Object translateForSet(Object val,Optic[] modifiers)
+  public Tbean translateForSet(Tprop val,Optic[] modifiers)
   { throw new UnsupportedOperationException();
   }
 
-  public Prism getPrism()
+  public Prism<Tprop> getPrism()
   { return _prism;
   }
 
   public String toString()
-  { return getClass().getName()+":"+_method.toString();
+  { return super.toString()+":"+_method.toString();
   }
 }
 

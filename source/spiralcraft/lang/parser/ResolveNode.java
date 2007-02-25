@@ -19,14 +19,14 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
 
-public class ResolveNode
-  extends Node
+public class ResolveNode<T>
+  extends Node<T>
 {
 
-  private final Node _source;
+  private final Node<?> _source;
   private final IdentifierNode _identifier;
 
-  public ResolveNode(Node source,IdentifierNode identifier)
+  public ResolveNode(Node<?> source,IdentifierNode identifier)
   { 
     _source=source;
     _identifier=identifier;
@@ -40,19 +40,21 @@ public class ResolveNode
   { return _source;
   }
 
-  public Optic bind(final Focus focus)
+  public Optic<T> bind(final Focus focus)
     throws BindException
   { 
-    Optic sourceOptic;
+    Optic<?> sourceOptic;
     if (_source!=null)
     { sourceOptic=_source.bind(focus);
     }
     else
-    { sourceOptic=focus.getSubject();
+    { 
+      System.out.println("ResolveNode:"+super.toString()+" DEFAULT Using Focus subject");
+      sourceOptic=focus.getSubject();
     }
     String identifier=_identifier.getIdentifier();
 
-    Optic ret=sourceOptic.resolve(focus,identifier,null);
+    Optic<T> ret=sourceOptic.<T>resolve(focus,identifier,null);
     if (ret==null)
     { throw new BindException("Name '"+identifier+"' not found.");
     }

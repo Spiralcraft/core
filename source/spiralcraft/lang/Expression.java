@@ -20,30 +20,31 @@ import spiralcraft.lang.parser.ExpressionParser;
 
 import java.util.HashMap;
 
-public class Expression
+public class Expression<T>
 {
-  private static final HashMap<String,Expression> _CACHE
-    =new HashMap<String,Expression>();
+  private static final HashMap<String,Expression<?>> _CACHE
+    =new HashMap<String,Expression<?>>();
 
-  private Node _root;
+  private Node<T> _root;
   private String _text;
   
-  public static Expression parse(String text)
+  @SuppressWarnings("unchecked") // Heterogeneous HashMap
+  public static <X> Expression<X> parse(String text)
     throws ParseException
   { 
     synchronized (_CACHE)
     { 
-      Expression ret=(Expression) _CACHE.get(text);
+      Expression<X> ret=(Expression<X>) _CACHE.get(text);
       if (ret==null)
       { 
-        ret=new ExpressionParser().parse(text);
+        ret=new ExpressionParser().<X>parse(text);
         _CACHE.put(text,ret);
       }
       return ret;
     }
   }
 
-  public Expression(Node root,String text)
+  public Expression(Node<T> root,String text)
   { 
     _root=root;
     _text=text;
@@ -60,15 +61,19 @@ public class Expression
    * Users should use Focus.bind(Expression exp) to permit the Focus to 
    *   re-use Channels defined by the same Expression.
    */
-  public Channel bind(Focus focus)
+  public Channel<T> bind(Focus<?> focus)
     throws BindException
   { 
     if (_root==null)
-    { throw new BindException("No way to bind expresion '"+_text+"'");
+    { throw new BindException("No way to bind expression '"+_text+"'");
     }
-    return new Channel(focus,_root.bind(focus),this); 
+    return new Channel<T>(focus,_root.bind(focus),this); 
   }
 
+  public String toString()
+  { return super.toString()+"["+_text+"]:"+_root.toString();
+  }
+  
   public void dumpParseTree(StringBuffer out)
   { _root.dumpTree(out,"\r\n");
   }

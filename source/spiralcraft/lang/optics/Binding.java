@@ -26,19 +26,19 @@ import spiralcraft.lang.WriteException;
  * To summarize, a Binding provides an updateable "view" of a piece of 
  *   information from an underlying data source or data container.
  */
-public interface Binding
-  extends Optic
+public interface Binding<T>
+  extends Optic<T>
 {
   /**
    * Return the bound object
    */
-  public Object get();
+  public T get();
 
   /**
    * Update the bound object.
    *@return Whether the modification was successful or not.
    */
-  public boolean set(Object value)
+  public boolean set(T value)
     throws WriteException;
 
   /**
@@ -46,7 +46,7 @@ public interface Binding
    *   
    *   
    */
-  public Prism getPrism();
+  public Prism<T> getPrism();
 
   /** 
    * Indicates whether the bound object is guaranteed to

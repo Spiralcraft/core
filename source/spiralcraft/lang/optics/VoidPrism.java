@@ -23,7 +23,7 @@ import spiralcraft.lang.Decorator;
  * Type that is undefined (ie. null)
  */
 public class VoidPrism
-  implements Prism
+  implements Prism<Void>
 {
 
   /**
@@ -31,8 +31,8 @@ public class VoidPrism
    *   expressions against the source Binding within the context of the supplied
    *   Focus.
    */
-  public Binding resolve
-    (Binding source,Focus focus,String name,Expression[] params)
+  public <X> Binding<X> resolve
+    (Binding<Void> source,Focus<?> focus,String name,Expression[] params)
     throws BindException
   { 
     // We should implement .equals()
@@ -43,7 +43,7 @@ public class VoidPrism
    * Decorate the specified optic with a decorator that implements the
    *   specified interface
    */
-  public Decorator decorate(Binding source,Class decoratorInterface)
+  public Decorator<Void> decorate(Binding source,Class decoratorInterface)
     throws BindException
   { return null;
   }
@@ -52,7 +52,7 @@ public class VoidPrism
    * Return the Java class of the data object accessible through Bindings 
    *   associated with this Prism
    */
-  public Class<?> getContentType()
+  public Class<Void> getContentType()
   { return Void.class;
   }
 }

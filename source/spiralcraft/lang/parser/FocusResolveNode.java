@@ -20,8 +20,8 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Context;
 
 
-public class FocusResolveNode
-  extends Node
+public class FocusResolveNode<X>
+  extends Node<X>
 {
 
   private final FocusNode _source;
@@ -34,7 +34,7 @@ public class FocusResolveNode
   }
 
   
-  public Optic bind(final Focus focus)
+  public Optic<X> bind(final Focus<?> focus)
     throws BindException
   { 
 //    String identifier=_identifier.getIdentifier();
@@ -44,18 +44,18 @@ public class FocusResolveNode
 
     Context context=specifiedFocus.getContext();
     
-    Optic ret=null;
+    Optic<X> ret=null;
     if (context!=null)
-    { ret=context.resolve(_identifier.getIdentifier());
+    { ret=context.<X>resolve(_identifier.getIdentifier());
     }
 
     if (ret==null)
     { 
       try
       { 
-        Optic subject=specifiedFocus.getSubject();
+        Optic<?> subject=specifiedFocus.getSubject();
         if (subject!=null)
-        { ret=subject.resolve(specifiedFocus,_identifier.getIdentifier(),null);
+        { ret=subject.<X>resolve(specifiedFocus,_identifier.getIdentifier(),null);
         }
       }
       catch (BindException x)

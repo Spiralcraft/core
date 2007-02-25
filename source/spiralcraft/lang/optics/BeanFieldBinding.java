@@ -19,15 +19,15 @@ import spiralcraft.lang.WriteException;
 
 import java.lang.reflect.Field;
 
-public class BeanFieldBinding
-  extends LenseBinding
+public class BeanFieldBinding<Tprop,Tbean>
+  extends LenseBinding<Tprop,Tbean>
 {
 
   private final Field _field;
 
   public BeanFieldBinding
-    (Binding source
-    ,BeanFieldLense lense
+    (Binding<Tbean> source
+    ,BeanFieldLense<Tprop,Tbean> lense
     )
   {
     super(source,lense,null);

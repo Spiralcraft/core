@@ -20,29 +20,33 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 
 /**
- * Exposes parts of an object model to access by Expressions by creating
- *   transformations based on elements of Expression syntax.
+ * A Prism is a "Type dictionary" which exposes parts of an object model 
+ *   by creating data pipes (Bindings) based on elements of Expression syntax.<P>
+ *   
+ * Given a data source and a Focus, a Prism will resolve a name and a set of modifiers
+ *   into another data source (Binding) bound to the first and to the Focus, that 
+ *   provides some sort  of transformation.<P>
  */
-public interface Prism
+public interface Prism<T>
 {
 
   /**
    * Generate a new Binding which resolves the name and the given parameter 
    *   expressions against the source Binding and the supplied Focus.
    */
-  public Binding resolve(Binding source,Focus focus,String name,Expression[] params)
+  public <X> Binding<X> resolve(Binding<T> source,Focus<?> focus,String name,Expression[] params)
     throws BindException;
 
   /**
    * Decorate the specified optic with a decorator that implements the
    *   specified interface
    */
-  public Decorator decorate(Binding source,Class decoratorInterface)
+  public Decorator<T> decorate(Binding<? extends T> source,Class decoratorInterface)
     throws BindException;
   
   /**
    * Return the Java class of the data object accessible through Bindings 
    *   associated with this Prism
    */
-  public Class<?> getContentType();
+  public Class<T> getContentType();
 }

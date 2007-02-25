@@ -14,20 +14,55 @@
 //
 package spiralcraft.lang.parser;
 
+import spiralcraft.lang.Expression;
+import spiralcraft.lang.Optic;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.OpticFactory;
+import spiralcraft.lang.optics.LenseBinding;
+import spiralcraft.lang.optics.ArrayIndexLense;
 
-public class SubscriptNode
-  extends Node
+
+public class SubscriptNode<T,C,I>
+  extends Node<T>
 {
 
-  private final Node _source;
-  private final Node _selector;
+  private final Node<C> _source;
+  private final Node<I> _selector;
 
-  public SubscriptNode(Node source,Node selector)
+  public SubscriptNode(Node<C> source,Node<I> selector)
   { 
     _source=source;
     _selector=selector;
   }
 
+  @SuppressWarnings("unchecked") // Upcast for narrowing index type
+  public Optic<T> bind(Focus<?> focus)
+    throws BindException
+  {
+    Optic<C> collection=focus.<C>bind(new Expression<C>(_source,null));
+    Optic<I> selector=focus.<I>bind(new Expression<I>(_selector,null));
+    
+    Class clazz=selector.getContentType();
+    if (Integer.class.isAssignableFrom(clazz)
+        || Short.class.isAssignableFrom(clazz)
+        || Byte.class.isAssignableFrom(clazz)
+        )
+    { 
+      if (collection.getContentType().isArray())
+      {
+        return (Optic<T>) ArrayIndexHelper.<T,C>bind
+          (focus,collection,(Optic<Number>) selector);
+      }
+      else
+      { throw new BindException("Unknown Collection Type");
+      }
+    }
+    else
+    { throw new BindException("Unknown Selector Type");
+    }
+  }
+  
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append("Subscript");
@@ -38,4 +73,28 @@ public class SubscriptNode
     out.append(prefix).append("]");
   }
   
+}
+
+class ArrayIndexHelper
+{
+  
+  @SuppressWarnings("unchecked") // Upcasts bc/we narrowed operation type
+  public static final <T,C> Optic<T> bind
+    (Focus<?> focus
+     ,Optic<C> collection
+     ,Optic<Number> selector
+     )
+     throws BindException
+  {
+    return new LenseBinding<T,T[]>
+      ((Optic<T[]>) collection
+      ,new ArrayIndexLense<T>
+        (OpticFactory.getInstance()
+            .<T>findPrism((Class<T>) collection.getContentType().getComponentType())
+        )
+      ,new Optic[] {selector}
+      );
+    
+  }
+
 }

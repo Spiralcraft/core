@@ -24,42 +24,52 @@ import spiralcraft.lang.optics.Lense;
 import spiralcraft.lang.optics.Prism;
 import spiralcraft.lang.optics.LenseBinding;
 
-public abstract class LogicalNode
-  extends Node
-  implements Lense
+public abstract class LogicalNode<T1,T2>
+  extends Node<Boolean>
+  implements Lense<Boolean,T1>
 {
-  public static Prism BOOLEAN_PRISM;
+  public static Prism<Boolean> BOOLEAN_PRISM;
   
   { 
     try
-    { BOOLEAN_PRISM=OpticFactory.getInstance().findPrism(Boolean.class);
+    { BOOLEAN_PRISM=OpticFactory.getInstance().<Boolean>findPrism(Boolean.class);
     }
     catch (BindException x)
     { }
       
   }
     
-  private final Node _op1;
-  private final Node _op2;
+  private final Node<T1> _op1;
+  private final Node<T2> _op2;
 
-  public LogicalNode(Node op1,Node op2)
+  public LogicalNode(Node<T1> op1,Node<T2> op2)
   { 
     _op1=op1;
     _op2=op2;
   }
 
-  public Optic bind(Focus focus)
+  public Optic<Boolean> bind(Focus<?> focus)
     throws BindException
   { 
-    return new LenseBinding
-      (focus.bind(new Expression(_op1,null))
+//    System.out.println("LogicalNode bind "+_op1.toString()+" "+_op2.toString());
+
+    Optic[] params;
+    if (_op2!=null)
+    { params=new Optic[] {focus.bind(new Expression<T2>(_op2,null))};
+    }
+    else
+    { params=new Optic[] {};
+    }
+    
+    return new LenseBinding<Boolean,T1>
+      (focus.<T1>bind(new Expression<T1>(_op1,null))
       ,this
-      ,new Optic[] {focus.bind(new Expression(_op2,null))}
+      ,params
       );
       
   }
   
-  public Prism getPrism()
+  public Prism<Boolean> getPrism()
   { return BOOLEAN_PRISM;
   }
     
@@ -69,8 +79,16 @@ public abstract class LogicalNode
   {
     out.append(prefix).append(getClass().getName());
     prefix=prefix+"  ";
-    _op1.dumpTree(out,prefix);
-    out.append(prefix).append(getSymbol());
-    _op2.dumpTree(out,prefix);
+    if (_op2!=null)
+    { 
+      _op1.dumpTree(out,prefix);
+      out.append(prefix).append(getSymbol());
+      _op2.dumpTree(out,prefix);
+    }
+    else
+    {
+      out.append(prefix).append(getSymbol());
+      _op1.dumpTree(out,prefix);
+    }
   }
 }

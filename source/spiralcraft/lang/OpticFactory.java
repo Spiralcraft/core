@@ -38,14 +38,16 @@ public class OpticFactory
   /**
    * Create an Optic which provides view of an arbitrary Java object.
    */
-  public Optic createOptic(Object object)
+  @SuppressWarnings("unchecked") // Runtime conversion
+  public <T> Optic<T> createOptic(T object)
     throws BindException
   { 
+    // XXX Maybe not so good- not Orthogonal
     if (object instanceof Optic)
     { return (Optic) object;
     }
     else
-    { return new SimpleBinding(object,true);
+    { return new SimpleBinding<T>(object,true);
     }
   }
 
@@ -53,17 +55,19 @@ public class OpticFactory
   /**
    * Find a Prism which provides an interface into the specified Java class
    */
-  public synchronized Prism findPrism(Class clazz)
+  
+  @SuppressWarnings("unchecked") // Map is heterogeneous, T is ambiguous for VoidPrism
+  public synchronized <T> Prism<T> findPrism(Class<T> clazz)
     throws BindException
   { 
-    Prism result=(Prism) _prismMap.get(clazz);
+    Prism<T> result=(Prism<T>) _prismMap.get(clazz);
     if (result==null)
     {
       if (clazz==Void.class)
-      { result=new VoidPrism();
+      { result=(Prism<T>) new VoidPrism();
       }
       else
-      { result=new BeanPrism(clazz);
+      { result=new BeanPrism<T>(clazz);
       }
       _prismMap.put(clazz,result);
     }

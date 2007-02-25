@@ -23,6 +23,8 @@ package spiralcraft.lang.optics;
 import java.lang.reflect.*;
 import java.util.*;
 
+import spiralcraft.util.ClassUtil;
+
 /**
  * Finds methods and constructors that can be invoked reflectively.
  * Attempts to address some of the limitations of the JDK's
@@ -69,9 +71,9 @@ public final class MethodResolver
     }
 
     if (clazz.isPrimitive()) {
-      throw new IllegalArgumentException(
-        "primitive Class parameter");
+      clazz=ClassUtil.boxedEquivalent(clazz);
     }
+    
 
     if (clazz.isArray()) {
       throw new IllegalArgumentException(

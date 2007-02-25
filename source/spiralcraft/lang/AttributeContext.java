@@ -27,7 +27,7 @@ import spiralcraft.lang.optics.SimpleBinding;
 public class AttributeContext
   implements Context
 {
-  private Map<String,Attribute> _names;
+  private Map<String,Attribute<?>> _names;
   private Attribute[] _attributes;
   private final Context _parent;
 
@@ -43,12 +43,16 @@ public class AttributeContext
   { _parent=parent;
   }
 
-  public Optic resolve(String name)
+  /**
+   * Resolves the Optic listed under the specified name in this Context
+   */
+  @SuppressWarnings("unchecked") // Heterogeneous HashMap
+  public <T> Optic<T> resolve(String name)
   { 
-    Optic optic=null;
+    Optic<T> optic=null;
     if (_names!=null) 
     { 
-      Attribute attrib=(Attribute) _names.get(name);
+      Attribute<T> attrib=(Attribute<T>) _names.get(name);
       if (attrib!=null)
       { optic=attrib.getOptic();
       }
@@ -58,7 +62,7 @@ public class AttributeContext
     if (optic==null)
     { 
       if (_parent!=null)
-      { optic=_parent.resolve(name);
+      { optic=_parent.<T>resolve(name);
       }
     }
     return optic;
@@ -73,7 +77,7 @@ public class AttributeContext
     else
     {
       if (_names==null)
-      { _names=new HashMap<String,Attribute>();
+      { _names=new HashMap<String,Attribute<?>>();
       }
       for (int i=0;i<_attributes.length;i++)
       { 
@@ -118,17 +122,18 @@ public class AttributeContext
   /**
    * Put specified Optic into the Context 
    */
-  public void putOptic(String name,Optic optic)
+  @SuppressWarnings("unchecked") // HashMap is heterogeneous
+  public <T> void putOptic(String name,Optic<T> optic)
   {
     if (_names==null)
-    { setAttributes(new Attribute[] {new Attribute(name,optic)});
+    { setAttributes(new Attribute[] {new Attribute<T>(name,optic)});
     }
     else
     { 
-      Attribute attrib=(Attribute) _names.get(name);
+      Attribute<T> attrib=(Attribute<T>) _names.get(name);
       if (attrib==null)
       { 
-        attrib=new Attribute(name,optic);
+        attrib=new Attribute<T>(name,optic);
         _attributes=(Attribute[]) ArrayUtil.append(_attributes,attrib);
         _names.put(name,attrib);
       }
@@ -141,9 +146,9 @@ public class AttributeContext
   /**
    * Put a Java object into the context under the specified name
    */
-  public void putObject(String name,Object val)
+  public <T> void putObject(String name,T val)
     throws BindException
-  { putOptic(name,new SimpleBinding(val,true));
+  { putOptic(name,new SimpleBinding<T>(val,true));
   }
   
 }

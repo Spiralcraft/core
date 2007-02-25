@@ -29,23 +29,25 @@ import spiralcraft.lang.Optic;
  * A lense associated with a single bean property. The 'get' transformation
  *   simply retrieves the value of the property from the supplied bean.
  */
-class BeanPropertyLense
-  implements Lense
+class BeanPropertyLense<Tprop,Tbean>
+  implements Lense<Tprop,Tbean>
 {
   private static final Object[] EMPTY_PARAMS=new Object[0];
 
   private final PropertyDescriptor _property;
   private final Method _readMethod;
   private final MappedBeanInfo _beanInfo;
-  private final Prism _prism;
+  private final Prism<Tprop> _prism;
   
+  @SuppressWarnings("unchecked") // PropertyDescriptor is not generic
   public BeanPropertyLense(PropertyDescriptor property,MappedBeanInfo beanInfo)
     throws BindException
   { 
     _property=property;
     _readMethod=property.getReadMethod();
     _beanInfo=beanInfo;
-    _prism=OpticFactory.getInstance().findPrism(_property.getPropertyType());
+    _prism=OpticFactory.getInstance().<Tprop>findPrism
+      ((Class<Tprop>)_property.getPropertyType());
     
   }
 
@@ -57,14 +59,15 @@ class BeanPropertyLense
   { return _property;
   }
 
-  public Object translateForGet(Object value,Optic[] modifiers)
+  @SuppressWarnings("unchecked") // Method is not generic
+  public Tprop translateForGet(Tbean value,Optic[] modifiers)
   { 
     try
     {
       if (_readMethod!=null)
       { 
         if (value!=null)
-        { return _readMethod.invoke(value,EMPTY_PARAMS);
+        { return (Tprop) _readMethod.invoke(value,EMPTY_PARAMS);
         }
         else
         { return null;
@@ -92,11 +95,11 @@ class BeanPropertyLense
     }
   }
 
-  public Object translateForSet(Object val,Optic[] modifiers)
+  public Tbean translateForSet(Tprop val,Optic[] modifiers)
   { throw new UnsupportedOperationException();
   }
 
-  public Prism getPrism()
+  public Prism<Tprop> getPrism()
   { return _prism;
   }
 

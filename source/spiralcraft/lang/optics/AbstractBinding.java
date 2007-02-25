@@ -23,22 +23,24 @@ import spiralcraft.lang.Decorator;
 import java.beans.PropertyChangeSupport;
 
 /**
- * A starting point for building a Binding.
+ * A starting point for building a Binding.<B>
  *
  * Handles PropertyChangeSupport, caching bindings, and keeping a reference
- *   to the Prism.
+ *   to the Prism.<P>
  *
  * Storage and retrieval is accomplished by abstract methods defined in the
- *   subclass.
+ *   subclass.<P>
  *
  * To summarize, a Binding provides an updateable "view" of a piece of 
- *   information from an underlying data source or data container.
+ *   information from an underlying data source or data container. As the underlying
+ *   data changes, property changes are propogated through the binding chain, and the
+ *   get() method of the Channel will reflect the updated data.<P>
  */
-public abstract class AbstractBinding
-  implements Binding
+public abstract class AbstractBinding<T>
+  implements Binding<T>
 {
  
-  private final Prism _prism;
+  private final Prism<T> _prism;
   private final boolean _static;
   private PropertyChangeSupport _propertyChangeSupport;
   private WeakBindingCache _cache;
@@ -54,7 +56,7 @@ public abstract class AbstractBinding
   /**
    * Construct an AbstractBinding without an initial value
    */
-  protected AbstractBinding(Prism prism)
+  protected AbstractBinding(Prism<T> prism)
     throws BindException
   { 
     _prism=prism;
@@ -64,36 +66,36 @@ public abstract class AbstractBinding
   /**
    * Construct an AbstractBinding with an initial value
    */
-  protected AbstractBinding(Prism prism,boolean isStatic)
+  protected AbstractBinding(Prism<T> prism,boolean isStatic)
     throws BindException
   { 
     _prism=prism;
     _static=isStatic;
   }
 
-  public Class<?> getContentType()
+  public Class<T> getContentType()
   { return _prism.getContentType();
   }
   
-  public Optic resolve(Focus focus,String name,Expression[] params)
+  public <X> Optic<X> resolve(Focus<?> focus,String name,Expression[] params)
     throws BindException
   { 
-    Binding binding=_prism.resolve(this,focus,name,params);
+    Binding<X> binding=_prism.<X>resolve(this,focus,name,params);
     if (binding==null)
     { throw new BindException("'"+name+"' not found in "+_prism.toString());
     }
     return binding;
   }
   
-  public Object get()
+  public T get()
   { return retrieve();
   }
   
-  protected abstract Object retrieve();
+  protected abstract T retrieve();
   
-  protected abstract boolean store(Object val);
+  protected abstract boolean store(T val);
 
-  public Decorator decorate(Class decoratorInterface)
+  public Decorator<T> decorate(Class decoratorInterface)
   { 
     try
     { return _prism.decorate(this,decoratorInterface);
@@ -103,7 +105,7 @@ public abstract class AbstractBinding
     }
   }
   
-  public synchronized boolean set(Object value)
+  public synchronized boolean set(T value)
   { 
     if (_static)
     { return false;
@@ -127,7 +129,7 @@ public abstract class AbstractBinding
   /**
    * Return the Prism ("type" model/name resolver) for this Binding
    */
-  public Prism getPrism()
+  public Prism<T> getPrism()
   { return _prism;
   }
 

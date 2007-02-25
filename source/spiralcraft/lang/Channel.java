@@ -27,17 +27,17 @@ import java.util.HashMap;
  * Channels cache the expressions bound to them to avoid duplication of
  *   effort and to minimize memory consumption
  */
-public class Channel
-  extends ProxyOptic
-  implements Focus
+public class Channel<T>
+  extends ProxyOptic<T>
+  implements Focus<T>
 {
-  private final Expression _expression;
-  private final Focus _source;
+  private final Expression<T> _expression;
+  private final Focus<?> _source;
   
   // XXX These should be weak or soft refs
-  private HashMap<Expression,Channel> _channels;
+  private HashMap<Expression<?>,Channel<?>> _channels;
 
-  public Channel(Focus source,Optic optic,Expression expression)
+  public Channel(Focus<?> source,Optic<T> optic,Expression<T> expression)
   { 
     super(optic);
     _expression=expression;
@@ -48,15 +48,15 @@ public class Channel
   { return _expression;
   }
   
-  public Optic getSubject()
+  public Optic<T> getSubject()
   { return this;
   }
   
-  public Focus getParentFocus()
+  public Focus<?> getParentFocus()
   { return _source;
   }
   
-  public Focus findFocus(String name)
+  public Focus<?> findFocus(String name)
   { return _source.findFocus(name);
   }
   
@@ -64,18 +64,19 @@ public class Channel
   { return _source.getContext();
   }
   
-  public synchronized Channel bind(Expression expression)
+  @SuppressWarnings("unchecked") // Heterogeneous hash map
+  public synchronized <X> Channel<X> bind(Expression<X> expression)
     throws BindException
   { 
     // XXX These should be weak or soft refs so we don't hang on to unused 
     // XXX   channels
     
-    Channel channel=null;
+    Channel<X> channel=null;
     if (_channels==null)
-    { _channels=new HashMap<Expression,Channel>();
+    { _channels=new HashMap<Expression<?>,Channel<?>>();
     }
     else
-    { channel=(Channel) _channels.get(expression);
+    { channel=(Channel <X>) _channels.get(expression);
     }
     if (channel==null)
     { 

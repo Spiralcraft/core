@@ -75,7 +75,7 @@ public class ExpressionResolverTest
     try 
     {
       long time=System.currentTimeMillis();
-      Expression expression = parser.parse(_expression);
+      Expression<Object> expression = parser.parse(_expression);
       System.err.println("Initial read time "+(System.currentTimeMillis()-time));
       
       if (_dump)
@@ -90,9 +90,9 @@ public class ExpressionResolverTest
       context.setAttributes
         (
           new Attribute[] 
-            {new Attribute
+            {new Attribute<String>
               ("test"
-              ,new SimpleBinding("testValue",true)
+              ,new SimpleBinding<String>("testValue",true)
               )
             }
         );
@@ -101,7 +101,7 @@ public class ExpressionResolverTest
 
       time=System.currentTimeMillis();
 
-      Channel channel=expression.bind(focus);
+      Channel<Object> channel=expression.bind(focus);
 
       System.err.println("Bind time "+(System.currentTimeMillis()-time));
 

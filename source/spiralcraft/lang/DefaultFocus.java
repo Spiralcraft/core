@@ -19,20 +19,20 @@ import java.util.HashMap;
 /**
  * Simple implementation of Focus
  */
-public class DefaultFocus
-  implements Focus
+public class DefaultFocus<T>
+  implements Focus<T>
 {
 
   private Context _context;
-  private Optic _subject;
-  private Focus _parent;
-  private HashMap<Expression,Channel> _channels;
+  private Optic<T> _subject;
+  private Focus<?> _parent;
+  private HashMap<Expression<?>,Channel<?>> _channels;
 
   public DefaultFocus()
   {
   }
 
-  public DefaultFocus(Optic subject)
+  public DefaultFocus(Optic<T> subject)
   { _subject=subject;
   }
 
@@ -40,7 +40,7 @@ public class DefaultFocus
   { _parent=parent;
   }
 
-  public Focus getParentFocus()
+  public Focus<?> getParentFocus()
   { return _parent;
   }
 
@@ -48,7 +48,7 @@ public class DefaultFocus
   { _context=val;
   }
     
-  public synchronized void setSubject(Optic val)
+  public synchronized void setSubject(Optic<T> val)
   { 
     _subject=val;
     _channels=null;
@@ -75,11 +75,11 @@ public class DefaultFocus
   /**
    * Return the subject of expression evaluation
    */
-  public Optic getSubject()
+  public Optic<T> getSubject()
   { return _subject;
   }
 
-  public Focus findFocus(String name)
+  public Focus<?> findFocus(String name)
   { 
     if (_parent!=null)
     { return _parent.findFocus(name);
@@ -89,15 +89,16 @@ public class DefaultFocus
     }
   }
 
-  public synchronized Channel bind(Expression expression)
+  @SuppressWarnings("unchecked") // Heterogeneous hash map
+  public synchronized <X> Channel<X> bind(Expression<X> expression)
     throws BindException
   { 
-    Channel channel=null;
+    Channel<X> channel=null;
     if (_channels==null)
-    { _channels=new HashMap<Expression,Channel>();
+    { _channels=new HashMap<Expression<?>,Channel<?>>();
     }
     else
-    { channel=(Channel) _channels.get(expression);
+    { channel=(Channel<X>) _channels.get(expression);
     }
     if (channel==null)
     { 

@@ -20,16 +20,18 @@ import spiralcraft.lang.BindException;
 
 import spiralcraft.lang.optics.SimpleBinding;
 
-public class LiteralNode
-  extends Node
+public class LiteralNode<X>
+  extends Node<X>
 {
 
-  private final SimpleBinding _optic;
+  private final SimpleBinding<X> _optic;
 
-  public LiteralNode(Object value,Class valueClass)
+  public LiteralNode(X value,Class<X> valueClass)
   { 
     try
-    { _optic=new SimpleBinding(valueClass,value,true);
+    { 
+//      System.out.println("LiteralNode: Creating SimpleBinding with "+value);
+      _optic=new SimpleBinding<X>(valueClass,value,true);
     }
     catch (BindException x)
     { throw new IllegalArgumentException(x.toString());
@@ -39,13 +41,17 @@ public class LiteralNode
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix)
-      .append("Literal: ")
-      .append(_optic.toString())
+      .append("Literal: ").append(_optic.getContentType().getName())
+      .append(":[")
+      .append(_optic.get().toString())
+      .append("]");
       ;
   }
 
-  public synchronized Optic bind(final Focus focus)
+  public synchronized Optic<X> bind(final Focus focus)
     throws BindException
-  { return _optic;
+  { 
+//    System.out.println("LiteralNode: Returning "+_optic.toString());
+    return _optic;
   }
 }
