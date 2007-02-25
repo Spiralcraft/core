@@ -336,7 +336,7 @@ class Context
       if (fieldIterator==null)
       { 
         startType();
-        fieldIterator=tuple.getScheme().fieldIterable().iterator();
+        fieldIterator=tuple.getFieldSet().fieldIterable().iterator();
       }
       else if (fieldIterator.hasNext())
       {

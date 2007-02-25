@@ -16,6 +16,7 @@ package spiralcraft.data.lang;
 
 import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.DataException;
 
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.OpticFactory;
@@ -30,6 +31,7 @@ public class FieldLense
   private final Field field;
   private final Prism prism;
   
+  @SuppressWarnings("unchecked") // We haven't genericized the data package builder yet
   public FieldLense(Field field)
     throws BindException
   { 
@@ -38,7 +40,7 @@ public class FieldLense
     if (field.getType().getScheme()!=null)
     { 
       prism
-        =SchemePrism.getInstance(field.getType().getScheme());
+        =TuplePrism.getInstance(field.getType().getScheme());
     }
     else
     {
@@ -53,7 +55,13 @@ public class FieldLense
   }
   
   public Object translateForGet(Object value,Optic[] modifiers)
-  { return ((Tuple) value).get(field.getIndex());
+  { 
+    try
+    { return field.getValue((Tuple) value);
+    }
+    catch (DataException x)
+    { throw new IllegalArgumentException("Field is not valid for Tuple",x);
+    }
   }
 
   public Object translateForSet(Object val,Optic[] modifiers)

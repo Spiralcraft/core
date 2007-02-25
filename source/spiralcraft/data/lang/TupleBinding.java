@@ -19,41 +19,24 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.optics.AbstractBinding;
 
 import spiralcraft.data.Tuple;
-import spiralcraft.data.Scheme;
+import spiralcraft.data.FieldSet;
 
 /**
  * A spiralcraft.lang binding for Tuples, which uses the Tuple's Scheme
  *   as the type model for binding expressions.
  */
-public class TupleBinding
-  extends AbstractBinding
+public abstract class TupleBinding
+  extends AbstractBinding<Tuple>
 {
-  private Tuple tuple;
-  
-  public TupleBinding(Scheme scheme)
+ 
+  public TupleBinding(FieldSet fieldSet,boolean isStatic)
     throws BindException
-  { super(SchemePrism.getInstance(scheme),false);
+  { super(TuplePrism.getInstance(fieldSet),isStatic);
   }
   
-  public TupleBinding(Scheme scheme,Tuple data)
-    throws BindException
-  { 
-    super(SchemePrism.getInstance(scheme),true);
-    tuple=data;
-  }
 
-  public Scheme getScheme()
-  { return ((SchemePrism) getPrism()).getScheme();
-  }
-
-  protected Object retrieve()
-  { return tuple;
-  }
-  
-  protected boolean store(Object val)
-  { 
-    tuple=(Tuple) val;
-    return true;
+  public FieldSet getFieldSet()
+  { return ((TuplePrism) getPrism()).getFieldSet();
   }
 
 }

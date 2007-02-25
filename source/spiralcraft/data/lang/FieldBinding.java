@@ -29,6 +29,7 @@ public class FieldBinding
 {
   private final FieldLense lense;
   
+  @SuppressWarnings("unchecked") // We haven't genericized the data package yet
   public FieldBinding(Binding source,FieldLense lense)
   { 
     super(source,lense,null);

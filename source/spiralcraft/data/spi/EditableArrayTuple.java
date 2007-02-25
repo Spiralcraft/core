@@ -17,7 +17,7 @@ package spiralcraft.data.spi;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
-import spiralcraft.data.Scheme;
+import spiralcraft.data.FieldSet;
 import spiralcraft.data.DataException;
 
 
@@ -29,8 +29,8 @@ public class EditableArrayTuple
   extends ArrayTuple
   implements EditableTuple
 {
-  public EditableArrayTuple(Scheme scheme)
-  { super(scheme);
+  public EditableArrayTuple(FieldSet fieldSet)
+  { super(fieldSet);
   }
   
   public EditableArrayTuple(Tuple original)

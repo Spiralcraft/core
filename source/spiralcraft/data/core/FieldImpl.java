@@ -16,6 +16,7 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Field;
+import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
@@ -30,12 +31,13 @@ public class FieldImpl
   implements Field
 {
   private boolean locked;
-  private SchemeImpl scheme;
+  private FieldSet fieldSet;
   private int index;
   private String name;
   private Type<?> type;
   private Field archetypeField;
   private URI uri;
+  private boolean isScheme;
   
   /**
    * Set the scheme
@@ -43,7 +45,8 @@ public class FieldImpl
   void setScheme(SchemeImpl scheme)
   { 
     assertUnlocked();
-    this.scheme=scheme;
+    isScheme=true;
+    this.fieldSet=scheme;
     if (scheme.getType()!=null)
     { 
       this.uri
@@ -55,7 +58,19 @@ public class FieldImpl
         =URI.create("untyped#"+getName());
       
     }
-      
+  }
+  
+  void setFieldSet(FieldSet fieldSet)
+  {
+    assertUnlocked();
+    if (fieldSet instanceof Scheme)
+    { setScheme((SchemeImpl) fieldSet);
+    }
+    else
+    { 
+      this.fieldSet=fieldSet;
+      this.uri=URI.create("untyped#"+getName());
+    }
     
   }
   
@@ -76,10 +91,23 @@ public class FieldImpl
   }
   
   /**
-   * Return the Scheme
+   *@return the owning FieldSet
+   */
+  public FieldSet getFieldSet()
+  { return fieldSet;
+  }
+  
+  /**
+   *@return the Scheme
    */
   public Scheme getScheme()
-  { return scheme;
+  { 
+    if (fieldSet instanceof Scheme)
+    { return (Scheme) fieldSet;
+    }
+    else
+    { return null;
+    }
   }
 
   public URI getUri()
@@ -136,29 +164,66 @@ public class FieldImpl
   public Type<?> getType()
   { return type;
   }
+
+  private Tuple widenTuple(Tuple t)
+    throws DataException
+  {
+    if (isScheme)
+    { 
+      Scheme scheme=(Scheme) fieldSet;
+      // Find the Tuple which stores this field
+      if (scheme.getType()!=null)
+      { t=t.widen(scheme.getType());
+      }
+    }
+    else
+    { 
+      if (fieldSet!=t.getFieldSet())
+      { t=null;
+      }
+    }
+    return t;
+    
+  }
+  
+  private EditableTuple widenTuple(EditableTuple t)
+    throws DataException
+  {
+    if (isScheme)
+    { 
+      Scheme scheme=(Scheme) fieldSet;
+      // Find the Tuple which stores this field
+      if (scheme.getType()!=null)
+      { t=t.widen(scheme.getType());
+      }
+    }
+    else
+    { 
+      if (fieldSet!=t.getFieldSet())
+      { t=null;
+      }
+    }
+    return t;
+  }
   
   public Object getValue(Tuple t)
     throws DataException
   { 
-    // Find the Tuple which stores this field
-    if (scheme.getType()!=null)
-    { t=t.widen(scheme.getType());
-    }
+    t=widenTuple(t);
     
     if (t!=null)
     { return t.get(index);
     }
-    
+      
     throw new IllegalArgumentException
-      ("Field '"+name+"' not in Tuple Scheme "+scheme.toString());
+      ("Field '"+name+"' not in Tuple FieldSet "+t.getFieldSet());
+      
   }
   
   public void setValue(EditableTuple t,Object value)
     throws DataException
   { 
-    if (scheme.getType()!=null)
-    { t=t.widen(scheme.getType());
-    }
+    t=widenTuple(t);
     
     if (t!=null)
     { t.set(index,value);
@@ -167,7 +232,7 @@ public class FieldImpl
     {
       throw new IllegalArgumentException
         ("Field "+getUri()
-        +" not in Tuple Scheme "+scheme.toString()
+        +" not in Tuple FieldSet "+t.getFieldSet()
         );
     }
   }

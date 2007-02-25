@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 1998,2005 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -15,23 +15,13 @@
 package spiralcraft.data;
 
 /**
- * A passive consumer of Tuple data. 
+ * An immutable Tuple which holds data corresponding to a Key of a Scheme.
  */
-interface DataConsumer
+public interface KeyTuple
+  extends Tuple
 {
   /**
-   * Called once before dataAvailable() to allow the DataConsumer to verify
-   *   and bind to the applicable Tuple Scheme.
+   * The Key on which this Tuple is based
    */
-  void dataInitialize(Scheme scheme)
-    throws DataException;
-  
-  /**
-   * Called one or more times when data is available to consume. The
-   *   DataConsumer should copy data from this tuple.
-   */
-  void dataAvailable(Tuple tuple)
-    throws DataException;
-    
-  
+  Key getKey();
 }

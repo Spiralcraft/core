@@ -36,6 +36,7 @@ import spiralcraft.data.types.meta.TypeType;
 import spiralcraft.data.sax.XmlTypeFactory;
 
 import spiralcraft.data.wrapper.ReflectionTypeFactory;
+import spiralcraft.data.wrapper.ReflectionType;
 
 /**
  * Resolves Type references to singleton instances of the Type interface. 
@@ -117,7 +118,12 @@ public class TypeResolver
     
   }
 
-  public final Type<?> resolve(URI typeUri)
+  public final Type resolveFromClass(Class clazz)
+    throws TypeNotFoundException
+  { return resolve(ReflectionType.canonicalUri(clazz));
+  }
+  
+  public final Type resolve(URI typeUri)
     throws TypeNotFoundException
   { 
     if (typeUri==null)

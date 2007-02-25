@@ -46,12 +46,13 @@ import java.lang.reflect.InvocationTargetException;
  * Effectively allows a Tuple to automatically implement a "data container" 
  *  Java interface.
  */
-public class TupleDelegate
-  extends AbstractBinding
+@SuppressWarnings("unchecked") // Proxy is not generic
+public class TupleDelegate<T>
+  extends AbstractBinding<T>
   implements InvocationHandler
 {
   
-  private final Object proxy;
+  private final T proxy;
   private final TupleBinding binding;
   
   /**
@@ -61,22 +62,22 @@ public class TupleDelegate
    *
    * A default Tuple implementation is used.
    */
-  public TupleDelegate(Class iface)
+  public TupleDelegate(Class<T> iface)
     throws BindException,DataException
   { 
-    super(new TuplePrism(iface),true);
+    super(new TupleDelegatePrism<T>(iface),true);
     
     Scheme scheme
       =TypeResolver.getTypeResolver().resolve
         (ReflectionType.canonicalUri(iface))
           .getScheme();
           
-    binding=new TupleBinding
+    binding=new StaticTupleBinding
       (scheme
       ,new EditableArrayTuple(scheme)
       );
       
-    proxy=Proxy.newProxyInstance
+    proxy=(T) Proxy.newProxyInstance
       (iface.getClassLoader()
       ,new Class[] {iface}
       ,this
@@ -110,7 +111,7 @@ public class TupleDelegate
     throws Throwable
   {
     Field field=
-      ((ReflectionScheme) binding.getScheme()).getField(method);
+      ((ReflectionScheme) binding.getFieldSet()).getField(method);
 
     if (field!=null)
     {
@@ -146,14 +147,14 @@ public class TupleDelegate
   /**
    * Return the proxy interface
    */ 
-  protected Object retrieve()
+  protected T retrieve()
   { return proxy;
   }
   
   /**
    * We can't change the proxy here, as our implementation is fixed
    */
-  public boolean store(Object val)
+  public boolean store(T val)
   { return false;
   }
 }
@@ -161,27 +162,33 @@ public class TupleDelegate
 /**
  * 
  */
-class TuplePrism
-  implements Prism
+class TupleDelegatePrism<T>
+  implements Prism<T>
 {
-  private final Class iface;
+  private final Class<T> iface;
   
-  public TuplePrism(Class iface)
+  public TupleDelegatePrism(Class<T> iface)
   { this.iface=iface;
   }
-  
-  public Binding resolve(Binding source,Focus focus,String name,Expression[] params)
+
+  // We haven't genericized the data package builder yet
+  // XXX TODO- this gets pretty hacked up using generics- figure out something cleaner
+  @SuppressWarnings("unchecked")
+  public <X> Binding<X> resolve(Binding<T> source,Focus<?> focus,String name,Expression[] params)
     throws BindException
   { 
-    Binding binding=((TupleDelegate) source).getTupleBinding();
-    return binding.getPrism().resolve(binding,focus,name,params);
+    Binding<T> binding=(Binding<T>) ((TupleDelegate) source).getTupleBinding();
+    return binding.getPrism().<X>resolve(binding,focus,name,params);
   }
   
-  public Decorator decorate(Binding source,Class decoratorInterface)
+  // We haven't genericized the data package builder yet
+  // XXX TODO- this gets pretty hacked up using generics- figure out something cleaner
+  @SuppressWarnings("unchecked")
+  public Decorator<T> decorate(Binding source,Class decoratorInterface)
   { 
     try
     {
-      Binding binding=((TupleDelegate) source).getTupleBinding();
+      Binding<T> binding=(Binding<T>) ((TupleDelegate) source).getTupleBinding();
       return binding.getPrism().decorate(binding,decoratorInterface);
     }
     catch (BindException x)
@@ -190,7 +197,7 @@ class TuplePrism
     
   }
   
-  public Class<?> getContentType()
+  public Class<T> getContentType()
   { return iface;
   }
 }

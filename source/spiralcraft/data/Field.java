@@ -22,9 +22,9 @@ import java.net.URI;
 public interface Field
 {
   /**
-   * The Scheme to which this Field belongs
+   * The FieldSet to which this Field belongs. All Fields belong to a FieldSet.
    */
-  Scheme getScheme();
+  FieldSet getFieldSet();
   
   /**
    * The index of the Field within the Scheme, which corresponds to the

@@ -121,7 +121,7 @@ public class SchemeImpl
   /**
    * Add a local Field
    */
-  protected void addField(FieldImpl field)
+  public void addField(FieldImpl field)
   { 
     assertUnresolved();
     if (localFieldMap.get(field.getName())!=null)

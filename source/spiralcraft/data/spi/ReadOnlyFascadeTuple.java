@@ -15,9 +15,9 @@
 package spiralcraft.data.spi;
 
 import spiralcraft.data.Type;
+import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
-import spiralcraft.data.Scheme;
 import spiralcraft.data.DataException;
 
 /**
@@ -62,8 +62,8 @@ public class ReadOnlyFascadeTuple
   { throw new UnsupportedOperationException("Not an Aggregate");
   }
  
-  public Scheme getScheme()
-  { return delegate.getScheme();
+  public FieldSet getFieldSet()
+  { return delegate.getFieldSet();
   }
   
   public Object get(int index)

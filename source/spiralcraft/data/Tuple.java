@@ -18,9 +18,9 @@ package spiralcraft.data;
  * A Tuple provides read access to a unit of structured data consisting of 
  *   one or more closely related data elements (Fields).<P>
  *
- * The data structure of a Tuple is defined by a Scheme, which names and 
+ * The data structure of a Tuple is defined by a FieldSet, which names and 
  *   describes each Field in the Tuple. Each Field is assigned an index
- *   according to the sequence of its definition in the Scheme.<P>
+ *   according to the sequence of its definition in the FieldSet.<P>
  *
  * The primary function of a Tuple is to provide a uniform means of access
  *   to data regardless of the source and external representation of that data,
@@ -37,8 +37,7 @@ package spiralcraft.data;
  *
  * Implementations of Tuple must implement the equals() and the hashCode()
  *   methods appropriately. A Tuple is considered equal to another tuple if
- *   and only if all of its data elements are equal. Two tuples which have
- *   different Schemes may be equal. <P>
+ *   and only if all of its data elements are of compatible types and are equal.
  *
  */
 public interface Tuple
@@ -72,9 +71,19 @@ public interface Tuple
 //    throws DataException;
   
   /**
+   *@return the FieldSet for this Tuple.
+   */
+  FieldSet getFieldSet();
+  
+  /**
+   *@return the Type for this Tuple, if it has one. 
+   */
+  Type<?> getType();
+  
+  /**
    * Return the Scheme of this Tuple
    */
-  Scheme getScheme();
+  // Scheme getScheme();
   
   /**
    * Return the Object in the specified Field position. The index supplied

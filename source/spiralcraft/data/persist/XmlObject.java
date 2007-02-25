@@ -133,7 +133,7 @@ public class XmlObject
         ,type
         );
       
-      Type actualType=tuple.getScheme().getType();
+      Type actualType=tuple.getType();
       
       assembly = (Assembly) actualType.fromData(tuple,null); 
       type=actualType; 
