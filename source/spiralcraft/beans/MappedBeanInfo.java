@@ -87,6 +87,10 @@ public class MappedBeanInfo
     { _fieldMap.put(_fields[i].getName(),_fields[i]);
     }
   }
+  
+  public Field[] getFields()
+  { return _fields;
+  }
 
   public PropertyDescriptor findProperty(String name)
   { return _propertyMap.get(name);
