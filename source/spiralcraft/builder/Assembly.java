@@ -74,6 +74,7 @@ public class Assembly
    * Construct an instance of the specified AssemblyClass,
    *   without binding properties
    */
+  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
   Assembly(AssemblyClass assemblyClass)
     throws BuildException
   {
@@ -306,6 +307,7 @@ public class Assembly
   /**
    * implement Focus.bind()
    */
+  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
   public synchronized Channel bind(Expression expression)
     throws BindException
   { 

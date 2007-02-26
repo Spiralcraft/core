@@ -53,6 +53,7 @@ import java.beans.PropertyChangeSupport;
  *   uiExpression (against a text field): text
  *   
  */
+@SuppressWarnings("unchecked") // Not a specific use of Generics
 public class Binding
   implements PropertyChangeListener
 {
@@ -73,7 +74,7 @@ public class Binding
    * Supply the Focus against which the model Expression will be
    *   resolved.
    */
-  public void setModelFocus(Focus val)
+  public void setModelFocus(Focus<Object> val)
   { _modelFocus=val;
   }
 
@@ -90,7 +91,7 @@ public class Binding
    * Supply the Focus against which the UI Expression will be
    *   resolved (optional).
    */
-  public void setUiFocus(Focus val)
+  public void setUiFocus(Focus<Object> val)
   { _uiFocus=val;
   }
 

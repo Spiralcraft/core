@@ -180,6 +180,8 @@ public class PropertyBinding
     }
   }
 
+  
+  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
   private void resolveTarget()
     throws BuildException
   {
@@ -422,7 +424,8 @@ public class PropertyBinding
   public Assembly getContainer()
   { return _container;
   }
-  
+
+  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
   private void apply()
     throws BuildException
   { 

@@ -87,6 +87,7 @@ public abstract class BindingGroup
    */
   protected abstract Object getModelObject();
 
+  @SuppressWarnings("unchecked") // Not a specific use of generics
 	public void init()
 	{  
     try

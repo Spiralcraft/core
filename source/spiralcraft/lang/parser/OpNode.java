@@ -20,29 +20,29 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 
 
-public class OpNode
-  extends Node
+public class OpNode<T1,T2 extends T1>
+  extends Node<T1>
 {
 
-  private final Node _op1;
-  private final Node _op2;
+  private final Node<T1> _op1;
+  private final Node<T2> _op2;
   private final Expression[] _params;
   private final String _op;
 
-  public OpNode(Node op1,Node op2,char op)
+  public OpNode(Node<T1> op1,Node<T2> op2,char op)
   { 
     _op1=op1;
     _op2=op2;
     _op=new String(new char[]{op}).intern();
-    _params=new Expression[] {new Expression(_op2,null)};
+    _params=new Expression[] {new Expression<T2>(_op2,null)};
   }
 
-  public Optic bind(final Focus focus)
+  public Optic<T1> bind(final Focus focus)
     throws BindException
   { 
-    Optic op1=_op1.bind(focus);
+    Optic<T1> op1=_op1.bind(focus);
 
-    Optic ret=op1
+    Optic<T1> ret=op1
       .resolve(focus
               ,_op
               ,_params
