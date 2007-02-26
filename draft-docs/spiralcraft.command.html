@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>spiralcraft.command</title>
+  <meta name="author" content="Mike Toth">
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#000099" vlink="#990099"
+ alink="#000099">
+<h1>Spiralcraft</h1>
+<hr width="100%" size="2">
+<h2>spiralcraft.command package</h2>
+The spiralcraft.command package implements an abstracted command line
+interface for resolving and invoking functionality exposed by the
+Spiralcraft platform and applications built on top of it.<br>
+<br>
+This package does not implement a shell application per-se as it does
+not provide for command editing functionality. It does, however,
+provide mechanisms to support a shell interface.<br>
+<h3>Assumptions of the Command paradigm</h3>
+The Command interface is an ideal low level access mechanism for a
+software platform. When application functionality is exposed within the
+context of a properly designed command interface, a natural boundary is
+created between functionality and presentation which facilitates the
+addition of alternative interfaces; for example graphical interfaces
+and voice response systems. Most alternative interfaces can also
+produce a command line analog as default behavior if a specific UI
+component is not available for an application component. <br>
+<br>
+Current and legacy implementations of command line interfaces suffer
+from some common problems which require resolution before the command
+line interface can be made suitable for the control of a large scale,
+open ended object oriented platform. Many aspects of the Spiralcraft
+command interface are designed to solve these problems. <br>
+<h4>Contextual namespace instead of flat namespace or sequential
+resolution.<br>
+</h4>
+Brief command names are desirable as they increase the usability of an
+interface. In a flat namespace where multiple uncoordinated developers
+add functionality, brevity quickly comes into conflict with uniqueness.<br>
+<br>
+Providing a hierarchical set of command 'contexts' solves this problem.
+When a command context chooses to inherit commands from its parent
+'context', security concerns dictate that it cannot override its
+parent's commands. This ensures that the user will always obtain a
+predictable result when they type in a command.<br>
+<h4>Object-centric instead of file-centric<br>
+</h4>
+OS command line interfaces are predominantly oriented around the file
+system. 'Navigation' is accomplished by 'change directory' operations.<br>
+In an open ended object oriented application platform, however, the
+file system is but one of many different systems which can be the focus
+of user interaction.<br>
+<br>
+This package solves this problem by providing a mechanism for
+applications to expose 'command contexts', and for the end user to
+navigate them.<br>
+<h4>Well defined parameter collection instead of text or 'filespec'
+typed&nbsp; variable argument lists.<br>
+</h4>
+Most command line interfaces pass textual arguments to their targets,
+requiring the target component to support some facility for
+interpreting those arguments. This is both a burden for the target
+component and a deviation from the goal of having the command line
+interface serve as a common denominator for accessing functionality, as
+graphical user interfaces do not normally depend on exclusively passing
+textual arguments to the components they control.<br>
+<br>
+This package provides a means for passing a well defined ParameterSet
+to
+commands.<br>
+<h3>Typical Use Case<br>
+</h3>
+A user agent (UA) obtains a new instance of a CommandContext.<br>
+<br>
+<div style="margin-left: 40px;">Since a user agent's primary means of
+interaction is via a CommandContext, there must be some chain of
+CommandContexts. Each CommandContext will have a set of subcontexts the
+user agent can use to navigate a system.<br>
+<br>
+Access to CommandContexts is a secure operation- requiring specific
+action to resolve an access path results in a positively defined
+security model.<br>
+<br>
+<br>
+</div>
+UA finds an appropriate Command within the CommandContext.<br>
+<br>
+<div style="margin-left: 40px;">Commands are cataloged for use by
+introspective UI based mechanisms (help, menus, etc).<br>
+<br>
+</div>
+UA retrieves a new ParameterSet from the command, and fills in
+appropriate parameters.<br>
+<br>
+UA creates a new Invocation with the CommandContext, Command,
+ParameterSet<br>
+<div style="margin-left: 40px;"><br>
+The Invocation tracks the status and result of the Command execution.<br>
+</div>
+<br>
+<br>
+<br>
+An Invocation may generate messages<br>
+<br>
+An Invocation may throw an exception<br>
+<br>
+Invocations and their output are journalled<br>
+<br>
+<br>
+<h3>Critical Analysis</h3>
+<br>
+<h4>What is the difference between a command and a method?</h4>
+Commands are imperatives, invoked by a user or a user agent to direct
+the system to perform some activity to further some goal.<br>
+<br>
+Methods can be analogous to commands, but are a much more general
+mechanism. Many methods do nothing but return values. Other methods
+encapsulate operations that do not normally terminate. <br>
+<br>
+<h4>Why are commands needed instead of just using methods via
+reflection?</h4>
+User agents need to inquire as to the set of commands available within
+a given context.<br>
+<br>
+An object in a controller role may have as its primary purpose the
+responsibility for defining and exposing the set of commands available<br>
+<br>
+A command provides a useful basis for managing high level invocations
+of functionality- an Invocation can hold the state of command execution
+and encapsulate the result or any exceptions generated.<br>
+<br>
+A command context assumes the presence of a user agent, whereas a
+method call does not. The presence of a user agent permits the command
+target to post messages, check security, and perform other actions that
+take advantage of the user agent communication channel.<br>
+<br>
+<h4>What are the problems with different methods of parameter passing?</h4>
+Variable string arguments: All strings must be parsed and interpreted.
+Burden of interpretation is on non-reusable, application specific
+implementation, which lacks contextual information available to user
+agent.<br>
+<br>
+Variable object arguments: Positional interface is not reliable, unless
+string identifiers used, which must be parsed. <br>
+<br>
+Dictionary arguments: Passing anything requires assignment of a
+dictionary name, which increases naming complexity. Simple commands
+with one argument would be made highly inefficient.<br>
+<br>
+<h4>How would Arguments object work?</h4>
+Each command would provide a new Arguments object. The Arguments object
+would provide a queryable list of Argument names and data types, which
+represent the interface to the command. The argument names would be
+available as constants for compilation and runtime efficiency, or could
+be managed as text strings by UA's that are more ad-hoc in nature. If a
+UA tried to apply an argument that was invalid or the wrong type, an
+exception would be thrown before the Command was executed.<br>
+<br>
+A direct mapping between variable string arguments with "options" is
+possible here. <br>
+<br>
+<br>
+<br>
+</body>
+</html>
