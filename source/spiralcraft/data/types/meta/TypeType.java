@@ -97,7 +97,7 @@ public class TypeType
   }
   
   public String toString(TypeImpl val)
-  { return ((Type) val).getUri().toString();
+  { return ((Type) val).getURI().toString();
   } 
   
   /**

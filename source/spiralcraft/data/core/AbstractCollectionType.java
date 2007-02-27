@@ -55,7 +55,7 @@ public class AbstractCollectionType<T extends Collection<?>>
       try
       {
         this.contentType=(Type<? super Object>) getTypeResolver().resolve
-          (ReflectionType.canonicalUri(Object.class));
+          (ReflectionType.canonicalURI(Object.class));
       }
       catch (TypeNotFoundException x)
       { throw new RuntimeException(x);

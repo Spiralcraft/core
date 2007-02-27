@@ -50,7 +50,7 @@ public class FieldImpl
     if (scheme.getType()!=null)
     { 
       this.uri
-        =URI.create(scheme.getType().getUri().toString()+"#"+getName());
+        =URI.create(scheme.getType().getURI().toString()+"#"+getName());
     }
     else
     {

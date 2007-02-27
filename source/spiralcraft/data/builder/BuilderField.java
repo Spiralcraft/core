@@ -136,7 +136,7 @@ public class BuilderField
             //   declared PropertySpecifier to contain it
             throw new DataException
               ("Field '"+getName()+"' must be declared in Assembly: "
-              +getScheme().getType().getUri()
+              +getScheme().getType().getURI()
               +" in order to depersist."
               );
           }
@@ -201,7 +201,7 @@ public class BuilderField
                 Object subjectBean=subAssembly.getSubject().get();
                 type=
                   TypeResolver.getTypeResolver().resolve
-                    (ReflectionType.canonicalUri(subjectBean.getClass()));
+                    (ReflectionType.canonicalURI(subjectBean.getClass()));
                 // Narrow the data conversion
                 aggregate.add(type.toData(subjectBean));
                 

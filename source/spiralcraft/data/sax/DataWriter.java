@@ -44,7 +44,7 @@ public class DataWriter
 { 
     
    
-  public void writeToUri
+  public void writeToURI
     (URI resourceUri
     ,Tuple data
     )
@@ -192,7 +192,7 @@ class Context
     public TypeFrame(Type<?> type)
     {
       this.type=type;
-      URI typeUri=type.getUri();
+      URI typeUri=type.getURI();
       String[] path=StringUtil.tokenize(typeUri.getPath(),"/");
 
       

@@ -79,7 +79,7 @@ public abstract class AbstractAggregateType<T>
   public Type getMetaType()
   {
     try
-    { return getTypeResolver().resolve(ReflectionType.canonicalUri(getClass()));
+    { return getTypeResolver().resolve(ReflectionType.canonicalURI(getClass()));
     }
     catch (TypeNotFoundException x)
     { throw new RuntimeException(x);
@@ -101,7 +101,7 @@ public abstract class AbstractAggregateType<T>
   { return false;
   }
   
-  public URI getUri()
+  public URI getURI()
   { return uri;
   }
   
@@ -144,7 +144,7 @@ public abstract class AbstractAggregateType<T>
     { 
       archetype
         =contentType.getTypeResolver().resolve
-          (URI.create(contentArchetype.getUri().toString()
+          (URI.create(contentArchetype.getURI().toString()
                       .concat(getAggregateQualifier())
                      )
           );
@@ -155,7 +155,7 @@ public abstract class AbstractAggregateType<T>
     { 
       baseType
         =contentType.getTypeResolver().resolve
-          (URI.create(contentBaseType.getUri().toString()
+          (URI.create(contentBaseType.getURI().toString()
                       .concat(getAggregateQualifier())
                      )
           );

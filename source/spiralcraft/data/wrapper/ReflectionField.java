@@ -81,7 +81,7 @@ public class ReflectionField
     {
       if (type.getScheme()!=null && type.getNativeClass()==null)
       {
-        System.err.println("Not depersisting "+type.getUri());
+        System.err.println("Not depersisting "+type.getURI());
         // Does not correspond to a Java type
       }
       else
@@ -175,7 +175,7 @@ public class ReflectionField
         if (value!=null)
         {
           type=(Type<? super Object>) TypeResolver.getTypeResolver().resolve
-            (ReflectionType.canonicalUri(value.getClass()));
+            (ReflectionType.canonicalURI(value.getClass()));
           if (!type.isPrimitive())
           { 
             if (type.getNativeClass()!=null)

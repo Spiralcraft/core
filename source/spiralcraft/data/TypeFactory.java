@@ -25,7 +25,7 @@ public interface TypeFactory
    *@return A new instance of the specified Type that is not yet linked,
    *  or null, if this TypeFactory does not apply to the specified URI.
    */
-  public Type createType(TypeResolver resolver,URI typeUri)
+  public Type createType(TypeResolver resolver,URI typeURI)
     throws DataException;
   
 }

@@ -99,7 +99,7 @@ public class BuilderType
     }
   }
 
-  public static URI canonicalUri(AssemblyClass assemblyClass)
+  public static URI canonicalURI(AssemblyClass assemblyClass)
   {
     if (assemblyClass!=null)
     {
@@ -140,7 +140,7 @@ public class BuilderType
   @SuppressWarnings("unchecked")
   public static Type<Assembly> canonicalType(AssemblyClass assemblyClass)
     throws DataException
-  { return (Type<Assembly>) TypeResolver.getTypeResolver().resolve(canonicalUri(assemblyClass));
+  { return (Type<Assembly>) TypeResolver.getTypeResolver().resolve(canonicalURI(assemblyClass));
   }
   
   public static Type genericBuilderType()
@@ -162,7 +162,7 @@ public class BuilderType
   { 
     super
       (outerType.getTypeResolver()
-      ,canonicalUri(innerClass)
+      ,canonicalURI(innerClass)
       );
 
     targetAssemblyClass=innerClass;
@@ -209,7 +209,7 @@ public class BuilderType
     { 
       archetype=
         resolver.resolve
-          (canonicalUri(baseAssemblyClass)
+          (canonicalURI(baseAssemblyClass)
           );
     }
     scheme=new BuilderScheme(resolver,this,targetAssemblyClass);
@@ -301,7 +301,7 @@ public class BuilderType
       // System.out.println("Narrowing "+getUri());
       Type<Assembly> targetType
         =(BuilderType) getTypeResolver().resolve
-          (canonicalUri(assembly.getAssemblyClass())
+          (canonicalURI(assembly.getAssemblyClass())
           );
       return targetType.toData(assembly);    
     }

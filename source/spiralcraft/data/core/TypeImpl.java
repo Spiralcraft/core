@@ -120,7 +120,7 @@ public class TypeImpl<T>
   { return resolver;
   }
   
-  public URI getUri()
+  public URI getURI()
   { return uri;
   }
 

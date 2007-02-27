@@ -111,7 +111,7 @@ public class ReflectionType<T>
   }
 
  
-  public static URI canonicalUri(Class iface)
+  public static URI canonicalURI(Class iface)
   {
     iface=ClassUtil.boxedEquivalent(iface);
 
@@ -219,7 +219,7 @@ public class ReflectionType<T>
           (Class) reflectedClass.getTypeParameters()[0].getBounds()[0];
       }
       try
-      { contentType=resolver.resolve(canonicalUri(contentClass));
+      { contentType=resolver.resolve(canonicalURI(contentClass));
       }
       catch (TypeNotFoundException x)
       { x.printStackTrace();
@@ -228,7 +228,7 @@ public class ReflectionType<T>
     }
 
     if (reflectedClass.getSuperclass()!=null)
-    { archetype=resolver.resolve(canonicalUri(reflectedClass.getSuperclass()));
+    { archetype=resolver.resolve(canonicalURI(reflectedClass.getSuperclass()));
     }
     
     scheme=new ReflectionScheme(resolver,this,reflectedClass);
@@ -303,7 +303,7 @@ public class ReflectionType<T>
       
       if (classField==null)
       { 
-        System.err.println("No classField in "+getUri());
+        System.err.println("No classField in "+getURI());
         referencedClass=nativeClass;
       }
       else if (classField.getValue(tuple)!=null)
@@ -327,12 +327,12 @@ public class ReflectionType<T>
     catch (InstantiationException x)
     { 
       throw new DataException
-        (getUri().toString()+": Error instantiating bean from Tuple '"+tuple+"':"+x.toString(),x);
+        (getURI().toString()+": Error instantiating bean from Tuple '"+tuple+"':"+x.toString(),x);
     }
     catch (IllegalAccessException x)
     { 
       throw new DataException
-        (getUri().toString()+"Error instantiating bean from Tuple '"+tuple+"':"+x.toString(),x);
+        (getURI().toString()+"Error instantiating bean from Tuple '"+tuple+"':"+x.toString(),x);
     }
   }
   
@@ -406,7 +406,7 @@ public class ReflectionType<T>
       {
         // System.out.println("Narrowing "+val.getClass());
         Type<? super Object> type
-          =(Type<? super Object>) resolver.resolve(canonicalUri(val.getClass()));
+          =(Type<? super Object>) resolver.resolve(canonicalURI(val.getClass()));
         return type.toData(val);
       }
       else

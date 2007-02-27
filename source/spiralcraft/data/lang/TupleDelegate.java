@@ -69,7 +69,7 @@ public class TupleDelegate<T>
     
     Scheme scheme
       =TypeResolver.getTypeResolver().resolve
-        (ReflectionType.canonicalUri(iface))
+        (ReflectionType.canonicalURI(iface))
           .getScheme();
           
     binding=new StaticTupleBinding

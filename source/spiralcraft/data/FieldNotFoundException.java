@@ -43,7 +43,7 @@ public class FieldNotFoundException
   public FieldNotFoundException(Type type,String fieldName)
   { 
     super
-      ("Field '"+fieldName+"' not found in type "+type.getUri()
+      ("Field '"+fieldName+"' not found in type "+type.getURI()
       +": fields=["+makeFieldList(type)+"]"
       );
   }

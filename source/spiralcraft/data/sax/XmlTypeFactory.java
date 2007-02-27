@@ -82,7 +82,7 @@ public class XmlTypeFactory
 
       Tuple tuple
         =(Tuple) new DataReader()
-          .readFromUri(URI.create(uri.toString()+".type.xml")
+          .readFromURI(URI.create(uri.toString()+".type.xml")
                       ,resolver.getMetaType()
                       );
   

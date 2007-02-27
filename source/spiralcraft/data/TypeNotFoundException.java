@@ -24,11 +24,11 @@ public class TypeNotFoundException
 {
   private static final long serialVersionUID=1;	
 
-  public TypeNotFoundException(URI typeUri)
-  { super("Type not found: "+typeUri.toString());
+  public TypeNotFoundException(URI typeURI)
+  { super("Type not found: "+typeURI.toString());
   }
 
-  public TypeNotFoundException(URI typeUri,Throwable reason)
-  { super("Type "+typeUri.toString()+" not found: "+reason.toString(),reason);
+  public TypeNotFoundException(URI typeURI,Throwable reason)
+  { super("Type "+typeURI.toString()+" not found: "+reason.toString(),reason);
   }
 }

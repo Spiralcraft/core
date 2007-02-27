@@ -164,7 +164,7 @@ public abstract class AbstractTuple
     StringBuilder sb=new StringBuilder();
     sb.append(super.toString());
     if (getType()!=null)
-    { sb.append(":").append(getType().getUri());
+    { sb.append(":").append(getType().getURI());
     }
     else
     { sb.append(":(untyped)"+fieldSet);
@@ -208,7 +208,7 @@ public abstract class AbstractTuple
           
           String stringVal
             =compositeVal.getClass().getName()+":"
-              +compositeVal.getType().getUri();
+              +compositeVal.getType().getURI();
           sb.append(field.getName())
             .append("=")
             .append("<")
@@ -230,7 +230,7 @@ public abstract class AbstractTuple
     sb.append(super.toString());
     sb.append("\r\n").append(indent).append("==");
     if (getType()!=null)
-    { sb.append(getType().getUri());
+    { sb.append(getType().getURI());
     }
     else
     { sb.append("(untyped)-"+fieldSet);

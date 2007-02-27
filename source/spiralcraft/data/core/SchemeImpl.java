@@ -167,7 +167,7 @@ public class SchemeImpl
     
     String typeUri="(untyped)";
     if (getType()!=null)
-    { typeUri=getType().getUri().toString();
+    { typeUri=getType().getURI().toString();
     }
     return super.toString()
       .concat(":")

@@ -30,7 +30,7 @@ public interface Type<T>
   /**
    * The canonical URI for this type.
    */
-  URI getUri();
+  URI getURI();
   
   /**
    * The Type used to describe Type objects of this Type, to support the

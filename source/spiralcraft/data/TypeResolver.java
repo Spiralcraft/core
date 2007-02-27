@@ -120,7 +120,7 @@ public class TypeResolver
 
   public final Type resolveFromClass(Class clazz)
     throws TypeNotFoundException
-  { return resolve(ReflectionType.canonicalUri(clazz));
+  { return resolve(ReflectionType.canonicalURI(clazz));
   }
   
   public final Type resolve(URI typeUri)

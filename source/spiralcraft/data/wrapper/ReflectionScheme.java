@@ -135,7 +135,7 @@ public class ReflectionScheme
   protected Type findType(Class iface)
     throws TypeNotFoundException
   { 
-    URI uri=ReflectionType.canonicalUri(iface);
+    URI uri=ReflectionType.canonicalURI(iface);
     return resolver.resolve(uri);
   }
   

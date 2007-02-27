@@ -78,7 +78,7 @@ public class Writer
         if (field.getType()!=null)
         { 
           _out.write("(");
-          _out.write(field.getType().getUri().toString());
+          _out.write(field.getType().getURI().toString());
           _out.write(")");
         }
       }

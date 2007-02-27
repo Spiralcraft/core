@@ -366,7 +366,7 @@ public class DataHandler
         { 
           throw new DataException
             ("Data of type "
-            +type.getUri()
+            +type.getURI()
             +" is not String encodable ["+chars.toString()+"]"
             );
         }
@@ -396,7 +396,7 @@ public class DataHandler
       if (scheme==null)
       { 
         throw new DataException
-          ("Primitive Type "+type.getUri()+" does not accept field data");
+          ("Primitive Type "+type.getURI()+" does not accept field data");
       }
       
       currentField=scheme.getFieldByName(localName);
