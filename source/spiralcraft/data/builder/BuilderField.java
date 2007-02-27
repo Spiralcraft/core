@@ -120,7 +120,7 @@ public class BuilderField
           } // Is a builder type
           else
           {
-            System.out.println("Not a builder type "+type.getCoreType());
+            // System.out.println("Not a builder type "+type.getCoreType());
             // Use bean method to depersist
             Object bean=assembly.getSubject().get();
             super.depersistBeanProperty(tuple,bean);
