@@ -38,7 +38,7 @@ import javax.xml.parsers.SAXParser;
 public class DataReader
 {
   
-  public Object readFromUri(URI uri,Type formalType)
+  public Object readFromURI(URI uri,Type formalType)
     throws SAXException,IOException,DataException
   { 
     return readFromResource
@@ -54,7 +54,7 @@ public class DataReader
     throws SAXException,IOException,DataException
   {
     if (!resource.exists())
-    { return null;
+    { throw new IOException("Resource not found: "+resource.getURI());
     }
     InputStream in=resource.getInputStream();
     try
