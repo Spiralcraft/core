@@ -41,6 +41,10 @@ public class URLResource
     throws UnresolvableURIException
   { 
     super(uri);
+    if (!uri.isAbsolute())
+    { throw new UnresolvableURIException(uri,"Non-absolute URI");
+    }
+    
     try
     { _url=uri.toURL();
     }
