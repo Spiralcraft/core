@@ -21,7 +21,7 @@ import spiralcraft.loader.LibraryCatalog;
 
 import spiralcraft.util.ArrayUtil;
 
-import spiralcraft.data.persist.XmlObject;
+import spiralcraft.data.persist.XmlAssembly;
 import spiralcraft.data.persist.PersistenceException;
 
 import spiralcraft.stream.Resolver;
@@ -131,8 +131,8 @@ public class ApplicationManager
       URI environmentTypeRef
         =URI.create("java:/spiralcraft/exec/ApplicationEnvironment");
         
-      XmlObject environmentRef
-        =new XmlObject(applicationURI,environmentTypeRef);
+      XmlAssembly environmentRef
+        =new XmlAssembly(environmentTypeRef,applicationURI);
       
       environmentRef.register
         (_registryNode.createChild(Integer.toString(_nextEnvironmentId++)));

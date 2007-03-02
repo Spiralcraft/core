@@ -14,7 +14,7 @@
 //
 package spiralcraft.exec;
 
-import spiralcraft.data.persist.XmlObject;
+import spiralcraft.data.persist.XmlAssembly;
 import spiralcraft.data.persist.PersistenceException;
 
 import spiralcraft.util.ArrayUtil;
@@ -28,24 +28,51 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import java.io.IOException;
-import java.io.File;
-
 
 /**
- * Loads and activates an Executable based on a URI.
+ * The Executor is the standard "Main" class for invoking coarse grained
+ *   functionality in the Spiralcraft framework.<P>
+ * 
+ * The Executor loads an Executable using the spiralcraft.data.persist.XmlObject
+ *   persistence mechanism, using a Type resource URI and/or an instance resource URI.<P>
+ * 
+ * The Type resource URI, if specified, must resolve to a
+ *   BuilderType (spiralcraft.data.builder.BuilderType), which means that a resource
+ *   <Type resource URI>.assembly.xml must exist, and must build an object that 
+ *   implements the Executable interface.<P>
+ * 
+ * The instance resource URI, if it points to an existing resource, must contain
+ *   an object of a Type that satisfies the above constraint.<P>
+ * 
+ * If a Type resource URI is specified and either the instance resource URI is not
+ *   specified, or the resource it refers to does not exist, a new instance of the
+ *   builder Assembly will be created. If a Type resource URI is provided, the
+ *   properties of this Assembly will be saved to the specified resource upon normal
+ *   termination of the Executable.
  */
 public class Executor
   implements Registrant
 {
-  private String _uri;
-  // private String _applicationUri;
-  private RegistryNode _registryNode;  
+  private URI typeURI;
+  private URI instanceURI;
+  private boolean persistOnCompletion;
+  private XmlAssembly wrapper;
+  private RegistryNode registryNode;  
+  private int argCounter=-2;
   
-  protected ExecutionContext _context
+  protected ExecutionContext context
     =new SystemExecutionContext();
     
-  protected String[] _arguments=new String[0];
+  protected String[] arguments=new String[0];
   
+  /**
+   * @see execute(String[] args)
+   * @param args
+   * @throws IOException
+   * @throws URISyntaxException
+   * @throws PersistenceException
+   * @throws ExecutionException
+   */
   public static void main(String[] args)
     throws IOException
             ,URISyntaxException
@@ -55,17 +82,32 @@ public class Executor
   }
 
   public void register(RegistryNode registryNode)
-  { _registryNode=registryNode;
+  { this.registryNode=registryNode;
   }
   
-  public void setURI(String uri)
-  { _uri=uri;
+  public void setTypeURI(URI typeURI)
+  { this.typeURI=typeURI;
+  }
+  
+  public void setInstanceURI(URI instanceURI)
+  { this.instanceURI=instanceURI;
+  }
+  
+  public void setArguments(String[] arguments)
+  { this.arguments=arguments;
   }
   
   /**
-   * Locate and execute an application or assembly appropriate
-   *   for the specified URI. The URI must be specified as either
-   *   the first argument or via the setURI() method.
+   * Load and execute an Executable specified by the first two arguments.<p>
+   * 
+   * The first argument is the Type resource URI. If no Type resource is
+   *   specified, use "-" in the argument in place of the URI.<p>
+   *   
+   * The second argument is the instance resource URI. If no instance resource
+   *   is specified, use "-" in the argument in place of the URI.<p>
+   *   
+   * The remaining arguments will be passed along to the Executable in its
+   *   execute method.
    */
   public void execute(String[] args)
     throws ExecutionException
@@ -74,72 +116,58 @@ public class Executor
             ,PersistenceException
   {
     processArguments(args);
+    if (argCounter<0)
+    { throw new IllegalArgumentException("Executor requires at least 2 arguments");
+    }
 
-    if (_uri==null)
-    { throw new IllegalArgumentException("No URI specified. Nothing to execute.");
+    if (typeURI==null && instanceURI==null)
+    { 
+      throw new IllegalArgumentException
+        ("No Type URI or instance URI specified. Nothing to execute.");
     }
     
-    URI uri=URI.create(_uri);
-    if (!uri.isAbsolute())
-    { 
-      // XXX Get user context
-      _uri=new File(new File(".").getAbsolutePath()).toURI().resolve(uri).toString();
+    if (typeURI!=null)
+    { typeURI=context.canonicalize(typeURI);
     }
-
-
+    
+    if (instanceURI!=null)
+    { instanceURI=context.canonicalize(instanceURI);
+    }
+    
     Executable executable=resolveExecutable(); 
-    executable.execute(_context,_arguments);
+    executable.execute(context,arguments);
+    if (persistOnCompletion && instanceURI!=null)
+    { wrapper.save();
+    }
   }
 
   private Executable resolveExecutable()
     throws PersistenceException
   {
-    XmlObject application=resolveApplication();
+    wrapper=new XmlAssembly(typeURI,instanceURI);
       
-    if (_registryNode==null)
-    { _registryNode=Registry.getLocalRoot();
+    if (registryNode==null)
+    { registryNode=Registry.getLocalRoot();
     }
 
-    application.register(_registryNode);
-    return (Executable) application.get();
+    wrapper.register(registryNode);
+    Object o=wrapper.get();
+    if (!(o instanceof Executable))
+    { 
+      throw new IllegalArgumentException
+        ("Cannot execute "
+        +(typeURI!=null?typeURI.toString():"(unspecified Type)")
+        +" instance "
+        +(instanceURI!=null?instanceURI.toString():"(no instance data)")
+        +": Found a "+o.getClass()+" which is not an executable"
+        );
+    }
+    return (Executable) wrapper.get();
   }
   
   /**
-   * Create the XmlObject which represents the runtime image of the application
-   *   specified in the URI.
-   *
-   * If the URI ends with ".assembly.xml", the root of the specified Assembly 
-   *   must be an Executable, which will be instantiated.
-   *
-   * If the URI ends with a registered extension, the appropriate Assembly will
-   *   be instantiated and the URI will be passed as the first argument to
-   *   the Executable.
-   *
-   * In the default case, the URI will be assumed to point to persistent
-   *   object data. The object will be restored and executed.
-   */
-  private XmlObject resolveApplication()
-    throws PersistenceException
-  { 
-    
-    // XXX This seems kind of ugly. We need to revisit the resolution protocol.
-    if (_uri.endsWith(".assembly.xml"))
-    {
-      // We have a Type but no data file = non-persistent application
-      return new XmlObject
-        (null
-        ,URI.create(_uri.substring(0,_uri.indexOf(".assembly.xml")))
-        );
-    }
-    
-      
-    return new XmlObject(URI.create(_uri),null);
-  } 
-  
-  /**
-   * Process arguments. The first non-option argument is treated as the URI
-   *   of the target to invoke, if the URI hasn't been preset programmatically.
-   *   The remaining arguments are passed through the the Executable.
+   * Process arguments. The first non-option argument is the Type URI. If the
+   *   type URI is immediately followed by a    
    */
   private void processArguments(String[] args)
   {
@@ -147,22 +175,54 @@ public class Executor
     {
       public boolean processArgument(String argument)
       { 
-        if (_uri==null)
-        { _uri=argument;
+        if (argCounter==-2)
+        { 
+          typeURI=URI.create(argument);
+          argCounter++;
+        }
+        else if (argCounter==-1)
+        { 
+          instanceURI=URI.create(argument);
+          argCounter++;
         }
         else
-        { _arguments=(String[]) ArrayUtil.append(_arguments,argument);
+        { 
+          arguments=(String[]) ArrayUtil.append(arguments,argument);
+          argCounter++;
         }
         return true;
       }
 
       public boolean processOption(String option)
       { 
-        if (_uri==null)
-        { return false;
+        if (argCounter==-2)
+        { 
+          if (!option.equals(""))
+          { 
+            throw new IllegalArgumentException
+              ("Unrecognized option '-"+option+"': "
+              +"Type URI for Executable (or '-' for unspecified Type)"
+              +" must be specified as first parameter to Executor."    
+              );
+          }
+          argCounter++;
+        }
+        else if (argCounter==-1)
+        {
+          if (!option.equals(""))
+          { 
+            throw new IllegalArgumentException
+              ("Unrecognized option '-"+option+"': "
+              +"Instance URI for Executable (or '-' for unspecified data resource)"
+              +" must be specified as second parameter to Executor."    
+              );
+          }
+          argCounter++;
         }
         else
-        { _arguments=(String[]) ArrayUtil.append(_arguments,"-"+option);
+        { 
+          arguments=(String[]) ArrayUtil.append(arguments,"-"+option);
+          argCounter++;
         }
         return true;
       }

@@ -48,28 +48,43 @@ import spiralcraft.registry.RegistryNode;
  * An instance of a persistent object is tied to its non-volatile representation
  *   in a storage medium.
  */
-public class XmlObject
+public class XmlAssembly<T>
   implements Registrant,PersistentReference
 {
 
-  private URI resourceUri;
-  private URI typeUri;
-  private Type type;
-  private Assembly assembly;
+  private URI instanceURI;
+  private URI typeURI;
+  private Type<Assembly> type;
+  private Assembly<T> assembly;
   private RegistryNode registryNode;
   
   /**
-   * Construct an XmlObject from a URI, that is expected to conform to the
-   *   datatype specified by typeUri.
+   * Construct an XmlObject from the given Type resource and instance
+   *   data resource.
    *
-   * The URI points to a resource in spiralcraft.data XML format, which
-   *   contains instance data for the specified object.
+   * The typeURI references a BuilderType (spiralcraft.data.builder.BuilderType),
+   *   which refers to the spiralcraft.builder.AssemblyClass that should be 
+   *   instantiated to create the target object. The AssemblyClass referred to
+   *   is defined in <TypeURI>.assembly.xml
+   * 
+   * The instanceURI references a data resource which contains the instance data
+   *   (persistent properties) for the specified type. This data will be applied
+   *   to the object after it the Assembly is instatiated, and will be transferred
+   *   from the object to the resource as a result of the save() method.
+   * 
+   * If the typeURI is not specifed, the instanceURI must be specified. The Type will
+   *   be read from the data resource.
+   *   
+   * If the instanceURI is not specified, or does not exist, the typeURI must be
+   *   specified. An Assembly will be instantiated as per the BuilderType. If the
+   *   instanceURI is specifed but does not exist, the save() method will create it
+   *   and store persistent properties from the object.
    */
-  public XmlObject(URI resourceUri,URI typeUri)
+  public XmlAssembly(URI typeURI,URI instanceURI)
     throws PersistenceException
   { 
-    this.resourceUri=resourceUri;
-    this.typeUri=typeUri;
+    this.typeURI=typeURI;
+    this.instanceURI=instanceURI;
     try
     { load();
     }
@@ -90,52 +105,54 @@ public class XmlObject
     catch (SAXException x)
     { 
       throw new PersistenceException
-        ("Error parsing "+resourceUri+": "+x.toString()
+        ("Error parsing "+instanceURI+": "+x.toString()
         ,x
         );
     }
     catch (IOException x)
     {
       throw new PersistenceException
-        ("Error parsing "+resourceUri+": "+x.toString()
+        ("Error parsing "+instanceURI+": "+x.toString()
         ,x
         );
     }
   }
   
-  public void setResourceUri(URI resourceUri)
-  { this.resourceUri=resourceUri;
+  public void setResourceUri(URI instanceURI)
+  { this.instanceURI=instanceURI;
   }
   
+  
+  @SuppressWarnings("unchecked") // Narrowing from Assembly to Assembly<T>
   private void load()
     throws BuildException,DataException,SAXException,IOException
   {
-    if (typeUri!=null)
+    if (typeURI!=null)
     {
-      type=TypeResolver.getTypeResolver().resolve(typeUri);
+      type=TypeResolver.getTypeResolver().<Assembly>resolve(typeURI);
       if (!(type instanceof BuilderType))
       { 
         throw new DataException
-          (typeUri.toString()+" does not reference an AssemblyClass"
+          (typeURI.toString()+" does not reference an AssemblyClass"
           );
       }
       
-      if (resourceUri==null)
+      if (instanceURI==null)
       { assembly = ((BuilderType) type).newAssembly(null);
       }
     }
-    
-    if (resourceUri!=null)
+        
+    if (instanceURI!=null)
     {
       DataReader reader=new DataReader();
-      Tuple tuple = (Tuple) reader.readFromUri
-        (resourceUri
+      Tuple tuple = (Tuple) reader.readFromURI
+        (instanceURI
         ,type
         );
       
       Type actualType=tuple.getType();
       
-      assembly = (Assembly) actualType.fromData(tuple,null); 
+      assembly = (Assembly<T>) actualType.fromData(tuple,null); 
       type=actualType; 
     }
     
@@ -144,7 +161,7 @@ public class XmlObject
   public void save()
     throws PersistenceException
   { 
-    if (resourceUri!=null && type!=null)
+    if (instanceURI!=null && type!=null)
     {
       DataWriter writer=new DataWriter();
       try
@@ -154,13 +171,13 @@ public class XmlObject
             (assembly.getAssemblyClass())
             .toData(assembly);
         // System.out.println(tuple.toText("|  "));
-        writer.writeToUri(resourceUri,tuple);
+        writer.writeToURI(instanceURI,tuple);
       }
       catch (IOException x)
-      { throw new PersistenceException("Error writing "+resourceUri+": "+x,x);
+      { throw new PersistenceException("Error writing "+instanceURI+": "+x,x);
       }
       catch (DataException x)
-      { throw new PersistenceException("Error writing "+resourceUri+": "+x,x);
+      { throw new PersistenceException("Error writing "+instanceURI+": "+x,x);
       }
     }
     
@@ -173,7 +190,10 @@ public class XmlObject
     assembly.register(registryNode.createChild("instance"));
   }
   
-  public Object get()
+  /**
+   *@return The Java object referred to and activated by this XmlObject
+   */
+  public T get()
   { return assembly.getSubject().get();
   }
 }
