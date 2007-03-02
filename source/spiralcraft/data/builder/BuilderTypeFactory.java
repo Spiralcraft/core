@@ -28,6 +28,8 @@ import spiralcraft.data.DataException;
 import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.PropertySpecifier;
 
+import spiralcraft.builder.Assembly;
+
 public class BuilderTypeFactory
   implements TypeFactory
 {
@@ -67,7 +69,7 @@ public class BuilderTypeFactory
       else
       { parentUri=URI.create(uriString);
       }
-      BuilderType parentType=(BuilderType) resolver.resolve(parentUri);
+      BuilderType parentType=(BuilderType) resolver.<Assembly>resolve(parentUri);
       
       return new BuilderType
         (parentType

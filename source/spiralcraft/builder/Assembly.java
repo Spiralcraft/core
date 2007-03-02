@@ -56,12 +56,12 @@ import spiralcraft.util.StringConverter;
  * After instantiation, the register(RegistryNode node) method is invoked 
  *   to provide context.
  */
-public class Assembly
-  implements Focus,Registrant
+public class Assembly<T>
+  implements Focus<T>,Registrant
 {
   private final AssemblyClass _assemblyClass;
   private Assembly _parent;
-  private final Optic _optic;
+  private final Optic<T> _optic;
   private PropertyBinding[] _propertyBindings;
   private HashMap<String,Assembly> _importedSingletons;
   private HashMap<Expression,Channel> _channels;
@@ -195,11 +195,19 @@ public class Assembly
   {
     node.registerInstance(Assembly.class,this);
 
-    Object instance=_optic.get();
+    T instance=_optic.get();
     if (instance instanceof Registrant)
     { ((Registrant) instance).register(node);
     }
-    node.registerInstance(Object.class,instance);
+    
+    // Register the Object associated with this node as its
+    //   concrete Class identity.
+    // XXX We changed this from registering as Object.class- make sure
+    //   nothing breaks
+    node.registerInstance
+      (_assemblyClass.getJavaClass()
+      ,instance
+      );
 
     for (int i=0;i<_propertyBindings.length;i++)
     { _propertyBindings[i].register(node);
@@ -209,7 +217,7 @@ public class Assembly
   /**
    * Return the Assembly which contains this one
    */
-  public Assembly getParent()
+  public Assembly<?> getParent()
   { return _parent;
   }
 
@@ -247,7 +255,7 @@ public class Assembly
   /**
    *@return the Java object managed by this Assembly
    */
-  public Object getObject()
+  public T getObject()
   { return _optic.get();
   }
   
@@ -260,7 +268,7 @@ public class Assembly
   /**
    * implement Focus.getParentFocus()
    */
-  public Focus getParentFocus()
+  public Focus<?> getParentFocus()
   { return _parent;
   }
 
@@ -274,14 +282,14 @@ public class Assembly
   /**
    * implement Focus.getSubject()
    */
-  public Optic getSubject()
+  public Optic<T> getSubject()
   { return _optic;
   }
  
   /**
    * implement Focus.findFocus()
    */
-  public Focus findFocus(String name)
+  public Focus<?> findFocus(String name)
   { 
     
     if (_importedSingletons!=null)

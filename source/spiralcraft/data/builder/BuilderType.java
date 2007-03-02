@@ -140,7 +140,7 @@ public class BuilderType
   @SuppressWarnings("unchecked")
   public static Type<Assembly> canonicalType(AssemblyClass assemblyClass)
     throws DataException
-  { return (Type<Assembly>) TypeResolver.getTypeResolver().resolve(canonicalURI(assemblyClass));
+  { return (Type<Assembly>) TypeResolver.getTypeResolver().<Assembly>resolve(canonicalURI(assemblyClass));
   }
   
   public static Type genericBuilderType()
@@ -300,7 +300,7 @@ public class BuilderType
     { 
       // System.out.println("Narrowing "+getUri());
       Type<Assembly> targetType
-        =(BuilderType) getTypeResolver().resolve
+        =(BuilderType) getTypeResolver().<Assembly>resolve
           (canonicalURI(assembly.getAssemblyClass())
           );
       return targetType.toData(assembly);    

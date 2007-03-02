@@ -123,13 +123,19 @@ public class TypeResolver
   { return resolve(ReflectionType.canonicalURI(clazz));
   }
   
-  public final Type resolve(URI typeUri)
+  @SuppressWarnings("unchecked") // Generic method but heterogeneous implementation
+  public final <T> Type<T> resolve(URI typeUri)
     throws TypeNotFoundException
   { 
     if (typeUri==null)
     { return null;
     }
-    Type<?> type=null;
+    if (!typeUri.isAbsolute())
+    { 
+      throw new IllegalArgumentException
+        ("Type URI ["+typeUri+"] is relative and cannot be resolved");
+    }
+    Type<T> type=null;
     try
     { type=load(typeUri);
     }
@@ -186,7 +192,46 @@ public class TypeResolver
   }
 
   @SuppressWarnings("unchecked")
+  private final Type loadArrayType(Type baseType,URI typeURI)
+  {
+    Type type=new ArrayType(baseType,typeURI);
+    map.put(typeURI,type);
+    return type;
+  }
+  
+  @SuppressWarnings("unchecked")
+  private final Type loadListType(Type baseType,URI typeURI)
+  {
+    // Create and map the list type
+    Type type=new AbstractCollectionType<ArrayList>
+      (this
+      ,baseType
+      ,typeURI
+      ,ArrayList.class
+      );
+    map.put(typeURI,type);
+    return type;
+  }
+
+  @SuppressWarnings("unchecked")
+  private final Type loadTypeType(Type baseType,URI typeURI)
+    throws DataException
+  {
+    // Create and map the types type
+    //type=baseType.getMetaType();
+    Type type=new TypeType
+      (this
+      ,typeURI
+      ,baseType.getURI()
+      ,baseType.getClass()
+      );
+    map.put(typeURI,type);
+    return type;
+  }
+
+  @SuppressWarnings("unchecked")
   private final Type findLoadedType(URI typeUri)
+    throws DataException
   {
     
     Type type=map.get(typeUri);
@@ -196,22 +241,37 @@ public class TypeResolver
 
     if (typeUri.getPath().endsWith(".array"))
     {
-      
-      String uriStr=typeUri.toString();
-      URI baseTypeUri=URI.create(uriStr.substring(0,uriStr.length()-6));
+      URI baseTypeUri=desuffix(typeUri,".array");
       Type baseType=findLoadedType(baseTypeUri);
       if (baseType!=null)
-      { 
-        // Create and map the array type
-        type=new ArrayType(baseType,typeUri);
-        map.put(typeUri,type);
-        return type;
+      { return loadArrayType(baseType,typeUri);
       }
     }
-    // XXX Add meta types and lists here?
+    else if (typeUri.getPath().endsWith(".list"))
+    {
+      URI baseTypeUri=desuffix(typeUri,".list");
+
+      // Recurse to resolve baseType
+      Type baseType=findLoadedType(baseTypeUri);
+      if (baseType!=null)
+      { return loadListType(baseType,typeUri);
+      }
+    }
+    else if (typeUri.getPath().endsWith(".type"))
+    {
+      URI baseTypeUri=desuffix(typeUri,".type");
+
+      // Recurse to resolve baseType
+      Type baseType=findLoadedType(baseTypeUri);
+      if (baseType!=null)
+      { return loadTypeType(baseType,typeUri);
+      }
+    }
+    
     return null;
   }
 
+  
 
   /**
    * Find a type in the local classloader that is a derivative of another
@@ -229,11 +289,7 @@ public class TypeResolver
       // Recurse to resolve baseType
       Type baseType=findTypeExtended(baseTypeUri);
       if (baseType!=null)
-      {
-        // Create and map the array type
-        type=new ArrayType(baseType,typeUri);
-        map.put(typeUri,type);
-        return type;
+      { return loadArrayType(baseType,typeUri);
       }
     }
     else if (typeUri.getPath().endsWith(".list"))
@@ -243,16 +299,7 @@ public class TypeResolver
       // Recurse to resolve baseType
       Type baseType=findTypeExtended(baseTypeUri);
       if (baseType!=null)
-      {
-        // Create and map the array type
-        type=new AbstractCollectionType<ArrayList>
-          (this
-          ,baseType
-          ,typeUri
-          ,ArrayList.class
-          );
-        map.put(typeUri,type);
-        return type;
+      { return loadListType(baseType,typeUri);
       }
     }
     else if (typeUri.getPath().endsWith(".type"))
@@ -262,12 +309,7 @@ public class TypeResolver
       // Recurse to resolve baseType
       Type baseType=findTypeExtended(baseTypeUri);
       if (baseType!=null)
-      {
-        // Create and map the types type
-        //type=baseType.getMetaType();
-        type=new TypeType(this,typeUri,baseTypeUri,baseType.getClass());
-        map.put(typeUri,type);
-        return type;
+      { return loadTypeType(baseType,typeUri);
       }
     }
     else
@@ -288,7 +330,7 @@ public class TypeResolver
   synchronized final Type load(URI typeUri)
     throws DataException
   { 
-    Type type=findLoadedType(typeUri);
+    Type type=this.findLoadedType(typeUri);
     if (type!=null)
     { return type;
     }
@@ -325,34 +367,6 @@ public class TypeResolver
       }
     }
     return type;
-    
-    
-    //if (type==null)
-    //{ type=loadProtoType(typeUri);
-    //}
-    //if (type==null)
-    //{ type=loadTypeFromTypeClass(typeUri);
-    //}
-    //if (type==null)
-    //{ type=loadBuilderType(typeUri);
-    //}
-    //if (type==null)
-    //{ type=loadReflectiveType(typeUri);
-    //}
-    //return type;
   }
   
-
-  
-  /**
-   * Indicate whether the URI is resolved through the local classloader
-   */
-//  private boolean isClassPathScheme(String scheme)
-//  {
-//    return scheme.equals("java") // Spiralcraft
-//      || scheme.equals("classpath") // Cocoon
-//      || scheme.equals("class") // common
-//      || scheme.equals("class-resource") // GNU
-//      ;
-//  }
 }
