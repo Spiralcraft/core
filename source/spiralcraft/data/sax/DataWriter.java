@@ -46,7 +46,7 @@ public class DataWriter
    
   public void writeToURI
     (URI resourceUri
-    ,Tuple data
+    ,DataComposite data
     )
     throws IOException,DataException
   {
@@ -58,12 +58,12 @@ public class DataWriter
 
   public void writeToResource
     (Resource resource
-    ,Tuple tuple
+    ,DataComposite data
     )
     throws IOException,DataException
   {
     OutputStream out=resource.getOutputStream();
-    writeToOutputStream(out,tuple);
+    writeToOutputStream(out,data);
     if (out!=null)
     {
       out.flush();
@@ -73,12 +73,12 @@ public class DataWriter
   
   public void writeToOutputStream
     (OutputStream out
-    ,Tuple tuple
+    ,DataComposite data
     )
     throws IOException,DataException
   {
     try
-    { new Context(out).write(tuple);
+    { new Context(out).write(data);
     }
     catch (SAXException x)
     { throw new DataException("Error writing data "+x,x);
@@ -105,11 +105,17 @@ class Context
   { writer=new XmlWriter(out);
   }
   
-  public void write(Tuple tuple)
+  public void write(DataComposite data)
     throws IOException,SAXException,DataException
   {
     writer.startDocument();
-    currentFrame=new TupleFrame(tuple);
+    if (data.isTuple())
+    { currentFrame=new TupleFrame(data.asTuple());
+    }
+    else
+    {
+      
+    }
     while (currentFrame!=null)
     { currentFrame.next();
     }
@@ -358,6 +364,55 @@ class Context
     
   }
   
+  class AggregateFrame
+    extends TypeFrame
+  {
+    private final Aggregate aggregate;
+    private Iterator aggregateIterator;
+  
+    public AggregateFrame(Aggregate aggregate)
+    { 
+      super(aggregate.getType());
+      this.aggregate=aggregate;
+    }
+  
+  
+    public void next()
+      throws SAXException
+    {
+      if (aggregateIterator==null)
+      { 
+        startType();
+        aggregateIterator=aggregate.iterator();
+      }
+      else if (aggregateIterator.hasNext())
+      {
+        Object object=aggregateIterator.next();
+        if (object instanceof DataComposite)
+        {
+          DataComposite data=(DataComposite) object;
+          if (data.isTuple())
+          { currentFrame=new TupleFrame(data.asTuple());
+          }
+          else
+          { currentFrame=new AggregateFrame(data.asAggregate());
+          }
+        }
+        else
+        { currentFrame=new PrimitiveFrame(type,object,false);
+        }
+        
+      }
+      else
+      {
+        endType(true);
+        finish();
+        return;
+      }
+    }
+  
+  }
+
 
   abstract class FieldFrame
     extends Frame
