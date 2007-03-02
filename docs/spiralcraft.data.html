@@ -46,6 +46,158 @@ integration of dedicated, decoupled implementations of:<br>
   <li>foreign type systems<br>
   </li>
 </ul>
+<h3>Primary Concepts</h3>
+The following is a brief introduction to some of the concepts that
+underpin the spiralcraft.data framework.<span style="font-weight: bold;"><br>
+</span>
+<h4>Tabular paradigm</h4>
+Underlying the spiralcraft.data framework is a paradigm of "data", as
+it is used in information systems, of being inherently "tabular",
+meaning it can be visualized as a table with "columns" and "rows". The
+application of this concept is nearly universal, though the use of the
+term "table" is more explicit in some systems, such as databases and
+spreadsheets, than in others, such as hierarchical documents and
+programming languages.<br>
+<br>
+The operative principles here are that a "table" has a <span
+ style="font-style: italic;">horizontal</span> component and a <span
+ style="font-style: italic;">vertical</span> component.<br>
+<br>
+The horizontal component is comprised of a set of "columns", each of
+which is defined by some piece of <span style="font-style: italic;">metadata</span>
+which names and identifies the data that will be stored in that
+position of each table row. The key principle here is that the
+horizontal component represents metadata- the definition of the data.<br>
+<br>
+The vertical component is comprised of set of "rows", or data <span
+ style="font-style: italic;">instances</span>, each of which holds some
+variation of data elements that are closely related to each other and
+conform to the metadata. The key principle here is that the vertical
+component represents instances, or references to actual data. <br>
+<br>
+The paradigm can be mapped into a wide variety of other systems, thus
+the utility of the paradigm as a basis for this general purpose data
+framework. The following table describes some of these analogous
+elements:<br>
+<br>
+<table style="text-align: left; width: 684px; height: 240px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">System</span><br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Horizontal
+Component</span><br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Vertical
+Component</span><br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Vertical
+Aggregation</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Abstract<br>
+      </td>
+      <td style="vertical-align: top;">Metadata<br>
+      </td>
+      <td style="vertical-align: top;">Data<br>
+      </td>
+      <td style="vertical-align: top;">Collection<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">spiralcraft.data<br>
+      </td>
+      <td style="vertical-align: top;">Type<br>
+      </td>
+      <td style="vertical-align: top;">Tuple<br>
+      </td>
+      <td style="vertical-align: top;">Aggregate<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Java(tm) Language<br>
+      </td>
+      <td style="vertical-align: top;">Class<br>
+      </td>
+      <td style="vertical-align: top;">Object<br>
+      </td>
+      <td style="vertical-align: top;">Array or Collection<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Database System<br>
+      </td>
+      <td style="vertical-align: top;">Column Definition<br>
+      </td>
+      <td style="vertical-align: top;">Row<br>
+      </td>
+      <td style="vertical-align: top;">Relation<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Spreadsheet<br>
+      </td>
+      <td style="vertical-align: top;">Column<br>
+      </td>
+      <td style="vertical-align: top;">Row<br>
+      </td>
+      <td style="vertical-align: top;">Table / Worksheet<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">XML Document<br>
+      </td>
+      <td style="vertical-align: top;">Element Definition/DTD<br>
+      </td>
+      <td style="vertical-align: top;">Node (Tag delimited)<br>
+      </td>
+      <td style="vertical-align: top;">Node (with many children)<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<span style="font-weight: bold;"></span>
+<h4>Type</h4>
+A Type describes a unit of data in terms of the following aspects:<br>
+<ul>
+  <li>The structure of the unit of data, if has any, in the form of a
+Scheme.</li>
+  <li>The native representation of the unit of data as a Java class, if
+any.</li>
+  <li>A means of transforming the unit of data between its native
+representation and a data-centric representation.</li>
+  <li>The other Types that this Type inherits.</li>
+</ul>
+A Type is usually uniquely identifiable by a URI. Types can refer to
+horizontal <br>
+<h4>Scheme</h4>
+A Scheme describes the structure of a unit of data as represented in
+the form of a Tuple. A Scheme is an an ordered list of unique Fields,
+each of which describes a specific attribute.<br>
+<h4>Field</h4>
+A Field describes a single attribute of a unit of data, in the
+following aspects:<br>
+<ul>
+  <li>The name of the attribute, to distinguish it from other
+attributes that describe the same unit of data.</li>
+  <li>The Type of data the attribute refers to.</li>
+  <li>The nature of the relationship between the containing Type and
+the data it refers to (ie. locally stored, calculated, retrieved by
+reference, etc..)<br>
+  </li>
+  <li>Constraints on the data referred to, in the context of the
+containing Type.</li>
+</ul>
+<h4>Tuple</h4>
+A Tuple represents a data instance and provides an interface to store
+and retrieve the data values for individual Fields.<br>
+<h4>Aggregate</h4>
+An Aggregate is a collection of data elements.&nbsp; The data elements
+can be Tuples, other Aggregates, or "primitive" objects.<br>
+<br>
 <h3>Type System</h3>
 The spiralcraft.data.Type interface is the heart of metadata definition
 in the spiralcraft.data framework. Every data element is described by a
