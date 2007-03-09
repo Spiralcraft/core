@@ -28,5 +28,9 @@ public class TypeMismatchException
   public TypeMismatchException(String message)
   { super(message);
   }
+  
+  public TypeMismatchException(String message,Type formalType,Type actualType)
+  { super(message+": expected "+formalType.getURI()+" but found "+actualType.getURI());
+  }
 
 }
