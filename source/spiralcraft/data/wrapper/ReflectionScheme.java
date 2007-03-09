@@ -71,11 +71,14 @@ public class ReflectionScheme
     }
   }
   
-  public void resolve()
+  /**
+   * Call after creating Scheme to populate fields
+   */
+  public void addFields()
     throws DataException
   {
     List<? extends ReflectionField> fieldList
-      =generateFields(beanInfo.getPropertyDescriptors());
+    =generateFields(beanInfo.getPropertyDescriptors());
 
     for (ReflectionField field: fieldList)
     { 
@@ -87,13 +90,12 @@ public class ReflectionScheme
       if (method!=null)
       { methodMap.put(method,field);
       }
-      
+    
       method=field.getWriteMethod();      
       if (method!=null)
       { methodMap.put(method,field);
       }
     }
-    super.resolve();
     
   }
   
