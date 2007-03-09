@@ -79,7 +79,7 @@ public class XmlTypeFactory
   {
     try
     {
-
+//      System.err.println("XmlTypeFactory: Loading "+uri);
       Tuple tuple
         =(Tuple) new DataReader()
           .readFromURI(URI.create(uri.toString()+".type.xml")
@@ -92,8 +92,12 @@ public class XmlTypeFactory
           ,new Object[] {resolver,uri}
           );
           
-          
-      return (Type) tuple.getType().fromData(tuple,instanceResolver);    
+//      System.err.println("XmlTypeFactory: data is "+tuple.toText("  "));
+      
+      Type type=(Type) tuple.getType().fromData(tuple,instanceResolver);
+//      System.err.println("XmlTypeFactory: Loaded "+uri+" = "+type.getURI());
+      
+      return type;
     }
     catch (SAXException x)
     { throw new DataException(x.toString(),x);
