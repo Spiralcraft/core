@@ -17,7 +17,6 @@ package spiralcraft.data.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import spiralcraft.data.Cursor;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Projection;
@@ -25,6 +24,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 
 import spiralcraft.data.spi.ArrayTuple;
+import spiralcraft.data.transport.Cursor;
 
 import spiralcraft.data.lang.CursorBinding;
 import spiralcraft.data.lang.BoundTuple;
