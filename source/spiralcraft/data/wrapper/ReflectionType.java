@@ -53,7 +53,6 @@ import java.math.BigDecimal;
  */
 public class ReflectionType<T>
   extends TypeImpl<T>
-  implements Type<T>
 {
   private static final HashMap<Class,URI> CANONICAL_MAP
     =new HashMap<Class,URI>();
@@ -84,6 +83,7 @@ public class ReflectionType<T>
   private Constructor<T> stringConstructor;
   private Constructor<T> tupleConstructor;
   private Field classField;
+  private boolean linked;
   
   private ThreadLocal<CycleDetector> cycleDetectorLocal
     =new ThreadLocal<CycleDetector>()
@@ -206,6 +206,7 @@ public class ReflectionType<T>
     if (linked)
     { return;
     }
+    linked=true;
 
     if (aggregate)
     { 
@@ -231,11 +232,23 @@ public class ReflectionType<T>
     { archetype=resolver.resolve(canonicalURI(reflectedClass.getSuperclass()));
     }
     
-    scheme=new ReflectionScheme(resolver,this,reflectedClass);
+    ReflectionScheme scheme=new ReflectionScheme(resolver,this,reflectedClass);
+    scheme.addFields();
+    this.scheme=scheme;
     super.link();
     classField=scheme.getFieldByName("class");
   }
   
+  public boolean isAssignableFrom(Type type)
+  {
+    if (!(type instanceof ReflectionType))
+    { return super.isAssignableFrom(type);
+    }
+    else
+    { return getNativeClass().isAssignableFrom(type.getNativeClass());
+    }
+  }
+    
   public boolean isStringEncodable()
   { return stringConstructor!=null;
   }
@@ -316,7 +329,9 @@ public class ReflectionType<T>
       T bean=null;
       
       if (context!=null)
-      { bean=(T) context.resolve(referencedClass);
+      { 
+        bean=(T) context.resolve(referencedClass);
+//        System.err.println("ReflectionType: resolved from context: "+bean);
       }
       
       if (bean==null)
@@ -342,7 +357,7 @@ public class ReflectionType<T>
   public T fromData(DataComposite val,InstanceResolver context)
     throws DataException
   {
-    // System.err.println("--- ReflectionType.fromData\r\nDataComposite: "+val+"\r\n");
+//    System.err.println(" ReflectionType.fromData\r\nDataComposite: "+val+"\r\n");
     if (nativeClass==null)
     { 
       throw new UnsupportedOperationException
