@@ -21,6 +21,7 @@ import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeNotFoundException;
+import spiralcraft.data.TypeMismatchException;
 import spiralcraft.data.FieldNotFoundException;
 
 import spiralcraft.data.spi.EditableArrayTuple;
@@ -280,7 +281,18 @@ public class DataHandler
     public Type getFormalType()
     { return formalType;
     }
-
+    
+    protected void assertCompatibleType(Type formalType,Type actualType)
+      throws TypeMismatchException
+    {
+      if (!formalType.isAssignableFrom(actualType))
+      { 
+        throw new TypeMismatchException
+          ("Error reading data",formalType,actualType);
+      }
+    
+    }
+    
     protected Type resolveType(String uri,String localName)
       throws TypeNotFoundException
     {
@@ -298,6 +310,7 @@ public class DataHandler
         { typeUri=URI.create(uri.concat("/").concat(localName));
         }
       }
+//      System.err.println("DataHandler resolving: "+typeUri.toString());
       return TypeResolver.getTypeResolver().resolve(typeUri);
     }
 
@@ -439,6 +452,7 @@ public class DataHandler
     { return object;
     }
     
+    
     protected void addObject(Object object)
       throws SAXException
     { 
@@ -464,6 +478,7 @@ public class DataHandler
       { throw new SAXException("Cannot contain more than one Object");
       }
       Type type=resolveType(uri,localName);
+      assertCompatibleType(formalType,type);
       return new DetailFrame(type);
     }
     
@@ -512,6 +527,7 @@ public class DataHandler
       throws SAXException,DataException
     {
       Type type=resolveType(uri,localName);
+      assertCompatibleType(formalType.getContentType(),type);
       return new DetailFrame(type);
     }
     
