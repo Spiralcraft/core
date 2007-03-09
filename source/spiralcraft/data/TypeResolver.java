@@ -28,10 +28,10 @@ import spiralcraft.util.ClassLoaderLocal;
 import spiralcraft.data.core.ArrayType;
 import spiralcraft.data.core.AbstractCollectionType;
 import spiralcraft.data.core.CoreTypeFactory;
+import spiralcraft.data.core.MetaType;
+
 
 import spiralcraft.data.builder.BuilderTypeFactory;
-
-import spiralcraft.data.types.meta.TypeType;
 
 import spiralcraft.data.sax.XmlTypeFactory;
 
@@ -64,7 +64,7 @@ public class TypeResolver
     =new ClassLoaderLocal<TypeResolver>();
     
   private static final URI TYPE_TYPE_URI 
-    =URI.create("java:/spiralcraft/data/types/meta/Type");
+    =URI.create("java:/spiralcraft/data/Type");
   
   protected final TypeResolver parent;
   private final HashMap<URI,Type> map=new HashMap<URI,Type>();
@@ -191,7 +191,7 @@ public class TypeResolver
     }
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("unchecked") // Heterogenous ArrayType construction
   private final Type loadArrayType(Type baseType,URI typeURI)
   {
     Type type=new ArrayType(baseType,typeURI);
@@ -199,7 +199,7 @@ public class TypeResolver
     return type;
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("unchecked") // Heterogeneuous CollectionType construction
   private final Type loadListType(Type baseType,URI typeURI)
   {
     // Create and map the list type
@@ -213,13 +213,10 @@ public class TypeResolver
     return type;
   }
 
-  @SuppressWarnings("unchecked")
-  private final Type loadTypeType(Type baseType,URI typeURI)
+  private final Type loadMetaType(Type baseType,URI typeURI)
     throws DataException
   {
-    // Create and map the types type
-    //type=baseType.getMetaType();
-    Type type=new TypeType
+    Type type=new MetaType
       (this
       ,typeURI
       ,baseType.getURI()
@@ -236,7 +233,9 @@ public class TypeResolver
     
     Type type=map.get(typeUri);
     if (type!=null)
-    { return type;
+    { 
+      // System.err.println("TypeResolver- using cached "+typeUri+" = "+type.getURI());
+      return type;
     }
 
     if (typeUri.getPath().endsWith(".array"))
@@ -264,7 +263,7 @@ public class TypeResolver
       // Recurse to resolve baseType
       Type baseType=findLoadedType(baseTypeUri);
       if (baseType!=null)
-      { return loadTypeType(baseType,typeUri);
+      { return loadMetaType(baseType,typeUri);
       }
     }
     
@@ -309,14 +308,16 @@ public class TypeResolver
       // Recurse to resolve baseType
       Type baseType=findTypeExtended(baseTypeUri);
       if (baseType!=null)
-      { return loadTypeType(baseType,typeUri);
+      { return loadMetaType(baseType,typeUri);
       }
     }
     else
     {
       type=findType(typeUri);
       if (type!=null)
-      { map.put(typeUri,type);
+      { 
+        // System.err.println("TypeResolver: Caching "+typeUri+" = "+type.getURI());
+        map.put(typeUri,type);
       }
       return type;
     }
