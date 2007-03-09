@@ -18,6 +18,7 @@ import java.util.List;
 
 import java.beans.PropertyDescriptor;
 
+import spiralcraft.data.Field;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
@@ -239,6 +240,20 @@ public class BuilderField
     }
   }
   
+  public boolean isFunctionalEquivalent(Field field)
+  {
+    if (!super.isFunctionalEquivalent(field))
+    { return false;
+    }
+    if (!(field instanceof BuilderField))
+    { return false;
+    }
+    
+//    BuilderField bfield=(BuilderField) field;
 
+    return true;
+    
+  }
+  
     
 }
