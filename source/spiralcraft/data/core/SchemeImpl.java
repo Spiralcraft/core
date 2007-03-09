@@ -184,6 +184,7 @@ public class SchemeImpl
     }
     resolved=true;
 
+//    System.err.println("SchemeImpl.resolve() for "+getType());
     int fieldIndex=0;
     if (archetypeScheme!=null)
     { 
@@ -220,10 +221,10 @@ public class SchemeImpl
         //   extending field functionality in compatible way
         field.setArchetypeField(archetypeField);
         fields.set(field.getIndex(),field);
-        System.err.println
-          ("Field "+field.getUri()
-          +" overriding field "+archetypeField.getUri()
-          );
+//        System.err.println
+//          ("Field "+field.getUri()
+//          +" overriding field "+archetypeField.getUri()
+//          );
       }
       else
       { 
