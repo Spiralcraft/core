@@ -29,18 +29,18 @@ import java.net.URI;
  * Core implementation of a Type
  */
 public class TypeImpl<T>
-  implements Type<T>
+  extends Type<T>
 {  
   protected Class<T> nativeClass;
   protected SchemeImpl scheme;
   protected final TypeResolver resolver;
   protected final URI uri;
-  protected boolean linked;
   protected Type archetype;
   protected Type baseType;
   protected boolean aggregate=false;
   protected Type contentType=null;
   
+  private boolean linked;
   
   public TypeImpl(TypeResolver resolver,URI uri)
   { 
@@ -98,6 +98,33 @@ public class TypeImpl<T>
     }
   }
 
+  public boolean isAssignableFrom(Type type)
+  {
+    
+    if (type.isPrimitive())
+    { return getNativeClass().isAssignableFrom(type.getNativeClass());
+    }
+    else
+    {
+      // Check native compatability
+      if (getNativeClass()!=null
+          && type.getNativeClass()!=null
+          && !getNativeClass().isAssignableFrom(type.getNativeClass())
+          )
+      { return false;
+      }
+    
+      if (type.hasArchetype(this))
+      { return true;
+      }
+      if (type.hasBaseType(this))
+      { return true;
+      }
+      
+      return false;
+    }
+  }
+  
   public Type getMetaType()
   { 
     try
