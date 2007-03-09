@@ -34,6 +34,7 @@ public class FieldImpl
   private FieldSet fieldSet;
   private int index;
   private String name;
+  private String title;
   private Type<?> type;
   private Field archetypeField;
   private URI uri;
@@ -119,7 +120,7 @@ public class FieldImpl
    *@return Whether this field has the same type, constraints and attributes
    *   as the specified field.
    */
-  boolean isFunctionalEquivalent(Field field)
+  public boolean isFunctionalEquivalent(Field field)
   { return field.getType()==getType();
   }
   
@@ -150,6 +151,22 @@ public class FieldImpl
   
   public String getName()
   { return name;
+  }
+  
+  public String getTitle()
+  { 
+    if (title==null)
+    { return name;
+    }
+    else
+    { return title;
+    }
+  }
+  
+  public void setTitle(String title)
+  { 
+    assertUnlocked();
+    this.title=title;
   }
   
   /**
