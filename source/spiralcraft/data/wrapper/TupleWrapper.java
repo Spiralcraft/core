@@ -60,6 +60,7 @@ public abstract class TupleWrapper
    *@return tuple.get(index)
    */
   protected Object dataGet(int index)
+    throws DataException
   {
     assertTuple();
     return tuple.get(index);

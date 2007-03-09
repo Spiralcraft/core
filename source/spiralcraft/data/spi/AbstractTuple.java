@@ -16,6 +16,7 @@ package spiralcraft.data.spi;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.TypeMismatchException;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.Type;
@@ -140,8 +141,18 @@ public abstract class AbstractTuple
     Tuple t=(Tuple) o;
     for (Field field : fieldSet.fieldIterable())
     { 
-      Object thisVal=get(field.getIndex());
-      Object otherVal=t.get(field.getIndex());
+      Object thisVal;
+      Object otherVal;
+      
+      try
+      {
+        thisVal=get(field.getIndex());
+        otherVal=t.get(field.getIndex());
+      }
+      catch (DataException x)
+      { throw new RuntimeDataException("Error reading field ["+field+"]:"+x,x);
+      }
+      
       if (thisVal!=null)
       { 
         if (!thisVal.equals(otherVal))
@@ -173,7 +184,14 @@ public abstract class AbstractTuple
     boolean first=true;
     for (Field field : fieldSet.fieldIterable())
     { 
-      Object val=get(field.getIndex());
+      Object val;
+      try
+      { val=get(field.getIndex());
+      }
+      catch (DataException x)
+      { throw new RuntimeDataException("Error reading field ["+field+"]:"+x,x);
+      }
+
       if (!(val instanceof DataComposite))
       {
         if (val!=null)

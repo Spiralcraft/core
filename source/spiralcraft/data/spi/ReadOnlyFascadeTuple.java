@@ -67,6 +67,7 @@ public class ReadOnlyFascadeTuple
   }
   
   public Object get(int index)
+    throws DataException
   { return delegate.get(index);
   }
   
