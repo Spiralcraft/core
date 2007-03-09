@@ -34,9 +34,16 @@ public interface Field
   
   /**
    * The name of the Field, to be used for the programmatic binding of
-   *   data consumers and producers to Tuples of this Scheme.
+   *   data aware components to Tuples of this Scheme. Conforms to
+   *   the rules for language identifiers.
    */
   String getName();
+  
+  /**
+   * A short descriptive name for the field, for user consumption. Does not
+   *   have syntax constraints.
+   */
+  String getTitle();
   
   /**
    * The Type of the Field
