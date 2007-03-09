@@ -41,9 +41,9 @@ import spiralcraft.data.core.SchemeImpl;
 import spiralcraft.data.core.FieldImpl;
 
 import spiralcraft.data.spi.EditableArrayTuple;
+import spiralcraft.data.transport.DataConsumer;
+import spiralcraft.data.transport.DataConsumerChain;
 
-import spiralcraft.data.pipeline.DataConsumer;
-import spiralcraft.data.pipeline.DataConsumerChain;
 
 /**
  * Parse a tabular file and feed the results to a DataHandler

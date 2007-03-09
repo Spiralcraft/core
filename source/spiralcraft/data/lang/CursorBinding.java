@@ -19,8 +19,8 @@ import spiralcraft.lang.BindException;
 
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
-import spiralcraft.data.Cursor;
 import spiralcraft.data.DataException;
+import spiralcraft.data.transport.Cursor;
 
 /**
  * A spiralcraft.lang binding for Tuples, which uses the Tuple's Scheme

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2007 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,24 +12,30 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.pipeline;
+package spiralcraft.data.query;
+
+import spiralcraft.lang.Expression;
 
 /**
- * Processes data from a DataSource and sends it to the DataHandler
+ * A Query operation which constrains the result to meet the specified constraints
  */
-public interface DataConsumerChain
-  extends DataConsumer
+public abstract class AbstractFilter
+  extends Query
 {
+  public Expression constraints;
   
   /**
-   * Set the next DataConsumer in the chain
+   * Specify the Expression which constrains the result
    */
-  void setDataConsumer(DataConsumer consumer);
+  public void setConstraints(Expression constraints)
+  { this.constraints=constraints;
+  }
   
   /**
-   * Insert the specified DataConsumerChain into the chain
-   *   immediately after this one
+   *@return the Expression which constrains the result
    */
-  void insertDataConsumer(DataConsumerChain consumerChain);
-  
+  public Expression getConstraints()
+  { return constraints;
+  }
+    
 }
