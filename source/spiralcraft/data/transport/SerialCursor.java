@@ -12,16 +12,28 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data;
+package spiralcraft.data.transport;
+
+import spiralcraft.data.DataException;
+import spiralcraft.data.FieldSet;
+import spiralcraft.data.Tuple;
 
 /**
- * A Cursor is a window onto one or more Tuples of compatible Types.<P>
- * 
- * Cursors provide a means for data processing components to bind to a data stream,
- *   and for streaming data providers to expose data.
+ * A SerialCursor is a Cursor that advances through a set of Tuples until
+ *   the end of the set is reached.<P>
  */
-public interface Cursor<T extends Tuple>
+public interface SerialCursor<T extends Tuple>
+  extends Cursor<T>
 {
+  /**
+   * Advance the cursor to the next Tuple, if any.
+   * 
+   *@return Whether the Cursor advanced to another Tuple, or false if the Cursor
+   *   encountered the end of the stream.   
+   */
+  boolean dataNext()
+    throws DataException;
+  
   /**
    *@return The FieldSet common to all the Tuples that will be returned by this Cursor
    */

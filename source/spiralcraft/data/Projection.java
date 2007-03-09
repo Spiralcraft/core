@@ -14,6 +14,8 @@
 //
 package spiralcraft.data;
 
+import spiralcraft.data.transport.Cursor;
+
 
 /**
  * A FieldSet derived from a "master" FieldSet which provides a facility 

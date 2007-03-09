@@ -14,6 +14,8 @@
 //
 package spiralcraft.data;
 
+import spiralcraft.data.transport.Cursor;
+
 
 /**
  * A FieldSet which combines fields from one or more other FieldSets into a

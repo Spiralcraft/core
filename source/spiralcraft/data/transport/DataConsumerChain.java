@@ -12,12 +12,24 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data;
+package spiralcraft.data.transport;
 
 /**
- * A data storage container.
+ * Processes data from a DataSource and sends it to the DataHandler
  */
-public interface Space
+public interface DataConsumerChain
+  extends DataConsumer
 {
-
+  
+  /**
+   * Set the next DataConsumer in the chain
+   */
+  void setDataConsumer(DataConsumer consumer);
+  
+  /**
+   * Insert the specified DataConsumerChain into the chain
+   *   immediately after this one
+   */
+  void insertDataConsumer(DataConsumerChain consumerChain);
+  
 }
