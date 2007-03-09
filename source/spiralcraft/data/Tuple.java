@@ -86,10 +86,14 @@ public interface Tuple
   // Scheme getScheme();
   
   /**
-   * Return the Object in the specified Field position. The index supplied
+   *@return the Object in the specified Field position. The index supplied
    *   corresponds to the Field's order of definition in the Scheme.
+   *   
+   *@throws DataException If the data at the specified position could not be
+   *   retrieved.
    */
-  Object get(int index);
+  Object get(int index)
+    throws DataException;
 
   
   /**
