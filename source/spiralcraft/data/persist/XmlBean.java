@@ -125,7 +125,10 @@ public class XmlBean<T>
       DataReader reader=new DataReader();
       DataComposite data = (DataComposite) reader.readFromURI
         (instanceURI
-        ,type
+        ,type!=null
+          ?type
+          :TypeResolver.getTypeResolver().resolve
+            (URI.create("java:/spiralcraft/data/types/standard/Object"))
         );
       
       Type<T> actualType=(Type<T>) data.getType();
