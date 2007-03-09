@@ -20,23 +20,23 @@ import java.net.URI;
 /**
  * Describes the data type of a data element.<BR>
  */
-public interface Type<T>
+public abstract class Type<T>
 {  
   /**
    * The TypeResolver which instantiated this particular Type.
    */
-  TypeResolver getTypeResolver();
+  public abstract TypeResolver getTypeResolver();
 
   /**
    * The canonical URI for this type.
    */
-  URI getURI();
+  public abstract URI getURI();
   
   /**
    * The Type used to describe Type objects of this Type, to support the
    *   defining of Type extensions using data.
    */
-  Type getMetaType();
+  public abstract Type getMetaType();
   
   /**
    * The public Java class or interface used to programatically access or
@@ -45,7 +45,7 @@ public interface Type<T>
    * @return A Class Or Interface, or null if the data element should be
    *   manipulated as Tuple data.
    */
-  Class<?> getNativeClass();
+  public abstract Class<?> getNativeClass();
 
   /**
    * A primitive type is a 'leaf node' of a data tree. A DataComposite
@@ -57,31 +57,31 @@ public interface Type<T>
    * 
    * @return Whether this is a primitive type.
    */
-  boolean isPrimitive();
+  public abstract boolean isPrimitive();
   
   /**
    * @return The Scheme which describes the structure of this type, or null if
    *   this type is not a complex type. 
    */
-  Scheme getScheme();
+  public abstract Scheme getScheme();
   
   /**
    * @return Whether this Type is an aggregate (array or collection) of another
    *   type.
    */
-  boolean isAggregate();
+  public abstract boolean isAggregate();
    
   /**
    * @return The Type of data aggregated by this aggregate Type, or null if 
    *   this is not an aggregate Type.
    */
-  Type getContentType();
+  public abstract Type getContentType();
   
   /**
    * @return The first non-aggregate returned by recursive calls to
    *   getContentType(), or this type if not an aggregate.
    */
-  Type getCoreType();
+  public abstract Type getCoreType();
   
   /**
    * An Archetype is a Type which defines a data structure and operations
@@ -96,13 +96,13 @@ public interface Type<T>
    *
    * @return The archetype of this Type
    */
-  Type getArchetype();
+  public abstract Type getArchetype();
   
   /**
    * @return Whether this Type or any of its archetypes (recursively) is the
    *   the specified Type.
    */
-  boolean hasArchetype(Type type);
+  public abstract boolean hasArchetype(Type type);
   
   /**
    * A base Type is a means for this Type to inherit an identity, data structure
@@ -131,15 +131,20 @@ public interface Type<T>
    *   storage to maintain their relationship to other Tuples of the same
    *   instance.<P>
    */
-  Type getBaseType();
+  public abstract Type getBaseType();
   
   
   /**
    * @return Whether this Type or any of its base Types (recursively) is the
    *   the specified Type.
    */
-  boolean hasBaseType(Type type);
+  public abstract boolean hasBaseType(Type type);
   
+  /**
+   * @return Whether a variable of this Type may be assigned a value corresponding to
+   *   the specified Type.
+   */
+  public abstract boolean isAssignableFrom(Type type);
   
   /**
    * Indicate whether Objects of this type can be encoded to and decoded from
@@ -147,7 +152,7 @@ public interface Type<T>
    *
    * @return Whether Objects of this type can be represented as a String.
    */
-  boolean isStringEncodable();
+  public abstract boolean isStringEncodable();
   
   /**
    * Translate the canonical String representation of a value of this Type to
@@ -159,7 +164,7 @@ public interface Type<T>
    * @throws IllegalArgumentException If the supplied String cannot be
    *    translated.
    */
-  T fromString(String str)
+  public abstract T fromString(String str)
     throws DataException;
   
   /**
@@ -172,7 +177,7 @@ public interface Type<T>
    * @throws IllegalArgumentException If the supplied Object is not compatible
    *    with the Class or Interface returned from the getNativeClass() method.
    */
-  String toString(T value);
+  public abstract String toString(T value);
   
   /**
    * Translates a DataComposite representation of a value of this Type to an 
@@ -187,7 +192,7 @@ public interface Type<T>
    *
    * @throws DataException If an error occurs in the translation process.
    */
-  T fromData(DataComposite composite,InstanceResolver resolver)
+  public abstract T fromData(DataComposite composite,InstanceResolver resolver)
     throws DataException;
   
   /**
@@ -201,7 +206,7 @@ public interface Type<T>
    *
    * @throws DataException If an error occurs in the translation process.
    */
-  DataComposite toData(T object)
+  public abstract DataComposite toData(T object)
     throws DataException;
   
   
@@ -212,13 +217,13 @@ public interface Type<T>
    * @return null, if the value is valid for this Type, or a ValidationResult
    *   containing specifics of the failure.
    */
-  ValidationResult validate(Object value);
+  public abstract ValidationResult validate(Object value);
   
   /**
    * Called by the TypeResolver to allow the type to recursively resolve any
    *   referenced Types. This method has no effect after it is called once
    *   by the TypeResolver.
    */
-  void link()
+  public abstract void link()
     throws DataException;
 }
