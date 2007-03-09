@@ -20,20 +20,20 @@ import spiralcraft.lang.BindException;
 
 
 public class ResolveNode<T>
-  extends Node<T>
+  extends Node
 {
 
-  private final Node<?> _source;
-  private final IdentifierNode _identifier;
+  private final Node _source;
+  private final String identifier;
 
-  public ResolveNode(Node<?> source,IdentifierNode identifier)
+  public ResolveNode(Node source,String identifier)
   { 
     _source=source;
-    _identifier=identifier;
+    this.identifier=identifier;
   }
 
   public String getIdentifierName()
-  { return _identifier.getIdentifier();
+  { return identifier;
   }
 
   public Node getSource()
@@ -52,7 +52,6 @@ public class ResolveNode<T>
       System.out.println("ResolveNode:"+super.toString()+" DEFAULT Using Focus subject");
       sourceOptic=focus.getSubject();
     }
-    String identifier=_identifier.getIdentifier();
 
     Optic<T> ret=sourceOptic.<T>resolve(focus,identifier,null);
     if (ret==null)
@@ -68,8 +67,7 @@ public class ResolveNode<T>
     if (_source!=null)
     { _source.dumpTree(out,prefix);
     }
-    out.append(prefix).append(".");
-    _identifier.dumpTree(out,prefix);
+    out.append(prefix).append(".").append(identifier);
   }
   
 }

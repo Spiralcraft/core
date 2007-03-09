@@ -14,46 +14,31 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.optics.Prism;
 
-import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Optic;
-import spiralcraft.lang.OpticAdapter;
+
+import java.util.List;
+
 
 /**
  * A Node in an Expression parse tree
  */
-public abstract class Node<T>
+public abstract class Node
 {
 
-  public abstract Optic<T> bind(Focus<?> focus)
-    throws BindException;
   
   /**
    * Stubbed bind method for unimplemented nodes.
    *
    *@return An optic with no functionality
    */
-  public Optic<Void> defaultBind(Focus<?> focus)
+  public Optic bind(Focus<?> focus)
     throws BindException
   { 
-    System.err.println(getClass().getName()+" not implemented");
-    return new OpticAdapter<Void>()
-    {
-      @SuppressWarnings("unchecked") // Cast to Prism<Void>
-      public Prism<Void> getPrism()
-      { 
-        try
-        { return (Prism<Void>) OpticFactory.getInstance().findPrism(Void.class);
-        }
-        catch (BindException x)
-        { // shouldn't happen
-        }
-        return null;
-      }
-    };
+    unsupported("bind");
+    return null;
   }
 
   public abstract void dumpTree(StringBuffer out,String prefix);
@@ -64,5 +49,85 @@ public abstract class Node<T>
     dumpTree(out,"\r\n  ");
     err.println(out.toString());
     
+  }
+  
+  public final Node isEqual(Node source)
+  { return new EqualityNode(false,this,source);
+  }
+  
+  public final Node isNotEqual(Node source)
+  { return new EqualityNode(true,this,source);
+  }
+  
+  public final Node call(String identifier,List<Node> params)
+  { return new MethodCallNode(this,identifier,params);
+  }
+  
+  public final Node resolve(String identifier)
+  { return new ResolveNode(this,identifier);
+  }
+
+  public Node and(Node op)
+  { return new LogicalAndNode(this,op);
+  }
+  
+  public Node or(Node op)
+  { return new LogicalOrNode(this,op);
+  }
+  
+  public Node not()
+  { return new LogicalNegateNode(this);
+  }
+  
+  public Node xor(Node op)
+  { return new ExclusiveOrNode(this,op);
+  }
+  
+  public Node onCondition(Node trueResult,Node falseResult)
+  { return new ConditionalNode(this,trueResult,falseResult);
+  }
+
+  public Node negative()
+  { return new NumericNegateNode(this);
+  }
+
+  public Node plus(Node op)
+  { return new NumericOpNode(this,op,'+');
+  }
+  
+  public Node minus(Node op)
+  { return new NumericOpNode(this,op,'-');
+  }
+  
+  public Node times(Node op)
+  { return new NumericOpNode(this,op,'*');
+  }
+  
+  public Node divide(Node op)
+  { return new NumericOpNode(this,op,'/');
+  }
+  
+  public Node modulus(Node op)
+  { return new NumericOpNode(this,op,'%');
+  }
+
+  public Node greaterThan(Node op)
+  { return new RelationalNode(true,false,this,op);
+  }
+  
+  public Node lessThan(Node op)
+  { return new RelationalNode(false,false,this,op);
+  }
+
+  public Node greaterThanOrEquals(Node op)
+  { return new RelationalNode(false,true,this,op);
+  }
+  
+  public Node lessThanOrEquals(Node op)
+  { return new RelationalNode(false,true,this,op);
+  }  
+    
+  protected void unsupported(String msg)
+  { throw new UnsupportedOperationException(getClass().getName()+"."+msg+"(...)");
   }
 }

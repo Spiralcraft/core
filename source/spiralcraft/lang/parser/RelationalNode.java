@@ -23,7 +23,7 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
   private final boolean _greaterThan;
   private final boolean _equals;
 
-  public RelationalNode(boolean greaterThan,boolean equals,Node<T1> op1,Node<T2> op2)
+  public RelationalNode(boolean greaterThan,boolean equals,Node op1,Node op2)
   { 
     super(op1,op2);
     _greaterThan=greaterThan;

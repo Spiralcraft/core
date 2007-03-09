@@ -20,21 +20,21 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Context;
 
 
-public class FocusResolveNode<X>
-  extends Node<X>
+public class FocusResolveNode
+  extends Node
 {
 
   private final FocusNode _source;
-  private final IdentifierNode _identifier;
+  private final String _identifier;
 
-  public FocusResolveNode(FocusNode source,IdentifierNode identifier)
+  public FocusResolveNode(FocusNode source,String identifier)
   { 
     _source=source;
     _identifier=identifier;
   }
 
   
-  public Optic<X> bind(final Focus<?> focus)
+  public Optic bind(final Focus focus)
     throws BindException
   { 
 //    String identifier=_identifier.getIdentifier();
@@ -44,9 +44,9 @@ public class FocusResolveNode<X>
 
     Context context=specifiedFocus.getContext();
     
-    Optic<X> ret=null;
+    Optic<?> ret=null;
     if (context!=null)
-    { ret=context.<X>resolve(_identifier.getIdentifier());
+    { ret=context.resolve(_identifier);
     }
 
     if (ret==null)
@@ -55,14 +55,14 @@ public class FocusResolveNode<X>
       { 
         Optic<?> subject=specifiedFocus.getSubject();
         if (subject!=null)
-        { ret=subject.<X>resolve(specifiedFocus,_identifier.getIdentifier(),null);
+        { ret=subject.resolve(specifiedFocus,_identifier,null);
         }
       }
       catch (BindException x)
       { 
         throw new BindException
           ("Could not resolve identifier '"
-          +_identifier.getIdentifier()
+          +_identifier
           +"' in Context or Subject of Focus"
           );
       }
@@ -72,7 +72,7 @@ public class FocusResolveNode<X>
     {
       throw new BindException
         ("Could not resolve identifier '"
-        +_identifier.getIdentifier()
+        +_identifier
         +"' in Context or Subject of Focus"
         );
     }
@@ -81,12 +81,12 @@ public class FocusResolveNode<X>
 
   public void dumpTree(StringBuffer out,String prefix)
   { 
-    out.append(prefix).append("FocusResolve");
+    out.append(prefix).append("FocusResolve '"+_identifier+"'");
     prefix=prefix+"  ";
     if (_source!=null)
     { _source.dumpTree(out,prefix);
     }
-    _identifier.dumpTree(out,prefix);
+
   }
   
 }

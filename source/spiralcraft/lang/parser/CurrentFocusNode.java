@@ -17,7 +17,7 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
-public class DefaultFocusNode
+public class CurrentFocusNode
   extends FocusNode
 {
 

@@ -22,7 +22,7 @@ public class EqualityNode<X>
 
   private final boolean _negate;
 
-  public EqualityNode(boolean negate,Node<X> op1,Node<X> op2)
+  public EqualityNode(boolean negate,Node op1,Node op2)
   { 
     super(op1,op2);
     _negate=negate;

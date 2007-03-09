@@ -21,18 +21,18 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.BindException;
 
-public class MethodCallNode<T>
-  extends Node<T>
+public class MethodCallNode
+  extends Node
 {
 
-  private final Node<?> _source;
+  private final Node _source;
   private final String _identifierName;
   private final Expression[] _parameters;
   private final Node[] _parameterNodes;
 
   
   @SuppressWarnings("unchecked") // Raw type for parameter node array
-  public MethodCallNode(Node<?> source,String identifierName,List<Node> parameterList)
+  public MethodCallNode(Node source,String identifierName,List<Node> parameterList)
   { 
     
     _source=source;
@@ -60,7 +60,7 @@ public class MethodCallNode<T>
    * MethodCallNode operates on a source. If there is no direct source,
    *   the subject of the supplied focus will be used.
    */
-  public Optic<T> bind(final Focus focus)
+  public Optic bind(final Focus focus)
     throws BindException
   { 
     Optic<?> source;
@@ -78,8 +78,8 @@ public class MethodCallNode<T>
 //    { System.out.println("MethodCallNode "+toString()+" param:"+param.toString());
 //    }
     
-    Optic<T> ret=source
-      .<T>resolve(focus
+    Optic ret=source
+      .resolve(focus
               ,_identifierName
               ,_parameters
               );

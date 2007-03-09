@@ -24,20 +24,20 @@ import spiralcraft.lang.optics.ArrayIndexLense;
 
 
 public class SubscriptNode<T,C,I>
-  extends Node<T>
+  extends Node
 {
 
-  private final Node<C> _source;
-  private final Node<I> _selector;
+  private final Node _source;
+  private final Node _selector;
 
-  public SubscriptNode(Node<C> source,Node<I> selector)
+  public SubscriptNode(Node source,Node selector)
   { 
     _source=source;
     _selector=selector;
   }
 
-  @SuppressWarnings("unchecked") // Upcast for narrowing index type
-  public Optic<T> bind(Focus<?> focus)
+//  @SuppressWarnings("unchecked") // Upcast for narrowing index type
+  public Optic bind(Focus<?> focus)
     throws BindException
   {
     Optic<C> collection=focus.<C>bind(new Expression<C>(_source,null));
@@ -52,7 +52,7 @@ public class SubscriptNode<T,C,I>
       if (collection.getContentType().isArray())
       {
         return (Optic<T>) ArrayIndexHelper.<T,C>bind
-          (focus,collection,(Optic<Number>) selector);
+          (focus,collection, selector);
       }
       else
       { throw new BindException("Unknown Collection Type");
@@ -82,7 +82,7 @@ class ArrayIndexHelper
   public static final <T,C> Optic<T> bind
     (Focus<?> focus
      ,Optic<C> collection
-     ,Optic<Number> selector
+     ,Optic selector
      )
      throws BindException
   {

@@ -28,16 +28,16 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class NumericNegateNode<T extends Number>
-  extends Node<T>
+  extends Node
 {
 
-  private final Node<T> _node;
+  private final Node _node;
 
   public static HashMap<Class,NegateLense<?>> _lenseMap
     =new HashMap<Class,NegateLense<?>>();
   
   
-  public NumericNegateNode(Node<T> node)
+  public NumericNegateNode(Node node)
   {  _node=node;
   }
 

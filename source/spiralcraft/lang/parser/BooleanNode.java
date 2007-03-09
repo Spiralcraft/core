@@ -15,42 +15,34 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Optic;
+import spiralcraft.lang.OpticFactory;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
 
-public class LogicalNegateNode
-  extends LogicalNode<Boolean,Void>
+import spiralcraft.lang.optics.Prism;
+
+public abstract class BooleanNode
+  extends Node
 {
 
-  public LogicalNegateNode(Node node)
-  { super(node,null);
-  }
-
-  public Boolean translateForGet(Boolean val,Optic[] mods)
+  public static Prism<Boolean> BOOLEAN_PRISM;
+  
   { 
-    if (val==null)
-    { return null;
+    try
+    { BOOLEAN_PRISM=OpticFactory.getInstance().<Boolean>findPrism(Boolean.class);
     }
-    else if (val)
-    { return Boolean.FALSE;
-    }
-    else
-    { return Boolean.TRUE;
-    }
+    catch (BindException x)
+    { }
+      
   }
   
-  public Boolean translateForSet(Boolean val,Optic[] mods)
-  { 
-    if (val==null)
-    { return null;
-    }
-    else if (val)
-    { return Boolean.FALSE;
-    }
-    else
-    { return Boolean.TRUE;
-    }
-  }
+  public abstract Optic bind(Focus<?> focus)
+    throws BindException;
   
-  public String getSymbol()
-  { return "!";
+  public Prism<Boolean> getPrism()
+  { return BOOLEAN_PRISM;
   }
+    
+  public abstract String getSymbol();
+  
 }

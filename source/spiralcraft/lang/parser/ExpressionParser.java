@@ -43,7 +43,7 @@ public class ExpressionParser
   { 
     createTokenizer(text);
     nextToken();
-    Node<X> ret=(Node<X>) parseExpression();
+    Node ret=parseExpression();
     if (ret==null)
     { throwUnexpected();
     }
@@ -117,10 +117,10 @@ public class ExpressionParser
   /**
    * Verifies and consumes specified input, if not expected, throws exception
    */
-  private void throwGeneral(String message)
-    throws ParseException
-  { throw new ParseException(message,_pos,_progressBuffer.toString());
-  }
+//  private void throwGeneral(String message)
+//    throws ParseException
+//  { throw new ParseException(message,_pos,_progressBuffer.toString());
+//  }
   
 
   private boolean nextToken()
@@ -170,7 +170,6 @@ public class ExpressionParser
    * ConditionalExpression -> LogicalOrExpression 
    *                          ( "?" conditionalExpression ":" conditionalExpression )
    */
-  @SuppressWarnings("unchecked") // Parse methods are polymorphic
   private Node parseConditionalExpression()
     throws ParseException
   {
@@ -181,7 +180,7 @@ public class ExpressionParser
       Node trueResult=this.parseConditionalExpression();
       expect(':');
       Node falseResult=this.parseConditionalExpression();
-      node=new ConditionalNode(node,trueResult,falseResult);
+      node=node.onCondition(trueResult, falseResult);
     }
     return node;
   }
@@ -197,7 +196,6 @@ public class ExpressionParser
     return parseLogicalOrExpressionRest(node);
   }
   
-  @SuppressWarnings("unchecked") // Parse methods are polymorphic
   private Node parseLogicalOrExpressionRest(Node firstOperand)
     throws ParseException
   {
@@ -206,7 +204,7 @@ public class ExpressionParser
       nextToken();
       expect('|');
       Node secondOperand=parseLogicalAndExpression();
-      Node logicalOrNode = new LogicalOrNode(firstOperand,secondOperand);
+      Node logicalOrNode = firstOperand.or(secondOperand);
       return parseLogicalOrExpressionRest(logicalOrNode);
     }
     else
@@ -225,7 +223,6 @@ public class ExpressionParser
     return parseLogicalAndExpressionRest(node);
   }
   
-  @SuppressWarnings("unchecked") // Parse methods are polymorphic
   private Node parseLogicalAndExpressionRest(Node firstOperand)
     throws ParseException
   {
@@ -234,7 +231,7 @@ public class ExpressionParser
       nextToken();
       expect('&');
       Node secondOperand=parseExclusiveOrExpression();
-      Node logicalAndNode = new LogicalAndNode(firstOperand,secondOperand);
+      Node logicalAndNode = firstOperand.and(secondOperand);
       return parseLogicalAndExpressionRest(logicalAndNode);
     }
     else
@@ -253,14 +250,13 @@ public class ExpressionParser
     return parseExclusiveOrExpressionRest(node);
   }
   
-  @SuppressWarnings("unchecked") // Parse methods are polymorphic
   private Node parseExclusiveOrExpressionRest(Node firstOperand)
     throws ParseException
   {
     if (_tokenizer.ttype=='^')
     { 
       nextToken();
-      Node exclusiveOrNode = new ExclusiveOrNode(firstOperand,parseEqualityExpression());
+      Node exclusiveOrNode = firstOperand.xor(parseEqualityExpression());
       return parseExclusiveOrExpressionRest(exclusiveOrNode);
     }
     else
@@ -272,7 +268,6 @@ public class ExpressionParser
    * EqualityExpression -> RelationalExpression
    *                       ( ("!=" | "==") RelationalExpression )
    */
-  @SuppressWarnings("unchecked") // Parse methods are polymorphic
   private Node parseEqualityExpression()
     throws ParseException
   {
@@ -280,7 +275,6 @@ public class ExpressionParser
     return parseEqualityExpressionRest(node);
   }
 
-  @SuppressWarnings("unchecked") // Parse methods are polymorphic
   private Node parseEqualityExpressionRest(Node firstOperand)
     throws ParseException
   { 
@@ -289,7 +283,7 @@ public class ExpressionParser
       nextToken();
       expect('=');
       Node secondOperand=parseRelationalExpression();
-      Node equalityNode = new EqualityNode(true,firstOperand,secondOperand);
+      Node equalityNode = firstOperand.isNotEqual(secondOperand);
       return parseEqualityExpressionRest(equalityNode);
     }
     else if (_tokenizer.ttype=='=')
@@ -297,7 +291,7 @@ public class ExpressionParser
       nextToken();
       expect('=');
       Node secondOperand=parseRelationalExpression();
-      Node equalityNode = new EqualityNode(false,firstOperand,secondOperand);
+      Node equalityNode = firstOperand.isEqual(secondOperand);
       return parseEqualityExpressionRest(equalityNode);
     }
     else
@@ -317,34 +311,49 @@ public class ExpressionParser
     return parseRelationalExpressionRest(node);
   }
   
-  @SuppressWarnings("unchecked") // Parser methods are heterogeneous
   private Node parseRelationalExpressionRest(Node firstOperand)
     throws ParseException
   {
-    boolean greaterThan=false;
-    boolean equals=false;
     switch (_tokenizer.ttype)
     {
       case '>':
-        greaterThan=true;
+        nextToken();
+        if (_tokenizer.ttype=='=')
+        {
+          nextToken();
+          return parseRelationalExpressionRest
+            (firstOperand.greaterThanOrEquals
+              (parseAdditiveExpression()
+              )
+            );
+        }
+        else
+        {
+          return parseRelationalExpressionRest
+            (firstOperand.greaterThan
+              (parseAdditiveExpression()
+              )
+            );
+        }
       case '<':
         nextToken();
         if (_tokenizer.ttype=='=')
         {
           nextToken();
-          equals=true;
-        }
-
-        Node operation 
-          = new RelationalNode
-            (greaterThan
-            ,equals
-            ,firstOperand
-            ,parseAdditiveExpression()
+          return parseRelationalExpressionRest
+            (firstOperand.lessThanOrEquals
+              (parseAdditiveExpression()
+              )
             );
-
-        return parseRelationalExpressionRest(operation);
-                
+        }
+        else
+        {
+          return parseRelationalExpressionRest
+            (firstOperand.lessThan
+              (parseAdditiveExpression()
+              )
+            );
+        }
       default:
         return firstOperand;        
     }
@@ -361,7 +370,6 @@ public class ExpressionParser
     return parseAdditiveExpressionRest(node);
   }
 
-  @SuppressWarnings("unchecked") // Parser methods are heterogeneous
   private Node parseAdditiveExpressionRest(Node firstOperand)
     throws ParseException
   {
@@ -370,15 +378,13 @@ public class ExpressionParser
     switch (_tokenizer.ttype)
     {
       case '-':
-      case '+':
-        char ttype=(char) _tokenizer.ttype;
         nextToken();
-        operation 
-          = new NumericOpNode
-            (firstOperand
-            ,parseMultiplicativeExpression()
-            ,ttype
-            );
+        operation=firstOperand.minus(parseMultiplicativeExpression());
+        node=parseAdditiveExpressionRest(operation);
+        break;
+      case '+':
+        nextToken();
+        operation=firstOperand.plus(parseMultiplicativeExpression());
         node=parseAdditiveExpressionRest(operation);
         break;
       default:
@@ -400,7 +406,6 @@ public class ExpressionParser
     return parseMultiplicativeExpressionRest(node);
   }
   
-  @SuppressWarnings("unchecked") // Parser methods are heterogeneous
   private Node parseMultiplicativeExpressionRest(Node firstOperand)
     throws ParseException
   {
@@ -409,16 +414,18 @@ public class ExpressionParser
     switch (_tokenizer.ttype)
     {
       case '/':
-      case '*':
-      case '%':
-        char ttype=(char) _tokenizer.ttype;
         nextToken();
-        operation 
-          = new NumericOpNode
-            (firstOperand
-            ,parseUnaryExpression()
-            ,ttype
-            );
+        operation = firstOperand.divide(parseUnaryExpression()); 
+        node = parseMultiplicativeExpressionRest(operation);
+        break;
+      case '*':
+        nextToken();
+        operation = firstOperand.times(parseUnaryExpression()); 
+        node = parseMultiplicativeExpressionRest(operation);
+        break;
+      case '%':
+        nextToken();
+        operation = firstOperand.modulus(parseUnaryExpression()); 
         node = parseMultiplicativeExpressionRest(operation);
         break;
       default:
@@ -433,7 +440,6 @@ public class ExpressionParser
    *                  | "!" UnaryExpression
    *                  | PostfixExpression
    */
-  @SuppressWarnings("unchecked") // Parse methods are polymorphic
   private Node parseUnaryExpression()
     throws ParseException
   {
@@ -441,25 +447,30 @@ public class ExpressionParser
     {
       case '-':
         nextToken();
-        return new NumericNegateNode(parseUnaryExpression());
+        return parseUnaryExpression().negative(); 
       case '!':
         nextToken();
-        return new LogicalNegateNode(parseUnaryExpression());
+        return parseUnaryExpression().not();
       default:
         return parsePostfixExpression();
     }
   }
 
+  // 
+  // Beyond this point there is no left-hand-side recursion
+  //
+
   /**
    * PostfixExpression -> FocusExpression
-   *                     ( "(" ExpressionList ")" 
-   *                     |  "[" Expression "]"
+   *                     ( "[" Expression "]"
    *                     | "." IdentifierExpression
    *                     ) *
    */
   private Node parsePostfixExpression()
     throws ParseException
   {
+    // The focus expression -always- returns a node which provides the 
+    //   target of further dereference.
     Node node = parseFocusExpression();
     return parsePostfixExpressionRest(node);
   }
@@ -468,24 +479,28 @@ public class ExpressionParser
   private Node parsePostfixExpressionRest(Node primary)
     throws ParseException
   {
+    // This handles the entire dot/subscript/member dereference chain
     switch (_tokenizer.ttype)
     {
-      case '(':
-        if (!(primary instanceof ResolveNode))
-        { throwUnexpected();
-        }
-        nextToken();
-        if (((ResolveNode) primary).getSource()==null)
-        { throwGeneral("Internal error: MethodCall source is null");
-        }
-        Node methodCallNode
-          =new MethodCallNode
-            ( ((ResolveNode) primary).getSource()
-            , ((ResolveNode) primary).getIdentifierName()
-            , parseExpressionList()
-            );
-        expect(')');
-        return parsePostfixExpressionRest(methodCallNode);
+//      case '(':
+        // XXX: An expression list after a resolved item is not necessarily part
+        //   of the grammar. This should not be a case
+        
+//        if (!(primary instanceof ResolveNode))
+//        { throwUnexpected();
+//        }
+//        nextToken();
+//        if (((ResolveNode) primary).getSource()==null)
+//        { throwGeneral("Internal error: MethodCall source is null");
+//        }
+//        ResolveNode resolveNode=(ResolveNode) primary;
+//        Node methodCallNode
+//          =resolveNode.getSource().call
+//            (resolveNode.getIdentifierName()
+//            ,parseExpressionList()
+//            );
+//        expect(')');
+//        return parsePostfixExpressionRest(methodCallNode);
       case '[':
         nextToken();
         Node subscriptNode=new SubscriptNode(primary,parseExpression());
@@ -493,10 +508,7 @@ public class ExpressionParser
         return parsePostfixExpressionRest(subscriptNode);
       case '.':
         nextToken();
-        IdentifierNode idNode=parseIdentifier();
-        nextToken();
-        Node resolveNode=new ResolveNode(primary,idNode);
-        return parsePostfixExpressionRest(resolveNode);
+        return parseIdentifierExpression(primary);
       default:
         return primary;
     }
@@ -538,13 +550,14 @@ public class ExpressionParser
 
   /**
    * PrimaryExpression -> Number
-   *                    | String 
+   *                    | String Literal
    *                    | "true" 
    *                    | "false" 
    *                    | "null"
+   *                    | IdentifierExpression
    *                    | "(" Expression ")"
    */
-  private Node parsePrimaryExpression()
+  private Node parsePrimaryExpression(Node focus)
     throws ParseException
   {
     Node node=null;
@@ -564,7 +577,7 @@ public class ExpressionParser
         { node=parseNumber();
         }
         else
-        { node=parseIdentifier();
+        { node=parseIdentifierExpression(focus);
         }
         nextToken();
         break;
@@ -595,19 +608,59 @@ public class ExpressionParser
     return node;
   }
 
-  private IdentifierNode parseIdentifier()
+  /**
+   * IdentifierExpression -> Name ( "(" expressionList ")" )
+   */
+  private Node parseIdentifierExpression(Node primary)
     throws ParseException
   { 
-    IdentifierNode ret=null;
     if (_tokenizer.ttype!=StreamTokenizer.TT_WORD)
-    { throwUnexpected();
+    { 
+      throwUnexpected();
+      return null;
     }
     else
     { 
-      ret=
-        new IdentifierNode(_tokenizer.sval);
+      String name=_tokenizer.sval;
+      
+      if (primary instanceof FocusResolveNode)
+      {
+        nextToken();
+        if (_tokenizer.ttype=='(')
+        { 
+          // XXX Support global functions
+          throwUnexpected();
+          return null;
+        }
+        else
+        {
+          // The focusResolveNode is the node that will resolve
+          //   the identifier. Pass it through.
+          return primary;
+        }
+        
+      }
+      else
+      {
+        nextToken();
+        if (_tokenizer.ttype=='(')
+        { 
+          // Method call
+          nextToken();
+          Node node
+            =primary.call
+              (name
+              ,parseExpressionList()
+              );
+          expect(')');
+          return parsePostfixExpressionRest(node);
+        }
+        else
+        {
+          return parsePostfixExpressionRest(primary.resolve(name));
+        }
+      }
     }
-    return ret;
   }
   
   private Node parseNumber()
@@ -672,7 +725,7 @@ public class ExpressionParser
   /**
    * FocusExpression -> ( "[" FocusSpecifier "]" ) 
    *                    ( "." RelativeFocusExpression 
-   *                      | Identifier
+   *                      | IdentifierExpression
    *                      | PrimaryExpression
    *                    )
    */
@@ -697,26 +750,32 @@ public class ExpressionParser
         { throwUnexpected();
         }
         return null;
-      case StreamTokenizer.TT_WORD:
-        if (debug)
-        { alert("parseFocusExpression.TT_WORD");
-        }
-        Node primaryNode=parsePrimaryExpression();
-        if (primaryNode instanceof IdentifierNode)
-        { return new FocusResolveNode(focusNode,(IdentifierNode) primaryNode);
-        }
-        else
-        { return primaryNode;
-        }
       case '.':
         nextToken();
+        if (focusNode==null)
+        { focusNode=new CurrentFocusNode();
+        }
         Node ret=parseFocusRelativeExpression(focusNode);
         if (debug)
         { alert("parseFocusExpression():'.'");
         }
         return ret;
+      case StreamTokenizer.TT_WORD:
+        // Either a literal, or 
+        if (debug)
+        { alert("parseFocusExpression.TT_WORD");
+        }
+        
+        // If this is an identifier, parseIdentifierExpression() will
+        //   catch this as a case not to use a resolve()
+        return parsePrimaryExpression
+          (new FocusResolveNode(focusNode,_tokenizer.sval));
       default:
-        return parsePrimaryExpression();
+        if (focusNode==null)
+        { focusNode=new CurrentFocusNode();
+        }
+        return parsePrimaryExpression(focusNode);
+        
     }
   }
 
@@ -729,25 +788,22 @@ public class ExpressionParser
     throws ParseException
   { 
     if (focusNode==null)
-    { focusNode=new DefaultFocusNode();
+    { focusNode=new CurrentFocusNode();
     }
     
     switch (_tokenizer.ttype)
     {
       case StreamTokenizer.TT_EOF:
+        // implicit 'this', refers to subject of focus
         return focusNode;
       case StreamTokenizer.TT_WORD:
-        IdentifierNode id=new IdentifierNode(_tokenizer.sval);
-        nextToken();
-        return parsePostfixExpressionRest(new ResolveNode(focusNode,id));
-        // return new ResolveNode(focusNode,id);
+        // a name resolve or method call against the subject of the focus
+        return parseIdentifierExpression(focusNode);
       case '[':
-        // New- array subscript of implicit array focus
-        nextToken();
-        Node subscriptNode=new SubscriptNode(focusNode,parseExpression());
-        expect(']');
-        return parsePostfixExpressionRest(subscriptNode);    
+        // an array subscript against the subject of the focus
+        return parsePostfixExpressionRest(focusNode);
       case '.':
+        // The parent focus
         nextToken();
         FocusNode parentFocusNode=new ParentFocusNode(focusNode);
         return parseFocusRelativeExpression(parentFocusNode);
@@ -756,38 +812,6 @@ public class ExpressionParser
         return null;
     }
   }
-
-//  /**
-//   * FocusExpression -> FocusName ( ":" Expression )
-//   */
-//  private FocusNode parseFocusSpecifier()
-//    throws ParseException
-//  {
-//    StringBuffer focusName=new StringBuffer();
-//    
-//    while (true)
-//    {
-//      switch (_tokenizer.ttype)
-//      {
-//        case ']':
-//          return new AbsoluteFocusNode(focusName.toString(),null);
-//        case StreamTokenizer.TT_EOF:
-//          throwUnexpected();
-//        case ':':
-//          nextToken();
-//          return new AbsoluteFocusNode(focusName.toString(),parseExpression());
-//        case StreamTokenizer.TT_WORD:
-//        case StreamTokenizer.TT_NUMBER:
-//          focusName.append(_tokenizer.sval);
-//          nextToken();
-//          break;
-//        default:
-//          focusName.append((char) _tokenizer.ttype);
-//          nextToken();
-//          break;
-//      }
-//    }
-//  }
 
   /**
    * FocusExpression -> FocusName 

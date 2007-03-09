@@ -33,9 +33,10 @@ public class AbsoluteFocusNode
   public Focus findFocus(final Focus focus)
     throws BindException
   { 
-    if (_focusName==null)
+    if (_focusName==null || _focusName.equals(""))
     { return focus;
     }
+    
     Focus newFocus=focus.findFocus(_focusName);
     if (newFocus!=null)
     { return newFocus;

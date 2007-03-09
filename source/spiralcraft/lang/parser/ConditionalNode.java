@@ -22,17 +22,18 @@ import spiralcraft.lang.Optic;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
-public class ConditionalNode<T>
-  extends Node<T>
+@SuppressWarnings("unchecked") // Nodes are not generic
+public class ConditionalNode
+  extends Node
 {
-  private final Node<Boolean> _condition;
-  private final Node<T> _trueResult;
-  private final Node<T> _falseResult;
+  private final Node _condition;
+  private final Node _trueResult;
+  private final Node _falseResult;
 
   public ConditionalNode
-    (Node<Boolean> condition
-    ,Node<T> trueResult
-    ,Node<T> falseResult
+    (Node condition
+    ,Node trueResult
+    ,Node falseResult
     )
   { 
     _condition=condition;
@@ -40,16 +41,16 @@ public class ConditionalNode<T>
     _falseResult=falseResult;
   }
 
-  public Optic<T> bind(Focus<?> focus)
+  public Optic bind(Focus focus)
     throws BindException
   { 
-    Optic<Boolean> condition=_condition.bind(focus);
-    Optic<T> trueResult=_trueResult.bind(focus);
-    Optic<T> falseResult=_falseResult.bind(focus);
+    Optic condition=_condition.bind(focus);
+    Optic trueResult=_trueResult.bind(focus);
+    Optic falseResult=_falseResult.bind(focus);
     
-    return new LenseBinding<T,Boolean>
+    return new LenseBinding
       (condition
-      ,new ConditionalLense<T>
+      ,new ConditionalLense
         (trueResult.getPrism()
         ,falseResult.getPrism()
         )

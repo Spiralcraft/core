@@ -32,19 +32,19 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 
-public class NumericOpNode<T1,T2>
-  extends Node<T1>
+public class NumericOpNode<T1 extends Comparable<T1>,T2>
+  extends Node
 {
  
 
     
-  private final Node<T1> _op1;
-  private final Node<T2> _op2;
+  private final Node _op1;
+  private final Node _op2;
   private final char _op;
   
 
     
-  public NumericOpNode(Node<T1> op1,Node<T2> op2,char op)
+  public NumericOpNode(Node op1,Node op2,char op)
   { 
 
     _op1=op1;
@@ -82,6 +82,8 @@ public class NumericOpNode<T1,T2>
         );
     }
   }
+
+
   
   public void dumpTree(StringBuffer out,String prefix)
   { 

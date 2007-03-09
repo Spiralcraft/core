@@ -15,7 +15,7 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Optic;
-import spiralcraft.lang.OpticFactory;
+
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
@@ -25,24 +25,15 @@ import spiralcraft.lang.optics.Prism;
 import spiralcraft.lang.optics.LenseBinding;
 
 public abstract class LogicalNode<T1,T2>
-  extends Node<Boolean>
+  extends BooleanNode
   implements Lense<Boolean,T1>
 {
   public static Prism<Boolean> BOOLEAN_PRISM;
   
-  { 
-    try
-    { BOOLEAN_PRISM=OpticFactory.getInstance().<Boolean>findPrism(Boolean.class);
-    }
-    catch (BindException x)
-    { }
-      
-  }
-    
-  private final Node<T1> _op1;
-  private final Node<T2> _op2;
+  private final Node _op1;
+  private final Node _op2;
 
-  public LogicalNode(Node<T1> op1,Node<T2> op2)
+  public LogicalNode(Node op1,Node op2)
   { 
     _op1=op1;
     _op2=op2;
@@ -62,18 +53,15 @@ public abstract class LogicalNode<T1,T2>
     }
     
     return new LenseBinding<Boolean,T1>
-      (focus.<T1>bind(new Expression<T1>(_op1,null))
+      (focus.bind(new Expression<T1>(_op1,null))
       ,this
       ,params
       );
       
   }
   
-  public Prism<Boolean> getPrism()
-  { return BOOLEAN_PRISM;
-  }
-    
   public abstract String getSymbol();
+
   
   public void dumpTree(StringBuffer out,String prefix)
   {

@@ -20,7 +20,7 @@ public class LogicalOrNode
   extends LogicalNode<Boolean,Boolean>
 {
 
-  public LogicalOrNode(Node<Boolean> op1,Node<Boolean> op2)
+  public LogicalOrNode(Node op1,Node op2)
   { super(op1,op2);
   }
 

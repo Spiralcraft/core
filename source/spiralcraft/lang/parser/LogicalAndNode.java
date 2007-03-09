@@ -21,7 +21,7 @@ public class LogicalAndNode
   extends LogicalNode<Boolean,Boolean>
 {
 
-  public LogicalAndNode(Node<Boolean> op1,Node<Boolean> op2)
+  public LogicalAndNode(Node op1,Node op2)
   { super(op1,op2);
   }
 

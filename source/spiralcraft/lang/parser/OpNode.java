@@ -21,15 +21,15 @@ import spiralcraft.lang.BindException;
 
 
 public class OpNode<T1,T2 extends T1>
-  extends Node<T1>
+  extends Node
 {
 
-  private final Node<T1> _op1;
-  private final Node<T2> _op2;
+  private final Node _op1;
+  private final Node _op2;
   private final Expression[] _params;
   private final String _op;
 
-  public OpNode(Node<T1> op1,Node<T2> op2,char op)
+  public OpNode(Node op1,Node op2,char op)
   { 
     _op1=op1;
     _op2=op2;
@@ -37,12 +37,14 @@ public class OpNode<T1,T2 extends T1>
     _params=new Expression[] {new Expression<T2>(_op2,null)};
   }
 
-  public Optic<T1> bind(final Focus focus)
+  
+  @SuppressWarnings("unchecked") // Heterogeneous operation
+  public Optic bind(final Focus focus)
     throws BindException
   { 
-    Optic<T1> op1=_op1.bind(focus);
+    Optic op1=_op1.bind(focus);
 
-    Optic<T1> ret=op1
+    Optic ret=op1
       .resolve(focus
               ,_op
               ,_params

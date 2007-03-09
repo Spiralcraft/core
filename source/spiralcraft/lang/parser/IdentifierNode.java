@@ -19,8 +19,8 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Context;
 import spiralcraft.lang.BindException;
 
-public class IdentifierNode<X>
-  extends Node<X>
+public class IdentifierNode
+  extends Node
 {
 
   private final String _identifier;
@@ -37,20 +37,21 @@ public class IdentifierNode<X>
   { out.append(prefix).append("Identifier:").append(_identifier);
   }
 
-  public Optic<X> bind(Focus<?> focus)
+  @SuppressWarnings("unchecked") // Heterogeneous operation
+  public Optic bind(Focus focus)
     throws BindException
   { 
     Context context=focus.getContext();
     
-    Optic<X> ret=null;
+    Optic<?> ret=null;
     if (context!=null)
-    { ret=context.<X>resolve(_identifier);
+    { ret=context.resolve(_identifier);
     }
 
     if (ret==null)
     { 
       try
-      { ret=focus.getSubject().<X>resolve(focus,_identifier,null);
+      { ret=focus.getSubject().resolve(focus,_identifier,null);
       }
       catch (BindException x)
       { 

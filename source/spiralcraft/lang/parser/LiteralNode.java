@@ -21,7 +21,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.optics.SimpleBinding;
 
 public class LiteralNode<X>
-  extends Node<X>
+  extends Node
 {
 
   private final SimpleBinding<X> _optic;
