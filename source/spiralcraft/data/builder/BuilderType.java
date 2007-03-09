@@ -49,7 +49,6 @@ import java.io.IOException;
  */
 public class BuilderType
   extends TypeImpl<Assembly>
-  implements Type<Assembly>
 {
   public static final char INNER_PATH_SEPARATOR='_';
   public static final URI GENERIC_BUILDER_TYPE_URI
@@ -59,6 +58,7 @@ public class BuilderType
     =URI.create("java:/spiralcraft/builder/Object.array");
   
   private final AssemblyClass targetAssemblyClass;
+  private boolean linked;
 
   //private final HashMap<String,Type> pathMap
   //  =new HashMap<String,Type>();
@@ -99,6 +99,22 @@ public class BuilderType
     }
   }
 
+  public boolean isAssignableFrom(Type type)
+  { 
+    if (super.isAssignableFrom(type))
+    { return true;
+    }
+    if (getURI().equals(GENERIC_BUILDER_TYPE_URI)
+        && type instanceof BuilderType
+        )
+    { 
+      // All builder types are compatible with the degenerate AssemblyClass
+      return true;
+    }
+    System.out.println("BuilderType -isAssignableFrom "+this+" : "+type);
+    return false;
+  }
+  
   public static URI canonicalURI(AssemblyClass assemblyClass)
   {
     if (assemblyClass!=null)
@@ -167,7 +183,7 @@ public class BuilderType
 
     targetAssemblyClass=innerClass;
       
-    System.err.println("Created Builder Type "+uri);
+//    System.err.println("Created Builder Type "+uri);
   }
   
   public BuilderType(TypeResolver resolver,URI uri)
@@ -203,6 +219,8 @@ public class BuilderType
     if (linked)
     { return;
     }
+    linked=true;
+    
     
     AssemblyClass baseAssemblyClass=targetAssemblyClass.getBaseClass();
     if (baseAssemblyClass!=null)
@@ -212,7 +230,9 @@ public class BuilderType
           (canonicalURI(baseAssemblyClass)
           );
     }
-    scheme=new BuilderScheme(resolver,this,targetAssemblyClass);
+    BuilderScheme scheme=new BuilderScheme(resolver,this,targetAssemblyClass);
+    scheme.addFields();
+    this.scheme=scheme;
     super.link();
     classField=scheme.getFieldByName("class");
 
@@ -250,10 +270,10 @@ public class BuilderType
           Class tupleClass=(Class) classField.getValue(t);
           for (Assembly assembly: contextBinding.getContents())
           { 
-            System.out.println("Checking "+tupleClass+" = "+assembly.getSubject().get().getClass());
+//            System.out.println("BuilderType: Checking "+tupleClass+" = "+assembly.getSubject().get().getClass());
             if (assembly.getSubject().get().getClass().equals(tupleClass))
             { 
-              System.out.println("Found");
+//              System.out.println("BuilderType: Found");
               instance=assembly;
               break;
             }
