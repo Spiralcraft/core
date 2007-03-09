@@ -29,6 +29,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataComposite;
+import spiralcraft.data.Field;
 
 public class ReflectionField
   extends FieldImpl
@@ -58,6 +59,50 @@ public class ReflectionField
 
   public PropertyDescriptor getPropertyDescriptor()
   { return descriptor;
+  }
+  
+  public boolean isFunctionalEquivalent(Field field)
+  {
+    if (!super.isFunctionalEquivalent(field))
+    { return false;
+    }
+    if (!(field instanceof ReflectionField))
+    { return false;
+    }
+    
+    ReflectionField rfield=(ReflectionField) field;
+    if (readMethod!=null)
+    { 
+      if (rfield.getReadMethod()==null)
+      { return false;
+      }
+      if (!rfield.getReadMethod().getDeclaringClass().isAssignableFrom
+            (getScheme().getType().getNativeClass())
+         )
+      { 
+        // If rfield is from a subclass, which should be assignable from
+        //   this bean's native class, the methods are functionally equivalent
+        return false;
+      }
+    }  
+    
+    if (writeMethod!=null)
+    { 
+      if (rfield.getWriteMethod()==null)
+      { return false;
+      }
+      if (!rfield.getWriteMethod().getDeclaringClass().isAssignableFrom
+            (getScheme().getType().getNativeClass())
+         )
+      { 
+        // If rfield is from a subclass, which should be assignable from
+        //   this bean's native class, the methods are functionally equivalent
+        return false;
+      }
+    }  
+
+    return true;
+    
   }
   
   public void depersistBeanProperty(Tuple tuple,Object bean)
