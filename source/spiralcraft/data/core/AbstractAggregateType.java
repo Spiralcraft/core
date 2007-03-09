@@ -28,7 +28,7 @@ import java.net.URI;
  * Implementation base class for common aggregate type functionality
  */
 public abstract class AbstractAggregateType<T>
-  implements Type<T>
+  extends Type<T>
 {
   protected final URI uri;
   
@@ -76,6 +76,15 @@ public abstract class AbstractAggregateType<T>
     }
   }
 
+  public boolean isAssignableFrom(Type type)
+  {
+    if (!getNativeClass().isAssignableFrom(type.getNativeClass()))
+    { return false;
+    }
+    return getContentType().isAssignableFrom(type.getContentType());
+  }
+  
+  
   public Type getMetaType()
   {
     try

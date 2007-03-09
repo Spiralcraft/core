@@ -34,7 +34,6 @@ import java.net.URI;
  */
 public class ArrayType
   extends AbstractAggregateType<Object>
-  implements Type<Object>
 {  
   
   public ArrayType(Type<? super Object> contentType,URI uri)

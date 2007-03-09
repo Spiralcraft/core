@@ -36,7 +36,6 @@ import java.util.Collection;
  */
 public class AbstractCollectionType<T extends Collection<?>>
   extends AbstractAggregateType<Collection<?>>
-  implements Type<Collection<?>>
 {  
   private final TypeResolver resolver;
   
@@ -74,7 +73,7 @@ public class AbstractCollectionType<T extends Collection<?>>
   { return resolver;
   }
   
-  
+
   public ValidationResult validate(Object value)
   { 
     // More work here-
