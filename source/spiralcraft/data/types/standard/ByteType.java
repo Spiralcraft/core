@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.types.standard;
 
-import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 
 import spiralcraft.data.core.PrimitiveTypeImpl;
@@ -23,7 +22,6 @@ import java.net.URI;
 
 public class ByteType
   extends PrimitiveTypeImpl<Byte>
-  implements Type<Byte>
 {
   public ByteType(TypeResolver resolver,URI uri)
   { super(resolver,uri,Byte.class);

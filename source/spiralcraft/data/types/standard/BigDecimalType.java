@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.types.standard;
 
-import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 
 import spiralcraft.data.core.PrimitiveTypeImpl;
@@ -25,7 +24,6 @@ import java.net.URI;
 
 public class BigDecimalType
   extends PrimitiveTypeImpl<BigDecimal>
-  implements Type<BigDecimal>
 {
   public BigDecimalType(TypeResolver resolver,URI uri)
   { super(resolver,uri,BigDecimal.class);

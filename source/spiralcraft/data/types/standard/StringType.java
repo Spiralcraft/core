@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.types.standard;
 
-import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.ValidationResult;
 
@@ -24,7 +23,6 @@ import java.net.URI;
 
 public class StringType
   extends PrimitiveTypeImpl<String>
-  implements Type<String>
 {
   private int maxLength=-1;
   

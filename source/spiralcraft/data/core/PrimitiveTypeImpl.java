@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.core;
 
-import spiralcraft.data.Type;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.InstanceResolver;
@@ -25,7 +24,6 @@ import java.net.URI;
 
 public abstract class PrimitiveTypeImpl<T>
   extends TypeImpl<T>
-  implements Type<T>
 {
   protected boolean linked;
   protected StringConverter<T> converter;
