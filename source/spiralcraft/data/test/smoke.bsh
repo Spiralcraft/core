@@ -37,18 +37,24 @@ t.fromString("12345.6789");
 "//   specific precision and scale";
 t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/BigDecimalType"));
 
+"// Subclassed ReflectionType";
+t=typeResolver.resolve(URI.create("java:/java/awt/Rectangle"));
+t.getScheme();
+t.getArchetype().getScheme();
+t.getArchetype().getArchetype().getScheme();
+
 "// Raw XML Reading- String";
-result=new spiralcraft.data.sax.DataReader().readFromUri
+result=new spiralcraft.data.sax.DataReader().readFromURI
   (URI.create("java:/spiralcraft/data/test/1.data.xml")
-  ,typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/StringType"))
+  ,typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/String"))
   );
 result.getClass();
 
 
 "// Raw XML Reading- BigDecimal";
-result=new spiralcraft.data.sax.DataReader().readFromUri
+result=new spiralcraft.data.sax.DataReader().readFromURI
   (URI.create("java:/spiralcraft/data/test/2.data.xml")
-  ,typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/BigDecimalType"))
+  ,typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/BigDecimal"))
   );
 result.getClass();
 
@@ -56,7 +62,7 @@ result.getClass();
 type=typeResolver.resolve(URI.create("java:/spiralcraft/builder/test/SimpleWidget"));
 
 "// Raw XML Reading- External Bean";
-result=new spiralcraft.data.sax.DataReader().readFromUri
+result=new spiralcraft.data.sax.DataReader().readFromURI
   (URI.create("java:/spiralcraft/data/test/3.data.xml")
   ,type
   );
@@ -91,7 +97,7 @@ resultObject=resultAssembly.getSubject().get();
 resultObject.getClass();
 
 "// Test primitive ProtoType";
-result=new spiralcraft.data.sax.DataReader().readFromUri
+result=new spiralcraft.data.sax.DataReader().readFromURI
   (URI.create("java:/spiralcraft/data/test/4.data.xml")
   ,typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/String"))
   );
@@ -99,7 +105,7 @@ result.getClass();
 
 "// Test custom Scheme- 'Customer' data";
 customerType=typeResolver.resolve(URI.create("java:/spiralcraft/data/test/example/Customer"));
-result=new spiralcraft.data.sax.DataReader().readFromUri
+result=new spiralcraft.data.sax.DataReader().readFromURI
   (URI.create("java:/spiralcraft/data/test/5.data.xml")
   ,customerType
   );
