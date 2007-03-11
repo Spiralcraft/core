@@ -16,25 +16,13 @@ package spiralcraft.data.persist;
 
 import java.net.URI;
 
-import java.io.IOException;
-
-import org.xml.sax.SAXException;
-
 import spiralcraft.data.Type;
-import spiralcraft.data.Tuple;
-import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataException;
-
-import spiralcraft.data.sax.DataReader;
-import spiralcraft.data.sax.DataWriter;
 
 import spiralcraft.data.builder.BuilderType;
 
 import spiralcraft.builder.Assembly;
 import spiralcraft.builder.BuildException;
-
-import spiralcraft.registry.Registrant;
-import spiralcraft.registry.RegistryNode;
 
 /**
  * A persistent object represented in an XML based portable data format.
@@ -49,14 +37,8 @@ import spiralcraft.registry.RegistryNode;
  *   in a storage medium.
  */
 public class XmlAssembly<T>
-  implements Registrant,PersistentReference
+  extends AbstractXmlObject<T,Assembly>
 {
-
-  private URI instanceURI;
-  private URI typeURI;
-  private Type<Assembly> type;
-  private Assembly<T> assembly;
-  private RegistryNode registryNode;
   
   /**
    * Construct an XmlObject from the given Type resource and instance
@@ -83,117 +65,39 @@ public class XmlAssembly<T>
   public XmlAssembly(URI typeURI,URI instanceURI)
     throws PersistenceException
   { 
-    this.typeURI=typeURI;
-    this.instanceURI=instanceURI;
+    super(typeURI,instanceURI);
+    load();
+  }
+  
+
+  protected void verifyType(Type type)
+    throws DataException
+  {
+    if (!(type instanceof BuilderType))
+    { 
+      throw new DataException
+        (typeURI.toString()+" does not reference an AssemblyClass"
+        );
+    }
+  }
+  
+  protected Assembly newInstance()
+    throws DataException
+  { 
     try
-    { load();
+    { return ((BuilderType) type).newAssembly(null);
     }
     catch (BuildException x)
-    { 
-      throw new PersistenceException
-        ("Error instantiating XmlObject: "+x.toString()
-        ,x
-        );
+    { throw new DataException("Error instantiating assembly "+typeURI+": "+x,x);
     }
-    catch (DataException x)
-    { 
-      throw new PersistenceException
-        ("Error instantiating XmlObject: "+x.toString()
-        ,x
-        );
-    }
-    catch (SAXException x)
-    { 
-      throw new PersistenceException
-        ("Error parsing "+instanceURI+": "+x.toString()
-        ,x
-        );
-    }
-    catch (IOException x)
-    {
-      throw new PersistenceException
-        ("Error parsing "+instanceURI+": "+x.toString()
-        ,x
-        );
-    }
-  }
-  
-  public void setResourceUri(URI instanceURI)
-  { this.instanceURI=instanceURI;
-  }
-  
-  
-  @SuppressWarnings("unchecked") // Narrowing from Assembly to Assembly<T>
-  private void load()
-    throws BuildException,DataException,SAXException,IOException
-  {
-    if (typeURI!=null)
-    {
-      type=TypeResolver.getTypeResolver().<Assembly>resolve(typeURI);
-      if (!(type instanceof BuilderType))
-      { 
-        throw new DataException
-          (typeURI.toString()+" does not reference an AssemblyClass"
-          );
-      }
-      
-      if (instanceURI==null)
-      { assembly = ((BuilderType) type).newAssembly(null);
-      }
-    }
-        
-    if (instanceURI!=null)
-    {
-      DataReader reader=new DataReader();
-      Tuple tuple = (Tuple) reader.readFromURI
-        (instanceURI
-        ,type
-        );
-      
-      Type actualType=tuple.getType();
-      
-      assembly = (Assembly<T>) actualType.fromData(tuple,null); 
-      type=actualType; 
-    }
-    
-  }
-
-  public void save()
-    throws PersistenceException
-  { 
-    if (instanceURI!=null && type!=null)
-    {
-      DataWriter writer=new DataWriter();
-      try
-      {
-        Tuple tuple=(Tuple)
-          BuilderType.canonicalType
-            (assembly.getAssemblyClass())
-            .toData(assembly);
-        // System.out.println(tuple.toText("|  "));
-        writer.writeToURI(instanceURI,tuple);
-      }
-      catch (IOException x)
-      { throw new PersistenceException("Error writing "+instanceURI+": "+x,x);
-      }
-      catch (DataException x)
-      { throw new PersistenceException("Error writing "+instanceURI+": "+x,x);
-      }
-    }
-    
-  }
-  
-  public void register(RegistryNode node)
-  {
-    registryNode=node;
-    registryNode.registerInstance(PersistentReference.class,this);
-    assembly.register(registryNode.createChild("instance"));
   }
   
   /**
    *@return The Java object referred to and activated by this XmlObject
    */
+  @SuppressWarnings("unchecked") // Non-generic use of Builder
   public T get()
-  { return assembly.getSubject().get();
+  { return (T) instance.getSubject().get();
   }
+  
 }
