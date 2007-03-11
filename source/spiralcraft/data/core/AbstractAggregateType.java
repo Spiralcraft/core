@@ -20,7 +20,7 @@ import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
 
-import spiralcraft.data.wrapper.ReflectionType;
+import spiralcraft.data.reflect.ReflectionType;
 
 import java.net.URI;
 
@@ -33,7 +33,7 @@ public abstract class AbstractAggregateType<T>
   protected final URI uri;
   
   protected Type<? super Object> contentType;
-  protected Class nativeClass;
+  protected Class<T> nativeClass;
   protected Type archetype;
   protected Type baseType;
   protected boolean linked;
@@ -99,7 +99,7 @@ public abstract class AbstractAggregateType<T>
    * The public Java class or interface used to programatically access or
    *   manipulate this data element.
    */
-  public Class<?> getNativeClass()
+  public Class<T> getNativeClass()
   { return nativeClass;
   }
 
@@ -173,6 +173,10 @@ public abstract class AbstractAggregateType<T>
 
   public boolean isStringEncodable()
   { return false;
+  }
+  
+  public boolean isDataEncodable()
+  { return true;
   }
   
   public T fromString(String val)

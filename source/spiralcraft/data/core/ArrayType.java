@@ -33,15 +33,16 @@ import java.net.URI;
  * An Array version of a base type
  */
 public class ArrayType
-  extends AbstractAggregateType<Object>
+  extends AbstractAggregateType<Object[]>
 {  
   
+  @SuppressWarnings("unchecked") // Array creation via reflection
   public ArrayType(Type<? super Object> contentType,URI uri)
   { 
     super(uri);
     this.contentType=contentType;
     if (contentType.getNativeClass()!=null)
-    { nativeClass=Array.newInstance(contentType.getNativeClass(),0).getClass();
+    { nativeClass=(Class<Object[]>) Array.newInstance(contentType.getNativeClass(),0).getClass();
     }
     else
     { nativeClass=null;
@@ -64,7 +65,7 @@ public class ArrayType
   
 
   
-  public Object fromData(DataComposite data,InstanceResolver resolver)
+  public Object[] fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
   { 
     Aggregate aggregate=data.asAggregate();
@@ -107,10 +108,10 @@ public class ArrayType
         }
       }
     }
-    return array;
+    return (Object[]) array;
   }
   
-  public DataComposite toData(Object array)
+  public DataComposite toData(Object[] array)
     throws DataException
   { 
     if (contentType.isPrimitive())

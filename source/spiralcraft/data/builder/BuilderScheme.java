@@ -14,17 +14,15 @@
 //
 package spiralcraft.data.builder;
 
-
-import spiralcraft.data.TypeResolver;
-
 import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
+import spiralcraft.data.TypeResolver;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 
-import spiralcraft.data.wrapper.ReflectionScheme;
-import spiralcraft.data.wrapper.ReflectionField;
+import spiralcraft.data.reflect.ReflectionField;
+import spiralcraft.data.reflect.ReflectionScheme;
 
 
 import spiralcraft.builder.AssemblyClass;
@@ -45,9 +43,9 @@ public class BuilderScheme
   private final HashMap<String,PropertySpecifier> memberMap
     =new HashMap<String,PropertySpecifier>();
   
-  public BuilderScheme(TypeResolver typeResolver,Type type,AssemblyClass assemblyClass)
+  public BuilderScheme(TypeResolver resolver,Type type,AssemblyClass assemblyClass)
   { 
-    super(typeResolver,type,assemblyClass.getJavaClass());
+    super(resolver,type,assemblyClass.getJavaClass());
     // this.assemblyClass=assemblyClass;
     for (PropertySpecifier specifier : assemblyClass.memberIterable())
     { memberMap.put(specifier.getTargetName(),specifier);
@@ -57,23 +55,12 @@ public class BuilderScheme
   protected BuilderField generateField(PropertyDescriptor prop)
     throws DataException
   { 
-    Type defaultType=null;
-    try
-    { defaultType=findType(prop.getPropertyType());
-    }
-    catch (DataException x)
-    { 
-      // This should NEVER happen- there always exists a Type for
-      //   every java class
-      x.printStackTrace();
-    }
-      
-    BuilderField field=new BuilderField
-      (prop
+    BuilderField field = new BuilderField
+      (resolver
+      ,prop
       ,memberMap.get(prop.getName())
-      ,defaultType
       );
-
+    field.resolveType();
     return field;
   }
   

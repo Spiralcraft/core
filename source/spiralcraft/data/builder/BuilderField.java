@@ -26,9 +26,9 @@ import spiralcraft.data.DataComposite;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 
-import spiralcraft.data.wrapper.ReflectionType;
-import spiralcraft.data.wrapper.ReflectionField;
 
+import spiralcraft.data.reflect.ReflectionField;
+import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.spi.StaticInstanceResolver;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 
@@ -45,32 +45,32 @@ public class BuilderField
   private final PropertySpecifier specifier;
   
   public BuilderField
-    (PropertyDescriptor prop
+    (TypeResolver resolver
+    ,PropertyDescriptor prop
     ,PropertySpecifier specifier
-    ,Type defaultType
     )
     throws DataException
   { 
-    super(prop);
+    super(resolver,prop);
     this.specifier=specifier;
+  }
+  
+  public void resolveType()
+    throws DataException
+  {
+    super.resolveType();
     if (specifier!=null)
     {
       List<AssemblyClass> contents=specifier.getContents();
       if (contents!=null && contents.size()>0)
       {
-        if (defaultType.isAggregate())
+        if (getType().isAggregate())
         { setType(BuilderType.genericBuilderArrayType());
         }
         else
         { setType(BuilderType.canonicalType(contents.get(0)));
         }
       }
-      else
-      { setType(defaultType);
-      }
-    }
-    else
-    { setType(defaultType);
     }
   }
   
@@ -153,7 +153,7 @@ public class BuilderField
       catch (BuildException x)
       { 
         throw new DataException
-          ("Error depersisting field '"+getUri()+"':"+x
+          ("Error depersisting field '"+getURI()+"':"+x
           ,x
           );
       }
@@ -191,7 +191,7 @@ public class BuilderField
               if (type instanceof BuilderType)
               { 
                 // Narrow the data conversion
-                System.err.println("Adding "+type);
+//                System.err.println("BuilderField: Adding "+type);
                 aggregate.add(type.toData(subAssembly));
               }
               else
@@ -225,6 +225,7 @@ public class BuilderField
         }
         else
         {    
+//          System.err.println("BuilderField: persisting "+getName()+" as bean");
           Object bean=assembly.getSubject().get();
           super.persistBeanProperty(bean,tuple);
         }

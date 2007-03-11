@@ -27,13 +27,15 @@ public abstract class PrimitiveTypeImpl<T>
 {
   protected boolean linked;
   protected StringConverter<T> converter;
+  protected boolean dataEncodable=false;
     
   @SuppressWarnings("unchecked")
   public PrimitiveTypeImpl(TypeResolver resolver,URI uri,Class<T> nativeClass)
   { 
     super(resolver,uri);
     this.nativeClass=nativeClass;
-    this.converter=(StringConverter<T>) StringConverter.getInstance(nativeClass);
+    
+    converter=(StringConverter<T>) StringConverter.getInstance(nativeClass);
   }
   
   protected void setStringConverter(StringConverter<T> converter)
@@ -57,19 +59,31 @@ public abstract class PrimitiveTypeImpl<T>
   
   @SuppressWarnings("unchecked")
   public String toString(T val)
-  {
+  { 
     if (val==null)
     { return null;
     }
     if (nativeClass.isAssignableFrom(val.getClass()))
-    { return converter.toString(val);
+    { 
+      if (converter!=null)
+      { return converter.toString(val);
+      }
+      else
+      { return StringConverter.encodeToXml(val);
+      }
     }
     throw new IllegalArgumentException(val.getClass()+" is not an String");
 
   }
   
   public T fromString(String string)
-  { return (T) converter.fromString(string);
+  { 
+    if (converter!=null)
+    { return converter.fromString(string);
+    }
+    else
+    { return StringConverter.<T>decodeFromXml(string);
+    }
   }
   
   public DataComposite toData(T val)
@@ -88,7 +102,11 @@ public abstract class PrimitiveTypeImpl<T>
    * Primitive types should always be String encodable
    */
   public boolean isStringEncodable()
-  { return converter!=null;
+  { return true;
+  }
+  
+  public boolean isDataEncodable()
+  { return dataEncodable;
   }
   
   /**

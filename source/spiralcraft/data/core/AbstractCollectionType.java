@@ -24,8 +24,8 @@ import spiralcraft.data.TypeResolver;
 import spiralcraft.data.ValidationResult;
 import spiralcraft.data.InstanceResolver;
 
-import spiralcraft.data.wrapper.ReflectionType;
 
+import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 
 import java.net.URI;
@@ -34,8 +34,8 @@ import java.util.Collection;
 /**
  * Base type for Collections
  */
-public class AbstractCollectionType<T extends Collection<?>>
-  extends AbstractAggregateType<Collection<?>>
+public class AbstractCollectionType<T extends Collection>
+  extends AbstractAggregateType<T>
 {  
   private final TypeResolver resolver;
   
@@ -44,7 +44,7 @@ public class AbstractCollectionType<T extends Collection<?>>
     (TypeResolver resolver
     ,Type<? super Object> contentType
     ,URI uri
-    ,Class<? extends Collection> nativeClass
+    ,Class<T> nativeClass
     )
   { 
     super(uri);
@@ -84,21 +84,21 @@ public class AbstractCollectionType<T extends Collection<?>>
   
   
   @SuppressWarnings("unchecked")
-  public Collection fromData(DataComposite data,InstanceResolver resolver)
+  public T fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
   { 
     Aggregate aggregate=data.asAggregate();
     
-    Collection collection=null;
+    T collection=null;
     
     if (resolver!=null)
-    { collection=(Collection) resolver.resolve(nativeClass);
+    { collection=(T) resolver.resolve(nativeClass);
     }
     
     if (collection==null)
     { 
       try
-      { collection=(Collection) nativeClass.newInstance();
+      { collection=(T) nativeClass.newInstance();
       }
       catch (InstantiationException x)
       { 
@@ -135,7 +135,7 @@ public class AbstractCollectionType<T extends Collection<?>>
     return collection;
   }
   
-  public DataComposite toData(Collection<?> obj)
+  public DataComposite toData(T obj)
     throws DataException
   { 
     if (!(obj instanceof Collection))

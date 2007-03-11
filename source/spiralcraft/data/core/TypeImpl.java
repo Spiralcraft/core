@@ -238,6 +238,10 @@ public class TypeImpl<T>
   { return false;
   }
   
+  public boolean isDataEncodable()
+  { return true;
+  }
+    
   public String toString()
   { return super.toString()+":"+(uri!=null?uri.toString():"(delegated)");
   }

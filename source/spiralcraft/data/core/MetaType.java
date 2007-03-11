@@ -22,7 +22,7 @@ import spiralcraft.data.TypeResolver;
 import spiralcraft.data.InstanceResolver;
 import spiralcraft.data.Tuple;
 
-import spiralcraft.data.wrapper.ReflectionType;
+import spiralcraft.data.reflect.ReflectionType;
 
 import java.net.URI;
 

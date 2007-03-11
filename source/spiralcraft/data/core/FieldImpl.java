@@ -21,6 +21,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
+import spiralcraft.data.TypeMismatchException;
 
 import java.net.URI;
 
@@ -75,18 +76,20 @@ public class FieldImpl
     
   }
   
-  void setArchetypeField(Field field)
+  public void setArchetypeField(Field field)
     throws DataException
   {
+    assertUnlocked();
     archetypeField=field;
     this.index=archetypeField.getIndex();
     if (!this.type.hasArchetype(archetypeField.getType()))
     { 
-      throw new DataException
-        ("Field "+getUri()+"'"
-        +" cannot extend field "+archetypeField.getUri()
-        +": type "+archetypeField.getType()+" is not an archetype of "
-        +this.type
+      throw new TypeMismatchException
+        ("Field "+getURI()+"'"
+        +" cannot extend field "+archetypeField.getURI()
+        +" as types are not compatible"
+        ,field.getType()
+        ,this.type
         );
     }
   }
@@ -111,7 +114,7 @@ public class FieldImpl
     }
   }
 
-  public URI getUri()
+  public URI getURI()
   { return uri;
   }
   
@@ -248,7 +251,7 @@ public class FieldImpl
     else
     {
       throw new IllegalArgumentException
-        ("Field "+getUri()
+        ("Field "+getURI()
         +" not in Tuple FieldSet "+t.getFieldSet()
         );
     }

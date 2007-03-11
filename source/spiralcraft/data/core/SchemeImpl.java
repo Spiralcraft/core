@@ -23,6 +23,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Field;
 import spiralcraft.data.DataException;
+import spiralcraft.data.TypeMismatchException;
 
 /**
  * Core implementation of a Scheme
@@ -219,12 +220,18 @@ public class SchemeImpl
         
         // Field with same name will have same index as archetype field,
         //   extending field functionality in compatible way
-        field.setArchetypeField(archetypeField);
-        fields.set(field.getIndex(),field);
+        try
+        { 
+          field.setArchetypeField(archetypeField);
+          fields.set(field.getIndex(),field);
 //        System.err.println
-//          ("Field "+field.getUri()
-//          +" overriding field "+archetypeField.getUri()
-//          );
+//        ("Field "+field.getUri()
+//        +" overriding field "+archetypeField.getUri()
+//        );
+        }
+        catch (TypeMismatchException x)
+        { System.err.println("SchemeImpl: Ignoring archetype field override: "+x);
+        }
       }
       else
       { 

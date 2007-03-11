@@ -273,7 +273,7 @@ public class BuilderType
 //            System.out.println("BuilderType: Checking "+tupleClass+" = "+assembly.getSubject().get().getClass());
             if (assembly.getSubject().get().getClass().equals(tupleClass))
             { 
-//              System.out.println("BuilderType: Found");
+//              System.err.println("BuilderType: resolved existing target assembly for "+tupleClass);
               instance=assembly;
               break;
             }
@@ -283,7 +283,9 @@ public class BuilderType
         { 
           Assembly[] contents=contextBinding.getContents();
           if (contents.length>0)
-          { instance=contents[0];
+          { 
+//            System.err.println("BuilderType: resolved existing target assembly for "+getURI());
+            instance=contents[0];
           }
         }
       }
@@ -296,6 +298,7 @@ public class BuilderType
         { parent=contextBinding.getContainer();
         }
         instance=newAssembly(parent);
+//        System.err.println("BuilderType: constructed new instance of "+getURI());
       }
       ((BuilderScheme) scheme).depersistBeanProperties(t,instance);
       return instance;
