@@ -26,6 +26,8 @@ import spiralcraft.beans.MappedBeanInfo;
 
 import spiralcraft.util.ArrayUtil;
 
+import spiralcraft.util.lang.MethodResolver;
+
 import java.beans.Introspector;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
