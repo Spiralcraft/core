@@ -33,10 +33,11 @@ import spiralcraft.data.core.MetaType;
 
 import spiralcraft.data.builder.BuilderTypeFactory;
 
+import spiralcraft.data.reflect.ReflectionType;
+import spiralcraft.data.reflect.ReflectionTypeFactory;
+
 import spiralcraft.data.sax.XmlTypeFactory;
 
-import spiralcraft.data.wrapper.ReflectionTypeFactory;
-import spiralcraft.data.wrapper.ReflectionType;
 
 /**
  * Resolves Type references to singleton instances of the Type interface. 

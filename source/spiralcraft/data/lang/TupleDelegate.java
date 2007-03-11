@@ -21,9 +21,10 @@ import spiralcraft.data.Scheme;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataException;
 
+import spiralcraft.data.reflect.ReflectionScheme;
+import spiralcraft.data.reflect.ReflectionType;
+
 import spiralcraft.data.spi.EditableArrayTuple;
-import spiralcraft.data.wrapper.ReflectionScheme;
-import spiralcraft.data.wrapper.ReflectionType;
 
 import spiralcraft.lang.BindException;
 

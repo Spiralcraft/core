@@ -19,7 +19,7 @@ import spiralcraft.data.TypeResolver;
 import spiralcraft.data.core.TypeImpl;
 
 
-import spiralcraft.data.wrapper.ReflectionType;
+import spiralcraft.data.reflect.ReflectionType;
 
 import java.net.URI;
 

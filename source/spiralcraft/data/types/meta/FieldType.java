@@ -17,7 +17,7 @@ package spiralcraft.data.types.meta;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.core.FieldImpl;
 
-import spiralcraft.data.wrapper.ReflectionType;
+import spiralcraft.data.reflect.ReflectionType;
 
 import java.net.URI;
 
