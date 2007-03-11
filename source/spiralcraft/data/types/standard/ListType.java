@@ -22,8 +22,8 @@ import java.util.List;
 
 import java.net.URI;
 
-public class ListType<T extends List<?>>
-  extends AbstractCollectionType<List<?>>
+public class ListType<T extends List>
+  extends AbstractCollectionType<List>
 {
   public ListType(TypeResolver resolver,URI uri)
   { super(resolver,null,uri,List.class);

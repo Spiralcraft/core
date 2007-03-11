@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.net.URI;
 
 public class ArrayListType
-  extends AbstractCollectionType<ArrayList<?>>
+  extends AbstractCollectionType<ArrayList>
 {
   public ArrayListType(TypeResolver resolver,URI uri)
   { super(resolver,null,uri,ArrayList.class);

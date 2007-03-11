@@ -22,8 +22,8 @@ import java.util.Collection;
 
 import java.net.URI;
 
-public class CollectionType<T extends Collection<?>>
-  extends AbstractCollectionType<Collection<?>>
+public class CollectionType<T extends Collection>
+  extends AbstractCollectionType<Collection>
 {
   public CollectionType(TypeResolver resolver,URI uri)
   { super(resolver,null,uri,Collection.class);
