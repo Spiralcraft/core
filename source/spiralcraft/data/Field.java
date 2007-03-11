@@ -66,5 +66,5 @@ public interface Field
    * @return This field's URI, which is this field's name in the context of
    *   the Type that it belongs to. 
    */
-  URI getUri();
+  URI getURI();
 }
