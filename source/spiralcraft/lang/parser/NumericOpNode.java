@@ -25,7 +25,7 @@ import spiralcraft.lang.optics.Prism;
 import spiralcraft.lang.optics.LenseBinding;
 import spiralcraft.lang.optics.StringConcatLense;
 
-import spiralcraft.util.ClassUtil;
+import spiralcraft.util.lang.ClassUtil;
 
 import java.util.HashMap;
 import java.math.BigDecimal;
