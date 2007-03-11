@@ -113,11 +113,12 @@ public abstract class StringConverter<T>
     }
   }
 
-  public static Object decodeFromXml(String xml)
+  @SuppressWarnings("unchecked") // XMLDecoder is not generic
+  public static <T> T decodeFromXml(String xml)
   {
     XMLDecoder decoder
       =new XMLDecoder(new ByteArrayInputStream(xml.getBytes()));
-    return decoder.readObject();
+    return (T) decoder.readObject();
     
   }
 
