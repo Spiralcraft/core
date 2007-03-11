@@ -18,12 +18,14 @@ import spiralcraft.data.transport.Cursor;
 
 
 /**
- * A FieldSet derived from a "master" FieldSet which provides a facility 
- *   to materialize this transformation by creating a Tuple of the Projection
+ * <P>A horizontal transformation of data described by one FieldSet (the Master
+ *   FieldSet) into data described by another FieldSet (the Projection
+ *   FieldSet). Each Field of the Projection FieldSet is defined by a field
+ *   or expression relative to the Master FieldSet.
+ *   
+ * <P>The transformation is materialized by creating a Tuple of the Projection
  *   FieldSet for each tuple of the master FieldSet.
  *  
- * A MultiProjection can be compared to a SQL SELECT expression list.
- * 
  * @author mike
  */
 public interface Projection
