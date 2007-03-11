@@ -45,7 +45,7 @@ public abstract class Type<T>
    * @return A Class Or Interface, or null if the data element should be
    *   manipulated as Tuple data.
    */
-  public abstract Class<?> getNativeClass();
+  public abstract Class<T> getNativeClass();
 
   /**
    * A primitive type is a 'leaf node' of a data tree. A DataComposite
@@ -58,6 +58,7 @@ public abstract class Type<T>
    * @return Whether this is a primitive type.
    */
   public abstract boolean isPrimitive();
+
   
   /**
    * @return The Scheme which describes the structure of this type, or null if
@@ -153,6 +154,14 @@ public abstract class Type<T>
    * @return Whether Objects of this type can be represented as a String.
    */
   public abstract boolean isStringEncodable();
+
+  /**
+   * Indicates whether a Type referers to data that is encodable as
+   *   a DataComposite (A Tuple or Aggregate). This will only return false
+   *   for primitives that should always be encoded as Strings (some primitives
+   *   can be encoded as Data if they are immutable).
+   */
+  public abstract boolean isDataEncodable();
   
   /**
    * Translate the canonical String representation of a value of this Type to
