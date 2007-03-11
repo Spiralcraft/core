@@ -418,6 +418,9 @@ public class DataHandler
       }
       
       Type fieldType=currentField.getType();
+      if (fieldType==null)
+      { System.err.println("Field type is null "+currentField.toString());
+      }
       if (fieldType.isAggregate())
       { return new AggregateFrame(fieldType);
       }

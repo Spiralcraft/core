@@ -180,6 +180,17 @@ class Context
       { writer.characters(str.toCharArray(),0,str.length());
       }
     }
+    
+    protected void pushCompositeFrame(DataComposite data)
+    {
+      if (data.isTuple())
+      { currentFrame=new TupleFrame(data.asTuple());
+      }
+      else
+      { currentFrame=new AggregateFrame(data.asAggregate());
+      }
+    }
+    
   }
 
   abstract class TypeFrame
@@ -292,6 +303,7 @@ class Context
       writer.endElement(null,null,qName);
     }
     
+    
   }
 
   class PrimitiveFrame
@@ -314,7 +326,9 @@ class Context
       if (!singleContext)
       { startType();
       }
-      writeString(((Type <? super Object>)type).toString(value));      
+      
+      writeString(((Type <? super Object>)type).toString(value));
+      
       if (!singleContext)
       { endType(false);
       }
@@ -377,8 +391,9 @@ class Context
     }
   
   
+    @SuppressWarnings("unchecked") // toData() not generic here
     public void next()
-      throws SAXException
+      throws SAXException,DataException
     {
       if (aggregateIterator==null)
       { 
@@ -389,17 +404,19 @@ class Context
       {
         Object object=aggregateIterator.next();
         if (object instanceof DataComposite)
-        {
-          DataComposite data=(DataComposite) object;
-          if (data.isTuple())
-          { currentFrame=new TupleFrame(data.asTuple());
-          }
-          else
-          { currentFrame=new AggregateFrame(data.asAggregate());
-          }
+        { pushCompositeFrame((DataComposite) object);
         }
         else
-        { currentFrame=new PrimitiveFrame(type,object,false);
+        { 
+          if (type.getContentType().isDataEncodable())
+          { 
+            DataComposite data
+              =type.getContentType().toData(object);
+            pushCompositeFrame(data);
+          }
+          else
+          { currentFrame=new PrimitiveFrame(type,object,false);
+          }
         }
         
       }
@@ -413,6 +430,7 @@ class Context
   
   }
 
+  
 
   abstract class FieldFrame
     extends Frame
@@ -465,6 +483,7 @@ class Context
     }
     
     
+    @SuppressWarnings("unchecked") // toData is not generic
     public void next()
       throws SAXException,DataException
     {
@@ -485,12 +504,22 @@ class Context
       {
         hasOne=true;
         Object item=iterator.next();
-        System.out.println("Aggregate Field: iterating "+item);
+//        System.out.println("Aggregate Field: iterating "+item);
         if (item instanceof DataComposite)
         { currentFrame=new TupleFrame(((DataComposite) item).asTuple());
         }
         else
-        { currentFrame=new PrimitiveFrame(componentType,item,false);
+        { 
+          if (componentType.isDataEncodable())
+          { 
+            DataComposite data
+              =componentType.toData(item);
+            pushCompositeFrame(data);
+          }
+          else
+          { currentFrame=new PrimitiveFrame(componentType,item,false);
+          }
+          
         }
       }
       else
@@ -512,6 +541,7 @@ class Context
     { super(tuple,field);
     }
     
+    @SuppressWarnings("unchecked") // toData not generic
     public void next()
       throws SAXException,DataException
     {
@@ -533,8 +563,17 @@ class Context
         }
         else
         { 
-          primitive=true;
-          currentFrame=new PrimitiveFrame(field.getType(),value,true);
+          if (field.getType().isDataEncodable())
+          { 
+            DataComposite data
+              =field.getType().toData(value);
+            pushCompositeFrame(data);
+          }
+          else
+          { 
+            primitive=true;
+            currentFrame=new PrimitiveFrame(field.getType(),value,true);
+          }
         }
       }
       else
