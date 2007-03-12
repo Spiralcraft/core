@@ -84,7 +84,7 @@ public class ReflectionType<T>
       (java.awt.Point.class
       ,java.awt.Dimension.class
       ,java.awt.Font.class
-//      ,java.awt.Color.class
+      ,java.awt.Color.class
       );
   }
   
