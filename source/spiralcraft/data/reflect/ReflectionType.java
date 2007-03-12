@@ -22,20 +22,17 @@ import spiralcraft.data.Field;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeNotFoundException;
-import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.InstanceResolver;
 
 import spiralcraft.data.spi.EditableArrayTuple;
 
 import spiralcraft.data.core.TypeImpl;
 
-import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.CycleDetector;
 
 import spiralcraft.util.lang.ClassUtil;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.HashMap;
@@ -98,13 +95,11 @@ public class ReflectionType<T>
   private boolean linked;
   
   private String[] preferredConstructorFieldNames;
-  private Field[] preferredConstructorFields;
-  private Constructor<T> preferredConstructor;
+  private ConstructorBinding preferredConstructorBinding;
   
   private String[] depersistMethodFieldNames;
   private String depersistMethodName;
-  private Field[] depersistMethodFields;
-  private Method depersistMethod;
+  private MethodBinding depersistMethodBinding;
 
   private ThreadLocal<CycleDetector> cycleDetectorLocal
     =new ThreadLocal<CycleDetector>()
@@ -309,40 +304,20 @@ public class ReflectionType<T>
     throws DataException
   {
     if (preferredConstructorFieldNames!=null)
-    {
-      int numFields=preferredConstructorFieldNames.length;
-      int i=0;
-      preferredConstructorFields=new Field[numFields];
-      Class[] constructorSig=new Class[numFields];
-      
-      for (String fieldName: preferredConstructorFieldNames)
-      { 
-        ReflectionField field
-          =(ReflectionField) scheme.getFieldByName(fieldName);
-        
-        if (field==null)
-        { throw new FieldNotFoundException(this,fieldName);
-        }
-        field.setForcePersist(true);
-        field.setDepersist(false);
-        preferredConstructorFields[i]=field;
-        constructorSig[i]=field.getType().getNativeClass();
-        i++;
-      }
-      
-      
-      preferredConstructor
-        =ClassUtil.getConstructor(getNativeClass(),constructorSig);
-      if (preferredConstructor==null)
-      { 
-        throw new DataException
-          ("Constructor matching "
-          +ArrayUtil.format(constructorSig,",","")
-          +" not found"
+    { 
+      preferredConstructorBinding
+        =new ConstructorBinding
+          (getScheme()
+          ,getNativeClass()
+          ,preferredConstructorFieldNames
           );
+      for (Field field: preferredConstructorBinding.getFields())
+      { 
+        ReflectionField rfield=(ReflectionField) field;
+        rfield.setForcePersist(true);
+        rfield.setDepersist(false);
       }
-    }
-    
+    }      
   }
   
   @SuppressWarnings("unchecked") // Reference to non-generic constructor
@@ -351,44 +326,20 @@ public class ReflectionType<T>
   {
     if (depersistMethodFieldNames!=null)
     {
-      int numFields=depersistMethodFieldNames.length;
-      int i=0;
-      depersistMethodFields=new Field[numFields];
-      Class[] methodSig=new Class[numFields];
-      
-      for (String fieldName: depersistMethodFieldNames)
-      { 
-        ReflectionField field
-          =(ReflectionField) scheme.getFieldByName(fieldName);
-        
-        if (field==null)
-        { throw new FieldNotFoundException(this,fieldName);
-        }
-        field.setForcePersist(true);
-        field.setDepersist(false);
-        depersistMethodFields[i]=field;
-        methodSig[i]=field.getType().getNativeClass();
-        i++;
-      }
-      
-      
-      depersistMethod
-        =ClassUtil.getMethod
-          (getNativeClass()
+      depersistMethodBinding
+        =new MethodBinding
+          (getScheme()
+          ,getNativeClass()
           ,depersistMethodName
-          ,methodSig
+          ,depersistMethodFieldNames
           );
-      if (depersistMethod==null)
+      for (Field field: depersistMethodBinding.getFields())
       { 
-        throw new DataException
-          ("Method matching "+depersistMethodName+"("
-          +ArrayUtil.format(methodSig,",","")
-          +") not found"
-          );
+        ReflectionField rfield=(ReflectionField) field;
+        rfield.setForcePersist(true);
+        rfield.setDepersist(false);
       }
-
-    }
-    
+    }    
   }
 
   public boolean isAssignableFrom(Type type)
@@ -486,22 +437,8 @@ public class ReflectionType<T>
 //        System.err.println("ReflectionType: resolved from context: "+bean);
       }
       
-      if (bean==null && preferredConstructor!=null)
-      { 
-        Object[] params=new Object[preferredConstructorFields.length];
-        int i=0;
-        for (Field field: preferredConstructorFields)
-        { 
-          params[i++]=field.getValue(tuple);
-        }
-        try
-        { bean=(T) preferredConstructor.newInstance(params);
-        }
-        catch (InvocationTargetException x)
-        {
-          throw new DataException
-          (getURI().toString()+": Error instantiating bean from Tuple '"+tuple+"':"+x.toString(),x);
-        }
+      if (bean==null && preferredConstructorBinding!=null)
+      { bean=(T) preferredConstructorBinding.newInstance(tuple);
       }
       
       if (bean==null)
@@ -567,34 +504,8 @@ public class ReflectionType<T>
 
     T bean=obtainInstance(tuple,context);
     
-    if (depersistMethod!=null)
-    { 
-      Object[] params=new Object[depersistMethodFields.length];
-      int i=0;
-      for (Field field: depersistMethodFields)
-      { 
-        params[i++]=field.getValue(tuple);
-      }
-      try
-      { depersistMethod.invoke(bean,params);
-      }
-      catch (InvocationTargetException x)
-      {
-        throw new DataException
-          (getURI().toString()+": Error invoking depersist method for Tuple '"
-          +tuple+"':"+x.toString()
-          ,x
-          );
-      }
-      catch (IllegalAccessException x)
-      {
-        throw new DataException
-          (getURI().toString()+": Error invoking depersist method for Tuple '"
-          +tuple+"':"+x.toString()
-          ,x
-          );
-      }
-      
+    if (bean!=null && depersistMethodBinding!=null)
+    { depersistMethodBinding.invoke(bean,tuple);
     }
     else
     { ((ReflectionScheme) scheme).depersistBeanProperties(tuple,bean);

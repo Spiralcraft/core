@@ -21,9 +21,12 @@ import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Projection;
 import spiralcraft.data.DataException;
+import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.Tuple;
 
 import spiralcraft.data.spi.ArrayTuple;
+import spiralcraft.data.spi.ListCursor;
+
 import spiralcraft.data.transport.Cursor;
 
 import spiralcraft.data.lang.CursorBinding;
@@ -50,6 +53,24 @@ public class ProjectionImpl
   
   protected boolean resolved;
 
+  public ProjectionImpl()
+  {
+  }
+  
+  public ProjectionImpl(FieldSet masterFieldSet,String ... fieldNames)
+    throws DataException
+  {
+    this.masterFieldSet=masterFieldSet;
+    for (String fieldName : fieldNames)
+    { 
+      Field masterField=masterFieldSet.getFieldByName(fieldName);
+      if (masterField==null)
+      { throw new FieldNotFoundException(masterFieldSet,fieldName);
+      }
+      addMasterField(fieldName,masterField);
+    }
+  }
+  
   public Iterable<? extends Field> fieldIterable()
   { return fields;
   }
@@ -77,6 +98,7 @@ public class ProjectionImpl
     FieldImpl field=new FieldImpl();
     field.setFieldSet(this);
     field.setIndex(fields.size());
+    field.setType(masterField.getType());
     fields.add(field);
     fieldMap.put(field.getName(),field);
     mappings.add(new FieldMapping(masterField));
@@ -96,6 +118,14 @@ public class ProjectionImpl
     { return;
     }
     resolved=true;
+  }
+  
+  public Tuple project(Tuple source)
+    throws DataException
+  { 
+    ListCursor cursor=new ListCursor<Tuple>(masterFieldSet,source);
+    cursor.dataNext();
+    return bind(cursor).dataGetTuple();
   }
   
   public Cursor bind(Cursor source)

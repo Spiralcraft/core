@@ -19,8 +19,8 @@ import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 
 /**
- * A SerialCursor is a Cursor that advances through a set of Tuples until
- *   the end of the set is reached.<P>
+ * A SerialCursor is a controllable Cursor that advances through a set of Tuples
+ *   until the end of the set is reached.<P>
  */
 public interface SerialCursor<T extends Tuple>
   extends Cursor<T>

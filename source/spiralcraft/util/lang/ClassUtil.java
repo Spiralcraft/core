@@ -167,6 +167,40 @@ public abstract class ClassUtil
   }    
 
   /**
+   * Return the primitive default value for the specified primitive Class
+   */
+  public static Object primitiveDefault(Class clazz)
+  { 
+    if (clazz==Boolean.TYPE)
+    { return Boolean.FALSE;
+    }
+    else if (clazz==Byte.TYPE)
+    { return 0;
+    }
+    else if (clazz==Short.TYPE)
+    { return 0;
+    }
+    else if (clazz==Integer.TYPE)
+    { return 0;
+    }
+    else if (clazz==Long.TYPE)
+    { return 0;
+    }
+    else if (clazz==Float.TYPE)
+    { return 0;
+    }
+    else if (clazz==Double.TYPE)
+    { return 0;
+    }
+    else if (clazz==Character.TYPE)
+    { return '\0';
+    }
+    else
+    { return null;
+    }
+  }    
+
+  /**
    * Return the boxed equivalent of the specified Class
    */
   public static Class boxedEquivalent(Class clazz)

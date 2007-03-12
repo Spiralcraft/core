@@ -23,11 +23,11 @@ public class FieldNotFoundException
 {
   private static final long serialVersionUID=1;
   
-  private static final String makeFieldList(Type type)
+  private static final String makeFieldList(FieldSet fieldSet)
   {
     StringBuilder fieldList=new StringBuilder();
     boolean first=true;
-    for (Field field:type.getScheme().fieldIterable())
+    for (Field field:fieldSet.fieldIterable())
     {
       if (first)
       { first=false;
@@ -44,7 +44,19 @@ public class FieldNotFoundException
   { 
     super
       ("Field '"+fieldName+"' not found in type "+type.getURI()
-      +": fields=["+makeFieldList(type)+"]"
+      +": fields=["+makeFieldList(type.getScheme())+"]"
+      );
+  }
+
+  public FieldNotFoundException(FieldSet fieldSet,String fieldName)
+  { 
+    super
+      ("Field '"+fieldName+"' not found in "
+      +(( (fieldSet instanceof Scheme) && ((Scheme) fieldSet).getType()!=null )
+       ?" type "+((Scheme) fieldSet).getType().getURI()+":"
+       :" field set "
+       )
+      +":["+makeFieldList(fieldSet)+"]"
       );
   }
 }

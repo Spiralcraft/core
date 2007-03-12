@@ -21,8 +21,8 @@ import spiralcraft.data.Tuple;
 /**
  * A Cursor is a window onto one or more Tuples of compatible Types.<P>
  * 
- * Cursors provide a means for data processing components to bind to a data stream,
- *   and for streaming data providers to expose data.
+ * Cursors provide a means for data processing components to bind to a data
+ *   stream, and for streaming data providers to expose data.
  */
 public interface Cursor<T extends Tuple>
 {

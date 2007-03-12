@@ -22,7 +22,8 @@ public interface KeyFunction<K,V>
 {
   /**
    * Return a key derived from the given value. The same value must always
-   *   return the same or equivalent key.
+   *   return the same or equivalent key. The returned key must be immutable,
+   *   ie. its externally accessible data must not change once it is returned.
    */
   public K key(V value);
 }

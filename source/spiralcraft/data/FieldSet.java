@@ -15,9 +15,8 @@
 package spiralcraft.data;
 
 /**
- * An ordered set of uniquely named Fields. The Fields in a FieldSet normally
- *  consist of a subset of Fields from another structure such as a Scheme or
- *  a Projection. 
+ * An ordered set of uniquely named Fields which define the data structure of
+ *   a Tuple.
  */
 public interface FieldSet
 {
