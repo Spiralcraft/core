@@ -61,7 +61,7 @@ public class Assembly<T>
 {
   private final AssemblyClass _assemblyClass;
   private Assembly _parent;
-  private final Optic<T> _optic;
+  private final SimpleBinding<T> _optic;
   private PropertyBinding[] _propertyBindings;
   private HashMap<String,Assembly> _importedSingletons;
   private HashMap<Expression,Channel> _channels;
@@ -79,26 +79,38 @@ public class Assembly<T>
     throws BuildException
   {
     _assemblyClass=assemblyClass;
+
+    Class javaClass=_assemblyClass.getJavaClass();
+    if (javaClass==null)
+    { throw new BuildException("No java class defined for assembly");
+    }
     try
-    {
-      Class javaClass=_assemblyClass.getJavaClass();
-      if (javaClass==null)
-      { throw new BuildException("No java class defined for assembly");
-      }
-      
-      if (javaClass.isInterface())
-      { 
-        // Build a automatic container to back the Bean interface with a Tuple
-         _optic=new TupleDelegate(javaClass);
-      }
-      else 
-      { 
-        // Construct the an instance of the class
-        
+    { _optic=new SimpleBinding(javaClass,null,false);
+    }
+    catch (BindException x)
+    { throw new BuildException("Error binding class "+javaClass.getName()+": "+x,x);
+    }
+
+  }
+
+  
+  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
+  private void constructInstance()
+    throws BuildException
+  {
+    Class javaClass=_assemblyClass.getJavaClass();
+    if (javaClass==null)
+    { throw new BuildException("No java class defined for assembly");
+    }
+
+    if (!javaClass.isInterface())
+    { 
+      try
+      {
         String constructor=_assemblyClass.getConstructor();
         Object instance;
         if (constructor!=null)
-        { instance=construct(javaClass,constructor);
+        { instance=constructFromString(javaClass,constructor);
         }
         else
         { instance=javaClass.newInstance();
@@ -106,25 +118,33 @@ public class Assembly<T>
         if (Context.class.isAssignableFrom(instance.getClass()))
         { _context=(Context) instance;
         }
-        _optic=new SimpleBinding(instance,true);
+        _optic.set((T) instance);
       }
-
+      catch (InstantiationException x)
+      { throw new BuildException("Error instantiating assembly",x);
+      }
+      catch (IllegalAccessException x)
+      { throw new BuildException("Error instantiating assembly",x);
+      }
     }
-    catch (InstantiationException x)
-    { throw new BuildException("Error instantiating assembly",x);
+    else
+    {
+      try
+      { 
+        // Use a proxy to auto-implement the interface
+        _optic.set((T) new TupleDelegate(javaClass).get());
+      }
+      catch (DataException x)
+      { throw new BuildException("Error binding instance",x);
+      }
+      catch (BindException x)
+      { throw new BuildException("Error binding instance",x);
+      }
     }
-    catch (IllegalAccessException x)
-    { throw new BuildException("Error instantiating assembly",x);
-    }
-    catch (BindException x)
-    { throw new BuildException("Error binding instance",x);
-    }
-    catch (DataException x)
-    { throw new BuildException("Error binding instance",x);
-    }
+    
   }
-
-  Object construct(Class clazz,String constructor)
+  
+  Object constructFromString(Class clazz,String constructor)
     throws BuildException
   {
     StringConverter converter=StringConverter.getInstance(clazz);
@@ -172,13 +192,55 @@ public class Assembly<T>
   { return resolved;
   }
   
+  /**
+   * Specify a default instance for this Assembly to apply properties to, as opposed to
+   *   constructing a new instance. Must be called before resolve().
+   */
+  
+  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
+  void setDefaultInstance(T val)
+  {
+    if (resolved)
+    { throw new IllegalStateException("Cannot setDefaultInstance() when already resolved");
+    }
+    if (_assemblyClass.getJavaClass().isAssignableFrom(val.getClass()))
+    { _optic.set(val);
+    }
+    else
+    { 
+      // XXX: Remove warning once functionality is well verified
+      //
+      // If we opt to create an incompatible type, that's still valid as long as it 
+      //   is still compatible with the formal property type, not the actual type of the
+      //   default object. 
+      System.err.println
+        ("Assembly: Default value of type "
+        +val.getClass()
+        +" is not compatible with "
+        +_assemblyClass.getJavaClass()
+        );
+    }
+  }
+  
+  /**
+   * Recursively resolve all instances.
+   * 
+   * PropertyBinding.resolve() will:
+   *  1. resolve sub-Assemblies
+   *  2. retrieve the instance/value for the property and
+   *  3. apply the value to this Assembly's bean.
+   */
   void resolve()
     throws BuildException
   {
     if (resolved)
-    { throw new BuildException("Already resolved");
+    { throw new IllegalStateException("Already resolved");
     }
     resolved=true;
+    
+    if (_optic.get()==null)
+    { constructInstance();
+    }
     
     if (_propertyBindings!=null)
     {
@@ -252,12 +314,6 @@ public class Assembly<T>
   { return _assemblyClass;
   }
 
-  /**
-   *@return the Java object managed by this Assembly
-   */
-  public T getObject()
-  { return _optic.get();
-  }
   
   //////////////////////////////////////////////////  
   //

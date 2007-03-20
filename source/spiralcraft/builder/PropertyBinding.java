@@ -69,9 +69,29 @@ public class PropertyBinding
     instantiateContents();
   }
 
+  /**
+   * Instantiate the sub-assemblies, resolve the property value source, retrieve the value
+   *   and apply it to the target,.
+   */
+  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
   public void resolve()
     throws BuildException
   {
+    if (!isAggregate() 
+       && _contents!=null
+       && _contents.length==1
+       && !_contents[0].getAssemblyClass().isSingleton()
+       )
+    { 
+      // Give the containing object an opportunity to construct a default instance
+      //   to use as the source object, instead of having the sub-assembly construct
+      //   one.
+      Object defaultVal=_target.get();
+      if (defaultVal!=null)
+      { _contents[0].setDefaultInstance(defaultVal);
+      }
+    }
+    
     if (_contents!=null)
     {
       for (Assembly assembly:_contents)
@@ -135,7 +155,9 @@ public class PropertyBinding
   }
 
   
-  
+  /**
+   * Instantiate sub-Assemblies (but not the instances they contain yet)
+   */
   private void instantiateContents()
     throws BuildException
   {
@@ -209,6 +231,10 @@ public class PropertyBinding
       || Collection.class.isAssignableFrom(_target.getContentType());
   }
   
+  /**
+   * Resolve the source data for this property. At this point, all sub-assemblies must 
+   *   have had their contents instantiated and configured.
+   */
   @SuppressWarnings("unchecked")
   private void resolveSource()
     throws BuildException

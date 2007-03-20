@@ -64,7 +64,7 @@ public class AssemblyLoader
   { 
     AssemblyClass assemblyClass=findAssemblyClass(classUri);
     Assembly assembly=assemblyClass.newInstance(null);
-    return assembly.getObject();
+    return assembly.getSubject().get();
     
   }
   

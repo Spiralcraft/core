@@ -640,6 +640,8 @@ public class AssemblyClass
         { 
           _singletonInstance=new Assembly(this);
           _singletonInstance.bind((Assembly) null);
+          // Note: resolve() is re-entrant, so it will be late-called
+          
           return _singletonInstance;
         }
       }
