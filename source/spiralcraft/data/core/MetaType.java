@@ -24,6 +24,8 @@ import spiralcraft.data.Tuple;
 
 import spiralcraft.data.reflect.ReflectionType;
 
+import spiralcraft.data.spi.ConstructorInstanceResolver;
+
 import java.net.URI;
 
 /**
@@ -34,6 +36,7 @@ public class MetaType
 {
 
   private Type referencedType;
+  private int anonRefId=1;
   
   /**
    * <P>Construct a TypeType that reflects the implementation of the referenced Type.
@@ -74,15 +77,32 @@ public class MetaType
     throws DataException
   {
     Tuple tuple=composite.asTuple();
+    
+    boolean referenced=true;
     // A metaType uses the .type operator in the uri. It can only be used
     //   to generate the resolved instance of the base type, which cannot
     //   be customized (the tuple must be empty).
     for (Field field : getScheme().fieldIterable())
     { 
       if (field.getValue(tuple)!=null)
-      { throw new DataException("A TypeReference cannot be customized");
+      { 
+        referenced=false;
+        break;
       }
     } 
-    return referencedType;
+    if (referenced)
+    { return referencedType;
+    }
+    else
+    { 
+      URI uri=URI.create(getURI().toString().concat("-"+(anonRefId++)));
+      instanceResolver
+        =new ConstructorInstanceResolver
+          (new Class[] {TypeResolver.class,URI.class}
+          ,new Object[] {getTypeResolver(),uri}
+          );
+      return super.fromData(composite,instanceResolver);
+    }
+    
   }
 }
