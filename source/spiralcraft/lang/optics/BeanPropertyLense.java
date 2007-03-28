@@ -76,7 +76,7 @@ class BeanPropertyLense<Tprop,Tbean>
       else
       { 
         System.err.println
-          ("Cannot read property '"
+          ("BeanPropertyLense: No read method for '"
           +value.getClass().getName()
           +"."+_property.getName()+"'"
           );
