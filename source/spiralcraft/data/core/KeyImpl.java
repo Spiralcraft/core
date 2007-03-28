@@ -84,11 +84,19 @@ public class KeyImpl
   { return primary;
   }
   
+  public void setPrimary(boolean primary)
+  { this.primary=primary;
+  }
+  
   /**
    * @return Whether this Key uniquely identifies a single Tuple
    */
   public boolean isUnique()
   { return unique;
+  }
+  
+  public void setUnique(boolean unique)
+  { this.unique=unique;
   }
   
   /**

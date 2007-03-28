@@ -283,6 +283,13 @@ public class SchemeImpl
   { return primaryKey;
   }
 
+  public void setKeys(KeyImpl[] keyArray)
+  { 
+    for (KeyImpl key: keyArray)
+    { keys.add(key);
+    }
+  }
+  
   public Iterable<? extends Key> keyIterable()
   { return keys;
   }
