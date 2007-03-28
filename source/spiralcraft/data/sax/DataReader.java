@@ -58,7 +58,7 @@ public class DataReader
     }
     InputStream in=resource.getInputStream();
     try
-    { return readFromInputStream(in,formalType);
+    { return readFromInputStream(in,formalType,resource.getURI());
     }
     finally
     { 
@@ -71,6 +71,7 @@ public class DataReader
   public Object readFromInputStream
     (InputStream in
     ,Type formalType
+    ,URI resourceURI
     )
     throws SAXException,IOException,DataException
   {
@@ -92,7 +93,7 @@ public class DataReader
       throw new IOException(x.toString());
     }
     
-    DataHandler handler=new DataHandler(formalType);
+    DataHandler handler=new DataHandler(formalType,resourceURI);
     try
     { parser.parse(in,handler);
     }

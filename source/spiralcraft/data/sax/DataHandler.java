@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 
 import java.net.URI;
+import java.io.IOException;
 
 /**
  * Reads SAX events into a Data graph.
@@ -44,14 +45,17 @@ public class DataHandler
   
   // private final TypeResolver resolver=TypeResolver.getTypeResolver();
   private Frame currentFrame;
+  private URI resourceURI;
   
   
   /**
    * Construct a new DataReader which expects to read the specified
    *   formal Type.
    */
-  public DataHandler(Type formalType)
-  { currentFrame=new InitialFrame(formalType); 
+  public DataHandler(Type formalType,URI resourceURI)
+  { 
+    currentFrame=new InitialFrame(formalType); 
+    this.resourceURI=resourceURI;
   }
 
   public Object getCurrentObject()
@@ -124,6 +128,9 @@ public class DataHandler
   {
   }  
 
+  protected void pushResource(URI uri)
+  { 
+  }
 
   /**
    * Holder for an element of the data tree
@@ -265,6 +272,34 @@ public class DataHandler
   }
   
   /**
+   * A frame which can contain nothing
+   */
+  class EmptyFrame
+    extends Frame
+  {
+
+    protected void endChild(Frame child)
+      throws SAXException, DataException
+    { }
+
+    public Object getObject()
+    { return null;
+    }
+
+    protected Frame newChild
+      (String uri
+      , String localName
+      , String qName
+      , Attributes attributes
+      ) 
+      throws SAXException, DataException
+    { throw new SAXException("Element '"+qName+"' not permitted here");
+    }
+    
+  }
+  
+  
+  /**
    * Expects an Object in the form of a literal or one or more 
    *   Objects in the form of Type elements. The literal or Type elements
    *   must be compatible with the formalType.
@@ -325,8 +360,10 @@ public class DataHandler
     { 
       if (chars.toString().trim().length()!=0)
       { 
+//        System.err.println("DataHandler-ContainerFrame.closeFrame: "+chars);
         // Instantiate from a literal string, if present
-        addObject(formalType.fromString(chars.toString()));
+        addObject(formalType.fromString(chars.toString().trim()));
+        
       }
       
     }
@@ -345,6 +382,8 @@ public class DataHandler
     private final EditableTuple tuple;
     
     private Field currentField;
+    private Object prependData;
+
     
     private Object object;
     
@@ -406,6 +445,20 @@ public class DataHandler
       )
       throws SAXException,DataException
     {
+      URI ref=null;
+      
+      for (int i=0;i<attributes.getLength();i++)
+      {
+        if (attributes.getLocalName(i).equals("ref"))
+        { ref=URI.create(attributes.getValue(i));
+        }
+        else
+        { 
+          throw new SAXException
+            ("Unrecognized attribute '"+attributes.getQName(i)+"'");
+        }
+      }
+        
       if (scheme==null)
       { 
         throw new DataException
@@ -421,6 +474,27 @@ public class DataHandler
       if (fieldType==null)
       { System.err.println("Field type is null "+currentField.toString());
       }
+
+      if (ref!=null)
+      { 
+        if (!ref.isAbsolute())
+        { ref=resourceURI.resolve(ref);
+        }
+        try
+        { 
+          currentField.setValue
+            (tuple
+            ,new DataReader().readFromURI(ref,fieldType)
+            );
+          
+        }
+        catch (IOException x)
+        { throw new DataException("Error reading "+ref+": "+x,x);
+        
+        }
+        return new EmptyFrame(); //XXX Until merge works
+      }
+      
       if (fieldType.isAggregate())
       { return new AggregateFrame(fieldType);
       }
@@ -434,7 +508,16 @@ public class DataHandler
      */
     protected void endChild(Frame frame)
       throws DataException
-    { currentField.setValue(tuple,frame.getObject());
+    { 
+      if (!(frame instanceof EmptyFrame))
+      { 
+        Object childObject=frame.getObject();
+        if (prependData!=null)
+        {
+          // Figure out how to merge the two
+        }
+        currentField.setValue(tuple,childObject);
+      }
     }
   }
   
@@ -463,7 +546,9 @@ public class DataHandler
       { throw new SAXException("Cannot contain more than one Object");
       }
       else
-      { this.object=object;
+      { 
+        this.object=object;
+//        System.err.println("DataHandler-ObjectFrame.addObject: "+object);
       }
     }
     
