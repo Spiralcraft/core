@@ -338,10 +338,9 @@ public class Parser
   { tuple=new EditableArrayTuple(_fields);
   }
   
-	private void readData(StreamTokenizer st)
-		throws IOException,ParseException,DataException
-	{
-		st.resetSyntax();
+  private void resetSyntaxForData(StreamTokenizer st)
+  {
+    st.resetSyntax();
     if (!_notypes)
     { st.parseNumbers();
     }
@@ -371,15 +370,15 @@ public class Parser
       st.wordChars('[','`');
       
     }
-		st.wordChars('a','z');
-		st.wordChars('A','Z');
-		st.wordChars('.','.');
-		st.wordChars('_','_');
-		st.wordChars(':',':');
-		st.wordChars('/','/');
-		st.wordChars('+','+');
-		st.wordChars('=','=');
-		st.wordChars('{','~');
+    st.wordChars('a','z');
+    st.wordChars('A','Z');
+    st.wordChars('.','.');
+    st.wordChars('_','_');
+    st.wordChars(':',':');
+    st.wordChars('/','/');
+    st.wordChars('+','+');
+    st.wordChars('=','=');
+    st.wordChars('{','~');
 
     st.wordChars((char) 0x7F,(char) 0xFFFF);
     st.wordChars((char) 1,(char) 9);
@@ -397,7 +396,15 @@ public class Parser
     }
  
     st.ordinaryChar(_delimiter);
-		st.eolIsSignificant(true);
+    st.eolIsSignificant(true);
+    
+  }
+  
+	private void readData(StreamTokenizer st)
+		throws IOException,ParseException,DataException
+	{
+    resetSyntaxForData(st);
+    
     
     clearBuffer();
     int dataPos=0;
