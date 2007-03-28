@@ -6,13 +6,30 @@
     <meta:Scheme>
       <fields>
         <meta:Field>
-          <name>displayName</name>
-          <type><String.type/></type>
+          
+          <name>displayName
+          </name>
+          
+          <type>
+          	<String.type>
+
+		          <maxLength>128
+		          </maxLength>
+          	
+          	</String.type>
+          </type>
+
         </meta:Field>
 
         <meta:Field>
-          <name>address</name>
-          <type><example:Address.type/></type>
+
+          <name>address
+          </name>
+
+          <type>
+          	<example:Address.type/>
+          </type>
+
         </meta:Field>
       </fields>
     </meta:Scheme>

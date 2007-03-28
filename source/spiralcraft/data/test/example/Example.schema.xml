@@ -1,0 +1,9 @@
+<transport:Schema
+	xmlns:transport="java:/spiralcraft/data/transport"
+	xmlns:example="java:/spiralcraft/data/test/example"
+	>
+	 
+	<types>
+		<example:Customer.type/>
+	</types>
+</transport:Schema>

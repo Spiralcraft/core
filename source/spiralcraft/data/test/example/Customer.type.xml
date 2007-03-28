@@ -4,24 +4,52 @@
   >
   <archetype><example:Contact.type/>
   </archetype>
+  
   <scheme>
     <meta:Scheme>
+
       <fields>
         <meta:Field>
+
           <name>id
           </name>
-          <type><String.type/>
+
+          <type><Integer.type/>
           </type>
+          
         </meta:Field>
         
         <meta:Field>
+
           <name>paymentTerms
           </name>
-          <type><String.type/>
+
+          <type>
+          	<String.type>
+          	
+              <maxLength>32
+              </maxLength>
+              
+          	</String.type>
           </type>
+
         </meta:Field>
       </fields>
+      
+      <keys>
+      	<meta:Key>
+
+      		<fieldList>id
+      		</fieldList>
+      		
+      		<primary>true
+      		</primary>
+      		
+      	</meta:Key>
+      </keys>
+      
     </meta:Scheme>
   </scheme>
+  
 
 </meta:Type>
