@@ -119,6 +119,12 @@ public class TypeResolver
     
   }
 
+  public final URI getPackageURI(URI typeURI)
+  {
+    String uriStr=typeURI.toString();
+    return URI.create(uriStr.substring(0,uriStr.lastIndexOf('/')+1));
+  }
+  
   public final Type resolveFromClass(Class clazz)
     throws TypeNotFoundException
   { return resolve(ReflectionType.canonicalURI(clazz));

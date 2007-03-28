@@ -35,6 +35,7 @@ public class TypeImpl<T>
   protected SchemeImpl scheme;
   protected final TypeResolver resolver;
   protected final URI uri;
+  protected final URI packageURI;
   protected Type archetype;
   protected Type baseType;
   protected boolean aggregate=false;
@@ -46,6 +47,11 @@ public class TypeImpl<T>
   { 
     this.resolver=resolver;
     this.uri=uri;
+    this.packageURI=resolver.getPackageURI(uri);
+  }
+  
+  public URI getPackageURI()
+  { return packageURI;
   }
   
   public Type getArchetype()

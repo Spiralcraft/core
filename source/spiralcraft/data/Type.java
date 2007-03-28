@@ -22,6 +22,7 @@ import java.net.URI;
  */
 public abstract class Type<T>
 {  
+  
   /**
    * The TypeResolver which instantiated this particular Type.
    */
@@ -31,6 +32,8 @@ public abstract class Type<T>
    * The canonical URI for this type.
    */
   public abstract URI getURI();
+  
+  public abstract URI getPackageURI();
   
   /**
    * The Type used to describe Type objects of this Type, to support the

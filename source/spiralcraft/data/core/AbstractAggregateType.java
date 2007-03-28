@@ -59,6 +59,10 @@ public abstract class AbstractAggregateType<T>
     }
   }
   
+  public URI getPackageURI()
+  { return baseType.getPackageURI();
+  }
+  
   public Type getBaseType()
   { return baseType;
   }
