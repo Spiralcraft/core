@@ -201,7 +201,7 @@ public class ReflectionField
     { type=((DataComposite) value).getType();
     }
     
-    if (value!=null && writeMethod!=null)
+    if (value!=null)
     {
       if (type.getScheme()!=null && type.getNativeClass()==null)
       {
@@ -214,17 +214,26 @@ public class ReflectionField
         {
           if (type.isPrimitive())
           { 
-            try
-            { writeMethod.invoke(bean,value);
-            }
-            catch (IllegalArgumentException x)
+            if (writeMethod!=null)
             {
-              throw new DataException
-                ("Error depersisting field '"+getName()+"': Does not accept"
-                +" argument type "+value.getClass().getName()
-                ,x
-                );
+              try
+              { writeMethod.invoke(bean,value);
+              }
+              catch (IllegalArgumentException x)
+              {
+                throw new DataException
+                  ("Error depersisting field '"+getName()+"': Does not accept"
+                  +" argument type "+value.getClass().getName()
+                  ,x
+                  );
+              }
             }
+            else
+            {
+              System.err.println
+                ("ReflectionField: Field "+getURI()+" is not depersistable- no 'set' method: ");              
+            }
+            
           }
           else
           { 
@@ -237,14 +246,6 @@ public class ReflectionField
               =(DataComposite) value;
             Type dataType=compositeValue.getType();
             
-            if (compositeValue instanceof spiralcraft.data.Aggregate
-                && dataType instanceof ReflectionType
-               )
-               { System.err.println("Field :"+getName());
-               }
-            
-            
-            
             Object convertedValue
               =dataType.fromData
                 (compositeValue
@@ -253,18 +254,41 @@ public class ReflectionField
                   :null
                 );
             
-            try
-            { writeMethod.invoke(bean,convertedValue);
-            }
-            catch (IllegalArgumentException x)
-            {
-              throw new DataException
-                ("Error depersisting field '"+getName()+"': Does not accept"
-                +" argument type "+convertedValue.getClass().getName()
-                ,x
-                );
-            }
+//            System.err.println
+//              ("ReflectionField: Field "+getURI()
+//              +": depersisting "+convertedValue
+//              );            
             
+            if (writeMethod!=null)
+            {
+              try
+              { writeMethod.invoke(bean,convertedValue);
+              }
+              catch (IllegalArgumentException x)
+              {
+                throw new DataException
+                ("Error depersisting field '"+getName()+"': Does not accept"
+                    +" argument type "+convertedValue.getClass().getName()
+                    ,x
+                );
+              }
+            }
+            else if (convertedValue!=existingValue)
+            { 
+              System.err.println
+                ("ReflectionField: Field "+getURI()
+                 +" is not depersistable- no 'set' method "
+                 +" and no pre-existing value used"
+                 );            
+              
+            }
+            else
+            {
+//              System.err.println
+//              ("ReflectionField: Field "+getURI()
+//               +" used pre-existing bean value to depersist data"
+//               );            
+            }
           }
         }
         catch (IllegalAccessException x)
@@ -273,14 +297,6 @@ public class ReflectionField
         catch (InvocationTargetException x)
         { throw new DataException("Error depersisting field '"+getName()+"'",x);
         }
-      }
-    }
-    else
-    {
-      if (value!=null && writeMethod==null)
-      { 
-        System.err.println
-          ("Field "+getURI()+" is not depersistable- no 'set' method: ");
       }
     }
   }
