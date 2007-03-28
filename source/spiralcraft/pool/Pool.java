@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Collection;
 
 import spiralcraft.registry.RegistryNode;
+import spiralcraft.registry.Registrant;
 
 import spiralcraft.time.Clock;
 import spiralcraft.time.Scheduler;
@@ -31,6 +32,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 public class Pool
+  implements Registrant
 {
 
   private int _overdueSeconds=600;
