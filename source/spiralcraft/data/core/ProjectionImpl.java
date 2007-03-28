@@ -94,11 +94,13 @@ public class ProjectionImpl
   protected void addMasterField(String name,Field masterField)
   { 
     assertUnresolved();
+    // XXX We should move to ProjectionFields
     
     FieldImpl field=new FieldImpl();
     field.setFieldSet(this);
     field.setIndex(fields.size());
     field.setType(masterField.getType());
+    field.setName(masterField.getName());
     fields.add(field);
     fieldMap.put(field.getName(),field);
     mappings.add(new FieldMapping(masterField));
