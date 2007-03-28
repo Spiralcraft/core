@@ -18,20 +18,23 @@ import spiralcraft.data.query.Queryable;
 
 import spiralcraft.data.DataException;
 
-
 /**
- * A logical data container. Provides access to a complete set of data used by
- *   one or more applications. Data reachable from a Space may be contained 
- *   contained in or more Stores. There is normally only one Space associated 
- *   with an application.
+ * A physical data container. Provides access to a set of data that is reachable
+ *   through a single access mechanism, such as a database login, an XML file,
+ *   or the subtree of a filesystem directory.
  */
-public interface Space
+public interface Store
   extends Queryable
 {
-
   /**
-   * Prepare the Space and all Stores for data processing
+   * @return The Space to which this store belongs
+   */
+  Space getSpace();
+  
+  /**
+   * Prepare the Store for operation
    */
   void initialize()
     throws DataException;
+  
 }

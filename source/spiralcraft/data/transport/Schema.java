@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 1998,2005 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -14,24 +14,20 @@
 //
 package spiralcraft.data.transport;
 
-import spiralcraft.data.query.Queryable;
-
-import spiralcraft.data.DataException;
-
+import spiralcraft.data.Type;
 
 /**
- * A logical data container. Provides access to a complete set of data used by
- *   one or more applications. Data reachable from a Space may be contained 
- *   contained in or more Stores. There is normally only one Space associated 
- *   with an application.
+ * The collection of Types associated with an atomic unit of data storage.
  */
-public interface Space
-  extends Queryable
+public class Schema
 {
-
-  /**
-   * Prepare the Space and all Stores for data processing
-   */
-  void initialize()
-    throws DataException;
+  private Type[] types;
+  
+  public Type[] getTypes()
+  { return types;
+  }
+  
+  public void setTypes(Type[] types)
+  { this.types=types;
+  }
 }
