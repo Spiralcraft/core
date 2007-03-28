@@ -23,6 +23,7 @@ import java.util.HashMap;
 public class LocalRegistryNode
   implements RegistryNode
 {
+  // XXX Make maps weak
   private HashMap<Class,Object> _instances;
   private HashMap<String,RegistryNode> _children;
   private final RegistryNode _parent;
@@ -79,6 +80,14 @@ public class LocalRegistryNode
     return null;
   }
 
+  public RegistryNode createChild
+    (Class instanceClass,Object instance)
+  {
+    RegistryNode child=createChild(instanceClass.getName());
+    child.registerInstance(instanceClass,instance);
+    return child;
+  }
+  
   public void registerInstance(Class instanceClass,Object instance)
   { 
     if (_instances==null)
@@ -89,11 +98,18 @@ public class LocalRegistryNode
 
   public RegistryNode createChild(String name)
   { 
-    RegistryNode child=new LocalRegistryNode(this,name);
     if (_children==null)
     { _children=new HashMap<String,RegistryNode>();
     }
-    _children.put(name,child);
+    
+    String newName=name;
+    int i=1;
+    while (_children.get(newName)!=null)
+    { newName=name+i++;
+    }
+
+    RegistryNode child=new LocalRegistryNode(this,newName);
+    _children.put(newName,child);
     return child;
   }
 

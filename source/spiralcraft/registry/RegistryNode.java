@@ -25,7 +25,7 @@ package spiralcraft.registry;
  *
  * For example, using the fully qualified component path, logging
  *   services can tailor logging preferences for individual components,
- *   monitoring services can be activated for indivudual components
+ *   monitoring services can be activated for individual components
  *   and configuration services can key configuration details to
  *   individual components.
  */
@@ -51,18 +51,27 @@ public interface RegistryNode
   public Object findInstance(Class instanceClass);
 
   /**
-   * Register an instance that will be visible from
-   *   this RegistryNode and its descendants.
+   * Register an instance as a local singleton, ie. one that will be visible
+   *   from this RegistryNode and its descendants.
    */
   public void registerInstance(Class instanceClass,Object instance);
 
 
   /** 
    * Create a child RegistryNode and register it with this node
-   *   under the specified name
+   *   under the specified name. If the name is already taken,
+   *   append an incrementing number to differentiate it, ie. 
+   *   the name "foo", if already used, becomes "foo1", or "foo2", etc.
    */
-  public RegistryNode createChild(String name);
-  
+  public RegistryNode createChild(String name); 
+
+  /**
+   * Create a child RegistryNode named with the Class name, and 
+   *   register the specified instance as the local singleton for the
+   *   specified class.
+   */
+  public RegistryNode createChild(Class instanceClass,Object instance);
+
   /**
    * Return the child RegistryNode with the specified name
    */
