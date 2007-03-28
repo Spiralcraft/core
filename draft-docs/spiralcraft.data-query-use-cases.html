@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>spiralcraft-data package: Query Use Cases</title>
+</head>
+<body>
+<h1>Spiralcraft</h1>
+<hr size="2" width="100%">
+<h2>spiralcraft.data package</h2>
+<h3>Query Use Cases</h3>
+The spiralcraft.data Query framework provides SQL-like functionality
+for querying data. This exercise examines various SQL use cases and
+their Query counterparts. <br>
+<h4>Query Execution Stages</h4>
+<ul>
+  <li><span style="font-weight: bold;">Query</span><br>
+Metadata level. References types, fields, expressions. Can be bound to
+a Focus and a Queryable.</li>
+  <li><span style="font-weight: bold;">BoundQuery</span><br>
+Data path created when bound to a Queryable.<br>
+Can execute(), returning a SerialCursor<br>
+Several types of BoundQueries chained together help delegate
+appropriate parts to the Queryable implementation</li>
+  <ul>
+    <li><span style="font-weight: bold;">BoundAggregateScan<br>
+      <span style="font-weight: bold;"></span></span>Simply traverses
+an aggregate and provides a reference all the Tuples contained within<br>
+    </li>
+    <li><span style="font-weight: bold;">BoundSqlScan<br>
+      </span>Prepares a statement when bound and executes a SELECT,
+provides a reference to Tuple that wraps the ResultSet</li>
+    <ul>
+      <li>simple mode<br>
+Selects a Type (table) and returns all rows</li>
+      <li>filtered<br>
+Translates a filter expression and/or join expression into a where
+clause</li>
+      <li>projected<br>
+Retrieves only fields specified in projection- requires intercept of
+'bind' to register that field must be retrieved.</li>
+      <li>joined<br>
+Retrieves from multiple types. Must go through the client-side join
+filter to ensure consistency.<br>
+        <span style="font-weight: bold;"></span></li>
+    </ul>
+    <li><span style="font-weight: bold;">BoundFilter<br>
+      </span>Filters another BoundQuery to only return matching Tuples.<br>
+A SQL store can check the BoundFilter to parse out translatable
+expressions.<br>
+    </li>
+    <li><br>
+    </li>
+  </ul>
+  <li><span style="font-weight: bold;">SerialCursor</span><br>
+Data path root (return) is a SerialCursor (dataCanAdvance()),
+dataAdvance())<br>
+Tuple returned by SerialCursor is usually mutable, and is a View based
+on underlying data window representation<br>
+  </li>
+</ul>
+<h4>Query Subcomponents</h4>
+<ul>
+  <li>Projection</li>
+  <ul>
+    <li>The FieldSet that defines the Tuples returned by the Query.
+This is composed entirely of the ProjectionFields<br>
+    </li>
+  </ul>
+  <li>ProjectionField</li>
+  <ul>
+    <li>Associates a Field name with a ProjectionExpression. The
+ProjectionFields compose the Projection.</li>
+  </ul>
+  <li>ProjectionExpression</li>
+  <ul>
+    <ul>
+      <li>An Expression that references a Focus <br>
+      </li>
+    </ul>
+  </ul>
+</ul>
+<h4>Representative SQL syntax</h4>
+<pre style="margin-left: 40px;">SELECT [ DISTINCT | ALL ]<br>  column_expression1, column_expression2, ....<br>  [ FROM from_clause ]<br>  [ WHERE where_expression ]<br>  [ GROUP BY expression1, expression2, .... ]<br>  [ HAVING having_expression ]<br>  [ ORDER BY order_column_expr1, order_column_expr2, .... ]</pre>
+<pre style="margin-left: 40px;">column_expression ::= expression [ AS ] [ column_alias ]</pre>
+<pre style="margin-left: 40px;">from_clause ::= select_table1, select_table2, ...<br>from_clause ::= select_table1 LEFT [OUTER] JOIN select_table2 ON expr  ...<br>from_clause ::= select_table1 RIGHT [OUTER] JOIN select_table2 ON expr  ...<br>from_clause ::= select_table1 [INNER] JOIN select_table2  ...</pre>
+<pre style="margin-left: 40px;">select_table ::= table_name [ AS ] [ table_alias ]<br>select_table ::= ( sub_select_statement ) [ AS ] [ table_alias ]</pre>
+<pre style="margin-left: 40px;">order_column_expr ::= expression [ ASC | DESC ]</pre>
+<h4>SQL column_expression</h4>
+Case: &lt;expr&gt; AS &lt;name&gt;<br>
+<br>
+This case should result in a new ProjectionField with the specified
+name.<br>
+<br>
+Case: &lt;expr&gt;<br>
+<br>
+Case: AG_FN(&lt;expr&gt;)<br>
+<br>
+<h4>Query XML</h4>
+<code>&lt;SelectionQuery&gt;<br>
+&nbsp; &lt;criteria&gt;name="mike" &amp;amp;&amp;amp; age &gt;
+30&lt;/criteria&gt;<br>
+&nbsp; &lt;type&gt;&lt;mySchema:customer.type/&gt;&lt;/type&gt;<br>
+&lt;/SelectionQuery&gt;<br>
+<br>
+</code>
+</body>
+</html>
