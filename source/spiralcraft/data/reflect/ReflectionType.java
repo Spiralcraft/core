@@ -78,6 +78,7 @@ public class ReflectionType<T>
       ,List.class
       ,ArrayList.class
       ,Collection.class
+      ,URI.class
       );
     
     mapSystemClass
@@ -379,6 +380,9 @@ public class ReflectionType<T>
       catch (InvocationTargetException x)
       { throw new DataException("Error decoding String '"+val+"'",x);
       }
+    }
+    else
+    { System.err.println("ReflectionType.fromString()  "+getURI()+": No string constructor");
     }
     return null;
     
