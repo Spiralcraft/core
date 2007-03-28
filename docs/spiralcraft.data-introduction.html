@@ -1,0 +1,302 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>spiralcraft.data package: Introduction</title>
+</head>
+<body>
+<h1>Spiralcraft</h1>
+<hr size="2" width="100%">
+<h2>spiralcraft.data package</h2>
+<h3>Introduction<br>
+</h3>
+Most applications have some kind of data aspect, for example: <br>
+<ul>
+  <li>managing configuration data</li>
+  <li>processing data streams</li>
+  <li>providing data entry and reporting functionality</li>
+  <li>integrating other data systems</li>
+</ul>
+This data aspect contributes to a number of orthogonal design concerns
+including:<br>
+<ul>
+  <li>runtime data representation</li>
+  <li>data structure metadata</li>
+  <li>data storage mechanism</li>
+  <li>data format</li>
+  <li>input/output protocol</li>
+  <li>user interface (entry and presentation). </li>
+</ul>
+The spiralcraft.data package provides a common runtime data
+representation (the Tuple and the Aggregate), and a common data
+structure metadata representation (the Type and the Scheme). It serves
+as a hub (a "mediator pattern") to permit the development and rapid
+integration of dedicated, decoupled implementations of:<br>
+<ul>
+  <li>storage and i/o methods</li>
+  <li>format translators</li>
+  <li>data processing algorithms</li>
+  <li>presentation mechanisms</li>
+  <li>integration adapters</li>
+  <li>foreign type systems</li>
+</ul>
+<span style="font-weight: bold;"></span>
+<h3>Tabular paradigm</h3>
+Underlying the spiralcraft.data framework is a paradigm of "data", as
+it is used in information systems, of being inherently "tabular",
+meaning it can be visualized as a table with "columns" and "rows". The
+application of this concept is nearly universal, though the use of the
+term "table" is more explicit in some systems, such as databases and
+spreadsheets, than in others, such as hierarchical documents and
+programming languages.<br>
+<br>
+The operative principles here are that a "table" has a <span
+ style="font-style: italic;">horizontal</span> component and a <span
+ style="font-style: italic;">vertical</span> component.<br>
+<br>
+The horizontal component is comprised of a set of "columns", each of
+which is defined by some piece of <span style="font-style: italic;">metadata</span>
+which names and identifies the data that will be stored in that
+position of each table row. The key principle here is that the
+horizontal component represents metadata- the definition of the data.<br>
+<br>
+The vertical component is comprised of set of "rows", or data <span
+ style="font-style: italic;">instances</span>, each of which holds some
+variation of data elements that are closely related to each other and
+conform to the metadata. The key principle here is that the vertical
+component represents instances, or references to actual data. <br>
+<br>
+The paradigm can be mapped into a wide variety of other systems, thus
+the utility of the paradigm as a basis for this general purpose data
+framework. The following table describes some of these analogous
+elements:<br>
+<br>
+<table style="text-align: left; width: 875px; height: 320px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">System</span><br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Horizontal
+Aggregation</span><br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Horizontal
+Component</span><br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Vertical
+Aggregation</span><br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Vertical
+Component</span><br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Comment</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Abstract<br>
+      </td>
+      <td style="vertical-align: top;">Metadata <br>
+      </td>
+      <td style="vertical-align: top;">Component Metadata<br>
+      </td>
+      <td style="vertical-align: top;">Collection<br>
+      </td>
+      <td style="vertical-align: top;">Unit of Data<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">spiralcraft.data<br>
+      </td>
+      <td style="vertical-align: top;">Type<br>
+      </td>
+      <td style="vertical-align: top;">Field<br>
+      </td>
+      <td style="vertical-align: top;">Aggregate<br>
+      </td>
+      <td style="vertical-align: top;">Tuple<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Java(tm) Language<br>
+      </td>
+      <td style="vertical-align: top;">Class<br>
+      </td>
+      <td style="vertical-align: top;">Bean Property / Field<br>
+      </td>
+      <td style="vertical-align: top;">Array or Collection<br>
+      </td>
+      <td style="vertical-align: top;">Object<br>
+      </td>
+      <td style="vertical-align: top;">Most non-primitive Java objects
+can be decomposed into named subunits.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Database System<br>
+      </td>
+      <td style="vertical-align: top;">Table Definition<br>
+      </td>
+      <td style="vertical-align: top;">Column Definition<br>
+      </td>
+      <td style="vertical-align: top;">Row<br>
+      </td>
+      <td style="vertical-align: top;">Table / Relation<br>
+      </td>
+      <td style="vertical-align: top;">In most advanced relational<br>
+database systems, a Table is also<br>
+called a Type.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Spreadsheet<br>
+      </td>
+      <td style="vertical-align: top;">Worksheet Column Set<br>
+      </td>
+      <td style="vertical-align: top;">Column<br>
+      </td>
+      <td style="vertical-align: top;">Worksheet<br>
+      </td>
+      <td style="vertical-align: top;">Row<br>
+      </td>
+      <td style="vertical-align: top;">A spreadsheet is a very loosely
+defined table.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">XML Document<br>
+      </td>
+      <td style="vertical-align: top;">DTD<br>
+      </td>
+      <td style="vertical-align: top;">Element Definition<br>
+      </td>
+      <td style="vertical-align: top;">Document<br>
+      </td>
+      <td style="vertical-align: top;">Node<br>
+      </td>
+      <td style="vertical-align: top;">An XML document can store<br>
+multiple Types and can always be mapped to one or more&nbsp; logical
+Tables. <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+Some of the above analogies will be referred to in the following
+discussion of concepts that underpin the spiralcraft.data package.<br>
+<span style="font-weight: bold;"></span>
+<h3>Metadata<br>
+</h3>
+<h4>Type</h4>
+A Type describes a unit of data in terms of the following aspects:<br>
+<ul>
+  <li>The structure of the unit of data, if has any, in the form of a
+Scheme.</li>
+  <li>The native representation of the unit of data as a Java class, if
+any.</li>
+  <li>A means of transforming the unit of data between its native
+representation and a data-centric representation.</li>
+  <li>The other Types that this Type inherits.</li>
+</ul>
+A Type is usually uniquely identifiable by a URI.<br>
+<h4>Scheme</h4>
+A Scheme describes the structure of a unit of data as represented in
+the form of a Tuple. A Scheme is an an ordered list of unique Fields,
+each of which describes a specific attribute.<br>
+<h4>Field</h4>
+A Field describes a single attribute of a unit of data, in the
+following aspects:<br>
+<ul>
+  <li>The name of the attribute, to distinguish it from other
+attributes that describe the same unit of data.</li>
+  <li>The Type of data the attribute refers to.</li>
+  <li>The nature of the relationship between the containing Type and
+the data it refers to (ie. locally stored, calculated, retrieved by
+reference, etc..)<br>
+  </li>
+  <li>Constraints on the data referred to, in the context of the
+containing Type.</li>
+</ul>
+<h3>Data Representation<br>
+</h3>
+<h4>Tuple</h4>
+A Tuple represents a data instance and provides an interface to store
+and retrieve the data values for individual Fields.<br>
+<h4>Aggregate</h4>
+An Aggregate is a collection of data elements.&nbsp; The data elements
+can be Tuples, other Aggregates, or "primitive" objects.<br>
+<h3>Data Storage and Retreival</h3>
+<h4>Store</h4>
+A Store represents a container that holds data in some concrete form,
+in a specific location. The primary responsibility of a Store is to
+support the storage and retreival of data using a common interface that
+is adapted to a specific physical implementation.<br>
+<br>
+A Store manages a set of instances for a number of Types. Instances can
+be queried, updated, inserted or deleted.<br>
+<br>
+Some examples of useful Stores are:<br>
+<ul>
+  <li>A SQL database: A server that supports multiple databases would
+support multiple Stores.</li>
+  <li>An XML file: An XML file can viewed as a set of Types. Minimally,
+a Type would have a "parent" and "children" fields, and a field for
+each defined attribute. Ideally, a more specific mapping would be set
+up.</li>
+  <li>A spreadsheet: An individual Type can be mapped to regions, or
+worksheets.<br>
+  </li>
+</ul>
+<h4><span style="font-weight: bold;">Space</span></h4>
+A Space represents a set of Stores which function together represent a
+complete set of data. A Space can consist of one or more Stores, each
+of which is responsible for a certain "partition" of the data-set. How
+a Space coordinates among its partitions is the responsibility of a
+given implementation.<br>
+<br>
+Some examples of partitioning schemes for a Space are:<br>
+<ul>
+  <li>Common: A Space that consists of a single Store, perhaps a SQL
+Store, which handles all the data.</li>
+  <li>Media Catalog: A Space which stores catalog data in a SQL Store,
+but keeps the huge binaries in a file system Store. This is an example
+of <span style="font-style: italic;">horizontal partitioning</span>,
+where different types are located in different stores.<br>
+  </li>
+  <li>Managed Archive: A Space which stores 'current' data in a fast
+access SQL Store, but keeps 'historical' data in a slow CDR library
+Store. The Space would have its own metadata store to index what was
+where. This is an example of <span style="font-style: italic;">vertical
+partitioning</span>, where different collections of data for the same
+Type are stored in different places.</li>
+  <li>Distributed Database: A Space which combines Stores located at
+different points on the network. There are a wide variety of possible
+implementations for a Space like this. Some of them might be:</li>
+  <ul>
+    <li>A tightly coupled distributed transaction system, vertically
+partitioning a global dataset into operation specific datasets.</li>
+    <li>A hot replication system, where two partitions are kept in an
+identical state</li>
+    <li>A publish-subscribe replication system, where subscribers
+receive updates after a publisher incorporates them.</li>
+    <li>A loose "Tuple Space", where multiple stores around a network
+can publish data for a given Type that would be queryable from a global
+perspective.<br>
+    </li>
+  </ul>
+</ul>
+<h4>Query</h4>
+A Query is a request for data, specifically a set of expressions, Types
+to query, and criteria, which may include sub-queries. The data is
+returned as a stream of Tuples which can be represented in a number of
+different forms, such as a Cursor or and Aggregate.<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>
