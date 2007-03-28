@@ -12,30 +12,22 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.query;
+package spiralcraft.data.types.standard;
 
-import spiralcraft.lang.Expression;
+import spiralcraft.data.TypeResolver;
 
-/**
- * A Query operation which constrains the result to meet the specified constraints
- */
-public abstract class AbstractFilter
-  extends Query
+import spiralcraft.data.core.PrimitiveTypeImpl;
+
+import java.net.URI;
+
+public class URIType
+  extends PrimitiveTypeImpl<URI>
 {
-  public Expression constraints;
-  
-  /**
-   * Specify the Expression which constrains the result
-   */
-  public void setConstraints(Expression constraints)
-  { this.constraints=constraints;
+  public URIType(TypeResolver resolver,URI uri)
+  { super(resolver,uri,URI.class);
   }
   
-  /**
-   *@return the Expression which constrains the result
-   */
-  public Expression getConstraints()
-  { return constraints;
+  public URI fromString(String str)
+  { return URI.create(str);
   }
-    
 }

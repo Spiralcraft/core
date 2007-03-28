@@ -25,8 +25,32 @@ import java.net.URI;
 public class BigDecimalType
   extends PrimitiveTypeImpl<BigDecimal>
 {
+  private int precision;
+  private int scale;
+  
   public BigDecimalType(TypeResolver resolver,URI uri)
   { super(resolver,uri,BigDecimal.class);
   }
   
+  /**
+   *@return The total number of digits in the number
+   */
+  public int getPrecision()
+  { return precision;
+  }
+  
+  public void setPrecision(int precision)
+  { this.precision=precision;
+  }
+  
+  /**
+   *@return The number of digits to the right of the decimal point
+   */
+  public int getScale()
+  { return scale;
+  }
+  
+  public void setScale(int scale)
+  { this.scale=scale;
+  }
 }

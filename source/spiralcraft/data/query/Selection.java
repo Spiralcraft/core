@@ -14,29 +14,126 @@
 //
 package spiralcraft.data.query;
 
-import spiralcraft.data.Type;
+import spiralcraft.lang.Expression;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.DefaultFocus;
+import spiralcraft.lang.Optic;
+import spiralcraft.lang.BindException;
+
+
+import spiralcraft.data.DataException;
+import spiralcraft.data.Tuple;
+import spiralcraft.data.FieldSet;
 
 /**
- * A Query operation which retreives a set of Tuples of a specified Type
- *   which meet the specified constraints.
+ * A Query operation which constrains the result of another Query
  */
 public class Selection
-  extends AbstractFilter
+  extends Query
 {
-  protected Type type;
+  private Expression<Boolean> constraints;
+  
+  public Selection()
+  { 
+  }
+  
+  public FieldSet getFieldSet()
+  { 
+    if (sources.size()>0)
+    { return sources.get(0).getFieldSet();
+    }
+    else
+    { return null;
+    }
+  }
+    
+  public Selection
+      (Selection baseQuery
+      ,Expression<Boolean> constraints
+      )
+  { 
+    super(baseQuery);
+    this.constraints=constraints;
+  }
+
   
   /**
-   * Specify the Type whos instances will be retrieved.
+   * Specify the Expression which constrains the result
    */
-  public void setType(Type type)
-  { this.type=type;
+  public void setConstraints(Expression<Boolean> constraints)
+  { this.constraints=constraints;
+  }
+ 
+  public void setSource(Query source)
+  { addSource(source);
   }
   
   /**
-   * @return the Type whos instances will be retrieved
+   *@return the Expression which constrains the result
    */
-  public Type getType()
-  { return type;
+  public Expression<Boolean> getConstraints()
+  { return constraints;
+  }
+  
+  public BoundQuery<?> bind(Focus focus,Queryable store)
+    throws DataException
+  { return new SelectionBinding<Selection>(this,focus,store);
+   
+  }
+  
+
+    
+}
+
+class SelectionBinding<Tq extends Selection>
+  extends UnaryBoundQuery<Tq>
+{
+  private final Focus paramFocus;
+  private DefaultFocus<?> focus;
+  private Optic<Boolean> filter;
+  
+  public SelectionBinding
+    (Tq query
+    ,Focus paramFocus
+    ,Queryable store
+    )
+    throws DataException
+  { 
+    super(query.getSources(),paramFocus,store);
+    setQuery(query);
+    this.paramFocus=paramFocus;
+    
+    
+  }
+
+  public void resolve() throws DataException
+  { 
+    
+    source.resolve();
+    focus=new DefaultFocus<Tuple>(source.getResultBinding());
+    focus.setParentFocus(paramFocus);
+    try
+    { filter=focus.<Boolean>bind(getQuery().getConstraints());
+    }
+    catch (BindException x)
+    { throw new DataException("Error binding constraints "+x,x);
+    }
+  }
+  
+  protected boolean integrate(Tuple t)
+  { 
+    if (t==null)
+    { return false;
+    }
+    
+    if (filter.get())
+    { 
+      dataAvailable(t);
+      return true;
+    }
+    else
+    { return false;
+    }
   }
   
 }

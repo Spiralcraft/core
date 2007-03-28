@@ -15,8 +15,13 @@
 package spiralcraft.data.query;
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.Type;
+
+
 
 import spiralcraft.lang.Focus;
+
+import java.util.List;
 
 /**
  * <P>A Queryable is anything that can execute a Query and provide a Cursor of
@@ -31,6 +36,33 @@ import spiralcraft.lang.Focus;
 public interface Queryable
 {
 
-  public BoundQuery bindQuery(Query q,Focus context)
+  /**
+   * @return A list of all the Types supported by this Queryable
+   */
+  List<Type> getTypes();
+  
+  /**
+   * @return Whether the store contains the specified Type.
+   */
+  boolean containsType(Type type);
+  
+  /**
+   * Returns all instances of a Type for further manipulation by BoundQueries. This method
+   *   is used when a Queryable cannot provide an optimized implementation for the simplest
+   *   of Queries, or if no optimization is needed. 
+   * 
+   * @return A boundQuery which provides the set of all instances for a given type. 
+   */
+  BoundQuery getAll(Type type) 
+    throws DataException;
+  
+
+  /**
+   * Bind the specified Query and parameter context to this Queryable.
+   * 
+   *@return a BoundQuery that implements the data flow path and provides the data requested
+   *  by the Query
+   */
+  BoundQuery query(Query q,Focus context)
     throws DataException;
 }
