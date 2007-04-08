@@ -42,7 +42,7 @@ public interface Focus<T>
   Optic<T> getSubject();
 
   /**
-   * Find a Focus using its well known name.
+   * Find a Focus using an application specific public name.
    */
   Focus<?> findFocus(String name);
 
