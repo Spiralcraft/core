@@ -17,17 +17,23 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
+/**
+ * Refers to the current implicit Focus.
+ */
 public class CurrentFocusNode
   extends FocusNode
 {
 
+  /**
+   * Simply returns the specified Focus.
+   */
   public Focus findFocus(final Focus focus)
     throws BindException
   { return focus;
   }
 
   public void dumpTree(StringBuffer out,String prefix)
-  { out.append(prefix).append("DefaultFocus");
+  { out.append(prefix).append("CurrentFocus");
   }
   
 }

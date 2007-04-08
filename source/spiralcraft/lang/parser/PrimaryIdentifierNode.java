@@ -19,20 +19,41 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Context;
 
-
-public class FocusResolveNode
+/**
+ * <P>A Node which represents a primary identifier.
+ * 
+ * <P>A primary identifier is resolved
+ *   against either the "default" Focus, if the identifier is "standalone", or 
+ *   by a Focus specified using the <code>[ Focus-name ] identifier</code> syntax,
+ *   which is reachable throug the "default" Focus.
+ *   
+ * <P>A primary identifier will try to bind to an attribute in the Context of the
+ *   applicable Focus. If no binding is found, the identifier will try to bind to
+ *   the subject of the Focus.
+ *   
+ * <P>To force binding to the subject of the Focus, use the <code>.identifier</code>
+ *   form. The dot prefix always refers to the subject of the Focus.
+ */
+public class PrimaryIdentifierNode
   extends Node
 {
 
   private final FocusNode _source;
   private final String _identifier;
 
-  public FocusResolveNode(FocusNode source,String identifier)
+  public PrimaryIdentifierNode(FocusNode source,String identifier)
   { 
     _source=source;
     _identifier=identifier;
   }
 
+  public FocusNode getSource()
+  { return _source;
+  }
+  
+  public String getIdentifier()
+  { return _identifier;
+  }
   
   public Optic bind(final Focus focus)
     throws BindException

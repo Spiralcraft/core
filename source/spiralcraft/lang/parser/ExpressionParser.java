@@ -42,7 +42,7 @@ public class ExpressionParser
     throws ParseException
   { 
     createTokenizer(text);
-    nextToken();
+    consumeToken();
     Node ret=parseExpression();
     if (ret==null)
     { throwUnexpected();
@@ -103,7 +103,7 @@ public class ExpressionParser
   }
   
   /**
-   * Verifies and consumes specified input, if not expected, throws exception
+   * Verifies and consumeTokens specified input, if not expected, throws exception
    */
   private void expect(char chr)
     throws ParseException
@@ -111,11 +111,11 @@ public class ExpressionParser
     if (_tokenizer.ttype!=chr)
     { throw new ParseException("Expected '"+chr+"', not "+_tokenizer.toString(),_pos,_progressBuffer.toString());
     }
-    nextToken();
+    consumeToken();
   }
   
   /**
-   * Verifies and consumes specified input, if not expected, throws exception
+   * Verifies and consumeTokens specified input, if not expected, throws exception
    */
 //  private void throwGeneral(String message)
 //    throws ParseException
@@ -123,7 +123,7 @@ public class ExpressionParser
 //  }
   
 
-  private boolean nextToken()
+  private boolean consumeToken()
   { 
 
     try
@@ -176,7 +176,7 @@ public class ExpressionParser
     Node node=this.parseLogicalOrExpression();
     if (_tokenizer.ttype=='?')
     { 
-      nextToken();
+      consumeToken();
       Node trueResult=this.parseConditionalExpression();
       expect(':');
       Node falseResult=this.parseConditionalExpression();
@@ -201,7 +201,7 @@ public class ExpressionParser
   {
     if (_tokenizer.ttype=='|')
     { 
-      nextToken();
+      consumeToken();
       expect('|');
       Node secondOperand=parseLogicalAndExpression();
       Node logicalOrNode = firstOperand.or(secondOperand);
@@ -228,7 +228,7 @@ public class ExpressionParser
   {
     if (_tokenizer.ttype=='&')
     { 
-      nextToken();
+      consumeToken();
       expect('&');
       Node secondOperand=parseExclusiveOrExpression();
       Node logicalAndNode = firstOperand.and(secondOperand);
@@ -255,7 +255,7 @@ public class ExpressionParser
   {
     if (_tokenizer.ttype=='^')
     { 
-      nextToken();
+      consumeToken();
       Node exclusiveOrNode = firstOperand.xor(parseEqualityExpression());
       return parseExclusiveOrExpressionRest(exclusiveOrNode);
     }
@@ -280,7 +280,7 @@ public class ExpressionParser
   { 
     if (_tokenizer.ttype=='!')
     {
-      nextToken();
+      consumeToken();
       expect('=');
       Node secondOperand=parseRelationalExpression();
       Node equalityNode = firstOperand.isNotEqual(secondOperand);
@@ -288,7 +288,7 @@ public class ExpressionParser
     }
     else if (_tokenizer.ttype=='=')
     {
-      nextToken();
+      consumeToken();
       expect('=');
       Node secondOperand=parseRelationalExpression();
       Node equalityNode = firstOperand.isEqual(secondOperand);
@@ -317,10 +317,10 @@ public class ExpressionParser
     switch (_tokenizer.ttype)
     {
       case '>':
-        nextToken();
+        consumeToken();
         if (_tokenizer.ttype=='=')
         {
-          nextToken();
+          consumeToken();
           return parseRelationalExpressionRest
             (firstOperand.greaterThanOrEquals
               (parseAdditiveExpression()
@@ -336,10 +336,10 @@ public class ExpressionParser
             );
         }
       case '<':
-        nextToken();
+        consumeToken();
         if (_tokenizer.ttype=='=')
         {
-          nextToken();
+          consumeToken();
           return parseRelationalExpressionRest
             (firstOperand.lessThanOrEquals
               (parseAdditiveExpression()
@@ -378,12 +378,12 @@ public class ExpressionParser
     switch (_tokenizer.ttype)
     {
       case '-':
-        nextToken();
+        consumeToken();
         operation=firstOperand.minus(parseMultiplicativeExpression());
         node=parseAdditiveExpressionRest(operation);
         break;
       case '+':
-        nextToken();
+        consumeToken();
         operation=firstOperand.plus(parseMultiplicativeExpression());
         node=parseAdditiveExpressionRest(operation);
         break;
@@ -414,17 +414,17 @@ public class ExpressionParser
     switch (_tokenizer.ttype)
     {
       case '/':
-        nextToken();
+        consumeToken();
         operation = firstOperand.divide(parseUnaryExpression()); 
         node = parseMultiplicativeExpressionRest(operation);
         break;
       case '*':
-        nextToken();
+        consumeToken();
         operation = firstOperand.times(parseUnaryExpression()); 
         node = parseMultiplicativeExpressionRest(operation);
         break;
       case '%':
-        nextToken();
+        consumeToken();
         operation = firstOperand.modulus(parseUnaryExpression()); 
         node = parseMultiplicativeExpressionRest(operation);
         break;
@@ -446,10 +446,10 @@ public class ExpressionParser
     switch (_tokenizer.ttype)
     {
       case '-':
-        nextToken();
+        consumeToken();
         return parseUnaryExpression().negative(); 
       case '!':
-        nextToken();
+        consumeToken();
         return parseUnaryExpression().not();
       default:
         return parsePostfixExpression();
@@ -489,7 +489,7 @@ public class ExpressionParser
 //        if (!(primary instanceof ResolveNode))
 //        { throwUnexpected();
 //        }
-//        nextToken();
+//        consumeToken();
 //        if (((ResolveNode) primary).getSource()==null)
 //        { throwGeneral("Internal error: MethodCall source is null");
 //        }
@@ -502,12 +502,12 @@ public class ExpressionParser
 //        expect(')');
 //        return parsePostfixExpressionRest(methodCallNode);
       case '[':
-        nextToken();
+        consumeToken();
         Node subscriptNode=new SubscriptNode(primary,parseExpression());
         expect(']');
         return parsePostfixExpressionRest(subscriptNode);
       case '.':
-        nextToken();
+        consumeToken();
         return parseIdentifierExpression(primary);
       default:
         return primary;
@@ -537,7 +537,7 @@ public class ExpressionParser
   {
     if (_tokenizer.ttype==',')
     {
-      nextToken();
+      consumeToken();
       Node node=parseExpression();
       if (node==null)
       { throwUnexpected();
@@ -565,13 +565,19 @@ public class ExpressionParser
     {
       case StreamTokenizer.TT_WORD:
         if (_tokenizer.sval.equals("true"))
-        { node=new LiteralNode<Boolean>(Boolean.TRUE,Boolean.class);
+        { 
+          node=new LiteralNode<Boolean>(Boolean.TRUE,Boolean.class);
+          consumeToken();
         }
         else if (_tokenizer.sval.equals("false"))
-        { node=new LiteralNode<Boolean>(Boolean.FALSE,Boolean.class);
+        { 
+          node=new LiteralNode<Boolean>(Boolean.FALSE,Boolean.class);
+          consumeToken();
         }
         else if (_tokenizer.sval.equals("null"))
-        { node=new LiteralNode<Void>(null,Void.class);
+        { 
+          node=new LiteralNode<Void>(null,Void.class);
+          consumeToken();
         }
         else if (Character.isDigit(_tokenizer.sval.charAt(0)))
         { node=parseNumber();
@@ -579,11 +585,10 @@ public class ExpressionParser
         else
         { node=parseIdentifierExpression(focus);
         }
-        nextToken();
         break;
       case '"':
         node=new LiteralNode<String>(_tokenizer.sval,String.class);
-        nextToken();
+        consumeToken();
         break;
         
 //      case '0':
@@ -600,7 +605,7 @@ public class ExpressionParser
 //        node=parseNumber();
 //        break;
       case '(':
-        nextToken();
+        consumeToken();
         node=parseExpression();
         expect(')');
         break;
@@ -623,9 +628,9 @@ public class ExpressionParser
     { 
       String name=_tokenizer.sval;
       
-      if (primary instanceof FocusResolveNode)
+      if (primary instanceof PrimaryIdentifierNode)
       {
-        nextToken();
+        consumeToken();
         if (_tokenizer.ttype=='(')
         { 
           // XXX Support global functions
@@ -634,7 +639,7 @@ public class ExpressionParser
         }
         else
         {
-          // The focusResolveNode is the node that will resolve
+          // The PrimaryIdentifierNode is the node that will resolve
           //   the identifier. Pass it through.
           return primary;
         }
@@ -642,11 +647,11 @@ public class ExpressionParser
       }
       else
       {
-        nextToken();
+        consumeToken();
         if (_tokenizer.ttype=='(')
         { 
           // Method call
-          nextToken();
+          consumeToken();
           Node node
             =primary.call
               (name
@@ -663,6 +668,9 @@ public class ExpressionParser
     }
   }
   
+  /**
+   * Parse a general number
+   */
   private Node parseNumber()
     throws ParseException
   {
@@ -683,6 +691,7 @@ public class ExpressionParser
         case 'F':
           return new LiteralNode<Float>(new Float(numberString),Float.class);
         default:
+          _tokenizer.pushBack();
           throwUnexpected();
           return null;
       }
@@ -695,22 +704,26 @@ public class ExpressionParser
     }
   }
   
+  /**
+   * Parse a Decimal number
+   */
   private void parseDecimal(StringBuilder buff)
+    throws ParseException
   {
     parseInteger(buff);
-    nextToken();
     if (_tokenizer.ttype=='.')
     { 
       buff.append(".");
-      nextToken();
+      consumeToken();
       parseInteger(buff);
-    }
-    else
-    { _tokenizer.pushBack();
     }
   }
   
+  /**
+   * Parse an Integer
+   */
   private void parseInteger(StringBuilder buff)
+    throws ParseException
   {
     if (_tokenizer.ttype==StreamTokenizer.TT_WORD
         && Character.isDigit(_tokenizer.sval.charAt(0))
@@ -718,6 +731,12 @@ public class ExpressionParser
     {
 //      System.out.println(_tokenizer.sval);
       buff.append(_tokenizer.sval);
+      consumeToken();
+    }
+    else
+    { 
+      // Can't accept something that doesn't start with a digit here 
+      throwUnexpected();
     }
   }
   
@@ -735,7 +754,7 @@ public class ExpressionParser
     FocusNode focusNode=null;
     if (_tokenizer.ttype=='[')
     {
-      nextToken();
+      consumeToken();
       focusNode=parseFocusSpecifier();
       expect(']');
     }
@@ -751,7 +770,7 @@ public class ExpressionParser
         }
         return null;
       case '.':
-        nextToken();
+        consumeToken();
         if (focusNode==null)
         { focusNode=new CurrentFocusNode();
         }
@@ -769,7 +788,7 @@ public class ExpressionParser
         // If this is an identifier, parseIdentifierExpression() will
         //   catch this as a case not to use a resolve()
         return parsePrimaryExpression
-          (new FocusResolveNode(focusNode,_tokenizer.sval));
+          (new PrimaryIdentifierNode(focusNode,_tokenizer.sval));
       default:
         if (focusNode==null)
         { focusNode=new CurrentFocusNode();
@@ -788,7 +807,10 @@ public class ExpressionParser
     throws ParseException
   { 
     if (focusNode==null)
-    { focusNode=new CurrentFocusNode();
+    { 
+      // Shouldn't happen
+      throw new IllegalArgumentException
+        ("ExpressionParser.parseFocusRelativeExpression: focusNode can't be null");
     }
     
     switch (_tokenizer.ttype)
@@ -804,7 +826,7 @@ public class ExpressionParser
         return parsePostfixExpressionRest(focusNode);
       case '.':
         // The parent focus
-        nextToken();
+        consumeToken();
         FocusNode parentFocusNode=new ParentFocusNode(focusNode);
         return parseFocusRelativeExpression(parentFocusNode);
       default:
@@ -832,11 +854,11 @@ public class ExpressionParser
         case StreamTokenizer.TT_WORD:
         case StreamTokenizer.TT_NUMBER:
           focusName.append(_tokenizer.sval);
-          nextToken();
+          consumeToken();
           break;
         default:
           focusName.append((char) _tokenizer.ttype);
-          nextToken();
+          consumeToken();
           break;
       }
     }

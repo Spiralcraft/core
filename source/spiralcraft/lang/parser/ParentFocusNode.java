@@ -24,19 +24,17 @@ public class ParentFocusNode
   private final FocusNode _child;
 
   public ParentFocusNode(FocusNode child)
-  { _child=child;
+  { 
+    if (child==null)
+    { throw new IllegalArgumentException("ParentFocusNode- child cannot be null");
+    }
+    _child=child;
   }
 
   public Focus findFocus(final Focus focus)
     throws BindException
   { 
-    Focus childFocus;
-    if (_child==null)
-    { childFocus=focus;
-    }
-    else
-    { childFocus=_child.findFocus(focus);
-    }
+    Focus childFocus=_child.findFocus(focus);
 
     Focus parentFocus=childFocus.getParentFocus();
     if (parentFocus!=null)

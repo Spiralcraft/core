@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import spiralcraft.util.lang.ClassUtil;
+
 public class NumericNegateNode<T extends Number>
   extends Node
 {
@@ -50,8 +52,8 @@ public class NumericNegateNode<T extends Number>
     throws BindException
   {
     Optic<T> sourceBinding=focus.<T>bind(new Expression<T>(_node,null));
-    if (!Number.class.isAssignableFrom(sourceBinding.getContentType()))
-    { throw new BindException("Negation operator only applies to numbers");
+    if (!Number.class.isAssignableFrom(ClassUtil.boxedEquivalent(sourceBinding.getContentType())))
+    { throw new BindException("Negation operator only applies to numbers, not "+sourceBinding.getContentType());
     }
 
     NegateLense<? extends Number> lense=(NegateLense<T>) _lenseMap.get(sourceBinding.getContentType());
@@ -59,7 +61,7 @@ public class NumericNegateNode<T extends Number>
     
     if (lense==null)
     { 
-      Class clazz=sourceBinding.getContentType();
+      Class clazz=ClassUtil.boxedEquivalent(sourceBinding.getContentType());
       if (clazz==Integer.class)
       {
         

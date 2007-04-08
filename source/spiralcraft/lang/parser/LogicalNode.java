@@ -62,6 +62,13 @@ public abstract class LogicalNode<T1,T2>
   
   public abstract String getSymbol();
 
+  public Node getLeftOperand()
+  { return _op1;
+  }
+  
+  public Node getRightOperand()
+  { return _op2;
+  }
   
   public void dumpTree(StringBuffer out,String prefix)
   {

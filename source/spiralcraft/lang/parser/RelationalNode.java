@@ -74,6 +74,14 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
     throw new UnsupportedOperationException();
   }
   
+  public boolean isGreaterThan()
+  { return _greaterThan;
+  }
+  
+  public boolean isEqual()
+  { return _equals;
+  }
+  
   public String getSymbol()
   { 
     if (_greaterThan)

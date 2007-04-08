@@ -18,6 +18,11 @@ import spiralcraft.lang.Optic;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
+/**
+ * A reference to a relative Focus. The specific Focus is derived at bind-time from
+ *   the Focus passed to the bind method. The bind method refers to the subject of
+ *   the resulting focus.
+ */
 public abstract class FocusNode
   extends Node
 {

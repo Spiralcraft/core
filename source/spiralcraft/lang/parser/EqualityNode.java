@@ -46,6 +46,10 @@ public class EqualityNode<X>
     throw new UnsupportedOperationException();
   }
   
+  public boolean isNegated()
+  { return _negate;
+  }
+  
   public String getSymbol()
   { return _negate?"!=":"==";
   }
