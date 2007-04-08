@@ -28,7 +28,6 @@ import spiralcraft.data.query.BoundQuery;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.registry.Registrant;
-import spiralcraft.registry.Registry;
 import spiralcraft.registry.RegistryNode;
 
 /**
