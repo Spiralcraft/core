@@ -79,6 +79,7 @@ public class ReflectionType<T>
       ,ArrayList.class
       ,Collection.class
       ,URI.class
+      ,spiralcraft.lang.Expression.class
       );
     
     mapSystemClass
