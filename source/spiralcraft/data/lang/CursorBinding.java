@@ -18,7 +18,6 @@ import spiralcraft.lang.BindException;
 
 
 import spiralcraft.data.Tuple;
-import spiralcraft.data.FieldSet;
 import spiralcraft.data.DataException;
 import spiralcraft.data.transport.Cursor;
 
@@ -36,10 +35,6 @@ public class CursorBinding
   { 
     super(cursor.dataGetFieldSet(),false);
     this.cursor=cursor;
-  }
-
-  public FieldSet getFieldSet()
-  { return ((TuplePrism) getPrism()).getFieldSet();
   }
 
   protected Tuple retrieve()
