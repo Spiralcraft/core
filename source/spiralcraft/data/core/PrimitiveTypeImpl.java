@@ -17,6 +17,7 @@ package spiralcraft.data.core;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.InstanceResolver;
+import spiralcraft.data.DataException;
 
 import spiralcraft.util.StringConverter;
 
@@ -77,6 +78,7 @@ public abstract class PrimitiveTypeImpl<T>
   }
   
   public T fromString(String string)
+    throws DataException
   { 
     if (converter!=null)
     { return converter.fromString(string);
