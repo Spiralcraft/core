@@ -22,7 +22,7 @@ import java.beans.PropertyDescriptor;
 
 import spiralcraft.data.core.FieldImpl;
 
-import spiralcraft.data.spi.StaticInstanceResolver;
+import spiralcraft.data.util.StaticInstanceResolver;
 
 import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;

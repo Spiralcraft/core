@@ -27,7 +27,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.InstanceResolver;
 
-import spiralcraft.data.spi.ConstructorInstanceResolver;
+import spiralcraft.data.util.ConstructorInstanceResolver;
 
 import spiralcraft.stream.Resource;
 import spiralcraft.stream.Resolver;
