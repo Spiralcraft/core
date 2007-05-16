@@ -15,8 +15,17 @@ public class Scan
 
   private Type type;
   
+  /**
+   * Construct an unconfigured Scan
+   */
   public Scan()
-  {
+  { }
+  
+  /**
+   * Construct a new Scan for the given Type
+   */
+  public Scan(Type type)
+  { this.type=type;
   }
   
   public Scan(Query baseQuery)

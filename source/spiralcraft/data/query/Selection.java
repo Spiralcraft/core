@@ -34,7 +34,17 @@ public class Selection
   private Expression<Boolean> constraints;
   
   public Selection()
+  {
+  }
+  
+  /**
+   * Construct a Selection which reads data from the specified source Query and filters
+   *   data according to the specified constraints expression.
+   */
+  public Selection(Query source,Expression<Boolean> constraints)
   { 
+    this.constraints=constraints;
+    addSource(source);
   }
   
   public FieldSet getFieldSet()

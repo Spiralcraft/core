@@ -121,11 +121,7 @@ public abstract class Query
   
   
   public Selection select(Expression<Boolean> constraints)
-  { 
-    Selection selection=new Selection();
-    selection.setConstraints(constraints);
-    selection.setSource(this);
-    return selection;
+  { return new Selection(this,constraints);
   }
   
   /**
