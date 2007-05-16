@@ -35,13 +35,20 @@ public interface JournalTuple
    *   this method will return null. If this Tuple is the most current version,
    *   this method will return a reference to itself.
    */
-  Tuple latestVersion();
+  JournalTuple latestVersion();
   
   /**
    * Return the next version of this Tuple. This method will return null if 
-   *   the Tuple does not have a more up-to date version.
+   *   the Tuple does not have a more up-to date version, or, if the data has been
+   *   deleted, will return a JournalTuple where isDeletedVersion()==true.
    */
-  Tuple nextVersion();
+  JournalTuple nextVersion();
+  
+  /**
+   * Return the DeltaTuple which specified the changes made between this version
+   *   and the next.
+   */
+  DeltaTuple nextDelta();
    
   /**
    * Indicate whether the problem domain object was deleted.
@@ -50,9 +57,9 @@ public interface JournalTuple
   boolean isDeletedVersion();
   
   /**
-   * Create a new JournalTuple from the changes made in the specified Buffer
+   * Create a new JournalTuple from the changes made in the specified DeltaTuple
    *   and set it as the next version in the Journal.
    */
-  JournalTuple update(BufferTuple buffer)
+  JournalTuple update(DeltaTuple delta)
     throws DataException;
 }

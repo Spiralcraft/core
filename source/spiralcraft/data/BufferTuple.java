@@ -14,15 +14,13 @@
 //
 package spiralcraft.data;
 
-import java.util.List;
-
 /**
  * An EditableTuple which holds a copy of data from another Tuple, tracks
  *   modifications, and applies those modifications to the Tuple
  *   in an atomic fashion.
  */
 public interface BufferTuple
-  extends EditableTuple
+  extends EditableTuple,DeltaTuple
 {
   /**
    * Apply all changes (creating a new JournalTuple) and reset the BufferTuple
@@ -45,12 +43,6 @@ public interface BufferTuple
     throws DataException;
   
   /**
-   * Indicate whether the last action resulted in the deletion of the buffered
-   *   Tuple
-   */
-  void isDeleted();
-  
-  /**
    * Reload the data from the Tuple into the Buffer and merge it with local
    *   changes. Locally modified data that has not been updated in the Tuple
    *   will survive the merge. Non-local changes will always overwrite local
@@ -58,21 +50,6 @@ public interface BufferTuple
    */
   void refresh()
     throws DataException;
-  
-  /**
-   * Return the Tuple being buffered by this BufferTuple
-   */
-  Tuple getOriginal();
-  
-  /**
-   * Return a List of locally modified fields
-   */
-  List<Field> getDirtyFields();
-
-  /**
-   * Indicate whether the field specified by the index has been locally modified
-   */
-  boolean isDirty(int index);
   
   /**
    * Indicate whether any data has been locally modified
