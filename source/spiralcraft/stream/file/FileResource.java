@@ -36,6 +36,12 @@ public class FileResource
   private File _file;
   private Resource[] _contents;
 
+  public FileResource(File file)
+  { 
+    super(file.toURI());
+    _file=file;
+  }
+  
   public FileResource(URI uri)
     throws UnresolvableURIException
   { 
@@ -113,6 +119,14 @@ public class FileResource
     }
   }
 
+  public String getLocalName()
+  { return _file.getName();
+  }
+  
+  public long getLastModified()
+  { return _file.lastModified();
+  }
+  
   public Resource[] listContents()
   { 
     makeContents();
@@ -131,7 +145,7 @@ public class FileResource
     return null;
   }
 
-  public Resource createChild(String name)
+  public Resource getChild(String name)
     throws UnresolvableURIException
   { return new FileResource(new File(_file,name).toURI());
   }

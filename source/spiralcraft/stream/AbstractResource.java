@@ -65,6 +65,13 @@ public abstract class AbstractResource
   }
 
   /**
+   * Doesn't know about local naming
+   */
+  public String getLocalName()
+  { return null;
+  }
+  
+  /**
    * Write not supported by default
    */
   public boolean supportsWrite()
@@ -93,6 +100,11 @@ public abstract class AbstractResource
   public boolean exists()
     throws IOException
   { return false;
+  }
+  
+  public long getLastModified()
+    throws IOException
+  { return 0;
   }
   
   /**

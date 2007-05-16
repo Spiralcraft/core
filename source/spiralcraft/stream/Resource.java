@@ -84,9 +84,15 @@ public interface Resource
     throws IOException;
   
   /**
-   * Return the enclosing or containing Resource.
+   * @return the enclosing or containing Resource.
    */
   public Resource getParent();
+  
+  /**
+   * 
+   * @return The name of this resource with respect to its parent
+   */
+  public String getLocalName();
   
   /**
    * Indicate whether the resource exists (ie. operations against
@@ -94,7 +100,14 @@ public interface Resource
    */
   public boolean exists()
     throws IOException;
-    
+  
+  /**
+   * @return The long integer representation of the time this resource was
+   *   last modified.
+   */
+  public long getLastModified()
+    throws IOException;
+  
   /**
    * Copy this resource from the source resource in the
    *   most efficient way possible.

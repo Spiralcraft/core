@@ -47,10 +47,10 @@ public interface Container
     throws IOException;
 
   /**
-   * Create a new Resource in this container with the specified name
+   * Obtain a child resource with the specified name
    *  (the actual backing resource may not exist until it is written to).
    */
-  Resource createChild(String name)
+  Resource getChild(String name)
     throws UnresolvableURIException;
 
   /**
