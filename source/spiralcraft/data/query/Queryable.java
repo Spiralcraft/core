@@ -27,11 +27,12 @@ import java.util.List;
  * <P>A Queryable is anything that can execute a Query and provide a Cursor of
  *   result Tuples.
  * 
- * <P>A Query must be bound before it can be executed. When a Query is bound, data
- *   paths are established from the data sources and all parameter sources.
+ * <P>A Query must be bound before it can be executed. When a Query is bound,
+ *   data paths are established from the data sources and all parameter
+ *   sources.
  *   
- * <P>Once bound, the Query can be repeatedly executed efficiently for different 
- *   parameter values.
+ * <P>Once bound, the Query can be repeatedly executed efficiently for
+ *   different parameter values.
  */
 public interface Queryable
 {
@@ -47,11 +48,13 @@ public interface Queryable
   boolean containsType(Type type);
   
   /**
-   * Returns all instances of a Type for further manipulation by BoundQueries. This method
-   *   is used when a Queryable cannot provide an optimized implementation for the simplest
-   *   of Queries, or if no optimization is needed. 
+   * Returns all data instances of a specific Type for further manipulation by
+   *   BoundQueries. This method is used when a Queryable cannot provide
+   *   an optimized implementation for the simplest of Queries, or if no 
+   *   optimization is needed. 
    * 
-   * @return A boundQuery which provides the set of all instances for a given type. 
+   * @return A boundQuery which provides the set of all instances for a given
+   *   type. 
    */
   BoundQuery getAll(Type type) 
     throws DataException;
@@ -60,8 +63,8 @@ public interface Queryable
   /**
    * Bind the specified Query and parameter context to this Queryable.
    * 
-   *@return a BoundQuery that implements the data flow path and provides the data requested
-   *  by the Query
+   *@return a BoundQuery that implements the data flow path and provides the
+   *  data requested by the Query
    */
   BoundQuery query(Query q,Focus context)
     throws DataException;
