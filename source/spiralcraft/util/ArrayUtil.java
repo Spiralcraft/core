@@ -349,6 +349,30 @@ public class ArrayUtil
     return hashCode;
   }
   
+  public static final <X> Iterator<X> iterator(final X[] array)
+  {
+    return new Iterator<X>()
+    {
+      private int index=0;
+      private int length=array.length;
+
+      public boolean hasNext()
+      { return index<length;
+      }
+      
+      public X next()
+      { return array[index++];
+      }
+      
+      public void remove()
+      { 
+        throw new UnsupportedOperationException
+          ("Can't remove from array");
+      }
+    };
+    
+  }
+  
   public static final Iterable iterable(final Object array)
   {
     return new Iterable()
