@@ -24,6 +24,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataException;
+import spiralcraft.data.DataComposite;
 
 import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.sax.DataWriter;
@@ -121,15 +122,15 @@ public abstract class AbstractXmlObject<T,C>
         else
         {
         
-          Tuple tuple = (Tuple) reader.readFromResource
+          DataComposite composite = (DataComposite) reader.readFromResource
             (resource
             ,type
             );
 
-          Type actualType=tuple.getType();
+          Type actualType=composite.getType();
           verifyType(actualType);
 
-          instance = (C) actualType.fromData(tuple,null);
+          instance = (C) actualType.fromData(composite,null);
           type=actualType; 
         }
       }
