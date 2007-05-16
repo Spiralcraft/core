@@ -20,6 +20,9 @@ import spiralcraft.stream.Resource;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 
+import spiralcraft.data.transport.DataConsumer;
+import spiralcraft.data.Tuple;
+
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -33,10 +36,16 @@ import javax.xml.parsers.SAXParser;
 
 
 /**
- * Reads SAX events into a Data graph.
+ * Reads SAX events into a Data graph, and returns the root object, which can be
+ *   either a DataComposite (Tuple or Aggregate) or a simple primitive Java object.
  */
 public class DataReader
 {
+  private DataConsumer<? super Tuple> dataConsumer;
+  
+  public void setDataConsumer(DataConsumer<? super Tuple> dataConsumer)
+  { this.dataConsumer=dataConsumer;
+  }
   
   public Object readFromURI(URI uri,Type formalType)
     throws SAXException,IOException,DataException
@@ -94,6 +103,10 @@ public class DataReader
     }
     
     DataHandler handler=new DataHandler(formalType,resourceURI);
+    if (dataConsumer!=null)
+    { handler.setDataConsumer(dataConsumer);
+    }
+    
     try
     { parser.parse(in,handler);
     }

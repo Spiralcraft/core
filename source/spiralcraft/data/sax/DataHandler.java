@@ -18,11 +18,14 @@ import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.EditableTuple;
+import spiralcraft.data.Tuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.TypeMismatchException;
 import spiralcraft.data.FieldNotFoundException;
+
+import spiralcraft.data.transport.DataConsumer;
 
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.EditableArrayListAggregate;
@@ -46,7 +49,7 @@ public class DataHandler
   // private final TypeResolver resolver=TypeResolver.getTypeResolver();
   private Frame currentFrame;
   private URI resourceURI;
-  
+  private DataConsumer<? super Tuple> dataConsumer;
   
   /**
    * Construct a new DataReader which expects to read the specified
@@ -58,6 +61,14 @@ public class DataHandler
     this.resourceURI=resourceURI;
   }
 
+  /**
+   * Specify the DataConsumer that will receive all Tuples contained within
+   *   an outermost aggregate type. 
+   */
+  public void setDataConsumer(DataConsumer<? super Tuple> consumer)
+  { this.dataConsumer=consumer;
+  }
+  
   public Object getCurrentObject()
   { return currentFrame.getObject();
   }
@@ -350,6 +361,19 @@ public class DataHandler
     }
 
     /**
+     * Create a new Frame to read the specified Type
+     */
+    protected Frame createFrame(Type type)
+    {
+      if (type.isAggregate())
+      { return new AggregateFrame(type);
+      }
+      else
+      { return new DetailFrame(type);
+      }
+    }
+    
+    /**
      * Deal with adding an object
      */
     protected abstract void addObject(Object objet)
@@ -567,7 +591,8 @@ public class DataHandler
       }
       Type type=resolveType(uri,localName);
       assertCompatibleType(formalType,type);
-      return new DetailFrame(type);
+      return createFrame(type);
+
     }
     
     public void endChild(Frame child)
@@ -576,6 +601,72 @@ public class DataHandler
     }
   }
   
+  /**
+   * Expects one or more Objects in the form of Type elements, which are fed to
+   *   a DataConsumer in sequence.
+   * 
+   * The literal or Type elements must be compatible with the formalType, which must
+   *   be an Aggregate type.
+   */
+  class ConsumerFrame
+    extends ContainerFrame
+  {
+    private final DataConsumer<? super Tuple> consumer;
+    
+    protected ConsumerFrame(Type formalType,DataConsumer<? super Tuple> consumer)
+      throws DataException
+    {
+      super(formalType);
+      this.consumer=consumer;
+      consumer.dataInitialize(formalType.getContentType().getScheme());
+    }
+    
+    /**
+     * No Data object is retained by the ConsumerFrame
+     */
+    public Object getObject()
+    { return null;
+    }
+    
+    protected void addObject(Object object)
+      throws SAXException
+    {
+      try
+      { consumer.dataAvailable((Tuple) object);
+      }
+      catch (DataException x)
+      { throw new SAXException("Error handling Tuple "+x,x);
+      }
+      
+      
+    }
+    
+    // We've encountered an Object
+    public Frame newChild
+      (String uri
+      ,String localName
+      ,String qName
+      ,Attributes attribs
+      )
+      throws SAXException,DataException
+    {
+      Type type=resolveType(uri,localName);
+      assertCompatibleType(formalType.getContentType(),type);
+      return createFrame(type);
+    }    
+    
+    public void endChild(Frame child)
+      throws SAXException
+    { addObject(child.getObject());
+    }    
+    
+    protected void closeFrame()
+      throws SAXException,DataException
+    { 
+      super.closeFrame();
+      consumer.dataFinalize();
+    }
+  }
   
   /**
    * Expects an Object in the form of a literal or one or more 
@@ -585,7 +676,6 @@ public class DataHandler
   class AggregateFrame
     extends ContainerFrame
   { 
-    
     private EditableArrayListAggregate<? super Object> aggregate;
     
     protected AggregateFrame(Type formalType)
@@ -616,7 +706,7 @@ public class DataHandler
     {
       Type type=resolveType(uri,localName);
       assertCompatibleType(formalType.getContentType(),type);
-      return new DetailFrame(type);
+      return createFrame(type);
     }
     
     public void endChild(Frame child)
@@ -637,10 +727,38 @@ public class DataHandler
     { super(formalType);
     }
     
-    public void endChild(Frame child)
-      throws SAXException
-    { addObject(child.getObject());
+    // We've encountered an Object
+    public Frame newChild
+      (String uri
+      ,String localName
+      ,String qName
+      ,Attributes attribs
+      )
+      throws SAXException,DataException
+    {
+      Type type=resolveType(uri,localName);
+      assertCompatibleType(formalType,type);
+      
+      if (dataConsumer!=null)
+      { 
+        if (type.isAggregate())
+        { return new ConsumerFrame(type,dataConsumer);
+        }
+        else
+        { 
+          throw new DataException
+            ("Outermost element must be an aggregate Type to use a" +
+            " DataConsumer"
+            );
+                
+        }
+      }
+      else
+      { return createFrame(type);
+      }
+
     }
+
   }
   
 }
