@@ -22,7 +22,7 @@ import spiralcraft.data.Tuple;
  * A passive consumer of Tuple data, implemented by components that process a stream
  *   of Tuples.
  */
-public interface DataConsumer
+public interface DataConsumer<T extends Tuple>
 {
   /**
    * Called once before dataAvailable() to allow the DataConsumer to verify
@@ -35,7 +35,7 @@ public interface DataConsumer
    * Called one or more times when data is available to consume. The
    *   DataConsumer should copy data from this tuple.
    */
-  void dataAvailable(Tuple tuple)
+  void dataAvailable(T tuple)
     throws DataException;
     
   /**

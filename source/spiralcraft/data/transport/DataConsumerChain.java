@@ -14,11 +14,13 @@
 //
 package spiralcraft.data.transport;
 
+import spiralcraft.data.Tuple;
+
 /**
  * Processes data from a DataSource and sends it to the DataHandler
  */
-public interface DataConsumerChain
-  extends DataConsumer
+public interface DataConsumerChain<T extends Tuple>
+  extends DataConsumer<T>
 {
   
   /**
