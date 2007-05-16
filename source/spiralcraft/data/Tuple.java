@@ -37,7 +37,8 @@ package spiralcraft.data;
  *
  * Implementations of Tuple must implement the equals() and the hashCode()
  *   methods appropriately. A Tuple is considered equal to another tuple if
- *   and only if all of its data elements are of compatible types and are equal.
+ *   and only if all of its data elements are of compatible types and are equal,
+ *   and both tuples share the same Scheme.
  *
  */
 public interface Tuple
@@ -104,6 +105,12 @@ public interface Tuple
   boolean isMutable();
   
   /**
+   * @return an immutable snapshot copy of this Tuple.
+   */
+  Tuple snapshot()
+    throws DataException;
+  
+  /**
    * Return the Tuple's hash code, which is a function of the Tuple's data
    *   elements.
    */
@@ -112,7 +119,8 @@ public interface Tuple
   /**
    * Indicate whether this tuple is data-equivalent to another. Tuple 'a'
    *   is considered equal to Tuple 'b' if and only if each data element in
-   *   Tuple 'a' is equal to its counterpart in Tuple 'b'.
+   *   Tuple 'a' is equal to its counterpart in Tuple 'b', and both Tuples
+   *   have the same Scheme.
    */
   boolean equals(Object o);
   
