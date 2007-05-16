@@ -14,22 +14,31 @@
 //
 package spiralcraft.util;
 
+import java.util.Iterator;
 
 /**
- * An immutable sequence of Strings which represent elements in a hierarchy.
+ * An immutable sequence of Strings which represent elements in an abstract hierarchy.
  */ 
 public class Path
+  implements Iterable<String>
 {
   private boolean _absolute=false;
   private final String[] _elements;
   private final int _hashCode;
   
+  /**
+   * Construct an empty Path
+   */
   public Path()
   { 
     _elements=new String[0];
     _hashCode=0;
   }
-  
+
+  /**
+   * Construct a path made up of a set of tokens embedded in a String and separated by
+   *   the specified delimiter
+   */
   public Path(String source,char delimiter)
   { 
     if (source.startsWith(Character.toString(delimiter)))
@@ -39,6 +48,9 @@ public class Path
     _hashCode=ArrayUtil.arrayHashCode(_elements)*(_absolute?13:1);
   }
   
+  /**
+   * Construct a path made up of the set of tokens in the specified String[].
+   */
   public Path(String[] elements,boolean absolute)
   { 
     _absolute=absolute;
@@ -46,14 +58,24 @@ public class Path
     _hashCode=ArrayUtil.arrayHashCode(_elements)*(_absolute?13:1);
   }
 
+  /**
+   * Append the specified array of elements to the path 
+   */
   public Path append(String[] elements)
   { return new Path( (String[]) ArrayUtil.appendArrays(_elements,elements),_absolute);
   }
 
+  /**
+   * Append a single element to the path
+   */
   public Path append(String element)
   { return new Path( (String[]) ArrayUtil.append(_elements,element),_absolute);
   }
-  
+
+  /**
+   * 
+   * @return the last element in the path
+   */
   public String lastElement()
   { 
     if (_elements.length==0)
@@ -63,7 +85,11 @@ public class Path
     { return _elements[_elements.length-1];
     }
   }
-  
+
+  /**
+   * 
+   * @return the path up to, but not including the last element
+   */
   public Path parentPath()
   { 
     if (_elements.length>1)
@@ -77,14 +103,42 @@ public class Path
     }
   }
   
+  /**
+   *@return the sub-path starting at the specified element
+   */
+  public Path subPath(int startElement)
+  { 
+    if (_elements.length>startElement)
+    { 
+      String[] newElements=new String[_elements.length-startElement];
+      System.arraycopy(_elements,startElement,newElements,0,newElements.length);
+      return new Path(newElements,false);
+    }
+    else
+    { return new Path();
+    }
+  }
+  
+  /**
+   * 
+   * @return The element at the specified index in the path
+   */
   public String getElement(int index)
   { return _elements[index];
   }
   
+  /**
+   * 
+   * @return The number of elements in the path
+   */
   public int size()
   { return _elements.length;
   }
   
+  /**
+   * 
+   * @return The elements as a String[]
+   */
   public String[] elements()
   { return _elements;
   }
@@ -93,16 +147,39 @@ public class Path
   { return _hashCode;
   }
   
-  public boolean equals(Path path)
+  public boolean equals(Object o)
   { 
+    if (!(o instanceof Path))
+    { return false;
+    }
+    Path path=(Path) o;
     if (path==null)
+    { return false;
+    }
+    if (path.isAbsolute()!=_absolute)
     { return false;
     }
     return ArrayUtil.arrayEquals(_elements,path.elements());
   }
   
-  public String format(String delimiter)
-  { return (_absolute?delimiter:"")+ArrayUtil.format(_elements,delimiter,null);
+  /**
+   * @return Whether the path begins at a 'root' (not reprented as an element)
+   */
+  public boolean isAbsolute()
+  { return _absolute;
+  }
+  
+  /**
+   * 
+   * @return A String representation of the path with the elements separated by the
+   *   specified separator string
+   */
+  public String format(String separator)
+  { return (_absolute?separator:"")+ArrayUtil.format(_elements,separator,null);
+  }
+  
+  public Iterator<String> iterator()
+  { return ArrayUtil.<String>iterator(_elements);
   }
   
   public String toString()
