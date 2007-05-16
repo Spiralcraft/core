@@ -14,6 +14,8 @@
 //
 package spiralcraft.data;
 
+import spiralcraft.data.query.Query;
+
 /**
  * A set of Fields within a Scheme which uniquely identify a single Tuple 
  *   or distinctly identify a group of Tuples within a given Space.
@@ -53,5 +55,11 @@ public interface Key
    *   for this Key's Fields. 
    */
   public Key getImportedKey();
+  
+  /**
+   * @return The Query that will return the Tuple or Tuples when provided with
+   *   the matching Field values.
+   */
+  public Query getQuery();
   
 }

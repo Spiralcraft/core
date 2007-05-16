@@ -23,6 +23,13 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldNotFoundException;
 
+import spiralcraft.data.query.Query;
+import spiralcraft.data.query.Selection;
+import spiralcraft.data.query.Scan;
+
+import spiralcraft.lang.Expression;
+import spiralcraft.lang.ParseException;
+
 import spiralcraft.util.StringUtil;
 
 public class KeyImpl
@@ -36,6 +43,7 @@ public class KeyImpl
   private Type foreignType;
   private KeyImpl importedKey;
   private String[] fieldNames;
+  private Query query;
 
 
   /**
@@ -118,6 +126,10 @@ public class KeyImpl
   { this.importedKey=key;
   }
 
+  public Query getQuery()
+  { return query;
+  }
+  
   public void setFieldList(String fieldList)
   {
     assertUnresolved();
@@ -162,6 +174,31 @@ public class KeyImpl
       importedKey.setScheme(importedScheme);
       importedKey.resolve();
     }
+    
+    StringBuilder expression=new StringBuilder();
+    for (String fieldName: fieldNames)
+    { 
+      if (expression.length()>0)
+      { expression.append(" && ");
+      }
+      expression.append(fieldName).append("==").append("..").append(fieldName);
+    }
+//    System.err.println("KeyImpl: expression= ["+expression+"]");
+    
+    try
+    {
+      query
+        =new Selection
+          (new Scan(scheme.getType())
+          ,Expression.<Boolean>parse(expression.toString())
+          );
+    }
+    catch (ParseException x)
+    { 
+      throw new DataException
+        ("Error parsing Key expression '"+expression.toString()+"':"+x,x);
+    }
+    
     super.resolve();
 
   }

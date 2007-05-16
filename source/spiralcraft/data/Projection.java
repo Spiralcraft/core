@@ -14,8 +14,6 @@
 //
 package spiralcraft.data;
 
-import spiralcraft.data.transport.Cursor;
-
 
 /**
  * <P>A horizontal transformation of data described by one FieldSet (the Master
@@ -37,27 +35,11 @@ public interface Projection
   public FieldSet getMasterFieldSet();
   
   /**
-   * <P>Materialize the projection for a single Tuple by computing the value for
-   *   each Field.
-   * 
-   * <P>If this Projection needs to be materialized for more than one Tuple,
-   *   use the <code>bind(Cursor master)</code> method for efficiency.
-   * 
-   * @return A Tuple which contains the values resulting from the transformation
-   *   of the specified masterTuple.
+   * Create a BoundProjection that materializes this Projection
    */
-  public Tuple project(Tuple masterTuple)
+  public BoundProjection createBinding()
     throws DataException;
   
-  /**
-   * Bind a Cursor which materializes this projection to perform a bulk
-   *   operation. 
-   * 
-   *@return A Cursor which provides a Tuple defined by this FieldSet for
-   *  every Tuple of the master FieldSet returned by the specified master
-   *  Cursor
-   */
-  public Cursor bind(Cursor master)
-    throws DataException;
+
   
 }

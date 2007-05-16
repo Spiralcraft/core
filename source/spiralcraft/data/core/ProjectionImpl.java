@@ -20,22 +20,16 @@ import java.util.HashMap;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Projection;
+import spiralcraft.data.BoundProjection;
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.Tuple;
 
-import spiralcraft.data.spi.ArrayTuple;
-import spiralcraft.data.spi.ListCursor;
-
-import spiralcraft.data.transport.Cursor;
-
-import spiralcraft.data.lang.CursorBinding;
 import spiralcraft.data.lang.BoundTuple;
+import spiralcraft.data.lang.TupleFocus;
 
-import spiralcraft.lang.DefaultFocus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Optic;
-import spiralcraft.lang.Focus;
 
 public class ProjectionImpl
   implements Projection
@@ -122,64 +116,48 @@ public class ProjectionImpl
     resolved=true;
   }
   
-  public Tuple project(Tuple source)
+  
+  public BoundProjection createBinding()
     throws DataException
-  { 
-    ListCursor cursor=new ListCursor<Tuple>(masterFieldSet,source);
-    cursor.dataNext();
-    return bind(cursor).dataGetTuple();
+  { return new Binding();
   }
   
-  public Cursor bind(Cursor source)
-    throws DataException
+    
+  class Binding
+    implements BoundProjection
   {
-    try
-    {
-      if (source.dataGetFieldSet()!=masterFieldSet)
-      { 
-        throw new DataException
-          ("Cursor of type "+source.dataGetFieldSet()
-          +" cannot be bound by a Projection of type "
-          +masterFieldSet.toString()
-          );
-      }
-      CursorBinding cursorBinding=new CursorBinding(source);
-      DefaultFocus focus=new DefaultFocus<Tuple>(cursorBinding);
-      return new ProjectionCursor(cursorBinding,focus);
-    }
-    catch (BindException x)
-    { 
-      throw new DataException
-        ("Error binding Projection "+toString()+": "+x
-        ,x
-        );
-    }
-  }
-  
-  class ProjectionCursor
-    implements Cursor
-  {
+    private final TupleFocus<Tuple> focus;
+    
     private final BoundTuple boundTuple;
     
-    public ProjectionCursor(CursorBinding source,Focus focus)
-      throws BindException
+    public Binding()
+      throws DataException
     { 
+      focus=new TupleFocus<Tuple>(masterFieldSet);
+      
       Optic[] bindings=new Optic[mappings.size()];
       int i=0;
       for (Mapping mapping: mappings)
-      { bindings[i++]=mapping.bind(source,focus);
+      { 
+        try
+        { bindings[i++]=mapping.bind(focus);
+        }
+        catch (BindException x)
+        { throw new DataException("Error binding mapping '"+mapping+"' "+x,x);
+        }
       }
       boundTuple=new BoundTuple(ProjectionImpl.this,bindings);
     }
-    
-    public FieldSet dataGetFieldSet()
+
+    public Projection getProjection()
     { return ProjectionImpl.this;
     }
     
-    public Tuple dataGetTuple()
+    public Tuple project(Tuple masterTuple)
       throws DataException
     { 
-      return new ArrayTuple(boundTuple);
+      focus.setTuple(masterTuple);
+      return boundTuple;
     }
   }
   
@@ -190,7 +168,7 @@ public class ProjectionImpl
  */
 abstract class Mapping
 {
-  public abstract Optic bind(CursorBinding source,Focus focus)
+  public abstract Optic bind(TupleFocus<Tuple> focus)
     throws BindException;
 
 }
@@ -204,9 +182,9 @@ class FieldMapping
   { this.masterField=masterField;
   }
   
-  public Optic bind(CursorBinding source,Focus focus)
+  public Optic bind(TupleFocus<Tuple> focus)
     throws BindException
-  { return source.resolve(focus,masterField.getName(),null);
+  { return focus.getSubject().resolve(focus,masterField.getName(),null);
     
   }
 }
