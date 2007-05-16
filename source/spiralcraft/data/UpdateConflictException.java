@@ -18,7 +18,7 @@ package spiralcraft.data;
  * Thrown when a BufferTuple is committed and the change is incompatible with
  *   changes made in another journal update.
  */
-public class BufferConflictException
+public class UpdateConflictException
   extends DataException
 {
   private static final long serialVersionUID=1;
@@ -26,8 +26,8 @@ public class BufferConflictException
   // private BufferTuple buffer;
   // private JournalTuple journal;
   
-  public BufferConflictException
-    (BufferTuple buffer, JournalTuple journal)
+  public UpdateConflictException
+    (DeltaTuple requested, DeltaTuple existing)
   { 
     super();
     // this.buffer=buffer;
