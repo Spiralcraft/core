@@ -124,6 +124,17 @@ public abstract class AbstractTuple
     }
   }
   
+  public Tuple snapshot()
+    throws DataException
+  { 
+    if (isMutable())
+    { return new ArrayTuple(this);
+    }
+    else
+    { return this;
+    }
+  }
+  
   public boolean isMutable()
   { return false;
   }

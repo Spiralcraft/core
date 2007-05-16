@@ -80,6 +80,11 @@ public class ReadOnlyFascadeTuple
   { return delegate.isMutable();
   }
   
+  public Tuple snapshot()
+    throws DataException
+  { return delegate.snapshot();
+  }
+  
   public boolean equals(Object o)
   { return delegate.equals(o);
   }
