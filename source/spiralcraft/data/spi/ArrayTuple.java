@@ -49,12 +49,27 @@ public class ArrayTuple
     this.data=new Object[fieldSet.getFieldCount()];
     
     for (Field field : fieldSet.fieldIterable())
-    { data[field.getIndex()]=field.getValue(original);
+    { 
+      Object originalValue=original.get(field.getIndex());
+      if (originalValue instanceof Tuple)
+      { 
+        Tuple originalTuple=(Tuple) originalValue;
+        if (originalTuple.isMutable())
+        { data[field.getIndex()]=new ArrayTuple(originalTuple);
+        }
+        else
+        { data[field.getIndex()]=originalValue;
+        }
+      }
+      else
+      { data[field.getIndex()]=originalValue;
+      }
     }
   }
 
   
   public Object get(int index)
+    throws DataException
   { return data[index];
   }
   
