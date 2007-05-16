@@ -102,7 +102,7 @@ public class PrimaryIdentifierNode
 
   public void dumpTree(StringBuffer out,String prefix)
   { 
-    out.append(prefix).append("FocusResolve '"+_identifier+"'");
+    out.append(prefix).append("PrimaryIdentifier '"+_identifier+"'");
     prefix=prefix+"  ";
     if (_source!=null)
     { _source.dumpTree(out,prefix);

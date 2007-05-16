@@ -463,7 +463,7 @@ public class ExpressionParser
   /**
    * PostfixExpression -> FocusExpression
    *                     ( "[" Expression "]"
-   *                     | "." IdentifierExpression
+   *                     | "." DereferenceExpression
    *                     ) *
    */
   private Node parsePostfixExpression()
@@ -508,7 +508,7 @@ public class ExpressionParser
         return parsePostfixExpressionRest(subscriptNode);
       case '.':
         consumeToken();
-        return parseIdentifierExpression(primary);
+        return parseDereferenceExpression(primary);
       default:
         return primary;
     }
@@ -516,6 +516,99 @@ public class ExpressionParser
     
   }
 
+  /**
+   * FocusExpression -> ( "[" FocusSpecifier "]" ) 
+   *                    ( "." FocusRelativeExpression 
+   *                      | IdentifierExpression
+   *                      | PrimaryExpression
+   *                    )
+   */
+  private Node parseFocusExpression()
+    throws ParseException
+  { 
+    FocusNode focusNode=null;
+    if (_tokenizer.ttype=='[')
+    {
+      consumeToken();
+      focusNode=parseFocusSpecifier();
+      expect(']');
+    }
+
+    switch (_tokenizer.ttype)
+    {
+      case StreamTokenizer.TT_EOF:
+        if (focusNode!=null)
+        { return focusNode;
+        }
+        else
+        { throwUnexpected();
+        }
+        return null;
+      case '.':
+        consumeToken();
+        if (focusNode==null)
+        { focusNode=new CurrentFocusNode();
+        }
+        Node ret=parseFocusRelativeExpression(focusNode);
+        if (debug)
+        { alert("parseFocusExpression():'.'");
+        }
+        return ret;
+      case StreamTokenizer.TT_WORD:
+        // Either a literal, or 
+        if (debug)
+        { alert("parseFocusExpression.TT_WORD");
+        }
+        
+        // If this is an identifier, parseIdentifierExpression() will
+        //   catch this as a case not to use a resolve()
+        return parsePrimaryExpression(focusNode);
+      default:
+        if (focusNode==null)
+        { focusNode=new CurrentFocusNode();
+        }
+        return parsePrimaryExpression(focusNode);
+        
+    }
+  }
+
+  /**
+   * FocusRelativeExpression -> "." FocusRelativeExpression 
+   *                            | PostfixExpressionRest
+   */
+  @SuppressWarnings("unchecked") // Parser methods are heterogeneous  
+  private Node parseFocusRelativeExpression(FocusNode focusNode)
+    throws ParseException
+  { 
+    if (focusNode==null)
+    { 
+      // Shouldn't happen
+      throw new IllegalArgumentException
+        ("ExpressionParser.parseFocusRelativeExpression: focusNode can't be null");
+    }
+    
+    switch (_tokenizer.ttype)
+    {
+      case StreamTokenizer.TT_EOF:
+        // implicit 'this', refers to subject of focus
+        return focusNode;
+      case StreamTokenizer.TT_WORD:
+        // a name resolve or method call against the subject of the focus
+        return parseDereferenceExpression(focusNode);
+      case '[':
+        // an array subscript against the subject of the focus
+        return parsePostfixExpressionRest(focusNode);
+      case '.':
+        // The parent focus
+        consumeToken();
+        FocusNode parentFocusNode=new ParentFocusNode(focusNode);
+        return parseFocusRelativeExpression(parentFocusNode);
+      default:
+        throwUnexpected();
+        return null;
+    }
+  }
+  
   /**
    * ExpressionList -> Expression ("," Expression)*
    */
@@ -557,7 +650,7 @@ public class ExpressionParser
    *                    | IdentifierExpression
    *                    | "(" Expression ")"
    */
-  private Node parsePrimaryExpression(Node focus)
+  private Node parsePrimaryExpression(FocusNode focus)
     throws ParseException
   {
     Node node=null;
@@ -604,7 +697,7 @@ public class ExpressionParser
 //      case StreamTokenizer.TT_NUMBER:
 //        node=parseNumber();
 //        break;
-      case '(':
+      case '(': //        "(" expression ")" - recursive reference
         consumeToken();
         node=parseExpression();
         expect(')');
@@ -614,9 +707,9 @@ public class ExpressionParser
   }
 
   /**
-   * IdentifierExpression -> Name ( "(" expressionList ")" )
+   * DereferenceExpression -> Name ( "(" expressionList ")" )
    */
-  private Node parseIdentifierExpression(Node primary)
+  private Node parseDereferenceExpression(Node primary)
     throws ParseException
   { 
     if (_tokenizer.ttype!=StreamTokenizer.TT_WORD)
@@ -627,43 +720,53 @@ public class ExpressionParser
     else
     { 
       String name=_tokenizer.sval;
-      
-      if (primary instanceof PrimaryIdentifierNode)
-      {
+      consumeToken();
+      if (_tokenizer.ttype=='(')
+      { 
+        // Method call
         consumeToken();
-        if (_tokenizer.ttype=='(')
-        { 
-          // XXX Support global functions
-          throwUnexpected();
-          return null;
-        }
-        else
-        {
-          // The PrimaryIdentifierNode is the node that will resolve
-          //   the identifier. Pass it through.
-          return primary;
-        }
-        
+        Node node
+          =primary.call
+            (name
+            ,parseExpressionList()
+            );
+        expect(')');
+        return parsePostfixExpressionRest(node);
+      }
+      else
+      { return parsePostfixExpressionRest(primary.resolve(name));
+      }
+    }
+  }
+
+  /**
+   * IdentifierExpression -> Name ( "(" expressionList ")" )
+   */
+  private Node parseIdentifierExpression(FocusNode focus)
+    throws ParseException
+  { 
+    if (_tokenizer.ttype!=StreamTokenizer.TT_WORD)
+    { 
+      throwUnexpected();
+      return null;
+    }
+    else
+    { 
+      String name=_tokenizer.sval;
+      Node primary=new PrimaryIdentifierNode(focus,name);
+      
+      consumeToken();
+      if (_tokenizer.ttype=='(')
+      { 
+        // XXX Support global functions
+        throwUnexpected();
+        return null;
       }
       else
       {
-        consumeToken();
-        if (_tokenizer.ttype=='(')
-        { 
-          // Method call
-          consumeToken();
-          Node node
-            =primary.call
-              (name
-              ,parseExpressionList()
-              );
-          expect(')');
-          return parsePostfixExpressionRest(node);
-        }
-        else
-        {
-          return parsePostfixExpressionRest(primary.resolve(name));
-        }
+        // The PrimaryIdentifierNode is the node that will resolve
+        //   the identifier. Pass it through.
+        return primary;
       }
     }
   }
@@ -741,99 +844,6 @@ public class ExpressionParser
   }
   
 
-  /**
-   * FocusExpression -> ( "[" FocusSpecifier "]" ) 
-   *                    ( "." RelativeFocusExpression 
-   *                      | IdentifierExpression
-   *                      | PrimaryExpression
-   *                    )
-   */
-  private Node parseFocusExpression()
-    throws ParseException
-  { 
-    FocusNode focusNode=null;
-    if (_tokenizer.ttype=='[')
-    {
-      consumeToken();
-      focusNode=parseFocusSpecifier();
-      expect(']');
-    }
-
-    switch (_tokenizer.ttype)
-    {
-      case StreamTokenizer.TT_EOF:
-        if (focusNode!=null)
-        { return focusNode;
-        }
-        else
-        { throwUnexpected();
-        }
-        return null;
-      case '.':
-        consumeToken();
-        if (focusNode==null)
-        { focusNode=new CurrentFocusNode();
-        }
-        Node ret=parseFocusRelativeExpression(focusNode);
-        if (debug)
-        { alert("parseFocusExpression():'.'");
-        }
-        return ret;
-      case StreamTokenizer.TT_WORD:
-        // Either a literal, or 
-        if (debug)
-        { alert("parseFocusExpression.TT_WORD");
-        }
-        
-        // If this is an identifier, parseIdentifierExpression() will
-        //   catch this as a case not to use a resolve()
-        return parsePrimaryExpression
-          (new PrimaryIdentifierNode(focusNode,_tokenizer.sval));
-      default:
-        if (focusNode==null)
-        { focusNode=new CurrentFocusNode();
-        }
-        return parsePrimaryExpression(focusNode);
-        
-    }
-  }
-
-  /**
-   * FocusRelativeExpression -> "." FocusRelativeExpression 
-   *                            | PostfixExpressionRest
-   */
-  @SuppressWarnings("unchecked") // Parser methods are heterogeneous  
-  private Node parseFocusRelativeExpression(FocusNode focusNode)
-    throws ParseException
-  { 
-    if (focusNode==null)
-    { 
-      // Shouldn't happen
-      throw new IllegalArgumentException
-        ("ExpressionParser.parseFocusRelativeExpression: focusNode can't be null");
-    }
-    
-    switch (_tokenizer.ttype)
-    {
-      case StreamTokenizer.TT_EOF:
-        // implicit 'this', refers to subject of focus
-        return focusNode;
-      case StreamTokenizer.TT_WORD:
-        // a name resolve or method call against the subject of the focus
-        return parseIdentifierExpression(focusNode);
-      case '[':
-        // an array subscript against the subject of the focus
-        return parsePostfixExpressionRest(focusNode);
-      case '.':
-        // The parent focus
-        consumeToken();
-        FocusNode parentFocusNode=new ParentFocusNode(focusNode);
-        return parseFocusRelativeExpression(parentFocusNode);
-      default:
-        throwUnexpected();
-        return null;
-    }
-  }
 
   /**
    * FocusExpression -> FocusName 
