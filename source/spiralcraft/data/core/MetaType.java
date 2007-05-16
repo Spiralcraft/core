@@ -24,7 +24,7 @@ import spiralcraft.data.Tuple;
 
 import spiralcraft.data.reflect.ReflectionType;
 
-import spiralcraft.data.spi.ConstructorInstanceResolver;
+import spiralcraft.data.util.ConstructorInstanceResolver;
 
 import java.net.URI;
 

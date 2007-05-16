@@ -51,7 +51,7 @@ import spiralcraft.data.transport.DataConsumerChain;
 public class Parser
   implements Executable
 {
-	private DataConsumer consumer;
+	private DataConsumer<Tuple> consumer;
 	private InputStream _in;
   private boolean _readHeader=true;
   private boolean _notypes=false;
@@ -62,7 +62,7 @@ public class Parser
   private FieldSet _fields;
   private boolean _haltOnErrors=false;
   private boolean _useEscapes=true;
-  private DataConsumerChain[] _filters;
+  private DataConsumerChain<Tuple>[] _filters;
   private String _charsetName;
   private ExecutionContext _context;
   
@@ -105,7 +105,7 @@ public class Parser
       }
       
 			parse(new FileInputStream(filename)
-							,new DataConsumer()
+							,new DataConsumer<Tuple>()
 								{
 									public void dataInitialize(FieldSet fieldSet)
 									{ context.out().println(fieldSet);
@@ -137,7 +137,7 @@ public class Parser
    * A set of filters that will be applied before the results are sent to
    *   the DataHandler
    */
-  public void setFilters(DataConsumerChain[] filters)
+  public void setFilters(DataConsumerChain<Tuple>[] filters)
   { _filters=filters;
   }
 
@@ -203,7 +203,7 @@ public class Parser
   }
   
 
-	public void parse(InputStream in,DataConsumer sink)
+	public void parse(InputStream in,DataConsumer<Tuple> sink)
 		throws IOException,ParseException,DataException
 	{
     if (_context==null)

@@ -29,8 +29,8 @@ import spiralcraft.data.DataException;
 
 import spiralcraft.data.reflect.ReflectionField;
 import spiralcraft.data.reflect.ReflectionType;
-import spiralcraft.data.spi.StaticInstanceResolver;
 import spiralcraft.data.spi.EditableArrayListAggregate;
+import spiralcraft.data.util.StaticInstanceResolver;
 
 import spiralcraft.builder.PropertySpecifier;
 import spiralcraft.builder.PropertyBinding;

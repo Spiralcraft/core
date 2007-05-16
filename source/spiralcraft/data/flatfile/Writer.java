@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 
 public class Writer
-  implements DataConsumer
+  implements DataConsumer<Tuple>
 {
   private BufferedWriter _out;
   private DecimalFormat _format
