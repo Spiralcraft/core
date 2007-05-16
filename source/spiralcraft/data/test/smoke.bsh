@@ -112,3 +112,20 @@ result=new spiralcraft.data.sax.DataReader().readFromURI
   );
 result.toText("|  ");
 
+"// Test custom Scheme- 'Customer' list";
+customerListType=typeResolver.resolve(URI.create("java:/spiralcraft/data/test/example/Customer.list"));
+dataReader=new spiralcraft.data.sax.DataReader();
+result=dataReader.readFromURI
+  (URI.create("java:/spiralcraft/data/test/example/Customer.data.xml")
+  ,customerListType
+  );
+result.toText("|  ");
+
+"// Test DataConsumer XML push";
+dataReader=new spiralcraft.data.sax.DataReader();
+dataReader.setDataConsumer(new spiralcraft.data.util.DebugDataConsumer());
+dataReader.readFromURI
+  (URI.create("java:/spiralcraft/data/test/example/Customer.data.xml")
+  ,customerListType
+  );
+

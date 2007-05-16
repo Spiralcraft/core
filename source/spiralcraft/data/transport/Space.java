@@ -17,13 +17,16 @@ package spiralcraft.data.transport;
 import spiralcraft.data.query.Queryable;
 
 import spiralcraft.data.DataException;
-
+import spiralcraft.data.Type;
+import spiralcraft.data.DeltaTuple;
 
 /**
  * A logical data container. Provides access to a complete set of data used by
  *   one or more applications. Data reachable from a Space may be contained 
- *   contained in or more Stores. There is normally only one Space associated 
- *   with an application.
+ *   contained in or more Stores. 
+ *   
+ * There is normally only one Space associated with an application. A Space is
+ *   never contained within another Space.
  */
 public interface Space
   extends Queryable
@@ -34,4 +37,15 @@ public interface Space
    */
   void initialize()
     throws DataException;
+  
+  /**
+   * Retrieve an update 'channel'. The DataConsumer can be used once to update
+   *   a batch of Tuples of the same Type.
+   * 
+   * @return A DataConsumer which is used to push one or more updates into
+   *   this Space. 
+   */
+  DataConsumer<DeltaTuple> getUpdater(Type type)
+    throws DataException;
+  
 }

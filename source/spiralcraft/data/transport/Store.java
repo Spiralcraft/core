@@ -17,11 +17,15 @@ package spiralcraft.data.transport;
 import spiralcraft.data.query.Queryable;
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.Type;
+import spiralcraft.data.DeltaTuple;
 
 /**
- * A physical data container. Provides access to a set of data that is reachable
- *   through a single access mechanism, such as a database login, an XML file,
- *   or the subtree of a filesystem directory.
+ * <P>A physical data container. Provides access to a set of data that is
+ *   reachable through a single access mechanism, such as a database login,
+ *   an XML file, the subtree of a filesystem directory, etc.
+ *   
+ * <P>A Store is always participates in a single Space.
  */
 public interface Store
   extends Queryable
@@ -36,5 +40,14 @@ public interface Store
    */
   void initialize()
     throws DataException;
-  
+
+  /**
+   * Retrieve an update 'channel'. The DataConsumer can be used once to update
+   *   a batch of Tuples of the same Type.
+   * 
+   * @return A DataConsumer which is used to push one or more updates into
+   *   this Store
+   */
+  DataConsumer<DeltaTuple> getUpdater(Type type)
+    throws DataException;
 }

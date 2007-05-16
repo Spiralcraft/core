@@ -18,9 +18,11 @@ import java.util.List;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
+import spiralcraft.data.DeltaTuple;
 
 import spiralcraft.data.transport.Space;
 import spiralcraft.data.transport.Store;
+import spiralcraft.data.transport.DataConsumer;
 
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.BoundQuery;
@@ -83,5 +85,10 @@ public class SingleSpace
 
   public List<Type> getTypes()
   { return store.getTypes();
+  }
+  
+  public DataConsumer<DeltaTuple> getUpdater(Type type)
+    throws DataException
+  { return store.getUpdater(type);
   }
 }
