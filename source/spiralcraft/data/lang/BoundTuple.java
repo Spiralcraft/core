@@ -23,7 +23,8 @@ import spiralcraft.lang.Optic;
 import spiralcraft.util.ArrayUtil;
 
 /**
- * Base class for a simple in-memory immutable Tuple.
+ * A Tuple where each Field references a language binding to an arbitrary
+ *   data source. The Field values may change if the source changes. 
  */
 public class BoundTuple
   extends AbstractTuple
@@ -62,5 +63,5 @@ public class BoundTuple
     }
     return ArrayUtil.arrayHashCode(data);
   }
-  
+   
 }

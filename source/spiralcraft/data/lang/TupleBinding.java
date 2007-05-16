@@ -25,13 +25,13 @@ import spiralcraft.data.FieldSet;
  * A spiralcraft.lang binding for Tuples, which uses the Tuple's Scheme
  *   as the type model for binding expressions.
  */
-public abstract class TupleBinding
-  extends AbstractBinding<Tuple>
+public abstract class TupleBinding<T extends Tuple>
+  extends AbstractBinding<T>
 {
  
   public TupleBinding(FieldSet fieldSet,boolean isStatic)
     throws BindException
-  { super(TuplePrism.getInstance(fieldSet),isStatic);
+  { super(TuplePrism.<T>getInstance(fieldSet),isStatic);
   }
   
 

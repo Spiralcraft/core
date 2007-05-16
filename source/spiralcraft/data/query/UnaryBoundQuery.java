@@ -34,7 +34,7 @@ public abstract class UnaryBoundQuery<Tq extends Query>
   extends BoundQuery<Tq>
 {
 
-  protected final BoundQuery source;
+  protected final BoundQuery<?> source;
   private boolean resolved;
   protected boolean eos;
   protected boolean bos;

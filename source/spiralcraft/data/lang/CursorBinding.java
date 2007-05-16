@@ -25,19 +25,19 @@ import spiralcraft.data.transport.Cursor;
  * A spiralcraft.lang binding for Tuples, which uses the Tuple's Scheme
  *   as the type model for binding expressions.
  */
-public class CursorBinding
-  extends TupleBinding
+public class CursorBinding<T extends Tuple>
+  extends TupleBinding<T>
 {
-  private Cursor cursor;
+  private Cursor<T> cursor;
   
-  public CursorBinding(Cursor cursor)
+  public CursorBinding(Cursor<T> cursor)
     throws BindException
   { 
     super(cursor.dataGetFieldSet(),false);
     this.cursor=cursor;
   }
 
-  protected Tuple retrieve()
+  protected T retrieve()
   { 
     try
     { return cursor.dataGetTuple();

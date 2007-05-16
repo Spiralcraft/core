@@ -34,8 +34,8 @@ import java.util.HashMap;
  * This allows object models of Tuples (defined by Schemes) to be
  *   fully utilized by the language facilities.
  */
-public class TuplePrism
-  implements Prism<Tuple>
+public class TuplePrism<T extends Tuple>
+  implements Prism<T>
 {
   private static final HashMap<FieldSet,TuplePrism> SINGLETONS
     =new HashMap<FieldSet,TuplePrism>();
@@ -44,23 +44,28 @@ public class TuplePrism
   
   private final HashMap<String,FieldLense> fieldLenses
     =new HashMap<String,FieldLense>();
+  
+  private final Class<T> contentType;
 
-  public synchronized static final TuplePrism getInstance(FieldSet fieldSet)
+  @SuppressWarnings("unchecked") // We only create Prism with erased type
+  public synchronized static final 
+    <T extends Tuple> TuplePrism<T> getInstance(FieldSet fieldSet)
     throws BindException
   { 
     TuplePrism prism=SINGLETONS.get(fieldSet);
     if (prism==null)
     {
-      prism=new TuplePrism(fieldSet);
+      prism=new TuplePrism<Tuple>(fieldSet,Tuple.class);
       SINGLETONS.put(fieldSet,prism);
     }
     return prism;
   }
   
-  TuplePrism(FieldSet fieldSet)
+  TuplePrism(FieldSet fieldSet,Class<T> contentType)
     throws BindException
   { 
     this.fieldSet=fieldSet;
+    this.contentType=contentType;
     for (Field field : fieldSet.fieldIterable())
     { fieldLenses.put(field.getName(),new FieldLense(field));
     }
@@ -95,15 +100,15 @@ public class TuplePrism
     return null;
   }
 
-  public Decorator<Tuple> decorate(Binding binding,Class decoratorInterface)
+  public Decorator<T> decorate(Binding binding,Class decoratorInterface)
   { 
     // This depends on a system for registering and mapping decorators
     //   to Tuple constructs.
     return null;
   }
   
-  public Class<Tuple> getContentType()
-  { return Tuple.class;
+  public Class<T> getContentType()
+  { return contentType;
   }
   
 }

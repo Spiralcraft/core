@@ -21,15 +21,14 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
 
 /**
- * A spiralcraft.lang binding for Tuples, which uses the Tuple's Scheme
- *   as the type model for binding expressions.
+ * A TupleBinding where the contained Tuple never changes
  */
-public class StaticTupleBinding
-  extends TupleBinding
+public class StaticTupleBinding<T extends Tuple>
+  extends TupleBinding<T>
 {
-  private Tuple tuple;
+  private T tuple;
   
-  public StaticTupleBinding(FieldSet fieldSet,Tuple data)
+  public StaticTupleBinding(FieldSet fieldSet,T data)
     throws BindException
   { 
     super(fieldSet,true);
@@ -40,7 +39,7 @@ public class StaticTupleBinding
   { return ((TuplePrism) getPrism()).getFieldSet();
   }
 
-  protected Tuple retrieve()
+  protected T retrieve()
   { return tuple;
   }
   

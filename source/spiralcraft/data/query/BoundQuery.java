@@ -62,7 +62,7 @@ public abstract class BoundQuery<Tq extends Query>
   /**
    * @return The binding available for downstream components.
    */
-  public final TupleBinding getResultBinding()
+  public final TupleBinding<Tuple> getResultBinding()
   { return resultBinding;
   }
   
@@ -111,7 +111,7 @@ public abstract class BoundQuery<Tq extends Query>
   }
   
   class BoundQueryBinding
-    extends TupleBinding
+    extends TupleBinding<Tuple>
   {
     
     public BoundQueryBinding(FieldSet fieldSet)
