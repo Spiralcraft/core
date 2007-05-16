@@ -16,8 +16,13 @@
     />
   </target>
 
+	<target name="smoke">
+		<java classpath="../../lib/bsh.jar;source" classname="bsh.Interpreter" failonerror="true">
+			<arg value="smoke.bsh"/>
+		</java>
+  </target>
   
-  <target name="jar" depends="build">
+  <target name="jar" depends="build,smoke">
     <echo message= "jar: ${build.name}"/>
     <jar 
       destfile="../../lib/spiralcraft-${module}.jar" 

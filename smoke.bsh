@@ -1,0 +1,3 @@
+source("source/spiralcraft/data/test/smoke.bsh");
+source("source/spiralcraft/lang/test/smoke.bsh");
+source("source/spiralcraft/util/tree/smoke.bsh");
