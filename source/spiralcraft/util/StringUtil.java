@@ -103,6 +103,8 @@ public class StringUtil
         if (st.ttype=='"' || st.ttype==StreamTokenizer.TT_WORD)
         {	result.add(st.sval);
         }
+        
+        // System.err.println("StringUtil.tokenizeCommandLine: "+st.sval);
         st.nextToken();
       }
     }
