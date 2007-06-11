@@ -154,6 +154,7 @@ public class DataHandler
 
     protected Frame parentFrame;
     private boolean hasElements;
+    private boolean preserveWhitespace=false;
 
     // Begin SAX API
     
@@ -165,7 +166,7 @@ public class DataHandler
       )
       throws SAXException,DataException
     { 
-      if (chars.toString().trim().length()==0)
+      if (getCharacters().length()==0)
       { 
         hasElements=true;
         newChild(uri,localName,qName,attributes).start(qName);
@@ -173,7 +174,7 @@ public class DataHandler
       else
       { 
         throw new SAXException
-          ("Element already contains text '"+chars.toString()+"', it cannot "
+          ("Element already contains text '"+getCharacters()+"', it cannot "
           +"also contain another Element <"+qName+">"
           );
       }
@@ -204,10 +205,18 @@ public class DataHandler
       throws SAXException
     { 
       if (!hasElements)
-      { chars.append(new String(ch,start,length).trim());
+      { chars.append(new String(ch,start,length));
       }
       else
       { 
+        if (preserveWhitespace)
+        {
+          throw new SAXException
+          ("Element already contains other elements."
+          +" It cannot contain preserved whitespace."
+          );
+        }
+        
         if (new String(ch,start,length).trim().length()>0)
         {
           throw new SAXException
@@ -280,6 +289,16 @@ public class DataHandler
       currentFrame=parentFrame;
       parentFrame.endChild(this);
     }
+    
+    protected String getCharacters()
+    { 
+      if (preserveWhitespace)
+      { return chars.toString();
+      }
+      else
+      { return chars.toString().trim();
+      }
+    }
   }
   
   /**
@@ -331,7 +350,7 @@ public class DataHandler
     protected void assertCompatibleType(Type formalType,Type actualType)
       throws TypeMismatchException
     {
-      if (!formalType.isAssignableFrom(actualType))
+      if (formalType!=null && !formalType.isAssignableFrom(actualType))
       { 
         throw new TypeMismatchException
           ("Error reading data",formalType,actualType);
@@ -382,11 +401,12 @@ public class DataHandler
     protected void closeFrame()
       throws SAXException,DataException
     { 
-      if (chars.toString().trim().length()!=0)
+      String text=getCharacters();
+      if (text.length()!=0)
       { 
-//        System.err.println("DataHandler-ContainerFrame.closeFrame: "+chars);
+//        System.err.println("DataHandler-ContainerFrame.closeFrame: "+text);
         // Instantiate from a literal string, if present
-        addObject(formalType.fromString(chars.toString().trim()));
+        addObject(formalType.fromString(text));
         
       }
       
@@ -433,17 +453,18 @@ public class DataHandler
     protected void closeFrame()
       throws DataException
     {
-      if (chars.toString().trim().length()>0)
+      String text=getCharacters();
+      if (text.length()>0)
       { 
         if (type.isStringEncodable())
-        { object=type.fromString(chars.toString());
+        { object=type.fromString(text);
         }
         else
         { 
           throw new DataException
             ("Data of type "
             +type.getURI()
-            +" is not String encodable ["+chars.toString()+"]"
+            +" is not String encodable ["+text+"]"
             );
         }
       }
