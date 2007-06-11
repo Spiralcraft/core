@@ -30,20 +30,20 @@
     </test:SimpleWidget>
   </friend>
   <children>
-    <test:SimpleWidget>
+    <test:SimpleWidget id="0">
       <title>Child 1</title>
     </test:SimpleWidget>
-    <test:SimpleWidget>
+    <test:SimpleWidget id="1">
       <title>Child 2</title>
     </test:SimpleWidget>
-    <test:SimpleWidget>
+    <test:SimpleWidget id="2">
       <title><String>Child 3</String></title>
     </test:SimpleWidget>
   </children>  
   <aliases>
-    <String>alias 1</String>
-    <String>alias 2</String>
-    <String>alias 3</String>
+    <String id="0">alias 1</String>
+    <String id="1">alias 2</String>
+    <String id="2">alias 3</String>
   </aliases>
 
   <dateFormat>
