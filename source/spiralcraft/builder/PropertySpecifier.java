@@ -73,7 +73,14 @@ public class PropertySpecifier
     addCharacters(value.toCharArray());
   }
 
-  public PropertySpecifier
+  /**
+   * <P>Create a PropertySpecifier which holds as its content an inner-subclass
+   *   of some AssemblyClass.
+   *   
+   * This is only called from AssemblyClass.ensureLocalClass()
+   *   
+   */
+  PropertySpecifier
     (AssemblyClass container
     ,String specifier
     ,AssemblyClass content
@@ -408,13 +415,13 @@ public class PropertySpecifier
   { return _targetName;
   }
 
-  public void addAssemblyClass(AssemblyClass assembly)
+  public void addAssemblyClass(AssemblyClass assemblyClass)
   { 
     if (_contents==null)
     { _contents=new ArrayList<AssemblyClass>(1);
     }
-    _contents.add(assembly);
-    assembly.setContainingProperty(this);
+    _contents.add(assemblyClass);
+    assemblyClass.setContainingProperty(this);
     
   }
 
