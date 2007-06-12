@@ -14,6 +14,8 @@
 //
 package spiralcraft.xml;
 
+import spiralcraft.text.ParseException;
+
 /**
  * Reads and XML attribute name/value pair
  */
@@ -46,7 +48,7 @@ public class AttributeReader
     }
     _whitespaceReader.readWhitespace(context);
     if (context.getCurrentChar()!='=')
-    { throw new ParseException("Expected '='");
+    { throw new ParseException("Expected '='",context.getPosition());
     }
     context.advance();
     _whitespaceReader.readWhitespace(context);

@@ -16,6 +16,8 @@ package spiralcraft.xml;
 
 import spiralcraft.util.ArrayUtil;
 
+import spiralcraft.text.ParseException;
+
 /**
  * Reads an XML tag (name and attributes)
  */

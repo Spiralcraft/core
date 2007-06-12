@@ -14,6 +14,8 @@
 //
 package spiralcraft.xml;
 
+import spiralcraft.text.ParseException;
+
 /**
  * XML whitespace
  */

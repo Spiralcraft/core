@@ -14,6 +14,8 @@
 //
 package spiralcraft.xml;
 
+import spiralcraft.text.ParseException;
+
 /**
  * An XML name token (tag, entity or attribute name)
  */

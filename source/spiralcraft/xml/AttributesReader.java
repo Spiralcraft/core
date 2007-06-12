@@ -16,6 +16,8 @@ package spiralcraft.xml;
 
 import java.util.LinkedList;
 
+import spiralcraft.text.ParseException;
+
 /**
  * A set of attributes in an XML tag
  */

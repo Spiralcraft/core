@@ -14,6 +14,8 @@
 //
 package spiralcraft.xml;
 
+import spiralcraft.text.ParseException;
+
 /**
  * Reads a literal in double quotes
  */
@@ -32,7 +34,10 @@ public class LiteralReader
     if (_delimiter!='"' && _delimiter!='\'')
     { 
       throw new ParseException
-        ("Expected single or double quote, found '"+_delimiter+"'");
+        ("Expected single or double quote, found '"+_delimiter+"'"
+        ,context.getPosition()
+        );
+      
     }
     context.advance();
     
@@ -45,13 +50,20 @@ public class LiteralReader
         return;
       }
       if (context.isEof())
-      { throw new ParseException("Unterminated delimiter ("+_delimiter+")");
+      { 
+        throw new ParseException
+          ("Unterminated delimiter ("+_delimiter+")"
+          ,context.getPosition()
+          );
       }
       switch (chr)
       {
       case '\n':
       case '\r':
-        throw new ParseException("Found line break in literal");
+        throw new ParseException
+          ("Found line break in literal"
+          ,context.getPosition()
+          );
       default:
         _buffer.append(chr);
       }

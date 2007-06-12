@@ -19,6 +19,9 @@ import java.io.IOException;
 
 import spiralcraft.text.io.CharSequenceReader;
 
+import spiralcraft.text.ParseException;
+import spiralcraft.text.ParsePosition;
+
 /**
  * Encapsulates the state of parsing an XML document
  */
@@ -27,6 +30,7 @@ public class ParserContext
   private char _currentChar;
   private boolean _eof=false;
   private Reader _reader;
+  private ParsePosition position=new ParsePosition();
 
   public ParserContext(Reader reader)
     throws ParseException
@@ -42,6 +46,10 @@ public class ParserContext
     advance();
   }
 
+  public ParsePosition getPosition()
+  { return position;
+  }
+  
   public final char getCurrentChar()
   { return _currentChar;
   }
@@ -50,11 +58,13 @@ public class ParserContext
     throws ParseException
   { 
     if (_eof)
-    { throw new ParseException("Unexpected end of input");
+    { throw new ParseException("Unexpected end of input",position);
     }
     try
     {
+      
       int chr=_reader.read();
+      position.incIndex(1);
       if (chr==-1)
       { _eof=true;
       }
@@ -63,7 +73,7 @@ public class ParserContext
       }
     }
     catch (IOException x)
-    { throw new ParseException("",x);
+    { throw new ParseException("",position,x);
     }
   }
 
