@@ -15,13 +15,13 @@
 package spiralcraft.text.markup;
 
 import spiralcraft.text.ParseException;
-
+import spiralcraft.text.ParsePosition;
 
 /**
  * Compiles a CharSequence containing markup into a tree of Units. The
  *   actual interpretation of the markup is left to the subclass.
  */
-public abstract class MarkupCompiler
+public abstract class MarkupCompiler<U extends Unit<U>>
   implements MarkupHandler
 {
   
@@ -29,7 +29,8 @@ public abstract class MarkupCompiler
   // private final Trimmer _trimmer=new Trimmer("\r\n\t ");
   // private final CharSequence _startDelimiter;
   // private final CharSequence _endDelimiter;
-  private Unit _unit;
+  private Unit<U> _unit;
+  protected ParsePosition position;
   
   
   public MarkupCompiler
@@ -43,25 +44,30 @@ public abstract class MarkupCompiler
     _parser.setMarkupHandler(this);
   }
 
-  public synchronized CompilationUnit compile(CharSequence sequence)
-    throws ParseException
+  /**
+   * Compile a sequence of marked up text and add all the units read as
+   *   children of the specified root Unit.
+   * 
+   * @param root
+   * @param sequence
+   * @throws ParseException
+   */
+  public synchronized void compile(U root,CharSequence sequence)
+    throws ParseException,MarkupException
   { 
-    _unit=createCompilationUnit();
+    _unit=root;
 
     _parser.parse(sequence);
     
-    if (!(_unit instanceof CompilationUnit))
+    if (!(_unit==root))
     { 
-      throw new ParseException
-        ("Unexpected end of input. Unclosed unit "+_unit.getName()
-        ,sequence.length()
-        );
+      throw new MarkupException
+        ("Unexpected end of input. Unclosed unit "+_unit.getName(),position);
     }
-    return (CompilationUnit)  _unit;
   }
 
-  public void handleContent(CharSequence text)
-  { _unit.addChild(new ContentUnit(text));
+  public void setPosition(ParsePosition position)
+  { this.position=position;
   }
   
   /**
@@ -81,7 +87,15 @@ public abstract class MarkupCompiler
   { return _unit;
   }
   
-  protected final void addUnit(Unit newUnit)
+  /**
+   * Called by the superclass to open a new Unit node. If the newUnit.isOpen()
+   *   it will be the current containing unit. Otherwise, the existing 
+   *   containing unit will remain the current containing unit.
+   *   
+   * 
+   * @param newUnit
+   */
+  protected final void pushUnit(U newUnit)
   {
     _unit.addChild(newUnit);
     if (newUnit.isOpen())
@@ -89,9 +103,11 @@ public abstract class MarkupCompiler
     }
   }
   
-  protected abstract CompilationUnit createCompilationUnit();
-  
   public abstract void handleMarkup(CharSequence code)
-    throws Exception;
+    throws ParseException;
 
+  public abstract void handleContent(CharSequence text)
+    throws ParseException;
+  
+  
 }

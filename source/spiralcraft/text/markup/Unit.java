@@ -15,31 +15,31 @@
 package spiralcraft.text.markup;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A Unit of marked up text
  */
-public abstract class Unit
+public abstract class Unit<T extends Unit<T>>
 {
-  private LinkedList<Unit> _children;
-  private Unit _parent;
+  protected LinkedList<T> children;
+  private Unit<T> _parent;
   private String _name;
   
-  
-  public void addChild(Unit child)
+  public void addChild(T child)
   { 
-    if (_children==null)
-    { _children=new LinkedList<Unit>();
+    if (children==null)
+    { children=new LinkedList<T>();
     }
-    _children.add(child);
+    children.add(child);
     child.setParent(this);
   }
   
-  public void setParent(Unit parent)
+  public void setParent(Unit<T> parent)
   { _parent=parent;
   }
   
-  public Unit getParent()
+  public Unit<T> getParent()
   { return _parent;
   }
   
@@ -51,14 +51,8 @@ public abstract class Unit
   { _name=name;
   }
 
-  public Unit[] getChildren()
-  { 
-    if (_children==null)
-    { return new Unit[0];
-    }
-    Unit[] children=new Unit[_children.size()];
-    _children.toArray(children);
-    return children;
+  public List<T> getChildren()
+  { return children;
   }  
   
   public boolean isOpen()
@@ -69,5 +63,5 @@ public abstract class Unit
     throws MarkupException
   {
   }
-   
+
 }

@@ -15,6 +15,7 @@
 package spiralcraft.text.markup;
 
 import spiralcraft.text.ParseException;
+import spiralcraft.text.ParsePosition;
 import spiralcraft.text.KmpMatcher;
 
 /**
@@ -26,9 +27,11 @@ public class MarkupParser
   private MarkupHandler _markupHandler;
   private final KmpMatcher _beginTagMatcher;
   private final KmpMatcher _endTagMatcher;
+  private final KmpMatcher _lineMatcher;
   private final int _startDelimiterLength;
   private final int _endDelimiterLength;
   private final CharSequence _endDelimiter;
+  private final ParsePosition position=new ParsePosition();
   
   public MarkupParser(CharSequence startDelimiter,CharSequence endDelimiter)
   { 
@@ -37,6 +40,7 @@ public class MarkupParser
     _startDelimiterLength=startDelimiter.length();
     _endTagMatcher=new KmpMatcher(endDelimiter);  
     _endDelimiterLength=endDelimiter.length();
+    _lineMatcher=new KmpMatcher(System.getProperty("line.separator"));
   }
   
   /**
@@ -48,59 +52,66 @@ public class MarkupParser
   }
   
   public void parse(CharSequence sequence)
-    throws ParseException
+    throws ParseException,MarkupException
   {
     boolean inText=true;
     _beginTagMatcher.reset();
     _endTagMatcher.reset();
+    _lineMatcher.reset();
+    position.setLine(1);
     int mark=0;
     for (int i=0;i<sequence.length();i++)
     {
-      try
-      {
-        if (inText)
+      position.incIndex(1);
+      position.incColumn(1);
+      if (_lineMatcher.match(sequence.charAt(i)))
+      { 
+        position.incLine(1);
+        position.setColumn(1);
+      
+      }
+
+      if (inText)
+      { 
+        if (_beginTagMatcher.match(sequence.charAt(i)))
         { 
-          if (_beginTagMatcher.match(sequence.charAt(i)))
-          { 
-            _markupHandler.handleContent
-              (sequence.subSequence
-                (mark
-                ,i-(_startDelimiterLength-1)
-                )
-              );
-            mark=i+1;
-            inText=false;
-          }
-        }
-        else
-        {
-          if (_endTagMatcher.match(sequence.charAt(i)))
-          { 
-            _markupHandler.handleMarkup
-              (sequence.subSequence
-                (mark
-                ,i-(_endDelimiterLength-1)
-                )
-              );
-            mark=i+1;
-            inText=true;
-          }
+          _markupHandler.setPosition(position);
+          _markupHandler.handleContent
+          (sequence.subSequence
+              (mark
+                  ,i-(_startDelimiterLength-1)
+              )
+          );
+          mark=i+1;
+          inText=false;
         }
       }
-      catch (Exception x)
+      else
       {
-        throw new ParseException
-          ("Error handling markup",i,x);
+        if (_endTagMatcher.match(sequence.charAt(i)))
+        { 
+          _markupHandler.setPosition(position);
+          _markupHandler.handleMarkup
+          (sequence.subSequence
+              (mark
+                  ,i-(_endDelimiterLength-1)
+              )
+          );
+          mark=i+1;
+          inText=true;
+        }
       }
     }
-    if(!inText)
+    if (!inText)
     { 
       throw new ParseException
         ("Unexpected end of input. Missing "
         +_endDelimiter
-        ,sequence.length()
+        ,position
         );
     }
-    _markupHandler.handleContent(sequence.subSequence(mark,sequence.length()));
+    _markupHandler.setPosition(position);
+    _markupHandler.handleContent
+      (sequence.subSequence(mark,sequence.length()));
   }
 }

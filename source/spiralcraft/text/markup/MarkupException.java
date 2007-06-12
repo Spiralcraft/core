@@ -14,20 +14,23 @@
 //
 package spiralcraft.text.markup;
 
+import spiralcraft.text.ParsePosition;
+import spiralcraft.text.ParseException;
+
 public class MarkupException
-  extends Exception
+  extends ParseException
 {
   private static final long serialVersionUID = 1L;
 
-  public MarkupException(String message)
-  { super(message);
+  public MarkupException(String message,ParsePosition position)
+  { super(message,position);
   }
   
-  public MarkupException(String message,Throwable cause)
-  { super(message,cause);
+  public MarkupException(String message,ParsePosition position,Throwable cause)
+  { super(message,position,cause);
   }
 
-  public MarkupException(Throwable cause)
-  { super(cause);
+  public MarkupException(ParsePosition position,Throwable cause)
+  { super(position,cause);
   }
 }
