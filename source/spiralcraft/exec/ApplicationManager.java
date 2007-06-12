@@ -150,9 +150,9 @@ public class ApplicationManager
   /**
    * Search for the named environment, in order of priority:
    *   
-   *   1. The system environment path
+   *   1. The user directory
    *   2. The user environment path
-   *   3. The user directory
+   *   3. The system environment path
    *
    */
   private URI findEnvironment(String name)
@@ -165,7 +165,8 @@ public class ApplicationManager
     { return nameURI;
     }
 
-    searchURI=_codebaseEnvironmentURI.resolve(nameURI);
+    
+    searchURI=new File(System.getProperty("user.dir")).toURI().resolve(nameURI);
     if (isEnvironment(searchURI))
     { return searchURI;
     }
@@ -175,10 +176,12 @@ public class ApplicationManager
     { return searchURI;
     }
 
-    searchURI=new File(System.getProperty("user.dir")).toURI().resolve(nameURI);
+    searchURI=_codebaseEnvironmentURI.resolve(nameURI);
     if (isEnvironment(searchURI))
     { return searchURI;
     }
+
+
 
     return null;
   }
@@ -213,33 +216,4 @@ public class ApplicationManager
   }
 }
 
-/*
-10/25/2004
-
-The search for ApplicationEnvironments falls under the concern of context. Our
-'search' is aware of three contexts- a 'global' system context, a 'user' context
-and a 'current directory' context.
-
-The behavior of the current system is such that no lesser priveleged context
-can override a greater privelaged context by substituting an execution
-environment with the same name. This is accomplished simply be ordering the
-search.
-
-This creates ambiguity when a developer creates a new environment that is
-duplicated elsewhere, and the expected code doesn't run. 
-
-The problem we are trying to solve by the search and resolution is primarily
-associated with the 'shorthand' invocation of functionality, say, from the
-command line.
-
-The command line carries much context information though, in the form of the
-directory structure that is being navigated. By creating some association with
-parent directories, it may be possible to derive a set of nested contexts.
-
-If this occurs, some deterministic way of getting info about the available
-ApplicationEnvironments must be worked out. Perhaps cataloging the
-environments is a good way to do this.
-
-
-*/
 
