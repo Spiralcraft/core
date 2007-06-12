@@ -24,11 +24,11 @@ import spiralcraft.lang.Optic;
  * The Optic interface exposes the data at the current position of the 
  *   iteration.
  */
-public interface IterationDecorator
-  extends Decorator,Optic
+public interface IterationDecorator<T,I>
+  extends Decorator<T>,Optic<I>
 {
   /**
-   * Reset the iteration
+   * Reset the iteration. Must be called -before- every iteration
    */
   public void reset();
   
