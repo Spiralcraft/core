@@ -18,6 +18,8 @@ import java.net.URI;
 
 import java.util.HashMap;
 
+import java.io.File;
+
 import spiralcraft.stream.url.URLResourceFactory;
 import spiralcraft.stream.classpath.ClasspathResourceFactory;
 import spiralcraft.stream.file.FileResourceFactory;
@@ -32,7 +34,7 @@ public class Resolver
   private HashMap<String,ResourceFactory> _resourceFactories
     =new HashMap<String,ResourceFactory>();
   private ResourceFactory _defaultFactory;
-
+  
   public static synchronized Resolver getInstance()
   {
     if (_INSTANCE==null)
@@ -43,8 +45,10 @@ public class Resolver
       {
         // Consider auto-registering "class","classpath","class-resource",
         //   or moving this mapping to a config mechanism
-        _INSTANCE.registerResourceFactory("java",new ClasspathResourceFactory());
-        _INSTANCE.registerResourceFactory("file",new FileResourceFactory());
+        _INSTANCE.registerResourceFactory
+          ("java",new ClasspathResourceFactory());
+        _INSTANCE.registerResourceFactory
+          ("file",new FileResourceFactory());
       }
       catch (AlreadyRegisteredException x)
       { 
@@ -62,9 +66,22 @@ public class Resolver
   { _defaultFactory=factory;
   }
 
+  /**
+   * <P> Obtain a Resource that provides access to the content identified by
+   *    the URI. If the URI is relative, it will be resolved against the
+   *    user directory (Java VM working directory).
+   * 
+   * 
+   * @return A Resource with provides access to the content identified by 
+   *   the URI
+   */
   public Resource resolve(URI uri)
     throws UnresolvableURIException
   { 
+    if (!uri.isAbsolute())
+    { uri=new File(System.getProperty("user.dir")).toURI().resolve(uri);
+    }
+    
     ResourceFactory factory=null;
     synchronized (_resourceFactories)
     { 
