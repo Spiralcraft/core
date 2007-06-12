@@ -19,10 +19,6 @@ package spiralcraft.lang;
  */ 
 public interface Decorator<T>
 {
-  /**
-   * Associate the decorator with an optic
-   */
-  public void bind(Optic<T> optic)
-    throws BindException;
+
     
 }
