@@ -292,10 +292,17 @@ public class ReflectionField
           }
         }
         catch (IllegalAccessException x)
-        { throw new DataException("Error depersisting field '"+getName()+"'",x);
+        { 
+          throw new DataException
+            ("Error depersisting field '"+getName()+"':"+x,x);
         }
         catch (InvocationTargetException x)
-        { throw new DataException("Error depersisting field '"+getName()+"'",x);
+        { 
+          throw new DataException
+            ("Error depersisting field '"+getName()
+            +"': "+x.getTargetException()
+            ,x
+            );
         }
       }
     }
