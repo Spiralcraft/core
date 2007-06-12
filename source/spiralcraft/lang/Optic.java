@@ -88,7 +88,8 @@ public interface Optic<T>
    *return The decorator that implements the decoratorInterface, or null if
    *  the decoratorInterface is not supported
    */
-  Decorator<T> decorate(Class decoratorInterface);
+  <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
+    throws BindException;
  
   /**
    * Provide a reference to the PropertyChangeSupport object

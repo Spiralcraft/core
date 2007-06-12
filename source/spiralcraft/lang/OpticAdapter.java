@@ -49,7 +49,7 @@ public abstract class OpticAdapter<T>
   /**
    * No immediate decorator support
    */
-  public Decorator<T> decorate(Class decoratorInterface)
+  public <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
   { return null;
   }
   

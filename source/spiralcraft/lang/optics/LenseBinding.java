@@ -130,7 +130,7 @@ public  class LenseBinding<T,S>
   { return _lense.getPrism().getContentType();
   }
   
-  public Decorator<T> decorate(Class decoratorInterface)
+  public <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
   { 
     try
     { return _lense.getPrism().decorate(this,decoratorInterface);

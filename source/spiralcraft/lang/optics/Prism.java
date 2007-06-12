@@ -41,7 +41,8 @@ public interface Prism<T>
    * Decorate the specified optic with a decorator that implements the
    *   specified interface
    */
-  public Decorator<T> decorate(Binding<? extends T> source,Class decoratorInterface)
+  public <D extends Decorator<T>> D decorate
+    (Binding<? extends T> source,Class<D> decoratorInterface)
     throws BindException;
   
   /**

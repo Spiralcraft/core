@@ -95,7 +95,7 @@ public abstract class AbstractBinding<T>
   
   protected abstract boolean store(T val);
 
-  public Decorator<T> decorate(Class decoratorInterface)
+  public <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
   { 
     try
     { return _prism.decorate(this,decoratorInterface);

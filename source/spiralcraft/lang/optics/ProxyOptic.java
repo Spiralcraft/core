@@ -59,7 +59,8 @@ public class ProxyOptic<T>
   { return _optic.getContentType();
   }
 
-  public Decorator<T> decorate(Class decoratorInterface)
+  public <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
+    throws BindException
   { return _optic.decorate(decoratorInterface);
   }
 
