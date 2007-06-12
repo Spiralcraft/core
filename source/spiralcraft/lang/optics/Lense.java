@@ -17,9 +17,11 @@ package spiralcraft.lang.optics;
 import spiralcraft.lang.Optic;
 
 /**
- * A bidirectional data translation associated with an Optic. A "derived" Object is obtained
- *   from the "origin" object in the "get" direction, and the "origin" object is obtained
- *   from the "derived" object in the "set" direction.
+ * A bidirectional data translation associated with an Optic.
+ * 
+ * A "derived" Object is obtained from the "origin" object in the "get"
+ *   direction, and the "origin" object is obtained from the "derived" object
+ *   in the "set" direction.
  */
 public interface Lense<Tderived,Torigin>
 {
