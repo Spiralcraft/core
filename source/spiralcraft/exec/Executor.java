@@ -73,7 +73,7 @@ public class Executor
    * @throws PersistenceException
    * @throws ExecutionException
    */
-  public static void main(String[] args)
+  public static void main(String ... args)
     throws IOException
             ,URISyntaxException
             ,PersistenceException
