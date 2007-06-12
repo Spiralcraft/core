@@ -1,5 +1,0 @@
-<!-- Base assembly for building a concrete Scheme in Builder -->
-
-<Scheme>
-  <fields collection="spiralcraft.tuple.spi.FieldListImpl"/>
-</Scheme>
