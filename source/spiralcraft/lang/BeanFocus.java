@@ -14,6 +14,8 @@
 //
 package spiralcraft.lang;
 
+import spiralcraft.lang.optics.SimpleBinding;
+
 /**
  * A Focus where the subject is a java Bean
  */
@@ -21,17 +23,25 @@ public class BeanFocus<T>
   extends DefaultFocus<T>
 {
   
-  public BeanFocus()
-  {
+  SimpleBinding<T> binding;
+  
+  public BeanFocus(Class<T> clazz,T bean)
+    throws BindException
+  { 
+    binding=new SimpleBinding<T>(clazz,bean,false);
+    setSubject(binding);
   }
   
+  @SuppressWarnings("unchecked") // Stupid cast 
   public BeanFocus(T bean)
     throws BindException
-  { setBean(bean);
+  { 
+    binding=new SimpleBinding<T>( (Class<T>) bean.getClass(),bean,true);
+    setBean(bean);
+    setSubject(binding);
   }
   
   public void setBean(T bean)
-    throws BindException
-  { setSubject((Optic<T>)OpticFactory.getInstance().createOptic(bean));
+  { binding.set(bean);
   }
 }
