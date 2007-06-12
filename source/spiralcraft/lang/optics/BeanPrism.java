@@ -21,6 +21,8 @@ import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 
+import spiralcraft.lang.decorators.IterationDecorator;
+
 import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
 
@@ -109,11 +111,20 @@ public class BeanPrism<T>
     return binding;
   }
 
-  public Decorator<T> decorate(Binding<? extends T> source,Class decoratorInterface)
+  @SuppressWarnings("unchecked") // Dynamic class info
+  public <D extends Decorator<T>> D decorate
+    (Binding<? extends T> source,Class<D> decoratorInterface)
     throws BindException
   { 
+    if (decoratorInterface==IterationDecorator.class)
+    { 
+      if (source.getContentType().isArray())
+      { return (D) new ArrayIterator(source);
+      }
+    }
+    
     // Look up the target class in the map of decorators for 
-    //   the specified interface. 
+    //   the specified interface?
     return null;
   }
   
