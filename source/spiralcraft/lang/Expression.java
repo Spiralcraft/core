@@ -48,6 +48,16 @@ public class Expression<T>
   private Node _root;
   private String _text;
   
+  /**
+   * Create an Expression by parsing an expression language String. This is
+   *   the preferred way to create an expression as it utilizes a cache to
+   *   save cycles.
+   * 
+   * @param <X> The type of output the Expression will generate
+   * @param text The expression text
+   * @return a compiled Expression
+   * @throws ParseException
+   */
   @SuppressWarnings("unchecked") // Heterogeneous HashMap
   public static <X> Expression<X> parse(String text)
     throws ParseException
@@ -62,6 +72,24 @@ public class Expression<T>
       }
       return ret;
     }
+  }
+  
+  /**
+   * <P>Create a new Expression by parsing an expression language String. This
+   *   constructor is used for facilities that depend on a 1-arg String
+   *   constructor to automatically create instances.
+   * 
+   * @param <X> The type of output the Expression will generate
+   * @param text The expression text
+   * @throws ParseException
+   * 
+   */
+  public <X> Expression(String text)
+    throws ParseException
+  {
+    Expression canonical=parse(text);
+    _root=canonical.getRootNode();
+    _text=text;
   }
 
   public Expression(Node root,String text)
