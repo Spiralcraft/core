@@ -22,27 +22,27 @@ public class ParseException
 {
   private static final long serialVersionUID = 1L;
 
-  private int _offset;
+  private ParsePosition position;
   
-  public ParseException(String message, int offset)
+  public ParseException(String message, ParsePosition position)
   { 
-    super(message+"(@"+Integer.toString(offset)+")");
-    _offset=offset;
+    super(message+" (@"+position.toString()+")");
+    this.position=position;
   }
   
-  public ParseException(String message, int offset, Exception cause)
+  public ParseException(String message, ParsePosition position, Throwable cause)
   {
-    super(message+"(@"+Integer.toString(offset)+")",cause);
-    _offset=offset;
+    super(message+" (@"+position.toString()+")",cause);
+    this.position=position;
   }
 
-  public ParseException(int offset, Exception cause)
+  public ParseException(ParsePosition position, Throwable cause)
   {
-    super(cause);
-    _offset=offset;
+    super(" (@"+position.toString()+")",cause);
+    this.position=position;
   }
   
-  public int getOffset()
-  { return _offset;
+  public ParsePosition getPosition()
+  { return position;
   }
 }
