@@ -65,7 +65,14 @@ public class BuilderField
       if (contents!=null && contents.size()>0)
       {
         if (getType().isAggregate())
-        { setType(BuilderType.genericBuilderArrayType());
+        { 
+          // XXX Figure out aggregate type
+          
+          // Using Object.array is safe, but not very useful
+          setType(BuilderType.genericBuilderArrayType());
+          
+          // XXX This is dangerous
+          // setType(BuilderType.canonicalType(contents.get(0)));
         }
         else
         { setType(BuilderType.canonicalType(contents.get(0)));

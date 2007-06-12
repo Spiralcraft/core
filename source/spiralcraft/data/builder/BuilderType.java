@@ -71,6 +71,7 @@ public class BuilderType
   public static final boolean isApplicable(URI uri)
     throws DataException
   { 
+    // System.err.println("BuilderType.isApplicable(): "+uri);
     String uriString=uri.toString();
     int bangPos=uriString.indexOf(INNER_PATH_SEPARATOR);
     if (bangPos>=0)
