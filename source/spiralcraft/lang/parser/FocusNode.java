@@ -35,7 +35,12 @@ public abstract class FocusNode
   
   public Optic bind(final Focus focus)
     throws BindException
-  { return findFocus(focus).getSubject();
+  { 
+    Optic ret=findFocus(focus).getSubject();
+    if (ret==null)
+    { throw new BindException("Focus "+findFocus(focus)+" has no subject");
+    }
+    return ret;
   }
 
 }
