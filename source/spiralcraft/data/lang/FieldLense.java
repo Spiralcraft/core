@@ -56,6 +56,12 @@ public class FieldLense
   
   public Object translateForGet(Object value,Optic[] modifiers)
   { 
+    if (value==null)
+    { 
+      // Null input results in null output
+      return null;
+    }
+    
     try
     { return field.getValue((Tuple) value);
     }
