@@ -229,6 +229,12 @@ public class FieldImpl
   public Object getValue(Tuple t)
     throws DataException
   { 
+    if (t==null)
+    { 
+      throw new IllegalArgumentException
+        ("Tuple cannot be null");
+    }
+    
     t=widenTuple(t);
     
     if (t!=null)
