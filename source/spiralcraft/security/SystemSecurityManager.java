@@ -18,6 +18,11 @@ import java.security.Permission;
 
 import spiralcraft.main.Spiralcraft;
 
+/**
+ * Stub for Classloader level permissions implementation
+ * 
+ * @author mike
+ */
 public class SystemSecurityManager
   extends SecurityManager
 {

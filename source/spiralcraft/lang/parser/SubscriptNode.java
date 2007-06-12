@@ -23,6 +23,15 @@ import spiralcraft.lang.optics.LenseBinding;
 import spiralcraft.lang.optics.ArrayIndexLense;
 
 
+/**
+ * Represents a subscript operation.
+ * 
+ * @author mike
+ *
+ * @param <T> The base (content) type
+ * @param <C> The collection type
+ * @param <I> The index or selector type
+ */
 public class SubscriptNode<T,C,I>
   extends Node
 {
