@@ -16,12 +16,15 @@ package spiralcraft.data.util;
 
 import spiralcraft.data.transport.ScrollableCursor;
 
+
 import java.util.List;
 import java.util.Arrays;
+import java.util.ArrayList;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Aggregate;
 
 /**
  * <P>A ScrollableCursor which navigates a List of Tuples.
@@ -36,6 +39,25 @@ public class ListCursor<T extends Tuple>
   protected List<T> data;
   protected int pointer=-1;
   
+  public ListCursor(Aggregate<T> aggregate)
+  {
+    this.fieldSet=aggregate.getType().getContentType().getScheme();
+    data=new ArrayList<T>(aggregate.size());
+    for (T t:data)
+    { this.data.add(t);
+    }
+  }
+  
+  public ListCursor(FieldSet fieldSet,Iterable<T> data)
+  { 
+    this.fieldSet=fieldSet;
+    data=new ArrayList<T>();
+    for (T t:data)
+    { this.data.add(t);
+    }
+    
+  }
+
   public ListCursor(FieldSet fieldSet,T ... data)
   { 
     this.fieldSet=fieldSet;
