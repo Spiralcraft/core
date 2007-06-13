@@ -61,7 +61,9 @@ public class PrimaryIdentifierNode
 //    String identifier=_identifier.getIdentifier();
 
     Focus specifiedFocus
-      =_source!=null?_source.findFocus(focus):focus;
+      =_source!=null
+      ?_source.findFocus(focus)
+      :focus;
 
     Context context=specifiedFocus.getContext();
     
