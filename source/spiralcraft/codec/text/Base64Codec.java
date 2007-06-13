@@ -244,11 +244,6 @@ class Base64Input
       { 
         // End of input
         done=true;
-        if (!endChunk)
-        {
-          throw new CodecException
-            ("Premature EOF encountered in BASE64 encoding.");
-        }
         return chunkPos;
       }
       int result=translate(window[windowStart++]);
