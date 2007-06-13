@@ -32,7 +32,8 @@ public interface Focus<T>
     
   /**
    * Return the Context of this Focus (the 'workspace' in which the computation
-   *   is being performed).
+   *   is being performed). A Focus inherits its parent's Context if it does
+   *   not have one of its own.
    */
   Context getContext();
 
