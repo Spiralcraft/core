@@ -36,7 +36,7 @@ import spiralcraft.data.builder.BuilderTypeFactory;
 import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.reflect.ReflectionTypeFactory;
 
-import spiralcraft.data.sax.XmlTypeFactory;
+import spiralcraft.data.xml.XmlTypeFactory;
 
 
 /**

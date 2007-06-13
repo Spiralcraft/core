@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.sax;
+package spiralcraft.data.xml;
 
 import java.net.URI;
 
@@ -26,6 +26,8 @@ import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.InstanceResolver;
+
+import spiralcraft.data.sax.DataReader;
 
 import spiralcraft.data.util.ConstructorInstanceResolver;
 
