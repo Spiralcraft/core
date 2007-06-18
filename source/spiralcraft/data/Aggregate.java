@@ -15,14 +15,35 @@
 package spiralcraft.data;
 
 /**
- * Holds a collection of objects of a common type.
+ * <P>Holds a random-access collection of objects of a common type.
  */
 public interface Aggregate<T>
-  extends DataComposite,Iterable
+  extends DataComposite,Iterable<T>
 {
+  
+  /**
+   * Obtain the value at the specified index of this aggregate
+   */
+  T get(int index);
+  
+  /**
+   * Indicate whether the value returned by the get(int index) method may
+   *   change at some point in the future. Some elements of data processing
+   *   functionality may require that an Aggregate be immutable before 
+   *   processing.
+   */
+  boolean isMutable();
+  
+  /**
+   * @return an immutable snapshot copy of this Aggregate.
+   */
+  Aggregate snapshot()
+    throws DataException;
   
   /**
    * The number of elements in this Aggregate
    */
   public int size();
+  
+  
 }
