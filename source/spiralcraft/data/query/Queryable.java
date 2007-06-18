@@ -38,9 +38,9 @@ public interface Queryable
 {
 
   /**
-   * @return A list of all the Types supported by this Queryable
+   * @return An array of all the Types supported by this Queryable
    */
-  List<Type> getTypes();
+  Type[] getTypes();
   
   /**
    * @return Whether the store contains the specified Type.
