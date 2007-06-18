@@ -26,7 +26,7 @@ import spiralcraft.data.TypeMismatchException;
 import java.net.URI;
 
 /**
- * Core implementation of a Field
+ * <P>Implementation of a standard Field.
  */
 public class FieldImpl
   implements Field
@@ -40,6 +40,7 @@ public class FieldImpl
   private Field archetypeField;
   private URI uri;
   private boolean isScheme;
+  private boolean stored=true;
   
   /**
    * Set the scheme
@@ -125,6 +126,19 @@ public class FieldImpl
    */
   public boolean isFunctionalEquivalent(Field field)
   { return field.getType()==getType();
+  }
+  
+  /**
+   *@return Whether this field is stored or whether it is recomputed every time
+   *  the value is accessed.
+   */
+  public boolean isStored()
+  { return stored;
+  }
+  
+
+  public void setStored(boolean stored)
+  { this.stored=stored;
   }
   
   /**
@@ -226,7 +240,7 @@ public class FieldImpl
     return t;
   }
   
-  public Object getValue(Tuple t)
+  public final Object getValue(Tuple t)
     throws DataException
   { 
     if (t==null)
@@ -238,7 +252,10 @@ public class FieldImpl
     t=widenTuple(t);
     
     if (t!=null)
-    { return t.get(index);
+    { 
+      Object val=getValueImpl(t);
+      // System.err.println("FieldImpl "+getURI()+": getValue()="+val);
+      return val;
     }
       
     throw new IllegalArgumentException
@@ -246,13 +263,20 @@ public class FieldImpl
       
   }
   
-  public void setValue(EditableTuple t,Object value)
+
+  public final void setValue(EditableTuple t,Object value)
     throws DataException
   { 
+    if (t==null)
+    {
+      throw new IllegalArgumentException
+        ("Tuple cannot be null");
+    }
+    
     t=widenTuple(t);
     
     if (t!=null)
-    { t.set(index,value);
+    { setValueImpl(t,value);
     } 
     else
     {
@@ -263,14 +287,58 @@ public class FieldImpl
     }
   }
   
+  /**
+   * Prevent further changes to this Field definition
+   */
   void lock()
   { locked=true;
+  }
+  
+  /**
+   * Resolve any external dependencies.
+   */
+  void resolve()
+    throws DataException
+  {
+    if (!locked)
+    { lock();
+    }
   }
   
   public String toString()
   { return super.toString()+":"+uri;
   }
   
+  /**
+   * Implements the field data value retrieval mechanism
+   *   
+   * @param tuple The Tuple that contains the value
+   * @return The data value of the Field in the specified Tuple
+   * @throws DataException
+   */
+  protected Object getValueImpl(Tuple tuple)
+    throws DataException
+  { return tuple.get(index);
+  }
+
+  /**
+   * Implement the field data value update mechanism
+   * 
+   * @param tuple The EditableTuple to be updated
+   * @param value The data value to update
+   * @throws DataException
+   */
+  protected void setValueImpl(EditableTuple tuple,Object value)
+    throws DataException
+  { tuple.set(index,value);
+  }
+
+  
+  /**
+   * Ensure that this Field definition is still modifyable or throw an
+   *   exception
+   *
+   */
   private final void assertUnlocked()
   { 
     if (locked)

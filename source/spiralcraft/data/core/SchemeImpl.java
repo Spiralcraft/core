@@ -243,6 +243,15 @@ public class SchemeImpl
       
     }
     
+    for (FieldImpl field: localFields)
+    { 
+      // XXX There may be fields in this list that were not made part of this
+      //   scheme because they were redundant of their Archetype field. Should
+      //   we always extend an Archetype field (in the above block) to avoid
+      //   this?
+      field.resolve();
+    }
+    
     int keyIndex=0;
     for (KeyImpl key:keys)
     {
