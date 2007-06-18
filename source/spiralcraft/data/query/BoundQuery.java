@@ -77,19 +77,27 @@ public abstract class BoundQuery<Tq extends Query>
   }
   
   /**
-   * <P>A BoundQuery is often composed of nested BoundQueries, which form a data flow
-   *   tree. Once the tree is created, the field names and parameter references must
-   *   be resolved to various points in this data flow tree. In some cases, nodes in
-   *   this data flow tree may be collapsed for efficiency.
+   * <P>A BoundQuery is often composed of nested BoundQueries, which form a 
+   *   data flow  tree. Once the tree is created, the field names and parameter
+   *   references must be resolved to various points in this data flow tree.
+   *   In some cases, nodes in this data flow tree may be collapsed for 
+   *   efficiency.
    *   
    * <P>
    */
   public void resolve()
     throws DataException
   { 
-    assertUnresolved();
-    if (!resolved)
-    { resolved=true;
+    if (resolved)
+    { return;
+    }
+    resolved=true;
+    
+    try
+    { resultBinding=new BoundQueryBinding(query.getFieldSet());
+    }
+    catch (BindException x)
+    { throw new DataException("Error creating BoundQuery result binding: "+x,x);
     }
   }
   
@@ -128,7 +136,7 @@ public abstract class BoundQuery<Tq extends Query>
     }
   }
   
-  abstract class BoundQuerySerialCursor
+  public abstract class BoundQuerySerialCursor
     implements SerialCursor
   { 
     public Tuple dataGetTuple()
