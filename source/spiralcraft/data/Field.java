@@ -17,7 +17,7 @@ package spiralcraft.data;
 import java.net.URI;
 
 /**
- * A description of a single element of a Tuple.
+ * <P>A description of a single element of a Tuple.
  */
 public interface Field
 {
@@ -43,6 +43,7 @@ public interface Field
    * A short descriptive name for the field, for user consumption. Does not
    *   have syntax constraints.
    */
+  // XXX Consider a FieldUI component which provides descriptive information
   String getTitle();
   
   /**
@@ -67,4 +68,10 @@ public interface Field
    *   the Type that it belongs to. 
    */
   URI getURI();
+  
+  /**
+   * @return Whether the value for this Field is stored or recomputed every
+   *   time it is accessed. 
+   */
+  boolean isStored();
 }
