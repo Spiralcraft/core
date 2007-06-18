@@ -14,7 +14,7 @@
 //
 package spiralcraft.data;
 
-import java.net.URI; 
+import java.net.URI;
 
 
 /**
@@ -22,6 +22,10 @@ import java.net.URI;
  */
 public abstract class Type<T>
 {  
+  public static Type forURI(URI uri)
+    throws TypeNotFoundException
+  { return TypeResolver.getTypeResolver().resolve(uri);
+  }
   
   /**
    * The TypeResolver which instantiated this particular Type.
