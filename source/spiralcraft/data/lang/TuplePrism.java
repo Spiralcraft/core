@@ -75,6 +75,10 @@ public class TuplePrism<T extends Tuple>
   { return fieldSet;
   }
 
+  /**
+   * Resolve a Binding that provides access to a member of a Tuple given a 
+   *   source that provides Tuples.
+   */
   @SuppressWarnings("unchecked") // We haven't genericized the data package yet
   public synchronized Binding resolve
     (Binding source

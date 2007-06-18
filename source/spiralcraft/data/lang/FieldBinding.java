@@ -43,7 +43,7 @@ public class FieldBinding
   public boolean isStatic()
   { 
     // XXX Find a way to incorporate Tuple immutability to give a more
-    // XXX intelligent response here.
+    //  intelligent response here.
     return false;
   }
   

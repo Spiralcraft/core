@@ -18,7 +18,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.DataException;
 
-import spiralcraft.data.util.ManualCursor;
+import spiralcraft.data.spi.ManualCursor;
 
 import spiralcraft.lang.DefaultFocus;
 import spiralcraft.lang.BindException;

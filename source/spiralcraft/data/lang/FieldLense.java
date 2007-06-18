@@ -72,7 +72,8 @@ public class FieldLense
 
   public Object translateForSet(Object val,Optic[] modifiers)
   { 
-    // We can't turn the value into a Tuple
+    // We can't turn the value into a Tuple, lacking access to
+    //   any kind of lookup context
     throw new UnsupportedOperationException();
   }
     
