@@ -25,15 +25,27 @@ import spiralcraft.data.transport.SerialCursor;
 import spiralcraft.data.transport.ScrollableCursor;
 
 /**
- * A BoundQuery that performs some sort of transformation on the results
+ * <P>A BoundQuery that performs a transformation on the results
  *   of single other BoundQuery. One or more Tuples from the SourceQuery
- *   will generate an output Tuple.
+ *   will generate an output Tuple (ie. they may be filtered, grouped or
+ *   otherwise reduced). 
+ *   
+ * <P>This class helps to build Query operations which act on the output of
+ *   another Query.
  *
  */
 public abstract class UnaryBoundQuery<Tq extends Query>
   extends BoundQuery<Tq>
 {
 
+  // XXX It would be cleaner if some of these positional vars resided in the
+  //  Cursor. BoundQuery should move to being threadsafe. If params are
+  //  threadSafe or sharable, this is doable. But not everything can be
+  //  threadSafe- ie. SQL queries have issues. Is that why we're going for more
+  //  and shorter lived Binding instances? ThreadLocal for processing state
+  //  might be our answer. Dovetails with execution context awareness, b/c need
+  //  a container component stacking the context into the Thread.
+  
   protected final BoundQuery<?> source;
   private boolean resolved;
   protected boolean eos;
@@ -105,6 +117,7 @@ public abstract class UnaryBoundQuery<Tq extends Query>
   public void resolve()
     throws DataException
   { 
+    super.resolve();
     if (!resolved)
     { 
       source.resolve();
@@ -155,7 +168,8 @@ public abstract class UnaryBoundQuery<Tq extends Query>
             return false;
           }
         }
-        
+//        System.err.println
+//          ("UnaryBoundQuery: dataNext() "+sourceCursor.dataGetTuple());
         lookahead=0;
         if (integrate(sourceCursor.dataGetTuple()))
         { return true;

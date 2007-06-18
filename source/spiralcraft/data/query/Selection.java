@@ -118,7 +118,7 @@ class SelectionBinding<Tq extends Selection>
 
   public void resolve() throws DataException
   { 
-    
+    super.resolve();
     source.resolve();
     focus=new DefaultFocus<Tuple>(source.getResultBinding());
     focus.setParentFocus(paramFocus);
@@ -133,16 +133,21 @@ class SelectionBinding<Tq extends Selection>
   protected boolean integrate(Tuple t)
   { 
     if (t==null)
-    { return false;
+    { 
+//      System.err.println("BoundSelection: eod ");
+      return false;
     }
     
     if (filter.get())
     { 
+//      System.err.println("BoundSelection: passed "+t);
       dataAvailable(t);
       return true;
     }
     else
-    { return false;
+    { 
+//      System.err.println("BoundSelection: filtered "+t);
+      return false;
     }
   }
   
