@@ -213,7 +213,7 @@ class Base64Input
   private int windowEnd=0;
   private int windowStart=0;
   private boolean done=false;
-  private boolean endChunk=false;
+  //private boolean endChunk=false;
 
   
   public Base64Input(InputStream in,int bufsize)
@@ -250,7 +250,7 @@ class Base64Input
       if (result==65)
       { 
         done=true;
-        endChunk=true;
+        // endChunk=true;
         return chunkPos;
       }
       else if (result>-1)
