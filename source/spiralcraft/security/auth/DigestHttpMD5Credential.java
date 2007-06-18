@@ -23,6 +23,10 @@ package spiralcraft.security.auth;
 public class DigestHttpMD5Credential
   extends Credential<byte[]>
 {
+  public DigestHttpMD5Credential()
+  { super(byte[].class,null);
+  }
+  
   public DigestHttpMD5Credential(byte[] digest)
   { super(byte[].class,digest);
   }

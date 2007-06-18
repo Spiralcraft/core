@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2007 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -17,11 +17,18 @@ package spiralcraft.security.auth;
 import java.security.Principal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Iterator;
 
+import spiralcraft.lang.DefaultFocus;
+
 /**
- * Represents the state of the authentication process from a client's
+ * <P>Represents the state of the authentication process from a client's
  *   perspective.
+ *   
+ * <P>Provides an interface to the credentials received from the client
+ *   for authentication functionality.
  * 
  * @author mike
  */
@@ -31,9 +38,52 @@ public abstract class AuthSession
   protected final ArrayList<Credential> credentialList
     =new ArrayList<Credential>();
   
+  protected final HashMap<String,Credential<?>> credentialMap
+    =new HashMap<String,Credential<?>>();
+
+  protected final DefaultFocus<Map<String,Credential<?>>> credentialFocus
+    =new DefaultFocus<Map<String,Credential<?>>>();
+  { credentialFocus.setSubject(new CredentialSetBinding(credentialMap));
+  }
+  
   protected Principal principal;
   protected boolean authenticated;
-  protected Class[] requiredCredentials;
+  protected Class<? extends Credential<?>>[] requiredCredentials;
+  
+  protected void setRequiredCredentials
+    (Class<? extends Credential<?>>[] requiredCredentials)
+  { 
+    this.requiredCredentials=requiredCredentials;
+    for (Class<? extends Credential<?>> credClass: requiredCredentials)
+    { 
+      if (credentialMap.get(credClass.getSimpleName())==null)
+      { 
+        try
+        { credentialMap.put(credClass.getSimpleName(),credClass.newInstance());
+        }
+        catch (InstantiationException x)
+        { 
+          throw new IllegalArgumentException
+            ("Credential class "
+            +credClass.getName()
+            +" could not be instantiated: "
+            +x
+            ,x
+            );
+        }
+        catch (IllegalAccessException x)
+        {
+          throw new IllegalArgumentException
+          ("Credential class "
+          +credClass.getName()
+          +" could not be instantiated: "
+          +x
+          ,x
+          );
+        }
+      }
+    }
+  }
   
   /**
    * @return The Principal currently authenticated in this session.
@@ -70,14 +120,14 @@ public abstract class AuthSession
         }
       }
       credentialList.add(cred);
+      credentialMap.put(cred.getClass().getSimpleName(),cred);
     }
   }
     
-  public Class[] getRequiredCredentials()
+  public Class<? extends Credential<?>>[] getRequiredCredentials()
   { return requiredCredentials;
   }
   
   public abstract boolean isAuthenticated();
-
   
 }

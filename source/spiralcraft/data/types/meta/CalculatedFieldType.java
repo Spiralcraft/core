@@ -12,29 +12,24 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.spi;
+package spiralcraft.data.types.meta;
 
-import spiralcraft.data.EditableAggregate;
+import spiralcraft.data.TypeResolver;
+import spiralcraft.data.core.CalculatedFieldImpl;
 
-import spiralcraft.data.Type;
+import spiralcraft.data.reflect.ReflectionType;
+
+import java.net.URI;
 
 /**
- * Holds a aggregation of objects of a common type.
+ * A Type implementation that represents a Field
  */
-public class EditableArrayListAggregate<T>
-  extends ArrayListAggregate<T>
-  implements EditableAggregate<T>
+public class CalculatedFieldType
+  extends ReflectionType<CalculatedFieldImpl>
 {
-  public EditableArrayListAggregate(Type type)
-  { super(type);
+  public CalculatedFieldType(TypeResolver resolver,URI uri)
+  { super(resolver,uri,CalculatedFieldImpl.class,CalculatedFieldImpl.class);
   }
   
-  public void add(T val)
-  { list.add(val);
-  }
-  
-  public boolean isMutable()
-  { return true;
-  }
-  
+
 }

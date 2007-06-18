@@ -22,6 +22,11 @@ package spiralcraft.security.auth;
 public class UsernameCredential
   extends Credential<String>
 {
+  
+  public UsernameCredential()
+  { super(String.class,null);
+  }
+  
   public UsernameCredential(String username)
   { super(String.class,username);
   }

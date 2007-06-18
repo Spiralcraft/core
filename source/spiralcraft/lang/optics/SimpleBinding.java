@@ -19,7 +19,8 @@ import spiralcraft.lang.BindException;
 
 
 /**
- * An Binding bound to a self-contained Object 
+ * An Binding which references a self-contained Object. Used to provide a
+ *   programatically defined target against which Expressions can be evaluated.
  */
 public class SimpleBinding<T>
   extends AbstractBinding<T>

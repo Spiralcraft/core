@@ -22,6 +22,10 @@ package spiralcraft.security.auth;
 public class PasswordCleartextCredential
   extends Credential<String>
 {
+  public PasswordCleartextCredential()
+  { super(String.class,null);
+  }
+  
   public PasswordCleartextCredential(String password)
   { super(String.class,password);
   }

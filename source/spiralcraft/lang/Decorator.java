@@ -20,5 +20,4 @@ package spiralcraft.lang;
 public interface Decorator<T>
 {
 
-    
 }

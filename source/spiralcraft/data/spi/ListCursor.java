@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.util;
+package spiralcraft.data.spi;
 
 import spiralcraft.data.transport.ScrollableCursor;
 
@@ -42,8 +42,8 @@ public class ListCursor<T extends Tuple>
   public ListCursor(Aggregate<T> aggregate)
   {
     this.fieldSet=aggregate.getType().getContentType().getScheme();
-    data=new ArrayList<T>(aggregate.size());
-    for (T t:data)
+    this.data=new ArrayList<T>(aggregate.size());
+    for (T t:aggregate)
     { this.data.add(t);
     }
   }
@@ -51,7 +51,7 @@ public class ListCursor<T extends Tuple>
   public ListCursor(FieldSet fieldSet,Iterable<T> data)
   { 
     this.fieldSet=fieldSet;
-    data=new ArrayList<T>();
+    this.data=new ArrayList<T>();
     for (T t:data)
     { this.data.add(t);
     }
@@ -118,6 +118,8 @@ public class ListCursor<T extends Tuple>
   public boolean dataNext() throws DataException
   { 
     pointer++;
+//    System.err.println
+//      ("ListCursor.dataNext(): #"+pointer+"/"+data.size()+": "+dataGetTuple());
     if (pointer>=data.size())
     { 
       pointer=data.size();

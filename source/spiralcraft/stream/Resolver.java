@@ -23,6 +23,7 @@ import java.io.File;
 import spiralcraft.stream.url.URLResourceFactory;
 import spiralcraft.stream.classpath.ClasspathResourceFactory;
 import spiralcraft.stream.file.FileResourceFactory;
+import spiralcraft.stream.context.ContextResourceFactory;
 
 /**
  * Resolves URIs into Resources
@@ -49,6 +50,8 @@ public class Resolver
           ("java",new ClasspathResourceFactory());
         _INSTANCE.registerResourceFactory
           ("file",new FileResourceFactory());
+        _INSTANCE.registerResourceFactory
+          ("context",new ContextResourceFactory());
       }
       catch (AlreadyRegisteredException x)
       { 

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 1998,2005 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,29 +12,23 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.spi;
+package spiralcraft.stream.context;
 
-import spiralcraft.data.EditableAggregate;
+import spiralcraft.stream.ResourceFactory;
+import spiralcraft.stream.Resource;
+import spiralcraft.stream.UnresolvableURIException;
 
-import spiralcraft.data.Type;
+import java.net.URI;
 
-/**
- * Holds a aggregation of objects of a common type.
- */
-public class EditableArrayListAggregate<T>
-  extends ArrayListAggregate<T>
-  implements EditableAggregate<T>
+public class ContextResourceFactory
+  implements ResourceFactory
 {
-  public EditableArrayListAggregate(Type type)
-  { super(type);
+
+  public Resource resolve(URI uri)
+    throws UnresolvableURIException
+  { return new ContextResource(uri);
   }
-  
-  public void add(T val)
-  { list.add(val);
-  }
-  
-  public boolean isMutable()
-  { return true;
-  }
-  
+
+
+
 }

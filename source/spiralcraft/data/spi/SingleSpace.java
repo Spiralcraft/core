@@ -83,7 +83,7 @@ public class SingleSpace
   { return store.getAll(type);
   }
 
-  public List<Type> getTypes()
+  public Type[] getTypes()
   { return store.getTypes();
   }
   

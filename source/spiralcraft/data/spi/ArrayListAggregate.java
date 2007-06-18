@@ -29,11 +29,22 @@ import java.util.Iterator;
 public class ArrayListAggregate<T>
   implements Aggregate<T>
 {
-  protected ArrayList<T> list=new ArrayList<T>();
+  protected final ArrayList<T> list;
   private final Type type;
   
   public ArrayListAggregate(Type type)
-  { this.type=type;
+  { 
+    this.type=type;
+    list=new ArrayList<T>();
+  }
+
+  public ArrayListAggregate(ArrayListAggregate<T> original)
+  { 
+    list=new ArrayList<T>(original.size());
+    type=original.getType();
+    for (T element:original)
+    { list.add(element);
+    }
   }
 
   public boolean isAggregate()
@@ -57,8 +68,10 @@ public class ArrayListAggregate<T>
   { return type;
   }
   
-  public Iterator iterator()
-  { return list.iterator();
+  public Iterator<T> iterator()
+  { 
+    // XXX Block remove() if not mutable- create a ReadOnlyIterator wrapper
+    return list.iterator();
   }
   
   public int size()
@@ -114,5 +127,25 @@ public class ArrayListAggregate<T>
     builder.append("\r\n").append(indent);
     builder.append("}");
     return builder.toString();
+  }
+
+  public T get(int index)
+  { return list.get(index);
+  }
+
+  public boolean isMutable()
+  { return false;
+  }
+
+  public Aggregate snapshot() throws DataException
+  { 
+    if (isMutable())
+    { return new ArrayListAggregate<T>(this);
+    }
+    else
+    {
+      // XXX Should we return snapshots of all the contained data?
+      return this;
+    }
   }
 }

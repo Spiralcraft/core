@@ -31,6 +31,7 @@ public class EqualityNode<X>
   public Boolean translateForGet(X val,Optic[] mods)
   { 
     Object mod=mods[0].get();
+    // System.err.println("EqualityNode: "+val+" == "+mod);
     if (val==mod)
     { return _negate?Boolean.FALSE:Boolean.TRUE;
     }

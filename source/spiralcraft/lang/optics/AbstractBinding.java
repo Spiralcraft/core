@@ -56,8 +56,7 @@ public abstract class AbstractBinding<T>
   /**
    * Construct an AbstractBinding without an initial value
    */
-  protected AbstractBinding(Prism<T> prism)
-    throws BindException
+  public AbstractBinding(Prism<T> prism)
   { 
     _prism=prism;
     _static=false;
@@ -67,7 +66,6 @@ public abstract class AbstractBinding<T>
    * Construct an AbstractBinding with an initial value
    */
   protected AbstractBinding(Prism<T> prism,boolean isStatic)
-    throws BindException
   { 
     _prism=prism;
     _static=isStatic;

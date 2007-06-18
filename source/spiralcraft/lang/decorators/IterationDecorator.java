@@ -27,6 +27,7 @@ import spiralcraft.lang.Optic;
 public interface IterationDecorator<T,I>
   extends Decorator<T>,Optic<I>
 {
+  
   /**
    * Reset the iteration. Must be called -before- every iteration
    */
