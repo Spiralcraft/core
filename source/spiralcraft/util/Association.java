@@ -15,30 +15,30 @@
 package spiralcraft.util;
 
 /**
- * Associates a String name with a value
+ * Associates a Key with a Value
  */
-public class NamedValue
+public class Association<K,V>
 {
-  private String _name;
-  private Object _value;
+  private K key;
+  private V value;
 
-  public NamedValue()
+  public Association()
   {
   }
 
-  public void setName(String name)
-  { _name=name;
+  public void setKey(K key)
+  { this.key=key;
   }
 
-  public void setValue(Object value)
-  { _value=value;
+  public void setValue(V value)
+  { this.value=value;
   }
 
-  public String getName()
-  { return _name;
+  public K getKey()
+  { return key;
   }
 
-  public Object getValue()
-  { return _value;
+  public V getValue()
+  { return value;
   }
 }
