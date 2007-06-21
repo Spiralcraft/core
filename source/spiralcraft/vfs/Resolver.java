@@ -17,6 +17,7 @@ package spiralcraft.vfs;
 import java.net.URI;
 
 import java.util.HashMap;
+import java.util.Stack;
 
 import java.io.File;
 
@@ -26,17 +27,37 @@ import spiralcraft.vfs.file.FileResourceFactory;
 import spiralcraft.vfs.url.URLResourceFactory;
 
 /**
- * Resolves URIs into Resources
+ * <P>Resolves URIs into Resources. Each supported URI scheme is mapped to a 
+ *   ResourceFactory.
+ *   
+ * <P>When a relative URI is encountered, it is resolved against a contextual
+ *   URI currently in effect for the executing Thread. Components that wish
+ *   to change the contextual URI for subcomponents they will be calling into
+ *   should use the following mechanism:
+ * 
+ * <P><CODE><PRE>
+ *   URI localURI=<I>someLocalURI</I>;
+ *   Resolver.pushThreadContextURI(localURI);
+ *   try
+ *   { doSomeWork();
+ *   }
+ *   finally
+ *   { resolver.popThreadContextURI();
+ *   }
+ *   </PRE></CODE>
  */
 public class Resolver
 {
   private static Resolver _INSTANCE;
   
-  private static final ThreadLocal<URI> contextMap
-    =new ThreadLocal<URI>()
+  private static final ThreadLocal<Stack<URI>> contextURI
+    =new ThreadLocal<Stack<URI>>()
   {
-    protected URI initialValue()
-    { return new File(System.getProperty("user.dir")).toURI();
+    protected Stack<URI> initialValue()
+    { 
+      Stack<URI> stack=new Stack<URI>();
+      stack.push(new File(System.getProperty("user.dir")).toURI());
+      return stack;
     }
   };
 
@@ -74,11 +95,15 @@ public class Resolver
   
 
   public static final URI getThreadContextURI()
-  { return contextMap.get();
+  { return contextURI.get().peek();
   }
 
-  public static final void setThreadContextURI(String name,URI uri)
-  { contextMap.set(uri);
+  public static final void pushThreadContextURI(URI uri)
+  { contextURI.get().push(uri);
+  }
+  
+  public static final void popThreadContextURI()
+  { contextURI.get().pop();
   }
   
   /**
