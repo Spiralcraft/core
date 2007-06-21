@@ -32,8 +32,8 @@ import spiralcraft.data.sax.DataWriter;
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
 
-import spiralcraft.stream.Resource;
-import spiralcraft.stream.Resolver;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
 
 /**
  * A persistent object represented in an XML based portable data format.

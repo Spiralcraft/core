@@ -16,9 +16,9 @@ package spiralcraft.builder;
 
 import java.net.URI;
 
-import spiralcraft.stream.Resource;
 
 import spiralcraft.util.Path;
+import spiralcraft.vfs.Resource;
 
 import java.io.IOException;
 

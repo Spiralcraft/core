@@ -17,8 +17,8 @@ package spiralcraft.loader;
 import spiralcraft.main.Spiralcraft;
 
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.vfs.StreamUtil;
 
-import spiralcraft.stream.StreamUtil;
 
 import spiralcraft.exec.ApplicationManager;
 import spiralcraft.exec.ExecutionTargetException;

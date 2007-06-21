@@ -24,12 +24,12 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataException;
 
-import spiralcraft.stream.Resource;
-import spiralcraft.stream.Resolver;
-import spiralcraft.stream.UnresolvableURIException;
 
-import spiralcraft.stream.util.Watcher;
-import spiralcraft.stream.util.WatcherHandler;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.UnresolvableURIException;
+import spiralcraft.vfs.util.Watcher;
+import spiralcraft.vfs.util.WatcherHandler;
 
 
 import java.net.URI;

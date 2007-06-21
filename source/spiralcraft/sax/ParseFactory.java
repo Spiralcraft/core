@@ -14,8 +14,8 @@
 //
 package spiralcraft.sax;
 
-import spiralcraft.stream.Resolver;
-import spiralcraft.stream.Resource;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
 
 import java.net.URI;
 

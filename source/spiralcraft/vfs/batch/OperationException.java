@@ -12,35 +12,24 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.text.io;
+package spiralcraft.vfs.batch;
 
-import java.io.InputStream;
-import java.io.IOException;
-
-import java.net.URI;
-
-import spiralcraft.vfs.Resolver;
-import spiralcraft.vfs.Resource;
-
-/**
- * Represents an File as a CharSequence
- */
-
-//
-// XXX Support constructors for non-default Character conversion
-// 
-
-public class ResourceCharSequence
-  extends InputStreamCharSequence
+public class OperationException
+  extends Exception
 {
-  public ResourceCharSequence(URI resourceURI)
-    throws IOException
+  // private final Operation _operation;
+
+  private static final long serialVersionUID = 1L;
+
+  public OperationException(Operation operation,String message)
   { 
-    Resource resource=Resolver.getInstance().resolve(resourceURI);
-    InputStream in=resource.getInputStream();
-    load(in);
-    in.close();
+    super(message);
+    // _operation=operation;
   }
   
-  
+  public OperationException(Operation operation,String message,Throwable cause)
+  { 
+    super(message,cause);
+    // _operation=operation;
+  }
 }

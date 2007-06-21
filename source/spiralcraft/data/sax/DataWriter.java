@@ -14,8 +14,6 @@
 //
 package spiralcraft.data.sax;
 
-import spiralcraft.stream.Resolver;
-import spiralcraft.stream.Resource;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.Tuple;
@@ -25,6 +23,8 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 
 import spiralcraft.util.StringUtil;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
 
 import spiralcraft.sax.XmlWriter;
 

@@ -20,13 +20,13 @@ import spiralcraft.registry.RegistryNode;
 import spiralcraft.loader.LibraryCatalog;
 
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.UnresolvableURIException;
 
 import spiralcraft.data.persist.XmlAssembly;
 import spiralcraft.data.persist.PersistenceException;
 
-import spiralcraft.stream.Resolver;
-import spiralcraft.stream.Resource;
-import spiralcraft.stream.UnresolvableURIException;
 
 import java.io.File;
 import java.io.IOException;

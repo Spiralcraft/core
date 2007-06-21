@@ -34,9 +34,9 @@ import spiralcraft.builder.Assembly;
 import spiralcraft.builder.PropertyBinding;
 import spiralcraft.builder.BuildException;
 
-import spiralcraft.stream.Resource;
-import spiralcraft.stream.Resolver;
-import spiralcraft.stream.UnresolvableURIException;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.UnresolvableURIException;
 
 import java.net.URI;
 

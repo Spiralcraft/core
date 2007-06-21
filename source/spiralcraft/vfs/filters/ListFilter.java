@@ -12,35 +12,38 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.text.io;
+package spiralcraft.vfs.filters;
 
-import java.io.InputStream;
-import java.io.IOException;
 
-import java.net.URI;
-
-import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.ResourceFilter;
+
+import java.util.List;
+import java.util.LinkedList;
+
 
 /**
- * Represents an File as a CharSequence
+ * A ResourceFilter which accepts all resources provided and stores
+ *   them in a LinkedList.
  */
-
-//
-// XXX Support constructors for non-default Character conversion
-// 
-
-public class ResourceCharSequence
-  extends InputStreamCharSequence
+public class ListFilter
+  implements ResourceFilter
 {
-  public ResourceCharSequence(URI resourceURI)
-    throws IOException
+  private final LinkedList<Resource> _list
+    =new LinkedList<Resource>();
+    
+  public boolean accept(Resource resource)
   { 
-    Resource resource=Resolver.getInstance().resolve(resourceURI);
-    InputStream in=resource.getInputStream();
-    load(in);
-    in.close();
+    _list.add(resource);
+    return true;
+  }
+
+  public List getList()
+  { return _list;
   }
   
-  
+  public void clear()
+  { _list.clear();
+  }
 }
+

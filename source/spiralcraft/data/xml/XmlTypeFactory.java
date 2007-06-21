@@ -31,9 +31,9 @@ import spiralcraft.data.sax.DataReader;
 
 import spiralcraft.data.util.ConstructorInstanceResolver;
 
-import spiralcraft.stream.Resource;
-import spiralcraft.stream.Resolver;
-import spiralcraft.stream.UnresolvableURIException;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.UnresolvableURIException;
 
 public class XmlTypeFactory
   implements TypeFactory

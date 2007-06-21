@@ -12,35 +12,23 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.text.io;
+package spiralcraft.vfs.classpath;
 
-import java.io.InputStream;
-import java.io.IOException;
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.ResourceFactory;
+import spiralcraft.vfs.UnresolvableURIException;
 
 import java.net.URI;
 
-import spiralcraft.vfs.Resolver;
-import spiralcraft.vfs.Resource;
-
-/**
- * Represents an File as a CharSequence
- */
-
-//
-// XXX Support constructors for non-default Character conversion
-// 
-
-public class ResourceCharSequence
-  extends InputStreamCharSequence
+public class ClasspathResourceFactory
+  implements ResourceFactory
 {
-  public ResourceCharSequence(URI resourceURI)
-    throws IOException
-  { 
-    Resource resource=Resolver.getInstance().resolve(resourceURI);
-    InputStream in=resource.getInputStream();
-    load(in);
-    in.close();
+
+  public Resource resolve(URI uri)
+    throws UnresolvableURIException
+  { return new ClasspathResource(uri);
   }
-  
-  
+
+
+
 }

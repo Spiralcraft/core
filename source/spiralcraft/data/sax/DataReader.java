@@ -14,8 +14,8 @@
 //
 package spiralcraft.data.sax;
 
-import spiralcraft.stream.Resolver;
-import spiralcraft.stream.Resource;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
 
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;

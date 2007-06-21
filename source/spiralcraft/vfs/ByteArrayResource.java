@@ -12,35 +12,41 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.text.io;
+package spiralcraft.vfs;
 
 import java.io.InputStream;
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 
 import java.net.URI;
 
-import spiralcraft.vfs.Resolver;
-import spiralcraft.vfs.Resource;
-
-/**
- * Represents an File as a CharSequence
- */
-
-//
-// XXX Support constructors for non-default Character conversion
-// 
-
-public class ResourceCharSequence
-  extends InputStreamCharSequence
+public class ByteArrayResource
+  extends AbstractResource
 {
-  public ResourceCharSequence(URI resourceURI)
-    throws IOException
+  private static int NEXT_ID=0;
+  private byte[] _bytes;
+  
+  
+  public ByteArrayResource(byte[] bytes)
   { 
-    Resource resource=Resolver.getInstance().resolve(resourceURI);
-    InputStream in=resource.getInputStream();
-    load(in);
-    in.close();
+    super(URI.create("bytes:"+NEXT_ID++));
+    _bytes=bytes;
   }
   
+  public ByteArrayResource()
+  { 
+    super(URI.create("bytes:"+NEXT_ID++));
+    _bytes=new byte[0];
+  }
   
+  public InputStream getInputStream()
+  { return new ByteArrayInputStream(_bytes);
+  }
+  
+  public boolean supportsRead()
+  { return true;
+  }
+  
+  public boolean exists()
+  { return _bytes!=null;
+  }
 }
