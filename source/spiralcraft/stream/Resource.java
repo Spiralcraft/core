@@ -26,7 +26,9 @@ import java.io.OutputStream;
 public interface Resource
 {
   /**
-   * Return the absolute URI corresponding to this resource
+   * Return the absolute, canonical URI corresponding to this resource. This 
+   *   may be different than the URI used to resolve the resource, which may
+   *   be relative to some application specific context.
    */
   public URI getURI();
 

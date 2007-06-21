@@ -34,58 +34,58 @@ public abstract class ResourceWrapper
   implements Resource
 {
 
-  protected Resource delegate;
+  protected abstract Resource getDelegate();
   
   public Container asContainer()
-  { return delegate.asContainer();
+  { return getDelegate().asContainer();
   }
 
   public void copyFrom(Resource source) throws IOException
-  { delegate.copyFrom(source);
+  { getDelegate().copyFrom(source);
   }
 
   public Container ensureContainer() throws IOException
-  { return delegate.ensureContainer();
+  { return getDelegate().ensureContainer();
   }
 
   public boolean exists() throws IOException
-  { return delegate.exists();
+  { return getDelegate().exists();
   }
 
   public InputStream getInputStream() throws IOException
-  { return delegate.getInputStream();
+  { return getDelegate().getInputStream();
   }
 
   public long getLastModified() throws IOException
-  { return delegate.getLastModified();
+  { return getDelegate().getLastModified();
   }
 
   public String getLocalName()
-  { return delegate.getLocalName();
+  { return getDelegate().getLocalName();
   }
 
   public OutputStream getOutputStream() throws IOException
-  { return delegate.getOutputStream();
+  { return getDelegate().getOutputStream();
   }
 
   public Resource getParent()
-  { return delegate.getParent();
+  { return getDelegate().getParent();
   }
 
   public URI getURI()
-  { return delegate.getURI();
+  { return getDelegate().getURI();
   }
 
   public boolean supportsRead()
-  { return delegate.supportsRead();
+  { return getDelegate().supportsRead();
   }
 
   public boolean supportsWrite()
-  { return delegate.supportsWrite();
+  { return getDelegate().supportsWrite();
   }
 
   public long write(InputStream in) throws IOException
-  { return delegate.write(in);
+  { return getDelegate().write(in);
   }
 
 }

@@ -16,6 +16,7 @@ package spiralcraft.stream.context;
 
 import spiralcraft.stream.UnresolvableURIException;
 import spiralcraft.stream.Resolver;
+import spiralcraft.stream.Resource;
 
 import spiralcraft.stream.util.ResourceWrapper;
 
@@ -27,10 +28,15 @@ import java.util.HashMap;
  * <P>A named virtual resource backed by a physical resource. Used to simplify
  *   and make more portable components which access external resources.
  * 
+ * <P>A ContextResource is a simple wrapper for another resource. All methods,
+ *   including 'getURI()', will return the details of the specific resource.
+ * 
+ * 
  * <P>A ContextResource is created when a container binds a name to a URI for
  *   the duration of a method call which invokes user subcomponents. The
  *   container will restore the previous URI bound to the name, if any, before
  *   the Thread returns from the method call.
+ *   
  * 
  * <P>Examples:
  * <BR>context://war/WEB-INF/web.xml
@@ -39,11 +45,7 @@ import java.util.HashMap;
  */
 public class ContextResource
   extends ResourceWrapper
-{
-  
-  private URI uri;
-  private String path;
-  
+{ 
   private static final ThreadLocal<HashMap<String,URI>> threadMap
     =new ThreadLocal<HashMap<String,URI>>()
     {
@@ -51,6 +53,9 @@ public class ContextResource
       { return new HashMap<String,URI>();
       }
     };
+
+  private String path;
+  private Resource delegate;
     
   
   public static final URI lookup(String name)
@@ -64,7 +69,6 @@ public class ContextResource
   public ContextResource(URI uri)
     throws UnresolvableURIException
   { 
-    this.uri=uri;
     path=uri.getPath().substring(1);
     String authority=uri.getAuthority();
     URI root=lookup(authority);
@@ -78,5 +82,8 @@ public class ContextResource
     
   }
   
+  protected Resource getDelegate()
+  { return delegate;
+  }
   
 }
