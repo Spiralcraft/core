@@ -22,7 +22,6 @@ import spiralcraft.vfs.util.ResourceWrapper;
 
 import java.net.URI;
 
-import java.util.HashMap;
 
 /**
  * <P>A named virtual resource backed by a physical resource. Used to simplify
@@ -46,32 +45,19 @@ import java.util.HashMap;
 public class ContextResource
   extends ResourceWrapper
 { 
-  private static final ThreadLocal<HashMap<String,URI>> threadMap
-    =new ThreadLocal<HashMap<String,URI>>()
-    {
-      protected HashMap<String,URI> initialValue()
-      { return new HashMap<String,URI>();
-      }
-    };
 
   private String path;
   private Resource delegate;
     
-  
-  public static final URI lookup(String name)
-  { return threadMap.get().get(name);
-  }
-  
-  public static final void bind(String name,URI uri)
-  { threadMap.get().put(name,uri);
-  }
+
+
   
   public ContextResource(URI uri)
     throws UnresolvableURIException
   { 
     path=uri.getPath().substring(1);
     String authority=uri.getAuthority();
-    URI root=lookup(authority);
+    URI root=ContextResourceMap.lookup(authority);
     if (root==null)
     { 
       throw new UnresolvableURIException
