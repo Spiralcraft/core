@@ -67,8 +67,8 @@ public class CalculatedFieldImpl
     try
     { 
       Object ret=expressionBinding.get();
-      System.err.println
-        ("CalculatedFieldImpl: "+expression.toString()+": "+ret);
+//      System.err.println
+//        ("CalculatedFieldImpl: "+expression.toString()+": "+ret);
       return ret;
     }
     finally
