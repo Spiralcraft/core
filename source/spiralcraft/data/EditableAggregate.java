@@ -23,7 +23,15 @@ public interface EditableAggregate<T>
 
   /**
    * Add an Object to this aggregation
+   * 
+   * @param val
    */
   public void add(T val);
   
+  /**
+   * Add all the values in the specified aggregate to this aggregation
+   *
+   * @param values
+   */
+  public void addAll(Aggregate<T> values);
 }

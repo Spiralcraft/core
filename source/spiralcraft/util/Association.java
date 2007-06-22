@@ -25,6 +25,12 @@ public class Association<K,V>
   public Association()
   {
   }
+  
+  public Association(K key,V value)
+  { 
+    this.key=key;
+    this.value=value;
+  }
 
   public void setKey(K key)
   { this.key=key;

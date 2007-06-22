@@ -15,6 +15,7 @@
 package spiralcraft.data.spi;
 
 import spiralcraft.data.EditableAggregate;
+import spiralcraft.data.Aggregate;
 
 import spiralcraft.data.Type;
 
@@ -35,6 +36,13 @@ public class EditableArrayListAggregate<T>
   
   public boolean isMutable()
   { return true;
+  }
+  
+  public void addAll(Aggregate<T> values)
+  {
+    for (T value: values)
+    { list.add(value);
+    }
   }
   
 }

@@ -19,6 +19,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Aggregate;
 import spiralcraft.data.Field;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeNotFoundException;
@@ -382,13 +383,29 @@ public class DataHandler
     /**
      * Create a new Frame to read the specified Type
      */
-    protected Frame createFrame(Type type)
+    @SuppressWarnings("unchecked") // Heterogeneous collection
+    protected Frame createFrame(Type type,URI ref)
+      throws DataException,SAXException
     {
+      Object value=null;
+      if (ref!=null)
+      { 
+        if (!ref.isAbsolute())
+        { ref=resourceURI.resolve(ref);
+        }
+        try
+        { value=new DataReader().readFromURI(ref,type);
+        }
+        catch (IOException x)
+        { throw new DataException("Error reading "+ref+": "+x,x);
+        }
+      }
+
       if (type.isAggregate())
-      { return new AggregateFrame(type);
+      { return new AggregateFrame(type,(Aggregate) value);
       }
       else
-      { return new DetailFrame(type);
+      { return new DetailFrame(type,(Tuple) value);
       }
     }
     
@@ -434,12 +451,17 @@ public class DataHandler
     /**
      * Construct a detail frame to read a specific Type of data
      */
-    public DetailFrame(Type type)
+    public DetailFrame(Type type,Tuple initialValue)
+      throws DataException
     { 
       this.type=type;
       scheme=type.getScheme();
       if (scheme!=null)
-      { tuple=new EditableArrayTuple(scheme);
+      { 
+        tuple=new EditableArrayTuple(scheme);
+        if (initialValue!=null)
+        { tuple.copyFrom(initialValue);
+        }
       }
       else
       { tuple=null;
@@ -541,7 +563,7 @@ public class DataHandler
       }
       
       if (fieldType.isAggregate())
-      { return new AggregateFrame(fieldType);
+      { return new AggregateFrame(fieldType,null);
       }
       else
       { return new ObjectFrame(fieldType);
@@ -603,16 +625,32 @@ public class DataHandler
       (String uri
       ,String localName
       ,String qName
-      ,Attributes attribs
+      ,Attributes attributes
       )
       throws SAXException,DataException
     {
       if (object!=null)
       { throw new SAXException("Cannot contain more than one Object");
       }
+      
+      URI ref=null;
+      
+      for (int i=0;i<attributes.getLength();i++)
+      {
+        if (attributes.getLocalName(i).equals("ref"))
+        { ref=URI.create(attributes.getValue(i));
+        }
+        else
+        { 
+          throw new SAXException
+            ("Unrecognized attribute '"+attributes.getQName(i)+"'");
+        }
+      }
+      
       Type type=resolveType(uri,localName);
       assertCompatibleType(formalType,type);
-      return createFrame(type);
+      
+      return createFrame(type,ref);
 
     }
     
@@ -673,7 +711,7 @@ public class DataHandler
     {
       Type type=resolveType(uri,localName);
       assertCompatibleType(formalType.getContentType(),type);
-      return createFrame(type);
+      return createFrame(type,null);
     }    
     
     public void endChild(Frame child)
@@ -697,14 +735,19 @@ public class DataHandler
   class AggregateFrame
     extends ContainerFrame
   { 
-    private EditableArrayListAggregate<? super Object> aggregate;
+    private EditableArrayListAggregate<Object> aggregate;
     
-    protected AggregateFrame(Type formalType)
+    protected AggregateFrame
+      (Type formalType
+      ,Aggregate<Object> initialValue
+      )
     { 
       super(formalType);
       
-      // XXX Must create new aggregation type
       aggregate=new EditableArrayListAggregate<Object>(formalType);
+      if (initialValue!=null)
+      { aggregate.addAll(initialValue);
+      }
     }
     
     public Object getObject()
@@ -721,13 +764,27 @@ public class DataHandler
       (String uri
       ,String localName
       ,String qName
-      ,Attributes attribs
+      ,Attributes attributes
       )
       throws SAXException,DataException
     {
+      URI ref=null;
+      
+      for (int i=0;i<attributes.getLength();i++)
+      {
+        if (attributes.getLocalName(i).equals("ref"))
+        { ref=URI.create(attributes.getValue(i));
+        }
+        else
+        { 
+          throw new SAXException
+            ("Unrecognized attribute '"+attributes.getQName(i)+"'");
+        }
+      }
+      
       Type type=resolveType(uri,localName);
       assertCompatibleType(formalType.getContentType(),type);
-      return createFrame(type);
+      return createFrame(type,ref);
     }
     
     public void endChild(Frame child)
@@ -775,7 +832,7 @@ public class DataHandler
         }
       }
       else
-      { return createFrame(type);
+      { return createFrame(type,null);
       }
 
     }

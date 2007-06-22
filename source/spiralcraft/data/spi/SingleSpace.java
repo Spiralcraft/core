@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.spi;
 
-import java.util.List;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;

@@ -59,7 +59,7 @@ result=new spiralcraft.data.sax.DataReader().readFromURI
 result.getClass();
 
 "// Object construction using BuilderType";
-type=typeResolver.resolve(URI.create("java:/spiralcraft/builder/test/SimpleWidget"));
+type=typeResolver.resolve(URI.create("java:/spiralcraft/builder/test/SimpleWidget.assy"));
 
 "// Raw XML Reading- External Bean";
 result=new spiralcraft.data.sax.DataReader().readFromURI

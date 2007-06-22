@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<dt:SimpleWidget
+<dt:SimpleWidget.assy
   xmlns:dt="java:/spiralcraft/builder/test"
   >
   <title>My Simple Widget</title>
@@ -19,4 +19,4 @@
       <title>Second ChildWidget</title>
     </dt:SimpleWidget>
   </children>
-</dt:SimpleWidget>
+</dt:SimpleWidget.assy>

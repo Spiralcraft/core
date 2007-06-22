@@ -434,7 +434,7 @@ public class AssemblyClass
     throws BuildException
   {
     URI baseResource
-      =_basePackage.resolve(_baseName+".assembly.xml");
+      =_basePackage.resolve(_baseName+".assy.xml");
 
     // URI baseUri
     //  =_basePackage.resolve(_baseName);

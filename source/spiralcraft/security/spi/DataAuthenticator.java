@@ -65,7 +65,7 @@ public class DataAuthenticator
     {
       
       // Default values for basic username/password authentication
-      loginDataType=Type.forURI(URI.create("java:/spiralcraft/security/Login"));
+      loginDataType=Type.resolve(URI.create("java:/spiralcraft/security/Login"));
 
       // XXX Make this an Equijoin to search type values in parameter context
       loginQuery=new Selection

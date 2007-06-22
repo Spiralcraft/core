@@ -82,8 +82,8 @@ public class AssemblyLoader
 
   /**
    * Retrieve the AssemblyClass identified by the specified URI. The URI
-   *   identifies an abstract resource- ie. if <uri>.assembly.xml does
-   *   not exists, a default assembly for the Java class associated with
+   *   identifies an abstract resource- ie. if <uri>.assy.xml does
+   *   not exist, a default assembly for the Java class associated with
    *   the URI will be returned.
    */
   public synchronized AssemblyClass findAssemblyClass(URI classUri)
@@ -93,7 +93,7 @@ public class AssemblyLoader
     if (ret==null)
     {
       ret=findAssemblyDefinition
-        (URI.create(classUri.toString()+".assembly.xml"));
+        (URI.create(classUri.toString()+".assy.xml"));
         
       if (ret!=null)
       { _classCache.put(classUri,ret);

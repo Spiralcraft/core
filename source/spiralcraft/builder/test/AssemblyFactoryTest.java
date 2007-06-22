@@ -46,7 +46,7 @@ public class AssemblyFactoryTest
     { 
       _uri=
         new URI
-          ("java:/spiralcraft/builder/test/test1.assembly.xml"
+          ("java:/spiralcraft/builder/test/test1.assy.xml"
           );
     }
     catch (URISyntaxException x)

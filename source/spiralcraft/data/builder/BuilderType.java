@@ -27,6 +27,7 @@ import spiralcraft.data.core.TypeImpl;
 
 import spiralcraft.data.spi.EditableArrayTuple;
 
+
 import spiralcraft.builder.AssemblyLoader;
 import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.Assembly;
@@ -34,13 +35,9 @@ import spiralcraft.builder.Assembly;
 import spiralcraft.builder.PropertyBinding;
 import spiralcraft.builder.BuildException;
 
-import spiralcraft.vfs.Resolver;
-import spiralcraft.vfs.Resource;
-import spiralcraft.vfs.UnresolvableURIException;
 
 import java.net.URI;
 
-import java.io.IOException;
 
 
 /**
@@ -52,10 +49,10 @@ public class BuilderType
 {
   public static final char INNER_PATH_SEPARATOR='_';
   public static final URI GENERIC_BUILDER_TYPE_URI
-    =URI.create("java:/spiralcraft/builder/Object");
+    =URI.create("java:/spiralcraft/builder/Object.assy");
     
   public static final URI GENERIC_BUILDER_ARRAY_TYPE_URI
-    =URI.create("java:/spiralcraft/builder/Object.array");
+    =URI.create("java:/spiralcraft/builder/Object.assy.array");
   
   private final AssemblyClass targetAssemblyClass;
   private boolean linked;
@@ -70,34 +67,7 @@ public class BuilderType
   
   public static final boolean isApplicable(URI uri)
     throws DataException
-  { 
-    // System.err.println("BuilderType.isApplicable(): "+uri);
-    String uriString=uri.toString();
-    int bangPos=uriString.indexOf(INNER_PATH_SEPARATOR);
-    if (bangPos>=0)
-    { uriString=uriString.substring(0,bangPos);
-    }
-    
-    URI resourceUri=URI.create(uriString+".assembly.xml");
-    Resource resource=null;
-    
-    try
-    { resource=Resolver.getInstance().resolve(resourceUri);
-    }
-    catch (UnresolvableURIException x)
-    { return false;
-    } 
-
-    try
-    { return resource.exists();
-    }
-    catch (IOException x)
-    { 
-      throw new DataException
-        ("IOException checking resource "+resourceUri+": "+x.toString()
-        ,x
-        );
-    }
+  { return uri.getPath().endsWith(".assy");
   }
 
   public boolean isAssignableFrom(Type type)
@@ -121,7 +91,7 @@ public class BuilderType
     if (assemblyClass!=null)
     {
       URI baseUri=
-        TypeResolver.desuffix(assemblyClass.getSourceURI(),".assembly.xml");
+        TypeResolver.desuffix(assemblyClass.getSourceURI(),".assy.xml");
       
       String path="";
       
@@ -143,10 +113,10 @@ public class BuilderType
         assemblyClass=assemblyClass.getDefiningClass();
       }
       if (path.length()>0)
-      { return URI.create(baseUri.toString()+INNER_PATH_SEPARATOR+path);
+      { return URI.create(baseUri.toString()+INNER_PATH_SEPARATOR+path+".assy");
       }
       else
-      { return baseUri;
+      { return URI.create(baseUri.toString()+".assy");
       }
     }
     else
@@ -194,9 +164,10 @@ public class BuilderType
     
     try
     {
+      URI assemblyURI=TypeResolver.desuffix(uri,".assy");
       targetAssemblyClass
         =AssemblyLoader.getInstance()
-          .findAssemblyDefinition(URI.create(uri.toString()+".assembly.xml"));
+          .findAssemblyClass(assemblyURI);
     }
     catch (BuildException x)
     { throw new DataException(x.toString(),x);

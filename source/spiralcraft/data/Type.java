@@ -22,7 +22,7 @@ import java.net.URI;
  */
 public abstract class Type<T>
 {  
-  public static Type forURI(URI uri)
+  public static Type resolve(URI uri)
     throws TypeNotFoundException
   { return TypeResolver.getTypeResolver().resolve(uri);
   }

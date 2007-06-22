@@ -35,4 +35,14 @@ public interface EditableTuple
    */
   EditableTuple widen(Type type)
     throws DataException;
+  
+  /**
+   * Copy data from the source Tuple which is of the same Type or an archetype
+   *   of this Tuple's Type. Non-null field values will be copied.
+   *   
+   * @param source The data source
+   * @throws DataException If there is an error during copying
+   */
+  void copyFrom(Tuple source)
+    throws DataException;
 }

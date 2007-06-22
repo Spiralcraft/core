@@ -16,6 +16,7 @@ package spiralcraft.data.spi;
 
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Type;
+import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.DataException;
@@ -49,5 +50,18 @@ public class EditableArrayTuple
   public EditableTuple widen(Type type)
     throws DataException
   { return (EditableTuple) super.widen(type);
+  }
+  
+  public void copyFrom(Tuple source)
+    throws DataException
+  { 
+    if (getFieldSet()==source.getFieldSet()
+        || (getType()!=null && getType().hasArchetype(source.getType()))
+       )
+    { 
+      for (Field field: source.getFieldSet().fieldIterable())
+      { field.setValue(this,field.getValue(source));
+      }
+    }
   }
 }
