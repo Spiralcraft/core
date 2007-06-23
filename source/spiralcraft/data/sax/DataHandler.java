@@ -454,8 +454,14 @@ public class DataHandler
     public DetailFrame(Type type,Tuple initialValue)
       throws DataException
     { 
-      this.type=type;
-      scheme=type.getScheme();
+      if (initialValue!=null)
+      { this.type=initialValue.getType();
+      }
+      else
+      { this.type=type;
+      }
+      
+      scheme=this.type.getScheme();
       if (scheme!=null)
       { 
         tuple=new EditableArrayTuple(scheme);
