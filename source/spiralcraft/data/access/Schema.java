@@ -12,26 +12,22 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.transport;
+package spiralcraft.data.access;
 
-import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 
 /**
- * Processes data from a DataSource and sends it to the DataHandler
+ * The collection of Types associated with an atomic unit of data storage.
  */
-public interface DataConsumerChain<T extends Tuple>
-  extends DataConsumer<T>
+public class Schema
 {
+  private Type[] types;
   
-  /**
-   * Set the next DataConsumer in the chain
-   */
-  void setDataConsumer(DataConsumer consumer);
+  public Type[] getTypes()
+  { return types;
+  }
   
-  /**
-   * Insert the specified DataConsumerChain into the chain
-   *   immediately after this one
-   */
-  void insertDataConsumer(DataConsumerChain consumerChain);
-  
+  public void setTypes(Type[] types)
+  { this.types=types;
+  }
 }

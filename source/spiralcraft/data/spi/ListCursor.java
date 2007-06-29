@@ -14,7 +14,7 @@
 //
 package spiralcraft.data.spi;
 
-import spiralcraft.data.transport.ScrollableCursor;
+import spiralcraft.data.access.ScrollableCursor;
 
 
 import java.util.List;

@@ -14,7 +14,7 @@
 //
 package spiralcraft.data.spi;
 
-import spiralcraft.data.transport.Cursor;
+import spiralcraft.data.access.Cursor;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 

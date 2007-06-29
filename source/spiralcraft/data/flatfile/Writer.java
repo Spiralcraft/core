@@ -19,7 +19,7 @@ import spiralcraft.data.FieldSet;
 import spiralcraft.data.Field;
 import spiralcraft.data.DataException;
 
-import spiralcraft.data.transport.DataConsumer;
+import spiralcraft.data.access.DataConsumer;
 
 import java.io.OutputStreamWriter;
 import java.io.BufferedWriter;

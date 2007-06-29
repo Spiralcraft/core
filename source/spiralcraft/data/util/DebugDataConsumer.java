@@ -6,8 +6,8 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 
-import spiralcraft.data.transport.DataConsumer;
-import spiralcraft.data.transport.DataConsumerChain;
+import spiralcraft.data.access.DataConsumer;
+import spiralcraft.data.access.DataConsumerChain;
 
 /**
  * A DataConsumer which prints data and events in a debugging friendly format

@@ -20,7 +20,7 @@ import spiralcraft.vfs.Resource;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 
-import spiralcraft.data.transport.DataConsumer;
+import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.Tuple;
 
 import org.xml.sax.SAXException;

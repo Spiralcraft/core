@@ -20,13 +20,14 @@ import spiralcraft.security.auth.Credential;
 import spiralcraft.security.auth.UsernameCredential;
 import spiralcraft.security.auth.PasswordCleartextCredential;
 
+import spiralcraft.data.access.SerialCursor;
+
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Selection;
 import spiralcraft.data.query.Scan;
 import spiralcraft.data.query.BoundQuery;
 
-import spiralcraft.data.transport.SerialCursor;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;

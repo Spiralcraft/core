@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2007 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,22 +12,15 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.transport;
-
-import spiralcraft.data.Type;
+package spiralcraft.data;
 
 /**
- * The collection of Types associated with an atomic unit of data storage.
+ * 
+ * 
+ * @author mike
+ *
  */
-public class Schema
+public class DataSession
 {
-  private Type[] types;
-  
-  public Type[] getTypes()
-  { return types;
-  }
-  
-  public void setTypes(Type[] types)
-  { this.types=types;
-  }
+
 }

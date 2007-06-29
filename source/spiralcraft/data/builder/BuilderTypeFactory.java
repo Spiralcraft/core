@@ -40,8 +40,11 @@ public class BuilderTypeFactory
     if (!BuilderType.isApplicable(uri))
     { return null;
     }
-    
-    String uriString=uri.toString();
+    System.err.println("BuilderTypeFactory: create type "+uri);
+ 
+    URI baseURI=TypeResolver.desuffix(uri,".assy");
+    String uriString=baseURI.toString();
+ 
     int bangPos=uriString.indexOf(BuilderType.INNER_PATH_SEPARATOR);
     Path path;
     if (bangPos>=0)
@@ -64,10 +67,10 @@ public class BuilderTypeFactory
       if (parentPath.length()>0)
       { 
         parentUri=URI.create
-          (uriString+BuilderType.INNER_PATH_SEPARATOR+parentPath);
+          (uriString+BuilderType.INNER_PATH_SEPARATOR+parentPath+".assy");
       }
       else
-      { parentUri=URI.create(uriString);
+      { parentUri=URI.create(uriString+".assy");
       }
       BuilderType parentType=(BuilderType) resolver.<Assembly>resolve(parentUri);
       

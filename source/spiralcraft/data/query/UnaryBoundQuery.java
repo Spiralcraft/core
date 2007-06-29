@@ -21,8 +21,8 @@ import spiralcraft.lang.Focus;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 
-import spiralcraft.data.transport.SerialCursor;
-import spiralcraft.data.transport.ScrollableCursor;
+import spiralcraft.data.access.ScrollableCursor;
+import spiralcraft.data.access.SerialCursor;
 
 /**
  * <P>A BoundQuery that performs a transformation on the results

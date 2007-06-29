@@ -37,12 +37,12 @@ import spiralcraft.data.EditableTuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.TypeResolver;
 
+import spiralcraft.data.access.DataConsumer;
+import spiralcraft.data.access.DataConsumerChain;
 import spiralcraft.data.core.SchemeImpl;
 import spiralcraft.data.core.FieldImpl;
 
 import spiralcraft.data.spi.EditableArrayTuple;
-import spiralcraft.data.transport.DataConsumer;
-import spiralcraft.data.transport.DataConsumerChain;
 
 
 /**

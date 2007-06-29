@@ -19,7 +19,7 @@ import spiralcraft.lang.BindException;
 
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
-import spiralcraft.data.transport.Cursor;
+import spiralcraft.data.access.Cursor;
 
 /**
  * A spiralcraft.lang binding for Tuples, which uses the Tuple's Scheme

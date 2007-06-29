@@ -26,8 +26,8 @@ import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.TypeMismatchException;
 import spiralcraft.data.FieldNotFoundException;
 
-import spiralcraft.data.transport.DataConsumer;
 
+import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 

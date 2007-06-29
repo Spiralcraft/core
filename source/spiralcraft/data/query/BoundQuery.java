@@ -20,8 +20,8 @@ import spiralcraft.data.DataException;
 
 
 
-import spiralcraft.data.transport.SerialCursor;
 
+import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.lang.TupleBinding;
 
 import spiralcraft.lang.BindException;

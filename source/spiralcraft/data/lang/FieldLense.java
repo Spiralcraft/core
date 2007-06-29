@@ -37,10 +37,10 @@ public class FieldLense
   { 
     this.field=field;
 
-    if (field.getType().getScheme()!=null)
+    if (!field.getType().isPrimitive())
     { 
       prism
-        =TuplePrism.getInstance(field.getType().getScheme());
+        =DataPrism.getInstance(field.getType());
     }
     else
     {

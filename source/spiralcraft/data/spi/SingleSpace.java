@@ -19,10 +19,10 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.DeltaTuple;
 
-import spiralcraft.data.transport.Space;
-import spiralcraft.data.transport.Store;
-import spiralcraft.data.transport.DataConsumer;
 
+import spiralcraft.data.access.DataConsumer;
+import spiralcraft.data.access.Space;
+import spiralcraft.data.access.Store;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.BoundQuery;
 

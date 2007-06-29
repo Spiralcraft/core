@@ -15,19 +15,25 @@
 package spiralcraft.data.lang;
 
 import spiralcraft.lang.optics.Binding;
+import spiralcraft.lang.optics.Prism;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
+import spiralcraft.lang.IterationDecorator;
+import spiralcraft.lang.Optic;
+
+import spiralcraft.lang.optics.Lense;
 
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
-import spiralcraft.data.Field;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
+import spiralcraft.data.Aggregate;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Maps a Scheme into the spiralcraft.lang binding mechanism
@@ -35,13 +41,11 @@ import java.util.HashMap;
  * This allows object models of Tuples (defined by Schemes) to be
  *   fully utilized by the language facilities.
  */
-public class TuplePrism<T extends Tuple>
+public class AggregatePrism<T extends Aggregate<I>,I>
   extends DataPrism<T>
-{
-  private final FieldSet fieldSet;
-  
-  private final HashMap<String,FieldLense> fieldLenses
-    =new HashMap<String,FieldLense>();
+{ 
+  private final HashMap<String,Lense> lenses
+    =new HashMap<String,Lense>();
   
   private final Class<T> contentType;
 
@@ -59,31 +63,13 @@ public class TuplePrism<T extends Tuple>
   }
   
 
-  TuplePrism(Type type,Class<T> contentType)
+  AggregatePrism(Type type,Class<T> contentType)
     throws BindException
   { 
     super(type);
-    this.fieldSet=type.getScheme();
     this.contentType=contentType;
-    for (Field field : fieldSet.fieldIterable())
-    { fieldLenses.put(field.getName(),new FieldLense(field));
-    }
   }
   
-  TuplePrism(FieldSet fieldSet,Class<T> contentType)
-    throws BindException
-  { 
-    super(null);
-    this.fieldSet=fieldSet;
-    this.contentType=contentType;
-    for (Field field : fieldSet.fieldIterable())
-    { fieldLenses.put(field.getName(),new FieldLense(field));
-    }
-  }
-
-  public FieldSet getFieldSet()
-  { return fieldSet;
-  }
 
   /**
    * Resolve a Binding that provides access to a member of a Tuple given a 
@@ -98,14 +84,14 @@ public class TuplePrism<T extends Tuple>
     )
     throws BindException
   {
-    FieldLense lense=fieldLenses.get(name);
+    Lense lense=lenses.get(name);
     
     if (lense!=null)
     {
       Binding binding=source.getCache().get(lense);
       if (binding==null)
       { 
-        binding=new FieldBinding(source,lense);
+        // binding=new FieldBinding(source,lense);
         source.getCache().put(lense,binding);
       }
       return binding;      
@@ -114,10 +100,17 @@ public class TuplePrism<T extends Tuple>
     return null;
   }
 
-  public Decorator<T> decorate(Binding binding,Class decoratorInterface)
+  
+  @SuppressWarnings("unchecked") // Generic factory method, manip. unknown types
+  public Decorator
+    decorate(Binding binding,Class decoratorInterface)
+    throws BindException
   { 
-    // This depends on a system for registering and mapping decorators
-    //   to Tuple constructs.
+    if (decoratorInterface==IterationDecorator.class)
+    { 
+      Prism prism=DataPrism.getInstance(type.getContentType());
+      return new AggregateIterationDecorator(binding,prism);
+    }
     return null;
   }
   
@@ -126,3 +119,19 @@ public class TuplePrism<T extends Tuple>
   }
   
 }
+
+class AggregateIterationDecorator<I>
+  extends IterationDecorator<Aggregate<I>,I>
+{
+
+  public AggregateIterationDecorator(Optic<Aggregate<I>> source,Prism<I> prism)
+  { super(source,prism);
+  }
+  
+  @Override
+  protected Iterator<I> createIterator()
+  { return source.get().iterator();
+  }
+  
+}
+

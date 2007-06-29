@@ -21,7 +21,6 @@ import spiralcraft.data.Type;
 
 import spiralcraft.lang.Focus;
 
-import java.util.List;
 
 /**
  * <P>A Queryable is anything that can execute a Query and provide a Cursor of
