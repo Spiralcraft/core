@@ -17,7 +17,7 @@
   </target>
 
 	<target name="smoke">
-		<java classpath="../../lib/bsh.jar;source" classname="bsh.Interpreter" failonerror="true">
+		<java classpath="../../lib/bsh.jar;source;${classpath}" classname="bsh.Interpreter" failonerror="true">
 			<arg value="smoke.bsh"/>
 		</java>
   </target>
