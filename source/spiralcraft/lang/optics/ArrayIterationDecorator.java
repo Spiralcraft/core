@@ -12,34 +12,28 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang.decorators;
+package spiralcraft.lang.optics;
 
-import spiralcraft.lang.Decorator;
+
+import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Optic;
 
+import spiralcraft.util.ArrayUtil;
+
+import java.util.Iterator;
+
 /**
- * Supports Iteration through containers and data structures with multiple
- *   elements.
- *
- * The Optic interface exposes the data at the current position of the 
- *   iteration.
+ * Implements an IterationDecorator for a source that returns an Array
  */
-public interface IterationDecorator<T,I>
-  extends Decorator<T>,Optic<I>
+public class ArrayIterationDecorator<I>
+  extends IterationDecorator<I[],I>
 {
+  public ArrayIterationDecorator(Optic<I[]> source,Prism<I> componentPrism)
+  { super(source,componentPrism);
+  }
   
-  /**
-   * Reset the iteration. Must be called -before- every iteration
-   */
-  public void reset();
-  
-  /**
-   * Indicate whether there are more elements in the iteration
-   */
-  public boolean hasNext();
-  
-  /**
-   * Advance to the next element
-   */
-  public void next();
+  public Iterator<I> createIterator()
+  { return ArrayUtil.<I>iterator( source.get());
+  }
+
 }

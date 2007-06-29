@@ -60,7 +60,7 @@ public class Channel<T>
   { return _source.findFocus(name);
   }
   
-  public Context getContext()
+  public Optic<?> getContext()
   { return _source.getContext();
   }
   

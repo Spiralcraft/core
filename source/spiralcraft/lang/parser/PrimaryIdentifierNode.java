@@ -17,7 +17,6 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Context;
 
 /**
  * <P>A Node which represents a primary identifier.
@@ -65,11 +64,12 @@ public class PrimaryIdentifierNode
       ?_source.findFocus(focus)
       :focus;
 
-    Context context=specifiedFocus.getContext();
+    Optic<?> context=specifiedFocus.getContext();
     
     Optic<?> ret=null;
+    
     if (context!=null)
-    { ret=context.resolve(_identifier);
+    { ret=context.resolve(specifiedFocus,_identifier,null);
     }
 
     if (ret==null)

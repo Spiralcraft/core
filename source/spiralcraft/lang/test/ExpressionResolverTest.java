@@ -19,12 +19,14 @@ import spiralcraft.lang.parser.ExpressionParser;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.DefaultFocus;
-import spiralcraft.lang.AttributeContext;
-import spiralcraft.lang.Attribute;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.OpticFactory;
 
 import spiralcraft.lang.optics.SimpleBinding;
+import spiralcraft.lang.optics.NamespacePrism;
+import spiralcraft.lang.optics.Namespace;
+
 
 
 import spiralcraft.util.Arguments;
@@ -37,14 +39,14 @@ public class ExpressionResolverTest
   private int _bindRepeats=0;
   private int _getRepeats=0;
 
-  public static void main(String[] args)
+  public static void main(String ... args)
   {
     final ExpressionResolverTest test
       =new ExpressionResolverTest();
     test.run(args);
   }
   
-  public void run(String[] args)
+  public void run(String ... args)
   {
     new Arguments()
     {
@@ -85,19 +87,14 @@ public class ExpressionResolverTest
         System.err.println(out.toString());
       }
 
-      DefaultFocus focus=new DefaultFocus();
-      AttributeContext context=new AttributeContext();
-      context.setAttributes
-        (
-          new Attribute[] 
-            {new Attribute<String>
-              ("test"
-              ,new SimpleBinding<String>("testValue",true)
-              )
-            }
-        );
+      DefaultFocus<Namespace> focus=new DefaultFocus<Namespace>();
+      
+      NamespacePrism defs=new NamespacePrism();
+      defs.register("test",OpticFactory.getInstance().findPrism(String.class));
+      Namespace namespace=new Namespace(defs);
+      namespace.put("test","testValue");
 
-      focus.setContext(context);
+      focus.setSubject(new SimpleBinding<Namespace>(defs,namespace,false));
 
       time=System.currentTimeMillis();
 

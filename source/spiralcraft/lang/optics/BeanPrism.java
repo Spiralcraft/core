@@ -16,12 +16,12 @@ package spiralcraft.lang.optics;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.OpticFactory;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 
-import spiralcraft.lang.decorators.IterationDecorator;
 
 import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
@@ -118,8 +118,12 @@ public class BeanPrism<T>
   { 
     if (decoratorInterface==IterationDecorator.class)
     { 
+      
       if (source.getContentType().isArray())
-      { return (D) new ArrayIterator(source);
+      { 
+        Prism prism=OpticFactory.getInstance().findPrism
+          (_targetClass.getComponentType());
+        return (D) new ArrayIterationDecorator(source,prism);
       }
     }
     

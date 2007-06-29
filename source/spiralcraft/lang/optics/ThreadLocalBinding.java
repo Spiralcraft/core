@@ -31,8 +31,8 @@ import spiralcraft.lang.optics.Prism;
 public class ThreadLocalBinding<T>
   extends AbstractBinding<T>
 {
-  private final ThreadLocal<Reference<T>> threadLocal
-    =new ThreadLocal<Reference<T>>();
+  private final ThreadLocal<ThreadReference<T>> threadLocal
+    =new ThreadLocal<ThreadReference<T>>();
   
   public ThreadLocalBinding(Prism<T> prism)
   { super(prism);
@@ -64,8 +64,8 @@ public class ThreadLocalBinding<T>
    */
   public void push(T val)
   { 
-    Reference<T> oldref=threadLocal.get();
-    Reference<T> newref=new Reference<T>();
+    ThreadReference<T> oldref=threadLocal.get();
+    ThreadReference<T> newref=new ThreadReference<T>();
     newref.object=val;
     newref.prior=oldref;
     threadLocal.set(newref);
@@ -76,7 +76,7 @@ public class ThreadLocalBinding<T>
    */
   public void pop()
   { 
-    Reference<T> oldref=threadLocal.get().prior;
+    ThreadReference<T> oldref=threadLocal.get().prior;
     if (oldref==null)
     { threadLocal.remove();
     }
@@ -85,9 +85,9 @@ public class ThreadLocalBinding<T>
     }
   }
   
-  class Reference<X>
+  class ThreadReference<X>
   {
-    public Reference<X> prior;
+    public ThreadReference<X> prior;
     public X object;
   }
 

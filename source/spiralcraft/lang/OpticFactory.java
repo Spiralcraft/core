@@ -44,7 +44,9 @@ public class OpticFactory
   { 
     // XXX Maybe not so good- not Orthogonal
     if (object instanceof Optic)
-    { return (Optic) object;
+    { 
+      System.err.println("OpticFactory: createOptic(Optic val) is deprecated");
+      return (Optic) object;
     }
     else
     { return new SimpleBinding<T>(object,true);

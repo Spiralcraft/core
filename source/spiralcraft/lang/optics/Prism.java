@@ -34,7 +34,12 @@ public interface Prism<T>
    * Generate a new Binding which resolves the name and the given parameter 
    *   expressions against the source Binding and the supplied Focus.
    */
-  public <X> Binding<X> resolve(Binding<T> source,Focus<?> focus,String name,Expression[] params)
+  public <X> Binding<X> resolve
+    (Binding<T> source
+    ,Focus<?> focus
+    ,String name
+    ,Expression[] params
+    )
     throws BindException;
 
   /**

@@ -12,13 +12,33 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang;
+package spiralcraft.lang.optics;
 
-/**
- * Base interface for functionality extensions applied to Optics. 
- */ 
-public interface Decorator<T>
+public class NamespaceBinding<T>
+  extends LenseBinding<T,Namespace>
 {
 
+  private final AttributeLense lense;
   
+  public NamespaceBinding
+    (Binding<Namespace> source
+    ,AttributeLense<T> lense
+    )
+  { 
+    super(source,lense,null);
+    this.lense=lense;
+  }
+
+  
+  @Override
+  public boolean set(Object val)
+  { 
+    if (_static)
+    { return false;
+    }
+    source.get().set(lense.getIndex(),val);
+    return true;
+  }
 }
+
+

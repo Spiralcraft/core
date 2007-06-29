@@ -51,6 +51,11 @@ public class SimpleBinding<T>
     //System.out.println("SimpleBinding- with class:"+super.toString()+":["+val+"]");
   }
 
+  public SimpleBinding(Prism<T> prism,T val,boolean isStatic)
+  { 
+    super(prism,isStatic);
+    _object=val;
+  }
   
   protected T retrieve()
   { 

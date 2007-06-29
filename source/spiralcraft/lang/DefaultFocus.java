@@ -23,7 +23,7 @@ public class DefaultFocus<T>
   implements Focus<T>
 {
 
-  private Context _context;
+  private Optic<?> _context;
   private Optic<T> _subject;
   private Focus<?> _parent;
   private HashMap<Expression<?>,Channel<?>> _channels;
@@ -44,7 +44,7 @@ public class DefaultFocus<T>
   { return _parent;
   }
 
-  public void setContext(Context val)
+  public void setContext(Optic val)
   { _context=val;
   }
     
@@ -58,7 +58,7 @@ public class DefaultFocus<T>
    * Return the Context for this Focus, or if there is none associated,
    *   return the Context for the parent Focus.
    */
-  public Context getContext()
+  public Optic<?> getContext()
   { 
     if (_context!=null)
     { return _context;

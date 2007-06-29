@@ -15,16 +15,23 @@
 package spiralcraft.lang;
 
 /**
- * A locus for the evaluation of Expressions
+ * <P>A locus for the evaluation of an Expression.
+ * 
+ * <P>When an Expressions are evaluated, the Focus is the starting point for
+ *   the resolution of identifiers in the Expression language syntax.
+ *   
+ * <P>A hierarchy of Focus objects comprises a chain that allows components
+ *   at a global scope to publish themselves under names that can be reference
+ *   by Expressions acting at a local scope.
+ * 
+ * <P>The subject of a Focus is the 
  *
- * A Focus references a single subject and is associated with a 
- *   Context. The Context provides access to the 'workspace' of a given
- *   task, and as such will usually contain the subject of the Focus as well
- *   as a number of other named attributes which provide access to data, tools
- *   and resources useful to a given computation.  
+ * A Focus references a single subject and a context. The context provides
+ *   access to a 'pinned', or more general scope of evaluation in circumstances
+ *   where the evaluation of an expression traverses recursively deeper 
  *
  * Expressions bound to a Focus incorporate attributes of the subject
- *   and the Context into traversals, transformations and computations to
+ *   and the context into traversals, transformations and computations to
  *   create new subjects of Focus. 
  */
 public interface Focus<T>
@@ -35,7 +42,7 @@ public interface Focus<T>
    *   is being performed). A Focus inherits its parent's Context if it does
    *   not have one of its own.
    */
-  Context getContext();
+  Optic<?> getContext();
 
   /**
    * Return the subject of expression evaluation

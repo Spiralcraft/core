@@ -16,7 +16,6 @@ package spiralcraft.builder;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.Context;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Optic;
 import spiralcraft.lang.BindException;
@@ -65,7 +64,7 @@ public class Assembly<T>
   private PropertyBinding[] _propertyBindings;
   private HashMap<String,Assembly> _importedSingletons;
   private HashMap<Expression,Channel> _channels;
-  private Context _context;
+  private Optic<?> _context;
   private boolean bound=false;
   private boolean resolved=false;
   
@@ -114,9 +113,6 @@ public class Assembly<T>
         }
         else
         { instance=javaClass.newInstance();
-        }
-        if (Context.class.isAssignableFrom(instance.getClass()))
-        { _context=(Context) instance;
         }
         _optic.set((T) instance);
       }
@@ -331,8 +327,14 @@ public class Assembly<T>
   /**
    * implement Focus.getContext()
    */
-  public Context getContext()
-  { return _context;
+  public Optic<?> getContext()
+  { 
+    if (_context!=null)
+    { return _context;
+    }
+    else
+    { return _optic;
+    }
   }
 
   /**

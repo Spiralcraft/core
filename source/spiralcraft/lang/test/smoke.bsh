@@ -46,7 +46,40 @@ Evaluator.parseAndEvaluateObject("1==2",new Object());
 Evaluator.parseAndEvaluateObject(".hashCode()==.hashCode()",new Object());
 Evaluator.parseAndEvaluateObject(".hashCode()==1",new Object());
 Evaluator.parseAndEvaluateObject("-.hashCode()==-.hashCode()",new Object());
-
+"// ExpressionResolverTest";
+import spiralcraft.lang.test.ExpressionResolverTest;
+"//// Perf 1: retrieval";
+ExpressionResolverTest.main
+	(new String[] 
+		{"-expression","test"
+		,"-bindRepeats","1000000"
+		,"-getRepeats","1000000"
+		}
+  );
+"//// Perf 2: reflect";
+ExpressionResolverTest.main
+	(new String[] 
+		{"-expression","test.length()"
+		,"-bindRepeats","1000"
+		,"-getRepeats","1000000"
+		}
+  );
+"//// Perf 3: reflect+compare";
+ExpressionResolverTest.main
+	(new String[] 
+		{"-expression","test.length()>2"
+		,"-bindRepeats","1000"
+		,"-getRepeats","1000000"
+		}
+  );
+"//// Perf 4: reflect+compare+add";
+ExpressionResolverTest.main
+	(new String[] 
+		{"-expression","test.length()>(2+2)"
+		,"-bindRepeats","1000"
+		,"-getRepeats","1000000"
+		}
+  );
 
 
 

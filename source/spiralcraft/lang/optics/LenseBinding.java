@@ -36,10 +36,11 @@ public  class LenseBinding<T,S>
   
   protected final int id;
 
-  private final Optic<S> _source;
+  protected final Optic<S> source;
+  protected final boolean _static;
+
   private final Lense<T,? super S> _lense;
   private final Optic[] _modifiers;
-  private final boolean _static;
   private PropertyChangeSupport _propertyChangeSupport;
   private PropertyChangeListener _modifierListener;
   private WeakBindingCache _cache;
@@ -50,14 +51,14 @@ public  class LenseBinding<T,S>
    */
   public LenseBinding(Optic<S> source,Lense<T,S> lense,Optic[] modifiers)
   { 
-    _source=source;
+    this.source=source;
     _lense=lense;
     _modifiers=modifiers;
     
     // Determine default static by checking source, modifiers.
     // If all dependencies are static, this is static
     boolean isStatic=true;
-    if (!_source.isStatic())
+    if (!source.isStatic())
     { isStatic=false;
     }
     if (_modifiers!=null)
@@ -85,7 +86,7 @@ public  class LenseBinding<T,S>
   }
   
   public final T get()
-  { return _lense.translateForGet(_source.get(),_modifiers);
+  { return _lense.translateForGet(source.get(),_modifiers);
   }
 
   /**
@@ -97,11 +98,11 @@ public  class LenseBinding<T,S>
   }
   
   protected final S getSourceValue()
-  { return _source.get();
+  { return source.get();
   }
 
   protected final boolean isSourceStatic()
-  { return _source.isStatic();
+  { return source.isStatic();
   }
 
   /**
@@ -180,7 +181,7 @@ public  class LenseBinding<T,S>
     {
       T newValue=null;
 
-      S sourceValue=_source.get();
+      S sourceValue=source.get();
       if (sourceValue!=null)
       { newValue=_lense.translateForGet(sourceValue,_modifiers);
       }
@@ -200,7 +201,7 @@ public  class LenseBinding<T,S>
       // System.out.println(toString()+" propertyChangeSupport");
       
       _propertyChangeSupport=new PropertyChangeSupport(this);
-      PropertyChangeSupport pcs=_source.propertyChangeSupport();
+      PropertyChangeSupport pcs=source.propertyChangeSupport();
       if (pcs!=null)
       { pcs.addPropertyChangeListener(this);
       }
@@ -250,7 +251,7 @@ public  class LenseBinding<T,S>
   { 
     StringBuilder out=new StringBuilder();
     out.append
-      (super.toString()+":"+id+"("+_lense.toString()+"):"+_source.toString()+"(");
+      (super.toString()+":"+id+"("+_lense.toString()+"):"+source.toString()+"(");
     boolean first=true;
     for (Optic o: _modifiers)
     { 
