@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
@@ -33,10 +33,10 @@ public abstract class FocusNode
   public abstract Focus findFocus(final Focus focus)
     throws BindException;
   
-  public Optic bind(final Focus focus)
+  public Channel bind(final Focus focus)
     throws BindException
   { 
-    Optic ret=findFocus(focus).getSubject();
+    Channel ret=findFocus(focus).getSubject();
     if (ret==null)
     { throw new BindException("Focus "+findFocus(focus)+" has no subject");
     }

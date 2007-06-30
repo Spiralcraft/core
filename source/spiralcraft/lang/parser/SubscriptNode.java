@@ -15,12 +15,13 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Expression;
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.OpticFactory;
-import spiralcraft.lang.optics.LenseBinding;
-import spiralcraft.lang.optics.ArrayIndexLense;
+
+import spiralcraft.lang.spi.ArrayIndexTranslator;
+import spiralcraft.lang.spi.BeanReflector;
+import spiralcraft.lang.spi.TranslatorBinding;
 
 
 /**
@@ -46,11 +47,11 @@ public class SubscriptNode<T,C,I>
   }
 
 //  @SuppressWarnings("unchecked") // Upcast for narrowing index type
-  public Optic bind(Focus<?> focus)
+  public Channel bind(Focus<?> focus)
     throws BindException
   {
-    Optic<C> collection=focus.<C>bind(new Expression<C>(_source,null));
-    Optic<I> selector=focus.<I>bind(new Expression<I>(_selector,null));
+    Channel<C> collection=focus.<C>bind(new Expression<C>(_source,null));
+    Channel<I> selector=focus.<I>bind(new Expression<I>(_selector,null));
     
     Class clazz=selector.getContentType();
     if (Integer.class.isAssignableFrom(clazz)
@@ -60,7 +61,7 @@ public class SubscriptNode<T,C,I>
     { 
       if (collection.getContentType().isArray())
       {
-        return (Optic<T>) ArrayIndexHelper.<T,C>bind
+        return (Channel<T>) ArrayIndexHelper.<T,C>bind
           (focus,collection, selector);
       }
       else
@@ -88,20 +89,20 @@ class ArrayIndexHelper
 {
   
   @SuppressWarnings("unchecked") // Upcasts bc/we narrowed operation type
-  public static final <T,C> Optic<T> bind
+  public static final <T,C> Channel<T> bind
     (Focus<?> focus
-     ,Optic<C> collection
-     ,Optic selector
+     ,Channel<C> collection
+     ,Channel selector
      )
      throws BindException
   {
-    return new LenseBinding<T,T[]>
-      ((Optic<T[]>) collection
-      ,new ArrayIndexLense<T>
-        (OpticFactory.getInstance()
-            .<T>findPrism((Class<T>) collection.getContentType().getComponentType())
+    return new TranslatorBinding<T,T[]>
+      ((Channel<T[]>) collection
+      ,new ArrayIndexTranslator<T>
+        (BeanReflector.<T>getInstance
+            ((Class<T>) collection.getContentType().getComponentType())
         )
-      ,new Optic[] {selector}
+      ,new Channel[] {selector}
       );
     
   }

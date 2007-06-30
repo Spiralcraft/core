@@ -15,12 +15,11 @@
 package spiralcraft.builder;
 
 import spiralcraft.lang.Expression;
-import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.optics.SimpleBinding;
+import spiralcraft.lang.spi.SimpleBinding;
 
 import spiralcraft.data.lang.TupleDelegate;
 import spiralcraft.data.DataException;
@@ -64,7 +63,7 @@ public class Assembly<T>
   private PropertyBinding[] _propertyBindings;
   private HashMap<String,Assembly> _importedSingletons;
   private HashMap<Expression,Channel> _channels;
-  private Optic<?> _context;
+  private Channel<?> _context;
   private boolean bound=false;
   private boolean resolved=false;
   
@@ -83,7 +82,7 @@ public class Assembly<T>
     if (javaClass==null)
     { throw new BuildException("No java class defined for assembly");
     }
-    try
+    try 
     { _optic=new SimpleBinding(javaClass,null,false);
     }
     catch (BindException x)
@@ -327,7 +326,7 @@ public class Assembly<T>
   /**
    * implement Focus.getContext()
    */
-  public Optic<?> getContext()
+  public Channel<?> getContext()
   { 
     if (_context!=null)
     { return _context;
@@ -340,7 +339,7 @@ public class Assembly<T>
   /**
    * implement Focus.getSubject()
    */
-  public Optic<T> getSubject()
+  public Channel<T> getSubject()
   { return _optic;
   }
  

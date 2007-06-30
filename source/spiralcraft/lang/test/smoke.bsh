@@ -81,6 +81,14 @@ ExpressionResolverTest.main
 		}
   );
 
+"// Meta operator";
+Evaluator.parseAndEvaluateObject(".!",new Object());
+Evaluator.parseAndEvaluateObject(".class.name!",new Object());
+Evaluator.parseAndEvaluateObject(".hashCode()!",new Object());
+
+
+
+
 
 
 

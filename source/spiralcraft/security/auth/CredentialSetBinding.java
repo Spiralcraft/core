@@ -18,9 +18,9 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.optics.AbstractBinding;
-import spiralcraft.lang.optics.Binding;
-import spiralcraft.lang.optics.Prism;
+import spiralcraft.lang.Reflector;
+import spiralcraft.lang.spi.AbstractBinding;
+import spiralcraft.lang.spi.Binding;
 
 import java.util.Map;
 
@@ -35,7 +35,7 @@ public class CredentialSetBinding
   
   public CredentialSetBinding(Map<String,Credential<?>> map)
   {
-    super(new CredentialMapPrism(map));
+    super(new CredentialMapTypeBroker(map));
     this.map=map;
   }
 
@@ -52,13 +52,15 @@ public class CredentialSetBinding
   
 }
 
-class CredentialMapPrism
-  implements Prism<Map<String,Credential<?>>>
+@SuppressWarnings("unchecked") // Complex to genericize
+class CredentialMapTypeBroker
+  implements Reflector<Map<String,Credential<?>>>
 {
-
+  // XXX Consider the use of namespaces, now that they are implemented
+  
   private Map<String,Credential<?>> map;
   
-  public CredentialMapPrism(Map<String,Credential<?>> map)
+  public CredentialMapTypeBroker(Map<String,Credential<?>> map)
   { this.map=map;
   }
   
@@ -68,6 +70,7 @@ class CredentialMapPrism
   { return null;
   }
 
+  
   public Class getContentType()
   { return Map.class;
   }

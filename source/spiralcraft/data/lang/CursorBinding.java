@@ -16,7 +16,7 @@ package spiralcraft.data.lang;
 
 import spiralcraft.lang.BindException;
 
-
+import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.access.Cursor;
@@ -34,6 +34,20 @@ public class CursorBinding<T extends Tuple>
     throws BindException
   { 
     super(cursor.dataGetFieldSet(),false);
+    this.cursor=cursor;
+  }
+  
+  public CursorBinding(FieldSet fieldSet)
+    throws BindException
+  { super(fieldSet,false);
+  }
+  
+  public void setCursor(Cursor<T> cursor)
+  { 
+    if (cursor.dataGetFieldSet()!=getFieldSet())
+    { throw new IllegalArgumentException
+        ("Cursor is incompatible with existing binding");
+    }
     this.cursor=cursor;
   }
 

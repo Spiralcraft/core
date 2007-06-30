@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
@@ -39,12 +39,12 @@ public class OpNode<T1,T2 extends T1>
 
   
   @SuppressWarnings("unchecked") // Heterogeneous operation
-  public Optic bind(final Focus focus)
+  public Channel bind(final Focus focus)
     throws BindException
   { 
-    Optic op1=_op1.bind(focus);
+    Channel op1=_op1.bind(focus);
 
-    Optic ret=op1
+    Channel ret=op1
       .resolve(focus
               ,_op
               ,_params

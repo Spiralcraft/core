@@ -17,13 +17,13 @@ package spiralcraft.data.core;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
 
-import spiralcraft.data.lang.TuplePrism;
+import spiralcraft.data.lang.TupleReflector;
 
-import spiralcraft.lang.optics.ThreadLocalBinding;
+import spiralcraft.lang.spi.ThreadLocalBinding;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.DefaultFocus;
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 
 /**
@@ -36,7 +36,7 @@ public class CalculatedFieldImpl
 {
 
   private ThreadLocalBinding<Tuple> threadLocalBinding;
-  private Optic expressionBinding;
+  private Channel expressionBinding;
   private Expression<?> expression;
   
   public void setExpression(Expression<?> expression)
@@ -50,7 +50,7 @@ public class CalculatedFieldImpl
     try
     {
       threadLocalBinding
-        =new ThreadLocalBinding<Tuple>(TuplePrism.getInstance(getFieldSet()));
+        =new ThreadLocalBinding<Tuple>(TupleReflector.getInstance(getFieldSet()));
       DefaultFocus<Tuple> focus=new DefaultFocus<Tuple>(threadLocalBinding);
       expressionBinding=focus.bind(expression);
     }

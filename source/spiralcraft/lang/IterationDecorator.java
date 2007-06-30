@@ -14,8 +14,7 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.lang.optics.Prism;
-import spiralcraft.lang.optics.IterationContextBinding;
+import spiralcraft.lang.spi.IterationContextBinding;
 
 import java.util.Iterator;
 
@@ -30,26 +29,26 @@ public abstract class IterationDecorator<T,I>
   implements Decorator<T>,Iterable
 {   
   
-  protected final Optic<T> source;
-  private final Prism<I> componentPrism;
+  protected final Channel<T> source;
+  private final Reflector<I> componentReflector;
   
-  public IterationDecorator(Optic<T> source,Prism<I> componentPrism)
+  public IterationDecorator(Channel<T> source,Reflector<I> componentReflector)
   { 
     this.source=source;
-    this.componentPrism=componentPrism;
+    this.componentReflector=componentReflector;
   }
   
   /**
    * 
-   * @return The Prism which describes the component type of the Iteration.
+   * @return The Reflector which describes the component type of the Iteration.
    *   Use with the IterationContextBinding
    *   use with 
    */
   public IterationContextBinding<I>
-    createComponentBinding(Optic<IterationContext<I>> iterationContextSource)
+    createComponentBinding(Channel<IterationContext<I>> iterationContextSource)
   { 
     return new IterationContextBinding<I>
-      (componentPrism,iterationContextSource);
+      (componentReflector,iterationContextSource);
   }
   
   protected abstract Iterator<I> createIterator();

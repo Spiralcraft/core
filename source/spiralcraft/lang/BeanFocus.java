@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.lang.optics.SimpleBinding;
+import spiralcraft.lang.spi.SimpleBinding;
 
 /**
  * A Focus where the subject is a java Bean

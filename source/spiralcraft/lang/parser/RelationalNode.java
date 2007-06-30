@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 
 public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
   extends LogicalNode<T1,T2>
@@ -31,10 +31,10 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
   }
 
   @SuppressWarnings("unchecked") // Array is heterogeneous
-  public Boolean translateForGet(T1 val,Optic[] mods)
+  public Boolean translateForGet(T1 val,Channel[] mods)
   { 
     Comparable<T1> val1= val;
-    T2 val2=((Optic<T2>) mods[0]).get();
+    T2 val2=((Channel<T2>) mods[0]).get();
     
     if (val1==null)
     { 
@@ -68,7 +68,7 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
     }
   }
   
-  public T1 translateForSet(Boolean val,Optic[] mods)
+  public T1 translateForSet(Boolean val,Channel[] mods)
   { 
     // Not reversible
     throw new UnsupportedOperationException();

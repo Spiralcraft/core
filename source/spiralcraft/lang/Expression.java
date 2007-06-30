@@ -123,7 +123,7 @@ public class Expression<T>
     if (_root==null)
     { throw new BindException("No way to bind expression '"+_text+"'");
     }
-    return new Channel<T>(focus,_root.bind(focus),this); 
+    return _root.bind(focus); 
   }
 
   

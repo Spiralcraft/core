@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 
 
 public class ExclusiveOrNode
@@ -30,7 +30,7 @@ public class ExclusiveOrNode
   }
 
   @SuppressWarnings("unchecked") // Heterogeneous Array
-  public Boolean translateForGet(Boolean val,Optic[] mods)
+  public Boolean translateForGet(Boolean val,Channel[] mods)
   { 
     if (val==null)
     { return null;
@@ -38,7 +38,7 @@ public class ExclusiveOrNode
     boolean val1=val.booleanValue();
 //    System.out.println("val1="+val1);
 
-    Boolean mod=((Optic<Boolean>) mods[0]).get();
+    Boolean mod=((Channel<Boolean>) mods[0]).get();
     if (mod==null)
     { return null;
     }
@@ -50,7 +50,7 @@ public class ExclusiveOrNode
     
   }
   
-  public Boolean translateForSet(Boolean val,Optic[] mods)
+  public Boolean translateForSet(Boolean val,Channel[] mods)
   { 
     // Not reversible
     throw new UnsupportedOperationException();

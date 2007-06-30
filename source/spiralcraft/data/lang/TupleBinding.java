@@ -16,7 +16,7 @@ package spiralcraft.data.lang;
 
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.optics.AbstractBinding;
+import spiralcraft.lang.spi.AbstractBinding;
 
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
@@ -31,12 +31,12 @@ public abstract class TupleBinding<T extends Tuple>
  
   public TupleBinding(FieldSet fieldSet,boolean isStatic)
     throws BindException
-  { super(TuplePrism.<T>getInstance(fieldSet),isStatic);
+  { super(TupleReflector.<T>getInstance(fieldSet),isStatic);
   }
   
 
   public FieldSet getFieldSet()
-  { return ((TuplePrism) getPrism()).getFieldSet();
+  { return ((TupleReflector) getReflector()).getFieldSet();
   }
 
 }

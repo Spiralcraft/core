@@ -18,22 +18,22 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 
-import spiralcraft.lang.optics.LenseBinding;
-import spiralcraft.lang.optics.Binding;
+import spiralcraft.lang.spi.Binding;
+import spiralcraft.lang.spi.TranslatorBinding;
 
 /**
  * A binding to a value of a field
  */
 public class FieldBinding
-  extends LenseBinding
+  extends TranslatorBinding
 {
-  private final FieldLense lense;
+  private final FieldTranslator translator;
   
   @SuppressWarnings("unchecked") // We haven't genericized the data package yet
-  public FieldBinding(Binding source,FieldLense lense)
+  public FieldBinding(Binding source,FieldTranslator translator)
   { 
-    super(source,lense,null);
-    this.lense=lense;
+    super(source,translator,null);
+    this.translator=translator;
   }
 
   /**
@@ -55,7 +55,7 @@ public class FieldBinding
     { 
       try
       {
-        ((EditableTuple) tuple).set(lense.getField().getIndex(),val);
+        ((EditableTuple) tuple).set(translator.getField().getIndex(),val);
         return true;
       }
       catch (DataException x)

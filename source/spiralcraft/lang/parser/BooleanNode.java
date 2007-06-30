@@ -14,33 +14,34 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Optic;
-import spiralcraft.lang.OpticFactory;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
 
-import spiralcraft.lang.optics.Prism;
+import spiralcraft.lang.spi.BeanReflector;
+
 
 public abstract class BooleanNode
   extends Node
 {
 
-  public static Prism<Boolean> BOOLEAN_PRISM;
+  public static Reflector<Boolean> BOOLEAN_REFLECTOR;
   
   { 
     try
-    { BOOLEAN_PRISM=OpticFactory.getInstance().<Boolean>findPrism(Boolean.class);
+    { BOOLEAN_REFLECTOR=BeanReflector.<Boolean>getInstance(Boolean.class);
     }
     catch (BindException x)
     { }
       
   }
   
-  public abstract Optic bind(Focus<?> focus)
+  public abstract Channel bind(Focus<?> focus)
     throws BindException;
   
-  public Prism<Boolean> getPrism()
-  { return BOOLEAN_PRISM;
+  public Reflector<Boolean> getReflector()
+  { return BOOLEAN_REFLECTOR;
   }
     
   public abstract String getSymbol();

@@ -14,13 +14,13 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.optics.LenseBinding;
-import spiralcraft.lang.optics.Prism;
-import spiralcraft.lang.optics.Lense;
+import spiralcraft.lang.spi.Translator;
+import spiralcraft.lang.spi.TranslatorBinding;
 
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Reflector;
 
 @SuppressWarnings("unchecked") // Nodes are not generic
 public class ConditionalNode
@@ -41,20 +41,20 @@ public class ConditionalNode
     _falseResult=falseResult;
   }
 
-  public Optic bind(Focus focus)
+  public Channel bind(Focus focus)
     throws BindException
   { 
-    Optic condition=_condition.bind(focus);
-    Optic trueResult=_trueResult.bind(focus);
-    Optic falseResult=_falseResult.bind(focus);
+    Channel condition=_condition.bind(focus);
+    Channel trueResult=_trueResult.bind(focus);
+    Channel falseResult=_falseResult.bind(focus);
     
-    return new LenseBinding
+    return new TranslatorBinding
       (condition
-      ,new ConditionalLense
-        (trueResult.getPrism()
-        ,falseResult.getPrism()
+      ,new ConditionalTranslator
+        (trueResult.getReflector()
+        ,falseResult.getReflector()
         )
-      ,new Optic[] {trueResult,falseResult}
+      ,new Channel[] {trueResult,falseResult}
       );
   }
   
@@ -70,45 +70,48 @@ public class ConditionalNode
   }
 }
 
-class ConditionalLense<T>
-  implements Lense<T,Boolean>
+class ConditionalTranslator<T>
+  implements Translator<T,Boolean>
 {
-  private Prism<T> prism;
+  private Reflector<T> reflector;
   
-  public ConditionalLense(Prism<T> truePrism,Prism<T> falsePrism)
+  public ConditionalTranslator
+    (Reflector<T> trueReflector
+    ,Reflector<T> falseReflector
+    )
     throws BindException
   { 
-    if (truePrism.getContentType()==Void.class)
-    { prism=falsePrism;
+    if (trueReflector.getContentType()==Void.class)
+    { reflector=falseReflector;
     }
-    else if (falsePrism.getContentType()==Void.class)
-    { prism=truePrism;
+    else if (falseReflector.getContentType()==Void.class)
+    { reflector=trueReflector;
     }
-    else if (truePrism.getContentType().isAssignableFrom(falsePrism.getContentType()))
-    { prism=truePrism;
+    else if (trueReflector.getContentType().isAssignableFrom(falseReflector.getContentType()))
+    { reflector=trueReflector;
     }
-    else if (falsePrism.getContentType().isAssignableFrom(truePrism.getContentType()))
-    { prism=falsePrism;
+    else if (falseReflector.getContentType().isAssignableFrom(trueReflector.getContentType()))
+    { reflector=falseReflector;
     }
     else
     { throw new BindException("Can't disambiguate conditional");
     }
   }
   
-  public Prism<T> getPrism()
-  { return prism;
+  public Reflector<T> getReflector()
+  { return reflector;
   }
   
   @SuppressWarnings("unchecked") // Arrays and Generics issue
-  public T translateForGet(Boolean val,Optic[] modifiers)
+  public T translateForGet(Boolean val,Channel[] modifiers)
   { 
     if (val==null)
-    { return ((Optic<T>) modifiers[1]).get();
+    { return ((Channel<T>) modifiers[1]).get();
     }
-    return val?((Optic<T>)modifiers[0]).get():((Optic<T>)modifiers[1]).get();
+    return val?((Channel<T>)modifiers[0]).get():((Channel<T>)modifiers[1]).get();
   }
 
-  public Boolean translateForSet(T val,Optic[] modifiers)
+  public Boolean translateForSet(T val,Channel[] modifiers)
   { 
     // TODO: We can check which one of the modifiers "val" equals and
     //   set the boolean value accordingly

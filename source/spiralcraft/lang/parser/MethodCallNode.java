@@ -18,7 +18,7 @@ import java.util.List;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 
 public class MethodCallNode
@@ -60,10 +60,10 @@ public class MethodCallNode
    * MethodCallNode operates on a source. If there is no direct source,
    *   the subject of the supplied focus will be used.
    */
-  public Optic bind(final Focus focus)
+  public Channel bind(final Focus focus)
     throws BindException
   { 
-    Optic<?> source;
+    Channel<?> source;
     if (_source!=null)
     { source=_source.bind(focus);
     }
@@ -78,7 +78,7 @@ public class MethodCallNode
 //    { System.out.println("MethodCallNode "+toString()+" param:"+param.toString());
 //    }
     
-    Optic ret=source
+    Channel ret=source
       .resolve(focus
               ,_identifierName
               ,_parameters

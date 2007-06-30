@@ -15,7 +15,7 @@
 package spiralcraft.lang;
 
 /**
- * Thrown when an exception is thrown when writing a value through an Optic.
+ * Thrown when an exception is thrown when writing a value through an Channel.
  */
 public class WriteException
   extends Exception

@@ -17,7 +17,7 @@ package spiralcraft.data.query;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.DefaultFocus;
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 
 
@@ -100,7 +100,7 @@ class SelectionBinding<Tq extends Selection>
 {
   private final Focus paramFocus;
   private DefaultFocus<?> focus;
-  private Optic<Boolean> filter;
+  private Channel<Boolean> filter;
   
   public SelectionBinding
     (Tq query

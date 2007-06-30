@@ -15,17 +15,18 @@
 package spiralcraft.lang.test;
 
 import spiralcraft.lang.parser.ExpressionParser;
+import spiralcraft.lang.spi.BeanReflector;
+import spiralcraft.lang.spi.Namespace;
+import spiralcraft.lang.spi.NamespaceReflector;
+import spiralcraft.lang.spi.SimpleBinding;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.DefaultFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.OpticFactory;
 
-import spiralcraft.lang.optics.SimpleBinding;
-import spiralcraft.lang.optics.NamespacePrism;
-import spiralcraft.lang.optics.Namespace;
+
 
 
 
@@ -89,10 +90,12 @@ public class ExpressionResolverTest
 
       DefaultFocus<Namespace> focus=new DefaultFocus<Namespace>();
       
-      NamespacePrism defs=new NamespacePrism();
-      defs.register("test",OpticFactory.getInstance().findPrism(String.class));
+      NamespaceReflector defs=new NamespaceReflector();
+      defs.register("test",BeanReflector.getInstance(String.class));
       Namespace namespace=new Namespace(defs);
-      namespace.put("test","testValue");
+      
+      
+      namespace.putOptic("test",new SimpleBinding<String>("testValue",true));
 
       focus.setSubject(new SimpleBinding<Namespace>(defs,namespace,false));
 

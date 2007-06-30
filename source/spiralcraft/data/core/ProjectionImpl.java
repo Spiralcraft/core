@@ -29,7 +29,7 @@ import spiralcraft.data.lang.BoundTuple;
 import spiralcraft.data.lang.TupleFocus;
 
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 
 public class ProjectionImpl
   implements Projection
@@ -135,7 +135,7 @@ public class ProjectionImpl
     { 
       focus=new TupleFocus<Tuple>(masterFieldSet);
       
-      Optic[] bindings=new Optic[mappings.size()];
+      Channel[] bindings=new Channel[mappings.size()];
       int i=0;
       for (Mapping mapping: mappings)
       { 
@@ -168,7 +168,7 @@ public class ProjectionImpl
  */
 abstract class Mapping
 {
-  public abstract Optic bind(TupleFocus<Tuple> focus)
+  public abstract Channel bind(TupleFocus<Tuple> focus)
     throws BindException;
 
 }
@@ -182,7 +182,7 @@ class FieldMapping
   { this.masterField=masterField;
   }
   
-  public Optic bind(TupleFocus<Tuple> focus)
+  public Channel bind(TupleFocus<Tuple> focus)
     throws BindException
   { return focus.getSubject().resolve(focus,masterField.getName(),null);
     

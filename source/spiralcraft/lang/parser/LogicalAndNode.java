@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 
 
 public class LogicalAndNode
@@ -26,18 +26,18 @@ public class LogicalAndNode
   }
 
   @SuppressWarnings("unchecked") // Non-generic array
-  public Boolean translateForGet(Boolean val,Optic[] mods)
+  public Boolean translateForGet(Boolean val,Channel[] mods)
   { 
     boolean val1=val!=null?val.booleanValue():false;
     if (!val1)
     { return Boolean.FALSE;
     }
-    Boolean mod=((Optic<Boolean>)mods[0]).get();
+    Boolean mod=((Channel<Boolean>)mods[0]).get();
     boolean val2=mod!=null?mod.booleanValue():false;
     return val2?Boolean.TRUE:Boolean.FALSE;
   }
   
-  public Boolean translateForSet(Boolean val,Optic[] mods)
+  public Boolean translateForSet(Boolean val,Channel[] mods)
   { 
     // Not reversible
     throw new UnsupportedOperationException();

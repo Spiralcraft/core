@@ -14,75 +14,98 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.lang.optics.ProxyOptic;
+import java.beans.PropertyChangeSupport;
 
-import java.util.HashMap;
 
 /**
- * A new Focus created as a result of binding an Expression to a source Focus.
+ * An Channel is a "data pipe" that provides a "view" of the contents of an 
+ *   arbitrary data source or container, the "model-part", that exists within
+ *   an arbitrary object model.<P>
  *
- * This Focus inherits the Context of the source Focus and has a subject
- *   that corresponds to the data pathway specifed by the expression.
+ * An Channel is able to track changes to the model-part over time, and in
+ *   some cases may update the contents of the model-part.<P>
  *
- * Channels cache the expressions bound to them to avoid duplication of
- *   effort and to minimize memory consumption
+ * As a "view", the Channel is transformative- it provides a specific
+ *   representation of the model-part contents which may consist of a subset
+ *   or superset of the information contained within the model-part.<P>
+ *
+ * Optics are combined using an expression language to form Channels. A Channel
+ *   is a tree of Optics that results in the combination and transformation
+ *   of a number of model-parts into a single representation.<P>
+ *
+ * Optics are "typed"- they are associated with a content type
+ *   (expressed as a Java class) and a set of named resolutions
+ *   that provide "deeper" views into the object model, alternate
+ *   representations of the model-part, or transformations of the model-part
+ *   content controlled by other contextual elements.<P>
+ *
+ * Resolutions are handled by the resolve() method. A given resolution is
+ *   specified by name and may be associated with a Focus and a set of
+ *   Expression parameters. As such, transformations have access to the
+ *   application context via the Focus and define the context
+ *   in which the parameter expressions will be evaluated.<P>
+ *
+ * Optics may be 'decorated' with interfaces that provide support for 
+ *   certain operations, such as Iterator. The decorate() method will
+ *   resolve an appropriate implementation of the desired interface and
+ *   bind it to the Channel, if such an implementation exists and is 
+ *   appropriately registered with the OpticFactory.<P>
  */
-public class Channel<T>
-  extends ProxyOptic<T>
-  implements Focus<T>
+public interface Channel<T>
 {
-  private final Expression<T> _expression;
-  private final Focus<?> _source;
-  
-  // XXX These should be weak or soft refs
-  private HashMap<Expression<?>,Channel<?>> _channels;
+  /**
+   * Resolve the name and optional set of parameter expressions to provide
+   *   new views derived from this one.
+   */
+  <X> Channel<X> resolve(Focus<?> focus,String name,Expression[] parameters)
+    throws BindException;
 
-  public Channel(Focus<?> source,Optic<T> optic,Expression<T> expression)
-  { 
-    super(optic);
-    _expression=expression;
-    _source=source;
-  }
+  /**
+   * Return the content of this view.
+   */
+  T get();
 
-  public Expression getExpression()
-  { return _expression;
-  }
+  /**
+   * Update the content this view, if the transformation associated with
+   *   this Channel and its data sources is reversible.
+   *
+   *@return Whether the modification was successful or not.
+   *@throws WriteException if the target of the write throws an exception
+   */
+  boolean set(T value)
+    throws WriteException;
+
+  /**
+   * Indicate the Java Class of the content of this View.
+   */
+  Class<T> getContentType();
+
+  /**
+   * Decorate this Channel with a suitable implementation of a decoratorInterface
+   *   for the content type.
+   *return The decorator that implements the decoratorInterface, or null if
+   *  the decoratorInterface is not supported
+   */
+  <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
+    throws BindException;
+ 
+  /**
+   * Provide a reference to the PropertyChangeSupport object
+   *   which fires a PropertyChangeEvent when the data source for this view
+   *   changes. Returns null if the this view or any of its data sources do
+   *   not support property change notification, or if the content is guaranteed
+   *   to remain unchanged.
+   */
+  PropertyChangeSupport propertyChangeSupport();
+
+  /** 
+   * Indicates whether the referenced data value is guaranteed to
+   *   remain unchanged.
+   */
+  boolean isStatic();
   
-  public Optic<T> getSubject()
-  { return this;
-  }
-  
-  public Focus<?> getParentFocus()
-  { return _source;
-  }
-  
-  public Focus<?> findFocus(String name)
-  { return _source.findFocus(name);
-  }
-  
-  public Optic<?> getContext()
-  { return _source.getContext();
-  }
-  
-  @SuppressWarnings("unchecked") // Heterogeneous hash map
-  public synchronized <X> Channel<X> bind(Expression<X> expression)
-    throws BindException
-  { 
-    // XXX These should be weak or soft refs so we don't hang on to unused 
-    // XXX   channels
-    
-    Channel<X> channel=null;
-    if (_channels==null)
-    { _channels=new HashMap<Expression<?>,Channel<?>>();
-    }
-    else
-    { channel=(Channel <X>) _channels.get(expression);
-    }
-    if (channel==null)
-    { 
-      channel=expression.bind(this);
-      _channels.put(expression,channel);
-    }
-    return channel;
-  }
+  /**
+   * Return the spiralcraft.lang type of the referenced data 
+   */
+  Reflector<T> getReflector();
 }

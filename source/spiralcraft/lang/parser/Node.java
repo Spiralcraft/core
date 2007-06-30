@@ -17,7 +17,7 @@ package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public abstract class Node
    *
    *@return An optic with no functionality
    */
-  public Optic bind(Focus<?> focus)
+  public Channel bind(Focus<?> focus)
     throws BindException
   { 
     unsupported("bind");

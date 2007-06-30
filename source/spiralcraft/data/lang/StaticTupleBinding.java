@@ -36,7 +36,7 @@ public class StaticTupleBinding<T extends Tuple>
   }
 
   public FieldSet getFieldSet()
-  { return ((TuplePrism) getPrism()).getFieldSet();
+  { return ((TupleReflector) getReflector()).getFieldSet();
   }
 
   protected T retrieve()

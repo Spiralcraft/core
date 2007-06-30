@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
@@ -54,7 +54,7 @@ public class PrimaryIdentifierNode
   { return _identifier;
   }
   
-  public Optic bind(final Focus focus)
+  public Channel bind(final Focus focus)
     throws BindException
   { 
 //    String identifier=_identifier.getIdentifier();
@@ -64,9 +64,9 @@ public class PrimaryIdentifierNode
       ?_source.findFocus(focus)
       :focus;
 
-    Optic<?> context=specifiedFocus.getContext();
+    Channel<?> context=specifiedFocus.getContext();
     
-    Optic<?> ret=null;
+    Channel<?> ret=null;
     
     if (context!=null)
     { ret=context.resolve(specifiedFocus,_identifier,null);
@@ -76,7 +76,7 @@ public class PrimaryIdentifierNode
     { 
       try
       { 
-        Optic<?> subject=specifiedFocus.getSubject();
+        Channel<?> subject=specifiedFocus.getSubject();
         if (subject!=null)
         { ret=subject.resolve(specifiedFocus,_identifier,null);
         }

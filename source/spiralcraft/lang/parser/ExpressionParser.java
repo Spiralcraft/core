@@ -509,6 +509,9 @@ public class ExpressionParser
       case '.':
         consumeToken();
         return parseDereferenceExpression(primary);
+      case '!': 
+        consumeToken();
+        return parsePostfixExpressionRest(new MetaNode(primary));
       default:
         return primary;
     }
@@ -597,6 +600,8 @@ public class ExpressionParser
         return parseDereferenceExpression(focusNode);
       case '[':
         // an array subscript against the subject of the focus
+      case '!': 
+        // a meta-reference against the subject of the focus
         return parsePostfixExpressionRest(focusNode);
       case '.':
         // The parent focus

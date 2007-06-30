@@ -14,9 +14,11 @@
 //
 package spiralcraft.security.auth;
 
-import spiralcraft.lang.OpticFactory;
+
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.optics.AbstractBinding;
+
+import spiralcraft.lang.spi.AbstractBinding;
+import spiralcraft.lang.spi.BeanReflector;
 
 import java.util.Map;
 
@@ -30,8 +32,7 @@ public class CredentialBinding
   public CredentialBinding(Map<String,Credential<?>> map,String name)
     throws BindException
   { 
-    super(OpticFactory.getInstance().findPrism
-        (map.get(name).getTokenType()));
+    super(BeanReflector.getInstance((map.get(name).getTokenType())));
     this.name=name;
     this.map=map;
   }

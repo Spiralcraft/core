@@ -15,10 +15,10 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.optics.SimpleBinding;
+import spiralcraft.lang.spi.SimpleBinding;
 
 public class LiteralNode<X>
   extends Node
@@ -48,7 +48,7 @@ public class LiteralNode<X>
       ;
   }
 
-  public synchronized Optic<X> bind(final Focus focus)
+  public synchronized Channel<X> bind(final Focus focus)
     throws BindException
   { 
 //    System.out.println("LiteralNode: Returning "+_optic.toString());

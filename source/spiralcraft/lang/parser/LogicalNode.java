@@ -14,21 +14,21 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.Reflector;
 
-import spiralcraft.lang.optics.Lense;
-import spiralcraft.lang.optics.Prism;
-import spiralcraft.lang.optics.LenseBinding;
+import spiralcraft.lang.spi.Translator;
+import spiralcraft.lang.spi.TranslatorBinding;
 
 public abstract class LogicalNode<T1,T2>
   extends BooleanNode
-  implements Lense<Boolean,T1>
+  implements Translator<Boolean,T1>
 {
-  public static Prism<Boolean> BOOLEAN_PRISM;
+  public static Reflector<Boolean> BOOLEAN_REFLECTOR;
   
   private final Node _op1;
   private final Node _op2;
@@ -39,20 +39,20 @@ public abstract class LogicalNode<T1,T2>
     _op2=op2;
   }
 
-  public Optic<Boolean> bind(Focus<?> focus)
+  public Channel<Boolean> bind(Focus<?> focus)
     throws BindException
   { 
 //    System.out.println("LogicalNode bind "+_op1.toString()+" "+_op2.toString());
 
-    Optic[] params;
+    Channel[] params;
     if (_op2!=null)
-    { params=new Optic[] {focus.bind(new Expression<T2>(_op2,null))};
+    { params=new Channel[] {focus.bind(new Expression<T2>(_op2,null))};
     }
     else
-    { params=new Optic[] {};
+    { params=new Channel[] {};
     }
     
-    return new LenseBinding<Boolean,T1>
+    return new TranslatorBinding<Boolean,T1>
       (focus.bind(new Expression<T1>(_op1,null))
       ,this
       ,params

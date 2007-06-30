@@ -18,7 +18,7 @@ import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.spi.AbstractTuple;
 
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 
 import spiralcraft.util.ArrayUtil;
 
@@ -30,12 +30,12 @@ public class BoundTuple
   extends AbstractTuple
   implements Tuple
 {
-  protected final Optic[] bindings;
+  protected final Channel[] bindings;
   
   /**
    * Construct an ArrayTuple with an empty set of data
    */
-  public BoundTuple(FieldSet fieldSet,Optic[] bindings)
+  public BoundTuple(FieldSet fieldSet,Channel[] bindings)
   { 
     super(fieldSet);
     if (bindings.length!=fieldSet.getFieldCount())
@@ -58,7 +58,7 @@ public class BoundTuple
   { 
     Object[] data=new Object[bindings.length];
     int i=0;
-    for (Optic opt: bindings)
+    for (Channel opt: bindings)
     { data[i++]=opt.get();
     }
     return ArrayUtil.arrayHashCode(data);

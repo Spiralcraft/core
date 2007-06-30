@@ -14,16 +14,16 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Optic;
-import spiralcraft.lang.OpticFactory;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.Reflector;
 
-import spiralcraft.lang.optics.Lense;
-import spiralcraft.lang.optics.Prism;
-import spiralcraft.lang.optics.LenseBinding;
-import spiralcraft.lang.optics.StringConcatLense;
+import spiralcraft.lang.spi.BeanReflector;
+import spiralcraft.lang.spi.Translator;
+import spiralcraft.lang.spi.TranslatorBinding;
+import spiralcraft.lang.spi.StringConcatTranslator;
 
 import spiralcraft.util.lang.ClassUtil;
 
@@ -55,22 +55,22 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
 
   
   @SuppressWarnings("unchecked") // More heterogeneus operations
-  public Optic<T1> bind(Focus<?> focus)
+  public Channel<T1> bind(Focus<?> focus)
     throws BindException
   {
     
-    Optic<T1> op1=focus.<T1>bind(new Expression<T1>(_op1,null));
-    Optic<T2> op2=focus.<T2>bind(new Expression<T2>(_op2,null));
+    Channel<T1> op1=focus.<T1>bind(new Expression<T1>(_op1,null));
+    Channel<T2> op2=focus.<T2>bind(new Expression<T2>(_op2,null));
     
     if (String.class.isAssignableFrom(op1.getContentType()))
-    { return (Optic<T1>) StringBindingHelper.bindString(focus,(Optic<String>) op1,op2,_op);
+    { return (Channel<T1>) StringBindingHelper.bindString(focus,(Channel<String>) op1,op2,_op);
     }
     else if (ClassUtil.isNumber(op1.getContentType()))
     { 
-      return (Optic<T1>) NumberBindingHelper.bindNumber
+      return (Channel<T1>) NumberBindingHelper.bindNumber
         (focus
-        ,(Optic<? extends Number>) op1
-        ,(Optic<? extends Number>) op2
+        ,(Channel<? extends Number>) op1
+        ,(Channel<? extends Number>) op2
         ,_op
         );
     }
@@ -99,14 +99,14 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
 class StringBindingHelper
 {
 
-  private static Lense<String,String> _stringConcatLense;
+  private static Translator<String,String> _stringConcatTranslator;
   static
   {
     try
     { 
-      _stringConcatLense
-        =new StringConcatLense
-          (OpticFactory.getInstance().findPrism(String.class)
+      _stringConcatTranslator
+        =new StringConcatTranslator
+          (BeanReflector.getInstance(String.class)
           );
     }
     catch (BindException x)
@@ -114,16 +114,16 @@ class StringBindingHelper
     }
   }
   
-  public static final Optic<String> 
-    bindString(Focus focus,Optic<String> op1,Optic<?> op2,char operator)
+  public static final Channel<String> 
+    bindString(Focus focus,Channel<String> op1,Channel<?> op2,char operator)
     throws BindException
   {
     if (operator=='+')
     {
-      return new LenseBinding<String,String>
+      return new TranslatorBinding<String,String>
         (op1
-        ,_stringConcatLense
-        ,new Optic[] {op2}
+        ,_stringConcatTranslator
+        ,new Channel[] {op2}
         );
     }
     else
@@ -144,55 +144,55 @@ class NumberBindingHelper
   //promote as the result in a numeric operation. The generic method holds to the source
   //type and not the argument type.
   
-  private static HashMap<Class,NumericLense> _lenseMapAdd
-    =new HashMap<Class,NumericLense>();
+  private static HashMap<Class,NumericTranslator> _translatorMapAdd
+    =new HashMap<Class,NumericTranslator>();
   
-  private static HashMap<Class,NumericLense> _lenseMapSubtract
-    =new HashMap<Class,NumericLense>();
+  private static HashMap<Class,NumericTranslator> _translatorMapSubtract
+    =new HashMap<Class,NumericTranslator>();
 
-  private static HashMap<Class,NumericLense> _lenseMapMultiply
-    =new HashMap<Class,NumericLense>();
+  private static HashMap<Class,NumericTranslator> _translatorMapMultiply
+    =new HashMap<Class,NumericTranslator>();
 
-  private static HashMap<Class,NumericLense> _lenseMapDivide
-    =new HashMap<Class,NumericLense>();
+  private static HashMap<Class,NumericTranslator> _translatorMapDivide
+    =new HashMap<Class,NumericTranslator>();
   
   @SuppressWarnings("unchecked")
-  public static final <Tret extends Number,T1 extends Tret,T2 extends Tret> Optic<Tret> 
-    bindNumber(Focus<?> focus,Optic<T1> op1,Optic<T2> op2,char operator)
+  public static final <Tret extends Number,T1 extends Tret,T2 extends Tret> Channel<Tret> 
+    bindNumber(Focus<?> focus,Channel<T1> op1,Channel<T2> op2,char operator)
     throws BindException
   {
     
     // Promoted type might not be T1, but not a runtime problem.
     
-    Prism<Tret> prism=OpticFactory.getInstance().<Tret>findPrism
+    Reflector<Tret> reflector=BeanReflector.<Tret>getInstance
       (promotedType(op1.getContentType(),op2.getContentType()));
     
-    HashMap<Class,NumericLense> lenseMap=null;
+    HashMap<Class,NumericTranslator> translatorMap=null;
     switch (operator)
     {
       case '+':
-        lenseMap=_lenseMapAdd;
+        translatorMap=_translatorMapAdd;
         break;
       case '-':
-        lenseMap=_lenseMapSubtract;
+        translatorMap=_translatorMapSubtract;
         break;
       case '*':
-        lenseMap=_lenseMapMultiply;
+        translatorMap=_translatorMapMultiply;
         break;
       case '/':
-        lenseMap=_lenseMapDivide;
+        translatorMap=_translatorMapDivide;
         break;
     }
     
-    NumericLense<Tret,T1,T2> lense=lenseMap.get(prism.getContentType());
+    NumericTranslator<Tret,T1,T2> translator=translatorMap.get(reflector.getContentType());
     
-    if (lense==null)
+    if (translator==null)
     { 
-      Class clazz=prism.getContentType();
+      Class clazz=reflector.getContentType();
       
       if (clazz==Integer.class || clazz==int.class)
       {
-        lense=new NumericLense<Tret,T1,T2>(prism,operator)
+        translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
             
           public Tret get(T1 val1,T2 val2)
@@ -225,7 +225,7 @@ class NumberBindingHelper
       }
       else if (clazz==Float.class || clazz==float.class)
       {
-        lense=new NumericLense<Tret,T1,T2>(prism,operator)
+        translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
             
           public Tret get(T1 val1,T2 val2)
@@ -258,7 +258,7 @@ class NumberBindingHelper
       }
       else if (clazz==Double.class || clazz==double.class)
       {
-        lense=new NumericLense<Tret,T1,T2>(prism,operator)
+        translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
             
           public Tret get(T1 val1,T2 val2)
@@ -291,7 +291,7 @@ class NumberBindingHelper
       }
       else if (clazz==BigDecimal.class)
       {
-        lense=new NumericLense<Tret,T1,T2>(prism,operator)
+        translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
             
           public Tret get(T1 val1,T2 val2)
@@ -340,13 +340,13 @@ class NumberBindingHelper
       { throw new BindException("Don't know how to handle a "+clazz);
       }
       
-      lenseMap.put(op1.getContentType(),lense);
+      translatorMap.put(op1.getContentType(),translator);
     }
     
-    return new LenseBinding<Tret,T1>
+    return new TranslatorBinding<Tret,T1>
       (op1
-      ,lense
-      ,new Optic[] {op2}
+      ,translator
+      ,new Channel[] {op2}
       );
   }
   
@@ -487,15 +487,15 @@ class NumberBindingHelper
   }
 }
 
-abstract class NumericLense<Tret extends Number,T1 extends Tret,T2 extends Tret>
-  implements Lense<Tret,T1>
+abstract class NumericTranslator<Tret extends Number,T1 extends Tret,T2 extends Tret>
+  implements Translator<Tret,T1>
 { 
-  private Prism<Tret> prism;
+  private Reflector<Tret> reflector;
   protected char oper;
   
-  public NumericLense(Prism<Tret> prism,char op)
+  public NumericTranslator(Reflector<Tret> reflector,char op)
   { 
-    this.prism=prism;
+    this.reflector=reflector;
     this.oper=op;
   }
   
@@ -506,16 +506,16 @@ abstract class NumericLense<Tret extends Number,T1 extends Tret,T2 extends Tret>
   }
 
   @SuppressWarnings("unchecked") // Heterogeneous Array
-  public Tret translateForGet(T1 val,Optic[] mods)
-  { return get(val,((Optic<T2>) mods[0]).get());
+  public Tret translateForGet(T1 val,Channel[] mods)
+  { return get(val,((Channel<T2>) mods[0]).get());
   }
   
   @SuppressWarnings("unchecked") // Heterogeneous Array
-  public T1 translateForSet(Tret val,Optic[] mods)
-  { return set(val,((Optic<T2>) mods[0]).get());
+  public T1 translateForSet(Tret val,Channel[] mods)
+  { return set(val,((Channel<T2>) mods[0]).get());
   }
 
-  public Prism<Tret> getPrism()
-  { return prism;
+  public Reflector<Tret> getReflector()
+  { return reflector;
   }
 }

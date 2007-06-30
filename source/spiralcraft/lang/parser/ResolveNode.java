@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
@@ -40,10 +40,10 @@ public class ResolveNode<T>
   { return _source;
   }
 
-  public Optic<T> bind(final Focus focus)
+  public Channel<T> bind(final Focus focus)
     throws BindException
   { 
-    Optic<?> sourceOptic;
+    Channel<?> sourceOptic;
     if (_source!=null)
     { 
       sourceOptic=_source.bind(focus);
@@ -61,7 +61,7 @@ public class ResolveNode<T>
     }
 
     
-    Optic<T> ret=sourceOptic.<T>resolve(focus,identifier,null);
+    Channel<T> ret=sourceOptic.<T>resolve(focus,identifier,null);
     if (ret==null)
     { throw new BindException("Name '"+identifier+"' not found.");
     }

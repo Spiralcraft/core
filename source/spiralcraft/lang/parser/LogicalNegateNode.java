@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 
 public class LogicalNegateNode
   extends LogicalNode<Boolean,Void>
@@ -24,7 +24,7 @@ public class LogicalNegateNode
   { super(node,null);
   }
 
-  public Boolean translateForGet(Boolean val,Optic[] mods)
+  public Boolean translateForGet(Boolean val,Channel[] mods)
   { 
     if (val==null)
     { return null;
@@ -37,7 +37,7 @@ public class LogicalNegateNode
     }
   }
   
-  public Boolean translateForSet(Boolean val,Optic[] mods)
+  public Boolean translateForSet(Boolean val,Channel[] mods)
   { 
     if (val==null)
     { return null;

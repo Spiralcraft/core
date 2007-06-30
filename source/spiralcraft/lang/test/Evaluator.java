@@ -20,9 +20,9 @@ import spiralcraft.lang.ParseException;
 import spiralcraft.lang.DefaultFocus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 
-import spiralcraft.lang.optics.SimpleBinding;
+import spiralcraft.lang.spi.SimpleBinding;
 
 
 public class Evaluator
@@ -35,7 +35,7 @@ public class Evaluator
       (expression,new SimpleBinding<Y>(subject,true));
   }
   
-  public static <X,Y> X parseAndEvaluateOptic(String expression,Optic<Y> subject)
+  public static <X,Y> X parseAndEvaluateOptic(String expression,Channel<Y> subject)
     throws BindException,ParseException
   { 
     return Evaluator.<X,Y>evaluate
@@ -44,6 +44,8 @@ public class Evaluator
   
   public static <X,Y> X evaluate(Expression<X> expression,Focus<Y> focus)
     throws BindException
-  { return focus.<X>bind(expression).get();
+  { 
+    System.err.println("evaluate:"+expression+":"+focus.bind(expression));
+    return focus.<X>bind(expression).get();
   }
 }

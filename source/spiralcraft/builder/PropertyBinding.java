@@ -16,13 +16,13 @@ package spiralcraft.builder;
 
 import spiralcraft.util.StringConverter;
 
-import spiralcraft.lang.Optic;
-import spiralcraft.lang.OpticFactory;
-import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.DefaultFocus;
 import spiralcraft.lang.WriteException;
+
+import spiralcraft.lang.spi.SimpleBinding;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -46,8 +46,8 @@ public class PropertyBinding
   private Assembly _container;
   private PropertySpecifier _specifier;
 
-  private Optic _target;
-  // private Optic _sourceOptic;
+  private Channel _target;
+  // private Channel _sourceOptic;
   private Focus _focus;
   private Object _source;
 
@@ -359,7 +359,7 @@ public class PropertyBinding
           // Consider supplying a parent focus here, since we may want to
           //   resolve something from this container.
           _focus=new DefaultFocus
-            (OpticFactory.getInstance().createOptic(focusObject)
+            (new SimpleBinding(focusObject,true)
             );
         }
         else
@@ -402,9 +402,7 @@ public class PropertyBinding
           //   the actual object. Otherwise, the formal property type will
           //   be used and some names will not resolve as expected.
           _source=new DefaultFocus
-            (OpticFactory.getInstance().createOptic
-              (sourceChannel.get()
-              )
+            (new SimpleBinding(sourceChannel.get(),false)
             );
         }
         else if (_target.getContentType()==Channel.class

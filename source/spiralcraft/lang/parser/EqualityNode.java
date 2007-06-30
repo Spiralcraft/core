@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 
 public class EqualityNode<X>
   extends LogicalNode<X,X>
@@ -28,7 +28,7 @@ public class EqualityNode<X>
     _negate=negate;
   }
 
-  public Boolean translateForGet(X val,Optic[] mods)
+  public Boolean translateForGet(X val,Channel[] mods)
   { 
     Object mod=mods[0].get();
     // System.err.println("EqualityNode: "+val+" == "+mod);
@@ -41,7 +41,7 @@ public class EqualityNode<X>
     return _negate?Boolean.TRUE:Boolean.FALSE;
   }
   
-  public X translateForSet(Boolean val,Optic[] mods)
+  public X translateForSet(Boolean val,Channel[] mods)
   { 
     // Not reversible
     throw new UnsupportedOperationException();

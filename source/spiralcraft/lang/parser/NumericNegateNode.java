@@ -14,14 +14,14 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Optic;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.Reflector;
 
-import spiralcraft.lang.optics.Lense;
-import spiralcraft.lang.optics.Prism;
-import spiralcraft.lang.optics.LenseBinding;
+import spiralcraft.lang.spi.Translator;
+import spiralcraft.lang.spi.TranslatorBinding;
 
 import java.util.HashMap;
 import java.math.BigDecimal;
@@ -35,8 +35,8 @@ public class NumericNegateNode<T extends Number>
 
   private final Node _node;
 
-  public static HashMap<Class,NegateLense<?>> _lenseMap
-    =new HashMap<Class,NegateLense<?>>();
+  public static HashMap<Class,NegateTranslator<?>> _translatorMap
+    =new HashMap<Class,NegateTranslator<?>>();
   
   
   public NumericNegateNode(Node node)
@@ -44,28 +44,28 @@ public class NumericNegateNode<T extends Number>
   }
 
   // Suppress Warnings notes:
-  //   Lense cast at end of method from specific back to T- type checked against
-  //   content type in type selector. Also Prism is cast up to specific type, also safe
+  //   Translator cast at end of method from specific back to T- type checked against
+  //   content type in type selector. Also Reflector is cast up to specific type, also safe
   //   due to API. There might be a cleaner way to do this. This class is heterogeneous.
   @SuppressWarnings("unchecked")
-  public Optic<T> bind(Focus<?> focus)
+  public Channel<T> bind(Focus<?> focus)
     throws BindException
   {
-    Optic<T> sourceBinding=focus.<T>bind(new Expression<T>(_node,null));
+    Channel<T> sourceBinding=focus.<T>bind(new Expression<T>(_node,null));
     if (!Number.class.isAssignableFrom(ClassUtil.boxedEquivalent(sourceBinding.getContentType())))
     { throw new BindException("Negation operator only applies to numbers, not "+sourceBinding.getContentType());
     }
 
-    NegateLense<? extends Number> lense=(NegateLense<T>) _lenseMap.get(sourceBinding.getContentType());
-    Prism<T> prism=sourceBinding.getPrism();
+    NegateTranslator<? extends Number> translator=(NegateTranslator<T>) _translatorMap.get(sourceBinding.getContentType());
+    Reflector<T> reflector=sourceBinding.getReflector();
     
-    if (lense==null)
+    if (translator==null)
     { 
       Class clazz=ClassUtil.boxedEquivalent(sourceBinding.getContentType());
       if (clazz==Integer.class)
       {
         
-        lense=new NegateLense<Integer>((Prism<Integer>) prism)
+        translator=new NegateTranslator<Integer>((Reflector<Integer>) reflector)
         {
           public Integer negate(Integer val)
           { return -val;
@@ -74,7 +74,7 @@ public class NumericNegateNode<T extends Number>
       }
       else if (clazz==Float.class)
       {
-        lense=new NegateLense<Float>((Prism<Float>) prism)
+        translator=new NegateTranslator<Float>((Reflector<Float>) reflector)
         {
           public Float negate(Float val)
           { return -val;
@@ -83,7 +83,7 @@ public class NumericNegateNode<T extends Number>
       }
       else if (clazz==Byte.class)
       {
-        lense=new NegateLense<Byte>((Prism<Byte>) prism)
+        translator=new NegateTranslator<Byte>((Reflector<Byte>) reflector)
         {
           public Byte negate(Byte val)
           { return Integer.valueOf(-val).byteValue();
@@ -92,7 +92,7 @@ public class NumericNegateNode<T extends Number>
       }
       else if (clazz==Short.class)
       {
-        lense=new NegateLense<Short>((Prism<Short>) prism)
+        translator=new NegateTranslator<Short>((Reflector<Short>) reflector)
         {
           public Short negate(Short val)
           { return Integer.valueOf(-val).shortValue();
@@ -101,7 +101,7 @@ public class NumericNegateNode<T extends Number>
       }
       else if (clazz==Long.class)
       {
-        lense=new NegateLense<Long>((Prism<Long>) prism)
+        translator=new NegateTranslator<Long>((Reflector<Long>) reflector)
         {
           public Long negate(Long val)
           { return -(val);
@@ -110,7 +110,7 @@ public class NumericNegateNode<T extends Number>
       }
       else if (clazz==Double.class)
       {
-        lense=new NegateLense<Double>((Prism<Double>) prism)
+        translator=new NegateTranslator<Double>((Reflector<Double>) reflector)
         {
           public Double negate(Double val)
           { return -(val);
@@ -119,7 +119,7 @@ public class NumericNegateNode<T extends Number>
       }
       else if (clazz==java.math.BigDecimal.class)
       {
-        lense=new NegateLense<BigDecimal>((Prism<BigDecimal>) prism)
+        translator=new NegateTranslator<BigDecimal>((Reflector<BigDecimal>) reflector)
         {
           public BigDecimal negate(BigDecimal val)
           { return val.multiply(BigDecimal.valueOf(-1));
@@ -128,7 +128,7 @@ public class NumericNegateNode<T extends Number>
       }
       else if (clazz==java.math.BigInteger.class)
       {
-        lense=new NegateLense<BigInteger>((Prism<BigInteger>) prism)
+        translator=new NegateTranslator<BigInteger>((Reflector<BigInteger>) reflector)
         {
           public BigInteger negate(BigInteger val)
           { return val.multiply(BigInteger.valueOf(-1));
@@ -139,12 +139,12 @@ public class NumericNegateNode<T extends Number>
       { throw new BindException("Don't know how to negate a "+clazz);
       }
       
-      _lenseMap.put(sourceBinding.getContentType(),lense);
+      _translatorMap.put(sourceBinding.getContentType(),translator);
     }
     
-    return new LenseBinding<T,T>
+    return new TranslatorBinding<T,T>
       (focus.<T>bind(new Expression<T>(_node,null))
-      ,(Lense<T,T>) lense
+      ,(Translator<T,T>) translator
       ,null
       );
   }
@@ -159,26 +159,26 @@ public class NumericNegateNode<T extends Number>
 
 }
 
-abstract class NegateLense<X>
-  implements Lense<X,X>
+abstract class NegateTranslator<X>
+  implements Translator<X,X>
 { 
-  private Prism<X> prism;
+  private Reflector<X> reflector;
   
-  public NegateLense(Prism<X> prism)
-  { this.prism=prism;
+  public NegateTranslator(Reflector<X> reflector)
+  { this.reflector=reflector;
   }
   
   protected abstract X negate(X val);
   
-  public X translateForGet(X val,Optic[] mods)
+  public X translateForGet(X val,Channel[] mods)
   { return negate(val);
   }
   
-  public X translateForSet(X val,Optic[] mods)
+  public X translateForSet(X val,Channel[] mods)
   { return negate(val);
   }
 
-  public Prism<X> getPrism()
-  { return prism;
+  public Reflector<X> getReflector()
+  { return reflector;
   }
 }

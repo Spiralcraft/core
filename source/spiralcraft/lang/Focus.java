@@ -42,12 +42,12 @@ public interface Focus<T>
    *   is being performed). A Focus inherits its parent's Context if it does
    *   not have one of its own.
    */
-  Optic<?> getContext();
+  Channel<?> getContext();
 
   /**
    * Return the subject of expression evaluation
    */
-  Optic<T> getSubject();
+  Channel<T> getSubject();
 
   /**
    * Find a Focus using an application specific public name.
