@@ -106,7 +106,7 @@ class StringBindingHelper
     { 
       _stringConcatTranslator
         =new StringConcatTranslator
-          (BeanReflector.getInstance(String.class)
+          (BeanReflector.<String>getInstance(String.class)
           );
     }
     catch (BindException x)

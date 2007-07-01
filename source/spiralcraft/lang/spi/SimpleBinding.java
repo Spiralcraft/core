@@ -46,7 +46,7 @@ public class SimpleBinding<T>
     throws BindException
   { 
      
-    super(BeanReflector.getInstance(clazz),isStatic);
+    super(BeanReflector.<T>getInstance(clazz),isStatic);
     _object=val; 
 
     //System.out.println("SimpleBinding- with class:"+super.toString()+":["+val+"]");

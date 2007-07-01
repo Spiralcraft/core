@@ -31,7 +31,7 @@ class BeanFieldTranslator<Tprop,Tbean>
     throws BindException
   { 
     _field=field;
-    _reflector=BeanReflector.<Tprop>getInstance((Class<Tprop>)_field.getType());
+    _reflector=BeanReflector.<Tprop>getInstance(_field.getType());
   }
 
   public Field getField()

@@ -42,6 +42,8 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
+import java.lang.reflect.ParameterizedType;
 
 /**
  * A Reflector which uses Java Beans introspection and reflection
@@ -56,8 +58,8 @@ public class BeanReflector<T>
     =BeanInfoCache.getInstance(Introspector.IGNORE_ALL_BEANINFO);
 
   
-  private static final WeakHashMap<Class,WeakReference<Reflector>> reflectorMap
-    =new WeakHashMap<Class,WeakReference<Reflector>>();
+  private static final WeakHashMap<Type,WeakReference<Reflector>> reflectorMap
+    =new WeakHashMap<Type,WeakReference<Reflector>>();
   
   private static final ArrayLengthTranslator arrayLengthTranslator
     =new ArrayLengthTranslator();
@@ -67,7 +69,8 @@ public class BeanReflector<T>
    */  
   @SuppressWarnings("unchecked") 
   // Map is heterogeneous, T is ambiguous for VoidReflector
-  public static final synchronized <T> Reflector<T> getInstance(Class<T> clazz)
+  public static final synchronized <T> Reflector<T> 
+    getInstance(Type clazz)
     throws BindException
   { 
     Reflector<T> result=null;
@@ -96,10 +99,27 @@ public class BeanReflector<T>
   private HashMap<String,BeanFieldTranslator<?,T>> _fields;
   private HashMap<String,MethodTranslator<?,T>> _methods;
   private Class<T> _targetClass;
+  private Type _targetType;
   private MethodResolver _methodResolver;
   
-  public BeanReflector(Class<T> clazz)
+  public BeanReflector(Type type)
   { 
+    System.err.println("BeanReflector.new() "+type);
+    Class<T> clazz=null;
+    _targetType=type;
+    
+    if (type instanceof Class)
+    { clazz=(Class<T>) type;
+    }
+    else if (type instanceof ParameterizedType)
+    { clazz=(Class<T>) ((ParameterizedType) type).getRawType();
+    }
+    else
+    { 
+      throw new IllegalArgumentException
+        ("BeanReflector: unrecognized type "+type);
+    }
+    
     _targetClass=clazz;
     try
     {
@@ -154,11 +174,51 @@ public class BeanReflector<T>
     if (decoratorInterface==IterationDecorator.class)
     { 
       
-      if (source.getContentType().isArray())
+      if (_targetClass.isArray())
       { 
         Reflector reflector=BeanReflector.getInstance
           (_targetClass.getComponentType());
         return (D) new ArrayIterationDecorator(source,reflector);
+      }
+      else if (Iterable.class.isAssignableFrom(_targetClass))
+      { 
+        try
+        {
+          // Make an effort to find a hint of a component type
+          Method method=_targetClass.getMethod("iterator",new Class[0]);
+          Type type=method.getGenericReturnType();
+          if (type instanceof ParameterizedType)
+          {
+            Type[] parameterTypes
+              =((ParameterizedType) type).getActualTypeArguments();
+            if (parameterTypes.length>0)
+            { 
+              Type parameterType=parameterTypes[0];
+              Reflector reflector=BeanReflector.getInstance(parameterType);
+              return (D) new IterableDecorator(source,reflector);
+            }
+            else
+            {
+              System.err.println
+                ("BeanReflector: IterationDecorator- "
+                +" no parameters for iterator" 
+                );
+              Reflector reflector=BeanReflector.getInstance(Object.class);
+              return (D) new IterableDecorator(source,reflector);
+            }
+          }
+          else
+          {
+            System.err.println
+              ("BeanReflector: IterationDecorator- iterator not parameterized");
+            Reflector reflector=BeanReflector.getInstance(Object.class);
+            return (D) new IterableDecorator(source,reflector);
+          }
+        
+        }
+        catch (NoSuchMethodException x)
+        { x.printStackTrace();
+        }
       }
     }
     

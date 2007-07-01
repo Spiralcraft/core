@@ -31,8 +31,31 @@ import spiralcraft.data.DataException;
 /**
  * <P>Provides access to a set of coordinated Views of related data.
  * 
- * <P>Implementations may differ in how the Views are created.
+ * <P>Access is provided to the spiralcraft.lang expression language through a 
+ *  spiralcraft.lang Focus for expression resolution. The namespace published
+ *  in this Focus is:
+ *  
+ * <UL>
+ *   <LI><CODE>[DataSession] data.<I>viewname</I></CODE>
+ *   <BR>References the Tuple at the current cursor position of the
+ *     specified view
+ *   </LI>
+ *   <LI><CODE>[DataSession] data.<I>viewname</I>.<I>fieldname</I></CODE>
+ *   <BR>References a data field value at the current cursor position of the
+ *     specified view
+ *   </LI>
+ *   <LI><CODE>[DataSession] view.<I>viewname</I></CODE>
+ *   <BR>References the spiralcraft.data.session.View as a Java Bean
+ *   </LI>
+ *   <LI><CODE>[DataSession] session</CODE>
+ *   <BR>References the spiralcraft.data.session.DataSession itself 
+ *     as a Java Bean
+ *   </LI>
+ * </UL>
  * 
+ * <P>Implementations of this class primaily differ in how the Views are
+ *  created.
+ *
  * @author mike
  *
  */
@@ -44,43 +67,69 @@ public class DataSession
   protected final HashMap<String,View> viewMap
     =new HashMap<String,View>();
   
-  private Namespace namespace;
-  private final NamespaceReflector namespaceReflector=new NamespaceReflector();
-  private Focus<DataSession> localFocus;
+  private final NamespaceReflector dataSessionNamespaceReflector
+    =new NamespaceReflector();
+  private Namespace dataSessionNamespace;
+  private SimpleBinding<Namespace> dataSessionChannel;
+    
+  private final NamespaceReflector dataNamespaceReflector
+    =new NamespaceReflector();
+  private Namespace dataNamespace;
+  private SimpleBinding<Namespace> dataChannel;
+  
+  private final NamespaceReflector viewNamespaceReflector
+    =new NamespaceReflector();
+  private Namespace viewNamespace;
+  private SimpleBinding<Namespace> viewChannel;
+  
+  
+  private DefaultFocus<Namespace> localFocus;
+  
+  private DefaultFocus<Namespace> dataFocus;
 
 
-  public Focus<DataSession> createFocus(Focus parentFocus,String ... aliases)
+  /**
+   * Provide a Focus for expression evaluation in the general context of
+   *   the specified parentFocus. The Focus will be registered under the
+   *   <CODE>[DataSession]</CODE> intrinsic identifier as well as any other
+   *   aliases specified.
+   *   
+   */
+  public DefaultFocus<Namespace> createFocus
+    (Focus parentFocus,String ... aliases)
     throws BindException
   {
-    DefaultFocus<DataSession> focus=new DefaultFocus<DataSession>();
+    DefaultFocus<Namespace> focus=new DefaultFocus<Namespace>();
     if (parentFocus!=null)
     { focus.setParentFocus(focus);
     }
-    focus.setSubject(new SimpleBinding<DataSession>(this,true));
-    focus.setContext
-      (new SimpleBinding<Namespace>
-        (namespaceReflector,namespace,true)
-      );
+    focus.setSubject(dataSessionChannel);
+    focus.setContext(dataSessionChannel);
+    focus.addNames("DataSession");
+    focus.addNames(aliases);
     
     return focus;
   }
   
   
-  @SuppressWarnings("unchecked") // Heterogeneous ops
-  public void initialize()
+  /**
+   * Set up the namespace definitions for each View
+   * 
+   * @throws DataException
+   */
+  private void initViews()
     throws DataException
-  { 
+  {
     for (View view:views)
     { 
       // Connect everything together
       view.setDataSession(this);
       viewMap.put(view.getName(),view);
-    }
-    
-    for (View view:views)
-    {
+
       try
-      { namespaceReflector.register(view.getName(),view.getViewReflector());
+      { 
+        dataNamespaceReflector.register(view.getName(),view.getDataReflector());
+        viewNamespaceReflector.register(view.getName(),view.getViewReflector());
       }
       catch (BindException x)
       { 
@@ -92,11 +141,81 @@ public class DataSession
           );
       }
     }    
+    
+  }
+  
+  /**
+   * Provide a Channel for the data in each View under the appropriate name
+   *   in the data namespace.
+   * 
+   * @throws DataException
+   */
+  private void bindViews()
+    throws DataException
+  {
+    for (View view:views)
+    {
+      view.bindData(dataFocus);
+      try
+      { 
+        dataNamespace.putOptic
+          (view.getName()
+          ,view.getTupleBinding()
+          );
+        
+        viewNamespace.putOptic
+          (view.getName()
+          ,new SimpleBinding<View>(view.getViewReflector(),view,true)
+          );
+      }
+      catch (BindException x)
+      { 
+        throw new DataException
+          ("View '"+view.getName()
+          +"' could not be added to dataNamespace in DataSession: "
+          +x
+          ,x
+          );
+      }
+    }
+
+  }
+  
+  @SuppressWarnings("unchecked") // Heterogeneous ops
+  public void initialize()
+    throws DataException
+  { 
+    initViews();
+    
+    dataSessionNamespace=new Namespace(dataSessionNamespaceReflector);
+    dataSessionChannel
+      =new SimpleBinding
+        (dataSessionNamespaceReflector,dataSessionNamespace,true);
       
-    namespace=new Namespace(namespaceReflector);
+    dataNamespace=new Namespace(dataNamespaceReflector);
+    dataChannel=new SimpleBinding(dataNamespaceReflector,dataNamespace,true);
+
+    viewNamespace=new Namespace(viewNamespaceReflector);
+    viewChannel=new SimpleBinding(viewNamespaceReflector,viewNamespace,true);
 
     try
-    { localFocus=createFocus(null,"DataSession");
+    { 
+      dataSessionNamespace.putOptic("data",dataChannel);
+      dataSessionNamespace.putOptic("view",viewChannel);
+      dataSessionNamespace.putOptic("session", new SimpleBinding(this,true));
+    }
+    catch (BindException x)
+    {
+      throw new DataException
+      ("DataSession: could not set up DataSession namespace"
+      +x
+      ,x
+      );
+    }
+    
+    try
+    { 
+      localFocus=createFocus(null,"DataSession");
     }
     catch (BindException x)
     {
@@ -107,27 +226,11 @@ public class DataSession
       );
     }
     
-    for (View view:views)
-    {
-      
-      try
-      { 
-        namespace.putOptic
-          (view.getName()
-          ,view.bindView(localFocus)
-          );
-      }
-      catch (BindException x)
-      { 
-        throw new DataException
-          ("View '"+view.getName()
-          +"' could not be added to namespace in DataSession: "
-          +x
-          ,x
-          );
-      }
-    }
-  }
-  
-  
+    dataFocus=new DefaultFocus<Namespace>();
+    dataFocus.setParentFocus(localFocus);
+    dataFocus.setSubject(dataChannel);
+    dataFocus.setContext(dataChannel);
+    
+    bindViews();
+  } 
 }

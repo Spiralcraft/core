@@ -38,7 +38,7 @@ class MethodTranslator<Tprop,Tbean>
   { 
     _method=method;
     _reflector=BeanReflector.<Tprop>getInstance
-      ((Class<Tprop>)method.getReturnType());
+      (method.getGenericReturnType());
   }
 
   public Method getMethod()

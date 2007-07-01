@@ -41,7 +41,7 @@ public interface Reflector<T>
     throws BindException;
 
   /**
-   * Decorate the specified optic with a decorator that implements the
+   * Decorate the specified Binding with a decorator that implements the
    *   specified interface
    */
   public <D extends Decorator<T>> D decorate
@@ -49,7 +49,7 @@ public interface Reflector<T>
     throws BindException;
   
   /**
-   * Return the Java class of the data object accessible through Bindings 
+   * Return the Java class of the data object accessible through Channels 
    *   associated with this Reflector
    */
   public Class<T> getContentType();

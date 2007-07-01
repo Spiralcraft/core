@@ -15,6 +15,7 @@
 package spiralcraft.lang;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Simple implementation of Focus
@@ -27,6 +28,7 @@ public class DefaultFocus<T>
   private Channel<T> _subject;
   private Focus<?> _parent;
   private HashMap<Expression<?>,Channel<?>> _channels;
+  private HashSet<String> names;
 
   public DefaultFocus()
   {
@@ -55,6 +57,26 @@ public class DefaultFocus<T>
   }
 
   /**
+   * Specify that this Focus is addressed by the <CODE>[<I>name</I>]</CODE>
+   *   operator.
+   * 
+   * @param name
+   */
+  public synchronized void addNames(String ... newNames)
+  { 
+    if (newNames!=null)
+    {
+      if (names==null)
+      { names=new HashSet<String>();
+      }
+      for (String name: newNames)
+      { names.add(name);
+      }
+    }
+  }
+  
+  
+  /**
    * Return the Context for this Focus, or if there is none associated,
    *   return the Context for the parent Focus.
    */
@@ -81,6 +103,9 @@ public class DefaultFocus<T>
 
   public Focus<?> findFocus(String name)
   { 
+    if (names!=null && names.contains(name))
+    { return this;
+    }
     if (_parent!=null)
     { return _parent.findFocus(name);
     }

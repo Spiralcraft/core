@@ -14,28 +14,32 @@
 //
 package spiralcraft.data.session;
 
+import java.util.Iterator;
+
 import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.lang.spi.Binding;
-import spiralcraft.lang.spi.Namespace;
 import spiralcraft.lang.spi.NamespaceReflector;
-import spiralcraft.lang.spi.SimpleBinding;
 
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.IterationDecorator;
-import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
-
-
+import spiralcraft.lang.Expression;
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
+import spiralcraft.data.Tuple;
 
 import spiralcraft.data.lang.TupleBinding;
 import spiralcraft.data.lang.DataReflector;
 
 import spiralcraft.data.query.Queryable;
+
+import spiralcraft.data.spi.CursorIterator;
+
+import spiralcraft.data.access.SerialCursor;
 
 /**
  * <P>A named component of a DataSession that provides access to a set of  
@@ -59,8 +63,6 @@ public abstract class View
   
   protected ViewReflector viewReflector;
   
-  private Namespace namespace;
-  
   private String name;
   private TupleBinding tupleBinding;
   private DataSession dataSession;
@@ -72,10 +74,22 @@ public abstract class View
   {
   }
   
+  /**
+   * Create a new SerialCursor which iterates through
+   *   the visible Tuples in this view 
+   */
+  public abstract SerialCursor scan()
+    throws DataException;
+  
   void setDataSession(DataSession dataSession)
   { this.dataSession=dataSession;
   }
   
+  /**
+   * @return The DataSession that owns this View
+   * 
+   * @return
+   */
   public DataSession getDataSession()
   { return dataSession;
   }
@@ -88,86 +102,144 @@ public abstract class View
   { return tupleBinding;
   }
   
+  protected void setTupleBinding(TupleBinding binding)
+  { this.tupleBinding=binding;
+  }
+  
   public Type getType()
   { return type;
   }
   
   
-  
   /**
-   * The View should bind to all sources here
+   * The View should bind to all data sources here
    */
-  protected abstract TupleBinding bind(Focus focus)
-    throws DataException;
+  public abstract void bindData(Focus focus)
+    throws DataException;  
+
+  Reflector<View> getViewReflector()
+    throws DataException
+  { 
+    try
+    { return new ViewReflector<View,Tuple>(getClass(),type);
+    }
+    catch (BindException x)
+    { 
+      throw new DataException
+        ("View '"+name+"': Error reflecting Type "+type.getURI()
+         +": "+x.toString()
+        ,x
+        ); 
+            
+    }
+  }
   
   /** 
    * Return the Reflector associated with this view. 
    */
-  Reflector getViewReflector()
+  Reflector<Tuple> getDataReflector()
     throws DataException
   {
-    try
-    {
-      namespaceReflector.register
-        ("view"
-        ,BeanReflector.getInstance(getClass())
-        );
-      namespaceReflector.register
-        ("data"
-        ,DataReflector.getInstance(type)
-        );
-    }
-    catch (BindException x)
-    { 
-      throw new DataException
-        ("View '"+name+"': Internal error instantiating "+x.toString(),x);
-    }
-    return namespaceReflector;
-  }
-  
-  Channel bindView(Focus focus)
-    throws DataException
-  {
-    try
-    {
-      namespace=new Namespace(namespaceReflector);
-      namespace.putOptic("view",new SimpleBinding<View>(this,true));
-
-      TupleBinding tupleBinding=bind(focus);
-      namespace.putOptic("data",tupleBinding);
-      
-    }
-    catch (BindException x)
-    { 
-      throw new DataException
-        ("View '"+name+"': Internal binding View to namespace "+x.toString(),x);
-    }
-    return new SimpleBinding<Namespace>(namespaceReflector,namespace,true);
     
+    try
+    { return DataReflector.getInstance(getType());
+    }
+    catch (BindException x)
+    { 
+      throw new DataException
+        ("View '"+name+"': Error reflecting Type "+type.getURI()
+         +": "+x.toString()
+        ,x
+        ); 
+            
+    }
   }
-  
 
 }
 
-class ViewReflector<T extends View>
-  extends BeanReflector<T>
+
+/**
+ * Provides access to a View's Bean interface, with the added function of
+ *   supporting Type knowledgable iteration bindings.
+ * 
+ * @author mike
+ *
+ * @param <Tview>
+ * @param <Ttuple>
+ */
+class ViewReflector<Tview extends View,Ttuple extends Tuple>
+  extends BeanReflector<Tview>
 { 
-  public ViewReflector(Class<T> viewClass)
-  { super(viewClass);
+  
+  //private Type type;
+  private final Reflector dataReflector;
+  
+
+  public ViewReflector(Class<? extends View> viewClass,Type type)
+    throws BindException
+  { 
+    super(viewClass);
+    //this.type=type;
+    this.dataReflector=DataReflector.<Ttuple>getInstance(type);
   }
   
+  @Override
+  public Binding<Object> resolve(Binding<Tview> source,Focus<?> focus,String name,Expression[] params)
+    throws BindException
+  { return super.resolve(source,focus,name,params);
+  }
+  
+  
+  @Override
   @SuppressWarnings("unchecked") // Dynamic class info
-  public <D extends Decorator<T>> D decorate
-    (Binding<? extends T> source,Class<D> decoratorInterface)
+  public Decorator decorate
+    (Binding source,Class decoratorInterface)
     throws BindException
   { 
     if (decoratorInterface==IterationDecorator.class)
     { 
+      return new ViewIterationDecorator<Tview,Ttuple>
+        (source
+        ,dataReflector
+        );
+    }
+    return null;
+  }
 
+
+}
+
+/**
+ * Iterates through the visible contents of a View as provided by
+ *   the SerialCursor returned from View.scan()
+ * 
+ * @author mike
+ *
+ * @param <Tview>
+ * @param <Ttuple>
+ */
+class ViewIterationDecorator<Tview extends View,Ttuple extends Tuple>
+  extends IterationDecorator<Tview,Ttuple>
+{
+
+  public ViewIterationDecorator
+    (Binding<Tview> viewSource
+    ,Reflector<Ttuple> iterationType
+    )
+  { super(viewSource,iterationType);
+  }
+  
+  @Override
+  protected Iterator<Ttuple> createIterator()
+  { 
+    try
+    { return new CursorIterator<Ttuple>(source.get().scan());
+    }
+    catch (DataException x)
+    { 
+      throw new RuntimeDataException
+        ("Error getting Cursor for iteration: "+x,x);
     }
     
-    // Look up the target class in the map of decorators for 
-    //   the specified interface?
-    return null;
   }
 }

@@ -18,38 +18,56 @@ import java.beans.PropertyChangeSupport;
 
 
 /**
- * An Channel is a "data pipe" that provides a "view" of the contents of an 
+ * <P>A Channel is a "data pipe" that provides a "view" of the contents of an 
  *   arbitrary data source or container, the "model-part", that exists within
  *   an arbitrary object model.<P>
  *
- * An Channel is able to track changes to the model-part over time, and in
+ * <P>A Channel is able to track changes to the model-part over time, and in
  *   some cases may update the contents of the model-part.<P>
  *
- * As a "view", the Channel is transformative- it provides a specific
+ * <P>As a "view", the Channel is transformative- it provides a specific
  *   representation of the model-part contents which may consist of a subset
  *   or superset of the information contained within the model-part.<P>
  *
- * Optics are combined using an expression language to form Channels. A Channel
- *   is a tree of Optics that results in the combination and transformation
- *   of a number of model-parts into a single representation.<P>
+ * <P>Channels are combined using an expression language. The expression
+ *   language defines a tree of operations to perform against a set of names
+ *   available from a name resolution context called a Focus. 
  *
- * Optics are "typed"- they are associated with a content type
- *   (expressed as a Java class) and a set of named resolutions
- *   that provide "deeper" views into the object model, alternate
- *   representations of the model-part, or transformations of the model-part
- *   content controlled by other contextual elements.<P>
+ * <P>A Channel provides a get() and set() method as its primary interface.
+ *   These methods accept objects of a predefined type, expressed by 
+ *   getContentType(), which returns a Java class.  
+ * 
+ * <P>A Channel provides another layer of type information in the form of
+ *   a Reflector returned from the getReflector() method. The Reflector defines
+ *   how language elements are transformed into data access and computation,
+ *   and provides an implementation in the form of a new Channel which
+ *   references the first, and is returned via the first Channel's resolve()
+ *   method.
+ *   
+ * <P>The resolution of a new Channel from an existing Channel is a named,
+ *   parameterized operation. In many cases, ie. simple 'properties',
+ *   a single name creates a new Channel which returns the 'property value'
+ *   associated with the name by the Reflector.
+ *   
+ * <P>In other cases, parameters are provided as expressions. The expressions
+ *   are bound to a Focus to provide Channels which deliver parameter values.
+ *   The Focus against which the parameter expressions are evaluated can either
+ *   be supplied externally, or the Reflector may decide to create its own.
+ *   
+ * <P>For example, the expression <CODE>foo[.name==bar.name]</CODE> is intended
+ *   to return the subset of the indexable object 'foo' where the 'name' 
+ *   property of an indexed element equals the 'name' property of the object
+ *   named 'bar' in the externally supplied context.
+ *   
+ * <P>A Channel may be 'decorated' with interfaces that provide support for 
+ *   certain operations, for example, Iteration. The decorate() method will
+ *   resolve an appropriate implementation of the desired interface (again, via
+ *   the Reflector) and bind it to the Channel.
+ * 
+ * <P>The actual decorator determines the specifics of its own use. As channels
+ *   do not create their own state, a Decorator will usually provide some 
+ *   convenient means to manage a stateful operation. 
  *
- * Resolutions are handled by the resolve() method. A given resolution is
- *   specified by name and may be associated with a Focus and a set of
- *   Expression parameters. As such, transformations have access to the
- *   application context via the Focus and define the context
- *   in which the parameter expressions will be evaluated.<P>
- *
- * Optics may be 'decorated' with interfaces that provide support for 
- *   certain operations, such as Iterator. The decorate() method will
- *   resolve an appropriate implementation of the desired interface and
- *   bind it to the Channel, if such an implementation exists and is 
- *   appropriately registered with the OpticFactory.<P>
  */
 public interface Channel<T>
 {
@@ -81,9 +99,10 @@ public interface Channel<T>
   Class<T> getContentType();
 
   /**
-   * Decorate this Channel with a suitable implementation of a decoratorInterface
-   *   for the content type.
-   *return The decorator that implements the decoratorInterface, or null if
+   * <P>Decorate this Channel with a suitable implementation of the
+   *   specified decoratorInterface for type of data this Channel accesses.
+   *   
+   *@return The decorator that implements the decoratorInterface, or null if
    *  the decoratorInterface is not supported
    */
   <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
