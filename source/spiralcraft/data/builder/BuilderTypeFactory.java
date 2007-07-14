@@ -33,7 +33,8 @@ import spiralcraft.builder.Assembly;
 public class BuilderTypeFactory
   implements TypeFactory
 {
-  
+   
+  @SuppressWarnings("unchecked") // Heterogeneous factory method
   public Type createType(TypeResolver resolver,URI uri)
     throws DataException
   {

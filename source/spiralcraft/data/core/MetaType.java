@@ -31,11 +31,12 @@ import java.net.URI;
 /**
  * A Type implementation that implements the canonical MetaType of a canonical Type
  */
+@SuppressWarnings("unchecked") // Runtime class resolution
 public class MetaType
   extends ReflectionType<Type>
 {
 
-  private Type referencedType;
+  private Type<?> referencedType;
   private int anonRefId=1;
   
   /**
@@ -64,7 +65,7 @@ public class MetaType
   }
   
   
-  public Type fromString(String val)
+  public Type<?> fromString(String val)
     throws DataException
   { return getTypeResolver().resolve(URI.create(val));
   }

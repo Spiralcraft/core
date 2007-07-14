@@ -18,20 +18,22 @@ public class DebugDataConsumer<T extends Tuple>
     implements DataConsumerChain<T>
 {
   
-  private DataConsumer nextConsumer;
+  private DataConsumer<T> nextConsumer;
   
   private PrintStream out=System.err;
 
-  public void insertDataConsumer(DataConsumerChain consumerChain)
+  @SuppressWarnings("unchecked") // Chains can convert between tuple types
+  public void insertDataConsumer(DataConsumerChain<?> consumerChain)
   { 
     if (nextConsumer!=null)
     { consumerChain.setDataConsumer(nextConsumer);
     }
-    nextConsumer=consumerChain;
+    nextConsumer=(DataConsumerChain<T>) consumerChain;
   }
 
-  public void setDataConsumer(DataConsumer consumer)
-  { nextConsumer=consumer;
+  @SuppressWarnings("unchecked") // Chains can convert between tuple types
+  public void setDataConsumer(DataConsumer<?> consumer)
+  { nextConsumer=(DataConsumer<T>) consumer;
   }
 
   @SuppressWarnings("unchecked") // Chain pass-through is not runtime type safe

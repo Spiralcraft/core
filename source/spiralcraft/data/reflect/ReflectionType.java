@@ -57,8 +57,8 @@ public class ReflectionType<T>
 {
   public static final String INNER_CLASS_SEPARATOR="-";
   
-  private static final HashMap<Class,URI> CANONICAL_MAP
-    =new HashMap<Class,URI>();
+  private static final HashMap<Class<?>,URI> CANONICAL_MAP
+    =new HashMap<Class<?>,URI>();
   {
     
     mapStandardClass
@@ -90,7 +90,7 @@ public class ReflectionType<T>
       );
   }
   
-  private final Class reflectedClass;
+  private final Class<?> reflectedClass;
   private Constructor<T> stringConstructor;
   private Constructor<T> tupleConstructor;
   private Field classField;
@@ -103,17 +103,17 @@ public class ReflectionType<T>
   private String depersistMethodName;
   private MethodBinding depersistMethodBinding;
 
-  private ThreadLocal<CycleDetector> cycleDetectorLocal
-    =new ThreadLocal<CycleDetector>()
+  private ThreadLocal<CycleDetector<Object>> cycleDetectorLocal
+    =new ThreadLocal<CycleDetector<Object>>()
     {
-      protected synchronized CycleDetector initialValue()
-      { return new CycleDetector();
+      protected synchronized CycleDetector<Object> initialValue()
+      { return new CycleDetector<Object>();
       }
     };
 
-  private static void mapStandardClass(Class ... classes)
+  private static void mapStandardClass(Class<?> ... classes)
   {
-    for (Class clazz: classes)
+    for (Class<?> clazz: classes)
     {
       CANONICAL_MAP.put
         (clazz
@@ -124,9 +124,9 @@ public class ReflectionType<T>
     }
   }
   
-  private static void mapSystemClass(Class ... classes)
+  private static void mapSystemClass(Class<?> ... classes)
   {
-    for (Class clazz: classes)
+    for (Class<?> clazz: classes)
     {
       CANONICAL_MAP.put
         (clazz
@@ -137,12 +137,12 @@ public class ReflectionType<T>
     }
   }
 
-  private static boolean checkAggregate(Class clazz)
+  private static boolean checkAggregate(Class<?> clazz)
   { return clazz.isArray() || Collection.class.isAssignableFrom(clazz);
   }
 
  
-  public static URI canonicalURI(Class iface)
+  public static URI canonicalURI(Class<?> iface)
   {
     iface=ClassUtil.boxedEquivalent(iface);
 
@@ -151,13 +151,13 @@ public class ReflectionType<T>
     { 
       if (iface.isArray())
       {
-        Class compType=iface.getComponentType();
+        Class<?> compType=iface.getComponentType();
         arraySuffix.append(".array");
         iface=ClassUtil.boxedEquivalent(compType);
       }
       else
       {
-        Class compType=(Class) iface.getTypeParameters()[0].getBounds()[0];
+        Class<?> compType=(Class<?>) iface.getTypeParameters()[0].getBounds()[0];
         arraySuffix.append(".list");
         iface=ClassUtil.boxedEquivalent(compType);
       }
@@ -267,14 +267,14 @@ public class ReflectionType<T>
 
     if (aggregate)
     { 
-      Class contentClass;
+      Class<?> contentClass;
       if (reflectedClass.isArray())
       { contentClass=reflectedClass.getComponentType();
       }
       else
       { 
         contentClass=
-          (Class) reflectedClass.getTypeParameters()[0].getBounds()[0];
+          (Class<?>) reflectedClass.getTypeParameters()[0].getBounds()[0];
       }
       try
       { contentType=resolver.resolve(canonicalURI(contentClass));
@@ -344,7 +344,7 @@ public class ReflectionType<T>
     }    
   }
 
-  public boolean isAssignableFrom(Type type)
+  public boolean isAssignableFrom(Type<?> type)
   {
     if (!(type instanceof ReflectionType))
     { return super.isAssignableFrom(type);

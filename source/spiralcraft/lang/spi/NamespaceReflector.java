@@ -35,8 +35,8 @@ public class NamespaceReflector
   
   private int index=0;
 
-  private Map<String,NamespaceAttribute> attributeMap
-    =new HashMap<String,NamespaceAttribute>();
+  private Map<String,NamespaceAttribute<?>> attributeMap
+    =new HashMap<String,NamespaceAttribute<?>>();
   
   
   
@@ -51,7 +51,7 @@ public class NamespaceReflector
     (Binding<Namespace> source
     ,Focus<?> focus
     ,String name
-    ,Expression[] params
+    ,Expression<?>[] params
     )
     throws BindException
   { 
@@ -100,7 +100,7 @@ public class NamespaceReflector
   Object getOptic(Namespace namespace,String name)
     throws BindException
   { 
-    NamespaceAttribute translator=attributeMap.get(name);
+    NamespaceAttribute<?> translator=attributeMap.get(name);
     if (translator!=null)
     { return namespace.getOptic(translator.getIndex());
     }
@@ -109,10 +109,10 @@ public class NamespaceReflector
     }
   }
   
-  void putOptic(Namespace namespace,String name,Channel value)
+  void putOptic(Namespace namespace,String name,Channel<?> value)
     throws BindException
   { 
-    NamespaceAttribute translator=attributeMap.get(name);
+    NamespaceAttribute<?> translator=attributeMap.get(name);
     if (translator!=null)
     { namespace.setOptic(translator.getIndex(),value);      
     }

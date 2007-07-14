@@ -46,7 +46,7 @@ class MethodTranslator<Tprop,Tbean>
   }
 
   @SuppressWarnings("unchecked") // Method is not generic
-  public Tprop translateForGet(Tbean value,Channel[] params)
+  public Tprop translateForGet(Tbean value,Channel<?>[] params)
   { 
 //    System.out.println("MethodTranslator "+toString()+" translateForGet: ["+value+"]");
     
@@ -99,7 +99,7 @@ class MethodTranslator<Tprop,Tbean>
     }
   }
 
-  public Tbean translateForSet(Tprop val,Channel[] modifiers)
+  public Tbean translateForSet(Tprop val,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException();
   }
 

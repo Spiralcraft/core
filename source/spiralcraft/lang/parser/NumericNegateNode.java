@@ -35,8 +35,8 @@ public class NumericNegateNode<T extends Number>
 
   private final Node _node;
 
-  public static HashMap<Class,NegateTranslator<?>> _translatorMap
-    =new HashMap<Class,NegateTranslator<?>>();
+  public static HashMap<Class<?>,NegateTranslator<?>> _translatorMap
+    =new HashMap<Class<?>,NegateTranslator<?>>();
   
   
   public NumericNegateNode(Node node)
@@ -170,11 +170,11 @@ abstract class NegateTranslator<X>
   
   protected abstract X negate(X val);
   
-  public X translateForGet(X val,Channel[] mods)
+  public X translateForGet(X val,Channel<?>[] mods)
   { return negate(val);
   }
   
-  public X translateForSet(X val,Channel[] mods)
+  public X translateForSet(X val,Channel<?>[] mods)
   { return negate(val);
   }
 

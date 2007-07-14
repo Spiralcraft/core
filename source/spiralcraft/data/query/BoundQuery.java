@@ -36,11 +36,11 @@ import spiralcraft.lang.BindException;
  *    
  * <P>Tuples are exposed via the SerialCursor interface.
  */
-public abstract class BoundQuery<Tq extends Query>
+public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
 {
   private Tq query;
   private BoundQueryBinding resultBinding;
-  private Tuple tuple;
+  private Tt tuple;
   private boolean resolved;
   
   /**
@@ -70,7 +70,7 @@ public abstract class BoundQuery<Tq extends Query>
    * Implementations must call this when a new Tuple is available for 
    *   processing.
    */
-  protected final void dataAvailable(Tuple tuple)
+  protected final void dataAvailable(Tt tuple)
   { 
     this.tuple=tuple;
     // TODO: Notify?
@@ -107,7 +107,7 @@ public abstract class BoundQuery<Tq extends Query>
    *
    * @throws DataException If anything goes wrong when executing the Query
    */
-  public abstract SerialCursor execute()
+  public abstract SerialCursor<Tt> execute()
     throws DataException;
   
 
@@ -137,9 +137,9 @@ public abstract class BoundQuery<Tq extends Query>
   }
   
   public abstract class BoundQuerySerialCursor
-    implements SerialCursor
+    implements SerialCursor<Tt>
   { 
-    public Tuple dataGetTuple()
+    public Tt dataGetTuple()
     { return tuple;
     }
     

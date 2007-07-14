@@ -63,7 +63,7 @@ public class AssemblyLoader
     throws BuildException
   { 
     AssemblyClass assemblyClass=findAssemblyClass(classUri);
-    Assembly assembly=assemblyClass.newInstance(null);
+    Assembly<?> assembly=assemblyClass.newInstance(null);
     return assembly.getSubject().get();
     
   }
@@ -72,11 +72,11 @@ public class AssemblyLoader
    * Instantiate an Assembly from the specified URI, in the context of the
    *   specified parent.
    */
-  public Assembly instantiateAssembly(URI classUri,Assembly parent)
+  public Assembly<?> instantiateAssembly(URI classUri,Assembly<?> parent)
     throws BuildException
   { 
     AssemblyClass assemblyClass=findAssemblyClass(classUri);
-    Assembly assembly=assemblyClass.newInstance(parent);
+    Assembly<?> assembly=assemblyClass.newInstance(parent);
     return assembly;
   }
 
@@ -286,10 +286,10 @@ public class AssemblyLoader
       StringBuilder constructorBuff=new StringBuilder();
       boolean readProperties=false;
       
-      Iterator it=node.getChildren().iterator();
+      Iterator<Node> it=node.getChildren().iterator();
       while (it.hasNext())
       { 
-        Node child = (Node) it.next();
+        Node child = it.next();
         if (child instanceof Element)
         { 
           if (constructorBuff.length()>0)
@@ -371,10 +371,10 @@ public class AssemblyLoader
     containerClass.addPropertySpecifier(prop);
     if (node.hasChildren())
     {
-      Iterator it=node.getChildren().iterator();
+      Iterator<Node> it=node.getChildren().iterator();
       while (it.hasNext())
       { 
-        Node child = (Node) it.next();
+        Node child = it.next();
         if (child instanceof Element)
         { prop.addAssemblyClass(readAssemblyClass(sourceUri,(Element) child,containerClass));
         }

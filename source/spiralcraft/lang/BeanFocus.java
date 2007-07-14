@@ -20,7 +20,7 @@ import spiralcraft.lang.spi.SimpleBinding;
  * A Focus where the subject is a java Bean
  */
 public class BeanFocus<T>
-  extends DefaultFocus<T>
+  extends SimpleFocus<T>
 {
   
   SimpleBinding<T> binding;

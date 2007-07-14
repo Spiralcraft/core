@@ -40,7 +40,7 @@ public class KeyImpl
   private int index;
   private boolean primary;
   private boolean unique;
-  private Type foreignType;
+  private Type<?> foreignType;
   private KeyImpl importedKey;
   private String[] fieldNames;
   private Query query;
@@ -110,7 +110,7 @@ public class KeyImpl
   /**
    * @return A Type which provides data for this Key's Fields.
    */
-  public Type getForeignType()
+  public Type<?> getForeignType()
   { return foreignType;
   }
   

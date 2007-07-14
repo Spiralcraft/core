@@ -48,7 +48,7 @@ public interface Key
   /**
    * @return A Type which provides data for this Key's Fields.
    */
-  public Type getForeignType();
+  public Type<?> getForeignType();
   
   /**
    * @return A Key from the foreign Type that originates the data values

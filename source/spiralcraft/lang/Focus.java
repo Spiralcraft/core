@@ -21,14 +21,12 @@ package spiralcraft.lang;
  *   the resolution of identifiers in the Expression language syntax.
  *   
  * <P>A hierarchy of Focus objects comprises a chain that allows components
- *   at a global scope to publish themselves under names that can be reference
+ *   at a global scope to publish themselves under names that can be referenced
  *   by Expressions acting at a local scope.
- * 
- * <P>The subject of a Focus is the 
  *
  * A Focus references a single subject and a context. The context provides
  *   access to a 'pinned', or more general scope of evaluation in circumstances
- *   where the evaluation of an expression traverses recursively deeper 
+ *   where the evaluation of an expression traverses recursively deeper.
  *
  * Expressions bound to a Focus incorporate attributes of the subject
  *   and the context into traversals, transformations and computations to
@@ -50,9 +48,12 @@ public interface Focus<T>
   Channel<T> getSubject();
 
   /**
-   * Find a Focus using an application specific public name.
+   * Find a Focus using an application specific public name, in a specified
+   *   namespace. A given implementation may provide a reference to itself or
+   *   a different Focus for a given name. The name is resolved up the Focus 
+   *   hierarchy if this Focus does not recognize the name and has a parent.
    */
-  Focus<?> findFocus(String name);
+  Focus<?> findFocus(String namespace,String name);
 
   /**
    * Return this Focus's parent Focus.

@@ -103,7 +103,7 @@ class ConditionalTranslator<T>
   }
   
   @SuppressWarnings("unchecked") // Arrays and Generics issue
-  public T translateForGet(Boolean val,Channel[] modifiers)
+  public T translateForGet(Boolean val,Channel<?>[] modifiers)
   { 
     if (val==null)
     { return ((Channel<T>) modifiers[1]).get();
@@ -111,7 +111,7 @@ class ConditionalTranslator<T>
     return val?((Channel<T>)modifiers[0]).get():((Channel<T>)modifiers[1]).get();
   }
 
-  public Boolean translateForSet(T val,Channel[] modifiers)
+  public Boolean translateForSet(T val,Channel<?>[] modifiers)
   { 
     // TODO: We can check which one of the modifiers "val" equals and
     //   set the boolean value accordingly

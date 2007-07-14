@@ -16,7 +16,7 @@ package spiralcraft.data.query;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.DefaultFocus;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 
@@ -85,9 +85,9 @@ public class Selection
   { return constraints;
   }
   
-  public BoundQuery<?> bind(Focus focus,Queryable store)
+  public <T extends Tuple> BoundQuery<?,T> bind(Focus<?> focus,Queryable<T> store)
     throws DataException
-  { return new SelectionBinding<Selection>(this,focus,store);
+  { return new SelectionBinding<Selection,T>(this,focus,store);
    
   }
   
@@ -95,17 +95,17 @@ public class Selection
     
 }
 
-class SelectionBinding<Tq extends Selection>
-  extends UnaryBoundQuery<Tq>
+class SelectionBinding<Tq extends Selection,Tt extends Tuple>
+  extends UnaryBoundQuery<Tq,Tt>
 {
-  private final Focus paramFocus;
-  private DefaultFocus<?> focus;
+  private final Focus<?> paramFocus;
+  private SimpleFocus<?> focus;
   private Channel<Boolean> filter;
   
   public SelectionBinding
     (Tq query
-    ,Focus paramFocus
-    ,Queryable store
+    ,Focus<?> paramFocus
+    ,Queryable<Tt> store
     )
     throws DataException
   { 
@@ -120,7 +120,7 @@ class SelectionBinding<Tq extends Selection>
   { 
     super.resolve();
     source.resolve();
-    focus=new DefaultFocus<Tuple>(source.getResultBinding());
+    focus=new SimpleFocus<Tuple>(source.getResultBinding());
     focus.setParentFocus(paramFocus);
     try
     { filter=focus.<Boolean>bind(getQuery().getConstraints());
@@ -130,7 +130,7 @@ class SelectionBinding<Tq extends Selection>
     }
   }
   
-  protected boolean integrate(Tuple t)
+  protected boolean integrate(Tt t)
   { 
     if (t==null)
     { 

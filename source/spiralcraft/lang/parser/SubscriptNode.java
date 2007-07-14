@@ -47,13 +47,13 @@ public class SubscriptNode<T,C,I>
   }
 
 //  @SuppressWarnings("unchecked") // Upcast for narrowing index type
-  public Channel bind(Focus<?> focus)
+  public Channel<?> bind(Focus<?> focus)
     throws BindException
   {
     Channel<C> collection=focus.<C>bind(new Expression<C>(_source,null));
     Channel<I> selector=focus.<I>bind(new Expression<I>(_selector,null));
     
-    Class clazz=selector.getContentType();
+    Class<?> clazz=selector.getContentType();
     if (Integer.class.isAssignableFrom(clazz)
         || Short.class.isAssignableFrom(clazz)
         || Byte.class.isAssignableFrom(clazz)

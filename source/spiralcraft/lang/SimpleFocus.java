@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2007 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -15,39 +15,38 @@
 package spiralcraft.lang;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
- * Simple implementation of Focus
+ * Simple implementation of a Focus
  */
-public class DefaultFocus<T>
+public class SimpleFocus<T>
   implements Focus<T>
 {
 
   private Channel<?> _context;
   private Channel<T> _subject;
-  private Focus<?> _parent;
+  protected Focus<?> parent;
   private HashMap<Expression<?>,Channel<?>> _channels;
-  private HashSet<String> names;
-
-  public DefaultFocus()
+ 
+  
+  public SimpleFocus()
   {
   }
 
-  public DefaultFocus(Channel<T> subject)
-  { _subject=subject;
+  public SimpleFocus(Channel<T> subject)
+  { this._subject=subject;
   }
 
-  public void setParentFocus(Focus parent)
-  { _parent=parent;
+  public void setParentFocus(Focus<?> parent)
+  { this.parent=parent;
   }
 
   public Focus<?> getParentFocus()
-  { return _parent;
+  { return parent;
   }
 
-  public void setContext(Channel val)
-  { _context=val;
+  public void setContext(Channel<?> val)
+  { this._context=val;
   }
     
   public synchronized void setSubject(Channel<T> val)
@@ -55,25 +54,7 @@ public class DefaultFocus<T>
     _subject=val;
     _channels=null;
   }
-
-  /**
-   * Specify that this Focus is addressed by the <CODE>[<I>name</I>]</CODE>
-   *   operator.
-   * 
-   * @param name
-   */
-  public synchronized void addNames(String ... newNames)
-  { 
-    if (newNames!=null)
-    {
-      if (names==null)
-      { names=new HashSet<String>();
-      }
-      for (String name: newNames)
-      { names.add(name);
-      }
-    }
-  }
+  
   
   
   /**
@@ -85,8 +66,8 @@ public class DefaultFocus<T>
     if (_context!=null)
     { return _context;
     }
-    else if (_parent!=null)
-    { return _parent.getContext();
+    else if (parent!=null)
+    { return parent.getContext();
     }
     else
     { return null;
@@ -100,14 +81,12 @@ public class DefaultFocus<T>
   public Channel<T> getSubject()
   { return _subject;
   }
+  
 
-  public Focus<?> findFocus(String name)
-  { 
-    if (names!=null && names.contains(name))
-    { return this;
-    }
-    if (_parent!=null)
-    { return _parent.findFocus(name);
+  public Focus<?> findFocus(String namespace,String name)
+  {       
+    if (parent!=null)
+    { return parent.findFocus(namespace,name);
     }
     else
     { return null;

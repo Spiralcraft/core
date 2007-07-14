@@ -54,12 +54,12 @@ public class PrimaryIdentifierNode
   { return _identifier;
   }
   
-  public Channel bind(final Focus focus)
+  public Channel<?> bind(final Focus<?> focus)
     throws BindException
   { 
 //    String identifier=_identifier.getIdentifier();
 
-    Focus specifiedFocus
+    Focus<?> specifiedFocus
       =_source!=null
       ?_source.findFocus(focus)
       :focus;

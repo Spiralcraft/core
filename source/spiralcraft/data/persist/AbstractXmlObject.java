@@ -82,7 +82,7 @@ public abstract class AbstractXmlObject<T,C>
   /**
    * Verify that the Type is appropriate for a given implementation
    */
-  protected abstract void verifyType(Type type)
+  protected abstract void verifyType(Type<?> type)
     throws DataException;
   
   /**

@@ -37,7 +37,7 @@ public interface Aggregate<T>
   /**
    * @return an immutable snapshot copy of this Aggregate.
    */
-  Aggregate snapshot()
+  Aggregate<T> snapshot()
     throws DataException;
   
   /**

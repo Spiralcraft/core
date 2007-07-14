@@ -38,7 +38,7 @@ import spiralcraft.lang.Focus;
  * 
  */
 public class AggregateQueryable<T extends Tuple>
-  implements Queryable
+  implements Queryable<T>
 {
   private Aggregate<T> aggregate;
  
@@ -55,11 +55,11 @@ public class AggregateQueryable<T extends Tuple>
     // System.err.println("AggregateQueryable: aggregate="+aggregate);
   }
   
-  public boolean containsType(Type type)
+  public boolean containsType(Type<?> type)
   { return getAggregate().getType().getContentType()==type;
   }
 
-  public BoundQuery getAll(Type type) throws DataException
+  public BoundQuery<?,T> getAll(Type<?> type) throws DataException
   {
     if (getAggregate().getType().getContentType()!=type)
     { 
@@ -72,20 +72,20 @@ public class AggregateQueryable<T extends Tuple>
     return scan;
   }
 
-  public Type[] getTypes()
+  public Type<?>[] getTypes()
   { return new Type[] {getAggregate().getType().getContentType()};
   }
 
-  public BoundQuery query(Query q, Focus context)
+  public BoundQuery<?,T> query(Query q, Focus<?> context)
     throws DataException
   { 
-    BoundQuery ret=q.bind(context, this);
+    BoundQuery<?,T> ret=q.bind(context, this);
     ret.resolve();
     return ret;
   }
   
   class BoundScan
-    extends BoundQuery<Scan>
+    extends BoundQuery<Scan,T>
   {
     
     public BoundScan(Scan query)
@@ -93,14 +93,14 @@ public class AggregateQueryable<T extends Tuple>
     }
     
     @Override
-    public SerialCursor execute() throws DataException
+    public SerialCursor<T> execute() throws DataException
     { return new BoundScanSerialCursor(); 
     } 
     
     class BoundScanSerialCursor
       extends BoundQuerySerialCursor
     {
-      private final SerialCursor cursor=new ListCursor<T>(getAggregate());
+      private final SerialCursor<T> cursor=new ListCursor<T>(getAggregate());
       
       public boolean dataNext()
         throws DataException

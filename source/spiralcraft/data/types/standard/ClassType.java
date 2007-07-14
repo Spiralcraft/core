@@ -20,6 +20,7 @@ import spiralcraft.data.core.PrimitiveTypeImpl;
 
 import java.net.URI;
 
+@SuppressWarnings("unchecked") // Runtime resolution
 public class ClassType
   extends PrimitiveTypeImpl<Class>
 {

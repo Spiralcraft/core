@@ -36,10 +36,10 @@ public class TypeImpl<T>
   protected final TypeResolver resolver;
   protected final URI uri;
   protected final URI packageURI;
-  protected Type archetype;
-  protected Type baseType;
+  protected Type<?> archetype;
+  protected Type<?> baseType;
   protected boolean aggregate=false;
-  protected Type contentType=null;
+  protected Type<?> contentType=null;
   
   private boolean linked;
   
@@ -54,11 +54,11 @@ public class TypeImpl<T>
   { return packageURI;
   }
   
-  public Type getArchetype()
+  public Type<?> getArchetype()
   { return archetype;
   }
   
-  public void setArchetype(Type archetype)
+  public void setArchetype(Type<?> archetype)
   { 
     if (linked)
     { throw new IllegalStateException("Type already linked");
@@ -66,7 +66,7 @@ public class TypeImpl<T>
     this.archetype=archetype;
   }
   
-  public boolean hasArchetype(Type type)
+  public boolean hasArchetype(Type<?> type)
   {
     if (this==type)
     { return true;
@@ -79,11 +79,11 @@ public class TypeImpl<T>
     }
   }
   
-  public Type getBaseType()
+  public Type<?> getBaseType()
   { return baseType;
   }
   
-  public void setBaseType(Type baseType)
+  public void setBaseType(Type<?> baseType)
   { 
     if (linked)
     { throw new IllegalStateException("Type already linked");
@@ -91,7 +91,7 @@ public class TypeImpl<T>
     this.baseType=baseType;
   }
   
-  public boolean hasBaseType(Type type)
+  public boolean hasBaseType(Type<?> type)
   {
     if (this==type)
     { return true;
@@ -104,7 +104,7 @@ public class TypeImpl<T>
     }
   }
 
-  public boolean isAssignableFrom(Type type)
+  public boolean isAssignableFrom(Type<?> type)
   {
     
     if (type.isPrimitive())
@@ -131,7 +131,7 @@ public class TypeImpl<T>
     }
   }
   
-  public Type getMetaType()
+  public Type<?> getMetaType()
   { 
     try
     { return resolver.resolve(URI.create(uri.toString().concat(".type")));
@@ -227,9 +227,9 @@ public class TypeImpl<T>
   { return aggregate;
   }
   
-  public Type getCoreType()
+  public Type<?> getCoreType()
   {
-    Type ret=this;
+    Type<?> ret=this;
     while (ret.isAggregate())
     { ret=ret.getContentType();
     }
@@ -271,7 +271,7 @@ public class TypeImpl<T>
   { throw new UnsupportedOperationException("Not persistable");
   }
   
-  public Type getContentType()
+  public Type<?> getContentType()
   { return contentType;
   }
   

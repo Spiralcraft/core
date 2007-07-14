@@ -68,14 +68,14 @@ public class ArrayType
   public Object[] fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
   { 
-    Aggregate aggregate=data.asAggregate();
+    Aggregate<?> aggregate=data.asAggregate();
     
     Object array
       =Array.newInstance(contentType.getNativeClass(),aggregate.size());
     int index=0;
     for (Object val: aggregate)
     { 
-      Type type=contentType;
+      Type<?> type=contentType;
       if (val instanceof DataComposite)
       { type=((DataComposite) val).getType();
       }

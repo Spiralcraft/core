@@ -59,7 +59,7 @@ public class TupleReflector<T extends Tuple>
   }
   
 
-  TupleReflector(Type type,Class<T> contentType)
+  TupleReflector(Type<?> type,Class<T> contentType)
     throws BindException
   { 
     super(type);
@@ -114,7 +114,8 @@ public class TupleReflector<T extends Tuple>
     return null;
   }
 
-  public Decorator<T> decorate(Binding binding,Class decoratorInterface)
+  public <D extends Decorator<T>> D 
+    decorate(Binding<? extends T> binding,Class<D> decoratorInterface)
   { 
     // This depends on a system for registering and mapping decorators
     //   to Tuple constructs.

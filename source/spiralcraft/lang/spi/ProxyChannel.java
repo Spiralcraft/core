@@ -42,7 +42,7 @@ public class ProxyChannel<T>
     _optic=delegate;
   }
 
-  public <X> Channel<X> resolve(Focus focus,String name,Expression[] params)
+  public <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
   { return _optic.resolve(focus,name,params);
   }

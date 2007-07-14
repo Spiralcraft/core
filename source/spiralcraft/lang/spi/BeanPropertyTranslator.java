@@ -62,7 +62,7 @@ class BeanPropertyTranslator<Tprop,Tbean>
   }
 
   @SuppressWarnings("unchecked") // Method is not generic
-  public Tprop translateForGet(Tbean value,Channel[] modifiers)
+  public Tprop translateForGet(Tbean value,Channel<?>[] modifiers)
   { 
     try
     {
@@ -97,7 +97,7 @@ class BeanPropertyTranslator<Tprop,Tbean>
     }
   }
 
-  public Tbean translateForSet(Tprop val,Channel[] modifiers)
+  public Tbean translateForSet(Tprop val,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException();
   }
 

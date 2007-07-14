@@ -31,7 +31,7 @@ public class MethodBinding<Tprop,Tbean>
   public MethodBinding
     (Binding<Tbean> source
     ,MethodTranslator<Tprop,Tbean> translator
-    ,Channel[] params
+    ,Channel<?>[] params
     )
   { super(source,translator,params);
   }

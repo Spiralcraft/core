@@ -20,7 +20,7 @@ import spiralcraft.data.DataException;
 
 import spiralcraft.data.spi.ManualCursor;
 
-import spiralcraft.lang.DefaultFocus;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.BindException;
 
 /**
@@ -30,7 +30,7 @@ import spiralcraft.lang.BindException;
  *   Tuple at a time. 
  */
 public class TupleFocus<T extends Tuple>
-    extends DefaultFocus<T>
+    extends SimpleFocus<T>
 {
 
   private final CursorBinding<T> cursorBinding;

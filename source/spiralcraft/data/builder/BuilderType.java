@@ -44,6 +44,7 @@ import java.net.URI;
  * A Type based on a spiralcraft.builder Assembly. The Scheme is defined
  *   by a combination of the AssemblyClass members and Bean reflection.
  */
+@SuppressWarnings("unchecked") // Can't further specify Assembly generic
 public class BuilderType
   extends TypeImpl<Assembly>
 {
@@ -70,6 +71,7 @@ public class BuilderType
   { return uri.getPath().endsWith(".assy");
   }
 
+  @SuppressWarnings("unchecked") // Type system is heterogeneous
   public boolean isAssignableFrom(Type type)
   { 
     if (super.isAssignableFrom(type))
@@ -130,12 +132,12 @@ public class BuilderType
   { return (Type<Assembly>) TypeResolver.getTypeResolver().<Assembly>resolve(canonicalURI(assemblyClass));
   }
   
-  public static Type genericBuilderType()
+  public static Type<?> genericBuilderType()
     throws DataException
   { return TypeResolver.getTypeResolver().resolve(GENERIC_BUILDER_TYPE_URI);
   }
   
-  public static Type genericBuilderArrayType()
+  public static Type<?> genericBuilderArrayType()
     throws DataException
   { return TypeResolver.getTypeResolver().resolve(GENERIC_BUILDER_ARRAY_TYPE_URI);
   }
@@ -179,7 +181,7 @@ public class BuilderType
   { return targetAssemblyClass;
   }
 
-  public Class getTargetType()
+  public Class<?> getTargetType()
   { return targetAssemblyClass.getJavaClass();
   }
   
@@ -210,7 +212,7 @@ public class BuilderType
 
   }
 
-  public Assembly newAssembly(Assembly parent)
+  public Assembly<?> newAssembly(Assembly<?> parent)
     throws BuildException
   { return targetAssemblyClass.newInstance(parent);
   }
@@ -220,7 +222,7 @@ public class BuilderType
    *   either a new Assembly or an existing one in the
    *   the specified PropertyBinding context.
    */
-  public Assembly fromData(DataComposite composite,InstanceResolver resolver)
+  public Assembly<?> fromData(DataComposite composite,InstanceResolver resolver)
     throws DataException
   {
     
@@ -232,15 +234,15 @@ public class BuilderType
     Tuple t = composite.asTuple();
     try
     { 
-      Assembly instance=null;
+      Assembly<?> instance=null;
       if (contextBinding!=null)
       {
         if (contextBinding.isAggregate())
         { 
           // Disambiguate by Class
           // XXX now we have better typing- make sure this is appropriate
-          Class tupleClass=(Class) classField.getValue(t);
-          for (Assembly assembly: contextBinding.getContents())
+          Class<?> tupleClass=(Class<?>) classField.getValue(t);
+          for (Assembly<?> assembly: contextBinding.getContents())
           { 
 //            System.out.println("BuilderType: Checking "+tupleClass+" = "+assembly.getSubject().get().getClass());
             if (assembly.getSubject().get().getClass().equals(tupleClass))
@@ -253,7 +255,7 @@ public class BuilderType
         }
         else
         { 
-          Assembly[] contents=contextBinding.getContents();
+          Assembly<?>[] contents=contextBinding.getContents();
           if (contents.length>0)
           { 
 //            System.err.println("BuilderType: resolved existing target assembly for "+getURI());
@@ -265,7 +267,7 @@ public class BuilderType
       { 
         // Construct a new Assembly as a child of the current context, if
         //   not null
-        Assembly parent=null;
+        Assembly<?> parent=null;
         if (contextBinding!=null)
         { parent=contextBinding.getContainer();
         }
@@ -282,14 +284,15 @@ public class BuilderType
 
   }
   
-  public DataComposite toData(Assembly obj)
+  @SuppressWarnings("unchecked") // Runtime downcast- can't use generic version
+  public DataComposite toData(Assembly<?> obj)
     throws DataException
   {
     if (!(obj instanceof Assembly))
     { throw new DataException(obj.getClass().getName()+" is not an Assembly");
     }
     
-    Assembly assembly=(Assembly) obj;
+    Assembly<?> assembly=(Assembly<?>) obj;
     
     if (assembly.getAssemblyClass()!=targetAssemblyClass)
     { 

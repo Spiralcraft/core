@@ -27,7 +27,7 @@ public class MethodCallNode
 
   private final Node _source;
   private final String _identifierName;
-  private final Expression[] _parameters;
+  private final Expression<?>[] _parameters;
   private final Node[] _parameterNodes;
 
   
@@ -60,7 +60,7 @@ public class MethodCallNode
    * MethodCallNode operates on a source. If there is no direct source,
    *   the subject of the supplied focus will be used.
    */
-  public Channel bind(final Focus focus)
+  public Channel<?> bind(final Focus<?> focus)
     throws BindException
   { 
     Channel<?> source;
@@ -78,7 +78,7 @@ public class MethodCallNode
 //    { System.out.println("MethodCallNode "+toString()+" param:"+param.toString());
 //    }
     
-    Channel ret=source
+    Channel<?> ret=source
       .resolve(focus
               ,_identifierName
               ,_parameters

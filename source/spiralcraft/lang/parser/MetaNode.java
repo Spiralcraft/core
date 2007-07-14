@@ -28,7 +28,7 @@ import spiralcraft.lang.spi.SimpleBinding;
  *
  * @param <T>
  */
-public class MetaNode<T extends Channel>
+public class MetaNode<T extends Channel<?>>
   extends Node
 {
 

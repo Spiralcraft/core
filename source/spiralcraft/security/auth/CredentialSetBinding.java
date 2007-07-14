@@ -35,7 +35,7 @@ public class CredentialSetBinding
   
   public CredentialSetBinding(Map<String,Credential<?>> map)
   {
-    super(new CredentialMapTypeBroker(map));
+    super(new CredentialMapReflector(map));
     this.map=map;
   }
 
@@ -53,14 +53,14 @@ public class CredentialSetBinding
 }
 
 @SuppressWarnings("unchecked") // Complex to genericize
-class CredentialMapTypeBroker
+class CredentialMapReflector
   implements Reflector<Map<String,Credential<?>>>
 {
   // XXX Consider the use of namespaces, now that they are implemented
   
   private Map<String,Credential<?>> map;
   
-  public CredentialMapTypeBroker(Map<String,Credential<?>> map)
+  public CredentialMapReflector(Map<String,Credential<?>> map)
   { this.map=map;
   }
   
@@ -77,9 +77,9 @@ class CredentialMapTypeBroker
 
   public Binding resolve
     (Binding<Map<String,Credential<?>>> source
-    , Focus focus
+    , Focus<?> focus
     , String name
-    , Expression[] params
+    , Expression<?>[] params
     ) throws BindException
   {
     if (map.get(name)==null)

@@ -26,7 +26,7 @@ public class EditableArrayListAggregate<T>
   extends ArrayListAggregate<T>
   implements EditableAggregate<T>
 {
-  public EditableArrayListAggregate(Type type)
+  public EditableArrayListAggregate(Type<?> type)
   { super(type);
   }
   

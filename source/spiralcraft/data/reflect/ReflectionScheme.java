@@ -46,13 +46,13 @@ public class ReflectionScheme
   private static final BeanInfoCache BEAN_INFO_CACHE
     =BeanInfoCache.getInstance(Introspector.IGNORE_ALL_BEANINFO);
 
-  private final Class clazz;
+  private final Class<?> clazz;
   private final BeanInfo beanInfo;
   private final HashMap<Method,FieldImpl> methodMap
     =new HashMap<Method,FieldImpl>();
   protected final TypeResolver resolver;
 
-  public ReflectionScheme(TypeResolver resolver,Type type,Class clazz)
+  public ReflectionScheme(TypeResolver resolver,Type<?> type,Class<?> clazz)
   {
     this.clazz=clazz;
     this.type=type;

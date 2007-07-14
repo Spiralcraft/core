@@ -43,7 +43,7 @@ public class BuilderScheme
   private final HashMap<String,PropertySpecifier> memberMap
     =new HashMap<String,PropertySpecifier>();
   
-  public BuilderScheme(TypeResolver resolver,Type type,AssemblyClass assemblyClass)
+  public BuilderScheme(TypeResolver resolver,Type<?> type,AssemblyClass assemblyClass)
   { 
     super(resolver,type,assemblyClass.getJavaClass());
     // this.assemblyClass=assemblyClass;

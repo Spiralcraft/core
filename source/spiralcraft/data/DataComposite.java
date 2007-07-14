@@ -42,7 +42,7 @@ public interface DataComposite
   /**
    *@return This object as an Aggregate
    */
-  Aggregate asAggregate();
+  Aggregate<?> asAggregate();
   
   /**
    *@return A recursively generated textual representation of this data, for

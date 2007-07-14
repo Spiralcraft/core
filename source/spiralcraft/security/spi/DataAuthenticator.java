@@ -52,10 +52,10 @@ public class DataAuthenticator
   extends Authenticator
 {
   
-  private Queryable source;
+  private Queryable<?> source;
   
   // XXX Make these both configurable
-  private Type loginDataType;
+  private Type<?> loginDataType;
   private Query loginQuery;
   
   public DataAuthenticator()
@@ -94,7 +94,7 @@ public class DataAuthenticator
   /**
    * @param source The Queryable which provides access to the login database
    */
-  public void setSource(Queryable source)
+  public void setSource(Queryable<?> source)
   { this.source=source;
   }
   
@@ -106,7 +106,7 @@ public class DataAuthenticator
     extends AuthSession
   {
     
-    private BoundQuery boundQuery;
+    private BoundQuery<?,?> boundQuery;
     
     @SuppressWarnings("unchecked") // Heterogeneous class array creation
     public DataAuthSession()
@@ -128,7 +128,7 @@ public class DataAuthenticator
 
     }
     
-    public void addCredentials(Credential[] credentials)
+    public void addCredentials(Credential<?>[] credentials)
     { super.addCredentials(credentials);
     }
 
@@ -145,7 +145,7 @@ public class DataAuthenticator
       
       try
       {
-        SerialCursor cursor=boundQuery.execute();
+        SerialCursor<?> cursor=boundQuery.execute();
         if (cursor.dataNext())
         { 
           // We have a row where all the credentials in the database

@@ -39,7 +39,7 @@ public class XmlTypeFactory
   implements TypeFactory
 {
   
-  public Type createType(TypeResolver resolver,URI uri)
+  public Type<?> createType(TypeResolver resolver,URI uri)
     throws DataException
   {
     if (!typeExists(uri))
@@ -76,7 +76,7 @@ public class XmlTypeFactory
     }
   }
   
-  private Type loadType(TypeResolver resolver,URI uri)
+  private Type<?> loadType(TypeResolver resolver,URI uri)
     throws DataException
   {
     try
@@ -96,7 +96,7 @@ public class XmlTypeFactory
           
 //      System.err.println("XmlTypeFactory: data is "+tuple.toText("  "));
       
-      Type type=(Type) tuple.getType().fromData(tuple,instanceResolver);
+      Type<?> type=(Type<?>) tuple.getType().fromData(tuple,instanceResolver);
 //      System.err.println("XmlTypeFactory: Loaded "+uri+" = "+type.getURI());
       
       return type;

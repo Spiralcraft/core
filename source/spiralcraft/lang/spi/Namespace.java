@@ -27,7 +27,7 @@ public class Namespace
 {
 
   private NamespaceReflector reflector;
-  private Channel[] data;
+  private Channel<?>[] data;
   
   public Namespace(NamespaceReflector reflector)
   { 
@@ -35,15 +35,15 @@ public class Namespace
     this.data=new Channel[reflector.getAttributeCount()];
   }
   
-  Channel getOptic(int index)
+  Channel<?> getOptic(int index)
   { return data[index];
   }
   
-  void setOptic(int index,Channel channel)
+  void setOptic(int index,Channel<?> channel)
   { data[index]=channel;
   }
   
-  public void putOptic(String name,Channel value)
+  public void putOptic(String name,Channel<?> value)
     throws BindException
   { reflector.putOptic(this,name,value);
   }

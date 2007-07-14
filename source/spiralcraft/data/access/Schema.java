@@ -21,13 +21,13 @@ import spiralcraft.data.Type;
  */
 public class Schema
 {
-  private Type[] types;
+  private Type<?>[] types;
   
-  public Type[] getTypes()
+  public Type<?>[] getTypes()
   { return types;
   }
   
-  public void setTypes(Type[] types)
+  public void setTypes(Type<?>[] types)
   { this.types=types;
   }
 }

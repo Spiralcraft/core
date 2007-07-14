@@ -29,12 +29,12 @@ public interface Translator<Tderived,Torigin>
   /**
    * Transform the source object in the 'get' direction
    */
-  public Tderived translateForGet(Torigin source,Channel[] modifiers);
+  public Tderived translateForGet(Torigin source,Channel<?>[] modifiers);
 
   /**
    * Transform the source object in the 'set' direction
    */
-  public Torigin translateForSet(Tderived source,Channel[] modifiers);
+  public Torigin translateForSet(Tderived source,Channel<?>[] modifiers);
 
   /**
    * Return the Reflector associated with the derived Object.

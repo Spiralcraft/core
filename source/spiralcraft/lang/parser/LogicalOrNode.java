@@ -25,7 +25,7 @@ public class LogicalOrNode
   }
 
   @SuppressWarnings("unchecked") // Heterogeneous Array
-  public Boolean translateForGet(Boolean val,Channel[] mods)
+  public Boolean translateForGet(Boolean val,Channel<?>[] mods)
   { 
     boolean val1=val!=null?val.booleanValue():false;
     if (val1)
@@ -36,7 +36,7 @@ public class LogicalOrNode
     return val2?Boolean.TRUE:Boolean.FALSE;
   }
   
-  public Boolean translateForSet(Boolean val,Channel[] mods)
+  public Boolean translateForSet(Boolean val,Channel<?>[] mods)
   { 
     // Not reversible
     throw new UnsupportedOperationException();

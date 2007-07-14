@@ -47,7 +47,7 @@ public class EditableArrayTuple
   { return true;
   }
   
-  public EditableTuple widen(Type type)
+  public EditableTuple widen(Type<?> type)
     throws DataException
   { return (EditableTuple) super.widen(type);
   }

@@ -23,6 +23,7 @@ import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.lang.CursorBinding;
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.Tuple;
 
 /**
  * A View based solely on a Queryable.
@@ -30,20 +31,20 @@ import spiralcraft.data.DataException;
  * @author mike
  *
  */
-public class SimpleView
-  extends View
+public class SimpleView<T extends Tuple>
+  extends View<T>
 {
   
-  public void setQueryable(Queryable queryable)
+  public void setQueryable(Queryable<Tuple> queryable)
   { this.queryable=queryable;
   }
   
   @Override
-  public void bindData(Focus focus)
+  public void bindData(Focus<?> focus)
     throws DataException
   { 
     try
-    { setTupleBinding(new CursorBinding(getType().getScheme()));
+    { setTupleBinding(new CursorBinding<Tuple>(getType().getScheme()));
     }
     catch (BindException x)
     { 
@@ -53,7 +54,7 @@ public class SimpleView
   }
 
   @Override
-  public SerialCursor scan()
+  public SerialCursor<Tuple> scan()
     throws DataException
   { return queryable.getAll(getType()).execute();
   }

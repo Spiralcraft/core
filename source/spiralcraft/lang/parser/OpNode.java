@@ -26,7 +26,7 @@ public class OpNode<T1,T2 extends T1>
 
   private final Node _op1;
   private final Node _op2;
-  private final Expression[] _params;
+  private final Expression<?>[] _params;
   private final String _op;
 
   public OpNode(Node op1,Node op2,char op)

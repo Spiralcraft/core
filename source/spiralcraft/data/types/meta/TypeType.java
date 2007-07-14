@@ -27,6 +27,8 @@ import java.net.URI;
  * A Type implementation that reflects Type objects for
  *   the purpose of examining and extending them.
  */
+
+@SuppressWarnings("unchecked") // Runtime .class resolution
 public class TypeType
   extends ReflectionType<TypeImpl>
 {

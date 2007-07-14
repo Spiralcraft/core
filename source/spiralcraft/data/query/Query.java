@@ -22,6 +22,7 @@ import spiralcraft.lang.Expression;
 
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Tuple;
 
 /**
  * <P>A Query describes a data stream that will retrieve a set of Tuples from a Queryable,
@@ -100,7 +101,7 @@ public abstract class Query
    *   Queryable store. This will recursively bind the entire dataflow tree underneath this 
    *   query and return the root BoundQuery.
    */
-  public BoundQuery<?> solve(Focus focus,Queryable store)
+  public <T extends Tuple> BoundQuery<?,T> solve(Focus<?> focus,Queryable<T> store)
     throws DataException
   { 
     Query factor=factor();
@@ -116,7 +117,8 @@ public abstract class Query
    *   Queryable.query() for all sources and integrating the source BoundQueries into the
    *   downstream BoundQuery.
    */
-  public abstract BoundQuery<?> bind(Focus focus,Queryable store)
+  public abstract <T extends Tuple> BoundQuery<?,T> 
+    bind(Focus<?> focus,Queryable<T> store)
     throws DataException;
   
   

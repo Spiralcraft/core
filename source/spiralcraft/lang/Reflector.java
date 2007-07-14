@@ -36,7 +36,7 @@ public interface Reflector<T>
     (Binding<T> source
     ,Focus<?> focus
     ,String name
-    ,Expression[] params
+    ,Expression<?>[] params
     )
     throws BindException;
 

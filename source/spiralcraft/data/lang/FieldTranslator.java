@@ -25,10 +25,10 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.Translator;
 
 public class FieldTranslator
-  implements Translator
+  implements Translator<Object,Object>
 {
   private final Field field;
-  private final Reflector reflector;
+  private final Reflector<Object> reflector;
   
   @SuppressWarnings("unchecked") // We haven't genericized the data package builder yet
   public FieldTranslator(Field field)
@@ -42,7 +42,7 @@ public class FieldTranslator
   { return field;
   }
   
-  public Object translateForGet(Object value,Channel[] modifiers)
+  public Object translateForGet(Object value,Channel<?>[] modifiers)
   { 
     if (value==null)
     { 
@@ -58,14 +58,14 @@ public class FieldTranslator
     }
   }
 
-  public Object translateForSet(Object val,Channel[] modifiers)
+  public Object translateForSet(Object val,Channel<?>[] modifiers)
   { 
     // We can't turn the value into a Tuple, lacking access to
     //   any kind of lookup context
     throw new UnsupportedOperationException();
   }
     
-  public Reflector getReflector()
+  public Reflector<Object> getReflector()
   { return reflector;
   }
 }

@@ -26,7 +26,7 @@ public abstract class ChannelAdapter<T>
   /**
    * Return null. no names exposed
    */
-  public <X> Channel<X> resolve(Focus focus,String name,Expression[] parameters)
+  public <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] parameters)
     throws BindException
   { return null;
   }

@@ -37,7 +37,7 @@ public abstract class BooleanNode
       
   }
   
-  public abstract Channel bind(Focus<?> focus)
+  public abstract Channel<Boolean> bind(Focus<?> focus)
     throws BindException;
   
   public Reflector<Boolean> getReflector()

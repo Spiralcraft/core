@@ -19,6 +19,7 @@ import spiralcraft.data.query.Queryable;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.DeltaTuple;
+import spiralcraft.data.Tuple;
 
 /**
  * <P>A physical data container. Provides access to a set of data that is
@@ -27,13 +28,13 @@ import spiralcraft.data.DeltaTuple;
  *   
  * <P>A Store is always participates in a single Space.
  */
-public interface Store
-  extends Queryable
+public interface Store<T extends Tuple>
+  extends Queryable<T>
 {
   /**
    * @return The Space to which this store belongs
    */
-  Space getSpace();
+  Space<T> getSpace();
   
   /**
    * Prepare the Store for operation
@@ -48,6 +49,6 @@ public interface Store
    * @return A DataConsumer which is used to push one or more updates into
    *   this Store
    */
-  DataConsumer<DeltaTuple> getUpdater(Type type)
+  DataConsumer<DeltaTuple> getUpdater(Type<?> type)
     throws DataException;
 }

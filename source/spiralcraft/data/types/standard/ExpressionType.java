@@ -25,6 +25,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 
 
+@SuppressWarnings("unchecked") // Runtime .class resolution
 public class ExpressionType
   extends PrimitiveTypeImpl<Expression>
 {
@@ -32,7 +33,7 @@ public class ExpressionType
   { super(resolver,uri,Expression.class);
   }
   
-  public Expression fromString(String str)
+  public Expression<?> fromString(String str)
     throws DataException
   { 
     try

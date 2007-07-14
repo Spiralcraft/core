@@ -31,7 +31,7 @@ import spiralcraft.data.TypeMismatchException;
 public class SchemeImpl
   implements Scheme
 {
-  protected Type type;
+  protected Type<?> type;
   protected Key primaryKey;
   private boolean resolved;
   private Scheme archetypeScheme;
@@ -52,7 +52,7 @@ public class SchemeImpl
     =new HashMap<String,KeyImpl>();
   
   
-  public Type getType()
+  public Type<?> getType()
   { return type;
   }
   
@@ -75,7 +75,7 @@ public class SchemeImpl
     }
   }
   
-  public void setType(Type type)
+  public void setType(Type<?> type)
   { 
     assertUnresolved();
     this.type=type;

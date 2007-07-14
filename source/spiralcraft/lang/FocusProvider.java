@@ -29,12 +29,11 @@ public interface FocusProvider
    *   operator. 
    * 
    * @param parent The parent Focus
-   * @param aliases A list of names that address this component via the Focus
+   * @param name The name this Focus can be addressed using the Focus
    *                 resolution operator, ( ie. <code>[<i>myWidget</i>]</code>)
-   *                 in addition to standardized names supported.
    * @return The new Focus
    * @throws BindException if an error occurs when creating the Focus
    */
-  Focus createFocus(Focus parent,String ... aliases)
+  Focus<?> createFocus(Focus<?> parent,String name)
     throws BindException;
 }

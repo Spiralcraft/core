@@ -36,6 +36,7 @@ import spiralcraft.builder.BuildException;
  * An instance of a persistent object is tied to its non-volatile representation
  *   in a storage medium.
  */
+@SuppressWarnings("unchecked") // BuilderType is not genericized
 public class XmlAssembly<T>
   extends AbstractXmlObject<T,Assembly>
 {

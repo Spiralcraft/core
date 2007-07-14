@@ -30,14 +30,14 @@ package spiralcraft.data;
  */
 public class WorkArea
 {
-  private Type type;
+  private Type<?> type;
   private boolean resolved=false;
   
-  public Type getType()
+  public Type<?> getType()
   { return type;
   }
   
-  public void setType(Type type)
+  public void setType(Type<?> type)
   { 
     assertUnresolved();
     this.type=type;

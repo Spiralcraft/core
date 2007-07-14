@@ -27,11 +27,11 @@ import java.lang.reflect.Constructor;
 public class ConstructorBinding
   extends ParameterBinding
 {
-  private Constructor constructor;
+  private Constructor<?> constructor;
   
   public ConstructorBinding
     (FieldSet source
-    ,Class targetClass
+    ,Class<?> targetClass
     ,String ... fieldNames
     )
     throws DataException
@@ -54,10 +54,10 @@ public class ConstructorBinding
     throws DataException
   { 
     Object[] values=getValues(paramSource);
-    Class[] paramTypes=constructor.getParameterTypes();
+    Class<?>[] paramTypes=constructor.getParameterTypes();
 
     int i=0;
-    for (Class clazz: paramTypes)
+    for (Class<?> clazz: paramTypes)
     { 
       if (values[i]==null && clazz.isPrimitive())
       { values[i]=ClassUtil.primitiveDefault(clazz);

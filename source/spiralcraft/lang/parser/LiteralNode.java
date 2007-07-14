@@ -48,7 +48,7 @@ public class LiteralNode<X>
       ;
   }
 
-  public synchronized Channel<X> bind(final Focus focus)
+  public synchronized Channel<X> bind(final Focus<?> focus)
     throws BindException
   { 
 //    System.out.println("LiteralNode: Returning "+_optic.toString());

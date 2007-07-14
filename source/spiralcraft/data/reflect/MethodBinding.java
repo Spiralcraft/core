@@ -31,7 +31,7 @@ public class MethodBinding
   
   public MethodBinding
     (FieldSet source
-    ,Class targetClass
+    ,Class<?> targetClass
     ,String methodName
     ,String ... fieldNames
     )
@@ -55,10 +55,10 @@ public class MethodBinding
     throws DataException
   { 
     Object[] values=getValues(paramSource);
-    Class[] paramTypes=method.getParameterTypes();
+    Class<?>[] paramTypes=method.getParameterTypes();
 
     int i=0;
-    for (Class clazz: paramTypes)
+    for (Class<?> clazz: paramTypes)
     { 
       if (values[i]==null && clazz.isPrimitive())
       { values[i]=ClassUtil.primitiveDefault(clazz);

@@ -17,7 +17,7 @@ package spiralcraft.lang.test;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
-import spiralcraft.lang.DefaultFocus;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
@@ -39,7 +39,7 @@ public class Evaluator
     throws BindException,ParseException
   { 
     return Evaluator.<X,Y>evaluate
-      (Expression.<X>parse(expression),new DefaultFocus<Y>(subject));
+      (Expression.<X>parse(expression),new SimpleFocus<Y>(subject));
   }
   
   public static <X,Y> X evaluate(Expression<X> expression,Focus<Y> focus)

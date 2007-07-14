@@ -90,6 +90,7 @@ public class DataWriter
   
 }
 
+@SuppressWarnings("unchecked") // Mostly runtime type resolution
 class Context
 {
   private static final AttributesImpl NULL_ATTRIBUTES
@@ -196,7 +197,7 @@ class Context
   abstract class TypeFrame
     extends Frame
   {
-    protected final Type<?> type;
+    protected final Type type;
     protected final String typeName;
     protected final URI typeNamespace;
     protected final String qName;
@@ -206,7 +207,7 @@ class Context
       =new HashMap<String,URI>();
     protected AttributesImpl attributes=NULL_ATTRIBUTES;
     
-    public TypeFrame(Type<?> type)
+    public TypeFrame(Type type)
     {
       this.type=type;
       URI typeUri=type.getURI();
@@ -381,10 +382,10 @@ class Context
   class AggregateFrame
     extends TypeFrame
   {
-    private final Aggregate aggregate;
-    private Iterator aggregateIterator;
+    private final Aggregate<?> aggregate;
+    private Iterator<?> aggregateIterator;
   
-    public AggregateFrame(Aggregate aggregate)
+    public AggregateFrame(Aggregate<?> aggregate)
     { 
       super(aggregate.getType());
       this.aggregate=aggregate;
@@ -472,7 +473,7 @@ class Context
     extends FieldFrame
   {
     
-    private Iterator iterator;
+    private Iterator<?> iterator;
     private Type componentType;
     private boolean hasOne;
     
@@ -565,8 +566,9 @@ class Context
         { 
           if (field.getType().isDataEncodable())
           { 
+            Type ftype=field.getType();
             DataComposite data
-              =field.getType().toData(value);
+              =ftype.toData(value);
             pushCompositeFrame(data);
           }
           else

@@ -30,7 +30,7 @@ public class ExclusiveOrNode
   }
 
   @SuppressWarnings("unchecked") // Heterogeneous Array
-  public Boolean translateForGet(Boolean val,Channel[] mods)
+  public Boolean translateForGet(Boolean val,Channel<?>[] mods)
   { 
     if (val==null)
     { return null;
@@ -50,7 +50,7 @@ public class ExclusiveOrNode
     
   }
   
-  public Boolean translateForSet(Boolean val,Channel[] mods)
+  public Boolean translateForSet(Boolean val,Channel<?>[] mods)
   { 
     // Not reversible
     throw new UnsupportedOperationException();

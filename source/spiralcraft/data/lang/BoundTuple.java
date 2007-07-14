@@ -30,12 +30,12 @@ public class BoundTuple
   extends AbstractTuple
   implements Tuple
 {
-  protected final Channel[] bindings;
+  protected final Channel<?>[] bindings;
   
   /**
    * Construct an ArrayTuple with an empty set of data
    */
-  public BoundTuple(FieldSet fieldSet,Channel[] bindings)
+  public BoundTuple(FieldSet fieldSet,Channel<?>[] bindings)
   { 
     super(fieldSet);
     if (bindings.length!=fieldSet.getFieldCount())
@@ -58,7 +58,7 @@ public class BoundTuple
   { 
     Object[] data=new Object[bindings.length];
     int i=0;
-    for (Channel opt: bindings)
+    for (Channel<?> opt: bindings)
     { data[i++]=opt.get();
     }
     return ArrayUtil.arrayHashCode(data);

@@ -40,7 +40,7 @@ public class FieldNotFoundException
     return fieldList.toString();
   }
   
-  public FieldNotFoundException(Type type,String fieldName)
+  public FieldNotFoundException(Type<?> type,String fieldName)
   { 
     super
       ("Field '"+fieldName+"' not found in type "+type.getURI()

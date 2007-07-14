@@ -40,7 +40,7 @@ public class ResolveNode<T>
   { return _source;
   }
 
-  public Channel<T> bind(final Focus focus)
+  public Channel<T> bind(final Focus<?> focus)
     throws BindException
   { 
     Channel<?> sourceOptic;

@@ -16,7 +16,7 @@ package spiralcraft.data.query;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
-
+import spiralcraft.data.Tuple;
 
 
 import spiralcraft.lang.Focus;
@@ -33,18 +33,18 @@ import spiralcraft.lang.Focus;
  * <P>Once bound, the Query can be repeatedly executed efficiently for
  *   different parameter values.
  */
-public interface Queryable
+public interface Queryable<Ttuple extends Tuple>
 {
 
   /**
    * @return An array of all the Types supported by this Queryable
    */
-  Type[] getTypes();
+  Type<?>[] getTypes();
   
   /**
    * @return Whether the store contains the specified Type.
    */
-  boolean containsType(Type type);
+  boolean containsType(Type<?> type);
   
   /**
    * Returns all data instances of a specific Type for further manipulation by
@@ -55,7 +55,7 @@ public interface Queryable
    * @return A boundQuery which provides the set of all instances for a given
    *   type. 
    */
-  BoundQuery getAll(Type type) 
+  BoundQuery<?,Ttuple> getAll(Type<?> type) 
     throws DataException;
   
 
@@ -65,6 +65,6 @@ public interface Queryable
    *@return a BoundQuery that implements the data flow path and provides the
    *  data requested by the Query
    */
-  BoundQuery query(Query q,Focus context)
+  BoundQuery<?,Ttuple> query(Query q,Focus<?> context)
     throws DataException;
 }

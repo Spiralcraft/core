@@ -44,7 +44,7 @@ import java.io.IOException;
  * @author mike
  */
 public class XmlQueryable
-  extends AggregateQueryable
+  extends AggregateQueryable<Tuple>
 {
   private Resource resource;
   
@@ -78,7 +78,7 @@ public class XmlQueryable
   { super();
   }
   
-  public Aggregate getAggregate()
+  public Aggregate<Tuple> getAggregate()
   { 
     watcher.check();
     return super.getAggregate();

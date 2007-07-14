@@ -31,12 +31,12 @@ public class ParentFocusNode
     _child=child;
   }
 
-  public Focus findFocus(final Focus focus)
+  public Focus<?> findFocus(final Focus<?> focus)
     throws BindException
   { 
-    Focus childFocus=_child.findFocus(focus);
+    Focus<?> childFocus=_child.findFocus(focus);
 
-    Focus parentFocus=childFocus.getParentFocus();
+    Focus<?> parentFocus=childFocus.getParentFocus();
     if (parentFocus!=null)
     { return parentFocus;
     }

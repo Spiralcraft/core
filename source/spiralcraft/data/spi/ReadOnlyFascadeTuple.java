@@ -37,7 +37,7 @@ public class ReadOnlyFascadeTuple
   { this.delegate=delegate;
   }
   
-  public Tuple widen(Type type)
+  public Tuple widen(Type<?> type)
     throws DataException
   { return new ReadOnlyFascadeTuple(delegate.widen(type));
   }
@@ -58,7 +58,7 @@ public class ReadOnlyFascadeTuple
   { return false;
   }
   
-  public Aggregate asAggregate()
+  public Aggregate<?> asAggregate()
   { throw new UnsupportedOperationException("Not an Aggregate");
   }
  

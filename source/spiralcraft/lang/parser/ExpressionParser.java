@@ -863,7 +863,7 @@ public class ExpressionParser
       switch (_tokenizer.ttype)
       {
         case ']':
-          return new AbsoluteFocusNode(focusName.toString(),null);
+          return new AbsoluteFocusNode(focusName.toString());
         case StreamTokenizer.TT_EOF:
           throwUnexpected();
         case StreamTokenizer.TT_WORD:

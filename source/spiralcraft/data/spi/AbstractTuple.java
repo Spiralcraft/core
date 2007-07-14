@@ -67,7 +67,7 @@ public abstract class AbstractTuple
   { return false;
   }
   
-  public Aggregate asAggregate()
+  public Aggregate<?> asAggregate()
   { throw new UnsupportedOperationException("Not an Aggregate");
   }
   
@@ -96,7 +96,7 @@ public abstract class AbstractTuple
     }
   }
   
-  public Tuple widen(Type type)
+  public Tuple widen(Type<?> type)
     throws DataException
   {
     if (getType()!=null)

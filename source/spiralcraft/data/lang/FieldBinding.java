@@ -24,12 +24,12 @@ import spiralcraft.lang.spi.TranslatorBinding;
 /**
  * A binding to a value of a field
  */
+@SuppressWarnings("unchecked") // We haven't genericized the data package yet
 public class FieldBinding
   extends TranslatorBinding
 {
   private final FieldTranslator translator;
   
-  @SuppressWarnings("unchecked") // We haven't genericized the data package yet
   public FieldBinding(Binding source,FieldTranslator translator)
   { 
     super(source,translator,null);

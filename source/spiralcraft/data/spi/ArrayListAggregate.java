@@ -30,9 +30,9 @@ public class ArrayListAggregate<T>
   implements Aggregate<T>
 {
   protected final ArrayList<T> list;
-  private final Type type;
+  private final Type<?> type;
   
-  public ArrayListAggregate(Type type)
+  public ArrayListAggregate(Type<?> type)
   { 
     this.type=type;
     list=new ArrayList<T>();
@@ -51,7 +51,7 @@ public class ArrayListAggregate<T>
   { return true;
   }
   
-  public Aggregate asAggregate()
+  public Aggregate<?> asAggregate()
   { return this;
   }
   
@@ -137,7 +137,7 @@ public class ArrayListAggregate<T>
   { return false;
   }
 
-  public Aggregate snapshot() throws DataException
+  public Aggregate<T> snapshot() throws DataException
   { 
     if (isMutable())
     { return new ArrayListAggregate<T>(this);

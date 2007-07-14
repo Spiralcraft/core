@@ -33,7 +33,7 @@ public class VoidReflector
    *   Focus.
    */
   public <X> Binding<X> resolve
-    (Binding<Void> source,Focus<?> focus,String name,Expression[] params)
+    (Binding<Void> source,Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
   { 
     // We should implement .equals()
@@ -44,7 +44,10 @@ public class VoidReflector
    * Decorate the specified optic with a decorator that implements the
    *   specified interface
    */
-  public Decorator<Void> decorate(Binding source,Class decoratorInterface)
+  public <D extends Decorator<Void>> D decorate
+      (Binding<? extends Void> source
+      ,Class<D> decoratorInterface
+      )
     throws BindException
   { return null;
   }

@@ -44,8 +44,8 @@ import java.util.Iterator;
 public class AggregateReflector<T extends Aggregate<I>,I>
   extends DataReflector<T>
 { 
-  private final HashMap<String,Translator> translators
-    =new HashMap<String,Translator>();
+  private final HashMap<String,Translator<?,?>> translators
+    =new HashMap<String,Translator<?,?>>();
   
   private final Class<T> contentType;
 
@@ -63,7 +63,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   }
   
 
-  AggregateReflector(Type type,Class<T> contentType)
+  AggregateReflector(Type<?> type,Class<T> contentType)
     throws BindException
   { 
     super(type);

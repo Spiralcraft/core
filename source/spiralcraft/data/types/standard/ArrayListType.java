@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import java.net.URI;
 
+@SuppressWarnings("unchecked") // Runtime resolution
 public class ArrayListType
   extends AbstractCollectionType<ArrayList>
 {

@@ -87,7 +87,7 @@ public class Expression<T>
   public <X> Expression(String text)
     throws ParseException
   {
-    Expression canonical=parse(text);
+    Expression<X> canonical=parse(text);
     _root=canonical.getRootNode();
     _text=text;
   }
@@ -123,7 +123,7 @@ public class Expression<T>
     if (_root==null)
     { throw new BindException("No way to bind expression '"+_text+"'");
     }
-    return _root.bind(focus); 
+    return (Channel<T>) _root.bind(focus); 
   }
 
   

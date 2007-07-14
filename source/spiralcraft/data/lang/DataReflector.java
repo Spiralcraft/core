@@ -40,10 +40,10 @@ public abstract class DataReflector<T extends DataComposite>
 {
   // 
   // XXX Use weak map
-  private static final WeakHashMap<Type,WeakReference<Reflector>>
-    SINGLETONS=new WeakHashMap<Type,WeakReference<Reflector>>();
+  private static final WeakHashMap<Type<?>,WeakReference<Reflector<?>>>
+    SINGLETONS=new WeakHashMap<Type<?>,WeakReference<Reflector<?>>>();
   
-  protected final Type type;
+  protected final Type<?> type;
   
   @SuppressWarnings("unchecked") // We only create Reflector with erased type
   public synchronized static final 
@@ -59,7 +59,7 @@ public abstract class DataReflector<T extends DataComposite>
     }
     else
     {
-      WeakReference<Reflector> ref=SINGLETONS.get(type);
+      WeakReference<Reflector<?>> ref=SINGLETONS.get(type);
       if (ref!=null)
       { broker=ref.get();
       }
@@ -77,11 +77,11 @@ public abstract class DataReflector<T extends DataComposite>
     return broker;
   }
   
-  public DataReflector(Type type)
+  public DataReflector(Type<?> type)
   { this.type=type;
   }
   
-  public Type getType()
+  public Type<?> getType()
   { return type;
   }
 }

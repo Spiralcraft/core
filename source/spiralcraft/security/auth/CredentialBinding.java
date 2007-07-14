@@ -22,8 +22,15 @@ import spiralcraft.lang.spi.BeanReflector;
 
 import java.util.Map;
 
-public class CredentialBinding
-  extends AbstractBinding
+/**
+ * A Binding which pulls a named Credential out of a shared map and retrieves
+ *   its current value
+ *   
+ * @author mike
+ *
+ */
+public class CredentialBinding<T>
+  extends AbstractBinding<T>
 {
   private final String name;
   private final Map<String,Credential<?>> map;
@@ -32,14 +39,18 @@ public class CredentialBinding
   public CredentialBinding(Map<String,Credential<?>> map,String name)
     throws BindException
   { 
-    super(BeanReflector.getInstance((map.get(name).getTokenType())));
+    super
+      ((BeanReflector<T>) BeanReflector
+          .getInstance((map.get(name).getTokenType()))
+      );
     this.name=name;
     this.map=map;
   }
   
+  @SuppressWarnings("unchecked") // Heterogeneous map
   @Override
-  protected Object retrieve()
-  { return map.get(name).getValue();
+  protected T retrieve()
+  { return (T) map.get(name).getValue();
   }
 
   @Override

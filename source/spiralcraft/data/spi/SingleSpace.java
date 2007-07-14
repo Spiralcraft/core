@@ -18,7 +18,7 @@ package spiralcraft.data.spi;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.DeltaTuple;
-
+import spiralcraft.data.Tuple;
 
 import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.access.Space;
@@ -34,14 +34,14 @@ import spiralcraft.registry.RegistryNode;
 /**
  * A Space that consists of a single Store.
  */
-public class SingleSpace
-  implements Space
+public class SingleSpace<T extends Tuple>
+  implements Space<T>
 {
   
-  private Store store;
+  private Store<T> store;
   private RegistryNode registryNode;
 
-  public void setStore(Store store)
+  public void setStore(Store<T> store)
   { 
     this.store=store;
   }
@@ -66,27 +66,27 @@ public class SingleSpace
     store.initialize();
   }
   
-  public BoundQuery query(Query query,Focus focus)
+  public BoundQuery<?,T> query(Query query,Focus<?> focus)
     throws DataException
   { 
     // Pass it through
     return store.query(query,focus);
   }
 
-  public boolean containsType(Type type)
+  public boolean containsType(Type<?> type)
   { return store.containsType(type);
   }
 
-  public BoundQuery getAll(Type type)
+  public BoundQuery<?,T> getAll(Type<?> type)
     throws DataException
   { return store.getAll(type);
   }
 
-  public Type[] getTypes()
+  public Type<?>[] getTypes()
   { return store.getTypes();
   }
   
-  public DataConsumer<DeltaTuple> getUpdater(Type type)
+  public DataConsumer<DeltaTuple> getUpdater(Type<?> type)
     throws DataException
   { return store.getUpdater(type);
   }

@@ -22,7 +22,7 @@ import spiralcraft.lang.spi.SimpleBinding;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
-import spiralcraft.lang.DefaultFocus;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 
@@ -88,7 +88,7 @@ public class ExpressionResolverTest
         System.err.println(out.toString());
       }
 
-      DefaultFocus<Namespace> focus=new DefaultFocus<Namespace>();
+      SimpleFocus<Namespace> focus=new SimpleFocus<Namespace>();
       
       NamespaceReflector defs=new NamespaceReflector();
       defs.register("test",BeanReflector.getInstance(String.class));

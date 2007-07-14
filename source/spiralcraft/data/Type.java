@@ -22,7 +22,7 @@ import java.net.URI;
  */
 public abstract class Type<T>
 {  
-  public static Type resolve(URI uri)
+  public static Type<?> resolve(URI uri)
     throws TypeNotFoundException
   { return TypeResolver.getTypeResolver().resolve(uri);
   }
@@ -43,7 +43,7 @@ public abstract class Type<T>
    * The Type used to describe Type objects of this Type, to support the
    *   defining of Type extensions using data.
    */
-  public abstract Type getMetaType();
+  public abstract Type<?> getMetaType();
   
   /**
    * The public Java class or interface used to programatically access or
@@ -83,13 +83,13 @@ public abstract class Type<T>
    * @return The Type of data aggregated by this aggregate Type, or null if 
    *   this is not an aggregate Type.
    */
-  public abstract Type getContentType();
+  public abstract Type<?> getContentType();
   
   /**
    * @return The first non-aggregate returned by recursive calls to
    *   getContentType(), or this type if not an aggregate.
    */
-  public abstract Type getCoreType();
+  public abstract Type<?> getCoreType();
   
   /**
    * An Archetype is a Type which defines a data structure and operations
@@ -104,13 +104,13 @@ public abstract class Type<T>
    *
    * @return The archetype of this Type
    */
-  public abstract Type getArchetype();
+  public abstract Type<?> getArchetype();
   
   /**
    * @return Whether this Type or any of its archetypes (recursively) is the
    *   the specified Type.
    */
-  public abstract boolean hasArchetype(Type type);
+  public abstract boolean hasArchetype(Type<?> type);
   
   /**
    * A base Type is a means for this Type to inherit an identity, data structure
@@ -139,20 +139,20 @@ public abstract class Type<T>
    *   storage to maintain their relationship to other Tuples of the same
    *   instance.<P>
    */
-  public abstract Type getBaseType();
+  public abstract Type<?> getBaseType();
   
   
   /**
    * @return Whether this Type or any of its base Types (recursively) is the
    *   the specified Type.
    */
-  public abstract boolean hasBaseType(Type type);
+  public abstract boolean hasBaseType(Type<?> type);
   
   /**
    * @return Whether a variable of this Type may be assigned a value corresponding to
    *   the specified Type.
    */
-  public abstract boolean isAssignableFrom(Type type);
+  public abstract boolean isAssignableFrom(Type<?> type);
   
   /**
    * Indicate whether Objects of this type can be encoded to and decoded from

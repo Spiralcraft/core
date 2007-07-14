@@ -45,7 +45,7 @@ public class AssemblyClass
   private final AssemblyClass _outerClass;
   private final AssemblyLoader _loader;
   private String _declarationName;
-  private Class _javaClass;
+  private Class<?> _javaClass;
   private LinkedList<PropertySpecifier> _propertySpecifiers;
   
   // The rolled-up list of PropertySpecifiers which apply to the specific
@@ -53,9 +53,9 @@ public class AssemblyClass
   private LinkedList<PropertySpecifier> _compositeMembers;
   
   private boolean _singleton;
-  private Assembly _singletonInstance;
+  private Assembly<?> _singletonInstance;
   
-  private Class[] _singletons;
+  private Class<?>[] _singletons;
   private LinkedList<PropertySpecifier> _members;
   private HashMap<String,PropertySpecifier> _memberMap;
   private boolean _resolved;
@@ -243,7 +243,7 @@ public class AssemblyClass
     _containingProperty=specifier;
   }
   
-  PropertyBinding[] bindProperties(Assembly container)
+  PropertyBinding[] bindProperties(Assembly<?> container)
     throws BuildException
   { 
     if (_compositeMembers!=null)
@@ -306,20 +306,20 @@ public class AssemblyClass
     }
   }
 
-  public boolean isFocusNamed(String name)
+  public boolean isFocusNamed(String namespace,String name)
   { 
-    if (_id!=null && _id.equals(name))
+    if (namespace==null && _id!=null && _id.equals(name))
     { return true;
     }
     else if (_baseAssemblyClass!=null)
-    { return _baseAssemblyClass.isFocusNamed(name);
+    { return _baseAssemblyClass.isFocusNamed(namespace,name);
     }
     else if (_javaClass!=null)
     { 
-      name=name.intern();
-      Class[] singletons=getSingletons();
-      for (Class clazz:singletons)
-      { return clazz.getName()==name;
+      String qname=(namespace!=null?namespace+".":"")+name;
+      Class<?>[] singletons=getSingletons();
+      for (Class<?> clazz:singletons)
+      { return clazz.getName().equals(qname);
       }
     }
     return false;
@@ -529,7 +529,7 @@ public class AssemblyClass
   { return _propertySpecifiers;
   }
 
-  public Class getJavaClass()
+  public Class<?> getJavaClass()
   {
     if (_javaClass!=null)
     { return _javaClass;
@@ -548,7 +548,7 @@ public class AssemblyClass
   }
 
 
-  public Class[] getSingletons()
+  public Class<?>[] getSingletons()
   { 
     if (_baseAssemblyClass!=null)
     { return _baseAssemblyClass.getSingletons();
@@ -569,9 +569,9 @@ public class AssemblyClass
   private void resolveSingletons()
   {
 
-    LinkedList<Class> singletons=new LinkedList<Class>();
-    Class javaClass=_javaClass;
-    Class[] interfaces=javaClass.getInterfaces();
+    LinkedList<Class<?>> singletons=new LinkedList<Class<?>>();
+    Class<?> javaClass=_javaClass;
+    Class<?>[] interfaces=javaClass.getInterfaces();
     
     while (javaClass!=null && javaClass!=Object.class)
     { 
@@ -579,7 +579,7 @@ public class AssemblyClass
       javaClass=javaClass.getSuperclass();
     }
     
-    for (Class clazz: interfaces)
+    for (Class<?> clazz: interfaces)
     { 
       while (clazz!=null)
       { 
@@ -626,7 +626,8 @@ public class AssemblyClass
   /**
    * Create an unbound assembly (if not a singleton), for later binding
    */
-  Assembly newInstance()
+  @SuppressWarnings("unchecked") // Reflected type at Runtime
+  Assembly<?> newInstance()
     throws BuildException
   {
     if (_singleton)
@@ -639,7 +640,7 @@ public class AssemblyClass
         else
         { 
           _singletonInstance=new Assembly(this);
-          _singletonInstance.bind((Assembly) null);
+          _singletonInstance.bind((Assembly<?>) null);
           // Note: resolve() is re-entrant, so it will be late-called
           
           return _singletonInstance;
@@ -660,10 +661,10 @@ public class AssemblyClass
    * Create a new instance of this AssemblyClass in the context of the
    *   optional specified parent Assembly.
    */
-  public Assembly newInstance(Assembly parent)
+  public Assembly<?> newInstance(Assembly<?> parent)
     throws BuildException
   { 
-    Assembly assembly=newInstance();
+    Assembly<?> assembly=newInstance();
     if (!assembly.isBound())
     { assembly.bind(parent);
     }

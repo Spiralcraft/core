@@ -175,7 +175,12 @@ class TupleDelegateReflector<T>
   // We haven't genericized the data package builder yet
   // XXX TODO- this gets pretty hacked up using generics- figure out something cleaner
   @SuppressWarnings("unchecked")
-  public <X> Binding<X> resolve(Binding<T> source,Focus<?> focus,String name,Expression[] params)
+  public <X> Binding<X> 
+    resolve(Binding<T> source
+        ,Focus<?> focus
+        ,String name
+        ,Expression<?>[] params
+        )
     throws BindException
   { 
     Binding<T> binding=(Binding<T>) ((TupleDelegate) source).getTupleBinding();

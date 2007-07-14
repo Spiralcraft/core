@@ -34,7 +34,7 @@ public abstract class Node
    *
    *@return An optic with no functionality
    */
-  public Channel bind(Focus<?> focus)
+  public Channel<?> bind(Focus<?> focus)
     throws BindException
   { 
     unsupported("bind");
@@ -51,10 +51,12 @@ public abstract class Node
     
   }
   
+  @SuppressWarnings("unchecked") // Genericized for internal purposes only
   public final Node isEqual(Node source)
   { return new EqualityNode(false,this,source);
   }
   
+  @SuppressWarnings("unchecked") // Genericized for internal purposes only
   public final Node isNotEqual(Node source)
   { return new EqualityNode(true,this,source);
   }
@@ -63,6 +65,7 @@ public abstract class Node
   { return new MethodCallNode(this,identifier,params);
   }
   
+  @SuppressWarnings("unchecked") // Genericized for internal purposes only
   public final Node resolve(String identifier)
   { return new ResolveNode(this,identifier);
   }
@@ -87,42 +90,52 @@ public abstract class Node
   { return new ConditionalNode(this,trueResult,falseResult);
   }
 
+  @SuppressWarnings("unchecked") // Generics for internal use only
   public Node negative()
   { return new NumericNegateNode(this);
   }
 
+  @SuppressWarnings("unchecked") // Generics for internal use only
   public Node plus(Node op)
   { return new NumericOpNode(this,op,'+');
   }
   
+  @SuppressWarnings("unchecked") // Generics for internal use only
   public Node minus(Node op)
   { return new NumericOpNode(this,op,'-');
   }
   
+  @SuppressWarnings("unchecked") // Generics for internal use only
   public Node times(Node op)
   { return new NumericOpNode(this,op,'*');
   }
   
+  @SuppressWarnings("unchecked") // Generics for internal use only
   public Node divide(Node op)
   { return new NumericOpNode(this,op,'/');
   }
   
+  @SuppressWarnings("unchecked") // Generics for internal use only
   public Node modulus(Node op)
   { return new NumericOpNode(this,op,'%');
   }
 
+  @SuppressWarnings("unchecked") // Generics for internal use only
   public Node greaterThan(Node op)
   { return new RelationalNode(true,false,this,op);
   }
   
+  @SuppressWarnings("unchecked") // Generics for internal use only
   public Node lessThan(Node op)
   { return new RelationalNode(false,false,this,op);
   }
 
+  @SuppressWarnings("unchecked") // Generics for internal use only
   public Node greaterThanOrEquals(Node op)
   { return new RelationalNode(false,true,this,op);
   }
   
+  @SuppressWarnings("unchecked") // Generics for internal use only
   public Node lessThanOrEquals(Node op)
   { return new RelationalNode(false,true,this,op);
   }  

@@ -19,7 +19,8 @@ import java.util.HashMap;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.DefaultFocus;
+import spiralcraft.lang.CompoundFocus;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.FocusProvider;
 
 import spiralcraft.lang.spi.Namespace;
@@ -63,9 +64,9 @@ public class DataSession
   implements FocusProvider
 {
 
-  protected final ArrayList<View> views=new ArrayList<View>();
-  protected final HashMap<String,View> viewMap
-    =new HashMap<String,View>();
+  protected final ArrayList<View<?>> views=new ArrayList<View<?>>();
+  protected final HashMap<String,View<?>> viewMap
+    =new HashMap<String,View<?>>();
   
   private final NamespaceReflector dataSessionNamespaceReflector
     =new NamespaceReflector();
@@ -83,9 +84,9 @@ public class DataSession
   private SimpleBinding<Namespace> viewChannel;
   
   
-  private DefaultFocus<Namespace> localFocus;
+  private SimpleFocus<Namespace> localFocus;
   
-  private DefaultFocus<Namespace> dataFocus;
+  private SimpleFocus<Namespace> dataFocus;
 
 
   /**
@@ -95,18 +96,18 @@ public class DataSession
    *   aliases specified.
    *   
    */
-  public DefaultFocus<Namespace> createFocus
-    (Focus parentFocus,String ... aliases)
+  public SimpleFocus<Namespace> createFocus
+    (Focus<?> parentFocus,String name)
     throws BindException
   {
-    DefaultFocus<Namespace> focus=new DefaultFocus<Namespace>();
+    CompoundFocus<Namespace> focus=new CompoundFocus<Namespace>();
     if (parentFocus!=null)
     { focus.setParentFocus(focus);
     }
     focus.setSubject(dataSessionChannel);
     focus.setContext(dataSessionChannel);
-    focus.addNames("DataSession");
-    focus.addNames(aliases);
+    focus.addNamespaceAlias("data");
+    focus.setName(name);
     
     return focus;
   }
@@ -120,7 +121,7 @@ public class DataSession
   private void initViews()
     throws DataException
   {
-    for (View view:views)
+    for (View<?> view:views)
     { 
       // Connect everything together
       view.setDataSession(this);
@@ -150,10 +151,11 @@ public class DataSession
    * 
    * @throws DataException
    */
+  @SuppressWarnings("unchecked") // View type is heterogeneous
   private void bindViews()
     throws DataException
   {
-    for (View view:views)
+    for (View<?> view:views)
     {
       view.bindData(dataFocus);
       try
@@ -202,6 +204,13 @@ public class DataSession
     { 
       dataSessionNamespace.putOptic("data",dataChannel);
       dataSessionNamespace.putOptic("view",viewChannel);
+      
+      // Maybe put the dataSession as the subject at the createFocus point
+      // The context of that focus will be the dataSessionNamespace
+      //
+      // data and view are context names, which lead to the data namespace
+      //   and the view namespace.
+      
       dataSessionNamespace.putOptic("session", new SimpleBinding(this,true));
     }
     catch (BindException x)
@@ -226,7 +235,7 @@ public class DataSession
       );
     }
     
-    dataFocus=new DefaultFocus<Namespace>();
+    dataFocus=new SimpleFocus<Namespace>();
     dataFocus.setParentFocus(localFocus);
     dataFocus.setSubject(dataChannel);
     dataFocus.setContext(dataChannel);

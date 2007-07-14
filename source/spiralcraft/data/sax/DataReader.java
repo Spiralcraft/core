@@ -47,7 +47,7 @@ public class DataReader
   { this.dataConsumer=dataConsumer;
   }
   
-  public Object readFromURI(URI uri,Type formalType)
+  public Object readFromURI(URI uri,Type<?> formalType)
     throws SAXException,IOException,DataException
   { 
     return readFromResource
@@ -58,7 +58,7 @@ public class DataReader
   
   public Object readFromResource
     (Resource resource
-    ,Type formalType
+    ,Type<?> formalType
     )
     throws SAXException,IOException,DataException
   {
@@ -79,7 +79,7 @@ public class DataReader
   
   public Object readFromInputStream
     (InputStream in
-    ,Type formalType
+    ,Type<?> formalType
     ,URI resourceURI
     )
     throws SAXException,IOException,DataException

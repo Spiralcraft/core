@@ -19,7 +19,7 @@ import spiralcraft.util.StringConverter;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.DefaultFocus;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.WriteException;
 
 import spiralcraft.lang.spi.SimpleBinding;
@@ -40,6 +40,7 @@ import spiralcraft.registry.RegistryNode;
  * Associates a PropertySpecifier with some value or value source
  *   in the context of an instantiated Assembly
  */
+@SuppressWarnings("unchecked") // Heterogenous design- does not use generics
 public class PropertyBinding
   implements PropertyChangeListener
 {
@@ -358,7 +359,7 @@ public class PropertyBinding
         { 
           // Consider supplying a parent focus here, since we may want to
           //   resolve something from this container.
-          _focus=new DefaultFocus
+          _focus=new SimpleFocus
             (new SimpleBinding(focusObject,true)
             );
         }
@@ -401,7 +402,7 @@ public class PropertyBinding
           // !!! It is important to call get() to NARROW the type to that of
           //   the actual object. Otherwise, the formal property type will
           //   be used and some names will not resolve as expected.
-          _source=new DefaultFocus
+          _source=new SimpleFocus
             (new SimpleBinding(sourceChannel.get(),false)
             );
         }

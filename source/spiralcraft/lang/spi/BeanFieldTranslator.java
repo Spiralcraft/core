@@ -39,7 +39,7 @@ class BeanFieldTranslator<Tprop,Tbean>
   }
 
   @SuppressWarnings("unchecked") // Field is not generic
-  public Tprop translateForGet(Tbean value,Channel[] modifiers)
+  public Tprop translateForGet(Tbean value,Channel<?>[] modifiers)
   { 
     try
     { return (Tprop) _field.get(value);
@@ -49,7 +49,7 @@ class BeanFieldTranslator<Tprop,Tbean>
     }
   }
 
-  public Tbean translateForSet(Tprop val,Channel[] modifiers)
+  public Tbean translateForSet(Tprop val,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException();
   }
 

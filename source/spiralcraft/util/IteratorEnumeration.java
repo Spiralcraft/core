@@ -20,13 +20,13 @@ import java.util.Enumeration;
 /**
  * Provides an Iterator interface to an Enumeration
  */
-public class IteratorEnumeration
-  implements Enumeration
+public class IteratorEnumeration<T>
+  implements Enumeration<T>
 {
 
-  private final Iterator _iterator;
+  private final Iterator<T> _iterator;
 
-  public IteratorEnumeration(Iterator iterator)
+  public IteratorEnumeration(Iterator<T> iterator)
   { _iterator=iterator;
   }    
 
@@ -34,7 +34,7 @@ public class IteratorEnumeration
   { return _iterator.hasNext();
   }
 
-  public Object nextElement()
+  public T nextElement()
   { return _iterator.next();
   }
 }

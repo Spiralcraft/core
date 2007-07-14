@@ -15,12 +15,13 @@
 package spiralcraft.lang.spi;
 
 import spiralcraft.lang.WriteException;
+import spiralcraft.lang.Channel;
 
 public class NamespaceBinding<T>
   extends TranslatorBinding<T,Namespace>
 {
 
-  private final NamespaceAttribute translator;
+  private final NamespaceAttribute<T> translator;
   
   public NamespaceBinding
     (Binding<Namespace> source
@@ -32,15 +33,15 @@ public class NamespaceBinding<T>
   }
 
   
-  @SuppressWarnings("unchecked") // Source is heterogenous
+  @SuppressWarnings("unchecked") // Source is heterogeneous
   @Override
-  public boolean set(Object val)
+  public boolean set(T val)
     throws WriteException
   { 
     if (_static)
     { return false;
     }
-    source.get().getOptic(translator.getIndex()).set(val);
+    ((Channel<T>) source.get().getOptic(translator.getIndex())).set(val);
     return true;
   }
 }

@@ -131,13 +131,13 @@ public class ApplicationManager
       URI environmentTypeRef
         =URI.create("java:/spiralcraft/exec/ApplicationEnvironment.assy");
         
-      XmlAssembly environmentRef
-        =new XmlAssembly(environmentTypeRef,applicationURI);
+      XmlAssembly<ApplicationEnvironment> environmentRef
+        =new XmlAssembly<ApplicationEnvironment>(environmentTypeRef,applicationURI);
       
       environmentRef.register
         (_registryNode.createChild(Integer.toString(_nextEnvironmentId++)));
       
-      ApplicationEnvironment environment=(ApplicationEnvironment) environmentRef.get();
+      ApplicationEnvironment environment=environmentRef.get();
       environment.setApplicationManager(this);
     
       environment.exec(args);

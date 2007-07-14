@@ -55,19 +55,19 @@ import spiralcraft.data.access.SerialCursor;
  * </UL>
  * 
  */
-public abstract class View
+public abstract class View<Ttuple extends Tuple>
 {
 
   protected final NamespaceReflector namespaceReflector
     =new NamespaceReflector();
   
-  protected ViewReflector viewReflector;
+  protected ViewReflector<?,?> viewReflector;
   
   private String name;
-  private TupleBinding tupleBinding;
+  private TupleBinding<?> tupleBinding;
   private DataSession dataSession;
-  protected Queryable queryable;
-  protected Type type;
+  protected Queryable<Tuple> queryable;
+  protected Type<?> type;
   
   
   protected View()
@@ -78,7 +78,7 @@ public abstract class View
    * Create a new SerialCursor which iterates through
    *   the visible Tuples in this view 
    */
-  public abstract SerialCursor scan()
+  public abstract SerialCursor<Tuple> scan()
     throws DataException;
   
   void setDataSession(DataSession dataSession)
@@ -98,15 +98,15 @@ public abstract class View
   { return name;
   }
   
-  public TupleBinding getTupleBinding()
+  public TupleBinding<?> getTupleBinding()
   { return tupleBinding;
   }
   
-  protected void setTupleBinding(TupleBinding binding)
+  protected void setTupleBinding(TupleBinding<?> binding)
   { this.tupleBinding=binding;
   }
   
-  public Type getType()
+  public Type<?> getType()
   { return type;
   }
   
@@ -114,14 +114,15 @@ public abstract class View
   /**
    * The View should bind to all data sources here
    */
-  public abstract void bindData(Focus focus)
+  public abstract void bindData(Focus<?> focus)
     throws DataException;  
 
+  @SuppressWarnings("unchecked") // Runtime getClass()
   Reflector<View> getViewReflector()
     throws DataException
   { 
     try
-    { return new ViewReflector<View,Tuple>(getClass(),type);
+    { return new ViewReflector(getClass(),type);
     }
     catch (BindException x)
     { 
@@ -160,31 +161,36 @@ public abstract class View
 
 /**
  * Provides access to a View's Bean interface, with the added function of
- *   supporting Type knowledgable iteration bindings.
+ *   supporting Type aware iteration bindings.
  * 
  * @author mike
  *
  * @param <Tview>
  * @param <Ttuple>
  */
-class ViewReflector<Tview extends View,Ttuple extends Tuple>
+class ViewReflector<Tview extends View<Ttuple>,Ttuple extends Tuple>
   extends BeanReflector<Tview>
 { 
   
   //private Type type;
-  private final Reflector dataReflector;
+  private final Reflector<Tuple> dataReflector;
   
 
-  public ViewReflector(Class<? extends View> viewClass,Type type)
+  public ViewReflector(Class<Tview> viewClass,Type<?> type)
     throws BindException
   { 
     super(viewClass);
     //this.type=type;
-    this.dataReflector=DataReflector.<Ttuple>getInstance(type);
+    this.dataReflector=DataReflector.<Tuple>getInstance(type);
   }
   
   @Override
-  public Binding<Object> resolve(Binding<Tview> source,Focus<?> focus,String name,Expression[] params)
+  public Binding<Object> resolve
+    (Binding<Tview> source
+    ,Focus<?> focus
+    ,String name
+    ,Expression<?>[] params
+    )
     throws BindException
   { return super.resolve(source,focus,name,params);
   }
@@ -192,7 +198,7 @@ class ViewReflector<Tview extends View,Ttuple extends Tuple>
   
   @Override
   @SuppressWarnings("unchecked") // Dynamic class info
-  public Decorator decorate
+  public  Decorator decorate
     (Binding source,Class decoratorInterface)
     throws BindException
   { 
@@ -218,22 +224,22 @@ class ViewReflector<Tview extends View,Ttuple extends Tuple>
  * @param <Tview>
  * @param <Ttuple>
  */
-class ViewIterationDecorator<Tview extends View,Ttuple extends Tuple>
-  extends IterationDecorator<Tview,Ttuple>
+class ViewIterationDecorator<Tview extends View<Ttuple>,Ttuple extends Tuple>
+  extends IterationDecorator<Tview,Tuple>
 {
 
   public ViewIterationDecorator
     (Binding<Tview> viewSource
-    ,Reflector<Ttuple> iterationType
+    ,Reflector<Tuple> iterationType
     )
   { super(viewSource,iterationType);
   }
   
   @Override
-  protected Iterator<Ttuple> createIterator()
+  protected Iterator<Tuple> createIterator()
   { 
     try
-    { return new CursorIterator<Ttuple>(source.get().scan());
+    { return new CursorIterator<Tuple>(source.get().scan());
     }
     catch (DataException x)
     { 

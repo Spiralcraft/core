@@ -37,8 +37,9 @@ import spiralcraft.data.spi.ArrayDeltaTuple;
  *   with an externally maintained data source that does not provide an update
  *   log.
  */
+@SuppressWarnings("unchecked") // Chains are heterogeneous
 public class DataSynchronizer
-  implements DataConsumerChain<Tuple>
+  implements DataConsumerChain
 {
 
   private final Key primaryKey;
@@ -48,7 +49,7 @@ public class DataSynchronizer
   
   private DataConsumer nextConsumer;
   
-  public DataSynchronizer(Space space,Type type)
+  public DataSynchronizer(Space space,Type<?> type)
     throws DataException
   { 
     this.space=space;
@@ -93,8 +94,8 @@ public class DataSynchronizer
   {
     Tuple keyValue=keyBinding.project(tuple);
     focus.setTuple(keyValue);
-    BoundQuery query=space.query(primaryKey.getQuery(),focus);
-    SerialCursor cursor=query.execute();
+    BoundQuery<?,?> query=space.query(primaryKey.getQuery(),focus);
+    SerialCursor<?> cursor=query.execute();
     Tuple storeTuple=null;
     while (cursor.dataNext())
     {

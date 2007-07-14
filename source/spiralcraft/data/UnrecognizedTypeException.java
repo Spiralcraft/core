@@ -22,7 +22,7 @@ public class UnrecognizedTypeException
 {
   private static final long serialVersionUID=1;	
 
-  public UnrecognizedTypeException(Type type,String message)
+  public UnrecognizedTypeException(Type<?> type,String message)
   { super("Unrecognized Type : "+type.getURI().toString()+": "+message);
   }
 }

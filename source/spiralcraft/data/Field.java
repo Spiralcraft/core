@@ -49,7 +49,7 @@ public interface Field
   /**
    * The Type of the Field
    */
-  Type getType();
+  Type<?> getType();
   
   /**
    * Retreive the value of this Field in the specified Tuple

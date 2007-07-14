@@ -64,7 +64,7 @@ public class XmlBean<T>
   }
   
 
-  protected void verifyType(Type type)
+  protected void verifyType(Type<?> type)
   {
   }
   

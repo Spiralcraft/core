@@ -44,7 +44,7 @@ public abstract class LogicalNode<T1,T2>
   { 
 //    System.out.println("LogicalNode bind "+_op1.toString()+" "+_op2.toString());
 
-    Channel[] params;
+    Channel<?>[] params;
     if (_op2!=null)
     { params=new Channel[] {focus.bind(new Expression<T2>(_op2,null))};
     }

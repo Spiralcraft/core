@@ -83,7 +83,7 @@ public class AssemblyFactoryTest
       { System.err.println("AssemblyClass is null");
       }
       
-      Assembly assembly=assemblyClass.newInstance(null);
+      Assembly<?> assembly=assemblyClass.newInstance(null);
       if (assembly!=null)
       { System.err.println(assembly.toString());
       }

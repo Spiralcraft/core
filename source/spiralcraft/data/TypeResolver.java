@@ -68,7 +68,7 @@ public class TypeResolver
     =URI.create("java:/spiralcraft/data/Type");
   
   protected final TypeResolver parent;
-  private final HashMap<URI,Type> map=new HashMap<URI,Type>();
+  private final HashMap<URI,Type<?>> map=new HashMap<URI,Type<?>>();
   private final WeakReference<ClassLoader> classLoaderRef;
 
   private final ArrayList<TypeFactory> factories=new ArrayList<TypeFactory>();
@@ -125,7 +125,7 @@ public class TypeResolver
     return URI.create(uriStr.substring(0,uriStr.lastIndexOf('/')+1));
   }
   
-  public final Type resolveFromClass(Class clazz)
+  public final Type<?> resolveFromClass(Class<?> clazz)
     throws TypeNotFoundException
   { return resolve(ReflectionType.canonicalURI(clazz));
   }
@@ -186,7 +186,7 @@ public class TypeResolver
   /**
    * Return the Type that describes a Type
    */
-  public final Type getMetaType()
+  public final Type<?> getMetaType()
   { 
     try
     { return resolve(TYPE_TYPE_URI);
@@ -220,10 +220,10 @@ public class TypeResolver
     return type;
   }
 
-  private final Type loadMetaType(Type baseType,URI typeURI)
+  private final Type<?> loadMetaType(Type<?> baseType,URI typeURI)
     throws DataException
   {
-    Type type=new MetaType
+    Type<?> type=new MetaType
       (this
       ,typeURI
       ,baseType.getURI()
@@ -335,10 +335,11 @@ public class TypeResolver
    * @return the Type which corresponds to the specified name
    *   within the specified namespace.
    */
+  @SuppressWarnings("unchecked") // Types not genericized in dynamic loader
   synchronized final Type load(URI typeUri)
     throws DataException
   { 
-    Type type=this.findLoadedType(typeUri);
+    Type<?> type=this.findLoadedType(typeUri);
     if (type!=null)
     { return type;
     }
@@ -363,10 +364,10 @@ public class TypeResolver
   /**
    * Called when a Type is not already loaded and needs to be found.
    */
-  protected final Type findType(URI typeUri)
+  protected final Type<?> findType(URI typeUri)
     throws DataException
   { 
-    Type type=null;
+    Type<?> type=null;
     for (TypeFactory factory: factories)
     { 
       type=factory.createType(this,typeUri);

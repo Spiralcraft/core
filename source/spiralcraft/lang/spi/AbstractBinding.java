@@ -42,7 +42,7 @@ public abstract class AbstractBinding<T>
 {
  
   private final Reflector<T> _reflector;
-  private Binding metaBinding;
+  private Binding<?> metaBinding;
   private final boolean _static;
   private PropertyChangeSupport _propertyChangeSupport;
   private WeakBindingCache _cache;
@@ -80,7 +80,7 @@ public abstract class AbstractBinding<T>
   }
   
   @SuppressWarnings("unchecked") // Heterogeneous ops
-  public <X> Channel<X> resolve(Focus<?> focus,String name,Expression[] params)
+  public <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
   { 
     Binding<X> binding=_reflector.<X>resolve(this,focus,name,params);
@@ -94,7 +94,7 @@ public abstract class AbstractBinding<T>
           { metaBinding=new SimpleBinding<AbstractBinding>(this,true);
           }
         }
-        binding=metaBinding;
+        binding=(Binding<X>) metaBinding;
       }
     }
     

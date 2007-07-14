@@ -30,13 +30,13 @@ public abstract class FocusNode
   /**
    * Return another Focus related to the specified Focus
    */
-  public abstract Focus findFocus(final Focus focus)
+  public abstract Focus<?> findFocus(final Focus<?> focus)
     throws BindException;
   
-  public Channel bind(final Focus focus)
+  public Channel<?> bind(final Focus<?> focus)
     throws BindException
   { 
-    Channel ret=findFocus(focus).getSubject();
+    Channel<?> ret=findFocus(focus).getSubject();
     if (ret==null)
     { throw new BindException("Focus "+findFocus(focus)+" has no subject");
     }

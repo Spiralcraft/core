@@ -20,12 +20,12 @@ class NamespaceAttribute<T>
   }
 
   @SuppressWarnings("unchecked") // Heterogeneous collection
-  public T translateForGet(Namespace source, Channel[] modifiers)
+  public T translateForGet(Namespace source, Channel<?>[] modifiers)
   { return (T) source.getOptic(index).get();
   }
 
   
-  public Namespace translateForSet(T source, Channel[] modifiers)
+  public Namespace translateForSet(T source, Channel<?>[] modifiers)
   { throw new UnsupportedOperationException("Operation is not reversible");
   }
   

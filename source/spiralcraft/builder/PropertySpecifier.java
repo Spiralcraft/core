@@ -42,8 +42,8 @@ public class PropertySpecifier
   private String _targetName;
   private AssemblyClass _targetAssemblyClass;
   private int _targetSequence;
-  private Expression _sourceExpression;
-  private Expression _focusExpression;
+  private Expression<?> _sourceExpression;
+  private Expression<?> _focusExpression;
   private boolean _literalWhitespace;
   private String _focus;
   private String _expression;
@@ -188,15 +188,15 @@ public class PropertySpecifier
   { _expression=val;
   }
 
-  public Expression getSourceExpression()
+  public Expression<?> getSourceExpression()
   { return _sourceExpression;
   }
   
-  public Expression getFocusExpression()
+  public Expression<?> getFocusExpression()
   { return _focusExpression;
   }
 
-  public PropertyBinding getPropertyBinding(Assembly assembly)
+  public PropertyBinding getPropertyBinding(Assembly<?> assembly)
   { 
     if (assembly.getAssemblyClass()!=_targetAssemblyClass)
     { 
@@ -323,7 +323,8 @@ public class PropertySpecifier
       }
       
       
-      List contents=targetAssemblyPropertySpecifier.getContents();
+      List<AssemblyClass> contents
+        =targetAssemblyPropertySpecifier.getContents();
       if (contents==null || contents.size()==0)
       { throw new BuildException("Property '"+pathElement+"' does not contain any Assemblies");
       }
@@ -333,7 +334,7 @@ public class PropertySpecifier
       { throw new BuildException("Property '"+pathElement+"' contains more than one Assembly");
       }
       else
-      { targetAssemblyClass=(AssemblyClass) contents.get(0);
+      { targetAssemblyClass=contents.get(0);
       }
       
       // When we recurse, make sure we are dealing with a local class,

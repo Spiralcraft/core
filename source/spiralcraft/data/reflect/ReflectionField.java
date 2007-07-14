@@ -195,7 +195,7 @@ public class ReflectionField
     }
     
     Object value=getValue(tuple);
-    Type type=getType();
+    Type<?> type=getType();
     
     if (value instanceof DataComposite)
     { type=((DataComposite) value).getType();
@@ -244,7 +244,7 @@ public class ReflectionField
             
             DataComposite compositeValue
               =(DataComposite) value;
-            Type dataType=compositeValue.getType();
+            Type<?> dataType=compositeValue.getType();
             
             Object convertedValue
               =dataType.fromData
@@ -366,7 +366,7 @@ public class ReflectionField
 //    }
   }
   
-  protected Type findType(Class iface)
+  protected Type<?> findType(Class<?> iface)
     throws TypeNotFoundException
   { 
     URI uri=ReflectionType.canonicalURI(iface);

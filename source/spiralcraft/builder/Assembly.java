@@ -54,11 +54,12 @@ import spiralcraft.util.StringConverter;
  * After instantiation, the register(RegistryNode node) method is invoked 
  *   to provide context.
  */
+@SuppressWarnings("unchecked") // Heterogeneous design- does not use generics
 public class Assembly<T>
   implements Focus<T>,Registrant
 {
   private final AssemblyClass _assemblyClass;
-  private Assembly _parent;
+  private Assembly<?> _parent;
   private final SimpleBinding<T> _optic;
   private PropertyBinding[] _propertyBindings;
   private HashMap<String,Assembly> _importedSingletons;
@@ -346,7 +347,7 @@ public class Assembly<T>
   /**
    * implement Focus.findFocus()
    */
-  public Focus<?> findFocus(String name)
+  public Focus<?> findFocus(String namespace,String name)
   { 
     
     if (_importedSingletons!=null)
@@ -357,12 +358,12 @@ public class Assembly<T>
       }
     }
     
-    if (_assemblyClass.isFocusNamed(name))
+    if (_assemblyClass.isFocusNamed(namespace,name))
     { return this;
     }
 
     if (_parent!=null)
-    { return _parent.findFocus(name);
+    { return _parent.findFocus(namespace,name);
     }
     
     return null;

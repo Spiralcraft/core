@@ -3,6 +3,8 @@ package spiralcraft.data.query;
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
+import spiralcraft.data.Tuple;
+
 import spiralcraft.lang.Focus;
 
 /**
@@ -13,7 +15,7 @@ public class Scan
   extends Query
 {
 
-  private Type type;
+  private Type<?> type;
   
   /**
    * Construct an unconfigured Scan
@@ -24,7 +26,7 @@ public class Scan
   /**
    * Construct a new Scan for the given Type
    */
-  public Scan(Type type)
+  public Scan(Type<?> type)
   { this.type=type;
   }
   
@@ -35,14 +37,14 @@ public class Scan
   /**
    * Specify the Type whos instances will be retrieved.
    */
-  public void setType(Type type)
+  public void setType(Type<?> type)
   { this.type=type;
   }
   
   /**
    * @return the Type whos instances will be retrieved
    */
-  public Type getType()
+  public Type<?> getType()
   { return type;
   }
   
@@ -56,7 +58,7 @@ public class Scan
     }
   }
 
-  public BoundQuery<?> bind(Focus focus,Queryable store)
+  public <T extends Tuple> BoundQuery<?,T> bind(Focus<?> focus,Queryable<T> store)
     throws DataException
   { 
     return store.getAll(type);

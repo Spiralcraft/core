@@ -41,6 +41,7 @@ import java.io.IOException;
 /**
  * Reads SAX events into a Data graph.
  */
+@SuppressWarnings("unchecked") // Mostly runtime type resolution
 public class DataHandler
   extends DefaultHandler
 {
@@ -56,7 +57,7 @@ public class DataHandler
    * Construct a new DataReader which expects to read the specified
    *   formal Type.
    */
-  public DataHandler(Type formalType,URI resourceURI)
+  public DataHandler(Type<?> formalType,URI resourceURI)
   { 
     currentFrame=new InitialFrame(formalType); 
     this.resourceURI=resourceURI;
@@ -338,17 +339,17 @@ public class DataHandler
   abstract class ContainerFrame
     extends Frame
   { 
-    protected final Type formalType;
+    protected final Type<?> formalType;
 
-    protected ContainerFrame(Type formalType)
+    protected ContainerFrame(Type<?> formalType)
     { this.formalType=formalType;
     }
     
-    public Type getFormalType()
+    public Type<?> getFormalType()
     { return formalType;
     }
     
-    protected void assertCompatibleType(Type formalType,Type actualType)
+    protected void assertCompatibleType(Type<?> formalType,Type<?> actualType)
       throws TypeMismatchException
     {
       if (formalType!=null && !formalType.isAssignableFrom(actualType))
@@ -359,7 +360,7 @@ public class DataHandler
     
     }
     
-    protected Type resolveType(String uri,String localName)
+    protected Type<?> resolveType(String uri,String localName)
       throws TypeNotFoundException
     {
       URI typeUri;

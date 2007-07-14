@@ -85,7 +85,7 @@ public class BuilderField
     throws DataException
   {
     Object fieldValue=getValue(tuple);
-    Type type=getType();
+    Type<?> type=getType();
 
     if (fieldValue!=null) // We only depersist non-null data
     {
@@ -96,7 +96,7 @@ public class BuilderField
       
       try
       {
-        Assembly assembly=(Assembly) subject;
+        Assembly<?> assembly=(Assembly<?>) subject;
         if (specifier!=null)
         {
           PropertyBinding binding=specifier.getPropertyBinding(assembly);
@@ -106,7 +106,7 @@ public class BuilderField
           { 
             if (type.isAggregate())
             {
-              Assembly[] valueAssemblies
+              Assembly<?>[] valueAssemblies
                 =(Assembly[]) type.fromData
                   ((DataComposite) fieldValue,resolver);
                   
@@ -116,8 +116,8 @@ public class BuilderField
             }
             else
             { 
-              Assembly valueAssembly
-                =(Assembly) type.fromData
+              Assembly<?> valueAssembly
+                =(Assembly<?>) type.fromData
                   ((DataComposite) fieldValue,resolver);
                   
               if (valueAssembly!=null)

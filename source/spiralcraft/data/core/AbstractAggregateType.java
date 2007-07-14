@@ -34,19 +34,19 @@ public abstract class AbstractAggregateType<T>
   
   protected Type<? super Object> contentType;
   protected Class<T> nativeClass;
-  protected Type archetype;
-  protected Type baseType;
+  protected Type<?> archetype;
+  protected Type<?> baseType;
   protected boolean linked;
   
   protected AbstractAggregateType(URI uri)
   { this.uri=uri;
   }
   
-  public Type getArchetype()
+  public Type<?> getArchetype()
   { return archetype;
   }
 
-  public boolean hasArchetype(Type type)
+  public boolean hasArchetype(Type<?> type)
   {
     if (this==type)
     { return true;
@@ -63,11 +63,11 @@ public abstract class AbstractAggregateType<T>
   { return baseType.getPackageURI();
   }
   
-  public Type getBaseType()
+  public Type<?> getBaseType()
   { return baseType;
   }
 
-  public boolean hasBaseType(Type type)
+  public boolean hasBaseType(Type<?> type)
   {
     if (this==type)
     { return true;
@@ -80,7 +80,7 @@ public abstract class AbstractAggregateType<T>
     }
   }
 
-  public boolean isAssignableFrom(Type type)
+  public boolean isAssignableFrom(Type<?> type)
   {
     if (!getNativeClass().isAssignableFrom(type.getNativeClass()))
     { return false;
@@ -89,7 +89,7 @@ public abstract class AbstractAggregateType<T>
   }
   
   
-  public Type getMetaType()
+  public Type<?> getMetaType()
   {
     try
     { return getTypeResolver().resolve(ReflectionType.canonicalURI(getClass()));
@@ -130,13 +130,13 @@ public abstract class AbstractAggregateType<T>
   { return true;
   }
   
-  public Type getContentType()
+  public Type<?> getContentType()
   { return contentType;
   }
   
-  public Type getCoreType()
+  public Type<?> getCoreType()
   {
-    Type ret=this;
+    Type<?> ret=this;
     while (ret.isAggregate())
     { ret=ret.getContentType();
     }
@@ -152,7 +152,7 @@ public abstract class AbstractAggregateType<T>
     linked=true;
     contentType.link();
     
-    Type contentArchetype=contentType.getArchetype();
+    Type<?> contentArchetype=contentType.getArchetype();
     if (contentArchetype!=null)
     { 
       archetype
@@ -163,7 +163,7 @@ public abstract class AbstractAggregateType<T>
           );
     }
     
-    Type contentBaseType=contentType.getBaseType();
+    Type<?> contentBaseType=contentType.getBaseType();
     if (contentBaseType!=null)
     { 
       baseType

@@ -17,32 +17,49 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
+/**
+ * An expression node which resolves a Focus from somewhere in the hierarchy
+ *   using a qualified name (ie. <code>[<I>namespace</I>:<I>name</I>]</code>)
+ * 
+ * @author mike
+ *
+ */
 public class AbsoluteFocusNode
   extends FocusNode
 {
 
-  private final Node _selector;
-  private final String _focusName;
+  private final String name;
+  private final String namespace;
 
-  public AbsoluteFocusNode(String focusName,Node selector)
+  public AbsoluteFocusNode(String qname)
   { 
-    _focusName=focusName;
-    _selector=selector;
+    int colonPos=qname.indexOf(':');
+    if (colonPos>-1)
+    {
+      this.namespace=qname.substring(0,colonPos);
+      this.name=qname.substring(colonPos+1);
+    }
+    else
+    { 
+      this.namespace=null;
+      this.name=qname;
+    }
+
   }
 
-  public Focus findFocus(final Focus focus)
+  public Focus<?> findFocus(final Focus<?> focus)
     throws BindException
   { 
-    if (_focusName==null || _focusName.equals(""))
+    if (namespace==null || namespace.equals(""))
     { return focus;
     }
     
-    Focus newFocus=focus.findFocus(_focusName);
+    Focus<?> newFocus=focus.findFocus(namespace,name);
     if (newFocus!=null)
     { return newFocus;
     }
     else
-    { throw new BindException("Focus '"+_focusName+"' not found.");
+    { throw new BindException("Focus '"+namespace+":"+name+"' not found.");
     }
   }
 
@@ -50,9 +67,9 @@ public class AbsoluteFocusNode
   { 
     out.append(prefix).append("Focus");
     prefix=prefix+"  ";
-    out.append(prefix).append("name="+(_focusName!=null?_focusName:"(default)"));
-    if (_selector!=null)
-    { _selector.dumpTree(out,prefix);
+    out.append(prefix).append("namespace="+(namespace!=null?namespace:"(default)"));
+    if (name!=null)
+    { out.append(prefix).append("name="+name);
     }
   }
   

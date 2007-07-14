@@ -19,6 +19,7 @@ import spiralcraft.data.query.Queryable;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.DeltaTuple;
+import spiralcraft.data.Tuple;
 
 /**
  * A logical data container. Provides access to a complete set of data used by
@@ -28,8 +29,8 @@ import spiralcraft.data.DeltaTuple;
  * There is normally only one Space associated with an application. A Space is
  *   never contained within another Space.
  */
-public interface Space
-  extends Queryable
+public interface Space<T extends Tuple>
+  extends Queryable<T>
 {
 
   /**
@@ -45,7 +46,7 @@ public interface Space
    * @return A DataConsumer which is used to push one or more updates into
    *   this Space. 
    */
-  DataConsumer<DeltaTuple> getUpdater(Type type)
+  DataConsumer<DeltaTuple> getUpdater(Type<?> type)
     throws DataException;
   
 }

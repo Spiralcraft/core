@@ -29,7 +29,7 @@ public class ParameterBinding
 {
 
   protected final FieldSet fieldSet;
-  protected final Class[] signature;
+  protected final Class<?>[] signature;
   protected final Field[] fields;
   
   public ParameterBinding(FieldSet fieldSet,String ... fieldNames)
@@ -56,7 +56,7 @@ public class ParameterBinding
   { return fields;
   }
   
-  public Class[] getSignature()
+  public Class<?>[] getSignature()
   { return signature;
   }
   

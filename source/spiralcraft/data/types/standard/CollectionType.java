@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import java.net.URI;
 
+@SuppressWarnings("unchecked") // Runtime resolution
 public class CollectionType<T extends Collection>
   extends AbstractCollectionType<Collection>
 {

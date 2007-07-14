@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
 
-import spiralcraft.lang.DefaultFocus;
+import spiralcraft.lang.SimpleFocus;
 
 /**
  * <P>Represents the state of the authentication process from a client's
@@ -35,14 +35,14 @@ import spiralcraft.lang.DefaultFocus;
 public abstract class AuthSession
 {
 
-  protected final ArrayList<Credential> credentialList
-    =new ArrayList<Credential>();
+  protected final ArrayList<Credential<?>> credentialList
+    =new ArrayList<Credential<?>>();
   
   protected final HashMap<String,Credential<?>> credentialMap
     =new HashMap<String,Credential<?>>();
 
-  protected final DefaultFocus<Map<String,Credential<?>>> credentialFocus
-    =new DefaultFocus<Map<String,Credential<?>>>();
+  protected final SimpleFocus<Map<String,Credential<?>>> credentialFocus
+    =new SimpleFocus<Map<String,Credential<?>>>();
   { credentialFocus.setSubject(new CredentialSetBinding(credentialMap));
   }
   
@@ -108,11 +108,11 @@ public abstract class AuthSession
     return null;
   }
   
-  public void addCredentials(Credential[] credentials)
+  public void addCredentials(Credential<?>[] credentials)
   { 
-    for (Credential cred: credentials)
+    for (Credential<?> cred: credentials)
     { 
-      Iterator<Credential> it=credentialList.iterator();
+      Iterator<Credential<?>> it=credentialList.iterator();
       while (it.hasNext())
       { 
         if (it.next().getClass()==cred.getClass())

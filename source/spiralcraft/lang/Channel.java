@@ -75,7 +75,7 @@ public interface Channel<T>
    * Resolve the name and optional set of parameter expressions to provide
    *   new views derived from this one.
    */
-  <X> Channel<X> resolve(Focus<?> focus,String name,Expression[] parameters)
+  <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] parameters)
     throws BindException;
 
   /**

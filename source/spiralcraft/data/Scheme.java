@@ -31,7 +31,7 @@ public interface Scheme
    *@return the Type associated with this Scheme, or null if there is no
    *  Type associated with this Scheme.<P>
    */
-  Type getType();
+  Type<?> getType();
   
   /**
    * A Scheme's archetype is usually equivalent to

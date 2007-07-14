@@ -26,7 +26,7 @@ import java.util.Iterator;
  *   the current position of the iteration.
  */
 public abstract class IterationDecorator<T,I>
-  implements Decorator<T>,Iterable
+  implements Decorator<T>,Iterable<I>
 {   
   
   protected final Channel<T> source;

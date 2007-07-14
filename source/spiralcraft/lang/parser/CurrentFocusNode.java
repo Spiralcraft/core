@@ -27,7 +27,7 @@ public class CurrentFocusNode
   /**
    * Simply returns the specified Focus.
    */
-  public Focus findFocus(final Focus focus)
+  public Focus<?> findFocus(final Focus<?> focus)
     throws BindException
   { return focus;
   }

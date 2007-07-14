@@ -115,7 +115,7 @@ class StringBindingHelper
   }
   
   public static final Channel<String> 
-    bindString(Focus focus,Channel<String> op1,Channel<?> op2,char operator)
+    bindString(Focus<?> focus,Channel<String> op1,Channel<?> op2,char operator)
     throws BindException
   {
     if (operator=='+')
@@ -144,17 +144,17 @@ class NumberBindingHelper
   //promote as the result in a numeric operation. The generic method holds to the source
   //type and not the argument type.
   
-  private static HashMap<Class,NumericTranslator> _translatorMapAdd
-    =new HashMap<Class,NumericTranslator>();
+  private static HashMap<Class<?>,NumericTranslator<?,?,?>> _translatorMapAdd
+    =new HashMap<Class<?>,NumericTranslator<?,?,?>>();
   
-  private static HashMap<Class,NumericTranslator> _translatorMapSubtract
-    =new HashMap<Class,NumericTranslator>();
+  private static HashMap<Class<?>,NumericTranslator<?,?,?>> _translatorMapSubtract
+    =new HashMap<Class<?>,NumericTranslator<?,?,?>>();
 
-  private static HashMap<Class,NumericTranslator> _translatorMapMultiply
-    =new HashMap<Class,NumericTranslator>();
+  private static HashMap<Class<?>,NumericTranslator<?,?,?>> _translatorMapMultiply
+    =new HashMap<Class<?>,NumericTranslator<?,?,?>>();
 
-  private static HashMap<Class,NumericTranslator> _translatorMapDivide
-    =new HashMap<Class,NumericTranslator>();
+  private static HashMap<Class<?>,NumericTranslator<?,?,?>> _translatorMapDivide
+    =new HashMap<Class<?>,NumericTranslator<?,?,?>>();
   
   @SuppressWarnings("unchecked")
   public static final <Tret extends Number,T1 extends Tret,T2 extends Tret> Channel<Tret> 
@@ -167,7 +167,7 @@ class NumberBindingHelper
     Reflector<Tret> reflector=BeanReflector.<Tret>getInstance
       (promotedType(op1.getContentType(),op2.getContentType()));
     
-    HashMap<Class,NumericTranslator> translatorMap=null;
+    HashMap<Class<?>,NumericTranslator<?,?,?>> translatorMap=null;
     switch (operator)
     {
       case '+':
@@ -184,7 +184,9 @@ class NumberBindingHelper
         break;
     }
     
-    NumericTranslator<Tret,T1,T2> translator=translatorMap.get(reflector.getContentType());
+    NumericTranslator<Tret,T1,T2> translator
+      =(NumericTranslator<Tret,T1,T2>) 
+        translatorMap.get(reflector.getContentType());
     
     if (translator==null)
     { 
@@ -352,7 +354,7 @@ class NumberBindingHelper
   
   
 
-  private static Class promotedType(Class cl1,Class cl2)
+  private static Class<?> promotedType(Class<?> cl1,Class<?> cl2)
     throws BindException
   {
     cl1=ClassUtil.boxedEquivalent(cl1);

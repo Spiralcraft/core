@@ -22,6 +22,7 @@ import java.util.List;
 
 import java.net.URI;
 
+@SuppressWarnings("unchecked") // Runtime resolution
 public class ListType<T extends List>
   extends AbstractCollectionType<List>
 {

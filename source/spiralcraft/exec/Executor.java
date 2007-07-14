@@ -56,7 +56,7 @@ public class Executor
   private URI typeURI;
   private URI instanceURI;
   private boolean persistOnCompletion;
-  private XmlAssembly wrapper;
+  private XmlAssembly<Executable> wrapper;
   private RegistryNode registryNode;  
   private int argCounter=-2;
   
@@ -144,7 +144,7 @@ public class Executor
   private Executable resolveExecutable()
     throws PersistenceException
   {
-    wrapper=new XmlAssembly(typeURI,instanceURI);
+    wrapper=new XmlAssembly<Executable>(typeURI,instanceURI);
       
     if (registryNode==null)
     { registryNode=Registry.getLocalRoot();
@@ -162,7 +162,7 @@ public class Executor
         +": Found a "+o.getClass()+" which is not an executable"
         );
     }
-    return (Executable) wrapper.get();
+    return wrapper.get();
   }
   
   /**

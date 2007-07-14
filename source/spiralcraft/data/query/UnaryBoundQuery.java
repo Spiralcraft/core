@@ -34,8 +34,8 @@ import spiralcraft.data.access.SerialCursor;
  *   another Query.
  *
  */
-public abstract class UnaryBoundQuery<Tq extends Query>
-  extends BoundQuery<Tq>
+public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
+  extends BoundQuery<Tq,Tt>
 {
 
   // XXX It would be cleaner if some of these positional vars resided in the
@@ -46,7 +46,7 @@ public abstract class UnaryBoundQuery<Tq extends Query>
   //  might be our answer. Dovetails with execution context awareness, b/c need
   //  a container component stacking the context into the Thread.
   
-  protected final BoundQuery<?> source;
+  protected final BoundQuery<?,?> source;
   private boolean resolved;
   protected boolean eos;
   protected boolean bos;
@@ -54,7 +54,7 @@ public abstract class UnaryBoundQuery<Tq extends Query>
   protected int direction;
   protected int lookahead;
   
-  protected UnaryBoundQuery(List<Query> sources,Focus focus,Queryable store)
+  protected UnaryBoundQuery(List<Query> sources,Focus<?> focus,Queryable<?> store)
     throws DataException
   { 
     if (sources.size()<1)
@@ -65,7 +65,7 @@ public abstract class UnaryBoundQuery<Tq extends Query>
     { throw new DataException(getClass().getName()+": Can't bind to more than one source");
     }
 
-    BoundQuery source=store.query(sources.get(0),focus);
+    BoundQuery<?,?> source=store.query(sources.get(0),focus);
 
     this.source=source;
   }
@@ -84,13 +84,14 @@ public abstract class UnaryBoundQuery<Tq extends Query>
    * @return true when a new result Tuple is available, or false if
    *   no result Tuple is available.
    */
-  protected abstract boolean integrate(Tuple sourceTuple);
+  protected abstract boolean integrate(Tt sourceTuple);
   
   protected final void lookedAhead()
   { lookahead+=direction;
   }
   
-  public SerialCursor execute()
+  @SuppressWarnings("unchecked") // Converting from source Tuple type
+  public SerialCursor<Tt> execute()
     throws DataException
   {
     if (!resolved)
@@ -103,9 +104,9 @@ public abstract class UnaryBoundQuery<Tq extends Query>
     direction=1;
     lookahead=0;
     
-    SerialCursor cursor=source.execute();
+    SerialCursor<Tt> cursor=(SerialCursor<Tt>) source.execute();
     if (cursor instanceof ScrollableCursor)
-    { return new UnaryBoundQueryScrollableCursor((ScrollableCursor) cursor);
+    { return new UnaryBoundQueryScrollableCursor((ScrollableCursor<Tt>) cursor);
     }
     else
     { return new UnaryBoundQuerySerialCursor(cursor);
@@ -131,9 +132,9 @@ public abstract class UnaryBoundQuery<Tq extends Query>
   class UnaryBoundQuerySerialCursor
     extends BoundQuerySerialCursor
   {
-    private final SerialCursor sourceCursor;
+    private final SerialCursor<Tt> sourceCursor;
     
-    public UnaryBoundQuerySerialCursor(SerialCursor sourceCursor)
+    public UnaryBoundQuerySerialCursor(SerialCursor<Tt> sourceCursor)
     { this.sourceCursor=sourceCursor;
     }
     
@@ -186,11 +187,11 @@ public abstract class UnaryBoundQuery<Tq extends Query>
 
   class UnaryBoundQueryScrollableCursor
     extends UnaryBoundQuerySerialCursor
-    implements ScrollableCursor
+    implements ScrollableCursor<Tt>
   {
-    private final ScrollableCursor sourceCursor;
+    private final ScrollableCursor<Tt> sourceCursor;
 
-    public UnaryBoundQueryScrollableCursor(ScrollableCursor sourceCursor)
+    public UnaryBoundQueryScrollableCursor(ScrollableCursor<Tt> sourceCursor)
     { 
       super(sourceCursor);
       this.sourceCursor=sourceCursor;

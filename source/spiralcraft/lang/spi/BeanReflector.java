@@ -49,6 +49,7 @@ import java.lang.reflect.ParameterizedType;
  * A Reflector which uses Java Beans introspection and reflection
  *   to navigate a Java object provided by a source optic.
  */
+@SuppressWarnings("unchecked") // Various levels of heterogeneous runtime ops
 public class BeanReflector<T>
   implements Reflector<T>
 {
@@ -67,7 +68,6 @@ public class BeanReflector<T>
   /**
    * Find a BeanReflector which reflects the specified Java class
    */  
-  @SuppressWarnings("unchecked") 
   // Map is heterogeneous, T is ambiguous for VoidReflector
   public static final synchronized <T> Reflector<T> 
     getInstance(Type clazz)
@@ -99,14 +99,15 @@ public class BeanReflector<T>
   private HashMap<String,BeanFieldTranslator<?,T>> _fields;
   private HashMap<String,MethodTranslator<?,T>> _methods;
   private Class<T> _targetClass;
-  private Type _targetType;
+  // private Type _targetType;
   private MethodResolver _methodResolver;
   
+  @SuppressWarnings("unchecked") // Runtime case from Type to Class<T>
   public BeanReflector(Type type)
   { 
     System.err.println("BeanReflector.new() "+type);
     Class<T> clazz=null;
-    _targetType=type;
+    // _targetType=type;
     
     if (type instanceof Class)
     { clazz=(Class<T>) type;
@@ -141,7 +142,12 @@ public class BeanReflector<T>
   
   
   @SuppressWarnings("unchecked") // Expression array params heterogeneous
-  public synchronized <X> Binding<X> resolve(Binding<T> source,Focus<?> focus,String name,Expression[] params)
+  public synchronized <X> Binding<X> 
+    resolve(Binding<T> source
+        ,Focus<?> focus
+        ,String name
+        ,Expression<?>[] params
+        )
     throws BindException
   { 
     Binding<X> binding=null;
@@ -409,7 +415,7 @@ class MethodKey
 {
   private final Object instanceSig[];
 
-  public MethodKey(Translator translator,Channel[] params)
+  public MethodKey(Translator<?,?> translator,Channel<?>[] params)
   {
     instanceSig=new Object[params.length+1];
     instanceSig[0]=translator;
@@ -446,11 +452,13 @@ class ArrayLengthTranslator<S>
     }
   }
   
-  public Integer translateForGet(S source,Channel[] params)
+  @Override
+  public Integer translateForGet(S source,Channel<?>[] params)
   { return Array.getLength(source);
   }
   
-  public S translateForSet(Integer length,Channel[] params)
+  @Override
+  public S translateForSet(Integer length,Channel<?>[] params)
   { throw new UnsupportedOperationException("Cannot set array length");
   }
   

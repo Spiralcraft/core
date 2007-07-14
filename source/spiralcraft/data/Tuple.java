@@ -61,7 +61,7 @@ public interface Tuple
    *@return the extent Tuple associated with the specified base Type, or this
    *  tuple if the specified type is this Tuple's type.
    */
-  Tuple widen(Type type)
+  Tuple widen(Type<?> type)
     throws DataException;
     
   /**

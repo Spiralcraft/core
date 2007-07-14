@@ -41,17 +41,21 @@ public  class TranslatorBinding<T,S>
   protected final boolean _static;
 
   private final Translator<T,? super S> translator;
-  private final Channel[] _modifiers;
+  private final Channel<?>[] _modifiers;
   private PropertyChangeSupport _propertyChangeSupport;
   private PropertyChangeListener _modifierListener;
   private WeakBindingCache _cache;
-  private Binding metaBinding;
+  private Binding<?> metaBinding;
 
   /**
    * Create a Translator binding which translates values bidirectionally,
    *   through the specified Translator.
    */
-  public TranslatorBinding(Channel<S> source,Translator<T,S> translator,Channel[] modifiers)
+  public TranslatorBinding
+    (Channel<S> source
+    ,Translator<T,S> translator
+    ,Channel<?>[] modifiers
+    )
   { 
     this.source=source;
     this.translator=translator;
@@ -120,7 +124,7 @@ public  class TranslatorBinding<T,S>
   }
 
   @SuppressWarnings("unchecked") // Heterogeneous metadata
-  public <X> Channel<X> resolve(Focus<?> focus,String name,Expression[] params)
+  public <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
   {     
     Binding<X> binding=translator.getReflector().resolve(this,focus,name,params);
@@ -134,7 +138,7 @@ public  class TranslatorBinding<T,S>
           { metaBinding=new SimpleBinding<TranslatorBinding>(this,true);
           }
         }
-        binding=metaBinding;
+        binding=(Binding<X>) metaBinding;
       }
     }
     if (binding==null)
@@ -271,7 +275,7 @@ public  class TranslatorBinding<T,S>
     boolean first=true;
     if (_modifiers!=null)
     {
-      for (Channel o: _modifiers)
+      for (Channel<?> o: _modifiers)
       { 
         if (!first)
         { out.append(",");
