@@ -101,7 +101,7 @@ public abstract class Query
    *   Queryable store. This will recursively bind the entire dataflow tree underneath this 
    *   query and return the root BoundQuery.
    */
-  public <T extends Tuple> BoundQuery<?,T> solve(Focus<?> focus,Queryable<T> store)
+  public BoundQuery<?,?> solve(Focus<?> focus,Queryable<?> store)
     throws DataException
   { 
     Query factor=factor();

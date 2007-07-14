@@ -34,7 +34,7 @@ public interface Store<T extends Tuple>
   /**
    * @return The Space to which this store belongs
    */
-  Space<T> getSpace();
+  Space<?> getSpace();
   
   /**
    * Prepare the Store for operation

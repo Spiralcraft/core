@@ -66,7 +66,7 @@ public class SingleSpace<T extends Tuple>
     store.initialize();
   }
   
-  public BoundQuery<?,T> query(Query query,Focus<?> focus)
+  public BoundQuery<?,?> query(Query query,Focus<?> focus)
     throws DataException
   { 
     // Pass it through
