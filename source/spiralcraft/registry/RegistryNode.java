@@ -48,13 +48,13 @@ public interface RegistryNode
    *   that has been registered with this RegistryNode or
    *   its ancestors. 
    */
-  public Object findInstance(Class instanceClass);
+  public Object findInstance(Class<?> instanceClass);
 
   /**
    * Register an instance as a local singleton, ie. one that will be visible
    *   from this RegistryNode and its descendants.
    */
-  public void registerInstance(Class instanceClass,Object instance);
+  public void registerInstance(Class<?> instanceClass,Object instance);
 
 
   /** 
@@ -70,7 +70,7 @@ public interface RegistryNode
    *   register the specified instance as the local singleton for the
    *   specified class.
    */
-  public RegistryNode createChild(Class instanceClass,Object instance);
+  public RegistryNode createChild(Class<?> instanceClass,Object instance);
 
   /**
    * Return the child RegistryNode with the specified name

@@ -24,7 +24,7 @@ public class LocalRegistryNode
   implements RegistryNode
 {
   // XXX Make maps weak
-  private HashMap<Class,Object> _instances;
+  private HashMap<Class<?>,Object> _instances;
   private HashMap<String,RegistryNode> _children;
   private final RegistryNode _parent;
   private final String _name;
@@ -53,7 +53,7 @@ public class LocalRegistryNode
   { return _absolutePath;
   }
 
-  public Object findInstance(Class instanceClass)
+  public Object findInstance(Class<?> instanceClass)
   { 
     Object instance=null;
     if (_instances!=null)
@@ -81,17 +81,17 @@ public class LocalRegistryNode
   }
 
   public RegistryNode createChild
-    (Class instanceClass,Object instance)
+    (Class<?> instanceClass,Object instance)
   {
     RegistryNode child=createChild(instanceClass.getName());
     child.registerInstance(instanceClass,instance);
     return child;
   }
   
-  public void registerInstance(Class instanceClass,Object instance)
+  public void registerInstance(Class<?> instanceClass,Object instance)
   { 
     if (_instances==null)
-    { _instances=new HashMap<Class,Object>();
+    { _instances=new HashMap<Class<?>,Object>();
     }
     _instances.put(instanceClass,instance);
   }

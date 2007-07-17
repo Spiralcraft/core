@@ -454,7 +454,7 @@ public class Pool
 
     if (discardList!=null)
     {
-      Iterator it=discardList.iterator();
+      Iterator<?> it=discardList.iterator();
       while (it.hasNext())
       { 
         _overdueDiscardsCount++;
