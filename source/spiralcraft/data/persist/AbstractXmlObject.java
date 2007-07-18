@@ -32,6 +32,9 @@ import spiralcraft.data.sax.DataWriter;
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
 
+import spiralcraft.builder.Lifecycle;
+import spiralcraft.builder.LifecycleException;
+
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
@@ -44,7 +47,7 @@ import spiralcraft.vfs.Resource;
  *   in a storage medium.
  */
 public abstract class AbstractXmlObject<T,C>
-  implements Registrant,PersistentReference
+  implements Registrant,PersistentReference,Lifecycle
 {
 
   protected URI instanceURI;
@@ -191,6 +194,22 @@ public abstract class AbstractXmlObject<T,C>
     { registryNode.registerInstance(instance.getClass(),instance);
     }    
     registryNode.registerInstance(PersistentReference.class,this);
+  }
+  
+  public void start()
+    throws LifecycleException
+  {
+    if (instance instanceof Lifecycle)
+    { ((Lifecycle) instance).start();
+    }
+  }
+  
+  public void stop()
+    throws LifecycleException
+  {
+    if (instance instanceof Lifecycle)
+    { ((Lifecycle) instance).stop();
+    }
   }
   
 }

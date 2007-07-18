@@ -21,6 +21,8 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Tuple;
 
+import spiralcraft.builder.Lifecycle;
+
 /**
  * <P>A physical data container. Provides access to a set of data that is
  *   reachable through a single access mechanism, such as a database login,
@@ -29,18 +31,13 @@ import spiralcraft.data.Tuple;
  * <P>A Store is always participates in a single Space.
  */
 public interface Store<T extends Tuple>
-  extends Queryable<T>
+  extends Queryable<T>,Lifecycle
 {
   /**
    * @return The Space to which this store belongs
    */
   Space<?> getSpace();
   
-  /**
-   * Prepare the Store for operation
-   */
-  void initialize()
-    throws DataException;
 
   /**
    * Retrieve an update 'channel'. The DataConsumer can be used once to update

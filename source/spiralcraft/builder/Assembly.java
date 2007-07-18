@@ -56,7 +56,7 @@ import spiralcraft.util.StringConverter;
  */
 @SuppressWarnings("unchecked") // Heterogeneous design- does not use generics
 public class Assembly<T>
-  implements Focus<T>,Registrant
+  implements Focus<T>,Registrant,Lifecycle
 {
   private final AssemblyClass _assemblyClass;
   private Assembly<?> _parent;
@@ -248,7 +248,7 @@ public class Assembly<T>
   
 
   
-  
+  @Override
   public void register(RegistryNode node)
   {
     node.registerInstance(Assembly.class,this);
@@ -272,6 +272,26 @@ public class Assembly<T>
     }
   }
 
+  @Override
+  public void start() throws LifecycleException
+  {
+    T instance=_optic.get();
+    if (instance instanceof Lifecycle)
+    { ((Lifecycle) instance).start();
+    }
+    
+  }
+
+
+  @Override
+  public void stop() throws LifecycleException
+  {
+    T instance=_optic.get();
+    if (instance instanceof Lifecycle)
+    { ((Lifecycle) instance).stop();
+    }
+  }
+  
   /**
    * Return the Assembly which contains this one
    */
@@ -373,8 +393,7 @@ public class Assembly<T>
   /**
    * implement Focus.bind()
    */
-  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
-  public synchronized Channel bind(Expression expression)
+  public  synchronized <X> Channel<X> bind(Expression<X> expression)
     throws BindException
   { 
     Channel channel=null;
@@ -391,6 +410,9 @@ public class Assembly<T>
     }
     return channel;
   }
+
+
+
 
 
 }

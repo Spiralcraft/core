@@ -21,6 +21,8 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Tuple;
 
+import spiralcraft.builder.Lifecycle;
+
 /**
  * A logical data container. Provides access to a complete set of data used by
  *   one or more applications. Data reachable from a Space may be contained 
@@ -30,14 +32,8 @@ import spiralcraft.data.Tuple;
  *   never contained within another Space.
  */
 public interface Space<T extends Tuple>
-  extends Queryable<T>
+  extends Queryable<T>,Lifecycle
 {
-
-  /**
-   * Prepare the Space and all Stores for data processing
-   */
-  void initialize()
-    throws DataException;
   
   /**
    * Retrieve an update 'channel'. The DataConsumer can be used once to update
