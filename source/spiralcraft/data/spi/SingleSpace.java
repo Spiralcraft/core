@@ -31,6 +31,8 @@ import spiralcraft.lang.Focus;
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
 
+import spiralcraft.builder.LifecycleException;
+
 /**
  * A Space that consists of a single Store.
  */
@@ -55,15 +57,20 @@ public class SingleSpace<T extends Tuple>
     }
   }
   
-  public void initialize()
-    throws DataException
+  public void start()
+    throws LifecycleException
   { 
     if (registryNode==null)
     { 
-      throw new DataException
-        ("SingleSpace: must call register() before initialize()");
+      throw new LifecycleException
+        ("SingleSpace: must call register() before start()");
     }
-    store.initialize();
+    store.start();
+  }
+  
+  public void stop()
+    throws LifecycleException
+  { store.stop();
   }
   
   public BoundQuery<?,?> query(Query query,Focus<?> focus)
