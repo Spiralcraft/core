@@ -45,7 +45,7 @@ public class XmlAssembly<T>
    * Construct an XmlObject from the given Type resource and instance
    *   data resource.
    *
-   * The typeURI references a BuilderType (spiralcraft.data.builder.BuilderType),
+   * The typeURI references a spiralcraft.data.builder.BuilderType,
    *   which refers to the spiralcraft.builder.AssemblyClass that should be 
    *   instantiated to create the target object. The AssemblyClass referred to
    *   is defined in <TypeURI>.assembly.xml
@@ -91,6 +91,10 @@ public class XmlAssembly<T>
     catch (BuildException x)
     { throw new DataException("Error instantiating assembly "+typeURI+": "+x,x);
     }
+  }
+  
+  public Assembly<T> getAssembly()
+  { return instance;
   }
   
   /**
