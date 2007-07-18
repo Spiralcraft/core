@@ -36,6 +36,7 @@ import java.beans.PropertyDescriptor;
 
 import java.util.HashMap;
 import java.util.WeakHashMap;
+import java.util.Enumeration;
 
 import java.lang.ref.WeakReference;
 
@@ -99,7 +100,7 @@ public class BeanReflector<T>
   private HashMap<String,BeanFieldTranslator<?,T>> _fields;
   private HashMap<String,MethodTranslator<?,T>> _methods;
   private Class<T> _targetClass;
-  // private Type _targetType;
+  private Type _targetType;
   private MethodResolver _methodResolver;
   
   @SuppressWarnings("unchecked") // Runtime case from Type to Class<T>
@@ -107,7 +108,7 @@ public class BeanReflector<T>
   { 
     System.err.println("BeanReflector.new() "+type);
     Class<T> clazz=null;
-    // _targetType=type;
+    _targetType=type;
     
     if (type instanceof Class)
     { clazz=(Class<T>) type;
@@ -185,6 +186,37 @@ public class BeanReflector<T>
         Reflector reflector=BeanReflector.getInstance
           (_targetClass.getComponentType());
         return (D) new ArrayIterationDecorator(source,reflector);
+      }
+      else if (Enumeration.class.isAssignableFrom(_targetClass))
+      {
+        if (_targetType instanceof ParameterizedType)
+        {
+          Type[] parameterTypes
+            =((ParameterizedType) _targetType).getActualTypeArguments();
+          if (parameterTypes.length>0)
+          {  
+            Type parameterType=parameterTypes[0];
+            Reflector reflector=BeanReflector.getInstance(parameterType);
+            return (D) new EnumerationIterationDecorator(source,reflector);
+          }
+          else
+          {
+            System.err.println
+              ("BeanReflector: IterationDecorator- "
+              +" no parameters for Enumeration" 
+              );
+            Reflector reflector=BeanReflector.getInstance(Object.class);
+            return (D) new EnumerationIterationDecorator(source,reflector);
+          }
+        }
+        else
+        {
+          System.err.println
+            ("BeanReflector: IterationDecorator- Enumeration not parameterized");
+          Reflector reflector=BeanReflector.getInstance(Object.class);
+          return (D) new EnumerationIterationDecorator(source,reflector);
+        }
+        
       }
       else if (Iterable.class.isAssignableFrom(_targetClass))
       { 
