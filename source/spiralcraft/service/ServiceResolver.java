@@ -38,7 +38,7 @@ public interface ServiceResolver
    *@throws AmbiguousServiceException if multiple services in the same scope with
    *  the same key provide the same interface
    */
-  public Service[] findServices(Class serviceInterface)
+  public Service[] findServices(Class<?> serviceInterface)
     throws AmbiguousServiceException;
 
   /**
@@ -48,7 +48,7 @@ public interface ServiceResolver
    *@throws AmbiguousServiceException if multiple services in the same scope with
    *  the same selector provide the same interface
    */
-  public Service findService(Class serviceInterface,Object selector)
+  public Service findService(Class<?> serviceInterface,Object selector)
     throws AmbiguousServiceException;
 
 }

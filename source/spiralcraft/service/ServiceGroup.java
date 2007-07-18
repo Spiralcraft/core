@@ -44,7 +44,7 @@ public class ServiceGroup
   { return _services;
   }
 
-  public Service[] findServices(Class serviceInterface)
+  public Service[] findServices(Class<?> serviceInterface)
     throws AmbiguousServiceException
   { 
     Service[] locals=new Service[_services.length];
@@ -89,7 +89,7 @@ public class ServiceGroup
     return (Service[]) ArrayUtil.appendArrays(locals,ArrayUtil.truncate(inherited,k));    
   }
 
-  public Service findService(Class serviceInterface,Object selector)
+  public Service findService(Class<?> serviceInterface,Object selector)
     throws AmbiguousServiceException
   { 
     Service ret=null;
@@ -191,7 +191,7 @@ public class ServiceGroup
   { _selector=val;
   }
 
-  public boolean providesInterface(Class serviceInterface)
+  public boolean providesInterface(Class<?> serviceInterface)
     throws AmbiguousServiceException
   {
     boolean found=false;
@@ -210,7 +210,7 @@ public class ServiceGroup
     return found;
   }
 
-  public Object getInterface(Class serviceInterface)
+  public Object getInterface(Class<?> serviceInterface)
     throws AmbiguousServiceException
   {
     Object ret=null;
