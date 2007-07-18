@@ -46,10 +46,16 @@ class BeanPropertyTranslator<Tprop,Tbean>
     _property=property;
     _readMethod=property.getReadMethod();
     _beanInfo=beanInfo;
-    // _reflector=BeanReflector.<Tprop>getInstance
-    //  ((Class<Tprop>)_property.getPropertyType());
-    _reflector=BeanReflector.<Tprop>getInstance
-      (_readMethod.getGenericReturnType());
+    if (_readMethod!=null)
+    {
+      _reflector=BeanReflector.<Tprop>getInstance
+        (_readMethod.getGenericReturnType());
+    }
+    else
+    {
+      _reflector=BeanReflector.<Tprop>getInstance
+        ((Class<Tprop>)_property.getPropertyType());
+    }
     
   }
 
