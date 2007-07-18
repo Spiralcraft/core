@@ -79,9 +79,6 @@ public class NamespaceReflector
   { return null;
   }
   
-  public String toString()
-  { return super.toString()+":"+getClass().getName();
-  }
 
   @SuppressWarnings("unchecked") // We don't know specific type
   public void register(String name,Reflector val)
@@ -121,6 +118,9 @@ public class NamespaceReflector
     }
   }
   
+  public String toString()
+  { return super.toString()+attributeMap.keySet();
+  }
   
 }
 
