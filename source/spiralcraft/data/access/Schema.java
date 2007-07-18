@@ -17,7 +17,7 @@ package spiralcraft.data.access;
 import spiralcraft.data.Type;
 
 /**
- * The collection of Types associated with an atomic unit of data storage.
+ * The collection of Types associated with a unit of data storage.
  */
 public class Schema
 {
