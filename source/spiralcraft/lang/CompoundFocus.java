@@ -101,7 +101,9 @@ public class CompoundFocus<T>
 
   public Focus<?> findFocus(String namespace,String name)
   { 
-    System.err.println("CompoundFocus["+this.namespaceAliases+":"+this.name+"].findFocus:["+namespace+"]:["+name+"]");
+    // System.err.println
+    //   ("CompoundFocus["+this.namespaceAliases+":"+this.name
+    //        +"].findFocus:["+namespace+"]:["+name+"]");
     if (hasNamespace(namespace))
     {
 

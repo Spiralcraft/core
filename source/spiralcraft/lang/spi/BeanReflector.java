@@ -106,7 +106,7 @@ public class BeanReflector<T>
   @SuppressWarnings("unchecked") // Runtime case from Type to Class<T>
   public BeanReflector(Type type)
   { 
-    System.err.println("BeanReflector.new() "+type);
+    // System.err.println("BeanReflector.new() "+type);
     Class<T> clazz=null;
     _targetType=type;
     
