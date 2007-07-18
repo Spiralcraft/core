@@ -98,6 +98,12 @@ public abstract class View<Ttuple extends Tuple>
   { return name;
   }
   
+  public void setName(String name)
+  { 
+    // XXX Assert stopped
+    this.name=name;
+  }
+  
   public TupleBinding<?> getTupleBinding()
   { return tupleBinding;
   }

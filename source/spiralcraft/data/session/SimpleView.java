@@ -24,6 +24,9 @@ import spiralcraft.data.lang.CursorBinding;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
+
+import java.net.URI;
 
 /**
  * A View based solely on a Queryable.
@@ -35,14 +38,29 @@ public class SimpleView<T extends Tuple>
   extends View<T>
 {
   
+  private URI typeURI;
+  
   public void setQueryable(Queryable<Tuple> queryable)
   { this.queryable=queryable;
+  }
+  
+  public void setTypeURI(URI typeURI)
+  { 
+    try
+    { this.type=Type.resolve(typeURI);
+    }
+    catch (DataException x)
+    { 
+      throw new IllegalArgumentException
+        ("Error resolving type "+typeURI+" : "+x,x);
+    }
   }
   
   @Override
   public void bindData(Focus<?> focus)
     throws DataException
   { 
+
     try
     { setTupleBinding(new CursorBinding<Tuple>(getType().getScheme()));
     }

@@ -17,17 +17,30 @@ package spiralcraft.data.session;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import java.net.URI;
+
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.CompoundFocus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.FocusProvider;
+import spiralcraft.lang.Reflector;
 
 import spiralcraft.lang.spi.Namespace;
 import spiralcraft.lang.spi.NamespaceReflector;
 import spiralcraft.lang.spi.SimpleBinding;
 
+import spiralcraft.builder.Lifecycle;
+import spiralcraft.builder.LifecycleException;
+
 import spiralcraft.data.DataException;
+import spiralcraft.data.EditableTuple;
+import spiralcraft.data.Type;
+
+import spiralcraft.data.spi.EditableArrayTuple;
+
+import spiralcraft.data.lang.StaticTupleBinding;
+
 
 /**
  * <P>Provides access to a set of coordinated Views of related data.
@@ -37,18 +50,18 @@ import spiralcraft.data.DataException;
  *  in this Focus is:
  *  
  * <UL>
- *   <LI><CODE>[DataSession] data.<I>viewname</I></CODE>
+ *   <LI><CODE>[dataSession] data.<I>viewname</I></CODE>
  *   <BR>References the Tuple at the current cursor position of the
  *     specified view
  *   </LI>
- *   <LI><CODE>[DataSession] data.<I>viewname</I>.<I>fieldname</I></CODE>
+ *   <LI><CODE>[dataSession] data.<I>viewname</I>.<I>fieldname</I></CODE>
  *   <BR>References a data field value at the current cursor position of the
  *     specified view
  *   </LI>
- *   <LI><CODE>[DataSession] view.<I>viewname</I></CODE>
+ *   <LI><CODE>[dataSession] view.<I>viewname</I></CODE>
  *   <BR>References the spiralcraft.data.session.View as a Java Bean
  *   </LI>
- *   <LI><CODE>[DataSession] session</CODE>
+ *   <LI><CODE>[dataSession] .</CODE>
  *   <BR>References the spiralcraft.data.session.DataSession itself 
  *     as a Java Bean
  *   </LI>
@@ -61,7 +74,7 @@ import spiralcraft.data.DataException;
  *
  */
 public class DataSession
-  implements FocusProvider
+  implements FocusProvider<DataSession>,Lifecycle
 {
 
   protected final ArrayList<View<?>> views=new ArrayList<View<?>>();
@@ -70,23 +83,24 @@ public class DataSession
   
   private final NamespaceReflector dataSessionNamespaceReflector
     =new NamespaceReflector();
-  private Namespace dataSessionNamespace;
   private SimpleBinding<Namespace> dataSessionChannel;
     
   private final NamespaceReflector dataNamespaceReflector
     =new NamespaceReflector();
-  private Namespace dataNamespace;
   private SimpleBinding<Namespace> dataChannel;
   
   private final NamespaceReflector viewNamespaceReflector
     =new NamespaceReflector();
-  private Namespace viewNamespace;
   private SimpleBinding<Namespace> viewChannel;
   
+  private Reflector<EditableTuple> inReflector;
+  private StaticTupleBinding<EditableTuple> inChannel;
   
-  private SimpleFocus<Namespace> localFocus;
+  private SimpleFocus<DataSession> localFocus;
   
   private SimpleFocus<Namespace> dataFocus;
+  
+  private URI inTypeURI;
 
 
   /**
@@ -96,20 +110,28 @@ public class DataSession
    *   aliases specified.
    *   
    */
-  public SimpleFocus<Namespace> createFocus
-    (Focus<?> parentFocus,String name)
+  public SimpleFocus<DataSession> createFocus
+    (Focus<?> parentFocus,String namespace,String name)
     throws BindException
   {
-    CompoundFocus<Namespace> focus=new CompoundFocus<Namespace>();
+    CompoundFocus<DataSession> focus=new CompoundFocus<DataSession>();
     if (parentFocus!=null)
-    { focus.setParentFocus(focus);
+    { focus.setParentFocus(focus);    
     }
-    focus.setSubject(dataSessionChannel);
+    focus.setSubject(new SimpleBinding<DataSession>(this,true));
     focus.setContext(dataSessionChannel);
-    focus.addNamespaceAlias("data");
+    focus.addNamespaceAlias(namespace);
     focus.setName(name);
     
     return focus;
+  }
+  
+  public void setViews(View<?>[] views)
+  { 
+    this.views.clear();
+    for (View<?> view:views)
+    { this.views.add(view);
+    }
   }
   
   
@@ -160,12 +182,12 @@ public class DataSession
       view.bindData(dataFocus);
       try
       { 
-        dataNamespace.putOptic
+        dataChannel.get().putOptic
           (view.getName()
           ,view.getTupleBinding()
           );
         
-        viewNamespace.putOptic
+        viewChannel.get().putOptic
           (view.getName()
           ,new SimpleBinding<View>(view.getViewReflector(),view,true)
           );
@@ -183,35 +205,60 @@ public class DataSession
 
   }
   
+  @Override
+  public void start()
+    throws LifecycleException
+  {
+    try
+    { initialize();
+    }
+    catch (DataException x)
+    { 
+      x.printStackTrace();
+      throw new LifecycleException(x.toString(),x);
+    }
+  }
+  
+  @Override
+  public void stop()
+  { }
+  
+
   @SuppressWarnings("unchecked") // Heterogeneous ops
-  public void initialize()
+  private void initialize()
     throws DataException
   { 
     initViews();
-    
-    dataSessionNamespace=new Namespace(dataSessionNamespaceReflector);
-    dataSessionChannel
-      =new SimpleBinding
-        (dataSessionNamespaceReflector,dataSessionNamespace,true);
-      
-    dataNamespace=new Namespace(dataNamespaceReflector);
-    dataChannel=new SimpleBinding(dataNamespaceReflector,dataNamespace,true);
-
-    viewNamespace=new Namespace(viewNamespaceReflector);
-    viewChannel=new SimpleBinding(viewNamespaceReflector,viewNamespace,true);
-
     try
-    { 
+    {
+      dataSessionNamespaceReflector.register("data",dataNamespaceReflector);
+      dataSessionNamespaceReflector.register("view",viewNamespaceReflector);
+      dataSessionNamespaceReflector.register("in",inReflector);
+    
+      Namespace dataSessionNamespace
+        =new Namespace(dataSessionNamespaceReflector);
+      dataSessionChannel
+        =new SimpleBinding
+          (dataSessionNamespaceReflector,dataSessionNamespace,true);
+      
+      if (inTypeURI!=null)
+      {
+        Type inType=Type.resolve(inTypeURI);
+        EditableTuple inTuple=new EditableArrayTuple(inType.getScheme());
+        inChannel
+          =new StaticTupleBinding<EditableTuple>(inType.getScheme(),inTuple);
+        dataSessionNamespace.putOptic("in",inChannel);
+      }
+
+      Namespace dataNamespace=new Namespace(dataNamespaceReflector);
+      dataChannel=new SimpleBinding(dataNamespaceReflector,dataNamespace,true);
       dataSessionNamespace.putOptic("data",dataChannel);
+      
+
+      Namespace viewNamespace=new Namespace(viewNamespaceReflector);
+      viewChannel=new SimpleBinding(viewNamespaceReflector,viewNamespace,true);
       dataSessionNamespace.putOptic("view",viewChannel);
-      
-      // Maybe put the dataSession as the subject at the createFocus point
-      // The context of that focus will be the dataSessionNamespace
-      //
-      // data and view are context names, which lead to the data namespace
-      //   and the view namespace.
-      
-      dataSessionNamespace.putOptic("session", new SimpleBinding(this,true));
+
     }
     catch (BindException x)
     {
@@ -224,7 +271,7 @@ public class DataSession
     
     try
     { 
-      localFocus=createFocus(null,"DataSession");
+      localFocus=createFocus(null,"data","DataSession");
     }
     catch (BindException x)
     {
