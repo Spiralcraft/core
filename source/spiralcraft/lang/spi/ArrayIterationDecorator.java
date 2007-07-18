@@ -34,7 +34,14 @@ public class ArrayIterationDecorator<I>
   }
   
   public Iterator<I> createIterator()
-  { return ArrayUtil.<I>iterator( source.get());
+  { 
+    I[] array=source.get();
+    if (array!=null)
+    { return ArrayUtil.<I>iterator( array);
+    }
+    else
+    { return null;
+    }
   }
 
 }

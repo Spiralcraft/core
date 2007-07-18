@@ -25,7 +25,7 @@ import java.util.Iterator;
  * @param <I>
  */
 public class IterationContext<I>
-  implements Iterator
+  implements Iterator<I>
 {
   private I value;
   private final Iterator<I> iterator;
@@ -39,18 +39,28 @@ public class IterationContext<I>
   }
   
   public boolean hasNext()
-  { return iterator.hasNext();
+  { 
+    if (iterator!=null)
+    { return iterator.hasNext();
+    }
+    else
+    { return false;
+    }
   }
   
   public I next()
   {
-    value=iterator.next();
+    if (iterator!=null)
+    { value=iterator.next();
+    }
     return value;
   }
   
   public void remove()
   { 
-    iterator.remove();
+    if (iterator!=null)
+    { iterator.remove();
+    }
     value=null;
   }
 
