@@ -27,7 +27,7 @@ public class CursorIterator<T extends Tuple>
   }
   
   public boolean hasNext()
-  { return hasNext();
+  { return hasNext;
   }
   
   public T next()
