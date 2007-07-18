@@ -21,7 +21,7 @@ package spiralcraft.lang;
  * @author mike
  *
  */
-public interface FocusProvider
+public interface FocusProvider<T>
 {
   /** 
    * <P>Create a new Focus, that has as its parent the specified Focus and that
@@ -29,11 +29,14 @@ public interface FocusProvider
    *   operator. 
    * 
    * @param parent The parent Focus
+   * @param namespace The namespace this Focus is associated with used in the
+   *                 Focus resolution operator, 
+   *                 ( ie. <code>[<i>myNamespace:myWidget</i>]</code>)
    * @param name The name this Focus can be addressed using the Focus
    *                 resolution operator, ( ie. <code>[<i>myWidget</i>]</code>)
    * @return The new Focus
    * @throws BindException if an error occurs when creating the Focus
    */
-  Focus<?> createFocus(Focus<?> parent,String name)
+  Focus<T> createFocus(Focus<?> parent,String namespace,String name)
     throws BindException;
 }

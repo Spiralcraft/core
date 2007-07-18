@@ -24,6 +24,26 @@ public class CompoundFocus<T>
   private HashSet<String> namespaceAliases;
   private HashMap<String,Focus<?>> foci;
 
+  
+  public CompoundFocus
+    (Focus<?> parentFocus
+    ,String namespace
+    ,String name
+    ,Channel<T> subject
+    ,Channel<?> context
+    )
+  { 
+    setParentFocus(parentFocus);
+    addNamespaceAlias(namespace);
+    setName(name);
+    setSubject(subject);
+    setContext(context);
+  }
+  
+  public CompoundFocus()
+  {
+  }
+  
   public void setName(String name)
   { this.name=name;
   }
@@ -49,7 +69,8 @@ public class CompoundFocus<T>
 
   /**
    * Bind a Focus to a name that will referenced via findFocus(), or by the
-   *   <CODE>[<I>name</I>]</CODE> operator in the expression language.
+   *   <CODE>[<I>name</I>]</CODE> or <CODE>[<I>namespace:name</I>]</CODE>
+   *   operator in the expression language.
    */
   public synchronized void bindFocus(String name,Focus<?> focus)
     throws BindException
@@ -80,10 +101,11 @@ public class CompoundFocus<T>
 
   public Focus<?> findFocus(String namespace,String name)
   { 
+    System.err.println("CompoundFocus["+this.namespaceAliases+":"+this.name+"].findFocus:["+namespace+"]:["+name+"]");
     if (hasNamespace(namespace))
     {
 
-      if (this.name==name)
+      if (this.name!=null && this.name.equals(name))
       { return this;
       }
       if (foci!=null)
