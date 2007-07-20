@@ -61,7 +61,11 @@ public class XmlTypeFactory
     { resource=Resolver.getInstance().resolve(resourceUri);
     }
     catch (UnresolvableURIException x)
-    { return false;
+    { 
+      throw new DataException
+        ("Could not resolve resource "+resourceUri+": "+x.toString()
+        ,x
+        );
     } 
     
     try
