@@ -153,6 +153,20 @@ public class Resolver
     return factory.resolve(uri);
     
   }
+  
+  /**
+   * 
+   * @param uri
+   * @return The absolute, globally resolvable URI that corresponds to the 
+   *  resource referenced by the specified URI.
+   * @throws UnresolvableURIException
+   */
+  public URI canonicalize(URI uri)
+    throws UnresolvableURIException
+  { 
+    Resource resource=resolve(uri);
+    return resource.getURI();
+  }
 
   public void registerResourceFactory
     (String scheme
