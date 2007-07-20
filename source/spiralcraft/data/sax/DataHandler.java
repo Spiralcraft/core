@@ -31,6 +31,10 @@ import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.UnresolvableURIException;
+
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
@@ -48,7 +52,6 @@ public class DataHandler
   private static final String STANDARD_PATH
     ="java:/spiralcraft/data/types/standard/";
   
-  // private final TypeResolver resolver=TypeResolver.getTypeResolver();
   private Frame currentFrame;
   private URI resourceURI;
   private DataConsumer<? super Tuple> dataConsumer;
@@ -366,7 +369,14 @@ public class DataHandler
       URI typeUri;
      
       if ( uri==null || uri.length()==0)
-      { typeUri=URI.create(STANDARD_PATH.concat(localName));
+      { 
+        
+        // Default to standard types path
+        typeUri=URI.create(STANDARD_PATH.concat(localName));
+        return Type.resolve(typeUri);
+      }
+      else if (uri.equals(".") && resourceURI!=null)
+      { return Type.resolve(resourceURI.resolve(localName));
       }
       else
       { 
@@ -376,9 +386,10 @@ public class DataHandler
         else
         { typeUri=URI.create(uri.concat("/").concat(localName));
         }
-      }
+        
 //      System.err.println("DataHandler resolving: "+typeUri.toString());
-      return TypeResolver.getTypeResolver().resolve(typeUri);
+        return Type.resolve(typeUri);
+      }
     }
 
     /**
