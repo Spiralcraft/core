@@ -180,7 +180,7 @@ public class Search
   /**
    * Run a configured search and return a List of the results
    */
-  public synchronized List list()
+  public synchronized List<Resource> list()
   { 
     ListFilter filter=new ListFilter();
     setFilter(filter);

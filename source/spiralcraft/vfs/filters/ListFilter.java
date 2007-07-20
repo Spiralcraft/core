@@ -38,7 +38,7 @@ public class ListFilter
     return true;
   }
 
-  public List getList()
+  public List<Resource> getList()
   { return _list;
   }
   
