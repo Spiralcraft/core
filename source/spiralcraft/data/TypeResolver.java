@@ -24,6 +24,8 @@ import java.lang.ref.WeakReference;
 
 import spiralcraft.util.ClassLoaderLocal;
 
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.UnresolvableURIException;
 
 import spiralcraft.data.core.ArrayType;
 import spiralcraft.data.core.AbstractCollectionType;
@@ -137,11 +139,20 @@ public class TypeResolver
     if (typeUri==null)
     { return null;
     }
-    if (!typeUri.isAbsolute())
-    { 
-      throw new IllegalArgumentException
-        ("Type URI ["+typeUri+"] is relative and cannot be resolved");
+
+//    if (!typeUri.isAbsolute())
+//    { 
+//      throw new IllegalArgumentException
+//        ("Type URI ["+typeUri+"] is relative and cannot be resolved");
+//    }
+    
+    try
+    { typeUri=Resolver.getInstance().canonicalize(typeUri);
     }
+    catch (UnresolvableURIException x)
+    { throw new TypeNotFoundException(typeUri,x);
+    }
+    
     Type<T> type=null;
     try
     { type=load(typeUri);
