@@ -18,6 +18,9 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 
 import java.util.HashMap;
+import java.util.WeakHashMap;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Cache of BeanInfo (MappedBeanInfo) derived from classes with a
@@ -34,15 +37,11 @@ import java.util.HashMap;
  */
 public class BeanInfoCache
 {
-  //
-  // XXX TO DO: Make Class keys weak so they can drop out of the map
-  //            if they need to be unloaded.
-  //
   private static final HashMap<Integer,BeanInfoCache> _SINGLETONS
   	=new HashMap<Integer,BeanInfoCache>(); 
 
-  private HashMap<Class,MappedBeanInfo> _cache
-  	=new HashMap<Class,MappedBeanInfo>();
+  private WeakHashMap<Class<?>,WeakReference<MappedBeanInfo>> _cache
+  	=new WeakHashMap<Class<?>,WeakReference<MappedBeanInfo>>();
   private int _introspectorFlags;
   
   /**
@@ -74,18 +73,23 @@ public class BeanInfoCache
   /**
    *@return The MappedBeanInfo object for the specified Class.
    */
-  public synchronized MappedBeanInfo getBeanInfo(Class clazz)
+  public synchronized MappedBeanInfo getBeanInfo(Class<?> clazz)
     throws IntrospectionException
   {
-    MappedBeanInfo binf=_cache.get(clazz);
-    if (binf==null)
+    WeakReference<MappedBeanInfo> binfRef=_cache.get(clazz);
+    MappedBeanInfo binf=null;
+    if (binfRef!=null)
+    { binf=binfRef.get();
+    }
+    
+    if (binfRef==null || binf==null)
     { 
       binf=new MappedBeanInfo
         (Introspector.getBeanInfo
           (clazz,_introspectorFlags)
         );
         
-      _cache.put(clazz,binf);
+      _cache.put(clazz,new WeakReference<MappedBeanInfo>(binf));
       Introspector.flushFromCaches(clazz);
     }
     return binf;
