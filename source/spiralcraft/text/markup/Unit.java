@@ -39,6 +39,13 @@ public abstract class Unit<T extends Unit<T>>
   { _parent=parent;
   }
   
+  /**
+   * Find a unit among this Unit's ancestors/containers
+   * 
+   * @param <X>
+   * @param clazz
+   * @return The unit with the specific class, or null if none was found
+   */
   @SuppressWarnings("unchecked") // Downcast from runtime check
   public <X extends Unit<T>> X findUnit(Class<X> clazz)
   {
