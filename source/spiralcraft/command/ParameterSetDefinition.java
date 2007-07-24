@@ -21,7 +21,7 @@ public class ParameterSetDefinition
   private LinkedHashMap<String,ParameterDefinition> _parameters
   	=new LinkedHashMap<String,ParameterDefinition>();
   
-  public void addParameter(String name,int count,Class type,boolean required)
+  public void addParameter(String name,int count,Class<?> type,boolean required)
   { _parameters.put(name,new ParameterDefinition(name,count,type,required));
   }
   
@@ -37,7 +37,7 @@ public class ParameterSetDefinition
   { return getParameter(name).count;
   }
   
-  public Class getType(String name)
+  public Class<?> getType(String name)
   { return getParameter(name).type;
   }
 }
@@ -46,10 +46,11 @@ class ParameterDefinition
 {
   public final String name;
   public final int count;
-  public final Class type;
+  public final Class<?> type;
   public final boolean required;
 
-  public ParameterDefinition(String name,int count,Class type,boolean required)
+  public ParameterDefinition
+    (String name,int count,Class<?> type,boolean required)
   {
     this.name=name;
     this.count=count;

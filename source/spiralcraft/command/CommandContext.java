@@ -79,7 +79,7 @@ public abstract class CommandContext
   /**
    * Return a list of subcontexts
    */
-  public List listContexts()
+  public List<String> listContexts()
   { 
     LinkedList<String> list=new LinkedList<String>();
     list.addAll(_contexts.keySet());
