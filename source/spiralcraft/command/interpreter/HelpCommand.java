@@ -15,7 +15,6 @@
 package spiralcraft.command.interpreter;
 
 import java.util.List;
-import java.util.Iterator;
 import java.util.ArrayList;
 
 import spiralcraft.command.Command;
@@ -51,9 +50,8 @@ public class HelpCommand
     messageLines.add("");
     
     
-    for (Iterator it=commands.iterator();it.hasNext();)
+    for (Command command:commands)
     { 
-      Command command=(Command) it.next();
       messageLines.add("    command: "+command.getName());
       messageLines.add("description: "+command.getDescription());
       messageLines.add("");

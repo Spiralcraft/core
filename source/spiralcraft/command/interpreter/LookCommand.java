@@ -15,7 +15,6 @@
 package spiralcraft.command.interpreter;
 
 import java.util.List;
-import java.util.Iterator;
 import java.util.ArrayList;
 
 import spiralcraft.command.Command;
@@ -45,13 +44,13 @@ public class LookCommand
   { 
     CommandContext targetContext=context;
     
-    List contexts=targetContext.listContexts();
+    List<String> contexts=targetContext.listContexts();
 
     List<String> messageLines=new ArrayList<String>(contexts.size()+10);
     messageLines.add(targetContext.getDescription());
     
-    for (Iterator it=contexts.iterator();it.hasNext();)
-    { messageLines.add("  "+it.next());
+    for (String str:contexts)
+    { messageLines.add("  "+str);
     }
     
     context.handleMessage(messageLines.toArray());
