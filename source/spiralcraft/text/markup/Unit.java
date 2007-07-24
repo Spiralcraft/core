@@ -39,6 +39,20 @@ public abstract class Unit<T extends Unit<T>>
   { _parent=parent;
   }
   
+  @SuppressWarnings("unchecked") // Downcast from runtime check
+  public <X extends Unit<T>> X findUnit(Class<X> clazz)
+  {
+    if (clazz.isAssignableFrom(getClass()))
+    { return (X) this;
+    }
+    else if (_parent!=null)
+    { return _parent.<X>findUnit(clazz);
+    }
+    else
+    { return null;
+    }
+  }
+  
   public Unit<T> getParent()
   { return _parent;
   }
