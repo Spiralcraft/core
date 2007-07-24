@@ -77,7 +77,7 @@ public class ArrayUtil
    */
   public static Object mergeArrays(Object array1,Object array2)
   { 
-    TreeSet treeSet=new TreeSet();
+    TreeSet<Object> treeSet=new TreeSet<Object>();
     addToCollection(treeSet,array1);
     addToCollection(treeSet,array2);
     Object array3=Array.newInstance(array1.getClass().getComponentType(),treeSet.size());
@@ -90,7 +90,7 @@ public class ArrayUtil
    * Create single element array of the specified class which contains the
    *   specified value
    */
-  public static Object newInstance(Class arrayComponentClass,Object value)
+  public static Object newInstance(Class<?> arrayComponentClass,Object value)
   { 
     Object array=Array.newInstance(arrayComponentClass,1);
     Array.set(array,0,value);
@@ -373,13 +373,13 @@ public class ArrayUtil
     
   }
   
-  public static final Iterable iterable(final Object array)
+  public static final <T> Iterable<T> iterable(final T[] array)
   {
-    return new Iterable()
+    return new Iterable<T>()
     {
-      public Iterator iterator()
+      public Iterator<T> iterator()
       {
-        return new Iterator()
+        return new Iterator<T>()
         {
           private int index=0;
           private int length=Array.getLength(array);
@@ -388,8 +388,9 @@ public class ArrayUtil
           { return index<length;
           }
           
-          public Object next()
-          { return Array.get(array,index++);
+          @SuppressWarnings("unchecked") // Cast from not-generic method
+          public T next()
+          { return (T) Array.get(array,index++);
           }
           
           public void remove()

@@ -59,7 +59,7 @@ public  class ListWrapper<T>
   { return _list.iterator();
   }
   
-  public boolean retainAll(Collection c)
+  public boolean retainAll(Collection<?> c)
   { return _list.retainAll(c);
   }
   
@@ -67,7 +67,7 @@ public  class ListWrapper<T>
   { return _list.contains(o);
   }
   
-  public boolean containsAll(Collection c)
+  public boolean containsAll(Collection<?> c)
   { return _list.containsAll(c);
   }
 
@@ -75,7 +75,7 @@ public  class ListWrapper<T>
   { return _list.remove(o);
   }
   
-  public boolean removeAll(Collection c)
+  public boolean removeAll(Collection<?> c)
   { return _list.removeAll(c);
   }
 

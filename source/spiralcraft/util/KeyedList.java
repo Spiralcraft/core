@@ -45,7 +45,7 @@ public class KeyedList<T>
     return map;
   }
   
-  public void removeMap(Index map)
+  public void removeMap(Index<Object,T> map)
   { 
     if (_keys!=null)
     { 
