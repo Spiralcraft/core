@@ -27,8 +27,8 @@ import java.lang.reflect.Method;
  */
 public abstract class ClassUtil
 {
-  private static final Map<Class,Class> primitiveEquivalentMap =
-    new HashMap<Class,Class>();
+  private static final Map<Class<?>,Class<?>> primitiveEquivalentMap =
+    new HashMap<Class<?>,Class<?>>();
 
   static {
     primitiveEquivalentMap.put(Boolean.class, Boolean.TYPE);
@@ -41,8 +41,8 @@ public abstract class ClassUtil
     primitiveEquivalentMap.put(Short.class, Short.TYPE);
   }
 
-  private static final Map<Class,Class> boxedEquivalentMap =
-    new HashMap<Class,Class>();
+  private static final Map<Class<?>,Class<?>> boxedEquivalentMap =
+    new HashMap<Class<?>,Class<?>>();
 
   static {
     boxedEquivalentMap.put(Boolean.TYPE, Boolean.class);
@@ -55,11 +55,11 @@ public abstract class ClassUtil
     boxedEquivalentMap.put(Short.TYPE, Short.class);
   }
 
-  private static final Map<Class,Set> primitiveCompatabilityMap =
-    new HashMap<Class,Set>();
+  private static final Map<Class<?>,Set<?>> primitiveCompatabilityMap =
+    new HashMap<Class<?>,Set<?>>();
 
   static {
-    Set<Class> set = new HashSet<Class>();
+    Set<Class<?>> set = new HashSet<Class<?>>();
 
     set.add(Short.TYPE);
     set.add(Integer.TYPE);
@@ -68,7 +68,7 @@ public abstract class ClassUtil
     set.add(Double.TYPE);
     primitiveCompatabilityMap.put(Byte.TYPE, set);
 
-    set = new HashSet<Class>();
+    set = new HashSet<Class<?>>();
 
     set.add(Integer.TYPE);
     set.add(Long.TYPE);
@@ -77,20 +77,20 @@ public abstract class ClassUtil
     primitiveCompatabilityMap.put(Short.TYPE, set);
     primitiveCompatabilityMap.put(Character.TYPE, set);
 
-    set = new HashSet<Class>();
+    set = new HashSet<Class<?>>();
 
     set.add(Long.TYPE);
     set.add(Float.TYPE);
     set.add(Double.TYPE);
     primitiveCompatabilityMap.put(Integer.TYPE, set);
 
-    set = new HashSet<Class>();
+    set = new HashSet<Class<?>>();
 
     set.add(Float.TYPE);
     set.add(Double.TYPE);
     primitiveCompatabilityMap.put(Long.TYPE, set);
 
-    set = new HashSet<Class>();
+    set = new HashSet<Class<?>>();
 
     set.add(Double.TYPE);
     primitiveCompatabilityMap.put(Float.TYPE, set);
@@ -99,7 +99,7 @@ public abstract class ClassUtil
   /**
    * Indicate whether the clazz represents a number
    */
-  public static boolean isNumber(Class clazz)
+  public static boolean isNumber(Class<?> clazz)
   {
     return Number.class.isAssignableFrom(clazz)
       || Number.class.isAssignableFrom(boxedEquivalent(clazz));
@@ -157,7 +157,7 @@ public abstract class ClassUtil
   /**
    * Return the primitive equivalent of the specified Class
    */
-  public static Class primitiveEquivalent(Class clazz)
+  public static Class<?> primitiveEquivalent(Class<?> clazz)
   { 
     return     
       clazz.isPrimitive()
@@ -169,7 +169,7 @@ public abstract class ClassUtil
   /**
    * Return the primitive default value for the specified primitive Class
    */
-  public static Object primitiveDefault(Class clazz)
+  public static Object primitiveDefault(Class<?> clazz)
   { 
     if (clazz==Boolean.TYPE)
     { return Boolean.FALSE;
@@ -203,7 +203,7 @@ public abstract class ClassUtil
   /**
    * Return the boxed equivalent of the specified Class
    */
-  public static Class boxedEquivalent(Class clazz)
+  public static Class<?> boxedEquivalent(Class<?> clazz)
   { 
     return     
       clazz.isPrimitive()
@@ -216,9 +216,9 @@ public abstract class ClassUtil
    *   closest match to the specified signature, taking into account
    *   primitive boxing.
    */
-  public static Constructor getConstructor
-    (Class clazz
-    ,Class[] signature
+  public static Constructor<?> getConstructor
+    (Class<?> clazz
+    ,Class<?>[] signature
     )
   { 
     try
@@ -235,9 +235,9 @@ public abstract class ClassUtil
    *   primitive boxing.
    */
   public static Method getMethod
-    (Class clazz
+    (Class<?> clazz
     ,String name
-    ,Class[] signature
+    ,Class<?>[] signature
     )
   { 
     try

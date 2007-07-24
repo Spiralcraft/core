@@ -33,8 +33,8 @@ final class ClassUtilities {
    * Mapping from primitive wrapper Classes to their
    * corresponding primitive Classes.
    */
-  private static final Map<Class,Class> objectToPrimitiveMap =
-    new HashMap<Class,Class>(13);
+  private static final Map<Class<?>,Class<?>> objectToPrimitiveMap =
+    new HashMap<Class<?>,Class<?>>(13);
 
   static {
     objectToPrimitiveMap.put(Boolean.class, Boolean.TYPE);
@@ -52,11 +52,11 @@ final class ClassUtilities {
    * primitive classes whose instances can be assigned an
    * instance of the first.
    */
-  private static final Map<Class,Set<Class>> primitiveWideningsMap =
-    new HashMap<Class,Set<Class>>(11);
+  private static final Map<Class<?>,Set<Class<?>>> primitiveWideningsMap =
+    new HashMap<Class<?>,Set<Class<?>>>(11);
 
   static {
-    Set<Class> set = new HashSet<Class>();
+    Set<Class<?>> set = new HashSet<Class<?>>();
 
     set.add(Short.TYPE);
     set.add(Integer.TYPE);
@@ -65,7 +65,7 @@ final class ClassUtilities {
     set.add(Double.TYPE);
     primitiveWideningsMap.put(Byte.TYPE, set);
 
-    set = new HashSet<Class>();
+    set = new HashSet<Class<?>>();
 
     set.add(Integer.TYPE);
     set.add(Long.TYPE);
@@ -74,20 +74,20 @@ final class ClassUtilities {
     primitiveWideningsMap.put(Short.TYPE, set);
     primitiveWideningsMap.put(Character.TYPE, set);
 
-    set = new HashSet<Class>();
+    set = new HashSet<Class<?>>();
 
     set.add(Long.TYPE);
     set.add(Float.TYPE);
     set.add(Double.TYPE);
     primitiveWideningsMap.put(Integer.TYPE, set);
 
-    set = new HashSet<Class>();
+    set = new HashSet<Class<?>>();
 
     set.add(Float.TYPE);
     set.add(Double.TYPE);
     primitiveWideningsMap.put(Long.TYPE, set);
 
-    set = new HashSet<Class>();
+    set = new HashSet<Class<?>>();
 
     set.add(Double.TYPE);
     primitiveWideningsMap.put(Float.TYPE, set);
@@ -109,7 +109,7 @@ final class ClassUtilities {
    * @exception  ClassNotFoundException  if name names an
    * unknown class or primitive
    */
-  static Class classForNameOrPrimitive(String name, ClassLoader loader)
+  static Class<?> classForNameOrPrimitive(String name, ClassLoader loader)
   throws ClassNotFoundException {
     if (name == null || name.equals("") || name.equals("null")
         || name.equals("void"))
@@ -147,7 +147,7 @@ final class ClassUtilities {
    * @return  true if the class is accessible, false otherwise.
    * Presently returns true if the class is declared public.
    */
-  static boolean classIsAccessible(Class aClass) {
+  static boolean classIsAccessible(Class<?> aClass) {
     return Modifier.isPublic(aClass.getModifiers());
   }
 
@@ -178,8 +178,8 @@ final class ClassUtilities {
       }
 
       if (! lhs[i].isAssignableFrom(rhs[i])) {
-        Class lhsPrimEquiv = primitiveEquivalentOf(lhs[i]);
-        Class rhsPrimEquiv = primitiveEquivalentOf(rhs[i]);
+        Class<?> lhsPrimEquiv = primitiveEquivalentOf(lhs[i]);
+        Class<?> rhsPrimEquiv = primitiveEquivalentOf(rhs[i]);
 
         if (! primitiveIsAssignableFrom(lhsPrimEquiv, rhsPrimEquiv))
           return false;
@@ -201,7 +201,8 @@ final class ClassUtilities {
    * searched, then their superclasses, etc. until a method is
    * found.  Returns null if there is no such method.
    */
-  static Method getAccessibleMethodFrom(Class<?> aClass, String methodName, Class[] parameterTypes) {
+  static Method getAccessibleMethodFrom
+    (Class<?> aClass, String methodName, Class<?>[] parameterTypes) {
     // Look for overridden method in the superclass.
     Class<?> superclass = aClass.getSuperclass();
     Method overriddenMethod = null;
@@ -268,10 +269,10 @@ final class ClassUtilities {
    * primitive wrapper.  If aClass is primitive, returns aClass.
    * Otherwise, returns null.
    */
-  static Class primitiveEquivalentOf(Class aClass) {
+  static Class<?> primitiveEquivalentOf(Class<?> aClass) {
     return aClass.isPrimitive()
            ? aClass
-           : (Class) objectToPrimitiveMap.get(aClass);
+           : (Class<?>) objectToPrimitiveMap.get(aClass);
   }
 
   /**
@@ -286,7 +287,7 @@ final class ClassUtilities {
    * does not represent a primitive (e.g. Byte.TYPE), returns
    * false.
    */
-  static boolean primitiveIsAssignableFrom(Class lhs, Class rhs) {
+  static boolean primitiveIsAssignableFrom(Class<?> lhs, Class<?> rhs) {
     if (lhs == null || rhs == null)
       return false;
 
@@ -296,7 +297,7 @@ final class ClassUtilities {
     if (lhs.equals(rhs))
       return true;
 
-    Set wideningSet = (Set) primitiveWideningsMap.get(rhs);
+    Set<?> wideningSet = (Set<?>) primitiveWideningsMap.get(rhs);
 
     if (wideningSet == null)
       return false;
