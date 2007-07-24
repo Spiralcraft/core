@@ -31,8 +31,6 @@ import java.io.OutputStreamWriter;
 import java.io.FileOutputStream;
 import java.io.File;
 
-import java.util.Iterator;
-
 import spiralcraft.util.Arguments;
 
 public class ParseTreeTest
@@ -164,9 +162,8 @@ public class ParseTreeTest
     }
     if (node.getChildren()!=null)
     {
-      Iterator it=node.getChildren().iterator();
-      while (it.hasNext())
-      { dump(out,(Node) it.next(),prefix);
+      for (Node child: node.getChildren())
+      { dump(out,child,prefix);
       }
     }
     

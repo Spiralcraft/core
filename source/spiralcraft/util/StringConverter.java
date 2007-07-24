@@ -36,10 +36,10 @@ import java.lang.reflect.InvocationTargetException;
 public abstract class StringConverter<T>
 {
 
-  private static final HashMap<Class,StringConverter<?>> _MAP
-    =new HashMap<Class,StringConverter<?>>();
+  private static final HashMap<Class<?>,StringConverter<?>> _MAP
+    =new HashMap<Class<?>,StringConverter<?>>();
     
-  private static final StringConverter _ONE_WAY_INSTANCE=new ToString();
+  private static final StringConverter<?> _ONE_WAY_INSTANCE=new ToString();
   
   static
   {
@@ -79,7 +79,7 @@ public abstract class StringConverter<T>
         // Discover single argument constructor and create a new
         //   stringConverter for the class
 
-        Constructor constructor=null;
+        Constructor<?> constructor=null;
         try
         { constructor=type.getConstructor(new Class[] {String.class});
         }
@@ -106,7 +106,8 @@ public abstract class StringConverter<T>
   /**
    * Register an instance of a StringConverter to be used for the specified type
    */
-  public static void registerInstance(Class type,StringConverter converter)
+  public static void registerInstance
+    (Class<?> type,StringConverter<?> converter)
   {
     synchronized (_MAP)
     { _MAP.put(type,converter);
@@ -149,9 +150,9 @@ public abstract class StringConverter<T>
 final class ConstructFromString
   extends StringConverter<Object>
 {
-  private Constructor _constructor;
+  private Constructor<?> _constructor;
 
-  public ConstructFromString(Constructor constructor)
+  public ConstructFromString(Constructor<?> constructor)
   { _constructor=constructor;
   }
   
@@ -187,33 +188,33 @@ final class ToString
 }
 
 final class StringToString
-  extends StringConverter
+  extends StringConverter<String>
 {
-  public String toString(Object val)
+  public String toString(String val)
   { return (String) val;
   }
 
-  public Object fromString(String val)
+  public String fromString(String val)
   { return val;
   }
 }
 
 final class IntToString
-  extends StringConverter
+  extends StringConverter<Integer>
 {
-  public Object fromString(String val)
+  public Integer fromString(String val)
   { return val!=null?Integer.parseInt(val):null;
   }
 }
 
 final class BooleanToString
-  extends StringConverter
+  extends StringConverter<Boolean>
 {
-  public String toString(Object val)
+  public String toString(Boolean val)
   { return val!=null?val.toString():null;
   }
 
-  public Object fromString(String val)
+  public Boolean fromString(String val)
   { 
     if (val==null)
     { return null;
@@ -231,49 +232,49 @@ final class BooleanToString
 }
 
 final class FloatToString
-  extends StringConverter
+  extends StringConverter<Float>
 {
-  public Object fromString(String val)
+  public Float fromString(String val)
   { return val!=null?Float.parseFloat(val):null;
   }
 }
 
 final class LongToString
-  extends StringConverter
+  extends StringConverter<Long>
 {
-  public Object fromString(String val)
+  public Long fromString(String val)
   { return val!=null?Long.parseLong(val):null;
   }
 }
 
 final class DoubleToString
-  extends StringConverter
+  extends StringConverter<Double>
 {
-  public Object fromString(String val)
+  public Double fromString(String val)
   { return val!=null?Double.parseDouble(val):null;
   }
 }
 
 final class ShortToString
-  extends StringConverter
+  extends StringConverter<Short>
 {
-  public Object fromString(String val)
+  public Short fromString(String val)
   { return val!=null?Short.parseShort(val):null;
   }
 }
 
 final class CharacterToString
-  extends StringConverter
+  extends StringConverter<Character>
 {
-  public Object fromString(String val)
+  public Character fromString(String val)
   { return (val!=null && val.length()==1)?new Character(val.charAt(0)):null;
   }
 }
 
 final class ByteToString
-  extends StringConverter
+  extends StringConverter<Byte>
 {
-  public Object fromString(String val)
+  public Byte fromString(String val)
   { return val!=null?Byte.parseByte(val):null;
   }
 }
@@ -287,18 +288,18 @@ final class BigDecimalToString
 }
 
 final class BigIntegerToString
-  extends StringConverter
+  extends StringConverter<BigInteger>
 {
-  public Object fromString(String val)
+  public BigInteger fromString(String val)
   { return val!=null?new BigInteger(val):null;
   }
 }
 
 final class ClassToString
-  extends StringConverter
+  extends StringConverter<Class<?>>
 {
-  public String toString(Object val)
-  { return val!=null?((Class) val).getName():null;
+  public String toString(Class<?> val)
+  { return val!=null?val.getName():null;
   }
 
   /**
@@ -310,7 +311,7 @@ final class ClassToString
    * Names of primitive types and primitive array types 
    *  resolve to their primitive class.
    */
-  public Object fromString(String val)
+  public Class<?> fromString(String val)
   { 
     val=val.intern();    
     if (!val.contains("."))
@@ -401,13 +402,13 @@ final class ClassToString
 }
 
 final class URIToString
-  extends StringConverter
+  extends StringConverter<URI>
 {
-  public String toString(Object val)
-  { return val!=null?((URI) val).toString():null;
+  public String toString(URI val)
+  { return val!=null?(val).toString():null;
   }
 
-  public Object fromString(String val)
+  public URI fromString(String val)
   { return URI.create(val);
   }
 }
