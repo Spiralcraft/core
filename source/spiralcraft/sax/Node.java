@@ -16,7 +16,6 @@ package spiralcraft.sax;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Iterator;
 import java.util.ArrayList;
 
 import org.xml.sax.ContentHandler;
@@ -70,10 +69,8 @@ public abstract class Node
     }
 
     List<? super Node> ret=new ArrayList<Node>();
-    Iterator it = _children.iterator();
-    while (it.hasNext())
+    for (Node child:_children)
     {
-      Node child=(Node) it.next();
       if (type.isAssignableFrom(child.getClass()))
       { ret.add(child);
       }
@@ -111,9 +108,8 @@ public abstract class Node
   {
     if (_children!=null)
     {
-      Iterator it=_children.iterator();
-      while (it.hasNext())
-      { ((Node) it.next()).playEvents(handler);
+      for (Node child:_children)
+      { child.playEvents(handler);
       }
     }
   }

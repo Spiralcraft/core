@@ -83,7 +83,7 @@ public abstract class MarkupCompiler<U extends Unit<U>>
   /**
    * Obtain the current containing unit
    */
-  protected final Unit getUnit()
+  protected final Unit<U> getUnit()
   { return _unit;
   }
   

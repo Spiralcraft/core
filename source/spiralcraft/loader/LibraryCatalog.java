@@ -68,13 +68,10 @@ public class LibraryCatalog
   
   public void close()
   {
-    Iterator it=_libraries.iterator();
-    while (it.hasNext())
+    for (Library library: _libraries)
     { 
       try
-      { 
-        Library library=(Library) it.next();
-        library.forceClose();
+      { library.forceClose();
       }
       catch (IOException x)
       { }
@@ -101,10 +98,8 @@ public class LibraryCatalog
 
   private Library getLibrary(String fullPath)
   { 
-    Iterator it=_libraries.iterator();
-    while (it.hasNext())
+    for (Library library: _libraries)
     { 
-      Library library=(Library) it.next();
       if (library.path.equals(fullPath))
       { return library;
       }
@@ -190,10 +185,8 @@ public class LibraryCatalog
 
     public void release()
     {
-      Iterator it=_myLibraries.iterator();
-      while (it.hasNext())
+      for (Library library: _myLibraries)
       {
-        Library library=(Library) it.next();
         try
         { library.close();
         }
@@ -234,10 +227,8 @@ public class LibraryCatalog
     { 
       LinkedList<Library> libraries
         =new LinkedList<Library>();
-      Iterator it=_libraries.iterator();
-      while (it.hasNext())
+      for (Library library: _libraries)
       {
-        Library library=(Library) it.next();
         if (library.isModule(name))
         { libraries.add(library);
         }
@@ -253,12 +244,9 @@ public class LibraryCatalog
     public void addLibrary(String path)
       throws IOException
     { 
-      Iterator it=_libraries.iterator();
       boolean found=false;
-      while (it.hasNext())
+      for (Library library: _libraries)
       { 
-        Library library=(Library) it.next();
-
         // Use versioning logic to find the best
         //   library in the future
         if (library.path.equals(path))
@@ -327,13 +315,9 @@ public class LibraryCatalog
     
     public String findNativeLibrary(String name)
     {
-      // List libraries=new LinkedList();
 
-      Iterator it=_libraries.iterator();
-      while (it.hasNext())
+      for (Library library: _libraries)
       { 
-        Library library=(Library) it.next();
-
         if ((library instanceof NativeLibrary)
             && library.name.equals(name)
            )
@@ -424,12 +408,12 @@ class JarLibrary
       new JarFile(path);
     try
     {
-      Enumeration entries=jarFile.entries();
+      Enumeration<JarEntry> entries=jarFile.entries();
   
       while (entries.hasMoreElements())
       {
         JarEntry jarEntry
-          =(JarEntry) entries.nextElement();
+          =entries.nextElement();
         JarResource resource
           =new JarResource();
         resource.entry=jarEntry;

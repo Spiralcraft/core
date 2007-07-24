@@ -23,10 +23,10 @@ public class AmbiguousServiceException
 {
   private static final long serialVersionUID = 1L;
   
-  private Class _serviceInterface;
+  private Class<?> _serviceInterface;
   private Object _key;
 
-  public AmbiguousServiceException(Class serviceInterface,Object key)
+  public AmbiguousServiceException(Class<?> serviceInterface,Object key)
   { 
     _serviceInterface=serviceInterface;
     _key=key;
