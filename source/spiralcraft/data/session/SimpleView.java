@@ -38,7 +38,7 @@ public class SimpleView<T extends Tuple>
   extends View<T>
 {
   
-  private URI typeURI;
+  // private URI typeURI;
   
   public void setQueryable(Queryable<Tuple> queryable)
   { this.queryable=queryable;
