@@ -58,8 +58,8 @@ public class Transaction
   { return TRANSACTION_LOCAL.get();
   }
   
-  private HashMap<ResourceManager,Branch> branchMap
-    =new HashMap<ResourceManager,Branch>();
+  private HashMap<ResourceManager<?>,Branch> branchMap
+    =new HashMap<ResourceManager<?>,Branch>();
   
   private ArrayList<Branch> branches=new ArrayList<Branch>();
   private Branch llrBranch;
@@ -97,7 +97,7 @@ public class Transaction
   }
   
 
-  synchronized Branch branch(ResourceManager manager)
+  synchronized Branch branch(ResourceManager<?> manager)
     throws TransactionException
   { 
     Branch branch=branchMap.get(manager);

@@ -27,10 +27,10 @@ import spiralcraft.data.DataException;
 public class ConstructorInstanceResolver
   implements InstanceResolver
 {
-  private final Class[] formalArgs;
+  private final Class<?>[] formalArgs;
   private final Object[] actualArgs;
   
-  public ConstructorInstanceResolver(Class[] formalArgs,Object[] actualArgs)
+  public ConstructorInstanceResolver(Class<?>[] formalArgs,Object[] actualArgs)
   { 
     this.formalArgs=formalArgs;
     this.actualArgs=actualArgs;
@@ -48,7 +48,7 @@ public class ConstructorInstanceResolver
   {
     try
     {
-      Constructor constructor=clazz.getConstructor(formalArgs);
+      Constructor<?> constructor=clazz.getConstructor(formalArgs);
       return constructor.newInstance(actualArgs);
     }
     catch (NoSuchMethodException x)

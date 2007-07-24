@@ -62,7 +62,7 @@ public class ExpressionParserTest
     try 
     {
       long time=System.currentTimeMillis();
-      Expression expression = parser.parse(_expression);
+      Expression<?> expression = parser.parse(_expression);
       System.err.println("Initial read time "+(System.currentTimeMillis()-time));
       
       if (_dump)
