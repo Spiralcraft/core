@@ -592,9 +592,9 @@ public class ExpressionParser
     
     switch (_tokenizer.ttype)
     {
-      case StreamTokenizer.TT_EOF:
+      //case StreamTokenizer.TT_EOF:
         // implicit 'this', refers to subject of focus
-        return focusNode;
+        //return focusNode;
       case StreamTokenizer.TT_WORD:
         // a name resolve or method call against the subject of the focus
         return parseDereferenceExpression(focusNode);
@@ -609,8 +609,10 @@ public class ExpressionParser
         FocusNode parentFocusNode=new ParentFocusNode(focusNode);
         return parseFocusRelativeExpression(parentFocusNode);
       default:
-        throwUnexpected();
-        return null;
+        // implicit 'this', refers to subject of focus
+        return focusNode;
+        // throwUnexpected();
+        // return null;
     }
   }
   
