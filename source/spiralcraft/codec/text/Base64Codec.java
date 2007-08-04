@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
+
 import spiralcraft.codec.CodecException;
 
 public class Base64Codec
@@ -37,6 +40,15 @@ public class Base64Codec
   
   private static final int WINDOW_SIZE = 1024; 
 
+  public static final String encodeAsciiString(String input)
+    throws CodecException,IOException
+  {
+    ByteArrayOutputStream result=new ByteArrayOutputStream();
+    new Base64Codec().encode
+      (new ByteArrayInputStream(input.getBytes()), result);
+    return new String(result.toByteArray());
+  }
+  
   /**
    * Encode byte 1 of output from a 1 byte input chunk (bits 0-5)
    */
