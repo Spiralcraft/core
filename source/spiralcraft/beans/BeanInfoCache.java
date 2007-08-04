@@ -87,6 +87,7 @@ public class BeanInfoCache
       binf=new MappedBeanInfo
         (Introspector.getBeanInfo
           (clazz,_introspectorFlags)
+        ,this
         );
         
       _cache.put(clazz,new WeakReference<MappedBeanInfo>(binf));

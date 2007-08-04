@@ -22,6 +22,7 @@ import java.beans.BeanInfo;
 import java.beans.PropertyChangeListener;
 
 import java.lang.reflect.Field;
+import java.beans.IntrospectionException;
 
 /**
  * Extends the BeanInfo interface and implementation to enhance the performance
@@ -43,8 +44,11 @@ public class MappedBeanInfo
   private HashMap<String,Field> _fieldMap;
   private Field[] _fields;
   private EventSetDescriptor _propertyChangeEventSetDescriptor=null;
-
-  public MappedBeanInfo(BeanInfo binf)
+  private final MappedBeanInfo superBeanInfo;
+  private final MappedBeanInfo[] interfacesBeanInfo;
+  
+  public MappedBeanInfo(BeanInfo binf,BeanInfoCache cache)
+    throws IntrospectionException
   { 
     super(binf);
     mapProperties();
@@ -60,6 +64,29 @@ public class MappedBeanInfo
         _propertyChangeEventSetDescriptor=events[i];
         break;
       }
+    }
+    
+    Class<?> superClass=binf.getBeanDescriptor().getBeanClass().getSuperclass();
+    if (superClass!=null)
+    { superBeanInfo=cache.getBeanInfo(superClass);
+    }
+    else
+    { superBeanInfo=null;
+    }
+    
+    Class<?>[] interfaces
+      =binf.getBeanDescriptor().getBeanClass().getInterfaces();
+    if (interfaces!=null)
+    {
+      interfacesBeanInfo=new MappedBeanInfo[interfaces.length];
+      int i=0;
+      for (Class<?> clazz: interfaces)
+      { interfacesBeanInfo[i++]=cache.getBeanInfo(clazz);
+      }
+      
+    }
+    else
+    { interfacesBeanInfo=null;
     }
   }
   
@@ -92,8 +119,30 @@ public class MappedBeanInfo
   { return _fields;
   }
 
+  /**
+   * Find a property declared in this Bean or any of its 
+   *   superclasses or interfaces
+   * 
+   * @param name The property name
+   * @return The PropertyDescriptor
+   */
   public PropertyDescriptor findProperty(String name)
-  { return _propertyMap.get(name);
+  { 
+    PropertyDescriptor ret=_propertyMap.get(name);
+    if (ret==null && superBeanInfo!=null)
+    { ret=superBeanInfo.findProperty(name);
+    }
+    if (ret==null && interfacesBeanInfo!=null)
+    { 
+      for (MappedBeanInfo beanInfo: interfacesBeanInfo)
+      {
+        ret=beanInfo.findProperty(name);
+        if (ret!=null)
+        { break;
+        }
+      }
+    }
+    return ret;
   }
 
   public Field findField(String name)
