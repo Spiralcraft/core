@@ -40,12 +40,23 @@ Evaluator.parseAndEvaluateObject(".[2][2]",array);
 Evaluator.parseAndEvaluateObject(".[0][0].length()",array);
 Evaluator.parseAndEvaluateObject(".[1][1].length()",array);
 Evaluator.parseAndEvaluateObject(".[2][2].length()",array);
+
 "==";
 Evaluator.parseAndEvaluateObject("1==1",new Object());
 Evaluator.parseAndEvaluateObject("1==2",new Object());
 Evaluator.parseAndEvaluateObject(".hashCode()==.hashCode()",new Object());
 Evaluator.parseAndEvaluateObject(".hashCode()==1",new Object());
 Evaluator.parseAndEvaluateObject("-.hashCode()==-.hashCode()",new Object());
+
+"// Meta operator";
+Evaluator.parseAndEvaluateObject(".!",new Object());
+Evaluator.parseAndEvaluateObject(".class.name!",new Object());
+Evaluator.parseAndEvaluateObject(".hashCode()!",new Object());
+
+"// Self operator";
+Evaluator.parseAndEvaluateObject(".concat(.)","test");
+
+
 "// ExpressionResolverTest";
 import spiralcraft.lang.test.ExpressionResolverTest;
 "//// Perf 1: retrieval";
@@ -81,10 +92,6 @@ ExpressionResolverTest.main
 		}
   );
 
-"// Meta operator";
-Evaluator.parseAndEvaluateObject(".!",new Object());
-Evaluator.parseAndEvaluateObject(".class.name!",new Object());
-Evaluator.parseAndEvaluateObject(".hashCode()!",new Object());
 
 
 
