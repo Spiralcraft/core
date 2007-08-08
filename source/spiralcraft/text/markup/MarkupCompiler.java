@@ -18,8 +18,12 @@ import spiralcraft.text.ParseException;
 import spiralcraft.text.ParsePosition;
 
 /**
- * Compiles a CharSequence containing markup into a tree of Units. The
+ * <P>Compiles a CharSequence containing markup into a tree of Units. The
  *   actual interpretation of the markup is left to the subclass.
+ * </P>
+ *   
+ * <P>The MarkupCompiler is not thread-safe
+ * </P>
  */
 public abstract class MarkupCompiler<U extends Unit<U>>
   implements MarkupHandler

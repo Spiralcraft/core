@@ -17,6 +17,8 @@ package spiralcraft.text.markup;
 import java.util.LinkedList;
 import java.util.List;
 
+import spiralcraft.text.ParsePosition;
+
 /**
  * A Unit of marked up text
  */
@@ -25,6 +27,7 @@ public abstract class Unit<T extends Unit<T>>
   protected LinkedList<T> children;
   private Unit<T> _parent;
   private String _name;
+  private ParsePosition position;
   
   public void addChild(T child)
   { 
@@ -37,6 +40,14 @@ public abstract class Unit<T extends Unit<T>>
   
   public void setParent(Unit<T> parent)
   { _parent=parent;
+  }
+  
+  public ParsePosition getPosition()
+  { return position;
+  }
+  
+  public void setPosition(ParsePosition position)
+  { this.position=position;
   }
   
   /**

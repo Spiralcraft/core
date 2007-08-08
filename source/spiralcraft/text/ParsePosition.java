@@ -25,6 +25,18 @@ public class ParsePosition
   private int index;
   private CharSequence context;
   
+  public ParsePosition()
+  { }
+  
+  ParsePosition(int line,int column,int index,CharSequence context)
+  {
+    this.line=line;
+    this.column=column;
+    this.index=index;
+    this.context=context;
+  }
+  
+  
   /**
    * 
    * @return The current line, or -1 if lines are not tracked.
@@ -111,5 +123,8 @@ public class ParsePosition
     }
     return str.toString();
   }
-  
+ 
+  public ParsePosition clone()
+  { return new ParsePosition(line,column,index,context);
+  }
 }
