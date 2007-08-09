@@ -47,7 +47,7 @@ public class AttributesReader
       { attributes.add(_attributeReader.getAttribute());
       }
       else
-      { return;
+      { break;
       }
       _whitespaceReader.readWhitespace(context);
     }

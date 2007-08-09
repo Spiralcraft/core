@@ -32,12 +32,16 @@ public class TagReader
   private AttributesReader _attributesReader
     =new AttributesReader();
 
-  // private Attribute[] _attributes;
+  private boolean _closed;
   private String _tagName;
 
   
   public String getTagName()
   { return _tagName;
+  }
+  
+  public boolean isClosed()
+  { return _closed;
   }
 
   public Attribute[] getAttributes()
@@ -65,15 +69,22 @@ public class TagReader
     _tagName=_nameTokenReader.getBuffer();
     _whitespaceReader.readWhitespace(context);
     _attributesReader.read(context);
-    // _attributes=_attributesReader.getAttributes();
+    _whitespaceReader.readWhitespace(context);
+    if (context.getCurrentChar()=='/')
+    { 
+      _closed=true;
+      context.advance();
+    }
   }
 
   public String toString()
   { 
     return 
       super.toString()
-        +"[name='"+_tagName
-        +"',attributes="+ArrayUtil.format(getAttributes(),",","")+"]"
+        +"[name='"+_tagName+"'"
+        +(getAttributes()!=null?",attributes="+ArrayUtil.format(getAttributes(),",",""):"")
+        +(_closed?",closed":"")
+        +"]"
         ;
   }
 }

@@ -33,7 +33,7 @@ public abstract class MarkupCompiler<U extends Unit<U>>
   // private final Trimmer _trimmer=new Trimmer("\r\n\t ");
   // private final CharSequence _startDelimiter;
   // private final CharSequence _endDelimiter;
-  private Unit<U> _unit;
+  private U _unit;
   protected ParsePosition position;
   
   
@@ -59,6 +59,12 @@ public abstract class MarkupCompiler<U extends Unit<U>>
   public synchronized void compile(U root,CharSequence sequence)
     throws ParseException,MarkupException
   { 
+    // Give the root unit an origin position
+    // - it is not actually in the document
+    ParsePosition position=new ParsePosition();
+    position.setIndex(0);
+    root.setPosition(position);
+    
     _unit=root;
 
     _parser.parse(sequence);
@@ -74,6 +80,10 @@ public abstract class MarkupCompiler<U extends Unit<U>>
   { this.position=position;
   }
   
+  public ParsePosition getPosition()
+  { return position;
+  }
+  
   /**
    * Closes the current containing unit
    */
@@ -87,7 +97,7 @@ public abstract class MarkupCompiler<U extends Unit<U>>
   /**
    * Obtain the current containing unit
    */
-  protected final Unit<U> getUnit()
+  protected final U getUnit()
   { return _unit;
   }
   
@@ -101,7 +111,6 @@ public abstract class MarkupCompiler<U extends Unit<U>>
    */
   protected final void pushUnit(U newUnit)
   {
-    _unit.addChild(newUnit);
     if (newUnit.isOpen())
     { _unit=newUnit;
     }

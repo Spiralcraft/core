@@ -25,21 +25,25 @@ import spiralcraft.text.ParsePosition;
 public abstract class Unit<T extends Unit<T>>
 {
   protected LinkedList<T> children;
-  private Unit<T> _parent;
+  private final T _parent;
   private String _name;
   private ParsePosition position;
   
-  public void addChild(T child)
+  @SuppressWarnings("unchecked") // addChild(this)- bi-di link assumes subclass
+  public Unit(T parent)
+  { 
+    _parent=parent;
+    if (_parent!=null)
+    { _parent.addChild((T) this);
+    }
+  }
+  
+  void addChild(T child)
   { 
     if (children==null)
     { children=new LinkedList<T>();
     }
     children.add(child);
-    child.setParent(this);
-  }
-  
-  public void setParent(Unit<T> parent)
-  { _parent=parent;
   }
   
   public ParsePosition getPosition()
@@ -70,8 +74,8 @@ public abstract class Unit<T extends Unit<T>>
     { return null;
     }
   }
-  
-  public Unit<T> getParent()
+
+  public T getParent()
   { return _parent;
   }
   
