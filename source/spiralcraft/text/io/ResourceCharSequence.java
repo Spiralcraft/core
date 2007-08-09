@@ -38,6 +38,9 @@ public class ResourceCharSequence
   { 
     Resource resource=Resolver.getInstance().resolve(resourceURI);
     InputStream in=resource.getInputStream();
+    if (in==null)
+    { throw new IOException("Could not read "+resourceURI);
+    }
     load(in);
     in.close();
   }
