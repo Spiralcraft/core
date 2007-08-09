@@ -41,7 +41,7 @@ public class BuilderTypeFactory
     if (!BuilderType.isApplicable(uri))
     { return null;
     }
-    System.err.println("BuilderTypeFactory: create type "+uri);
+    // System.err.println("BuilderTypeFactory: create type "+uri);
  
     URI baseURI=TypeResolver.desuffix(uri,".assy");
     String uriString=baseURI.toString();

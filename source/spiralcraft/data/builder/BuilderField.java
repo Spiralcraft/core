@@ -203,7 +203,7 @@ public class BuilderField
               }
               else
               {
-                System.out.println("Unpacking "+subAssembly);
+                System.out.println("BuilderField: Unpacking "+subAssembly);
                 // Not a builder type, and can't get type from assembly
                 // Unpackage the assembly and store as a reflection type
                 Object subjectBean=subAssembly.getSubject().get();

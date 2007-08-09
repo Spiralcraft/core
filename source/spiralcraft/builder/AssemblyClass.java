@@ -197,7 +197,7 @@ public class AssemblyClass
 
     if (_compositeMembers!=null)
     { 
-      System.err.println("Recomposing "+prop);
+      System.err.println("AssemblyClass: Recomposing "+prop);
       // XXX Should override more intelligently,
       //   if property exists instead of double
       //   setting.

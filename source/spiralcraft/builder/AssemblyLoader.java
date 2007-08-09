@@ -105,11 +105,17 @@ public class AssemblyLoader
     { 
       Path path=new Path(classUri.getPath(),'/');
       
-      URI packageUri=classUri.resolve(URI.create(path.parentPath().format("/")+"/"));
-      String className=packageUri.relativize(classUri).toString();
-      System.out.println(classUri.toString());
-      System.out.println(packageUri.toString());
-      System.out.println(className.toString());
+      URI packageUri
+        =classUri.resolve(URI.create(path.parentPath().format("/")+"/"));
+      String className
+        =packageUri.relativize(classUri).toString();
+      
+//      System.out.println
+//        ("AssemblyLoader.findAssemblyClass: "+classUri.toString());
+//      System.out.println
+//        ("AssemblyLoader.findAssemblyClass: "+packageUri.toString());
+//      System.out.println
+//        ("AssemblyLoader.findAssemblyClass: "+className.toString());
       
       ret=new AssemblyClass
         (null
