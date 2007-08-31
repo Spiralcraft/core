@@ -198,8 +198,12 @@ public class ArrayUtil
   }
 
   /**
-   * Format a String array into a String using the specified separator and delimiter.
-   * No escape processing is performed by this method.
+   * <p>Format an array into a String using the specified separator and
+   * delimiter.
+   * </p>
+   * 
+   * <p>No escape processing is performed by this method.
+   * </p>
    */
   public static String format(Object[] array,String separator,String delimiter)
   {
@@ -223,6 +227,37 @@ public class ArrayUtil
     
   }
 
+  /**
+   * <p>Format an Array, using reflection, into a String using the 
+   *  specified separator and delimiter.
+   * </p>
+   * 
+   * <p>No escape processing is performed by this method.
+   * </p>
+   */
+  public static String format(Object array,String separator,String delimiter)
+  {
+    StringBuilder buf=new StringBuilder();
+    int len=Array.getLength(array);
+    for (int i=0;i<len;i++)
+    { 
+      Object val=Array.get(array,i);
+      if (i>0)
+      { buf.append(separator);
+      }
+      if (val!=null)
+      { 
+        if (delimiter!=null)
+        { buf.append(delimiter).append(val).append(delimiter);
+        }
+        else
+        { buf.append(val);
+        }
+      }
+    }
+    return buf.toString();
+  }  
+  
   /**
    * Format a String array into a String using the specified separator and delimiter.
    * No escape processing is performed by this method.

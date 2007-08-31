@@ -1,0 +1,11 @@
+show();
+parserContext=new spiralcraft.text.xml.ParserContext
+	("atag x=\"hello\" y=\"goodbye.test\" /");
+reader=new spiralcraft.text.xml.TagReader();
+reader.readTag(parserContext);
+reader.toString();
+parserContext=new spiralcraft.text.xml.ParserContext
+	("atag x=\"hello\" y=\"goodbye.test\" ");
+reader=new spiralcraft.text.xml.TagReader();
+reader.readTag(parserContext);
+reader.toString();

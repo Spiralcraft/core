@@ -12,36 +12,56 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.xml;
+package spiralcraft.text.xml;
 
 import spiralcraft.text.ParseException;
 
 /**
- * XML whitespace
+ * An XML name token (tag, entity or attribute name)
  */
-public class WhitespaceReader
+public class NameTokenReader
 {
 
-  private StringBuffer _buffer;
-
-  public void readWhitespace(ParserContext context)
+  /**
+   * Read a name token. The context should be positioned
+   *   on the first character.
+   */
+  public void readNameToken(ParserContext context)
     throws ParseException
   {
     _buffer=new StringBuffer();
+
     while (!context.isEof())
     {
       char chr=context.getCurrentChar();
       switch (chr)
       {
+      case '%':
+      case '<':
+      case '>':
+      case '&':
+      case ',':
+      case '|':
+      case '*':
+      case '+':
+      case '?':
+      case ')':
+      case '=':
+      case '\'':
+      case '"':
+      case '[':
       case ' ':
       case '\t':
-      case '\r':
       case '\n':
+      case '\r':
+      case ';':
+      case '/':
+        return;
+      default:
         _buffer.append(chr);
         context.advance();
         continue;
       }
-      return;
     }
   }
 
@@ -49,4 +69,5 @@ public class WhitespaceReader
   { return _buffer.toString();
   }
 
+  private StringBuffer _buffer;
 }
