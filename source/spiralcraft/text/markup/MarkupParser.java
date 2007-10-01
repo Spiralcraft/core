@@ -31,7 +31,7 @@ public class MarkupParser
   private final int _startDelimiterLength;
   private final int _endDelimiterLength;
   private final CharSequence _endDelimiter;
-  private final ParsePosition position=new ParsePosition();
+  private ParsePosition position;
   
   public MarkupParser(CharSequence startDelimiter,CharSequence endDelimiter)
   { 
@@ -41,6 +41,10 @@ public class MarkupParser
     _endTagMatcher=new KmpMatcher(endDelimiter);  
     _endDelimiterLength=endDelimiter.length();
     _lineMatcher=new KmpMatcher(System.getProperty("line.separator"));
+  }
+  
+  public void setPosition(ParsePosition position)
+  { this.position=position;
   }
   
   /**

@@ -17,6 +17,8 @@ package spiralcraft.text.markup;
 import spiralcraft.text.ParseException;
 import spiralcraft.text.ParsePosition;
 
+import java.net.URI;
+
 /**
  * <P>Compiles a CharSequence containing markup into a tree of Units. The
  *   actual interpretation of the markup is left to the subclass.
@@ -56,13 +58,18 @@ public abstract class MarkupCompiler<U extends Unit<U>>
    * @param sequence
    * @throws ParseException
    */
-  public synchronized void compile(U root,CharSequence sequence)
+  public synchronized void compile
+    (U root
+    ,CharSequence sequence
+    ,URI contextURI
+    )
     throws ParseException,MarkupException
   { 
-    // Give the root unit an origin position
-    // - it is not actually in the document
-    ParsePosition position=new ParsePosition();
-    position.setIndex(0);
+    position=new ParsePosition();
+    position.setContextURI(contextURI);
+    _parser.setPosition(position);
+    
+    
     root.setPosition(position);
     
     _unit=root;
