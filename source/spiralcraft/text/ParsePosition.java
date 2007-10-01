@@ -14,6 +14,8 @@
 //
 package spiralcraft.text;
 
+import java.net.URI;
+
 /**
  * Encapsulates information related to the position of a text parsing operation.
  */
@@ -24,16 +26,18 @@ public class ParsePosition
   private int column=-1;
   private int index;
   private CharSequence context;
+  private URI contextURI;
   
   public ParsePosition()
   { }
   
-  ParsePosition(int line,int column,int index,CharSequence context)
+  ParsePosition(int line,int column,int index,CharSequence context,URI contextURI)
   {
     this.line=line;
     this.column=column;
     this.index=index;
     this.context=context;
+    this.contextURI=contextURI;
   }
   
   
@@ -97,6 +101,14 @@ public class ParsePosition
   { column+=count;
   }
 
+  public void setContextURI(URI contextURI)
+  { this.contextURI=contextURI;
+  }
+  
+  public URI getContextURI()
+  { return contextURI;
+  }
+  
   public String toString()
   {
     StringBuilder str=new StringBuilder();
@@ -121,10 +133,18 @@ public class ParsePosition
       }
       str.append(" at \""+context+"\"");
     }
+    
+    if (contextURI!=null)
+    {
+      if (str.length()>0)
+      { str.append(",");
+      }
+      str.append(" in \""+contextURI+"\"");
+    }
     return str.toString();
   }
  
   public ParsePosition clone()
-  { return new ParsePosition(line,column,index,context);
+  { return new ParsePosition(line,column,index,context,contextURI);
   }
 }
