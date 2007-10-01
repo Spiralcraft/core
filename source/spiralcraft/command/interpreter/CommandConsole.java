@@ -17,30 +17,34 @@ package spiralcraft.command.interpreter;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.StringUtil;
 
-import spiralcraft.command.CommandContext;
-import spiralcraft.command.Invocation;
-import spiralcraft.command.UnrecognizedCommandException;
-import spiralcraft.command.MessageHandler;
-import spiralcraft.command.ParameterSet;
+import spiralcraft.lang.Focus;
+
+import spiralcraft.command.Command;
 
 import spiralcraft.places.UserAgent;
 
 /**
- * Abstract mechanism to implement an user friendly input driven command
- *   interface using simple line based textual I/O and a TCL based syntax.
- *
- * The subclass is responsible for translating input into lines, and for
+ * <p>Abstract mechanism to implement a stateful command line interface
+ * </p>
+ * 
+ * <p>The subclass is responsible for translating input into lines, and for
  *   rendering any output that may be generated.
- *
- * Command lines are tokenized using the tokenizeCommandLine method
+ * </p>
+ * 
+ * <p>Command lines are tokenized using the tokenizeCommandLine method
  *   in the spiralcraft.util.StringUtil class.
- *
- * Once tokenized, the command line is interpreted as follows:
- *
+ * </p>
+ * 
+ * <p>Once tokenized, the command line is interpreted as follows:
+ * </p>
+ * 
+ * <h3><i> XXX THE FOLLOWING IS IN FLUX XXX</i></h3>
  * * The first token is always a literal command name, to be resolved
- *   within the current CommandContext.
+ *   within the XXX DEFINE COMMAND RESOLUTION  XXX
  *
  * For each successive token in the command line:
+ * 
+ * * XXX 
  *
  * * If the token starts with an '-' it is treated as a parameter name and
  *   the next token will be evaluated as a 'value token'.
@@ -65,11 +69,9 @@ import spiralcraft.places.UserAgent;
 public abstract class CommandConsole
   implements MessageHandler,UserAgent
 {
-  private final CommandContext _context
-    =new ConsoleCommandContext(this);
-  { _context.setMessageHandler(this);
-  }
 
+  private Focus<?> focus;
+  private String[] focusPath;
   
   /**
    * Process the Command input from the User Agent. Each line of
@@ -82,15 +84,16 @@ public abstract class CommandConsole
     {
       try
       {
-        Invocation invocation
-          =newInvocation(tokens);
+        Command command
+          =newCommand(tokens);
         
-        invocation.invoke();
+        command.execute();
         
-        if (invocation.failed())
+        Exception x;
+        if ((x=command.getException())!=null)
         { 
-          writeMessage(invocation.getThrowable().toString());
-          StackTraceElement[] trace=invocation.getThrowable().getStackTrace();
+          writeMessage(x.toString());
+          StackTraceElement[] trace=x.getStackTrace();
           writeMessage(trace[0].toString());
         }
       }
@@ -100,15 +103,17 @@ public abstract class CommandConsole
     }
   }
 
-  public void setFocus(CommandContext focus)
-  { _context.setFocus(focus);
+  public void setFocus(Focus<?> focus)
+  { this.focus=focus;
+  }
+  
+  public void changeFocus(String focusExpression)
+  {
+    if (focus!=null);
   }
   
   public String getFocusPathString()
-  { 
-    String[] focusPath=
-      _context.getFocusPath();
-    return ArrayUtil.format(focusPath,":","");
+  { return ArrayUtil.format(focusPath,":","");
   }
   
   public String getUserID()
@@ -123,12 +128,13 @@ public abstract class CommandConsole
     writeMessage("> ");
   }
   
-  private Invocation newInvocation(String[] tokens)
+  private Command newCommand(String[] tokens)
     throws UnrecognizedCommandException
   {
     String commandName=tokens[0];
-    Invocation invocation=_context.newInvocation(commandName);
-    ParameterSet parameterSet=invocation.getParameterSet();
+    if (commandName!=null);
+    Command command=null; // XXX Resolve command here
+    ArgumentSet parameterSet=null; // XXX Resolve command argument set
     
     for (int i=0;i<tokens.length;i++)
     { 
@@ -157,7 +163,7 @@ public abstract class CommandConsole
         parameterSet.addValue("",tokens[i]);
       }
     }
-    return invocation;
+    return command;
   }
   
   public void handleMessage(Object[] messageLines)

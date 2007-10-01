@@ -14,48 +14,30 @@
 //
 package spiralcraft.command.interpreter;
 
-import java.util.List;
-import java.util.ArrayList;
 
-import spiralcraft.command.Command;
-import spiralcraft.command.CommandContext;
-import spiralcraft.command.ParameterSet;
-import spiralcraft.command.ParameterSetDefinition;
+import spiralcraft.command.CommandAdapter;
 
 /**
  * Provides information about the current context or a subcontext
  */
 public class LookCommand
-  implements Command
+  extends CommandAdapter
 {
-  private static final ParameterSetDefinition _DEFINITION
-    =new ParameterSetDefinition()
+  private static final ArgumentDefinition _DEFINITION
+    =new ArgumentDefinition()
     { 
       {
         addParameter("",1,String.class,false);
       }
     };
   
-  public ParameterSet newParameterSet()
-  { return new ParameterSet(_DEFINITION);
+  public ArgumentSet newParameterSet()
+  { return new ArgumentSet(_DEFINITION);
   }
   
-  public Object execute(CommandContext context,ParameterSet params)
+  public void run()
   { 
-    CommandContext targetContext=context;
-    
-    List<String> contexts=targetContext.listContexts();
 
-    List<String> messageLines=new ArrayList<String>(contexts.size()+10);
-    messageLines.add(targetContext.getDescription());
-    
-    for (String str:contexts)
-    { messageLines.add("  "+str);
-    }
-    
-    context.handleMessage(messageLines.toArray());
-    
-    return targetContext;
   }
   
   public String getDescription()

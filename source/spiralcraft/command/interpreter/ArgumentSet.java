@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.command;
+package spiralcraft.command.interpreter;
 
 import java.util.HashMap;
 
@@ -20,18 +20,18 @@ import spiralcraft.util.ArrayUtil;
 /**
  * A structure to hold parameter values passed into commands.
  */
-public class ParameterSet
+public class ArgumentSet
 {
-  private final ParameterSetDefinition _definition;
+  private final ArgumentDefinition _definition;
   private HashMap<String,Object[]> _values;
   
   
   
-  public ParameterSet(ParameterSetDefinition definition)
+  public ArgumentSet(ArgumentDefinition definition)
   { _definition=definition;
   }
   
-  public ParameterSetDefinition getDefinition()
+  public ArgumentDefinition getDefinition()
   { return _definition;
   }
   

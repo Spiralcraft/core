@@ -15,34 +15,19 @@
 package spiralcraft.command.interpreter;
 
 
-import spiralcraft.command.Command;
-import spiralcraft.command.CommandContext;
-import spiralcraft.command.ParameterSet;
-import spiralcraft.command.ParameterSetDefinition;
+import spiralcraft.command.CommandAdapter;
 
 /**
  * Provides information about the current context or a subcontext
  */
 public class FocusCommand
-  implements Command
+  extends CommandAdapter
 {
-  private static final ParameterSetDefinition _DEFINITION
-    =new ParameterSetDefinition()
-    { 
-      {
-        addParameter("",1,String.class,false);
-      }
-    };
+  private String targetName;
   
-  public ParameterSet newParameterSet()
-  { return new ParameterSet(_DEFINITION);
-  }
-  
-  public Object execute(CommandContext context,ParameterSet params)
+  public void run()
   { 
-    String name=(String) params.getValue("");
-    context.setFocus(name);
-    return context.getFocus();
+    if (targetName!=null);
   }
   
   public String getDescription()

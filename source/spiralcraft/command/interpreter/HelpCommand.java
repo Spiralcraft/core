@@ -18,29 +18,27 @@ import java.util.List;
 import java.util.ArrayList;
 
 import spiralcraft.command.Command;
-import spiralcraft.command.CommandContext;
-import spiralcraft.command.ParameterSet;
-import spiralcraft.command.ParameterSetDefinition;
+import spiralcraft.command.CommandAdapter;
 
 public class HelpCommand
-  implements Command
+  extends CommandAdapter
 {
   
-  private static final ParameterSetDefinition _DEFINITION
-    =new ParameterSetDefinition()
+  private static final ArgumentDefinition _DEFINITION
+    =new ArgumentDefinition()
     { 
       {
         addParameter("",1,String.class,false);
       }
     };
     
-  public ParameterSet newParameterSet()
-  { return new ParameterSet(_DEFINITION);
+  public ArgumentSet newParameterSet()
+  { return new ArgumentSet(_DEFINITION);
   }
   
-  public Object execute(CommandContext context,ParameterSet params)
+  public void run()
   { 
-    List<Command> commands=context.listCommands();
+    List<Command> commands=null;
 
     List<String> messageLines=new ArrayList<String>(commands.size()+10);
     messageLines.add("Use help <command> for more information");
@@ -52,15 +50,13 @@ public class HelpCommand
     
     for (Command command:commands)
     { 
-      messageLines.add("    command: "+command.getName());
-      messageLines.add("description: "+command.getDescription());
+      if (command!=null);
+      messageLines.add("    command: ");
+      messageLines.add("description: ");
       messageLines.add("");
     }
     messageLines.add("");
     
-    context.handleMessage(messageLines.toArray());
-    
-    return commands;
   }
   
   public String getDescription()

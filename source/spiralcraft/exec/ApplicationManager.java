@@ -33,8 +33,6 @@ import java.io.IOException;
 
 import java.net.URI;
 
-import spiralcraft.command.CommandContext;
-
 /**
  * Controls the execution of applications via one or more ApplicationEnvironments.
  *
@@ -88,10 +86,6 @@ public class ApplicationManager
         (new File(_codebase,"lib")
         );
     _registryNode=_REGISTRY_ROOT.createChild(_userId);
-  }
-
-  public CommandContext newCommandContext()
-  { return new ApplicationManagerCommandContext(this);
   }
   
   public void setDebug(boolean val)
