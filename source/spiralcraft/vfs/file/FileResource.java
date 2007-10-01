@@ -18,6 +18,7 @@ import spiralcraft.vfs.AbstractResource;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
+import spiralcraft.vfs.NotStreamableException;
 
 import java.net.URI;
 
@@ -53,7 +54,9 @@ public class FileResource
     throws IOException
   { 
     if (_file.isDirectory())
-    { return null;
+    { 
+      throw new NotStreamableException
+        (getURI(),"Directory is not streamable");
     }
     return new FileInputStream(_file);
   }
