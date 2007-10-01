@@ -51,6 +51,10 @@ public abstract class IterationDecorator<T,I>
       (componentReflector,iterationContextSource);
   }
   
+  public Reflector<I> getComponentReflector()
+  { return componentReflector;
+  }
+  
   protected abstract Iterator<I> createIterator();
   
   /**
