@@ -84,7 +84,28 @@ public class StreamUtil
     return out.toByteArray();
   }
 
+  public static byte[] readBytes(InputStream in,long len)
+    throws IOException
+  {
+    ByteArrayOutputStream out=new ByteArrayOutputStream();
+    copyRaw(in,out,DEFAULT_BUFFER_SIZE,len);
+    return out.toByteArray();
+  }
+  
  
+  public static String readAsciiString(InputStream in,int len)
+    throws IOException
+  { 
+    byte[] bytes=readBytes(in,len);
+    char[] chars=new char[bytes.length];
+    int i=0;
+    
+    for (byte b:bytes)
+    { chars[i++]=(char) b;
+    }
+    return new String(chars);
+  }
+  
   /**
    * Discard [bytes] bytes of the input stream
    */
