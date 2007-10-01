@@ -49,12 +49,16 @@ public class AttributeEncoder
         {
         case AMP_C:
           out.write(AMP_S);
+          break;
         case GT_C:
           out.write(GT_S);
+          break;
         case LT_C:
           out.write(LT_S);
+          break;
         case '"':
           out.write("&quot;");
+          break;
         default:
           out.write(c);
         }
