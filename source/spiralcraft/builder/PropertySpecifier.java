@@ -59,6 +59,9 @@ public class PropertySpecifier
     ,String specifier
     )
   {
+    if (container==null)
+    { throw new IllegalArgumentException("Container cannot be null");
+    }
     _container=container;
     _specifier=StringUtil.tokenize(specifier,".");
   }
@@ -97,7 +100,8 @@ public class PropertySpecifier
       +"."
       +ArrayUtil.format(_specifier,".",null)
       +" in "
-      +_container.getSourceURI().toString();
+      +(_container.getSourceURI()!=null?
+         _container.getSourceURI().toString():"(unknown source)");
   }
 
   /**
