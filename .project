@@ -3,7 +3,7 @@
 	<name>spiralcraft-modules-core</name>
 	<comment></comment>
 	<projects>
-		<project>spiralcraft-devtools</project>
+		<project>spiralcraft-build</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

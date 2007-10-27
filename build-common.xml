@@ -12,7 +12,6 @@
   <target name="compile">
     <buildnumber/>
     <echo message= "build: ${build.name}"/>
-    <echo message= "env: ${spiralcraft.devtools}"/>
     <javac 
       classpath="${classpath}"
       srcdir="source" 
@@ -23,7 +22,7 @@
 
   <target name="smoke" depends="jar">
     <java
-      classpath="${spiralcraft.devtools}/lib/bsh.jar;lib/spiralcraft-${module}.jar;${classpath}"
+      classpath="${spiralcraft.build}/lib/bsh.jar;lib/spiralcraft-${module}.jar;${classpath}"
       classname="bsh.Interpreter" 
       failonerror="true"
       fork="true"
