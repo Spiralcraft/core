@@ -191,7 +191,7 @@ class ViewReflector<Tview extends View<Ttuple>,Ttuple extends Tuple>
   }
   
   @Override
-  public Binding<Object> resolve
+  public <X> Binding<X> resolve
     (Binding<Tview> source
     ,Focus<?> focus
     ,String name

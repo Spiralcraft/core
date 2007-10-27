@@ -3,6 +3,7 @@
 	<name>spiralcraft-modules-core</name>
 	<comment></comment>
 	<projects>
+		<project>spiralcraft-devtools</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -15,9 +16,15 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>tk.eclipse.plugin.htmleditor.HTMLProjectBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>net.sourceforge.metrics.nature</nature>
+		<nature>tk.eclipse.plugin.htmleditor.HTMLProjectNature</nature>
 	</natures>
 </projectDescription>

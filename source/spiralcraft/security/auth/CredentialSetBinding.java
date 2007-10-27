@@ -75,7 +75,7 @@ class CredentialMapReflector
   { return Map.class;
   }
 
-  public Binding resolve
+  public <X> Binding<X> resolve
     (Binding<Map<String,Credential<?>>> source
     , Focus<?> focus
     , String name
