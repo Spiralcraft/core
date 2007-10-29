@@ -6,6 +6,7 @@
   />
   <property name="manifest.class.path" value="" />
   <property environment="env"/>
+  <property name="spiralcraft.build" value="../../build"/>
   
   <target name="build" depends="compile,jar,smoke" />
   
