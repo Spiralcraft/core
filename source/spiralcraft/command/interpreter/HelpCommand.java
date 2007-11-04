@@ -21,7 +21,7 @@ import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
 
 public class HelpCommand
-  extends CommandAdapter
+  extends CommandAdapter<List<String>>
 {
   
   private static final ArgumentDefinition _DEFINITION
@@ -38,7 +38,7 @@ public class HelpCommand
   
   public void run()
   { 
-    List<Command> commands=null;
+    List<Command<?>> commands=null;
 
     List<String> messageLines=new ArrayList<String>(commands.size()+10);
     messageLines.add("Use help <command> for more information");
@@ -48,7 +48,7 @@ public class HelpCommand
     messageLines.add("");
     
     
-    for (Command command:commands)
+    for (Command<?> command:commands)
     { 
       if (command!=null);
       messageLines.add("    command: ");
@@ -56,7 +56,7 @@ public class HelpCommand
       messageLines.add("");
     }
     messageLines.add("");
-    
+    setResult(messageLines);
   }
   
   public String getDescription()

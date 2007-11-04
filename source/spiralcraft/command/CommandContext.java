@@ -25,12 +25,12 @@ package spiralcraft.command;
  * </p>
  *
  */
-public interface CommandContext
+public interface CommandContext<Tresult>
 {
   /**
    * @param name The command name
    * @return A new Command object
    */
-  Command newCommand();
+  Command<Tresult> newCommand();
   
 }

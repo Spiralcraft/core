@@ -21,7 +21,7 @@ import spiralcraft.command.CommandAdapter;
  * Provides information about the current context or a subcontext
  */
 public class FocusCommand
-  extends CommandAdapter
+  extends CommandAdapter<String>
 {
   private String targetName;
   

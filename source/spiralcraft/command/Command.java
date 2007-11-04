@@ -53,8 +53,8 @@ package spiralcraft.command;
  * <p>The Command is executed via the execute() method
  * </p>
  * 
- * <p>The Command results may be retrieved via an implementation specific
- *   mechanism
+ * <p>The Command results may be retrieved via the generic getResult() method
+ *   which returns an implementation specific interface or class.
  * </p>
  * 
  * <p>If supported, the Command may be undone via the undo() method.
@@ -82,7 +82,7 @@ package spiralcraft.command;
  * </p>
  *
  */
-public interface Command
+public interface Command<Tresult>
 {  
   
   /**
@@ -95,7 +95,7 @@ public interface Command
    * @return A copy of this Command which references the same target(s) and
    *   parameters as this Command but is in a pre-execution state.
    */
-  Command clone();
+  Command<Tresult> clone();
   
   /**
    * 
@@ -114,5 +114,12 @@ public interface Command
    * @return The Exception, if any, which caused this command to terminate 
    */
   Exception getException();
+  
+  
+  /**
+   * @return The result of this command execution, if any 
+   */
+  Tresult getResult();
+  
   
 }

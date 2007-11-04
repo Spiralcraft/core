@@ -21,7 +21,7 @@ import spiralcraft.command.CommandAdapter;
  * Provides information about the current context or a subcontext
  */
 public class LookCommand
-  extends CommandAdapter
+  extends CommandAdapter<String>
 {
   private static final ArgumentDefinition _DEFINITION
     =new ArgumentDefinition()

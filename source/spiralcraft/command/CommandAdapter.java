@@ -30,12 +30,13 @@ package spiralcraft.command;
  * @author mike
  *
  */
-public abstract class CommandAdapter
-  implements Command,Runnable
+public abstract class CommandAdapter<Tresult>
+  implements Command<Tresult>,Runnable
 {
   private boolean started;
   private boolean completed;
   private Exception exception;
+  private Tresult result;
   
   public boolean isStarted()
   { return started;
@@ -47,6 +48,10 @@ public abstract class CommandAdapter
   
   public Exception getException()
   { return exception;
+  }
+  
+  public Tresult getResult()
+  { return result;
   }
   
   protected synchronized void notifyStarted()
@@ -67,6 +72,18 @@ public abstract class CommandAdapter
   { this.exception=exception;
   }
   
+  protected void setResult(Tresult result)
+  { this.result=result;
+  }
+
+  /**
+   * <p>Execute the command
+   * </p>
+   * 
+   * <p>Note: to implement functionality, consider overriding the run()
+   *   method instead.
+   * </p>
+   */
   public void execute()
   {
     notifyStarted();
@@ -81,7 +98,8 @@ public abstract class CommandAdapter
     }
   }
   
-  public synchronized Command clone()
+  @SuppressWarnings("unchecked") // Cast Object.clone() result
+  public synchronized Command<Tresult> clone()
   {
     if (started)
     {
@@ -89,7 +107,7 @@ public abstract class CommandAdapter
         ("Cannot clone a Command that has been executed already");
     }
     try
-    { return (Command) super.clone();
+    { return (Command<Tresult>) super.clone();
     }
     catch (CloneNotSupportedException x)
     { throw new RuntimeException("Unexpected exception during clone",x);
