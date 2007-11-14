@@ -32,8 +32,9 @@ import spiralcraft.loader.LibraryClassLoader;
  *   references an appropriate set of code libraries, and resolves and executes
  *   a suitable entry point.
  *
- * The standard Spiralcraft entry point is the spiralcraft.exec.Executor class,
- *   which loads and executes an application specified by a URI.
+ * The standard and default Spiralcraft entry point is the 
+ *  spiralcraft.exec.Executor class, which loads and executes an application
+ *  specified by a URI.
  *
  * An alternate class with the Java standard "main" method can be invoked
  *   using the "-main &lt;classname&gt;" option.
@@ -122,9 +123,7 @@ public class ApplicationEnvironment
     processArguments(args);
 
     if (_mainClass==null)
-    { 
-      System.err.println("Nothing to execute. Please specify a class.");
-      return;
+    { _mainClass="spiralcraft.exec.Executor";
     }
 
     try
@@ -211,6 +210,17 @@ public class ApplicationEnvironment
 }
 
 /* Notes and ramblings
+
+2007-11-14
+
+For the most part, we're going to use the ApplicationEnvironment to setup a
+  ClassLoader and call the spiralcraft.exec.Executor.main(String[] args).
+  
+Functionality will be retained to call other 'main' classes in a variety of
+  ways so as to interface cleanly with non-Spiralcraft 'main' entry points,
+  but environment should be set up in these cases to provide Spiralcraft
+  functionality reachable from non-Spiralcraft entry points with a standard
+  environment.
 
 2003-02-??
 
