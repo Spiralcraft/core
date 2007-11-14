@@ -24,11 +24,14 @@ public class ClasspathResourceFactory
   implements ResourceFactory
 {
 
+  public static boolean isClasspathScheme(String scheme)
+  { return scheme.equals("java");
+  }
+
   public Resource resolve(URI uri)
     throws UnresolvableURIException
   { return new ClasspathResource(uri);
   }
-
 
 
 }

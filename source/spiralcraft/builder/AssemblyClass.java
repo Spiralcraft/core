@@ -22,6 +22,8 @@ import java.util.HashMap;
 
 import spiralcraft.util.ArrayUtil;
 
+import spiralcraft.vfs.classpath.ClasspathResourceFactory;
+
 /**
  * An AssemblyClass defines the behavior and content of an Assembly. One
  *   instance of an AssemblyClass is created within a given ClassLoader for
@@ -443,13 +445,26 @@ public class AssemblyClass
     { 
       // Circular definition
       // Use Java class instead
-      resolveJavaClass();
+      _javaClass=resolveJavaClass();
+      if (_javaClass==null)
+      { 
+        throw new BuildException
+          ("Assembly "+_sourceUri+" is not contained in a Java package and "
+          +" thus cannot be based on a Java class of the same name"
+          );
+      }
     }
     else
     {
       _baseAssemblyClass=_loader.findAssemblyDefinition(baseResource);
       if (_baseAssemblyClass==null)
-      { resolveJavaClass();
+      { 
+        resolveJavaClass();
+        throw new BuildException
+          ("Assembly "+baseResource+" is not contained in a Java package and "
+          +" thus cannot be automatically derived from a Java class of the same" 
+          +" name"
+          );
       }
     }
   }
@@ -458,39 +473,43 @@ public class AssemblyClass
    * Resolve the Java class- called when the top of the AssemblyClass tree is
    *   reached during resolveExternalBaseClass
    *
-   * XXX Use the whole URI to load classes from the network, and shortcut
-   *     the java: scheme to work from the classpath.
    */
-  private void resolveJavaClass()
+  private Class<?> resolveJavaClass()
     throws BuildException
   { 
-    String className
-      =_basePackage.getPath().substring(1).replace('/','.')+_baseName;
-    try
+    
+    if (ClasspathResourceFactory.isClasspathScheme(_basePackage.getScheme()))
     {
-      _javaClass
-        =Class.forName
-          (className
-          ,false
-          ,Thread.currentThread().getContextClassLoader()
-          );
-    }
-    catch (ClassNotFoundException x)
-    { 
-      String langClassName="java.lang."+_baseName;
+        
+      String className
+        =_basePackage.getPath().substring(1).replace('/','.')+_baseName;
       try
-      {
-        _javaClass
-          =Class.forName
-            (langClassName
+      { 
+        return
+          Class.forName
+            (className
             ,false
             ,Thread.currentThread().getContextClassLoader()
             );
       }
-      catch (ClassNotFoundException y)
-      { throwBuildException("Class not found: '"+className+"'",x);
+      catch (ClassNotFoundException x)
+      { 
+        String langClassName="java.lang."+_baseName;
+        try
+        {
+          return
+            Class.forName
+              (langClassName
+              ,false
+              ,Thread.currentThread().getContextClassLoader()
+              );
+        }
+        catch (ClassNotFoundException y)
+        { throwBuildException("Class not found: '"+className+"'",x);
+        }
       }
     }
+    return null;
   }
 
   /**
