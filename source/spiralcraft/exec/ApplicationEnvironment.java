@@ -126,7 +126,7 @@ public class ApplicationEnvironment
     { _mainClass="spiralcraft.exec.Executor";
     }
 
-    try
+    try  
     {
       if (_modules!=null)
       {

@@ -1,4 +1,8 @@
 <project name="build-common">
+	<!--
+	  Master Template
+	  Last updated 2007-11-01 16:19
+  -->
 
   <property file="build.number"/>
   <property 
@@ -37,12 +41,14 @@
     <jar 
       destfile="lib/spiralcraft-${module}.jar" 
       basedir="source"
-      includes="spiralcraft/**/*.class,spiralcraft/**/*.xml"
       >
-     <Manifest>
+      <Manifest>
         <attribute name="Class-Path" value="${manifest.class.path}"/>
-     </Manifest>
-       
+        <attribute name="Main-Class" value="${manifest.main.class}"/>   
+      </Manifest>
+      <include name="spiralcraft/**/*.class"/>
+      <include name="spiralcraft/**/*.xml"/>
+      <include name="spiralcraft/**/*.tgl"/>
     </jar>
   </target>
 
