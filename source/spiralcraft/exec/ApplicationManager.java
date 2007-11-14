@@ -45,9 +45,9 @@ import java.net.URI;
  * If the URI is relative, the ApplicationManager will search for the
  *   Resource according to the following rules:
  *
- *   1. System environment path (<spiralcraft-home>/env)
+ *   1. "user.dir" Java system property
  *   2. User environment path (<user-home>/.spiralcraft/env)
- *   3. "user.dir" Java system property
+ *   3. System environment path (<spiralcraft-home>/env)
  *
  */
 public class ApplicationManager
