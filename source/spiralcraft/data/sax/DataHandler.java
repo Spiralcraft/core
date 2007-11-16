@@ -382,7 +382,15 @@ public class DataHandler
         else
         { typeUri=URI.create(uri.concat("/").concat(localName));
         }
-        
+        if (!typeUri.isAbsolute() && resourceURI!=null)
+        { 
+//        System.err.println
+//          ("DataHandler resolving relative to : "
+//          +resourceURI.toString()+" : "+typeUri.toString()
+//          );
+          
+          typeUri=resourceURI.resolve(typeUri);
+        }
 //      System.err.println("DataHandler resolving: "+typeUri.toString());
         return Type.resolve(typeUri);
       }
