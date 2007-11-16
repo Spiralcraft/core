@@ -30,25 +30,32 @@ import java.net.URISyntaxException;
 import java.io.IOException;
 
 /**
- * The Executor is the standard "Main" class for invoking coarse grained
- *   functionality in the Spiralcraft framework.<P>
+ * <p>The Executor is the standard "Main" class for invoking coarse grained
+ *   functionality in the Spiralcraft framework.
+ * </p>
  * 
- * The Executor loads an Executable using the spiralcraft.data.persist.XmlObject
- *   persistence mechanism, using a Type resource URI and/or an instance resource URI.<P>
+ * <p>The Executor loads an Executable using the 
+ *   <code>spiralcraft.data.persist.XmlObject</code>
+ *   persistence mechanism, using a Type resource URI and/or an instance 
+ *   resource URI.
+ * </p>
  * 
- * The Type resource URI, if specified, must resolve to a
- *   BuilderType (spiralcraft.data.builder.BuilderType), which means that a resource
- *   <Type resource URI>.assembly.xml must exist, and must build an object that 
- *   implements the Executable interface.<P>
+ * <p>The Type resource URI, if specified, must resolve to a
+ *   BuilderType (spiralcraft.data.builder.BuilderType), which means that a 
+ *   resource <code>[Type resource URI].assy.xml</code> must exist, and must
+ *   build an object that implements the Executable interface.
+ * </p>
  * 
- * The instance resource URI, if it points to an existing resource, must contain
- *   an object of a Type that satisfies the above constraint.<P>
+ * <p>The instance resource URI, if it points to an existing resource, must
+ *   contain an object of a Type that satisfies the above constraint.
+ * </p>
  * 
- * If a Type resource URI is specified and either the instance resource URI is not
- *   specified, or the resource it refers to does not exist, a new instance of the
- *   builder Assembly will be created. If a Type resource URI is provided, the
- *   properties of this Assembly will be saved to the specified resource upon normal
- *   termination of the Executable.
+ * <p>If a Type resource URI is specified and either the instance resource URI
+ *   is not specified, or the resource it refers to does not exist, a new 
+ *   instance of the builder Assembly will be created. If a Type resource URI
+ *   is provided, the properties of this Assembly will be saved to the 
+ *   specified resource upon normal termination of the Executable.
+ * </p>
  */
 public class Executor
   implements Registrant
@@ -117,7 +124,9 @@ public class Executor
   {
     processArguments(args);
     if (argCounter<0)
-    { throw new IllegalArgumentException("Executor requires at least 2 arguments");
+    { 
+      throw new IllegalArgumentException
+        ("Executor requires at least 2 arguments");
     }
 
     if (typeURI==null && instanceURI==null)
