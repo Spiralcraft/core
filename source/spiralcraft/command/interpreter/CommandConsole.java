@@ -84,7 +84,7 @@ public abstract class CommandConsole
     {
       try
       {
-        Command<?> command
+        Command<?,?> command
           =newCommand(tokens);
         
         command.execute();
@@ -128,12 +128,12 @@ public abstract class CommandConsole
     writeMessage("> ");
   }
   
-  private Command<?> newCommand(String[] tokens)
+  private Command<?,?> newCommand(String[] tokens)
     throws UnrecognizedCommandException
   {
     String commandName=tokens[0];
     if (commandName!=null);
-    Command<?> command=null; // XXX Resolve command here
+    Command<?,?> command=null; // XXX Resolve command here
     ArgumentSet parameterSet=null; // XXX Resolve command argument set
     
     for (int i=0;i<tokens.length;i++)

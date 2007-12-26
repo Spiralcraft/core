@@ -30,13 +30,15 @@ package spiralcraft.command;
  * @author mike
  *
  */
-public abstract class CommandAdapter<Tresult>
-  implements Command<Tresult>,Runnable
+public abstract class CommandAdapter<Ttarget,Tresult>
+  implements Command<Ttarget,Tresult>,Runnable
 {
   private boolean started;
   private boolean completed;
+  
   private Exception exception;
   private Tresult result;
+  private Ttarget target;
   
   public boolean isStarted()
   { return started;
@@ -48,6 +50,14 @@ public abstract class CommandAdapter<Tresult>
   
   public Exception getException()
   { return exception;
+  }
+  
+  public void setTarget(Ttarget target)
+  { this.target=target; 
+  }
+  
+  public Ttarget getTarget()
+  { return target;
   }
   
   public Tresult getResult()
@@ -99,7 +109,7 @@ public abstract class CommandAdapter<Tresult>
   }
   
   @SuppressWarnings("unchecked") // Cast Object.clone() result
-  public synchronized Command<Tresult> clone()
+  public synchronized Command<Ttarget,Tresult> clone()
   {
     if (started)
     {
@@ -107,10 +117,19 @@ public abstract class CommandAdapter<Tresult>
         ("Cannot clone a Command that has been executed already");
     }
     try
-    { return (Command<Tresult>) super.clone();
+    { return (Command<Ttarget,Tresult>) super.clone();
     }
     catch (CloneNotSupportedException x)
     { throw new RuntimeException("Unexpected exception during clone",x);
     }
+  }
+  
+  @Override
+  public boolean isUndoable()
+  { return false;
+  }
+  
+  public void undo()
+  { throw new IllegalStateException("Command cannot be undone");
   }
 }

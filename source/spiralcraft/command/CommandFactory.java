@@ -19,18 +19,17 @@ package spiralcraft.command;
  *   available at the time of creation.
  * </p>
  * 
- * <p>The CommandContext usually has an application level (long duration) 
+ * <p>The CommandFactory usually has an application level (long duration) 
  *   lifecycle, whereas a Command usually has an operation level (short
  *   duration) lifecycle.
  * </p>
  *
  */
-public interface CommandContext<Tresult>
+public interface CommandFactory<Ttarget,Tresult>
 {
   /**
-   * @param name The command name
    * @return A new Command object
    */
-  Command<Tresult> newCommand();
+  Command<Ttarget,Tresult> newCommand();
   
 }

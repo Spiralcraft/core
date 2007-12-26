@@ -16,12 +16,15 @@ package spiralcraft.command.interpreter;
 
 
 import spiralcraft.command.CommandAdapter;
+import spiralcraft.command.Commandable;
 
 /**
- * Provides information about the current context or a subcontext
+ * Provides textual information about the current Commandable 
+ * 
+ * XXX stub
  */
 public class FocusCommand
-  extends CommandAdapter<String>
+  extends CommandAdapter<Commandable<?>,String>
 {
   private String targetName;
   
@@ -29,12 +32,5 @@ public class FocusCommand
   { 
     if (targetName!=null);
   }
-  
-  public String getDescription()
-  { return "Change the focus of system interaction";
-  }
 
-  public String getName()
-  { return "focus";
-  }
 }

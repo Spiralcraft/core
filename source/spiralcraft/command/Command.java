@@ -23,51 +23,71 @@ package spiralcraft.command;
  *   executed against a target object, preserving the results of that action.
  * </p>
  * 
- * <p>The Command interface and related components provide the following
- *   benefits.
+ * <p>The Command interface and related components enable the following
+ *   concerns to be separated: 
  * </p>
  * 
  * <ul>
- *   <li>Achieves the separation of multiple concerns: resolving the
- *     reference to the Command target, parameterizing the Command, 
- *     triggering the execution of the Command, and retrieving the
- *     results of execution.
+ *   <li>Command instantiation: The CommandFactory interface separates the
+ *     creation and configuration of the Command from the UI component that
+ *     uses it, minimizing the coupling between UI components and specific
+ *     means of resolving and configuring the Command objects they reference.
  *   </li>
  *   
- *   <li>Allows for the temporal separation of Command creation and Command
- *     invocation, permitting asynchronous and remote invocation.
+ *   <li>Command target resolution: The Command target may be set by any
+ *     component that has access to the Command before it executes, to allow
+ *     a different component to reference the command target than the one which
+ *     references the command. This allows, for instance, multiple "action"
+ *     components to reference different commands that operate on the same
+ *     target, referenced by a common container. This also permits a system to
+ *     resolve the target of a remote command on the "server" side.
  *   </li>
+ *     
+ *   <li>Command execution: A Command may be executed in a different time or
+ *     thread context than the action which triggers it, enabling asynchronous
+ *     or remote invocation.
+ *   </li>
+ *   
+ *   <li>Command result processing: The "result" of a command, as well as any
+ *     Exception generated during execution, may be processed in a different
+ *     time or thread context. This allows a remote system to instantiate a
+ *     Command, pass it to a "server" for execution, and receive the result for
+ *     local processing. 
+ *   </li>
+ *   
  * </ul>
  * 
  * <h3>Lifecycle</h3>
  * 
- * <p>An instance of a specific Command is created by a CommandContext, which
- *   associates the Command with one or more target objects. This frees both
- *   the creator and the invoker of the Command from knowledge of the target.
- * </p>
+ * <ul>
+ *  <li>An instance of a specific Command is created by a CommandFactory, which
+ *   creates the Command object and provides it with configuration information.
+ *  </li>
  * 
- * <p>The Command is parameterized via an implementation specific mechanism
- *   (eg. Bean properties).
- * </p>
+ *  <li>The Command is provided with a target object.
+ *  </li>
  * 
- * <p>The Command is executed via the execute() method
- * </p>
+ *  <li>The Command is executed via the execute() method
+ *  </li>
  * 
- * <p>The Command results may be retrieved via the generic getResult() method
+ *  <li>The Command results may be retrieved via the generic getResult() method
  *   which returns an implementation specific interface or class.
- * </p>
+ *  </li>
  * 
- * <p>If supported, the Command may be undone via the undo() method.
- * </p>
+ *  <li>If supported, the Command may be undone via the undo() method.
+ *  </li>
+ * 
+ * </ul>
  * 
  * <h3>State</h3>
  * 
  * <p>A single instance of the Command object is associated with an
- *   implementation specific set of parameters at the time that execute()
- *   is called. As such, the Command object is stateful and not thread-safe.
+ *   implementation specific set of parameters and a specific target at the
+ *   time that execute() is called. As such, the Command object is stateful 
+ *   and not thread-safe.
  * </p>
  * 
- * <p>The parameters of a Command cannot be modified during or after
+ * <p>The parameters and target of a Command cannot be modified during or after
  *   invocation. This restriction should be enforced by implementations by
  *   throwing a java.lang.IllegalStateException.
  * </p>
@@ -77,25 +97,43 @@ package spiralcraft.command;
  * </p>
  * 
  * <p>A Command may be cloned. The clone will be in a pre-execution state, and
- *   will contain the same parameters as the original. To execute a Command
- *   more than once, clone it and execute the clone.
+ *   will contain the same parameters and target as the original. To execute a
+ *   Command more than once, clone it and execute the clone.
  * </p>
  *
  */
-public interface Command<Tresult>
+public interface Command<Ttarget,Tresult>
 {  
   
   /**
    * Execute the Command
    */
   void execute();
+
+  /**
+   * Undo the command, if undo is supported.
+   */
+  void undo();
+  
+  /**
+   * Specify the target of this command
+   * 
+   * @param target
+   */
+  void setTarget(Ttarget target); 
+
+  /**
+   * 
+   * @return The target of this command
+   */
+  Ttarget getTarget();
   
   /**
    * 
    * @return A copy of this Command which references the same target(s) and
    *   parameters as this Command but is in a pre-execution state.
    */
-  Command<Tresult> clone();
+  Command<Ttarget,Tresult> clone();
   
   /**
    * 
@@ -120,6 +158,14 @@ public interface Command<Tresult>
    * @return The result of this command execution, if any 
    */
   Tresult getResult();
+  
+  /**
+   * 
+   * @return Whether the Command is reversable. This may depend on the state
+   *   of the Command target.
+   */
+  boolean isUndoable();
+  
   
   
 }

@@ -18,10 +18,18 @@ import java.util.List;
 import java.util.ArrayList;
 
 import spiralcraft.command.Command;
+import spiralcraft.command.Commandable;
 import spiralcraft.command.CommandAdapter;
 
+/**
+ * 
+ * Provides textual information about the commands available from a Commandable
+ * 
+ * @author mike
+ *
+ */
 public class HelpCommand
-  extends CommandAdapter<List<String>>
+  extends CommandAdapter<Commandable<?>,List<String>>
 {
   
   private static final ArgumentDefinition _DEFINITION
@@ -38,7 +46,7 @@ public class HelpCommand
   
   public void run()
   { 
-    List<Command<?>> commands=null;
+    List<Command<?,?>> commands=null;
 
     List<String> messageLines=new ArrayList<String>(commands.size()+10);
     messageLines.add("Use help <command> for more information");
@@ -48,7 +56,7 @@ public class HelpCommand
     messageLines.add("");
     
     
-    for (Command<?> command:commands)
+    for (Command<?,?> command:commands)
     { 
       if (command!=null);
       messageLines.add("    command: ");
