@@ -16,6 +16,7 @@ package spiralcraft.command;
 
 import java.net.URI;
 
+
 /**
  * <p>Describes a Command for the purpose of programmatic UI generation.
  * </p>
@@ -29,11 +30,18 @@ import java.net.URI;
 public interface CommandInfo
 {
   /**
-   * @return the programmatic id associated with command, referenced in UI
-   *   configuration and used to obtain a CommandFactory from a Commandable.
+   * @return the programmatic name associated with command, referenced in UI
+   *   configuration. The id is unique within the Commands interface associated
+   *   with the target object.
    */
-  String getId();
+  String getAlias();
   
+  /**
+   * 
+   * @return the URI of the resource used to construct an instance of
+   *   the Command
+   */
+  URI getInstanceURI();
   
   /**
    * @return A short internationalized name for use in a menu

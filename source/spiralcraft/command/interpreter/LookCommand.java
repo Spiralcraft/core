@@ -16,13 +16,13 @@ package spiralcraft.command.interpreter;
 
 
 import spiralcraft.command.CommandAdapter;
-import spiralcraft.command.Commandable;
+import spiralcraft.command.Commands;
 
 /**
  * Provides information about the current Commandable
  */
 public class LookCommand
-  extends CommandAdapter<Commandable<?>,String>
+  extends CommandAdapter<Commands<?>,String>
 {
   private static final ArgumentDefinition _DEFINITION
     =new ArgumentDefinition()

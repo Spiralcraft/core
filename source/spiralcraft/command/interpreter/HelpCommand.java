@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import spiralcraft.command.Command;
-import spiralcraft.command.Commandable;
+import spiralcraft.command.Commands;
 import spiralcraft.command.CommandAdapter;
 
 /**
@@ -29,7 +29,7 @@ import spiralcraft.command.CommandAdapter;
  *
  */
 public class HelpCommand
-  extends CommandAdapter<Commandable<?>,List<String>>
+  extends CommandAdapter<Commands<?>,List<String>>
 {
   
   private static final ArgumentDefinition _DEFINITION

@@ -16,7 +16,7 @@ package spiralcraft.command.interpreter;
 
 
 import spiralcraft.command.CommandAdapter;
-import spiralcraft.command.Commandable;
+import spiralcraft.command.Commands;
 
 /**
  * Provides textual information about the current Commandable 
@@ -24,7 +24,7 @@ import spiralcraft.command.Commandable;
  * XXX stub
  */
 public class FocusCommand
-  extends CommandAdapter<Commandable<?>,String>
+  extends CommandAdapter<Commands<?>,String>
 {
   private String targetName;
   

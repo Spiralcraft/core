@@ -15,27 +15,29 @@
 package spiralcraft.command;
 
 /**
- * <p>Creates a new instance of a Command, resolving contextual information
- *   at the time of command creation. 
+ * <p>Provides a set of Commands associated with a given type of target
  * </p>
  * 
- * 
- * <p>The CommandFactory usually has an application level (long duration) 
- *   lifecycle, whereas a Command usually has an operation level (short
- *   duration) lifecycle.
+ * <p>A Commands is associated with a target by convention or mapping
  * </p>
  * 
- * <p>The CommandFactory is primarily intended to decouple the mechanism
- *   of Command instance creation from the client interface components
- *   that trigger Command execution
- * </p>
- *
+ * @author mike
+ * 
  */
-public interface CommandFactory<Ttarget,Tresult>
+public interface Commands<Ttarget>
 {
-  /**
-   * @return A new Command object
-   */
-  Command<Ttarget,Tresult> newCommand();
   
+  /**
+   * @return Information about the Commands registered for the target,
+   *   in order of their definition.
+   */
+  public CommandInfo[] listCommands();
+  
+  /**
+   * 
+   * @param alias The command alias
+   * @return The CommandInfo that describes the command with the specified
+   *    alias.
+   */
+  public CommandInfo getCommandInfo(String alias);
 }

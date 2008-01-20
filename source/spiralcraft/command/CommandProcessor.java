@@ -14,34 +14,30 @@
 //
 package spiralcraft.command;
 
+
 /**
- * An interface which executes commands against a specific target.
+ * <p>Manages the execution of commands for a user or machine
+ *   interface session.
+ * </p>
+ * 
+ * <p>Provides a single point for the serialization and tracking of
+ *   user actions expressed as commands.
+ * </p>
  * 
  * @author mike
  * 
  */
-public interface Commandable<Ttarget>
+public interface CommandProcessor
 {
+
   
   /**
-   * 
-   * @return Information about the commands registered for the target
-   *   associated with this Commandable. 
-   */
-  public CommandInfo[] getCommands();
-  
-  
-  /**
-   * <p>Resolve the command target and execute the command asynchronously.
+   * <p>Execute the command.
    * </p>
    * 
-   * <p>The actual command target and the actual execution may be in a
-   *   different context. This method may return before the command is
-   *   complete.
-   * </p>
    * 
    * @param command
    */
-  public void executeCommand(Command<Ttarget,?> command);
-  
+  void executeCommand(Command<?,?> command);
+ 
 }
