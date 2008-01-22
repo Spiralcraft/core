@@ -43,7 +43,17 @@ import spiralcraft.data.lang.StaticTupleBinding;
 
 
 /**
- * <P>Provides access to a set of coordinated Views of related data.
+ * <p>Provides access to a set of coordinated Views of related data, with
+ *   support for edit buffering and propagating updates to a back-end store
+ * </p>
+ * 
+ * <h3>Concurrency support</h3>
+ * 
+ * <p>The DataSession and View object provide efficient concurrency support
+ *   through the separation of structure and state in both components. 
+ * </p>
+ * 
+ * <i>NOTE: THE FOLLOWING IS IN A STATE OF FLUX</i>
  * 
  * <P>Access is provided to the spiralcraft.lang expression language through a 
  *  spiralcraft.lang Focus for expression resolution. The namespace published
@@ -136,7 +146,11 @@ public class DataSession
   
   
   /**
-   * Set up the namespace definitions for each View
+   * <p>Set up the namespace definitions for each View
+   * </p>
+   * 
+   * <p>Called from initialize()
+   * </p>
    * 
    * @throws DataException
    */
