@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.lang.spi.IterationContextBinding;
+import spiralcraft.lang.spi.IterationCursorBinding;
 
 import java.util.Iterator;
 
@@ -22,7 +22,7 @@ import java.util.Iterator;
  * Supports Iteration through containers and data structures with multiple
  *   elements.
  *
- * The iterator() method provides an IterationContext which exposes the data at
+ * The iterator() method provides an IterationCursor which exposes the data at
  *   the current position of the iteration.
  */
 public abstract class IterationDecorator<T,I>
@@ -40,17 +40,30 @@ public abstract class IterationDecorator<T,I>
   
   /**
    * 
-   * @return The Reflector which describes the component type of the Iteration.
-   *   Use with the IterationContextBinding
-   *   use with 
+   * <p>Provide a binding that exposes the component of an in-process Iteration
+   * </p>
+   * 
+   * <p>The IterationCursor maintains the state of
+   *   a given iteration, and is managed in an application specific fashion not
+   *   defined by the spiralcraft.lang package.
+   * </p>
+   *
+   * @return A binding to an IterationCursor that "downcasts" to the appropriate
+   *   iteration component type. 
+   *   
    */
-  public IterationContextBinding<I>
-    createComponentBinding(Channel<IterationContext<I>> iterationContextSource)
+  public IterationCursorBinding<I>
+    createComponentBinding(Channel<IterationCursor<I>> iterationCursorSource)
   { 
-    return new IterationContextBinding<I>
-      (componentReflector,iterationContextSource);
+    return new IterationCursorBinding<I>
+      (componentReflector,iterationCursorSource);
   }
   
+  /**
+   * 
+   * @return The Reflector which describes the component type of the Iteration.
+   *   
+   */
   public Reflector<I> getComponentReflector()
   { return componentReflector;
   }
@@ -58,10 +71,11 @@ public abstract class IterationDecorator<T,I>
   protected abstract Iterator<I> createIterator();
   
   /**
-   * <P>Create a new IterationContext that holds the state of an iteration
+   * <p>Create a new IterationCursor that holds the state of a new iteration
+   * </p>
    */
-  public IterationContext<I> iterator()
-  { return new IterationContext<I>(createIterator());
+  public IterationCursor<I> iterator()
+  { return new IterationCursor<I>(createIterator());
   }
   
   

@@ -24,13 +24,13 @@ import java.util.Iterator;
  *
  * @param <I>
  */
-public class IterationContext<I>
+public class IterationCursor<I>
   implements Iterator<I>
 {
   private I value;
   private final Iterator<I> iterator;
   
-  public IterationContext(Iterator<I> iterator)
+  public IterationCursor(Iterator<I> iterator)
   { this.iterator=iterator;
   }
   

@@ -16,26 +16,26 @@ package spiralcraft.lang.spi;
 
 
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.IterationContext;
+import spiralcraft.lang.IterationCursor;
 import spiralcraft.lang.Reflector;
 
 
 /**
  * <P>Provides access to an object at the current position of an iteration,
- *   expressed by the IterationContext returned by the specified Channel.
+ *   expressed by the IterationCursor returned by the specified Channel.
  */
-public class IterationContextBinding<T>
+public class IterationCursorBinding<T>
   extends AbstractBinding<T>
 {
-  private final Channel<IterationContext<T>> source;
+  private final Channel<IterationCursor<T>> source;
   
   /**
-   * Create a new IterationContextBinding which obtains the value of the
-   *   current iteration position from the IterationContext obtained from
+   * Create a new IterationCursorBinding which obtains the value of the
+   *   current iteration position from the IterationCursor obtained from
    *   the specified source.
    */
-  public IterationContextBinding
-    (Reflector<T> componentReflector,Channel<IterationContext<T>> source)
+  public IterationCursorBinding
+    (Reflector<T> componentReflector,Channel<IterationCursor<T>> source)
   { 
     super(componentReflector);
     this.source=source;
