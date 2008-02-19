@@ -18,10 +18,14 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
+import spiralcraft.log.ClassLogger;
+
 
 public class ResolveNode<T>
   extends Node
 {
+  
+  private static final ClassLogger log=new ClassLogger(ResolveNode.class);
 
   private final Node _source;
   private final String identifier;
@@ -53,7 +57,7 @@ public class ResolveNode<T>
     }
     else
     { 
-      System.out.println("ResolveNode:"+super.toString()+" DEFAULT Using Focus subject");
+      log.fine("ResolveNode:"+super.toString()+" DEFAULT Using Focus subject");
       sourceOptic=focus.getSubject();
       if (sourceOptic==null)
       { throw new BindException("Focus "+focus+" has no subject");

@@ -30,10 +30,11 @@ import spiralcraft.lang.BindException;
 
 import spiralcraft.lang.spi.AbstractBinding;
 import spiralcraft.lang.spi.Binding;
+import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
-import spiralcraft.lang.Reflector;
+
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -164,12 +165,12 @@ public class TupleDelegate<T>
  * 
  */
 class TupleDelegateReflector<T>
-  implements Reflector<T>
+  extends BeanReflector<T>
 {
-  private final Class<T> iface;
+  
   
   public TupleDelegateReflector(Class<T> iface)
-  { this.iface=iface;
+  { super(iface);
   }
 
   // We haven't genericized the data package builder yet
@@ -202,9 +203,6 @@ class TupleDelegateReflector<T>
     }
     
   }
-  
-  public Class<T> getContentType()
-  { return iface;
-  }
+
 }
 

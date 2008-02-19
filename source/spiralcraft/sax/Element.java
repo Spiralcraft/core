@@ -21,6 +21,7 @@ import org.xml.sax.SAXException;
 import spiralcraft.util.ArrayUtil;
 
 import java.util.List;
+import java.util.HashMap;
 
 /**
  * Represents an Element in an XML document
@@ -32,6 +33,7 @@ public class Element
   private String _localName;
   private String _qName;
   private Attribute[] _attributes;
+  private HashMap<String,String> prefixMappings;
   
   /**
    * Constructor for no-namespace client use
@@ -82,6 +84,26 @@ public class Element
   }
 
   /**
+   * @return Any namespace prefix mappings declared in this Element 
+   */
+  public HashMap<String,String> getPrefixMappings()
+  { return prefixMappings;
+  }
+  
+  /**
+   * Specify any namespace prefix mappings declared with this Element
+   * 
+   * @param mappings
+   */
+  public void setPrefixMappings(HashMap<String,String> mappings)
+  { prefixMappings=mappings;
+  }
+  
+   
+
+  
+
+  /**
    * A concatenation of the character data in this element
    */
   @SuppressWarnings("unchecked")
@@ -109,14 +131,26 @@ public class Element
   { return _attributes;
   }
 
+  /**
+   * 
+   * @return The namespace URI
+   */
   public String getURI()
   { return _uri;
   }
 
+  /**
+   * 
+   * @return The qualified tag name (namespace:name)
+   */
   public String getQName()
   { return _qName;
   }
 
+  /**
+   * 
+   * @return The local name (without a namespace prefix)
+   */
   public String getLocalName()
   { return _localName;
   }

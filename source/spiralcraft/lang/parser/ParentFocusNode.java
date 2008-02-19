@@ -17,10 +17,14 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
+import spiralcraft.log.ClassLogger;
+
 public class ParentFocusNode
   extends FocusNode
 {
 
+  private static final ClassLogger log=new ClassLogger(ParentFocusNode.class);
+  
   private final FocusNode _child;
 
   public ParentFocusNode(FocusNode child)
@@ -41,7 +45,12 @@ public class ParentFocusNode
     { return parentFocus;
     }
     else
-    { throw new BindException("Focus has no parent");
+    { 
+      StringBuffer out=new StringBuffer();
+      dumpTree(out,"");
+      log.fine(out.toString());
+      
+      throw new BindException("Focus has no parent ("+focus.toString()+")");
     }
   }
 

@@ -1,0 +1,9 @@
+// BUILDER TEST
+show(); 
+new spiralcraft.lang.BeanFocus
+  (new spiralcraft.data.persist.XmlAssembly
+    (URI.create("java:/spiralcraft/builder/test/MyWidget.assy"),null)
+    .get()
+  );
+    
+ 

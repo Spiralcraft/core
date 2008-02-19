@@ -15,7 +15,12 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.NamespaceResolver;
+
 import spiralcraft.lang.BindException;
+import java.net.URI;
+
+import spiralcraft.log.ClassLogger;
 
 /**
  * An expression node which resolves a Focus from somewhere in the hierarchy
@@ -27,8 +32,12 @@ import spiralcraft.lang.BindException;
 public class AbsoluteFocusNode
   extends FocusNode
 {
-
-  private final String name;
+  @SuppressWarnings("unused")
+  private static final ClassLogger log=new ClassLogger(AbsoluteFocusNode.class);
+  
+  private static final URI NULL_URI=URI.create("");
+  
+  private final String suffix;
   private final String namespace;
 
   public AbsoluteFocusNode(String qname)
@@ -37,12 +46,12 @@ public class AbsoluteFocusNode
     if (colonPos>-1)
     {
       this.namespace=qname.substring(0,colonPos);
-      this.name=qname.substring(colonPos+1);
+      this.suffix=qname.substring(colonPos+1);
     }
     else
     { 
       this.namespace=null;
-      this.name=qname;
+      this.suffix=qname;
     }
 
   }
@@ -50,16 +59,36 @@ public class AbsoluteFocusNode
   public Focus<?> findFocus(final Focus<?> focus)
     throws BindException
   { 
-    if (namespace==null || namespace.equals(""))
-    { return focus;
+    URI namespaceURI=NULL_URI;
+    NamespaceResolver resolver=focus.getNamespaceResolver();
+    if (resolver!=null)
+    {
+      if (namespace==null || namespace.equals(""))
+      { namespaceURI=resolver.getDefaultNamespaceURI();
+      }
+      else
+      { namespaceURI=resolver.resolveNamespace(namespace);
+      }
+    }
+    else if (namespace!=null)
+    { 
+      throw new BindException
+        ("No NamespaceResolver for namespace '"+namespace+"'");
     }
     
-    Focus<?> newFocus=focus.findFocus(namespace,name);
+    if (namespaceURI==null)
+    { throw new BindException("Namespace '"+namespace+"' not defined.");
+    }
+    
+    // log.fine(namespaceURI.toString()+"  :  "+suffix);
+    URI uri=namespaceURI.resolve(suffix);
+    
+    Focus<?> newFocus=focus.findFocus(uri);
     if (newFocus!=null)
     { return newFocus;
     }
     else
-    { throw new BindException("Focus '"+namespace+":"+name+"' not found.");
+    { throw new BindException("Focus '"+uri+"' not found.");
     }
   }
 
@@ -68,8 +97,8 @@ public class AbsoluteFocusNode
     out.append(prefix).append("Focus");
     prefix=prefix+"  ";
     out.append(prefix).append("namespace="+(namespace!=null?namespace:"(default)"));
-    if (name!=null)
-    { out.append(prefix).append("name="+name);
+    if (suffix!=null)
+    { out.append(prefix).append("name="+suffix);
     }
   }
   

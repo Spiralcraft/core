@@ -17,6 +17,8 @@ package spiralcraft.util.tree;
 import java.util.Iterator;
 import java.util.Stack;
 
+import spiralcraft.log.ClassLogger;
+
 /**
  * Implements a Depth First Search (preorder) algorithm on a Tree
  */
@@ -24,6 +26,11 @@ public class DepthFirstSearch<T extends Tree<T,?>>
   implements Iterable<T>
 {
 
+  static final ClassLogger log=new ClassLogger(DepthFirstSearch.class);
+
+  
+
+  
   private final T tree;
   
   public DepthFirstSearch(T tree)
@@ -59,7 +66,7 @@ public class DepthFirstSearch<T extends Tree<T,?>>
       for (int i=children.length;i-->0;)
       { 
         T child=children[i];
-        System.err.println("Pushing "+child);
+//        log.fine("Pushing "+child);
         stack.push(child);
       }
       return lastNode;

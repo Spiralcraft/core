@@ -24,10 +24,13 @@ import spiralcraft.lang.Channel;
 
 import spiralcraft.lang.spi.SimpleBinding;
 
+import spiralcraft.log.ClassLogger;
 
 public class Evaluator
 {
 
+  static ClassLogger log=new ClassLogger(Evaluator.class);
+  
   public static <X,Y> X parseAndEvaluateObject(String expression,Y subject)
     throws BindException,ParseException
   { 
@@ -45,7 +48,7 @@ public class Evaluator
   public static <X,Y> X evaluate(Expression<X> expression,Focus<Y> focus)
     throws BindException
   { 
-    System.err.println("evaluate:"+expression+":"+focus.bind(expression));
+    log.fine("evaluate:"+expression+":"+focus.bind(expression));
     return focus.<X>bind(expression).get();
   }
 }

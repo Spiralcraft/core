@@ -35,7 +35,7 @@ import java.beans.IntrospectionException;
  *   retrieval. 
  *
  * Initially geared towards supporting bean property driven IoC, language
- *   binding, and object data representation (ie. Builder, Lang and Tuple).
+ *   binding, and object data representation (ie. Builder, Lang and Data).
  */
 public class MappedBeanInfo
   extends BeanInfoProxy

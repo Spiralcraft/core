@@ -21,13 +21,31 @@ import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 
 /**
- * A Reflector which defines the contents of a Namespace. Multiple instances of
+ * <p>A Reflector which defines the contents of a Namespace. Multiple instances of
  *   a Namespace can be associated with one NamespaceReflector.
+ * </p>
+ * 
+ * <h3>EXPERIMENTAL CODE</h3>
+ * <p>This class is experimental. It's necessity lies in
+ *   exposing as strongly typed named Channels members of a collection that are
+ *   heterogeneously typed. Specifically, the set of named Views in a dataset,
+ *   which expose different data types.
+ * </p>
+ *   
+ * <p>This may be also accomplished by spiralcraft.data
+ *   methods, or by using chained Focus objects that expose various interfaces.
+ *   Because use of this requires an object to generate a focus, it is possible
+ *   that simply using chained Focus objects would achieve the same result with
+ *   greater elegance and simplicity.
+ * </p>
+ *   
+ * 
  */
 public class NamespaceReflector
   implements Reflector<Namespace>
@@ -120,6 +138,24 @@ public class NamespaceReflector
   
   public String toString()
   { return super.toString()+attributeMap.keySet();
+  }
+
+  @Override
+  public URI getTypeURI()
+  {
+    // TODO Auto-generated method stub
+    // XXX: Not defined yet
+    return null;
+  }
+
+
+  @Override
+  public boolean isAssignableTo(
+    URI typeURI)
+  {
+    // TODO Auto-generated method stub
+    // XXX: Not defined yet
+    return false;
   }
   
 }

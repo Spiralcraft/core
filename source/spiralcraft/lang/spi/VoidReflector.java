@@ -14,11 +14,14 @@
 //
 package spiralcraft.lang.spi;
 
+import java.net.URI;
+
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Reflector;
+
 
 /**
  * Type that is undefined (ie. null)
@@ -27,6 +30,8 @@ public class VoidReflector
   implements Reflector<Void>
 {
 
+  URI uri=URI.create("class:/java/lang/Void");
+  
   /**
    * Generate a new Binding which resolves the name and the given parameter 
    *   expressions against the source Binding within the context of the supplied
@@ -58,5 +63,19 @@ public class VoidReflector
    */
   public Class<Void> getContentType()
   { return Void.class;
+  }
+
+
+  @Override
+  public URI getTypeURI()
+  { return uri;
+  }
+
+  @Override
+  public boolean isAssignableTo
+    (URI typeURI)
+  {
+    // Void is not assignable to anything
+    return false;
   }
 }

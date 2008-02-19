@@ -29,6 +29,7 @@ public abstract class Node
   private LinkedList<Node> _children;
   private Node _parent;
   private Object _peer;
+  private PrefixResolver prefixResolver;
 
   /**
    * Associate an application specific Object with this
@@ -103,6 +104,29 @@ public abstract class Node
   { return _parent;
   }
 
+  /**
+   * 
+   * @return The namespace PrefixResolver in effect for this Element
+   */
+  public PrefixResolver getPrefixResolver()
+  { 
+    if (this.prefixResolver!=null)
+    { return this.prefixResolver;
+    }
+    else if (_parent!=null)
+    { return _parent.getPrefixResolver();
+    }
+    return null;
+  }
+  
+  /**
+   * The namespace PrefixResolver applicable to this Element
+   * @param resolver
+   */
+  public void setPrefixResolver(PrefixResolver resolver)
+  { this.prefixResolver=resolver;
+  }
+  
   protected void playChildEvents(ContentHandler handler)
     throws SAXException
   {

@@ -42,6 +42,7 @@ import java.util.HashMap;
  */
 public class Expression<T>
 {
+  // XXX Make this weak- remove Expressions not referenced
   private static final HashMap<String,Expression<?>> _CACHE
     =new HashMap<String,Expression<?>>();
 

@@ -17,6 +17,7 @@ package spiralcraft.data.lang;
 import java.util.WeakHashMap;
 
 import java.lang.ref.WeakReference;
+import java.net.URI;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
@@ -27,6 +28,7 @@ import spiralcraft.data.DataComposite;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Type;
+import spiralcraft.data.TypeNotFoundException;
 
 /**
  * Abstract base class maps a DataComposite into the spiralcraft.lang namespace
@@ -86,5 +88,34 @@ public abstract class DataReflector<T extends DataComposite>
   
   public Type<?> getType()
   { return type;
+  }
+  
+
+  @Override
+  public URI getTypeURI()
+  {
+    if (type!=null)
+    { return type.getURI();
+    }
+    return null;
+  }
+
+
+  @Override
+  public boolean isAssignableTo(URI typeURI)
+  {
+    if (type==null)
+    { return false;
+    }
+    try
+    {
+      Type<?> requestedType=Type.resolve(typeURI);
+      return requestedType.isAssignableFrom(type);
+    }
+    catch (TypeNotFoundException x)
+    { return false;
+    }
+    
+
   }
 }

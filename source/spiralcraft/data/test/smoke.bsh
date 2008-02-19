@@ -70,7 +70,7 @@ result.toText("|  ");
 
 "// Convert to Assembly";
 resultAssembly=type.fromData(result,null);
-resultObject=resultAssembly.getSubject().get();
+resultObject=resultAssembly.get();
 resultObject.getClass();
 
 "// Convert back to data";
@@ -94,7 +94,7 @@ result.toText("|  ");
 
 "// Convert to Assembly";
 resultAssembly=type.fromData(result,null);
-resultObject=resultAssembly.getSubject().get();
+resultObject=resultAssembly.get();
 resultObject.getClass();
 
 "// Test primitive ProtoType";

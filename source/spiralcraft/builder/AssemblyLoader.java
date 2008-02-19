@@ -64,7 +64,7 @@ public class AssemblyLoader
   { 
     AssemblyClass assemblyClass=findAssemblyClass(classUri);
     Assembly<?> assembly=assemblyClass.newInstance(null);
-    return assembly.getSubject().get();
+    return assembly.get();
     
   }
   
@@ -211,7 +211,10 @@ public class AssemblyLoader
     }
   }
 
-  private AssemblyClass loadAssemblyDefinition(URI resourceUri,ParseTree parseTree)
+  private AssemblyClass loadAssemblyDefinition
+    (URI resourceUri
+    ,ParseTree parseTree
+    )
     throws BuildException
   {
     Element root=parseTree.getDocument().getRootElement();
@@ -223,6 +226,11 @@ public class AssemblyLoader
   
   /**
    * Define an AssemblyClass based on the information in an XML Element
+   * 
+   * @param sourceURI The URI of the document container in which the 
+   *   Assemblyclass is referenced
+   * @param node The node which contains the AssemblyClass reference
+   * @param containerClass The immediately containing AssemblyClass
    */
   private AssemblyClass readAssemblyClass
     (URI sourceUri
@@ -337,17 +345,14 @@ public class AssemblyLoader
     throws BuildException
   {
     PropertySpecifier prop=new PropertySpecifier(containerClass,node.getLocalName());
-
+    prop.setPrefixResolver(node.getPrefixResolver());
     Attribute[] attribs = node.getAttributes();
     if (attribs!=null)
     {
       for (int i=0;i<attribs.length;i++)
       {
         String name=attribs[i].getLocalName().intern();
-        if (name=="focus")
-        { prop.setFocus(attribs[i].getValue());
-        }
-        else if (name=="expression")
+        if (name=="expression")
         { prop.setExpression(attribs[i].getValue());
         }
         else if (name=="whitespace")

@@ -125,5 +125,10 @@ public class TupleReflector<T extends Tuple>
   public Class<T> getContentType()
   { return contentType;
   }
+
+
+
+
+
   
 }

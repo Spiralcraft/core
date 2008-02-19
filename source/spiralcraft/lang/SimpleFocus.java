@@ -16,99 +16,141 @@ package spiralcraft.lang;
 
 import java.util.HashMap;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 /**
  * Simple implementation of a Focus
  */
 public class SimpleFocus<T>
+  extends BaseFocus<T>
   implements Focus<T>
 {
 
-  private Channel<?> _context;
-  private Channel<T> _subject;
-  protected Focus<?> parent;
-  private HashMap<Expression<?>,Channel<?>> _channels;
- 
+  private URI containerURI;
+  private String layerName;
+  private HashMap<String,URI> namespaces;
+  private boolean namespaceRoot;
   
   public SimpleFocus()
   {
   }
 
   public SimpleFocus(Channel<T> subject)
-  { this._subject=subject;
+  { this.subject=subject;
   }
 
-  public void setParentFocus(Focus<?> parent)
-  { this.parent=parent;
-  }
 
-  public Focus<?> getParentFocus()
-  { return parent;
-  }
-
-  public void setContext(Channel<?> val)
-  { this._context=val;
-  }
     
-  public synchronized void setSubject(Channel<T> val)
-  { 
-    _subject=val;
-    _channels=null;
+  /**
+   * Indicate that namespace resolution should end at this Focus node.
+   * 
+   * @param val
+   */
+  public void setNamespaceRoot(boolean val)
+  { this.namespaceRoot=val;
   }
   
+  public void setLayerName(String layerName)
+  { this.layerName=layerName;
+  }
+  
+  public void setContainerURI(URI containerURI)
+  { this.containerURI=containerURI;
+  }
+  
+  public synchronized void mapNamespace(String name,URI namespace)
+  {
+    if (namespaces==null)
+    { namespaces=new HashMap<String,URI>();
+    }
+    namespaces.put(name,namespace);
+  }
   
   
   /**
-   * Return the Context for this Focus, or if there is none associated,
-   *   return the Context for the parent Focus.
+   * A Focus accessible from expressions embedded in a container should have
+   *   a URI that is discoverable to the expression writer using that 
+   *   container. This is called the container URI.
+   * 
+   * @return The container URI of this Focus.
    */
-  public Channel<?> getContext()
-  { 
-    if (_context!=null)
-    { return _context;
-    }
-    else if (parent!=null)
-    { return parent.getContext();
-    }
-    else
-    { return null;
-    }
-    
-  }
-
-  /**
-   * Return the subject of expression evaluation
-   */
-  public Channel<T> getSubject()
-  { return _subject;
+  public URI getContainerURI()
+  { return containerURI;
   }
   
+  /**
+   * Identifies the application layer represented by the subject of the Focus.
+   * 
+   * @return A String conforming to the syntax of Java package names, 
+   *   representing the package which "implements" the layer. The layer name
+   *   is provided by the container.
+   */  
+  public String getLayerName()
+  { return layerName;
+  }
+  
+  
+  public boolean isFocus(URI uri)
+  { 
+    if (containerURI!=null 
+        && containerURI.relativize(uri)!=uri
+       )
+    { return true;
+    }
+    
+    if (subject==null)
+    { return false;
+    }
+    
+    try
+    {
+      URI shortURI
+        =new URI(uri.getScheme(),uri.getAuthority(),uri.getPath(),null,null);
+      if  (subject.getReflector().isAssignableTo(shortURI))
+      { return true;
+      }
+    }
+    catch (URISyntaxException x)
+    { x.printStackTrace();
+    }
+    return false;
+  }
 
-  public Focus<?> findFocus(String namespace,String name)
+  public Focus<?> findFocus(URI uri)
   {       
+    if (isFocus(uri))
+    {
+      String query=uri.getQuery();
+      String fragment=uri.getFragment();
+
+      if (query==null)
+      {
+        if (fragment==null || fragment.equals(layerName))
+        { return this;
+        }
+      }
+
+    }
+    
     if (parent!=null)
-    { return parent.findFocus(namespace,name);
+    { return parent.findFocus(uri);
     }
     else
     { return null;
     }
   }
 
-  @SuppressWarnings("unchecked") // Heterogeneous hash map
-  public synchronized <X> Channel<X> bind(Expression<X> expression)
-    throws BindException
+
+  @Override
+  public NamespaceResolver getNamespaceResolver()
   { 
-    Channel<X> channel=null;
-    if (_channels==null)
-    { _channels=new HashMap<Expression<?>,Channel<?>>();
+    if (namespaceResolver!=null)
+    { return namespaceResolver;
     }
-    else
-    { channel=(Channel<X>) _channels.get(expression);
+    else if (!namespaceRoot && parent!=null)
+    { return parent.getNamespaceResolver();
     }
-    if (channel==null)
-    { 
-      channel=expression.bind(this);
-      _channels.put(expression,channel);
-    }
-    return channel;
+    return null;
   }
 }

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.WeakHashMap;
 
 import java.lang.ref.WeakReference;
+import java.net.URI;
 
 /**
  * Cache of BeanInfo (MappedBeanInfo) derived from classes with a
@@ -44,6 +45,9 @@ public class BeanInfoCache
   	=new WeakHashMap<Class<?>,WeakReference<MappedBeanInfo>>();
   private int _introspectorFlags;
   
+  private static final WeakHashMap<URI,WeakReference<Class<?>>> uriMap
+    =new WeakHashMap<URI,WeakReference<Class<?>>>();
+  
   /**
    * Obtain or create the singleton instance of the BeanInfoCache which
    *   corresponds to the given introspector flags.
@@ -60,6 +64,74 @@ public class BeanInfoCache
       _SINGLETONS.put(flags,cache);
     }
     return cache;
+  }
+  
+  /**
+   * Obtain the conventional URI for the specified class, relative to
+   *   the classpath. The "<code>class:/some/package/Classname</code>"
+   *   convention is used. The inner class specifier "$" is replaced with 
+   *   a "-".
+   * 
+   * @param clazz
+   * @return The conventional URI for the specified class
+   */
+  public static final URI getClassURI(Class<?> clazz)
+  { 
+    String suffix="";
+    while (clazz.isArray())
+    { 
+      suffix=suffix.concat(".array");
+      clazz=clazz.getComponentType();
+    }
+    
+    return URI.create
+      ("class:/"+clazz.getName().replace('.','/').replace('$','-')+suffix);
+  }
+  
+  /**
+   * Return the Class, if any, identified by the specified URI in the 
+   *   convention "<code>class:/some/package/Classname</code>".
+   * 
+   * @param uri
+   * @return The Class identified by the URI, if the URI scheme is "class" and
+   *   the Class is accessible from the context ClassLoader.
+   */
+  public static final synchronized Class<?> getClassForURI(URI uri)
+  { 
+    if (!uri.getScheme().equals("class"))
+    { return null;
+    }
+    
+    Class<?> result=null;
+    WeakReference<Class<?>> classRef=uriMap.get(uri);
+    if (classRef!=null)
+    { result=classRef.get();
+    }
+    
+    if (result==null)
+    { 
+      String className
+        =uri.getPath().substring(1).replace('/','.').replace('-','$');
+
+      // XXX Deal with arrays
+      
+      try
+      {
+        result 
+          =Class.forName
+            (className
+            ,false
+            ,Thread.currentThread().getContextClassLoader()
+            );
+        
+        uriMap.put(uri,new WeakReference<Class<?>>(result));
+      }
+      catch (ClassNotFoundException x)
+      { }
+      
+    }
+    
+    return result;
   }
   
   public BeanInfoCache()

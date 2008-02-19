@@ -14,10 +14,9 @@
 //
 package spiralcraft.builder;
 
-import spiralcraft.lang.Expression;
-import spiralcraft.lang.Focus;
-import spiralcraft.lang.Channel;
+import spiralcraft.lang.BaseFocus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
 
 import spiralcraft.lang.spi.SimpleBinding;
 
@@ -32,6 +31,13 @@ import spiralcraft.registry.Registrant;
 
 import spiralcraft.util.StringConverter;
 
+import spiralcraft.lang.WriteException;
+
+import spiralcraft.log.ClassLogger;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
 /**
  * An Assembly is an 'instance' of an AssemblyClass. It is a scaffold which
  *   supports a unique Java Object instance.
@@ -39,13 +45,14 @@ import spiralcraft.util.StringConverter;
  * The instantiation sequence is as follows:
  *
  * 1. new Assembly(AssemblyClass class)
- *    Internal Java class is resolved and the Object is instantiated.
+ *    Internal Java class is resolved 
  * 2. bind(parent) is called 
  *    Links this Assembly to its parent
  *    Binds all of the parent's properties into an array of _propertyBindings
  *    Property source expressions are compiled
  *    Nested Assemblies are instantiated and bound
  * 3. resolve() is called
+ *    The object is instantiated
  *    All properties are resolved
  *      Any nested Assemblies are resolved
  *      Property expressions are evaluated
@@ -56,17 +63,18 @@ import spiralcraft.util.StringConverter;
  */
 @SuppressWarnings("unchecked") // Heterogeneous design- does not use generics
 public class Assembly<T>
-  implements Focus<T>,Registrant,Lifecycle
+  implements Registrant,Lifecycle
 {
+  @SuppressWarnings("unused")
+  private static ClassLogger log=new ClassLogger(Assembly.class);
+  
   private final AssemblyClass _assemblyClass;
   private Assembly<?> _parent;
-  private final SimpleBinding<T> _optic;
   private PropertyBinding[] _propertyBindings;
   private HashMap<String,Assembly> _importedSingletons;
-  private HashMap<Expression,Channel> _channels;
-  private Channel<?> _context;
   private boolean bound=false;
   private boolean resolved=false;
+  private final AssemblyFocus<T> focus;
   
   
   /**
@@ -77,6 +85,8 @@ public class Assembly<T>
   Assembly(AssemblyClass assemblyClass)
     throws BuildException
   {
+    // log.fine("Plain Constructor");
+
     _assemblyClass=assemblyClass;
 
     Class javaClass=_assemblyClass.getJavaClass();
@@ -84,7 +94,9 @@ public class Assembly<T>
     { throw new BuildException("No java class defined for assembly");
     }
     try 
-    { _optic=new SimpleBinding(javaClass,null,false);
+    { 
+      focus=new AssemblyFocus();
+      focus.setSubject(new SimpleBinding(javaClass,null,false));
     }
     catch (BindException x)
     { throw new BuildException("Error binding class "+javaClass.getName()+": "+x,x);
@@ -93,6 +105,11 @@ public class Assembly<T>
   }
 
   
+  /**
+   * Called from resolve() to actually instantiate object
+   * 
+   * @throws BuildException
+   */
   @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
   private void constructInstance()
     throws BuildException
@@ -114,7 +131,10 @@ public class Assembly<T>
         else
         { instance=javaClass.newInstance();
         }
-        _optic.set((T) instance);
+        focus.getSubject().set((T) instance);
+      }
+      catch (WriteException x)
+      { throw new BuildException("Error publishing instance in Focus chain",x);
       }
       catch (InstantiationException x)
       { throw new BuildException("Error instantiating assembly",x);
@@ -128,7 +148,10 @@ public class Assembly<T>
       try
       { 
         // Use a proxy to auto-implement the interface
-        _optic.set((T) new TupleDelegate(javaClass).get());
+        focus.getSubject().set((T) new TupleDelegate(javaClass).get());
+      }
+      catch (WriteException x)
+      { throw new BuildException("Error publishing instance in Focus chain",x);
       }
       catch (DataException x)
       { throw new BuildException("Error binding instance",x);
@@ -151,16 +174,26 @@ public class Assembly<T>
     { throw new BuildException("Can't construct a "+clazz+" from text"); 
     }
   }
-  
-  /**
-   * Construct an instance of the specified AssemblyClass
-   */
-  Assembly(AssemblyClass assemblyClass,Assembly parent)
-    throws BuildException
-  { 
-    this(assemblyClass);
-    bind(parent);
-  }
+
+//  Unused constructor- obsolete- bind(parent) is public and called directly
+//  
+//  /**
+//   * Construct an instance of the specified AssemblyClass
+//   */
+//  Assembly(AssemblyClass assemblyClass,Assembly parent)
+//    throws BuildException
+//  { 
+//    this(assemblyClass);
+//    log.fine("Constructor with parent");
+//    focus.setParentFocus(parent.getFocus());
+//    if (parent.getFocus()==null)
+//    { log.fine("Parent has no focus "+parent.getAssemblyClass().getDeclarationName());
+//    }
+//    else
+//    { log.fine(parent.getFocus().toString());
+//    }
+//    bind(parent);
+//  }
 
   /**
    *@return Whether this Assembly's properties have been bound
@@ -177,6 +210,9 @@ public class Assembly<T>
     }
     bound=true;
     _parent=parent;
+    if (_parent!=null)
+    { focus.setParentFocus(parent.getFocus());
+    }
     _propertyBindings=_assemblyClass.bindProperties(this);
   }
   
@@ -200,7 +236,14 @@ public class Assembly<T>
     { throw new IllegalStateException("Cannot setDefaultInstance() when already resolved");
     }
     if (_assemblyClass.getJavaClass().isAssignableFrom(val.getClass()))
-    { _optic.set(val);
+    { 
+      try
+      { focus.getSubject().set(val);
+      }
+      catch (WriteException x)
+      { x.printStackTrace();
+      }
+
     }
     else
     { 
@@ -234,7 +277,7 @@ public class Assembly<T>
     }
     resolved=true;
     
-    if (_optic.get()==null)
+    if (focus.getSubject().get()==null)
     { constructInstance();
     }
     
@@ -253,7 +296,7 @@ public class Assembly<T>
   {
     node.registerInstance(Assembly.class,this);
 
-    T instance=_optic.get();
+    T instance=focus.getSubject().get();
     if (instance instanceof Registrant)
     { ((Registrant) instance).register(node);
     }
@@ -275,7 +318,7 @@ public class Assembly<T>
   @Override
   public void start() throws LifecycleException
   {
-    T instance=_optic.get();
+    T instance=focus.getSubject().get();
     if (instance instanceof Lifecycle)
     { ((Lifecycle) instance).start();
     }
@@ -286,7 +329,7 @@ public class Assembly<T>
   @Override
   public void stop() throws LifecycleException
   {
-    T instance=_optic.get();
+    T instance=focus.getSubject().get();
     if (instance instanceof Lifecycle)
     { ((Lifecycle) instance).stop();
     }
@@ -330,91 +373,69 @@ public class Assembly<T>
   { return _assemblyClass;
   }
 
+  public Focus<T> getFocus()
+  { return focus;
+  }
   
-  //////////////////////////////////////////////////  
-  //
-  // Implementation of spiralcraft.lang.Focus
-  //
-  //////////////////////////////////////////////////  
-
-  /**
-   * implement Focus.getParentFocus()
-   */
-  public Focus<?> getParentFocus()
-  { return _parent;
+  public T get()
+  { return getFocus().getSubject().get();
   }
-
-  /**
-   * implement Focus.getContext()
-   */
-  public Channel<?> getContext()
-  { 
-    if (_context!=null)
-    { return _context;
-    }
-    else
-    { return _optic;
-    }
-  }
-
-  /**
-   * implement Focus.getSubject()
-   */
-  public Channel<T> getSubject()
-  { return _optic;
-  }
- 
-  /**
-   * implement Focus.findFocus()
-   */
-  public Focus<?> findFocus(String namespace,String name)
-  { 
-    
-    if (_importedSingletons!=null)
+  
+  class AssemblyFocus<tFocus>
+    extends BaseFocus<tFocus>
+    implements Focus<tFocus>
+  {
+    public boolean isFocus(URI uri)
     { 
-      Assembly assembly=_importedSingletons.get(name);
-      if (assembly!=null)
-      { return assembly;
+      if (_assemblyClass.isFocus(uri))
+      { return true;
+      }
+      
+      
+      if (subject==null)
+      { return false;
+      }
+      
+      try
+      {
+        URI shortURI
+          =new URI(uri.getScheme(),uri.getAuthority(),uri.getPath(),null,null);
+        if  (subject.getReflector().isAssignableTo(shortURI))
+        { return true;
+        }
+      }
+      catch (URISyntaxException x)
+      { x.printStackTrace();
+      }
+      return false;
+    }
+    
+    public Focus<?> findFocus(URI uri)
+    {       
+      if (isFocus(uri))
+      {
+        String query=uri.getQuery();
+        String fragment=uri.getFragment();
+
+        if (query==null)
+        {
+          if (fragment==null || fragment=="spiralcraft.builder")
+          { return this;
+          }
+        }
+
+      }
+      
+      if (parent!=null)
+      { return parent.findFocus(uri);
+      }
+      else
+      { return null;
       }
     }
     
-    if (_assemblyClass.isFocusNamed(namespace,name))
-    { return this;
-    }
-
-    if (_parent!=null)
-    { return _parent.findFocus(namespace,name);
-    }
-    
-    return null;
-
   }
-
-  /**
-   * implement Focus.bind()
-   */
-  public  synchronized <X> Channel<X> bind(Expression<X> expression)
-    throws BindException
-  { 
-    Channel channel=null;
-    if (_channels==null)
-    { _channels=new HashMap<Expression,Channel>();
-    }
-    else
-    { channel=_channels.get(expression);
-    }
-    if (channel==null)
-    { 
-      channel=expression.bind(this);
-      _channels.put(expression,channel);
-    }
-    return channel;
-  }
-
-
-
-
-
+  
 }
 
 

@@ -24,6 +24,8 @@ import spiralcraft.lang.Expression;
 
 import java.util.List;
 
+import spiralcraft.sax.PrefixResolver;
+
 /**
  * Specifies a property to be defined in the context of an AssemblyClass
  *
@@ -43,9 +45,7 @@ public class PropertySpecifier
   private AssemblyClass _targetAssemblyClass;
   private int _targetSequence;
   private Expression<?> _sourceExpression;
-  private Expression<?> _focusExpression;
   private boolean _literalWhitespace;
-  private String _focus;
   private String _expression;
   private boolean _persistent;
   private boolean _dynamic;
@@ -53,6 +53,7 @@ public class PropertySpecifier
   private String _collectionClassName;
   private Class<? extends Collection<?>> _collectionClass;
   private boolean _export;
+  private PrefixResolver prefixResolver;
   
   public PropertySpecifier
     (AssemblyClass container
@@ -92,6 +93,15 @@ public class PropertySpecifier
     this(container,specifier);
     addAssemblyClass(content);
   }
+  
+  public void setPrefixResolver(PrefixResolver resolver)
+  { this.prefixResolver=resolver;
+  }
+  
+  public PrefixResolver getPrefixResolver() 
+  { return this.prefixResolver;
+  }
+  
   
   public String getSourceCodeLocation()
   { 
@@ -172,17 +182,6 @@ public class PropertySpecifier
   { _literalWhitespace=val;
   }
 
-  /**
-   * Specify the expression that will be bound at built-time to provide
-   *   
-   */
-  public void setFocus(String val)
-  { _focus=val;
-  }
-
-  public String getFocus()
-  { return _focus;
-  }
 
   /**
    * Specify the expression that will be bound and evaluated at build-time when the
@@ -196,9 +195,6 @@ public class PropertySpecifier
   { return _sourceExpression;
   }
   
-  public Expression<?> getFocusExpression()
-  { return _focusExpression;
-  }
 
   public PropertyBinding getPropertyBinding(Assembly<?> assembly)
   { 
@@ -258,24 +254,7 @@ public class PropertySpecifier
       }
     }
 
-      
-    if (_focus!=null)
-    { 
-      if (_contents!=null)
-      { throw new BuildException("Properties cannot have both a focus and Assembly definitions");
-      }
-      if (_textData!=null)
-      { throw new BuildException("Properties cannot have both expressions and text data");
-      }
-
-      try
-      { _focusExpression=Expression.parse(_focus);
-      }
-      catch (Exception x)
-      { throw new BuildException("Error parsing focus "+_focus,x);
-      }
-    }
-      
+          
     if (_expression!=null)
     { 
       if (_contents!=null)

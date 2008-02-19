@@ -45,6 +45,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.lang.reflect.ParameterizedType;
+import java.net.URI;
+
+import spiralcraft.log.ClassLogger;
 
 /**
  * A Reflector which uses Java Beans introspection and reflection
@@ -54,6 +57,9 @@ import java.lang.reflect.ParameterizedType;
 public class BeanReflector<T>
   implements Reflector<T>
 {
+  @SuppressWarnings("unused")
+  private static final ClassLogger log=new ClassLogger(BeanReflector.class);
+  
   private static final boolean ENABLE_METHOD_BINDING_CACHE=true;
   
   private static final BeanInfoCache _BEAN_INFO_CACHE
@@ -63,8 +69,14 @@ public class BeanReflector<T>
   private static final WeakHashMap<Type,WeakReference<Reflector>> reflectorMap
     =new WeakHashMap<Type,WeakReference<Reflector>>();
   
+
   private static final ArrayLengthTranslator arrayLengthTranslator
     =new ArrayLengthTranslator();
+  
+
+  
+
+
   
   /**
    * Find a BeanReflector which reflects the specified Java class
@@ -95,20 +107,21 @@ public class BeanReflector<T>
   }
   
   
-  private final MappedBeanInfo _beanInfo;
-  private HashMap<String,BeanPropertyTranslator<?,T>> _properties;
-  private HashMap<String,BeanFieldTranslator<?,T>> _fields;
-  private HashMap<String,MethodTranslator<?,T>> _methods;
-  private Class<T> _targetClass;
-  private Type _targetType;
-  private MethodResolver _methodResolver;
+  private final MappedBeanInfo beanInfo;
+  private HashMap<String,BeanPropertyTranslator<?,T>> properties;
+  private HashMap<String,BeanFieldTranslator<?,T>> fields;
+  private HashMap<String,MethodTranslator<?,T>> methods;
+  private Class<T> targetClass;
+  private Type targetType;
+  private URI uri;
+  private MethodResolver methodResolver;
   
   @SuppressWarnings("unchecked") // Runtime case from Type to Class<T>
   public BeanReflector(Type type)
   { 
-    // System.err.println("BeanReflector.new() "+type);
+    // log.fine(type);
     Class<T> clazz=null;
-    _targetType=type;
+    targetType=type;
     
     if (type instanceof Class)
     { clazz=(Class<T>) type;
@@ -122,12 +135,13 @@ public class BeanReflector<T>
         ("BeanReflector: unrecognized type "+type);
     }
     
-    _targetClass=clazz;
+    targetClass=clazz;
+    uri=BeanInfoCache.getClassURI(clazz);
     try
     {
-      _beanInfo
+      beanInfo
         =_BEAN_INFO_CACHE.getBeanInfo
-          (_targetClass);
+          (targetClass);
     }
     catch (IntrospectionException x)
     { 
@@ -138,9 +152,23 @@ public class BeanReflector<T>
   }
 
   public Class<T> getContentType()
-  { return _targetClass;
+  { return targetClass;
   }
   
+  @Override
+  public URI getTypeURI()
+  { return uri;
+  }
+
+  @Override
+  public boolean isAssignableTo(URI typeURI)
+  { 
+    Class clazz=BeanInfoCache.getClassForURI(typeURI);
+    if (clazz!=null)
+    { return clazz.isAssignableFrom(this.targetClass);
+    }
+    return false;
+  }
   
   @SuppressWarnings("unchecked") // Expression array params heterogeneous
   public synchronized <X> Binding<X> 
@@ -158,7 +186,7 @@ public class BeanReflector<T>
       if (binding==null)
       { binding=this.<X>getField(source,name);
       }
-      if (binding==null && _targetClass.isArray())
+      if (binding==null && targetClass.isArray())
       { binding=this.<X>getArrayProperty(source,name);
       }
     }
@@ -181,18 +209,18 @@ public class BeanReflector<T>
     if (decoratorInterface==IterationDecorator.class)
     { 
       
-      if (_targetClass.isArray())
+      if (targetClass.isArray())
       { 
         Reflector reflector=BeanReflector.getInstance
-          (_targetClass.getComponentType());
+          (targetClass.getComponentType());
         return (D) new ArrayIterationDecorator(source,reflector);
       }
-      else if (Enumeration.class.isAssignableFrom(_targetClass))
+      else if (Enumeration.class.isAssignableFrom(targetClass))
       {
-        if (_targetType instanceof ParameterizedType)
+        if (targetType instanceof ParameterizedType)
         {
           Type[] parameterTypes
-            =((ParameterizedType) _targetType).getActualTypeArguments();
+            =((ParameterizedType) targetType).getActualTypeArguments();
           if (parameterTypes.length>0)
           {  
             Type parameterType=parameterTypes[0];
@@ -201,29 +229,25 @@ public class BeanReflector<T>
           }
           else
           {
-            System.err.println
-              ("BeanReflector: IterationDecorator- "
-              +" no parameters for Enumeration" 
-              );
+            // log.fine("IterationDecorator- Non-parameterized Enumeration");
             Reflector reflector=BeanReflector.getInstance(Object.class);
             return (D) new EnumerationIterationDecorator(source,reflector);
           }
         }
         else
         {
-          System.err.println
-            ("BeanReflector: IterationDecorator- Enumeration not parameterized");
+          // log.fine("IterationDecorator- Non-parameterized Enumeration");
           Reflector reflector=BeanReflector.getInstance(Object.class);
           return (D) new EnumerationIterationDecorator(source,reflector);
         }
         
       }
-      else if (Iterable.class.isAssignableFrom(_targetClass))
+      else if (Iterable.class.isAssignableFrom(targetClass))
       { 
         try
         {
           // Make an effort to find a hint of a component type
-          Method method=_targetClass.getMethod("iterator",new Class[0]);
+          Method method=targetClass.getMethod("iterator",new Class[0]);
           Type type=method.getGenericReturnType();
           if (type instanceof ParameterizedType)
           {
@@ -237,18 +261,14 @@ public class BeanReflector<T>
             }
             else
             {
-              System.err.println
-                ("BeanReflector: IterationDecorator- "
-                +" no parameters for iterator" 
-                );
+              // log.fine("IterationDecorator- no parameters for iterator");
               Reflector reflector=BeanReflector.getInstance(Object.class);
               return (D) new IterableDecorator(source,reflector);
             }
           }
           else
           {
-            System.err.println
-              ("BeanReflector: IterationDecorator- iterator not parameterized");
+            // log.fine("IterationDecorator- iterator not parameterized");
             Reflector reflector=BeanReflector.getInstance(Object.class);
             return (D) new IterableDecorator(source,reflector);
           }
@@ -274,21 +294,21 @@ public class BeanReflector<T>
     throws BindException
   {
     BeanFieldTranslator<X,T> fieldTranslator=null;
-    if (_fields==null)
-    { _fields=new HashMap<String,BeanFieldTranslator<?,T>>();
+    if (fields==null)
+    { fields=new HashMap<String,BeanFieldTranslator<?,T>>();
     }
     else
-    { fieldTranslator=(BeanFieldTranslator<X,T>) _fields.get(name);
+    { fieldTranslator=(BeanFieldTranslator<X,T>) fields.get(name);
     }
 
     if (fieldTranslator==null)
     {
       Field field
-        =_beanInfo.findField(name);
+        =beanInfo.findField(name);
       if (field!=null)
       { 
         fieldTranslator=new BeanFieldTranslator<X,T>(field);
-        _fields.put(name,fieldTranslator);
+        fields.put(name,fieldTranslator);
       }
     }
     if (fieldTranslator!=null)
@@ -309,22 +329,22 @@ public class BeanReflector<T>
     throws BindException
   {
     BeanPropertyTranslator<X,T> translator=null;
-    if (_properties==null)
-    { _properties=new HashMap<String,BeanPropertyTranslator<?,T>>();
+    if (properties==null)
+    { properties=new HashMap<String,BeanPropertyTranslator<?,T>>();
     }
     else
-    { translator=(BeanPropertyTranslator<X,T>) _properties.get(name);
+    { translator=(BeanPropertyTranslator<X,T>) properties.get(name);
     }
 
     if (translator==null)
     {
       PropertyDescriptor prop
-        =_beanInfo.findProperty(name);
+        =beanInfo.findProperty(name);
       
       if (prop!=null)
       { 
-        translator=new BeanPropertyTranslator<X,T>(prop,_beanInfo);
-        _properties.put(name,translator);
+        translator=new BeanPropertyTranslator<X,T>(prop,beanInfo);
+        properties.put(name,translator);
       }
     }
     if (translator!=null)
@@ -366,8 +386,8 @@ public class BeanReflector<T>
   private synchronized <X> Binding<X> getMethod(Binding<T> source,String name,Channel[] params)
     throws BindException
   { 
-    if (_methodResolver==null)
-    { _methodResolver=new MethodResolver(_targetClass);
+    if (methodResolver==null)
+    { methodResolver=new MethodResolver(targetClass);
     }
     
     StringBuffer sigbuf=new StringBuffer();
@@ -385,11 +405,11 @@ public class BeanReflector<T>
     String sig=sigbuf.toString();
 
     MethodTranslator<X,T> translator=null;
-    if (_methods==null)
-    { _methods=new HashMap<String,MethodTranslator<?,T>>();
+    if (methods==null)
+    { methods=new HashMap<String,MethodTranslator<?,T>>();
     }
     else
-    { translator= (MethodTranslator<X,T>) _methods.get(sig);
+    { translator= (MethodTranslator<X,T>) methods.get(sig);
     }
 
     if (translator==null)
@@ -397,12 +417,12 @@ public class BeanReflector<T>
       try
       {
         Method method
-          =_methodResolver.findMethod(name,classSig);
+          =methodResolver.findMethod(name,classSig);
         
         if (method!=null)
         { 
           translator=new MethodTranslator<X,T>(method);
-          _methods.put(sig,translator);
+          methods.put(sig,translator);
         }
       }
       catch (NoSuchMethodException x)
@@ -411,7 +431,7 @@ public class BeanReflector<T>
           ("Method "
           +name
           +"("+ArrayUtil.format(classSig,",","")
-          +") not found in "+_targetClass
+          +") not found in "+targetClass
           ,x
           );
       }
@@ -438,8 +458,10 @@ public class BeanReflector<T>
   }
 
   public String toString()
-  { return super.toString()+":"+_targetClass.getName();
+  { return super.toString()+":"+targetClass.getName();
   }
+
+
 
 }
 

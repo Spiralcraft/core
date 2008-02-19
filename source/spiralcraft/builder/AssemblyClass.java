@@ -34,13 +34,18 @@ import spiralcraft.vfs.classpath.ClasspathResourceFactory;
  */
 public class AssemblyClass
 {
-  private final URI _sourceUri;
+  private final URI sourceURI;
+  
 
   // _basePackage and _baseName are used
   //   to resolve external base class or java class
   //   if _baseAssemblyClass hasn't been supplied at construction
   private final URI _basePackage;
   private final String _baseName;
+  
+  // The URI used to reference this AssemblyClass in the referencing container
+  private final URI _containerURI;
+  private String _id;  
   
   private AssemblyClass _baseAssemblyClass;
 
@@ -61,7 +66,6 @@ public class AssemblyClass
   private LinkedList<PropertySpecifier> _members;
   private HashMap<String,PropertySpecifier> _memberMap;
   private boolean _resolved;
-  private String _id;
   private String _constructorText;
   private PropertySpecifier _containingProperty;
   
@@ -91,9 +95,10 @@ public class AssemblyClass
     ,AssemblyLoader loader
     )
   { 
-    _sourceUri=sourceUri;
+    this.sourceURI=sourceUri;
     _basePackage=basePackage;
     _baseName=baseName;
+    _containerURI=_basePackage.resolve(baseName);
     _outerClass=outerClass;
     if (loader!=null)
     { _loader=loader;
@@ -104,9 +109,13 @@ public class AssemblyClass
   }
 
   public String toString()
-  { return super.toString()+":"+_sourceUri+":"+_basePackage+":"+_baseName;
+  { return super.toString()+":"+sourceURI+":"+_containerURI;
   }
 
+  public URI getContainerURI()
+  { return _containerURI;
+  }
+  
   public void setConstructor(String constructor)
   { _constructorText=constructor;
   }
@@ -144,9 +153,10 @@ public class AssemblyClass
     ,AssemblyLoader loader
     )
   { 
-    _sourceUri=sourceUri;
+    this.sourceURI=sourceUri;
     _basePackage=null;
     _baseName=null;
+    _containerURI=baseClass.getContainerURI();
     _baseAssemblyClass=baseClass;
     _outerClass=outerClass;
     if (loader!=null)
@@ -162,10 +172,17 @@ public class AssemblyClass
    *   the specified baseClass.
    */
   AssemblyClass innerSubclass(AssemblyClass baseClass)
-  { return new AssemblyClass(_sourceUri,baseClass,this,_loader);
+  { return new AssemblyClass(sourceURI,baseClass,this,_loader);
   }
 
-
+  public void setId(String id)
+  { this._id=id;
+  }
+  
+  public String getId()
+  { return _id;
+  }
+  
 
   /**
    * Register a PropertySpecifier as member of this assembly class.
@@ -308,40 +325,40 @@ public class AssemblyClass
     }
   }
 
-  public boolean isFocusNamed(String namespace,String name)
+  public boolean isFocus(URI uri)
   { 
-    if (namespace==null && _id!=null && _id.equals(name))
-    { return true;
-    }
-    else if (_baseAssemblyClass!=null)
-    { return _baseAssemblyClass.isFocusNamed(namespace,name);
-    }
-    else if (_javaClass!=null)
+    if (_outerClass==null)
     { 
-      String qname=(namespace!=null?namespace+".":"")+name;
-      Class<?>[] singletons=getSingletons();
-      for (Class<?> clazz:singletons)
-      { return clazz.getName().equals(qname);
+      // If the source file URI matches an outer class, that works
+      if (sourceURI.relativize(uri)!=uri)
+      { return true;
       }
+    }
+    else
+    {
+      // For an inner class, we need to match the URI of the reference
+      URI containerURI=getContainerURI();
+      if (containerURI!=null 
+          && containerURI.relativize(uri)!=uri
+         )
+      { return true;
+      }
+    }
+    
+    // Recurse
+    if (_baseAssemblyClass!=null) 
+    { return _baseAssemblyClass.isFocus(uri);
     }
     return false;
   }
 
+  
   public void setDeclarationName(String val)
   { 
     assertUnresolved();
     _declarationName=val;
   }
 
-  public void setId(String val)
-  { 
-    assertUnresolved();
-    _id=val;
-  }
-
-  public String getId()
-  { return _id;
-  }
 
   /**
    * Whether this AssemblyClass should generate a global shared instance
@@ -424,7 +441,7 @@ public class AssemblyClass
    * The URI of the defining resource for this assembly class
    */
   public URI getSourceURI()
-  { return _sourceUri;
+  { return sourceURI;
   }
 
   /**
@@ -441,7 +458,7 @@ public class AssemblyClass
     // URI baseUri
     //  =_basePackage.resolve(_baseName);
       
-    if (baseResource.equals(_sourceUri) && _outerClass==null)
+    if (baseResource.equals(sourceURI) && _outerClass==null)
     { 
       // Circular definition
       // Use Java class instead
@@ -449,7 +466,7 @@ public class AssemblyClass
       if (_javaClass==null)
       { 
         throw new BuildException
-          ("Assembly "+_sourceUri+" is not contained in a Java package and "
+          ("Assembly "+sourceURI+" is not contained in a Java package and "
           +" thus cannot be based on a Java class of the same name"
           );
       }
@@ -459,12 +476,15 @@ public class AssemblyClass
       _baseAssemblyClass=_loader.findAssemblyDefinition(baseResource);
       if (_baseAssemblyClass==null)
       { 
-        resolveJavaClass();
-        throw new BuildException
-          ("Assembly "+baseResource+" is not contained in a Java package and "
-          +" thus cannot be automatically derived from a Java class of the same" 
-          +" name"
-          );
+        _javaClass=resolveJavaClass();
+        if (_javaClass==null)
+        {
+          throw new BuildException
+            ("Assembly "+baseResource+" is not contained in a Java package and "
+            +" thus cannot be automatically derived from a Java class of the same" 
+            +" name"
+            );
+        }
       }
     }
   }
@@ -518,8 +538,8 @@ public class AssemblyClass
   private void throwBuildException(String message,Exception cause)
     throws BuildException
   { 
-    if (_sourceUri!=null)
-    { throw new BuildException(message+" ("+_sourceUri.toString()+")",cause);
+    if (sourceURI!=null)
+    { throw new BuildException(message+" ("+sourceURI.toString()+")",cause);
     }
     else
     { throw new BuildException(message,cause);

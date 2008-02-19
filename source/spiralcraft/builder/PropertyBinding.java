@@ -18,6 +18,9 @@ import spiralcraft.util.StringConverter;
 
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.FocusWrapper;
+import spiralcraft.lang.NamespaceResolver;
+
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.WriteException;
@@ -28,6 +31,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import java.net.URI;
+
 import java.lang.reflect.Array;
 
 import java.beans.PropertyChangeListener;
@@ -35,6 +40,7 @@ import java.beans.PropertyChangeEvent;
 
 import spiralcraft.registry.RegistryNode;
 
+import spiralcraft.sax.PrefixResolver;
 
 /**
  * Associates a PropertySpecifier with some value or value source
@@ -62,7 +68,8 @@ public class PropertyBinding
   { 
     _specifier=specifier;
     _container=container;
-    _focus=container;
+    _focus=new NamespaceFocus
+      (container.getFocus(),specifier.getPrefixResolver());
 
     // Resolve the target first to determine how we are to interpret
     //   the contents/source information
@@ -210,8 +217,8 @@ public class PropertyBinding
   {
     try
     {
-      _target=_container.getSubject()
-        .resolve(_container,_specifier.getTargetName(),null);
+      _target=_container.getFocus().getSubject()
+        .resolve(_container.getFocus(),_specifier.getTargetName(),null);
     }
     catch (BindException x)
     {
@@ -246,7 +253,7 @@ public class PropertyBinding
       {
         // Source is a single object
         if (_contents.length==1)
-        { _source=_contents[0].getSubject().get();
+        { _source=_contents[0].get();
         }
         else
         {
@@ -300,7 +307,7 @@ public class PropertyBinding
         
         for (int i=0;i<_contents.length;i++)
         { 
-          source.add(_contents[i].getSubject().get());
+          source.add(_contents[i].get());
           if (_specifier.getExport())
           { exportSingletons(_contents[i]);
           }
@@ -317,7 +324,7 @@ public class PropertyBinding
           );
         for (int i=0;i<_contents.length;i++)
         { 
-          Array.set(_source,i,_contents[i].getSubject().get());
+          Array.set(_source,i,_contents[i].get());
           if (_specifier.getExport())
           { exportSingletons(_contents[i]);
           }
@@ -336,46 +343,6 @@ public class PropertyBinding
           );
       }
       _source=_converter.fromString(text);
-    }
-    else if (_specifier.getFocusExpression()!=null)
-    { 
-      // Focus on the specific result of evaluating the focus expression
-      
-      // Focus expressions in Assembly definitions are intended to permit the 
-      //   developer to specify a alternate component in the assembly hierarchy
-      //   against which to resolve an expression. By default, expressions
-      //   resolve against the containing Assembly. 
-      //
-      // The focus expression is evaluated only once, as opposed to the source
-      //   expression, which is evaluated every time a property update is 
-      //   triggered. This -may- help performance.
-      // 
-      // This particular feature remains under evaluation, as it can be
-      //   confusing.
-      try
-      { 
-        Object focusObject=_focus.bind(_specifier.getFocusExpression()).get();
-        if (focusObject!=null)
-        { 
-          // Consider supplying a parent focus here, since we may want to
-          //   resolve something from this container.
-          _focus=new SimpleFocus
-            (new SimpleBinding(focusObject,true)
-            );
-        }
-        else
-        { 
-          throw new BuildException
-            ("Subject of focus "+_specifier.getFocusExpression().getText()
-            +" is null." 
-            );
-        }
-      }
-      catch (BindException x)
-      { 
-        throw new BuildException
-          ("Error binding focus "+_specifier.getFocusExpression().getText(),x);
-      }
     }
     else
     { 
@@ -510,3 +477,40 @@ public class PropertyBinding
     
   }
 }
+
+class NamespaceFocus<tFocus>
+  extends FocusWrapper<tFocus>
+{ 
+  private NamespaceResolver resolver;
+  
+  public NamespaceFocus(Focus<tFocus> delegate,final PrefixResolver resolver)
+  { 
+    super(delegate);
+    this.resolver
+      =new NamespaceResolver()
+    {
+
+      @Override
+      public URI getDefaultNamespaceURI()
+      {
+        // TODO Auto-generated method stub
+        return URI.create(resolver.resolvePrefix("default"));
+      }
+
+      @Override
+      public URI resolveNamespace(
+        String prefix)
+      {
+        // TODO Auto-generated method stub
+        return URI.create(resolver.resolvePrefix(prefix));
+      }
+    };
+  }
+  
+  @Override
+  public NamespaceResolver getNamespaceResolver()
+  { return resolver;
+  }
+
+}
+

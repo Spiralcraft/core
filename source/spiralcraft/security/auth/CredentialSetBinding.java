@@ -22,6 +22,7 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.AbstractBinding;
 import spiralcraft.lang.spi.Binding;
 
+import java.net.URI;
 import java.util.Map;
 
 /**
@@ -89,6 +90,21 @@ class CredentialMapReflector
     }
     return new CredentialBinding(map,name);
 
+  }
+
+  @Override
+  public URI getTypeURI()
+  {
+    // Undefined
+    return null;
+  }
+
+
+  @Override
+  public boolean isAssignableTo(URI typeURI)
+  {
+    // Undefined
+    return false;
   } 
   
 }

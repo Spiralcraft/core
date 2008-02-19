@@ -91,7 +91,7 @@ public class AssemblyFactoryTest
       { System.err.println("Assembly is null");
       }
       
-      Object o=assembly.getSubject().get();
+      Object o=assembly.get();
       if (o!=null)
       { System.err.println(o.toString());
       }

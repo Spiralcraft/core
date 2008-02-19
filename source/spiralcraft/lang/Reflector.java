@@ -16,6 +16,8 @@ package spiralcraft.lang;
 
 import spiralcraft.lang.spi.Binding;
 
+import java.net.URI;
+
 /**
  * <P>A Reflector is a "type broker" which exposes parts of an object model 
  *   by creating data pipes (Bindings) based on elements of Expression syntax
@@ -53,4 +55,20 @@ public interface Reflector<T>
    *   associated with this Reflector
    */
   public Class<T> getContentType();
+  
+  /**
+   * @return The URI that identifies the specific type of the data objects
+   *   described by this Reflector. The URI is defined by the type system
+   *   that provides the Reflector implementation.
+   */
+  public URI getTypeURI();
+  
+  /**
+   * @return Whether the data object described by this Reflector can be
+   *   assigned to the type identified by the typeURI. If typeURI==getTypeURI()
+   *   then this method must return true. Otherwise, the type compatibility
+   *   is defined by the type system that provides the Reflector 
+   *   implementation.
+   */
+  public boolean isAssignableTo(URI typeURI);
 }

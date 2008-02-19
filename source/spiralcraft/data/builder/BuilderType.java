@@ -245,7 +245,7 @@ public class BuilderType
           for (Assembly<?> assembly: contextBinding.getContents())
           { 
 //            System.out.println("BuilderType: Checking "+tupleClass+" = "+assembly.getSubject().get().getClass());
-            if (assembly.getSubject().get().getClass().equals(tupleClass))
+            if (assembly.get().getClass().equals(tupleClass))
             { 
 //              System.err.println("BuilderType: resolved existing target assembly for "+tupleClass);
               instance=assembly;

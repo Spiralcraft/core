@@ -27,6 +27,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 
 
+import spiralcraft.log.ClassLogger;
 
 
 
@@ -35,6 +36,9 @@ import spiralcraft.util.Arguments;
 public class ExpressionResolverTest
 {
 
+  private static final ClassLogger log
+    =new ClassLogger(ExpressionResolverTest.class);
+  
   private String _expression=null;
   private boolean _dump=false;
   private int _bindRepeats=0;
@@ -79,13 +83,13 @@ public class ExpressionResolverTest
     {
       long time=System.currentTimeMillis();
       Expression<Object> expression = parser.parse(_expression);
-      System.err.println("Initial read time "+(System.currentTimeMillis()-time));
+      log.fine("Initial read time "+(System.currentTimeMillis()-time));
       
       if (_dump)
       { 
         StringBuffer out=new StringBuffer();
         expression.dumpParseTree(out);
-        System.err.println(out.toString());
+        log.fine(out.toString());
       }
 
       SimpleFocus<Namespace> focus=new SimpleFocus<Namespace>();
@@ -103,7 +107,7 @@ public class ExpressionResolverTest
 
       Channel<Object> channel=expression.bind(focus);
 
-      System.err.println("Bind time "+(System.currentTimeMillis()-time));
+      log.fine("Bind time "+(System.currentTimeMillis()-time));
 
       if (_bindRepeats>0)
       {
@@ -111,7 +115,7 @@ public class ExpressionResolverTest
         for (int i=0;i<_bindRepeats;i++)
         { expression.bind(focus);
         }
-        System.err.println(_bindRepeats+" repeats bind time "+(System.currentTimeMillis()-time));
+        log.fine(_bindRepeats+" repeats bind time "+(System.currentTimeMillis()-time));
       }
 
       System.out.println(channel.get());      
@@ -122,18 +126,18 @@ public class ExpressionResolverTest
         for (int i=0;i<_getRepeats;i++)
         { channel.get();
         }
-        System.err.println(_getRepeats+" repeats get time "+(System.currentTimeMillis()-time));
+        log.fine(_getRepeats+" repeats get time "+(System.currentTimeMillis()-time));
       }
     } 
     catch (ParseException e) 
     { 
-      System.err.println(e.getMessage());
+      log.fine(e.getMessage());
       e.printStackTrace();
 
     }
     catch (BindException e) 
     { 
-      System.err.println(e.getMessage());
+      log.fine(e.getMessage());
       e.printStackTrace();
 
     }

@@ -130,7 +130,7 @@ public class BuilderField
           {
             // System.out.println("Not a builder type "+type.getCoreType());
             // Use bean method to depersist
-            Object bean=assembly.getSubject().get();
+            Object bean=assembly.get();
             super.depersistBeanProperty(tuple,bean);
           }
           
@@ -152,7 +152,7 @@ public class BuilderField
           {
             // We -can- depersist a bean value into a property
             //   that has no descriptor
-            Object bean=assembly.getSubject().get();
+            Object bean=assembly.get();
             super.depersistBeanProperty(tuple,bean);
           }
         }
@@ -206,7 +206,7 @@ public class BuilderField
                 System.out.println("BuilderField: Unpacking "+subAssembly);
                 // Not a builder type, and can't get type from assembly
                 // Unpackage the assembly and store as a reflection type
-                Object subjectBean=subAssembly.getSubject().get();
+                Object subjectBean=subAssembly.get();
                 type=
                   TypeResolver.getTypeResolver().resolve
                     (ReflectionType.canonicalURI(subjectBean.getClass()));
@@ -226,14 +226,14 @@ public class BuilderField
               setValue(tuple,type.toData(assemblies[0]));
             }
             else 
-            { super.persistBeanProperty(assembly.getSubject().get(),tuple);
+            { super.persistBeanProperty(assembly.get(),tuple);
             }
           }
         }
         else
         {    
 //          System.err.println("BuilderField: persisting "+getName()+" as bean");
-          Object bean=assembly.getSubject().get();
+          Object bean=assembly.get();
           super.persistBeanProperty(bean,tuple);
         }
       } // if (specifier.isPersistent() && assembly!=null);
@@ -242,7 +242,7 @@ public class BuilderField
     {
       if (!(getType().getCoreType() instanceof BuilderType))
       { 
-        Object bean=assembly.getSubject().get();
+        Object bean=assembly.get();
         super.persistBeanProperty(bean,tuple);
       }
     }

@@ -102,7 +102,7 @@ public class XmlAssembly<T>
    */
   @SuppressWarnings("unchecked") // Non-generic use of Builder
   public T get()
-  { return (T) instance.getSubject().get();
+  { return (T) instance.get();
   }
   
 }

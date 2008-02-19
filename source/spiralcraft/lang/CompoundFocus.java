@@ -14,117 +14,122 @@
 //
 package spiralcraft.lang;
 
+import java.net.URI;
 import java.util.HashMap;
-import java.util.HashSet;
 
+
+/**
+ * <p>A grouping of Focus objects that cross-cuts application layers.
+ * </p>
+ * 
+ * @author mike
+ *
+ * @param <T>
+ */
 public class CompoundFocus<T>
   extends SimpleFocus<T>
 {
-  private String name;
-  private HashSet<String> namespaceAliases;
-  private HashMap<String,Focus<?>> foci;
+
+  private HashMap<String,Focus<?>> layers;
 
   
   public CompoundFocus
     (Focus<?> parentFocus
-    ,String namespace
-    ,String name
     ,Channel<T> subject
-    ,Channel<?> context
     )
   { 
     setParentFocus(parentFocus);
-    addNamespaceAlias(namespace);
-    setName(name);
     setSubject(subject);
-    setContext(context);
   }
   
   public CompoundFocus()
   {
   }
   
-  public void setName(String name)
-  { this.name=name;
-  }
-
-  /**
-   * Specify that this Focus is addressed by the <CODE>[<I>name</I>]</CODE>
-   *   operator.
-   * 
-   * @param name
-   */
-  public synchronized void addNamespaceAlias(String ... newNames)
-  { 
-    if (newNames!=null)
-    {
-      if (namespaceAliases==null)
-      { namespaceAliases=new HashSet<String>();
-      }
-      for (String name: newNames)
-      { namespaceAliases.add(name);
-      }
-    }
-  }
-
   /**
    * Bind a Focus to a name that will referenced via findFocus(), or by the
    *   <CODE>[<I>name</I>]</CODE> or <CODE>[<I>namespace:name</I>]</CODE>
    *   operator in the expression language.
    */
-  public synchronized void bindFocus(String name,Focus<?> focus)
+  public synchronized void bindFocus(String layerName,Focus<?> focus)
     throws BindException
   { 
-    if (foci==null)
-    { foci=new HashMap<String,Focus<?>>();
-    }
-    if (foci.get(name)==null)
-    { foci.put(name,focus);
-    }
-    else
-    { throw new BindException("Name '"+name+"' already bound");
-    }
-  }
     
-  private boolean hasNamespace(String namespace)
-  {
-    if (namespace==null)
-    { return true;
+    if (layers==null)
+    { layers=new HashMap<String,Focus<?>>();
     }
-    else if (namespaceAliases!=null)
-    { return namespaceAliases.contains(namespace);
+    if (layers.get(layerName)==null)
+    { layers.put(layerName,focus);
     }
     else
-    { return false;
+    { throw new BindException("Layer Name '"+layerName+"' already bound");
     }
   }
 
-  public Focus<?> findFocus(String namespace,String name)
+  public Focus<?> findFocus(URI uri)
   { 
-    // System.err.println
-    //   ("CompoundFocus["+this.namespaceAliases+":"+this.name
-    //        +"].findFocus:["+namespace+"]:["+name+"]");
-    if (hasNamespace(namespace))
+    if (isFocus(uri))
     {
+      String query=uri.getQuery();
+      String fragment=uri.getFragment();
 
-      if (this.name!=null && this.name.equals(name))
-      { return this;
-      }
-      if (foci!=null)
-      { 
-        Focus<?> focus=foci.get(name);
-        if (focus!=null)
-        { return focus;
+      if (query==null)
+      {
+        if (fragment==null || fragment.equals(getLayerName()))
+        { return this;
+        }
+        
+        Focus<?> altLayer=layers.get(fragment);
+        if (altLayer!=null)
+        { return altLayer;
         }
       }
+      else
+      { // XXX Figure out how to deal with query
+      }
+
+    }
+    
+    if (layers!=null)
+    {
+    
+      for (Focus<?> focus:layers.values())
+      {
+        if (focus.isFocus(uri))
+        { 
+          String query=uri.getQuery();
+          String fragment=uri.getFragment();
+          if (query==null)
+          {
+            if (fragment==null)
+            {
+              return focus;
+            }
+            else
+            {
+              // TODO: Investigate utility of allowing a deeper layer to
+              //   access a shallower layer. We might need to delegate fragment
+              //   resolution to the "sub" Focus.
+
+              Focus<?> altLayer=layers.get(fragment);
+              if (altLayer!=null)
+              { return altLayer;
+              }
+            }
+
+          }
+        }
+      }
+    
     }
       
     if (parent!=null)
-    { return parent.findFocus(namespace,name);
+    { return parent.findFocus(uri);
     }
     else
     { return null;
     }
   }
+  
 
 }

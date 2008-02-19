@@ -19,6 +19,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 
+
 /**
  * A lightweight parse tree of an XML document which captures and preserves SAX events.
  *
@@ -32,7 +33,8 @@ public class ParseTree
 {
   
   private Document _document;
-  private Node _currentNode;
+  private Node _currentElement;
+  private PrefixResolver newPrefixResolver;
   
   public static ParseTree createTree(Element root)
   { return new ParseTree(new Document(root));
@@ -59,16 +61,34 @@ public class ParseTree
     throws SAXException
   { 
     _document=new Document();
-    _currentNode=_document;
+    _currentElement=_document;
   }
 
   public void endDocument()
     throws SAXException
   { 
     _document.complete();
-    _currentNode=null;
+    _currentElement=null;
   }
    
+  public void startPrefixMapping(String prefix,String uri)
+  { 
+    if (newPrefixResolver==null)
+    { 
+      newPrefixResolver
+        =new PrefixResolver
+          (_currentElement!=null
+          ?_currentElement.getPrefixResolver()
+          :null
+          );
+    }
+    newPrefixResolver.mapPrefix(prefix,uri); 
+  }
+  
+  public void endPrefixMapping(String prefix)
+  {
+  }
+  
   public void startElement
     (String uri
     ,String localName
@@ -78,8 +98,13 @@ public class ParseTree
     throws SAXException
   {
     Element element=new Element(uri,localName,qName,attributes);
-    _currentNode.addChild(element);
-    _currentNode=element;
+    _currentElement.addChild(element);
+    _currentElement=element;
+    if (newPrefixResolver!=null)
+    { 
+      element.setPrefixResolver(newPrefixResolver);
+      newPrefixResolver=null;
+    }
   }
 
   public void endElement
@@ -88,7 +113,7 @@ public class ParseTree
     ,String qName
     )
     throws SAXException
-  { _currentNode=_currentNode.getParent();
+  { _currentElement=_currentElement.getParent();
   }
   
   public void characters
@@ -97,7 +122,7 @@ public class ParseTree
     ,int length
     )
     throws SAXException
-  { _currentNode.addChild(new Characters(ch,start,length));
+  { _currentElement.addChild(new Characters(ch,start,length));
   }
 
   public void ignorableWhitespace
@@ -106,6 +131,6 @@ public class ParseTree
     ,int length
     )
     throws SAXException
-  { _currentNode.addChild(new IgnorableWhitespace(ch,start,length));
+  { _currentElement.addChild(new IgnorableWhitespace(ch,start,length));
   }
 }

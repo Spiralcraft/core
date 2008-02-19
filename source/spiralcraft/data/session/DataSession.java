@@ -129,9 +129,9 @@ public class DataSession
     { focus.setParentFocus(focus);    
     }
     focus.setSubject(new SimpleBinding<DataSession>(this,true));
-    focus.setContext(dataSessionChannel);
-    focus.addNamespaceAlias(namespace);
-    focus.setName(name);
+//    focus.setContext(dataSessionChannel);
+//    focus.addNamespaceAlias(namespace);
+//    focus.setName(name);
     
     return focus;
   }
@@ -299,7 +299,7 @@ public class DataSession
     dataFocus=new SimpleFocus<Namespace>();
     dataFocus.setParentFocus(localFocus);
     dataFocus.setSubject(dataChannel);
-    dataFocus.setContext(dataChannel);
+//    dataFocus.setContext(dataChannel);
     
     bindViews();
   } 

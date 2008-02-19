@@ -35,6 +35,8 @@ import spiralcraft.vfs.util.WatcherHandler;
 import java.net.URI;
 import java.io.IOException;
 
+import spiralcraft.log.ClassLogger;
+
 /**
  * <P>Provides basic query functionality for an XML document which contains 
  *   an Aggregate (a set of Tuples of a common Type)
@@ -46,6 +48,9 @@ import java.io.IOException;
 public class XmlQueryable
   extends AggregateQueryable<Tuple>
 {
+  @SuppressWarnings("unused")
+  private static final ClassLogger log=new ClassLogger(XmlQueryable.class);
+  
   private Resource resource;
   
   private Watcher watcher;
@@ -90,7 +95,7 @@ public class XmlQueryable
   
   public void setResourceURI(URI resourceURI)
   { 
-    System.err.println("XmlQueryable: uri="+resourceURI);
+    // log.fine("XmlQueryable: uri="+resourceURI);
     try
     { 
       Resource resource=Resolver.getInstance().resolve(resourceURI);
