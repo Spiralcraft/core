@@ -171,15 +171,15 @@ public class BeanReflector<T>
   }
   
   @SuppressWarnings("unchecked") // Expression array params heterogeneous
-  public synchronized <X> Binding<X> 
-    resolve(Binding<T> source
+  public synchronized <X> Channel<X> 
+    resolve(Channel<T> source
         ,Focus<?> focus
         ,String name
         ,Expression<?>[] params
         )
     throws BindException
   { 
-    Binding<X> binding=null;
+    Channel<X> binding=null;
     if (params==null)
     { 
       binding=this.<X>getProperty(source,name);
@@ -203,7 +203,7 @@ public class BeanReflector<T>
 
   @SuppressWarnings("unchecked") // Dynamic class info
   public <D extends Decorator<T>> D decorate
-    (Binding<? extends T> source,Class<D> decoratorInterface)
+    (Channel<? extends T> source,Class<D> decoratorInterface)
     throws BindException
   { 
     if (decoratorInterface==IterationDecorator.class)
@@ -290,7 +290,7 @@ public class BeanReflector<T>
   // We are narrowing a generic type with a cast
   // When we pull the BeanFieldTranslator out of the map
   
-  private synchronized <X> Binding<X> getField(Binding<T> source,String name)
+  private synchronized <X> Channel<X> getField(Channel<T> source,String name)
     throws BindException
   {
     BeanFieldTranslator<X,T> fieldTranslator=null;
@@ -313,11 +313,11 @@ public class BeanReflector<T>
     }
     if (fieldTranslator!=null)
     { 
-      Binding<X> binding=source.getCache().<X>get(fieldTranslator);
+      Channel<X> binding=source.<X>getCached(fieldTranslator);
       if (binding==null)
       { 
-        binding=new BeanFieldBinding<X,T>(source,fieldTranslator);
-        source.getCache().put(fieldTranslator,binding);
+        binding=new BeanFieldChannel<X,T>(source,fieldTranslator);
+        source.cache(fieldTranslator,binding);
       }
       return binding;
     }
@@ -325,7 +325,7 @@ public class BeanReflector<T>
   }
 
   @SuppressWarnings("unchecked") // Reading property from map
-  private synchronized <X> Binding<X> getProperty(Binding<T> source,String name)
+  private synchronized <X> Channel<X> getProperty(Channel<T> source,String name)
     throws BindException
   {
     BeanPropertyTranslator<X,T> translator=null;
@@ -349,11 +349,11 @@ public class BeanReflector<T>
     }
     if (translator!=null)
     { 
-      Binding<X> binding=source.getCache().<X>get(translator);
+      Channel<X> binding=source.<X>getCached(translator);
       if (binding==null)
       { 
-        binding=new BeanPropertyBinding<X,T>(source,translator);
-        source.getCache().put(translator,binding);
+        binding=new BeanPropertyChannel<X,T>(source,translator);
+        source.cache(translator,binding);
       }
       return binding;
     }
@@ -361,7 +361,7 @@ public class BeanReflector<T>
   }
 
   @SuppressWarnings("unchecked") // Reading property from map
-  private synchronized <X> Binding<X> getArrayProperty(Binding<T> source,String name)
+  private synchronized <X> Channel<X> getArrayProperty(Channel<T> source,String name)
     throws BindException
   {
     Translator<X,T> translator=null;
@@ -371,11 +371,11 @@ public class BeanReflector<T>
     
     if (translator!=null)
     { 
-      Binding<X> binding=source.getCache().<X>get(translator);
+      Channel<X> binding=source.<X>getCached(translator);
       if (binding==null)
       { 
-        binding=new TranslatorBinding<X,T>(source,translator,null);
-        source.getCache().put(translator,binding);
+        binding=new TranslatorChannel<X,T>(source,translator,null);
+        source.cache(translator,binding);
       }
       return binding;
     }
@@ -383,7 +383,7 @@ public class BeanReflector<T>
   }
 
   @SuppressWarnings("unchecked") // HashMap is heterogeneous
-  private synchronized <X> Binding<X> getMethod(Binding<T> source,String name,Channel[] params)
+  private synchronized <X> Channel<X> getMethod(Channel<T> source,String name,Channel[] params)
     throws BindException
   { 
     if (methodResolver==null)
@@ -441,16 +441,16 @@ public class BeanReflector<T>
       if (ENABLE_METHOD_BINDING_CACHE)
       { 
         MethodKey cacheKey=new MethodKey(translator,params);
-        Binding<X> binding=source.getCache().<X>get(cacheKey);
+        Channel<X> binding=source.<X>getCached(cacheKey);
         if (binding==null)
         { 
-          binding=new MethodBinding<X,T>(source,translator,params);
-          source.getCache().put(cacheKey,binding);
+          binding=new MethodChannel<X,T>(source,translator,params);
+          source.cache(cacheKey,binding);
         }
         return binding;
       }
       else
-      { return new MethodBinding<X,T>(source,translator,params);
+      { return new MethodChannel<X,T>(source,translator,params);
       }
     }
     return null;

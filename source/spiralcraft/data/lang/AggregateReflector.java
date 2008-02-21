@@ -23,7 +23,6 @@ import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
-import spiralcraft.lang.spi.Binding;
 import spiralcraft.lang.spi.Translator;
 
 import spiralcraft.data.FieldSet;
@@ -76,8 +75,8 @@ public class AggregateReflector<T extends Aggregate<I>,I>
    *   source that provides Tuples.
    */
   @SuppressWarnings("unchecked") // We haven't genericized the data package yet
-  public synchronized Binding resolve
-    (Binding source
+  public synchronized Channel resolve
+    (Channel source
     ,Focus focus
     ,String name
     ,Expression[] params
@@ -88,11 +87,11 @@ public class AggregateReflector<T extends Aggregate<I>,I>
     
     if (translator!=null)
     {
-      Binding binding=source.getCache().get(translator);
+      Channel binding=source.getCached(translator);
       if (binding==null)
       { 
         // binding=new FieldBinding(source,translator);
-        source.getCache().put(translator,binding);
+        source.cache(translator,binding);
       }
       return binding;      
     }
@@ -103,7 +102,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   
   @SuppressWarnings("unchecked") // Generic factory method, manip. unknown types
   public Decorator
-    decorate(Binding binding,Class decoratorInterface)
+    decorate(Channel binding,Class decoratorInterface)
     throws BindException
   { 
     if (decoratorInterface==IterationDecorator.class)

@@ -14,17 +14,17 @@
 //
 package spiralcraft.lang.spi;
 
-import spiralcraft.lang.WriteException;
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
 
-public class NamespaceBinding<T>
-  extends TranslatorBinding<T,Namespace>
+public class NamespaceChannel<T>
+  extends TranslatorChannel<T,Namespace>
 {
 
   private final NamespaceAttribute<T> translator;
   
-  public NamespaceBinding
-    (Binding<Namespace> source
+  public NamespaceChannel
+    (Channel<Namespace> source
     ,NamespaceAttribute<T> translator
     )
   { 
@@ -36,7 +36,7 @@ public class NamespaceBinding<T>
   @SuppressWarnings("unchecked") // Source is heterogeneous
   @Override
   public boolean set(T val)
-    throws WriteException
+    throws AccessException
   { 
     if (_static)
     { return false;

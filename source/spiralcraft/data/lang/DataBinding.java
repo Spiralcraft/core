@@ -15,30 +15,48 @@
 package spiralcraft.data.lang;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.AccessException;
 
 import spiralcraft.lang.spi.AbstractChannel;
 
-import spiralcraft.data.Tuple;
-import spiralcraft.data.FieldSet;
+import spiralcraft.data.Type;
+
 
 /**
- * A spiralcraft.lang binding for Tuples, which uses the Tuple's Scheme
- *   as the type model for binding expressions.
+ * A spiralcraft.lang binding for Data, which uses the a Type as the 
+ *   model for binding expressions.
  */
 @SuppressWarnings("unchecked") // Haven't genericized the data package yet
-public abstract class TupleBinding<T extends Tuple>
+public class DataBinding<T>
   extends AbstractChannel<T>
 {
  
-  public TupleBinding(FieldSet fieldSet,boolean isStatic)
-    throws BindException
-  { super(TupleReflector.<T>getInstance(fieldSet),isStatic);
-  }
+  private Channel<T> source;
   
-
-  public FieldSet getFieldSet()
-  { return ((TupleReflector) getReflector()).getFieldSet();
+  public DataBinding(Type type,Channel source,boolean isStatic)
+    throws BindException
+  { 
+    super(DataReflector.<T>getInstance(type),isStatic);
+    this.source=source;
   }
+
+  @Override
+  protected T retrieve()
+  {
+    // TODO Auto-generated method stub
+    return source.get();
+  }
+
+  @Override
+  protected boolean store(
+    T val)
+    throws AccessException
+  {
+    // TODO Auto-generated method stub
+    return source.set(val);
+  }
+
 
 }
 

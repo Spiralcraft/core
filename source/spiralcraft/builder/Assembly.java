@@ -18,7 +18,7 @@ import spiralcraft.lang.BaseFocus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 
-import spiralcraft.lang.spi.SimpleBinding;
+import spiralcraft.lang.spi.SimpleChannel;
 
 import spiralcraft.data.lang.TupleDelegate;
 import spiralcraft.data.DataException;
@@ -31,7 +31,7 @@ import spiralcraft.registry.Registrant;
 
 import spiralcraft.util.StringConverter;
 
-import spiralcraft.lang.WriteException;
+import spiralcraft.lang.AccessException;
 
 import spiralcraft.log.ClassLogger;
 
@@ -96,7 +96,7 @@ public class Assembly<T>
     try 
     { 
       focus=new AssemblyFocus();
-      focus.setSubject(new SimpleBinding(javaClass,null,false));
+      focus.setSubject(new SimpleChannel(javaClass,null,false));
     }
     catch (BindException x)
     { throw new BuildException("Error binding class "+javaClass.getName()+": "+x,x);
@@ -133,7 +133,7 @@ public class Assembly<T>
         }
         focus.getSubject().set((T) instance);
       }
-      catch (WriteException x)
+      catch (AccessException x)
       { throw new BuildException("Error publishing instance in Focus chain",x);
       }
       catch (InstantiationException x)
@@ -150,7 +150,7 @@ public class Assembly<T>
         // Use a proxy to auto-implement the interface
         focus.getSubject().set((T) new TupleDelegate(javaClass).get());
       }
-      catch (WriteException x)
+      catch (AccessException x)
       { throw new BuildException("Error publishing instance in Focus chain",x);
       }
       catch (DataException x)
@@ -240,7 +240,7 @@ public class Assembly<T>
       try
       { focus.getSubject().set(val);
       }
-      catch (WriteException x)
+      catch (AccessException x)
       { x.printStackTrace();
       }
 

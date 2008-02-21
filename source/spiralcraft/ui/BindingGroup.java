@@ -18,7 +18,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 
-import spiralcraft.lang.spi.SimpleBinding;
+import spiralcraft.lang.spi.SimpleChannel;
 
 /**
  * Associates a UI component with a group of Bindings which bind
@@ -96,13 +96,13 @@ public abstract class BindingGroup
       final Object uiObject=getUiObject();
       Focus uiFocus=null;
       if (uiObject!=null)
-      { uiFocus=new SimpleFocus(new SimpleBinding(uiObject,true));
+      { uiFocus=new SimpleFocus(new SimpleChannel(uiObject,true));
       }
 
       final Object modelObject=getModelObject();
       Focus modelFocus=null;
       if (modelObject!=null)
-      { modelFocus=new SimpleFocus(new SimpleBinding(modelObject,true));
+      { modelFocus=new SimpleFocus(new SimpleChannel(modelObject,true));
       }
        
       if (_bindings!=null)

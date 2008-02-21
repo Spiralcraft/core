@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 1998,2005 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,23 +12,25 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang;
+package spiralcraft.lang.spi;
 
-/**
- * A Component capable of creating a Focus in order to expose its data and 
- *  functionality to the spiralcraft.lang expression language.
- *  
- * @author mike
- *
- */
-public interface FocusProvider<T>
+import spiralcraft.lang.Channel;
+
+import java.util.HashMap;
+
+public class WeakChannelCache
 {
-  /** 
-   * <p>Create a new Focus, that has as its parent the specified Focus. 
-   * </p>
-   * @return The new Focus
-   * @throws BindException if an error occurs when creating the Focus
-   */
-  Focus<T> createFocus(Focus<?> parent)
-    throws BindException;
+  // XXX Make weak?
+  private HashMap<Object,Channel<?>> _map
+    =new HashMap<Object,Channel<?>>();
+  
+  @SuppressWarnings("unchecked") // Map has heterogeneous types
+  public synchronized <X> Channel<X> get(Object key)
+  { return (Channel<X>) _map.get(key);
+  }
+  
+  public synchronized void put(Object key,Channel<?> value)
+  { _map.put(key,value);
+  }
 }
+

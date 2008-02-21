@@ -35,20 +35,36 @@ import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
 
+import spiralcraft.util.CycleDetector;
+
 public class XmlTypeFactory
   implements TypeFactory
 {
   
+  private ThreadLocal<CycleDetector<URI>> cycleDetectorRef
+    =new ThreadLocal<CycleDetector<URI>>()
+  {
+    protected synchronized CycleDetector<URI> initialValue() {
+      return new CycleDetector<URI>();
+    }
+  };
+  
   public Type<?> createType(TypeResolver resolver,URI uri)
     throws DataException
   {
-    if (!typeExists(uri))
+    if (cycleDetectorRef.get().detectOrPush(uri))
     { return null;
     }
-    else
-    { return loadType(resolver,uri);
+    try
+    {
+      if (typeExists(uri))
+      { return loadType(resolver,uri);
+      }
+      return null;
     }
-
+    finally
+    { cycleDetectorRef.get().pop();
+    }
   }
   
   private boolean typeExists(URI uri)

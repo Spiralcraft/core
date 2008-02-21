@@ -14,12 +14,13 @@
 //
 package spiralcraft.data.lang;
 
-import spiralcraft.lang.spi.Binding;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
+import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.Channel;
 
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
@@ -27,7 +28,6 @@ import spiralcraft.data.Field;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
 
-import java.util.HashMap;
 
 /**
  * Maps a Scheme into the spiralcraft.lang binding mechanism
@@ -39,9 +39,6 @@ public class TupleReflector<T extends Tuple>
   extends DataReflector<T>
 {
   private final FieldSet fieldSet;
-  
-  private final HashMap<String,FieldTranslator> fieldTranslators
-    =new HashMap<String,FieldTranslator>();
   
   private final Class<T> contentType;
 
@@ -65,9 +62,9 @@ public class TupleReflector<T extends Tuple>
     super(type);
     this.fieldSet=type.getScheme();
     this.contentType=contentType;
-    for (Field field : fieldSet.fieldIterable())
-    { fieldTranslators.put(field.getName(),new FieldTranslator(field));
-    }
+//    for (Field field : fieldSet.fieldIterable())
+//    { fieldTranslators.put(field.getName(),new FieldTranslator(field));
+//    }
   }
   
   TupleReflector(FieldSet fieldSet,Class<T> contentType)
@@ -76,9 +73,9 @@ public class TupleReflector<T extends Tuple>
     super(null);
     this.fieldSet=fieldSet;
     this.contentType=contentType;
-    for (Field field : fieldSet.fieldIterable())
-    { fieldTranslators.put(field.getName(),new FieldTranslator(field));
-    }
+//    for (Field field : fieldSet.fieldIterable())
+//    { fieldTranslators.put(field.getName(),new FieldTranslator(field));
+//    }
   }
 
   public FieldSet getFieldSet()
@@ -90,23 +87,34 @@ public class TupleReflector<T extends Tuple>
    *   source that provides Tuples.
    */
   @SuppressWarnings("unchecked") // We haven't genericized the data package yet
-  public synchronized Binding resolve
-    (Binding source
+  public synchronized Channel resolve
+    (Channel source
     ,Focus focus
     ,String name
     ,Expression[] params
     )
     throws BindException
   {
-    FieldTranslator translator=fieldTranslators.get(name);
-    
-    if (translator!=null)
+    Field field=fieldSet.getFieldByName(name);
+    if (field!=null)
     {
-      Binding binding=source.getCache().get(translator);
+      Channel binding=null;
+      
+      Focus tupleFocus;
+      
+      // Make sure the Focus for evaluating expressions in the Scheme is 
+      //   consistent with the source
+      if (focus.getContext()!=source
+          || focus.getSubject()!=source
+          )
+      { tupleFocus=new SimpleFocus(focus,source);
+      }
+      else
+      { tupleFocus=focus;
+      }
+              
       if (binding==null)
-      { 
-        binding=new FieldBinding(source,translator);
-        source.getCache().put(translator,binding);
+      { binding=field.bind(source,tupleFocus);
       }
       return binding;      
     }
@@ -115,7 +123,7 @@ public class TupleReflector<T extends Tuple>
   }
 
   public <D extends Decorator<T>> D 
-    decorate(Binding<? extends T> binding,Class<D> decoratorInterface)
+    decorate(Channel<? extends T> binding,Class<D> decoratorInterface)
   { 
     // This depends on a system for registering and mapping decorators
     //   to Tuple constructs.

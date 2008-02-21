@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2007 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,22 +12,22 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang.spi;
+package spiralcraft.data.session;
 
-import java.util.HashMap;
-
-public class WeakBindingCache
+/**
+ * Represents the stateful portion of a data session
+ *
+ * @author mike
+ */
+public interface SessionData
 {
-  private HashMap<Object,Binding<?>> _map
-    =new HashMap<Object,Binding<?>>();
+  int getId();
   
-  @SuppressWarnings("unchecked") // Map has heterogeneous types
-  public synchronized <X> Binding<X> get(Object key)
-  { return (Binding<X>) _map.get(key);
-  }
+  void setId(int id);
   
-  public synchronized void put(Object key,Binding<?> value)
-  { _map.put(key,value);
-  }
+  DataSession getDataSession();
+  
+  void setDataSession(DataSession dataSession);
+  
+  
 }
-

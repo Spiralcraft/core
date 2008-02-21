@@ -19,13 +19,15 @@ import spiralcraft.data.DataException;
 
 import spiralcraft.data.lang.TupleReflector;
 
-import spiralcraft.lang.spi.ThreadLocalBinding;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 
+@SuppressWarnings("unchecked")
 /**
  * A Field which provides a value based on an Expression.
  * 
@@ -35,7 +37,7 @@ public class CalculatedFieldImpl
   extends FieldImpl
 {
 
-  private ThreadLocalBinding<Tuple> threadLocalBinding;
+  private ThreadLocalChannel<Tuple> threadLocalBinding;
   private Channel<?> expressionBinding;
   private Expression<?> expression;
   
@@ -50,7 +52,7 @@ public class CalculatedFieldImpl
     try
     {
       threadLocalBinding
-        =new ThreadLocalBinding<Tuple>(TupleReflector.getInstance(getFieldSet()));
+        =new ThreadLocalChannel<Tuple>(TupleReflector.getInstance(getFieldSet()));
       SimpleFocus<Tuple> focus=new SimpleFocus<Tuple>(threadLocalBinding);
       expressionBinding=focus.bind(expression);
     }
@@ -76,4 +78,14 @@ public class CalculatedFieldImpl
     }
     
   }
+  
+  @Override
+  public Channel bind
+    (Channel<Tuple> source
+    ,Focus<?> focus
+    )
+    throws BindException
+  { return focus.bind(expression);
+  }
+  
 }

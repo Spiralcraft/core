@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 1998,2005 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,18 +12,34 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang;
+package spiralcraft.lang.spi;
 
-/**
- * Thrown when an exception is thrown when writing a value through an Channel.
- */
-public class WriteException
-  extends Exception
+import spiralcraft.lang.Channel;
+
+
+
+public class MethodChannel<Tprop,Tbean>
+  extends TranslatorChannel<Tprop,Tbean>
 {
-  private static final long serialVersionUID=1;
-  
-  public WriteException(String message,Throwable cause)
-  {
-    super(message,cause);
+  public MethodChannel
+    (Channel<Tbean> source
+    ,MethodTranslator<Tprop,Tbean> translator
+    )
+  { super(source,translator,null);
   }
+
+  public MethodChannel
+    (Channel<Tbean> source
+    ,MethodTranslator<Tprop,Tbean> translator
+    ,Channel<?>[] params
+    )
+  { super(source,translator,params);
+  }
+
+  public boolean isStatic()
+  { return false;
+  }
+
 }
+
+

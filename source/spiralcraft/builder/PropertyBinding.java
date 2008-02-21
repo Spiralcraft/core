@@ -23,9 +23,9 @@ import spiralcraft.lang.NamespaceResolver;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.WriteException;
+import spiralcraft.lang.AccessException;
 
-import spiralcraft.lang.spi.SimpleBinding;
+import spiralcraft.lang.spi.SimpleChannel;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -370,7 +370,7 @@ public class PropertyBinding
           //   the actual object. Otherwise, the formal property type will
           //   be used and some names will not resolve as expected.
           _source=new SimpleFocus
-            (new SimpleBinding(sourceChannel.get(),false)
+            (new SimpleChannel(sourceChannel.get(),false)
             );
         }
         else if (_target.getContentType()==Channel.class
@@ -435,7 +435,7 @@ public class PropertyBinding
         //          );
       }
     }
-    catch (WriteException x)
+    catch (AccessException x)
     {
       throwBuildException
         ("Caught "+x.getCause().toString()+" writing ["+_source.toString()+"] value to property \""

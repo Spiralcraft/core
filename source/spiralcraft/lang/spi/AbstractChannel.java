@@ -20,11 +20,12 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.AccessException;
 
 import java.beans.PropertyChangeSupport;
 
 /**
- * <P>A starting point for building a Binding.</P>
+ * <P>A starting point for building a Channel.</P>
  *
  * <P>Handles PropertyChangeSupport, caching bindings, and keeping a reference
  *   to the Reflector.
@@ -32,33 +33,40 @@ import java.beans.PropertyChangeSupport;
  * <P>Storage and retrieval is accomplished by abstract methods defined in the
  *   subclass.
  *
- * <P> To summarize, a Binding provides an updateable "view" of a piece of 
+ * <P> To summarize, a Channel provides an updateable "view" of a piece of 
  *   information from an underlying data source or data container. As the underlying
  *   data changes, property changes are propogated through the binding chain, and the
  *   get() method of the Channel will reflect the updated data.
  */
-public abstract class AbstractBinding<T>
-  implements Binding<T>
+public abstract class AbstractChannel<T>
+  implements Channel<T>
 {
  
   private final Reflector<T> _reflector;
-  private Binding<?> metaBinding;
+  private Channel<?> metaChannel;
   private final boolean _static;
   private PropertyChangeSupport _propertyChangeSupport;
-  private WeakBindingCache _cache;
+  private WeakChannelCache _cache;
   
-  public synchronized WeakBindingCache getCache()
-  {
+  
+  public synchronized void cache(Object key,Channel<?> channel)
+  { 
     if (_cache==null)
-    { _cache=new WeakBindingCache();
+    { _cache=new WeakChannelCache();
     }
-    return _cache;
+    _cache.put(key,channel);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public synchronized <X> Channel<X>getCached(Object key)
+  { 
+    return _cache!=null?(Channel<X>) _cache.get(key):null;
   }
   
   /**
-   * Construct an AbstractBinding without an initial value
+   * Construct an AbstractChannel without an initial value
    */
-  public AbstractBinding(Reflector<T> reflector)
+  public AbstractChannel(Reflector<T> reflector)
   { 
     _reflector=reflector;
     _static=false;
@@ -67,9 +75,9 @@ public abstract class AbstractBinding<T>
   }
 
   /**
-   * Construct an AbstractBinding with an initial value
+   * Construct an AbstractChannel with an initial value
    */
-  protected AbstractBinding(Reflector<T> reflector,boolean isStatic)
+  protected AbstractChannel(Reflector<T> reflector,boolean isStatic)
   {  
     _reflector=reflector;
     _static=isStatic;
@@ -83,18 +91,18 @@ public abstract class AbstractBinding<T>
   public <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
   { 
-    Binding<X> binding=_reflector.<X>resolve(this,focus,name,params);
+    Channel<X> binding=_reflector.<X>resolve(this,focus,name,params);
     if (binding==null)
     {
       if (name.equals("!"))
       { 
         synchronized (this)
         {
-          if (metaBinding==null)
-          { metaBinding=new SimpleBinding<AbstractBinding>(this,true);
+          if (metaChannel==null)
+          { metaChannel=new SimpleChannel<AbstractChannel>(this,true);
           }
         }
-        binding=(Binding<X>) metaBinding;
+        binding=(Channel<X>) metaChannel;
       }
     }
     
@@ -110,7 +118,8 @@ public abstract class AbstractBinding<T>
   
   protected abstract T retrieve();
   
-  protected abstract boolean store(T val);
+  protected abstract boolean store(T val)
+    throws AccessException;
 
   public <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
   { 
@@ -123,6 +132,7 @@ public abstract class AbstractBinding<T>
   }
   
   public synchronized boolean set(T value)
+    throws AccessException
   { 
     if (_static)
     { return false;
@@ -144,7 +154,7 @@ public abstract class AbstractBinding<T>
   }
 
   /**
-   * Return the Reflector ("type" model/name resolver) for this Binding
+   * Return the Reflector ("type" model/name resolver) for this Channel
    */
   public Reflector<T> getReflector()
   { return _reflector;

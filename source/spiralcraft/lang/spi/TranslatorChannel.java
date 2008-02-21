@@ -19,7 +19,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
-import spiralcraft.lang.WriteException;
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Decorator;
 
 import java.beans.PropertyChangeSupport;
@@ -30,8 +30,8 @@ import java.beans.PropertyChangeEvent;
  * An Binding which translates get() and source property changes
  *   through a Translator.
  */
-public  class TranslatorBinding<T,S>
-  implements Binding<T>,PropertyChangeListener
+public  class TranslatorChannel<T,S>
+  implements Channel<T>,PropertyChangeListener
 {
   private static int _ID=0;
   
@@ -44,14 +44,14 @@ public  class TranslatorBinding<T,S>
   private final Channel<?>[] _modifiers;
   private PropertyChangeSupport _propertyChangeSupport;
   private PropertyChangeListener _modifierListener;
-  private WeakBindingCache _cache;
-  private Binding<?> metaBinding;
+  private WeakChannelCache _cache;
+  private Channel<?> metaBinding;
 
   /**
    * Create a Translator binding which translates values bidirectionally,
    *   through the specified Translator.
    */
-  public TranslatorBinding
+  public TranslatorChannel
     (Channel<S> source
     ,Translator<T,S> translator
     ,Channel<?>[] modifiers
@@ -83,13 +83,21 @@ public  class TranslatorBinding<T,S>
 
   }
 
-  public synchronized WeakBindingCache getCache()
-  {
+  
+  public synchronized void cache(Object key,Channel<?> channel)
+  { 
     if (_cache==null)
-    { _cache=new WeakBindingCache();
+    { _cache=new WeakChannelCache();
     }
-    return _cache;
+    _cache.put(key,channel);
   }
+  
+  @SuppressWarnings("unchecked")
+  public synchronized <X> Channel<X>getCached(Object key)
+  { 
+    return _cache!=null?(Channel <X>) _cache.get(key):null;
+  }
+  
   
   public final T get()
   { return translator.translateForGet(source.get(),_modifiers);
@@ -115,7 +123,7 @@ public  class TranslatorBinding<T,S>
    * Override if value can be set
    */
   public boolean set(T value)
-    throws WriteException
+    throws AccessException
   { return false;
   }
 
@@ -127,7 +135,7 @@ public  class TranslatorBinding<T,S>
   public <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
   {     
-    Binding<X> binding=translator.getReflector().resolve(this,focus,name,params);
+    Channel<X> binding=translator.getReflector().resolve(this,focus,name,params);
     if (binding==null)
     {
       if (name.equals("!"))
@@ -135,10 +143,10 @@ public  class TranslatorBinding<T,S>
         synchronized (this)
         {
           if (metaBinding==null)
-          { metaBinding=new SimpleBinding<TranslatorBinding>(this,true);
+          { metaBinding=new SimpleChannel<TranslatorChannel>(this,true);
           }
         }
-        binding=(Binding<X>) metaBinding;
+        binding=(Channel<X>) metaBinding;
       }
     }
     if (binding==null)

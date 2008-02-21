@@ -15,7 +15,7 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.spi.Translator;
-import spiralcraft.lang.spi.TranslatorBinding;
+import spiralcraft.lang.spi.TranslatorChannel;
 
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
@@ -48,7 +48,7 @@ public class ConditionalNode
     Channel trueResult=_trueResult.bind(focus);
     Channel falseResult=_falseResult.bind(focus);
     
-    return new TranslatorBinding
+    return new TranslatorChannel
       (condition
       ,new ConditionalTranslator
         (trueResult.getReflector()

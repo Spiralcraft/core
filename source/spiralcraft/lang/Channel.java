@@ -72,8 +72,8 @@ import java.beans.PropertyChangeSupport;
 public interface Channel<T>
 {
   /**
-   * Resolve the name and optional set of parameter expressions to provide
-   *   new views derived from this one.
+   * Resolve the name and optional set of parameter expressions to create
+   *   a new view (Channel) derived from this one.
    */
   <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] parameters)
     throws BindException;
@@ -81,17 +81,18 @@ public interface Channel<T>
   /**
    * Return the content of this view.
    */
-  T get();
+  T get()
+    throws AccessException;
 
   /**
    * Update the content this view, if the transformation associated with
    *   this Channel and its data sources is reversible.
    *
    *@return Whether the modification was successful or not.
-   *@throws WriteException if the target of the write throws an exception
+   *@throws AccessException if the target of the write throws an exception
    */
   boolean set(T value)
-    throws WriteException;
+    throws AccessException;
 
   /**
    * Indicate the Java Class of the content of this View.
@@ -124,7 +125,25 @@ public interface Channel<T>
   boolean isStatic();
   
   /**
-   * Return the spiralcraft.lang type of the referenced data 
+   * Return the spiralcraft.lang.Reflector extended type of the referenced data 
    */
   Reflector<T> getReflector();
+  
+  /**
+   * Return a Channel cached by cache().
+   *  
+   * @param key
+   * @return
+   */
+  <X> Channel<X> getCached(Object key);
+  
+  /**
+   * Cache a Channel that is sourced from this Channel. to avoid creating 
+   *   redundant channel instances. A Channel should only be cached in this
+   *   manner if it depends solely on this Channel for input.
+   *  
+   * @param key
+   * @return
+   */
+  void cache(Object key,Channel<?> channel);
 }

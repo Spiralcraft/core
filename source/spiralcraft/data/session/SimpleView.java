@@ -56,20 +56,7 @@ public class SimpleView<T extends Tuple>
     }
   }
   
-  @Override
-  public void bindData(Focus<?> focus)
-    throws DataException
-  { 
 
-    try
-    { setTupleBinding(new CursorBinding<Tuple>(getType().getScheme()));
-    }
-    catch (BindException x)
-    { 
-      throw new DataException
-        ("Error creating CursorBinding for View '"+getName()+"': "+x,x);
-    }
-  }
 
   @Override
   public SerialCursor<Tuple> scan()

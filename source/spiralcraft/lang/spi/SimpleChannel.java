@@ -22,8 +22,8 @@ import spiralcraft.lang.Reflector;
  * An Binding which references a self-contained Object. Used to provide a
  *   programatically defined target against which Expressions can be evaluated.
  */
-public class SimpleBinding<T>
-  extends AbstractBinding<T>
+public class SimpleChannel<T>
+  extends AbstractChannel<T>
 {
  
   private T _object;
@@ -33,7 +33,7 @@ public class SimpleBinding<T>
    *   and with a targetClass equals to the Object's class.
    */
   @SuppressWarnings("unchecked") // does not return properly scoped class
-  public SimpleBinding(T val,boolean isStatic)
+  public SimpleChannel(T val,boolean isStatic)
     throws BindException
   { 
     super(BeanReflector.<T>getInstance((Class<T>) val.getClass()),isStatic);
@@ -42,7 +42,7 @@ public class SimpleBinding<T>
     // System.out.println("SimpleBinding- noclass:"+super.toString()+":["+val+"]");
   }
 
-  public SimpleBinding(Class<T> clazz,T val,boolean isStatic)
+  public SimpleChannel(Class<T> clazz,T val,boolean isStatic)
     throws BindException
   { 
      
@@ -52,7 +52,7 @@ public class SimpleBinding<T>
     //System.out.println("SimpleBinding- with class:"+super.toString()+":["+val+"]");
   }
 
-  public SimpleBinding(Reflector<T> reflector,T val,boolean isStatic)
+  public SimpleChannel(Reflector<T> reflector,T val,boolean isStatic)
   { 
     super(reflector,isStatic);
     _object=val;

@@ -24,8 +24,8 @@ import spiralcraft.lang.Reflector;
  * <P>Provides access to an object at the current position of an iteration,
  *   expressed by the IterationCursor returned by the specified Channel.
  */
-public class IterationCursorBinding<T>
-  extends AbstractBinding<T>
+public class IterationCursorChannel<T>
+  extends AbstractChannel<T>
 {
   private final Channel<IterationCursor<T>> source;
   
@@ -34,7 +34,7 @@ public class IterationCursorBinding<T>
    *   current iteration position from the IterationCursor obtained from
    *   the specified source.
    */
-  public IterationCursorBinding
+  public IterationCursorChannel
     (Reflector<T> componentReflector,Channel<IterationCursor<T>> source)
   { 
     super(componentReflector);

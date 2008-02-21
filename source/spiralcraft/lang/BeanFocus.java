@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.lang.spi.SimpleBinding;
+import spiralcraft.lang.spi.SimpleChannel;
 
 /**
  * A Focus where the subject is a java Bean
@@ -23,12 +23,12 @@ public class BeanFocus<T>
   extends SimpleFocus<T>
 {
   
-  SimpleBinding<T> binding;
+  SimpleChannel<T> binding;
   
   public BeanFocus(Class<T> clazz,T bean)
     throws BindException
   { 
-    binding=new SimpleBinding<T>(clazz,bean,false);
+    binding=new SimpleChannel<T>(clazz,bean,false);
     setSubject(binding);
   }
   
@@ -36,12 +36,18 @@ public class BeanFocus<T>
   public BeanFocus(T bean)
     throws BindException
   { 
-    binding=new SimpleBinding<T>( (Class<T>) bean.getClass(),bean,true);
+    binding=new SimpleChannel<T>( (Class<T>) bean.getClass(),bean,true);
     setBean(bean);
     setSubject(binding);
   }
   
   public void setBean(T bean)
-  { binding.set(bean);
+  { 
+    try
+    { binding.set(bean);
+    }
+    catch (AccessException x)
+    {
+    }
   }
 }

@@ -40,6 +40,11 @@ public class SimpleFocus<T>
   { this.subject=subject;
   }
 
+  public SimpleFocus(Focus<?> parentFocus,Channel<T> subject)
+  { 
+    setParentFocus(parentFocus);
+    this.subject=subject;
+  }
 
     
   /**

@@ -19,7 +19,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.WriteException;
+import spiralcraft.lang.AccessException;
 
 import spiralcraft.util.StringConverter;
 
@@ -157,7 +157,7 @@ public class Binding
         { updateFromModel();
         }
       }
-      catch (WriteException x)
+      catch (AccessException x)
       { 
         // XXX Review what to do here- tell controller about error?
         x.printStackTrace();
@@ -172,7 +172,7 @@ public class Binding
     try
     { _uiChannel.set(translateToUi(_modelChannel.get()));
     }
-    catch (WriteException x)
+    catch (AccessException x)
     { 
       // XXX Review what to do here- tell controller about error?
       x.printStackTrace();
@@ -216,7 +216,7 @@ public class Binding
     try
     { _uiChannel.set(translateToUi(event.getNewValue()));
     }
-    catch (WriteException x)
+    catch (AccessException x)
     { 
       // XXX Review what to do here- tell controller about error?
       x.printStackTrace();

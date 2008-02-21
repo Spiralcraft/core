@@ -14,19 +14,19 @@
 //
 package spiralcraft.lang.spi;
 
-import spiralcraft.lang.WriteException;
-
+import spiralcraft.lang.AccessException;
+import spiralcraft.lang.Channel;
 
 import java.lang.reflect.Field;
 
-public class BeanFieldBinding<Tprop,Tbean>
-  extends TranslatorBinding<Tprop,Tbean>
+public class BeanFieldChannel<Tprop,Tbean>
+  extends TranslatorChannel<Tprop,Tbean>
 {
 
   private final Field _field;
 
-  public BeanFieldBinding
-    (Binding<Tbean> source
+  public BeanFieldChannel
+    (Channel<Tbean> source
     ,BeanFieldTranslator<Tprop,Tbean> translator
     )
   {
@@ -41,7 +41,7 @@ public class BeanFieldBinding<Tprop,Tbean>
   }
 
   public synchronized boolean set(Object val)
-    throws WriteException
+    throws AccessException
   {
     try
     { 
@@ -50,7 +50,7 @@ public class BeanFieldBinding<Tprop,Tbean>
     }
     catch (IllegalAccessException x)
     { 
-      throw new WriteException
+      throw new AccessException
         (x.toString()+" writing bean field '"+_field.getName()+"'",x);
     }
   }

@@ -23,8 +23,18 @@ import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeMismatchException;
 
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
+import spiralcraft.lang.AccessException;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.spi.AbstractChannel;
+
+import spiralcraft.data.lang.DataReflector;
+
 import java.net.URI;
 
+@SuppressWarnings("unchecked")
 /**
  * <P>Implementation of a standard Field.
  */
@@ -41,6 +51,7 @@ public class FieldImpl
   private URI uri;
   private boolean isScheme;
   private boolean stored=true;
+  private Reflector contentReflector;
   
   /**
    * Set the scheme
@@ -193,6 +204,14 @@ public class FieldImpl
   { 
     assertUnlocked();
     this.type=type;
+    try
+    { this.contentReflector=DataReflector.getInstance(type);
+    }
+    catch (BindException x)
+    { 
+      throw new IllegalArgumentException
+        ("Could not find spiralcraft.lang.Reflector for Type "+type.getURI());
+    }
   }
   
   public Type<?> getType()
@@ -303,7 +322,12 @@ public class FieldImpl
     if (!locked)
     { lock();
     }
+    subclassResolve();
   }
+  
+  protected void subclassResolve()
+    throws DataException
+  { }
   
   public String toString()
   { return super.toString()+":"+uri;
@@ -344,5 +368,106 @@ public class FieldImpl
     if (locked)
     { throw new IllegalStateException("Field is in read-only state");
     }
+  }
+
+  @Override
+  public Channel bind
+    (Channel<Tuple> source,
+    Focus<?> focus
+    )
+    throws BindException
+  { 
+    Channel binding=source.getCached(this);
+    if (binding==null)
+    { 
+      binding=new SimpleChannel(source);
+      source.cache(this,binding);
+    }
+    return binding;
+  }
+  
+  @SuppressWarnings("unchecked")
+  class SimpleChannel
+    extends AbstractChannel
+  {
+    protected final Channel<Tuple> source;
+    
+    public SimpleChannel(Channel<Tuple> source)
+    { 
+      super(contentReflector);
+      this.source=source;
+    }
+
+    @Override
+    protected Object retrieve()
+    {
+      Tuple t=source.get();
+      if (t==null)
+      { 
+        // Defines x.f to be null if x is null
+        return null;
+      }
+      
+      try
+      { t=widenTuple(t);
+      }
+      catch (DataException x)
+      { throw new AccessException(x.toString(),x);
+      }
+      
+      if (t!=null)
+      { 
+        try
+        { return t.get(index);
+        }
+        catch (DataException x)
+        { throw new AccessException(x.toString(),x);
+        }
+      }
+      else
+      {
+        throw new AccessException
+          ("Field '"+name+"' not in Tuple FieldSet "+t.getFieldSet());
+      }
+
+    }
+
+    @Override
+    protected boolean store(Object val)
+    {
+      EditableTuple t=(EditableTuple) source.get();
+      if (t==null)
+      { return false;
+      }
+      
+      try
+      { t=widenTuple(t);
+      }
+      catch (DataException x)
+      { throw new AccessException(x.toString(),x);
+      }
+      
+      if (t!=null)
+      { 
+        try
+        { t.set(index,val);
+        }
+        catch (DataException x)
+        { throw new AccessException(x.toString(),x);
+        }
+        
+      } 
+      else
+      {
+        throw new IllegalArgumentException
+          ("Field "+getURI()
+          +" not in Tuple FieldSet "+t.getFieldSet()
+          );
+      }      
+      // TODO Auto-generated method stub
+      return false;
+    }
+    
+    
   }
 }

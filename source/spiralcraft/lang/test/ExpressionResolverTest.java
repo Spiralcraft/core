@@ -18,7 +18,7 @@ import spiralcraft.lang.parser.ExpressionParser;
 import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.lang.spi.Namespace;
 import spiralcraft.lang.spi.NamespaceReflector;
-import spiralcraft.lang.spi.SimpleBinding;
+import spiralcraft.lang.spi.SimpleChannel;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
@@ -99,9 +99,9 @@ public class ExpressionResolverTest
       Namespace namespace=new Namespace(defs);
       
       
-      namespace.putOptic("test",new SimpleBinding<String>("testValue",true));
+      namespace.putOptic("test",new SimpleChannel<String>("testValue",true));
 
-      focus.setSubject(new SimpleBinding<Namespace>(defs,namespace,false));
+      focus.setSubject(new SimpleChannel<Namespace>(defs,namespace,false));
 
       time=System.currentTimeMillis();
 

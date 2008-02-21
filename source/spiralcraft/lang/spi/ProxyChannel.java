@@ -19,7 +19,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
-import spiralcraft.lang.WriteException;
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Decorator;
 
 import java.beans.PropertyChangeSupport;
@@ -32,52 +32,68 @@ public class ProxyChannel<T>
   implements Channel<T>
 {
 
-  private final Channel<T> _optic;
+  private final Channel<T> channel;
+  private WeakChannelCache cache;
 
   public ProxyChannel(Channel<T> delegate)
   { 
     if (delegate==null)
     { throw new IllegalArgumentException("Delegate cannot be null");
     }
-    _optic=delegate;
+    channel=delegate;
   }
 
   public <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
-  { return _optic.resolve(focus,name,params);
+  { return channel.resolve(focus,name,params);
   }
 
   public T get()
-  { return _optic.get();
+  { return channel.get();
   }
 
   public boolean set(T value)
-    throws WriteException
-  { return _optic.set(value);
+    throws AccessException
+  { return channel.set(value);
   }
 
   public Class<T> getContentType()
-  { return _optic.getContentType();
+  { return channel.getContentType();
   }
 
   public <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
     throws BindException
-  { return _optic.decorate(decoratorInterface);
+  { return channel.decorate(decoratorInterface);
   }
 
   public PropertyChangeSupport propertyChangeSupport()
-  { return _optic.propertyChangeSupport();
+  { return channel.propertyChangeSupport();
   }
 
   public boolean isStatic()
-  { return _optic.isStatic();
+  { return channel.isStatic();
   }
 
   public Reflector<T> getReflector()
-  { return _optic.getReflector();
+  { return channel.getReflector();
   }
   
   public String toString()
-  { return super.toString()+":"+_optic.toString();
+  { return super.toString()+":"+channel.toString();
   }
+  
+  public synchronized void cache(Object key,Channel<?> channel)
+  { 
+    if (cache==null)
+    { cache=new WeakChannelCache();
+    }
+    cache.put(key,channel);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public synchronized <X> Channel<X> getCached(Object key)
+  { 
+    return cache!=null?(Channel<X>) cache.get(key):null;
+  }
+  
 }

@@ -21,7 +21,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Reflector;
 
 import spiralcraft.lang.spi.Translator;
-import spiralcraft.lang.spi.TranslatorBinding;
+import spiralcraft.lang.spi.TranslatorChannel;
 
 import java.util.HashMap;
 import java.math.BigDecimal;
@@ -142,7 +142,7 @@ public class NumericNegateNode<T extends Number>
       _translatorMap.put(sourceBinding.getContentType(),translator);
     }
     
-    return new TranslatorBinding<T,T>
+    return new TranslatorChannel<T,T>
       (focus.<T>bind(new Expression<T>(_node,null))
       ,(Translator<T,T>) translator
       ,null

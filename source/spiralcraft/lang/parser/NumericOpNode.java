@@ -22,7 +22,7 @@ import spiralcraft.lang.Reflector;
 
 import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.lang.spi.Translator;
-import spiralcraft.lang.spi.TranslatorBinding;
+import spiralcraft.lang.spi.TranslatorChannel;
 import spiralcraft.lang.spi.StringConcatTranslator;
 
 import spiralcraft.util.lang.ClassUtil;
@@ -120,7 +120,7 @@ class StringBindingHelper
   {
     if (operator=='+')
     {
-      return new TranslatorBinding<String,String>
+      return new TranslatorChannel<String,String>
         (op1
         ,_stringConcatTranslator
         ,new Channel[] {op2}
@@ -345,7 +345,7 @@ class NumberBindingHelper
       translatorMap.put(op1.getContentType(),translator);
     }
     
-    return new TranslatorBinding<Tret,T1>
+    return new TranslatorChannel<Tret,T1>
       (op1
       ,translator
       ,new Channel[] {op2}

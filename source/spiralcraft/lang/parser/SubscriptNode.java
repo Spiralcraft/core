@@ -21,7 +21,7 @@ import spiralcraft.lang.BindException;
 
 import spiralcraft.lang.spi.ArrayIndexTranslator;
 import spiralcraft.lang.spi.BeanReflector;
-import spiralcraft.lang.spi.TranslatorBinding;
+import spiralcraft.lang.spi.TranslatorChannel;
 
 
 /**
@@ -96,7 +96,7 @@ class ArrayIndexHelper
      )
      throws BindException
   {
-    return new TranslatorBinding<T,T[]>
+    return new TranslatorChannel<T,T[]>
       ((Channel<T[]>) collection
       ,new ArrayIndexTranslator<T>
         (BeanReflector.<T>getInstance

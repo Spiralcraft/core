@@ -43,7 +43,7 @@ public abstract class AuthSession
 
   protected final SimpleFocus<Map<String,Credential<?>>> credentialFocus
     =new SimpleFocus<Map<String,Credential<?>>>();
-  { credentialFocus.setSubject(new CredentialSetBinding(credentialMap));
+  { credentialFocus.setSubject(new CredentialSetChannel(credentialMap));
   }
   
   protected Principal principal;

@@ -17,7 +17,7 @@ package spiralcraft.security.auth;
 
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.spi.AbstractBinding;
+import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.BeanReflector;
 
 import java.util.Map;
@@ -29,14 +29,14 @@ import java.util.Map;
  * @author mike
  *
  */
-public class CredentialBinding<T>
-  extends AbstractBinding<T>
+public class CredentialChannel<T>
+  extends AbstractChannel<T>
 {
   private final String name;
   private final Map<String,Credential<?>> map;
 
   @SuppressWarnings("unchecked") // Heterogeneous map
-  public CredentialBinding(Map<String,Credential<?>> map,String name)
+  public CredentialChannel(Map<String,Credential<?>> map,String name)
     throws BindException
   { 
     super

@@ -12,23 +12,9 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang;
+package spiralcraft.data.session;
 
-/**
- * A Component capable of creating a Focus in order to expose its data and 
- *  functionality to the spiralcraft.lang expression language.
- *  
- * @author mike
- *
- */
-public interface FocusProvider<T>
+public interface ViewData
 {
-  /** 
-   * <p>Create a new Focus, that has as its parent the specified Focus. 
-   * </p>
-   * @return The new Focus
-   * @throws BindException if an error occurs when creating the Focus
-   */
-  Focus<T> createFocus(Focus<?> parent)
-    throws BindException;
+  String getName();
 }

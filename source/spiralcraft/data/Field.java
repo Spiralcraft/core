@@ -16,6 +16,11 @@ package spiralcraft.data;
 
 import java.net.URI;
 
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.BindException;
+
+
 /**
  * <P>A description of a single element of a Tuple.
  */
@@ -51,8 +56,32 @@ public interface Field
    */
   Type<?> getType();
   
+  
   /**
-   * Retreive the value of this Field in the specified Tuple
+   * @return This field's URI, which is this field's name in the context of
+   *   the Type that it belongs to. 
+   */
+  URI getURI();
+  
+  /**
+   * Create a Channel that accesses the value of this Field in the Tuple
+   *   provided by the source Channel
+   * 
+   * @param source
+   * @param focus
+   * @return A Binding bound to the source and focus
+   */
+   Channel<?> bind(Channel<Tuple> source,Focus<?> focus)
+    throws BindException;
+  
+  /**
+   * @return Whether the value for this Field is stored or recomputed every
+   *   time it is accessed. 
+   */
+  boolean isStored();
+
+  /**
+   * Retrieve the value of this Field in the specified Tuple
    */
   Object getValue(Tuple t)
     throws DataException;
@@ -62,16 +91,6 @@ public interface Field
    */
   void setValue(EditableTuple t,Object value)
     throws DataException;
+
   
-  /**
-   * @return This field's URI, which is this field's name in the context of
-   *   the Type that it belongs to. 
-   */
-  URI getURI();
-  
-  /**
-   * @return Whether the value for this Field is stored or recomputed every
-   *   time it is accessed. 
-   */
-  boolean isStored();
 }

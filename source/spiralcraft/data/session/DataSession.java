@@ -14,293 +14,127 @@
 //
 package spiralcraft.data.session;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import java.net.URI;
-
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.CompoundFocus;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.CompoundFocus;
 import spiralcraft.lang.FocusProvider;
-import spiralcraft.lang.Reflector;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.spi.SimpleChannel;
 
-import spiralcraft.lang.spi.Namespace;
-import spiralcraft.lang.spi.NamespaceReflector;
-import spiralcraft.lang.spi.SimpleBinding;
+import spiralcraft.data.Type;
+import spiralcraft.data.Field;
+import spiralcraft.data.EditableTuple;
+import spiralcraft.data.Tuple;
+
+import spiralcraft.data.lang.DataBinding;
 
 import spiralcraft.builder.Lifecycle;
 import spiralcraft.builder.LifecycleException;
 
-import spiralcraft.data.DataException;
-import spiralcraft.data.EditableTuple;
-import spiralcraft.data.Type;
+import java.util.ArrayList;
 
-import spiralcraft.data.spi.EditableArrayTuple;
-
-import spiralcraft.data.lang.StaticTupleBinding;
-
-
-/**
- * <p>Provides access to a set of coordinated Views of related data, with
- *   support for edit buffering and propagating updates to a back-end store
- * </p>
- * 
- * <h3>Concurrency support</h3>
- * 
- * <p>The DataSession and View object provide efficient concurrency support
- *   through the separation of structure and state in both components. 
- * </p>
- * 
- * <i>NOTE: THE FOLLOWING IS IN A STATE OF FLUX</i>
- * 
- * <P>Access is provided to the spiralcraft.lang expression language through a 
- *  spiralcraft.lang Focus for expression resolution. The namespace published
- *  in this Focus is:
- *  
- * <UL>
- *   <LI><CODE>[dataSession] data.<I>viewname</I></CODE>
- *   <BR>References the Tuple at the current cursor position of the
- *     specified view
- *   </LI>
- *   <LI><CODE>[dataSession] data.<I>viewname</I>.<I>fieldname</I></CODE>
- *   <BR>References a data field value at the current cursor position of the
- *     specified view
- *   </LI>
- *   <LI><CODE>[dataSession] view.<I>viewname</I></CODE>
- *   <BR>References the spiralcraft.data.session.View as a Java Bean
- *   </LI>
- *   <LI><CODE>[dataSession] .</CODE>
- *   <BR>References the spiralcraft.data.session.DataSession itself 
- *     as a Java Bean
- *   </LI>
- * </UL>
- * 
- * <P>Implementations of this class primaily differ in how the Views are
- *  created.
- *
- * @author mike
- *
- */
 public class DataSession
-  implements FocusProvider<DataSession>,Lifecycle
+  implements FocusProvider<DataSession.State>,Lifecycle
 {
-
-  protected final ArrayList<View<?>> views=new ArrayList<View<?>>();
-  protected final HashMap<String,View<?>> viewMap
-    =new HashMap<String,View<?>>();
   
-  private final NamespaceReflector dataSessionNamespaceReflector
-    =new NamespaceReflector();
-  private SimpleBinding<Namespace> dataSessionChannel;
-    
-  private final NamespaceReflector dataNamespaceReflector
-    =new NamespaceReflector();
-  private SimpleBinding<Namespace> dataChannel;
+  private CompoundFocus<State> focus;
+  private Type<SessionData> sessionDataType;
+  private Channel<State> sessionDataSource;
+  private ArrayList<View<?>> views;
   
-  private final NamespaceReflector viewNamespaceReflector
-    =new NamespaceReflector();
-  private SimpleBinding<Namespace> viewChannel;
   
-  private Reflector<EditableTuple> inReflector;
-  private StaticTupleBinding<EditableTuple> inChannel;
-  
-  private SimpleFocus<DataSession> localFocus;
-  
-  private SimpleFocus<Namespace> dataFocus;
-  
-  private URI inTypeURI;
-
-
-  /**
-   * Provide a Focus for expression evaluation in the general context of
-   *   the specified parentFocus. The Focus will be registered under the
-   *   <CODE>[DataSession]</CODE> intrinsic identifier as well as any other
-   *   aliases specified.
-   *   
-   */
-  public SimpleFocus<DataSession> createFocus
-    (Focus<?> parentFocus,String namespace,String name)
+  @Override
+  public Focus<State> createFocus(Focus<?> parent)
     throws BindException
   {
-    CompoundFocus<DataSession> focus=new CompoundFocus<DataSession>();
-    if (parentFocus!=null)
-    { focus.setParentFocus(focus);    
-    }
-    focus.setSubject(new SimpleBinding<DataSession>(this,true));
-//    focus.setContext(dataSessionChannel);
-//    focus.addNamespaceAlias(namespace);
-//    focus.setName(name);
-    
-    return focus;
-  }
-  
-  public void setViews(View<?>[] views)
-  { 
-    this.views.clear();
-    for (View<?> view:views)
-    { this.views.add(view);
-    }
-  }
-  
-  
-  /**
-   * <p>Set up the namespace definitions for each View
-   * </p>
-   * 
-   * <p>Called from initialize()
-   * </p>
-   * 
-   * @throws DataException
-   */
-  private void initViews()
-    throws DataException
-  {
-    for (View<?> view:views)
+    if (sessionDataSource==null)
     { 
-      // Connect everything together
-      view.setDataSession(this);
-      viewMap.put(view.getName(),view);
-
-      try
-      { 
-        dataNamespaceReflector.register(view.getName(),view.getDataReflector());
-        viewNamespaceReflector.register(view.getName(),view.getViewReflector());
-      }
-      catch (BindException x)
-      { 
-        throw new DataException
-          ("View '"+view.getName()
-          +"' could not be registered in DataSession: "
-          +x
-          ,x
-          );
-      }
-    }    
-    
-  }
-  
-  /**
-   * Provide a Channel for the data in each View under the appropriate name
-   *   in the data namespace.
-   * 
-   * @throws DataException
-   */
-  @SuppressWarnings("unchecked") // View type is heterogeneous
-  private void bindViews()
-    throws DataException
-  {
-    for (View<?> view:views)
-    {
-      view.bindData(dataFocus);
-      try
-      { 
-        dataChannel.get().putOptic
-          (view.getName()
-          ,view.getTupleBinding()
-          );
-        
-        viewChannel.get().putOptic
-          (view.getName()
-          ,new SimpleBinding<View>(view.getViewReflector(),view,true)
-          );
-      }
-      catch (BindException x)
-      { 
-        throw new DataException
-          ("View '"+view.getName()
-          +"' could not be added to dataNamespace in DataSession: "
-          +x
-          ,x
-          );
-      }
+      sessionDataSource
+        =new SimpleChannel<State>(State.class,null,false);
     }
+    
+ 
+    this.focus=new CompoundFocus<State>(parent,sessionDataSource);
+    this.focus.setLayerName("spiralcraft.data");
 
+    DataBinding<EditableTuple> dataBinding
+      =new DataBinding<EditableTuple>
+        (sessionDataType
+        ,sessionDataSource.resolve(this.focus,"sessionDataTuple",null)
+        ,false
+        );
+    
+    this.focus.bindFocus
+      ("spiralcraft.data",new SimpleFocus<EditableTuple>(this.focus,dataBinding));
+
+    return this.focus;
+    
+
+  }
+
+  /**
+   * Specify an alternate session data source, such as when session data
+   *   is being externally persisted or state-managed.
+   * @param channel
+   */
+  public void setSessionDataSource(Channel<State> channel)
+  { this.sessionDataSource=channel;
   }
   
   @Override
   public void start()
     throws LifecycleException
   {
-    try
-    { initialize();
-    }
-    catch (DataException x)
+    for (Field field: sessionDataType.getScheme().fieldIterable())
     { 
-      x.printStackTrace();
-      throw new LifecycleException(x.toString(),x);
+      if (field instanceof SessionField)
+      { 
+        View<?> view=((SessionField) field).getView();
+        if (view!=null)
+        { views.add(view);
+        }
+      }
+      
+      
     }
+    // TODO Auto-generated method stub
+    
   }
-  
+
   @Override
   public void stop()
-  { }
-  
-
-  @SuppressWarnings("unchecked") // Heterogeneous ops
-  private void initialize()
-    throws DataException
-  { 
-    initViews();
-    try
-    {
-      dataSessionNamespaceReflector.register("data",dataNamespaceReflector);
-      dataSessionNamespaceReflector.register("view",viewNamespaceReflector);
-      dataSessionNamespaceReflector.register("in",inReflector);
+    throws LifecycleException
+  {
+    // TODO Auto-generated method stub
     
-      Namespace dataSessionNamespace
-        =new Namespace(dataSessionNamespaceReflector);
-      dataSessionChannel
-        =new SimpleBinding
-          (dataSessionNamespaceReflector,dataSessionNamespace,true);
-      
-      if (inTypeURI!=null)
-      {
-        Type inType=Type.resolve(inTypeURI);
-        EditableTuple inTuple=new EditableArrayTuple(inType.getScheme());
-        inChannel
-          =new StaticTupleBinding<EditableTuple>(inType.getScheme(),inTuple);
-        dataSessionNamespace.putOptic("in",inChannel);
-      }
+  }
 
-      Namespace dataNamespace=new Namespace(dataNamespaceReflector);
-      dataChannel=new SimpleBinding(dataNamespaceReflector,dataNamespace,true);
-      dataSessionNamespace.putOptic("data",dataChannel);
-      
 
-      Namespace viewNamespace=new Namespace(viewNamespaceReflector);
-      viewChannel=new SimpleBinding(viewNamespaceReflector,viewNamespace,true);
-      dataSessionNamespace.putOptic("view",viewChannel);
-
-    }
-    catch (BindException x)
-    {
-      throw new DataException
-      ("DataSession: could not set up DataSession namespace"
-      +x
-      ,x
-      );
-    }
+  public class State
+  {
+    private EditableTuple sessionDataTuple;
+    private final View<?>.State[] viewStates=new View<?>.State[views.size()];
     
-    try
+    public State()
     { 
-      localFocus=createFocus(null,"data","DataSession");
-    }
-    catch (BindException x)
-    {
-      throw new DataException
-      ("DataSession: could not create local Focus: "
-      +x
-      ,x
-      );
+      int ctr=0;
+      for (View<?> view : views)
+      { viewStates[ctr++]=view.newState();
+      }
     }
     
-    dataFocus=new SimpleFocus<Namespace>();
-    dataFocus.setParentFocus(localFocus);
-    dataFocus.setSubject(dataChannel);
-//    dataFocus.setContext(dataChannel);
+    public DataSession getDataSession()
+    { return DataSession.this;
+    }
     
-    bindViews();
-  } 
+    public EditableTuple getSessionDataTuple()
+    { return sessionDataTuple;
+    }
+    
+    
+    
+  }
 }
+
+

@@ -27,13 +27,13 @@ import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.spi.EditableArrayTuple;
 
 import spiralcraft.lang.BindException;
-
-import spiralcraft.lang.spi.AbstractBinding;
-import spiralcraft.lang.spi.Binding;
-import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.Channel;
+
+import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.BeanReflector;
 
 
 import java.lang.reflect.InvocationHandler;
@@ -50,7 +50,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 @SuppressWarnings("unchecked") // Proxy is not generic
 public class TupleDelegate<T>
-  extends AbstractBinding<T>
+  extends AbstractChannel<T>
   implements InvocationHandler
 {
   
@@ -176,26 +176,26 @@ class TupleDelegateReflector<T>
   // We haven't genericized the data package builder yet
   // XXX TODO- this gets pretty hacked up using generics- figure out something cleaner
   @SuppressWarnings("unchecked")
-  public <X> Binding<X> 
-    resolve(Binding<T> source
+  public <X> Channel<X> 
+    resolve(Channel<T> source
         ,Focus<?> focus
         ,String name
         ,Expression<?>[] params
         )
     throws BindException
   { 
-    Binding<T> binding=(Binding<T>) ((TupleDelegate) source).getTupleBinding();
+    Channel<T> binding=(Channel<T>) ((TupleDelegate) source).getTupleBinding();
     return binding.getReflector().<X>resolve(binding,focus,name,params);
   }
   
   // We haven't genericized the data package builder yet
   // XXX TODO- this gets pretty hacked up using generics- figure out something cleaner
   @SuppressWarnings("unchecked")
-  public Decorator<T> decorate(Binding source,Class decoratorInterface)
+  public Decorator<T> decorate(Channel source,Class decoratorInterface)
   { 
     try
     {
-      Binding<T> binding=(Binding<T>) ((TupleDelegate) source).getTupleBinding();
+      Channel<T> binding=(Channel<T>) ((TupleDelegate) source).getTupleBinding();
       return binding.getReflector().decorate(binding,decoratorInterface);
     }
     catch (BindException x)

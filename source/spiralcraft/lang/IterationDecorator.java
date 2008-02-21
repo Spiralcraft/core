@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.lang.spi.IterationCursorBinding;
+import spiralcraft.lang.spi.IterationCursorChannel;
 
 import java.util.Iterator;
 
@@ -52,10 +52,10 @@ public abstract class IterationDecorator<T,I>
    *   iteration component type. 
    *   
    */
-  public IterationCursorBinding<I>
+  public IterationCursorChannel<I>
     createComponentBinding(Channel<IterationCursor<I>> iterationCursorSource)
   { 
-    return new IterationCursorBinding<I>
+    return new IterationCursorChannel<I>
       (componentReflector,iterationCursorSource);
   }
   

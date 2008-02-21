@@ -23,10 +23,11 @@ import java.beans.PropertyChangeListener;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
-import spiralcraft.lang.WriteException;
+import spiralcraft.lang.AccessException;
+import spiralcraft.lang.Channel;
 
-public class BeanPropertyBinding<T,S>
-  extends TranslatorBinding<T,S>
+public class BeanPropertyChannel<T,S>
+  extends TranslatorChannel<T,S>
 {
   private static final Object[] EMPTY_PARAMS=new Object[0];
   private final Object[] _params=new Object[1];
@@ -36,8 +37,8 @@ public class BeanPropertyBinding<T,S>
   private final EventSetDescriptor _propertyChangeEventSetDescriptor;
   private final Object[] _beanPropertyChangeListenerParams;
 
-  public BeanPropertyBinding
-    (Binding<S> source
+  public BeanPropertyChannel
+    (Channel<S> source
     ,BeanPropertyTranslator<T,S> translator
     )
   {
@@ -145,7 +146,7 @@ public class BeanPropertyBinding<T,S>
   }
   
   public synchronized boolean set(Object val)
-    throws WriteException
+    throws AccessException
   {
     if (_static)
     { return false;
@@ -181,12 +182,12 @@ public class BeanPropertyBinding<T,S>
     }
     catch (IllegalAccessException x)
     { 
-      throw new WriteException
+      throw new AccessException
         (x.toString()+" writing bean property '"+_property.getName()+"'",x);
     }
     catch (InvocationTargetException x)
     { 
-      throw new WriteException
+      throw new AccessException
         (x.toString()+":"+x.getTargetException().toString()
         +" writing bean property '"+_property.getName()+"'"
         ,x);

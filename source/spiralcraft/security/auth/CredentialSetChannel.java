@@ -19,8 +19,9 @@ import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
-import spiralcraft.lang.spi.AbstractBinding;
-import spiralcraft.lang.spi.Binding;
+import spiralcraft.lang.Channel;
+
+import spiralcraft.lang.spi.AbstractChannel;
 
 import java.net.URI;
 import java.util.Map;
@@ -29,12 +30,12 @@ import java.util.Map;
  * Provides spiralcraft.lang package access to the credential set of
  *   an AuthSession for the implementation of application specific tasks.
  */
-public class CredentialSetBinding
-  extends AbstractBinding<Map<String,Credential<?>>>
+public class CredentialSetChannel
+  extends AbstractChannel<Map<String,Credential<?>>>
 {
   private Map<String,Credential<?>> map;
   
-  public CredentialSetBinding(Map<String,Credential<?>> map)
+  public CredentialSetChannel(Map<String,Credential<?>> map)
   {
     super(new CredentialMapReflector(map));
     this.map=map;
@@ -66,7 +67,7 @@ class CredentialMapReflector
   }
   
   
-  public Decorator decorate(Binding source, Class decoratorInterface)
+  public Decorator decorate(Channel source, Class decoratorInterface)
     throws BindException
   { return null;
   }
@@ -76,8 +77,8 @@ class CredentialMapReflector
   { return Map.class;
   }
 
-  public <X> Binding<X> resolve
-    (Binding<Map<String,Credential<?>>> source
+  public <X> Channel<X> resolve
+    (Channel<Map<String,Credential<?>>> source
     , Focus<?> focus
     , String name
     , Expression<?>[] params
@@ -88,7 +89,7 @@ class CredentialMapReflector
       throw new BindException
         ("Credential map does not contain credential '"+name+"'");
     }
-    return new CredentialBinding(map,name);
+    return new CredentialChannel(map,name);
 
   }
 

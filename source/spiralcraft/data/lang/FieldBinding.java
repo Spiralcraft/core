@@ -18,19 +18,19 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 
-import spiralcraft.lang.spi.Binding;
-import spiralcraft.lang.spi.TranslatorBinding;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.spi.TranslatorChannel;
 
 /**
  * A binding to a value of a field
  */
 @SuppressWarnings("unchecked") // We haven't genericized the data package yet
 public class FieldBinding
-  extends TranslatorBinding
+  extends TranslatorChannel
 {
   private final FieldTranslator translator;
   
-  public FieldBinding(Binding source,FieldTranslator translator)
+  public FieldBinding(Channel source,FieldTranslator translator)
   { 
     super(source,translator,null);
     this.translator=translator;

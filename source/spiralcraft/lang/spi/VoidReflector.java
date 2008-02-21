@@ -21,6 +21,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.Channel;
 
 
 /**
@@ -37,8 +38,8 @@ public class VoidReflector
    *   expressions against the source Binding within the context of the supplied
    *   Focus.
    */
-  public <X> Binding<X> resolve
-    (Binding<Void> source,Focus<?> focus,String name,Expression<?>[] params)
+  public <X> Channel<X> resolve
+    (Channel<Void> source,Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
   { 
     // We should implement .equals()
@@ -50,7 +51,7 @@ public class VoidReflector
    *   specified interface
    */
   public <D extends Decorator<Void>> D decorate
-      (Binding<? extends Void> source
+      (Channel<? extends Void> source
       ,Class<D> decoratorInterface
       )
     throws BindException

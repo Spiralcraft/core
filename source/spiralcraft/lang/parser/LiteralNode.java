@@ -18,20 +18,20 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.spi.SimpleBinding;
+import spiralcraft.lang.spi.SimpleChannel;
 
 public class LiteralNode<X>
   extends Node
 {
 
-  private final SimpleBinding<X> _optic;
+  private final SimpleChannel<X> _optic;
 
   public LiteralNode(X value,Class<X> valueClass)
   { 
     try
     { 
 //      System.out.println("LiteralNode: Creating SimpleBinding with "+value);
-      _optic=new SimpleBinding<X>(valueClass,value,true);
+      _optic=new SimpleChannel<X>(valueClass,value,true);
     }
     catch (BindException x)
     { throw new IllegalArgumentException(x.toString());

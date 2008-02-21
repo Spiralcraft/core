@@ -19,22 +19,24 @@ import spiralcraft.lang.Reflector;
 
 
 /**
- * <P>Provides for thread-safe expression evaluation by holding a fixed value
+ * <p>Provides for thread-safe expression evaluation by holding a fixed value
  *   for a given Thread. Enables the sharing among multiple threads of bindings
  *   created at load-time.
- *   
- * <P>Note that this usage of ThreadLocal will often be used in a non-static
- *   and re-entrant manner. To prevent memory leaks, methods that with to use
- *   a ThreadLocalBinding to provide values for outgoing calls should call
- *   push() before use and pop() before returning.
+ * </p>
+ *  
+ * <p>Note that this usage of ThreadLocal will often be used in a non-static
+ *   and re-entrant manner. To prevent memory leaks, methods that use
+ *   a ThreadLocalBinding to provide a "callback" value for outgoing calls 
+ *   should call push() before use and pop() before returning.
+ * </p>
  */
-public class ThreadLocalBinding<T>
-  extends AbstractBinding<T>
+public class ThreadLocalChannel<T>
+  extends AbstractChannel<T>
 {
   private final ThreadLocal<ThreadReference<T>> threadLocal
     =new ThreadLocal<ThreadReference<T>>();
   
-  public ThreadLocalBinding(Reflector<T> reflector)
+  public ThreadLocalChannel(Reflector<T> reflector)
   { super(reflector);
   }
   

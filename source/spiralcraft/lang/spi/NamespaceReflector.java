@@ -65,8 +65,8 @@ public class NamespaceReflector
   
   
   @SuppressWarnings("unchecked") // Expression array params heterogeneous
-  public synchronized <X> Binding<X> resolve
-    (Binding<Namespace> source
+  public synchronized <X> Channel<X> resolve
+    (Channel<Namespace> source
     ,Focus<?> focus
     ,String name
     ,Expression<?>[] params
@@ -79,12 +79,12 @@ public class NamespaceReflector
     { return null;
     }
     
-    Binding<X> binding=source.getCache().<X>get(translator);
+    Channel<X> binding=source.<X>getCached(translator);
     if (binding==null)
     { 
-      binding=new NamespaceBinding(source,translator);
+      binding=new NamespaceChannel(source,translator);
       
-      source.getCache().put(translator,binding);
+      source.cache(translator,binding);
     }
     return binding;
     
@@ -92,7 +92,7 @@ public class NamespaceReflector
 
   @SuppressWarnings("unchecked") // Dynamic class info
   public <D extends Decorator<Namespace>> D decorate
-    (Binding<? extends Namespace> source,Class<D> decoratorInterface)
+    (Channel<? extends Namespace> source,Class<D> decoratorInterface)
     throws BindException
   { return null;
   }

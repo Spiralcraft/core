@@ -14,28 +14,28 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.lang.spi.Binding;
+import spiralcraft.lang.Channel;
 
 import java.net.URI;
 
 /**
  * <P>A Reflector is a "type broker" which exposes parts of an object model 
- *   by creating data pipes (Bindings) based on elements of Expression syntax
+ *   by creating data pipes (Channels) based on elements of Expression syntax
  *   as it applies to the underlying typing model.
  *   
  * <P>Given a data source and a Focus, a Reflector will resolve a name and a set of
- *   modifiers into another data source (Binding) bound to the first and to the
+ *   modifiers into another data source (Channel) bound to the first and to the
  *   Focus, in order to effect some transformation or computation.
  */
 public interface Reflector<T>
 {
 
   /**
-   * Generate a new Binding which resolves the name and the given parameter 
-   *   expressions against the source Binding and the supplied Focus.
+   * Generate a new Channel which resolves the name and the given parameter 
+   *   expressions against the source Channel and the supplied Focus.
    */
-  public <X> Binding<X> resolve
-    (Binding<T> source
+  public <X> Channel<X> resolve
+    (Channel<T> source
     ,Focus<?> focus
     ,String name
     ,Expression<?>[] params
@@ -43,11 +43,11 @@ public interface Reflector<T>
     throws BindException;
 
   /**
-   * Decorate the specified Binding with a decorator that implements the
+   * Decorate the specified Channel with a decorator that implements the
    *   specified interface
    */
   public <D extends Decorator<T>> D decorate
-    (Binding<? extends T> source,Class<D> decoratorInterface)
+    (Channel<? extends T> source,Class<D> decoratorInterface)
     throws BindException;
   
   /**

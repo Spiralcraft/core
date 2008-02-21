@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2007 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,34 +12,23 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang.spi;
+package spiralcraft.lang;
 
-import spiralcraft.lang.Channel;
-
-
-
-public class MethodBinding<Tprop,Tbean>
-  extends TranslatorBinding<Tprop,Tbean>
+/**
+ * Thrown when an exception is thrown when reading or writing a value through 
+ *   a Channel.
+ */
+public class AccessException
+  extends RuntimeException
 {
-  public MethodBinding
-    (Binding<Tbean> source
-    ,MethodTranslator<Tprop,Tbean> translator
-    )
-  { super(source,translator,null);
+  private static final long serialVersionUID=1;
+  
+  public AccessException(String message)
+  { super(message);
   }
-
-  public MethodBinding
-    (Binding<Tbean> source
-    ,MethodTranslator<Tprop,Tbean> translator
-    ,Channel<?>[] params
-    )
-  { super(source,translator,params);
+  
+  public AccessException(String message,Throwable cause)
+  {
+    super(message,cause);
   }
-
-  public boolean isStatic()
-  { return false;
-  }
-
 }
-
-
