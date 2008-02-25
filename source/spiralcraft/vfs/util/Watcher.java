@@ -27,6 +27,7 @@ public class Watcher
   private long lastModified;
   private long lastChecked;
   private long holdOffUntil;
+  private boolean firstTime=true;
   
   
   public Watcher(Resource resource,int pollIntervalMS,WatcherHandler handler)
@@ -54,8 +55,9 @@ public class Watcher
     try
     {
       long lastModified=resource.getLastModified();
-      if (lastModified!=this.lastModified)
+      if (lastModified!=this.lastModified || firstTime)
       { 
+        firstTime=false;
         int result=handler.handleUpdate();
         if (result>=0)
         { 
@@ -72,7 +74,9 @@ public class Watcher
       }  
     }
     catch (IOException x)
-    { // HandleUpdate?
+    { 
+      x.printStackTrace();
+      // HandleUpdate?
     }
     lastChecked=Clock.instance().approxTimeMillis();
   }
