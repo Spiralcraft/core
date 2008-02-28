@@ -98,7 +98,7 @@ public class BeanInfoCache
    */
   public static final synchronized Class<?> getClassForURI(URI uri)
   { 
-    if (!uri.getScheme().equals("class"))
+    if (uri==null || uri.getScheme()==null || !uri.getScheme().equals("class"))
     { return null;
     }
     

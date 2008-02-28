@@ -15,22 +15,25 @@
 package spiralcraft.data.lang;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
 
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Type;
 import spiralcraft.data.access.Cursor;
+import spiralcraft.data.session.BufferChannel;
 
 /**
  * A spiralcraft.lang binding for Tuples, which uses the Tuple's Scheme
- *   as the type model for binding expressions.
+ *   as the type model for binding expressions. The cursor is replaceable.
  */
-public class CursorBinding<T extends Tuple>
+public class CursorBinding<T extends Tuple,C extends Cursor<T>>
   extends TupleBinding<T>
 {
-  private Cursor<T> cursor;
+  private C cursor;
   
-  public CursorBinding(Cursor<T> cursor)
+  public CursorBinding(C cursor)
     throws BindException
   { 
     super(cursor.dataGetFieldSet(),false);
@@ -42,13 +45,17 @@ public class CursorBinding<T extends Tuple>
   { super(fieldSet,false);
   }
   
-  public void setCursor(Cursor<T> cursor)
+  public void setCursor(C cursor)
   { 
     if (cursor.dataGetFieldSet()!=getFieldSet())
     { throw new IllegalArgumentException
         ("Cursor is incompatible with existing binding");
     }
     this.cursor=cursor;
+  }
+  
+  public C getCursor()
+  { return cursor;
   }
 
   protected T retrieve()
@@ -65,5 +72,19 @@ public class CursorBinding<T extends Tuple>
   { throw new UnsupportedOperationException("Can't replace tuple");
   }
 
+  /**
+   * Convenience method to buffer 
+   * 
+   * @param focus
+   * @return
+   * @throws BindException
+   * @throws DataException
+   */
+  public BufferChannel buffer(Focus<?> focus)
+    throws BindException,DataException
+  { 
+    return new BufferChannel
+      (Type.getBufferType(cursor.getResultType()),this,focus);
+  }
 }
 

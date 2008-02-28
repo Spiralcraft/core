@@ -43,7 +43,7 @@ public abstract class AbstractChannel<T>
 {
  
   private final Reflector<T> _reflector;
-  private Channel<?> metaChannel;
+  protected Channel<?> metaChannel;
   private final boolean _static;
   private PropertyChangeSupport _propertyChangeSupport;
   private WeakChannelCache _cache;
@@ -174,4 +174,11 @@ public abstract class AbstractChannel<T>
     }
     return _propertyChangeSupport;
   }
+  
+  public String toString()
+  { 
+    return super.toString()
+      +":"+_reflector.getContentType().getName()+"["+_reflector+"]";
+  }
+  
 }

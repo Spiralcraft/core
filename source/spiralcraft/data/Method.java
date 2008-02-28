@@ -1,0 +1,69 @@
+//
+// Copyright (c) 1998,2005 Michael Toth
+// Spiralcraft Inc., All Rights Reserved
+//
+// This package is part of the Spiralcraft project and is licensed under
+// a multiple-license framework.
+//
+// You may not use this file except in compliance with the terms found in the
+// SPIRALCRAFT-LICENSE.txt file at the top of this distribution, or available
+// at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
+//
+// Unless otherwise agreed to in writing, this software is distributed on an
+// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+//
+package spiralcraft.data;
+
+
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.BindException;
+
+/**
+ * An action that can be taken on an data object
+ * 
+ * @author mike
+ *
+ */
+public interface Method
+{
+  
+  /**
+   * A Method is a member of data Type.
+   * 
+   * @return
+   */
+  Type<?> getDataType();
+  
+  /**
+   * This Method returns data of a specific Type
+   * 
+   * @return The Type, or null if this method does not return data.
+   */
+  Type<?> getReturnType();
+  
+  /**
+   * The Method name
+   * 
+   * @return
+   */
+  String getName();
+  
+  /**
+   * The Types of the parameters accepted by this method.
+   */
+  Type<?>[] getParameterTypes();
+  
+  /**
+   * Invoke the Method on the specified target, with the specified parameters.
+   * 
+   * @param params
+   * @return
+   * @throws DataException
+   */
+  Object invoke(Object target,Object[] params)
+    throws DataException;
+  
+  Channel<?> bind(Focus<?> focus,Channel<?> source,Channel<?>[] params)
+    throws BindException;
+}

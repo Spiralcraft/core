@@ -16,6 +16,7 @@ package spiralcraft.data.spi;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Identifier;
 import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.TypeMismatchException;
 import spiralcraft.data.DataComposite;
@@ -34,6 +35,7 @@ public abstract class AbstractTuple
   protected final FieldSet fieldSet;
   protected final boolean hasScheme;
   protected Tuple baseExtent;
+  protected Identifier id;
   
   
   /**
@@ -71,11 +73,22 @@ public abstract class AbstractTuple
   { throw new UnsupportedOperationException("Not an Aggregate");
   }
   
+  public Identifier getId()
+  { 
+    if (id==null && getType()!=null)
+    { id=new PojoIdentifier<Tuple>(this);
+    }
+    return id;
+  }
+    
+  public void setId(Identifier id)
+  { this.id=id;
+  }
   
   public Type<?> getType()
   { 
     if (hasScheme)
-    { return ((Scheme) fieldSet).getType();
+    { return fieldSet.getType();
     }
     else
     { return null;

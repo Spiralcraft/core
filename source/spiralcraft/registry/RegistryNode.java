@@ -48,7 +48,7 @@ public interface RegistryNode
    *   that has been registered with this RegistryNode or
    *   its ancestors. 
    */
-  public Object findInstance(Class<?> instanceClass);
+  public <X> X findInstance(Class<X> instanceClass);
 
   /**
    * Register an instance as a local singleton, ie. one that will be visible

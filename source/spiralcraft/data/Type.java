@@ -15,6 +15,11 @@
 package spiralcraft.data;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import spiralcraft.data.session.Buffer;
 
 
 /**
@@ -22,10 +27,42 @@ import java.net.URI;
  */
 public abstract class Type<T>
 {  
+  public static Type<?> resolve(String uriString)
+    throws TypeNotFoundException
+  { return TypeResolver.getTypeResolver().resolve(URI.create(uriString));
+  }
+
   public static Type<?> resolve(URI uri)
     throws TypeNotFoundException
   { return TypeResolver.getTypeResolver().resolve(uri);
   }
+  
+  @SuppressWarnings("unchecked")
+  public static <X> Type<List<X>> getAggregateType(Type<X> type)
+  { 
+    try
+    { return (Type<List<X>>) resolve(type.getURI().toString()+".list");
+    }
+    catch (TypeNotFoundException x)
+    { throw new RuntimeException(x);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <X> Type<Buffer> getBufferType(Type<X> type)
+  { 
+    try
+    { return (Type<Buffer>) resolve(type.getURI().toString()+".buffer");
+    }
+    catch (TypeNotFoundException x)
+    { throw new RuntimeException(x);
+    }
+  }
+
+  protected final ArrayList<Method> methods
+    =new ArrayList<Method>();
+  protected final HashMap<String,Method[]> methodMap
+    =new HashMap<String,Method[]>();
   
   /**
    * The TypeResolver which instantiated this particular Type.
@@ -155,6 +192,57 @@ public abstract class Type<T>
   public abstract boolean isAssignableFrom(Type<?> type);
   
   /**
+   * The Method with the specified name that best matches the
+   *   specified parameters.
+   * 
+   * @param name
+   * @param parameterTypes
+   * @return
+   */
+  public Method findMethod(
+    String name,
+    Type<?>[] parameterTypes)
+  {
+    Method[] matches=methodMap.get(name);
+    if (matches!=null)
+    { 
+      for (Method method:matches)
+      {
+        Type<?>[] formalParams=method.getParameterTypes();
+        if (formalParams.length==parameterTypes.length)
+        {
+          for (int i=0;i<formalParams.length;i++)
+          { 
+            if (formalParams[i].isAssignableFrom(parameterTypes[i]))
+            { return method;
+            }
+            
+          }
+        }
+      }
+    }
+    if (getArchetype()!=null)
+    { return getArchetype().findMethod(name,parameterTypes);
+    }
+    return null;
+  }
+
+
+  /**
+   * 
+   * @return The Methods that belong to this Type
+   */
+  public Method[] getMethods()
+  {
+    Method[] ret=new Method[methods.size()];
+    methods.toArray(ret);
+    return ret;
+    
+  }  
+  
+
+  
+  /**
    * Indicate whether Objects of this type can be encoded to and decoded from
    *   String form. This will only return true if getNativeClass()!=null.
    *
@@ -234,6 +322,7 @@ public abstract class Type<T>
    *   containing specifics of the failure.
    */
   public abstract ValidationResult validate(Object value);
+  
   
   /**
    * Called by the TypeResolver to allow the type to recursively resolve any

@@ -14,127 +14,107 @@
 //
 package spiralcraft.data.session;
 
-import spiralcraft.lang.BindException;
-import spiralcraft.lang.Focus;
-import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.CompoundFocus;
-import spiralcraft.lang.FocusProvider;
-import spiralcraft.lang.Channel;
-import spiralcraft.lang.spi.SimpleChannel;
 
+import spiralcraft.data.DataComposite;
+import spiralcraft.data.Identifier;
 import spiralcraft.data.Type;
-import spiralcraft.data.Field;
-import spiralcraft.data.EditableTuple;
-import spiralcraft.data.Tuple;
+import spiralcraft.data.spi.EditableArrayTuple;
+import spiralcraft.data.spi.PojoIdentifier;
 
-import spiralcraft.data.lang.DataBinding;
+import java.util.HashMap;
 
-import spiralcraft.builder.Lifecycle;
-import spiralcraft.builder.LifecycleException;
+import java.net.URI;
 
-import java.util.ArrayList;
-
+/**
+ * Represents the state of a data modification session that holds a
+ *   transactional unit of work. 
+ *
+ * @author mike
+ */
 public class DataSession
-  implements FocusProvider<DataSession.State>,Lifecycle
 {
+  public static final URI FOCUS_URI
+    =URI.create("class:/spiralcraft/data/session/DataSession");
   
-  private CompoundFocus<State> focus;
-  private Type<SessionData> sessionDataType;
-  private Channel<State> sessionDataSource;
-  private ArrayList<View<?>> views;
+  private HashMap<Identifier,Buffer> buffers;  
+  private DataComposite data;
+  private Type<DataComposite> type;
   
-  
-  @Override
-  public Focus<State> createFocus(Focus<?> parent)
-    throws BindException
-  {
-    if (sessionDataSource==null)
-    { 
-      sessionDataSource
-        =new SimpleChannel<State>(State.class,null,false);
-    }
-    
- 
-    this.focus=new CompoundFocus<State>(parent,sessionDataSource);
-    this.focus.setLayerName("spiralcraft.data");
-
-    DataBinding<EditableTuple> dataBinding
-      =new DataBinding<EditableTuple>
-        (sessionDataType
-        ,sessionDataSource.resolve(this.focus,"sessionDataTuple",null)
-        ,false
-        );
-    
-    this.focus.bindFocus
-      ("spiralcraft.data",new SimpleFocus<EditableTuple>(this.focus,dataBinding));
-
-    return this.focus;
-    
-
+  public void setType(Type<DataComposite> type)
+  { this.type=type;
   }
 
+  public Type<DataComposite> getType()
+  { return type;
+  }
+  
+  public DataComposite getData()
+  { 
+    if (data==null)
+    { data=new EditableArrayTuple(type.getScheme());
+    }
+    return data;
+  }
+  
   /**
-   * Specify an alternate session data source, such as when session data
-   *   is being externally persisted or state-managed.
-   * @param channel
+   * <p>Obtain a Buffer for the specified DataComposite. If an appropriate
+   *   buffer is not found, create one and cache it in the session.
+   * </p>
+   * 
+   * @param composite
+   * @return
    */
-  public void setSessionDataSource(Channel<State> channel)
-  { this.sessionDataSource=channel;
+  @SuppressWarnings("unchecked")
+  public synchronized Buffer buffer(DataComposite composite)
+  {
+    if (buffers==null)
+    { buffers=new HashMap<Identifier,Buffer>();
+    }
+    
+    Identifier id=composite.getId();
+    if (id==null)
+    { id=new PojoIdentifier(composite);
+    }
+    Buffer buffer=buffers.get(id);
+    if (buffer==null)
+    { 
+      if (composite.isTuple())
+      { buffer=new BufferTuple(this,composite.asTuple());
+      }
+      else if (composite.isAggregate())
+      { buffer=new BufferAggregate(this,composite.asAggregate());
+      }
+      else
+      { 
+        // Consider a Reference type
+        throw new IllegalArgumentException("DataComposite not recognized");
+      }
+      buffers.put(composite.getId(), buffer);
+    }
+    return buffer;
+    
+    
   }
   
-  @Override
-  public void start()
-    throws LifecycleException
+  /**
+   * Remove the specified buffer from being cached, once the buffer has
+   *   reverted, or it is known that it will not be used.
+   *   
+   * @param buffer
+   * @param composite
+   */
+  synchronized void release(Buffer buffer,Identifier id)
   {
-    for (Field field: sessionDataType.getScheme().fieldIterable())
-    { 
-      if (field instanceof SessionField)
-      { 
-        View<?> view=((SessionField) field).getView();
-        if (view!=null)
-        { views.add(view);
-        }
-      }
-      
-      
+    if (buffers.get(id)==buffer)
+    { buffers.remove(id);
     }
-    // TODO Auto-generated method stub
-    
   }
-
-  @Override
-  public void stop()
-    throws LifecycleException
-  {
-    // TODO Auto-generated method stub
-    
-  }
-
-
-  public class State
-  {
-    private EditableTuple sessionDataTuple;
-    private final View<?>.State[] viewStates=new View<?>.State[views.size()];
-    
-    public State()
-    { 
-      int ctr=0;
-      for (View<?> view : views)
-      { viewStates[ctr++]=view.newState();
-      }
-    }
-    
-    public DataSession getDataSession()
-    { return DataSession.this;
-    }
-    
-    public EditableTuple getSessionDataTuple()
-    { return sessionDataTuple;
-    }
-    
-    
-    
-  }
-}
-
+  
+}  
+  
+  
+  
+  
+  
+  
 

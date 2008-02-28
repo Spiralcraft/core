@@ -158,4 +158,11 @@ public class SimpleFocus<T>
     }
     return null;
   }
+  
+  public String toString()
+  { 
+    return super.toString()
+      +(containerURI!=null?containerURI.toString():"")
+      +"(#"+(layerName!=null?layerName:"")+")";
+  }
 }

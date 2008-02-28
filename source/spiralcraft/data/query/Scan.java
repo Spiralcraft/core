@@ -14,8 +14,6 @@ import spiralcraft.lang.Focus;
 public class Scan
   extends Query
 {
-
-  private Type<?> type;
   
   /**
    * Construct an unconfigured Scan

@@ -33,7 +33,7 @@ public class TupleFocus<T extends Tuple>
     extends SimpleFocus<T>
 {
 
-  private final CursorBinding<T> cursorBinding;
+  private final CursorBinding<T,ManualCursor<T>> cursorBinding;
   private final ManualCursor<T> cursor;
   
   public TupleFocus(FieldSet fieldSet)
@@ -41,7 +41,7 @@ public class TupleFocus<T extends Tuple>
   { 
     cursor=new ManualCursor<T>(fieldSet);
     try
-    { cursorBinding=new CursorBinding<T>(cursor);
+    { cursorBinding=new CursorBinding<T,ManualCursor<T>>(cursor);
     }
     catch (BindException x)
     { 

@@ -21,17 +21,6 @@ package spiralcraft.data;
 public interface Scheme
   extends FieldSet
 {
-
-  /**
-   *  A Scheme can be associated with a Type. 
-   *    
-   *  A Scheme without a Type usually indicates that is was created 
-   *    dynamically.
-   *
-   *@return the Type associated with this Scheme, or null if there is no
-   *  Type associated with this Scheme.<P>
-   */
-  Type<?> getType();
   
   /**
    * A Scheme's archetype is usually equivalent to

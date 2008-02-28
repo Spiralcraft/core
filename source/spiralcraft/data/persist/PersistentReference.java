@@ -14,6 +14,9 @@
 //
 package spiralcraft.data.persist;
 
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.Channel;
 import spiralcraft.registry.Registrant;
 
 import java.net.URI;
@@ -26,7 +29,7 @@ import java.net.URI;
  *
  *XXX This interface is incomplete
  */
-public interface PersistentReference
+public interface PersistentReference<T>
   extends Registrant
 {
   /**
@@ -41,8 +44,20 @@ public interface PersistentReference
   public void setResourceUri(URI resourceUri)
     throws PersistenceException;
   
+  
   /**
    * Return the Object being referred to
    */
-  public Object get();
+  public T get();
+  
+  public void set(T object);
+  
+  /**
+   * Bind this reference into the local hierarchical context
+   * 
+   * @param parent
+   * @return
+   */
+  public Channel<T> bind(Focus<?> parent)
+    throws BindException;
 }

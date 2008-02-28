@@ -14,6 +14,9 @@
 //
 package spiralcraft.data;
 
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.BindException;
 
 /**
  * <P>A horizontal transformation of data described by one FieldSet (the Master
@@ -35,11 +38,10 @@ public interface Projection
   public FieldSet getMasterFieldSet();
   
   /**
-   * Create a BoundProjection that materializes this Projection
+   * Bind the Projection to a Focus which sources the master data.
    */
-  public BoundProjection createBinding()
-    throws DataException;
-  
+  public Channel<Tuple> bind(Focus<? extends Tuple> focus)
+    throws BindException;
 
   
 }

@@ -29,11 +29,14 @@ import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.EditableArrayListAggregate;
+import spiralcraft.log.ClassLogger;
 
 
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
+
+
 
 import java.net.URI;
 import java.io.IOException;
@@ -45,6 +48,7 @@ import java.io.IOException;
 public class DataHandler
   extends DefaultHandler
 {
+  private static final ClassLogger log=new ClassLogger(DataHandler.class);
   private static final String STANDARD_PATH
     ="java:/spiralcraft/data/types/standard/";
   
@@ -355,6 +359,7 @@ public class DataHandler
     {
       if (formalType!=null && !formalType.isAssignableFrom(actualType))
       { 
+        log.fine(formalType.toString()+"<>"+actualType.toString());
         throw new TypeMismatchException
           ("Error reading data",formalType,actualType);
       }

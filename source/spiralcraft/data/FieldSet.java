@@ -21,6 +21,11 @@ package spiralcraft.data;
 public interface FieldSet
 {
   /**
+   * @return The Type that this FieldSet belongs to, if any.
+   */
+  Type<?> getType();
+  
+  /**
    *@return the Field at the specified position in the FieldSet.
    */
   Field getFieldByIndex(int index);

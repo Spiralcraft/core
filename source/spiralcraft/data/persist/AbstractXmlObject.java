@@ -29,6 +29,12 @@ import spiralcraft.data.DataComposite;
 import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.sax.DataWriter;
 
+import spiralcraft.lang.AccessException;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
 
@@ -46,15 +52,16 @@ import spiralcraft.vfs.Resource;
  * An instance of a persistent object is tied to its non-volatile representation
  *   in a storage medium.
  */
-public abstract class AbstractXmlObject<T,C>
-  implements Registrant,PersistentReference,Lifecycle
+public abstract class AbstractXmlObject<Treferent,Tcontainer>
+  implements Registrant,PersistentReference<Treferent>,Lifecycle
 {
 
   protected URI instanceURI;
   protected URI typeURI;
-  protected Type<C> type;
-  protected C instance;
+  protected Type<Tcontainer> type;
+  protected Tcontainer instance;
   protected RegistryNode registryNode;
+  protected Channel<Treferent> channel;
   
   /**
    * Construct an XmlObject from the given Type resource and instance
@@ -91,13 +98,13 @@ public abstract class AbstractXmlObject<T,C>
   /**
    * Create a new default instance of the specified type
    */
-  protected abstract C newInstance()
+  protected abstract Tcontainer newInstance()
     throws DataException;
 
   /**
    *@return The Java object referred to and activated by this XmlObject
    */
-  public abstract T get();
+  public abstract Treferent get();
 
   @SuppressWarnings("unchecked") // Narrowing from Assembly to Assembly<T>
   public void load()
@@ -107,7 +114,7 @@ public abstract class AbstractXmlObject<T,C>
     { 
       if (typeURI!=null)
       {
-        type=TypeResolver.getTypeResolver().<C>resolve(typeURI);
+        type=TypeResolver.getTypeResolver().<Tcontainer>resolve(typeURI);
         verifyType(type);
         
         if (instanceURI==null)
@@ -133,7 +140,7 @@ public abstract class AbstractXmlObject<T,C>
           Type actualType=composite.getType();
           verifyType(actualType);
 
-          instance = (C) actualType.fromData(composite,null);
+          instance = (Tcontainer) actualType.fromData(composite,null);
           type=actualType; 
         }
       }
@@ -212,4 +219,34 @@ public abstract class AbstractXmlObject<T,C>
     }
   }
   
+
+  
+  public Channel<Treferent> bind(Focus<?> parentFocus)
+    throws BindException
+  { 
+    if (channel==null)
+    { 
+      channel=new AbstractChannel<Treferent>
+        (BeanReflector.<Treferent>getInstance(get().getClass()))
+      {
+
+        @Override
+        protected Treferent retrieve()
+        { return AbstractXmlObject.this.get();
+        }
+
+        @Override
+        protected boolean store(
+          Treferent val)
+          throws AccessException
+        { 
+          AbstractXmlObject.this.set(val);
+          return true;
+
+        }
+      };
+    }
+    return channel;
+  }
+    
 }

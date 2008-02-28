@@ -25,6 +25,15 @@ public interface Key
 {
 
   /**
+   * <p>A Field name to access data referred to by the Key. A new Field will
+   *   be added to the Scheme automatically.
+   * </p>
+   *  
+   * @return
+   */
+  public String getName();
+  
+  /**
    * @return The Scheme to which this Key belongs.
    */
   public Scheme getScheme();

@@ -64,14 +64,15 @@ public interface Field
   URI getURI();
   
   /**
-   * Create a Channel that accesses the value of this Field in the Tuple
-   *   provided by the source Channel
+   * <p>Create a Channel that accesses the value of this Field in the Tuple
+   *   provided by the source Focus. The results of this operation may 
+   *   depend on the availability of other resources mapped through the Focus.
+   * </p>
    * 
-   * @param source
    * @param focus
-   * @return A Binding bound to the source and focus
+   * @return A Binding bound to the focus
    */
-   Channel<?> bind(Channel<Tuple> source,Focus<?> focus)
+   Channel<?> bind(Focus<? extends Tuple> focus)
     throws BindException;
   
   /**

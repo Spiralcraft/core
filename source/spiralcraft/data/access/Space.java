@@ -14,6 +14,8 @@
 //
 package spiralcraft.data.access;
 
+import java.net.URI;
+
 import spiralcraft.data.query.Queryable;
 
 import spiralcraft.data.DataException;
@@ -31,9 +33,10 @@ import spiralcraft.builder.Lifecycle;
  * There is normally only one Space associated with an application. A Space is
  *   never contained within another Space.
  */
-public interface Space<T extends Tuple>
-  extends Queryable<T>,Lifecycle
+public interface Space
+  extends Queryable<Tuple>,Lifecycle
 {
+  URI SPACE_URI = URI.create("class:/spiralcraft/data/access/Space");
   
   /**
    * Retrieve an update 'channel'. The DataConsumer can be used once to update

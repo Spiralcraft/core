@@ -15,8 +15,10 @@
 package spiralcraft.lang;
 
 /**
- * A Component capable of creating a Focus in order to expose its data and 
- *  functionality to the spiralcraft.lang expression language.
+ * <p>A Component which binds itself into the Focus chain in order to 
+ *  expose its data and functionality to users of the spiralcraft.lang 
+ *  expression language.
+ * </p>
  *  
  * @author mike
  *
@@ -24,8 +26,19 @@ package spiralcraft.lang;
 public interface FocusProvider<T>
 {
   /** 
-   * <p>Create a new Focus, that has as its parent the specified Focus. 
+   * <p>Bind to the specified Focus, returning a new Focus that has as its 
+   *   parent the specified Focus. 
    * </p>
+   * 
+   * <p>The new Focus becomes the next link in the Focus chain, and may
+   *   provide access to an arbitrary set of Channels. 
+   * </p>
+   * 
+   * <p>If bindFocus is called more than once, Components should ensure that 
+   *   all cached bindings created as a result of previous bindFocus calls
+   *   are removed.
+   * </p>
+   * 
    * @return The new Focus
    * @throws BindException if an error occurs when creating the Focus
    */

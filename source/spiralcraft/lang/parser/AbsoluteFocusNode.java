@@ -88,7 +88,7 @@ public class AbsoluteFocusNode
     { return newFocus;
     }
     else
-    { throw new BindException("Focus '"+uri+"' not found.");
+    { throw new BindException("Focus '"+uri+"' not found."+focusChain(focus));
     }
   }
 
@@ -101,5 +101,21 @@ public class AbsoluteFocusNode
     { out.append(prefix).append("name="+suffix);
     }
   }
+  
+  private String focusChain(Focus focus)
+  { 
+    StringBuilder buf=new StringBuilder();
+    buf.append("[");
+    while (focus!=null)
+    { 
+      buf.append("\r\n");
+      buf.append(focus.toString());
+      focus=focus.getParentFocus();
+    }
+    buf.append("\r\n");
+    buf.append("]");
+    return buf.toString();
+  }
+  
   
 }

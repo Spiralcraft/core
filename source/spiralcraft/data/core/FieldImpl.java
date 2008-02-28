@@ -87,6 +87,9 @@ public class FieldImpl
     }
     
   }
+  public Field getArchetypeField()
+  { return archetypeField;
+  }
   
   public void setArchetypeField(Field field)
     throws DataException
@@ -372,27 +375,26 @@ public class FieldImpl
 
   @Override
   public Channel bind
-    (Channel<Tuple> source,
-    Focus<?> focus
-    )
+    (Focus<? extends Tuple> focus)
     throws BindException
   { 
+    Channel source=focus.getSubject();
     Channel binding=source.getCached(this);
     if (binding==null)
     { 
-      binding=new SimpleChannel(source);
+      binding=new FieldChannel(source);
       source.cache(this,binding);
     }
     return binding;
   }
   
   @SuppressWarnings("unchecked")
-  class SimpleChannel
+  public class FieldChannel
     extends AbstractChannel
   {
-    protected final Channel<Tuple> source;
+    protected final Channel<? extends Tuple> source;
     
-    public SimpleChannel(Channel<Tuple> source)
+    public FieldChannel(Channel<? extends Tuple> source)
     { 
       super(contentReflector);
       this.source=source;

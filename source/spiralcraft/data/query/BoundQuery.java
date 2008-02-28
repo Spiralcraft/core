@@ -15,33 +15,40 @@
 package spiralcraft.data.query;
 
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Type;
 
-
-
-
+import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.data.access.SerialCursor;
-import spiralcraft.data.lang.TupleBinding;
 
+import spiralcraft.data.lang.CursorBinding;
 import spiralcraft.lang.BindException;
 
 /**
- * <P>A BoundQuery is a data path that resolves sets of Tuples based on sets of
- *    parameters and criteria. 
- *    
- * <P>It is created when a Query is bound to a Focus
+ * <p>A BoundQuery is a data path that resolves sets of Tuples from a 
+ *    Queryable based on sets of parameters and other criteria. 
+ * </p>
+ * 
+ * <p>A BoundQuery is created when a Query is bound to a Focus
  *    and a Queryable. The Focus provides external parameter values, and the
  *    Queryable provides access to Data.
+ * </p>
  *    
- * <P>Tuples are exposed via the SerialCursor interface.
+ * <p>Tuples are exposed via the SerialCursor interface.
+ * </p>
+ *
  */
 public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
 {
   private Tq query;
-  private BoundQueryBinding resultBinding;
-  private Tt tuple;
+  // private BoundQueryBinding resultBinding;
   private boolean resolved;
+  
+  public Type<?> getType()
+  { return query.getType();
+  }
   
   /**
    * @return The Query used to create this BoundQuery
@@ -62,19 +69,10 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
   /**
    * @return The binding available for downstream components.
    */
-  public final TupleBinding<Tuple> getResultBinding()
-  { return resultBinding;
-  }
+  // public final TupleBinding<Tuple> getResultBinding()
+  // { return resultBinding;
+  // }
   
-  /**
-   * Implementations must call this when a new Tuple is available for 
-   *   processing.
-   */
-  protected final void dataAvailable(Tt tuple)
-  { 
-    this.tuple=tuple;
-    // TODO: Notify?
-  }
   
   /**
    * <P>A BoundQuery is often composed of nested BoundQueries, which form a 
@@ -93,12 +91,12 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
     }
     resolved=true;
     
-    try
-    { resultBinding=new BoundQueryBinding(query.getFieldSet());
-    }
-    catch (BindException x)
-    { throw new DataException("Error creating BoundQuery result binding: "+x,x);
-    }
+//    try
+//    { resultBinding=new BoundQueryBinding(query.getFieldSet());
+//    }
+//    catch (BindException x)
+//    { throw new DataException("Error creating BoundQuery result binding: "+x,x);
+//    }
   }
   
   /**
@@ -118,27 +116,29 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
     }
   }
   
-  class BoundQueryBinding
-    extends TupleBinding<Tuple>
-  {
-    
-    public BoundQueryBinding(FieldSet fieldSet)
-      throws BindException
-    { super(fieldSet,false);
-    }
-    
-    protected Tuple retrieve()
-    { return tuple;
-    }
-    
-    protected boolean store(Tuple tuple)
-    { throw new UnsupportedOperationException("BoundQueryBinding is read-only");
-    }
+  @SuppressWarnings("unchecked")
+  public QueryChannel bind()
+    throws BindException
+  { return new QueryChannel((BoundQuery<Query,Tuple>) this);
   }
+  
   
   public abstract class BoundQuerySerialCursor
     implements SerialCursor<Tt>
   { 
+    private Tt tuple;
+    protected Identifier relationId;
+    
+    /**
+     * Implementations must call this when a new Tuple is available for 
+     *   processing.
+     */
+    protected final void dataAvailable(Tt tuple)
+    { 
+      this.tuple=tuple;
+      // TODO: Notify?
+    }
+
     public Tt dataGetTuple()
     { return tuple;
     }
@@ -147,6 +147,32 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
     { return query.getFieldSet();
     }
     
-  }
+    public CursorBinding<Tt,? extends SerialCursor<Tt>> bind()
+      throws BindException
+    { return new CursorBinding<Tt,SerialCursor<Tt>>(this);
+    }
+
+    public Identifier getRelationId()
+    { return relationId;
+    }
     
+    public Type<?> getResultType()
+    { return BoundQuery.this.getType();
+    }
+  }
+
+  public abstract class BoundQueryScrollableCursor
+    extends BoundQuerySerialCursor
+    implements ScrollableCursor<Tt>
+  {
+    public CursorBinding<Tt,? extends ScrollableCursor<Tt>> bind()
+      throws BindException
+    { return new CursorBinding<Tt,ScrollableCursor<Tt>>(this);
+    }
+    
+  }
+
+
 }
+
+

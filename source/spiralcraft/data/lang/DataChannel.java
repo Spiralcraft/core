@@ -17,24 +17,28 @@ package spiralcraft.data.lang;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.AccessException;
+import spiralcraft.lang.Focus;
 
 import spiralcraft.lang.spi.AbstractChannel;
 
+import spiralcraft.data.DataComposite;
+import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
+import spiralcraft.data.session.Buffer;
+import spiralcraft.data.session.BufferChannel;
 
 
 /**
- * A spiralcraft.lang binding for Data, which uses the a Type as the 
+ * A spiralcraft.lang channel for Data, which uses the a Type as the 
  *   model for binding expressions.
  */
-@SuppressWarnings("unchecked") // Haven't genericized the data package yet
-public class DataBinding<T>
+public class DataChannel<T extends DataComposite>
   extends AbstractChannel<T>
 {
  
   private Channel<T> source;
   
-  public DataBinding(Type type,Channel source,boolean isStatic)
+  public DataChannel(Type<?> type,Channel<T> source,boolean isStatic)
     throws BindException
   { 
     super(DataReflector.<T>getInstance(type),isStatic);
@@ -56,7 +60,27 @@ public class DataBinding<T>
     // TODO Auto-generated method stub
     return source.set(val);
   }
-
+  
+  
+  /**
+   * Convenience method to buffer 
+   * 
+   * @param focus
+   * @return
+   * @throws BindException
+   * @throws DataException
+   */
+  @SuppressWarnings("unchecked")
+  public BufferChannel buffer(Focus<?> focus)
+    throws BindException,DataException
+  { 
+    return new BufferChannel
+      (Type.<Buffer>getBufferType
+        ((Type<Buffer>)((DataReflector<T>) getReflector()).getType())
+      ,this
+      ,focus
+      );
+  } 
 
 }
 

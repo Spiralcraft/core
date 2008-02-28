@@ -50,6 +50,23 @@ public class Expression<T>
   private String _text;
   
   /**
+   * Parse an Expression, throwing a runtime expression on failure
+   * 
+   * @param <X>
+   * @param text
+   * @return
+   */
+  public static <X> Expression<X> create(String text)
+  {
+    try
+    { return Expression.<X>parse(text);
+    }
+    catch (ParseException x)
+    { throw new RuntimeException(x);
+    }
+  }
+  
+  /**
    * Create an Expression by parsing an expression language String. This is
    *   the preferred way to create an expression as it utilizes a cache to
    *   save cycles.

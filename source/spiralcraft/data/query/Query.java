@@ -23,32 +23,39 @@ import spiralcraft.lang.Expression;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 
 /**
- * <P>A Query describes a data stream that will retrieve a set of Tuples from a Queryable,
- *   such as a Store or a Space, via a Cursor. 
+ * <p>A Query describes a data stream that will retrieve a set of Tuples from a
+ *   Queryable, such as a Store or a Space, via a Cursor. 
+ * </p>
  * 
- * <P>It is composed of a tree of operations (sub-Queries) that constrain the set of
- *    reachable Tuples to produce a desired result.
+ * <p>It is composed of a tree of operations (sub-Queries) that constrain the
+ *    set of reachable Tuples to produce a desired result.
+ * </p>
  * 
- * <P>A Query must be bound against a Queryable before it can be executed. The
+ * <p>A Query must be bound against a Queryable before it can be executed. The
  *    binding process creates the data flow path for the result Tuples.
+ * </p>
  *    
- * <P>A Query can be 'solved', or factored into a set of subqueries of lesser complexity to allow
- *    Queryables to delegate higher level implementation details back to the system while taking
- *    over lower level details. 
- *    
- * <P>For example, a join may be performed in-process from an out-of-process
- *    source such as a SQL Server and from a text file on disk. The SQL server would optimize
- *    the Select by using a where clause, whereas the text file file would delegate the Select
- *    filter back to a default system implementation.
+ * <p>A Query can be 'solved', or factored into a set of subqueries of lesser 
+ *    complexity to allow Queryables to delegate higher level implementation
+ *    details back to the system while taking over lower level details. 
+ * </p>   
  * 
+ * <p>For example, a join may be performed in-process from an out-of-process
+ *    source such as a SQL Server and from a text file on disk. The SQL server
+ *    would optimize the Select by using a where clause, whereas the text file
+ *    would delegate the Select filter back to a default system
+ *    implementation.
+ * </p>
  */
 public abstract class Query
 { 
   protected final Query baseQuery;
   protected final List<Query> sources=new ArrayList<Query>(1);
-
+  protected Type<?> type;
+  
   /**
    * Construct a new, unfactored Query
    *
@@ -69,6 +76,10 @@ public abstract class Query
    * @return the FieldSet of the Tuples that this query will produce.
    */
   public abstract FieldSet getFieldSet();
+  
+  public Type<?> getType()
+  { return type;
+  }
 
   /**
    * @return The Query that was factored to produce this Query
@@ -113,9 +124,13 @@ public abstract class Query
   }
 
   /**
-   * <P>Create the standard BoundQuery implementation for this Query operation by calling
-   *   Queryable.query() for all sources and integrating the source BoundQueries into the
-   *   downstream BoundQuery.
+   * <p>Create the standard store-independent implementation for this Query 
+   *   operation, when a Queryable did not provide a store-optimized 
+   *   implementation
+   * </p>
+   * 
+   * <p>May retrieve all downstream query results to compute output.
+   * </p>
    */
   public abstract <T extends Tuple> BoundQuery<?,T> 
     bind(Focus<?> focus,Queryable<T> store)

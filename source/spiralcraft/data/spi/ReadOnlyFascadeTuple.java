@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.spi;
 
+import spiralcraft.data.Identifier;
 import spiralcraft.data.Type;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
@@ -35,6 +36,10 @@ public class ReadOnlyFascadeTuple
    */
   public ReadOnlyFascadeTuple(Tuple delegate)
   { this.delegate=delegate;
+  }
+  
+  public Identifier getId()
+  { return delegate.getId();
   }
   
   public Tuple widen(Type<?> type)

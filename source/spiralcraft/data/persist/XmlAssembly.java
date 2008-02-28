@@ -20,6 +20,8 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 
 import spiralcraft.data.builder.BuilderType;
+import spiralcraft.lang.AccessException;
+
 
 import spiralcraft.builder.Assembly;
 import spiralcraft.builder.BuildException;
@@ -37,8 +39,8 @@ import spiralcraft.builder.BuildException;
  *   in a storage medium.
  */
 @SuppressWarnings("unchecked") // BuilderType is not genericized
-public class XmlAssembly<T>
-  extends AbstractXmlObject<T,Assembly>
+public class XmlAssembly<Treferent>
+  extends AbstractXmlObject<Treferent,Assembly>
 {
   
   /**
@@ -93,7 +95,7 @@ public class XmlAssembly<T>
     }
   }
   
-  public Assembly<T> getAssembly()
+  public Assembly<Treferent> getAssembly()
   { return instance;
   }
   
@@ -101,8 +103,21 @@ public class XmlAssembly<T>
    *@return The Java object referred to and activated by this XmlObject
    */
   @SuppressWarnings("unchecked") // Non-generic use of Builder
-  public T get()
-  { return (T) instance.get();
+  public Treferent get()
+  { return (Treferent) instance.get();
   }
-  
+
+  @Override
+  public void set(
+    Treferent object)
+  { throw new AccessException("Cannot change contents of Assembly");
+    // TODO Auto-generated method stub
+    
+  }
+
+
+
+
+
+
 }

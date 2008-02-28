@@ -16,7 +16,9 @@ package spiralcraft.data.access;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 
 /**
  * A Cursor is a window onto one or more Tuples of compatible Types.<P>
@@ -26,6 +28,19 @@ import spiralcraft.data.Tuple;
  */
 public interface Cursor<T extends Tuple>
 {
+  /**
+   * 
+   * @return The Type, if any, of the data returned in the Tuple
+   */
+  Type<?> getResultType();
+  
+  /**
+   * 
+   * @return The Identifier associated with the relation being returned by
+   *   the Tuple, if any.
+   */
+  Identifier getRelationId();
+  
   /**
    *@return The FieldSet common to all the Tuples that will be returned by this Cursor
    */

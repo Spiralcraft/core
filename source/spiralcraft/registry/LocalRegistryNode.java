@@ -53,11 +53,12 @@ public class LocalRegistryNode
   { return _absolutePath;
   }
 
-  public Object findInstance(Class<?> instanceClass)
+  @SuppressWarnings("unchecked")
+  public <X> X findInstance(Class<X> instanceClass)
   { 
-    Object instance=null;
+    X instance=null;
     if (_instances!=null)
-    { instance=_instances.get(instanceClass);
+    { instance=(X) _instances.get(instanceClass);
     }
     
     if (instance==null && _parent!=null)
@@ -65,7 +66,7 @@ public class LocalRegistryNode
       instance=_parent.findInstance(instanceClass);
       if (instance!=null && instance instanceof RegistryPathObject)
       { 
-        instance=((RegistryPathObject) instance).registryPathObject(this);
+        instance=(X) ((RegistryPathObject) instance).registryPathObject(this);
         registerInstance(instanceClass,instance);
       }
     }

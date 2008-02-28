@@ -1,10 +1,46 @@
-package spiralcraft.lang;
+//
+// Copyright (c) 1998,2007 Michael Toth
+// Spiralcraft Inc., All Rights Reserved
+//
+// This package is part of the Spiralcraft project and is licensed under
+// a multiple-license framework.
+//
+// You may not use this file except in compliance with the terms found in the
+// SPIRALCRAFT-LICENSE.txt file at the top of this distribution, or available
+// at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
+//
+// Unless otherwise agreed to in writing, this software is distributed on an
+// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+//
+package spiralcraft.lang.spi;
 
 import java.net.URI;
 import java.util.HashMap;
 
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.NamespaceResolver;
 
-public class FocusWrapper<tFocus>
+
+/**
+ * <p>Allows an application component to expose a delegated Focus to
+ *   subcomponents while changing or restricting some aspect of its behavior.
+ * </p>
+ * 
+ * <p>Examples include changing the namespace map (such as when expressions
+ *   are being defined within another namespace context), or restricting the
+ *   set of URIs accessible from findFocus()
+ * </p>
+ * 
+ * @author mike
+ *
+ * @param <tFocus>
+ * 
+ * 
+ */
+public abstract class FocusWrapper<tFocus>
   implements Focus<tFocus>
 {
   protected final Focus<tFocus> focus;
@@ -78,4 +114,7 @@ public class FocusWrapper<tFocus>
   { return focus.isFocus(specifier);
   }
 
+  public String toString()
+  { return focus.toString();
+  }
 }

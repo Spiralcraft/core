@@ -14,13 +14,17 @@
 //
 package spiralcraft.data.access;
 
+
+
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.Key;
-import spiralcraft.data.BoundProjection;
+
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
 
 import spiralcraft.data.query.BoundQuery;
 
@@ -43,9 +47,11 @@ public class DataSynchronizer
 {
 
   private final Key primaryKey;
-  private final BoundProjection keyBinding;
+  private final Channel<Tuple> keyBinding;
   private final Space space;
-  private final TupleFocus<Tuple> focus;
+  private final TupleFocus<Tuple> primaryKeyFocus;
+  private final TupleFocus<Tuple> tupleFocus;
+  
   
   private DataConsumer nextConsumer;
   
@@ -60,8 +66,15 @@ public class DataSynchronizer
       throw new DataException
         ("DataSynchronizer: Type "+type.getURI()+" must have a primary key");
     }
-    keyBinding=primaryKey.createBinding();
-    focus=new TupleFocus<Tuple>(primaryKey);
+    primaryKeyFocus=new TupleFocus<Tuple>(primaryKey);
+    tupleFocus=new TupleFocus<Tuple>(type.getScheme());
+    try
+    {
+      keyBinding=primaryKey.bind(tupleFocus);
+    }
+    catch (BindException x)
+    { throw new DataException("Error Binding key:",x);
+    }
     
     
   }
@@ -92,9 +105,10 @@ public class DataSynchronizer
   private Tuple findTuple(Tuple tuple)
     throws DataException
   {
-    Tuple keyValue=keyBinding.project(tuple);
-    focus.setTuple(keyValue);
-    BoundQuery<?,?> query=space.query(primaryKey.getQuery(),focus);
+    tupleFocus.setTuple(tuple);
+    Tuple keyValue=keyBinding.get();
+    primaryKeyFocus.setTuple(keyValue);
+    BoundQuery<?,?> query=space.query(primaryKey.getQuery(),primaryKeyFocus);
     SerialCursor<?> cursor=query.execute();
     Tuple storeTuple=null;
     while (cursor.dataNext())
@@ -111,14 +125,21 @@ public class DataSynchronizer
     return storeTuple;
   }
 
+  public void dataInitialize(FieldSet fieldSet)
+    throws DataException
+  { 
+    nextConsumer.dataInitialize(fieldSet);
+  }
+  
   public void dataFinalize()
     throws DataException
   { nextConsumer.dataFinalize();
   }
 
-  public void dataInitialize(FieldSet fieldSet)
-    throws DataException
-  { nextConsumer.dataInitialize(fieldSet);
-  }
+ 
 
 }
+
+// History:
+//
+// 2008-02-26 mike: fixed up binding mechanism

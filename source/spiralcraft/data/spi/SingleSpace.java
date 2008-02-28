@@ -36,20 +36,21 @@ import spiralcraft.builder.LifecycleException;
 /**
  * A Space that consists of a single Store.
  */
-public class SingleSpace<T extends Tuple>
-  implements Space<T>
+public class SingleSpace
+  implements Space,Registrant
 {
   
-  private Store<T> store;
+  private Store store;
   private RegistryNode registryNode;
 
-  public void setStore(Store<T> store)
+  public void setStore(Store store)
   { 
     this.store=store;
   }
 
   public void register(RegistryNode node)
   { 
+
     registryNode=node;
     node=node.createChild(Space.class,this);
     if (store instanceof Registrant)
@@ -84,7 +85,7 @@ public class SingleSpace<T extends Tuple>
   { return store.containsType(type);
   }
 
-  public BoundQuery<?,T> getAll(Type<?> type)
+  public BoundQuery<?,Tuple> getAll(Type<?> type)
     throws DataException
   { return store.getAll(type);
   }

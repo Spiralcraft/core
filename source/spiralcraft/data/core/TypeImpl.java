@@ -14,6 +14,8 @@
 //
 package spiralcraft.data.core;
 
+
+import spiralcraft.data.Method;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
@@ -24,13 +26,17 @@ import spiralcraft.data.DataComposite;
 import spiralcraft.data.InstanceResolver;
 
 import java.net.URI;
+import java.util.List;
 
+import spiralcraft.log.ClassLogger;
 /**
  * Core implementation of a Type
  */
 public class TypeImpl<T>
   extends Type<T>
 {  
+  protected static final ClassLogger log=new ClassLogger(TypeImpl.class);
+  
   protected Class<T> nativeClass;
   protected SchemeImpl scheme;
   protected final TypeResolver resolver;
@@ -40,6 +46,8 @@ public class TypeImpl<T>
   protected Type<?> baseType;
   protected boolean aggregate=false;
   protected Type<?> contentType=null;
+  
+
   
   private boolean linked;
   
@@ -174,6 +182,9 @@ public class TypeImpl<T>
     { scheme.setArchetypeScheme(archetype.getScheme());
     }
     scheme.resolve();
+    for (Method method:methods)
+    { ((MethodImpl) method).resolve();
+    }
   }
   
   /**
@@ -184,12 +195,45 @@ public class TypeImpl<T>
   { return scheme;
   }
   
+  /**
+   * 
+   * Allows Class definitions to define Fields for a Type without having to
+   *   create an empty scheme.
+   * 
+   * @param fields
+   */
+  public void setFields(List<FieldImpl> fields)
+  {
+    if (scheme==null)
+    { scheme=new SchemeImpl();
+    }
+    scheme.setFields(fields);
+  }
+
+  public void setKeys(KeyImpl[] keyArray)
+  { 
+    if (scheme==null)
+    { scheme=new SchemeImpl();
+    }
+    scheme.setKeys(keyArray);
+
+  }
+  
   public void setScheme(Scheme scheme)
   {
     if (linked)
     { throw new IllegalStateException("Type already linked");
     }
-    // System.out.println("SETTING SCHEME");
+    
+    if (this.scheme!=null && this.scheme.getFieldCount()>0)
+    {
+      // System.out.println("SETTING SCHEME");
+      log.warning
+        ("Overriding non-empty scheme: Type "
+        +getURI()+" "
+        +scheme.toString()
+        );
+    }
     this.scheme=(SchemeImpl) scheme;
   }
   
@@ -274,5 +318,7 @@ public class TypeImpl<T>
   public Type<?> getContentType()
   { return contentType;
   }
+
+
   
 }

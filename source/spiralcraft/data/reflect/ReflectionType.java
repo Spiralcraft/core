@@ -23,6 +23,7 @@ import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.InstanceResolver;
+import spiralcraft.data.Method;
 
 import spiralcraft.data.spi.EditableArrayTuple;
 
@@ -292,6 +293,9 @@ public class ReflectionType<T>
     ReflectionScheme scheme=new ReflectionScheme(resolver,this,reflectedClass);
     scheme.addFields();
     this.scheme=scheme;
+    
+    addMethods();
+    
     super.link();
     classField=scheme.getFieldByName("class");
     
@@ -299,7 +303,33 @@ public class ReflectionType<T>
     resolveDepersistMethod();
   }
   
-  
+  private void addMethods()
+  { 
+    java.lang.reflect.Method[] methods=reflectedClass.getDeclaredMethods();
+    HashMap<String,List<Method>> map=new HashMap<String,List<Method>>();
+    
+    // Collate the methods by name
+    for (java.lang.reflect.Method method:methods)
+    {
+      ReflectionMethod reflectMethod=new ReflectionMethod(resolver,method);
+      reflectMethod.setDataType(this);
+      List<Method> list=map.get(method.getName());
+      if (list==null)
+      { 
+        list=new ArrayList<Method>();
+        map.put(method.getName(),list);
+      }
+      list.add(reflectMethod);
+    }
+    for (String name: map.keySet())
+    { 
+      List<Method> list=map.get(name);
+      Method[] methodsForName=new Method[list.size()];
+      list.toArray(methodsForName);
+      methodMap.put(name, methodsForName);
+    }
+
+  }
   
   @SuppressWarnings("unchecked") // Reference to non-generic constructor
   private void resolvePreferredConstructor()

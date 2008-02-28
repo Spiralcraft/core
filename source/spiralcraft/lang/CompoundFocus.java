@@ -131,5 +131,17 @@ public class CompoundFocus<T>
     }
   }
   
+  public String toString()
+  { 
+    StringBuffer buf=new StringBuffer();
+    if (layers!=null)
+    {
+      for (String name:layers.keySet())
+      { buf.append("#"+name+"="+layers.get(name));
+      }
+    }
+    
+    return super.toString()+"["+buf.toString()+"]";
+  }
 
 }

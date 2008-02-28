@@ -67,7 +67,7 @@ public class TupleReflector<T extends Tuple>
 //    }
   }
   
-  TupleReflector(FieldSet fieldSet,Class<T> contentType)
+  public TupleReflector(FieldSet fieldSet,Class<T> contentType)
     throws BindException
   { 
     super(null);
@@ -114,7 +114,7 @@ public class TupleReflector<T extends Tuple>
       }
               
       if (binding==null)
-      { binding=field.bind(source,tupleFocus);
+      { binding=field.bind(tupleFocus);
       }
       return binding;      
     }

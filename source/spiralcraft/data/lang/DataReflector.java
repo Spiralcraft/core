@@ -52,6 +52,7 @@ public abstract class DataReflector<T extends DataComposite>
     <T> Reflector<T> getInstance(Type type)
     throws BindException
   { 
+    
     if (type==null)
     { throw new IllegalArgumentException("Type cannot be null");
     }
@@ -83,14 +84,13 @@ public abstract class DataReflector<T extends DataComposite>
   }
   
   public DataReflector(Type<?> type)
-  { this.type=type;
+  { this.type=type;;
   }
   
   public Type<?> getType()
   { return type;
   }
   
-
   @Override
   public URI getTypeURI()
   {
@@ -117,5 +117,9 @@ public abstract class DataReflector<T extends DataComposite>
     }
     
 
+  }
+  
+  public String toString()
+  { return super.toString()+":"+type.getURI();
   }
 }

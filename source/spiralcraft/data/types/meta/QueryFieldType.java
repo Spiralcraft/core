@@ -12,22 +12,24 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.session;
+package spiralcraft.data.types.meta;
+
+import spiralcraft.data.TypeResolver;
+import spiralcraft.data.core.QueryField;
+
+import spiralcraft.data.reflect.ReflectionType;
+
+import java.net.URI;
 
 /**
- * Represents the stateful portion of a data session
- *
- * @author mike
+ * A Type implementation that represents a Field
  */
-public interface SessionData
+public class QueryFieldType
+  extends ReflectionType<QueryField>
 {
-  int getId();
+  public QueryFieldType(TypeResolver resolver,URI uri)
+  { super(resolver,uri,QueryField.class,QueryField.class);
+  }
   
-  void setId(int id);
-  
-  DataSession getDataSession();
-  
-  void setDataSession(DataSession dataSession);
-  
-  
+
 }

@@ -19,6 +19,7 @@ import spiralcraft.data.Key;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Field;
+import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldNotFoundException;
@@ -29,6 +30,7 @@ import spiralcraft.data.query.Scan;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
+import spiralcraft.lang.Reflector;
 
 import spiralcraft.util.StringUtil;
 
@@ -37,6 +39,7 @@ public class KeyImpl
   implements Key
 {
   private Scheme scheme;
+  private String name;
   private int index;
   private boolean primary;
   private boolean unique;
@@ -45,7 +48,15 @@ public class KeyImpl
   private String[] fieldNames;
   private Query query;
 
-
+  public String getName()
+  { return name;
+  }
+  
+  public void setName(String name)
+  { this.name=name;
+  }
+  
+  
   /**
    * Construct an unresolved KeyImpl which will be configured and resolved
    *   manually by the containing object.
@@ -198,9 +209,29 @@ public class KeyImpl
       throw new DataException
         ("Error parsing Key expression '"+expression.toString()+"':"+x,x);
     }
+
+    if (getForeignType()!=null && name!=null)
+    {
+      // Expose a Field to provide direct access to the join
+      
+      if (getFieldByName(name)!=null)
+      { 
+        throw new DataException
+          ("Key "+getScheme().getType().getURI()+"."+name+": Field '"
+            +name+"' already exists"
+          );
+      }
+      else
+      { ((SchemeImpl) getScheme()).addField(new KeyField(this));
+      }
+    }
     
     super.resolve();
-
+    
+    
   }
-  
+ 
+  public Reflector<Tuple> getReflector()
+  { return reflector;
+  }
 }

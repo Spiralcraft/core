@@ -23,8 +23,10 @@ import java.util.ArrayList;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
+import spiralcraft.data.Type;
 
 /**
  * <P>A ScrollableCursor which navigates a List of Tuples.
@@ -38,10 +40,18 @@ public class ListCursor<T extends Tuple>
   protected final FieldSet fieldSet;
   protected List<T> data;
   protected int pointer=-1;
+  protected Identifier relationId;
+  protected Type<?> type;
+  
+  
+  public Type<?> getResultType()
+  { return type;
+  }
   
   public ListCursor(Aggregate<T> aggregate)
   {
-    this.fieldSet=aggregate.getType().getContentType().getScheme();
+    this.type=aggregate.getType().getContentType();
+    this.fieldSet=type.getScheme();
     this.data=new ArrayList<T>(aggregate.size());
     for (T t:aggregate)
     { this.data.add(t);
@@ -50,6 +60,7 @@ public class ListCursor<T extends Tuple>
   
   public ListCursor(FieldSet fieldSet,Iterable<T> data)
   { 
+    this.type=fieldSet.getType();
     this.fieldSet=fieldSet;
     this.data=new ArrayList<T>();
     for (T t:data)
@@ -90,7 +101,14 @@ public class ListCursor<T extends Tuple>
     return data.get(pointer);
   }
 
-
+  public Identifier getRelationId()
+  { return relationId;
+  }
+  
+  public void setRelationId(Identifier relationId)
+  { this.relationId=relationId;
+  }
+  
   public void dataMoveAfterLast() throws DataException
   { pointer=data.size();
   }

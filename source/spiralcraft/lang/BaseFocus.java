@@ -83,7 +83,10 @@ public abstract class BaseFocus<T>
   { this.namespaceResolver=resolver;
   }
   
-  
+  public String toString()
+  { 
+    return super.toString()+"["+subject+"]";
+  }
 
 
 }

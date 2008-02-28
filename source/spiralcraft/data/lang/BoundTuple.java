@@ -14,8 +14,11 @@
 //
 package spiralcraft.data.lang;
 
+import spiralcraft.data.DataException;
+import spiralcraft.data.EditableTuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 import spiralcraft.data.spi.AbstractTuple;
 
 import spiralcraft.lang.Channel;
@@ -26,11 +29,12 @@ import spiralcraft.util.ArrayUtil;
  * A Tuple where each Field references a language binding to an arbitrary
  *   data source. The Field values may change if the source changes. 
  */
+@SuppressWarnings("unchecked")
 public class BoundTuple
   extends AbstractTuple
-  implements Tuple
+  implements EditableTuple
 {
-  protected final Channel<?>[] bindings;
+  protected final Channel[] bindings;
   
   /**
    * Construct an ArrayTuple with an empty set of data
@@ -49,7 +53,17 @@ public class BoundTuple
   public Object get(int index)
   { return bindings[index].get();
   }
-  
+
+  @Override
+  public void set(
+    int index,
+    Object data)
+    throws DataException
+  { bindings[index].set(data);
+    // TODO Auto-generated method stub
+    
+  }
+
   public boolean isMutable()
   { return true;
   }
@@ -62,6 +76,21 @@ public class BoundTuple
     { data[i++]=opt.get();
     }
     return ArrayUtil.arrayHashCode(data);
+  }
+
+  @Override
+  public void copyFrom(
+    Tuple source)
+    throws DataException
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  
+  public EditableTuple widen(Type<?> type)
+    throws DataException
+  { return (EditableTuple) super.widen(type);
   }
    
 }

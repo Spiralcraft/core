@@ -18,13 +18,13 @@ import spiralcraft.util.StringConverter;
 
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusWrapper;
 import spiralcraft.lang.NamespaceResolver;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.AccessException;
 
+import spiralcraft.lang.spi.FocusWrapper;
 import spiralcraft.lang.spi.SimpleChannel;
 
 import java.util.List;

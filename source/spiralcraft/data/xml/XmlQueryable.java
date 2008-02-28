@@ -15,13 +15,13 @@
 package spiralcraft.data.xml;
 
 
-import spiralcraft.data.spi.AggregateQueryable;
+import spiralcraft.data.spi.AbstractAggregateQueryable;
 
 import spiralcraft.data.sax.DataReader;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Tuple;
-import spiralcraft.data.TypeResolver;
+import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 
 
@@ -46,16 +46,21 @@ import spiralcraft.log.ClassLogger;
  * @author mike
  */
 public class XmlQueryable
-  extends AggregateQueryable<Tuple>
+  extends AbstractAggregateQueryable<Tuple>
 {
   @SuppressWarnings("unused")
   private static final ClassLogger log=new ClassLogger(XmlQueryable.class);
   
   private Resource resource;
+  private URI resourceURI;
+  private URI resourceContextURI;
   
   private Watcher watcher;
   
-  private URI typeURI;
+  private Type<?> type;
+  
+  private Aggregate<Tuple> aggregate;
+  
   private WatcherHandler handler
     =new WatcherHandler()
     {
@@ -65,8 +70,9 @@ public class XmlQueryable
         DataReader reader=new DataReader();
         try
         {
+          // log.fine("Resource "+resource.getURI()+" changed");
           Aggregate<Tuple> data=(Aggregate<Tuple>) reader.readFromResource
-            (resource, TypeResolver.getTypeResolver().resolve(typeURI));
+            (resource, type);
           setAggregate(data);
         }
         catch (Exception x)
@@ -83,42 +89,125 @@ public class XmlQueryable
   { super();
   }
   
-  public Aggregate<Tuple> getAggregate()
-  { 
-    watcher.check();
-    return super.getAggregate();
+  public XmlQueryable(Type<?> type,URI resourceURI)
+  {
+    this.type=type;
+    setResourceURI(resourceURI);
   }
   
+  protected void checkInit()
+    throws DataException
+  {
+    if (type==null)
+    { throw new DataException("No Type configured");
+    }
+
+    
+    if (resource==null)
+    { 
+      if (resourceURI==null)
+      { throw new DataException("No resourceURI specified");
+      }
+      
+      try
+      { 
+        URI qualifiedURI
+          =resourceURI.isAbsolute()
+          ?resourceURI
+          :resourceContextURI!=null
+            ?resourceContextURI.resolve(resourceURI)
+            :resourceURI
+          ;
+            
+        Resource resource=Resolver.getInstance().resolve(qualifiedURI);
+        try
+        {
+          if (!resource.exists())
+          { throw new IllegalArgumentException(qualifiedURI+" does not exist");
+          }
+        }
+        catch (IOException x)
+        { throw new IllegalArgumentException(qualifiedURI+" could not be read",x);
+        }
+        setResource(resource);
+      }
+      catch (UnresolvableURIException x)
+      { 
+        throw new DataException
+          ("Error resolving "+resourceURI
+          +(resourceContextURI!=null
+           ?" in context "+resourceContextURI
+           :""
+           )
+          ,x
+          );
+      }
+      
+      
+    }
+          
+    if (watcher==null)
+    { watcher=new Watcher(resource,1000,handler);    
+    }
+  }
+  
+  @Override
+  protected Aggregate<Tuple> getAggregate()
+    throws DataException
+  { 
+    checkInit();
+
+    // log.fine("Checking resource");
+    watcher.check();
+    return aggregate;
+  }
+  
+  @Override
+  // This is the Type of the Queryable, not the data container
+  protected Type<?> getResultType()
+  { return type.getContentType();
+  }
+  
+  public void setResultType(Type<?> type)
+  { this.type=Type.getAggregateType(type);
+  }
+  
+  private void setAggregate(Aggregate<Tuple> aggregate)
+  { this.aggregate=aggregate;
+  }
+  
+  /**
+   * 
+   * @param typeURI The TypeURI contained in the XML resource. This is usually
+   *   a list type of the resultType.
+   */
   public void setTypeURI(URI typeURI)
-  { this.typeURI=typeURI;
+  { 
+    try
+    { this.type=Type.resolve(typeURI);
+    }
+    catch (DataException x)
+    { throw new IllegalArgumentException(x);
+    }
   }
   
   public void setResourceURI(URI resourceURI)
   { 
     // log.fine("XmlQueryable: uri="+resourceURI);
-    try
-    { 
-      Resource resource=Resolver.getInstance().resolve(resourceURI);
-      try
-      {
-        if (!resource.exists())
-        { throw new IllegalArgumentException(resourceURI+" does not exist");
-        }
-      }
-      catch (IOException x)
-      { throw new IllegalArgumentException(resourceURI+" could not be read");
-      }
-      setResource(Resolver.getInstance().resolve(resourceURI));
-    }
-    catch (UnresolvableURIException x)
-    { throw new IllegalArgumentException(x.toString(),x);
-    }
+    this.resourceURI=resourceURI;
   }
+
+  public void setResourceContextURI(URI resourceContextURI)
+  { 
+    // log.fine("XmlQueryable: uri="+resourceURI);
+    this.resourceContextURI=resourceContextURI;
+  }
+  
+  
   
   public void setResource(Resource resource)
   { 
     this.resource=resource;
-    watcher=new Watcher(resource,1000,handler);    
   }
   
   

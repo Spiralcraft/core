@@ -16,6 +16,7 @@ package spiralcraft.data.spi;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.Aggregate;
+import spiralcraft.data.Identifier;
 import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
@@ -31,6 +32,7 @@ public class ArrayListAggregate<T>
 {
   protected final ArrayList<T> list;
   private final Type<?> type;
+  private Identifier id;
   
   public ArrayListAggregate(Type<?> type)
   { 
@@ -38,7 +40,12 @@ public class ArrayListAggregate<T>
     list=new ArrayList<T>();
   }
 
-  public ArrayListAggregate(ArrayListAggregate<T> original)
+  /**
+   * <p>Performs a shallow copy of contents of the original list
+   * 
+   * @param original
+   */
+  public ArrayListAggregate(Aggregate<T> original)
   { 
     list=new ArrayList<T>(original.size());
     type=original.getType();
@@ -47,6 +54,14 @@ public class ArrayListAggregate<T>
     }
   }
 
+  public Identifier getId()
+  { return id;
+  }
+  
+  public void setId(Identifier id)
+  { this.id=id;
+  }
+  
   public boolean isAggregate()
   { return true;
   }
@@ -81,7 +96,7 @@ public class ArrayListAggregate<T>
   public String toString()
   {
     StringBuilder builder=new StringBuilder();
-    builder.append("{");
+    builder.append(getClass().getName()+"{");
     boolean first=true;
     for (Object o:list)
     {

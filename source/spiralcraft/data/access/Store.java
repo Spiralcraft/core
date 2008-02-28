@@ -30,15 +30,15 @@ import spiralcraft.builder.Lifecycle;
  *   
  * <P>A Store is always participates in a single Space.
  */
-public interface Store<T extends Tuple>
-  extends Queryable<T>,Lifecycle
+public interface Store
+  extends Queryable<Tuple>,Lifecycle
 {
   /**
    * @return The Space to which this store belongs
    */
-  Space<?> getSpace();
+  Space getSpace();
   
-
+  
   /**
    * Retrieve an update 'channel'. The DataConsumer can be used once to update
    *   a batch of Tuples of the same Type.

@@ -89,6 +89,10 @@ public class SchemeImpl
   { return fieldMap.get(name);
   }
   
+  public Field getLocalFieldByName(String name)
+  { return localFieldMap.get(name);
+  }
+  
   /**
    *@return An Iterable that iterates through all fields of this Type and its
    *  archetype.

@@ -16,13 +16,16 @@ package spiralcraft.data.query;
 
 import java.util.List;
 
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 
 import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.data.access.SerialCursor;
+import spiralcraft.data.lang.TupleReflector;
 
 /**
  * <P>A BoundQuery that performs a transformation on the results
@@ -38,21 +41,9 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
   extends BoundQuery<Tq,Tt>
 {
 
-  // XXX It would be cleaner if some of these positional vars resided in the
-  //  Cursor. BoundQuery should move to being threadsafe. If params are
-  //  threadSafe or sharable, this is doable. But not everything can be
-  //  threadSafe- ie. SQL queries have issues. Is that why we're going for more
-  //  and shorter lived Binding instances? ThreadLocal for processing state
-  //  might be our answer. Dovetails with execution context awareness, b/c need
-  //  a container component stacking the context into the Thread.
-  
   protected final BoundQuery<?,?> source;
   private boolean resolved;
-  protected boolean eos;
-  protected boolean bos;
-  
-  protected int direction;
-  protected int lookahead;
+  protected ThreadLocalChannel<Tt> sourceChannel;
   
   protected UnaryBoundQuery(List<Query> sources,Focus<?> focus,Queryable<?> store)
     throws DataException
@@ -61,7 +52,7 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
     { throw new DataException(getClass().getName()+": No source to bind to");
     }
     
-    if (sources.size()<1)
+    if (sources.size()>1)
     { throw new DataException(getClass().getName()+": Can't bind to more than one source");
     }
 
@@ -70,26 +61,13 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
     this.source=source;
   }
   
-  /**
-   * Integrate the specified sourceTuple into the next result Tuple to be computed,
-   *   as the result Cursor moves.
-   * 
-   * If the specified Tuple is null, this signifies that the end or beginning of
-   *   the stream has been reached. 
-   *   
-   * If the specified Tuple is -not- part of the current result Tuple, the method
-   *   lookedAhead() should be called and the sourceTuple will be passed to
-   *   the integrate method again when Cursor movement resumes.
-   * 
-   * @return true when a new result Tuple is available, or false if
-   *   no result Tuple is available.
-   */
-  protected abstract boolean integrate(Tt sourceTuple);
   
-  protected final void lookedAhead()
-  { lookahead+=direction;
-  }
-  
+  protected abstract SerialCursor<Tt> 
+    newSerialCursor(SerialCursor<Tt> source);
+
+  protected abstract ScrollableCursor<Tt> 
+    newScrollableCursor(ScrollableCursor<Tt> source);
+
   @SuppressWarnings("unchecked") // Converting from source Tuple type
   public SerialCursor<Tt> execute()
     throws DataException
@@ -97,19 +75,13 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
     if (!resolved)
     { resolve();
     }
-    bos=true;
-    eos=false;
-    integrate(null);
-    
-    direction=1;
-    lookahead=0;
     
     SerialCursor<Tt> cursor=(SerialCursor<Tt>) source.execute();
     if (cursor instanceof ScrollableCursor)
-    { return new UnaryBoundQueryScrollableCursor((ScrollableCursor<Tt>) cursor);
+    { return newScrollableCursor((ScrollableCursor<Tt>) cursor);
     }
     else
-    { return new UnaryBoundQuerySerialCursor(cursor);
+    { return newSerialCursor(cursor);
     }
     
   }
@@ -122,6 +94,15 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
     if (!resolved)
     { 
       source.resolve();
+      try
+      {
+        sourceChannel
+          =new ThreadLocalChannel<Tt>
+            (new TupleReflector<Tt>(source.getQuery().getFieldSet(),null));
+      }
+      catch (BindException x)
+      { throw new DataException("Error resolving Query",x);
+      }
       resolved=true;
     }
     else
@@ -129,13 +110,59 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
     }
   }
   
-  class UnaryBoundQuerySerialCursor
+  abstract class UnaryBoundQuerySerialCursor
     extends BoundQuerySerialCursor
   {
     private final SerialCursor<Tt> sourceCursor;
     
+    protected boolean eos;
+    protected boolean bos;
+    
+    protected int direction;
+    protected int lookahead;
+    
     public UnaryBoundQuerySerialCursor(SerialCursor<Tt> sourceCursor)
-    { this.sourceCursor=sourceCursor;
+    { 
+      bos=true;
+      eos=false;
+      
+      integrate(null);
+      
+      direction=1;
+      lookahead=0;
+
+      this.sourceCursor=sourceCursor;
+    }
+
+    /**
+     * Integrate the Tuple available from the sourceChannel into the next 
+     *   result Tuple to be computed, as the result Cursor moves.
+     * 
+     * If the specified Tuple is null, this signifies that the end or beginning
+     *   of the stream has been reached. 
+     *   
+     * If the specified Tuple is -not- part of the current result Tuple, the 
+     *   method lookedAhead() should be called and the sourceTuple will be
+     *   passed to the integrate method again when Cursor movement resumes.
+     * 
+     * @return true when a new result Tuple is available, or false if
+     *   no result Tuple is available.
+     */
+    protected abstract boolean integrate();
+    
+    protected final boolean integrate(Tt tuple)
+    {
+      sourceChannel.push(tuple);
+      try
+      { return integrate();
+      }
+      finally
+      { sourceChannel.pop();
+      }
+    }
+    
+    protected final void lookedAhead()
+    { lookahead+=direction;
     }
     
     public boolean dataNext()
@@ -185,7 +212,7 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
     }
   }
 
-  class UnaryBoundQueryScrollableCursor
+  abstract class UnaryBoundQueryScrollableCursor
     extends UnaryBoundQuerySerialCursor
     implements ScrollableCursor<Tt>
   {

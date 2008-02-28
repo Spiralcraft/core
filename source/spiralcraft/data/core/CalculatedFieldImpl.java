@@ -15,6 +15,7 @@
 package spiralcraft.data.core;
 
 import spiralcraft.data.Tuple;
+import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 
 import spiralcraft.data.lang.TupleReflector;
@@ -38,7 +39,7 @@ public class CalculatedFieldImpl
 {
 
   private ThreadLocalChannel<Tuple> threadLocalBinding;
-  private Channel<?> expressionBinding;
+  private Channel expressionBinding;
   private Expression<?> expression;
   
   public void setExpression(Expression<?> expression)
@@ -54,7 +55,7 @@ public class CalculatedFieldImpl
       threadLocalBinding
         =new ThreadLocalChannel<Tuple>(TupleReflector.getInstance(getFieldSet()));
       SimpleFocus<Tuple> focus=new SimpleFocus<Tuple>(threadLocalBinding);
-      expressionBinding=focus.bind(expression);
+      expressionBinding=bind(focus);
     }
     catch (BindException x)
     { throw new DataException("Error resolving Field "+getURI()+": "+x,x);
@@ -80,10 +81,21 @@ public class CalculatedFieldImpl
   }
   
   @Override
+  protected void setValueImpl(EditableTuple t,Object val)
+  { 
+    threadLocalBinding.push(t);
+    try
+    { expressionBinding.set(val);
+    }
+    finally
+    { threadLocalBinding.pop();
+    }
+    
+  }
+  
+  @Override
   public Channel bind
-    (Channel<Tuple> source
-    ,Focus<?> focus
-    )
+    (Focus<? extends Tuple> focus)
     throws BindException
   { return focus.bind(expression);
   }

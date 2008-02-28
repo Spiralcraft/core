@@ -12,26 +12,34 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.session;
+package spiralcraft.data.access;
 
-import spiralcraft.data.core.FieldImpl;
 
-public class SessionField
-  extends FieldImpl
+import spiralcraft.data.DataException;
+import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
+import spiralcraft.data.spi.ArrayListAggregate;
+
+/**
+ * An Aggregate backed by a Cursor
+ * 
+ * @author mike
+ */
+public class CursorAggregate<Tt extends Tuple>
+  extends ArrayListAggregate<Tt>
 {
-  
-  private View<?> view;
-  
-  public void setView(View<?> view)
+
+  public CursorAggregate(SerialCursor<Tt> cursor)
+    throws DataException
   { 
-    this.view=view;
-    setType(view.getType());
-  }
-  
-  public View<?> getView()
-  { return this.view;
-  }
-  
+    super( Type.getAggregateType(cursor.getResultType()));
+
+    while (cursor.dataNext())
+    { list.add(cursor.dataGetTuple());
+    }
     
+  }
+  
+  
   
 }

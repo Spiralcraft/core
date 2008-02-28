@@ -32,6 +32,7 @@ import spiralcraft.data.core.AbstractCollectionType;
 import spiralcraft.data.core.CoreTypeFactory;
 import spiralcraft.data.core.MetaType;
 
+import spiralcraft.data.session.BufferType;
 
 import spiralcraft.data.builder.BuilderTypeFactory;
 
@@ -231,6 +232,18 @@ public class TypeResolver
     return type;
   }
 
+  private final Type<?> loadBufferType(Type<?> baseType,URI typeURI)
+    throws DataException
+  {
+    Type<?> type=new BufferType
+      (this
+      ,typeURI
+      ,baseType
+      );
+    map.put(typeURI,type);
+    return type;
+  } 
+
   private final Type<?> loadMetaType(Type<?> baseType,URI typeURI)
     throws DataException
   {
@@ -244,6 +257,7 @@ public class TypeResolver
     return type;
   }
 
+  
   @SuppressWarnings("unchecked")
   private final Type findLoadedType(URI typeUri)
     throws DataException
@@ -284,6 +298,16 @@ public class TypeResolver
       { return loadMetaType(baseType,typeUri);
       }
     }
+    else if (typeUri.getPath().endsWith(".buffer"))
+    {
+      URI baseTypeUri=desuffix(typeUri,".buffer");
+
+      // Recurse to resolve baseType
+      Type baseType=findLoadedType(baseTypeUri);
+      if (baseType!=null)
+      { return loadMetaType(baseType,typeUri);
+      }
+    }
     
     return null;
   }
@@ -317,6 +341,16 @@ public class TypeResolver
       Type baseType=findTypeExtended(baseTypeUri);
       if (baseType!=null)
       { return loadListType(baseType,typeUri);
+      }
+    }
+    else if (typeUri.getPath().endsWith(".buffer"))
+    {
+      URI baseTypeUri=desuffix(typeUri,".buffer");
+
+      // Recurse to resolve baseType
+      Type baseType=findTypeExtended(baseTypeUri);
+      if (baseType!=null)
+      { return loadBufferType(baseType,typeUri);
       }
     }
     else if (typeUri.getPath().endsWith(".type"))

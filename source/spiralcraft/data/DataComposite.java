@@ -19,11 +19,19 @@ package spiralcraft.data;
  */
 public interface DataComposite
 {
+  
   /**
    * The Type of data this object represents.
    */
   Type<?> getType();
   
+  /**
+   * @return The Identifier associated with the domain object represented
+   *   by this DataComposite, or null if this DataComposite does not represent
+   *   anything identifiable. 
+   */
+  Identifier getId();
+
   /**
    *@return Whether this DataComposite is a Tuple.
    */

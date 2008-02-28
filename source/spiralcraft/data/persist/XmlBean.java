@@ -87,4 +87,7 @@ public class XmlBean<T>
   { return instance;
   }
   
+  public void set(T instance)
+  { this.instance=instance;
+  }
 }

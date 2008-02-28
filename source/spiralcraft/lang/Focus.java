@@ -19,8 +19,13 @@ import java.net.URI;
 /**
  * <p>A starting point for the evaluation of an Expression, which provides
  *   access to a chain of different contexts that can be referenced by the
- *   EL.
+ *   EL. 
  * </p>
+ * 
+ * <p>The Focus interface effectively implements a "hierarchically localized
+ *   singletons" pattern, which is designed to reduce or eliminate the use
+ *   of absolute or "global" references in the dependency resolution process.
+ * </p> 
  *   
  * <p>A hierarchy of Focus objects comprises a chain that is used to publish
  *   application interfaces at different points in the application 

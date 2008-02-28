@@ -130,7 +130,14 @@ class AggregateIterationDecorator<I>
   
   @Override
   protected Iterator<I> createIterator()
-  { return source.get().iterator();
+  { 
+    Aggregate<I> aggregate=source.get();
+    if (aggregate!=null)
+    { return aggregate.iterator();
+    } 
+    else
+    { return null;
+    }
   }
   
 }

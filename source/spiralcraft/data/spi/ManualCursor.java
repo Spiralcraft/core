@@ -16,7 +16,9 @@ package spiralcraft.data.spi;
 
 import spiralcraft.data.access.Cursor;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 
 /**
  * A Cursor that provides access to Tuples that are provided by the
@@ -28,9 +30,14 @@ public class ManualCursor<T extends Tuple>
 
   protected final FieldSet fieldSet;
   protected T tuple;
+  protected Identifier relationId;
   
   public ManualCursor(FieldSet fieldSet)
   { this.fieldSet=fieldSet;
+  }
+  
+  public Type<?> getResultType()
+  { return fieldSet.getType();
   }
   
   public FieldSet dataGetFieldSet()
@@ -44,4 +51,13 @@ public class ManualCursor<T extends Tuple>
   public void dataSetTuple(T tuple)
   { this.tuple=tuple;
   }
+  
+  public Identifier getRelationId()
+  { return relationId;
+  }
+  
+  public void setRelationId(Identifier relationId)
+  { this.relationId=relationId;
+  }
+
 }

@@ -48,7 +48,7 @@ public class Evaluator
   public static <X,Y> X evaluate(Expression<X> expression,Focus<Y> focus)
     throws BindException
   { 
-    log.fine("evaluate:"+expression+":"+focus.bind(expression));
+    // log.fine("evaluate:"+expression+":"+focus.bind(expression));
     return focus.<X>bind(expression).get();
   }
 }

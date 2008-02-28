@@ -24,28 +24,42 @@ import spiralcraft.data.BoundProjection;
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 
 import spiralcraft.data.lang.BoundTuple;
 import spiralcraft.data.lang.TupleFocus;
+import spiralcraft.data.lang.TupleReflector;
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.spi.AbstractChannel;
 
+/**
+ * Implements a Projection- a FieldSet that references a field-by-field
+ *   transformation of a master FieldSet.
+ *   
+ * @author mike
+ *
+ * 
+ */
 public class ProjectionImpl
   implements Projection
 {
-  protected final ArrayList<Field> fields
-  =new ArrayList<Field>();
+  protected final ArrayList<ProjectionField> fields
+  =new ArrayList<ProjectionField>();
 
   protected final HashMap<String,Field> fieldMap
     =new HashMap<String,Field>();
  
-  protected final ArrayList<Mapping> mappings
-    =new ArrayList<Mapping>();
   
   protected FieldSet masterFieldSet;
   
   protected boolean resolved;
+  
+  protected TupleReflector<Tuple> reflector;
+
 
   public ProjectionImpl()
   {
@@ -63,6 +77,18 @@ public class ProjectionImpl
       }
       addMasterField(fieldName,masterField);
     }
+    try
+    { reflector=new TupleReflector<Tuple>(this,Tuple.class);
+    }
+    catch (BindException x)
+    { throw new DataException(x.toString());
+    }
+  }
+
+  public Type<?> getType()
+  { 
+    // TODO It would be useful to have Projections declared as Types
+    return null;
   }
   
   public Iterable<? extends Field> fieldIterable()
@@ -88,16 +114,17 @@ public class ProjectionImpl
   protected void addMasterField(String name,Field masterField)
   { 
     assertUnresolved();
-    // XXX We should move to ProjectionFields
+    // XXX We should move to ProjectionFields, that use expressions
     
-    FieldImpl field=new FieldImpl();
+//    FieldImpl field=new FieldImpl();
+    ProjectionField field=new ProjectionField();
     field.setFieldSet(this);
     field.setIndex(fields.size());
     field.setType(masterField.getType());
     field.setName(masterField.getName());
     fields.add(field);
     fieldMap.put(field.getName(),field);
-    mappings.add(new FieldMapping(masterField));
+    //mappings.add(new FieldMapping(masterField));
   }
   
   protected void assertUnresolved()
@@ -117,12 +144,68 @@ public class ProjectionImpl
   }
   
   
-  public BoundProjection createBinding()
-    throws DataException
-  { return new Binding();
+  public Channel<Tuple> bind(Focus<? extends Tuple> focus)
+    throws BindException
+  { return new ProjectionChannel(focus);
   }
   
+  public class ProjectionChannel
+    extends AbstractChannel<Tuple>
+  {
+     
+    private final Focus<? extends Tuple> focus;
+    private final BoundTuple boundTuple;
     
+    public ProjectionChannel(Focus<? extends Tuple> masterFocus)
+      throws BindException
+    { 
+      super(new TupleReflector<Tuple>(masterFieldSet,Tuple.class));
+      this.focus=masterFocus; 
+//      Channel<?>[] bindings=new Channel[mappings.size()];
+//      int i=0;
+//      for (Mapping mapping: mappings)
+//      { bindings[i++]=mapping.bind(focus);
+//      }
+
+      Channel<?>[] bindings=new Channel[fields.size()];
+      int i=0;
+      for (ProjectionField field : fields)
+      { bindings[i++]=field.bind(focus);
+      }
+      
+      boundTuple=new BoundTuple(ProjectionImpl.this,bindings);
+    }
+
+    @Override
+    protected Tuple retrieve()
+    { return boundTuple;
+    }
+
+    @Override
+    protected boolean store(
+      Tuple val)
+    {
+      if (val.getFieldSet().getFieldCount()==getFieldCount())
+      { 
+        int numFields=getFieldCount();
+        for (int i=0;i<numFields;i++)
+        { 
+          try
+          { boundTuple.set(i,val.get(i));
+          }
+          catch (DataException x)
+          { throw new AccessException("Error updating Projection",x);
+          }
+        }
+      }
+      // TODO Auto-generated method stub
+      return false;
+    }
+    
+    
+  }
+  
+  
   class Binding
     implements BoundProjection
   {
@@ -135,15 +218,15 @@ public class ProjectionImpl
     { 
       focus=new TupleFocus<Tuple>(masterFieldSet);
       
-      Channel<?>[] bindings=new Channel[mappings.size()];
+      Channel<?>[] bindings=new Channel[fields.size()];
       int i=0;
-      for (Mapping mapping: mappings)
+      for (ProjectionField field : fields)
       { 
         try
-        { bindings[i++]=mapping.bind(focus);
+        { bindings[i++]=field.bind(focus);
         }
         catch (BindException x)
-        { throw new DataException("Error binding mapping '"+mapping+"' "+x,x);
+        { throw new DataException("Error binding mapping '"+field+"' "+x,x);
         }
       }
       boundTuple=new BoundTuple(ProjectionImpl.this,bindings);
@@ -163,29 +246,4 @@ public class ProjectionImpl
   
 }
 
-/**
- * Maps a local field to a data source (master field or expression)
- */
-abstract class Mapping
-{
-  public abstract Channel<?> bind(TupleFocus<Tuple> focus)
-    throws BindException;
-
-}
-
-class FieldMapping
-  extends Mapping
-{
-  private final Field masterField;
-  
-  public FieldMapping(Field masterField)
-  { this.masterField=masterField;
-  }
-  
-  public Channel<?> bind(TupleFocus<Tuple> focus)
-    throws BindException
-  { return focus.getSubject().resolve(focus,masterField.getName(),null);
-    
-  }
-}
 

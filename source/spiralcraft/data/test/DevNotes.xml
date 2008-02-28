@@ -65,6 +65,7 @@
 -->
 
 <!-- Type is probably spiralcraft.data.types.SchemeType -->
+<x>
 <Scheme>
   <fields>
     <Field>
@@ -72,7 +73,7 @@
       <type>String</type>
     </Field>
     
-  <fields>
+  </fields>
 </Scheme>
 
 <PhoneNumberType>
@@ -82,7 +83,7 @@
 <Customer>
   <name>John</name>
 </Customer>
-
+</x>
 
 <!-- Beans and Tuples
 
@@ -92,43 +93,43 @@ Goal:
 * Configuration through metadata mechanism
 
 Option 1: Metadata as constructor
--- Requires that Bean be aware of metadata mechanism
+- Requires that Bean be aware of metadata mechanism
 
 Option 2: Immutable interface, mutable class
--- Requires two hand-coded Java files
+- Requires two hand-coded Java files
 
 Option 3: Immutable interface, proxy impl
--- Proxy cannot implement methods, unless a mutable class extends it (same prob as #2)
+- Proxy cannot implement methods, unless a mutable class extends it (same prob as #2)
 
 
 Scenario 1: 
--- Type name points to XXXType.class
--- Single public handwritten class
--- No 'set' methods
--- Tuple constructor
--- Tuple copied to properties by hand !!! COMPLEX AND INEFFICIENT !!!
+- Type name points to XXXType.class
+- Single public handwritten class
+- No 'set' methods
+- Tuple constructor
+- Tuple copied to properties by hand !!! COMPLEX AND INEFFICIENT !!!
 
 Scenario 2: 
--- Type name points to XXXType.class
--- Single public handwritten class
--- Set methods in inner class
--- Tuple constructor
--- Calls helper class to map tuple to inner class set methods
--- !!! MUST KNOW ABOUT TUPLES- MAYBE NOT SO BAD- BUT NOT IOC FRIENDLY !!!
+- Type name points to XXXType.class
+- Single public handwritten class
+- Set methods in inner class
+- Tuple constructor
+- Calls helper class to map tuple to inner class set methods
+- !!! MUST KNOW ABOUT TUPLES- MAYBE NOT SO BAD- BUT NOT IOC FRIENDLY !!!
 
 Scenario 3:
--- Type name points to XXXType.class INTERFACE
--- Handwritten implementation class (XXXTypeImpl) which has set methods
--- !!! REDUNDANT EFFORT, Impl MUST BE ASSOCIATED BY NAMING CONVENTION
+- Type name points to XXXType.class INTERFACE
+- Handwritten implementation class (XXXTypeImpl) which has set methods
+- !!! REDUNDANT EFFORT, Impl MUST BE ASSOCIATED BY NAMING CONVENTION
 
 Scenario 4:
--- Type name points to XXXType.class INTERFACE
--- Handwritten ABSTRACT implementation class (XXXTypeImpl) which has functional
---   part of interface implementation- optional.
--- Dynamic proxy which provides Bean part of implementation and delegates
+- Type name points to XXXType.class INTERFACE
+- Handwritten ABSTRACT implementation class (XXXTypeImpl) which has functional
+-   part of interface implementation- optional.
+- Dynamic proxy which provides Bean part of implementation and delegates
      functional part to TypeImpl XXX IMPOSSIBLE - TypeImpl is abstract, cannot
      be instantiated
--- Instantiate by
+- Instantiate by
      Proxy.newProxyInstance(<classLoader>,<type-interface>,<handler>)
      new <handler>(XXXTypeImpl)
 
@@ -140,43 +141,43 @@ Scenario 4:
 <!-- How to map Tuples to Objects
 
 Method 1: Construct an Object with a Tuple
--- Not very IOC compatible
--- Atomic
--- Intrusive
+- Not very IOC compatible
+- Atomic
+- Intrusive
 
 Method 2: Use reflection to set IOC
--- With setAccessible() will work ok, hopefully
--- Non-atomic
--- Non-intrusive
+- With setAccessible() will work ok, hopefully
+- Non-atomic
+- Non-intrusive
 
 Method 3: Define a new paradigm
--- Immutable Objects constructed with Tuples
--- Implements TupleBacked
--- No API Based Sets in non-editable object (though EditableXXX may support
---   buffers and EditableTuples.
--- Sole function of strongly typed interface is to support methods/actions/
---   behaviors that must be hand-coded (ie. Types, other structural components)
+- Immutable Objects constructed with Tuples
+- Implements TupleBacked
+- No API Based Sets in non-editable object (though EditableXXX may support
+-   buffers and EditableTuples.
+- Sole function of strongly typed interface is to support methods/actions/
+-   behaviors that must be hand-coded (ie. Types, other structural components)
 
 
 -->
 
 <!-- Type interface vs. classes
 
--- Scenarios where we want to re-implement Type 'functionality'
----- Value verification- DB logic vs Java logic? Far fetched, because
-----   goes beyond the concept of 'interface' vs. 'implementation'.
+-  Scenarios where we want to re-implement Type 'functionality'
+- -  Value verification- DB logic vs Java logic? Far fetched, because
+- -    goes beyond the concept of 'interface' vs. 'implementation'.
 
--- Scenarios where we want to re-implement Type definition from a property
+-  Scenarios where we want to re-implement Type definition from a property
      standpoint.
----- From Tuple
----- From IOC
----- Static
+- -  From Tuple
+- -  From IOC
+- -  Static
 
--- But a -given- type will normally have only one property setup mechanism.
+-  But a -given- type will normally have only one property setup mechanism.
 
--- We -need- to use Tuple type based definitions, however this is accomplished
+-  We -need- to use Tuple type based definitions, however this is accomplished
 
--- Type class makes the most sense, from a simplicity and usage standpoint.
+-  Type class makes the most sense, from a simplicity and usage standpoint.
 
 -->
 

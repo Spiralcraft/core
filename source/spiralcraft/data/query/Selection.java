@@ -24,6 +24,8 @@ import spiralcraft.lang.BindException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.access.ScrollableCursor;
+import spiralcraft.data.access.SerialCursor;
 
 /**
  * A Query operation which constrains the result of another Query
@@ -75,7 +77,9 @@ public class Selection
   }
  
   public void setSource(Query source)
-  { addSource(source);
+  { 
+    type=source.getType();
+    addSource(source);
   }
   
   /**
@@ -119,8 +123,8 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
   public void resolve() throws DataException
   { 
     super.resolve();
-    source.resolve();
-    focus=new SimpleFocus<Tuple>(source.getResultBinding());
+
+    focus=new SimpleFocus<Tt>(sourceChannel);
     focus.setParentFocus(paramFocus);
     try
     { filter=focus.<Boolean>bind(getQuery().getConstraints());
@@ -130,25 +134,72 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     }
   }
   
-  protected boolean integrate(Tt t)
-  { 
-    if (t==null)
-    { 
-//      System.err.println("BoundSelection: eod ");
-      return false;
-    }
-    
-    if (filter.get())
-    { 
-//      System.err.println("BoundSelection: passed "+t);
-      dataAvailable(t);
-      return true;
-    }
-    else
-    { 
-//      System.err.println("BoundSelection: filtered "+t);
-      return false;
-    }
+
+  protected SerialCursor<Tt> newSerialCursor(SerialCursor<Tt> source)
+  { return new SelectionSerialCursor(source);
   }
   
+  protected ScrollableCursor<Tt> newScrollableCursor(ScrollableCursor<Tt> source)
+  { return new SelectionScrollableCursor(source);
+  }
+
+  class SelectionSerialCursor
+    extends UnaryBoundQuerySerialCursor
+  {
+    public SelectionSerialCursor(SerialCursor<Tt> source)
+    { super(source);
+    }
+  
+    protected boolean integrate()
+    { 
+      Tt t=sourceChannel.get();
+      if (t==null)
+      { 
+//      System.err.println("BoundSelection: eod ");
+        return false;
+      }
+    
+      if (filter.get())
+      {  
+//      System.err.println("BoundSelection: passed "+t);
+        dataAvailable(t);
+        return true;
+      }
+      else
+      { 
+//      System.err.println("BoundSelection: filtered "+t);
+        return false;
+      }
+    }
+  }
+
+  class SelectionScrollableCursor
+    extends UnaryBoundQueryScrollableCursor
+  {
+    public SelectionScrollableCursor(ScrollableCursor<Tt> source)
+    { super(source);
+    }
+
+    protected boolean integrate()
+    { 
+      Tt t=sourceChannel.get();
+      if (t==null)
+      { 
+//      System.err.println("BoundSelection: eod ");
+        return false;
+      }
+
+      if (filter.get())
+      {  
+//      System.err.println("BoundSelection: passed "+t);
+        dataAvailable(t);
+        return true;
+      }
+      else
+      { 
+//      System.err.println("BoundSelection: filtered "+t);
+        return false;
+      }
+    }
+  }
 }

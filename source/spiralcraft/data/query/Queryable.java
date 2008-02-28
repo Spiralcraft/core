@@ -14,6 +14,8 @@
 //
 package spiralcraft.data.query;
 
+import java.net.URI;
+
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
@@ -35,7 +37,8 @@ import spiralcraft.lang.Focus;
  */
 public interface Queryable<Ttuple extends Tuple>
 {
-
+  URI QUERYABLE_URI = URI.create("class:/spiralcraft/data/query/Queryable");
+  
   /**
    * @return An array of all the Types supported by this Queryable
    */

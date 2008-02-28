@@ -15,10 +15,18 @@ public class ArrayDeltaTuple
 {
   private final BitSet dirtyFlags;
 
-  private Tuple original;
+  private final Tuple original;
   private boolean delete;
   private boolean dirty;
   
+  /**
+   * Constructs a DeltaTuple based on the difference between and
+   *   original Tuple and and updated Tuple
+   *   
+   * @param original
+   * @param updated
+   * @throws DataException
+   */
   public ArrayDeltaTuple(Tuple original,Tuple updated)
     throws DataException
   { 
