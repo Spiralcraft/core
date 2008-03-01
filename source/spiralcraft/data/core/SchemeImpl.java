@@ -175,6 +175,7 @@ public class SchemeImpl
     { typeUri=getType().getURI().toString();
     }
     return super.toString()
+      +":"+getType()!=null?getType().toString():"(untyped)"
       .concat(":")
       .concat(typeUri)
       .concat(fieldList.toString())

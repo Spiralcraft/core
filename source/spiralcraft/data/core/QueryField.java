@@ -34,7 +34,6 @@ public class QueryField
   extends FieldImpl
 {
   private Query query;
-  private boolean resolved;
   
   public QueryField()
   { 
@@ -47,7 +46,7 @@ public class QueryField
   public void setQuery(Query query)
   {
     this.query=query;
-    if (getType()!=null)
+    if (getType()==null)
     { setType(query.getType());
     }
   }
@@ -86,7 +85,7 @@ public class QueryField
     }
   }
   
-  private String focusChain(Focus focus)
+  private String focusChain(Focus<?> focus)
   { 
     StringBuilder buf=new StringBuilder();
     buf.append("[");

@@ -24,6 +24,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.log.ClassLogger;
 
 /**
  * Returns a Buffer of a source
@@ -33,12 +34,66 @@ import spiralcraft.lang.spi.AbstractChannel;
 public class BufferChannel
   extends AbstractChannel<Buffer>
 {
+  private static final ClassLogger log=new ClassLogger(BufferChannel.class);
+  
   private Channel<? extends DataComposite> originalChannel;
   private Channel<DataSession> sessionChannel;
 
 /*
   private Channel<Buffer> parentChannel;
 */
+
+  /**
+   * Construct a BufferChannel
+   * 
+   * @param focus A Focus on the DataComposite being buffered
+   * 
+   */
+  @SuppressWarnings("unchecked")
+  public BufferChannel(Focus<? extends DataComposite> focus)
+    throws BindException
+  { 
+    super
+      (DataReflector.<Buffer>getInstance
+        (Type.<DataComposite>getBufferType
+         ( ((DataReflector) focus.getSubject().getReflector())
+             .getType()
+         )
+        )
+      );
+    
+    log.fine("BufferChannel "+getReflector());
+    setupSession(focus);
+    this.originalChannel=focus.getSubject();
+    
+  }
+
+  /**
+   * Construct a BufferChannel
+   * 
+   * @param focus A focus, not necessarily on the originalChannel
+   * 
+   */
+  @SuppressWarnings("unchecked")
+  public BufferChannel
+    (Focus<? extends DataComposite> focus
+    ,Channel<DataComposite> original
+    )
+    throws BindException
+  { 
+    super
+      (DataReflector.<Buffer>getInstance
+        (Type.<DataComposite>getBufferType
+         ( ((DataReflector) original.getReflector())
+             .getType()
+         )
+        )
+      );
+    log.fine("BufferChannel "+getReflector());
+    setupSession(focus);
+    this.originalChannel=focus.getSubject();
+    
+  }
   
   /**
    * Construct a BufferChannel
@@ -58,7 +113,16 @@ public class BufferChannel
     //   not the originalChannel
 
     super(DataReflector.<Buffer>getInstance(bufferType));
+    log.fine("BufferChannel "+getReflector());
+    this.originalChannel=originalChannel;
+    setupSession(focus);
 
+  }
+
+  @SuppressWarnings("unchecked")
+  private void setupSession(Focus<?> focus)
+    throws BindException
+  {
     metaChannel=this;
     
     Focus<DataSession> sessionFocus
@@ -81,10 +145,10 @@ public class BufferChannel
 //    }
         
     
-    this.originalChannel=originalChannel;
-
+    
   }
-
+  
+  
   public boolean store(Buffer val)
   { 
     // TODO This will be useful, to place whole buffers

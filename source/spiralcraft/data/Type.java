@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import spiralcraft.data.session.Buffer;
+// import spiralcraft.log.ClassLogger;
 
 
 /**
@@ -27,6 +28,8 @@ import spiralcraft.data.session.Buffer;
  */
 public abstract class Type<T>
 {  
+//  private static final ClassLogger log=new ClassLogger(Type.class);
+  
   public static Type<?> resolve(String uriString)
     throws TypeNotFoundException
   { return TypeResolver.getTypeResolver().resolve(URI.create(uriString));
@@ -52,7 +55,13 @@ public abstract class Type<T>
   public static <X> Type<Buffer> getBufferType(Type<X> type)
   { 
     try
-    { return (Type<Buffer>) resolve(type.getURI().toString()+".buffer");
+    { 
+//      log.fine
+//        ("Buffer Type for "+type+" is "
+//        +resolve(type.getURI().toString()+".buffer")
+//        );
+      return (Type<Buffer>) resolve(type.getURI().toString()+".buffer");
+      
     }
     catch (TypeNotFoundException x)
     { throw new RuntimeException(x);

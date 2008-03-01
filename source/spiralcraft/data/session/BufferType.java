@@ -22,6 +22,7 @@ import spiralcraft.data.Field;
 
 import spiralcraft.data.core.TypeImpl;
 import spiralcraft.data.core.SchemeImpl;
+import spiralcraft.log.ClassLogger;
 
 
 import java.net.URI;
@@ -31,6 +32,8 @@ import java.net.URI;
 public class BufferType
   extends TypeImpl<Buffer>
 {
+  private static final ClassLogger log=new ClassLogger(BufferType.class);
+  
   public static final BufferType getBufferType(Type<?> baseType)
     throws DataException
   {
@@ -46,7 +49,9 @@ public class BufferType
   
   public BufferType(TypeResolver resolver,URI typeURI,Type<?> archetype)
   { 
+    
     super(resolver,typeURI);
+    // log.fine("Buffer type for "+archetype);
     this.archetype=archetype;
   }
   
@@ -68,6 +73,12 @@ public class BufferType
     
     for (Field field : this.archetype.getScheme().fieldIterable())
     {
+      if (field.getType()==null)
+      { 
+        log.fine("Field type is null "+field);
+        continue;
+      }
+      
       // Primitives are immutable
       if (!field.getType().isPrimitive())
       {
@@ -81,6 +92,7 @@ public class BufferType
             (Type.resolve
               (URI.create(field.getType().getURI().toString()+".buffer"))
             );
+          scheme.addField(newField);
           
         }
 

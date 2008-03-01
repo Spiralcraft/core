@@ -20,7 +20,7 @@ import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataChannel;
-import spiralcraft.lang.BeanFocus;
+
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.CompoundFocus;
@@ -42,13 +42,13 @@ import spiralcraft.log.ClassLogger;
 public class DataSessionFocus
   extends CompoundFocus<DataSession>
 {
+  @SuppressWarnings("unused")
   private static final ClassLogger log
     =new ClassLogger(DataSessionFocus.class);
   
   private static final Expression<DataComposite> DATA_EXPRESSION
     =Expression.<DataComposite>create("data");
 
-  private Type<DataComposite> type;
   
   public DataSessionFocus
     (Focus<?> parentFocus
@@ -94,7 +94,7 @@ public class DataSessionFocus
             );
     
       bindFocus("spiralcraft.data",dataFocus);
-        log.fine(dataFocus.toString());
+      // log.fine(dataFocus.toString());
 
       }
     }
@@ -109,7 +109,7 @@ public class DataSessionFocus
   public boolean isFocus(URI uri)
   { 
     boolean ret=super.isFocus(uri);
-    log.fine("isFocus="+ret+": "+uri);
+    // log.fine("isFocus="+ret+": "+uri);
     return ret;
   }
   

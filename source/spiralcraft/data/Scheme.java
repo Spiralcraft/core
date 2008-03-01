@@ -38,7 +38,7 @@ public interface Scheme
 
   /**
    *@return the Field that corresponds to the specified name. 
-   * Field names are unique within a Scheme
+   * Field names are unique within a Scheme. 
    */
   Field getFieldByName(String name);
   

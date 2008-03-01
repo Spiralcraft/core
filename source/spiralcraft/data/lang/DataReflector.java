@@ -120,6 +120,6 @@ public abstract class DataReflector<T extends DataComposite>
   }
   
   public String toString()
-  { return super.toString()+":"+type.getURI();
+  { return super.toString();
   }
 }

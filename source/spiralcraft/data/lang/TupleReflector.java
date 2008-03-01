@@ -47,8 +47,8 @@ public class TupleReflector<T extends Tuple>
     <T extends Tuple> TupleReflector<T> getInstance(FieldSet fieldSet)
     throws BindException
   { 
-    if (fieldSet instanceof Scheme)
-    { return (TupleReflector) DataReflector.getInstance( ((Scheme) fieldSet).getType());
+    if (fieldSet.getType()!=null)
+    { return (TupleReflector) DataReflector.getInstance(fieldSet.getType());
     }
     else
     { return new TupleReflector(fieldSet,Tuple.class);
@@ -135,7 +135,13 @@ public class TupleReflector<T extends Tuple>
   }
 
 
-
+  public String toString()
+  { return super.toString()
+      +type!=null
+      ?":"+type.toString()+"["+fieldSet.toString()+"]"
+      :":(untyped)["+fieldSet.toString()+"]";
+  }
+  
 
 
   

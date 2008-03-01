@@ -305,7 +305,7 @@ public class TypeResolver
       // Recurse to resolve baseType
       Type baseType=findLoadedType(baseTypeUri);
       if (baseType!=null)
-      { return loadMetaType(baseType,typeUri);
+      { return loadBufferType(baseType,typeUri);
       }
     }
     
