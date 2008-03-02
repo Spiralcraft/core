@@ -49,6 +49,11 @@ public class BufferAggregate<T>
     this.type=type;
   }
   
+  public synchronized void revert()
+  { appendix=null;
+  }
+  
+  
   public Identifier getId()
   { return id;
   }

@@ -67,6 +67,18 @@ public class BufferTuple
     this.session=session;
     this.type=type;
   }
+
+  /**
+   * Return the buffer to an unchanged state
+   */
+  public synchronized void revert()
+  {
+    this.dirty=false;
+    this.dirtyFlags=null;
+    this.delete=false;
+    this.data=null;
+    
+  }
   
   /**
    * Discard all changes, resetting the BufferTuple to an unchanged state

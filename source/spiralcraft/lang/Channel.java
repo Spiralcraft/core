@@ -146,4 +146,5 @@ public interface Channel<T>
    * @return
    */
   void cache(Object key,Channel<?> channel);
+  
 }

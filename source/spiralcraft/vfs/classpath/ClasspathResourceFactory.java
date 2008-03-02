@@ -25,7 +25,7 @@ public class ClasspathResourceFactory
 {
 
   public static boolean isClasspathScheme(String scheme)
-  { return scheme.equals("java");
+  { return scheme.equals("java") || scheme.equals("class");
   }
 
   public Resource resolve(URI uri)

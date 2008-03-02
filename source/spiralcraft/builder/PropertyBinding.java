@@ -56,8 +56,7 @@ public class PropertyBinding
   private Channel _target;
   // private Channel _sourceOptic;
   private Focus _focus;
-  private Object _source;
-
+  
   private Assembly[] _contents;
   private StringConverter _converter;
   // private RegistryNode _registryNode;
@@ -73,8 +72,9 @@ public class PropertyBinding
 
     // Resolve the target first to determine how we are to interpret
     //   the contents/source information
-    resolveTarget();
-    instantiateContents();
+    createTargetChannel();
+//    createSourceChanne();  
+    bindContents();
   }
 
   /**
@@ -109,9 +109,22 @@ public class PropertyBinding
         }
       }
     }
-    resolveSource();
-    apply();
+    applySource();
   }
+  
+  public void release()
+  {
+    if (_contents!=null)
+    {
+      for (Assembly assembly:_contents)
+      { 
+        if (!assembly.isResolved())
+        { assembly.release();
+        }
+      }
+    }
+  }
+  
 
   public Assembly[] getContents()
   { return _contents;
@@ -121,8 +134,7 @@ public class PropertyBinding
     throws BuildException
   {
     _contents=contents;
-    resolveSource();
-    apply();
+    applySource();
     if (propertyNode!=null)
     { registerSubAssemblies();
     }
@@ -162,11 +174,20 @@ public class PropertyBinding
     }
   }
 
+//  private void createSourceChannel()
+//  {
+//    if (_container.isFactoryMode())
+//    { _sourceChannel=new ThreadLocalChannel(_target.getReflector());
+//    }
+//    else
+//    { _sourceChannel=new SimpleChannel(_target.getReflector(),null,false);
+//    }
+//  }
   
   /**
    * Instantiate sub-Assemblies (but not the instances they contain yet)
    */
-  private void instantiateContents()
+  private void bindContents()
     throws BuildException
   {
     List<AssemblyClass> contents;
@@ -188,12 +209,13 @@ public class PropertyBinding
     
     if (contents!=null)
     { 
+      boolean factoryMode=_container.isFactoryMode();
       _contents=new Assembly[contents.size()];
       
       int i=0;
       for (AssemblyClass assemblyClass : contents)
       { 
-        Assembly assembly=assemblyClass.newInstance();
+        Assembly assembly=assemblyClass.newInstance(factoryMode);
         if (_specifier.getExport())
         { exportSingletons(assembly);
         }
@@ -203,7 +225,7 @@ public class PropertyBinding
       for (Assembly assembly:_contents)
       { 
         if (!assembly.isBound())
-        { assembly.bind(_container);
+        { assembly.bind(_container.getFocus());
         }
       }
 
@@ -212,7 +234,7 @@ public class PropertyBinding
 
   
   @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
-  private void resolveTarget()
+  private void createTargetChannel()
     throws BuildException
   {
     try
@@ -244,7 +266,7 @@ public class PropertyBinding
    *   have had their contents instantiated and configured.
    */
   @SuppressWarnings("unchecked")
-  private void resolveSource()
+  private void applySource()
     throws BuildException
   {
     if (_contents!=null && _contents.length>0)
@@ -253,7 +275,7 @@ public class PropertyBinding
       {
         // Source is a single object
         if (_contents.length==1)
-        { _source=_contents[0].get();
+        { apply(_contents[0].get());
         }
         else
         {
@@ -266,12 +288,12 @@ public class PropertyBinding
       }
       else if (Collection.class.isAssignableFrom(_target.getContentType()))
       { 
-        Collection source;
+        Collection collection;
         if (_specifier.getCollectionClass()!=null)
         {
           try
           { 
-            source
+            collection
               =_specifier.getCollectionClass().newInstance();
           }
           catch (Exception x)
@@ -281,13 +303,13 @@ public class PropertyBinding
           } 
         }
         else if (_target.getContentType()==List.class)
-        { source=new ArrayList<Object>(_contents.length);
+        { collection=new ArrayList<Object>(_contents.length);
         }
         else if (!_target.getContentType().isInterface())
         { 
           try
           { 
-            source
+            collection
               =(Collection) _target.getContentType().newInstance();
           }
           catch (Exception x)
@@ -307,28 +329,30 @@ public class PropertyBinding
         
         for (int i=0;i<_contents.length;i++)
         { 
-          source.add(_contents[i].get());
+          collection.add(_contents[i].get());
           if (_specifier.getExport())
           { exportSingletons(_contents[i]);
           }
         }
-        _source=source;
+        apply(collection);
         
       }
       else
       {
         // Source is an Array
-        _source=Array.newInstance
-          (_target.getContentType().getComponentType()
-          ,_contents.length
-          );
+        Object array
+          =Array.newInstance
+            (_target.getContentType().getComponentType()
+            ,_contents.length
+            );
         for (int i=0;i<_contents.length;i++)
         { 
-          Array.set(_source,i,_contents[i].get());
+          Array.set(array,i,_contents[i].get());
           if (_specifier.getExport())
           { exportSingletons(_contents[i]);
           }
         }
+        apply(array);
       }
     }
     else if (_specifier.getTextData()!=null)
@@ -342,7 +366,7 @@ public class PropertyBinding
           +_target.getContentType().getName()
           );
       }
-      _source=_converter.fromString(text);
+      apply(_converter.fromString(text));
     }
     else
     { 
@@ -358,6 +382,8 @@ public class PropertyBinding
               (sourceChannel.getContentType())
            )
         {
+          // XXX This should be reconsidered- implicit crossing of layers
+
           // Property is looking for a Focus for further expression
           //   bindings. Convert the source value into a Focus and pass the
           //   Focus to the property.
@@ -369,27 +395,34 @@ public class PropertyBinding
           // !!! It is important to call get() to NARROW the type to that of
           //   the actual object. Otherwise, the formal property type will
           //   be used and some names will not resolve as expected.
-          _source=new SimpleFocus
-            (new SimpleChannel(sourceChannel.get(),false)
+          apply
+            (new SimpleFocus
+              (new SimpleChannel(sourceChannel.get(),false)
+              )
             );
+          // XXX reconsider
         }
         else if (_target.getContentType()==Channel.class
             && !Channel.class.isAssignableFrom
               (sourceChannel.getContentType())
            )
         {
+          // XXX This should be reconsidered- implicit crossing of layers
+          
           // Property is looking for a Channel 
           //
           // This is another special case- components looking for a Channel
           //   are looking for a view on a property, not a property itself,
           //   primarily so the components can subscribe to property change
           //   events and manage updates.
-          _source=sourceChannel;
+          apply(sourceChannel);
+          
+          // XXX Reconsider
         }
         else
         { 
           // Property is looking for a standard Object or value
-          _source=sourceChannel.get();
+          apply(sourceChannel.get());
           if (_specifier.isDynamic())
           {
             // Propogate property changes
@@ -418,12 +451,12 @@ public class PropertyBinding
   }
 
   @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
-  private void apply()
+  private void apply(Object sourceVal)
     throws BuildException
   { 
     try
     {
-      if (_source!=null && !_target.set(_source))
+      if (sourceVal!=null && !_target.set(sourceVal))
       { 
         // Log something here- value didn't didn't need to change
         
@@ -438,7 +471,8 @@ public class PropertyBinding
     catch (AccessException x)
     {
       throwBuildException
-        ("Caught "+x.getCause().toString()+" writing ["+_source.toString()+"] value to property \""
+        ("Caught "+x.getCause().toString()
+          +" writing ["+sourceVal.toString()+"] value to property \""
         +_specifier.getTargetName()+"\""
         ,x
         );
@@ -455,15 +489,11 @@ public class PropertyBinding
 
   private void applySafe(Object value)
   {
-    Object osource=_source;
-    _source=value;
     try
-    { apply();
+    { apply(value);
     }
     catch (Exception x)
-    { 
-      System.err.println(x.toString());
-      _source=osource;
+    { System.err.println(x.toString());
     }
   }
 

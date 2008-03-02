@@ -18,7 +18,9 @@ import spiralcraft.lang.BaseFocus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 
+import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 
 import spiralcraft.data.lang.TupleDelegate;
 import spiralcraft.data.DataException;
@@ -69,12 +71,13 @@ public class Assembly<T>
   private static ClassLogger log=new ClassLogger(Assembly.class);
   
   private final AssemblyClass _assemblyClass;
-  private Assembly<?> _parent;
+  // private Assembly<?> _parent;
   private PropertyBinding[] _propertyBindings;
   private HashMap<String,Assembly> _importedSingletons;
   private boolean bound=false;
   private boolean resolved=false;
   private final AssemblyFocus<T> focus;
+  private boolean factoryMode=false;
   
   
   /**
@@ -82,12 +85,13 @@ public class Assembly<T>
    *   without binding properties
    */
   @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
-  Assembly(AssemblyClass assemblyClass)
+  Assembly(AssemblyClass assemblyClass,boolean factoryMode)
     throws BuildException
   {
     // log.fine("Plain Constructor");
 
     _assemblyClass=assemblyClass;
+    this.factoryMode=factoryMode;
 
     Class javaClass=_assemblyClass.getJavaClass();
     if (javaClass==null)
@@ -96,15 +100,24 @@ public class Assembly<T>
     try 
     { 
       focus=new AssemblyFocus();
-      focus.setSubject(new SimpleChannel(javaClass,null,false));
+      if (factoryMode)
+      {
+        focus.setSubject
+          (new ThreadLocalChannel(BeanReflector.getInstance(javaClass))
+          );
+      }
+      else
+      {
+        focus.setSubject(new SimpleChannel(javaClass,null,false));
+      }
+        
     }
     catch (BindException x)
     { throw new BuildException("Error binding class "+javaClass.getName()+": "+x,x);
     }
 
   }
-
-  
+    
   /**
    * Called from resolve() to actually instantiate object
    * 
@@ -163,6 +176,10 @@ public class Assembly<T>
     
   }
   
+  boolean isFactoryMode()
+  { return factoryMode;
+  }
+  
   Object constructFromString(Class clazz,String constructor)
     throws BuildException
   {
@@ -175,25 +192,6 @@ public class Assembly<T>
     }
   }
 
-//  Unused constructor- obsolete- bind(parent) is public and called directly
-//  
-//  /**
-//   * Construct an instance of the specified AssemblyClass
-//   */
-//  Assembly(AssemblyClass assemblyClass,Assembly parent)
-//    throws BuildException
-//  { 
-//    this(assemblyClass);
-//    log.fine("Constructor with parent");
-//    focus.setParentFocus(parent.getFocus());
-//    if (parent.getFocus()==null)
-//    { log.fine("Parent has no focus "+parent.getAssemblyClass().getDeclarationName());
-//    }
-//    else
-//    { log.fine(parent.getFocus().toString());
-//    }
-//    bind(parent);
-//  }
 
   /**
    *@return Whether this Assembly's properties have been bound
@@ -202,17 +200,15 @@ public class Assembly<T>
   { return bound;
   }
   
-  void bind(Assembly parent)
+  void bind(Focus<?> parentFocus)
     throws BuildException
   {
     if (bound)
     { throw new BuildException("Already bound properties");
     }
     bound=true;
-    _parent=parent;
-    if (_parent!=null)
-    { focus.setParentFocus(parent.getFocus());
-    }
+
+    focus.setParentFocus(parentFocus);
     _propertyBindings=_assemblyClass.bindProperties(this);
   }
   
@@ -269,13 +265,15 @@ public class Assembly<T>
    *  2. retrieve the instance/value for the property and
    *  3. apply the value to this Assembly's bean.
    */
-  void resolve()
+  public void resolve()
     throws BuildException
   {
     if (resolved)
     { throw new IllegalStateException("Already resolved");
     }
-    resolved=true;
+    if (!factoryMode)
+    { resolved=true;
+    }
     
     if (focus.getSubject().get()==null)
     { constructInstance();
@@ -289,6 +287,22 @@ public class Assembly<T>
     }
   }
   
+  /**
+   * Recursively release all instances
+   *
+   * PropertyBinding.release() will release sub-Assemblies
+   */
+  public void release()
+  {
+    focus.getSubject().set(null);
+    if (_propertyBindings!=null)
+    {
+      for (PropertyBinding binding: _propertyBindings)
+      { binding.release();
+      }
+    }
+    
+  }
 
   
   @Override
@@ -338,9 +352,9 @@ public class Assembly<T>
   /**
    * Return the Assembly which contains this one
    */
-  public Assembly<?> getParent()
-  { return _parent;
-  }
+//  public Assembly<?> getParent()
+//  { return _parent;
+//  }
 
   public void registerSingletons(Class[] singletonInterfaces,Assembly singleton)
     throws BuildException

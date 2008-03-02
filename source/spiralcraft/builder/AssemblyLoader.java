@@ -22,6 +22,7 @@ import spiralcraft.vfs.Resource;
 
 import java.io.IOException;
 
+import spiralcraft.lang.Focus;
 import spiralcraft.sax.ParseTreeFactory;
 import spiralcraft.sax.ParseTree;
 import spiralcraft.sax.Node;
@@ -72,11 +73,11 @@ public class AssemblyLoader
    * Instantiate an Assembly from the specified URI, in the context of the
    *   specified parent.
    */
-  public Assembly<?> instantiateAssembly(URI classUri,Assembly<?> parent)
+  public Assembly<?> instantiateAssembly(URI classUri,Focus<?> parentFocus)
     throws BuildException
   { 
     AssemblyClass assemblyClass=findAssemblyClass(classUri);
-    Assembly<?> assembly=assemblyClass.newInstance(parent);
+    Assembly<?> assembly=assemblyClass.newInstance(parentFocus);
     return assembly;
   }
 

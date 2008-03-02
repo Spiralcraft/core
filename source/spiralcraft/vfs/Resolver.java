@@ -76,8 +76,11 @@ public class Resolver
       {
         // Consider auto-registering "class","classpath","class-resource",
         //   or moving this mapping to a config mechanism
+        ClasspathResourceFactory classFactory=new ClasspathResourceFactory();
         _INSTANCE.registerResourceFactory
-          ("java",new ClasspathResourceFactory());
+          ("java",classFactory);
+        _INSTANCE.registerResourceFactory
+          ("class",classFactory);
         _INSTANCE.registerResourceFactory
           ("file",new FileResourceFactory());
         _INSTANCE.registerResourceFactory

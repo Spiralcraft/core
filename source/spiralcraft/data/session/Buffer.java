@@ -65,6 +65,6 @@ public abstract class Buffer
   @Override
   public abstract BufferAggregate<?> asAggregate();
   
-  
+  public abstract void revert();
 
 }

@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
 
+import spiralcraft.lang.Focus;
 import spiralcraft.util.ArrayUtil;
 
 import spiralcraft.vfs.classpath.ClasspathResourceFactory;
@@ -666,7 +667,7 @@ public class AssemblyClass
    * Create an unbound assembly (if not a singleton), for later binding
    */
   @SuppressWarnings("unchecked") // Reflected type at Runtime
-  Assembly<?> newInstance()
+  Assembly<?> newInstance(boolean factoryMode)
     throws BuildException
   {
     if (_singleton)
@@ -678,8 +679,8 @@ public class AssemblyClass
         }
         else
         { 
-          _singletonInstance=new Assembly(this);
-          _singletonInstance.bind((Assembly<?>) null);
+          _singletonInstance=new Assembly(this,factoryMode);
+          _singletonInstance.bind(null);
           // Note: resolve() is re-entrant, so it will be late-called
           
           return _singletonInstance;
@@ -689,27 +690,52 @@ public class AssemblyClass
     else if (isUnmodifiedSubclass() && _baseAssemblyClass.isSingleton())
     { 
       // Reference to a singleton
-      return _baseAssemblyClass.newInstance();
+      return _baseAssemblyClass.newInstance(factoryMode);
     }
     else
-    { return new Assembly(this);
+    { return new Assembly(this,factoryMode);
     }
   }
   
   /**
    * Create a new instance of this AssemblyClass in the context of the
-   *   optional specified parent Assembly.
+   *   optional specified parent Focus.
    */
-  public Assembly<?> newInstance(Assembly<?> parent)
+  public Assembly<?> newInstance(Focus<?> parentFocus)
     throws BuildException
   { 
-    Assembly<?> assembly=newInstance();
+    Assembly<?> assembly=newInstance(false);
     if (!assembly.isBound())
-    { assembly.bind(parent);
+    { assembly.bind(parentFocus);
     }
     if (!assembly.isResolved())
     { assembly.resolve();
     }
     return assembly;    
   }
+  
+  /**
+   * <p>Create a new instance of this AssemblyClass in the context of the
+   *   optional specified parent Focus. The given Assembly will operate
+   *   as a Factory.
+   * </p>
+   * 
+   * <p>When operating as a Factory, the Assembly creates an instance of the
+   *   target object accessible by only the current thread (ThreadLocal). The
+   *   "resolve" method will create a new Object, and the release() method
+   *   will release it.
+   *   
+   * </p>
+   */
+  public Assembly<?> newFactoryInstance(Focus<?> parentFocus)
+    throws BuildException
+  {
+    Assembly<?> assembly=newInstance(true);
+    
+    if (!assembly.isBound())
+    { assembly.bind(parentFocus);
+    }
+    return assembly;    
+  }
+  
 }

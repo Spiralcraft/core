@@ -26,6 +26,7 @@ import spiralcraft.data.InstanceResolver;
 import spiralcraft.data.core.TypeImpl;
 
 import spiralcraft.data.spi.EditableArrayTuple;
+import spiralcraft.lang.Focus;
 
 
 import spiralcraft.builder.AssemblyLoader;
@@ -212,9 +213,9 @@ public class BuilderType
 
   }
 
-  public Assembly<?> newAssembly(Assembly<?> parent)
+  public Assembly<?> newAssembly(Focus<?> parentFocus)
     throws BuildException
-  { return targetAssemblyClass.newInstance(parent);
+  { return targetAssemblyClass.newInstance(parentFocus);
   }
   
   /**
@@ -271,7 +272,7 @@ public class BuilderType
         if (contextBinding!=null)
         { parent=contextBinding.getContainer();
         }
-        instance=newAssembly(parent);
+        instance=newAssembly(parent!=null?parent.getFocus():null);
 //        System.err.println("BuilderType: constructed new instance of "+getURI());
       }
       ((BuilderScheme) scheme).depersistBeanProperties(t,instance);
