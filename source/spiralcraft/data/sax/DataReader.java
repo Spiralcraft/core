@@ -17,10 +17,12 @@ package spiralcraft.data.sax;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 
 import spiralcraft.data.access.DataConsumer;
+import spiralcraft.data.access.DataFactory;
 import spiralcraft.data.Tuple;
 
 import org.xml.sax.SAXException;
@@ -42,9 +44,14 @@ import javax.xml.parsers.SAXParser;
 public class DataReader
 {
   private DataConsumer<? super Tuple> dataConsumer;
+  private DataFactory<? super DataComposite> dataFactory;
   
   public void setDataConsumer(DataConsumer<? super Tuple> dataConsumer)
   { this.dataConsumer=dataConsumer;
+  }
+  
+  public void setDataFactory(DataFactory<? super DataComposite> dataFactory)
+  { this.dataFactory=dataFactory;
   }
   
   public Object readFromURI(URI uri,Type<?> formalType)
@@ -107,24 +114,11 @@ public class DataReader
     { handler.setDataConsumer(dataConsumer);
     }
     
-    try
-    { parser.parse(in,handler);
+    if (dataFactory!=null)
+    { handler.setDataFactory(dataFactory);
     }
-    catch (SAXException x)
-    {
-      if (x.getException()!=null)
-      {
-        if (x.getException() instanceof DataException)
-        { throw (DataException) x.getException();
-        }
-        else
-        { throw x;
-        }
-      }
-      else
-      { throw x;
-      }
-    }
+
+    parser.parse(in,handler);
     return handler.getCurrentObject();
 
   }  

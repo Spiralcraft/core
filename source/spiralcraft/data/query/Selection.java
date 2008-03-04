@@ -89,7 +89,7 @@ public class Selection
   { return constraints;
   }
   
-  public <T extends Tuple> BoundQuery<?,T> bind(Focus<?> focus,Queryable<T> store)
+  public <T extends Tuple> BoundQuery<?,T> getDefaultBinding(Focus<?> focus,Queryable<T> store)
     throws DataException
   { return new SelectionBinding<Selection,T>(this,focus,store);
    

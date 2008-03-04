@@ -64,7 +64,7 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
   public BoundQuery<?,T> query(Query q, Focus<?> context)
     throws DataException
   { 
-    BoundQuery<?,T> ret=q.bind(context, this);
+    BoundQuery<?,T> ret=q.getDefaultBinding(context, this);
     ret.resolve();
     return ret;
   }

@@ -20,6 +20,7 @@ import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.spi.AbstractTuple;
+import spiralcraft.data.spi.ArrayTuple;
 
 import spiralcraft.lang.Channel;
 
@@ -49,6 +50,20 @@ public class BoundTuple
     }
     this.bindings=bindings;
   }
+  
+  @Override
+  protected AbstractTuple createBaseExtent(
+    FieldSet fieldSet)
+  { throw new RuntimeException("Bound Tuple cannot have a base extent");
+  }
+
+  @Override
+  protected AbstractTuple createBaseExtent(
+    Tuple tuple)
+    throws DataException
+  { throw new RuntimeException("Bound Tuple cannot have a base extent");
+  }
+
   
   public Object get(int index)
   { return bindings[index].get();

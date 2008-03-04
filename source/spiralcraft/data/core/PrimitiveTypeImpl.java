@@ -48,10 +48,12 @@ public abstract class PrimitiveTypeImpl<T>
   }
   
   public final synchronized void link()
+    throws DataException
   { 
     if (!linked)
     { 
       linkPrimitive();
+      super.link();
       linked=true;
     }
   }

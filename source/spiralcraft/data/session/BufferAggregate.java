@@ -31,7 +31,7 @@ public class BufferAggregate<T>
 {
   private final DataSession session;
   private Aggregate<T> original;
-  private Type type;
+  private Type<?> type;
   private Identifier id;
   
   private EditableArrayListAggregate<T> appendix;
@@ -43,7 +43,7 @@ public class BufferAggregate<T>
     this.type=original.getType();
   }
   
-  public BufferAggregate(DataSession session,Type type)
+  public BufferAggregate(DataSession session,Type<?> type)
   { 
     this.session=session;
     this.type=type;

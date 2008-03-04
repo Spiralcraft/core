@@ -107,7 +107,7 @@ public abstract class AbstractChannel<T>
     }
     
     if (binding==null)
-    { throw new BindException("'"+name+"' not found in "+_reflector.toString());
+    { throw new BindException("'"+name+"' not found. ("+toString()+")");
     }
     return binding;
   }
@@ -178,7 +178,7 @@ public abstract class AbstractChannel<T>
   public String toString()
   { 
     return super.toString()
-      +":"+_reflector.getContentType().getName()+"["+_reflector+"]";
+      +":"+_reflector;
   }
   
 }

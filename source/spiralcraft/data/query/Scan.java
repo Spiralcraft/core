@@ -56,10 +56,11 @@ public class Scan
     }
   }
 
-  public <T extends Tuple> BoundQuery<?,T> bind(Focus<?> focus,Queryable<T> store)
+  public <T extends Tuple> BoundQuery<?,T> 
+    getDefaultBinding(Focus<?> focus,Queryable<T> queryable)
     throws DataException
   { 
-    return store.getAll(type);
+    return queryable.getAll(type);
   }
   
 }

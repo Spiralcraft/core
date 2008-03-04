@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.core;
 
+import spiralcraft.data.Field;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeNotFoundException;
 
@@ -126,6 +127,13 @@ public abstract class AbstractAggregateType<T>
   { return contentType.getScheme();
   }
   
+  /**
+   * Aggregates don't have fields, for now
+   */
+  public Field getField(String name)
+  { return null;
+  }
+  
   public boolean isAggregate()
   { return true;
   }
@@ -175,6 +183,10 @@ public abstract class AbstractAggregateType<T>
     }
   }
 
+  public boolean isLinked()
+  { return linked;
+  }
+  
   public boolean isStringEncodable()
   { return false;
   }
@@ -196,4 +208,20 @@ public abstract class AbstractAggregateType<T>
   }  
   
   protected abstract String getAggregateQualifier();
+  
+
+  @Override
+  public boolean isAbstract()
+  {
+    // TODO Auto-generated method stub
+    return contentType.isAbstract();
+  }
+
+
+  @Override
+  public boolean isExtendable()
+  {
+    // TODO Auto-generated method stub
+    return contentType.isExtendable();
+  }
 }

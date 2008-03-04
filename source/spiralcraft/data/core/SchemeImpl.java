@@ -153,15 +153,19 @@ public class SchemeImpl
   { return fields.size();
   }
   
-  public String toString()
+  public String contentsToString()
   {
+    if (fields==null)
+    { return "(no fields)";
+    }
+    
     StringBuilder fieldList=new StringBuilder();
     fieldList.append("[");
     boolean first=true;
     for (Field field:fields)
     { 
       if (!first)
-      { fieldList.append(",");
+      { fieldList.append("\r\n,");
       }
       else
       { first=false;
@@ -169,17 +173,21 @@ public class SchemeImpl
       fieldList.append(field.toString());
     }
     fieldList.append("]");
-    
-    String typeUri="(untyped)";
+    return fieldList.toString();
+  }
+  
+  public String toString()
+  {
     if (getType()!=null)
-    { typeUri=getType().getURI().toString();
+    { return type.toString();
     }
-    return super.toString()
-      +":"+getType()!=null?getType().toString():"(untyped)"
-      .concat(":")
-      .concat(typeUri)
-      .concat(fieldList.toString())
-      ;
+    else
+    {
+      return super.toString()
+        +"(untyped):"
+        +contentsToString()
+        ;
+    }
   }
   
   public void resolve()
@@ -205,6 +213,10 @@ public class SchemeImpl
     
     for (FieldImpl field:localFields)
     {
+      if (field.getName()==null)
+      { throw new DataException("Field "+field+" name is null");
+      }
+      
       Field archetypeField=null;
       field.setScheme(this);
       
@@ -274,14 +286,40 @@ public class SchemeImpl
         }
       }
       key.resolve();
+      
+      if (key.getForeignType()!=null && key.getName()!=null)
+      {
+        // Expose a Field to provide direct access to the join
+        
+        if (getFieldByName(key.getName())!=null)
+        { 
+          throw new DataException
+            ("Key "+getType().getURI()+"."+key.getName()+": Field '"
+              +key.getName()+"' already exists"
+            );
+        }
+        else
+        { addFieldPostResolve(new KeyField(key));
+        }
+      }
+      
     }
     
+  }
+  
+  private void addFieldPostResolve(FieldImpl field)
+    throws DataException
+  { 
+    field.setIndex(fields.size());
+    fields.add(field);
+    fieldMap.put(field.getName(), field);
+    field.resolve();
   }
   
   public void assertUnresolved()
   {
     if (resolved)
-    { throw new IllegalStateException("Already resolved");
+    { throw new IllegalStateException("Already resolved "+getType());
     }
   }
 

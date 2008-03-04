@@ -15,6 +15,7 @@
 package spiralcraft.data.util;
 
 import spiralcraft.data.InstanceResolver;
+import spiralcraft.data.Type;
 
 /**
  * An InstanceResolver that simply holds an Object
@@ -22,7 +23,7 @@ import spiralcraft.data.InstanceResolver;
 public class StaticInstanceResolver
   implements InstanceResolver
 {
-  private final Object object;
+  private Object object;
   
   public StaticInstanceResolver(Object object)
   { this.object=object;
@@ -40,5 +41,16 @@ public class StaticInstanceResolver
     { return object;
     }
     return null;
+  }
+
+  public void setInstance(
+    Object newInstance)
+  { this.object=newInstance;
+    // TODO Auto-generated method stub
+    
+  }
+
+  public Object getInstance()
+  { return object;
   }
 }

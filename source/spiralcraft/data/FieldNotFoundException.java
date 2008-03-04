@@ -40,11 +40,35 @@ public class FieldNotFoundException
     return fieldList.toString();
   }
   
+  private static final String makeFieldList(Type<?> type)
+  {
+    StringBuilder fieldList=new StringBuilder();
+    boolean first=true;
+    while (type!=null)
+    {
+      if (type.getScheme()!=null)
+      {
+        for (Field field:type.getScheme().fieldIterable())
+        {
+          if (first)
+          { first=false;
+          }
+          else
+          { fieldList.append(",");
+          }
+          fieldList.append(field.getName());
+        }
+      }
+      type=type.getBaseType();
+    }
+    return fieldList.toString();
+  }
+
   public FieldNotFoundException(Type<?> type,String fieldName)
   { 
     super
       ("Field '"+fieldName+"' not found in type "+type.getURI()
-      +": fields=["+makeFieldList(type.getScheme())+"]"
+      +": fields=["+makeFieldList(type)+"]"
       );
   }
 

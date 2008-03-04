@@ -142,5 +142,7 @@ public class ArrayType
   protected String getAggregateQualifier()
   { return ".list";
   }
+
+
   
 }

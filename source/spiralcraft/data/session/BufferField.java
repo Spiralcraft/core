@@ -156,7 +156,7 @@ public class BufferField
       { 
         // Do a bunch of stuff to buffer depending on state
 
-        // XXX Check buffer state
+        // XXX Check buffer state (don't do this every time)
         inheritedValues.set();
       }
       finally

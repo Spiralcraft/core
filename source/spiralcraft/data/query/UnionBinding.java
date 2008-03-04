@@ -1,0 +1,168 @@
+//
+// Copyright (c) 1998,2007 Michael Toth
+// Spiralcraft Inc., All Rights Reserved
+//
+// This package is part of the Spiralcraft project and is licensed under
+// a multiple-license framework.
+//
+// You may not use this file except in compliance with the terms found in the
+// SPIRALCRAFT-LICENSE.txt file at the top of this distribution, or available
+// at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
+//
+// Unless otherwise agreed to in writing, this software is distributed on an
+// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+//
+package spiralcraft.data.query;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import spiralcraft.data.DataException;
+import spiralcraft.data.FieldSet;
+import spiralcraft.data.Identifier;
+import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
+import spiralcraft.data.access.SerialCursor;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.SimpleFocus;
+
+class UnionBinding<Tq extends Union,Tt extends Tuple>
+  extends BoundQuery<Tq,Tt>
+{
+//  private final Focus<?> paramFocus;
+  private SimpleFocus<?> focus;
+  private List<BoundQuery<?,Tt>> sources
+    =new ArrayList<BoundQuery<?,Tt>>();
+  private boolean resolved;
+  
+//  private Queryable<Tt> store;
+  
+  @SuppressWarnings("unchecked")
+  public UnionBinding
+    (Tq query
+    ,Focus<?> paramFocus
+    ,Queryable<Tt> store
+    )
+    throws DataException
+  { 
+    for (Query sourceQuery : query.getSources())
+    { sources.add((BoundQuery<?,Tt>) store.query(sourceQuery,focus));
+    }
+//    this.paramFocus=paramFocus;
+//    this.store=store;
+    setQuery(query);
+    
+    
+  }
+
+  public void resolve() throws DataException
+  { 
+    super.resolve();
+    if (!resolved)
+    { 
+      for (BoundQuery<?,?> source : sources)
+      { source.resolve();
+      }
+      resolved=true;
+    }
+    else
+    { throw new IllegalStateException("Already resolved");
+    }
+    
+  }
+  
+  public SerialCursor<Tt> execute()
+    throws DataException
+  {
+    if (!resolved)
+    { resolve();
+    }
+    return new UnionSerialCursor();
+  }
+  
+
+
+  class UnionSerialCursor
+    implements SerialCursor<Tt>
+  {
+
+    private SerialCursor<Tt> currentSource;
+    private Iterator<BoundQuery<?,Tt>> sourceIterator;
+    
+    public UnionSerialCursor()
+      throws DataException
+    { 
+      sourceIterator=sources.iterator();
+      if (sourceIterator.hasNext())
+      { currentSource=sourceIterator.next().execute();
+      }
+    }
+    
+    @Override
+    public boolean dataNext()
+      throws DataException
+    {
+      boolean done=false;
+      while (!done)
+      {
+        
+        if (currentSource.dataNext())
+        { 
+          if (!checkDuplicate())
+          { return true;
+          }
+        }
+        else
+        {
+          if (sourceIterator.hasNext())
+          { currentSource=sourceIterator.next().execute();
+          }
+          else
+          { done=true;
+          }
+        }
+      }
+      return false;
+    }
+    
+    
+    private boolean checkDuplicate()
+    { 
+      // XXX implement, perhaps using Identifier
+      return false;
+    }
+
+    @Override
+    public FieldSet dataGetFieldSet()
+    { return getType().getScheme();
+    }
+
+    @Override
+    public Tt dataGetTuple()
+      throws DataException
+    {
+      if (currentSource!=null)
+      { return currentSource.dataGetTuple();
+      }
+      else
+      { return null;
+      }
+    }
+
+    @Override
+    public Identifier getRelationId()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public Type<?> getResultType()
+    { return getType();
+    }
+
+  
+  }
+
+}

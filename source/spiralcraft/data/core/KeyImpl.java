@@ -47,6 +47,7 @@ public class KeyImpl
   private KeyImpl importedKey;
   private String[] fieldNames;
   private Query query;
+  private Query foreignQuery;
 
   public String getName()
   { return name;
@@ -111,7 +112,7 @@ public class KeyImpl
    * @return Whether this Key uniquely identifies a single Tuple
    */
   public boolean isUnique()
-  { return unique;
+  { return primary || unique;
   }
   
   public void setUnique(boolean unique)
@@ -119,26 +120,37 @@ public class KeyImpl
   }
   
   /**
-   * @return A Type which provides data for this Key's Fields.
+   * @return A Type which maps data to this Key's Fields.
    */
   public Type<?> getForeignType()
   { return foreignType;
   }
   
   /**
+   * A Type which maps data to this Key's Fields.
+   */
+  public void setForeignType(Type<?> foreignType)
+  { this.foreignType=foreignType;
+  }
+
+  /**
    * @return A Key from the foreign Type that originates the data values
    *   for this Key's Fields. 
    */
-  public KeyImpl getImportedKey()
+  public Key getImportedKey()
   { return importedKey;
   }
   
-  public void setImportedKey(KeyImpl key)
-  { this.importedKey=key;
+  public void setImportedKey(Key key)
+  { this.importedKey=(KeyImpl) key;
   }
 
   public Query getQuery()
   { return query;
+  }
+  
+  public Query getForeignQuery()
+  { return foreignQuery;
   }
   
   public void setFieldList(String fieldList)
@@ -148,6 +160,9 @@ public class KeyImpl
       =StringUtil.tokenize(fieldList,",");
   }
   
+  public String[] getFieldNames()
+  { return fieldNames;
+  }
   
   public void resolve()
     throws DataException
@@ -166,24 +181,55 @@ public class KeyImpl
     }
     if (importedKey!=null)
     { 
-      if (foreignType==null)
-      { foreignType=scheme.getType();
-      }
       
       if (foreignType==null)
       { 
         throw new DataException
           ("Key with imported Key must also have a foreign Type");
       }
+
+//      // Querying another type while resolving introduced a
+//      // cycle.
+//      
+//      Scheme importedScheme=foreignType.getScheme();
+//      if (importedScheme==null)
+//      { 
+//        throw new DataException
+//          ("Foreign Type must have a Scheme "+foreignType);
+//      }
+
       
-      Scheme importedScheme=foreignType.getScheme();
-      if (importedScheme==null)
+      
+//      importedKey.setScheme(importedScheme);
+//      importedKey.resolve();
+      
+      StringBuilder expression=new StringBuilder();
+      String[] foreignFieldNames=importedKey.getFieldNames();
+      for (int i=0;i<fieldNames.length;i++)
+      {
+        if (expression.length()>0)
+        { expression.append(" && ");
+        }
+        expression.append(foreignFieldNames[i])
+          .append("==").append("..").append(fieldNames[i]);
+      }
+//      System.err.println("KeyImpl: expression= ["+expression+"]");
+      
+      try
+      {
+        foreignQuery
+          =new Selection
+            (new Scan(getForeignType())
+            ,Expression.<Boolean>parse(expression.toString())
+            );
+      }
+      catch (ParseException x)
       { 
         throw new DataException
-          ("Foreign Type must have a Scheme");
+          ("Error parsing Key expression '"+expression.toString()+"':"+x,x);
       }
-      importedKey.setScheme(importedScheme);
-      importedKey.resolve();
+      
+      
     }
     
     StringBuilder expression=new StringBuilder();
@@ -210,21 +256,6 @@ public class KeyImpl
         ("Error parsing Key expression '"+expression.toString()+"':"+x,x);
     }
 
-    if (getForeignType()!=null && name!=null)
-    {
-      // Expose a Field to provide direct access to the join
-      
-      if (getFieldByName(name)!=null)
-      { 
-        throw new DataException
-          ("Key "+getScheme().getType().getURI()+"."+name+": Field '"
-            +name+"' already exists"
-          );
-      }
-      else
-      { ((SchemeImpl) getScheme()).addField(new KeyField(this));
-      }
-    }
     
     super.resolve();
     

@@ -25,6 +25,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.reflect.ReflectionType;
 
 import spiralcraft.data.util.ConstructorInstanceResolver;
+import spiralcraft.data.util.StaticInstanceResolver;
 
 import java.net.URI;
 
@@ -74,6 +75,29 @@ public class MetaType
   { return val.getURI().toString();
   } 
   
+  /**
+   * Create a new subtype instance for type extension (making new instances
+   *   of various Type implementations), to bypass the type reference behavior
+   *   which returns canonical instances.
+   * 
+   * @param composite
+   * @param uri
+   * @return
+   * @throws DataException
+   */
+  public Type newSubtype(DataComposite composite,URI uri)
+    throws DataException
+  {
+    
+    InstanceResolver instanceResolver
+      =new ConstructorInstanceResolver
+        (new Class[] {TypeResolver.class,URI.class}
+        ,new Object[] {getTypeResolver(),uri}
+        );
+    return super.fromData(composite,instanceResolver);
+    
+  }
+  
   public Type fromData(DataComposite composite,InstanceResolver instanceResolver)
     throws DataException
   {
@@ -91,17 +115,34 @@ public class MetaType
         break;
       }
     } 
+    if (instanceResolver instanceof StaticInstanceResolver)
+    { 
+      // We already have an instance
+      referenced=false;
+    }
+    
+      
     if (referenced)
     { return referencedType;
     }
     else
     { 
-      URI uri=URI.create(getURI().toString().concat("-"+(anonRefId++)));
-      instanceResolver
-        =new ConstructorInstanceResolver
-          (new Class[] {TypeResolver.class,URI.class}
-          ,new Object[] {getTypeResolver(),uri}
-          );
+      
+      if (!(instanceResolver instanceof StaticInstanceResolver))
+      {
+        // A StaticInstanceResolver indicates that we've already created
+        //   the desired instance.
+        
+        // Create an anonymous subtype
+        // TODO: clean up and consolidate with newSubtype()
+        final URI uri=URI.create(getURI().toString().concat("-"+(anonRefId++)));
+        
+        instanceResolver
+          =new ConstructorInstanceResolver
+            (new Class[] {TypeResolver.class,URI.class}
+            ,new Object[] {getTypeResolver(),uri}
+            );
+      }
       return super.fromData(composite,instanceResolver);
     }
     

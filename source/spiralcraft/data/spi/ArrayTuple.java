@@ -37,6 +37,17 @@ public class ArrayTuple
   { 
     super(fieldSet);
     this.data=new Object[fieldSet.getFieldCount()];
+    
+    if (fieldSet.getType()!=null)
+    {
+      if (fieldSet.getType().getBaseType()!=null)
+      { 
+        FieldSet baseScheme=fieldSet.getType().getBaseType().getScheme();
+        if (baseScheme!=null)
+        { baseExtent=createBaseExtent(baseScheme);
+        }
+      }
+    }
   }
   
   /**
@@ -65,6 +76,9 @@ public class ArrayTuple
       { data[field.getIndex()]=originalValue;
       }
     }
+    if (original.getBaseExtent()!=null)
+    { baseExtent=createBaseExtent(original.getBaseExtent());
+    }
   }
 
   
@@ -75,6 +89,20 @@ public class ArrayTuple
   
   public int hashCode()
   { return ArrayUtil.arrayHashCode(data);
+  }
+
+
+  @Override
+  protected AbstractTuple createBaseExtent(
+    FieldSet fieldSet)
+  { return new ArrayTuple(fieldSet);
+  }
+
+  @Override
+  protected AbstractTuple createBaseExtent(
+    Tuple tuple)
+    throws DataException
+  { return new ArrayTuple(tuple);
   }
   
 }

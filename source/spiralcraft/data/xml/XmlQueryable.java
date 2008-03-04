@@ -123,11 +123,11 @@ public class XmlQueryable
         try
         {
           if (!resource.exists())
-          { throw new IllegalArgumentException(qualifiedURI+" does not exist");
+          { throw new DataException(qualifiedURI+" does not exist");
           }
         }
         catch (IOException x)
-        { throw new IllegalArgumentException(qualifiedURI+" could not be read",x);
+        { throw new DataException(qualifiedURI+" could not be read",x);
         }
         setResource(resource);
       }

@@ -40,6 +40,7 @@ public abstract class Type<T>
   { return TypeResolver.getTypeResolver().resolve(uri);
   }
   
+    
   @SuppressWarnings("unchecked")
   public static <X> Type<List<X>> getAggregateType(Type<X> type)
   { 
@@ -187,7 +188,18 @@ public abstract class Type<T>
    */
   public abstract Type<?> getBaseType();
   
+  /**
+   * 
+   * @return Whether another Type can extend this Type. 
+   */
+  public abstract boolean isExtendable();
   
+  /**
+   * 
+   * @return Whether this Type can be directly instantiated. 
+   */
+  public abstract boolean isAbstract();
+
   /**
    * @return Whether this Type or any of its base Types (recursively) is the
    *   the specified Type.
@@ -199,6 +211,14 @@ public abstract class Type<T>
    *   the specified Type.
    */
   public abstract boolean isAssignableFrom(Type<?> type);
+  
+
+  /**
+   * Returns the Field with the specified name in this Type or its base Types
+   * @param name
+   * @return the Field
+   */
+  public abstract Field getField(String name);
   
   /**
    * The Method with the specified name that best matches the
@@ -340,4 +360,10 @@ public abstract class Type<T>
    */
   public abstract void link()
     throws DataException;
+
+  /**
+   * Indicate whether a Type is has been linked.
+   */
+  public abstract boolean isLinked();
+  
 }

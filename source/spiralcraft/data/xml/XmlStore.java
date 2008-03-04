@@ -17,7 +17,6 @@ package spiralcraft.data.xml;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import spiralcraft.builder.LifecycleException;
 import spiralcraft.data.DataException;
@@ -26,6 +25,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.spi.AbstractStore;
+import spiralcraft.data.spi.BaseExtentQueryable;
 
 
 /**
@@ -39,9 +39,12 @@ public class XmlStore
 {
 
   
-  private LinkedHashMap<Type<?>,XmlQueryable> queryables
-    =new LinkedHashMap<Type<?>,XmlQueryable>();
+  private LinkedHashMap<Type<?>,Queryable<Tuple>> queryables
+    =new LinkedHashMap<Type<?>,Queryable<Tuple>>();
     
+  private ArrayList<XmlQueryable> xmlQueryables
+    =new ArrayList<XmlQueryable>();
+  
   private URI baseResourceURI;
   
   public void setBaseResourceURI(URI uri)
@@ -49,18 +52,60 @@ public class XmlStore
   }
   
   
-  public XmlQueryable[] getQueryables()
-  { 
-    XmlQueryable[] list=new XmlQueryable[queryables.size()];
-    queryables.values().toArray(list);
-    return list;
-    
-  }
+//  public XmlQueryable[] getQueryables()
+//  { 
+//    XmlQueryable[] list=new XmlQueryable[queryables.size()];
+//    queryables.values().toArray(list);
+//    return list;
+//    
+//  }
   
+  @SuppressWarnings("unchecked")
   public void setQueryables(XmlQueryable[] list)
   { 
+    
     for (XmlQueryable queryable:list)
-    { queryables.put(queryable.getResultType(),queryable);
+    { 
+      xmlQueryables.add(queryable);
+      
+      Type<?> subtype=queryable.getResultType();
+      queryables.put(subtype,queryable);
+      
+      Type<?> type=subtype.getBaseType();
+      while (type!=null)
+      { 
+        // Set up a queryable for each of the XmlQueryable's base types
+        
+        Queryable<?> candidateQueryable=queryables.get(type);
+        BaseExtentQueryable baseQueryable;
+        
+        if (candidateQueryable==null)
+        { 
+          baseQueryable=new BaseExtentQueryable(type);
+          queryables.put(type, baseQueryable);
+          baseQueryable.addExtent(subtype,queryable);
+        }
+        else if (!(candidateQueryable instanceof BaseExtentQueryable))
+        {
+          // The base extent queryable is already "concrete"
+          // This is ambiguous, though. The base extent queryable only
+          //   contains the non-subtyped concrete instances of the
+          //   base type.
+          
+          baseQueryable=new BaseExtentQueryable(type);
+          queryables.put(type, baseQueryable);
+          baseQueryable.addExtent(type,candidateQueryable);
+          baseQueryable.addExtent(subtype,queryable);
+        }
+        else
+        {
+          ((BaseExtentQueryable) candidateQueryable)
+            .addExtent(subtype, queryable);
+        }
+        type=type.getBaseType();
+        
+      }
+      
     }
   }
   
@@ -91,8 +136,8 @@ public class XmlStore
   {
     Type<?>[] types=new Type[queryables.size()];
     int i=0;
-    for (XmlQueryable queryable: queryables.values())
-    { types[i++]=queryable.getResultType();
+    for (Queryable<Tuple> queryable: queryables.values())
+    { types[i++]=queryable.getTypes()[0];
     }
     return types;
   }
@@ -104,7 +149,7 @@ public class XmlStore
     throws LifecycleException
   {
     // TODO Auto-generated method stub
-    for (XmlQueryable queryable:queryables.values())
+    for (XmlQueryable queryable:xmlQueryables)
     { 
       try
       { 

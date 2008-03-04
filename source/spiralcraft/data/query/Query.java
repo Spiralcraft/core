@@ -120,7 +120,7 @@ public abstract class Query
     { return null;
     }
 
-    return factor.bind(focus,store);
+    return factor.getDefaultBinding(focus,store);
   }
 
   /**
@@ -133,7 +133,7 @@ public abstract class Query
    * </p>
    */
   public abstract <T extends Tuple> BoundQuery<?,T> 
-    bind(Focus<?> focus,Queryable<T> store)
+    getDefaultBinding(Focus<?> focus,Queryable<T> store)
     throws DataException;
   
   

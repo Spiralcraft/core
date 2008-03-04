@@ -258,6 +258,7 @@ public class ReflectionType<T>
     depersistMethodFieldNames=fieldNames;
   }
    
+  @Override
   public void link()
     throws DataException
   {
@@ -597,6 +598,10 @@ public class ReflectionType<T>
     { cycleDetectorLocal.get().pop();
     }
       
+  }
+  
+  public String toString()
+  { return super.toString()+" reflects "+this.reflectedClass.getName();
   }
   
   

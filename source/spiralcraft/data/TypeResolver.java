@@ -40,6 +40,7 @@ import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.reflect.ReflectionTypeFactory;
 
 import spiralcraft.data.xml.XmlTypeFactory;
+import spiralcraft.log.ClassLogger;
 
 
 /**
@@ -64,6 +65,8 @@ import spiralcraft.data.xml.XmlTypeFactory;
  */
 public class TypeResolver
 {
+  private static final ClassLogger log=new ClassLogger(TypeResolver.class);
+  
   private static final ClassLoaderLocal<TypeResolver> classLoaderLocal
     =new ClassLoaderLocal<TypeResolver>();
     
@@ -158,29 +161,16 @@ public class TypeResolver
     try
     { type=load(typeUri);
     }
+    catch (TypeNotFoundException x)
+    { throw x;
+    }
     catch (DataException x)
-    { x.printStackTrace();
+    { throw new TypeNotFoundException(typeUri,x);
     }
     
     if (type!=null)
     { 
-      try
-      { type.link();
-      }
-      catch (TypeNotFoundException x)
-      { throw x;
-      }
-      catch (DataException x)
-      { 
-        if (x.getCause()!=null
-            && x.getCause() instanceof TypeNotFoundException
-           )
-        { throw (TypeNotFoundException) x.getCause();
-        }
-        else
-        { throw new TypeNotFoundException(typeUri,x);
-        }
-      }
+      // Link was here
       return type;
     }
     else
@@ -206,20 +196,22 @@ public class TypeResolver
     catch (TypeNotFoundException x)
     { 
       throw new RuntimeException
-        ("TypeResolver cannot resolve "+TYPE_TYPE_URI);
+        ("TypeResolver cannot resolve "+TYPE_TYPE_URI,x);
     }
   }
 
   @SuppressWarnings("unchecked") // Heterogenous ArrayType construction
   private final Type loadArrayType(Type baseType,URI typeURI)
+    throws DataException
   {
     Type type=new ArrayType(baseType,typeURI);
-    map.put(typeURI,type);
+    type=putMap(typeURI,type);
     return type;
   }
   
   @SuppressWarnings("unchecked") // Heterogeneuous CollectionType construction
   private final Type loadListType(Type baseType,URI typeURI)
+    throws DataException
   {
     // Create and map the list type
     Type type=new AbstractCollectionType<ArrayList>
@@ -228,7 +220,7 @@ public class TypeResolver
       ,typeURI
       ,ArrayList.class
       );
-    map.put(typeURI,type);
+    type=putMap(typeURI,type);
     return type;
   }
 
@@ -240,7 +232,7 @@ public class TypeResolver
       ,typeURI
       ,baseType
       );
-    map.put(typeURI,type);
+    type=putMap(typeURI,type);
     return type;
   } 
 
@@ -253,7 +245,7 @@ public class TypeResolver
       ,baseType.getURI()
       ,baseType.getClass()
       );
-    map.put(typeURI,type);
+    type=putMap(typeURI,type);
     return type;
   }
 
@@ -312,8 +304,53 @@ public class TypeResolver
     return null;
   }
 
+  /**
+   * Register a Type, without linking it
+   *
+   * @param uri
+   * @param type
+   * @throws DataException
+   */
+  public synchronized void register(URI uri,Type<?> type)
+    throws DataException
+  { 
+    if (map.get(uri)!=null)
+    { 
+      throw new DataException
+        ("Type "+uri+" already registered as "+map.get(uri));
+    }
+    map.put(uri,type);
+    log.fine("register "+type);
+    // Type may not be ready to be linked
+  }
   
+  public synchronized void unregister(URI uri,Type<?> type)
+  {
+    if (map.get(uri)!=type)
+    { log.fine("Unregister non-registered type"+type);
+    }
+    else
+    { map.remove(uri);
+    }
+  }
 
+  private synchronized Type<?> putMap(URI uri,Type<?> type)
+    throws DataException
+  {
+    Type<?> existing=map.get(uri);
+    if (existing!=null && existing!=type)
+    { 
+      log.fine("NOT remapping type "+type);
+      return existing;
+    }
+    map.put(uri,type);
+    type.link();
+    if (!type.isLinked())
+    { throw new DataException("Link failed silently for "+type);
+    }
+    return type;
+  }
+  
   /**
    * Find a type in the local classloader that is a derivative of another
    *   type (ie. an ArrayType based on the type, or the type's Type)
@@ -369,7 +406,7 @@ public class TypeResolver
       if (type!=null)
       { 
         // System.err.println("TypeResolver: Caching "+typeUri+" = "+type.getURI());
-        map.put(typeUri,type);
+        type=putMap(typeUri,type);
       }
       return type;
     }
@@ -389,19 +426,41 @@ public class TypeResolver
     { return type;
     }
     
+    
 
     // Delegate to parent
     if (parent!=null)
     {
       type=parent.load(typeUri);
       if (type!=null)
-      { return type;
+      { 
+        type.link();
+        return type;
       }
     }
     
     type=findTypeExtended(typeUri);
-    
 
+    if (type!=null)
+    {
+      try
+      { type.link();
+      }
+      catch (TypeNotFoundException x)
+      { throw x;
+      }
+      catch (DataException x)
+      { 
+        if (x.getCause()!=null
+            && x.getCause() instanceof TypeNotFoundException
+           )
+        { throw (TypeNotFoundException) x.getCause();
+        }
+        else
+        { throw new TypeNotFoundException(typeUri,x);
+        }
+      }
+    }
     return type;
   }
 
@@ -422,5 +481,6 @@ public class TypeResolver
     }
     return type;
   }
+
   
 }

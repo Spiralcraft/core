@@ -30,7 +30,12 @@ public class TypeMismatchException
   }
   
   public TypeMismatchException(String message,Type<?> formalType,Type<?> actualType)
-  { super(message+": expected "+formalType.getURI()+" but found "+actualType.getURI());
+  { super(message
+          +": expected "
+          +(formalType!=null?formalType.getURI():"(null)")
+          +" but found "
+          +(actualType!=null?actualType.getURI():"(null)")
+          );
   }
 
 }

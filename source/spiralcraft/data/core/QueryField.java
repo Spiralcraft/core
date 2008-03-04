@@ -71,7 +71,7 @@ public class QueryField
       try
       { 
         BoundQuery boundQuery
-          =query.bind(focus, (Queryable) queryableFocus.getSubject().get());
+          =query.getDefaultBinding(focus, (Queryable) queryableFocus.getSubject().get());
         return new QueryChannel(boundQuery);
       }
       catch (DataException x)

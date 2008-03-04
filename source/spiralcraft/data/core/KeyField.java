@@ -43,7 +43,8 @@ public class KeyField
   private KeyImpl key;
   
   public KeyField(KeyImpl key)
-  { this.key=key;
+  { 
+    this.key=key;
   }
   
   public KeyImpl getKey()
@@ -51,8 +52,12 @@ public class KeyField
   }
   
   @Override
-  public void subclassResolve()
-  { this.setType(key.getForeignType());
+  public void resolve()
+    throws DataException
+  { 
+    setName(key.getName());
+    setType(key.getForeignType());
+    super.resolve();
   }
   
   
@@ -63,7 +68,7 @@ public class KeyField
     
     Focus keyFocus=new SimpleFocus(focus,key.bind(focus));
 
-    Query query=key.getQuery();
+    Query query=key.getForeignQuery();
     Focus queryableFocus=focus.findFocus(Queryable.QUERYABLE_URI);
     if (queryableFocus!=null)
     { 
@@ -71,7 +76,7 @@ public class KeyField
       try
       { 
         BoundQuery boundQuery
-          =query.bind(keyFocus, (Queryable) queryableFocus.getSubject());
+          =query.getDefaultBinding(keyFocus, (Queryable) queryableFocus.getSubject());
         return new KeyFieldChannel(getType(),boundQuery);
       }
       catch (DataException x)

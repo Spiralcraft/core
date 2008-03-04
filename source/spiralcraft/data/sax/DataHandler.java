@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.sax;
 
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.EditableTuple;
@@ -27,12 +28,15 @@ import spiralcraft.data.FieldNotFoundException;
 
 
 import spiralcraft.data.access.DataConsumer;
+import spiralcraft.data.access.DataFactory;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.log.ClassLogger;
+import spiralcraft.text.ParsePosition;
 
 
 import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 
@@ -55,16 +59,37 @@ public class DataHandler
   private Frame currentFrame;
   private URI resourceURI;
   private DataConsumer<? super Tuple> dataConsumer;
+  private DataFactory<? super DataComposite> dataFactory;
+  private ParsePosition position;
+  private Locator locator;
   
   /**
    * Construct a new DataReader which expects to read the specified
    *   formal Type.
    */
   public DataHandler(Type<?> formalType,URI resourceURI)
-  { 
+  {
+
     currentFrame=new InitialFrame(formalType); 
     this.resourceURI=resourceURI;
   }
+  
+  public void setDocumentLocator(Locator locator)
+  { 
+    this.locator=locator;
+    position=new ParsePosition();
+    position.setLine(locator.getLineNumber());
+    position.setColumn(locator.getColumnNumber());
+    position.setContextURI(resourceURI);
+  }
+  
+  public String formatPosition()
+  {
+    position.setLine(locator.getLineNumber());
+    position.setColumn(locator.getColumnNumber());
+    return " ("+position+")";
+  }
+  
 
   /**
    * Specify the DataConsumer that will receive all Tuples contained within
@@ -72,6 +97,10 @@ public class DataHandler
    */
   public void setDataConsumer(DataConsumer<? super Tuple> consumer)
   { this.dataConsumer=consumer;
+  }
+  
+  public void setDataFactory(DataFactory<? super DataComposite> dataFactory)
+  { this.dataFactory=dataFactory;
   }
   
   public Object getCurrentObject()
@@ -108,7 +137,11 @@ public class DataHandler
     { currentFrame.startElement(uri,localName,qName,attributes);
     }
     catch (DataException x)
-    { throw new SAXException(x.toString(),x);
+    { 
+      SAXException sx=new SAXException(x.toString()+formatPosition());
+      sx.initCause(x);
+      throw sx;
+      
     }
     
   }
@@ -124,7 +157,10 @@ public class DataHandler
     { currentFrame.finish(); 
     }
     catch (DataException x)
-    { throw new SAXException(x.toString(),x);
+    { 
+      SAXException sx=new SAXException(x.toString()+formatPosition());
+      sx.initCause(x);
+      throw sx;
     }
   }
   
@@ -182,7 +218,7 @@ public class DataHandler
       { 
         throw new SAXException
           ("Element already contains text '"+getCharacters()+"', it cannot "
-          +"also contain another Element <"+qName+">"
+          +"also contain another Element <"+qName+">"+formatPosition()
           );
       }
       
@@ -200,7 +236,7 @@ public class DataHandler
       { finish(); 
       }
       else
-      { throw new SAXException("Expected </"+qName+">");
+      { throw new SAXException("Expected </"+qName+">"+formatPosition());
       }
     }
   
@@ -221,14 +257,16 @@ public class DataHandler
           throw new SAXException
           ("Element already contains other elements."
           +" It cannot contain preserved whitespace."
+          +formatPosition()
           );
         }
         
         if (new String(ch,start,length).trim().length()>0)
         {
           throw new SAXException
-            ("Element already contains other elements."
-            +" It cannot contain text '"+chars.toString()+"'"
+            ("Element '"+qName+"' already contains other elements."
+            +" It cannot contain text '"+new String(ch,start,length).trim()+"'"
+            +formatPosition()+" (frame="+toString()
             );
         }
       }
@@ -361,13 +399,13 @@ public class DataHandler
       { 
         log.fine(formalType.toString()+"<>"+actualType.toString());
         throw new TypeMismatchException
-          ("Error reading data",formalType,actualType);
+          ("Error reading data "+formatPosition(),formalType,actualType);
       }
     
     }
     
     protected Type<?> resolveType(String uri,String localName)
-      throws TypeNotFoundException
+      throws DataException
     {
       URI typeUri;
      
@@ -399,7 +437,17 @@ public class DataHandler
           typeUri=resourceURI.resolve(typeUri);
         }
 //      System.err.println("DataHandler resolving: "+typeUri.toString());
-        return Type.resolve(typeUri);
+        try
+        { return Type.resolve(typeUri);
+        }
+        catch (TypeNotFoundException x)
+        { 
+          throw new DataException
+            (x.getMessage()+formatPosition()
+            ,x
+            );
+        }
+        
       }
     }
 
@@ -417,7 +465,10 @@ public class DataHandler
         { ref=resourceURI.resolve(ref);
         }
         try
-        { value=new DataReader().readFromURI(ref,type);
+        { 
+          DataReader dataReader=new DataReader();
+          dataReader.setDataFactory(dataFactory);
+          value=dataReader.readFromURI(ref,type);
         }
         catch (IOException x)
         { throw new DataException("Error reading "+ref+": "+x,x);
@@ -487,7 +538,12 @@ public class DataHandler
       scheme=this.type.getScheme();
       if (scheme!=null)
       { 
-        tuple=new EditableArrayTuple(scheme);
+        if (dataFactory==null)
+        { tuple=new EditableArrayTuple(scheme);
+        }
+        else
+        { tuple=(EditableTuple) dataFactory.create(this.type);
+        }
         if (initialValue!=null)
         { tuple.copyFrom(initialValue);
         }
@@ -558,10 +614,12 @@ public class DataHandler
       if (scheme==null)
       { 
         throw new DataException
-          ("Primitive Type "+type.getURI()+" does not accept field data");
+          ("Primitive Type "+type+" does not accept field data:"
+           +formatPosition()
+          );
       }
       
-      currentField=scheme.getFieldByName(localName);
+      currentField=type.getField(localName);
       if (currentField==null)
       { throw new FieldNotFoundException(type,localName);
       }
@@ -578,9 +636,11 @@ public class DataHandler
         }
         try
         { 
+          DataReader dataReader=new DataReader();
+          dataReader.setDataFactory(dataFactory);
           currentField.setValue
             (tuple
-            ,new DataReader().readFromURI(ref,fieldType)
+            ,dataReader.readFromURI(ref,fieldType)
             );
           
         }
@@ -590,6 +650,7 @@ public class DataHandler
         }
         return new EmptyFrame(); //XXX Until merge works
       }
+
       
       if (fieldType.isAggregate())
       { return new AggregateFrame(fieldType,null);
@@ -723,7 +784,10 @@ public class DataHandler
       { consumer.dataAvailable((Tuple) object);
       }
       catch (DataException x)
-      { throw new SAXException("Error handling Tuple "+x,x);
+      { 
+        SAXException sx=new SAXException("Error handling Tuple "+x);
+        sx.initCause(x);
+        throw sx;
       }
       
       
@@ -770,10 +834,17 @@ public class DataHandler
       (Type formalType
       ,Aggregate<Object> initialValue
       )
+      throws DataException
     { 
       super(formalType);
       
-      aggregate=new EditableArrayListAggregate<Object>(formalType);
+      if (dataFactory!=null)
+      { aggregate=(EditableArrayListAggregate) dataFactory.create(formalType);
+      }
+      else
+      { aggregate=new EditableArrayListAggregate<Object>(formalType);
+      }
+      
       if (initialValue!=null)
       { aggregate.addAll(initialValue);
       }

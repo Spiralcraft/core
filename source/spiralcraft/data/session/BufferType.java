@@ -34,12 +34,12 @@ public class BufferType
 {
   private static final ClassLogger log=new ClassLogger(BufferType.class);
   
-  public static final BufferType getBufferType(Type<?> baseType)
+  public static final BufferType getBufferType(Type<?> bufferedType)
     throws DataException
   {
     return (BufferType) Type.resolve
       (URI.create
-         (baseType.getURI().toString().concat(".buffer"))
+         (bufferedType.getURI().toString().concat(".buffer"))
       ); 
     
   }
@@ -53,6 +53,9 @@ public class BufferType
     super(resolver,typeURI);
     // log.fine("Buffer type for "+archetype);
     this.archetype=archetype;
+    if (archetype.getBaseType()!=null)
+    { this.baseType=getBufferType(archetype.getBaseType());
+    }
   }
   
   /**
@@ -71,37 +74,51 @@ public class BufferType
     }
     this.scheme.setArchetypeScheme(this.archetype.getScheme());
     
-    for (Field field : this.archetype.getScheme().fieldIterable())
+    if (this.archetype.getScheme()!=null)
     {
-      if (field.getType()==null)
-      { 
-        log.fine("Field type is null "+field);
-        continue;
-      }
-      
-      // Primitives are immutable
-      if (!field.getType().isPrimitive())
+      for (Field field : this.archetype.getScheme().fieldIterable())
       {
-        // If we didn't buffer it already
-        if (this.scheme.getLocalFieldByName(field.getName())==null)
+        if (field.getType()==null)
         { 
-          // AutoBuffer 
-          BufferField newField=new BufferField();
-          newField.setName(field.getName());
-          newField.setType
-            (Type.resolve
-              (URI.create(field.getType().getURI().toString()+".buffer"))
-            );
-          scheme.addField(newField);
-          
+          log.fine("Field type is null "+field);
+          continue;
         }
 
+        if (field.getName()==null)
+        { 
+          log.fine("Field name is null "+field+" of type "+field.getType());
+          continue;
+        }
+
+        // Primitives are immutable
+        if (!field.getType().isPrimitive())
+        {
+          // If we didn't buffer it already
+          if (this.scheme.getLocalFieldByName(field.getName())==null)
+          { 
+            // AutoBuffer 
+            BufferField newField=new BufferField();
+            newField.setName(field.getName());
+            newField.setType(getBufferType(field.getType()));
+            scheme.addField(newField);
+
+          }
+
+        }
       }
     }
+    else
+    { 
+      if (!isAggregate())
+      {
+        log.warning("Archetype scheme is null: "
+          +archetype+" in BufferType"+toString());
+      }
+    }
+    super.link();
 
 //    addMethods();
 
-    super.link();
   }
 
   

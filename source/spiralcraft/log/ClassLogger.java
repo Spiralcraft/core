@@ -37,7 +37,9 @@ public class ClassLogger
       null
       );
     logger=Logger.getLogger(getName());
-    logger.addHandler(logHandler);
+    if (logger.getHandlers()==null || logger.getHandlers().length==0)
+    { logger.addHandler(logHandler);
+    }
     setLevel(Level.FINEST);
   }
   
@@ -60,7 +62,23 @@ public class ClassLogger
   public void setLevel(Level level)
   { logger.setLevel(level);
   }
-  
+
+  public void warning(String msg)
+  { 
+    if (isLoggable(Level.WARNING))
+    { 
+      StackTraceElement element
+        =Thread.currentThread().getStackTrace()[2];
+      
+      logger.logp
+        (Level.WARNING
+        ,element.getClassName()
+        ,element.getMethodName()+" ("+element.getFileName()+":"+element.getLineNumber()+")"
+        ,msg
+        );
+    }
+  }
+
   public void fine(String msg)
   { 
     if (isLoggable(Level.FINE))
@@ -76,7 +94,39 @@ public class ClassLogger
         );
     }
   }
+
+  public void finer(String msg)
+  { 
+    if (isLoggable(Level.FINER))
+    { 
+      StackTraceElement element
+        =Thread.currentThread().getStackTrace()[2];
+      
+      logger.logp
+        (Level.FINER
+        ,element.getClassName()
+        ,element.getMethodName()+" ("+element.getFileName()+":"+element.getLineNumber()+")"
+        ,msg
+        );
+    }
+  }
+
   
+  public void finest(String msg)
+  { 
+    if (isLoggable(Level.FINEST))
+    { 
+      StackTraceElement element
+        =Thread.currentThread().getStackTrace()[2];
+      
+      logger.logp
+        (Level.FINEST
+        ,element.getClassName()
+        ,element.getMethodName()+" ("+element.getFileName()+":"+element.getLineNumber()+")"
+        ,msg
+        );
+    }
+  }
 //  public void fine(String msg)
 //  { logger.finer(msg);
 //  }

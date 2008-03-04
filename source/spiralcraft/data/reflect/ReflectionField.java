@@ -280,6 +280,8 @@ public class ReflectionField
                  +" is not depersistable- no 'set' method "
                  +" and no pre-existing value used"
                  );            
+              System.err.println
+                ("readMethod="+readMethod);
               
             }
             else

@@ -47,6 +47,10 @@ public class ReadOnlyFascadeTuple
   { return new ReadOnlyFascadeTuple(delegate.widen(type));
   }
   
+  public Tuple getBaseExtent()
+  { return new ReadOnlyFascadeTuple(delegate.getBaseExtent());
+  }
+  
   public Type<?> getType()
   { return delegate.getType();
   }

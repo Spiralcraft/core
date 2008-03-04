@@ -34,7 +34,7 @@ public abstract class AbstractTuple
 {
   protected final FieldSet fieldSet;
   protected final boolean hasScheme;
-  protected Tuple baseExtent;
+  protected AbstractTuple baseExtent;
   protected Identifier id;
   
   
@@ -47,16 +47,25 @@ public abstract class AbstractTuple
     this.hasScheme=fieldSet instanceof Scheme;
   }
   
-  /**
-   * Construct an ArrayTuple with an empty set of data
-   */
-  public AbstractTuple(FieldSet fieldSet,Tuple baseExtent)
-  { 
-    this.fieldSet=fieldSet;
-    this.hasScheme=fieldSet instanceof Scheme;
-    this.baseExtent=baseExtent;
-  }
+  protected abstract AbstractTuple createBaseExtent(FieldSet fieldSet);
+  
+  protected abstract AbstractTuple createBaseExtent(Tuple tuple)
+    throws DataException;
 
+//  /**
+//   * Construct an ArrayTuple with an empty set of data
+//   */
+//  public AbstractTuple(FieldSet fieldSet,Tuple baseExtent)
+//  { 
+//    this.fieldSet=fieldSet;
+//    this.hasScheme=fieldSet instanceof Scheme;
+//    this.baseExtent=baseExtent;
+//  }
+
+  public Tuple getBaseExtent()
+  { return baseExtent;
+  }
+  
   public boolean isTuple()
   { return true;
   }
@@ -82,7 +91,11 @@ public abstract class AbstractTuple
   }
     
   public void setId(Identifier id)
-  { this.id=id;
+  { 
+    this.id=id;
+    if (baseExtent!=null)
+    { baseExtent.setId(id);
+    }
   }
   
   public Type<?> getType()

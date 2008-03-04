@@ -26,7 +26,6 @@ import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.Type;
-import spiralcraft.data.Scheme;
 
 
 /**
@@ -70,7 +69,7 @@ public class TupleReflector<T extends Tuple>
   public TupleReflector(FieldSet fieldSet,Class<T> contentType)
     throws BindException
   { 
-    super(null);
+    super(fieldSet.getType());
     this.fieldSet=fieldSet;
     this.contentType=contentType;
 //    for (Field field : fieldSet.fieldIterable())
@@ -94,8 +93,19 @@ public class TupleReflector<T extends Tuple>
     ,Expression[] params
     )
     throws BindException
-  {
-    Field field=fieldSet.getFieldByName(name);
+  {    
+    Field field=null;
+    
+    Type type=getType();
+    if (type!=null)
+    { field=type.getField(name);
+    }
+    
+    
+    if (field==null)
+    { field=fieldSet.getFieldByName(name);
+    }
+    
     if (field!=null)
     {
       Channel binding=null;
@@ -136,10 +146,12 @@ public class TupleReflector<T extends Tuple>
 
 
   public String toString()
-  { return super.toString()
-      +type!=null
-      ?":"+type.toString()+"["+fieldSet.toString()+"]"
-      :":(untyped)["+fieldSet.toString()+"]";
+  { 
+    return super.toString()
+      +(type!=null
+          ?type.toString()
+          :"(untyped)["+fieldSet.toString()+"]"
+       );
   }
   
 

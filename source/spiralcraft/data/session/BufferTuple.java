@@ -25,7 +25,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.JournalTuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.Identifier;
-import spiralcraft.data.DataComposite;
+import spiralcraft.data.TypeMismatchException;
 
 import spiralcraft.data.spi.ArrayTuple;
 
@@ -43,7 +43,7 @@ public class BufferTuple
   private Tuple original;
   private Identifier id;
   private Type<?> type;
-  
+  private BufferTuple baseExtent;
   
   
   private Object[] data;
@@ -60,12 +60,18 @@ public class BufferTuple
     this.original=original;
     this.type=original.getType();
     this.id=original.getId();
+    if (original.getBaseExtent()!=null)
+    { this.baseExtent=new BufferTuple(session,original.getBaseExtent());
+    }
   }
   
   public BufferTuple(DataSession session,Type<?> type)
   { 
     this.session=session;
     this.type=type;
+    if (type.getBaseType()!=null)
+    { baseExtent=new BufferTuple(session,type.getBaseType());
+    }
   }
 
   /**
@@ -77,7 +83,9 @@ public class BufferTuple
     this.dirtyFlags=null;
     this.delete=false;
     this.data=null;
-    
+    if (baseExtent!=null)
+    { baseExtent.revert();
+    }
   }
   
   /**
@@ -90,6 +98,9 @@ public class BufferTuple
     this.dirtyFlags=null;
     this.delete=false;
     this.data=null;
+    if (baseExtent!=null)
+    { baseExtent.revert();
+    }
     session.release(this,id);
   }
   
@@ -102,6 +113,9 @@ public class BufferTuple
     this.data=null;
     this.dirty=true;
     this.dirtyFlags=null;
+    if (baseExtent!=null)
+    { baseExtent.delete();
+    }
   }
   
   /**
@@ -128,6 +142,10 @@ public class BufferTuple
       }
     }
     
+    if (baseExtent!=null)
+    { baseExtent.refresh();
+    }
+    
   }
   
   /**
@@ -135,7 +153,13 @@ public class BufferTuple
    */
   @Override
   public boolean isDirty()
-  { return dirty;
+  { 
+    if (baseExtent!=null)
+    { return dirty || baseExtent.isDirty();
+    }
+    else
+    { return dirty;
+    }
   }
 
   /**
@@ -153,6 +177,9 @@ public class BufferTuple
       for (Field field: source.getFieldSet().fieldIterable())
       { field.setValue(this,field.getValue(source));
       }
+    }
+    if (source.getBaseExtent()!=null)
+    { baseExtent.copyFrom(source.getBaseExtent());
     }
     
   }
@@ -179,21 +206,29 @@ public class BufferTuple
     Type<?> type)
     throws DataException
   {
-    if (original!=null)
+    if (getType()!=null)
     {
-      Tuple origWidened=original.widen(type);
-      return session.buffer((DataComposite) origWidened).asTuple();
+      if (getType().hasArchetype(type))
+      { return this;
+      }
+      else
+      {
+        if (baseExtent!=null)
+        { return baseExtent.widen(type);
+        }
+        else
+        { 
+          throw new TypeMismatchException
+            ("Type "+getType()+" has no base type compatible with "
+            +" wider type "+type
+            );
+        }
+      }
     }
     else
-    {
-      if (getType().hasBaseType(type))
-      { return new BufferTuple(session,type);
-      }
-      throw new DataException
-        ("Type "+type.getURI()+" is not a base type of Type "
-        +getType().getURI()
-        );
+    { return null;
     }
+    
   }
 
   @Override
@@ -322,12 +357,20 @@ public class BufferTuple
     { throw new DataException("Cannot set Identifier for non-new Buffer");
     }
       
-    
+    this.id=id;
+    if (baseExtent!=null)
+    { baseExtent.setId(id);
+    }
   }
 
  
   @Override
   public Identifier getId()
   { return id;
+  }
+
+  @Override
+  public Tuple getBaseExtent()
+  { return baseExtent;
   }
 }

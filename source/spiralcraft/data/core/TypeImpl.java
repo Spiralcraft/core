@@ -15,6 +15,7 @@
 package spiralcraft.data.core;
 
 
+import spiralcraft.data.Field;
 import spiralcraft.data.Method;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
@@ -46,8 +47,8 @@ public class TypeImpl<T>
   protected Type<?> baseType;
   protected boolean aggregate=false;
   protected Type<?> contentType=null;
-  
-
+  protected boolean extendable;
+  protected boolean abztract;
   
   private boolean linked;
   
@@ -90,6 +91,7 @@ public class TypeImpl<T>
   public Type<?> getBaseType()
   { return baseType;
   }
+  
   
   public void setBaseType(Type<?> baseType)
   { 
@@ -177,13 +179,19 @@ public class TypeImpl<T>
     { return;
     }
     linked=true;
-    scheme.setType(this);
-    if (archetype!=null && archetype.getScheme()!=null)
-    { scheme.setArchetypeScheme(archetype.getScheme());
+    if (scheme!=null)
+    {
+      scheme.setType(this);
+      if (archetype!=null && archetype.getScheme()!=null)
+      { scheme.setArchetypeScheme(archetype.getScheme());
+      }
+      scheme.resolve();
     }
-    scheme.resolve();
-    for (Method method:methods)
-    { ((MethodImpl) method).resolve();
+    if (methods!=null)
+    {
+      for (Method method:methods)
+      { ((MethodImpl) method).resolve();
+      }
     }
   }
   
@@ -210,6 +218,26 @@ public class TypeImpl<T>
     scheme.setFields(fields);
   }
 
+  /**
+   * Returns the Field with the specified name in this type or a base Type
+   * @param name
+   * @return
+   */
+  public Field getField(String name)
+  {
+    if (!linked)
+    { throw new IllegalStateException("Type not linked: "+this);
+    }
+    Field field=null;
+    if (getScheme()!=null)
+    { field=getScheme().getFieldByName(name);
+    }
+    if (field==null && getBaseType()!=null)
+    { field=getBaseType().getField(name);
+    }
+    return field;
+  }
+  
   public void setKeys(KeyImpl[] keyArray)
   { 
     if (scheme==null)
@@ -293,7 +321,13 @@ public class TypeImpl<T>
   }
     
   public String toString()
-  { return super.toString()+":"+(uri!=null?uri.toString():"(delegated)");
+  { 
+    return super.toString()
+      +":"+(uri!=null?uri.toString():"(delegated)")+":"
+      +(linked?"":"linked=false:")
+      +(scheme!=null?scheme.contentsToString():"(no scheme)")
+      +(baseType!=null?"\r\nBase Type "+baseType:"")
+      ;
   }
   
   public String toString(T val)
@@ -319,6 +353,38 @@ public class TypeImpl<T>
   { return contentType;
   }
 
+  @Override
+  public boolean isAbstract()
+  { return abztract;
+  }
 
+  public void setAbstract(boolean abztract)
+  { 
+    if (linked)
+    { throw new IllegalStateException("Type already linked");
+    }
+    
+    this.abztract=abztract;
+  }
+  
+
+
+  @Override
+  public boolean isExtendable()
+  { return extendable;
+  }
+
+  public void setExtendable(boolean extendable)
+  { 
+    if (linked)
+    { throw new IllegalStateException("Type already linked");
+    }
+    
+    this.extendable=extendable;
+  }
+  
+  public boolean isLinked()
+  { return linked;
+  }
   
 }

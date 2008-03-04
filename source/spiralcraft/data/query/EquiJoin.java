@@ -119,7 +119,7 @@ public class EquiJoin
   { return assignments;
   }
   
-  public <T extends Tuple> BoundQuery<?,T> bind(Focus<?> focus,Queryable<T> store)
+  public <T extends Tuple> BoundQuery<?,T> getDefaultBinding(Focus<?> focus,Queryable<T> store)
     throws DataException
   { return new EquiJoinBinding<EquiJoin,T>(this,focus,store);
    

@@ -116,7 +116,15 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   public Class<T> getContentType()
   { return contentType;
   }
-  
+
+  public String toString()
+  { 
+    return super.toString()
+      +(type!=null
+          ?type.toString()
+          :"(untyped)"
+       );
+  }
 }
 
 class AggregateIterationDecorator<I>

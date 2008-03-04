@@ -63,5 +63,23 @@ public class EditableArrayTuple
       { field.setValue(this,field.getValue(source));
       }
     }
+    
+    if (source.getBaseExtent()!=null)
+    { ((EditableArrayTuple) baseExtent).copyFrom(source.getBaseExtent());
+    }
   }
+
+  @Override
+  protected AbstractTuple createBaseExtent(
+    FieldSet fieldSet)
+  { return new EditableArrayTuple(fieldSet);
+  }
+
+  @Override
+  protected AbstractTuple createBaseExtent(
+    Tuple tuple)
+    throws DataException
+  { return new EditableArrayTuple(tuple);
+  }
+  
 }

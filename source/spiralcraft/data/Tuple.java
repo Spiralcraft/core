@@ -124,5 +124,11 @@ public interface Tuple
    */
   boolean equals(Object o);
   
+  /**
+   * 
+   * @return The base extent of this Tuple, if the Tuple represents a subtype
+   */
+  Tuple getBaseExtent();
+  
 }
 
