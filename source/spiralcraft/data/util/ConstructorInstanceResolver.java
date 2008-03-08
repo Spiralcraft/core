@@ -17,7 +17,6 @@ package spiralcraft.data.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import spiralcraft.data.InstanceResolver;
 import spiralcraft.data.DataException;
 
 /**

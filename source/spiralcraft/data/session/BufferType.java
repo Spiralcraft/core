@@ -56,6 +56,11 @@ public class BufferType
     if (archetype.getBaseType()!=null)
     { this.baseType=getBufferType(archetype.getBaseType());
     }
+    if (this.archetype.isAggregate())
+    { 
+      this.aggregate=true;
+      this.contentType=getBufferType(archetype.getContentType());
+    }
   }
   
   /**

@@ -26,7 +26,7 @@ public abstract class ResourceManager<T extends Branch>
     throws TransactionException;
   
   /**
-   * Provide the existing branch or cr
+   * Provide the existing branch or create a new one
    */
   @SuppressWarnings("unchecked") // Transaction.branch() is heterogeneous
   public final T branch(Transaction transaction)

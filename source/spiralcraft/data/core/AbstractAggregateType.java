@@ -158,7 +158,11 @@ public abstract class AbstractAggregateType<T>
     { return;
     }
     linked=true;
-    contentType.link();
+    
+    // XXX Uncommenting this may prematurely link types in the process of
+    //   loading. Make sure we don't try to reference any 'unlinked' part
+    //   of the contentType
+    // contentType.link();
     
     Type<?> contentArchetype=contentType.getArchetype();
     if (contentArchetype!=null)

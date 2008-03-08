@@ -49,7 +49,23 @@ public abstract class Buffer
   Buffer getParent()
   { return parentRef.get();
   }
-*/  
+*/ 
+  
+  /**
+   * Requests that a Buffer be editable. A value of false will prevent the
+   *   buffer from being Editable. A value of true will allow the buffer
+   *   to be editable as other conditions allow. Defaults to true.
+   * 
+   * @return Whether this Buffer should be Editable 
+   */
+  public abstract void setEditable(boolean val);
+  
+  /**
+   * @return Whether this Buffer can be edited 
+   */
+  public abstract boolean isEditable();
+  
+  public abstract DataComposite getOriginal();
   /**
    * Provide a permanent id for newly created s before they are
    *   persisted beyond the data session.
@@ -65,6 +81,14 @@ public abstract class Buffer
   @Override
   public abstract BufferAggregate<?> asAggregate();
   
+  /**
+   * Discard edited data
+   */
   public abstract void revert();
 
+  /**
+   * Commit the edits to the data store
+   */
+  public abstract void save()
+    throws DataException;
 }

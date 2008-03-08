@@ -113,6 +113,9 @@ public class XmlTypeFactory
     throws DataException
   {
 //    log.fine("loadType "+uri);
+    
+    // Hold the pre-generated type instance to be registered to allow
+    //   for cyclic references
     final StaticInstanceResolver instanceResolver
       =new StaticInstanceResolver(null);
     
@@ -125,7 +128,8 @@ public class XmlTypeFactory
         (
           new DataFactory()
           {
-
+            // Using a DataFactory allows us to capture the
+            //   base type before the rest of the file is read
             boolean first=true;
             
             @Override
@@ -154,6 +158,8 @@ public class XmlTypeFactory
                   //   that empty data is simply a type reference, and at
                   //   this point we don't know if data is empty
                   instance=((MetaType) type).newSubtype(composite,uri);
+                  log.fine("Preinstantiating MetaType subtype "+instance
+                            +" of type "+type.getURI());
                 }
                 else
                 {
@@ -164,6 +170,9 @@ public class XmlTypeFactory
                       ,new Object[] {resolver,uri}
                       )
                     );
+                  log.fine
+                    ("Preregistering standard subtype "
+                      +instance+"\r\n of type "+type.getURI());
                 }
 //                log.fine("Preregistering "+instance);
                 // Pre-instantiate so rest of XML can resolve Type

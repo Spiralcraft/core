@@ -19,6 +19,8 @@ import java.net.URI;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
+import spiralcraft.data.access.Space;
+import spiralcraft.data.access.Store;
 import spiralcraft.data.lang.DataChannel;
 
 import spiralcraft.lang.BindException;
@@ -32,9 +34,9 @@ import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLogger;
 
 /**
- * A Focus which provides access to a DataSession object and its associated
- *   data buffer
- *   
+ * <p>A Focus which provides access to a DataSession object and its associated
+ *   data buffer. A source Channel manages the actual DataSession object.
+ * </p>  
  * 
  * @author mike
  *
@@ -49,7 +51,10 @@ public class DataSessionFocus
   private static final Expression<DataComposite> DATA_EXPRESSION
     =Expression.<DataComposite>create("data");
 
+  private Channel<Space> spaceChannel;
+  private Type<DataComposite> dataType;
   
+  @SuppressWarnings("unchecked")
   public DataSessionFocus
     (Focus<?> parentFocus
     ,Channel<DataSession> source
@@ -66,6 +71,16 @@ public class DataSessionFocus
             ,false
             )
          );
+    
+    this.dataType=dataType;
+    if (parentFocus!=null)
+    {
+      Focus<Space> spaceFocus
+        =(Focus<Space>) parentFocus.findFocus(Space.SPACE_URI);
+      if (spaceFocus!=null)
+      { spaceChannel=spaceFocus.getSubject();
+      }
+    }
     
     try
     {
@@ -93,10 +108,11 @@ public class DataSessionFocus
               )
             );
     
-      bindFocus("spiralcraft.data",dataFocus);
-      // log.fine(dataFocus.toString());
+        bindFocus("spiralcraft.data",dataFocus);
+        // log.fine(dataFocus.toString());
 
       }
+      
     }
     catch (DataException x)
     { throw new BindException("Error creating DataSessionFocus",x);
@@ -111,6 +127,16 @@ public class DataSessionFocus
     boolean ret=super.isFocus(uri);
     // log.fine("isFocus="+ret+": "+uri);
     return ret;
+  }
+  
+  public DataSession newDataSession()
+  {
+    DataSession dataSession=new DataSession();
+    dataSession.setType(dataType);
+    if (spaceChannel!=null)
+    { dataSession.setSpace(spaceChannel.get());
+    }
+    return dataSession;
   }
   
 }

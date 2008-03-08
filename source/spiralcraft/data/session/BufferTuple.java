@@ -17,6 +17,7 @@ package spiralcraft.data.session;
 import java.util.BitSet;
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Field;
@@ -27,7 +28,14 @@ import spiralcraft.data.Type;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.TypeMismatchException;
 
+import spiralcraft.data.access.DataConsumer;
+import spiralcraft.data.access.Space;
+import spiralcraft.data.access.Store;
+import spiralcraft.data.session.DataSession.DataSessionBranch;
 import spiralcraft.data.spi.ArrayTuple;
+import spiralcraft.data.transaction.Transaction;
+import spiralcraft.data.transaction.TransactionException;
+import spiralcraft.log.ClassLogger;
 
 /**
  * An EditableTuple which holds a copy of data from another Tuple, tracks
@@ -38,6 +46,7 @@ public class BufferTuple
   extends Buffer
   implements EditableTuple,DeltaTuple
 {
+  private static final ClassLogger log=new ClassLogger(BufferTuple.class);
   
   private DataSession session;
   private Tuple original;
@@ -46,6 +55,7 @@ public class BufferTuple
   private BufferTuple baseExtent;
   
   
+  private boolean editable;
   private Object[] data;
   private BitSet dirtyFlags;
   private boolean delete;
@@ -311,7 +321,26 @@ public class BufferTuple
   }
 
   public String toString()
-  { return super.toString()+":"+original;
+  { 
+    StringBuffer buf=new StringBuffer();
+    buf.append(super.toString()+":[\r\n");
+    Field[] dirtyFields=getDirtyFields();
+      
+    if (dirtyFields!=null)
+    {
+      for (Field field : dirtyFields)
+      { 
+        try
+        { buf.append(field.getName()+"="+field.getValue(this)+"\r\n");
+        }
+        catch (DataException x)
+        { buf.append(field.getName()+"=!!!"+x);
+        }
+      }
+    
+      buf.append("]\r\n");
+    }
+    return buf.toString()+":"+original;
   }
   
   @Override
@@ -373,4 +402,122 @@ public class BufferTuple
   public Tuple getBaseExtent()
   { return baseExtent;
   }
+  
+  public void setEditable(boolean val)
+  { editable=val;
+  }
+  
+  public boolean isEditable()
+  { 
+    return ((original instanceof EditableTuple) 
+            || (original instanceof JournalTuple)
+            )
+           && editable;
+           
+  }
+  
+  
+  
+  public void save()
+    throws DataException
+  {
+    if (!dirty)
+    { return;
+    }
+    Transaction transaction
+      =Transaction.getContextTransaction();
+    
+    if (transaction!=null)
+    {
+      log.fine("Saving "+toString());
+      DataSessionBranch branch
+        =session.getResourceManager().branch(transaction);
+      branch.addBuffer(this);
+      
+      DataConsumer<DeltaTuple> updater=branch.getUpdater(getType());
+      if (updater!=null)
+      { updater.dataAvailable(this);
+      }
+      else
+      { log.fine("No updater in Space for Type "+getType());
+      }
+    }
+    else
+    { 
+      log.fine("Saving "+toString());
+      transaction=
+        Transaction.startContextTransaction(Transaction.Nesting.ISOLATE);
+      try
+      {
+        
+        DataSessionBranch branch
+          =session.getResourceManager().branch(transaction);
+        branch.addBuffer(this);
+        
+        DataConsumer<DeltaTuple> updater=branch.getUpdater(getType());
+        if (updater!=null)
+        { updater.dataAvailable(this);
+        }
+        else
+        { log.fine("No updater in Space for Type "+getType());
+        }
+        
+        transaction.commit();
+      }
+      finally
+      {
+        transaction.complete();
+      }
+    }
+
+  }
+
+  
+  void prepare()
+    throws DataException
+  {
+    if (original instanceof JournalTuple)
+    { original=((JournalTuple) original).prepareUpdate(this);
+    }
+    
+  }
+  
+  void rollback()
+  {
+    if (original instanceof JournalTuple)
+    { ((JournalTuple) original).rollback();
+    }
+  }
+  
+  void commit()
+    throws DataException
+  { 
+    log.fine("Committing "+this);
+    if (original instanceof JournalTuple)
+    { 
+      // XXX Should be prepareUpdate(), which locks to transaction
+      ((JournalTuple) original).commit();
+    }
+    else if (original instanceof EditableTuple)
+    {
+      EditableTuple tuple=(EditableTuple) original;
+      for (Field field: getDirtyFields())
+      { 
+        if (field instanceof BufferField)
+        { 
+          ((BufferField) field).getArchetypeField()
+            .setValue(tuple, ((Buffer) field.getValue(this)).getOriginal());
+        }
+        else
+        { field.setValue(tuple, field.getValue(this));
+        }
+      }
+    }
+    else
+    {
+      log.fine("Original is not writable "+original);
+    }
+      
+  }
+  
 }

@@ -24,7 +24,8 @@ public interface Aggregate<T>
   /**
    * Obtain the value at the specified index of this aggregate
    */
-  T get(int index);
+  T get(int index)
+    throws DataException;
   
   /**
    * Indicate whether the value returned by the get(int index) method may

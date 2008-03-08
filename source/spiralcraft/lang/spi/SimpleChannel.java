@@ -61,7 +61,6 @@ public class SimpleChannel<T>
   protected T retrieve()
   { 
     // System.out.println("SimpleBinding "+super.toString()+" - returning "+_object);
-
     return _object;
   }
   
@@ -70,5 +69,7 @@ public class SimpleChannel<T>
     _object=val;
     return true;
   }
+  
+
 
 }

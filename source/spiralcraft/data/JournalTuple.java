@@ -14,6 +14,8 @@
 //
 package spiralcraft.data;
 
+import spiralcraft.data.session.BufferTuple;
+
 /**
  * An immutable Tuple that is part of a series of other tuples which represent
  *   successive versions or snapshots of the same conceptual object.
@@ -62,4 +64,23 @@ public interface JournalTuple
    */
   JournalTuple update(DeltaTuple delta)
     throws DataException;
+  
+  /**
+   * Create a new JournalTuple from the changes made in the specified DeltaTuple
+   *   and remain in a locked state until commit() or rollback() is called, or
+   *   the Transaction is aborted.
+   */
+  JournalTuple prepareUpdate(DeltaTuple delta)
+    throws DataException;
+  
+  /**
+   * Commit a prepared Update and unlock the JournalTuple
+   */
+  void commit();
+  
+  /**
+   * Discard a prepared update and unlock the JournalTuple
+   */
+  void rollback();
+
 }

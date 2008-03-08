@@ -21,11 +21,11 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataException;
-import spiralcraft.data.InstanceResolver;
 
 import spiralcraft.data.core.TypeImpl;
 
 import spiralcraft.data.spi.EditableArrayTuple;
+import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.lang.Focus;
 
 

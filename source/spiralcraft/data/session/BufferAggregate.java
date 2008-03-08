@@ -14,32 +14,40 @@
 //
 package spiralcraft.data.session;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import spiralcraft.data.Aggregate;
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.EditableAggregate;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.Identifier;
 
-import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.spi.ArrayListAggregate;
+import spiralcraft.data.transaction.Transaction;
+import spiralcraft.log.ClassLogger;
 
-public class BufferAggregate<T>
+public class BufferAggregate<T extends DataComposite>
   extends Buffer
-  implements EditableAggregate<T>
-{
+  implements EditableAggregate<Buffer>
+{ 
+  private final ClassLogger log=new ClassLogger(BufferAggregate.class);
+
+  
   private final DataSession session;
   private Aggregate<T> original;
+  private ArrayList<Buffer> buffers;
   private Type<?> type;
   private Identifier id;
-  
-  private EditableArrayListAggregate<T> appendix;
-  
+  private boolean editable=true;
+    
   public BufferAggregate(DataSession session,Aggregate<T> original)
+    throws DataException
   { 
     this.session=session;
-    this.original=original;
+    this.original=original.snapshot();
     this.type=original.getType();
   }
   
@@ -50,7 +58,7 @@ public class BufferAggregate<T>
   }
   
   public synchronized void revert()
-  { appendix=null;
+  { buffers=null;
   }
   
   
@@ -96,17 +104,17 @@ public class BufferAggregate<T>
 
   @Override
   public void add(
-    T val)
+    Buffer val)
   {
     
     if (val==null)
     { throw new IllegalArgumentException
         ("Cannot add a null value to an Aggregate");
     }
-    if (appendix==null)
-    { appendix=new EditableArrayListAggregate<T>(getType());
+    if (buffers==null)
+    { buffers=new ArrayList<Buffer>();
     }
-    appendix.add(val);
+    buffers.add(val);
     // XXX Should check type, might have to dirty fields, etc. Might be
     //   a new Tuple which requires data, etc.
     
@@ -114,31 +122,57 @@ public class BufferAggregate<T>
 
   @Override
   public void addAll(
-    Aggregate<T> values)
+    Aggregate<Buffer> values)
   {
     // TODO Auto-generated method stub
-    for (T value : values)
+    for (Buffer value : values)
     { add(value);
     }
   }
 
   @Override
-  public T get(
+  public Buffer get(
     int index)
-  {
-    if (index >= original.size())
+    throws DataException
+  { 
+    if (index < size())
     { 
-      index-=original.size();
-      if (appendix!=null)
-      { return appendix.get(index);
-      }
-      else throw new IndexOutOfBoundsException
+      return buffer(index);
+    }
+    else throw new IndexOutOfBoundsException
         ("Index "+index+" exceeds size "+size());
-    }
-    else
-    { return original.get(index);
-    }
   }
+  
+  private Buffer buffer(int index)
+    throws DataException
+  { 
+    if (index<size())
+    {
+      if (buffers==null)
+      { buffers=new ArrayList<Buffer>(index+1);
+      }
+      
+      for (int i=buffers.size();i<=index;i++)
+      { buffers.add(null);
+      }
+      Buffer buffer=buffers.get(index);
+      if (buffer==null)
+      { 
+        if (index<original.size())
+        { 
+          buffer=session.buffer(original.get(index));
+          buffers.set(index,buffer);
+        }
+        else
+        { buffer=null;
+        }
+      }
+      return buffer;
+    }
+    else throw new IndexOutOfBoundsException
+      ("Index "+index+" exceeds size "+size());
+  }
+  
 
   @Override
   public boolean isMutable()
@@ -150,23 +184,106 @@ public class BufferAggregate<T>
   @Override
   public int size()
   {
-    return original.size()
-      +(appendix!=null?appendix.size():0);
+    if (buffers==null)
+    { return original.size();
+    }
+    else
+    { return Math.max(original.size(),buffers.size());
+    }
   }
 
   @Override
-  public Aggregate<T> snapshot()
+  public Aggregate<Buffer> snapshot()
+    throws DataException
+  { return new ArrayListAggregate<Buffer>(this);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public Iterator<Buffer> iterator()
+  {
+    return new Iterator<Buffer>()
+    {
+      private int i=0;
+      
+      public Buffer next()
+      { 
+        if (i<size())
+        {
+          try
+          { return buffer(i++);
+          }
+          catch (DataException x)
+          { throw new RuntimeDataException("Error buffering",x);
+          }
+        }
+        else
+        { return null;
+        }
+
+        
+      }
+      
+      public boolean hasNext()
+      { return i<size();
+      }
+      
+      public void remove()
+      {
+      }
+    };
+    
+  }
+  
+  public void setEditable(boolean val)
+  { editable=val;
+  }
+  
+  public boolean isEditable()
+  { return (original instanceof EditableAggregate && editable);
+  }
+  
+  public Aggregate<T> getOriginal()
+  { return original;
+  }
+
+  public void save()
     throws DataException
   {
-    // TODO Auto-generated method stub
-    return new ArrayListAggregate<T>(this);
+    if (buffers==null)
+    { return;
+    }
+    log.fine("Saving..."+this);
+    
+    Transaction transaction
+      =Transaction.getContextTransaction();
+  
+    if (transaction!=null)
+    {
+      
+      for (Buffer buffer: this)
+      { buffer.save();
+      }
+    }
+    else
+    { 
+      transaction=
+        Transaction.startContextTransaction(Transaction.Nesting.ISOLATE);
+      try
+      {
+        for (Buffer buffer: this)
+        { buffer.save();
+        }
+      
+        transaction.commit();
+      }
+      finally
+      {
+        transaction.complete();
+      }
+    }
   }
-
-  @Override
-  public Iterator iterator()
-  {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
+  
 }
+
+

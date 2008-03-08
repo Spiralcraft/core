@@ -12,7 +12,9 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data;
+package spiralcraft.data.util;
+
+import spiralcraft.data.DataException;
 
 /**
  * Interface for resolving an instance of a Java class from an application

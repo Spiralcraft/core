@@ -21,6 +21,7 @@ import java.util.List;
 
 import spiralcraft.data.session.Buffer;
 // import spiralcraft.log.ClassLogger;
+import spiralcraft.data.util.InstanceResolver;
 
 
 /**

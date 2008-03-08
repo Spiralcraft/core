@@ -14,11 +14,14 @@
 //
 package spiralcraft.data.session;
 
+
 import spiralcraft.data.DataComposite;
+import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 
 import spiralcraft.data.lang.DataReflector;
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
@@ -91,7 +94,8 @@ public class BufferChannel
       );
     log.fine("BufferChannel "+getReflector());
     setupSession(focus);
-    this.originalChannel=focus.getSubject();
+    this.originalChannel=original;
+    
     
   }
   
@@ -152,6 +156,7 @@ public class BufferChannel
   public boolean store(Buffer val)
   { 
     // TODO This will be useful, to place whole buffers
+    log.fine("Not storing Buffer "+val);
     return false;
   }
 
@@ -159,8 +164,19 @@ public class BufferChannel
   { 
 
     DataComposite original=originalChannel.get();
-
-    Buffer buffer=sessionChannel.get().buffer(original);
+    
+    if (original instanceof Buffer)
+    { return (Buffer) original;
+    }
+    
+    try
+    { 
+      Buffer buffer=sessionChannel.get().buffer(original);
+      return buffer;
+    }
+    catch (DataException x)
+    { throw new AccessException("Error buffering "+original,x);
+    }
 //    Buffer parentBuffer=parentChannel!=null?parentChannel.get():null;
 //    if (parentBuffer!=null)
 //    { 
@@ -168,7 +184,7 @@ public class BufferChannel
 //      parentBuffer.addChild(buffer);
 //    }
 
-    return buffer;
+    
 
   }
 

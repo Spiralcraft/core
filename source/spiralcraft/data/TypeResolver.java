@@ -204,7 +204,12 @@ public class TypeResolver
   private final Type loadArrayType(Type baseType,URI typeURI)
     throws DataException
   {
-    Type type=new ArrayType(baseType,typeURI);
+    Type<?> type=map.get(typeURI);
+    if (type!=null)
+    { return type;
+    }
+
+    type=new ArrayType(baseType,typeURI);
     type=putMap(typeURI,type);
     return type;
   }
@@ -213,8 +218,13 @@ public class TypeResolver
   private final Type loadListType(Type baseType,URI typeURI)
     throws DataException
   {
+    Type<?> type=map.get(typeURI);
+    if (type!=null)
+    { return type;
+    }
+
     // Create and map the list type
-    Type type=new AbstractCollectionType<ArrayList>
+    type=new AbstractCollectionType<ArrayList>
       (this
       ,baseType
       ,typeURI
@@ -227,7 +237,12 @@ public class TypeResolver
   private final Type<?> loadBufferType(Type<?> baseType,URI typeURI)
     throws DataException
   {
-    Type<?> type=new BufferType
+    Type<?> type=map.get(typeURI);
+    if (type!=null)
+    { return type;
+    }
+
+    type=new BufferType
       (this
       ,typeURI
       ,baseType
@@ -239,7 +254,14 @@ public class TypeResolver
   private final Type<?> loadMetaType(Type<?> baseType,URI typeURI)
     throws DataException
   {
-    Type<?> type=new MetaType
+    log.fine("Loading MetaType for "+baseType);
+    
+    Type<?> type=map.get(typeURI);
+    if (type!=null)
+    { return type;
+    }
+
+    type=new MetaType
       (this
       ,typeURI
       ,baseType.getURI()
@@ -338,15 +360,26 @@ public class TypeResolver
     throws DataException
   {
     Type<?> existing=map.get(uri);
-    if (existing!=null && existing!=type)
+    if (existing!=null)
     { 
-      log.fine("NOT remapping type "+type);
+      if (existing!=type)
+      {
+        log.fine("NOT remapping type "+type+" from "+existing);
+        new Exception("FAILED REMAP").printStackTrace();
+      }
       return existing;
+      // Pre-register case- don't link, because type is still loading-
+      //   factory will call link
     }
-    map.put(uri,type);
-    type.link();
-    if (!type.isLinked())
-    { throw new DataException("Link failed silently for "+type);
+    else
+    {
+      
+      // Standard case
+      map.put(uri,type);
+      type.link();
+      if (!type.isLinked())
+      { throw new DataException("Link failed silently for "+type);
+      }
     }
     return type;
   }
@@ -360,6 +393,7 @@ public class TypeResolver
     throws DataException
   {
     Type type=null;
+    
     if (typeUri.getPath().endsWith(".array"))
     {
       URI baseTypeUri=desuffix(typeUri,".array");

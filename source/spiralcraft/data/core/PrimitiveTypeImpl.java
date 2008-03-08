@@ -16,8 +16,8 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.TypeResolver;
-import spiralcraft.data.InstanceResolver;
 import spiralcraft.data.DataException;
+import spiralcraft.data.util.InstanceResolver;
 
 import spiralcraft.util.StringConverter;
 

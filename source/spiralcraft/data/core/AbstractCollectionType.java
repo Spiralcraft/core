@@ -22,11 +22,11 @@ import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.ValidationResult;
-import spiralcraft.data.InstanceResolver;
 
 
 import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.spi.EditableArrayListAggregate;
+import spiralcraft.data.util.InstanceResolver;
 
 import java.net.URI;
 import java.util.Collection;

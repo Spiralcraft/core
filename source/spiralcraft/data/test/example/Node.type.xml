@@ -1,0 +1,29 @@
+<meta:Type
+  xmlns:meta="java:/spiralcraft/data/types/meta/"
+  xmlns:example="java:/spiralcraft/data/test/example"
+  >
+      <fields>
+        <meta:Field>
+          
+          <name>parentNode
+          </name>
+          
+          <type>
+          	<example:Node.type/>
+          </type>
+
+        </meta:Field>
+
+        <meta:Field>
+          
+          <name>children
+          </name>
+          
+          <type>
+          	<example:Node.list.type/>
+          </type>
+
+        </meta:Field>
+      </fields>
+
+</meta:Type>

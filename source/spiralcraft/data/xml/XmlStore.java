@@ -26,6 +26,7 @@ import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.spi.AbstractStore;
 import spiralcraft.data.spi.BaseExtentQueryable;
+import spiralcraft.data.util.DebugDataConsumer;
 
 
 /**
@@ -118,8 +119,8 @@ public class XmlStore
     Type type)
     throws DataException
   {
-    // TODO Auto-generated method stub
-    return null;
+    return new DebugDataConsumer();
+
   }
 
   protected Queryable<Tuple> getQueryable(Type<?> type)

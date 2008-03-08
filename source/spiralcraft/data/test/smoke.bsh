@@ -289,6 +289,18 @@ tChannel.get();
 bTchannel.get();
 
 "";
+"/////////////////////////////////////////";
+"//";
+"// Self referential";
+"//";
+"";
+
+nodeType=spiralcraft.data.Type.resolve
+	("java:/spiralcraft/data/test/example/Node");
+
+
+
+"";
 "//";
 "// END spiralcraft.data";
 "//";

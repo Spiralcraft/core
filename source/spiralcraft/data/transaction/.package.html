@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
 <head>
-<title>spiralcraft.lang package</title>
+<title>spiralcraft.data.transaction package</title>
 <!-- 
 
    Copyright (c) 1998,2007 Michael Toth
@@ -21,8 +21,72 @@
 </head>
 <body>
 
-	<p>Provides an expression language (EL) and associated infrastructure to 
-	  integrate the language into a wide variety of scenarios. 
+	<p>A lightweight 2PC Transaction model that provides basic data update
+	  atomicity, consistency, and isolation services to synchronize multiple
+	  Resources, such as external database servers as well as core buffer and
+	  caching structures.
+	</p>
+	
+	<h4>Usage:</h4>
+
+	<p>
+		A component wants to trigger a transactional update of a resource, which
+		may be Transaction aware at some point in the call chain. 
+	</p>
+	
+	<p>Transactions are scoped to Threads, and so the call chain must fall 
+		within the bounds of the try block.
+  </p>
+	
+	<p>
+	The component initiates a Transaction:
+	<pre>
+		try
+		{ 
+			Transaction transaction 
+				= Transaction.startContextTransaction(Transaction.Nesting.PROPOGATE);
+			
+			// do some work
+			
+			transaction.commit();
+		}
+		finally
+		{
+		  transaction.complete();
+		}
+	</pre>			
+	</p>
+
+	<p>
+	A transaction-aware component in the call-chain gets a request to do some
+	  work. 
+	<pre>
+		public void doMyWork()
+		{
+			Transaction transaction 
+				= Transaction.getContextTransaction(); 
+				
+			if (transaction!=null)
+			{ 
+			}	
+		
+			try
+			{ 
+			
+				// do some work
+			
+			transaction.commit();
+		}
+		finally
+		{
+		  transaction.complete();
+		}
+	</pre>			
+	</p>
+
+
+	<pre>
+	</pre>
 	</p>
 	
 	<p>The purpose of the spiralcraft.lang package is to provide

@@ -22,10 +22,10 @@ import spiralcraft.data.Field;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeNotFoundException;
-import spiralcraft.data.InstanceResolver;
 import spiralcraft.data.Method;
 
 import spiralcraft.data.spi.EditableArrayTuple;
+import spiralcraft.data.util.InstanceResolver;
 
 import spiralcraft.data.core.TypeImpl;
 

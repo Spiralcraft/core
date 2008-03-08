@@ -24,7 +24,7 @@ import spiralcraft.data.TypeResolver;
 import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.ValidationResult;
 import spiralcraft.data.DataComposite;
-import spiralcraft.data.InstanceResolver;
+import spiralcraft.data.util.InstanceResolver;
 
 import java.net.URI;
 import java.util.List;
@@ -178,6 +178,7 @@ public class TypeImpl<T>
     if (linked)
     { return;
     }
+    // log.fine("Linking "+toString());
     linked=true;
     if (scheme!=null)
     {
@@ -212,6 +213,9 @@ public class TypeImpl<T>
    */
   public void setFields(List<FieldImpl> fields)
   {
+    if (linked)
+    { throw new IllegalStateException("Type already linked: "+toString());
+    }
     if (scheme==null)
     { scheme=new SchemeImpl();
     }
@@ -250,7 +254,7 @@ public class TypeImpl<T>
   public void setScheme(Scheme scheme)
   {
     if (linked)
-    { throw new IllegalStateException("Type already linked");
+    { throw new IllegalStateException("Type already linked: "+toString());
     }
     
     if (this.scheme!=null && this.scheme.getFieldCount()>0)

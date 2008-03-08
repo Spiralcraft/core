@@ -19,12 +19,12 @@ import spiralcraft.data.Field;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeResolver;
-import spiralcraft.data.InstanceResolver;
 import spiralcraft.data.Tuple;
 
 import spiralcraft.data.reflect.ReflectionType;
 
 import spiralcraft.data.util.ConstructorInstanceResolver;
+import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.data.util.StaticInstanceResolver;
 
 import java.net.URI;

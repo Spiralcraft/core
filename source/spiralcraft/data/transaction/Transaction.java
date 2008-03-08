@@ -36,7 +36,7 @@ public class Transaction
   };
   
   public enum State
-  { STARTED,PREPARED,COMMITTED,ABORTED
+  { STARTED,PREPARED,COMMITTED,ABORTED,COMPLETED
   };
 
   /**
@@ -48,7 +48,18 @@ public class Transaction
   public static final Transaction startContextTransaction(Nesting nesting)
   { 
     Transaction transaction=TRANSACTION_LOCAL.get();
-    return new Transaction(transaction,nesting);
+    if (nesting==Nesting.PROPOGATE)
+    {
+      if (transaction!=null)
+      { return transaction.subTransaction();
+      }
+      else
+      { return new Transaction(null,Nesting.ISOLATE);
+      }
+    }
+    else
+    { return new Transaction(null,nesting);
+    }
   }
   
   /**
@@ -64,36 +75,46 @@ public class Transaction
   private ArrayList<Branch> branches=new ArrayList<Branch>();
   private Branch llrBranch;
   
-  private final Transaction nestee;
+  private final Transaction parent;
   // private Transaction sub;
   private Nesting nesting;
   private State state;
   private boolean rollbackOnly;
+  private ArrayList<Transaction> subtransactions
+    =new ArrayList<Transaction>();
   
   /**
    * Create a new Transaction nested in the given Transaction 
    */
-  Transaction(Transaction nestee,Nesting nesting)
+  Transaction(Transaction parent,Nesting nesting)
   { 
-    this.nestee=nestee;
+    this.parent=parent;
     this.nesting=nesting;
-    if (this.nesting==Nesting.PROPOGATE && nestee!=null)
-    { 
-      throw new UnsupportedOperationException("Subtransactions not yet supported");
-      // nestee.setSubTransaction(this);
-    }
     TRANSACTION_LOCAL.set(this);
+    this.state=State.STARTED;
   }
   
   //void addSubTransaction(Transaction sub)
   //{ 
   //}
   
+  public Transaction subTransaction()
+  {
+    Transaction child=new Transaction(this,Nesting.PROPOGATE);
+    subtransactions.add(child);
+    return child;
+  }
+  
+  
   /**
    * Specify that the Transaction can only rollback on completion
    */
   public void rollbackOnComplete()
-  { rollbackOnly=true;
+  { 
+    rollbackOnly=true;
+    if (parent!=null)
+    { parent.rollbackOnComplete();
+    }
   }
   
 
@@ -103,69 +124,151 @@ public class Transaction
     Branch branch=branchMap.get(manager);
     if (branch==null)
     { 
-      branch=manager.createBranch(this);
-      branchMap.put(manager,branch);
-
-      //XXX: Handle LogLastResource condition- last resource is non 2PC resource
-      //  which is std. single database scenario.
-      
-      if (branch.is2PC())
-      { branches.add(branch);
-      }
-      else if (llrBranch==null)
-      { llrBranch=branch;
+      if (parent!=null)
+      {
+        // Propogated transaction uses same branches. Resources use different
+        //   ResourceManagers, so they can still manage their own commits.
+        branch=parent.branch(manager);
       }
       else
-      { throw new TransactionException("Transaction already contains an non-2PC branch");
+      {
+        branch=manager.createBranch(this);
+        branchMap.put(manager,branch);
+
+        if (branch.is2PC())
+        { branches.add(branch);
+        }
+        else if (llrBranch==null)
+        { llrBranch=branch;
+        }
+        else
+        { throw new TransactionException
+            ("Transaction already contains an non-2PC branch");
+        }
       }
     }
+
     return branch;
   }
+  
+
   
   public synchronized void commit()
     throws TransactionException
   {
+    // Note that a subTransaction has no branches- the following code
+    //   will have no effect?
+    
     // XXX Exception handling logic is critical here
     
-    if (state==State.STARTED
-        )
+    if (parent!=null)
+    { 
+      // Parent will call prepare() and commitLocal()
+    }
+    else
     {
-      for (Branch branch: branches)
-      { branch.prepare();
+      if (state==State.STARTED)
+      { prepare();
       }
+      commitLocal();
     }
     
-    for (Branch branch: branches)
-    { 
-      if (branch.getState()!=State.PREPARED)
+  }
+  
+  public State getState()
+  { return state;
+  }
+  
+  public synchronized void commitLocal()
+    throws TransactionException
+  {
+  
+    if (state==State.PREPARED)
+    {
+      if (llrBranch!=null)
       { 
-        rollback();
-        throw new TransactionException
-          ("Transaction Aborted: branch "+branch+" failed to prepare");
+        llrBranch.commit();
+   
+        if (llrBranch.getState()!=State.COMMITTED)
+        {
+          rollback();
+          throw new TransactionException
+            ("Transaction Aborted: LLR branch "+llrBranch+" failed to commit");
+        }
       }
+
+
+    
+      for (Transaction transaction : subtransactions)
+      { 
+        transaction.commitLocal();
+        if (transaction.getState()!=State.COMMITTED)
+        { 
+          rollback();
+          throw new TransactionException
+          ("Transaction Aborted after Partial Commit: subtransaction "
+            +transaction+" failed to commit"
+          );
+        }
+      }
+
+      for (Branch branch: branches)
+      { branch.commit();
+      }
+      state=State.COMMITTED;
+    }
+    else
+    { 
+      throw new TransactionException
+        ("Transaction not PREPARED: state="+getState());
+    }
+    
+  }
+  
+  public synchronized void prepare()
+    throws TransactionException
+  {
+    // new Exception().printStackTrace();
+    if (state==State.STARTED)
+    {
+      for (Transaction transaction : subtransactions)
+      { 
+        transaction.prepare();
+        if (transaction.getState()!=State.PREPARED)
+        { 
+          rollback();
+          throw new TransactionException
+            ("Transaction Aborted: subtransaction "+transaction
+            +" failed to prepare"
+            );
+        }
+      }
+
+      for (Branch branch: branches)
+      { 
+        branch.prepare();
+        if (branch.getState()!=State.PREPARED)
+        { 
+          rollback();
+          throw new TransactionException
+            ("Transaction Aborted: branch "+branch+" failed to prepare");
+        }
+      }
+      state=State.PREPARED;
+    }
+    else
+    {
+      throw new TransactionException
+        ("Transaction not STARTED: state="+getState());
     }
 
-    if (llrBranch!=null)
-    { 
-      llrBranch.commit();
-   
-      if (llrBranch.getState()!=State.COMMITTED)
-      {
-        rollback();
-        throw new TransactionException
-          ("Transaction Aborted: LLR branch "+llrBranch+" failed to commit");
-      }
-    }
-    
-    for (Branch branch: branches)
-    { branch.commit();
-    }
     
   }
   
   public synchronized void rollback()
     throws TransactionException
   {
+    
     if (state==State.STARTED
         || state==State.PREPARED
         )
@@ -180,6 +283,10 @@ public class Transaction
           // XXX Temporary
           x.printStackTrace();
         }
+      }
+
+      for (Transaction transaction : subtransactions)
+      { transaction.rollback();
       }
       
       if (llrBranch!=null)
@@ -198,17 +305,24 @@ public class Transaction
     //{ sub.complete();
     //}
 
+    
     if (TRANSACTION_LOCAL.get()!=this)
     { 
       throw new IllegalStateException
         ("Transaction.complete() must be called from creating thread");
     }
     
+    if (parent!=null)
+    {
+      TRANSACTION_LOCAL.set(parent);
+      return;
+    }
+    
     if (state==State.COMMITTED
         || state==State.ABORTED
         )
     { 
-      TRANSACTION_LOCAL.set(nestee);
+      TRANSACTION_LOCAL.set(parent);
     }
     else
     {
@@ -240,7 +354,7 @@ public class Transaction
     
     
       // Pop the stack
-      TRANSACTION_LOCAL.set(nestee);
+      TRANSACTION_LOCAL.set(parent);
     }
     
     for (Branch branch:branches)
@@ -250,6 +364,7 @@ public class Transaction
     if (llrBranch!=null)
     { llrBranch.complete();
     }
+    state=State.COMPLETED;
     
   }
   

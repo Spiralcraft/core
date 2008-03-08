@@ -164,8 +164,9 @@ public class SchemeImpl
     boolean first=true;
     for (Field field:fields)
     { 
+      fieldList.append("\r\n  ");
       if (!first)
-      { fieldList.append("\r\n,");
+      { fieldList.append(",");
       }
       else
       { first=false;
@@ -311,6 +312,7 @@ public class SchemeImpl
     throws DataException
   { 
     field.setIndex(fields.size());
+    field.setScheme(this);
     fields.add(field);
     fieldMap.put(field.getName(), field);
     field.resolve();

@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.util;
 
-import spiralcraft.data.InstanceResolver;
 import spiralcraft.data.Type;
 
 /**
