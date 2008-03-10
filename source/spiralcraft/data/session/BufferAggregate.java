@@ -48,13 +48,29 @@ public class BufferAggregate<T extends DataComposite>
   { 
     this.session=session;
     this.original=original.snapshot();
-    this.type=original.getType();
+    this.type=Type.getBufferType(original.getType());
   }
   
   public BufferAggregate(DataSession session,Type<?> type)
   { 
     this.session=session;
     this.type=type;
+  }
+  
+  public boolean isDirty()
+  { 
+    if (buffers==null)
+    { return false;
+    }
+
+    for (Buffer buffer : buffers)
+    { 
+      if (buffer!=null && buffer.isDirty())
+      { return true;
+      }
+    }
+
+    return false;
   }
   
   public synchronized void revert()
@@ -82,7 +98,7 @@ public class BufferAggregate<T extends DataComposite>
 
   @Override
   public Type<?> getType()
-  { return original.getType();
+  { return type;
   }
 
   @Override

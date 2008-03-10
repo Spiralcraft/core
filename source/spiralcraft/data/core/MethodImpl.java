@@ -118,6 +118,11 @@ public abstract class MethodImpl
     }
 
     @Override
+    public boolean isWritable()
+    { return false;
+    }
+    
+    @Override
     protected Object retrieve()
     {
       Object o=source.get();

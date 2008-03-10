@@ -43,6 +43,11 @@ public class IterationCursorChannel<T>
   
  
   @Override
+  public boolean isWritable()
+  { return false;
+  }
+
+  @Override
   public T retrieve()
   { return source.get().getValue();
   }

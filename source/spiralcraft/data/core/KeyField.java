@@ -101,6 +101,10 @@ public class KeyField
       super(DataReflector.<DataComposite>getInstance(type));
 
     }
+    
+    public boolean isWritable()
+    { return false;
+    }
 
     @Override
     protected DataComposite retrieve()
@@ -118,8 +122,14 @@ public class KeyField
     protected boolean store(DataComposite val)
       throws AccessException
     { 
+      // XXX: We may want to re-translate the stored value and update the
+      //   key fields
       
-      return false;
+      throw new AccessException
+        ("Can't store key reference: Referenced object to field value " +
+        		"translation not implemented"
+        );
+     
     }
     
    

@@ -126,6 +126,13 @@ public  class TranslatorChannel<T,S>
     throws AccessException
   { return false;
   }
+  
+  /**
+   * Override if value can be set
+   */
+  public boolean isWritable()
+  { return false;
+  }
 
   public final Reflector<T> getReflector()
   { return translator.getReflector();

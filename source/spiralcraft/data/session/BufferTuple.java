@@ -17,7 +17,6 @@ package spiralcraft.data.session;
 import java.util.BitSet;
 
 import spiralcraft.data.DataException;
-import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Field;
@@ -29,12 +28,9 @@ import spiralcraft.data.Identifier;
 import spiralcraft.data.TypeMismatchException;
 
 import spiralcraft.data.access.DataConsumer;
-import spiralcraft.data.access.Space;
-import spiralcraft.data.access.Store;
 import spiralcraft.data.session.DataSession.DataSessionBranch;
 import spiralcraft.data.spi.ArrayTuple;
 import spiralcraft.data.transaction.Transaction;
-import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.log.ClassLogger;
 
 /**
@@ -71,7 +67,7 @@ public class BufferTuple
     this.type=original.getType();
     this.id=original.getId();
     if (original.getBaseExtent()!=null)
-    { this.baseExtent=new BufferTuple(session,original.getBaseExtent());
+    { baseExtent=new BufferTuple(session,original.getBaseExtent());
     }
   }
   
@@ -89,10 +85,7 @@ public class BufferTuple
    */
   public synchronized void revert()
   {
-    this.dirty=false;
-    this.dirtyFlags=null;
-    this.delete=false;
-    this.data=null;
+    reset();
     if (baseExtent!=null)
     { baseExtent.revert();
     }
@@ -104,14 +97,19 @@ public class BufferTuple
    */
   public synchronized void discard()
   { 
-    this.dirty=false;
-    this.dirtyFlags=null;
-    this.delete=false;
-    this.data=null;
+    reset();
     if (baseExtent!=null)
     { baseExtent.revert();
     }
     session.release(this,id);
+  }
+  
+  private void reset()
+  { 
+    this.dirty=false;
+    this.dirtyFlags=null;
+    this.delete=false;
+    this.data=null;
   }
   
   /**
@@ -421,18 +419,25 @@ public class BufferTuple
   public void save()
     throws DataException
   {
-    if (!dirty)
+    if (!isDirty())
     { return;
     }
+    
     Transaction transaction
       =Transaction.getContextTransaction();
     
     if (transaction!=null)
     {
       log.fine("Saving "+toString());
+      
+      if (baseExtent!=null)
+      { baseExtent.save();
+      }
+      
       DataSessionBranch branch
         =session.getResourceManager().branch(transaction);
       branch.addBuffer(this);
+      
       
       DataConsumer<DeltaTuple> updater=branch.getUpdater(getType());
       if (updater!=null)
@@ -449,6 +454,9 @@ public class BufferTuple
         Transaction.startContextTransaction(Transaction.Nesting.ISOLATE);
       try
       {
+        if (baseExtent!=null)
+        { baseExtent.save();
+        }
         
         DataSessionBranch branch
           =session.getResourceManager().branch(transaction);
@@ -501,15 +509,19 @@ public class BufferTuple
     else if (original instanceof EditableTuple)
     {
       EditableTuple tuple=(EditableTuple) original;
-      for (Field field: getDirtyFields())
-      { 
-        if (field instanceof BufferField)
+      Field[] dirtyFields=getDirtyFields();
+      if (dirtyFields!=null)
+      {
+        for (Field field: getDirtyFields())
         { 
-          ((BufferField) field).getArchetypeField()
-            .setValue(tuple, ((Buffer) field.getValue(this)).getOriginal());
-        }
-        else
-        { field.setValue(tuple, field.getValue(this));
+          if (field instanceof BufferField)
+          { 
+            ((BufferField) field).getArchetypeField()
+              .setValue(tuple, ((Buffer) field.getValue(this)).getOriginal());
+          }
+          else
+          { field.setValue(tuple, field.getValue(this));
+          }
         }
       }
     }
@@ -517,7 +529,9 @@ public class BufferTuple
     {
       log.fine("Original is not writable "+original);
     }
+    reset();
       
   }
+  
   
 }

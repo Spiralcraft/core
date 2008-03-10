@@ -70,6 +70,9 @@ public class SimpleChannel<T>
     return true;
   }
   
-
+  @Override
+  public boolean isWritable()
+  { return true;
+  }
 
 }

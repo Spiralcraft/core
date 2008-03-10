@@ -244,6 +244,11 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
           return true;
 
         }
+        
+        @Override
+        public boolean isWritable()
+        { return true;
+        }
       };
     }
     return channel;

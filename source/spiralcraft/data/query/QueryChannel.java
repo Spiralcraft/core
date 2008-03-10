@@ -69,6 +69,11 @@ public class QueryChannel
   }  
   
   @Override
+  public boolean isWritable()
+  { return false;
+  }
+  
+  @Override
   protected boolean store(
     Aggregate val)
     throws AccessException

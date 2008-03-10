@@ -153,6 +153,11 @@ public class TupleDelegate<T>
   { return proxy;
   }
   
+  @Override
+  public boolean isWritable()
+  { return false;
+  }
+  
   /**
    * We can't change the proxy here, as our implementation is fixed
    */

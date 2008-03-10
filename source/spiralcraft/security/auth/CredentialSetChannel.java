@@ -51,6 +51,10 @@ public class CredentialSetChannel
   { return false;
   }
   
+  @Override
+  public boolean isWritable()
+  { return false;
+  }
   
 }
 

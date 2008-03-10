@@ -141,9 +141,15 @@ public class BufferField
 
     }
 
+    @Override
+    public boolean isWritable()
+    { return false;
+    }
+      
     public boolean store(Buffer val)
     { 
-      // TODO This will be useful, to place whole buffers
+      // TODO This will be useful, to place whole buffers, especially
+      //   when updating relationships by object references instead of keys
       return false;
     }
 

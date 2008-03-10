@@ -177,6 +177,11 @@ public class ProjectionImpl
     }
 
     @Override
+    public boolean isWritable()
+    { return true;
+    }
+    
+    @Override
     protected Tuple retrieve()
     { return boundTuple;
     }
@@ -185,6 +190,7 @@ public class ProjectionImpl
     protected boolean store(
       Tuple val)
     {
+      // Anonymous positional copy
       if (val.getFieldSet().getFieldCount()==getFieldCount())
       { 
         int numFields=getFieldCount();
@@ -197,6 +203,7 @@ public class ProjectionImpl
           { throw new AccessException("Error updating Projection",x);
           }
         }
+        return true;
       }
       // TODO Auto-generated method stub
       return false;

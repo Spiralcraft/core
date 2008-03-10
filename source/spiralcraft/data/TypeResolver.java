@@ -247,6 +247,11 @@ public class TypeResolver
       ,typeURI
       ,baseType
       );
+    
+    Type<?> existingType=map.get(typeURI);
+    if (existingType!=null)
+    { return existingType;
+    }
     type=putMap(typeURI,type);
     return type;
   } 

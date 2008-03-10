@@ -61,6 +61,10 @@ public class DataChannel<T extends DataComposite>
     return source.set(val);
   }
   
+  public boolean isWritable()
+  { return source.isWritable();
+  }
+  
   
   /**
    * Convenience method to buffer 

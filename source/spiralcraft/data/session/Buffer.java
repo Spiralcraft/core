@@ -66,6 +66,9 @@ public abstract class Buffer
   public abstract boolean isEditable();
   
   public abstract DataComposite getOriginal();
+  
+  public abstract boolean isDirty();
+  
   /**
    * Provide a permanent id for newly created s before they are
    *   persisted beyond the data session.

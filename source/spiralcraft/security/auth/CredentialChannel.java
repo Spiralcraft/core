@@ -57,4 +57,9 @@ public class CredentialChannel<T>
   protected boolean store(Object val)
   { return false;
   }
+
+  @Override
+  public boolean isWritable()
+  { return false;
+  }
 }

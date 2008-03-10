@@ -19,4 +19,12 @@ public class Setter<T>
   public void set()
   { target.set(source.get());
   }
+  
+  public Channel<? extends T> getSource()
+  { return source;
+  }
+  
+  public Channel<T> getTarget()
+  { return target;
+  }
 }

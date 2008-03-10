@@ -56,6 +56,10 @@ public class ProxyChannel<T>
     throws AccessException
   { return channel.set(value);
   }
+  
+  public boolean isWritable()
+  { return channel.isWritable();
+  }
 
   public Class<T> getContentType()
   { return channel.getContentType();

@@ -164,6 +164,10 @@ public abstract class AbstractChannel<T>
   { return _static;
   }
 
+  public boolean isWritable()
+  { return true;
+  }
+  
   public synchronized PropertyChangeSupport propertyChangeSupport()
   { 
     if (_static)

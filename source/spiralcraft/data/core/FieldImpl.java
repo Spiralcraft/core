@@ -435,6 +435,11 @@ public class FieldImpl
     }
 
     @Override
+    public boolean isWritable()
+    { return source.get() instanceof EditableTuple;
+    }
+    
+    @Override
     protected boolean store(Object val)
     {
       EditableTuple t=(EditableTuple) source.get();

@@ -95,6 +95,16 @@ public interface Channel<T>
     throws AccessException;
 
   /**
+   * 
+   * @return Whether this Channel is writeable- ie. whether set() can be
+   *   attempted.
+   *   
+   * @throws AccessException
+   */
+  boolean isWritable()
+    throws AccessException;
+
+  /**
    * Indicate the Java Class of the content of this View.
    */
   Class<T> getContentType();

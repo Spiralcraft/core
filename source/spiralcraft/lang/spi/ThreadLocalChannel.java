@@ -40,7 +40,11 @@ public class ThreadLocalChannel<T>
   { super(reflector);
   }
   
- 
+  @Override
+  public boolean isWritable()
+  { return true;
+  }
+  
   @Override
   public T retrieve()
   { return threadLocal.get().object;

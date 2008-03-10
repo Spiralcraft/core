@@ -152,7 +152,13 @@ public class BufferChannel
     
   }
   
+
+  @Override
+  public boolean isWritable()
+  { return false;
+  }
   
+  @Override
   public boolean store(Buffer val)
   { 
     // TODO This will be useful, to place whole buffers
@@ -160,6 +166,7 @@ public class BufferChannel
     return false;
   }
 
+  @Override
   public Buffer retrieve()
   { 
 
