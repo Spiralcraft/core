@@ -20,6 +20,7 @@ import spiralcraft.data.DataException;
 
 import spiralcraft.data.spi.ManualCursor;
 
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.BindException;
 
@@ -35,6 +36,13 @@ public class TupleFocus<T extends Tuple>
 
   private final CursorBinding<T,ManualCursor<T>> cursorBinding;
   private final ManualCursor<T> cursor;
+  
+  public TupleFocus(Focus<?> parentFocus,FieldSet fieldSet)
+    throws DataException
+  { 
+    this(fieldSet);
+    setParentFocus(parentFocus);
+  }
   
   public TupleFocus(FieldSet fieldSet)
     throws DataException

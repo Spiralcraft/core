@@ -18,8 +18,8 @@ import java.net.URI;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Space;
 import spiralcraft.data.Type;
-import spiralcraft.data.access.Space;
 import spiralcraft.data.access.Store;
 import spiralcraft.data.lang.DataChannel;
 
@@ -136,6 +136,7 @@ public class DataSessionFocus
     if (spaceChannel!=null)
     { dataSession.setSpace(spaceChannel.get());
     }
+    dataSession.setFocus(this);
     return dataSession;
   }
   

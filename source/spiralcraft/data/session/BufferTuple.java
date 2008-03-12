@@ -470,6 +470,7 @@ public class BufferTuple
         { log.fine("No updater in Space for Type "+getType());
         }
         
+        
         transaction.commit();
       }
       finally

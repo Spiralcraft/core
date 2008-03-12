@@ -18,6 +18,7 @@ package spiralcraft.data.access;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.Space;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Type;
@@ -59,7 +60,8 @@ public class DataSynchronizer
     throws DataException
   { 
     this.space=space;
-    nextConsumer=space.getUpdater(type);
+    tupleFocus=new TupleFocus<Tuple>(type.getScheme());
+    nextConsumer=space.getUpdater(type,tupleFocus);
     primaryKey=type.getScheme().getPrimaryKey();
     if (primaryKey==null)
     { 
@@ -67,7 +69,6 @@ public class DataSynchronizer
         ("DataSynchronizer: Type "+type.getURI()+" must have a primary key");
     }
     primaryKeyFocus=new TupleFocus<Tuple>(primaryKey);
-    tupleFocus=new TupleFocus<Tuple>(type.getScheme());
     try
     {
       keyBinding=primaryKey.bind(tupleFocus);

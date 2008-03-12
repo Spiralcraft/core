@@ -37,7 +37,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.HashMap;
-
+import java.util.Date;
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
@@ -81,6 +81,7 @@ public class ReflectionType<T>
       ,Collection.class
       ,URI.class
       ,spiralcraft.lang.Expression.class
+      ,Date.class
       );
     
     mapSystemClass

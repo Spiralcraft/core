@@ -27,6 +27,17 @@ public class Assignment<T>
   private Expression<? extends T> source;
   private Expression<T> target;
   
+  public Assignment()
+  { }
+  
+  
+  public Assignment(Expression<T> target,Expression<? extends T> source)
+  { 
+    this.source=source;
+    this.target=target;
+  
+  }
+  
   public void setSource(Expression<? extends T> source)
   { this.source=source;
   }

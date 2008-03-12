@@ -22,6 +22,13 @@ public class DebugDataConsumer<T extends Tuple>
   
   private PrintStream out=System.err;
 
+  public DebugDataConsumer()
+  { }
+  
+  public DebugDataConsumer(DataConsumer<T> nextConsumer)
+  { this.nextConsumer=nextConsumer;
+  }
+  
   @SuppressWarnings("unchecked") // Chains can convert between tuple types
   public void insertDataConsumer(DataConsumerChain<?> consumerChain)
   { 

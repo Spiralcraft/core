@@ -122,6 +122,7 @@ public class ProjectionImpl
     field.setIndex(fields.size());
     field.setType(masterField.getType());
     field.setName(masterField.getName());
+    field.setMasterField(masterField);
     fields.add(field);
     fieldMap.put(field.getName(),field);
     //mappings.add(new FieldMapping(masterField));

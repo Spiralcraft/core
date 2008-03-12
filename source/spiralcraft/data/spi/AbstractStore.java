@@ -18,10 +18,10 @@ import spiralcraft.builder.Lifecycle;
 import spiralcraft.builder.LifecycleException;
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.Space;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
-import spiralcraft.data.access.Space;
 import spiralcraft.data.access.Store;
 
 import spiralcraft.data.query.BoundQuery;

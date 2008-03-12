@@ -53,6 +53,7 @@ public class BufferField
   public Channel<?> bind(Focus<? extends Tuple> focus)
     throws BindException
   {
+    // The Channel that provides the original field value
     Channel<DataComposite> originalChannel;
     
     if (getArchetypeField()!=null)
@@ -157,17 +158,18 @@ public class BufferField
     { 
       
       Buffer buffer=bufferSource.get();
-      bufferPinned.push(buffer);
-      try
-      { 
-        // Do a bunch of stuff to buffer depending on state
 
-        // XXX Check buffer state (don't do this every time)
-        inheritedValues.set();
-      }
-      finally
-      { bufferPinned.pop();
-      }
+//      bufferPinned.push(buffer);
+//      try
+//      { 
+//        // Do a bunch of stuff to buffer depending on state
+//
+//        // XXX Check buffer state (don't do this every time)
+//        inheritedValues.set();
+//      }
+//      finally
+//      { bufferPinned.pop();
+//      }
       
       return buffer;
 

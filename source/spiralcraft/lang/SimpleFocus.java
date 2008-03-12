@@ -64,13 +64,13 @@ public class SimpleFocus<T>
   { this.containerURI=containerURI;
   }
   
-  public synchronized void mapNamespace(String name,URI namespace)
-  {
-    if (namespaces==null)
-    { namespaces=new HashMap<String,URI>();
-    }
-    namespaces.put(name,namespace);
-  }
+//  public synchronized void mapNamespace(String name,URI namespace)
+//  {
+//    if (namespaces==null)
+//    { namespaces=new HashMap<String,URI>();
+//    }
+//    namespaces.put(name,namespace);
+//  }
   
   
   /**

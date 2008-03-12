@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.core;
 
+import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 
 import spiralcraft.lang.BindException;
@@ -48,6 +49,7 @@ public class ProjectionField
 {
 
   private Expression<?> expression;
+  private Field masterField;
   
   public void setExpression(Expression<?> expression)
   { this.expression=expression;
@@ -61,7 +63,17 @@ public class ProjectionField
   { 
     return focus.bind(expression);
   }
+
+  public void setMasterField(
+    Field masterField)
+  {
+    this.masterField=masterField;
+    
+  }
   
+  public Field getMasterField()
+  { return masterField;
+  }
   
 }
 

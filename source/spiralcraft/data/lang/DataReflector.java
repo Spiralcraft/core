@@ -87,6 +87,8 @@ public abstract class DataReflector<T extends DataComposite>
   { this.type=type;;
   }
   
+  
+  
   public Type<?> getType()
   { return type;
   }
@@ -101,6 +103,7 @@ public abstract class DataReflector<T extends DataComposite>
   }
 
 
+  
   @Override
   public boolean isAssignableTo(URI typeURI)
   {

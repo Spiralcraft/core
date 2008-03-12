@@ -12,49 +12,47 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.access;
+package spiralcraft.data;
 
 import java.net.URI;
+import java.util.Date;
 
+import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.query.Queryable;
 
-import spiralcraft.data.DataException;
-import spiralcraft.data.Sequence;
-import spiralcraft.data.Space;
-import spiralcraft.data.Type;
-import spiralcraft.data.DeltaTuple;
-import spiralcraft.data.Tuple;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.builder.Lifecycle;
 
 /**
- * <P>A physical data container. Provides access to a set of data that is
- *   reachable through a single access mechanism, such as a database login,
- *   an XML file, the subtree of a filesystem directory, etc.
+ * A logical data container. Provides access to a complete set of data used by
+ *   one or more applications. Data reachable from a Space may be contained 
+ *   contained in or more Stores. 
  *   
- * <P>A Store is always participates in a single Space.
+ * There is normally only one Space associated with an application. A Space is
+ *   never contained within another Space.
  */
-public interface Store
+public interface Space
   extends Queryable<Tuple>,Lifecycle
 {
-  /**
-   * @return The Space to which this store belongs
-   */
-  Space getSpace();
-  
-  
+  URI SPACE_URI = URI.create("class:/spiralcraft/data/Space");
   
   /**
-   * Retrieve an update 'channel'. The DataConsumer can be used once to update
+   * <p>Retrieve an update 'channel'. The DataConsumer can be used once to update
    *   a batch of Tuples of the same Type.
+   * </p>
+   * 
+   * <p>Expressions contained in Fields may reference components available
+   *   from the provided Focus to provide default values, sequences, timestamps,
+   *   etc. available through the DataSession.
+   * </p>
    * 
    * @return A DataConsumer which is used to push one or more updates into
-   *   this Store
+   *   this Space. 
    */
   DataConsumer<DeltaTuple> getUpdater(Type<?> type,Focus<?> focus)
     throws DataException;
-
+  
   /**
    * <p>Return a Sequence for generating primary key data, or null if
    *   sequential ids are not provided for the specified URI. The URI is
@@ -68,5 +66,16 @@ public interface Store
    */
   Sequence getSequence(URI uri)
     throws DataException;
+  
+  /**
+   * A Space provides a time reference, which should be used by all application
+   *   components which integrate time into data. The nowTime for a Space
+   *   is usually the current time, but may vary in situations where it
+   *   is fixed or frozen for testing, development, debugging or other 
+   *   special purposes.
+   * 
+   * @return The current time according to the Space
+   */
+  Date getNowTime();
 
 }

@@ -23,6 +23,7 @@ import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeMismatchException;
 
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.AccessException;
@@ -52,6 +53,8 @@ public class FieldImpl
   private boolean isScheme;
   private boolean stored=true;
   private Reflector contentReflector;
+  private Expression<?> defaultExpression;
+  private Expression<?> fixedExpression;
   
   /**
    * Set the scheme
@@ -133,7 +136,29 @@ public class FieldImpl
   { return uri;
   }
   
+
+  /**
+   * @return The Expression that evaluates to the default value for this field
+   */
+  public Expression<?> getDefaultExpression()
+  { return defaultExpression;
+  }
   
+  public void setDefaultExpression(Expression defaultExpression)
+  { this.defaultExpression=defaultExpression;
+  }
+  
+  /**
+   * @return The Expression that evaluates to the default value for this field
+   */
+  public Expression<?> getFixedExpression()
+  { return fixedExpression;
+  }
+  
+  public void setFixedExpression(Expression fixedExpression)
+  { this.fixedExpression=fixedExpression;
+  }
+
   /**
    *@return Whether this field has the same type, constraints and attributes
    *   as the specified field.

@@ -16,17 +16,27 @@ package spiralcraft.data.xml;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import spiralcraft.builder.LifecycleException;
 import spiralcraft.data.DataException;
+import spiralcraft.data.DeltaTuple;
+import spiralcraft.data.Field;
+import spiralcraft.data.Sequence;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.DataConsumer;
+import spiralcraft.data.access.Updater;
+import spiralcraft.data.core.SequenceField;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.spi.AbstractStore;
 import spiralcraft.data.spi.BaseExtentQueryable;
 import spiralcraft.data.util.DebugDataConsumer;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.spi.SimpleChannel;
 
 
 /**
@@ -47,6 +57,19 @@ public class XmlStore
     =new ArrayList<XmlQueryable>();
   
   private URI baseResourceURI;
+  
+//  private Focus<XmlStore> focus;
+  
+  private HashMap<URI,Sequence> sequences;
+
+  
+  public XmlStore()
+    throws BindException
+  {
+//      focus=new SimpleFocus<XmlStore>
+//        (new SimpleChannel<XmlStore>(this,true)
+//        );
+  }
   
   public void setBaseResourceURI(URI uri)
   { baseResourceURI=uri;
@@ -72,6 +95,52 @@ public class XmlStore
       Type<?> subtype=queryable.getResultType();
       queryables.put(subtype,queryable);
       
+      addBaseTypes(queryable);
+      
+      addSequences(queryable);
+    }
+  }
+  
+  private void addSequences(XmlQueryable queryable)
+  {
+      Type<?> subtype=queryable.getResultType();
+      if (sequences==null)
+      { sequences=new HashMap<URI,Sequence>();
+      }
+      for (Field field : subtype.getScheme().fieldIterable())
+      { 
+        if (field instanceof SequenceField)
+        { sequences.put
+            (field.getURI()
+            ,new Sequence()
+              {
+                private int val=-1000000;
+                
+                @Override
+                public Integer next()
+                  throws DataException
+                {
+                  // TODO Auto-generated method stub
+                  return val--;
+                }
+              }
+            );
+        }
+      }
+    
+  }
+ 
+  /**
+   * <p>Make sure any base-type "union proxies" are set up, to translate a 
+   *   Query for the base-type into a union of subtypes.
+   * </p>
+   * 
+   * @param queryable
+   */
+  @SuppressWarnings("unchecked")
+  private void addBaseTypes(XmlQueryable queryable)
+  {
+      Type<?> subtype=queryable.getResultType();
       Type<?> type=subtype.getBaseType();
       while (type!=null)
       { 
@@ -106,20 +175,16 @@ public class XmlStore
         type=type.getBaseType();
         
       }
-      
-    }
+    
   }
-  
- 
-
   
   @SuppressWarnings("unchecked")
   @Override
-  public DataConsumer getUpdater(
-    Type type)
+  public DataConsumer<DeltaTuple> getUpdater(
+    Type<?> type,Focus<?> focus)
     throws DataException
   {
-    return new DebugDataConsumer();
+    return new DebugDataConsumer<DeltaTuple>(new Updater(focus));
 
   }
 
@@ -173,4 +238,11 @@ public class XmlStore
     
   }
 
+
+  public Sequence getSequence(URI uri)
+  {
+    Sequence sequence=sequences.get(uri);
+    return sequence;
+  }
+  
 }

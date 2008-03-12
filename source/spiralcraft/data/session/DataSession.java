@@ -19,10 +19,10 @@ import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Identifier;
+import spiralcraft.data.Space;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.DataConsumer;
-import spiralcraft.data.access.Space;
 import spiralcraft.data.access.Store;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.PojoIdentifier;
@@ -32,6 +32,7 @@ import spiralcraft.data.transaction.Branch;
 import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.data.transaction.Transaction.State;
 import spiralcraft.data.util.DebugDataConsumer;
+import spiralcraft.lang.Focus;
 
 
 import java.util.ArrayList;
@@ -57,11 +58,16 @@ public class DataSession
   private Space space;
   private ResourceManager<DataSessionBranch> resourceManager
     =new DataSessionResourceManager();
+  private DataSessionFocus focus;
   
   public void setType(Type<DataComposite> type)
   { this.type=type;
   }
 
+  public void setFocus(DataSessionFocus focus)
+  { this.focus=focus;
+  }
+  
   /**
    * The Space which the DataSession queries and updates
    * 
@@ -155,7 +161,7 @@ public class DataSession
     Transaction transaction
       =Transaction.startContextTransaction(Transaction.Nesting.ISOLATE);
     
-    DataSessionBranch branch=resourceManager.branch(transaction);
+//    DataSessionBranch branch=resourceManager.branch(transaction);
     
     try
     {
@@ -227,7 +233,7 @@ public class DataSession
         =updaterMap.get(type);
       if (updater==null)
       { 
-        updater=space.getUpdater(type);
+        updater=space.getUpdater(type,focus);
         if (updater!=null)
         { 
           updaterMap.put(type,updater);

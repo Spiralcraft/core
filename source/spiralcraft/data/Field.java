@@ -17,6 +17,7 @@ package spiralcraft.data;
 import java.net.URI;
 
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
@@ -62,6 +63,18 @@ public interface Field
    *   the Type that it belongs to. 
    */
   URI getURI();
+  
+  /**
+   * @return The expression that evaluates to a default value for the Field,
+   *   applied if the Field value is null at the time updates are committed.
+   */
+  Expression<?> getDefaultExpression();
+
+  /**
+   * @return The expression that evaluates to the Field value,
+   *   applied at the time updates are committed. 
+   */
+  Expression<?> getFixedExpression();
   
   /**
    * <p>Create a Channel that accesses the value of this Field in the Tuple

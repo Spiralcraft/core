@@ -15,13 +15,17 @@
 package spiralcraft.data.spi;
 
 
+import java.net.URI;
+import java.util.Date;
+
 import spiralcraft.data.DataException;
+import spiralcraft.data.Sequence;
+import spiralcraft.data.Space;
 import spiralcraft.data.Type;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Tuple;
 
 import spiralcraft.data.access.DataConsumer;
-import spiralcraft.data.access.Space;
 import spiralcraft.data.access.Store;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.BoundQuery;
@@ -94,8 +98,18 @@ public class SingleSpace
   { return store.getTypes();
   }
   
-  public DataConsumer<DeltaTuple> getUpdater(Type<?> type)
+  public DataConsumer<DeltaTuple> getUpdater(Type<?> type,Focus<?> focus)
     throws DataException
-  { return store.getUpdater(type);
+  { return store.getUpdater(type,focus);
   }
+  
+  public Sequence getSequence(URI uri)
+    throws DataException
+  { return store.getSequence(uri);
+  }
+  
+  public Date getNowTime()
+  { return new Date();
+  }
+  
 }
