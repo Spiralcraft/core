@@ -15,6 +15,7 @@
 package spiralcraft.lang.spi;
 
 
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
 
@@ -32,6 +33,7 @@ import spiralcraft.lang.Reflector;
  */
 public class ThreadLocalChannel<T>
   extends AbstractChannel<T>
+  implements Channel<T>
 {
   private final ThreadLocal<ThreadReference<T>> threadLocal
     =new ThreadLocal<ThreadReference<T>>();

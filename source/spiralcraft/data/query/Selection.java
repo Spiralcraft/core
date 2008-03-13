@@ -19,6 +19,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
+import spiralcraft.log.ClassLogger;
 
 
 import spiralcraft.data.DataException;
@@ -33,6 +34,8 @@ import spiralcraft.data.access.SerialCursor;
 public class Selection
   extends Query
 {
+  private static final ClassLogger log=new ClassLogger(Selection.class);
+  
   private Expression<Boolean> constraints;
   
   public Selection()
@@ -102,6 +105,8 @@ public class Selection
 class SelectionBinding<Tq extends Selection,Tt extends Tuple>
   extends UnaryBoundQuery<Tq,Tt>
 {
+  private static final ClassLogger log=new ClassLogger(SelectionBinding.class);
+
   private final Focus<?> paramFocus;
   private SimpleFocus<?> focus;
   private Channel<Boolean> filter;
@@ -123,9 +128,11 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
   public void resolve() throws DataException
   { 
     super.resolve();
+    
 
     focus=new SimpleFocus<Tt>(sourceChannel);
     focus.setParentFocus(paramFocus);
+    log.fine("Binding constraints "+getQuery().getConstraints());
     try
     { filter=focus.<Boolean>bind(getQuery().getConstraints());
     }
@@ -185,19 +192,19 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
       Tt t=sourceChannel.get();
       if (t==null)
       { 
-//      System.err.println("BoundSelection: eod ");
+        log.fine("BoundSelection: eod ");
         return false;
       }
 
       if (filter.get())
       {  
-//      System.err.println("BoundSelection: passed "+t);
+        log.fine("BoundSelection: passed "+t);
         dataAvailable(t);
         return true;
       }
       else
       { 
-//      System.err.println("BoundSelection: filtered "+t);
+        log.fine("BoundSelection: filtered "+t);
         return false;
       }
     }

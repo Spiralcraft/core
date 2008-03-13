@@ -20,10 +20,8 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.Space;
-import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.DataConsumer;
-import spiralcraft.data.access.Store;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.PojoIdentifier;
 import spiralcraft.data.transaction.Transaction;
@@ -32,7 +30,6 @@ import spiralcraft.data.transaction.Branch;
 import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.data.transaction.Transaction.State;
 import spiralcraft.data.util.DebugDataConsumer;
-import spiralcraft.lang.Focus;
 
 
 import java.util.ArrayList;
@@ -136,6 +133,23 @@ public class DataSession
     return buffer;
     
     
+  }
+  
+  @SuppressWarnings("unchecked")
+  public synchronized Buffer newBuffer(Type<?> type)
+    throws DataException
+  {
+    Buffer buffer=null;
+    if (type.isAggregate())
+    { buffer=new BufferAggregate(this,type);
+    }
+    else
+    { buffer=new BufferTuple(this,type);
+    }
+    buffer.setId(new PojoIdentifier(buffer));
+    
+    buffers.put(buffer.getId(),buffer);
+    return buffer;
   }
   
   /**
