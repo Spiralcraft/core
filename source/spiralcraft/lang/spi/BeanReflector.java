@@ -58,7 +58,7 @@ public class BeanReflector<T>
   implements Reflector<T>
 {
   @SuppressWarnings("unused")
-  private static final ClassLogger log=new ClassLogger(BeanReflector.class);
+  private static final ClassLogger log=ClassLogger.getInstance(BeanReflector.class);
   
   private static final boolean ENABLE_METHOD_BINDING_CACHE=true;
   

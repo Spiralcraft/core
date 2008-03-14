@@ -37,7 +37,7 @@ import spiralcraft.log.ClassLogger;
 public class BufferChannel
   extends AbstractChannel<Buffer>
 {
-  private static final ClassLogger log=new ClassLogger(BufferChannel.class);
+  private static final ClassLogger log=ClassLogger.getInstance(BufferChannel.class);
   
   private Channel<? extends DataComposite> originalChannel;
   private Channel<DataSession> sessionChannel;

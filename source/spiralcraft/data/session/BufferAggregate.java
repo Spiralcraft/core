@@ -33,7 +33,7 @@ public class BufferAggregate<T extends DataComposite>
   extends Buffer
   implements EditableAggregate<Buffer>
 { 
-  private final ClassLogger log=new ClassLogger(BufferAggregate.class);
+  private final ClassLogger log=ClassLogger.getInstance(BufferAggregate.class);
 
   
   private final DataSession session;

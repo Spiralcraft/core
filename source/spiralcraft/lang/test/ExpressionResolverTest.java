@@ -37,7 +37,7 @@ public class ExpressionResolverTest
 {
 
   private static final ClassLogger log
-    =new ClassLogger(ExpressionResolverTest.class);
+    =ClassLogger.getInstance(ExpressionResolverTest.class);
   
   private String _expression=null;
   private boolean _dump=false;

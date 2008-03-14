@@ -52,7 +52,7 @@ import java.io.IOException;
 public class DataHandler
   extends DefaultHandler
 {
-  private static final ClassLogger log=new ClassLogger(DataHandler.class);
+  private static final ClassLogger log=ClassLogger.getInstance(DataHandler.class);
   private static final String STANDARD_PATH
     ="java:/spiralcraft/data/types/standard/";
   

@@ -37,7 +37,7 @@ import spiralcraft.data.lang.DataReflector;
 public class BufferField
   extends FieldImpl
 {
-  protected final ClassLogger log=new ClassLogger(BufferField.class);
+  protected final ClassLogger log=ClassLogger.getInstance(BufferField.class);
   
   @SuppressWarnings("unchecked")
   public Type<Buffer> getType()

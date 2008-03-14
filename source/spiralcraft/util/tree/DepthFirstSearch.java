@@ -26,7 +26,7 @@ public class DepthFirstSearch<T extends Tree<T,?>>
   implements Iterable<T>
 {
 
-  static final ClassLogger log=new ClassLogger(DepthFirstSearch.class);
+  static final ClassLogger log=ClassLogger.getInstance(DepthFirstSearch.class);
 
   
 

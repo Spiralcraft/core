@@ -11,11 +11,20 @@ import java.util.logging.LogRecord;
 public class ClassLogger
   extends Logger
 {
-  private static int sequence=0;
+  
+  private static ClassLogger instance;
+  
+  public static synchronized final ClassLogger getInstance(Class<?> subject)
+  {
+    if (instance==null)
+    { instance=new ClassLogger();
+    }
+    return instance;
+  }
+
   private Logger logger;
-  
   private Handler logHandler=new ConsoleHandler();
-  
+
   { 
     logHandler.setFormatter(new DefaultFormatter());
     logHandler.setLevel(Level.ALL);
@@ -23,16 +32,11 @@ public class ClassLogger
 //    logger=new RegistryLogger();
   }
   
-  public ClassLogger(Object source)
+  
+  ClassLogger()
   { 
     super(
-      
-//      ((source instanceof Class)
-//          ?((Class<?>) source).getName()
-//          :source.getClass().getName()
-//       )
-//       +"#"+source.hashCode()
-      "spiralcraft.log.ClassLogger#"+(++sequence)
+      "spiralcraft.log.ClassLogger"
       ,
       null
       );

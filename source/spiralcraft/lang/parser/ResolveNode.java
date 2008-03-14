@@ -25,7 +25,7 @@ public class ResolveNode<T>
   extends Node
 {
   
-  private static final ClassLogger log=new ClassLogger(ResolveNode.class);
+  private static final ClassLogger log=ClassLogger.getInstance(ResolveNode.class);
 
   private final Node _source;
   private final String identifier;

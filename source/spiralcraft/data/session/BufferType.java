@@ -32,7 +32,7 @@ import java.net.URI;
 public class BufferType
   extends TypeImpl<Buffer>
 {
-  private static final ClassLogger log=new ClassLogger(BufferType.class);
+  private static final ClassLogger log=ClassLogger.getInstance(BufferType.class);
   
   public static final BufferType getBufferType(Type<?> bufferedType)
     throws DataException

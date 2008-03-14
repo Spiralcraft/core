@@ -58,7 +58,7 @@ public class Updater<T extends DeltaTuple>
   implements DataConsumer<T>
 {
 
-  private static final ClassLogger log=new ClassLogger(Updater.class);
+  private static final ClassLogger log=ClassLogger.getInstance(Updater.class);
 
   private static final URI dataURI
     =URI.create("class:/spiralcraft/data/");

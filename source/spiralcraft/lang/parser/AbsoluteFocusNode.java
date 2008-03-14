@@ -33,7 +33,7 @@ public class AbsoluteFocusNode
   extends FocusNode
 {
   @SuppressWarnings("unused")
-  private static final ClassLogger log=new ClassLogger(AbsoluteFocusNode.class);
+  private static final ClassLogger log=ClassLogger.getInstance(AbsoluteFocusNode.class);
   
   private static final URI NULL_URI=URI.create("");
   

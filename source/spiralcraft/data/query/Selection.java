@@ -34,7 +34,7 @@ import spiralcraft.data.access.SerialCursor;
 public class Selection
   extends Query
 {
-  private static final ClassLogger log=new ClassLogger(Selection.class);
+  private static final ClassLogger log=ClassLogger.getInstance(Selection.class);
   
   private Expression<Boolean> constraints;
   
@@ -105,7 +105,7 @@ public class Selection
 class SelectionBinding<Tq extends Selection,Tt extends Tuple>
   extends UnaryBoundQuery<Tq,Tt>
 {
-  private static final ClassLogger log=new ClassLogger(SelectionBinding.class);
+  private static final ClassLogger log=ClassLogger.getInstance(SelectionBinding.class);
 
   private final Focus<?> paramFocus;
   private SimpleFocus<?> focus;

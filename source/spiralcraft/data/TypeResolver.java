@@ -65,7 +65,7 @@ import spiralcraft.log.ClassLogger;
  */
 public class TypeResolver
 {
-  private static final ClassLogger log=new ClassLogger(TypeResolver.class);
+  private static final ClassLogger log=ClassLogger.getInstance(TypeResolver.class);
   
   private static final ClassLoaderLocal<TypeResolver> classLoaderLocal
     =new ClassLoaderLocal<TypeResolver>();

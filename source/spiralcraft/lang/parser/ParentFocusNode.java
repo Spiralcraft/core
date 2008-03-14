@@ -23,7 +23,7 @@ public class ParentFocusNode
   extends FocusNode
 {
 
-  private static final ClassLogger log=new ClassLogger(ParentFocusNode.class);
+  private static final ClassLogger log=ClassLogger.getInstance(ParentFocusNode.class);
   
   private final FocusNode _child;
 

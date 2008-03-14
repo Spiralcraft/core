@@ -46,7 +46,7 @@ public class DataSessionFocus
 {
   @SuppressWarnings("unused")
   private static final ClassLogger log
-    =new ClassLogger(DataSessionFocus.class);
+    =ClassLogger.getInstance(DataSessionFocus.class);
   
   private static final Expression<DataComposite> DATA_EXPRESSION
     =Expression.<DataComposite>create("data");
@@ -82,21 +82,21 @@ public class DataSessionFocus
       }
     }
     
-    try
-    {
+//    try
+//    {
       if (dataType!=null)
       {
-        SimpleFocus<Buffer> dataBufferFocus
-          =new SimpleFocus<Buffer>
-            (this
-            ,new DataChannel<DataComposite>
-              (dataType
-              ,this.bind(DATA_EXPRESSION)
-              ,false
-              ).buffer(this)
-            );
-      
-        bindFocus("spiralcraft.data.buffer",dataBufferFocus);
+//        SimpleFocus<Buffer> dataBufferFocus
+//          =new SimpleFocus<Buffer>
+//            (this
+//            ,new DataChannel<DataComposite>
+//              (dataType
+//              ,this.bind(DATA_EXPRESSION)
+//              ,false
+//              ).buffer(this)
+//            );
+//      
+//         bindFocus("spiralcraft.data.buffer",dataBufferFocus);
 
         SimpleFocus<DataComposite> dataFocus
           =new SimpleFocus<DataComposite>
@@ -113,10 +113,10 @@ public class DataSessionFocus
 
       }
       
-    }
-    catch (DataException x)
-    { throw new BindException("Error creating DataSessionFocus",x);
-    }
+//    }
+//    catch (DataException x)
+//    { throw new BindException("Error creating DataSessionFocus",x);
+//    }
     
     
     

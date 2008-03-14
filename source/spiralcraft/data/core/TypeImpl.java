@@ -36,7 +36,7 @@ import spiralcraft.log.ClassLogger;
 public class TypeImpl<T>
   extends Type<T>
 {  
-  protected static final ClassLogger log=new ClassLogger(TypeImpl.class);
+  protected static final ClassLogger log=ClassLogger.getInstance(TypeImpl.class);
   
   protected Class<T> nativeClass;
   protected SchemeImpl scheme;

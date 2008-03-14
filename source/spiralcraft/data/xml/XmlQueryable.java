@@ -49,7 +49,7 @@ public class XmlQueryable
   extends AbstractAggregateQueryable<Tuple>
 {
   @SuppressWarnings("unused")
-  private static final ClassLogger log=new ClassLogger(XmlQueryable.class);
+  private static final ClassLogger log=ClassLogger.getInstance(XmlQueryable.class);
   
   private Resource resource;
   private URI resourceURI;

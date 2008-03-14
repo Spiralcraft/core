@@ -29,7 +29,7 @@ import spiralcraft.data.util.InstanceResolver;
  */
 public abstract class Type<T>
 {  
-//  private static final ClassLogger log=new ClassLogger(Type.class);
+//  private static final ClassLogger log=ClassLogger.getInstance(Type.class);
   
   public static Type<?> resolve(String uriString)
     throws TypeNotFoundException

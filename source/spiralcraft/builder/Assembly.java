@@ -68,7 +68,7 @@ public class Assembly<T>
   implements Registrant,Lifecycle
 {
   @SuppressWarnings("unused")
-  private static ClassLogger log=new ClassLogger(Assembly.class);
+  private static ClassLogger log=ClassLogger.getInstance(Assembly.class);
   
   private final AssemblyClass _assemblyClass;
   // private Assembly<?> _parent;

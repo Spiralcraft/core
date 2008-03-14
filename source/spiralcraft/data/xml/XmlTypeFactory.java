@@ -49,7 +49,7 @@ public class XmlTypeFactory
 {
   
   @SuppressWarnings("unused")
-  private static final ClassLogger log=new ClassLogger(XmlTypeFactory.class);
+  private static final ClassLogger log=ClassLogger.getInstance(XmlTypeFactory.class);
   
   private ThreadLocal<CycleDetector<URI>> cycleDetectorRef
     =new ThreadLocal<CycleDetector<URI>>()

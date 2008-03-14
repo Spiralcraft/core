@@ -25,6 +25,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Field;
+import spiralcraft.log.ClassLogger;
 
 /**
  * Abstract Base class for Tuple functionality.
@@ -32,10 +33,14 @@ import spiralcraft.data.Field;
 public abstract class AbstractTuple
   implements Tuple
 {
+  protected static final ClassLogger log
+    =ClassLogger.getInstance(AbstractTuple.class);
+  
   protected final FieldSet fieldSet;
   protected final boolean hasScheme;
   protected AbstractTuple baseExtent;
   protected Identifier id;
+  protected boolean debug;
   
   
   /**
@@ -85,13 +90,20 @@ public abstract class AbstractTuple
   public Identifier getId()
   { 
     if (id==null && getType()!=null)
-    { id=new PojoIdentifier<Tuple>(this);
+    { 
+      id=new PojoIdentifier<Tuple>(this);
+      if (debug)
+      { log.fine("Created new PojoId for Tuple "+this);
+      }
     }
     return id;
   }
     
   public void setId(Identifier id)
   { 
+    if (debug)
+    { log.fine("Setting id "+id+" for Tuple "+this);
+    }
     this.id=id;
     if (baseExtent!=null)
     { baseExtent.setId(id);
@@ -339,4 +351,20 @@ public abstract class AbstractTuple
     }
     return null;
   }
+
+  public boolean isDebug()
+  {
+    return debug;
+  }
+
+  public void setDebug(
+    boolean debug)
+  {
+    if (debug)
+    { log.fine("Debugging "+this);
+    }
+    this.debug = debug;
+  }
+  
+  
 }

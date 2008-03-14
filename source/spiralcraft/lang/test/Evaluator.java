@@ -29,7 +29,7 @@ import spiralcraft.log.ClassLogger;
 public class Evaluator
 {
 
-  static ClassLogger log=new ClassLogger(Evaluator.class);
+  static ClassLogger log=ClassLogger.getInstance(Evaluator.class);
   
   public static <X,Y> X parseAndEvaluateObject(String expression,Y subject)
     throws BindException,ParseException

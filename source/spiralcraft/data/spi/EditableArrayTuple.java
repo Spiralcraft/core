@@ -40,7 +40,11 @@ public class EditableArrayTuple
   }
   
   public void set(int index,Object val)
-  { data[index]=val;
+  { 
+    if (debug)
+    { log.fine("Setting "+index+"="+val+" in Tuple "+this);
+    }
+    data[index]=val;
   }
   
   public boolean isMutable()

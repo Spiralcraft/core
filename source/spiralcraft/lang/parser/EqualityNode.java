@@ -14,11 +14,16 @@
 //
 package spiralcraft.lang.parser;
 
+
 import spiralcraft.lang.Channel;
+//import spiralcraft.log.ClassLogger;
+
 
 public class EqualityNode<X>
   extends LogicalNode<X,X>
 {
+//  private static final ClassLogger log
+//    =ClassLogger.getInstance(EqualityNode.class);
 
   private final boolean _negate;
 
@@ -31,7 +36,7 @@ public class EqualityNode<X>
   public Boolean translateForGet(X val,Channel<?>[] mods)
   { 
     Object mod=mods[0].get();
-    // System.err.println("EqualityNode: "+val+" == "+mod);
+//    log.fine("EqualityNode: "+val+" == "+mod);
     if (val==mod)
     { return _negate?Boolean.FALSE:Boolean.TRUE;
     }

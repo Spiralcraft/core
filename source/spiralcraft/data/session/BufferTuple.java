@@ -42,7 +42,7 @@ public class BufferTuple
   extends Buffer
   implements EditableTuple,DeltaTuple
 {
-  private static final ClassLogger log=new ClassLogger(BufferTuple.class);
+  private static final ClassLogger log=ClassLogger.getInstance(BufferTuple.class);
   
   private DataSession session;
   private Tuple original;
