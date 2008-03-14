@@ -132,13 +132,13 @@ public class TypeResolver
   }
   
   public final Type<?> resolveFromClass(Class<?> clazz)
-    throws TypeNotFoundException
+    throws DataException
   { return resolve(ReflectionType.canonicalURI(clazz));
   }
   
   @SuppressWarnings("unchecked") // Generic method but heterogeneous implementation
   public final <T> Type<T> resolve(URI typeUri)
-    throws TypeNotFoundException
+    throws DataException
   { 
     if (typeUri==null)
     { return null;
@@ -158,15 +158,7 @@ public class TypeResolver
     }
     
     Type<T> type=null;
-    try
-    { type=load(typeUri);
-    }
-    catch (TypeNotFoundException x)
-    { throw x;
-    }
-    catch (DataException x)
-    { throw new TypeNotFoundException(typeUri,x);
-    }
+    type=load(typeUri);
     
     if (type!=null)
     { 
@@ -193,7 +185,7 @@ public class TypeResolver
     try
     { return resolve(TYPE_TYPE_URI);
     }
-    catch (TypeNotFoundException x)
+    catch (DataException x)
     { 
       throw new RuntimeException
         ("TypeResolver cannot resolve "+TYPE_TYPE_URI,x);
@@ -481,24 +473,7 @@ public class TypeResolver
     type=findTypeExtended(typeUri);
 
     if (type!=null)
-    {
-      try
-      { type.link();
-      }
-      catch (TypeNotFoundException x)
-      { throw x;
-      }
-      catch (DataException x)
-      { 
-        if (x.getCause()!=null
-            && x.getCause() instanceof TypeNotFoundException
-           )
-        { throw (TypeNotFoundException) x.getCause();
-        }
-        else
-        { throw new TypeNotFoundException(typeUri,x);
-        }
-      }
+    { type.link();
     }
     return type;
   }

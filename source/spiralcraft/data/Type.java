@@ -32,12 +32,12 @@ public abstract class Type<T>
 //  private static final ClassLogger log=ClassLogger.getInstance(Type.class);
   
   public static Type<?> resolve(String uriString)
-    throws TypeNotFoundException
+    throws DataException
   { return TypeResolver.getTypeResolver().resolve(URI.create(uriString));
   }
 
   public static Type<?> resolve(URI uri)
-    throws TypeNotFoundException
+    throws DataException
   { return TypeResolver.getTypeResolver().resolve(uri);
   }
   
@@ -48,7 +48,7 @@ public abstract class Type<T>
     try
     { return (Type<List<X>>) resolve(type.getURI().toString()+".list");
     }
-    catch (TypeNotFoundException x)
+    catch (DataException x)
     { throw new RuntimeException(x);
     }
   }
@@ -65,7 +65,7 @@ public abstract class Type<T>
       return (Type<Buffer>) resolve(type.getURI().toString()+".buffer");
       
     }
-    catch (TypeNotFoundException x)
+    catch (DataException x)
     { throw new RuntimeException(x);
     }
   }

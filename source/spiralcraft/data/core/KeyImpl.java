@@ -175,7 +175,10 @@ public class KeyImpl
     { 
       Field masterField=masterFieldSet.getFieldByName(fieldName);
       if (masterField==null)
-      { throw new FieldNotFoundException(scheme.getType(),fieldName);
+      { 
+        
+        throw new FieldNotFoundException
+          ("Error binding Key "+name,scheme.getType(),fieldName);
       }
       addMasterField(masterField.getName(),masterField);
     }

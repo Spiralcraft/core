@@ -25,6 +25,7 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.BeanReflector;
 
 import spiralcraft.data.DataComposite;
+import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Type;
@@ -115,7 +116,7 @@ public abstract class DataReflector<T extends DataComposite>
       Type<?> requestedType=Type.resolve(typeURI);
       return requestedType.isAssignableFrom(type);
     }
-    catch (TypeNotFoundException x)
+    catch (DataException x)
     { return false;
     }
     

@@ -17,7 +17,6 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
-import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.core.FieldImpl;
 
 
@@ -30,7 +29,7 @@ public class SequenceField
     try
     { setType(Type.resolve("class:/spiralcraft/data/types/standard/Integer"));
     }
-    catch (TypeNotFoundException x)
+    catch (DataException x)
     { x.printStackTrace();
     }
   }

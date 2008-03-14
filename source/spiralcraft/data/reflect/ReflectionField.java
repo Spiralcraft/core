@@ -369,7 +369,7 @@ public class ReflectionField
   }
   
   protected Type<?> findType(Class<?> iface)
-    throws TypeNotFoundException
+    throws DataException
   { 
     URI uri=ReflectionType.canonicalURI(iface);
     return resolver.resolve(uri);

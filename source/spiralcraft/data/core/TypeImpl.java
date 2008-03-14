@@ -146,7 +146,7 @@ public class TypeImpl<T>
     try
     { return resolver.resolve(URI.create(uri.toString().concat(".type")));
     }
-    catch (TypeNotFoundException x)
+    catch (DataException x)
     { throw new RuntimeException(x);
     }
   }

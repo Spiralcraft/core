@@ -65,11 +65,7 @@ public class FieldNotFoundException
   }
 
   public FieldNotFoundException(Type<?> type,String fieldName)
-  { 
-    super
-      ("Field '"+fieldName+"' not found in type "+type.getURI()
-      +": fields=["+makeFieldList(type)+"]"
-      );
+  { this("",type,fieldName); 
   }
 
   public FieldNotFoundException(FieldSet fieldSet,String fieldName)
@@ -82,5 +78,18 @@ public class FieldNotFoundException
        )
       +":["+makeFieldList(fieldSet)+"]"
       );
+  }
+
+  public FieldNotFoundException(
+    String message,
+    Type<?> type,
+    String fieldName)
+  {
+    super
+      (message+": Field '"+fieldName+"' not found in type "+type.getURI()
+      +": fields=["+makeFieldList(type)+"]"
+      );
+    
+    // TODO Auto-generated constructor stub
   }
 }

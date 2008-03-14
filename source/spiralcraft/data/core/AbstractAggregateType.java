@@ -95,7 +95,7 @@ public abstract class AbstractAggregateType<T>
     try
     { return getTypeResolver().resolve(ReflectionType.canonicalURI(getClass()));
     }
-    catch (TypeNotFoundException x)
+    catch (DataException x)
     { throw new RuntimeException(x);
     }
   }
