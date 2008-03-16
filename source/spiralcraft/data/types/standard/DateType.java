@@ -39,6 +39,10 @@ public class DateType
   public synchronized  Date fromString(String str)
     throws DataException
   { 
+    if (!linked)
+    { throw new DataException("Type "+getURI()+" not linked");
+    }
+    
     if (str!=null)
     { 
       try
@@ -79,6 +83,10 @@ public class DateType
   public void setDateFormat(
     String dateFormat)
   {
+    
+    if (linked)
+    { throw new IllegalStateException("Type "+getURI()+" is already linked");
+    }
     this.dateFormat = dateFormat;
   }
 

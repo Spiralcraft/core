@@ -302,29 +302,33 @@ public class PropertySpecifier
         =targetAssemblyClass.getMember(pathElement);
 
       if (targetAssemblyPropertySpecifier==null)
-      { throw new BuildException("Member assembly '"+pathElement+"' not found");
-      }
-      
-      
-      List<AssemblyClass> contents
-        =targetAssemblyPropertySpecifier.getContents();
-      if (contents==null || contents.size()==0)
-      { throw new BuildException("Property '"+pathElement+"' does not contain any Assemblies");
-      }
-
-      // Add feature to index contents
-      if (contents.size()>1)
-      { throw new BuildException("Property '"+pathElement+"' contains more than one Assembly");
+      { 
+        // XXX Try to accomodate missing intermediate PropertySpecifier
+        // Maybe just be a bean property
+        throw new BuildException("Member assembly '"+pathElement+"' not found");
       }
       else
-      { targetAssemblyClass=contents.get(0);
-      }
+      {
       
-      // When we recurse, make sure we are dealing with a local class,
-      //  not a base class
-      targetAssemblyClass=localContainer.ensureLocalClass
-        (pathElement,targetAssemblyClass);
-        
+        List<AssemblyClass> contents
+          =targetAssemblyPropertySpecifier.getContents();
+        if (contents==null || contents.size()==0)
+        { throw new BuildException("Property '"+pathElement+"' does not contain any Assemblies");
+        }
+
+        // Add feature to index contents
+        if (contents.size()>1)
+        { throw new BuildException("Property '"+pathElement+"' contains more than one Assembly");
+        }
+        else
+        { targetAssemblyClass=contents.get(0);
+        }
+      
+        // When we recurse, make sure we are dealing with a local class,
+        //  not a base class
+        targetAssemblyClass=localContainer.ensureLocalClass
+          (pathElement,targetAssemblyClass);
+      }  
       
     }
     

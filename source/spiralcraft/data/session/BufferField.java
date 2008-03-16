@@ -60,7 +60,8 @@ public class BufferField
     { 
       // Get the correct field behavior from the archetype
       originalChannel=(Channel<DataComposite>) getArchetypeField().bind(focus);
-      
+      log.fine("Creating BufferFieldChannel for field " +getURI());
+      		
       return new BufferFieldChannel(originalChannel,focus);
       
     }
@@ -116,7 +117,7 @@ public class BufferField
 //          =bufferFocus.getSubject();
 //      }
           
-      
+      log.fine("Creating BufferChannel of type "+getType());
       this.bufferSource=new BufferChannel(getType(),originalChannel,focus);
       this.bufferPinned
         =new ThreadLocalChannel(DataReflector.getInstance(getType()));

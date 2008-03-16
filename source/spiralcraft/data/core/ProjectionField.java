@@ -16,6 +16,7 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.core.FieldImpl.FieldChannel;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
@@ -55,13 +56,8 @@ public class ProjectionField
   { this.expression=expression;
   }
     
-  @Override
-  // The focus of a projection field is on the master tuple.
-  public Channel bind
-    (Focus<? extends Tuple> focus)
-    throws BindException
-  { 
-    return focus.bind(expression);
+  public Expression<?> getExpression()
+  { return expression;
   }
 
   public void setMasterField(
@@ -74,8 +70,11 @@ public class ProjectionField
   public Field getMasterField()
   { return masterField;
   }
-  
+
+
 }
+
+
 
 // History
 //

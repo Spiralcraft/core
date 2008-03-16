@@ -22,6 +22,7 @@ import spiralcraft.lang.BindException;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 
 import spiralcraft.data.core.FieldImpl;
 import spiralcraft.data.query.BoundQuery;
@@ -47,7 +48,7 @@ public class QueryField
   {
     this.query=query;
     if (getType()==null)
-    { setType(query.getType());
+    { setType(Type.getAggregateType((query.getType())));
     }
   }
   

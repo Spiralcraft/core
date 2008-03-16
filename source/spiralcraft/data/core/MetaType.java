@@ -127,7 +127,6 @@ public class MetaType
     }
     else
     { 
-      
       if (!(instanceResolver instanceof StaticInstanceResolver))
       {
         // A StaticInstanceResolver indicates that we've already created
@@ -137,13 +136,20 @@ public class MetaType
         // TODO: clean up and consolidate with newSubtype()
         final URI uri=URI.create(getURI().toString().concat("-"+(anonRefId++)));
         
+        
         instanceResolver
           =new ConstructorInstanceResolver
             (new Class[] {TypeResolver.class,URI.class}
             ,new Object[] {getTypeResolver(),uri}
             );
+        log.fine("Using MetaType to create new anonymous extended type "+uri);
+        Type type=super.fromData(composite,instanceResolver);
+        type.link();
+        return type;
       }
-      return super.fromData(composite,instanceResolver);
+      else
+      { return super.fromData(composite,instanceResolver);
+      }
     }
     
   }

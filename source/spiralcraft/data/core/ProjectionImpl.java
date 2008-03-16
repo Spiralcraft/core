@@ -33,6 +33,7 @@ import spiralcraft.data.lang.TupleReflector;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.AbstractChannel;
 
@@ -114,15 +115,15 @@ public class ProjectionImpl
   protected void addMasterField(String name,Field masterField)
   { 
     assertUnresolved();
-    // XXX We should move to ProjectionFields, that use expressions
     
 //    FieldImpl field=new FieldImpl();
     ProjectionField field=new ProjectionField();
     field.setFieldSet(this);
     field.setIndex(fields.size());
     field.setType(masterField.getType());
-    field.setName(masterField.getName());
+    field.setName(name);
     field.setMasterField(masterField);
+    field.setExpression(Expression.create(masterField.getName()));
     fields.add(field);
     fieldMap.put(field.getName(),field);
     //mappings.add(new FieldMapping(masterField));
@@ -140,6 +141,9 @@ public class ProjectionImpl
   { 
     if (resolved)
     { return;
+    }
+    for (ProjectionField field: fields)
+    { field.resolve();
     }
     resolved=true;
   }
@@ -160,7 +164,7 @@ public class ProjectionImpl
     public ProjectionChannel(Focus<? extends Tuple> masterFocus)
       throws BindException
     { 
-      super(new TupleReflector<Tuple>(masterFieldSet,Tuple.class));
+      super(new TupleReflector<Tuple>(ProjectionImpl.this,Tuple.class));
       this.focus=masterFocus; 
 //      Channel<?>[] bindings=new Channel[mappings.size()];
 //      int i=0;
@@ -171,7 +175,7 @@ public class ProjectionImpl
       Channel<?>[] bindings=new Channel[fields.size()];
       int i=0;
       for (ProjectionField field : fields)
-      { bindings[i++]=field.bind(focus);
+      { bindings[i++]=focus.bind(field.getExpression()); 
       }
       
       boundTuple=new BoundTuple(ProjectionImpl.this,bindings);
@@ -213,6 +217,33 @@ public class ProjectionImpl
     
   }
   
+  public String contentsToString()
+  {
+    if (fields==null)
+    { return "(no fields)";
+    }
+    
+    StringBuilder fieldList=new StringBuilder();
+    fieldList.append("[");
+    boolean first=true;
+    for (Field field:fields)
+    { 
+      fieldList.append("\r\n  ");
+      if (!first)
+      { fieldList.append(",");
+      }
+      else
+      { first=false;
+      }
+      fieldList.append(field.toString());
+    }
+    fieldList.append("]");
+    return fieldList.toString();
+  }
+  
+  public String toString()
+  { return contentsToString();
+  }
   
   class Binding
     implements BoundProjection

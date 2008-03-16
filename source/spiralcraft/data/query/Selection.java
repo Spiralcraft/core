@@ -19,6 +19,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.TeleFocus;
 import spiralcraft.log.ClassLogger;
 
 
@@ -108,7 +109,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
   private static final ClassLogger log=ClassLogger.getInstance(SelectionBinding.class);
 
   private final Focus<?> paramFocus;
-  private SimpleFocus<?> focus;
+  private Focus<Tt> focus;
   private Channel<Boolean> filter;
   
   public SelectionBinding
@@ -130,8 +131,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     super.resolve();
     
 
-    focus=new SimpleFocus<Tt>(sourceChannel);
-    focus.setParentFocus(paramFocus);
+    focus=new TeleFocus<Tt>(paramFocus,sourceChannel);
     log.fine("Binding constraints "+getQuery().getConstraints());
     try
     { filter=focus.<Boolean>bind(getQuery().getConstraints());

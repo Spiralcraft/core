@@ -314,8 +314,8 @@ public class SchemeImpl
     field.setIndex(fields.size());
     field.setScheme(this);
     fields.add(field);
-    fieldMap.put(field.getName(), field);
     field.resolve();
+    fieldMap.put(field.getName(), field);
   }
   
   public void assertUnresolved()

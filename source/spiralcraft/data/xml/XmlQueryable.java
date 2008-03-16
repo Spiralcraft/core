@@ -60,6 +60,7 @@ public class XmlQueryable
   private Type<?> type;
   
   private Aggregate<Tuple> aggregate;
+  private Exception exception;
   
   private WatcherHandler handler
     =new WatcherHandler()
@@ -70,6 +71,7 @@ public class XmlQueryable
         DataReader reader=new DataReader();
         try
         {
+          exception=null;
           // log.fine("Resource "+resource.getURI()+" changed");
           Aggregate<Tuple> data=(Aggregate<Tuple>) reader.readFromResource
             (resource, type);
@@ -77,6 +79,7 @@ public class XmlQueryable
         }
         catch (Exception x)
         { 
+          exception=x;
           x.printStackTrace();
           return -1000;
         }
@@ -159,6 +162,9 @@ public class XmlQueryable
 
     // log.fine("Checking resource");
     watcher.check();
+    if (exception!=null)
+    { throw new DataException("Error loading data from "+resourceURI,exception);
+    }
     return aggregate;
   }
   

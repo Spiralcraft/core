@@ -22,6 +22,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.SimpleFocus;
 
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.log.ClassLogger;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
@@ -29,6 +30,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
 import spiralcraft.data.access.CursorAggregate;
+import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.core.FieldImpl;
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Query;
@@ -40,6 +42,9 @@ import spiralcraft.data.lang.DataReflector;
 public class KeyField
   extends FieldImpl
 {
+  protected static final ClassLogger log
+    =ClassLogger.getInstance(KeyField.class);
+  
   private KeyImpl key;
   
   public KeyField(KeyImpl key)
@@ -69,15 +74,31 @@ public class KeyField
     Focus keyFocus=new SimpleFocus(focus,key.bind(focus));
 
     Query query=key.getForeignQuery();
-    Focus queryableFocus=focus.findFocus(Queryable.QUERYABLE_URI);
+    Focus<Queryable> queryableFocus
+      =(Focus<Queryable>) focus.findFocus(Queryable.QUERYABLE_URI);
     if (queryableFocus!=null)
     { 
       
       try
       { 
-        BoundQuery boundQuery
-          =query.getDefaultBinding(keyFocus, (Queryable) queryableFocus.getSubject());
-        return new KeyFieldChannel(getType(),boundQuery);
+        Queryable queryable=queryableFocus.getSubject().get();
+        if (queryable!=null)
+        {  
+          BoundQuery boundQuery
+            = queryable.query(query,keyFocus);
+          if (query==null)
+          {
+            throw new BindException
+              ("Got null query from "+queryable+" for query "+query);
+          }
+          return new KeyFieldChannel(getType(),boundQuery);
+          
+        }
+        else
+        { 
+          throw new BindException
+            ("No Queryable available in Focus chain "+focus.toString());
+        }
       }
       catch (DataException x)
       { throw new BindException(x.toString(),x);
@@ -99,7 +120,7 @@ public class KeyField
       throws BindException
     { 
       super(DataReflector.<DataComposite>getInstance(type));
-
+      this.query=query;
     }
     
     public boolean isWritable()
@@ -111,10 +132,49 @@ public class KeyField
       throws AccessException
     {
       try
-      { return new CursorAggregate(query.execute());
+      {
+        
+      try
+      { 
+        log.fine("KeyField "+getURI()+" retrieving...");
+        if (getType().isAggregate())
+        { 
+          CursorAggregate aggregate
+            =new CursorAggregate(query.execute());
+          log.fine(aggregate.toString());
+          return aggregate;
+        }
+        else
+        { 
+          Tuple val=null;
+          SerialCursor cursor=query.execute();
+          while (cursor.dataNext())
+          { 
+            if (val!=null)
+            { 
+              throw new AccessException
+                (getURI()+": Cardinality violation: non-aggregate query returned more" +
+                " than one result"
+                );
+            }
+            else
+            { val=cursor.dataGetTuple();
+            }
+          }
+          log.fine(val!=null?val.toString():"null");
+          return val;
+        }
       }
       catch (DataException x)
-      { throw new AccessException(x.toString(),x);
+      { 
+        throw new AccessException(x.toString(),x);
+      }
+      
+      }
+      catch (RuntimeException x)
+      { 
+        x.printStackTrace();
+        throw x;
       }
     }
 

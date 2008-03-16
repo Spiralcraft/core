@@ -14,6 +14,13 @@ public class TeleFocus<T>
   implements Focus<T>
 {
   
+  public TeleFocus(Focus<?> parentFocus,Channel<T> subject)
+  { 
+    setParentFocus(parentFocus);
+    setSubject(subject);
+   
+  }
+  
   public Channel<?> getContext()
   { 
     if (parent!=null)

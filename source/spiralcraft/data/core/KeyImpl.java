@@ -213,8 +213,8 @@ public class KeyImpl
         if (expression.length()>0)
         { expression.append(" && ");
         }
-        expression.append(foreignFieldNames[i])
-          .append("==").append("..").append(fieldNames[i]);
+        expression.append("."+foreignFieldNames[i])
+          .append("==").append(fieldNames[i]);
       }
 //      System.err.println("KeyImpl: expression= ["+expression+"]");
       

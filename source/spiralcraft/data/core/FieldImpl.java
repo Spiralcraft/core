@@ -64,17 +64,17 @@ public class FieldImpl
     assertUnlocked();
     isScheme=true;
     this.fieldSet=scheme;
-    if (scheme.getType()!=null)
-    { 
-      this.uri
-        =URI.create(scheme.getType().getURI().toString()+"#"+getName());
-    }
-    else
-    {
-      this.uri
-        =URI.create("untyped#"+getName());
-      
-    }
+//    if (scheme.getType()!=null)
+//    { 
+//      this.uri
+//        =URI.create(scheme.getType().getURI().toString()+"#"+getName());
+//    }
+//    else
+//    {
+//      this.uri
+//        =URI.create("untyped#"+getName());
+//      
+//    }
   }
   
   void setFieldSet(FieldSet fieldSet)
@@ -86,7 +86,7 @@ public class FieldImpl
     else
     { 
       this.fieldSet=fieldSet;
-      this.uri=URI.create("untyped#"+getName());
+//      this.uri=URI.create("untyped#"+getName());
     }
     
   }
@@ -249,13 +249,8 @@ public class FieldImpl
   private Tuple widenTuple(Tuple t)
     throws DataException
   {
-    if (isScheme)
-    { 
-      Scheme scheme=(Scheme) fieldSet;
-      // Find the Tuple which stores this field
-      if (scheme.getType()!=null)
-      { t=t.widen(scheme.getType());
-      }
+    if (fieldSet.getType()!=null)
+    { t=t.widen(fieldSet.getType());
     }
     else
     { 
@@ -350,6 +345,15 @@ public class FieldImpl
     if (!locked)
     { lock();
     }
+    if (fieldSet.getType()==null)
+    { this.uri=URI.create("untyped#"+getName());
+    }
+    else
+    { this.uri
+        =URI.create(fieldSet.getType().getURI().toString()+"#"+getName());
+
+    }
+    
     subclassResolve();
   }
   
@@ -428,15 +432,16 @@ public class FieldImpl
     @Override
     protected Object retrieve()
     {
-      Tuple t=source.get();
-      if (t==null)
+      Tuple t;
+      Tuple subtypeTuple=source.get();
+      if (subtypeTuple==null)
       { 
         // Defines x.f to be null if x is null
         return null;
       }
       
       try
-      { t=widenTuple(t);
+      { t=widenTuple(subtypeTuple);
       }
       catch (DataException x)
       { throw new AccessException(x.toString(),x);
@@ -454,7 +459,7 @@ public class FieldImpl
       else
       {
         throw new AccessException
-          ("Field '"+name+"' not in Tuple FieldSet "+t.getFieldSet());
+          ("Field '"+getURI()+"' not in Tuple FieldSet "+subtypeTuple.getFieldSet());
       }
 
     }
