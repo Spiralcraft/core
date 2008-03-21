@@ -30,7 +30,6 @@ public class Assignment<T>
   public Assignment()
   { }
   
-  
   public Assignment(Expression<T> target,Expression<? extends T> source)
   { 
     this.source=source;

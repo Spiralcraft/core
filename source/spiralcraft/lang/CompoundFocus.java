@@ -137,11 +137,11 @@ public class CompoundFocus<T>
     if (layers!=null)
     {
       for (String name:layers.keySet())
-      { buf.append("#"+name+"="+layers.get(name));
+      { buf.append("\r\n  #"+name+"="+layers.get(name));
       }
     }
     
-    return super.toString()+"["+buf.toString()+"]";
+    return super.toString()+"\r\n["+buf.toString()+"\r\n]";
   }
 
 }
