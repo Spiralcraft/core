@@ -49,9 +49,9 @@ Evaluator.parseAndEvaluateObject(".hashCode()==1",new Object());
 Evaluator.parseAndEvaluateObject("-.hashCode()==-.hashCode()",new Object());
 
 "// Meta operator";
-Evaluator.parseAndEvaluateObject(".!",new Object());
-Evaluator.parseAndEvaluateObject(".class.name!",new Object());
-Evaluator.parseAndEvaluateObject(".hashCode()!",new Object());
+//Evaluator.parseAndEvaluateObject(".!",new Object());
+//Evaluator.parseAndEvaluateObject(".class.name!",new Object());
+//Evaluator.parseAndEvaluateObject(".hashCode()!",new Object());
 
 "// Self operator";
 Evaluator.parseAndEvaluateObject(".concat(.)","test");

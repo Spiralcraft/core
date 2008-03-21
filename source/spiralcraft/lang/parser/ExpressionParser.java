@@ -509,9 +509,12 @@ public class ExpressionParser
       case '.':
         consumeToken();
         return parseDereferenceExpression(primary);
-      case '!': 
-        consumeToken();
-        return parsePostfixExpressionRest(new MetaNode(primary));
+
+//  Illegal - conflicts with "!="
+//      case '!': 
+//        consumeToken();
+//        return parsePostfixExpressionRest(new MetaNode(primary));
+        
       default:
         return primary;
     }
