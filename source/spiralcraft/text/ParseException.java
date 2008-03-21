@@ -32,13 +32,13 @@ public class ParseException
   
   public ParseException(String message, ParsePosition position, Throwable cause)
   {
-    super(message+" (@"+position.toString()+")",cause);
+    super(message+"\r\n(@"+position.toString()+")",cause);
     this.position=position;
   }
 
   public ParseException(ParsePosition position, Throwable cause)
   {
-    super(" (@"+position.toString()+")",cause);
+    super("(@"+position.toString()+")",cause);
     this.position=position;
   }
   
