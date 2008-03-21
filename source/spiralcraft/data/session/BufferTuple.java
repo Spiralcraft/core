@@ -29,6 +29,7 @@ import spiralcraft.data.TypeMismatchException;
 
 import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.session.DataSession.DataSessionBranch;
+import spiralcraft.data.spi.ArrayDeltaTuple;
 import spiralcraft.data.spi.ArrayTuple;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.log.ClassLogger;
@@ -64,7 +65,7 @@ public class BufferTuple
   { 
     this.session=session;
     this.original=original;
-    this.type=original.getType();
+    this.type=Type.getBufferType(original.getType());
     this.id=original.getId();
     if (original.getBaseExtent()!=null)
     { baseExtent=new BufferTuple(session,original.getBaseExtent());
@@ -315,13 +316,19 @@ public class BufferTuple
   public String toText(
     String indent)
     throws DataException
-  { return "Buffer of ["+original.toText(indent+" ")+"\r\n]";
+  { 
+    if (original!=null)
+    { return "Buffer of ["+original.toText(indent+" ")+"\r\n]";
+    }
+    else
+    { return "New buffer of "+getType().getArchetype();
+    }
   }
 
   public String toString()
   { 
     StringBuffer buf=new StringBuffer();
-    buf.append(super.toString()+":[\r\n");
+    buf.append(super.toString()+":"+getType().toString()+"[\r\n");
     Field[] dirtyFields=getDirtyFields();
       
     if (dirtyFields!=null)
@@ -336,8 +343,11 @@ public class BufferTuple
         }
       }
     
-      buf.append("]\r\n");
     }
+    else
+    { buf.append("(clean)");
+    }
+    buf.append("]\r\n");
     return buf.toString()+":"+original;
   }
   
@@ -429,17 +439,15 @@ public class BufferTuple
     if (transaction!=null)
     {
       log.fine("Saving "+toString());
-      
-      if (baseExtent!=null)
-      { baseExtent.save();
-      }
+
       
       DataSessionBranch branch
         =session.getResourceManager().branch(transaction);
       branch.addBuffer(this);
       
       
-      DataConsumer<DeltaTuple> updater=branch.getUpdater(getType());
+      DataConsumer<DeltaTuple> updater
+        =branch.getUpdater(getType());
       if (updater!=null)
       { updater.dataAvailable(this);
       }
@@ -454,9 +462,6 @@ public class BufferTuple
         Transaction.startContextTransaction(Transaction.Nesting.ISOLATE);
       try
       {
-        if (baseExtent!=null)
-        { baseExtent.save();
-        }
         
         DataSessionBranch branch
           =session.getResourceManager().branch(transaction);
@@ -504,8 +509,8 @@ public class BufferTuple
     log.fine("Committing "+this);
     if (original instanceof JournalTuple)
     { 
-      // XXX Should be prepareUpdate(), which locks to transaction
       ((JournalTuple) original).commit();
+      reset();
     }
     else if (original instanceof EditableTuple)
     {
@@ -525,12 +530,12 @@ public class BufferTuple
           }
         }
       }
+      reset();
     }
     else
     {
       log.fine("Original is not writable "+original);
     }
-    reset();
       
   }
   
