@@ -2,12 +2,15 @@ package spiralcraft.data.spi;
 
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Field;
+import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Aggregate;
+import spiralcraft.data.Type;
 
 import java.util.BitSet;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ArrayDeltaTuple
   extends ArrayTuple
@@ -16,8 +19,10 @@ public class ArrayDeltaTuple
   private final BitSet dirtyFlags;
 
   private final Tuple original;
+  
   private boolean delete;
   private boolean dirty;
+
   
   /**
    * Constructs a DeltaTuple based on the difference between and
@@ -73,6 +78,55 @@ public class ArrayDeltaTuple
           }
         }
       }
+    }
+  }
+
+  public ArrayDeltaTuple(FieldSet fieldSet)
+  { 
+    super(fieldSet);
+    this.dirtyFlags=new BitSet(fieldSet.getFieldCount());
+    this.original=null;
+  }
+
+  
+  /**
+   * Constructs a DeltaTuple from another DeltaTuple
+   *   
+   * @param original
+   * @param updated
+   * @throws DataException
+   */  
+  public ArrayDeltaTuple(Tuple tuple)
+    throws DataException
+  { 
+    super(((DeltaTuple) tuple).getFieldSet());
+    DeltaTuple updated=(DeltaTuple) tuple;
+    dirtyFlags=new BitSet(fieldSet.getFieldCount());
+    copyFrom(updated);
+    this.original=updated.getOriginal();
+  }
+
+  void copyFrom(DeltaTuple updated)
+    throws DataException
+  { 
+    if (updated==null)
+    { throw new IllegalArgumentException("Can't copy from null");
+    }
+    Field[] dirtyFields=updated.getDirtyFields();
+    if (dirtyFields!=null)
+    {
+      for (Field field : dirtyFields)
+      { 
+        int i=field.getIndex();
+        data[i]=updated.get(i);
+        dirtyFlags.set(i);
+      }
+    }
+    this.dirty=updated.isDirty();
+    if (baseExtent!=null)
+    { 
+      ((ArrayDeltaTuple) baseExtent)
+        .copyFrom((DeltaTuple) updated.getBaseExtent());
     }
   }
   
@@ -159,4 +213,16 @@ public class ArrayDeltaTuple
     }
   }
 
+    @Override
+  protected AbstractTuple createBaseExtent(
+    FieldSet fieldSet)
+  { return new ArrayDeltaTuple(fieldSet);
+  }
+
+  @Override
+  protected AbstractTuple createBaseExtent(
+    Tuple tuple)
+    throws DataException
+  { return new ArrayDeltaTuple(tuple);
+  }
 }
