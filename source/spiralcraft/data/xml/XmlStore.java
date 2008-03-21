@@ -30,7 +30,9 @@ import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.access.Updater;
 import spiralcraft.data.core.SequenceField;
 import spiralcraft.data.query.Queryable;
+import spiralcraft.data.session.BufferType;
 import spiralcraft.data.spi.AbstractStore;
+import spiralcraft.data.spi.ArrayTuple;
 import spiralcraft.data.spi.BaseExtentQueryable;
 import spiralcraft.data.util.DebugDataConsumer;
 import spiralcraft.lang.BindException;
@@ -104,27 +106,30 @@ public class XmlStore
   private void addSequences(XmlQueryable queryable)
   {
       Type<?> subtype=queryable.getResultType();
-      if (sequences==null)
-      { sequences=new HashMap<URI,Sequence>();
-      }
-      for (Field field : subtype.getScheme().fieldIterable())
-      { 
-        if (field instanceof SequenceField)
-        { sequences.put
+      if (subtype.getScheme()!=null)
+      {
+        if (sequences==null)
+        { sequences=new HashMap<URI,Sequence>();
+        }
+        for (Field field : subtype.getScheme().fieldIterable())
+        { 
+          if (field instanceof SequenceField)
+          { sequences.put
             (field.getURI()
-            ,new Sequence()
+              ,new Sequence()
               {
                 private int val=-1000000;
-                
+
                 @Override
                 public Integer next()
-                  throws DataException
+                throws DataException
                 {
                   // TODO Auto-generated method stub
                   return val--;
                 }
               }
             );
+          }
         }
       }
     
@@ -184,7 +189,25 @@ public class XmlStore
     Type<?> type,Focus<?> focus)
     throws DataException
   {
-    return new DebugDataConsumer<DeltaTuple>(new Updater(focus));
+    Queryable queryable;
+    
+    if (type instanceof BufferType)
+    { queryable=queryables.get(type.getArchetype());
+    }
+    else
+    { queryable=queryables.get(type);
+    }
+    
+    if (queryable==null)
+    { return null;
+    }
+    if (!(queryable instanceof XmlQueryable))
+    { throw new DataException("Cannot update an abstract type");
+    }
+      
+    return new DebugDataConsumer<DeltaTuple>
+      (new XmlUpdater(focus,(XmlQueryable) queryable)
+      );
 
   }
 
@@ -245,4 +268,35 @@ public class XmlStore
     return sequence;
   }
   
+  class XmlUpdater
+    extends Updater<DeltaTuple>
+  {
+    private XmlQueryable queryable;
+    private ArrayList<Tuple> addList=new ArrayList<Tuple>();
+    
+    
+    public XmlUpdater(Focus<?> context,XmlQueryable queryable)
+      throws DataException
+    { 
+      super(context);
+      this.queryable=queryable;
+    }
+    
+    public void dataAvailable(DeltaTuple tuple)
+      throws DataException
+    {
+      super.dataAvailable(tuple);
+      if (tuple.getOriginal()==null && !tuple.isDelete())
+      { addList.add(tuple);
+      }
+    }
+    
+    public void dataFinalize()
+      throws DataException
+    { 
+      for (Tuple t: addList)
+      { queryable.add(new ArrayTuple(t));
+      }
+    }
+  }
 }

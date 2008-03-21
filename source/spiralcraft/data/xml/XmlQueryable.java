@@ -20,6 +20,8 @@ import spiralcraft.data.spi.AbstractAggregateQueryable;
 import spiralcraft.data.sax.DataReader;
 
 import spiralcraft.data.Aggregate;
+import spiralcraft.data.EditableAggregate;
+import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
@@ -216,6 +218,9 @@ public class XmlQueryable
     this.resource=resource;
   }
   
+  void add(Tuple t)
+  { ((EditableAggregate<Tuple>) this.aggregate).add(t);
+  }
   
-  
+
 }
