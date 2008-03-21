@@ -61,7 +61,17 @@ public class KeyField
     throws DataException
   { 
     setName(key.getName());
-    setType(key.getForeignType());
+    
+    if (key.getForeignType()==null)
+    { throw new DataException("Foreign type is null Key "+key);
+    }
+    
+    if (key.getImportedKey().isUnique())
+    { setType(key.getForeignType());
+    }
+    else
+    { setType(Type.getAggregateType(key.getForeignType()));
+    }
     super.resolve();
   }
   
@@ -74,6 +84,7 @@ public class KeyField
     Focus keyFocus=new SimpleFocus(focus,key.bind(focus));
 
     Query query=key.getForeignQuery();
+    log.fine("Foreign query is "+query);
     Focus<Queryable> queryableFocus
       =(Focus<Queryable>) focus.findFocus(Queryable.QUERYABLE_URI);
     if (queryableFocus!=null)
@@ -136,12 +147,19 @@ public class KeyField
         
       try
       { 
-        log.fine("KeyField "+getURI()+" retrieving...");
+//        log.fine("KeyField "+getURI()+" retrieving...");
         if (getType().isAggregate())
         { 
+          SerialCursor cursor=query.execute();
+          if (cursor.getResultType()==null)
+          {
+            log.fine("cursor result type is null "+cursor);
+          }
+          
+          
           CursorAggregate aggregate
             =new CursorAggregate(query.execute());
-          log.fine(aggregate.toString());
+//          log.fine(aggregate.toString());
           return aggregate;
         }
         else
@@ -161,7 +179,7 @@ public class KeyField
             { val=cursor.dataGetTuple();
             }
           }
-          log.fine(val!=null?val.toString():"null");
+//          log.fine(val!=null?val.toString():"null");
           return val;
         }
       }

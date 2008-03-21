@@ -180,6 +180,13 @@ public class TypeImpl<T>
     }
     // log.fine("Linking "+toString());
     linked=true;
+    
+    if (baseType!=null && scheme==null)
+    { 
+      // Null subtype scheme causes problems
+      scheme=new SchemeImpl();
+    }
+    
     if (scheme!=null)
     {
       scheme.setType(this);
