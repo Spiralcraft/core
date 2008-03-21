@@ -139,6 +139,9 @@ public class DataSession
   public synchronized Buffer newBuffer(Type<?> type)
     throws DataException
   {
+    if (buffers==null)
+    { buffers=new HashMap<Identifier,Buffer>();
+    }
     Buffer buffer=null;
     if (type.isAggregate())
     { buffer=new BufferAggregate(this,type);

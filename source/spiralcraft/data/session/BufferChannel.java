@@ -172,6 +172,10 @@ public class BufferChannel
 
     DataComposite original=originalChannel.get();
     
+    if (original==null)
+    { return null;
+    }
+    
     if (original instanceof Buffer)
     { return (Buffer) original;
     }

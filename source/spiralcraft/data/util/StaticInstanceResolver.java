@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.util;
 
-import spiralcraft.data.Type;
 
 /**
  * An InstanceResolver that simply holds an Object
@@ -36,6 +35,9 @@ public class StaticInstanceResolver
    */
   public Object resolve(Class<?> clazz)
   {
+    if (object==null)
+    { return null;
+    }
     if (clazz.isAssignableFrom(object.getClass()))
     { return object;
     }

@@ -87,6 +87,8 @@ public class PrimaryIdentifierNode
           ("Could not resolve identifier '"
           +_identifier
           +"' in Context or Subject of Focus"
+          + specifiedFocus.toString()
+          ,x
           );
       }
     }
@@ -97,6 +99,7 @@ public class PrimaryIdentifierNode
         ("Could not resolve identifier '"
         +_identifier
         +"' in Context or Subject of Focus"
+        + specifiedFocus.toString()
         );
     }
     return ret;  
