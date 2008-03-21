@@ -77,4 +77,8 @@ public class MapWrapper<K,V>
   public Set<Map.Entry<K,V>> entrySet()
   { return map.entrySet();
   }
+  
+  public String toString()
+  { return super.toString()+"["+map.toString()+"]";
+  }
 }
