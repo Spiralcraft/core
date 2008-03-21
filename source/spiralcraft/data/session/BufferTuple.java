@@ -513,31 +513,36 @@ public class BufferTuple
       reset();
     }
     else if (original instanceof EditableTuple)
-    {
-      EditableTuple tuple=(EditableTuple) original;
-      Field[] dirtyFields=getDirtyFields();
-      if (dirtyFields!=null)
-      {
-        for (Field field: getDirtyFields())
-        { 
-          if (field instanceof BufferField)
-          { 
-            ((BufferField) field).getArchetypeField()
-              .setValue(tuple, ((Buffer) field.getValue(this)).getOriginal());
-          }
-          else
-          { field.setValue(tuple, field.getValue(this));
-          }
-        }
-      }
-      reset();
+    { writeThrough();
     }
     else
-    {
-      log.fine("Original is not writable "+original);
+    { log.fine("Original is not writable "+original);
     }
       
   }
   
-  
+  void writeThrough()
+    throws DataException
+  {
+    EditableTuple tuple=(EditableTuple) original;
+    Field[] dirtyFields=getDirtyFields();
+    if (dirtyFields!=null)
+    {
+      for (Field field: getDirtyFields())
+      { 
+        if (field instanceof BufferField)
+        { 
+          ((BufferField) field).getArchetypeField()
+            .setValue(tuple, ((Buffer) field.getValue(this)).getOriginal());
+        }
+        else
+        { field.setValue(tuple, field.getValue(this));
+        }
+      }
+    }
+    if (baseExtent!=null)
+    { baseExtent.writeThrough();
+    }
+    reset();
+  }
 }
