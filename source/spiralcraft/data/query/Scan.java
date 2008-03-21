@@ -63,6 +63,9 @@ public class Scan
     return queryable.getAll(type);
   }
   
+  public String toString()
+  { return super.toString()+"[type="+getType()+"]";
+  }
 }
 
 

@@ -146,7 +146,7 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
     public FieldSet dataGetFieldSet()
     { return query.getFieldSet();
     }
-    
+        
     public CursorBinding<Tt,? extends SerialCursor<Tt>> bind()
       throws BindException
     { return new CursorBinding<Tt,SerialCursor<Tt>>(this);

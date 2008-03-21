@@ -55,12 +55,19 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
     if (sources.size()>1)
     { throw new DataException(getClass().getName()+": Can't bind to more than one source");
     }
+    
 
     BoundQuery<?,?> source=store.query(sources.get(0),focus);
 
     this.source=source;
+    if (source==null)
+    { 
+      throw new DataException
+        ("Querying "+store+" returned null (unsupported Type?) for "+sources.get(0).toString());
+    }
   }
   
+
   
   protected abstract SerialCursor<Tt> 
     newSerialCursor(SerialCursor<Tt> source);
@@ -113,7 +120,7 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
   abstract class UnaryBoundQuerySerialCursor
     extends BoundQuerySerialCursor
   {
-    private final SerialCursor<Tt> sourceCursor;
+    protected final SerialCursor<Tt> sourceCursor;
     
     protected boolean eos;
     protected boolean bos;
@@ -216,7 +223,7 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
     extends UnaryBoundQuerySerialCursor
     implements ScrollableCursor<Tt>
   {
-    private final ScrollableCursor<Tt> sourceCursor;
+    protected final ScrollableCursor<Tt> sourceCursor;
 
     public UnaryBoundQueryScrollableCursor(ScrollableCursor<Tt> sourceCursor)
     { 

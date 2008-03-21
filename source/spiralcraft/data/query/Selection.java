@@ -26,6 +26,7 @@ import spiralcraft.log.ClassLogger;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.Type;
 import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.data.access.SerialCursor;
 
@@ -93,13 +94,18 @@ public class Selection
   { return constraints;
   }
   
+  
   public <T extends Tuple> BoundQuery<?,T> getDefaultBinding(Focus<?> focus,Queryable<T> store)
     throws DataException
   { return new SelectionBinding<Selection,T>(this,focus,store);
    
   }
   
-
+  public String toString()
+  { return super.toString()
+      +"[constraints="+constraints+"]: sources="
+      +getSources().toString();
+  }
     
 }
 
@@ -122,7 +128,6 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     super(query.getSources(),paramFocus,store);
     setQuery(query);
     this.paramFocus=paramFocus;
-    
     
   }
 
@@ -178,6 +183,10 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
         return false;
       }
     }
+    
+    public Type<?> getResultType()
+    { return sourceCursor.getResultType();
+    }
   }
 
   class SelectionScrollableCursor
@@ -192,21 +201,25 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
       Tt t=sourceChannel.get();
       if (t==null)
       { 
-        log.fine("BoundSelection: eod ");
+//        log.fine("BoundSelection: eod ");
         return false;
       }
 
       if (filter.get())
       {  
-        log.fine("BoundSelection: passed "+t);
+//        log.fine("BoundSelection: passed "+t);
         dataAvailable(t);
         return true;
       }
       else
       { 
-        log.fine("BoundSelection: filtered "+t);
+//        log.fine("BoundSelection: filtered "+t);
         return false;
       }
+    }
+
+    public Type<?> getResultType()
+    { return sourceCursor.getResultType();
     }
   }
 }
