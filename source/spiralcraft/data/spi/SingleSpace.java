@@ -82,7 +82,14 @@ public class SingleSpace
     throws DataException
   { 
     // Pass it through
-    return store.query(query,focus);
+    BoundQuery<?,?> boundQuery
+      =store.query(query,focus);
+    if (boundQuery==null)
+    { throw new DataException("No path to process Query "+query);
+    }
+    return boundQuery;
+    
+    
   }
 
   public boolean containsType(Type<?> type)
