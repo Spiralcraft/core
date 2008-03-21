@@ -503,7 +503,8 @@ public class AssemblyClass
     {
         
       String className
-        =_basePackage.getPath().substring(1).replace('/','.')+_baseName;
+        =_basePackage.getPath().substring(1).replace('/','.')
+          +_baseName.replace('-','$');
       try
       { 
         return
