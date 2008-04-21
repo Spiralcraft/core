@@ -39,6 +39,16 @@ public class Watcher
   }
   
   /**
+   * Set the watcher to ignore the latest changes
+   */
+  public synchronized void reset()
+    throws IOException
+  {
+    lastChecked=Clock.instance().approxTimeMillis();
+    lastModified=resource.getLastModified();
+  }
+  
+  /**
    * Check if any action needs to be performed.
    */
   public synchronized void check()

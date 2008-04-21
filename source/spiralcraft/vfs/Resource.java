@@ -111,12 +111,24 @@ public interface Resource
     throws IOException;
   
   /**
+   * @return The size in bytes of this resource, or 0 if not known.
+   */
+  public long getSize()
+    throws IOException;
+  
+  /**
    * Copy this resource from the source resource in the
    *   most efficient way possible.
    */
   public void copyFrom(Resource source)
     throws IOException;
   
+  /**
+   * Renames the resource if appropriate and efficient. Will 
+   */
+  public void renameTo(URI uri)
+    throws IOException;
+
   /**
    * Write the InputStream to the resource
    */

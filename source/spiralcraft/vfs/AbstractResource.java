@@ -190,4 +190,9 @@ public abstract class AbstractResource
     }
     
   }
+  
+  public long getSize()
+    throws IOException
+  { return 0;
+  }
 }

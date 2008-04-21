@@ -59,18 +59,37 @@ public class StreamUtil
     )
     throws IOException
   { 
+    if (bufferSize<=0)
+    { bufferSize=DEFAULT_BUFFER_SIZE;
+    }
     byte[] buffer=new byte[bufferSize];
     long count=0;
-    for (;;)
-    { 
-      int read=in.read(buffer,0,(int) Math.min(buffer.length,len-count));
-      if (read<0)
-      { break;
+    
+    if (len<=0)
+    {
+      for (;;)
+      { 
+        int read=in.read(buffer,0,buffer.length);
+        if (read<0)
+        { break;
+        }
+        out.write(buffer,0,read);
+        count+=read;
       }
-      out.write(buffer,0,read);
-      count+=read;
-      if (count==len)
-      { break;
+    }
+    else
+    {
+      for (;;)
+      { 
+        int read=in.read(buffer,0,(int) Math.min(buffer.length,len-count));
+        if (read<0)
+        { break;
+        }
+        out.write(buffer,0,read);
+        count+=read;
+        if (count==len)
+        { break;
+        }
       }
     }
     return count;

@@ -66,6 +66,12 @@ public class ClasspathResource
   public boolean supportsWrite()
   { return true;
   }
+  
+  public void renameTo(URI name)
+  { 
+    throw new UnsupportedOperationException
+      ("A classpath resource cannot be renamed");
+  }  
 
   public boolean exists()
     throws IOException

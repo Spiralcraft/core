@@ -87,5 +87,15 @@ public abstract class ResourceWrapper
   public long write(InputStream in) throws IOException
   { return getDelegate().write(in);
   }
+  
+  public long getSize()
+    throws IOException
+  { return getDelegate().getSize();
+  }
+  
+  public void renameTo(URI uri)
+    throws IOException
+  { getDelegate().renameTo(uri);
+  }
 
 }

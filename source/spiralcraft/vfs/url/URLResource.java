@@ -83,4 +83,20 @@ public class URLResource
     connection.connect();
     return connection.getDate()>0;
   }
+  
+  public long getSize()
+    throws IOException
+  {
+    URLConnection connection=_url.openConnection();
+    connection.setDoInput(false);
+    connection.setDoOutput(false);
+    connection.connect();
+    return connection.getContentLength();
+    
+  }
+  
+  public void renameTo(URI uri)
+    throws IOException
+  { throw new UnsupportedOperationException("URL rename not supported "+uri);
+  }
 }

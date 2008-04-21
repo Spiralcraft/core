@@ -50,6 +50,10 @@ public class FileResource
     _file=new File(uri);
   }
 
+  public File getFile()
+  { return _file;
+  }
+  
   public InputStream getInputStream()
     throws IOException
   { 
@@ -181,5 +185,17 @@ public class FileResource
   
   public boolean exists()
   { return _file.exists();
+  }
+  
+  public long getSize()
+  { return _file.length();
+  }
+  
+  public void renameTo(URI uri)
+    throws IOException
+  { 
+    if (!_file.renameTo(new File(uri)))
+    { throw new IOException("Rename failed "+uri);
+    }
   }
 }

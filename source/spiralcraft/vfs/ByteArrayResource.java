@@ -49,4 +49,13 @@ public class ByteArrayResource
   public boolean exists()
   { return _bytes!=null;
   }
+  
+  public long getSize()
+  { return _bytes.length;
+  }
+  
+  public void renameTo(URI name)
+  { throw new UnsupportedOperationException("A ByteArray cannot be renamed");
+  }
+  
 }
