@@ -14,14 +14,13 @@
 //
 package spiralcraft.security.auth;
 
+import java.net.URI;
 import java.security.Principal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
-
-import spiralcraft.lang.SimpleFocus;
 
 /**
  * <P>Represents the state of the authentication process from a client's
@@ -34,56 +33,21 @@ import spiralcraft.lang.SimpleFocus;
  */
 public abstract class AuthSession
 {
+  public static final URI FOCUS_URI
+    =URI.create("class:/spiralcraft/security/auth/AuthSession");
 
   protected final ArrayList<Credential<?>> credentialList
     =new ArrayList<Credential<?>>();
   
   protected final HashMap<String,Credential<?>> credentialMap
     =new HashMap<String,Credential<?>>();
-
-  protected final SimpleFocus<Map<String,Credential<?>>> credentialFocus
-    =new SimpleFocus<Map<String,Credential<?>>>();
-  { credentialFocus.setSubject(new CredentialSetChannel(credentialMap));
-  }
   
   protected Principal principal;
   protected boolean authenticated;
-  protected Class<? extends Credential<?>>[] requiredCredentials;
+  protected boolean sticky;
   
-  protected void setRequiredCredentials
-    (Class<? extends Credential<?>>[] requiredCredentials)
-  { 
-    this.requiredCredentials=requiredCredentials;
-    for (Class<? extends Credential<?>> credClass: requiredCredentials)
-    { 
-      if (credentialMap.get(credClass.getSimpleName())==null)
-      { 
-        try
-        { credentialMap.put(credClass.getSimpleName(),credClass.newInstance());
-        }
-        catch (InstantiationException x)
-        { 
-          throw new IllegalArgumentException
-            ("Credential class "
-            +credClass.getName()
-            +" could not be instantiated: "
-            +x
-            ,x
-            );
-        }
-        catch (IllegalAccessException x)
-        {
-          throw new IllegalArgumentException
-          ("Credential class "
-          +credClass.getName()
-          +" could not be instantiated: "
-          +x
-          ,x
-          );
-        }
-      }
-    }
-  }
+  
+
   
   /**
    * @return The Principal currently authenticated in this session.
@@ -108,8 +72,19 @@ public abstract class AuthSession
     return null;
   }
   
+  /**
+   * Called internally to retreived the Credential map
+   * 
+   * @return
+   */
+  Map<String,Credential<?>> getCredentialMap()
+  { return credentialMap;
+  }
+    
   public void addCredentials(Credential<?>[] credentials)
   { 
+    principal=null;
+    authenticated=false;
     for (Credential<?> cred: credentials)
     { 
       Iterator<Credential<?>> it=credentialList.iterator();
@@ -123,10 +98,7 @@ public abstract class AuthSession
       credentialMap.put(cred.getClass().getSimpleName(),cred);
     }
   }
-    
-  public Class<? extends Credential<?>>[] getRequiredCredentials()
-  { return requiredCredentials;
-  }
+
   
   public abstract boolean isAuthenticated();
   

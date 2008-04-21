@@ -9,6 +9,23 @@
     <meta:Scheme>
       <fields>
       
+        <!--  Login.principalId -->
+        <meta:Field>
+          
+          <name>principalId
+          </name>
+          
+          <type>
+            <String.type>
+
+              <maxLength>64
+              </maxLength>
+            
+            </String.type>
+          </type>
+
+        </meta:Field>
+
       	<!--  Login.username -->
         <meta:Field>
           

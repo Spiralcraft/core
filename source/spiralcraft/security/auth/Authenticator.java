@@ -14,6 +14,15 @@
 //
 package spiralcraft.security.auth;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.spi.BeanReflector;
+import spiralcraft.lang.spi.ThreadLocalChannel;
+
 
 /**
  * <P>Authenticates a client using one or more sets of credentials. 
@@ -25,6 +34,53 @@ package spiralcraft.security.auth;
 public abstract class Authenticator
 {
   protected String realmName;
+  protected ThreadLocalChannel<AuthSession> sessionChannel;
+  protected Focus<AuthSession> sessionFocus;
+  protected final HashMap<String,Credential<?>> protoMap
+    =new HashMap<String,Credential<?>>();
+  protected Class<? extends Credential<?>>[] requiredCredentials;
+  
+  protected SimpleFocus<Map<String,Credential<?>>> credentialFocus;
+  
+  protected void setRequiredCredentials
+    (Class<? extends Credential<?>>[] requiredCredentials)
+  { 
+    this.requiredCredentials=requiredCredentials;
+    for (Class<? extends Credential<?>> credClass: requiredCredentials)
+    { 
+      if (protoMap.get(credClass.getSimpleName())==null)
+      { 
+        try
+        { protoMap.put(credClass.getSimpleName(),credClass.newInstance());
+        }
+        catch (InstantiationException x)
+        { 
+          throw new IllegalArgumentException
+            ("Credential class "
+            +credClass.getName()
+            +" could not be instantiated: "
+            +x
+            ,x
+            );
+        }
+        catch (IllegalAccessException x)
+        {
+          throw new IllegalArgumentException
+          ("Credential class "
+          +credClass.getName()
+          +" could not be instantiated: "
+          +x
+          ,x
+          );
+        }
+      }
+    }
+  }  
+  
+      
+  public Class<? extends Credential<?>>[] getRequiredCredentials()
+  { return requiredCredentials;
+  }
   
   /**
    * @return The name of the realm this Authenticator will be serving.
@@ -46,6 +102,36 @@ public abstract class Authenticator
    *   realm of the Authenticator.
    */
   public abstract AuthSession createSession();
+  
+  /**
+   * <p>Provide the Authenticator with a Focus for it to resolve data sources
+   *   and other resources from the context. The context can be null, as long
+   *   as no contextual resources are required by the specific Authenticator.
+   * </p>
+   *   
+   * @param context
+   * @throws BindException
+   */
+  public void bind(Focus<?> context)
+    throws BindException
+  { 
+    this.sessionChannel
+      =new ThreadLocalChannel<AuthSession>
+        (BeanReflector.<AuthSession>getInstance(AuthSession.class));
+    
+    if (context!=null)
+    { this.sessionFocus=new SimpleFocus<AuthSession>(context,sessionChannel);
+    }
+    else
+    { this.sessionFocus=new SimpleFocus<AuthSession>(sessionChannel);
+    }
+        
+    credentialFocus
+      =new SimpleFocus<Map<String,Credential<?>>>
+      (new CredentialSetChannel(protoMap,sessionChannel)
+      );
+
+  }
   
 }
 

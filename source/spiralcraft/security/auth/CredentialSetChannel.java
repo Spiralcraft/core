@@ -33,17 +33,20 @@ import java.util.Map;
 public class CredentialSetChannel
   extends AbstractChannel<Map<String,Credential<?>>>
 {
-  private Map<String,Credential<?>> map;
+  private Channel<AuthSession> source;
   
-  public CredentialSetChannel(Map<String,Credential<?>> map)
+  public CredentialSetChannel
+    (Map<String,Credential<?>> protoMap
+    ,Channel<AuthSession> source
+    )
   {
-    super(new CredentialMapReflector(map));
-    this.map=map;
+    super(new CredentialMapReflector(protoMap));
+    this.source=source;
   }
 
   @Override
   protected Map<String, Credential<?>> retrieve()
-  { return map;
+  { return source.get().getCredentialMap();
   }
 
   @Override
@@ -64,10 +67,10 @@ class CredentialMapReflector
 {
   // XXX Consider the use of namespaces, now that they are implemented
   
-  private Map<String,Credential<?>> map;
+  private Map<String,Credential<?>> protoMap;
   
-  public CredentialMapReflector(Map<String,Credential<?>> map)
-  { this.map=map;
+  public CredentialMapReflector(Map<String,Credential<?>> protoMap)
+  { this.protoMap=protoMap;
   }
   
   
@@ -88,12 +91,13 @@ class CredentialMapReflector
     , Expression<?>[] params
     ) throws BindException
   {
-    if (map.get(name)==null)
+    if (protoMap.get(name)==null)
     { 
       throw new BindException
         ("Credential map does not contain credential '"+name+"'");
     }
-    return new CredentialChannel(map,name);
+    return new CredentialChannel
+      (source,protoMap.get(name).getTokenType(),name);
 
   }
 

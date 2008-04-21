@@ -16,6 +16,7 @@ package spiralcraft.security.auth;
 
 
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
 
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.BeanReflector;
@@ -33,28 +34,38 @@ public class CredentialChannel<T>
   extends AbstractChannel<T>
 {
   private final String name;
-  private final Map<String,Credential<?>> map;
+  private final Channel<Map<String,Credential<?>>> mapChannel;
 
   @SuppressWarnings("unchecked") // Heterogeneous map
-  public CredentialChannel(Map<String,Credential<?>> map,String name)
+  public CredentialChannel
+    (Channel<Map<String,Credential<?>>> mapChannel,Class tokenType,String name)
     throws BindException
   { 
     super
       ((BeanReflector<T>) BeanReflector
-          .getInstance((map.get(name).getTokenType()))
+          .getInstance(tokenType)
       );
     this.name=name;
-    this.map=map;
+    this.mapChannel=mapChannel;
   }
   
   @SuppressWarnings("unchecked") // Heterogeneous map
   @Override
   protected T retrieve()
-  { return (T) map.get(name).getValue();
+  { 
+    Map<String,Credential<?>> map=mapChannel.get();
+    if (map!=null)
+    { 
+      Credential<T> credential=(Credential<T>) map.get(name);
+      if (credential!=null)
+      { return credential.getValue();
+      }
+    }
+    return null;
   }
 
   @Override
-  protected boolean store(Object val)
+  protected boolean store(T val)
   { return false;
   }
 

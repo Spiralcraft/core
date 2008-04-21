@@ -30,12 +30,16 @@ import spiralcraft.data.query.BoundQuery;
 
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.Space;
 import spiralcraft.data.Type;
 
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
 
 import java.net.URI;
+import java.security.Principal;
 
 /**
  * <P>Authenticates with a spiralcraft.data.query.Queryable for the backing store
@@ -53,27 +57,38 @@ public class DataAuthenticator
 {
   
   private Queryable<?> source;
+  private Focus<Space> spaceFocus;
   
   // XXX Make these both configurable
   private Type<?> loginDataType;
   private Query loginQuery;
+  private BoundQuery<?,?> boundQuery;
   
+  @SuppressWarnings("unchecked")
   public DataAuthenticator()
     throws DataException
   {
     
     try
     {
+      setRequiredCredentials
+        (new Class[] 
+          {UsernameCredential.class
+          ,PasswordCleartextCredential.class
+          }
+        );
       
       // Default values for basic username/password authentication
-      loginDataType=Type.resolve(URI.create("java:/spiralcraft/security/Login"));
+      loginDataType
+        =Type.resolve(URI.create("java:/spiralcraft/security/Login"));
 
-      // XXX Make this an Equijoin to search type values in parameter context
+      // XXX Make this an Equijoin to search type values in parameter
+      //  context
       loginQuery=new Selection
         (new Scan(loginDataType)
         ,Expression.<Boolean>parse
-          ("searchname==..UsernameCredential.toLowerCase() "
-          +" && clearpass==..PasswordCleartextCredential"
+          (".searchname==UsernameCredential.toLowerCase() "
+          +" && .clearpass==PasswordCleartextCredential"
           )
         );
       
@@ -101,37 +116,52 @@ public class DataAuthenticator
   public AuthSession createSession()
   { return new DataAuthSession();
   }
+  
+  @SuppressWarnings("unchecked")
+  public void bind(Focus<?> context)
+    throws BindException
+  { 
+    super.bind(context);
+    if (source==null && context!=null)
+    { 
+      spaceFocus
+        =(Focus<Space>) context.findFocus(Space.SPACE_URI);
+      if (spaceFocus==null)
+      { 
+        throw new BindException
+          ("'source' not set, and no Space was found in Focus chain");
+      }
+    }
+
+    Queryable source=DataAuthenticator.this.source;
+        
+    if (source==null || spaceFocus!=null)
+    { source=spaceFocus.getSubject().get();
+    }
+    if (source==null)
+    { 
+      throw new BindException
+        ("No data source for DataAuthenticator");
+    }
+    try
+    { boundQuery=source.query(loginQuery,credentialFocus);
+    }
+    catch (DataException x)
+    { throw new BindException("Error binding Authenticator query "+loginQuery,x);
+    }
+
+  }
+  
 
   public class DataAuthSession
     extends AuthSession
   {
     
-    private BoundQuery<?,?> boundQuery;
     
-    @SuppressWarnings("unchecked") // Heterogeneous class array creation
     public DataAuthSession()
     {
-      try
-      { 
-        setRequiredCredentials
-          (new Class[] 
-            {UsernameCredential.class
-            ,PasswordCleartextCredential.class
-            }
-          );
+    }
         
-        boundQuery=source.query(loginQuery,credentialFocus);
-      }
-      catch (DataException x)
-      { x.printStackTrace();
-      }
-
-    }
-    
-    public void addCredentials(Credential<?>[] credentials)
-    { super.addCredentials(credentials);
-    }
-
     public boolean isAuthenticated()
     {
       if (boundQuery==null)
@@ -143,6 +173,12 @@ public class DataAuthenticator
         return false;
       }
       
+      if (principal!=null && authenticated)
+      { return true;
+      }
+      
+      // Make sure the query is accessing this AuthSession
+      sessionChannel.push(this);
       try
       {
         SerialCursor<?> cursor=boundQuery.execute();
@@ -157,6 +193,31 @@ public class DataAuthenticator
           // cursor.discard()
 //          System.out.println
 //            ("DataAuthenticator:login: "+cursor.dataGetTuple());
+          
+          final String name=(String) loginDataType.getField("username")
+                .getValue(cursor.dataGetTuple());
+          
+          if (principal==null
+              || !principal.getName().equals(name)
+             )
+          {
+            principal
+              =new Principal()
+            {
+
+              @Override
+              public String getName()
+              { return name;
+              }
+            
+              public String toString()
+              { return super.toString()+":"+name;
+              }
+            };
+          }
+          if (sticky)
+          { authenticated=true;
+          }
           return true;
         }
         else
@@ -171,6 +232,9 @@ public class DataAuthenticator
       { 
         x.printStackTrace();
         return false;
+      }
+      finally
+      { sessionChannel.pop();
       }
     }
   }
