@@ -123,7 +123,7 @@ public class ApplicationManager
     try
     {
       URI environmentTypeRef
-        =URI.create("java:/spiralcraft/exec/ApplicationEnvironment.assy");
+        =URI.create("class:/spiralcraft/exec/ApplicationEnvironment.assy");
         
       XmlAssembly<ApplicationEnvironment> environmentRef
         =new XmlAssembly<ApplicationEnvironment>
