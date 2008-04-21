@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 
 import java.net.URI;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -43,6 +44,7 @@ public abstract class StringConverter<T>
   
   static
   {
+    
     _MAP.put(String.class,new StringToString());
     _MAP.put(Integer.class,new IntToString());
     _MAP.put(int.class,new IntToString());
@@ -64,6 +66,7 @@ public abstract class StringConverter<T>
     _MAP.put(BigDecimal.class,new BigDecimalToString());
     _MAP.put(Class.class,new ClassToString());
     _MAP.put(URI.class,new URIToString());
+    
   }
 
   /**
@@ -98,7 +101,7 @@ public abstract class StringConverter<T>
     }
     
   }
-
+  
   public static StringConverter<?> getOneWayInstance()
   { return _ONE_WAY_INSTANCE;
   }
@@ -199,6 +202,10 @@ final class StringToString
   }
 }
 
+
+
+
+
 final class IntToString
   extends StringConverter<Integer>
 {
@@ -219,14 +226,15 @@ final class BooleanToString
     if (val==null)
     { return null;
     }
-    else if (val.equals("true"))
+    val=val.trim();
+    if (val.equals("true"))
     { return Boolean.TRUE;
     }
     else if (val.equals("false"))
     { return Boolean.FALSE;
     }
     else
-    { throw new IllegalArgumentException(val);
+    { throw new IllegalArgumentException("["+val+"]");
     }
   }
 }
