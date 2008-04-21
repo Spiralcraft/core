@@ -39,11 +39,18 @@ public class AbsoluteFocusNode
   
   private final String suffix;
   private final String namespace;
+  private URI uri;
 
   public AbsoluteFocusNode(String qname)
   { 
     int colonPos=qname.indexOf(':');
-    if (colonPos>-1)
+    if (colonPos==0)
+    { 
+      this.uri=URI.create(qname.substring(1));
+      this.namespace=null;
+      this.suffix=null;
+    }
+    else if (colonPos>0)
     {
       this.namespace=qname.substring(0,colonPos);
       this.suffix=qname.substring(colonPos+1);
@@ -60,28 +67,33 @@ public class AbsoluteFocusNode
     throws BindException
   { 
     URI namespaceURI=NULL_URI;
-    NamespaceResolver resolver=focus.getNamespaceResolver();
-    if (resolver!=null)
+    
+    if (uri==null)
     {
-      if (namespace==null || namespace.equals(""))
-      { namespaceURI=resolver.getDefaultNamespaceURI();
+      NamespaceResolver resolver=focus.getNamespaceResolver();
+      if (resolver!=null)
+      {
+        if (namespace==null || namespace.equals(""))
+        { namespaceURI=resolver.getDefaultNamespaceURI();
+        }
+        else
+        { namespaceURI=resolver.resolveNamespace(namespace);
+        }
       }
-      else
-      { namespaceURI=resolver.resolveNamespace(namespace);
+      else if (namespace!=null)
+      { 
+        throw new BindException
+        ("No NamespaceResolver for namespace '"+namespace+"' in "
+          +focus.getFocusChain().toString());
       }
+
+      if (namespaceURI==null)
+      { throw new BindException("Namespace '"+namespace+"' not defined.");
+      }
+
+      // log.fine(namespaceURI.toString()+"  :  "+suffix);
+      uri=namespaceURI.resolve(suffix);
     }
-    else if (namespace!=null)
-    { 
-      throw new BindException
-        ("No NamespaceResolver for namespace '"+namespace+"'");
-    }
-    
-    if (namespaceURI==null)
-    { throw new BindException("Namespace '"+namespace+"' not defined.");
-    }
-    
-    // log.fine(namespaceURI.toString()+"  :  "+suffix);
-    URI uri=namespaceURI.resolve(suffix);
     
     Focus<?> newFocus=focus.findFocus(uri);
     if (newFocus!=null)

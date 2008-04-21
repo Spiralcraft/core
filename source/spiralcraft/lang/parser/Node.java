@@ -139,6 +139,11 @@ public abstract class Node
   public Node lessThanOrEquals(Node op)
   { return new RelationalNode(false,true,this,op);
   }  
+  
+  @SuppressWarnings("unchecked")
+  public Node subscript(Node index)
+  { return new SubscriptNode(this,index);
+  }
     
   protected void unsupported(String msg)
   { throw new UnsupportedOperationException(getClass().getName()+"."+msg+"(...)");
