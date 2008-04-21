@@ -14,7 +14,10 @@
 //
 package spiralcraft.data.xml;
 
+import java.io.IOException;
+
 import java.net.URI;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -22,19 +25,32 @@ import java.util.LinkedHashMap;
 import spiralcraft.builder.LifecycleException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
+import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Field;
+import spiralcraft.data.FieldSet;
+import spiralcraft.data.Key;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Sequence;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.DataConsumer;
+import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.access.Updater;
 import spiralcraft.data.core.SequenceField;
+import spiralcraft.data.query.BoundQuery;
+import spiralcraft.data.query.EquiJoin;
+import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
+import spiralcraft.data.query.Scan;
+import spiralcraft.data.sax.DataWriter;
+import spiralcraft.data.session.BufferTuple;
 import spiralcraft.data.session.BufferType;
 import spiralcraft.data.spi.AbstractStore;
 import spiralcraft.data.spi.ArrayTuple;
 import spiralcraft.data.spi.BaseExtentQueryable;
+import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.util.DebugDataConsumer;
+import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
@@ -58,19 +74,41 @@ public class XmlStore
   private ArrayList<XmlQueryable> xmlQueryables
     =new ArrayList<XmlQueryable>();
   
+  
   private URI baseResourceURI;
   
 //  private Focus<XmlStore> focus;
   
-  private HashMap<URI,Sequence> sequences;
+  private Type<?> sequenceType;
+  private HashMap<URI,XmlSequence> sequences;
+  private EquiJoin sequenceQuery;
+  private XmlQueryable sequenceQueryable
+    =new XmlQueryable();
 
   
   public XmlStore()
-    throws BindException
   {
 //      focus=new SimpleFocus<XmlStore>
 //        (new SimpleChannel<XmlStore>(this,true)
 //        );
+    try
+    {
+      sequenceType=Type.resolve("java:/spiralcraft/data/spi/Sequence");
+      
+      sequenceQueryable.setResultType(sequenceType);
+      sequenceQueryable.setResourceURI(URI.create("Sequence.xml"));
+      sequenceQueryable.setAutoCreate(true);
+      
+      sequenceQuery=new EquiJoin();
+      sequenceQuery.setSource(new Scan(sequenceType));
+      sequenceQuery.setAssignments(".uri=..");
+//      sequenceQuery.setDebug(true);
+      sequenceQuery.resolve();
+      
+    }
+    catch (DataException x)
+    { throw new RuntimeDataException("Error resolving Sequence type",x);
+    }
   }
   
   public void setBaseResourceURI(URI uri)
@@ -99,35 +137,24 @@ public class XmlStore
       
       addBaseTypes(queryable);
       
-      addSequences(queryable);
     }
   }
   
-  private void addSequences(XmlQueryable queryable)
+  private void addSequences(Type<?> subtype)
+    throws BindException
   {
-      Type<?> subtype=queryable.getResultType();
       if (subtype.getScheme()!=null)
       {
         if (sequences==null)
-        { sequences=new HashMap<URI,Sequence>();
+        { sequences=new HashMap<URI,XmlSequence>();
         }
         for (Field field : subtype.getScheme().fieldIterable())
         { 
           if (field instanceof SequenceField)
-          { sequences.put
+          { 
+            sequences.put
             (field.getURI()
-              ,new Sequence()
-              {
-                private int val=-1000000;
-
-                @Override
-                public Integer next()
-                throws DataException
-                {
-                  // TODO Auto-generated method stub
-                  return val--;
-                }
-              }
+            ,new XmlSequence(field.getURI())
             );
           }
         }
@@ -205,9 +232,7 @@ public class XmlStore
     { throw new DataException("Cannot update an abstract type");
     }
       
-    return new DebugDataConsumer<DeltaTuple>
-      (new XmlUpdater(focus,(XmlQueryable) queryable)
-      );
+    return new XmlUpdater(focus,(XmlQueryable) queryable);
 
   }
 
@@ -237,6 +262,7 @@ public class XmlStore
   public void start()
     throws LifecycleException
   {
+    
     // TODO Auto-generated method stub
     for (XmlQueryable queryable:xmlQueryables)
     { 
@@ -251,6 +277,40 @@ public class XmlStore
         x.printStackTrace();
       }
     }
+    
+    try
+    { 
+      sequenceQueryable.setResourceContextURI(baseResourceURI);
+      sequenceQueryable.getAll(sequenceQueryable.getResultType());
+    }
+    catch (DataException x)
+    { x.printStackTrace();
+    }
+
+    for (Queryable<?> queryable:queryables.values())
+    { 
+      try
+      { addSequences(queryable.getTypes()[0]);
+      }
+      catch (BindException x)
+      { 
+        throw new LifecycleException
+          ("Error initializing sequences for "+queryable,x);
+      }
+
+    }
+    
+    for (XmlSequence sequence : sequences.values())
+    { 
+      try
+      { sequence.init();
+      }
+      catch (DataException x)
+      { throw new LifecycleException("Error initializing sequence "+sequence,x);
+      }
+      
+    }
+    
   }
 
   @Override
@@ -273,6 +333,13 @@ public class XmlStore
   {
     private XmlQueryable queryable;
     private ArrayList<Tuple> addList=new ArrayList<Tuple>();
+    private ArrayList<Tuple> updateList=new ArrayList<Tuple>();
+    private ArrayList<Tuple> deleteList=new ArrayList<Tuple>();
+
+    @SuppressWarnings("unchecked")
+    private BoundQuery originalQuery;
+    
+    private DataWriter debugWriter=new DataWriter();
     
     
     public XmlUpdater(Focus<?> context,XmlQueryable queryable)
@@ -282,21 +349,243 @@ public class XmlStore
       this.queryable=queryable;
     }
     
+    public void dataInitialize(FieldSet fieldSet)
+      throws DataException
+    { 
+      super.dataInitialize(fieldSet);
+      Key primaryKey=queryable.getResultType().getPrimaryKey();
+      if (primaryKey!=null)
+      { originalQuery=queryable.query(primaryKey.getQuery(), localFocus);
+      }
+      
+    }
+    
     public void dataAvailable(DeltaTuple tuple)
       throws DataException
     {
       super.dataAvailable(tuple);
       if (tuple.getOriginal()==null && !tuple.isDelete())
-      { addList.add(tuple);
+      { 
+        // New case
+        
+        // Copy
+        EditableArrayTuple newTuple;
+        if (tuple instanceof BufferTuple)
+        { 
+          newTuple
+            =new EditableArrayTuple(tuple.getFieldSet().getType()
+              .getArchetype().getScheme()
+              );
+          ((BufferTuple) tuple).updateTo(newTuple);
+          ((BufferTuple) tuple).updateOriginal(newTuple);
+          
+        } 
+        else
+        { newTuple=new EditableArrayTuple(tuple);
+        }
+        
+        addList.add(newTuple);
+        
+        try
+        { 
+          debugWriter.writeToOutputStream(System.out, tuple);
+          System.out.flush();
+        }
+        catch (IOException x)
+        { x.printStackTrace();
+        }
+      }
+      else if (!tuple.isDelete())
+      { 
+        // Update case
+        updateList.add(tuple);
+      }
+      else
+      { 
+        // Delete case
+        deleteList.add(tuple.getOriginal());
       }
     }
     
+    @SuppressWarnings("unchecked")
     public void dataFinalize()
       throws DataException
     { 
-      for (Tuple t: addList)
-      { queryable.add(new ArrayTuple(t));
+      if (debug)
+      { log.fine("Finalizing "+queryable.getResultType());
       }
+      synchronized (queryable)
+      {
+        queryable.freeze();
+        try
+        {
+        
+          for (Tuple t: deleteList)
+          { queryable.remove(t);
+          }
+
+          for (Tuple t: addList)
+          { queryable.add(t);
+          }
+
+          for (Tuple t: updateList)
+          {
+            if (t instanceof DeltaTuple)
+            { 
+              DeltaTuple dt=(DeltaTuple) t;
+
+              // Must find the old copy
+              EditableTuple original=(EditableTuple) dt.getOriginal();
+              if (originalQuery!=null)
+              {
+                // Find a more certain original
+                SerialCursor<Tuple> cursor=originalQuery.execute();
+                if (!cursor.dataNext())
+                {
+                  // Old one has been deleted
+                  log.warning("Adding back lost original on update"+t); 
+                  queryable.add(t);
+                }
+                else
+                { 
+                  EditableTuple newOriginal=(EditableTuple) cursor.dataGetTuple();
+                  if (newOriginal!=original)
+                  { 
+                    if (debug)
+                    { log.fine("Updating original to new version "+newOriginal);
+                    }
+                    if (t instanceof BufferTuple)
+                    { ((BufferTuple) t).updateOriginal(newOriginal);
+                    }
+                    original=newOriginal;
+
+                  }
+                  else
+                  { 
+                    if (debug)
+                    { log.fine("Read back same data"+original);
+                    }
+                  }
+                }
+
+                if (cursor.dataNext())
+                {
+                  log.warning
+                  ("Cardinality violation: duplicate "
+                    +cursor.dataGetTuple()
+                  );
+                }
+              }
+              else
+              { log.fine("No primary key defined for "+t.getType());
+              }
+
+              // Really should be working on a copy here, but that's what Journaling
+              //   is for.
+              dt.updateTo(original);
+            }
+          }
+
+
+          try
+          {
+            queryable.flush(".new");
+
+            // XXX Needs to be in transactional resource as LLR
+            queryable.commit(".new");
+            // Question of whether to re-read
+          }
+          catch (IOException x)
+          { throw new DataException("IOException persisting data",x);
+          }
+     
+        }
+        finally
+        { queryable.unfreeze();
+        }
+      
+      }
+    }
+  }
+  
+  class XmlSequence
+    implements Sequence
+  {
+
+    private int next;
+    private int increment;
+    private int stop;
+    private BoundQuery<?,Tuple> boundQuery;
+    private Focus<URI> uriFocus;
+    private URI uri;
+    
+    public XmlSequence (URI uri)
+      throws BindException
+    { 
+      this.uri=uri;
+      uriFocus=new SimpleFocus<URI>(new SimpleChannel<URI>(uri,true));
+    }
+
+    public void init()
+      throws DataException
+    {
+      boundQuery
+        =sequenceQueryable.query(sequenceQuery,uriFocus);
+    }
+    
+    public void allocate()
+      throws DataException
+    {
+      synchronized(sequenceQueryable)
+      {
+        SerialCursor<Tuple> result=boundQuery.execute();
+        if (!result.dataNext())
+        {
+          EditableTuple row=new EditableArrayTuple(sequenceType.getScheme());
+          sequenceType.getField("uri").setValue(row,uri);
+          sequenceType.getField("nextValue").setValue(row,200);
+          sequenceType.getField("increment").setValue(row,100);
+          next=100;
+          stop=200;
+          increment=100;
+          sequenceQueryable.add(row);
+        }
+        else
+        {
+          EditableTuple row=(EditableTuple) result.dataGetTuple();
+          next=(Integer) sequenceType.getField("nextValue").getValue(row);
+          increment=(Integer) sequenceType.getField("increment").getValue(row);
+          
+          stop=next+increment;
+          sequenceType.getField("nextValue").setValue(row,next+increment);
+          
+        }
+        if (result.dataNext())
+        {
+          throw new DataException
+            ("Cardinality violation in Sequence store- non unique URI "+uri); 
+        }
+        try
+        {
+          sequenceQueryable.flush(".new");
+          sequenceQueryable.commit(".new");
+        }
+        catch (IOException x)
+        { throw new DataException
+            ("Error writing data while allocating sequence",x); 
+        }
+        
+      }
+    }
+    
+    @Override
+    public synchronized Integer next()
+      throws DataException
+    {
+      if (next==stop)
+      { allocate();
+      }
+      return next++;
     }
   }
 }

@@ -16,11 +16,14 @@ package spiralcraft.data.xml;
 
 
 import spiralcraft.data.spi.AbstractAggregateQueryable;
+import spiralcraft.data.spi.EditableArrayListAggregate;
 
 import spiralcraft.data.sax.DataReader;
+import spiralcraft.data.sax.DataWriter;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.EditableAggregate;
+import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
@@ -30,11 +33,14 @@ import spiralcraft.data.DataException;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
+import spiralcraft.vfs.file.FileResource;
 import spiralcraft.vfs.util.Watcher;
 import spiralcraft.vfs.util.WatcherHandler;
 
 
 import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.io.IOException;
 
 import spiralcraft.log.ClassLogger;
@@ -51,7 +57,12 @@ public class XmlQueryable
   extends AbstractAggregateQueryable<Tuple>
 {
   @SuppressWarnings("unused")
-  private static final ClassLogger log=ClassLogger.getInstance(XmlQueryable.class);
+  private static final ClassLogger log
+    =ClassLogger.getInstance(XmlQueryable.class);
+  
+  
+  private SimpleDateFormat dateFormat
+    =new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
   
   private Resource resource;
   private URI resourceURI;
@@ -64,6 +75,11 @@ public class XmlQueryable
   private Aggregate<Tuple> aggregate;
   private Exception exception;
   
+  private boolean autoCreate;
+  
+  private boolean debug;
+  private boolean frozen;
+  
   private WatcherHandler handler
     =new WatcherHandler()
     {
@@ -74,7 +90,9 @@ public class XmlQueryable
         try
         {
           exception=null;
-          // log.fine("Resource "+resource.getURI()+" changed");
+          if (debug)
+          { log.fine("Resource "+resource.getURI()+" changed");
+          }
           Aggregate<Tuple> data=(Aggregate<Tuple>) reader.readFromResource
             (resource, type);
           setAggregate(data);
@@ -90,7 +108,6 @@ public class XmlQueryable
     };
   
   public XmlQueryable() 
-    throws DataException
   { super();
   }
   
@@ -125,16 +142,25 @@ public class XmlQueryable
           ;
             
         Resource resource=Resolver.getInstance().resolve(qualifiedURI);
+        setResource(resource);
         try
         {
           if (!resource.exists())
-          { throw new DataException(qualifiedURI+" does not exist");
+          { 
+            if (autoCreate)
+            {
+              aggregate
+                =new EditableArrayListAggregate<Tuple>(type);
+              flush(null);
+            }
+            else
+            { throw new DataException(qualifiedURI+" does not exist");
+            }
           }
         }
         catch (IOException x)
         { throw new DataException(qualifiedURI+" could not be read",x);
         }
-        setResource(resource);
       }
       catch (UnresolvableURIException x)
       { 
@@ -163,9 +189,12 @@ public class XmlQueryable
     checkInit();
 
     // log.fine("Checking resource");
-    watcher.check();
-    if (exception!=null)
-    { throw new DataException("Error loading data from "+resourceURI,exception);
+    if (!frozen)
+    {
+      watcher.check();
+      if (exception!=null)
+      { throw new DataException("Error loading data from "+resourceURI,exception);
+      }
     }
     return aggregate;
   }
@@ -173,7 +202,13 @@ public class XmlQueryable
   @Override
   // This is the Type of the Queryable, not the data container
   protected Type<?> getResultType()
-  { return type.getContentType();
+  { 
+    if (type!=null)
+    { return type.getContentType();
+    }
+    else
+    { return null;
+    }
   }
   
   public void setResultType(Type<?> type)
@@ -182,6 +217,10 @@ public class XmlQueryable
   
   private void setAggregate(Aggregate<Tuple> aggregate)
   { this.aggregate=aggregate;
+  }
+  
+  public void setAutoCreate(boolean val)
+  { autoCreate=val;
   }
   
   /**
@@ -218,9 +257,66 @@ public class XmlQueryable
     this.resource=resource;
   }
   
+
+  synchronized void flush(String tempSuffix)
+    throws DataException,IOException
+  {
+    Resource tempResource;
+    if (tempSuffix!=null)
+    {
+      tempResource=Resolver.getInstance().resolve
+        (URI.create(this.resource.getURI().toString()+tempSuffix));
+    }
+    else
+    { tempResource=resource;
+    }
+    
+    DataWriter writer=new DataWriter();
+    writer.writeToResource(tempResource, aggregate);
+  }
+  
+  synchronized void commit(String tempSuffix)
+    throws IOException
+  {
+    Resource tempResource
+      =Resolver.getInstance().resolve
+        (URI.create(this.resource.getURI().toString()+tempSuffix));
+
+    if (resource.exists())
+    {
+      resource.renameTo
+        (URI.create
+          (resource.getURI().toString()
+          +"."+dateFormat.format
+            (new Date())
+          )
+        );
+    }
+    
+    if (debug)
+    {
+      log.fine
+        ("Renaming "+tempResource.getURI()+" to "+resource.getURI());
+    }
+    tempResource.renameTo(resource.getURI());
+    watcher.reset();
+  }
+
+  
   void add(Tuple t)
   { ((EditableAggregate<Tuple>) this.aggregate).add(t);
   }
   
+  void remove(Tuple t)
+  { ((EditableAggregate<Tuple>) this.aggregate).remove(t);
+  }
+  
+  public void freeze()
+  { frozen=true;
+  }
+  
+  public void unfreeze()
+  { frozen=false;
+  }
 
 }

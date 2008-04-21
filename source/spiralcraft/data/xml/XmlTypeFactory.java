@@ -50,6 +50,7 @@ public class XmlTypeFactory
   
   @SuppressWarnings("unused")
   private static final ClassLogger log=ClassLogger.getInstance(XmlTypeFactory.class);
+  private boolean debug;
   
   private ThreadLocal<CycleDetector<URI>> cycleDetectorRef
     =new ThreadLocal<CycleDetector<URI>>()
@@ -170,9 +171,12 @@ public class XmlTypeFactory
                       ,new Object[] {resolver,uri}
                       )
                     );
-                  log.fine
-                    ("Preregistering standard subtype "
-                      +instance+"\r\n of type "+type.getURI());
+                  if (debug)
+                  {
+                    log.fine
+                      ("Preregistering standard subtype "
+                        +instance+"\r\n of type "+type.getURI());
+                  }
                 }
 //                log.fine("Preregistering "+instance);
                 // Pre-instantiate so rest of XML can resolve Type
@@ -210,7 +214,9 @@ public class XmlTypeFactory
           ("XmlTypeFactory error "+type+" != "+instanceResolver.getInstance());
         
       }
-      log.fine("Linking "+type);
+      if (debug)
+      { log.fine("Linking "+type);
+      }
       type.link();
       return type;
     }
