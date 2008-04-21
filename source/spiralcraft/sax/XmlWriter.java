@@ -51,6 +51,8 @@ public class XmlWriter
   { return _locator;
   }
   
+
+  
   public void startElement
     (String namespaceURI
     ,String localName
@@ -203,7 +205,15 @@ public class XmlWriter
 
 
   public void startDocument()
-  {
+    throws SAXException
+  { 
+    try
+    {
+      _writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
+    }
+    catch (IOException x)
+    { fail(x);
+    }
   }
 
   public void endDocument()
