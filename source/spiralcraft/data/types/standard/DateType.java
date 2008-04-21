@@ -30,7 +30,7 @@ public class DateType
 {
   private SimpleDateFormat format;
   
-  private String dateFormat="yyyy-MM-dd hh:mm:ss Z";
+  private String dateFormat="yyyy-MM-dd HH:mm:ss.SSS Z";
   
   public DateType(TypeResolver resolver,URI uri)
   { super(resolver,uri,Date.class);
