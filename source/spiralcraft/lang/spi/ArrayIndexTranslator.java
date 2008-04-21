@@ -35,6 +35,9 @@ public class ArrayIndexTranslator<T>
   @SuppressWarnings("unchecked") // Upcast for expected modifiers
   public T translateForGet(T[] source,Channel[] modifiers)
   { 
+    if (modifiers==null || modifiers.length==0)
+    { return null;
+    }
     Number index=((Channel<Number>)modifiers[0]).get();
     if (index==null)
     { return null;

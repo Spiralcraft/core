@@ -15,6 +15,8 @@
 package spiralcraft.lang;
 
 import java.net.URI;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * <p>A starting point for the evaluation of an Expression, which provides
@@ -257,4 +259,10 @@ public interface Focus<T>
    */
   <X> Channel<X> bind(Expression<X> expression)
     throws BindException;
+  
+  /**
+   * 
+   * @return The chain of Focus objects visible from this Focus.
+   */
+  public LinkedList<Focus<?>> getFocusChain();
 }

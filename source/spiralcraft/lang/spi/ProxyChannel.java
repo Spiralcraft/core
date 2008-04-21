@@ -34,6 +34,7 @@ public class ProxyChannel<T>
 
   private final Channel<T> channel;
   private WeakChannelCache cache;
+  private boolean debug;
 
   public ProxyChannel(Channel<T> delegate)
   { 
@@ -43,6 +44,10 @@ public class ProxyChannel<T>
     channel=delegate;
   }
 
+  public void setDebug(boolean val)
+  { debug=val;
+  }
+  
   public <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
   { return channel.resolve(focus,name,params);

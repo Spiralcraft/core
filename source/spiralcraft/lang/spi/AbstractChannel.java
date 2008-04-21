@@ -47,6 +47,7 @@ public abstract class AbstractChannel<T>
   private final boolean _static;
   private PropertyChangeSupport _propertyChangeSupport;
   private WeakChannelCache _cache;
+  protected boolean debug;
   
   
   public synchronized void cache(Object key,Channel<?> channel)
@@ -74,6 +75,10 @@ public abstract class AbstractChannel<T>
     
   }
 
+  public void setDebug(boolean val)
+  { this.debug=val;
+  }
+  
   /**
    * Construct an AbstractChannel with an initial value
    */

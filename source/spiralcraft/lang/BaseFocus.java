@@ -1,6 +1,8 @@
 package spiralcraft.lang;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class BaseFocus<T>
   implements Focus<T>
@@ -83,9 +85,40 @@ public abstract class BaseFocus<T>
   { this.namespaceResolver=resolver;
   }
   
+  public LinkedList<Focus<?>> getFocusChain()
+  {
+    LinkedList<Focus<?>> list;
+    if (parent==null)
+    { 
+      
+      list=new LinkedList<Focus<?>>()
+      {
+
+        private static final long serialVersionUID = 1L;
+
+        public String toString()
+        {
+          StringBuilder buf=new StringBuilder();
+          int i=0;
+          for (Focus<?> focus : this)
+          { buf.append("\r\n    focusChain #"+(i++)+": "+focus);
+          }
+          return buf.toString();
+        }
+      };
+    }
+    else
+    { list=parent.getFocusChain();
+    }
+    list.push(this);
+    return list;
+    
+  }
+  
   public String toString()
   { 
-    return super.toString()+"["+subject+"]";
+    return super.toString()+"["+subject+"] parentFocus="
+      +(parent!=null?parent.getClass().getName():null);
   }
 
 

@@ -65,6 +65,10 @@ public class TeleFocus<T>
     }
   }
   
+  public String toString()
+  {
+    return super.toString()+"\r\n context:"+getContext().toString();
+  }
 
 
 }

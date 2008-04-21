@@ -21,6 +21,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Decorator;
+import spiralcraft.log.ClassLogger;
 
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
@@ -33,6 +34,9 @@ import java.beans.PropertyChangeEvent;
 public  class TranslatorChannel<T,S>
   implements Channel<T>,PropertyChangeListener
 {
+  private static final ClassLogger log
+    =ClassLogger.getInstance(TranslatorChannel.class);
+  
   private static int _ID=0;
   
   protected final int id;
@@ -46,6 +50,7 @@ public  class TranslatorChannel<T,S>
   private PropertyChangeListener _modifierListener;
   private WeakChannelCache _cache;
   private Channel<?> metaBinding;
+  protected boolean debug;
 
   /**
    * Create a Translator binding which translates values bidirectionally,
@@ -83,6 +88,9 @@ public  class TranslatorChannel<T,S>
 
   }
 
+  public void setDebug(boolean val)
+  { debug=val;
+  }
   
   public synchronized void cache(Object key,Channel<?> channel)
   { 
@@ -100,7 +108,16 @@ public  class TranslatorChannel<T,S>
   
   
   public final T get()
-  { return translator.translateForGet(source.get(),_modifiers);
+  { 
+    if (debug)
+    {
+      T val=translator.translateForGet(source.get(),_modifiers);
+      log.fine(toString()+"\r\n.get() returning: "+val);
+      return val;
+    }
+    else
+    { return translator.translateForGet(source.get(),_modifiers);
+    }
   }
 
   /**

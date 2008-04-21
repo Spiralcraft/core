@@ -16,8 +16,8 @@ public class Setter<T>
     this.target=target;
   }
   
-  public void set()
-  { target.set(source.get());
+  public boolean set()
+  { return target.set(source.get());
   }
   
   public Channel<? extends T> getSource()
@@ -26,5 +26,9 @@ public class Setter<T>
   
   public Channel<T> getTarget()
   { return target;
+  }
+  
+  public String toString()
+  { return super.toString()+"\r\n    source="+source+"\r\n   target="+target;
   }
 }

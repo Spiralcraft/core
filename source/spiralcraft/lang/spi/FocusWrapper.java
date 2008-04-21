@@ -16,6 +16,7 @@ package spiralcraft.lang.spi;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -116,5 +117,9 @@ public abstract class FocusWrapper<tFocus>
 
   public String toString()
   { return focus.toString();
+  }
+  
+  public LinkedList<Focus<?>> getFocusChain() 
+  { return focus.getFocusChain();
   }
 }

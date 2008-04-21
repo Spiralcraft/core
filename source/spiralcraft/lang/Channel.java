@@ -157,4 +157,8 @@ public interface Channel<T>
    */
   void cache(Object key,Channel<?> channel);
   
+  /**
+   * Provide a data flow trace to the spiralcraft.log.ClassLogger log.
+   */
+  void setDebug(boolean debug);
 }
