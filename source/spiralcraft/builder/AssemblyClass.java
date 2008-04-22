@@ -531,6 +531,22 @@ public class AssemblyClass
         }
       }
     }
+    
+    String langClassName="java.lang."+_baseName;
+    try
+    {
+      return
+        Class.forName
+          (langClassName
+          ,false
+          ,Thread.currentThread().getContextClassLoader()
+          );
+      
+    }
+    catch (ClassNotFoundException y)
+    { throwBuildException("Class not found: '"+langClassName+"'",y);
+    }
+      
     return null;
   }
 
