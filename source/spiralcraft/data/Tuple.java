@@ -130,5 +130,14 @@ public interface Tuple
    */
   Tuple getBaseExtent();
   
+  public String dumpData()
+    throws DataException;
+  
+  /**
+   * 
+   * @return The behavior POJO on which compiled methods are invoked
+   */
+  public Object getBehavior()
+    throws DataException;
 }
 

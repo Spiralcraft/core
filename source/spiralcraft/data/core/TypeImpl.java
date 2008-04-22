@@ -16,17 +16,18 @@ package spiralcraft.data.core;
 
 
 import spiralcraft.data.Field;
+import spiralcraft.data.FieldSet;
 import spiralcraft.data.Method;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.TypeResolver;
-import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.ValidationResult;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.util.InstanceResolver;
 
 import java.net.URI;
+import java.util.Comparator;
 import java.util.List;
 
 import spiralcraft.log.ClassLogger;
@@ -37,6 +38,7 @@ public class TypeImpl<T>
   extends Type<T>
 {  
   protected static final ClassLogger log=ClassLogger.getInstance(TypeImpl.class);
+  protected static boolean debug=false;
   
   protected Class<T> nativeClass;
   protected SchemeImpl scheme;
@@ -49,6 +51,7 @@ public class TypeImpl<T>
   protected Type<?> contentType=null;
   protected boolean extendable;
   protected boolean abztract;
+  protected Comparator<T> comparator;
   
   private boolean linked;
   
@@ -75,6 +78,13 @@ public class TypeImpl<T>
     this.archetype=archetype;
   }
   
+  /**
+   * <p>Whether this specific type is patterned after the specified archetype
+   * </p>
+   * 
+   * <p>Does not search base types by design. Use isAssignableFrom(type)
+   * </p>
+   */
   public boolean hasArchetype(Type<?> type)
   {
     if (this==type)
@@ -117,6 +127,10 @@ public class TypeImpl<T>
   public boolean isAssignableFrom(Type<?> type)
   {
     
+    if (type==null)
+    { return false;
+    }
+    
     if (type.isPrimitive())
     { return getNativeClass().isAssignableFrom(type.getNativeClass());
     }
@@ -127,16 +141,29 @@ public class TypeImpl<T>
           && type.getNativeClass()!=null
           && !getNativeClass().isAssignableFrom(type.getNativeClass())
           )
-      { return false;
+      { 
+        if (debug)
+        {
+          log.fine
+            (this.getURI()+"("+this.getNativeClass()+")"
+            +" is not native assignable from "
+            +type.getURI()+"("+type.getNativeClass()+")"
+            );
+        }
+        return false;
       }
     
-      if (type.hasArchetype(this))
-      { return true;
+      Type<?> baseType=type;
+      while (baseType!=null)
+      {
+        if (baseType.hasArchetype(this))
+        { return true;
+        }
+        baseType=baseType.getBaseType();
       }
-      if (type.hasBaseType(this))
-      { return true;
+      if (debug)
+      { log.fine(this.getURI()+" is not assignable from "+type.getURI());
       }
-      
       return false;
     }
   }
@@ -247,6 +274,13 @@ public class TypeImpl<T>
     { field=getBaseType().getField(name);
     }
     return field;
+  }
+
+  /**
+   * Returns fields of this Type and base Types
+   */
+  public FieldSet getFieldSet()
+  { return new UnifiedFieldSet(this);
   }
   
   public void setKeys(KeyImpl[] keyArray)
@@ -396,6 +430,14 @@ public class TypeImpl<T>
   
   public boolean isLinked()
   { return linked;
+  }
+  
+  public Comparator<T> getComparator()
+  { return comparator;
+  }
+  
+  public void setComparator(Comparator<T> comparator)
+  { this.comparator=comparator;
   }
   
 }

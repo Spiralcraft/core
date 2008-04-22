@@ -92,7 +92,9 @@ public class BufferChannel
          )
         )
       );
-    log.fine("BufferChannel "+getReflector());
+    if (debug)
+    { log.fine("BufferChannel "+getReflector());
+    }
     setupSession(focus);
     this.originalChannel=original;
     
@@ -117,7 +119,9 @@ public class BufferChannel
     //   not the originalChannel
 
     super(DataReflector.<Buffer>getInstance(bufferType));
-    log.fine("BufferChannel "+getReflector());
+    if (debug)
+    { log.fine("BufferChannel "+getReflector());
+    }
     this.originalChannel=originalChannel;
     setupSession(focus);
 
@@ -162,7 +166,9 @@ public class BufferChannel
   public boolean store(Buffer val)
   { 
     // TODO This will be useful, to place whole buffers
-    log.fine("Not storing Buffer "+val);
+    if (debug)
+    { log.fine("Not storing Buffer "+val);
+    }
     return false;
   }
 

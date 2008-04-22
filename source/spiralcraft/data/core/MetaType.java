@@ -36,7 +36,8 @@ import java.net.URI;
 public class MetaType
   extends ReflectionType<Type>
 {
-
+  private static boolean debug;
+  
   private Type<?> referencedType;
   private int anonRefId=1;
   
@@ -142,7 +143,11 @@ public class MetaType
             (new Class[] {TypeResolver.class,URI.class}
             ,new Object[] {getTypeResolver(),uri}
             );
-        log.fine("Using MetaType to create new anonymous extended type "+uri);
+
+        if (debug)
+        { log.fine("Using MetaType to create new anonymous extended type "+uri);
+        }
+        
         Type type=super.fromData(composite,instanceResolver);
         type.link();
         return type;

@@ -29,21 +29,21 @@ import spiralcraft.data.spi.ArrayListAggregate;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.log.ClassLogger;
 
-public class BufferAggregate<T extends DataComposite>
+public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   extends Buffer
-  implements EditableAggregate<Buffer>
+  implements EditableAggregate<T>
 { 
   private final ClassLogger log=ClassLogger.getInstance(BufferAggregate.class);
 
   
   private final DataSession session;
-  private Aggregate<T> original;
-  private ArrayList<Buffer> buffers;
+  private Aggregate<Torig> original;
+  private ArrayList<T> buffers;
   private Type<?> type;
   private Identifier id;
   private boolean editable=true;
     
-  public BufferAggregate(DataSession session,Aggregate<T> original)
+  public BufferAggregate(DataSession session,Aggregate<Torig> original)
     throws DataException
   { 
     this.session=session;
@@ -77,6 +77,13 @@ public class BufferAggregate<T extends DataComposite>
   { buffers=null;
   }
   
+  /**
+   * Called immediately after successful save
+   */
+  public synchronized void reset()
+  { 
+    buffers=null;
+  }
   
   public Identifier getId()
   { return id;
@@ -87,7 +94,7 @@ public class BufferAggregate<T extends DataComposite>
   }
   
   @Override
-  public BufferAggregate<T> asAggregate()
+  public BufferAggregate<T,Torig> asAggregate()
   { return this;
   }
 
@@ -120,7 +127,7 @@ public class BufferAggregate<T extends DataComposite>
 
   @Override
   public void add(
-    Buffer val)
+    T val)
   {
     
     if (val==null)
@@ -128,7 +135,7 @@ public class BufferAggregate<T extends DataComposite>
         ("Cannot add a null value to an Aggregate");
     }
     if (buffers==null)
-    { buffers=new ArrayList<Buffer>();
+    { buffers=new ArrayList<T>();
     }
     buffers.add(val);
     // XXX Should check type, might have to dirty fields, etc. Might be
@@ -138,16 +145,16 @@ public class BufferAggregate<T extends DataComposite>
 
   @Override
   public void addAll(
-    Aggregate<Buffer> values)
+    Aggregate<T> values)
   {
     // TODO Auto-generated method stub
-    for (Buffer value : values)
+    for (T value : values)
     { add(value);
     }
   }
 
   @Override
-  public Buffer get(
+  public T get(
     int index)
     throws DataException
   { 
@@ -159,24 +166,25 @@ public class BufferAggregate<T extends DataComposite>
         ("Index "+index+" exceeds size "+size());
   }
   
-  private Buffer buffer(int index)
+  @SuppressWarnings("unchecked")
+  private T buffer(int index)
     throws DataException
   { 
     if (index<size())
     {
       if (buffers==null)
-      { buffers=new ArrayList<Buffer>(index+1);
+      { buffers=new ArrayList<T>(index+1);
       }
       
       for (int i=buffers.size();i<=index;i++)
       { buffers.add(null);
       }
-      Buffer buffer=buffers.get(index);
+      T buffer=buffers.get(index);
       if (buffer==null)
       { 
         if (index<original.size())
         { 
-          buffer=session.buffer(original.get(index));
+          buffer=(T) session.buffer(original.get(index));
           buffers.set(index,buffer);
         }
         else
@@ -209,20 +217,48 @@ public class BufferAggregate<T extends DataComposite>
   }
 
   @Override
-  public Aggregate<Buffer> snapshot()
+  public Aggregate<T> snapshot()
     throws DataException
-  { return new ArrayListAggregate<Buffer>(this);
+  { return new ArrayListAggregate<T>(this);
   }
 
+  public String toString()
+  {
+    StringBuilder builder=new StringBuilder();
+    builder.append(getClass().getName()+"{");
+    boolean first=true;
+    if (buffers!=null)
+    {
+      for (Object o: buffers)
+      {
+        if (!first)
+        { builder.append(",");
+        }
+        else
+        { first=false;
+        }
+        if (o!=null)
+        { builder.append(o.toString());
+        }
+        else
+        { builder.append("null");
+        }
+      }
+    }
+    builder.append("}");
+    return super.toString()+builder.toString();
+
+  }
+  
   @SuppressWarnings("unchecked")
   @Override
-  public Iterator<Buffer> iterator()
+  public Iterator<T> iterator()
   {
-    return new Iterator<Buffer>()
+    return new Iterator<T>()
     {
       private int i=0;
       
-      public Buffer next()
+      public T next()
       { 
         if (i<size())
         {
@@ -259,7 +295,7 @@ public class BufferAggregate<T extends DataComposite>
   { return (original instanceof EditableAggregate && editable);
   }
   
-  public Aggregate<T> getOriginal()
+  public Aggregate<? extends DataComposite> getOriginal()
   { return original;
   }
 
@@ -298,6 +334,12 @@ public class BufferAggregate<T extends DataComposite>
         transaction.complete();
       }
     }
+  }
+
+  @Override
+  public void remove(
+    T val)
+  { buffers.remove(val);
   }
   
 }

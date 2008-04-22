@@ -46,6 +46,7 @@ public class SequenceField
         +"\r\n   type="+getType()
         );
     }
+    super.resolve();
     
   }
   

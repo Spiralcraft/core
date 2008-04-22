@@ -15,6 +15,7 @@
 package spiralcraft.data.core;
 
 import spiralcraft.data.Field;
+import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeNotFoundException;
 
@@ -24,6 +25,7 @@ import spiralcraft.data.Scheme;
 import spiralcraft.data.reflect.ReflectionType;
 
 import java.net.URI;
+import java.util.Comparator;
 
 /**
  * Implementation base class for common aggregate type functionality
@@ -83,7 +85,10 @@ public abstract class AbstractAggregateType<T>
 
   public boolean isAssignableFrom(Type<?> type)
   {
-    if (!getNativeClass().isAssignableFrom(type.getNativeClass()))
+    
+    if (getNativeClass()!=null && type.getNativeClass()!=null &&
+        !getNativeClass().isAssignableFrom(type.getNativeClass())
+        )
     { return false;
     }
     return getContentType().isAssignableFrom(type.getContentType());
@@ -122,9 +127,20 @@ public abstract class AbstractAggregateType<T>
   /**
    * @return The Scheme which describes the structure of this type, or null if
    *   this type is not a complex type. 
+   *   
+   * XXX Need an aggregateScheme- great for indexes, computations, etc.  
    */
   public Scheme getScheme()
   { return contentType.getScheme();
+  }
+  
+  /**
+   * @return Fields here and in Base types.
+   * 
+   * XXX Need an aggregateScheme- great for indexes, computations, etc.  
+   */
+  public FieldSet getFieldSet()
+  { return contentType.getFieldSet();
   }
   
   /**
@@ -227,5 +243,9 @@ public abstract class AbstractAggregateType<T>
   {
     // TODO Auto-generated method stub
     return contentType.isExtendable();
+  }
+  
+  public Comparator<T> getComparator()
+  { return null;
   }
 }

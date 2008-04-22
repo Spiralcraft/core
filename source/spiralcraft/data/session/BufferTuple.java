@@ -14,8 +14,10 @@
 //
 package spiralcraft.data.session;
 
+import java.lang.ref.WeakReference;
 import java.util.BitSet;
 
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DeltaTuple;
@@ -29,10 +31,11 @@ import spiralcraft.data.TypeMismatchException;
 
 import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.session.DataSession.DataSessionBranch;
-import spiralcraft.data.spi.ArrayDeltaTuple;
 import spiralcraft.data.spi.ArrayTuple;
 import spiralcraft.data.transaction.Transaction;
+import spiralcraft.data.util.StaticInstanceResolver;
 import spiralcraft.log.ClassLogger;
+import spiralcraft.util.ArrayUtil;
 
 /**
  * An EditableTuple which holds a copy of data from another Tuple, tracks
@@ -58,8 +61,9 @@ public class BufferTuple
   private boolean delete;
   private boolean dirty;
   
+  private Tuple saveResult;
   
-  
+  private WeakReference<Object> behaviorRef;
   
   public BufferTuple(DataSession session,Tuple original)
   { 
@@ -81,6 +85,14 @@ public class BufferTuple
     }
   }
 
+  public void updateOriginal(Tuple tuple)
+  { 
+    if (debug)
+    { log.fine("Got new original "+tuple);
+    }
+    this.saveResult=tuple;
+  }
+  
   /**
    * Return the buffer to an unchanged state
    */
@@ -192,6 +204,39 @@ public class BufferTuple
     }
     
   }
+  
+  public void updateTo(
+    EditableTuple dest)
+    throws DataException
+  {
+    if (getFieldSet()==dest.getFieldSet()
+        || (getType()!=null && getType().hasArchetype(dest.getType()))
+       )
+    { 
+      Field[] dirtyFields=getExtentDirtyFields();
+      if (dirtyFields!=null)
+      {
+      
+        for (Field field : dirtyFields)
+        { 
+          Field destField
+            =dest.getFieldSet().getFieldByIndex(field.getIndex());
+          Object value=field.getValue(this);
+          if (value instanceof Buffer)
+          { 
+            // Don't do anything
+          }
+          else
+          { destField.setValue(dest,field.getValue(this));
+          }
+        }
+      }
+    }
+    if (baseExtent!=null)
+    { baseExtent.updateTo((EditableTuple) dest.getBaseExtent());
+    }
+    
+  }
 
   @Override
   public void set(
@@ -293,7 +338,7 @@ public class BufferTuple
   }
 
   @Override
-  public BufferAggregate<?> asAggregate()
+  public BufferAggregate<?,?> asAggregate()
   { return null;
   }
 
@@ -318,25 +363,104 @@ public class BufferTuple
     throws DataException
   { 
     if (original!=null)
-    { return "Buffer of ["+original.toText(indent+" ")+"\r\n]";
+    { 
+      return "\r\n"+indent+"Buffer "+toDirtyText(indent+"  ")
+        +"\r\n"+indent+"- of original "+original.toText(indent+"  ");
+        
     }
     else
-    { return "New buffer of "+getType().getArchetype();
+    { 
+      return 
+        "\r\n"+indent+"New Buffer "
+        +toDirtyText(indent+"  ");
     }
   }
+  
+  public String toDirtyText(String indent)
+    throws DataException
+  { 
+    StringBuilder sb=new StringBuilder();
+    sb.append("\r\n").append(indent);
+    sb.append(super.toString());
+    sb.append("\r\n").append(indent).append("==");
+    if (getType()!=null)
+    { sb.append(getType().getURI());
+    }
+    else
+    { sb.append("(untyped)");
+    }
+    sb.append("\r\n").append(indent);
+    sb.append("[");
+    boolean first=true;
+    String indent2=indent.concat("  ");
+    Field[] dirtyFields=getDirtyFields();
 
+    if (dirtyFields!=null)
+    {
+      for (Field field : getDirtyFields())
+      { 
+      
+        Object val=field.getValue(this);
+        if (val!=null)
+        { 
+          sb.append("\r\n").append(indent2);
+          if (!first)
+          { sb.append(",");
+          }
+          else
+          { first=false;
+          }
+        
+          sb.append(field.getName()).append("=");
+        
+          if (val instanceof DataComposite)
+          { 
+            sb.append("\r\n").append(indent2)
+              .append("[")
+              .append(((DataComposite) val).toText(indent2+"  "));
+            sb.append("\r\n").append(indent2)
+              .append("]");
+          }
+          else
+          { 
+            sb.append("[");
+            sb.append(val.toString());
+            sb.append("]");
+          }
+          
+          
+        }
+      }
+    }
+    sb.append("\r\n").append(indent); 
+    sb.append("]");
+    return sb.toString();
+  }  
+
+  public String dumpData()
+    throws DataException
+  { return toDirtyText("| ");
+  }
+  
   public String toString()
   { 
     StringBuffer buf=new StringBuffer();
-    buf.append(super.toString()+":"+getType().toString()+"[\r\n");
+    buf.append(super.toString()+":"+getType().getURI()+"[");
     Field[] dirtyFields=getDirtyFields();
       
     if (dirtyFields!=null)
     {
+      boolean first=true;
       for (Field field : dirtyFields)
       { 
+        if (first)
+        { first=false;
+        }
+        else
+        { buf.append(",");
+        }
         try
-        { buf.append(field.getName()+"="+field.getValue(this)+"\r\n");
+        { buf.append(field.getName()+"=["+field.getValue(this)+"]");
         }
         catch (DataException x)
         { buf.append(field.getName()+"=!!!"+x);
@@ -345,20 +469,29 @@ public class BufferTuple
     
     }
     else
-    { buf.append("(clean)");
+    { buf.append(delete?"(DELETED)":"(clean)");
     }
-    buf.append("]\r\n");
-    return buf.toString()+":"+original;
+    buf.append("] ");
+    buf.append(" original="+original);
+    
+    if (baseExtent!=null)
+    { buf.append("\r\n baseExtent="+baseExtent.toString());
+    }
+    return buf.toString();
   }
   
   @Override
-  public Field[] getDirtyFields()
+  public Field[] getExtentDirtyFields()
   {
     if (!dirty)
     { return null;
     }
+    else if (dirtyFlags==null)
+    { return null;
+    }
     else
     {
+      
       FieldSet fieldSet=getFieldSet();
       int j=0;
       Field[] fields=new Field[dirtyFlags.cardinality()];
@@ -366,6 +499,22 @@ public class BufferTuple
       { fields[j++]=fieldSet.getFieldByIndex(i);
       }
       return fields;
+    }
+  }
+  
+  public Field[] getDirtyFields()
+  {
+    Field[] baseDirty=(baseExtent!=null?baseExtent.getDirtyFields():null);
+    Field[] dirty=getExtentDirtyFields();
+    
+    if (baseDirty==null)
+    { return dirty;
+    }
+    else if (dirty==null)
+    { return baseDirty;
+    }
+    else
+    { return (Field[]) ArrayUtil.appendArrays(baseDirty,dirty);
     }
   }
 
@@ -438,7 +587,9 @@ public class BufferTuple
     
     if (transaction!=null)
     {
-      log.fine("Saving "+toString());
+      if (debug)
+      { log.fine("Saving "+toString());
+      }
 
       
       DataSessionBranch branch
@@ -457,7 +608,9 @@ public class BufferTuple
     }
     else
     { 
-      log.fine("Saving "+toString());
+      if (debug)
+      { log.fine("Saving "+toString());
+      }
       transaction=
         Transaction.startContextTransaction(Transaction.Nesting.ISOLATE);
       try
@@ -506,43 +659,73 @@ public class BufferTuple
   void commit()
     throws DataException
   { 
-    log.fine("Committing "+this);
-    if (original instanceof JournalTuple)
-    { 
-      ((JournalTuple) original).commit();
-      reset();
+    if (debug)
+    { log.fine("Committing "+this);
     }
-    else if (original instanceof EditableTuple)
-    { writeThrough();
-    }
-    else
-    { log.fine("Original is not writable "+original);
-    }
-      
-  }
-  
-  void writeThrough()
-    throws DataException
-  {
-    EditableTuple tuple=(EditableTuple) original;
-    Field[] dirtyFields=getDirtyFields();
-    if (dirtyFields!=null)
+    if (original!=null)
     {
-      for (Field field: getDirtyFields())
+      if (original instanceof JournalTuple)
       { 
-        if (field instanceof BufferField)
-        { 
-          ((BufferField) field).getArchetypeField()
-            .setValue(tuple, ((Buffer) field.getValue(this)).getOriginal());
-        }
-        else
-        { field.setValue(tuple, field.getValue(this));
-        }
+        ((JournalTuple) original).commit();
+        reset();
+      }
+      else if (original instanceof EditableTuple)
+      { // writeThrough();
+      }
+      else if (original!=null)
+      { log.fine("Original is not writable "+original);
       }
     }
-    if (baseExtent!=null)
-    { baseExtent.writeThrough();
+    
+    if (saveResult!=null)
+    { 
+      if (debug)
+      { log.fine("Got new original "+saveResult.dumpData());
+      }
+      setOriginal(saveResult);
+      reset();
+      
     }
-    reset();
+    saveResult=null;
+      
   }
+
+  void setOriginal(Tuple original)
+  { 
+    this.original=original;
+    if (baseExtent!=null)
+    { baseExtent.setOriginal(original.getBaseExtent());
+    }
+  }
+  
+  public synchronized Object getBehavior()
+    throws DataException
+  {
+    if (getType()==null)
+    { return null;
+    }
+    
+    if (getType().getNativeClass()==null)
+    { return null;
+    }
+    
+    Object behavior=null;
+    if (behaviorRef!=null)
+    { behavior=behaviorRef.get();
+    }
+    
+    StaticInstanceResolver instanceResolver=null;
+    if (behavior!=null)
+    { instanceResolver=new StaticInstanceResolver(behavior);
+    }
+    Object newBehavior=getType().fromData(this,instanceResolver);
+    
+    if (newBehavior!=behavior)
+    { behaviorRef=new WeakReference<Object>(newBehavior);
+    }
+    
+    return newBehavior;
+    
+  }  
+
 }

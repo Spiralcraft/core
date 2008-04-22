@@ -15,6 +15,7 @@
 package spiralcraft.data.session;
 
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
@@ -25,6 +26,7 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLogger;
 
 import spiralcraft.data.DataComposite;
+import spiralcraft.data.DataException;
 import spiralcraft.data.Key;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
@@ -60,9 +62,11 @@ public class BufferField
     { 
       // Get the correct field behavior from the archetype
       originalChannel=(Channel<DataComposite>) getArchetypeField().bind(focus);
-      log.fine("Creating BufferFieldChannel for field " +getURI());
+      if (debug)
+      { log.fine("Creating BufferFieldChannel for field " +getURI());
+      }
       		
-      return new BufferFieldChannel(originalChannel,focus);
+      return new BufferFieldChannel(originalChannel,(Focus<BufferTuple>) focus);
       
     }
     else
@@ -70,8 +74,8 @@ public class BufferField
       // We're not backed by an archetype? So we got our fields how?
       // By extension?
       originalChannel=new FieldChannel(focus.getSubject());
-      log.fine("Using Buffer with no archetype");
-      return new BufferFieldChannel(originalChannel,focus);
+      log.warning("Using Buffer with no archetype?!?");
+      return new BufferFieldChannel(originalChannel,(Focus<BufferTuple>) focus);
     }
 
   }
@@ -80,23 +84,12 @@ public class BufferField
     extends AbstractChannel<Buffer>
   {
     private Channel<? extends Buffer> bufferSource;
-    private Channel<DataSession> sessionChannel;
-    private ThreadLocalChannel<Buffer> bufferPinned;
-    private Focus<Buffer> pinnedFocus;
-    
-    private Setter<Tuple> inheritedValues;
-    
-    
-
-    
-  /*
-    private Channel<Buffer> parentChannel;
-  */
+    private Channel<BufferTuple> parentChannel;
     
     @SuppressWarnings("unchecked")
     public BufferFieldChannel
       (Channel<? extends DataComposite> originalChannel
-      ,Focus<? extends Tuple> focus
+      ,Focus<BufferTuple> parentFocus
       )
       throws BindException
     { 
@@ -106,74 +99,96 @@ public class BufferField
 
       metaChannel=this;
       
-      sessionChannel
-        =(Channel<DataSession>) focus.findFocus(DataSession.FOCUS_URI)
-          .getSubject();
-      
-//      Focus<Buffer> bufferFocus=(Focus<Buffer>) focus.findFocus(Buffer.FOCUS_URI);
-//      if (bufferFocus!=null)
-//      { 
-//        parentChannel
-//          =bufferFocus.getSubject();
-//      }
+      parentChannel
+        =parentFocus.getSubject();
           
-      log.fine("Creating BufferChannel of type "+getType());
-      this.bufferSource=new BufferChannel(getType(),originalChannel,focus);
-      this.bufferPinned
-        =new ThreadLocalChannel(DataReflector.getInstance(getType()));
-
-      this.pinnedFocus=new SimpleFocus(focus,bufferPinned);
-      
-      if (!getType().isAggregate())
+      if (debug)
       {
-
-        if (getArchetypeField() instanceof KeyField)
-        { 
-          Focus pinnedTupleFocus=pinnedFocus;
-          
-          Key key=((KeyField) getArchetypeField()).getKey();
-
-          inheritedValues
-            =new Setter<Tuple>
-              (key.bind(focus)
-              ,key.getImportedKey().bind(pinnedTupleFocus)
-              );
-        }
+        log.fine("BufferFieldChannel parentChannel="+parentChannel);
+        log.fine("Creating BufferChannel of type "+getType());
       }
-
+      this.bufferSource
+        =new BufferChannel(getType(),originalChannel,parentFocus);
+      
     }
 
     @Override
     public boolean isWritable()
-    { return false;
+    { return true;
     }
       
     public boolean store(Buffer val)
     { 
-      // TODO This will be useful, to place whole buffers, especially
-      //   when updating relationships by object references instead of keys
-      return false;
+      try
+      { 
+        if (val!=null && !(val instanceof Buffer))
+        { 
+          throw new AccessException
+            ("BufferField "+getURI()+" cannot be assigned a non-Buffer: "
+              +"\r\n      value="+val
+              );
+             
+        }
+        BufferTuple parent=parentChannel.get();
+        BufferField.this.setValue(parent,val);
+        return true;
+      }
+      catch (DataException x)
+      { throw new AccessException("Error storing buffer "+val,x);
+      }
     }
 
     public Buffer retrieve()
     { 
+      BufferTuple parent=parentChannel.get();
+      try
+      {
+        Object maybeBuffer=BufferField.this.getValue(parent);
+        if (maybeBuffer!=null && !(maybeBuffer instanceof Buffer))
+        { 
+          log.warning("BufferField "+getURI()+" field value was a non-Buffer: "
+              +"\r\n    parentChannel="+parentChannel
+              +"\r\n      value="+maybeBuffer
+              );
+          maybeBuffer=null;
+        }
+        
+        
+        Buffer buffer=(Buffer) maybeBuffer;
+        
+        if (buffer!=null 
+            && !buffer.isDirty() 
+            && buffer.getOriginal()!=null
+            )
+        { 
+          // Don't re-reference non-dirty buffers
+          buffer=null;
+          store(null);
+        }
+        
+        if (buffer==null)
+        { 
+          buffer=bufferSource.get();
+          
+          if (buffer!=null && !(buffer instanceof Buffer))
+          {
+            throw new AccessException
+              ("BufferField "+getURI()+" bufferSource returned a non-Buffer: "
+              +"\r\n    bufferSource="+bufferSource
+              +"\r\n      value="+maybeBuffer
+              );
+          }
+          
+          if (buffer!=null)
+          { BufferField.this.setValue(parentChannel.get(),buffer);
+          }
+        }
+        return buffer;
+      }
+      catch (DataException x)
+      { throw new AccessException("Error retrieving buffer",x);
+      }
       
-      Buffer buffer=bufferSource.get();
-
-//      bufferPinned.push(buffer);
-//      try
-//      { 
-//        // Do a bunch of stuff to buffer depending on state
-//
-//        // XXX Check buffer state (don't do this every time)
-//        inheritedValues.set();
-//      }
-//      finally
-//      { bufferPinned.pop();
-//      }
-      
-      return buffer;
-
     }
 
   }

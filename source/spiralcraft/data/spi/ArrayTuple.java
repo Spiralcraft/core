@@ -21,6 +21,7 @@ import spiralcraft.data.Field;
 
 import spiralcraft.util.ArrayUtil;
 
+
 /**
  * Base class for a simple in-memory immutable Tuple.
  */
@@ -29,6 +30,7 @@ public class ArrayTuple
   implements Tuple
 {
   protected final Object[] data;
+  
   
   /**
    * Construct an ArrayTuple with an empty set of data

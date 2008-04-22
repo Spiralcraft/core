@@ -1,16 +1,17 @@
 package spiralcraft.data.spi;
 
 import spiralcraft.data.DeltaTuple;
+import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Aggregate;
-import spiralcraft.data.Type;
+import spiralcraft.data.session.Buffer;
+import spiralcraft.util.ArrayUtil;
 
 import java.util.BitSet;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ArrayDeltaTuple
   extends ArrayTuple
@@ -112,7 +113,7 @@ public class ArrayDeltaTuple
     if (updated==null)
     { throw new IllegalArgumentException("Can't copy from null");
     }
-    Field[] dirtyFields=updated.getDirtyFields();
+    Field[] dirtyFields=updated.getExtentDirtyFields();
     if (dirtyFields!=null)
     {
       for (Field field : dirtyFields)
@@ -130,6 +131,40 @@ public class ArrayDeltaTuple
     }
   }
   
+  
+  public void updateTo(
+    EditableTuple dest)
+    throws DataException
+  {
+    if (getFieldSet()==dest.getFieldSet()
+        || (getType()!=null && getType().hasArchetype(dest.getType()))
+       )
+    { 
+      Field[] dirtyFields=getExtentDirtyFields();
+      if (dirtyFields!=null)
+      {
+      
+        for (Field field : dirtyFields)
+        { 
+          Field destField
+            =dest.getFieldSet().getFieldByIndex(field.getIndex());
+          Object value=field.getValue(this);
+          if (value instanceof Buffer)
+          { 
+            // XXX Follow content update-to
+            
+          }
+          else
+          { destField.setValue(dest,field.getValue(this));
+          }
+        }
+      }
+    }
+    if (baseExtent!=null)
+    { ((ArrayDeltaTuple) baseExtent).updateTo((EditableTuple) dest.getBaseExtent());
+    }
+    
+  }  
   protected Object makeDirtyValue(Object originalValue,Object updatedValue)
     throws DataException
   {
@@ -166,7 +201,7 @@ public class ArrayDeltaTuple
     dirtyFlags.set(field.getIndex(),true);
   }
 
-  public Field[] getDirtyFields()
+  public Field[] getExtentDirtyFields()
   {
     ArrayList<Field> fields=new ArrayList<Field>();
     for (int i=0;i<dirtyFlags.size();i++)
@@ -180,6 +215,23 @@ public class ArrayDeltaTuple
     return ret;
   }
 
+  public Field[] getDirtyFields()
+  {
+    Field[] baseDirty
+      =(baseExtent!=null?((ArrayDeltaTuple) baseExtent).getDirtyFields():null);
+    Field[] dirty=getExtentDirtyFields();
+    
+    if (baseDirty!=null && dirty==null)
+    { return baseDirty;
+    }
+    else if (baseDirty==null && dirty!=null)
+    { return dirty;
+    }
+    else
+    { return (Field[]) ArrayUtil.appendArrays(baseDirty,dirty);
+    }
+  }  
+  
   public Tuple getOriginal()
   { return original;
   }
@@ -193,7 +245,13 @@ public class ArrayDeltaTuple
   }
 
   public boolean isDirty()
-  { return dirty;
+  { 
+    if (baseExtent!=null)
+    { return dirty || ((ArrayDeltaTuple) baseExtent).isDirty();
+    }
+    else
+    { return dirty;
+    }
   }
   
   public Object get(int index)

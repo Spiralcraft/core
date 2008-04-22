@@ -16,7 +16,6 @@ package spiralcraft.data.query;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.TeleFocus;
@@ -36,8 +35,7 @@ import spiralcraft.data.access.SerialCursor;
 public class Selection
   extends Query
 {
-  private static final ClassLogger log=ClassLogger.getInstance(Selection.class);
-  
+ 
   private Expression<Boolean> constraints;
   
   public Selection()
@@ -94,8 +92,9 @@ public class Selection
   { return constraints;
   }
   
+
   
-  public <T extends Tuple> BoundQuery<?,T> getDefaultBinding(Focus<?> focus,Queryable<T> store)
+  public <T extends Tuple> BoundQuery<?,T> getDefaultBinding(Focus<?> focus,Queryable<?> store)
     throws DataException
   { return new SelectionBinding<Selection,T>(this,focus,store);
    
@@ -110,18 +109,19 @@ public class Selection
 }
 
 class SelectionBinding<Tq extends Selection,Tt extends Tuple>
-  extends UnaryBoundQuery<Tq,Tt>
+  extends UnaryBoundQuery<Tq,Tt,Tt>
 {
   private static final ClassLogger log=ClassLogger.getInstance(SelectionBinding.class);
 
   private final Focus<?> paramFocus;
   private Focus<Tt> focus;
   private Channel<Boolean> filter;
+  private boolean resolved;
   
   public SelectionBinding
     (Tq query
     ,Focus<?> paramFocus
-    ,Queryable<Tt> store
+    ,Queryable<?> store
     )
     throws DataException
   { 
@@ -131,27 +131,43 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     
   }
 
+  @SuppressWarnings("unchecked")
   public void resolve() throws DataException
   { 
-    super.resolve();
+    if (!resolved)
+    {
+      super.resolve();
     
 
-    focus=new TeleFocus<Tt>(paramFocus,sourceChannel);
-    log.fine("Binding constraints "+getQuery().getConstraints());
-    try
-    { filter=focus.<Boolean>bind(getQuery().getConstraints());
-    }
-    catch (BindException x)
-    { throw new DataException("Error binding constraints "+x,x);
+      focus= new TeleFocus<Tt>(paramFocus,sourceChannel);
+      
+      if (debug)
+      { log.fine("Binding constraints "+getQuery().getConstraints());
+      }
+      
+      try
+      { 
+        filter=focus.<Boolean>bind(getQuery().getConstraints());
+        if (debug)
+        { filter.setDebug(true);
+        }
+      }
+      catch (BindException x)
+      { throw new DataException("Error binding constraints "+x,x);
+      }
+      resolved=true;
     }
   }
   
 
   protected SerialCursor<Tt> newSerialCursor(SerialCursor<Tt> source)
+    throws DataException
   { return new SelectionSerialCursor(source);
   }
   
-  protected ScrollableCursor<Tt> newScrollableCursor(ScrollableCursor<Tt> source)
+  protected ScrollableCursor<Tt> 
+    newScrollableCursor(ScrollableCursor<Tt> source)
+    throws DataException
   { return new SelectionScrollableCursor(source);
   }
 
@@ -159,27 +175,35 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     extends UnaryBoundQuerySerialCursor
   {
     public SelectionSerialCursor(SerialCursor<Tt> source)
+      throws DataException
     { super(source);
     }
   
+    @SuppressWarnings("unchecked")
     protected boolean integrate()
     { 
-      Tt t=sourceChannel.get();
+      Tt t=(Tt) sourceChannel.get();
       if (t==null)
       { 
-//      System.err.println("BoundSelection: eod ");
+        if (debug)
+        { log.fine(toString()+"BoundSelection: eod ");
+        }
         return false;
       }
     
       if (filter.get())
       {  
-//      System.err.println("BoundSelection: passed "+t);
+        if (debug)
+        { log.fine(toString()+"BoundSelection: passed "+t);
+        }
         dataAvailable(t);
         return true;
       }
       else
       { 
-//      System.err.println("BoundSelection: filtered "+t);
+        if (debug)
+        { log.fine(toString()+"BoundSelection: filtered "+t);
+        }
         return false;
       }
     }
@@ -193,27 +217,35 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     extends UnaryBoundQueryScrollableCursor
   {
     public SelectionScrollableCursor(ScrollableCursor<Tt> source)
+      throws DataException
     { super(source);
     }
 
+    @SuppressWarnings("unchecked")
     protected boolean integrate()
     { 
-      Tt t=sourceChannel.get();
+      Tt t=(Tt) sourceChannel.get();
       if (t==null)
       { 
-//        log.fine("BoundSelection: eod ");
+        if (debug)
+        { log.fine("BoundSelection: eod ");
+        }
         return false;
       }
 
       if (filter.get())
       {  
-//        log.fine("BoundSelection: passed "+t);
+        if (debug)
+        { log.fine("BoundSelection: passed "+t);
+        }
         dataAvailable(t);
         return true;
       }
       else
       { 
-//        log.fine("BoundSelection: filtered "+t);
+        if (debug)
+        { log.fine("BoundSelection: filtered "+t);
+        }
         return false;
       }
     }

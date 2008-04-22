@@ -65,6 +65,12 @@ public interface Field
   URI getURI();
   
   /**
+   * @return The expression that evaluates to an initial value for the Field
+   *   when the containing Tuple is created.
+   */
+  Expression<?> getNewExpression();
+
+  /**
    * @return The expression that evaluates to a default value for the Field,
    *   applied if the Field value is null at the time updates are committed.
    */

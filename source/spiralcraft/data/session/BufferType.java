@@ -16,16 +16,20 @@ package spiralcraft.data.session;
 
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.Scheme;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Field;
 
+import spiralcraft.data.core.KeyField;
 import spiralcraft.data.core.TypeImpl;
 import spiralcraft.data.core.SchemeImpl;
 import spiralcraft.log.ClassLogger;
 
 
 import java.net.URI;
+import java.util.Iterator;
+
 
 
 
@@ -79,14 +83,14 @@ public class BufferType
     }
     this.scheme.setArchetypeScheme(this.archetype.getScheme());
     
-    if (this.archetype.getScheme()!=null)
-    {
+    if (this.archetype.getScheme()!=null && !isAggregate()) 
+    { 
       for (Field field : this.archetype.getScheme().fieldIterable())
-      {
+      { 
         if (field.getType()==null)
         { 
           log.fine("Field type is null "+field);
-          continue;
+          continue; 
         }
 
         if (field.getName()==null)
@@ -98,15 +102,25 @@ public class BufferType
         // Primitives are immutable
         if (!field.getType().isPrimitive())
         {
-          // If we didn't buffer it already
-          if (this.scheme.getLocalFieldByName(field.getName())==null)
-          { 
-            // AutoBuffer 
-            BufferField newField=new BufferField();
-            newField.setName(field.getName());
-            newField.setType(getBufferType(field.getType()));
-            scheme.addField(newField);
+          if (field instanceof KeyField
+              && isChildKey
+                (((KeyField) field).getKey().fieldIterable()
+                ,((KeyField) field).getScheme().getPrimaryKey().fieldIterable()
+                )
+              )
+          {
+            // Only buffer Key fields with parent-child relationships
+            
+            // If we didn't buffer it already
+            if (this.scheme.getLocalFieldByName(field.getName())==null)
+            { 
+              // AutoBuffer 
+              BufferField newField=new BufferField();
+              newField.setName(field.getName());
+              newField.setType(getBufferType(field.getType()));
+              scheme.addField(newField);
 
+            }
           }
 
         }
@@ -127,5 +141,32 @@ public class BufferType
   }
 
   
-  
+
+  private boolean isChildKey
+    (Iterable<? extends Field> relation,Iterable<? extends Field> primary)
+  {
+    Iterator<? extends Field> primaryField=primary.iterator();
+    for (Field childField: relation)
+    {
+      if (!primaryField.hasNext())
+      { 
+        // Primary key has fewer fields than used in relation
+        return true;
+      }
+      if (!childField.getName().equals(primaryField.next().getName()))
+      { return false;
+      }
+     
+    }
+    
+    if (primaryField.hasNext())
+    {
+      // Primary key has more fields than used in relation
+      //   so child is really a parent (less specific)
+      return false;
+    }
+    return true;
+    
+  }
 }
+

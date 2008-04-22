@@ -58,13 +58,14 @@ public class Updater<T extends DeltaTuple>
   implements DataConsumer<T>
 {
 
-  private static final ClassLogger log=ClassLogger.getInstance(Updater.class);
+  protected static final ClassLogger log
+    =ClassLogger.getInstance(Updater.class);
 
   private static final URI dataURI
     =URI.create("class:/spiralcraft/data/");
 
   private Focus<?> context;
-  private TupleFocus<T> localFocus;
+  protected TupleFocus<T> localFocus;
   
   
   private ArrayList<Setter<?>> fixedSetters;
@@ -73,6 +74,7 @@ public class Updater<T extends DeltaTuple>
   private Sequence sequence;
   private Field sequenceField;
   private Space space;
+  protected boolean debug;
   
   /**
    * <p>Create a new Updater, which uses the provided context to to resolve any
@@ -86,12 +88,20 @@ public class Updater<T extends DeltaTuple>
   { this.context=context;
   }
 
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
   @Override
   public void dataAvailable(
     T tuple)
     throws DataException
   {
+    if (debug)
+    { log.fine("Got "+tuple);
+    }
     localFocus.setTuple(tuple);
+    
     
     if (tuple instanceof BufferTuple)
     {
@@ -99,11 +109,33 @@ public class Updater<T extends DeltaTuple>
       {
         if (sequenceField.getValue(tuple)==null)
         { 
+          String sequenceVal = Integer.toString(sequence.next());
+          if (debug)
+          { 
+            log.fine
+              ("Generated sequence "+sequenceVal
+              +" for "+sequenceField.getURI()
+              );
+          }
+          
           sequenceField.setValue
-          ((EditableTuple) tuple
-            ,sequenceField.getType().fromString
-            (Integer.toString(sequence.next()))
-          );
+            ((EditableTuple) tuple
+              ,sequenceField.getType().fromString(sequenceVal)
+            );
+        }
+        else
+        { 
+          if (debug)
+          {
+            log.fine
+              ("Sequence field not null "+sequenceField.getURI());
+          }
+        }
+      }
+      else
+      { 
+        if (sequenceField!=null)
+        { log.fine("Sequence is null for "+sequenceField);
         }
       }
 
@@ -122,6 +154,14 @@ public class Updater<T extends DeltaTuple>
         for (Setter<?> setter : fixedSetters)
         { setter.set();
         }
+      }
+    }
+    else
+    {
+      if (debug)
+      {
+        log.fine
+          ("Not a BufferTuple "+tuple);
       }
     }
      
@@ -179,22 +219,31 @@ public class Updater<T extends DeltaTuple>
     // Takes care of key sequences? Nope.
     for (Field field: fieldSet.fieldIterable())
     {
+      if (debug)
+      { log.fine("Updater binding: "+field);
+      }
+      
       if (field instanceof SequenceField)
       {
         if (sequence!=null)
-        { 
-          log.fine("Ignoring additional SequenceField "+field.getURI());
+        { log.warning("Ignoring additional SequenceField "+field.getURI());
         }
         else if (space==null)
         {
-          log.fine
+          log.warning
             ("Ignoring SequenceField-"
             +" not attached to a Space: "+field.getURI()
             );
         }
         else
         { 
+          if (debug)
+          { log.fine("Binding sequence field "+field.getURI());
+          }
           sequence=space.getSequence(field.getURI());
+          if (sequence==null)
+          { throw new DataException("Sequence not found for "+field.getURI());
+          }
           sequenceField=field;
         }
       }

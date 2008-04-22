@@ -22,18 +22,21 @@ import spiralcraft.data.core.MethodImpl;
 
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataComposite;
+import spiralcraft.util.ArrayUtil;
 
 
 public class ReflectionMethod
   extends MethodImpl
 {
+  
   protected final TypeResolver resolver;
   private java.lang.reflect.Method method;
-
+  private boolean debug;
   
   public ReflectionMethod(TypeResolver resolver,java.lang.reflect.Method method)
   {
@@ -50,14 +53,56 @@ public class ReflectionMethod
   public Object invoke(Object target,Object[]params)
     throws DataException
   { 
+    if (debug)
+    { 
+      log.fine("Invoking "+method+" on "+target+" with "
+              +ArrayUtil.format(params,"\r\n  param:","")
+              );
+    }
     if (target instanceof DataComposite)
     { 
-      throw new DataException
-        ("Can't invoke method "+getQualifiedName()+" on data");
+      if (target instanceof Tuple)
+      { 
+        Object behavior=((Tuple) target).getBehavior();
+        if (behavior!=null)
+        { target=behavior;
+        }
+        else
+        {
+          throw new DataException
+            ("Failed to get behavior object from Tuple to invoke "
+            +" method "+getQualifiedName()+" on data"
+            );
+          
+        }
+      }
+      else
+      {
+        throw new DataException
+          ("Can't invoke method "+getQualifiedName()+" on data "+target);
+        
+      }
     }
     
+    
+    Object[] behaviorParams=new Object[params.length];
+    for (int i=0;i<behaviorParams.length;i++)
+    {
+      if (params[i] instanceof Tuple)
+      {
+        behaviorParams[i]=((Tuple) params[i]).getBehavior();
+      }
+      else
+      { behaviorParams[i]=params[i];
+      }
+    }
+           
     try
-    { return method.invoke(target,params);
+    { 
+      
+      
+      
+      return method.invoke(target,behaviorParams);
     }
     catch (InvocationTargetException x)
     { 
@@ -75,11 +120,9 @@ public class ReflectionMethod
     }
   }
   
-  public void resolveType()
+  public void resolve()
     throws DataException
   {
-    try
-    { 
       setReturnType(findType(method.getReturnType()));
       Class<?>[] formalTypes=method.getParameterTypes();
       Type<?>[] parameterTypes=new Type[formalTypes.length];
@@ -88,19 +131,17 @@ public class ReflectionMethod
       { parameterTypes[i]=findType(formalTypes[i]);
       }
       setParameterTypes(parameterTypes);
-    }
-    catch (TypeNotFoundException x)
-    { 
-      // This should NEVER happen- there always exists a Type for
-      //   every java class
-      x.printStackTrace();
-    }
+      super.resolve();
+    
   }
   
 
   protected Type<?> findType(Class<?> iface)
     throws DataException
   { 
+    if (iface==null)
+    { return Type.resolve("class:/java/lang/Void");
+    }
     URI uri=ReflectionType.canonicalURI(iface);
     return resolver.resolve(uri);
   }

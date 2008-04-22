@@ -164,14 +164,17 @@ public class SchemeImpl
     boolean first=true;
     for (Field field:fields)
     { 
-      fieldList.append("\r\n  ");
+      fieldList.append("\r\n       #");
       if (!first)
       { fieldList.append(",");
       }
       else
       { first=false;
       }
-      fieldList.append(field.toString());
+      fieldList.append
+        (field.getClass().getSimpleName()+":"
+         +field.getName()+"("+field.getType().getURI()+")"
+        );
     }
     fieldList.append("]");
     return fieldList.toString();
@@ -334,7 +337,14 @@ public class SchemeImpl
   }
 
   public Key getPrimaryKey()
-  { return primaryKey;
+  { 
+    if (primaryKey==null 
+        && type!=null
+        && type.getBaseType()!=null
+        )
+    { return type.getBaseType().getScheme().getPrimaryKey();
+    }
+    return primaryKey;
   }
 
   public void setKeys(KeyImpl[] keyArray)

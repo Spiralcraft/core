@@ -55,6 +55,7 @@ public abstract class Query
   protected final Query baseQuery;
   protected final List<Query> sources=new ArrayList<Query>(1);
   protected Type<?> type;
+  protected boolean debug;
   
   /**
    * Construct a new, unfactored Query
@@ -96,6 +97,25 @@ public abstract class Query
   }
  
   /**
+   * Called by the creator/user of the Query to complete any configuration
+   *   steps required for the Query to export a FieldSet defining the result.
+   */
+  public void resolve()
+    throws DataException
+  { 
+    if (sources!=null)
+    {
+      for (Query source:sources)
+      { 
+        if (debug)
+        { source.setDebug(true);
+        }
+        source.resolve();
+      }
+    }
+  }
+  
+  /**
    * <P>When a Queryable cannot provide an optimized BoundQuery implementation for a given
    *   operation in response to a query(Query) request, this method will factor the
    *   Query by subdividing the Query into downstream and upstream Queries. 
@@ -133,12 +153,20 @@ public abstract class Query
    * </p>
    */
   public abstract <T extends Tuple> BoundQuery<?,T> 
-    getDefaultBinding(Focus<?> focus,Queryable<T> store)
+    getDefaultBinding(Focus<?> focus,Queryable<?> store)
     throws DataException;
   
   
   public Selection select(Expression<Boolean> constraints)
   { return new Selection(this,constraints);
+  }
+  
+  public void setDebug(boolean val)
+  { this.debug=val;
+  }
+  
+  public boolean getDebug()
+  { return debug;
   }
   
   /**

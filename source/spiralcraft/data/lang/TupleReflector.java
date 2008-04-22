@@ -21,11 +21,16 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Reflector;
+import spiralcraft.log.ClassLogger;
 
+import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.Method;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.Type;
+import spiralcraft.data.reflect.ReflectionType;
 
 
 /**
@@ -37,6 +42,13 @@ import spiralcraft.data.Type;
 public class TupleReflector<T extends Tuple>
   extends DataReflector<T>
 {
+  private static final ClassLogger log
+    =ClassLogger.getInstance(TupleReflector.class);
+  
+  private static boolean debug;
+  
+  private static final Expression[] NULL_PARAMS = new Expression[0];
+  
   private final FieldSet fieldSet;
   
   private final Class<T> contentType;
@@ -59,7 +71,7 @@ public class TupleReflector<T extends Tuple>
     throws BindException
   { 
     super(type);
-    this.fieldSet=type.getScheme();
+    this.fieldSet=type.getFieldSet();
     this.contentType=contentType;
 //    for (Field field : fieldSet.fieldIterable())
 //    { fieldTranslators.put(field.getName(),new FieldTranslator(field));
@@ -126,12 +138,131 @@ public class TupleReflector<T extends Tuple>
       if (binding==null)
       { binding=field.bind(tupleFocus);
       }
-      return binding;      
+      
+      if (binding!=null)
+      { return binding;      
+      }
     }
     
+    if (type!=null)
+    { 
+      Type archetype=type;
+      Channel binding=null;
+      while (archetype!=null && binding==null)
+      {
+        if (debug)
+        { log.fine("Checking methods for name '"+name+"' in "+archetype);
+        }
+        binding=bindMethods(archetype,source,focus,name,params);
+        archetype=archetype.getArchetype();
+      }
+      if (binding!=null)
+      { return binding;
+      }
+    }
+        
     return null;
   }
 
+  @SuppressWarnings("unchecked")
+  private Channel bindMethods
+    (Type type,Channel source,Focus focus,String name,Expression[] params)
+    throws BindException
+  {
+    if (params==null)
+    { params=NULL_PARAMS;
+    }
+    Channel[] paramChannels=new Channel[params.length];
+    for (int i=0;i<params.length;i++)
+    { paramChannels[i]=focus.bind(params[i]);
+    }
+    if (debug)
+    { 
+      log.fine("Looking for "+name
+        +"("+params.length+") in type "+type.getURI());
+    }
+    
+    for (Method method : type.getMethods())
+    {
+      if (debug)
+      { 
+        log.fine("Checking "+method.getName()
+          +"("+method.getParameterTypes().length+") in type "+type.getURI());
+      }
+      if (method.getName().equals(name) 
+            && method.getParameterTypes().length==params.length
+            )
+      {
+        
+        if (debug)
+        {
+          log.fine("Possible method "+method.getName()
+            +" in type "+type.getURI()
+            );
+        }
+        int i=0;
+        boolean match=true;
+        for (Type<?> formalType : method.getParameterTypes())
+        {
+          if (debug)
+          {
+            log.fine("Checking param  "+i+" in "+method.getName()
+              +" in type "+type.getURI()
+              );
+          }
+          Channel paramChannel=paramChannels[i++];
+            
+          Reflector paramReflector=paramChannel.getReflector();
+          Type paramType;
+          if (paramReflector instanceof DataReflector)
+          { paramType=((DataReflector) paramReflector).getType();
+          }
+          else
+          { 
+            try
+            {
+              paramType
+                =Type.resolve
+                  (ReflectionType.canonicalURI(paramReflector.getContentType())
+                  );
+            }
+            catch (DataException x)
+            { 
+              x.printStackTrace();
+              match=false;
+              break; // Parameter compare loop
+            }
+          }
+          if (debug)
+          { log.fine(formalType+" <-- "+paramType);
+          }
+          if (!formalType.isAssignableFrom(paramType))
+          { 
+            match=false;
+            break; // Parameter compare loop
+          }
+        }
+         
+        if (match)
+        { 
+          if (debug)
+          {
+            log.fine
+              ("Found match for "+name
+               +": return type is "+method.getReturnType());
+          }
+          return method.bind(focus, source, paramChannels);
+          // Matching method- note: 
+          // XXX Method resolution is first declared to match, not best fit
+        }
+      }
+        
+    }
+    return null;  
+    
+  }
+  
+  
   public <D extends Decorator<T>> D 
     decorate(Channel<? extends T> binding,Class<D> decoratorInterface)
   { 

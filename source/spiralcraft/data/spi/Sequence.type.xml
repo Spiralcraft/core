@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="Cp1252"?>
+
+<!-- Sequence type -->
+<meta:Type
+  xmlns:meta="java:/spiralcraft/data/types/meta"
+  >
+  <fields>
+      
+    <!--  Sequence.uri -->
+    <meta:Field>
+      
+      <name>uri
+      </name>
+      
+      <type><URI.type/>
+      </type>
+
+    </meta:Field>
+
+    <!--  Sequence.nextValue -->
+    <meta:Field>
+      
+      <name>nextValue
+      </name>
+      
+      <type><Integer.type/>
+      </type>
+
+    </meta:Field>
+
+    <!--  Sequence.increment -->
+    <meta:Field>
+      
+      <name>increment
+      </name>
+      
+      <type><Integer.type/>
+      </type>
+
+    </meta:Field>
+
+
+  </fields>
+
+</meta:Type>

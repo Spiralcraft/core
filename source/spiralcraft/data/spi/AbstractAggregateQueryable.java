@@ -51,7 +51,6 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
 
   public BoundQuery<?,T> getAll(Type<?> type) throws DataException
   {
-    
     BoundScan scan=new BoundScan(new Scan(getResultType()));
     scan.resolve();
     return scan;

@@ -79,6 +79,8 @@ public class TypeResolver
 
   private final ArrayList<TypeFactory> factories=new ArrayList<TypeFactory>();
   
+  private boolean debug=false;
+  
   public static synchronized final TypeResolver getTypeResolver()
   { 
     TypeResolver resolver=classLoaderLocal.getInstance();
@@ -251,7 +253,9 @@ public class TypeResolver
   private final Type<?> loadMetaType(Type<?> baseType,URI typeURI)
     throws DataException
   {
-    log.fine("Loading MetaType for "+baseType);
+    if (debug)
+    { log.fine("Loading MetaType for "+baseType);
+    }
     
     Type<?> type=map.get(typeURI);
     if (type!=null)
@@ -339,7 +343,9 @@ public class TypeResolver
         ("Type "+uri+" already registered as "+map.get(uri));
     }
     map.put(uri,type);
-    log.fine("register "+type);
+    if (debug)
+    { log.fine("register "+type);
+    }
     // Type may not be ready to be linked
   }
   

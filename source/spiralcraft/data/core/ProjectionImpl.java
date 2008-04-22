@@ -60,6 +60,8 @@ public class ProjectionImpl
   protected boolean resolved;
   
   protected TupleReflector<Tuple> reflector;
+  
+  private Type<?> type;
 
 
   public ProjectionImpl()
@@ -87,9 +89,7 @@ public class ProjectionImpl
   }
 
   public Type<?> getType()
-  { 
-    // TODO It would be useful to have Projections declared as Types
-    return null;
+  { return type;
   }
   
   public Iterable<? extends Field> fieldIterable()
@@ -123,7 +123,7 @@ public class ProjectionImpl
     field.setType(masterField.getType());
     field.setName(name);
     field.setMasterField(masterField);
-    field.setExpression(Expression.create(masterField.getName()));
+    field.setExpression(Expression.create("."+masterField.getName()));
     fields.add(field);
     fieldMap.put(field.getName(),field);
     //mappings.add(new FieldMapping(masterField));
@@ -144,6 +144,14 @@ public class ProjectionImpl
     }
     for (ProjectionField field: fields)
     { field.resolve();
+    }
+// TODO: Experimental
+    if (masterFieldSet.getType()!=null)
+    {
+      this.type
+        =new FieldSetType
+          (masterFieldSet.getType().getURI().resolve("-projection"),this);
+      this.type.link();
     }
     resolved=true;
   }
@@ -179,6 +187,7 @@ public class ProjectionImpl
       }
       
       boundTuple=new BoundTuple(ProjectionImpl.this,bindings);
+      
     }
 
     @Override

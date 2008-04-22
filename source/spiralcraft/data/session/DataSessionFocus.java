@@ -15,19 +15,21 @@
 package spiralcraft.data.session;
 
 import java.net.URI;
+import java.util.ArrayList;
 
 import spiralcraft.data.DataComposite;
-import spiralcraft.data.DataException;
+import spiralcraft.data.Field;
 import spiralcraft.data.Space;
 import spiralcraft.data.Type;
-import spiralcraft.data.access.Store;
 import spiralcraft.data.lang.DataChannel;
 
+import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.CompoundFocus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.lang.spi.SimpleChannel;
@@ -35,7 +37,8 @@ import spiralcraft.log.ClassLogger;
 
 /**
  * <p>A Focus which provides access to a DataSession object and its associated
- *   data buffer. A source Channel manages the actual DataSession object.
+ *   data Tuple of arbitrary Type.
+ *   A source Channel provides access to the DataSession object.
  * </p>  
  * 
  * @author mike
@@ -53,7 +56,9 @@ public class DataSessionFocus
 
   private Channel<Space> spaceChannel;
   private Type<DataComposite> dataType;
-  
+  private Focus<DataComposite> dataFocus;
+  private ArrayList<Setter<?>> newSetters;
+
   @SuppressWarnings("unchecked")
   public DataSessionFocus
     (Focus<?> parentFocus
@@ -82,10 +87,11 @@ public class DataSessionFocus
       }
     }
     
-//    try
-//    {
       if (dataType!=null)
       {
+
+// To pre-buffer- no use case
+//
 //        SimpleFocus<Buffer> dataBufferFocus
 //          =new SimpleFocus<Buffer>
 //            (this
@@ -98,7 +104,7 @@ public class DataSessionFocus
 //      
 //         bindFocus("spiralcraft.data.buffer",dataBufferFocus);
 
-        SimpleFocus<DataComposite> dataFocus
+        dataFocus
           =new SimpleFocus<DataComposite>
             (this
             ,new DataChannel<DataComposite>
@@ -109,16 +115,36 @@ public class DataSessionFocus
             );
     
         bindFocus("spiralcraft.data",dataFocus);
-        // log.fine(dataFocus.toString());
 
-      }
+        // Take care of initial field value
+        for (Field field: dataType.getFieldSet().fieldIterable())
+        {
       
-//    }
-//    catch (DataException x)
-//    { throw new BindException("Error creating DataSessionFocus",x);
-//    }
+      
+          // Takes care of timestamps
+          if (field.getNewExpression()!=null)
+          {
+            if (newSetters==null)
+            { newSetters=new ArrayList<Setter<?>>();
+            }
+            newSetters.add
+              (bindSetter(field,field.getNewExpression()));
+          }
+        }
+      }
+        
     
-    
+  }
+
+
+  @SuppressWarnings("unchecked")
+  private Setter<?> bindSetter(Field field,Expression expression)
+    throws BindException
+  {
+    return new Assignment
+      (Expression.create(field.getName())
+      ,expression
+      ).bind(dataFocus);
     
   }
   
@@ -137,7 +163,28 @@ public class DataSessionFocus
     { dataSession.setSpace(spaceChannel.get());
     }
     dataSession.setFocus(this);
+    
     return dataSession;
+    
+  }
+  
+  public void initializeDataSession()
+  {
+    if (newSetters!=null)
+    { 
+      for (Setter<?> setter: newSetters)
+      { 
+        log.fine("Setting "+setter.toString()+" on "+dataFocus.getSubject().get());
+        if (!setter.set())
+        { 
+          log.fine("Assignment had no effect"
+                  +"\r\n   source="+setter.getSource().get()
+                  +"\r\n   target="+setter.getTarget().get()
+                  );
+          
+        }
+      }
+    }
   }
   
   

@@ -56,11 +56,13 @@ public class Scan
     }
   }
 
+
+  @SuppressWarnings("unchecked")
   public <T extends Tuple> BoundQuery<?,T> 
-    getDefaultBinding(Focus<?> focus,Queryable<T> queryable)
+    getDefaultBinding(Focus<?> focus,Queryable<?> queryable)
     throws DataException
   { 
-    return queryable.getAll(type);
+    return (BoundQuery<?,T>) queryable.getAll(type);
   }
   
   public String toString()

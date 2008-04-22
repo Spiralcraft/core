@@ -37,10 +37,15 @@ public interface DeltaTuple
   Tuple getOriginal();
   
   /**
-   *@return a List of modified fields
+   *@return a List of modified fields (in this extent and in base extents)
    */
   Field[] getDirtyFields();
 
+  /**
+   * @return a List of modified fields for this extent only
+   */
+  Field[] getExtentDirtyFields();
+  
   /**
    * Indicate whether the field specified by the index has been locally modified
    */
@@ -51,5 +56,14 @@ public interface DeltaTuple
    * Indicate whether any fields have been locally modified
    */
   boolean isDirty();
+  
+  /**
+   * Write the changes represented by this DeltaTuple to the specified
+   *   EditableTuple
+   *   
+   * @param tuple
+   */
+  void updateTo(EditableTuple tuple)
+    throws DataException;
   
 }

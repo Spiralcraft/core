@@ -85,10 +85,11 @@ public class Union
   { return type.getScheme();
   }
 
-  
+
+
   
   public <T extends Tuple> BoundQuery<?,T> getDefaultBinding
-    (Focus<?> focus,Queryable<T> store)
+    (Focus<?> focus,Queryable<?> store)
     throws DataException
   { return new UnionBinding<Union,T>(this,focus,store);
    

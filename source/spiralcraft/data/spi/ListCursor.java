@@ -81,6 +81,10 @@ public class ListCursor<T extends Tuple>
     this.data=data;
   }
   
+  public ListCursor(FieldSet fieldSet)
+  { this.fieldSet=fieldSet;
+  }
+  
   /**
    *@return The FieldSet common to all the Tuples that will be returned by this Cursor
    */

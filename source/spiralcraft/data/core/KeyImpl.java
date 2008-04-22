@@ -241,7 +241,7 @@ public class KeyImpl
       if (expression.length()>0)
       { expression.append(" && ");
       }
-      expression.append(fieldName).append("==").append("..").append(fieldName);
+      expression.append("."+fieldName+"=="+fieldName);
     }
 //    System.err.println("KeyImpl: expression= ["+expression+"]");
     

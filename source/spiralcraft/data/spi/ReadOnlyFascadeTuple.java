@@ -101,4 +101,14 @@ public class ReadOnlyFascadeTuple
   public int hashCode()
   { return delegate.hashCode();
   }
+  
+  public String dumpData()
+    throws DataException
+  { return delegate.dumpData();
+  }
+  
+  public Object getBehavior()
+    throws DataException
+  { return delegate.getBehavior();
+  }
 }

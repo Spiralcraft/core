@@ -25,6 +25,7 @@ import spiralcraft.data.access.SerialCursor;
 
 import spiralcraft.data.lang.CursorBinding;
 import spiralcraft.lang.BindException;
+import spiralcraft.log.ClassLogger;
 
 /**
  * <p>A BoundQuery is a data path that resolves sets of Tuples from a 
@@ -42,9 +43,13 @@ import spiralcraft.lang.BindException;
  */
 public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
 {
+  protected static final ClassLogger log
+    =ClassLogger.getInstance(BoundQuery.class);
+  
   private Tq query;
   // private BoundQueryBinding resultBinding;
   private boolean resolved;
+  protected boolean debug;
   
   public Type<?> getType()
   { return query.getType();
@@ -64,6 +69,9 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
   { 
     assertUnresolved();
     this.query=query;
+    if (query.getDebug())
+    { debug=true;
+    }
   }
   
   /**

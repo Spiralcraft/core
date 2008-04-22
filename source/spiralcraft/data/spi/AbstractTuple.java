@@ -14,6 +14,8 @@
 //
 package spiralcraft.data.spi;
 
+import java.lang.ref.WeakReference;
+
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Identifier;
@@ -25,6 +27,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Field;
+import spiralcraft.data.util.StaticInstanceResolver;
 import spiralcraft.log.ClassLogger;
 
 /**
@@ -37,19 +40,17 @@ public abstract class AbstractTuple
     =ClassLogger.getInstance(AbstractTuple.class);
   
   protected final FieldSet fieldSet;
-  protected final boolean hasScheme;
   protected AbstractTuple baseExtent;
   protected Identifier id;
   protected boolean debug;
-  
+  protected WeakReference<?> behaviorRef;
+
   
   /**
    * Construct an ArrayTuple with an empty set of data
    */
   public AbstractTuple(FieldSet fieldSet)
-  { 
-    this.fieldSet=fieldSet;
-    this.hasScheme=fieldSet instanceof Scheme;
+  { this.fieldSet=fieldSet;
   }
   
   protected abstract AbstractTuple createBaseExtent(FieldSet fieldSet);
@@ -111,13 +112,7 @@ public abstract class AbstractTuple
   }
   
   public Type<?> getType()
-  { 
-    if (hasScheme)
-    { return fieldSet.getType();
-    }
-    else
-    { return null;
-    }
+  { return fieldSet.getType();
   }
   
   public FieldSet getFieldSet()
@@ -126,7 +121,7 @@ public abstract class AbstractTuple
   
   public Scheme getScheme()
   { 
-    if (hasScheme)
+    if (fieldSet instanceof Scheme)
     { return (Scheme) fieldSet;
     }
     else
@@ -177,6 +172,35 @@ public abstract class AbstractTuple
   { return false;
   }
   
+  public synchronized Object getBehavior()
+    throws DataException
+  {
+    if (getType()==null)
+    { return null;
+    }
+    
+    if (getType().getNativeClass()==null)
+    { return null;
+    }
+    
+    Object behavior=null;
+    if (behaviorRef!=null)
+    { behavior=behaviorRef.get();
+    }
+    
+    StaticInstanceResolver instanceResolver=null;
+    if (behavior!=null)
+    { instanceResolver=new StaticInstanceResolver(behavior);
+    }
+    Object newBehavior=getType().fromData(this,instanceResolver);
+    
+    if (newBehavior!=behavior)
+    { behaviorRef=new WeakReference<Object>(newBehavior);
+    }
+    
+    return newBehavior;
+    
+  }
   public boolean equals(Object o)
   {
     if (o==null)
@@ -286,6 +310,9 @@ public abstract class AbstractTuple
       }
     }
     sb.append("]");
+    if (baseExtent!=null)
+    { sb.append("baseExtent="+baseExtent);
+    }
     return sb.toString();
   }
   
@@ -296,8 +323,11 @@ public abstract class AbstractTuple
     sb.append("\r\n").append(indent);
     sb.append(super.toString());
     sb.append("\r\n").append(indent).append("==");
+    FieldSet fieldSet=this.fieldSet;
     if (getType()!=null)
-    { sb.append(getType().getURI());
+    { 
+      sb.append(getType().getURI());
+      fieldSet=getType().getFieldSet();
     }
     else
     { sb.append("(untyped)-"+fieldSet);
@@ -344,6 +374,11 @@ public abstract class AbstractTuple
     return sb.toString();
   }
   
+  public String dumpData()
+    throws DataException
+  { return toText("| ");
+  }
+  
   protected Tuple resolveBaseExtent()
   { 
     if (baseExtent!=null)
@@ -351,6 +386,8 @@ public abstract class AbstractTuple
     }
     return null;
   }
+  
+  
 
   public boolean isDebug()
   {

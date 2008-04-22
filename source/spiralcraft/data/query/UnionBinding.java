@@ -42,7 +42,7 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
   public UnionBinding
     (Tq query
     ,Focus<?> paramFocus
-    ,Queryable<Tt> store
+    ,Queryable<?> store
     )
     throws DataException
   { 

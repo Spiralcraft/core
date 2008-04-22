@@ -10,11 +10,16 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.log.ClassLogger;
 
 public abstract class MethodImpl
   implements Method
 {
-
+  protected static final ClassLogger log
+    =ClassLogger.getInstance(MethodImpl.class);
+  
+  private static final Type<?>[] NULL_TYPES=new Type<?>[0];
+  
   private Type<?> dataType;
   private Type<?> returnType;
   private Reflector<?> returnReflector;
@@ -22,6 +27,8 @@ public abstract class MethodImpl
   private Type<?>[] parameterTypes;
   private String qualifiedName;
   private boolean locked;
+  
+  protected boolean debug;
   
   
   @Override
@@ -48,7 +55,7 @@ public abstract class MethodImpl
 
   @Override
   public Type<?>[] getParameterTypes()
-  { return parameterTypes;
+  { return parameterTypes!=null?parameterTypes:NULL_TYPES;
   }
 
   public void setParameterTypes(Type<?>[] types)
@@ -72,7 +79,7 @@ public abstract class MethodImpl
   /**
    * Resolve any external dependencies.
    */
-  void resolve()
+  public void resolve()
     throws DataException
   {
     if (!locked)
@@ -141,7 +148,7 @@ public abstract class MethodImpl
       { return invoke(o,oParams);
       }
       catch (DataException x)
-      { return new AccessException(x.toString(),x);
+      { throw new AccessException(x.toString(),x);
       }
       
     }

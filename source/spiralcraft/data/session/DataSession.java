@@ -254,7 +254,7 @@ public class DataSession
         if (updater!=null)
         { 
           updaterMap.put(type,updater);
-          updater.dataInitialize(type.getScheme());
+          updater.dataInitialize(type.getFieldSet());
         }
       }
       return updater;

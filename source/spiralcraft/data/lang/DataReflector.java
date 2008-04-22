@@ -55,7 +55,7 @@ public abstract class DataReflector<T extends DataComposite>
   { 
     
     if (type==null)
-    { throw new IllegalArgumentException("Type cannot be null");
+    { throw new BindException("Type cannot be null");
     }
     Reflector broker=null;
     

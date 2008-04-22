@@ -61,10 +61,18 @@ public class EquiJoin
     addSource(source);
   }
   
-  public void setAssignments(String[] assignments)
+  public void setAssignments(String ... assignments)
     throws IllegalArgumentException
   {
   
+    if (names==null)
+    { names=new ArrayList<String>();
+    }
+    
+    if (expressions==null)
+    { expressions=new ArrayList<Expression<?>>();
+    }
+
     for (String assignment : assignments)
     { 
       int eqPos=assignment.indexOf('=');
@@ -76,6 +84,7 @@ public class EquiJoin
           ("Expression not of the form 'x=y...': '"+assignment+"'");
       }
       
+        
       names.add(assignment.substring(0,eqPos));
       try
       { expressions.add(Expression.parse(assignment.substring(eqPos+1)));
@@ -119,7 +128,7 @@ public class EquiJoin
   { return assignments;
   }
   
-  public <T extends Tuple> BoundQuery<?,T> getDefaultBinding(Focus<?> focus,Queryable<T> store)
+  public <T extends Tuple> BoundQuery<?,T> getDefaultBinding(Focus<?> focus,Queryable<?> store)
     throws DataException
   { return new EquiJoinBinding<EquiJoin,T>(this,focus,store);
    
@@ -132,20 +141,22 @@ public class EquiJoin
   public ArrayList<Expression<?>> getExpressions()
   { return expressions;
   }
+  
+
     
 }
 
 class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
-  extends UnaryBoundQuery<Tq,Tt>
+  extends UnaryBoundQuery<Tq,Tt,Tt>
 {
   private final Focus<?> paramFocus;
-  private SimpleFocus<?> focus;
+  private SimpleFocus<Tt> focus;
   private Channel<Boolean>[] filter;
   
   public EquiJoinBinding
     (Tq query
     ,Focus<?> paramFocus
-    ,Queryable<Tt> store
+    ,Queryable<?> store
     )
     throws DataException
   { 
@@ -180,6 +191,12 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
               );
 
           filter[i++]=focus.<Boolean>bind(expression);
+          if (debug)
+          { 
+            log.fine("Added filter "+expression);
+            filter[i-1].setDebug(true);
+          }
+          
         }
         catch (ParseException x)
         { 
@@ -197,10 +214,12 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
   
   
   protected SerialCursor<Tt> newSerialCursor(SerialCursor<Tt> source)
+    throws DataException
   { return new EquiJoinSerialCursor(source);
   }
   
   protected ScrollableCursor<Tt> newScrollableCursor(ScrollableCursor<Tt> source)
+    throws DataException
   { return new EquiJoinScrollableCursor(source);
   }
 
@@ -208,15 +227,19 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
     extends UnaryBoundQuerySerialCursor
   {
     public EquiJoinSerialCursor(SerialCursor<Tt> source)
+      throws DataException
     { super(source);
     }
   
+    @SuppressWarnings("unchecked")
     protected boolean integrate()
     { 
-      Tt t=sourceChannel.get();
+      Tt t=(Tt) sourceChannel.get();
       if (t==null)
       { 
-//        System.err.println("BoundEquiJoin: eod ");
+        if (debug)
+        { log.fine("BoundEquiJoin: eod ");
+        }
         return false;
       }
       
@@ -225,6 +248,10 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
       { 
         if (!element.get())
         { 
+          if (debug)
+          { log.fine("BoundEquiJoin: failed "+element+" "+t);
+          }
+          
           result=false;
           break;
         }
@@ -232,7 +259,9 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
        
       if (result)
       { 
-//        System.err.println("BoundEquiJoin: passed "+t);
+        if (debug)
+        { log.fine("BoundEquiJoin: passed "+t);
+        }
         dataAvailable(t);
         return true;
       }
@@ -248,12 +277,14 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
     extends UnaryBoundQueryScrollableCursor
   {
     public EquiJoinScrollableCursor(ScrollableCursor<Tt> source)
+      throws DataException
     { super(source);
     }
 
+    @SuppressWarnings("unchecked")
     protected boolean integrate()
     { 
-      Tt t=sourceChannel.get();
+      Tt t=(Tt) sourceChannel.get();
       if (t==null)
       { 
 //        System.err.println("BoundEquiJoin: eod ");

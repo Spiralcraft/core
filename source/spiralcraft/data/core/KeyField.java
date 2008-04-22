@@ -72,6 +72,9 @@ public class KeyField
     else
     { setType(Type.getAggregateType(key.getForeignType()));
     }
+    if (key.getForeignQuery()!=null)
+    { key.getForeignQuery().resolve();
+    }
     super.resolve();
   }
   
@@ -84,7 +87,9 @@ public class KeyField
     Focus keyFocus=new SimpleFocus(focus,key.bind(focus));
 
     Query query=key.getForeignQuery();
-    log.fine("Foreign query is "+query);
+    if (debug)
+    { log.fine("Foreign query is "+query);
+    }
     Focus<Queryable> queryableFocus
       =(Focus<Queryable>) focus.findFocus(Queryable.QUERYABLE_URI);
     if (queryableFocus!=null)
@@ -102,6 +107,7 @@ public class KeyField
             throw new BindException
               ("Got null query from "+queryable+" for query "+query);
           }
+          boundQuery.resolve();
           return new KeyFieldChannel(getType(),boundQuery);
           
         }

@@ -146,11 +146,22 @@ public class ReflectionType<T>
  
   public static URI canonicalURI(Class<?> iface)
   {
+    if (iface==void.class)
+    { return URI.create("java:/java/lang/Void");
+    }
+    
+    Class<?> oiface=iface;
     iface=ClassUtil.boxedEquivalent(iface);
 
+    if (iface==null)
+    { throw new RuntimeException("Error getting boxed type for "+oiface);
+    }
+    
     StringBuilder arraySuffix=new StringBuilder();
     while (checkAggregate(iface))
     { 
+      oiface=iface;
+      
       if (iface.isArray())
       {
         Class<?> compType=iface.getComponentType();
@@ -162,6 +173,9 @@ public class ReflectionType<T>
         Class<?> compType=(Class<?>) iface.getTypeParameters()[0].getBounds()[0];
         arraySuffix.append(".list");
         iface=ClassUtil.boxedEquivalent(compType);
+      }
+      if (iface==null)
+      { throw new RuntimeException("Error finding component type of "+oiface);
       }
     }
     
@@ -199,6 +213,18 @@ public class ReflectionType<T>
     reflectedClass=clazz;
     nativeClass=clazz;
     aggregate=checkAggregate(clazz);
+
+// This breaks things because a Tuple needs to be constructed, not an Object
+// Represent this some other way than the absence of a stringConstructor
+// Primary reason is to simplify syntax of string arrays where the arrays
+//   can be converted to objects via a String constructor
+//
+//    try
+//    { stringConstructor=clazz.getConstructor(String.class);
+//    }
+//    catch (NoSuchMethodException x)
+//    { }
+    
   }
   
   
@@ -307,11 +333,11 @@ public class ReflectionType<T>
   
   private void addMethods()
   { 
-    java.lang.reflect.Method[] methods=reflectedClass.getDeclaredMethods();
+    java.lang.reflect.Method[] jmethods=reflectedClass.getDeclaredMethods();
     HashMap<String,List<Method>> map=new HashMap<String,List<Method>>();
     
     // Collate the methods by name
-    for (java.lang.reflect.Method method:methods)
+    for (java.lang.reflect.Method method:jmethods)
     {
       ReflectionMethod reflectMethod=new ReflectionMethod(resolver,method);
       reflectMethod.setDataType(this);
@@ -322,6 +348,8 @@ public class ReflectionType<T>
         map.put(method.getName(),list);
       }
       list.add(reflectMethod);
+      methods.add(reflectMethod);
+      
     }
     for (String name: map.keySet())
     { 
@@ -514,6 +542,9 @@ public class ReflectionType<T>
   public T fromData(DataComposite val,InstanceResolver context)
     throws DataException
   {
+    if (val==null)
+    { throw new DataException("fromData got null in "+getURI());
+    }
 //    System.err.println(" ReflectionType.fromData\r\nDataComposite: "+val+"\r\n");
     if (nativeClass==null)
     { 

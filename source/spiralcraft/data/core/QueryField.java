@@ -25,6 +25,7 @@ import spiralcraft.log.ClassLogger;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
+import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
@@ -32,9 +33,9 @@ import spiralcraft.data.access.CursorAggregate;
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.core.FieldImpl;
 import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.lang.TupleReflector;
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Query;
-import spiralcraft.data.query.QueryChannel;
 import spiralcraft.data.query.Queryable;
 
 
@@ -44,6 +45,7 @@ public class QueryField
   protected static ClassLogger log=ClassLogger.getInstance(QueryField.class);
   
   private Query query;
+  private boolean resolved;
   
   
   public QueryField()
@@ -57,17 +59,31 @@ public class QueryField
   public void setQuery(Query query)
   {
     this.query=query;
-    if (getType()==null)
-    { setType(Type.getAggregateType((query.getType())));
-    }
   }
   
-
-  
-  @Override
-  public void subclassResolve()
+  public void resolve()
+    throws DataException
   {
+    if (resolved)
+    { return;
+    }
+    if (query!=null)
+    { 
+      query.resolve();
+      if (getType()==null && query.getType()!=null)
+      { 
+        unlock();
+        setType(Type.getAggregateType((query.getType())));
+        lock();
+      }
+    }
+    else
+    { throw new DataException("Missing query in field "+toString());
+    }
+    super.resolve();
+    resolved=true;
   }
+  
   
   
   @SuppressWarnings("unchecked")
@@ -84,6 +100,7 @@ public class QueryField
         BoundQuery boundQuery
           =((Queryable) queryableFocus.getSubject().get()).query
             (query,focus);
+        boundQuery.resolve();
         return new QueryFieldChannel(getType(),boundQuery);
       }
       catch (DataException x)
@@ -117,7 +134,7 @@ public class QueryField
     extends AbstractChannel<DataComposite>
   {
     private BoundQuery query;
-    
+        
     public QueryFieldChannel(Type<?> type,BoundQuery query)
       throws BindException
     { 

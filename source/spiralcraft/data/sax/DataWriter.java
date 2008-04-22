@@ -16,12 +16,15 @@ package spiralcraft.data.sax;
 
 
 import spiralcraft.data.DataComposite;
+import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Field;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 
+import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.EmptyIterator;
 import spiralcraft.util.StringUtil;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -114,8 +117,7 @@ class Context
     { currentFrame=new TupleFrame(data.asTuple());
     }
     else
-    {
-      
+    { currentFrame=new AggregateFrame(data.asAggregate());
     }
     while (currentFrame!=null)
     { currentFrame.next();
@@ -357,7 +359,30 @@ class Context
       if (fieldIterator==null)
       { 
         startType();
-        fieldIterator=tuple.getFieldSet().fieldIterable().iterator();
+        if (tuple instanceof DeltaTuple)
+        { 
+          Field[] dirtyFields=((DeltaTuple) tuple).getDirtyFields();
+          if (dirtyFields!=null)
+          {
+            fieldIterator
+              =ArrayUtil.iterator(((DeltaTuple) tuple).getDirtyFields());
+          }
+          else 
+          { fieldIterator=new EmptyIterator<Field>();
+          }
+        }
+        else
+        { 
+          if (tuple.getType()!=null)
+          { 
+            // Make sure we include base type Fields
+            fieldIterator
+              =tuple.getType().getFieldSet().fieldIterable().iterator();
+          }
+          else
+          { fieldIterator=tuple.getFieldSet().fieldIterable().iterator();
+          }
+        }
       }
       else if (fieldIterator.hasNext())
       {

@@ -55,6 +55,10 @@ public class FieldImpl
   private Reflector contentReflector;
   private Expression<?> defaultExpression;
   private Expression<?> fixedExpression;
+  private Expression<?> newExpression;
+  
+  protected boolean debug;
+  
   
   /**
    * Set the scheme
@@ -100,7 +104,7 @@ public class FieldImpl
     assertUnlocked();
     archetypeField=field;
     this.index=archetypeField.getIndex();
-    if (!this.type.hasArchetype(archetypeField.getType()))
+    if (!archetypeField.getType().isAssignableFrom(this.getType()))
     { 
       throw new TypeMismatchException
         ("Field "+getURI()+"'"
@@ -136,10 +140,14 @@ public class FieldImpl
   { return uri;
   }
   
+  public Expression<?> getNewExpression()
+  { return newExpression;
+  }
+  
+  public void setNewExpression(Expression newExpression)
+  { this.newExpression=newExpression;
+  }
 
-  /**
-   * @return The Expression that evaluates to the default value for this field
-   */
   public Expression<?> getDefaultExpression()
   { return defaultExpression;
   }
@@ -148,9 +156,6 @@ public class FieldImpl
   { this.defaultExpression=defaultExpression;
   }
   
-  /**
-   * @return The Expression that evaluates to the default value for this field
-   */
   public Expression<?> getFixedExpression()
   { return fixedExpression;
   }
@@ -336,6 +341,10 @@ public class FieldImpl
   { locked=true;
   }
   
+  void unlock()
+  { locked=false;
+  }
+  
   /**
    * Resolve any external dependencies.
    */
@@ -401,6 +410,10 @@ public class FieldImpl
     { throw new IllegalStateException("Field is in read-only state");
     }
   }
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
 
   @Override
   public Channel bind
@@ -455,11 +468,20 @@ public class FieldImpl
         catch (DataException x)
         { throw new AccessException(x.toString(),x);
         }
+        catch (IndexOutOfBoundsException x)
+        {
+          throw new AccessException
+            ("Internal index error applying field "+getURI()+"("+getType().getURI()+")"
+            +" to Tuple of type "+t.getFieldSet().getType()
+            );
+        }
       }
       else
       {
         throw new AccessException
-          ("Field '"+getURI()+"' not in Tuple FieldSet "+subtypeTuple.getFieldSet());
+          ("Field '"+getURI()+"' not in Tuple FieldSet "+subtypeTuple.getFieldSet()
+          +" \r\n      fieldSet="+fieldSet
+          );
       }
 
     }

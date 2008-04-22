@@ -28,28 +28,8 @@ public abstract class Buffer
   public static final URI FOCUS_URI
     =URI.create("class:/spiralcraft/data/session/Buffer");
 
-/*  
-  private  ArrayList<Buffer> children=new ArrayList<Buffer>();
-  private WeakReference<Buffer> parentRef;
-*/
-/*  
-  void addChild(Buffer buffer)
-  { children.add(buffer);
-  }
+  protected boolean debug;
   
-  
-  void removeChild(Buffer buffer)
-  { children.remove(buffer);
-  }
-    
-  void setParent(Buffer buffer)
-  { parentRef=new WeakReference<Buffer>(buffer);
-  }
-  
-  Buffer getParent()
-  { return parentRef.get();
-  }
-*/ 
   
   /**
    * Requests that a Buffer be editable. A value of false will prevent the
@@ -82,7 +62,7 @@ public abstract class Buffer
   public abstract BufferTuple asTuple();
   
   @Override
-  public abstract BufferAggregate<?> asAggregate();
+  public abstract BufferAggregate<?,?> asAggregate();
   
   /**
    * Discard edited data
@@ -94,4 +74,8 @@ public abstract class Buffer
    */
   public abstract void save()
     throws DataException;
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
 }

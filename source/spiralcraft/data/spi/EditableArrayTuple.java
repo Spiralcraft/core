@@ -59,14 +59,16 @@ public class EditableArrayTuple
   public void copyFrom(Tuple source)
     throws DataException
   { 
+    Type<?> type=getType();
     if (getFieldSet()==source.getFieldSet()
-        || (getType()!=null && getType().hasArchetype(source.getType()))
+        || (type!=null && type.hasArchetype(source.getType()))
        )
     { 
       for (Field field: source.getFieldSet().fieldIterable())
       { field.setValue(this,field.getValue(source));
       }
     }
+
     
     if (source.getBaseExtent()!=null)
     { ((EditableArrayTuple) baseExtent).copyFrom(source.getBaseExtent());

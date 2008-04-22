@@ -16,6 +16,7 @@ package spiralcraft.data;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -154,6 +155,19 @@ public abstract class Type<T>
    */
   public abstract Type<?> getArchetype();
   
+  public Key getPrimaryKey()
+  { 
+    Key key=null;
+    if (getScheme()!=null)
+    { key=getScheme().getPrimaryKey();
+    }
+    if (key==null && getBaseType()!=null)
+    { key=getBaseType().getPrimaryKey();
+    }
+    return key;
+    
+  }
+  
   /**
    * @return Whether this Type or any of its archetypes (recursively) is the
    *   the specified Type.
@@ -209,7 +223,7 @@ public abstract class Type<T>
   
   /**
    * @return Whether a variable of this Type may be assigned a value corresponding to
-   *   the specified Type.
+   *   the specified Type. Recurses through all archetypes and base types.
    */
   public abstract boolean isAssignableFrom(Type<?> type);
   
@@ -220,6 +234,15 @@ public abstract class Type<T>
    * @return the Field
    */
   public abstract Field getField(String name);
+  
+  /**
+   * Returns the FieldSet composed of the fields in this Type and
+   *   all its base types. 
+   *   
+   * @param name
+   * @return the Field
+   */
+  public abstract FieldSet getFieldSet();
   
   /**
    * The Method with the specified name that best matches the
@@ -270,8 +293,7 @@ public abstract class Type<T>
     
   }  
   
-
-  
+ 
   /**
    * Indicate whether Objects of this type can be encoded to and decoded from
    *   String form. This will only return true if getNativeClass()!=null.
@@ -353,6 +375,11 @@ public abstract class Type<T>
    */
   public abstract ValidationResult validate(Object value);
   
+  /**
+   * Get the Comparator that should be used to define orderings of values of
+   *   this type.
+   */
+  public abstract Comparator<T> getComparator();
   
   /**
    * Called by the TypeResolver to allow the type to recursively resolve any
@@ -366,5 +393,7 @@ public abstract class Type<T>
    * Indicate whether a Type is has been linked.
    */
   public abstract boolean isLinked();
+  
+  
   
 }

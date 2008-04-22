@@ -37,13 +37,14 @@ import spiralcraft.data.lang.TupleReflector;
  *   another Query.
  *
  */
-public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
+public abstract class UnaryBoundQuery
+  <Tq extends Query,Tt extends Tuple,Ts extends Tuple>
   extends BoundQuery<Tq,Tt>
 {
 
-  protected final BoundQuery<?,?> source;
+  protected final BoundQuery<?,? extends Tuple> source;
   private boolean resolved;
-  protected ThreadLocalChannel<Tt> sourceChannel;
+  protected ThreadLocalChannel<Ts> sourceChannel;
   
   protected UnaryBoundQuery(List<Query> sources,Focus<?> focus,Queryable<?> store)
     throws DataException
@@ -70,10 +71,10 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
 
   
   protected abstract SerialCursor<Tt> 
-    newSerialCursor(SerialCursor<Tt> source);
+    newSerialCursor(SerialCursor<Ts> source) throws DataException;
 
   protected abstract ScrollableCursor<Tt> 
-    newScrollableCursor(ScrollableCursor<Tt> source);
+    newScrollableCursor(ScrollableCursor<Ts> source) throws DataException;
 
   @SuppressWarnings("unchecked") // Converting from source Tuple type
   public SerialCursor<Tt> execute()
@@ -83,14 +84,18 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
     { resolve();
     }
     
-    SerialCursor<Tt> cursor=(SerialCursor<Tt>) source.execute();
+    SerialCursor<Ts> cursor=(SerialCursor<Ts>) source.execute();
+    SerialCursor<Tt> ret=null;
     if (cursor instanceof ScrollableCursor)
-    { return newScrollableCursor((ScrollableCursor<Tt>) cursor);
+    { ret=newScrollableCursor((ScrollableCursor<Ts>) cursor);
     }
-    else
-    { return newSerialCursor(cursor);
+    if (ret==null)
+    { ret=newSerialCursor(cursor);
     }
-    
+    if (debug)
+    { log.fine(toString()+" execute returning "+ret);
+    }
+    return ret;
   }
 
 
@@ -104,8 +109,8 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
       try
       {
         sourceChannel
-          =new ThreadLocalChannel<Tt>
-            (new TupleReflector<Tt>(source.getQuery().getFieldSet(),null));
+          =new ThreadLocalChannel<Ts>
+            (new TupleReflector<Ts>(source.getQuery().getFieldSet(),null));
       }
       catch (BindException x)
       { throw new DataException("Error resolving Query",x);
@@ -120,7 +125,7 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
   abstract class UnaryBoundQuerySerialCursor
     extends BoundQuerySerialCursor
   {
-    protected final SerialCursor<Tt> sourceCursor;
+    protected final SerialCursor<Ts> sourceCursor;
     
     protected boolean eos;
     protected boolean bos;
@@ -128,7 +133,8 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
     protected int direction;
     protected int lookahead;
     
-    public UnaryBoundQuerySerialCursor(SerialCursor<Tt> sourceCursor)
+    public UnaryBoundQuerySerialCursor(SerialCursor<Ts> sourceCursor)
+      throws DataException
     { 
       bos=true;
       eos=false;
@@ -155,9 +161,11 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
      * @return true when a new result Tuple is available, or false if
      *   no result Tuple is available.
      */
-    protected abstract boolean integrate();
+    protected abstract boolean integrate()
+      throws DataException;
     
-    protected final boolean integrate(Tt tuple)
+    protected final boolean integrate(Ts tuple)
+      throws DataException
     {
       sourceChannel.push(tuple);
       try
@@ -223,9 +231,10 @@ public abstract class UnaryBoundQuery<Tq extends Query,Tt extends Tuple>
     extends UnaryBoundQuerySerialCursor
     implements ScrollableCursor<Tt>
   {
-    protected final ScrollableCursor<Tt> sourceCursor;
+    protected final ScrollableCursor<Ts> sourceCursor;
 
-    public UnaryBoundQueryScrollableCursor(ScrollableCursor<Tt> sourceCursor)
+    public UnaryBoundQueryScrollableCursor(ScrollableCursor<Ts> sourceCursor)
+      throws DataException
     { 
       super(sourceCursor);
       this.sourceCursor=sourceCursor;
