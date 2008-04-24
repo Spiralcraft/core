@@ -41,7 +41,10 @@ public class PropertySpecifier
   private StringBuffer _textContent;
   private String _textData;
   private ArrayList<AssemblyClass> _contents;
+  
   private String _targetName;
+  private String _targetSelector;
+  
   private AssemblyClass _targetAssemblyClass;
   private int _targetSequence;
   private Expression<?> _sourceExpression;
@@ -195,7 +198,14 @@ public class PropertySpecifier
   { return _sourceExpression;
   }
   
-
+  /**
+   * Using a PropertySpecifier scoped to an AssemblyClass, efficiently
+   *   return the associated PropertyBinding from an instance of the
+   *   AssemblyClass.
+   * 
+   * @param assembly
+   * @return
+   */
   public PropertyBinding getPropertyBinding(Assembly<?> assembly)
   { 
     if (assembly.getAssemblyClass()!=_targetAssemblyClass)
@@ -285,9 +295,18 @@ public class PropertySpecifier
     throws BuildException
   {
     _targetName=_specifier[_specifier.length-1];
+    
+    int selectorIndex=_targetName.indexOf('-');
+    if (selectorIndex>=1)
+    { 
+      _targetSelector=_targetName.substring(selectorIndex+1);
+      _targetName=_targetName.substring(0,selectorIndex);
+    }
 
     AssemblyClass targetAssemblyClass=_container;
     // Register specifier with appropriate assembly or subassembly
+    //   by recursing into the structure and ensuring an appropriate
+    //   targetAssemblyClass.
 
     for (int i=0;i<_specifier.length-1;i++)
     { 
@@ -296,7 +315,16 @@ public class PropertySpecifier
       //   chain the overridden property to the context in which it was specifed). 
       
       AssemblyClass localContainer=targetAssemblyClass;
+      
       String pathElement=_specifier[i];
+      String selector=null;
+      selectorIndex=pathElement.indexOf('-');
+      if (selectorIndex>=1)
+      { 
+        selector=pathElement.substring(selectorIndex+1);
+        pathElement=pathElement.substring(0,selectorIndex);
+      }
+      
       
       PropertySpecifier targetAssemblyPropertySpecifier
         =targetAssemblyClass.getMember(pathElement);
@@ -304,33 +332,88 @@ public class PropertySpecifier
       if (targetAssemblyPropertySpecifier==null)
       { 
         // XXX Try to accomodate missing intermediate PropertySpecifier
-        // Maybe just be a bean property
-        throw new BuildException("Member assembly '"+pathElement+"' not found");
+        // Maybe just be a bean property that needs to be implicitly added
+        throw new BuildException("Member property '"+pathElement+"' not found");
       }
       else
       {
       
         List<AssemblyClass> contents
           =targetAssemblyPropertySpecifier.getContents();
-        if (contents==null || contents.size()==0)
-        { throw new BuildException("Property '"+pathElement+"' does not contain any Assemblies");
-        }
+        
+        if (selector!=null)
+        { 
+          //
+          // Multi-element mode- selector specified
+          //
 
-        // Add feature to index contents
-        if (contents.size()>1)
-        { throw new BuildException("Property '"+pathElement+"' contains more than one Assembly");
+          if (Character.isDigit(selector.charAt(0)))
+          { 
+            int index=Integer.parseInt(selector);
+            if (index>=contents.size())
+            { 
+              throw new BuildException
+                ("Property '"+pathElement
+                +"'- Bad index, property only has "+contents.size()+" elements"
+                );
+            }
+            
+            targetAssemblyClass=contents.get(index);
+          }
+          else
+          {
+            boolean found=false;
+            for (AssemblyClass aclazz: contents)
+            {
+              if (selector.equals(aclazz.getId()))
+              {
+                targetAssemblyClass=aclazz;
+                found=true;
+                break;
+              }
+            }
+            if (!found)
+            {
+              throw new BuildException
+                ("Property '"+pathElement
+                +"'- no AssemblyClass in contents with id='"+selector+"'"
+                );
+            }
+
+          }
+          
         }
         else
-        { targetAssemblyClass=contents.get(0);
+        {
+          //
+          // Single element mode- no selector specified
+          //
+          
+          if (contents==null || contents.size()==0)
+          { 
+            throw new BuildException
+              ("Property '"+pathElement+"' does not contain any Assemblies");
+          }
+
+          if (contents.size()>1)
+          {
+            throw new BuildException
+              ("Property '"+pathElement+"' contains more than one Assembly");
+          }
+          else
+          { targetAssemblyClass=contents.get(0);
+          }
+          // When we recurse, make sure we are dealing with a local class,
+          //  not a base class
+          targetAssemblyClass=localContainer.ensureLocalClass
+            (pathElement,targetAssemblyClass);
+          
         }
       
-        // When we recurse, make sure we are dealing with a local class,
-        //  not a base class
-        targetAssemblyClass=localContainer.ensureLocalClass
-          (pathElement,targetAssemblyClass);
       }  
       
     }
+    
     
     targetAssemblyClass.registerMember(_targetName,this);
     
@@ -390,6 +473,7 @@ public class PropertySpecifier
     _baseMember=prop;
     _targetSequence=prop.getTargetSequence();
     resolveCollection();
+    
   }
   
   /**
@@ -433,7 +517,21 @@ public class PropertySpecifier
     { ret.addAll(_baseMember.getCombinedContents());
     }
     if (_contents!=null)
-    { ret.addAll(_contents);
+    { 
+      if (_targetSelector!=null)
+      {
+        for (int i=0;i<ret.size();i++)
+        { 
+          if (_targetSelector.equals(ret.get(i).getId()))
+          { 
+            ret.set(i,_contents.get(0));
+            break;
+          }
+        }
+      }
+      else
+      { ret.addAll(_contents);
+      }
     }
     return ret;
   }
