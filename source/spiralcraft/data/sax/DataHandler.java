@@ -397,7 +397,11 @@ public class DataHandler
     {
       if (formalType!=null && !formalType.isAssignableFrom(actualType))
       { 
-        log.fine(formalType.toString()+"<>"+actualType.toString());
+        log.fine
+          (formalType.toString()
+          +"\r\n  not assignable from \r\n"
+          +actualType.toString()
+          );
         throw new TypeMismatchException
           ("Error reading data "+formatPosition(),formalType,actualType);
       }
@@ -762,7 +766,10 @@ public class DataHandler
   {
     private final DataConsumer<? super Tuple> consumer;
     
-    protected ConsumerFrame(Type formalType,DataConsumer<? super Tuple> consumer)
+    protected ConsumerFrame
+      (Type formalType
+      ,DataConsumer<? super Tuple> consumer
+      )
       throws DataException
     {
       super(formalType);
@@ -910,17 +917,37 @@ public class DataHandler
       (String uri
       ,String localName
       ,String qName
-      ,Attributes attribs
+      ,Attributes attributes
       )
       throws SAXException,DataException
     {
+      URI ref=null;
+      
+      for (int i=0;i<attributes.getLength();i++)
+      {
+        if (attributes.getLocalName(i).equals("ref"))
+        { ref=URI.create(attributes.getValue(i));
+        }
+        else
+        { 
+          throw new SAXException
+            ("Unrecognized attribute '"+attributes.getQName(i)+"'");
+        }
+      }
+
       Type type=resolveType(uri,localName);
       assertCompatibleType(formalType,type);
       
       if (dataConsumer!=null)
       { 
         if (type.isAggregate())
-        { return new ConsumerFrame(type,dataConsumer);
+        { 
+          if (ref!=null)
+          { 
+            throw new DataException
+              ("Not implemented: using ref with a DataConsumer");
+          }
+          return new ConsumerFrame(type,dataConsumer);
         }
         else
         { 
@@ -932,7 +959,7 @@ public class DataHandler
         }
       }
       else
-      { return createFrame(type,null);
+      { return createFrame(type,ref);
       }
 
     }
