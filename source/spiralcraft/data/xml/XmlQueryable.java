@@ -191,7 +191,13 @@ public class XmlQueryable
     // log.fine("Checking resource");
     if (!frozen)
     {
-      watcher.check();
+      try
+      { watcher.check();
+      }
+      catch (IOException x)
+      { exception=x;
+      }
+      
       if (exception!=null)
       { throw new DataException("Error loading data from "+resourceURI,exception);
       }
@@ -302,6 +308,11 @@ public class XmlQueryable
     watcher.reset();
   }
 
+  synchronized void refresh()
+    throws IOException
+  { watcher.refresh();
+  }
+  
   
   void add(Tuple t)
   { ((EditableAggregate<Tuple>) this.aggregate).add(t);
@@ -310,6 +321,8 @@ public class XmlQueryable
   void remove(Tuple t)
   { ((EditableAggregate<Tuple>) this.aggregate).remove(t);
   }
+  
+  
   
   public void freeze()
   { frozen=true;

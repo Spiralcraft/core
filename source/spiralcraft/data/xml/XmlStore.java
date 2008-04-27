@@ -493,7 +493,10 @@ public class XmlStore
 
             // XXX Needs to be in transactional resource as LLR
             queryable.commit(".new");
-            // Question of whether to re-read
+            
+            // Make -sure- we re-read to verify data and fail for transaction
+            //   user
+            queryable.refresh();
           }
           catch (IOException x)
           { throw new DataException("IOException persisting data",x);
