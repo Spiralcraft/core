@@ -58,7 +58,8 @@ public class Main
   static
   {
     if (Main.class.getClassLoader()==ClassLoader.getSystemClassLoader())
-    { throw new IllegalStateException("This class cannot be loaded into the System ClassLoader");
+    { throw new IllegalStateException
+        ("This class cannot be loaded into the System ClassLoader");
     }
     // System.setSecurityManager(new SystemSecurityManager());
   }
@@ -68,12 +69,14 @@ public class Main
   {
 
     if (Spiralcraft.DEBUG)
-    { System.err.println("spiralcraft.loader.Main.main("+ArrayUtil.format(args,",","\"")+")");
+    { 
+      Spiralcraft.err.println
+        ("spiralcraft.loader.Main.main("+ArrayUtil.format(args,",","\"")+")");
     }
      
     File codebase=findCodebaseContext();
     if (Spiralcraft.DEBUG)
-    { System.err.println("Using codebase "+codebase.toString());
+    { Spiralcraft.err.println("Using codebase "+codebase.toString());
     }
       
     ApplicationManager applicationManager
@@ -92,16 +95,7 @@ public class Main
         applicationManager.exec(args);
       }
       else
-      { 
-        // Execute the command interpreter- the 
-        //   initial context assumes a user in a file system directory
-        
-        // XXX Experimental
-        // SystemConsole console=new SystemConsole();
-        // console.setFocus(applicationManager.newCommandContext());
-        // console.run();
-
-        //        System.err.println(new Usage().toString());
+      { Spiralcraft.err.println(new Usage().toString());
       }
     }
     catch (ExecutionTargetException x)
@@ -130,7 +124,7 @@ public class Main
       if (candidate.exists())
       { 
         if (Spiralcraft.DEBUG)
-        { System.err.println("Reading codebase from "+candidate);
+        { Spiralcraft.err.println("Reading codebase from "+candidate);
         }
         FileInputStream in=null;
         try

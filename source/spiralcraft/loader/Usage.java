@@ -29,12 +29,18 @@ public class Usage
     out.println("  ... [debug-options] environment-name [args]");
     out.println("");
     out.println("debug-options include:");
+    out.println("    -log [filename]");
+    out.println("       Output debug messages to a file instead of the console");
     out.println("    -debug");
     out.println("       Output debugging information about the loading process");
-    out.println("    -core.source");
-    out.println("       The location of the source tree for the spiralcraft-core module");
-    out.println("    -core.jar");
-    out.println("       The location of the spiralcraft-core jar file");
+    out.println("    -core.source [directory]");
+    out.println("       The location of the source tree for the bootup spiralcraft-core module");
+    out.println("    -core.jar [filename.jar]");
+    out.println("       The location of the bootup spiralcraft-core.jar file");
+    out.println("    -spiralcraft.home [directory]");
+    out.println("       The root directory of bootup Spiralcraft resources");
+    out.println("    -codebase [directory]");
+    out.println("       Look in ${codebase}/lib for application specific libraries/jars");
     out.println(" ");
     out.flush();
 
