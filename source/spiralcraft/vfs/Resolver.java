@@ -125,6 +125,20 @@ public class Resolver
    * @return A Resource with provides access to the content identified by 
    *   the URI
    */
+  public Resource resolve(String uri)
+    throws UnresolvableURIException
+  { return resolve(URI.create(uri));
+  }
+
+  /**
+   * <P> Obtain a Resource that provides access to the content identified by
+   *    the URI. If the URI is relative, it will be resolved against the
+   *    user directory (Java VM working directory).
+   * 
+   * 
+   * @return A Resource with provides access to the content identified by 
+   *   the URI
+   */
   public Resource resolve(URI uri)
     throws UnresolvableURIException
   { 
