@@ -12,16 +12,25 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.command.interpreter;
+package spiralcraft.shell;
 
-public class UnrecognizedCommandException
-  extends Exception
+
+import spiralcraft.command.CommandAdapter;
+import spiralcraft.command.Commands;
+
+/**
+ * Provides textual information about the current Commandable 
+ * 
+ * XXX stub
+ */
+public class FocusCommand
+  extends CommandAdapter<Commands<?>,String>
 {
-  private static final long serialVersionUID=1;
+  private String targetName;
   
-  public UnrecognizedCommandException(String name)
-  { super(name);
+  public void run()
+  { 
+    if (targetName!=null);
   }
+
 }
-
-
