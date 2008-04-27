@@ -20,6 +20,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
@@ -40,7 +41,16 @@ public class XmlWriter
   private boolean _elementDelimiterPending=false;
 
   public XmlWriter(OutputStream out)
-  { _writer=new BufferedWriter(new OutputStreamWriter(out));
+  { 
+    try
+    {
+      _writer=new BufferedWriter(new OutputStreamWriter(out,"UTF-8"));
+    }
+    catch (UnsupportedEncodingException x)
+    { 
+      // Unfathomable?
+      throw new RuntimeException("Platform does not support UTF-8",x);
+    }
   }
   
   public void setDocumentLocator(Locator locator)
