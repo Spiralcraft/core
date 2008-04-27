@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2008 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -69,7 +69,8 @@ public class ApplicationManager
 
 
   private final URI _userHomeEnvironmentURI
-    =new File(System.getProperty("user.home")).toURI().resolve(".spiralcraft/env/");
+    =new File(System.getProperty("user.home"))
+      .toURI().resolve(".spiralcraft/env/");
 
   private int _nextEnvironmentId=0;
 
