@@ -49,9 +49,34 @@ public class Watcher
   }
   
   /**
+   * Force a reload of the resource
+   */
+  public synchronized void refresh()
+    throws IOException
+  {
+    this.lastModified=resource.getLastModified();
+    int result=handler.handleUpdate();
+    if (result>=0)
+    { 
+      this.lastModified=resource.getLastModified();
+      if (result>0)
+      { this.holdOffUntil=Clock.instance().approxTimeMillis()+result;
+      }
+    }
+    else
+    { 
+      result=-result;
+      this.holdOffUntil=Clock.instance().approxTimeMillis()+result;
+    }
+    this.lastChecked=Clock.instance().approxTimeMillis();
+
+  }
+  
+  /**
    * Check if any action needs to be performed.
    */
   public synchronized void check()
+    throws IOException
   {
     long time=Clock.instance().approxTimeMillis();
     
@@ -62,32 +87,24 @@ public class Watcher
     { return;
     }
     
-    try
-    {
-      long lastModified=resource.getLastModified();
-      if (lastModified!=this.lastModified || firstTime)
-      { 
-        firstTime=false;
-        int result=handler.handleUpdate();
-        if (result>=0)
-        { 
-          this.lastModified=resource.getLastModified();
-          if (result>0)
-          { this.holdOffUntil=Clock.instance().approxTimeMillis()+result;
-          }
-        }
-        else
-        { 
-          result=-result;
-          this.holdOffUntil=Clock.instance().approxTimeMillis()+result;
-        }
-      }  
-    }
-    catch (IOException x)
+    long lastModified=resource.getLastModified();
+    if (lastModified!=this.lastModified || firstTime)
     { 
-      x.printStackTrace();
-      // HandleUpdate?
-    }
+      firstTime=false;
+      int result=handler.handleUpdate();
+      if (result>=0)
+      { 
+        this.lastModified=resource.getLastModified();
+        if (result>0)
+        { this.holdOffUntil=Clock.instance().approxTimeMillis()+result;
+        }
+      }
+      else
+      { 
+        result=-result;
+        this.holdOffUntil=Clock.instance().approxTimeMillis()+result;
+      }
+    }  
     lastChecked=Clock.instance().approxTimeMillis();
   }
 
