@@ -104,8 +104,10 @@ public class FieldImpl
     assertUnlocked();
     archetypeField=field;
     this.index=archetypeField.getIndex();
+    
     if (!archetypeField.getType().isAssignableFrom(this.getType()))
     { 
+      generateURI();
       throw new TypeMismatchException
         ("Field "+getURI()+"'"
         +" cannot extend field "+archetypeField.getURI()
@@ -251,6 +253,16 @@ public class FieldImpl
   { return type;
   }
 
+  /**
+   * Called before resolve() when a definitive Type is needed.
+   *    
+   * @throws DataException
+   */
+  protected void resolveType()
+    throws DataException
+  {
+  }
+  
   private Tuple widenTuple(Tuple t)
     throws DataException
   {
@@ -354,6 +366,12 @@ public class FieldImpl
     if (!locked)
     { lock();
     }
+    generateURI();
+    
+  }
+  
+  protected void generateURI()
+  {
     if (fieldSet.getType()==null)
     { this.uri=URI.create("untyped#"+getName());
     }
@@ -362,13 +380,9 @@ public class FieldImpl
         =URI.create(fieldSet.getType().getURI().toString()+"#"+getName());
 
     }
-    
-    subclassResolve();
   }
   
-  protected void subclassResolve()
-    throws DataException
-  { }
+
   
   public String toString()
   { return super.toString()+":"+uri;

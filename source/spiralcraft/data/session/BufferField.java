@@ -46,10 +46,6 @@ public class BufferField
   { return (Type<Buffer>) super.getType();
   }
   
-  @Override
-  public void subclassResolve()
-  {
-  }
   
   @SuppressWarnings("unchecked")
   public Channel<?> bind(Focus<? extends Tuple> focus)

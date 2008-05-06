@@ -31,9 +31,12 @@ import spiralcraft.data.Type;
 
 import spiralcraft.data.access.CursorAggregate;
 import spiralcraft.data.access.SerialCursor;
+
 import spiralcraft.data.core.FieldImpl;
+
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.lang.TupleReflector;
+
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
@@ -61,27 +64,20 @@ public class QueryField
     this.query=query;
   }
   
-  public void resolve()
+  public void resolveType()
     throws DataException
   {
-    if (resolved)
-    { return;
-    }
     if (query!=null)
     { 
       query.resolve();
       if (getType()==null && query.getType()!=null)
-      { 
-        unlock();
-        setType(Type.getAggregateType((query.getType())));
-        lock();
+      { setType(Type.getAggregateType((query.getType())));
       }
     }
     else
     { throw new DataException("Missing query in field "+toString());
     }
-    super.resolve();
-    resolved=true;
+    super.resolveType();
   }
   
   
