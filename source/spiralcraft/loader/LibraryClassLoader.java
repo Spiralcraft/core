@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2008 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -23,7 +23,9 @@ import java.io.ByteArrayInputStream;
 import java.net.URL;
 
 /**
- * Loads classes contained in the library
+ * <P>Loads classes contained in the Library
+ * </P>
+ * 
  */
 public class LibraryClassLoader
   extends AbstractClassLoader

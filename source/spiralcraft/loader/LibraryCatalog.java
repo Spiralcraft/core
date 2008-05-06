@@ -36,8 +36,12 @@ import java.net.URL;
 import spiralcraft.util.StringUtil;
 
 /**
- * Catalog of the code and resource libraries available for use by 
- * this process. 
+ * <P>Catalog of the code and resource Libraries available for use by a
+ *   ClassLoader. A LibraryCatalog may contain multiple versions of a Library.
+ * </P>
+ * 
+ * <P>TODO: A LibraryCatalog is really an Installation. A Library is a Module.
+ * </P>
  */
 public class LibraryCatalog
 {
@@ -48,7 +52,8 @@ public class LibraryCatalog
   private ArrayList<Library> _libraries=new ArrayList<Library>();
   
   /**
-   * File libraryDir
+   * Create a new LibraryCatalog for the library located at the specified
+   *   File path.
    */
   public LibraryCatalog(File path)
   { 
@@ -166,7 +171,7 @@ public class LibraryCatalog
   }
 
   /**
-   * Implemetation of LibraryClasspath- uses a subset of the LibraryCatalog
+   * Implementation of LibraryClasspath- uses a subset of the LibraryCatalog
    *   to load classes and resources.
    */
   class LibraryClasspathImpl
