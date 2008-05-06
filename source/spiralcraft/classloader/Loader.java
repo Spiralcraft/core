@@ -14,7 +14,6 @@
 //
 package spiralcraft.classloader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -277,8 +276,28 @@ public class Loader
   public void start()
     throws LifecycleException
   {
+    try
+    {
+      for (Archive archive: archives)
+      { archive.open();
+      }
     
-    // TODO Auto-generated method stub
+      for (Archive archive: precedentArchives)
+      { archive.open();
+      }
+      started=true;
+    }
+    catch (IOException x)
+    {
+      try
+      { stop();
+      }
+      catch (LifecycleException y)
+      { y.printStackTrace();
+      }
+      throw new LifecycleException("Error starting ClassLoader",x);
+    }
+    
     
   }
 
@@ -286,7 +305,13 @@ public class Loader
   public void stop()
     throws LifecycleException
   {
-    // TODO Auto-generated method stub
+    for (Archive archive: archives)
+    { archive.close();
+    }
+    
+    for (Archive archive: precedentArchives)
+    { archive.close();
+    }
     
   }
   
