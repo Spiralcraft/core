@@ -26,36 +26,44 @@ import spiralcraft.loader.LibraryClassLoader;
 
 
 /**
- * Provides necessary context for running application code. 
- *
- * Specifically, the ApplicationEnvironment creates a ClassLoader which
+ * <P>Provides necessary context for running application code. 
+ * </P>
+ * 
+ * <P>Specifically, the ApplicationEnvironment creates a ClassLoader which
  *   references an appropriate set of code libraries, and resolves and executes
  *   a suitable entry point.
- *
- * The standard and default Spiralcraft entry point is the 
+ * </P>
+ * 
+ * <P>The standard and default Spiralcraft entry point is the 
  *  spiralcraft.exec.Executor class, which loads and executes an application
  *  specified by a URI.
- *
- * An alternate class with the Java standard "main" method can be invoked
+ * </P>
+ * 
+ * <P>An alternate class with the Java standard "main" method can be invoked
  *   using the "-main &lt;classname&gt;" option.
- *
- * The "-exec &lt;classname&gt;" option invokes the 
+ * </P>
+ * 
+ * <P>The "-exec &lt;classname&gt;" option invokes the 
  *   spiralcraft.exec.ClassExecutor entry point, which accepts a class name
  *   as an argument. The specified class must implement 
  *   the spiralcraft.exec.Executable interface.
- *
- * The "-module" option specifies one or more code libraries (.jar names or
+ * </P>
+ * 
+ * <P>The "-module" option specifies one or more code libraries (.jar names or
  *   directories containing code) which will be available to the target
  *   application ClassLoader. 
- *
- * An ApplicationEnvironment must be associated with an ApplicationManager,
- *   which provides access to the available codebase.
+ * </P>
  * 
- * Note: The ClassLoader created by the ApplicationEnvironment is constructed
+ * <P>An ApplicationEnvironment must be associated with an ApplicationManager,
+ *   which provides access to the available codebase.
+ * </P>
+ *  
+ * <P>Note: The ClassLoader created by the ApplicationEnvironment is constructed
  *   so that it's parent is the Java system application classloader. 
  *   This preserves forward compatability by allowing the target
  *   application to use different versions of the libraries which compose this
  *   "boot" loading system. 
+ * </P>
  */
 public class ApplicationEnvironment
 {
