@@ -2,7 +2,6 @@ package spiralcraft.lang;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
 public abstract class BaseFocus<T>
   implements Focus<T>

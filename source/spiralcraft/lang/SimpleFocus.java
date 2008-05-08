@@ -14,7 +14,6 @@
 //
 package spiralcraft.lang;
 
-import java.util.HashMap;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,7 +28,6 @@ public class SimpleFocus<T>
 
   private URI containerURI;
   private String layerName;
-  private HashMap<String,URI> namespaces;
   private boolean namespaceRoot;
   
   public SimpleFocus()

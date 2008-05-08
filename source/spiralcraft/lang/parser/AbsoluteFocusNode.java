@@ -83,12 +83,34 @@ public class AbsoluteFocusNode
       else if (namespace!=null)
       { 
         throw new BindException
-        ("No NamespaceResolver for namespace '"+namespace+"' in "
-          +focus.getFocusChain().toString());
+          ("No NamespaceResolver for namespace '"+namespace+"' in \r\n"
+            +focus.getFocusChain().toString());
+      }
+      else
+      {
+        throw new BindException
+          ("No NamespaceResolver to provide default namespace for '"
+            +suffix+"' in \r\n"
+            +focus.getFocusChain().toString());
+
       }
 
       if (namespaceURI==null)
-      { throw new BindException("Namespace '"+namespace+"' not defined.");
+      { 
+        if (namespace!=null)
+        {
+          throw new BindException
+            ("Namespace '"+namespace+"' not defined in \r\n"
+              +focus.getFocusChain().toString()
+            );
+        }
+        else
+        {
+          throw new BindException
+            ("Default namespace for suffix '"+suffix+"' not defined in \r\n"
+              +focus.getFocusChain().toString()
+            );
+        }
       }
 
       // log.fine(namespaceURI.toString()+"  :  "+suffix);
@@ -114,7 +136,7 @@ public class AbsoluteFocusNode
     }
   }
   
-  private String focusChain(Focus focus)
+  private String focusChain(Focus<?> focus)
   { 
     StringBuilder buf=new StringBuilder();
     buf.append("[");
