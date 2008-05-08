@@ -35,6 +35,14 @@ public class Loader
   private final ArrayList<Archive> precedentArchives=new ArrayList<Archive>();
   private boolean started;
     
+  public Loader()
+  {
+  }
+  
+  public Loader(ClassLoader parent)
+  { super(parent);
+  }
+  
   /**
    * Add an archive to the search path for this ClassLoader within the
    *   standard delegation model (checked after parent ClassLoaders are checked)
