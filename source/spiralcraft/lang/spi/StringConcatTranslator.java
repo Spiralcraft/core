@@ -35,7 +35,8 @@ public class StringConcatTranslator
   @SuppressWarnings("unchecked") // Upcast for expected modifiers
   public String translateForGet(String source,Channel[] modifiers)
   { 
-    String modifier=((Channel<String>)modifiers[0]).get();
+    Object omodifier=((Channel<Object>)modifiers[0]).get();
+    String modifier=omodifier!=null?omodifier.toString():null;
     if (modifier==null)
     { return source;
     }
