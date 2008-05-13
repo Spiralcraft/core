@@ -16,7 +16,6 @@ package spiralcraft.data.session;
 
 
 import spiralcraft.data.DataException;
-import spiralcraft.data.Scheme;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Field;

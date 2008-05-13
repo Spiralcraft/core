@@ -19,20 +19,15 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Setter;
-import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLogger;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
-import spiralcraft.data.Key;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
 import spiralcraft.data.core.FieldImpl;
-import spiralcraft.data.core.KeyField;
 import spiralcraft.data.lang.DataReflector;
 
 
