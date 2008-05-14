@@ -22,6 +22,8 @@ import spiralcraft.lang.Decorator;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.spi.AspectChannel;
+import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.log.ClassLogger;
 
 import spiralcraft.data.DataException;
@@ -47,7 +49,7 @@ public class TupleReflector<T extends Tuple>
   
   private static boolean debug;
   
-  private static final Expression[] NULL_PARAMS = new Expression[0];
+  private static final Expression<?>[] NULL_PARAMS = new Expression[0];
   
   private final FieldSet fieldSet;
   
@@ -99,13 +101,29 @@ public class TupleReflector<T extends Tuple>
    */
   @SuppressWarnings("unchecked") // We haven't genericized the data package yet
   public synchronized Channel resolve
-    (Channel source
+    (final Channel source
     ,Focus focus
     ,String name
     ,Expression[] params
     )
     throws BindException
   {    
+    if (name.equals("_tuple"))
+    { 
+      // Provide access to 
+      Channel binding=source.getCached("_tuple");
+      if (binding==null)
+      { 
+        binding=new AspectChannel
+          (BeanReflector.getInstance(contentType)
+          ,source
+          );
+        source.cache("_tuple",binding);
+      }
+      return binding;
+    }
+    
+    
     Field field=null;
     
     Type type=getType();

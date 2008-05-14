@@ -20,7 +20,6 @@ import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.spi.AbstractTuple;
-import spiralcraft.data.spi.ArrayTuple;
 
 import spiralcraft.lang.Channel;
 

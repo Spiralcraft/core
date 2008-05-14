@@ -29,7 +29,9 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Type;
-import spiralcraft.data.TypeNotFoundException;
+import spiralcraft.data.session.BufferAggregate;
+import spiralcraft.data.session.BufferTuple;
+import spiralcraft.data.session.BufferType;
 
 /**
  * Abstract base class maps a DataComposite into the spiralcraft.lang namespace
@@ -73,10 +75,22 @@ public abstract class DataReflector<T extends DataComposite>
       if (broker==null)
       {
         if (type.isAggregate())
-        { broker=new AggregateReflector(type,Aggregate.class);
+        { 
+          if (type instanceof BufferType)
+          { broker=new AggregateReflector(type,BufferAggregate.class);
+          }
+          else
+          { broker=new AggregateReflector(type,Aggregate.class);
+          }
         }
         else
-        { broker=new TupleReflector(type,Tuple.class);
+        { 
+          if (type instanceof BufferType)
+          { broker=new BufferReflector(type,BufferTuple.class);
+          }
+          else
+          { broker=new TupleReflector(type,Tuple.class);
+          }
         }
         SINGLETONS.put(type,new WeakReference(broker));
       }

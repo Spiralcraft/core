@@ -52,12 +52,12 @@ public abstract class IterationDecorator<T,I>
    *   iteration component type. 
    *   
    */
-  public IterationCursorChannel<I>
-    createComponentBinding(Channel<IterationCursor<I>> iterationCursorSource)
-  { 
-    return new IterationCursorChannel<I>
-      (componentReflector,iterationCursorSource);
-  }
+//  public IterationCursorChannel<I>
+//    createComponentBinding(Channel<IterationCursor<I>> iterationCursorSource)
+//  { 
+//    return new IterationCursorChannel<I>
+//      (componentReflector,iterationCursorSource);
+//  }
   
   /**
    * 

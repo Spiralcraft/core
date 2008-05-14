@@ -23,6 +23,8 @@ import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
+import spiralcraft.lang.spi.AspectChannel;
+import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.lang.spi.Translator;
 
 import spiralcraft.data.FieldSet;
@@ -76,13 +78,28 @@ public class AggregateReflector<T extends Aggregate<I>,I>
    */
   @SuppressWarnings("unchecked") // We haven't genericized the data package yet
   public synchronized Channel resolve
-    (Channel source
+    (final Channel source
     ,Focus focus
     ,String name
     ,Expression[] params
     )
     throws BindException
   {
+    if (name.equals("_aggregate"))
+    { 
+      // Provide access to 
+      Channel binding=source.getCached("_aggregate");
+      if (binding==null)
+      { 
+        binding=new AspectChannel
+          (BeanReflector.getInstance(contentType)
+          ,source
+          );        
+        source.cache("_aggregate",binding);
+      }
+      return binding;
+    }
+    
     Translator translator=translators.get(name);
     
     if (translator!=null)
