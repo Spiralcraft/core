@@ -126,6 +126,84 @@ public class StreamUtil
   }
   
   /**
+   * Read a line of ascii text ending with an \r\n.
+   */
+  public final static String readAsciiLine
+    (final InputStream in
+    ,byte[] buffer
+    ,int maxLength
+    )
+    throws IOException
+  {
+    if (buffer==null)
+    { buffer=new byte[8192];
+    }
+    
+    StringBuilder ret=new StringBuilder();
+    int totalCount=0;
+    while (totalCount<maxLength)
+    {
+      int count
+        =readUntil
+          (in
+          ,buffer
+          ,(byte) '\n'
+          ,0
+          ,Math.min(maxLength-totalCount,buffer.length)
+          );
+     
+      if (count==-1)
+      { break;
+      }
+      totalCount+=count;
+      char[] _charBuffer=new char[count];
+      for (int i=0;i<count;i++)
+      { _charBuffer[i]=(char) buffer[i];
+      }
+
+      if (_charBuffer[count-1]=='\n')
+      { 
+        // Deal with possibility of just a \n as a line term 
+        final int trim=(count==1||_charBuffer[count-2]!='\r')?1:2;
+        ret.append(_charBuffer,0,count-trim);
+        break;
+      }
+      else
+      { ret.append(_charBuffer,0,count);
+      }
+    }
+    return ret.toString();
+  }
+
+  /**
+   * Read an input stream until a marker is reached.
+   *
+   *@return The number of characters read
+   */
+  public final static int readUntil
+    (final InputStream in
+    ,final byte[] bytes
+    ,final byte marker
+    , final int start
+    ,final int len
+    )
+    throws IOException
+  {
+    for (int i=0;i<len;i++)
+    { 
+      final int b=in.read();
+      if (b==-1)
+      { return i;
+      }
+      bytes[start+i]=(byte) b;
+      
+      if (b==(int) marker)
+      { return i+1;
+      }
+    }
+    return len;
+  }  
+  /**
    * Discard [bytes] bytes of the input stream
    */
   public static long discard(InputStream in,long bytes)
