@@ -22,10 +22,13 @@ import spiralcraft.lang.Decorator;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.TeleFocus;
 
 import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.lang.spi.BeanReflector;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.spi.Translator;
+import spiralcraft.lang.spi.TranslatorChannel;
 
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
@@ -99,21 +102,27 @@ public class AggregateReflector<T extends Aggregate<I>,I>
       }
       return binding;
     }
-    
-    Translator translator=translators.get(name);
-    
-    if (translator!=null)
-    {
-      Channel binding=source.getCached(translator);
-      if (binding==null)
-      { 
-        // binding=new FieldBinding(source,translator);
-        source.cache(translator,binding);
-      }
-      return binding;      
+    else if (name.equals("[]"))
+    { return subscript(source,focus,params[0]);
     }
+    else
+    {
     
-    return null;
+      Translator translator=translators.get(name);
+    
+      if (translator!=null)
+      {
+        Channel binding=source.getCached(translator);
+        if (binding==null)
+        { 
+          // binding=new FieldBinding(source,translator);
+          source.cache(translator,binding);
+        }
+        return binding;      
+      }
+    
+      return null;
+    }
   }
 
   
@@ -132,6 +141,60 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   
   public Class<T> getContentType()
   { return contentType;
+  }
+  
+  
+  @SuppressWarnings("unchecked") // Reflective subscript type
+  private Channel<?> subscript
+    (Channel<Aggregate<I>> source
+    ,Focus<?> focus
+    ,Expression<?> subscript
+    )
+    throws BindException
+  {
+        
+    Reflector<I> componentReflector
+      =DataReflector.getInstance(type.getContentType());
+    
+    ThreadLocalChannel<I> componentChannel
+      =new ThreadLocalChannel<I>(componentReflector);
+    
+    TeleFocus<I> teleFocus=new TeleFocus<I>(focus,componentChannel);
+    
+    Channel<?> subscriptChannel=teleFocus.bind(subscript);
+    
+    Class<?> subscriptClass=subscriptChannel.getContentType();
+    
+    if (Integer.class.isAssignableFrom(subscriptClass)
+        || Short.class.isAssignableFrom(subscriptClass)
+        || Byte.class.isAssignableFrom(subscriptClass)
+        )
+    {
+       return new TranslatorChannel<I,Aggregate<I>>
+         (source
+         ,new AggregateIndexTranslator(this)
+         ,subscriptChannel
+         );
+    }
+    else if 
+      (Boolean.class.isAssignableFrom(subscriptClass)
+      || boolean.class.isAssignableFrom(subscriptClass)
+      )
+    {
+       return new AggregateSelectChannel<I>
+         (source
+         ,componentChannel
+         ,(Channel<Boolean>) subscriptChannel
+         );
+    }
+    else
+    {
+      throw new BindException
+        ("Can't apply the [lookup("
+        +subscriptChannel.getContentType().getName()
+        +")] operator to an Aggregate");
+      
+    }
   }
 
   public String toString()

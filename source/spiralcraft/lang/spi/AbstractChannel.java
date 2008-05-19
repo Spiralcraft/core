@@ -93,24 +93,14 @@ public abstract class AbstractChannel<T>
   }
   
   @SuppressWarnings("unchecked") // Heterogeneous ops
-  public <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] params)
+  public <X> Channel<X> resolve
+    (Focus<?> focus
+    ,String name
+    ,Expression<?>[] params
+    )
     throws BindException
   { 
-    Channel<X> binding=_reflector.<X>resolve(this,focus,name,params);
-    if (binding==null)
-    {
-      if (name.equals("!"))
-      { 
-        synchronized (this)
-        {
-          if (metaChannel==null)
-          { metaChannel=new SimpleChannel<AbstractChannel>(this,true);
-          }
-        }
-        binding=(Channel<X>) metaChannel;
-      }
-    }
-    
+    Channel<X> binding=_reflector.<X>resolve(this,focus,name,params);    
     if (binding==null)
     { throw new BindException("'"+name+"' not found. ("+toString()+")");
     }

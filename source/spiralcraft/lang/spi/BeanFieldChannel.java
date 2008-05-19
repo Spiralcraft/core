@@ -30,7 +30,7 @@ public class BeanFieldChannel<Tprop,Tbean>
     ,BeanFieldTranslator<Tprop,Tbean> translator
     )
   {
-    super(source,translator,null);
+    super(source,translator);
     _field=translator.getField();
   }
 

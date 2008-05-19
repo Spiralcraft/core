@@ -59,7 +59,7 @@ public  class TranslatorChannel<T,S>
   public TranslatorChannel
     (Channel<S> source
     ,Translator<T,S> translator
-    ,Channel<?>[] modifiers
+    ,Channel<?> ... modifiers
     )
   { 
     this.source=source;

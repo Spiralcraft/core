@@ -25,7 +25,7 @@ public class MethodChannel<Tprop,Tbean>
     (Channel<Tbean> source
     ,MethodTranslator<Tprop,Tbean> translator
     )
-  { super(source,translator,null);
+  { super(source,translator);
   }
 
   public MethodChannel

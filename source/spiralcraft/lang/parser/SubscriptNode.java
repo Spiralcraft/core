@@ -46,32 +46,62 @@ public class SubscriptNode<T,C,I>
     _selector=selector;
   }
 
-//  @SuppressWarnings("unchecked") // Upcast for narrowing index type
   public Channel<?> bind(Focus<?> focus)
     throws BindException
   {
+   
     Channel<C> collection=focus.<C>bind(new Expression<C>(_source,null));
-    Channel<I> selector=focus.<I>bind(new Expression<I>(_selector,null));
-    
-    Class<?> clazz=selector.getContentType();
-    if (Integer.class.isAssignableFrom(clazz)
-        || Short.class.isAssignableFrom(clazz)
-        || Byte.class.isAssignableFrom(clazz)
-        )
+    Channel<?> result=
+      collection.resolve
+        (focus
+        , "[]"
+        , new Expression[] {new Expression<I>(_selector,null)}
+        );
+    if (result==null)
     { 
-      if (collection.getContentType().isArray())
-      {
-        return (Channel<T>) ArrayIndexHelper.<T,C>bind
-          (focus,collection, selector);
-      }
-      else
-      { throw new BindException("Unknown Collection Type");
-      }
+      throw new BindException
+        ("Channel could not intepret the [] operator: "
+        +collection+"["+_selector+"]"
+        );
     }
-    else
-    { throw new BindException("Unknown Selector Type");
-    }
+    return result;
   }
+  
+//  private Channel<?> bindDefault(Focus<?> focus)
+//    throws BindException
+//  {
+//    
+//    Channel<C> collection=focus.<C>bind(new Expression<C>(_source,null));
+//    Channel<I> selector=focus.<I>bind(new Expression<I>(_selector,null));
+//    
+//    Class<?> clazz=selector.getContentType();
+//    if (Integer.class.isAssignableFrom(clazz)
+//        || Short.class.isAssignableFrom(clazz)
+//        || Byte.class.isAssignableFrom(clazz)
+//        )
+//    { 
+//      // XXX Use an IndexDecorator interface 
+//      if (collection.getContentType().isArray())
+//      {
+//        return (Channel<T>) ArrayIndexHelper.<T,C>bind
+//          (focus,collection, selector);
+//      }
+//      else
+//      { throw new BindException("Unknown Collection Type");
+//      }
+//    }
+//    else if (Boolean.class.isAssignableFrom(clazz))
+//    {
+//      // XXX Use SelectionDecorator interface
+//      throw new BindException("Unimplemented Selector Type");
+//      
+//    }
+//    else
+//    { 
+//      // XXX Use MapDecorator interface
+//      throw new BindException("Unknown Selector Type");
+//    }
+//  }
   
   public void dumpTree(StringBuffer out,String prefix)
   { 

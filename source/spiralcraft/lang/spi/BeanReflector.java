@@ -21,6 +21,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.TeleFocus;
 
 
 import spiralcraft.beans.BeanInfoCache;
@@ -34,7 +35,10 @@ import java.beans.Introspector;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.Enumeration;
 
@@ -57,6 +61,14 @@ import spiralcraft.log.ClassLogger;
 public class BeanReflector<T>
   implements Reflector<T>
 {
+  private static enum CollectionType
+  {
+    ARRAY
+    ,MAP
+    ,LIST
+    ,COLLECTION
+  }
+
   @SuppressWarnings("unused")
   private static final ClassLogger log=ClassLogger.getInstance(BeanReflector.class);
   
@@ -180,7 +192,10 @@ public class BeanReflector<T>
     throws BindException
   { 
     Channel<X> binding=null;
-    if (params==null)
+    if (name.equals("[]"))
+    { binding=(Channel<X>) this.subscript(source,focus,params[0]);
+    }
+    else if (params==null)
     { 
       binding=this.<X>getProperty(source,name);
       if (binding==null)
@@ -374,7 +389,10 @@ public class BeanReflector<T>
       Channel<X> binding=source.<X>getCached(translator);
       if (binding==null)
       { 
-        binding=new TranslatorChannel<X,T>(source,translator,null);
+        binding=new TranslatorChannel<X,T>
+          (source
+          ,translator
+          );
         source.cache(translator,binding);
       }
       return binding;
@@ -383,7 +401,8 @@ public class BeanReflector<T>
   }
 
   @SuppressWarnings("unchecked") // HashMap is heterogeneous
-  private synchronized <X> Channel<X> getMethod(Channel<T> source,String name,Channel[] params)
+  private synchronized <X> Channel<X> 
+    getMethod(Channel<T> source,String name,Channel ... params)
     throws BindException
   { 
     if (methodResolver==null)
@@ -457,10 +476,164 @@ public class BeanReflector<T>
 
   }
 
+  
+  private Channel<?> subscript
+    (Channel<T> source
+    ,Focus<?> focus
+    ,Expression<?> subscript
+    )
+    throws BindException
+  {
+    
+    CollectionType collectionType=null;
+    
+    Reflector<?> componentReflector=null;
+    
+    // Determine what kind of collection we're accessing and what its
+    //   component type is
+    if (targetClass.isArray())
+    { 
+      collectionType=CollectionType.ARRAY;
+      componentReflector
+        =BeanReflector.getInstance
+          (targetClass.getComponentType());
+    }
+    else if (Map.class.isAssignableFrom(targetClass))
+    {
+      collectionType=CollectionType.MAP;
+      if (targetType instanceof ParameterizedType)
+      {
+        componentReflector
+          =BeanReflector.getInstance
+            (
+              ((ParameterizedType) targetType)
+                .getActualTypeArguments()[1]
+            );
+      }
+      else
+      { throw new BindException
+          ("Map of type '"+targetType+"' is not parameterized");
+      }
+    }
+    else if (List.class.isAssignableFrom(targetClass))
+    { 
+      collectionType=CollectionType.LIST;
+      if (targetType instanceof ParameterizedType)
+      {
+        componentReflector
+          =BeanReflector.getInstance
+            (
+              ((ParameterizedType) targetType)
+                .getActualTypeArguments()[0]
+            );
+      }
+      else
+      { throw new BindException
+          ("Collection of type '"+targetType+"' is not parameterized");
+      }
+    }
+    else if (Collection.class.isAssignableFrom(targetClass))
+    { 
+      collectionType=CollectionType.COLLECTION;
+      if (targetType instanceof ParameterizedType)
+      {
+        componentReflector
+          =BeanReflector.getInstance
+            (
+              ((ParameterizedType) targetType)
+                .getActualTypeArguments()[0]
+            );
+      }
+      else
+      { throw new BindException
+          ("Collection of type '"+targetType+"' is not parameterized");
+      }
+    }
+    else
+    {
+      throw new BindException
+        ("Don't know how to apply the [] operator to a '"+targetType);
+    }
+    
+    ThreadLocalChannel<?> componentChannel
+      =new ThreadLocalChannel(componentReflector);
+    
+    TeleFocus teleFocus=new TeleFocus(focus,componentChannel);
+    
+    Channel<?> subscriptChannel=teleFocus.bind(subscript);
+    
+    Class subscriptClass=subscriptChannel.getContentType();
+    
+    if (Integer.class.isAssignableFrom(subscriptClass)
+        || Short.class.isAssignableFrom(subscriptClass)
+        || Byte.class.isAssignableFrom(subscriptClass)
+        )
+    {
+      switch (collectionType)
+      {
+        case ARRAY:
+          return new TranslatorChannel
+            (source
+            ,new ArrayIndexTranslator(componentReflector)
+            ,subscriptChannel
+            );
+        case LIST:
+          return this.getMethod(source,"get",subscriptChannel);
+        case MAP:
+          return this.getMethod(source,"get",subscriptChannel);
+        default:
+          throw new BindException
+            ("Don't know how to apply the [index] operator to a '"+targetType);
+          
+      }
+    }
+    else if 
+      (Boolean.class.isAssignableFrom(subscriptClass)
+      || boolean.class.isAssignableFrom(subscriptClass)
+      )
+    {
+      switch (collectionType)
+      {
+        case ARRAY:
+          return new ArraySelectChannel
+            (source
+            ,componentChannel
+            ,subscriptChannel
+            );
+        case LIST:
+        case COLLECTION:
+          return new CollectionSelectChannel
+            (source
+            ,componentChannel
+            ,subscriptChannel
+            );
+        default:
+          throw new BindException
+            ("Don't know how to apply the [select] operator to a '"+targetType);
+      }
+    }
+    else
+    {
+      switch (collectionType)
+      {
+        case MAP:
+          return new TranslatorChannel
+            (source
+            ,new MapIndexTranslator(componentReflector)
+            ,subscriptChannel
+            );
+        default:
+          throw new BindException
+            ("Don't know how to apply the [lookup("
+            +subscriptChannel.getContentType().getName()
+            +")] operator to a '"+targetType);
+      }
+    }
+  }
+  
   public String toString()
   { return super.toString()+":"+targetClass.getName();
   }
-
 
 
 }

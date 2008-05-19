@@ -14,8 +14,6 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.lang.spi.IterationCursorChannel;
-
 import java.util.Iterator;
 
 /**

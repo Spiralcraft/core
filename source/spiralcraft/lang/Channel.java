@@ -74,8 +74,15 @@ public interface Channel<T>
   /**
    * Resolve the name and optional set of parameter expressions to create
    *   a new view (Channel) derived from this one.
+   *   
+   * @param parameters The expressions to use as parameters, or null for a
+   *   non parameterized name. Null is differentiated from an empty array.
    */
-  <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] parameters)
+  <X> Channel<X> resolve
+    (Focus<?> focus
+    ,String name
+    ,Expression<?>[] parameters
+    )
     throws BindException;
 
   /**

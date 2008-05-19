@@ -482,25 +482,6 @@ public class ExpressionParser
     // This handles the entire dot/subscript/member dereference chain
     switch (_tokenizer.ttype)
     {
-//      case '(':
-        // XXX: An expression list after a resolved item is not necessarily part
-        //   of the grammar. This should not be a case
-        
-//        if (!(primary instanceof ResolveNode))
-//        { throwUnexpected();
-//        }
-//        consumeToken();
-//        if (((ResolveNode) primary).getSource()==null)
-//        { throwGeneral("Internal error: MethodCall source is null");
-//        }
-//        ResolveNode resolveNode=(ResolveNode) primary;
-//        Node methodCallNode
-//          =resolveNode.getSource().call
-//            (resolveNode.getIdentifierName()
-//            ,parseExpressionList()
-//            );
-//        expect(')');
-//        return parsePostfixExpressionRest(methodCallNode);
       case '[':
         consumeToken();
         Node subscriptNode=new SubscriptNode(primary,parseExpression());
@@ -509,12 +490,6 @@ public class ExpressionParser
       case '.':
         consumeToken();
         return parseDereferenceExpression(primary);
-
-//  Illegal - conflicts with "!="
-//      case '!': 
-//        consumeToken();
-//        return parsePostfixExpressionRest(new MetaNode(primary));
-        
       default:
         return primary;
     }

@@ -40,6 +40,11 @@ Evaluator.parseAndEvaluateObject(".[2][2]",array);
 Evaluator.parseAndEvaluateObject(".[0][0].length()",array);
 Evaluator.parseAndEvaluateObject(".[1][1].length()",array);
 Evaluator.parseAndEvaluateObject(".[2][2].length()",array);
+"Array Selection";
+array=new String[] {"zero","one","two"};
+Evaluator.parseAndEvaluateObject(".[.startsWith(\"t\")][0]",array);
+
+
 
 "==";
 Evaluator.parseAndEvaluateObject("1==1",new Object());
@@ -47,11 +52,6 @@ Evaluator.parseAndEvaluateObject("1==2",new Object());
 Evaluator.parseAndEvaluateObject(".hashCode()==.hashCode()",new Object());
 Evaluator.parseAndEvaluateObject(".hashCode()==1",new Object());
 Evaluator.parseAndEvaluateObject("-.hashCode()==-.hashCode()",new Object());
-
-"// Meta operator";
-//Evaluator.parseAndEvaluateObject(".!",new Object());
-//Evaluator.parseAndEvaluateObject(".class.name!",new Object());
-//Evaluator.parseAndEvaluateObject(".hashCode()!",new Object());
 
 "// Self operator";
 Evaluator.parseAndEvaluateObject(".concat(.)","test");
