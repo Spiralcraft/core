@@ -42,7 +42,7 @@ public class BeanPropertyChannel<T,S>
     ,BeanPropertyTranslator<T,S> translator
     )
   {
-    super(source,translator);
+    super(source,translator,null);
     _property=translator.getProperty();
     _readMethod=_property.getReadMethod();
 

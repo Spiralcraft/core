@@ -28,7 +28,7 @@ public class NamespaceChannel<T>
     ,NamespaceAttribute<T> translator
     )
   { 
-    super(source,translator);
+    super(source,translator,null);
     this.translator=translator;
   }
 

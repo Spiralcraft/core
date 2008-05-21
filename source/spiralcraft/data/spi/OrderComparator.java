@@ -24,6 +24,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
 /**
@@ -37,7 +38,7 @@ public class OrderComparator
 {
 
   private ThreadLocalChannel<Tuple> aChannel,bChannel;
-  private SimpleFocus<Tuple> aFocus,bFocus;
+  private TeleFocus<Tuple> aFocus,bFocus;
   
   private Channel<Integer> result;
   
@@ -46,11 +47,11 @@ public class OrderComparator
   {
     aChannel=new ThreadLocalChannel<Tuple>
       (TupleReflector.getInstance(fieldSet));
-    aFocus=new SimpleFocus<Tuple>(context,aChannel);
+    aFocus=new TeleFocus<Tuple>(context,aChannel);
     
     bChannel=new ThreadLocalChannel<Tuple>
       (TupleReflector.getInstance(fieldSet));
-    bFocus=new SimpleFocus<Tuple>(context,bChannel);
+    bFocus=new TeleFocus<Tuple>(context,bChannel);
     result=order.bind(aFocus,bFocus);
   }
   

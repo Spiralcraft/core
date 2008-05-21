@@ -173,7 +173,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
        return new TranslatorChannel<I,Aggregate<I>>
          (source
          ,new AggregateIndexTranslator(this)
-         ,subscriptChannel
+         ,new Channel[] {subscriptChannel}
          );
     }
     else if 

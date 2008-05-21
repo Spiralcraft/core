@@ -145,6 +145,7 @@ public class NumericNegateNode<T extends Number>
     return new TranslatorChannel<T,T>
       (focus.<T>bind(new Expression<T>(_node,null))
       ,(Translator<T,T>) translator
+      ,null
       );
   }
   

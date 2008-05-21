@@ -392,6 +392,7 @@ public class BeanReflector<T>
         binding=new TranslatorChannel<X,T>
           (source
           ,translator
+          ,null
           );
         source.cache(translator,binding);
       }
@@ -575,7 +576,7 @@ public class BeanReflector<T>
           return new TranslatorChannel
             (source
             ,new ArrayIndexTranslator(componentReflector)
-            ,subscriptChannel
+            ,new Channel[] {subscriptChannel}
             );
         case LIST:
           return this.getMethod(source,"get",subscriptChannel);
@@ -620,7 +621,7 @@ public class BeanReflector<T>
           return new TranslatorChannel
             (source
             ,new MapIndexTranslator(componentReflector)
-            ,subscriptChannel
+            ,new Channel[] {subscriptChannel}
             );
         default:
           throw new BindException
