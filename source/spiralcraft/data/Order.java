@@ -36,9 +36,14 @@ public class Order
 
   private OrderElement<?>[] elements;
   private final ClassLogger log=ClassLogger.getInstance(Order.class);
+  private boolean debug;
   
   public void setElements(OrderElement<?>[] elements)
   { this.elements=elements;
+  }
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
   }
   
   /**
@@ -68,7 +73,9 @@ public class Order
       throws BindException
     { 
       super(BeanReflector.<Integer>getInstance(Integer.class));
-      log.fine("OrderChannel ["+ArrayUtil.format(elements,"],[","")+"]");
+      if (debug)
+      { log.fine("OrderChannel ["+ArrayUtil.format(elements,"],[","")+"]");
+      }
       elementChannels=(Channel<Integer>[]) new Channel[elements.length];
       for (int i=0;i<elements.length;i++)
       { elementChannels[i]=elements[i].bind(focusA,focusB);

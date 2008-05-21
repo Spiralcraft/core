@@ -83,11 +83,11 @@ class BeanPropertyTranslator<Tprop,Tbean>
       }
       else
       { 
-        System.err.println
-          ("BeanPropertyTranslator: No read method for '"
-          +value.getClass().getName()
-          +"."+_property.getName()+"'"
-          );
+//        System.err.println
+//          ("BeanPropertyTranslator: No read method for '"
+//          +value.getClass().getName()
+//          +"."+_property.getName()+"'"
+//          );
         return null;
       }
     }
