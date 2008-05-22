@@ -59,8 +59,8 @@ configuration time.<br>
 All Assembly Classes are defined with respect to their base Java class
 or Assembly Class, specified in the form of a URI with no filename
 extension. For example <span style="font-family: monospace;">&lt;auto:Car
-xmlns:auto="java:/com/myco/automotive"&gt;</span> translates to the URI
-"<span style="font-family: monospace;">java:/com/myco/automotive/Car</span>".
+xmlns:auto="class:/com/myco/automotive"&gt;</span> translates to the URI
+"<span style="font-family: monospace;">class:/com/myco/automotive/Car</span>".
 This URI is constructed using the XML namespace name and the tag name.
 If a resource of the pattern &lt;URI&gt;.assembly.xml exists, it will
 be used as the base Assembly Class for this Assembly. Otherwise, the
@@ -161,7 +161,7 @@ import java.net.URI;<br>
 <br>
 import com.myco.automotive.Car;<br>
 <br>
-URI uri=URI.create("java:/com/myco/automotive/Car.assembly.xml");<br>
+URI uri=URI.create("class:/com/myco/automotive/Car.assembly.xml");<br>
 <br>
 // Obtain the default instance of the AssemblyLoader<br>
 AssemblyLoader loader = AssemblyLoader.getInstance();<br>
@@ -185,7 +185,7 @@ spiralcraft.builder framework using a automobile analogy.. <br>
 <tt>File: com/myco/automotive/Car.assembly.xml<br>
 <br>
 &lt;auto:Car<br>
-&nbsp; xmlns:auto="java:/com/myco/automotive"<br>
+&nbsp; xmlns:auto="class:/com/myco/automotive"<br>
 /&gt;<br>
 </tt><br>
 In this trivial example, an instance of class com.myco.automotive.Car
@@ -194,7 +194,7 @@ will be created.
 <tt>File: com/myco/automotive/CarModelOne.assembly.xml<br>
 <br>
 &lt;auto:Car<br>
-&nbsp; xmlns:auto="java:/com/myco/automotive"<br>
+&nbsp; xmlns:auto="class:/com/myco/automotive"<br>
 &nbsp; &gt;<br>
 &nbsp; &lt;color&gt;blue&lt;/color&gt;<br>
 &nbsp; &lt;engine&gt;<br>
@@ -217,7 +217,7 @@ receive a value of 4.2.<br>
 <tt>File: com/myco/automotive/CustomCar.assembly.xml<br>
 <br>
 &lt;auto:CarModelOne<br>
-&nbsp; xmlns:auto="java:/com/myco/automotive"<br>
+&nbsp; xmlns:auto="class:/com/myco/automotive"<br>
 &nbsp; &gt;<br>
 &nbsp; &lt;color&gt;red&lt;/color&gt;<br>
 &nbsp; &lt;engine.capacityLiters&gt;5.0&lt;/engine.capacityLiters&gt;<br>
@@ -233,7 +233,7 @@ engine subassembly.<br>
 <tt>File: com/myco/automotive/MyFleet.assembly.xml<br>
 <br>
 &lt;auto:Fleet<br>
-&nbsp; xmlns:auto="java:/com/myco/automotive"<br>
+&nbsp; xmlns:auto="class:/com/myco/automotive"<br>
 &nbsp; &gt;<br>
 &nbsp; &lt;owner&gt;me&lt;/owner&gt;<br>
 &nbsp; &lt;cars&gt;<br>
@@ -269,7 +269,7 @@ be bound to the Car.owner property.<br>
 <tt>File: com/myco/automotive/MyExtendedFleet.assembly.xml<br>
 <br>
 &lt;auto:MyFleet<br>
-&nbsp; xmlns:auto="java:/com/myco/automotive"<br>
+&nbsp; xmlns:auto="class:/com/myco/automotive"<br>
 &nbsp; &gt;<br>
 &nbsp; &lt;cars&gt;<br>
 </tt><tt>&nbsp;&nbsp;&nbsp; &lt;auto:CustomCar&gt;<br>

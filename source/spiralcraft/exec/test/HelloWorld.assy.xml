@@ -1,6 +1,6 @@
 <HelloWorld>
   <testObject>
-    <bld:SimpleWidget xmlns:bld="java:/spiralcraft/builder/test">
+    <bld:SimpleWidget xmlns:bld="class:/spiralcraft/builder/test">
       <title>This is the title</title>
       <id>1</id>
       <on>true</on>

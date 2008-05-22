@@ -10,8 +10,8 @@
 -->
 
 <test:SimpleWidget
-  xmlns:test="java:/spiralcraft/builder/test/"
-  xmlns:jtext="java:/java/text/"
+  xmlns:test="class:/spiralcraft/builder/test/"
+  xmlns:jtext="class:/java/text/"
   singleton="true"
   >
 

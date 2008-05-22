@@ -71,7 +71,7 @@ public class TypeResolver
     =new ClassLoaderLocal<TypeResolver>();
     
   private static final URI TYPE_TYPE_URI 
-    =URI.create("java:/spiralcraft/data/Type");
+    =URI.create("class:/spiralcraft/data/Type");
   
   protected final TypeResolver parent;
   private final HashMap<URI,Type<?>> map=new HashMap<URI,Type<?>>();

@@ -2,8 +2,8 @@
 
 <!-- Standard username/password database -->
 <meta:Type
-  xmlns:meta="java:/spiralcraft/data/types/meta"
-  xmlns:security="java:/spiralcraft/security"
+  xmlns:meta="class:/spiralcraft/data/types/meta"
+  xmlns:security="class:/spiralcraft/security"
   >
   <scheme>
     <meta:Scheme>

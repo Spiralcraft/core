@@ -51,10 +51,10 @@ public class BuilderType
 {
   public static final char INNER_PATH_SEPARATOR='_';
   public static final URI GENERIC_BUILDER_TYPE_URI
-    =URI.create("java:/spiralcraft/builder/Object.assy");
+    =URI.create("class:/spiralcraft/builder/Object.assy");
     
   public static final URI GENERIC_BUILDER_ARRAY_TYPE_URI
-    =URI.create("java:/spiralcraft/builder/Object.assy.array");
+    =URI.create("class:/spiralcraft/builder/Object.assy.array");
   
   private final AssemblyClass targetAssemblyClass;
   private boolean linked;

@@ -1,5 +1,5 @@
 
 <test:ExtendedString
-  xmlns:test="java:/spiralcraft/data/test"
+  xmlns:test="class:/spiralcraft/data/test"
   >This is a String of ExtendedString type
 </test:ExtendedString>

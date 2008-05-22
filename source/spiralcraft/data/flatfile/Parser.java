@@ -298,7 +298,7 @@ public class Parser
       }
       URI typeUri;
       if (type==null)
-      { typeUri=URI.create("java:/spiralcraft/data/types/standard/String");
+      { typeUri=URI.create("class:/spiralcraft/data/types/standard/String");
       }
       else
       { 
@@ -306,7 +306,7 @@ public class Parser
         if (!typeUri.isAbsolute())
         { 
           typeUri
-            =URI.create("java:/spiralcraft/data/types/standard/").resolve(typeUri);
+            =URI.create("class:/spiralcraft/data/types/standard/").resolve(typeUri);
         }
       }
       field.setType(TypeResolver.getTypeResolver().resolve(typeUri));

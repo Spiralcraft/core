@@ -2,7 +2,7 @@
 show(); 
 new spiralcraft.lang.BeanFocus
   (new spiralcraft.data.persist.XmlAssembly
-    (URI.create("java:/spiralcraft/builder/test/MyWidget.assy"),null)
+    (URI.create("class:/spiralcraft/builder/test/MyWidget.assy"),null)
     .get()
   );
     

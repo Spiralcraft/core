@@ -1,6 +1,6 @@
 
 <example:Customer.list
-	xmlns:example="java:/spiralcraft/data/test/example"
+	xmlns:example="class:/spiralcraft/data/test/example"
 	>
 	
 	<example:Customer>

@@ -5,7 +5,7 @@
 -->
 
 <!--
-  Type resolution- in codebase namespace="java://" scheme, or default namespace:
+  Type resolution- in codebase namespace="class://" scheme, or default namespace:
   - Load prototype from resource <namespace>/<name>.type.xml
     Prototypes specify instances using reflection to override default props
     with tuple values. This particular one reflects a Type interface impl to

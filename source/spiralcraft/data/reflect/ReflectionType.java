@@ -119,7 +119,7 @@ public class ReflectionType<T>
     {
       CANONICAL_MAP.put
         (clazz
-        ,URI.create("java:/spiralcraft/data/types/standard/"
+        ,URI.create("class:/spiralcraft/data/types/standard/"
                     .concat(clazz.getSimpleName())
                    )
         );
@@ -132,7 +132,7 @@ public class ReflectionType<T>
     {
       CANONICAL_MAP.put
         (clazz
-        ,URI.create("java:/spiralcraft/data/types/system/"
+        ,URI.create("class:/spiralcraft/data/types/system/"
                     .concat(clazz.getName().replace(".","/"))
                    )
         );
@@ -147,7 +147,7 @@ public class ReflectionType<T>
   public static URI canonicalURI(Class<?> iface)
   {
     if (iface==void.class)
-    { return URI.create("java:/java/lang/Void");
+    { return URI.create("class:/java/lang/Void");
     }
     
     Class<?> oiface=iface;
@@ -193,7 +193,7 @@ public class ReflectionType<T>
     else
     { 
       uriBuilder
-        .append("java:/")
+        .append("class:/")
         .append(iface.getName().replace('.','/').replace("$",INNER_CLASS_SEPARATOR));
     }
 

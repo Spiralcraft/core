@@ -54,7 +54,7 @@ public class DataHandler
 {
   private static final ClassLogger log=ClassLogger.getInstance(DataHandler.class);
   private static final String STANDARD_PATH
-    ="java:/spiralcraft/data/types/standard/";
+    ="class:/spiralcraft/data/types/standard/";
   
   private Frame currentFrame;
   private URI resourceURI;

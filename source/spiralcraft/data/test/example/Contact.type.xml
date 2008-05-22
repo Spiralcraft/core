@@ -1,6 +1,6 @@
 <meta:Type
-  xmlns:meta="java:/spiralcraft/data/types/meta/"
-  xmlns:example="java:/spiralcraft/data/test/example"
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:example="class:/spiralcraft/data/test/example"
   >
   <scheme>
     <meta:Scheme>

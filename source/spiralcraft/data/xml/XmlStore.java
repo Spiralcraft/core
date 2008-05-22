@@ -93,7 +93,7 @@ public class XmlStore
 //        );
     try
     {
-      sequenceType=Type.resolve("java:/spiralcraft/data/spi/Sequence");
+      sequenceType=Type.resolve("class:/spiralcraft/data/spi/Sequence");
       
       sequenceQueryable.setResultType(sequenceType);
       sequenceQueryable.setResourceURI(URI.create("Sequence.xml"));

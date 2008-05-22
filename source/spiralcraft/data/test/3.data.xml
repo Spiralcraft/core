@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dt:SimpleWidget.assy
-  xmlns:dt="java:/spiralcraft/builder/test"
+  xmlns:dt="class:/spiralcraft/builder/test"
   >
   <title>My Simple Widget</title>
   <id>456</id>

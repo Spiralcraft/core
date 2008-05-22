@@ -100,7 +100,7 @@ class Context
     =new AttributesImpl();
 
   private static final URI STANDARD_NAMESPACE_URI
-    =URI.create("java:/spiralcraft/data/types/standard/");
+    =URI.create("class:/spiralcraft/data/types/standard/");
 
   private final XmlWriter writer;
   private Frame currentFrame; 

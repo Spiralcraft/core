@@ -1,6 +1,6 @@
 <transport:Schema
-	xmlns:transport="java:/spiralcraft/data/transport"
-	xmlns:example="java:/spiralcraft/data/test/example"
+	xmlns:transport="class:/spiralcraft/data/transport"
+	xmlns:example="class:/spiralcraft/data/test/example"
 	>
 	 
 	<types>

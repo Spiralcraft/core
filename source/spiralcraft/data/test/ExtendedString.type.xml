@@ -1,5 +1,5 @@
 <standard:StringType
-  xmlns:standard="java:/spiralcraft/data/types/standard"
+  xmlns:standard="class:/spiralcraft/data/types/standard"
   >
   <maxLength>255</maxLength>
 </standard:StringType>

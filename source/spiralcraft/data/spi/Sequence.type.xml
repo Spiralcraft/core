@@ -2,7 +2,7 @@
 
 <!-- Sequence type -->
 <meta:Type
-  xmlns:meta="java:/spiralcraft/data/types/meta"
+  xmlns:meta="class:/spiralcraft/data/types/meta"
   >
   <fields>
       

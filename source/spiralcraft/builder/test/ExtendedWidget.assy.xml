@@ -10,7 +10,7 @@
 -->
 
 <test:MyWidget
-  xmlns:test="java:/spiralcraft/builder/test/">
+  xmlns:test="class:/spiralcraft/builder/test/">
 
   <title>Extended Widget</title>
   <children>

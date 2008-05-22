@@ -15,34 +15,34 @@ tr=typeResolver=spiralcraft.data.TypeResolver.getTypeResolver();
 "// Basic types";
 "//";
 "";
-t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Boolean"));
+t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Boolean"));
 t.toString(true);
 t.fromString("true");
-t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/String"));
+t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/String"));
 t.toString("test");
 t.fromString("test");
-t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Character"));
+t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Character"));
 t.toString('a');
 t.fromString("a");
-t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Byte"));
+t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Byte"));
 t.toString(Byte.parseByte("127"));
 t.fromString("127");
-t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Short"));
+t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Short"));
 t.toString(Short.parseShort("12345"));
 t.fromString("12345");
-t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Integer"));
+t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Integer"));
 t.toString(Integer.parseInt("12345"));
 t.fromString("12345");
-t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Long"));
+t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Long"));
 t.toString(Long.parseLong("12345"));
 t.fromString("12345");
-t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Float"));
+t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Float"));
 t.toString(Float.parseFloat("12345.6789"));
 t.fromString("12345.6789");
-t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/Double"));
+t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Double"));
 t.toString(Double.parseDouble("12345.6789"));
 t.fromString("12345.6789");
-t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/BigDecimal"));
+t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/BigDecimal"));
 t.toString(new java.math.BigDecimal("12345.6789"));
 t.fromString("12345.6789");
 
@@ -53,7 +53,7 @@ t.fromString("12345.6789");
 "//   specific precision and scale";
 "//";
 "";
-t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/BigDecimalType"));
+t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/BigDecimalType"));
 
 "";
 "/////////////////////////////////////////";
@@ -61,7 +61,7 @@ t=typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/BigDeci
 "// Subclassed ReflectionType";
 "//";
 "";
-t=typeResolver.resolve(URI.create("java:/java/awt/Rectangle"));
+t=typeResolver.resolve(URI.create("class:/java/awt/Rectangle"));
 t.getScheme();
 t.getArchetype().getScheme();
 t.getArchetype().getArchetype().getScheme();
@@ -73,8 +73,8 @@ t.getArchetype().getArchetype().getScheme();
 "//";
 "";
 result=new spiralcraft.data.sax.DataReader().readFromURI
-  (URI.create("java:/spiralcraft/data/test/1.data.xml")
-  ,typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/String"))
+  (URI.create("class:/spiralcraft/data/test/1.data.xml")
+  ,typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/String"))
   );
 result.getClass();
 
@@ -86,8 +86,8 @@ result.getClass();
 "//";
 "";
 result=new spiralcraft.data.sax.DataReader().readFromURI
-  (URI.create("java:/spiralcraft/data/test/2.data.xml")
-  ,typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/BigDecimal"))
+  (URI.create("class:/spiralcraft/data/test/2.data.xml")
+  ,typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/BigDecimal"))
   );
 result.getClass();
 
@@ -98,7 +98,7 @@ result.getClass();
 "//";
 "";
 type=typeResolver
-	.resolve(URI.create("java:/spiralcraft/builder/test/SimpleWidget.assy"));
+	.resolve(URI.create("class:/spiralcraft/builder/test/SimpleWidget.assy"));
 
 "";
 "/////////////////////////////////////////";
@@ -107,7 +107,7 @@ type=typeResolver
 "//";
 "";
 result=new spiralcraft.data.sax.DataReader().readFromURI
-  (URI.create("java:/spiralcraft/data/test/3.data.xml")
+  (URI.create("class:/spiralcraft/data/test/3.data.xml")
   ,type
   );
 result.toText("|  ");
@@ -186,8 +186,8 @@ resultObject.getClass();
 "//";
 "";
 result=new spiralcraft.data.sax.DataReader().readFromURI
-  (URI.create("java:/spiralcraft/data/test/4.data.xml")
-  ,typeResolver.resolve(URI.create("java:/spiralcraft/data/types/standard/String"))
+  (URI.create("class:/spiralcraft/data/test/4.data.xml")
+  ,typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/String"))
   );
 result.getClass();
 
@@ -197,9 +197,9 @@ result.getClass();
 "// Test custom Scheme- 'Customer' data";
 "//";
 "";
-customerType=typeResolver.resolve(URI.create("java:/spiralcraft/data/test/example/Customer"));
+customerType=typeResolver.resolve(URI.create("class:/spiralcraft/data/test/example/Customer"));
 result=new spiralcraft.data.sax.DataReader().readFromURI
-  (URI.create("java:/spiralcraft/data/test/5.data.xml")
+  (URI.create("class:/spiralcraft/data/test/5.data.xml")
   ,customerType
   );
 result.toText("|  ");
@@ -210,10 +210,10 @@ result.toText("|  ");
 "// Test custom Scheme- 'Customer' list";
 "//";
 "";
-customerListType=typeResolver.resolve(URI.create("java:/spiralcraft/data/test/example/Customer.list"));
+customerListType=typeResolver.resolve(URI.create("class:/spiralcraft/data/test/example/Customer.list"));
 dataReader=new spiralcraft.data.sax.DataReader();
 result=dataReader.readFromURI
-  (URI.create("java:/spiralcraft/data/test/example/Customer.data.xml")
+  (URI.create("class:/spiralcraft/data/test/example/Customer.data.xml")
   ,customerListType
   );
 result.toText("|  ");
@@ -228,7 +228,7 @@ result.toText("|  ");
 dataReader=new spiralcraft.data.sax.DataReader();
 dataReader.setDataConsumer(new spiralcraft.data.util.DebugDataConsumer());
 dataReader.readFromURI
-  (URI.create("java:/spiralcraft/data/test/example/Customer.data.xml")
+  (URI.create("class:/spiralcraft/data/test/example/Customer.data.xml")
   ,customerListType
   );
 
@@ -248,7 +248,7 @@ focus.getSubject().set(new spiralcraft.data.session.DataSession());
 
 queryable=new spiralcraft.data.xml.XmlQueryable
 	(spiralcraft.data.Type.getAggregateType(customerType)
-	,URI.create("java:/spiralcraft/data/test/example/Customer.data.xml")
+	,URI.create("class:/spiralcraft/data/test/example/Customer.data.xml")
 	);
 
 boundQuery = 
@@ -296,7 +296,7 @@ bTchannel.get();
 "";
 
 nodeType=spiralcraft.data.Type.resolve
-	("java:/spiralcraft/data/test/example/Node");
+	("class:/spiralcraft/data/test/example/Node");
 
 
 
