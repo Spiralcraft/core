@@ -1,0 +1,47 @@
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:example="class:/spiralcraft/data/test/example"
+  >
+  
+  <fields>
+    <meta:Field>
+          
+      <name>localName
+      </name>
+      
+      <type>
+        <String.type>
+
+          <maxLength>256
+          </maxLength>
+        
+        </String.type>
+      </type>
+
+    </meta:Field>
+    
+    <meta:Field>
+      <name>mimeType
+      </name>
+      
+      <type>
+        <String.type>
+
+          <maxLength>256
+          </maxLength>
+        
+        </String.type>
+      </type>
+    </meta:Field>
+
+    <meta:Field>
+      <name>content
+      </name>
+
+      <type>
+        <BLOB.type/>
+      </type>
+    </meta:Field>
+
+  </fields>
+</meta:Type>

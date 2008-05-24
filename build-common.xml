@@ -1,7 +1,7 @@
 <project name="build-common">
 	<!--
 	  Master Template
-	  Last updated 2007-11-01 16:19
+	  Last updated 2008-05-22 17:53
   -->
 
   <property file="build.number"/>
@@ -41,7 +41,8 @@
     <jar 
       destfile="lib/spiralcraft-${module}.jar" 
       basedir="source"
-      >
+      level="9"
+            >
       <Manifest>
         <attribute name="Class-Path" value="${manifest.class.path}"/>
         <attribute name="Main-Class" value="${manifest.main.class}"/>   
@@ -49,6 +50,9 @@
       <include name="spiralcraft/**/*.class"/>
       <include name="spiralcraft/**/*.xml"/>
       <include name="spiralcraft/**/*.tgl"/>
+      <include name="spiralcraft/**/*.webui"/>
+      <include name="spiralcraft/**/*.ghtml"/>
+      <include name="spiralcraft/**/*.properties"/>
     </jar>
   </target>
 

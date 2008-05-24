@@ -5,6 +5,10 @@
   	  file="../main/lib/spiralcraft-main.jar"
   	  todir="lib"
   	/>  	
+  	<copy
+  	  file="../../build/resources/ant/build-common.xml"
+  	  todir="."
+  	/>
   </target>
   
 </project>
