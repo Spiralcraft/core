@@ -14,13 +14,10 @@
 //
 package spiralcraft.data.query;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.TeleFocus;

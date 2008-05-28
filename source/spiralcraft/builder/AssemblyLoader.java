@@ -82,6 +82,25 @@ public class AssemblyLoader
   }
 
   /**
+   * Retrieve the AssemblyClass that wraps the specified Java class, by
+   *   converting the class name into a canonical Assembly URI. The URI
+   *   identifies an abstract resource- ie. if <uri>.assy.xml does
+   *   not exist, a default assembly for the Java class will be returned.
+   */
+  public synchronized AssemblyClass findAssemblyClass(Class<?> javaClass)
+    throws BuildException
+  {
+    return findAssemblyClass
+      (URI.create
+        ("class:/"
+        +javaClass.getName()
+          .replace('.','/')
+          .replace('$','-')
+        )
+      );
+  }
+  
+  /**
    * Retrieve the AssemblyClass identified by the specified URI. The URI
    *   identifies an abstract resource- ie. if <uri>.assy.xml does
    *   not exist, a default assembly for the Java class associated with

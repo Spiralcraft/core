@@ -26,6 +26,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 
 import spiralcraft.builder.AssemblyClass;
+import spiralcraft.builder.BuildException;
 import spiralcraft.builder.PropertySpecifier;
 
 import spiralcraft.builder.Assembly;
@@ -107,8 +108,18 @@ public class BuilderTypeFactory
       
     AssemblyClass containingClass
       =outerType.getAssemblyClass();
-    PropertySpecifier containingProperty
-      =containingClass.getMember(propertyName);
+    
+    PropertySpecifier containingProperty=null;
+    try
+    {
+      containingProperty=containingClass.getMember(propertyName);
+    }
+    catch (BuildException x)
+    { 
+      throw new DataException
+        ("Error getting AssemblyClass member "+propertyName);
+    }
+    
     if (containingProperty==null)
     { 
       throw new DataException

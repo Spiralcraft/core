@@ -14,7 +14,6 @@
 //
 package spiralcraft.data;
 
-import spiralcraft.data.session.BufferTuple;
 
 /**
  * An immutable Tuple that is part of a series of other tuples which represent

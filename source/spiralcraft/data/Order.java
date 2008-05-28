@@ -14,7 +14,6 @@
 //
 package spiralcraft.data;
 
-import java.util.Comparator;
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
@@ -73,7 +72,7 @@ public class Order
       throws BindException
     { 
       super(BeanReflector.<Integer>getInstance(Integer.class));
-      if (debug)
+      if (debug || Order.this.debug)
       { log.fine("OrderChannel ["+ArrayUtil.format(elements,"],[","")+"]");
       }
       elementChannels=(Channel<Integer>[]) new Channel[elements.length];

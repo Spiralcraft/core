@@ -487,6 +487,11 @@ public class PropertySpecifier
   { return _targetName;
   }
 
+  /**
+   * Add an assembly class owned by this PropertySpecifier
+   * 
+   * @param assemblyClass
+   */
   public void addAssemblyClass(AssemblyClass assemblyClass)
   { 
     if (_contents==null)

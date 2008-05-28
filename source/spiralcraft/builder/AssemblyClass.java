@@ -14,13 +14,21 @@
 //
 package spiralcraft.builder;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.net.URI;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
 
+
+import spiralcraft.beans.BeanInfoCache;
+import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.lang.Focus;
+import spiralcraft.log.ClassLogger;
 import spiralcraft.util.ArrayUtil;
 
 import spiralcraft.vfs.classpath.ClasspathResourceFactory;
@@ -35,6 +43,13 @@ import spiralcraft.vfs.classpath.ClasspathResourceFactory;
  */
 public class AssemblyClass
 {
+  
+  private static final BeanInfoCache _BEAN_INFO_CACHE
+    =BeanInfoCache.getInstance(Introspector.IGNORE_ALL_BEANINFO);
+  
+  private static final ClassLogger log
+    =ClassLogger.getInstance(AssemblyClass.class);
+  
   private final URI sourceURI;
   
 
@@ -69,6 +84,7 @@ public class AssemblyClass
   private boolean _resolved;
   private String _constructorText;
   private PropertySpecifier _containingProperty;
+  private boolean _resolving;
   
   /**
    * Construct a new AssemblyClass from a definition
@@ -194,7 +210,7 @@ public class AssemblyClass
   void registerMember(String name,PropertySpecifier prop)
     throws BuildException
   { 
-    assertUnresolved();
+    // assertUnresolved();
     
     if (_members==null)
     { 
@@ -218,10 +234,22 @@ public class AssemblyClass
     if (_compositeMembers!=null)
     { 
       System.err.println("AssemblyClass: Recomposing "+prop);
-      // XXX Should override more intelligently,
-      //   if property exists instead of double
-      //   setting.
-      _compositeMembers.add(prop);
+
+      boolean found=false;
+      for (int i=0;i<_compositeMembers.size();i++)
+      {
+        PropertySpecifier baseMember=_compositeMembers.get(i);
+        if (baseMember.getTargetName().equals(name))
+        {
+          _compositeMembers.set(i,prop);
+          prop.setBaseMember(baseMember);
+          found=true;
+          break;
+        }
+      }
+      if (!found)
+      { _compositeMembers.add(prop);
+      }
     }
   }
 
@@ -240,6 +268,7 @@ public class AssemblyClass
    *   chain.
    */
   public PropertySpecifier getMember(String name)
+    throws BuildException
   { 
     PropertySpecifier member=null;
     if (_memberMap!=null)
@@ -249,7 +278,50 @@ public class AssemblyClass
     if (member==null && _baseAssemblyClass!=null)
     { member=_baseAssemblyClass.getMember(name);
     }
+       
+    if (member==null && _javaClass!=null)
+    {
+      // Set up a default association
+      try
+      {
+        MappedBeanInfo beanInfo
+          =_BEAN_INFO_CACHE.getBeanInfo(_javaClass);
+      
+        PropertyDescriptor descriptor=beanInfo.findProperty(name);
+        if (descriptor!=null)
+        {
+          member=new PropertySpecifier(this,name);
+          Class<?> propertyType=descriptor.getPropertyType();
+          if (!propertyType.isArray()
+              && 
+              !Collection.class.isAssignableFrom(propertyType)
+             )
+          { 
+            AssemblyClass sourceBaseClass
+              =_loader.findAssemblyClass(propertyType);
+
+            member.addAssemblyClass
+              (innerSubclass(sourceBaseClass)
+              );
+          }
+          if (_resolving || _resolved)
+          { member.resolve();
+          }
+          _memberMap.put(name,member);
+          if (_compositeMembers!=null)
+          { _compositeMembers.add(member);
+          }
+          
+        }
+      }
+      catch (IntrospectionException x)
+      { throw new BuildException("Error introspecting "+_javaClass.getName(),x);
+      }
+    }
     
+    if (member==null)
+    { log.fine("Member "+name+" not found- javaClass="+_javaClass);
+    }
     return member;
   }
 
@@ -309,6 +381,7 @@ public class AssemblyClass
   public synchronized void resolve()
     throws BuildException
   { 
+    _resolving=true;
     assertUnresolved();
     if (_baseAssemblyClass==null)
     { resolveExternalBaseClass();

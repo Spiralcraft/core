@@ -16,31 +16,22 @@ package spiralcraft.data.query;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.TeleFocus;
 import spiralcraft.log.ClassLogger;
 import spiralcraft.util.ArrayUtil;
 
 import spiralcraft.data.Order;
 import spiralcraft.data.OrderElement;
-import spiralcraft.data.Projection;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.data.access.SerialCursor;
-import spiralcraft.data.core.ProjectionImpl;
-import spiralcraft.data.spi.ArrayTuple;
 import spiralcraft.data.spi.ListCursor;
 import spiralcraft.data.spi.OrderComparator;
 
@@ -148,7 +139,8 @@ public class Sort
 class SortBinding<Tq extends Sort,T extends Tuple>
   extends BoundQuery<Tq,T>
 {
-  private static final ClassLogger log=ClassLogger.getInstance(SelectionBinding.class);
+  private static final ClassLogger log
+    =ClassLogger.getInstance(SelectionBinding.class);
   private OrderComparator comparator;
   private Focus<?> paramFocus;
   private boolean resolved;
