@@ -38,27 +38,6 @@ public abstract class IterationDecorator<T,I>
   
   /**
    * 
-   * <p>Provide a binding that exposes the component of an in-process Iteration
-   * </p>
-   * 
-   * <p>The IterationCursor maintains the state of
-   *   a given iteration, and is managed in an application specific fashion not
-   *   defined by the spiralcraft.lang package.
-   * </p>
-   *
-   * @return A binding to an IterationCursor that "downcasts" to the appropriate
-   *   iteration component type. 
-   *   
-   */
-//  public IterationCursorChannel<I>
-//    createComponentBinding(Channel<IterationCursor<I>> iterationCursorSource)
-//  { 
-//    return new IterationCursorChannel<I>
-//      (componentReflector,iterationCursorSource);
-//  }
-  
-  /**
-   * 
    * @return The Reflector which describes the component type of the Iteration.
    *   
    */
@@ -66,6 +45,11 @@ public abstract class IterationDecorator<T,I>
   { return componentReflector;
   }
   
+  /**
+   * Override to provide an implementation specific Iterator
+   * 
+   * @return
+   */
   protected abstract Iterator<I> createIterator();
   
   /**
