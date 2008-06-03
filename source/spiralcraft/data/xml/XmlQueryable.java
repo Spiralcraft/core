@@ -23,8 +23,6 @@ import spiralcraft.data.sax.DataWriter;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.EditableAggregate;
-import spiralcraft.data.EditableTuple;
-import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
@@ -33,7 +31,6 @@ import spiralcraft.data.DataException;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
-import spiralcraft.vfs.file.FileResource;
 import spiralcraft.vfs.util.Watcher;
 import spiralcraft.vfs.util.WatcherHandler;
 

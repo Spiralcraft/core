@@ -86,6 +86,8 @@ public class AssemblyClass
   private PropertySpecifier _containingProperty;
   private boolean _resolving;
   
+  private boolean debug;
+  
   /**
    * Construct a new AssemblyClass from a definition
    *
@@ -233,7 +235,9 @@ public class AssemblyClass
 
     if (_compositeMembers!=null)
     { 
-      System.err.println("AssemblyClass: Recomposing "+prop);
+      if (debug)
+      { log.fine("Recomposing "+prop);
+      }
 
       boolean found=false;
       for (int i=0;i<_compositeMembers.size();i++)

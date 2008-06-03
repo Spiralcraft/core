@@ -39,18 +39,14 @@ import spiralcraft.data.access.Updater;
 import spiralcraft.data.core.SequenceField;
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.EquiJoin;
-import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Scan;
 import spiralcraft.data.sax.DataWriter;
 import spiralcraft.data.session.BufferTuple;
 import spiralcraft.data.session.BufferType;
 import spiralcraft.data.spi.AbstractStore;
-import spiralcraft.data.spi.ArrayTuple;
 import spiralcraft.data.spi.BaseExtentQueryable;
 import spiralcraft.data.spi.EditableArrayTuple;
-import spiralcraft.data.util.DebugDataConsumer;
-import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
@@ -388,8 +384,11 @@ public class XmlStore
         
         try
         { 
-          debugWriter.writeToOutputStream(System.out, tuple);
-          System.out.flush();
+          if (debug)
+          {
+            debugWriter.writeToOutputStream(System.out, tuple);
+            System.out.flush();
+          }
         }
         catch (IOException x)
         { x.printStackTrace();
