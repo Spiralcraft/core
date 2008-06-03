@@ -155,7 +155,7 @@ public class ExpressionParser
     return _tokenizer.ttype!=StreamTokenizer.TT_EOF;
   }
 
-
+  
   /**
    * Expression -> ConditionalExpression
    */
@@ -438,6 +438,7 @@ public class ExpressionParser
   /**
    * UnaryExpression -> "-" UnaryExpression
    *                  | "!" UnaryExpression
+   *                  | "{" ListExpression "}" ( PostfixExpression )
    *                  | PostfixExpression
    */
   private Node parseUnaryExpression()
@@ -451,11 +452,23 @@ public class ExpressionParser
       case '!':
         consumeToken();
         return parseUnaryExpression().not();
+      case '{':
+        consumeToken();
+        Node ret=parseListExpression();
+        expect('}');
+        return parsePostfixExpressionRest(ret);
       default:
         return parsePostfixExpression();
     }
   }
 
+  @SuppressWarnings("unchecked") // Unknown type
+  private Node parseListExpression()
+    throws ParseException
+  {
+    return new ListNode(parseExpressionList());
+  }
+  
   // 
   // Beyond this point there is no left-hand-side recursion
   //
@@ -738,20 +751,22 @@ public class ExpressionParser
     else
     { 
       String name=_tokenizer.sval;
-      Node primary=new PrimaryIdentifierNode(focus,name);
       
       consumeToken();
       if (_tokenizer.ttype=='(')
       { 
-        // XXX Support global functions
-        throwUnexpected();
-        return null;
+        // Method call
+        consumeToken();
+        Node node=new ContextNode(focus)
+          .call(name,parseExpressionList());
+        expect(')');
+        return parsePostfixExpressionRest(node);
       }
       else
       {
         // The PrimaryIdentifierNode is the node that will resolve
         //   the identifier. Pass it through.
-        return primary;
+        return new PrimaryIdentifierNode(focus,name);
       }
     }
   }
