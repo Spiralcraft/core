@@ -24,6 +24,7 @@ import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
+import spiralcraft.log.ClassLogger;
 
 /**
  * A Translator associated with a single bean property. The 'get' transformation
@@ -33,6 +34,9 @@ class BeanPropertyTranslator<Tprop,Tbean>
   implements Translator<Tprop,Tbean>
 {
   private static final Object[] EMPTY_PARAMS=new Object[0];
+  
+  private static final ClassLogger log
+    =ClassLogger.getInstance(BeanPropertyTranslator.class);
 
   private final PropertyDescriptor _property;
   private final Method _readMethod;
@@ -43,8 +47,41 @@ class BeanPropertyTranslator<Tprop,Tbean>
   public BeanPropertyTranslator(PropertyDescriptor property,MappedBeanInfo beanInfo)
     throws BindException
   { 
+    
     _property=property;
-    _readMethod=property.getReadMethod();
+    Method readMethod=property.getReadMethod();
+    
+    if (readMethod!=null)
+    {
+      // Get the actual readMethod from the actual class we're introspecting,
+      //   because the PropertyDescriptor might not pick up a co-variant return
+      //   type
+      //
+      // (this is a problem that strangely cropped up only on linux and not
+      //   on windows, with identical binaries and java version 6u6)
+      try
+      {
+        Method altReadMethod
+          =beanInfo.getBeanDescriptor().getBeanClass()
+            .getMethod(readMethod.getName(), new Class[0]);
+        if (altReadMethod!=null)
+        { readMethod=altReadMethod;
+        }
+      }
+      catch (NoSuchMethodException x)
+      { 
+        log.fine
+          ("NoSuchMethodException getting alt read method "
+            +beanInfo.getBeanDescriptor().getBeanClass()+"."
+            +readMethod.getName()+"()"
+          );
+      }
+      _readMethod=readMethod;
+    }
+    else
+    { _readMethod=null;
+    }
+    
     _beanInfo=beanInfo;
     if (_readMethod!=null)
     {
@@ -56,7 +93,18 @@ class BeanPropertyTranslator<Tprop,Tbean>
       _reflector=BeanReflector.<Tprop>getInstance
         ((Class<Tprop>)_property.getPropertyType());
     }
-    
+//    if (_property.getName().equals("state"))
+//    { 
+//      if (_readMethod!=null)
+//      {
+//        log.fine("State "
+//                +_property.getReadMethod().getReturnType()+"\r\n"
+//                +_property.getReadMethod().getGenericReturnType()+"\r\n"
+//                +_property.getPropertyType()+"\r\n"
+//              );
+//      }
+//      log.fine(beanInfo.getBeanDescriptor().getBeanClass().toString());
+//    }
   }
 
   public MappedBeanInfo getBeanInfo()
