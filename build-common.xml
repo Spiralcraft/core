@@ -1,7 +1,7 @@
 <project name="build-common">
 	<!--
 	  Master Template
-	  Last updated 2008-06-06 17:53
+	  Last updated 2008-06-06 19:41
   -->
 
   <property file="build.number"/>
@@ -16,7 +16,7 @@
   
   <target name="clean">
     <delete>
-      <fileset dir="source" includes="**/*.class"/>
+      <fileset dir="out" includes="**/*"/>
     </delete>
   </target>
   
@@ -26,9 +26,18 @@
     <javac 
       classpath="${classpath}"
       srcdir="source" 
+      destdir="out"
       debug="true"
       deprecation="true"
     />
+    <copy toDir="out">
+      <fileset
+        dir="source"
+        excludes="**/*.class,**/*.java"
+        >
+        
+      </fileset>
+    </copy>
   </target>
 
   <target name="smoke" depends="jar">
@@ -46,7 +55,7 @@
     <echo message= "jar: ${build.name}"/>
     <jar 
       destfile="lib/spiralcraft-${module}.jar" 
-      basedir="source"
+      basedir="out"
       level="9"
             >
       <Manifest>
