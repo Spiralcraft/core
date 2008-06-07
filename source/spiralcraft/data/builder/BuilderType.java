@@ -47,7 +47,7 @@ import java.net.URI;
  */
 @SuppressWarnings("unchecked") // Can't further specify Assembly generic
 public class BuilderType
-  extends TypeImpl<Assembly>
+  extends TypeImpl<Assembly<?>>
 {
   public static final char INNER_PATH_SEPARATOR='_';
   public static final URI GENERIC_BUILDER_TYPE_URI
@@ -64,7 +64,7 @@ public class BuilderType
   
   private Field classField;
   
-  { nativeClass=Assembly.class;
+  { nativeClass=(Class<Assembly<?>>) (Class) Assembly.class;
   }
   
   public static final boolean isApplicable(URI uri)
@@ -286,6 +286,7 @@ public class BuilderType
   }
   
   @SuppressWarnings("unchecked") // Runtime downcast- can't use generic version
+  @Override
   public DataComposite toData(Assembly<?> obj)
     throws DataException
   {
@@ -298,8 +299,8 @@ public class BuilderType
     if (assembly.getAssemblyClass()!=targetAssemblyClass)
     { 
       // System.out.println("Narrowing "+getUri());
-      Type<Assembly> targetType
-        =(BuilderType) getTypeResolver().<Assembly>resolve
+      Type<Assembly<?>> targetType
+        =(BuilderType) getTypeResolver().<Assembly<?>>resolve
           (canonicalURI(assembly.getAssemblyClass())
           );
       return targetType.toData(assembly);    

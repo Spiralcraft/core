@@ -88,7 +88,7 @@ public class XmlAssembly<Treferent>
     throws DataException
   { 
     try
-    { return ((BuilderType) type).newAssembly(null);
+    { return ((BuilderType) (Type) type).newAssembly(null);
     }
     catch (BuildException x)
     { throw new DataException("Error instantiating assembly "+typeURI+": "+x,x);

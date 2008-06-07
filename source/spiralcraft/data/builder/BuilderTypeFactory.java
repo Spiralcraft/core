@@ -74,7 +74,7 @@ public class BuilderTypeFactory
       else
       { parentUri=URI.create(uriString+".assy");
       }
-      BuilderType parentType=(BuilderType) resolver.<Assembly>resolve(parentUri);
+      BuilderType parentType=(BuilderType) resolver.<Assembly<?>>resolve(parentUri);
       
       return new BuilderType
         (parentType
