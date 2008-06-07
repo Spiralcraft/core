@@ -24,7 +24,6 @@ import spiralcraft.data.core.MethodImpl;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
-import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataComposite;
 import spiralcraft.util.ArrayUtil;

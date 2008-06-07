@@ -1,6 +1,5 @@
 package spiralcraft.data.core;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import spiralcraft.data.Field;
@@ -16,7 +15,7 @@ public class UnifiedFieldSet
   private final int fieldCount;
 
   
-  public UnifiedFieldSet(Type type)
+  public UnifiedFieldSet(Type<?> type)
   { 
     this.type=type;
     Type<?> baseType=type.getBaseType();

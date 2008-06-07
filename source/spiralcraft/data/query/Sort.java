@@ -139,8 +139,6 @@ public class Sort
 class SortBinding<Tq extends Sort,T extends Tuple>
   extends BoundQuery<Tq,T>
 {
-  private static final ClassLogger log
-    =ClassLogger.getInstance(SelectionBinding.class);
   private OrderComparator comparator;
   private Focus<?> paramFocus;
   private boolean resolved;

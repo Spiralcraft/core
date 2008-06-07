@@ -33,6 +33,7 @@ public final class ArrayToString<Tdata>
     return buf.toString();
   }
 
+  @SuppressWarnings("unchecked")
   public Tdata[] fromString(String val)
   { 
     String[] strings=StringUtil.tokenize(val,",");

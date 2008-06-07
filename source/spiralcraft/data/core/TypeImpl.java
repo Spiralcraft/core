@@ -391,7 +391,7 @@ public class TypeImpl<T>
   
   public DataComposite toData(T val)
     throws DataException
-  { throw new UnsupportedOperationException("Not persistable");
+  { throw new UnsupportedOperationException("Not persistable: "+toString());
   }
   
   public Type<?> getContentType()

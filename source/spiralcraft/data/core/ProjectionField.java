@@ -15,12 +15,7 @@
 package spiralcraft.data.core;
 
 import spiralcraft.data.Field;
-import spiralcraft.data.Tuple;
-import spiralcraft.data.core.FieldImpl.FieldChannel;
 
-import spiralcraft.lang.BindException;
-import spiralcraft.lang.Focus;
-import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 
 /**

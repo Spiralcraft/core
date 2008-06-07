@@ -20,7 +20,6 @@ import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.vfs.util.ResourceWrapper;
 
-import java.io.IOException;
 import java.net.URI;
 
 

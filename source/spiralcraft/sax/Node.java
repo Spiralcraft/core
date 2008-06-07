@@ -63,17 +63,18 @@ public abstract class Node
   { return _children;
   }
 
-  public List<? super Node> getChildren(Class<?> type)
+  @SuppressWarnings("unchecked") // Runtime type check
+  public <X extends Node> List<X> getChildren(Class<X> type)
   { 
     if (_children==null)
     { return null;
     }
 
-    List<? super Node> ret=new ArrayList<Node>();
+    List<X> ret=new ArrayList<X>();
     for (Node child:_children)
     {
       if (type.isAssignableFrom(child.getClass()))
-      { ret.add(child);
+      { ret.add((X) child);
       }
     }
     return ret;

@@ -67,7 +67,7 @@ public class AggregateIndexTranslator<T>
   }
 
   @SuppressWarnings("unchecked") // Upcast for expected modifiers
-  public Aggregate<T> translateForSet(T value,Channel[] modifiers)
+  public Aggregate<T> translateForSet(T value,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException("Can't reverse array index");
   }
 

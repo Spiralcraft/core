@@ -63,11 +63,14 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
     Channel<T2> op2=focus.<T2>bind(new Expression<T2>(_op2,null));
     
     if (String.class.isAssignableFrom(op1.getContentType()))
-    { return (Channel<T1>) StringBindingHelper.bindString(focus,(Channel<String>) op1,op2,_op);
+    { return (Channel<T1>) (Object) 
+        StringBindingHelper.bindString
+          (focus,(Channel<String>) (Object) op1,op2,_op);
     }
     else if (ClassUtil.isNumber(op1.getContentType()))
     { 
-      return (Channel<T1>) NumberBindingHelper.bindNumber
+      return (Channel<T1>) (Object)
+        NumberBindingHelper.bindNumber
         (focus
         ,(Channel<? extends Number>) op1
         ,(Channel<? extends Number>) op2
@@ -508,12 +511,12 @@ abstract class NumericTranslator<Tret extends Number,T1 extends Tret,T2 extends 
   }
 
   @SuppressWarnings("unchecked") // Heterogeneous Array
-  public Tret translateForGet(T1 val,Channel[] mods)
+  public Tret translateForGet(T1 val,Channel<?>[] mods)
   { return get(val,((Channel<T2>) mods[0]).get());
   }
   
   @SuppressWarnings("unchecked") // Heterogeneous Array
-  public T1 translateForSet(Tret val,Channel[] mods)
+  public T1 translateForSet(Tret val,Channel<?>[] mods)
   { return set(val,((Channel<T2>) mods[0]).get());
   }
 

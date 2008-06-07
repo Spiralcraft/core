@@ -15,7 +15,6 @@
 package spiralcraft.data.core;
 
 import spiralcraft.data.Type;
-import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.DataComposite;

@@ -5,13 +5,13 @@ import java.net.URI;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
-import spiralcraft.data.Projection;
 import spiralcraft.data.Scheme;
+import spiralcraft.data.Tuple;
 import spiralcraft.data.TypeResolver;
 
 
 public class FieldSetType
-  extends TypeImpl
+  extends TypeImpl<Tuple>
 {
 
   private static int seq=0;

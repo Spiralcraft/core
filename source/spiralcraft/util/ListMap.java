@@ -14,6 +14,7 @@
 //
 package spiralcraft.util;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,13 +28,18 @@ public class ListMap<K,T>
   implements MultiMap<K,T>
 {
 
+  public ListMap()
+  { super(new LinkedHashMap<K,List<T>>());
+  }
+  
   public ListMap(Map<K,List<T>> map)
   { super(map);
   }
 
   /**
-   * Associates a key with single element array containing the
+   * <P>Associate a key with single element List containing the
    *   specified value
+   * </P>
    */
   public void set(K key,T value)
   { 
@@ -43,8 +49,9 @@ public class ListMap<K,T>
   } 
 
   /**
-   * Append the value to the array indexed to the specified key.
-   * If the array does not exist, it will be created
+   * <P>Append the value to the List indexed to the specified key.
+   *   If the List does not exist, it will be created
+   * </P>
    */
   public void add(K key,T value)
   { 
@@ -57,6 +64,11 @@ public class ListMap<K,T>
     }
   }
 
+  /**
+   * <P>Remove the value from the List indexed to the specified key. If the 
+   *   List is empty after removal, the key will be removed.
+   * </P>
+   */
   public void remove(K key,T value)
   { 
     List<T> list=get(key);
@@ -80,6 +92,24 @@ public class ListMap<K,T>
     else
     { return list.get(0);
     }
+  }
+  
+  /**
+   * Add all the values to the specified list, and return the number of
+   *   values added
+   * 
+   * @param target The list to append to
+   * @return
+   */
+  public int toValueList(List<T> target)
+  {
+    int i=0;
+    for (List<T> list: values())
+    { 
+      i+=list.size();
+      target.addAll(list);
+    }
+    return i;
   }
 
 }

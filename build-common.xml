@@ -1,7 +1,7 @@
 <project name="build-common">
 	<!--
 	  Master Template
-	  Last updated 2008-05-22 17:53
+	  Last updated 2008-06-06 17:53
   -->
 
   <property file="build.number"/>
@@ -12,7 +12,13 @@
   <property environment="env"/>
   <property name="spiralcraft.build" value="../../build"/>
   
-  <target name="build" depends="compile,jar,smoke" />
+  <target name="build" depends="clean,compile,jar,smoke" />
+  
+  <target name="clean">
+    <delete>
+      <fileset dir="source" includes="**/*.class"/>
+    </delete>
+  </target>
   
   <target name="compile">
     <buildnumber/>

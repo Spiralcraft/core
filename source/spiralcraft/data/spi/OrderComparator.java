@@ -23,7 +23,6 @@ import spiralcraft.data.lang.TupleReflector;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 

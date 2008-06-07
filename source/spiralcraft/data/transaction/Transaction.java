@@ -77,7 +77,7 @@ public class Transaction
   
   private final Transaction parent;
   // private Transaction sub;
-  private Nesting nesting;
+//  private Nesting nesting;
   private State state;
   private boolean rollbackOnly;
   private ArrayList<Transaction> subtransactions
@@ -89,7 +89,7 @@ public class Transaction
   Transaction(Transaction parent,Nesting nesting)
   { 
     this.parent=parent;
-    this.nesting=nesting;
+//    this.nesting=nesting;
     TRANSACTION_LOCAL.set(this);
     this.state=State.STARTED;
   }

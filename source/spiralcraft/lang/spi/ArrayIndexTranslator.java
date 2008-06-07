@@ -33,7 +33,7 @@ public class ArrayIndexTranslator<T>
   }
 
   @SuppressWarnings("unchecked") // Upcast for expected modifiers
-  public T translateForGet(T[] source,Channel[] modifiers)
+  public T translateForGet(T[] source,Channel<?>[] modifiers)
   { 
     if (modifiers==null || modifiers.length==0)
     { return null;
@@ -49,7 +49,7 @@ public class ArrayIndexTranslator<T>
   }
 
   @SuppressWarnings("unchecked") // Upcast for expected modifiers
-  public T[] translateForSet(T value,Channel[] modifiers)
+  public T[] translateForSet(T value,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException("Can't reverse array index");
   }
 

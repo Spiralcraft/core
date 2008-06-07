@@ -220,7 +220,7 @@ public class BeanReflector<T>
     (Channel<? extends T> source,Class<D> decoratorInterface)
     throws BindException
   { 
-    if (decoratorInterface==IterationDecorator.class)
+    if (decoratorInterface==(Object) IterationDecorator.class)
     { 
       
       if (targetClass.isArray())

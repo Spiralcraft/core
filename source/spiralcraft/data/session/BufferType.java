@@ -23,6 +23,7 @@ import spiralcraft.data.Field;
 import spiralcraft.data.core.KeyField;
 import spiralcraft.data.core.TypeImpl;
 import spiralcraft.data.core.SchemeImpl;
+
 import spiralcraft.log.ClassLogger;
 
 
@@ -37,15 +38,15 @@ public class BufferType
 {
   private static final ClassLogger log=ClassLogger.getInstance(BufferType.class);
   
-  public static final BufferType getBufferType(Type<?> bufferedType)
-    throws DataException
-  {
-    return (BufferType) Type.resolve
-      (URI.create
-         (bufferedType.getURI().toString().concat(".buffer"))
-      ); 
-    
-  }
+//  public static final BufferType getBufferType(Type<?> bufferedType)
+//    throws DataException
+//  {
+//    return (BufferType) Type.resolve
+//      (URI.create
+//         (bufferedType.getURI().toString().concat(".buffer"))
+//      ); 
+//    
+//  }
   
   
   private boolean linked;

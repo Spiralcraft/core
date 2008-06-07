@@ -17,7 +17,6 @@ package spiralcraft.data.core;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
-import spiralcraft.data.TypeNotFoundException;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;

@@ -16,7 +16,6 @@ package spiralcraft.security.spi;
 
 import spiralcraft.security.auth.Authenticator;
 import spiralcraft.security.auth.AuthSession;
-import spiralcraft.security.auth.Credential;
 import spiralcraft.security.auth.UsernameCredential;
 import spiralcraft.security.auth.PasswordCleartextCredential;
 

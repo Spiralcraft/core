@@ -25,7 +25,6 @@ import spiralcraft.log.ClassLogger;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
-import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
@@ -35,7 +34,6 @@ import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.core.FieldImpl;
 
 import spiralcraft.data.lang.DataReflector;
-import spiralcraft.data.lang.TupleReflector;
 
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Query;
@@ -48,7 +46,7 @@ public class QueryField
   protected static ClassLogger log=ClassLogger.getInstance(QueryField.class);
   
   private Query query;
-  private boolean resolved;
+//  private boolean resolved;
   
   
   public QueryField()
