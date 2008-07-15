@@ -97,5 +97,14 @@ public abstract class ResourceWrapper
     throws IOException
   { getDelegate().renameTo(uri);
   }
+  
+  public void delete()
+    throws IOException
+  { getDelegate().delete();
+  }
 
+  public void moveTo(Resource target)
+    throws IOException
+  { getDelegate().moveTo(target);
+  }
 }

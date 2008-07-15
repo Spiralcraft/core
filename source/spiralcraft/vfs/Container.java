@@ -61,4 +61,10 @@ public interface Container
   Resource createLink(String name,Resource resource)
     throws UnresolvableURIException;
   
+  /**
+   * Return the Resource aspect of this Container
+   * 
+   * @return
+   */
+  Resource asResource();
 }

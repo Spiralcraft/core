@@ -57,5 +57,9 @@ public class ByteArrayResource
   public void renameTo(URI name)
   { throw new UnsupportedOperationException("A ByteArray cannot be renamed");
   }
-  
+
+  public void delete()
+  { _bytes=null;
+  }
+
 }

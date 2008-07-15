@@ -20,8 +20,11 @@ import org.xml.sax.SAXException;
 
 import spiralcraft.util.ArrayUtil;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Represents an Element in an XML document
@@ -34,6 +37,7 @@ public class Element
   private String _qName;
   private Attribute[] _attributes;
   private HashMap<String,String> prefixMappings;
+
   
   /**
    * Constructor for no-namespace client use
@@ -43,7 +47,7 @@ public class Element
     ,Attribute[] attributes
     )
   { 
-    _uri="";
+    _uri=name;
     _localName=name;
     _qName=name;
     _attributes=attributes;
@@ -83,6 +87,74 @@ public class Element
     }
   }
 
+  public int pruneElements(Set<String> uriList)
+  { 
+    int count=0;
+    Iterator<Node> it=getChildren().iterator();
+    while (it.hasNext())
+    {
+      Node node=it.next();
+      if (node instanceof Element)
+      {
+        Element element=(Element) node;
+        if (uriList.contains(element.getResolvedName()))
+        { 
+          it.remove();
+          count++;
+        }
+        else
+        { count+=element.pruneElements(uriList);
+        }
+      }
+    }
+    return count;
+  }
+  
+  public int pruneAttributes(String elementURI,Set<String> attributeURIList)
+  {
+    int count=0;
+    if (elementURI==null || elementURI.equals(getResolvedName()))
+    {
+      if (_attributes!=null)
+      {
+        ArrayList<Attribute> list=new ArrayList<Attribute>(_attributes.length);
+        for (int i=0;i<_attributes.length;i++)
+        { 
+          if (!attributeURIList.contains(_attributes[i].getResolvedName()))
+          { list.add(_attributes[i]);
+          }
+          else
+          { count++;
+          }
+        }
+        if (count>0)
+        { _attributes=list.toArray(new Attribute[list.size()]);
+        }
+      }
+    }
+
+    if (getChildren()!=null)
+    {
+      Iterator<Node> it=getChildren().iterator();
+      while (it.hasNext())
+      {
+        Node node=it.next();
+        if (node instanceof Element)
+        { count+=((Element) node).pruneAttributes(elementURI,attributeURIList);
+        }
+      }
+    }
+    return count;
+    
+  }
+  
+  /**
+   * @return A String in the format of: { uri "#" } name
+   */
+  public String getResolvedName()
+  { return _uri!=null && !_uri.isEmpty()?_uri+"#"+_localName:_localName;
+  }
+  
   /**
    * @return Any namespace prefix mappings declared in this Element 
    */

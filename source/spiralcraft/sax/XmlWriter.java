@@ -19,6 +19,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import spiralcraft.util.StringUtil;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -39,6 +41,10 @@ public class XmlWriter
   private Writer _writer;
   private Locator _locator;
   private boolean _elementDelimiterPending=false;
+  private boolean format;
+  private int indentLevel;
+  private String indentString="  ";
+  
 
   public XmlWriter(OutputStream out)
   { 
@@ -61,7 +67,16 @@ public class XmlWriter
   { return _locator;
   }
   
-
+  /**
+   * <P>Format the output by inserting line breaks and indent spaces where
+   *   appropriate
+   * </P>
+   * 
+   * @param format
+   */
+  public void setFormat(boolean format)
+  { this.format=format;
+  }
   
   public void startElement
     (String namespaceURI
@@ -74,11 +89,17 @@ public class XmlWriter
     checkElementClose();      
     try
     {
+      if (format)
+      { _writer.write("\r\n\r\n"+StringUtil.repeat(indentString,indentLevel++));
+      }
       _writer.write("<");
       _writer.write(qName);
       for (int i=0;i<attribs.getLength();i++)
       { 
         _writer.write(" ");
+        if (format && i>0)
+        { _writer.write("\r\n"+StringUtil.repeat(indentString,indentLevel));
+        }
         _writer.write(attribs.getQName(i));
         _writer.write("=\"");
         writeAttributeValue(attribs.getValue(i));
@@ -104,6 +125,9 @@ public class XmlWriter
   { 
     try
     {
+      if (format)
+      { indentLevel--;
+      }
       if (_elementDelimiterPending)
       { 
         _writer.write("/>");
@@ -111,6 +135,9 @@ public class XmlWriter
       }
       else
       {
+        if (format)
+        { _writer.write("\r\n"+StringUtil.repeat(indentString,indentLevel));
+        }
         _writer.write("</");
         _writer.write(qName);
         _writer.write(">");
@@ -121,14 +148,27 @@ public class XmlWriter
     }
   }
 
+  private boolean isWhitespace(char c)
+  { return c=='\t' || c=='\r' || c=='\n' || c==' ';
+  }
+  
   public void characters(char[] ch,int start,int length)
     throws SAXException
   { 
     checkElementClose();      
     try
     { 
+      if (format)
+      {
+        while (start<length && isWhitespace(ch[start]))
+        { start++;
+        }
+      }
+      
       for (int i=start;i<length;i++)
       {
+
+        
         switch (ch[i])
         {
         case '&':
@@ -198,7 +238,10 @@ public class XmlWriter
   { 
     checkElementClose();      
     try
-    { _writer.write(ch,start,length);
+    { 
+      if (!format)
+      { _writer.write(ch,start,length);
+      }
     }
     catch (IOException x)
     { fail(x);

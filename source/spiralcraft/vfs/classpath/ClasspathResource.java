@@ -84,4 +84,9 @@ public class ClasspathResource
     }
     return false; 
   }
+  
+  public void delete()
+    throws IOException
+  { throw new IOException("ClasspathResource is read-only");
+  }
 }

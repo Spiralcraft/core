@@ -28,6 +28,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 
 
+import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -285,14 +286,16 @@ public class XmlQueryable
       =Resolver.getInstance().resolve
         (URI.create(this.resource.getURI().toString()+tempSuffix));
 
+    URI backupURI=null;
     if (resource.exists())
     {
-      resource.renameTo
-        (URI.create
+      backupURI=URI.create
           (resource.getURI().toString()
           +"."+dateFormat.format
             (new Date())
-          )
+          );
+      resource.renameTo
+        (backupURI
         );
     }
     
@@ -302,6 +305,18 @@ public class XmlQueryable
         ("Renaming "+tempResource.getURI()+" to "+resource.getURI());
     }
     tempResource.renameTo(resource.getURI());
+    
+    if (backupURI!=null)
+    { 
+      Resource backupResource=Resolver.getInstance().resolve(backupURI);
+      Container container=backupResource.getParent().asContainer();
+      Container backupContainer=container.getChild("history").asContainer();
+      if (backupContainer!=null && backupResource.exists())
+      { backupResource.moveTo(backupContainer.asResource());
+      }
+      
+    }
+    
     watcher.reset();
   }
 

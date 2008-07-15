@@ -31,6 +31,7 @@ public abstract class Node
   private Object _peer;
   private PrefixResolver prefixResolver;
 
+
   /**
    * Associate an application specific Object with this
    *   node.

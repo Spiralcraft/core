@@ -36,7 +36,7 @@ public class Attribute
     _localName=name;
     _qName=name;
     _type="";
-    _uri="";
+    _uri=name;
     _value=value;
 
   }
@@ -72,6 +72,14 @@ public class Attribute
   { return _uri;
   }
 
+  /**
+   * @return A String in the format of: { uri "#" } name
+   */
+  public String getResolvedName()
+  { return _uri!=null && !_uri.isEmpty()?_uri+"#"+_localName:_localName;
+  }
+
+  
   public String getValue()
   { return _value;
   }

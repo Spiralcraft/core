@@ -151,4 +151,23 @@ public class StringUtil
     return -1;
     
   }
+  
+  /**
+   * Repeat the specified string the specified number of occurrences.
+   * 
+   * @param string
+   * @param occurrences
+   * @return
+   */
+  public static StringBuilder repeat(String string,int occurrences)
+  {
+    StringBuilder ret=new StringBuilder();
+    if (string==null)
+    { return ret;
+    }
+    for (int i=0;i<occurrences;i++)
+    { ret.append(string);
+    }
+    return ret;
+  }
 }

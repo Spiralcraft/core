@@ -102,4 +102,17 @@ public abstract class AuthSession
   
   public abstract boolean isAuthenticated();
   
+  /**
+   * Logs out the user by clearing all credentials and principal data and
+   *   setting authenticated to false.
+   */
+  public void logout()
+  {
+    credentialList.clear();
+    credentialMap.clear();
+    principal=null;
+    authenticated=false;
+    
+  }
+  
 }

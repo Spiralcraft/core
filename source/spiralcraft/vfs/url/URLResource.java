@@ -99,4 +99,9 @@ public class URLResource
     throws IOException
   { throw new UnsupportedOperationException("URL rename not supported "+uri);
   }
+  
+  public void delete()
+    throws IOException
+  { throw new IOException("URL Delete is not implemented");
+  }
 }

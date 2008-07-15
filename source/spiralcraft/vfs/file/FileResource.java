@@ -50,6 +50,10 @@ public class FileResource
     _file=new File(uri);
   }
 
+  public Resource asResource()
+  { return this;
+  }
+  
   public File getFile()
   { return _file;
   }
@@ -197,5 +201,44 @@ public class FileResource
     if (!_file.renameTo(new File(uri)))
     { throw new IOException("Rename failed "+uri);
     }
+  }
+  
+  public void moveTo(Resource target)
+    throws IOException
+  { 
+    if (!(target instanceof FileResource))
+    { super.moveTo(target);
+    }
+    
+    Container container=target.asContainer();
+    if (target.exists() && container!=null)
+    { 
+      if (!_file.renameTo
+          ( ((FileResource) container.getChild(getLocalName()))
+          .getFile()
+          ))
+      { super.moveTo(target);
+      }
+      else
+      { this.delete();
+      }
+    }
+    else
+    { 
+      if (!_file.renameTo
+          ( ((FileResource) target)
+          .getFile()
+          ))
+      { super.moveTo(target);
+      }
+      else
+      { this.delete();
+      }
+    }
+    
+  }      
+  
+  public void delete()
+  { _file.delete();
   }
 }

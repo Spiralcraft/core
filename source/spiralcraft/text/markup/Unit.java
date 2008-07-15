@@ -25,16 +25,16 @@ import spiralcraft.text.ParsePosition;
 public abstract class Unit<T extends Unit<T>>
 {
   protected LinkedList<T> children;
-  private final T _parent;
+  protected final T parent;
   private String _name;
   private ParsePosition position;
   
   @SuppressWarnings("unchecked") // addChild(this)- bi-di link assumes subclass
   public Unit(T parent)
   { 
-    _parent=parent;
-    if (_parent!=null)
-    { _parent.addChild((T) this);
+    this.parent=parent;
+    if (this.parent!=null)
+    { this.parent.addChild((T) this);
     }
   }
   
@@ -67,8 +67,8 @@ public abstract class Unit<T extends Unit<T>>
     if (clazz.isAssignableFrom(getClass()))
     { return (X) this;
     }
-    else if (_parent!=null)
-    { return _parent.<X>findUnit(clazz);
+    else if (parent!=null)
+    { return parent.<X>findUnit(clazz);
     }
     else
     { return null;
@@ -76,7 +76,7 @@ public abstract class Unit<T extends Unit<T>>
   }
 
   public T getParent()
-  { return _parent;
+  { return parent;
   }
   
   public String getName()

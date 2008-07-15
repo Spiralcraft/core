@@ -124,11 +124,29 @@ public interface Resource
     throws IOException;
   
   /**
-   * Renames the resource if appropriate and efficient. Will 
+   * Renames the resource if appropriate and efficient.
    */
   public void renameTo(URI uri)
     throws IOException;
 
+  /**
+   * Move the content of the resource to the targetResource, overwriting
+   *   the targetResource if it exists. If the targetResource specifies a
+   *   container (ie. a directory) the resource will be moved to it.
+   *   
+   * @param resource
+   */
+  public void moveTo(Resource targetResource)
+    throws IOException;
+  
+  /**
+   * Delete the resource
+   *
+   * @throws IOException
+   */
+  public void delete()
+    throws IOException;
+  
   /**
    * Write the InputStream to the resource
    */

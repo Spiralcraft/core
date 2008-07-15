@@ -191,6 +191,23 @@ public abstract class AbstractResource
     
   }
   
+  public void moveTo(Resource target)
+    throws IOException
+  { 
+    Container container=target.asContainer();
+    if (target.exists() && container!=null)
+    { 
+      container.getChild(getLocalName()).copyFrom(this);
+      this.delete();
+    }
+    else
+    { 
+      target.copyFrom(this);
+      this.delete();
+    }
+    
+  }  
+  
   public long getSize()
     throws IOException
   { return 0;
