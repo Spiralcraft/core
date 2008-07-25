@@ -43,7 +43,6 @@ public class DebugDataConsumer<T extends Tuple>
   { nextConsumer=(DataConsumer<T>) consumer;
   }
 
-  @SuppressWarnings("unchecked") // Chain pass-through is not runtime type safe
   public void dataAvailable(T tuple) throws DataException
   {
     out.println(tuple.toText("| "));

@@ -92,7 +92,6 @@ public abstract class AbstractChannel<T>
   { return _reflector.getContentType();
   }
   
-  @SuppressWarnings("unchecked") // Heterogeneous ops
   public <X> Channel<X> resolve
     (Focus<?> focus
     ,String name

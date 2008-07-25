@@ -47,7 +47,7 @@ public interface Reflector<T>
    *   specified interface
    */
   public <D extends Decorator<T>> D decorate
-    (Channel<? extends T> source,Class<D> decoratorInterface)
+    (Channel<T> source,Class<D> decoratorInterface)
     throws BindException;
   
   /**

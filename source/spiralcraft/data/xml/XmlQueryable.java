@@ -54,7 +54,6 @@ import spiralcraft.log.ClassLogger;
 public class XmlQueryable
   extends AbstractAggregateQueryable<Tuple>
 {
-  @SuppressWarnings("unused")
   private static final ClassLogger log
     =ClassLogger.getInstance(XmlQueryable.class);
   

@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import spiralcraft.log.ClassLogger;
+
 /**
  * Core implementation of a Type
  */
@@ -314,7 +315,6 @@ public class TypeImpl<T>
    * Default implementation of validate is to ensure that the supplied object
    *   is assignable to this Type's nativeClass.
    */
-  @SuppressWarnings("unchecked")
   public ValidationResult validate(Object o)
   { 
     if (nativeClass==null)

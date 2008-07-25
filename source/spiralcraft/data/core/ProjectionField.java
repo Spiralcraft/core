@@ -18,11 +18,6 @@ import spiralcraft.data.Field;
 
 import spiralcraft.lang.Expression;
 
-/**
- * @author mike
- *
- */
-@SuppressWarnings("unchecked")
 
 /**
  * <p>A Field in a Projection which maps a name to an expression in the context

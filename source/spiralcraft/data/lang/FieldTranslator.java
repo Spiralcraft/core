@@ -30,7 +30,6 @@ public class FieldTranslator
   private final Field field;
   private final Reflector<Object> reflector;
   
-  @SuppressWarnings("unchecked") // We haven't genericized the data package builder yet
   public FieldTranslator(Field field)
     throws BindException
   { 

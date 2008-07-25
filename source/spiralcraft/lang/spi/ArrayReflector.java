@@ -83,7 +83,6 @@ public class ArrayReflector<I>
   private Class<I[]> targetClass;
   private URI uri;
   
-  @SuppressWarnings("unchecked") // Runtime case from Type to Class<T>
   public ArrayReflector(Reflector<I> componentReflector)
   { 
     
@@ -118,7 +117,6 @@ public class ArrayReflector<I>
     return componentReflector.isAssignableTo(baseURI);
   }
   
-  @SuppressWarnings("unchecked") // Expression array params heterogeneous
   public synchronized <X> Channel<X> 
     resolve(Channel<I[]> source
         ,Focus<?> focus
@@ -137,9 +135,8 @@ public class ArrayReflector<I>
     return binding;
   }
 
-  @SuppressWarnings("unchecked") // Dynamic class info
   public <D extends Decorator<I[]>> D decorate
-    (Channel<? extends I[]> source,Class<D> decoratorInterface)
+    (Channel<I[]> source,Class<D> decoratorInterface)
     throws BindException
   { 
     if (decoratorInterface==(Object) IterationDecorator.class)
@@ -152,7 +149,6 @@ public class ArrayReflector<I>
   }
   
 
-  @SuppressWarnings("unchecked") // Reading property from map
   private synchronized <X> Channel<X> getArrayProperty(Channel<I[]> source,String name)
     throws BindException
   {

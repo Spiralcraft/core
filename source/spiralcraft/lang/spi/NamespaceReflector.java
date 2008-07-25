@@ -58,8 +58,7 @@ public class NamespaceReflector
   
   
   
-  @SuppressWarnings("unchecked") // Can't return Class of extended generic type
-  public Class getContentType()
+  public Class<Namespace> getContentType()
   { return Namespace.class;
   }
   
@@ -90,9 +89,8 @@ public class NamespaceReflector
     
   }
 
-  @SuppressWarnings("unchecked") // Dynamic class info
   public <D extends Decorator<Namespace>> D decorate
-    (Channel<? extends Namespace> source,Class<D> decoratorInterface)
+    (Channel<Namespace> source,Class<D> decoratorInterface)
     throws BindException
   { return null;
   }

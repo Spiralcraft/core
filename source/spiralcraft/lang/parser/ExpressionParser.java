@@ -37,7 +37,6 @@ public class ExpressionParser
   private StreamTokenizer _tokenizer;
   private int _pos;
 
-  @SuppressWarnings("unchecked") // Parse methods are polymorphic
   public <X> Expression<X> parse(String text)
     throws ParseException
   { 
@@ -462,11 +461,13 @@ public class ExpressionParser
     }
   }
 
+  /**
+   * ListExpression -> ExpressionList
+   */
   @SuppressWarnings("unchecked") // Unknown type
   private Node parseListExpression()
     throws ParseException
-  {
-    return new ListNode(parseExpressionList());
+  { return new ListNode(parseExpressionList());
   }
   
   // 
@@ -570,7 +571,6 @@ public class ExpressionParser
    * FocusRelativeExpression -> "." FocusRelativeExpression 
    *                            | PostfixExpressionRest
    */
-  @SuppressWarnings("unchecked") // Parser methods are heterogeneous  
   private Node parseFocusRelativeExpression(FocusNode focusNode)
     throws ParseException
   { 
@@ -848,6 +848,7 @@ public class ExpressionParser
   /**
    * FocusExpression -> FocusName 
    */
+  @SuppressWarnings("fallthrough")
   private FocusNode parseFocusSpecifier()
     throws ParseException
   {

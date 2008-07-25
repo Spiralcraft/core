@@ -282,7 +282,7 @@ public class TupleReflector<T extends Tuple>
   
   
   public <D extends Decorator<T>> D 
-    decorate(Channel<? extends T> binding,Class<D> decoratorInterface)
+    decorate(Channel<T> binding,Class<D> decoratorInterface)
   { 
     // This depends on a system for registering and mapping decorators
     //   to Tuple constructs.

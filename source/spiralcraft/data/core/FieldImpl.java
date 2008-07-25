@@ -444,7 +444,6 @@ public class FieldImpl
     return binding;
   }
   
-  @SuppressWarnings("unchecked")
   public class FieldChannel
     extends AbstractChannel
   {

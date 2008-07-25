@@ -29,7 +29,6 @@ public class AggregateIndexTranslator<T>
 {
   private final Reflector<T> contentReflector;
   
-  @SuppressWarnings("unchecked")
   public AggregateIndexTranslator(DataReflector<Aggregate<T>> aggregateReflector)
     throws BindException
   { 
@@ -66,7 +65,6 @@ public class AggregateIndexTranslator<T>
     }
   }
 
-  @SuppressWarnings("unchecked") // Upcast for expected modifiers
   public Aggregate<T> translateForSet(T value,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException("Can't reverse array index");
   }

@@ -250,7 +250,6 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
 
   }
   
-  @SuppressWarnings("unchecked")
   @Override
   public Iterator<T> iterator()
   {

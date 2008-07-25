@@ -80,11 +80,11 @@ public class AggregateReflector<T extends Aggregate<I>,I>
    *   source that provides Tuples.
    */
   @SuppressWarnings("unchecked") // We haven't genericized the data package yet
-  public synchronized Channel resolve
-    (final Channel source
-    ,Focus focus
+  public synchronized <X> Channel<X> resolve
+    (final Channel<T> source
+    ,Focus<?> focus
     ,String name
-    ,Expression[] params
+    ,Expression<?>[] params
     )
     throws BindException
   {
@@ -103,7 +103,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
       return binding;
     }
     else if (name.equals("[]"))
-    { return subscript(source,focus,params[0]);
+    { return (Channel<X>) subscript(source,focus,params[0]);
     }
     else
     {
@@ -127,14 +127,14 @@ public class AggregateReflector<T extends Aggregate<I>,I>
 
   
   @SuppressWarnings("unchecked") // Generic factory method, manip. unknown types
-  public Decorator
-    decorate(Channel binding,Class decoratorInterface)
+  public <D extends Decorator<T>> D
+    decorate(Channel<T> binding,Class<D> decoratorInterface)
     throws BindException
   { 
-    if (decoratorInterface==IterationDecorator.class)
+    if (decoratorInterface.equals(IterationDecorator.class))
     { 
       Reflector reflector=DataReflector.getInstance(type.getContentType());
-      return new AggregateIterationDecorator(binding,reflector);
+      return (D) new AggregateIterationDecorator<T,I>(binding,reflector);
     }
     return null;
   }
@@ -146,7 +146,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   
   @SuppressWarnings("unchecked") // Reflective subscript type
   private Channel<?> subscript
-    (Channel<Aggregate<I>> source
+    (Channel<T> source
     ,Focus<?> focus
     ,Expression<?> subscript
     )
@@ -170,18 +170,18 @@ public class AggregateReflector<T extends Aggregate<I>,I>
         || Byte.class.isAssignableFrom(subscriptClass)
         )
     {
-       return new TranslatorChannel<I,Aggregate<I>>
+       return new TranslatorChannel<I,T>
          (source
          ,new AggregateIndexTranslator(this)
          ,new Channel[] {subscriptChannel}
-         );
+         ); 
     }
     else if 
       (Boolean.class.isAssignableFrom(subscriptClass)
       || boolean.class.isAssignableFrom(subscriptClass)
       )
     {
-       return new AggregateSelectChannel<I>
+       return new AggregateSelectChannel<T,I>
          (source
          ,componentChannel
          ,(Channel<Boolean>) subscriptChannel
@@ -205,14 +205,17 @@ public class AggregateReflector<T extends Aggregate<I>,I>
           :"(untyped)"
        );
   }
+
+
+
 }
 
-class AggregateIterationDecorator<I>
-  extends IterationDecorator<Aggregate<I>,I>
+class AggregateIterationDecorator<T extends Aggregate<I>,I>
+  extends IterationDecorator<T,I>
 {
 
   public AggregateIterationDecorator
-    (Channel<Aggregate<I>> source,Reflector<I> reflector)
+    (Channel<T> source,Reflector<I> reflector)
   { super(source,reflector);
   }
   

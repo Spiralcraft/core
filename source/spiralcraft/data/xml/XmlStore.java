@@ -120,7 +120,6 @@ public class XmlStore
 //    
 //  }
   
-  @SuppressWarnings("unchecked")
   public void setQueryables(XmlQueryable[] list)
   { 
     

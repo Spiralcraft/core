@@ -16,7 +16,7 @@ package spiralcraft.command;
 
 /**
  * <p>Provides a simple mechanism for implementing the Command interface by
- *   implementing the run() method of the Runnable interface.
+ *   implementing an abstract run() method.
  * </p>
  * 
  * <p>Deals with synchronization, setting and storing of flags, catching 
@@ -31,7 +31,7 @@ package spiralcraft.command;
  *
  */
 public abstract class CommandAdapter<Ttarget,Tresult>
-  implements Command<Ttarget,Tresult>,Runnable
+  implements Command<Ttarget,Tresult>
 {
   private boolean started;
   private boolean completed;
@@ -85,12 +85,18 @@ public abstract class CommandAdapter<Ttarget,Tresult>
   protected void setResult(Tresult result)
   { this.result=result;
   }
+  
+  /**
+   * <p>Run the function associated with the command.
+   * </p>
+   */
+  protected abstract void run();
 
   /**
    * <p>Execute the command
    * </p>
    * 
-   * <p>Note: to implement functionality, consider overriding the run()
+   * <p>Note: to implement functionality, override the run()
    *   method instead.
    * </p>
    */

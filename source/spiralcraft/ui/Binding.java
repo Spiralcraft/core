@@ -179,7 +179,6 @@ public class Binding
     }
   }
 
-  @SuppressWarnings("unchecked")
   private Object translateToUi(Object value)
   {
     // Unchecked generics b/c in meta-land here
@@ -195,7 +194,6 @@ public class Binding
     }
   }
 
-  @SuppressWarnings("unchecked")
   private Object translateToModel(Object value)
   {
     // Unchecked generics b/c in meta-land here

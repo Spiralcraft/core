@@ -109,7 +109,7 @@ public abstract class CommandConsole
   
   public void changeFocus(String focusExpression)
   {
-    if (focus!=null);
+    if (focus!=null) {};
   }
   
   public String getFocusPathString()
@@ -132,7 +132,7 @@ public abstract class CommandConsole
     throws UnrecognizedCommandException
   {
     String commandName=tokens[0];
-    if (commandName!=null);
+    if (commandName!=null) {}
     Command<?,?> command=null; // XXX Resolve command here
     ArgumentSet parameterSet=null; // XXX Resolve command argument set
     

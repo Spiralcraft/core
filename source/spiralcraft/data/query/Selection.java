@@ -131,7 +131,6 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     
   }
 
-  @SuppressWarnings("unchecked")
   public void resolve() throws DataException
   { 
     if (!resolved)
@@ -179,10 +178,9 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     { super(source);
     }
   
-    @SuppressWarnings("unchecked")
     protected boolean integrate()
     { 
-      Tt t=(Tt) sourceChannel.get();
+      Tt t=sourceChannel.get();
       if (t==null)
       { 
         if (debug)
@@ -221,10 +219,9 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     { super(source);
     }
 
-    @SuppressWarnings("unchecked")
     protected boolean integrate()
     { 
-      Tt t=(Tt) sourceChannel.get();
+      Tt t=sourceChannel.get();
       if (t==null)
       { 
         if (debug)

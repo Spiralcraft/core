@@ -34,7 +34,6 @@ public class CollectionSelectChannel<X>
   }
     
     
-  @SuppressWarnings("unchecked") // Array instantiation
   @Override
   protected Collection<X> retrieve()
   {

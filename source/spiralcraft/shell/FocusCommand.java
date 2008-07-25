@@ -16,7 +16,7 @@ package spiralcraft.shell;
 
 
 import spiralcraft.command.CommandAdapter;
-import spiralcraft.command.Commands;
+import spiralcraft.command.CommandMenu;
 
 /**
  * Provides textual information about the current Commandable 
@@ -24,13 +24,13 @@ import spiralcraft.command.Commands;
  * XXX stub
  */
 public class FocusCommand
-  extends CommandAdapter<Commands<?>,String>
+  extends CommandAdapter<CommandMenu,String>
 {
   private String targetName;
   
   public void run()
   { 
-    if (targetName!=null);
+    if (targetName!=null) {};
   }
 
 }

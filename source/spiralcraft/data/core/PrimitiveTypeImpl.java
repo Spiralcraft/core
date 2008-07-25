@@ -60,7 +60,6 @@ public abstract class PrimitiveTypeImpl<T>
   
   
   
-  @SuppressWarnings("unchecked")
   public String toString(T val)
   { 
     if (val==null)

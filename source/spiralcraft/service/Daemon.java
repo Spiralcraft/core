@@ -71,7 +71,7 @@ public class Daemon
 
   public void register(RegistryNode node)
   {
-    Logger logger=(Logger) node.findInstance(Logger.class);    
+    Logger logger=node.findInstance(Logger.class);    
     if (logger==null)
     { 
       logger=new RegistryLogger();

@@ -32,7 +32,7 @@ public class LogicalOrNode
     { return Boolean.TRUE;
     }
     Boolean mod=((Channel<Boolean>) mods[0]).get();
-    boolean val2=mod!=null?((Boolean) mod).booleanValue():false;
+    boolean val2=mod!=null?mod.booleanValue():false;
     return val2?Boolean.TRUE:Boolean.FALSE;
   }
   

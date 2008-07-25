@@ -26,7 +26,7 @@ public class ArgumentDefinition
   }
   
   public ParameterDefinition getParameter(String name)
-  { return (ParameterDefinition) _parameters.get(name);
+  { return _parameters.get(name);
   }
   
   public boolean isNameValid(String name)

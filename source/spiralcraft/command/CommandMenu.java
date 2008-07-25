@@ -15,16 +15,20 @@
 package spiralcraft.command;
 
 /**
- * <p>Provides a set of Commands associated with a given type of target
+ * <p>Provides information about Commands associated with a given type of 
+ *   target
  * </p>
  * 
  * <p>A Commands is associated with a target by convention or mapping
  * </p>
  * 
+ * <p>XXX Incomplete
+ * </p>
+ * 
  * @author mike
  * 
  */
-public interface Commands<Ttarget>
+public interface CommandMenu
 {
   
   /**

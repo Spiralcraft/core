@@ -92,7 +92,6 @@ public class DataSynchronizer
   { nextConsumer=consumer;
   }
 
-  @SuppressWarnings("unchecked") // Chain pass-through is not compile-time safe
   public void dataAvailable(Tuple tuple)
     throws DataException
   {

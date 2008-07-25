@@ -2,6 +2,7 @@ package spiralcraft.data.lang;
 
 
 import spiralcraft.lang.AccessException;
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
@@ -10,11 +11,11 @@ import spiralcraft.data.Aggregate;
 import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 
-public class AggregateSelectChannel<X>
+public class AggregateSelectChannel<T extends Aggregate<X>,X>
   extends AbstractChannel<Aggregate<X>>
 {
 
-  private final Channel<Aggregate<X>> source;
+  private final Channel<T> source;
   private final ThreadLocalChannel<X> componentChannel;
   private final Channel<Boolean> selector;
   
@@ -25,24 +26,26 @@ public class AggregateSelectChannel<X>
    * @param selector The selector which evaluates the filter expression
    *  
    */
+  
   public AggregateSelectChannel
-    (Channel<Aggregate<X>> source
+    (Channel<T> source
     ,ThreadLocalChannel<X> componentChannel
     ,Channel<Boolean> selector
     )
+    throws BindException
   { 
-    super(source.getReflector());
+    super(DataReflector.<Aggregate<X>> getInstance
+        ( ((DataReflector<?>) source.getReflector()).getType()));
     this.source=source;
     this.componentChannel=componentChannel;
     this.selector=selector;   
   }
     
     
-  @SuppressWarnings("unchecked") // Array instantiation
   @Override
   protected Aggregate<X> retrieve()
   {
-    Aggregate<X> aggregate=source.get();
+    T aggregate=source.get();
     EditableAggregate<X> ret=new EditableArrayListAggregate<X>(aggregate.getType());
     componentChannel.push(null);
     try

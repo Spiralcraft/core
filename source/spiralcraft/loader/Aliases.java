@@ -48,7 +48,7 @@ public class Aliases
   public void register(RegistryNode registryNode)
   { 
     _registryNode=registryNode;
-    Preferences prefs=(Preferences) _registryNode.findInstance(Preferences.class);
+    Preferences prefs=_registryNode.findInstance(Preferences.class);
     if (prefs!=null)
     {
       try
@@ -82,7 +82,7 @@ public class Aliases
 
     String expansion;
     synchronized (_map)
-    { expansion=(String) _map.get(source[0]);
+    { expansion=_map.get(source[0]);
     }
 
     if (expansion==null)

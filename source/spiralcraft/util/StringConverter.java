@@ -193,7 +193,7 @@ final class StringToString
   extends StringConverter<String>
 {
   public String toString(String val)
-  { return (String) val;
+  { return val;
   }
 
   public String fromString(String val)

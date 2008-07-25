@@ -26,7 +26,6 @@ class BeanFieldTranslator<Tprop,Tbean>
   private final Field _field;
   private final Reflector<Tprop> _reflector;
   
-  @SuppressWarnings("unchecked") // Field is not generic
   public BeanFieldTranslator(Field field)
     throws BindException
   { 

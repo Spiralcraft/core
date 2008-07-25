@@ -166,7 +166,6 @@ class SortBinding<Tq extends Sort,T extends Tuple>
     
   }
 
-  @SuppressWarnings("unchecked")
   public void resolve() throws DataException
   { 
     if (!resolved)

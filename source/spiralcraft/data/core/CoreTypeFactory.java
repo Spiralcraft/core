@@ -54,7 +54,7 @@ public class CoreTypeFactory
       return constructor.newInstance(resolver,uri);
     }
     catch (NoSuchMethodException x)
-    { System.err.println(x);
+    { // System.err.println(x);
     }
     catch (InvocationTargetException x)
     { 

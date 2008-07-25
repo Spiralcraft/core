@@ -26,14 +26,12 @@ public interface DataConsumerChain<T extends Tuple>
   /**
    * Set the next DataConsumer in the chain
    */
-  @SuppressWarnings("unchecked") // The chain may convert between Tuple types
   void setDataConsumer(DataConsumer<?> consumer);
   
   /**
    * Insert the specified DataConsumerChain into the chain
    *   immediately after this one
    */
-  @SuppressWarnings("unchecked") // The chain may convert between Tuple types
   void insertDataConsumer(DataConsumerChain<?> consumerChain);
   
 }

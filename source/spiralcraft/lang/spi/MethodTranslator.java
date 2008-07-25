@@ -32,7 +32,6 @@ class MethodTranslator<Tprop,Tbean>
   private final Method _method;
   private final Reflector<Tprop> _reflector;
   
-  @SuppressWarnings("unchecked") // Method is not parameterized
   public MethodTranslator(Method method)
     throws BindException
   { 

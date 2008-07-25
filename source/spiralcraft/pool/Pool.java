@@ -66,7 +66,7 @@ public class Pool
   private int _removesCount;
 
   public void register(RegistryNode node)
-  { _log=(Logger) node.findInstance(Logger.class);
+  { _log=node.findInstance(Logger.class);
   }
 
   /**
@@ -392,7 +392,7 @@ public class Pool
 
   private Reference removeOut(Object res)
   { 
-    Reference ref=(Reference) _out.remove(res);
+    Reference ref=_out.remove(res);
     if (ref!=null)
     { _checkedOutCount--;
     }
@@ -491,7 +491,7 @@ public class Pool
 
   private Reference popAvailable()
   {
-    Reference ret=(Reference) _available.pop();
+    Reference ret=_available.pop();
     _checkedInCount--;
     return ret;
   }

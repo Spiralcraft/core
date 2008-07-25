@@ -30,7 +30,6 @@ public class ListNode<T>
 
   private final List<Node> sources;
   
-  @SuppressWarnings("unchecked") // Raw type for parameter node array
   public ListNode(List<Node> sources)
   { this.sources=sources;
   }
@@ -61,9 +60,7 @@ public class ListNode<T>
         for (Channel<T> channel: channels)
         { list.add(channel.get());
         }
-        
-        // TODO Auto-generated method stub
-        return null;
+        return list;
       }
 
       @Override

@@ -111,7 +111,7 @@ public class ArgumentSet
     }
     else
     { 
-      Object[] values=(Object[]) _values.get(name);
+      Object[] values=_values.get(name);
       if (values==null)
       { return 0;
       }
@@ -127,7 +127,7 @@ public class ArgumentSet
     { return null;
     }
     else
-    { return (Object[]) _values.get(name);
+    { return _values.get(name);
     }
   }
   
@@ -138,7 +138,7 @@ public class ArgumentSet
     }
     else
     { 
-      Object[] values=(Object[]) _values.get(name);
+      Object[] values=_values.get(name);
       if (values==null)
       { return null;
       }

@@ -459,7 +459,7 @@ public class Parser
           {
             throw new ParseException
               ("line "+(inputRows+1)+": Read too many fields (>"+_fields.getFieldCount()+")"
-              +" at "+dataObject+" after '"+st.ttype+"' ("+(int) st.ttype+")"
+              +" at "+dataObject+" after '"+(char) st.ttype+"' ("+st.ttype+")"
               +": buffer is "+tuple
               );
           }
@@ -467,7 +467,7 @@ public class Parser
           {
             System.err.println
               ("line "+(inputRows+1)+": Read too many fields (>"+_fields.getFieldCount()+")"
-              +" at "+dataObject+" after '"+st.ttype+"' ("+(int) st.ttype+")"
+              +" at "+dataObject+" after '"+(char) st.ttype+"' ("+st.ttype+")"
               +": buffer is "+tuple
               );
             if (st.ttype==StreamTokenizer.TT_EOL)

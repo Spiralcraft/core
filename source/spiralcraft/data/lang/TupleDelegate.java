@@ -196,7 +196,8 @@ class TupleDelegateReflector<T>
   // We haven't genericized the data package builder yet
   // XXX TODO- this gets pretty hacked up using generics- figure out something cleaner
   @SuppressWarnings("unchecked")
-  public Decorator<T> decorate(Channel source,Class decoratorInterface)
+  public <D extends Decorator<T>> D 
+    decorate(Channel<T> source,Class<D> decoratorInterface)
   { 
     try
     {

@@ -48,7 +48,6 @@ public class ArrayIndexTranslator<T>
     return source[index.intValue()];
   }
 
-  @SuppressWarnings("unchecked") // Upcast for expected modifiers
   public T[] translateForSet(T value,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException("Can't reverse array index");
   }

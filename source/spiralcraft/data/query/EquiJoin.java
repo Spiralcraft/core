@@ -231,10 +231,9 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
     { super(source);
     }
   
-    @SuppressWarnings("unchecked")
     protected boolean integrate()
     { 
-      Tt t=(Tt) sourceChannel.get();
+      Tt t=sourceChannel.get();
       if (t==null)
       { 
         if (debug)
@@ -281,10 +280,9 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
     { super(source);
     }
 
-    @SuppressWarnings("unchecked")
     protected boolean integrate()
     { 
-      Tt t=(Tt) sourceChannel.get();
+      Tt t=sourceChannel.get();
       if (t==null)
       { 
 //        System.err.println("BoundEquiJoin: eod ");

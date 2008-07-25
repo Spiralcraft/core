@@ -14,33 +14,17 @@
 //
 package spiralcraft.command;
 
-
 /**
- * <p>Manages the execution of commands for a user or machine
- *   interface session.
- * </p>
- * 
- * <p>Provides a single point for the serialization and tracking of
- *   user actions expressed as commands.
- * </p>
- * 
- * <p>XXX Incomplete
+ * <p>Allows an arbitrary object to provide a CommandMenu and Command instances
+ *   to support Command scripting (eg. a command-line interface).
  * </p>
  * 
  * @author mike
- * 
  */
-public interface CommandProcessor
+public interface Commandable
 {
-
+  public CommandMenu getCommandMenu();
   
-  /**
-   * <p>Execute the command.
-   * </p>
-   * 
-   * 
-   * @param command
-   */
-  void executeCommand(Command<?,?> command);
- 
+  public Command<?,?> getCommand(String alias);
+  
 }

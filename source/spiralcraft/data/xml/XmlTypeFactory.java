@@ -48,7 +48,7 @@ public class XmlTypeFactory
   implements TypeFactory
 {
   
-  @SuppressWarnings("unused")
+
   private static final ClassLogger log=ClassLogger.getInstance(XmlTypeFactory.class);
   private boolean debug;
   

@@ -77,7 +77,6 @@ public class BufferField
     private Channel<? extends Buffer> bufferSource;
     private Channel<BufferTuple> parentChannel;
     
-    @SuppressWarnings("unchecked")
     public BufferFieldChannel
       (Channel<? extends DataComposite> originalChannel
       ,Focus<BufferTuple> parentFocus

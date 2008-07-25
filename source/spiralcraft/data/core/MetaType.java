@@ -50,7 +50,6 @@ public class MetaType
    * <P>The fromData() method will return the canonical instance of the referenced type.
    * If any data is contained in the tuple, an error in fromData() will result.
    */
-  @SuppressWarnings("unchecked")
   public MetaType
     (TypeResolver resolver,URI uri,URI referencedTypeURI,Class referencedTypeImplClass)
     throws DataException

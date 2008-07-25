@@ -127,7 +127,6 @@ public class BeanReflector<T>
   private URI uri;
   private MethodResolver methodResolver;
   
-  @SuppressWarnings("unchecked") // Runtime case from Type to Class<T>
   public BeanReflector(Type type)
   { 
     // log.fine(type);
@@ -181,7 +180,6 @@ public class BeanReflector<T>
     return false;
   }
   
-  @SuppressWarnings("unchecked") // Expression array params heterogeneous
   public synchronized <X> Channel<X> 
     resolve(Channel<T> source
         ,Focus<?> focus
@@ -215,9 +213,8 @@ public class BeanReflector<T>
     return binding;
   }
 
-  @SuppressWarnings("unchecked") // Dynamic class info
   public <D extends Decorator<T>> D decorate
-    (Channel<? extends T> source,Class<D> decoratorInterface)
+    (Channel<T> source,Class<D> decoratorInterface)
     throws BindException
   { 
     if (decoratorInterface==(Object) IterationDecorator.class)
@@ -300,11 +297,7 @@ public class BeanReflector<T>
   }
   
   
-  @SuppressWarnings("unchecked") 
-  // We are narrowing a generic type with a cast
-  // When we pull the BeanFieldTranslator out of the map
-  
-  private synchronized <X> Channel<X> getField(Channel<T> source,String name)
+ private synchronized <X> Channel<X> getField(Channel<T> source,String name)
     throws BindException
   {
     BeanFieldTranslator<X,T> fieldTranslator=null;
@@ -338,7 +331,6 @@ public class BeanReflector<T>
     return null;
   }
 
-  @SuppressWarnings("unchecked") // Reading property from map
   private synchronized <X> Channel<X> getProperty(Channel<T> source,String name)
     throws BindException
   {
@@ -374,7 +366,6 @@ public class BeanReflector<T>
     return null;
   }
 
-  @SuppressWarnings("unchecked") // Reading property from map
   private synchronized <X> Channel<X> getArrayProperty(Channel<T> source,String name)
     throws BindException
   {
@@ -400,7 +391,6 @@ public class BeanReflector<T>
     return null;
   }
 
-  @SuppressWarnings("unchecked") // HashMap is heterogeneous
   private synchronized <X> Channel<X> 
     getMethod(Channel<T> source,String name,Channel ... params)
     throws BindException

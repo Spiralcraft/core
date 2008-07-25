@@ -76,7 +76,7 @@ public class LocalRegistryNode
   public RegistryNode getChild(String name)
   { 
     if (_children!=null)
-    { return (RegistryNode) _children.get(name);
+    { return _children.get(name);
     }
     return null;
   }

@@ -47,7 +47,6 @@ import spiralcraft.log.ClassLogger;
 public class DataSessionFocus
   extends CompoundFocus<DataSession>
 {
-  @SuppressWarnings("unused")
   private static final ClassLogger log
     =ClassLogger.getInstance(DataSessionFocus.class);
   

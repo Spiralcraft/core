@@ -107,7 +107,6 @@ public class BufferChannel
    * @param focus A focus, not necessarily on the originalChannel
    * 
    */
-  @SuppressWarnings("unchecked")
   public BufferChannel
     (Type<Buffer> bufferType
     ,Channel<? extends DataComposite> originalChannel

@@ -212,10 +212,10 @@ public  class TranslatorChannel<T,S>
 
 
       if (event.getOldValue()!=null)
-      { oldValue=(T) translator.translateForGet((S) event.getOldValue(),_modifiers);
+      { oldValue=translator.translateForGet((S) event.getOldValue(),_modifiers);
       }
       if (event.getNewValue()!=null)
-      { newValue=(T) translator.translateForGet((S) event.getNewValue(),_modifiers);
+      { newValue=translator.translateForGet((S) event.getNewValue(),_modifiers);
       }
 
       if (oldValue!=newValue)

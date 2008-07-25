@@ -261,8 +261,10 @@ public class ArrayUtil
   /**
    * Format a String array into a String using the specified separator and delimiter.
    * No escape processing is performed by this method.
-   *@deprecated Use format instead
+   * 
+   * @deprecated Use format instead
    */
+  @Deprecated
   public static String formatToString(Object[] array,String separator,String delimiter)
   {
     StringBuilder buf=new StringBuilder();
@@ -310,7 +312,6 @@ public class ArrayUtil
     
   }
 
-  @SuppressWarnings("unchecked")
   public static final <T extends Object & Comparable<? super T>>
     int arrayCompare(final T[] a,final T[] b)
   {

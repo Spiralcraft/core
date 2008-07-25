@@ -50,7 +50,6 @@ public class MapIndexTranslator<I,T>
     return source.get(index);
   }
 
-  @SuppressWarnings("unchecked") // Upcast for expected modifiers
   public Map<I,T> translateForSet(T value,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException("Can't reverse map index");
   }

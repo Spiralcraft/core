@@ -51,7 +51,7 @@ public class VoidReflector
    *   specified interface
    */
   public <D extends Decorator<Void>> D decorate
-      (Channel<? extends Void> source
+      (Channel<Void> source
       ,Class<D> decoratorInterface
       )
     throws BindException

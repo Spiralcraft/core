@@ -1,7 +1,7 @@
 <project name="build-common">
 	<!--
 	  Master Template
-	  Last updated 2008-06-06 19:41
+	  Last updated 2008-07-24 19:47
   -->
 
   <property file="build.number"/>
@@ -29,7 +29,12 @@
       destdir="out"
       debug="true"
       deprecation="true"
-    />
+      compiler="modern"
+      fork="true"
+      >
+      <compilerarg value="-Xlint"/>
+    </javac>
+    
     <copy toDir="out">
       <fileset
         dir="source"

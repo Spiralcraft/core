@@ -199,7 +199,7 @@ public class LibraryCatalog
     public byte[] loadData(String path)
       throws IOException
     {
-      Resource resource=(Resource) _resources.get(path);
+      Resource resource=_resources.get(path);
       if (resource==null)
       { throw new IOException("Not found: "+path);
       }
@@ -209,7 +209,7 @@ public class LibraryCatalog
     public URL getResource(String path)
       throws IOException
     {
-      Resource resource=(Resource) _resources.get(path);
+      Resource resource=_resources.get(path);
       if (resource==null)
       { return null;
       }
@@ -237,7 +237,7 @@ public class LibraryCatalog
       { throw new IOException("Module not found: "+name);
       }
       
-      addLibrary((Library) libraries.get(0));
+      addLibrary(libraries.get(0));
     }
 
     public void addLibrary(String path)
@@ -308,7 +308,7 @@ public class LibraryCatalog
       { throw new IOException("Not found: "+resourcePath);
       }
       
-      addLibrary((Library) libraries.get(0));
+      addLibrary(libraries.get(0));
       
     }
     
