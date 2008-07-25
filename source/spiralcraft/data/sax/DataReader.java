@@ -45,15 +45,53 @@ public class DataReader
 {
   private DataConsumer<? super Tuple> dataConsumer;
   private DataFactory<? super DataComposite> dataFactory;
+  private FrameHandler frameHandler;
   
+  /**
+   * <p>Provide a DataConsumer to receive a stream of Tuples from the outermost
+   *   element that is mapped to a set of Tuples.
+   * </p>
+   * 
+   * @param dataConsumer
+   */
   public void setDataConsumer(DataConsumer<? super Tuple> dataConsumer)
   { this.dataConsumer=dataConsumer;
   }
   
+  /**
+   * <p>Provide a DataFactory to create appropriate DataComposite
+   *   instances given mapped Types.
+   * </p>
+   * 
+   * @param dataConsumer
+   */
   public void setDataFactory(DataFactory<? super DataComposite> dataFactory)
   { this.dataFactory=dataFactory;
   }
   
+  /**
+   * <p>Provide a FrameHandler tree which implements logic to map data from 
+   *   a foreign XML document into a Tuple representation.  
+   * </p>
+   * 
+   * @param frameHandler
+   */
+  public void setFrameHandler(FrameHandler frameHandler)
+  { this.frameHandler=frameHandler;
+  }
+  
+  /**
+   * <p>Read an Object from an XML resource identified by a URI, 
+   *   expecting a sub-type of the specified formalType.
+   * </p>
+   * 
+   * @param uri The URI of the resource
+   * @param formalType The Type expected
+   * @return The Object read
+   * @throws SAXException
+   * @throws IOException
+   * @throws DataException
+   */
   public Object readFromURI(URI uri,Type<?> formalType)
     throws SAXException,IOException,DataException
   { 
@@ -63,6 +101,18 @@ public class DataReader
       );
   }
   
+  /**
+   * <p>Read an Object from an XML resource,
+   *   expecting a sub-type of the specified formalType.
+   * </p>
+   * 
+   * @param resource The XML resource
+   * @param formalType The Type expected
+   * @return The Object read
+   * @throws SAXException
+   * @throws IOException
+   * @throws DataException
+   */
   public Object readFromResource
     (Resource resource
     ,Type<?> formalType
@@ -84,6 +134,18 @@ public class DataReader
     }
   }  
   
+  /**
+   * <p>Read an Object from an XML input stream,
+   *   expecting a sub-type of the specified formalType.
+   * </p>
+   * 
+   * @param in The XML input stream
+   * @param formalType The Type expected
+   * @return The Object read
+   * @throws SAXException
+   * @throws IOException
+   * @throws DataException
+   */
   public Object readFromInputStream
     (InputStream in
     ,Type<?> formalType
@@ -109,7 +171,14 @@ public class DataReader
       throw new IOException(x.toString());
     }
     
-    DataHandler handler=new DataHandler(formalType,resourceURI);
+    DataHandlerBase handler;
+    if (frameHandler==null)
+    { handler=new DataHandler(formalType,resourceURI);
+    }
+    else
+    { handler=new ForeignDataHandler(frameHandler,resourceURI);
+    }
+    
     if (dataConsumer!=null)
     { handler.setDataConsumer(dataConsumer);
     }

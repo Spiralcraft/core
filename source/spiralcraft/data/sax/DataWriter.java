@@ -322,7 +322,6 @@ class Context
       this.singleContext=singleContext; 
     }
     
-    @SuppressWarnings("unchecked")
     public void next()
       throws SAXException
     {
@@ -417,7 +416,6 @@ class Context
     }
   
   
-    @SuppressWarnings("unchecked") // toData() not generic here
     public void next()
       throws SAXException,DataException
     {
@@ -509,7 +507,6 @@ class Context
     }
     
     
-    @SuppressWarnings("unchecked") // toData is not generic
     public void next()
       throws SAXException,DataException
     {
@@ -567,7 +564,6 @@ class Context
     { super(tuple,field);
     }
     
-    @SuppressWarnings("unchecked") // toData not generic
     public void next()
       throws SAXException,DataException
     {

@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.sax;
 
-import spiralcraft.data.DataComposite;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.EditableTuple;
@@ -28,15 +27,11 @@ import spiralcraft.data.FieldNotFoundException;
 
 
 import spiralcraft.data.access.DataConsumer;
-import spiralcraft.data.access.DataFactory;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.log.ClassLogger;
-import spiralcraft.text.ParsePosition;
 
 
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 
@@ -46,332 +41,35 @@ import java.net.URI;
 import java.io.IOException;
 
 /**
- * Reads SAX events into a Data graph.
+ * Reads SAX events into a Data graph from a resource in the 
+ *   spiralcraft.data XML dialect.
  */
 @SuppressWarnings("unchecked") // Mostly runtime type resolution
 public class DataHandler
-  extends DefaultHandler
+  extends DataHandlerBase
 {
   private static final ClassLogger log=ClassLogger.getInstance(DataHandler.class);
   private static final String STANDARD_PATH
     ="class:/spiralcraft/data/types/standard/";
-  
-  private Frame currentFrame;
-  private URI resourceURI;
-  private DataConsumer<? super Tuple> dataConsumer;
-  private DataFactory<? super DataComposite> dataFactory;
-  private ParsePosition position;
-  private Locator locator;
   
   /**
    * Construct a new DataReader which expects to read the specified
    *   formal Type.
    */
   public DataHandler(Type<?> formalType,URI resourceURI)
-  {
+  { 
 
     currentFrame=new InitialFrame(formalType); 
     this.resourceURI=resourceURI;
   }
   
-  public void setDocumentLocator(Locator locator)
-  { 
-    this.locator=locator;
-    position=new ParsePosition();
-    position.setLine(locator.getLineNumber());
-    position.setColumn(locator.getColumnNumber());
-    position.setContextURI(resourceURI);
-  }
-  
-  public String formatPosition()
-  {
-    position.setLine(locator.getLineNumber());
-    position.setColumn(locator.getColumnNumber());
-    return " ("+position+")";
-  }
-  
 
-  /**
-   * Specify the DataConsumer that will receive all Tuples contained within
-   *   an outermost aggregate type. 
-   */
-  public void setDataConsumer(DataConsumer<? super Tuple> consumer)
-  { this.dataConsumer=consumer;
-  }
-  
-  public void setDataFactory(DataFactory<? super DataComposite> dataFactory)
-  { this.dataFactory=dataFactory;
-  }
-  
-  public Object getCurrentObject()
-  { return currentFrame.getObject();
-  }
-  
-  /**
-   * Optionally start the document
-   */
-  public void startDocument()
-    throws SAXException
-  { 
-  }
-
-  /**
-   * End the document, only if startDocument has been called
-   */
-  public void endDocument()
-    throws SAXException
-  { 
-  }
-   
-
-
-  public void startElement
-    (String uri
-    ,String localName
-    ,String qName
-    ,Attributes attributes
-    )
-    throws SAXException
-  { 
-    try
-    { currentFrame.startElement(uri,localName,qName,attributes);
-    }
-    catch (DataException x)
-    { 
-      SAXException sx=new SAXException(x.toString()+formatPosition());
-      sx.initCause(x);
-      throw sx;
-      
-    }
-    
-  }
-
-  public void endElement
-    (String uri
-    ,String localName
-    ,String qName
-    )
-    throws SAXException
-  { 
-    try
-    { currentFrame.finish(); 
-    }
-    catch (DataException x)
-    { 
-      SAXException sx=new SAXException(x.toString()+formatPosition());
-      sx.initCause(x);
-      throw sx;
-    }
-  }
-  
-  public void characters
-    (char[] ch
-    ,int start
-    ,int length
-    )
-    throws SAXException
-  { currentFrame.characters(ch,start,length);
-  }
-
-  public void ignorableWhitespace
-    (char[] ch
-    ,int start
-    ,int length
-    )
-    throws SAXException
-  {
-  }  
 
   protected void pushResource(URI uri)
   { 
   }
 
-  /**
-   * Holder for an element of the data tree
-   */
-  abstract class Frame
-  { 
-    protected String qName;
-    protected final StringBuilder chars
-      =new StringBuilder();
 
-    protected Frame parentFrame;
-    private boolean hasElements;
-    private boolean preserveWhitespace=false;
-
-    // Begin SAX API
-    
-    public final void startElement
-      (String uri
-      ,String localName
-      ,String qName
-      ,Attributes attributes
-      )
-      throws SAXException,DataException
-    { 
-      if (getCharacters().length()==0)
-      { 
-        hasElements=true;
-        newChild(uri,localName,qName,attributes).start(qName);
-      }
-      else
-      { 
-        throw new SAXException
-          ("Element already contains text '"+getCharacters()+"', it cannot "
-          +"also contain another Element <"+qName+">"+formatPosition()
-          );
-      }
-      
-    }
-    
-
-    public final void endElement
-      (String uri
-      ,String localName
-      ,String qName
-      )
-      throws SAXException,DataException
-    { 
-      if (this.qName.equals(qName))
-      { finish(); 
-      }
-      else
-      { throw new SAXException("Expected </"+qName+">"+formatPosition());
-      }
-    }
-  
-    public final void characters
-      (char[] ch
-      ,int start
-      ,int length
-      )
-      throws SAXException
-    { 
-      if (!hasElements)
-      { chars.append(new String(ch,start,length));
-      }
-      else
-      { 
-        if (preserveWhitespace)
-        {
-          throw new SAXException
-          ("Element already contains other elements."
-          +" It cannot contain preserved whitespace."
-          +formatPosition()
-          );
-        }
-        
-        if (new String(ch,start,length).trim().length()>0)
-        {
-          throw new SAXException
-            ("Element '"+qName+"' already contains other elements."
-            +" It cannot contain text '"+new String(ch,start,length).trim()+"'"
-            +formatPosition()+" (frame="+toString()
-            );
-        }
-      }
-    }
-    
-    // End SAX Api
-    
-
-    // Begin override API
-
-    /**
-     * Return whatever object is represented in this frame
-     */
-    public abstract Object getObject();
-
-    /**
-     * Must be overridden to create the new child node
-     */
-    protected abstract Frame newChild
-      (String uri
-      ,String localName
-      ,String qName
-      ,Attributes attributes
-      )
-      throws SAXException,DataException;
-
-    /**
-     * Most be overridden to handle data when a child is done
-     *   processing.
-     */
-    protected abstract void endChild(Frame child)
-      throws SAXException,DataException;
-    
-    /**
-     * Can be overridden to do something before this frame starts processing
-     *   sub-frames
-     */
-    protected void openFrame()
-    {
-    }
-    
-    /**
-     * Can be overridden to do something once this frame has finished processing
-     *   but before control is given to the parent frame
-     */
-    protected void closeFrame()
-      throws SAXException,DataException
-    {
-    }
-    
-    // End override API    
-    
-    private final void start(String qName)
-    {
-      parentFrame=currentFrame;
-      currentFrame=this;
-      this.qName=qName;
-      openFrame();
-    }
-
-    private final void finish()
-      throws SAXException,DataException
-    { 
-      closeFrame();
-      currentFrame=parentFrame;
-      parentFrame.endChild(this);
-    }
-    
-    protected String getCharacters()
-    { 
-      if (preserveWhitespace)
-      { return chars.toString();
-      }
-      else
-      { return chars.toString().trim();
-      }
-    }
-  }
-  
-  /**
-   * A frame which can contain nothing
-   */
-  class EmptyFrame
-    extends Frame
-  {
-
-    protected void endChild(Frame child)
-      throws SAXException, DataException
-    { }
-
-    public Object getObject()
-    { return null;
-    }
-
-    protected Frame newChild
-      (String uri
-      , String localName
-      , String qName
-      , Attributes attributes
-      ) 
-      throws SAXException, DataException
-    { throw new SAXException("Element '"+qName+"' not permitted here");
-    }
-    
-  }
   
   
   /**
@@ -458,7 +156,7 @@ public class DataHandler
     /**
      * Create a new Frame to read the specified Type
      */
-    @SuppressWarnings("unchecked") // Heterogeneous collection
+//    @SuppressWarnings("unchecked") // Heterogeneous collection
     protected Frame createFrame(Type type,URI ref)
       throws DataException,SAXException
     {
