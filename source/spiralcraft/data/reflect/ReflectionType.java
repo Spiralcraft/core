@@ -361,7 +361,6 @@ public class ReflectionType<T>
 
   }
   
-  @SuppressWarnings("unchecked") // Reference to non-generic constructor
   private void resolvePreferredConstructor()
     throws DataException
   {
@@ -382,7 +381,6 @@ public class ReflectionType<T>
     }      
   }
   
-  @SuppressWarnings("unchecked") // Reference to non-generic constructor
   private void resolveDepersistMethod()
     throws DataException
   {
@@ -582,7 +580,6 @@ public class ReflectionType<T>
   }
 
   
-  @SuppressWarnings("unchecked")
   public DataComposite toData(Object val)
     throws DataException
   {
@@ -615,7 +612,7 @@ public class ReflectionType<T>
       {
         // System.out.println("Narrowing "+val.getClass());
         Type<? super Object> type
-          =(Type<? super Object>) resolver.resolve(canonicalURI(val.getClass()));
+          =resolver.resolve(canonicalURI(val.getClass()));
         return type.toData(val);
       }
       else

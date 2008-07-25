@@ -132,7 +132,7 @@ public class ArrayType
 
       int len=Array.getLength(array);
       for (int index=0;index<len;index++)
-      { aggregate.add((DataComposite) contentType.toData(Array.get(array,index)));
+      { aggregate.add(contentType.toData(Array.get(array,index)));
       }
       return aggregate;
     }

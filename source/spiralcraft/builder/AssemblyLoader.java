@@ -109,7 +109,7 @@ public class AssemblyLoader
   public synchronized AssemblyClass findAssemblyClass(URI classUri)
     throws BuildException
   {
-    AssemblyClass ret=(AssemblyClass) _classCache.get(classUri);
+    AssemblyClass ret=_classCache.get(classUri);
     if (ret==null)
     {
       ret=findAssemblyDefinition
@@ -162,7 +162,7 @@ public class AssemblyLoader
   public synchronized AssemblyClass findAssemblyDefinition(URI resourceUri)
     throws BuildException
   { 
-    AssemblyClass ret=(AssemblyClass) _cache.get(resourceUri);
+    AssemblyClass ret=_cache.get(resourceUri);
     if (ret==null)
     { 
       ret=loadAssemblyDefinition(resourceUri);

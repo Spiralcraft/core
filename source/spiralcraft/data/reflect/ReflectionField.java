@@ -327,7 +327,7 @@ public class ReflectionField
         Object value=readMethod.invoke(bean);
         if (value!=null)
         {
-          type=(Type<? super Object>) TypeResolver.getTypeResolver().resolve
+          type=TypeResolver.getTypeResolver().resolve
             (ReflectionType.canonicalURI(value.getClass()));
           if (!type.isPrimitive())
           { 

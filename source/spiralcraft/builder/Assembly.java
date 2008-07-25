@@ -84,7 +84,6 @@ public class Assembly<T>
    * Construct an instance of the specified AssemblyClass,
    *   without binding properties
    */
-//  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
   Assembly(AssemblyClass assemblyClass,boolean factoryMode)
     throws BuildException
   {
@@ -123,7 +122,6 @@ public class Assembly<T>
    * 
    * @throws BuildException
    */
-//  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
   private void constructInstance()
     throws BuildException
   {
@@ -224,8 +222,6 @@ public class Assembly<T>
    * Specify a default instance for this Assembly to apply properties to, as opposed to
    *   constructing a new instance. Must be called before resolve().
    */
-  
-//  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
   void setDefaultInstance(T val)
   {
     if (resolved)

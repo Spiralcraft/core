@@ -178,11 +178,10 @@ public class Element
   /**
    * A concatenation of the character data in this element
    */
-  @SuppressWarnings("unchecked")
   public String getCharacters()
   { 
     List<Characters> children
-      = (List<Characters>) getChildren(Characters.class);
+      =getChildren(Characters.class);
 
     StringBuilder buf=new StringBuilder();
     for (Characters c: children)

@@ -39,7 +39,6 @@ public class AbstractCollectionType<T extends Collection>
 {  
   private final TypeResolver resolver;
   
-  @SuppressWarnings("unchecked")
   public AbstractCollectionType
     (TypeResolver resolver
     ,Type<? super Object> contentType
@@ -53,7 +52,7 @@ public class AbstractCollectionType<T extends Collection>
     { 
       try
       {
-        this.contentType=(Type<? super Object>) getTypeResolver().resolve
+        this.contentType=getTypeResolver().resolve
           (ReflectionType.canonicalURI(Object.class));
       }
       catch (DataException x)
@@ -83,7 +82,6 @@ public class AbstractCollectionType<T extends Collection>
   }
   
   
-  @SuppressWarnings("unchecked")
   public T fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
   { 
@@ -98,7 +96,7 @@ public class AbstractCollectionType<T extends Collection>
     if (collection==null)
     { 
       try
-      { collection=(T) nativeClass.newInstance();
+      { collection=nativeClass.newInstance();
       }
       catch (InstantiationException x)
       { 

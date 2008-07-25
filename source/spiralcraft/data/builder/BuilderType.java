@@ -72,7 +72,6 @@ public class BuilderType
   { return uri.getPath().endsWith(".assy");
   }
 
-  @SuppressWarnings("unchecked") // Type system is heterogeneous
   public boolean isAssignableFrom(Type type)
   { 
     if (super.isAssignableFrom(type))
@@ -127,10 +126,9 @@ public class BuilderType
     }
   }
   
-  @SuppressWarnings("unchecked")
   public static Type<Assembly> canonicalType(AssemblyClass assemblyClass)
     throws DataException
-  { return (Type<Assembly>) TypeResolver.getTypeResolver().<Assembly>resolve(canonicalURI(assemblyClass));
+  { return TypeResolver.getTypeResolver().<Assembly>resolve(canonicalURI(assemblyClass));
   }
   
   public static Type<?> genericBuilderType()
@@ -285,7 +283,6 @@ public class BuilderType
 
   }
   
-  @SuppressWarnings("unchecked") // Runtime downcast- can't use generic version
   @Override
   public DataComposite toData(Assembly<?> obj)
     throws DataException

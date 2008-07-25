@@ -100,11 +100,11 @@ public class TupleReflector<T extends Tuple>
    *   source that provides Tuples.
    */
   @SuppressWarnings("unchecked") // We haven't genericized the data package yet
-  public synchronized Channel resolve
-    (final Channel source
-    ,Focus focus
+  public synchronized <X> Channel<X> resolve
+    (final Channel<T> source
+    ,Focus<?> focus
     ,String name
-    ,Expression[] params
+    ,Expression<?>[] params
     )
     throws BindException
   {    

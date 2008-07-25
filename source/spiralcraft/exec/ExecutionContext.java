@@ -34,7 +34,7 @@ public abstract class ExecutionContext
   };
     
   public static final ExecutionContext getInstance()
-  { return (ExecutionContext) _INSTANCE.get();
+  { return _INSTANCE.get();
   }
 
   static final void setInstance(ExecutionContext context)
