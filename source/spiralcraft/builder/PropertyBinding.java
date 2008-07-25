@@ -81,7 +81,7 @@ public class PropertyBinding
    * Instantiate the sub-assemblies, resolve the property value source, retrieve the value
    *   and apply it to the target,.
    */
-  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
+//  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
   public void resolve()
     throws BuildException
   {
@@ -233,7 +233,7 @@ public class PropertyBinding
   }
 
   
-  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
+//  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
   private void createTargetChannel()
     throws BuildException
   {
@@ -265,7 +265,7 @@ public class PropertyBinding
    * Resolve the source data for this property. At this point, all sub-assemblies must 
    *   have had their contents instantiated and configured.
    */
-  @SuppressWarnings("unchecked")
+//  @SuppressWarnings("unchecked")
   private void applySource()
     throws BuildException
   {
@@ -450,7 +450,7 @@ public class PropertyBinding
   { return _container;
   }
 
-  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
+//  @SuppressWarnings("unchecked") // We haven't genericized the builder package builder yet
   private void apply(Object sourceVal)
     throws BuildException
   { 

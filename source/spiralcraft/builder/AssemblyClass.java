@@ -470,7 +470,7 @@ public class AssemblyClass
       while (_propertySpecifiers.size()>0)
       { 
         PropertySpecifier prop
-          =(PropertySpecifier) _propertySpecifiers.removeFirst();
+          =_propertySpecifiers.removeFirst();
         prop.resolve();
       }
     }
