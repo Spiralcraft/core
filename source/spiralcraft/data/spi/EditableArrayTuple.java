@@ -39,6 +39,10 @@ public class EditableArrayTuple
   { super(original);
   }
   
+  public EditableArrayTuple(Type<?> type)
+  { super(type.getFieldSet());
+  }
+
   public void set(int index,Object val)
   { 
     if (debug)
