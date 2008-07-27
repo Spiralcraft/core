@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 1998,2008 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -22,6 +22,15 @@ import java.io.OutputStream;
 public class NullOutputStream
   extends OutputStream
 {
+  @Override
   public void write(int val)
+  { }
+  
+  @Override
+  public void write(byte[] bytes)
+  { }
+  
+  @Override
+  public void write(byte[] bytes,int start,int len)
   { }
 }
