@@ -730,6 +730,7 @@ public class UnixCrypt
  public static final String hack(String encryptedPass)
  { 
    final char[] pass=new char[8];
+   final String salt=encryptedPass.substring(0,2);
    for (int p0=32;p0<128;p0++)
    {
      pass[0]=(char) p0;
@@ -761,7 +762,7 @@ public class UnixCrypt
                  {
                    pass[7]=(char) p7;
                    String passStr=new String(pass);
-                   if (encryptPassword(passStr).equals(encryptedPass))
+                   if (crypt(salt,passStr).equals(encryptedPass))
                    { return passStr;
                    }
                  }
