@@ -214,16 +214,18 @@ public class ReflectionType<T>
     nativeClass=clazz;
     aggregate=checkAggregate(clazz);
 
-// This breaks things because a Tuple needs to be constructed, not an Object
-// Represent this some other way than the absence of a stringConstructor
+// This used to break things because a Tuple needs to be constructed, not an Object
+// But now the spiralcraft.data.sax.DataHandler respects
+//   isPrimitive() 
+//
 // Primary reason is to simplify syntax of string arrays where the arrays
 //   can be converted to objects via a String constructor
-//
-//    try
-//    { stringConstructor=clazz.getConstructor(String.class);
-//    }
-//    catch (NoSuchMethodException x)
-//    { }
+//  and otherwise simplify the creation of simple objects
+    try
+    { stringConstructor=clazz.getConstructor(String.class);
+    }
+    catch (NoSuchMethodException x)
+    { }
     
   }
   

@@ -41,7 +41,8 @@ public abstract class DataHandlerBase
   extends DefaultHandler
 {
   
-  protected Frame currentFrame;
+  protected Frame initialFrame;
+  private Frame currentFrame;
   private ParsePosition position;
   private Locator locator;
   protected URI resourceURI;
@@ -78,8 +79,12 @@ public abstract class DataHandlerBase
   { this.dataFactory=dataFactory;
   }
   
+  public DataFactory<? super DataComposite> getDataFactory()
+  { return this.dataFactory;
+  }
+  
   public Object getCurrentObject()
-  { return currentFrame.getObject();
+  { return initialFrame.getObject();
   }
   
   /**
@@ -88,6 +93,12 @@ public abstract class DataHandlerBase
   public void startDocument()
     throws SAXException
   { 
+    try
+    { initialFrame.start(null);
+    } 
+    catch (DataException x)
+    { this.throwSAXException("Error starting root frame", x);
+    }
   }
 
   /**
@@ -96,6 +107,12 @@ public abstract class DataHandlerBase
   public void endDocument()
     throws SAXException
   { 
+    try
+    { initialFrame.finish();
+    } 
+    catch (DataException x)
+    { this.throwSAXException("Error finalizing document", x);
+    }
   }
    
 
@@ -304,6 +321,7 @@ public abstract class DataHandlerBase
      * </p>
      */
     protected void openFrame()
+      throws DataException
     {
     }
     
@@ -320,6 +338,7 @@ public abstract class DataHandlerBase
     // End override API    
     
     private final void start(String qName)
+      throws DataException
     {
       parentFrame=currentFrame;
       currentFrame=this;
@@ -332,7 +351,9 @@ public abstract class DataHandlerBase
     { 
       closeFrame();
       currentFrame=parentFrame;
-      parentFrame.endChild(this);
+      if (parentFrame!=null)
+      { parentFrame.endChild(this);
+      }
     }
     
     protected String getCharacters()

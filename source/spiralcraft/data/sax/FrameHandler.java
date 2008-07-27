@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 1998,2008 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -14,24 +14,32 @@
 //
 package spiralcraft.data.sax;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Stack;
 
-
 import org.xml.sax.Attributes;
 
+
+import spiralcraft.data.DataException;
+import spiralcraft.lang.AccessException;
+import spiralcraft.lang.Assignment;
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
+import spiralcraft.lang.Setter;
+import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.log.ClassLogger;
 
 /**
- * <P>Implements a mapping from a foreign XML data element to part of a
+ * <p>Implements a mapping from a foreign XML data element to part of a
  *   Tuple set.
- * </P>
+ * </p>
  * 
  * @author mike
  *
  */
-public class FrameHandler
+public abstract class FrameHandler
 {
   protected static final ClassLogger log
     =ClassLogger.getInstance(FrameHandler.class);
@@ -47,7 +55,28 @@ public class FrameHandler
   
   protected boolean debug;
   
+  protected FrameHandler parent;
+
+  private boolean bindCalled;
   
+  private Focus<?> focus;
+  
+  private AttributeBinding<?>[] attributeBindings;
+  
+  private HashMap<String,AttributeBinding<?>> attributeMap;
+
+  private Assignment<?>[] defaultAssignments;
+  protected Setter<?>[] defaultSetters;
+
+  
+  public void setDefaultAssignments(Assignment<?>[] defaultAssignments)
+  { this.defaultAssignments=defaultAssignments;
+  }
+  
+  
+  void setParent(FrameHandler parent)
+  { this.parent=parent;
+  }
   
   public void setDebug(boolean debug)
   { this.debug=debug;
@@ -61,14 +90,75 @@ public class FrameHandler
   { this.elementURI = elementURI;
   }
   
+  public void setAttributeBindings(AttributeBinding<?>[] attributeBindings)
+  { this.attributeBindings=attributeBindings;
+  }
+  
   /**
    * <p>Recursively bind queries and expressions to the application context.
    * </p>
    * 
    * @param focus
    */
-  public void bind(Focus<?> focus)
+  public void bind()
+    throws BindException
   {
+    bindCalled=true;
+    bindAttributes();
+    bindAssignments();
+    bindChildren();
+  }
+  
+  public void setFocus(Focus<?> focus)
+  { this.focus=focus;
+  }
+  
+  public Focus<?> getFocus()
+  { 
+    Focus<?> ret=focus;
+    if (ret==null && parent!=null)
+    { ret=parent.getFocus();
+    }
+    return ret;
+    
+  }
+  
+  protected void bindAssignments()
+    throws BindException
+  { defaultSetters=Assignment.bindArray(defaultAssignments,getFocus());
+  }
+  
+  protected void bindAttributes()
+    throws BindException
+  {
+    if (attributeBindings!=null)
+    {
+      if (attributeMap==null)
+      { attributeMap=new HashMap<String,AttributeBinding<?>>();
+      }
+      else
+      { attributeMap.clear();
+      }
+      
+      Focus<?> focus=getFocus();
+      for (AttributeBinding<?> binding: attributeBindings)
+      {
+        binding.bind(focus);
+        attributeMap.put
+          (binding.getAttribute()
+          ,binding
+          );
+      }
+      
+    }
+  }
+
+  protected void bindChildren()
+    throws BindException
+  {
+    for (FrameHandler child:childMap.values())
+    { child.bind();
+    }
   }
   
   /**
@@ -96,8 +186,10 @@ public class FrameHandler
   public void setChildren(FrameHandler[] children)
   { 
     childMap.clear();
-    for (FrameHandler map:children)
-    { childMap.put(map.getElementURI(), map);
+    for (FrameHandler child:children)
+    { 
+      childMap.put(child.getElementURI(), child);
+      child.setParent(this);
     }
   }
 
@@ -105,16 +197,104 @@ public class FrameHandler
   { return childMap;
   }
   
-  public void openFrame(ForeignDataHandler.HandledFrame frame)
+  protected void applyAttributes()
   { 
+    Attributes attributes=stack.peek().getAttributes();
+    if (attributes==null)
+    { return;
+    }
+    
+    for (int i=0;i<attributes.getLength();i++)
+    {
+      String name=attributes.getLocalName(i);
+      String uri=attributes.getURI(i);
+      String fullName=(uri!=null?uri:"")+name;
+      String value=attributes.getValue(i);
+      
+      
+      AttributeBinding<?> binding
+        =attributeMap!=null?attributeMap.get(fullName):null;
+        
+      if (binding!=null)
+      { binding.set(value);
+      }
+      else
+      {
+        if (debug)
+        { log.fine("URI="+elementURI+": Ignoring attribute "+fullName);
+        }
+      }
+    }
+
+  }
+
+  /**
+   * Override to setup data container (Tuple or List)
+   */
+  protected abstract void openData()
+    throws DataException;
+  
+  /**
+   * <p>Override to finalize state of any data objects read before the parent
+   *   frame receives them.
+   * </p>
+   */
+  protected abstract void closeData()
+    throws DataException;
+
+  /**
+   * <p>Interface between the DataHandler frame and the FrameHandler to
+   *   indicate when a new Frame has been opened (ie. new element)
+   * </p>
+   * 
+   * @param frame
+   */
+  public final void openFrame(ForeignDataHandler.HandledFrame frame)
+    throws DataException
+  { 
+    if (!bindCalled)
+    { 
+      throw new DataException
+        ("FrameHandler must be bound before it can be used");
+    }
+    
     stack.push(frame);
+    
     if (debug)
     { log.fine("URI="+elementURI);
     }
+    
+    openData();
+    applyAttributes();
   }
-
-  public void closeFrame(ForeignDataHandler.HandledFrame frame)
+ 
+  /**
+   * <p>Called when a child frame is closed to give the parent an opportunity
+   *   to integrate any data read by the child.
+   * </p>
+   *   
+   * @param child
+   */
+  public void closingChild(FrameHandler child)
   { 
+  }
+  
+  /**
+   * <p>Interface between the DataHandler frame and the FrameHandler to
+   *   indicate when a Frame is about to be closed 
+   * </p>
+   * 
+   * @param frame
+   */
+  public final void closeFrame(ForeignDataHandler.HandledFrame frame)
+    throws DataException
+  { 
+    closeData();
+    
+    if (parent!=null)
+    { parent.closingChild(this);
+    }
+    
     if (debug)
     { log.fine("URI="+elementURI);
     }
@@ -124,5 +304,36 @@ public class FrameHandler
         ("Internal Error: DataHandler and FrameHandler stack out of sync");
     }
   }
+  
+  protected ForeignDataHandler.HandledFrame getFrame()
+  { return stack.peek();
+  }
 
+  class FrameChannel<T>
+    extends AbstractChannel<T>
+  {
+
+    public FrameChannel(Reflector<T> reflector)
+    { super(reflector);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    protected T retrieve()
+    { return (T) getFrame().getObject();
+    }
+
+    @Override
+    protected boolean store(
+      T val)
+      throws AccessException
+    { 
+      getFrame().setObject(val);
+      return true;
+    }
+    
+    public boolean isWritable()
+    { return true;
+    }
+  }  
 }

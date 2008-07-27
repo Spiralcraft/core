@@ -59,7 +59,9 @@ public class DataHandler
   public DataHandler(Type<?> formalType,URI resourceURI)
   { 
 
-    currentFrame=new InitialFrame(formalType); 
+    
+    initialFrame=new InitialFrame(formalType); 
+    
     this.resourceURI=resourceURI;
   }
   
@@ -266,7 +268,15 @@ public class DataHandler
       if (text.length()>0)
       { 
         if (type.isStringEncodable())
-        { object=type.fromString(text);
+        { 
+          // XXX Never return a native object for a non-primitive Type.
+          Object nativeObject=type.fromString(text);
+          if (!type.isPrimitive())
+          { object=type.toData(nativeObject);
+          }
+          else
+          { object=nativeObject;
+          }
         }
         else
         { 

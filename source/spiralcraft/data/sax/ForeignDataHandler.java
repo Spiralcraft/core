@@ -16,7 +16,6 @@ package spiralcraft.data.sax;
 
 import spiralcraft.data.DataException;
 
-
 import spiralcraft.log.ClassLogger;
 
 
@@ -35,6 +34,7 @@ import java.net.URI;
 public class ForeignDataHandler
   extends DataHandlerBase
 {
+  @SuppressWarnings("unused")
   private static final ClassLogger log
     =ClassLogger.getInstance(ForeignDataHandler.class);
   
@@ -48,7 +48,7 @@ public class ForeignDataHandler
     ,URI resourceURI
     )
   { 
-    currentFrame=new HandledFrame(rootHandler,null); 
+    initialFrame=new HandledFrame(rootHandler,null);
     this.resourceURI=resourceURI;
   }
   
@@ -64,11 +64,20 @@ public class ForeignDataHandler
 
     protected final FrameHandler frameHandler;
     protected final Attributes attributes;
-
+    protected Object object;
+    
     public HandledFrame(FrameHandler frameHandler,Attributes attributes)
     { 
       this.frameHandler=frameHandler;
       this.attributes=attributes;
+    }
+    
+    public Attributes getAttributes()
+    { return attributes;
+    }
+    
+    public ForeignDataHandler getDataHandler()
+    { return ForeignDataHandler.this;
     }
     
     @Override
@@ -77,15 +86,18 @@ public class ForeignDataHandler
       throws SAXException,
       DataException
     {
-      // TODO Auto-generated method stub
       
     }
 
+    public void setObject(Object object)
+    { this.object=object;
+    }
+    
     @Override
     public Object getObject()
     {
       // TODO Auto-generated method stub
-      return null;
+      return object;
     }
 
     @Override
@@ -132,11 +144,14 @@ public class ForeignDataHandler
      * </p>
      */
     protected void openFrame()
+      throws DataException
     { 
       if (frameHandler!=null)
       { frameHandler.openFrame(this);
       }
     }
+    
+
     
     /**
      * <p>Can be overridden to do something once this frame has received all

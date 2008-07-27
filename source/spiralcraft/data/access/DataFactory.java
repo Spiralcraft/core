@@ -20,5 +20,5 @@ import spiralcraft.data.Type;
 
 public interface DataFactory<Tcomposite extends DataComposite>
 {
-  public DataComposite create(Type<?> type) throws DataException;
+  public <X extends DataComposite> X create(Type<?> type) throws DataException;
 }
