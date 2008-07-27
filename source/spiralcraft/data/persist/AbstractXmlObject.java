@@ -127,7 +127,18 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
         DataReader reader=new DataReader();
         Resource resource=Resolver.getInstance().resolve(instanceURI);
         if (!resource.exists())
-        { instance=newInstance();
+        { 
+          try
+          { instance=newInstance();
+          }
+          catch (DataException x)
+          { 
+            throw new DataException
+              ("Resource '"+resource.getURI()+"' does not exist, and a new " +
+                 type.getNativeClass().getName() +" could not be created"
+              ,x
+              );
+          }
         }
         else
         {
