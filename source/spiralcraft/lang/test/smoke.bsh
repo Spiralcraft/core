@@ -1,5 +1,8 @@
 show();
 import spiralcraft.lang.test.Evaluator;
+import spiralcraft.lang.Expression;
+import spiralcraft.lang.SimpleFocus;
+
 "Basic Ops";
 "--Get class from an Object";
 Evaluator.parseAndEvaluateObject("class",new Object());
@@ -56,6 +59,12 @@ Evaluator.parseAndEvaluateObject("-.hashCode()==-.hashCode()",new Object());
 "// Self operator";
 Evaluator.parseAndEvaluateObject(".concat(.)","test");
 
+"// Assignment operator";
+Expression.parse(".[0]=\"test\"").getRootNode().debugTree(System.err);
+array=new String[1];
+array[0]="orig";
+Evaluator.parseAndEvaluateObject(".[0]=\"test\"",array);
+array[0];
 
 "// ExpressionResolverTest";
 import spiralcraft.lang.test.ExpressionResolverTest;

@@ -18,6 +18,7 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.log.ClassLogger;
 
 import java.util.List;
 
@@ -28,6 +29,8 @@ import java.util.List;
 public abstract class Node
 {
 
+  protected static final ClassLogger log
+    =ClassLogger.getInstance(Node.class);
   
   /**
    * Stubbed bind method for unimplemented nodes.
@@ -145,6 +148,11 @@ public abstract class Node
   { return new SubscriptNode(this,index);
   }
     
+  @SuppressWarnings("unchecked")
+  public Node assign(Node source)
+  { return new AssignmentNode(this,source);
+  }
+
   protected void unsupported(String msg)
   { throw new UnsupportedOperationException(getClass().getName()+"."+msg+"(...)");
   }

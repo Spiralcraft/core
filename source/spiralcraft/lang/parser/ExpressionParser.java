@@ -17,6 +17,8 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 
+import spiralcraft.io.LookaheadStreamTokenizer;
+
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.io.IOException;
@@ -34,7 +36,7 @@ public class ExpressionParser
   private static boolean debug;
 
   private StringBuffer _progressBuffer;
-  private StreamTokenizer _tokenizer;
+  private LookaheadStreamTokenizer _tokenizer;
   private int _pos;
 
   public <X> Expression<X> parse(String text)
@@ -52,40 +54,43 @@ public class ExpressionParser
   
   private void createTokenizer(String expression)
   {
-    _tokenizer=new StreamTokenizer(new StringReader(expression));
-    _tokenizer.resetSyntax();
     
-    _tokenizer.wordChars((int) 'a',(int) 'z');
-    _tokenizer.wordChars((int) 'A',(int) 'Z');
-    _tokenizer.wordChars((int) '_',(int) '_');
+    _tokenizer=new LookaheadStreamTokenizer(new StringReader(expression));
+    StreamTokenizer syntax=_tokenizer.lookahead;
+    
+    syntax.resetSyntax();
+    
+    syntax.wordChars((int) 'a',(int) 'z');
+    syntax.wordChars((int) 'A',(int) 'Z');
+    syntax.wordChars((int) '_',(int) '_');
 
-    _tokenizer.whitespaceChars((int) '\r',(int) '\r');
-    _tokenizer.whitespaceChars((int) '\n',(int) '\n');
-    _tokenizer.whitespaceChars((int) '\t',(int) '\t');
-    _tokenizer.whitespaceChars((int) ' ',(int) ' ');
+    syntax.whitespaceChars((int) '\r',(int) '\r');
+    syntax.whitespaceChars((int) '\n',(int) '\n');
+    syntax.whitespaceChars((int) '\t',(int) '\t');
+    syntax.whitespaceChars((int) ' ',(int) ' ');
     
-    _tokenizer.ordinaryChar((int) '.');
-    _tokenizer.ordinaryChar((int) '!');
-    _tokenizer.ordinaryChar((int) '=');
-    _tokenizer.ordinaryChar((int) ')');
-    _tokenizer.ordinaryChar((int) '(');
-    _tokenizer.ordinaryChar((int) ',');
-    _tokenizer.ordinaryChar((int) '>');
-    _tokenizer.ordinaryChar((int) '<');
-    _tokenizer.ordinaryChar((int) '&');
-    _tokenizer.ordinaryChar((int) '|');
-    _tokenizer.ordinaryChar((int) '?');
-    _tokenizer.ordinaryChar((int) ':');
-    _tokenizer.ordinaryChar((int) '+');
-    _tokenizer.ordinaryChar((int) '-');
-    _tokenizer.ordinaryChar((int) '*');
-    _tokenizer.ordinaryChar((int) '/');
-    _tokenizer.ordinaryChar((int) '[');
-    _tokenizer.ordinaryChar((int) ']');
+    syntax.ordinaryChar((int) '.');
+    syntax.ordinaryChar((int) '!');
+    syntax.ordinaryChar((int) '=');
+    syntax.ordinaryChar((int) ')');
+    syntax.ordinaryChar((int) '(');
+    syntax.ordinaryChar((int) ',');
+    syntax.ordinaryChar((int) '>');
+    syntax.ordinaryChar((int) '<');
+    syntax.ordinaryChar((int) '&');
+    syntax.ordinaryChar((int) '|');
+    syntax.ordinaryChar((int) '?');
+    syntax.ordinaryChar((int) ':');
+    syntax.ordinaryChar((int) '+');
+    syntax.ordinaryChar((int) '-');
+    syntax.ordinaryChar((int) '*');
+    syntax.ordinaryChar((int) '/');
+    syntax.ordinaryChar((int) '[');
+    syntax.ordinaryChar((int) ']');
     
-    _tokenizer.wordChars((int) '0',(int) '9');
+    syntax.wordChars((int) '0',(int) '9');
 
-    _tokenizer.quoteChar((int) '"');
+    syntax.quoteChar((int) '"');
 
     
     _progressBuffer=new StringBuffer();
@@ -122,6 +127,28 @@ public class ExpressionParser
 //  }
   
 
+//  private void pushbackToken()
+//  { 
+//    
+//    if (_tokenizer.sval!=null)
+//    {
+//      if (_tokenizer.ttype=='"')
+//      { 
+//        int len=_tokenizer.sval.length()+2;
+//        _progressBuffer.setLength(_progressBuffer.length()-len);
+//      }
+//      else
+//      { 
+//        _progressBuffer.setLength
+//          (_progressBuffer.length()-_tokenizer.sval.length());
+//      }
+//      _pos-=_tokenizer.sval.length();
+//    }
+//    
+//    _tokenizer.pushBack();
+//  
+//  }
+  
   private boolean consumeToken()
   { 
 
@@ -161,7 +188,13 @@ public class ExpressionParser
   private Node parseExpression()
     throws ParseException
   { 
-    return this.parseConditionalExpression();
+    Node node=this.parseConditionalExpression();
+    if (_tokenizer.ttype=='=')
+    {
+      consumeToken();
+      node=node.assign(this.parseExpression());
+    }
+    return node;
   }
 
 
@@ -287,11 +320,20 @@ public class ExpressionParser
     }
     else if (_tokenizer.ttype=='=')
     {
-      consumeToken();
-      expect('=');
-      Node secondOperand=parseRelationalExpression();
-      Node equalityNode = firstOperand.isEqual(secondOperand);
-      return parseEqualityExpressionRest(equalityNode);
+      if (_tokenizer.lookahead.ttype=='=')
+      {
+        consumeToken();
+        consumeToken();
+        Node secondOperand=parseRelationalExpression();
+        Node equalityNode = firstOperand.isEqual(secondOperand);
+        return parseEqualityExpressionRest(equalityNode);
+      }
+      else
+      {
+        // This is an assignment operator, not a comparison operator
+        System.err.println("ttype=[ "+(char) _tokenizer.ttype+" ]");
+        return firstOperand;
+      }
     }
     else
     { return firstOperand;

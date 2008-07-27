@@ -19,6 +19,16 @@ import spiralcraft.lang.Reflector;
 
 import spiralcraft.lang.spi.Translator;
 
+/**
+ * <p>A Translator used as a means for accessing an array index. Translates
+ *   an Array using a single subscript modifier to generate the value at
+ *   the array subscript. This is unidirectional- does not allow the value
+ *   to be updated.
+ * </p>
+ * @author mike
+ *
+ * @param <T>
+ */
 public class ArrayIndexTranslator<T>
   implements Translator<T,T[]>
 {

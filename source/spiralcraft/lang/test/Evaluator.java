@@ -35,7 +35,7 @@ public class Evaluator
     throws BindException,ParseException
   { 
     return Evaluator.<X,Y>parseAndEvaluateOptic
-      (expression,new SimpleChannel<Y>(subject,true));
+      (expression,new SimpleChannel<Y>(subject,false));
   }
   
   public static <X,Y> X parseAndEvaluateOptic(String expression,Channel<Y> subject)

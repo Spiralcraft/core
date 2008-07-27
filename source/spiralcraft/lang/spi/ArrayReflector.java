@@ -199,11 +199,16 @@ public class ArrayReflector<I>
         || Byte.class.isAssignableFrom(subscriptClass)
         )
     {
-      return new TranslatorChannel
-        (source
-        ,new ArrayIndexTranslator(componentReflector)
-        ,new Channel[] {subscriptChannel}
+      return new ArrayIndexChannel<I>
+        (componentReflector
+        ,source
+        ,(Channel<Number>) subscriptChannel
         );
+//      return new TranslatorChannel
+//        (source
+//        ,new ArrayIndexTranslator(componentReflector)
+//        ,new Channel[] {subscriptChannel}
+//        );
     }
     else if 
       (Boolean.class.isAssignableFrom(subscriptClass)

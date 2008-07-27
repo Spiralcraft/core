@@ -7,6 +7,29 @@ package spiralcraft.lang;
  */
 public class Setter<T>
 {
+  public static final void applyArray(Setter<?>[] setters)
+  {
+    if (setters!=null)
+    { 
+      for (Setter<?> setter:setters)
+      { setter.set();
+      }
+    }
+  }
+
+  public static final void applyArrayIfNull(Setter<?>[] setters)
+  {
+    if (setters!=null)
+    { 
+      for (Setter<?> setter: setters)
+      { 
+        if (setter.getTarget().get()==null)
+        { setter.set();
+        }
+      }
+    }
+  }
+
   private Channel<? extends T> source;
   private Channel<T> target;
   
@@ -17,7 +40,15 @@ public class Setter<T>
   }
   
   public boolean set()
-  { return target.set(source.get());
+  { 
+    if (target!=null)
+    { return target.set(source.get());
+    }
+    else
+    { 
+      source.get();
+      return true;
+    }
   }
   
   public Channel<? extends T> getSource()

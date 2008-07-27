@@ -14,6 +14,8 @@
 //
 package spiralcraft.lang;
 
+import spiralcraft.lang.parser.AssignmentNode;
+
 /**
  * <p>Represents the assignment of the value obtained from the source Expression
  *   to the target Expression. 
@@ -24,11 +26,33 @@ package spiralcraft.lang;
  */
 public class Assignment<T>
 {
+  
+  public static final Setter<?>[] 
+    bindArray(Assignment<?>[] assignments,Focus<?> focus)
+    throws BindException
+  {
+    if (assignments!=null)
+    {
+      Setter<?>[] setters=new Setter<?>[assignments.length];
+      int i=0;
+      for (Assignment<?> assignment: assignments)
+      { setters[i++]=assignment.bind(focus);
+      }
+      return setters;
+    }
+    return null;
+  }
+  
   private Expression<? extends T> source;
   private Expression<T> target;
   
   public Assignment()
   { }
+  
+  public Assignment(String assignmentExpression)
+    throws ParseException
+  { source=Expression.<T>parse(assignmentExpression);
+  }
   
   public Assignment(Expression<T> target,Expression<? extends T> source)
   { 
@@ -53,11 +77,22 @@ public class Assignment<T>
   { return target;
   }
   
+  @SuppressWarnings("unchecked")
   public Setter<T> bind(Focus<?> focus)
     throws BindException
   {
     Channel<? extends T> sourceChannel=focus.bind(source);
-    Channel<T> targetChannel=focus.bind(target);
+    Channel<T> targetChannel=null;
+    if (target!=null)
+    { targetChannel=focus.bind(target);
+    }
+    else if (sourceChannel instanceof AssignmentNode.AssignmentChannel)
+    { 
+      targetChannel
+        =((AssignmentNode.AssignmentChannel) sourceChannel).targetChannel;
+      sourceChannel
+        =((AssignmentNode.AssignmentChannel) sourceChannel).sourceChannel;
+    }
     return new Setter<T>(sourceChannel,targetChannel);
   }
 }

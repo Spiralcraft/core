@@ -562,11 +562,16 @@ public class BeanReflector<T>
       switch (collectionType)
       {
         case ARRAY:
-          return new TranslatorChannel
-            (source
-            ,new ArrayIndexTranslator(componentReflector)
-            ,new Channel[] {subscriptChannel}
+          return new ArrayIndexChannel
+            (componentReflector
+            ,source
+            ,(Channel<Number>) subscriptChannel
             );
+//          return new TranslatorChannel
+//            (source
+//            ,new ArrayIndexTranslator(componentReflector)
+//            ,new Channel[] {subscriptChannel}
+//            );
         case LIST:
           return this.getMethod(source,"get",subscriptChannel);
         case MAP:
