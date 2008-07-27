@@ -266,8 +266,10 @@ public class FieldImpl
   private Tuple widenTuple(Tuple t)
     throws DataException
   {
-    if (fieldSet.getType()!=null)
-    { t=t.widen(fieldSet.getType());
+    final Type fieldSetType=fieldSet.getType();
+    
+    if (fieldSetType!=null)
+    { t=t.widen(fieldSetType);
     }
     else
     { 
@@ -286,8 +288,9 @@ public class FieldImpl
     { 
       Scheme scheme=(Scheme) fieldSet;
       // Find the Tuple which stores this field
-      if (scheme.getType()!=null)
-      { t=t.widen(scheme.getType());
+      final Type schemeType=scheme.getType();
+      if (schemeType!=null)
+      { t=t.widen(schemeType);
       }
     }
     else
@@ -365,6 +368,11 @@ public class FieldImpl
   {
     if (!locked)
     { lock();
+    }
+    if (getType()==null)
+    { 
+      generateURI();
+      throw new DataException("Field must have a type: "+uri);
     }
     generateURI();
     
