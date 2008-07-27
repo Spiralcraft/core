@@ -132,10 +132,13 @@ public abstract class AbstractTuple
   public Tuple widen(Type<?> type)
     throws DataException
   {
-    if (getType()!=null)
+    final Type<?> myType=getType();
+    if (myType!=null)
     {
-      if (getType().hasArchetype(type))
-      { return this;
+      if (myType==type || myType.hasArchetype(type))
+      { 
+        // == Comparison speeds common case 
+        return this;
       }
       else
       {
@@ -146,7 +149,7 @@ public abstract class AbstractTuple
         else
         { 
           throw new TypeMismatchException
-            ("Type "+getType()+" has no base type compatible with "
+            ("Type "+myType+" has no base type compatible with "
             +" wider type "+type
             );
         }
