@@ -30,8 +30,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Converts a String to an object of a specific type. Provides a means for registering
- *   StringConverters for custom types.
+ * <p>Converts a String to an object of a specific type in a consistent manner.
+ * </p>
+ * 
+ * <p>Provides a static interface for registering standard StringConverters 
+ *   for custom types.
+ * </p>
  */
 public abstract class StringConverter<T>
 {
