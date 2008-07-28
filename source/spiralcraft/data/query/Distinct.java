@@ -234,7 +234,11 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
         return false;
       }
       
-      // XXX This is why generic tuple tuples for queries are strange.
+      // XXX This is why generic tuples for queries are strange.
+      //
+      //      Need to make a copy of the projection to store it in the map 
+      //      Consider binding a TupleKeyFunction
+      //
       //      Queries should be read-only, but bufferable when required.
       //      Though there is the benefit of being able to use on Deltas
       //      or EditableTuples.

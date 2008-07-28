@@ -21,11 +21,12 @@ import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.EditableAggregate;
+import spiralcraft.data.Projection;
 import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.Identifier;
 
-import spiralcraft.data.spi.ArrayListAggregate;
+import spiralcraft.data.spi.ListAggregate;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.log.ClassLogger;
 
@@ -219,7 +220,7 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   @Override
   public Aggregate<T> snapshot()
     throws DataException
-  { return new ArrayListAggregate<T>(this);
+  { return new ListAggregate<T>(this);
   }
 
   public String toString()
@@ -339,6 +340,11 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   public void remove(
     T val)
   { buffers.remove(val);
+  }
+  
+  public Index<T> getIndex(Projection projection,boolean create)
+  {
+    return null;
   }
   
 }

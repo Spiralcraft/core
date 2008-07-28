@@ -17,41 +17,32 @@ package spiralcraft.data.spi;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Identifier;
+import spiralcraft.data.Projection;
 import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
  * Holds a aggregation of objects of a common type.
  */
-public class ArrayListAggregate<T>
+public abstract class AbstractAggregate<T>
   implements Aggregate<T>
 {
-  protected final ArrayList<T> list;
+  
   private final Type<?> type;
   private Identifier id;
   
-  public ArrayListAggregate(Type<?> type)
-  { 
-    this.type=type;
-    list=new ArrayList<T>();
-  }
-
   /**
-   * <p>Performs a shallow copy of contents of the original list
+   * <p>Create a new AbstractAggregate of the specified Type. The type
+   *   must be an Aggregate type (eg. Foo.list)
+   * </p>
    * 
-   * @param original
+   * @param type
    */
-  public ArrayListAggregate(Aggregate<T> original)
-  { 
-    list=new ArrayList<T>(original.size());
-    type=original.getType();
-    for (T element:original)
-    { list.add(element);
-    }
+  protected AbstractAggregate(Type<?> type)
+  { this.type=type;
   }
 
   public Identifier getId()
@@ -83,22 +74,16 @@ public class ArrayListAggregate<T>
   { return type;
   }
   
-  public Iterator<T> iterator()
-  { 
-    // XXX Block remove() if not mutable- create a ReadOnlyIterator wrapper
-    return list.iterator();
-  }
+  public abstract Iterator<T> iterator();
   
-  public int size()
-  { return list.size();
-  }
+  public abstract int size();
     
   public String toString()
   {
     StringBuilder builder=new StringBuilder();
     builder.append(getClass().getName()+"{");
     boolean first=true;
-    for (Object o:list)
+    for (Object o:this)
     {
       if (!first)
       { builder.append(",");
@@ -121,7 +106,7 @@ public class ArrayListAggregate<T>
     builder.append("\r\n").append(indent);
     builder.append("{");
     boolean first=true;
-    for (Object o:list)
+    for (Object o:this)
     {
       if (!first)
       { 
@@ -144,23 +129,19 @@ public class ArrayListAggregate<T>
     return builder.toString();
   }
 
-  public T get(int index)
-  { return list.get(index);
-  }
+  public abstract T get(int index);
 
   public boolean isMutable()
   { return false;
   }
 
-  public Aggregate<T> snapshot() throws DataException
-  { 
-    if (isMutable())
-    { return new ArrayListAggregate<T>(this);
-    }
-    else
-    {
-      // XXX Should we return snapshots of all the contained data?
-      return this;
-    }
+  public abstract Aggregate<T> snapshot()
+    throws DataException;
+  
+  
+  public Index<T> getIndex(Projection projection,boolean create)
+    throws DataException
+  { return null;
   }
+
 }

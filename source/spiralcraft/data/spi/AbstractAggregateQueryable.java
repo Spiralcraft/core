@@ -63,6 +63,9 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
   public BoundQuery<?,T> query(Query q, Focus<?> context)
     throws DataException
   { 
+    // XXX Turn an Equijoin into an index scan
+    
+    // Just do a scan
     BoundQuery<?,T> ret=q.getDefaultBinding(context, this);
     ret.resolve();
     return ret;

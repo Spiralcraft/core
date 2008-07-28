@@ -20,7 +20,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.SerialCursor;
-import spiralcraft.data.spi.ArrayListAggregate;
+import spiralcraft.data.spi.ListAggregate;
 
 /**
  * An Aggregate backed by a Query
@@ -28,7 +28,7 @@ import spiralcraft.data.spi.ArrayListAggregate;
  * @author mike
  */
 public class QueryAggregate<Tq extends Query,Tt extends Tuple>
-  extends ArrayListAggregate<Tt>
+  extends ListAggregate<Tt>
 {
 
   public QueryAggregate(BoundQuery<Tq,Tt> query)

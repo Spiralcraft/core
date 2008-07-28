@@ -16,6 +16,7 @@ package spiralcraft.util;
 
 import java.lang.reflect.Array;
 
+import java.util.Arrays;
 import java.util.TreeSet;
 import java.util.Collection;
 import java.util.Iterator;
@@ -353,36 +354,53 @@ public class ArrayUtil
     return 0;
   }
 
+  /**
+   * <p>Compute a deep array comparison
+   * </p>
+   *  
+   * @param a
+   * @return
+   */
   public static final boolean arrayEquals(final Object[] a,final Object[] b)
-  {
-    if (a==b)
-    { return true;
-    }
-    if (a==null || b==null || a.length!=b.length)
-    { return false;
-    }
-    for (int i=0;i<a.length;i++)
-    {
-      if (a[i]!=b[i]
-          && (a[i]==null
-              || b[i]==null
-              || !a[i].equals(b[i])
-             )
-         )
-      { return false;
-      }
-    }
-    return true;
+  { return Arrays.deepEquals(a,b);
+  
+//    if (a==b)
+//    { return true;
+//    }
+//    if (a==null || b==null || a.length!=b.length)
+//    { return false;
+//    }
+//    for (int i=0;i<a.length;i++)
+//    {
+//      if (a[i]!=b[i]
+//          && (a[i]==null
+//              || b[i]==null
+//              || !a[i].equals(b[i])
+//             )
+//         )
+//      { return false;
+//      }
+//    }
+//    return true;
   }
   
+  /**
+   * <p>Compute a deep array hash code
+   * </p>
+   *  
+   * @param a
+   * @return
+   */
   public static final int arrayHashCode(final Object[] a)
   {
-    int multiplier=31+(a.length*2);
-    int hashCode=7*multiplier+(a.length*2);
-    for (int i=0;i<a.length;i++)
-      hashCode=multiplier*hashCode + (a[i]==null ? 0: a[i].hashCode());
+    return Arrays.deepHashCode(a);
     
-    return hashCode;
+//    int multiplier=31+(a.length*2);
+//    int hashCode=7*multiplier+(a.length*2);
+//    for (int i=0;i<a.length;i++)
+//      hashCode=multiplier*hashCode + (a[i]==null ? 0: a[i].hashCode());
+//    
+//    return hashCode;
   }
   
   public static final <X> Iterator<X> iterator(final X[] array)

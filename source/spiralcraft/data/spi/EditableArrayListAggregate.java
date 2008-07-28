@@ -23,7 +23,7 @@ import spiralcraft.data.Type;
  * Holds a aggregation of objects of a common type.
  */
 public class EditableArrayListAggregate<T>
-  extends ArrayListAggregate<T>
+  extends ListAggregate<T>
   implements EditableAggregate<T>
 {
   public EditableArrayListAggregate(Type<?> type)

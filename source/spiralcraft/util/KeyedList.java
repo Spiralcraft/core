@@ -19,29 +19,33 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * A data structure comprised of a List and a number of Maps. Elements
+ * <p>A data structure comprised of a List and a number of Maps. Elements
  *   inserted into this data structure are maintained in their order of
  *   insertion and are mapped according to one or more KeyFunctions.
+ * </p>
  */
 public class KeyedList<T>
   extends ListWrapper<T>
 {
   
-  private ArrayList<Index<Object,T>> _keys;
+  private ArrayList<Index<?,T>> _keys;
   private int _numKeys;
   
   public KeyedList(List<T> impl)
   { super(impl);
   }
   
-  public Index<Object,T> addMap(Map<Object,List<T>> implMap,KeyFunction<Object,T> function)
+  public <K> Index<K,T> addMap(Map<K,List<T>> implMap,KeyFunction<K,T> function)
   { 
     if (_keys==null)
-    { _keys=new ArrayList<Index<Object,T>>();
+    { _keys=new ArrayList<Index<?,T>>();
     }
-    Index<Object,T> map=new Index<Object,T>(implMap,function);
+    Index<K,T> map=new Index<K,T>(implMap,function);
     _keys.add(map);
     _numKeys++;
+    for (T t:this)
+    { map.getMap().addValue(t);
+    }
     return map;
   }
   
@@ -108,6 +112,10 @@ public class KeyedList<T>
     
     AutoListMap<Tkey,Tdata> getMap()
     { return _map;
+    }
+    
+    public List<Tdata> get(Tkey key)
+    { return _map.get(key);
     }
     
     public Tdata getOne(Tkey key)

@@ -17,7 +17,6 @@ package spiralcraft.data.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import spiralcraft.data.DataComposite;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Projection;

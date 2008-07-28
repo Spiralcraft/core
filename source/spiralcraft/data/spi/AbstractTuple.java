@@ -204,25 +204,18 @@ public abstract class AbstractTuple
     return newBehavior;
     
   }
-  public boolean equals(Object o)
+  
+  
+  public static final boolean tupleEquals(Tuple a,Tuple t)
   {
-    if (o==null)
-    { return false;
-    }
-    
-    if (!(o instanceof Tuple))
-    { return false;
-    }
-    
-    Tuple t=(Tuple) o;
-    for (Field field : fieldSet.fieldIterable())
+    for (Field field : a.getFieldSet().fieldIterable())
     { 
       Object thisVal;
       Object otherVal;
       
       try
       {
-        thisVal=get(field.getIndex());
+        thisVal=a.get(field.getIndex());
         otherVal=t.get(field.getIndex());
       }
       catch (DataException x)
@@ -245,24 +238,46 @@ public abstract class AbstractTuple
     return true;
   }
   
+  public final boolean equals(Object o)
+  {
+    if (o==null)
+    { return false;
+    }
+    
+    if (!(o instanceof Tuple))
+    { return false;
+    }
+    
+    return tupleEquals(this,(Tuple) o);
+  }
   
   public String toString()
+  { return tupleToString(this);
+  }
+  
+  public String toText(String indent)
+    throws DataException
+  {
+    return tupleToText(this,indent);
+  }
+  
+  public static String tupleToString(Tuple tuple)
   {
     StringBuilder sb=new StringBuilder();
-    sb.append(super.toString());
-    if (getType()!=null)
-    { sb.append(":").append(getType().getURI());
+    sb.append(tuple.getClass().getName()+"@"+tuple.hashCode());
+    if (tuple.getType()!=null)
+    { sb.append(":").append(tuple.getType().getURI());
     }
     else
-    { sb.append(":(untyped)"+fieldSet);
+    { sb.append(":(untyped)"+tuple.getFieldSet());
     }
     sb.append("[");
     boolean first=true;
-    for (Field field : fieldSet.fieldIterable())
+    for (Field field : tuple.getFieldSet().fieldIterable())
     { 
       Object val;
       try
-      { val=get(field.getIndex());
+      { val=tuple.get(field.getIndex());
       }
       catch (DataException x)
       { throw new RuntimeDataException("Error reading field ["+field+"]:"+x,x);
@@ -313,24 +328,26 @@ public abstract class AbstractTuple
       }
     }
     sb.append("]");
-    if (baseExtent!=null)
-    { sb.append("baseExtent="+baseExtent);
+    if (tuple.getBaseExtent()!=null)
+    { sb.append("baseExtent="+tuple.getBaseExtent());
     }
     return sb.toString();
   }
   
-  public String toText(String indent)
+
+  
+  public static String tupleToText(Tuple tuple,String indent)
     throws DataException
   { 
     StringBuilder sb=new StringBuilder();
     sb.append("\r\n").append(indent);
-    sb.append(super.toString());
+    sb.append(tuple.getClass().getName()+"@"+tuple.hashCode());
     sb.append("\r\n").append(indent).append("==");
-    FieldSet fieldSet=this.fieldSet;
-    if (getType()!=null)
+    FieldSet fieldSet=tuple.getFieldSet();
+    if (tuple.getType()!=null)
     { 
-      sb.append(getType().getURI());
-      fieldSet=getType().getFieldSet();
+      sb.append(tuple.getType().getURI());
+      fieldSet=tuple.getType().getFieldSet();
     }
     else
     { sb.append("(untyped)-"+fieldSet);
@@ -342,7 +359,7 @@ public abstract class AbstractTuple
     for (Field field : fieldSet.fieldIterable())
     { 
       
-      Object val=field.getValue(this);
+      Object val=field.getValue(tuple);
       if (val!=null)
       { 
         sb.append("\r\n").append(indent2);
