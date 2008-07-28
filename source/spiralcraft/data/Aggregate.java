@@ -14,6 +14,7 @@
 //
 package spiralcraft.data;
 
+
 /**
  * <P>Holds a random-access collection of objects of a common type.
  */
@@ -45,6 +46,26 @@ public interface Aggregate<T>
    * The number of elements in this Aggregate
    */
   public int size();
+ 
+  /**
+   *
+   * @param projection
+   * @return The Index associated with the specified Projection, optionally
+   *   creating it.
+   */
+  public Index<T> getIndex(Projection projection,boolean create)
+    throws DataException;
   
-  
+  /**
+   * <p>A mapping of the elements in the List according to a key defined by a
+   *    Projection.
+   * </p>
+   * 
+   */
+  public interface Index<T>
+  {
+    public Aggregate<T> get(KeyTuple key);
+    
+    public T getOne(KeyTuple key);
+  }
 }

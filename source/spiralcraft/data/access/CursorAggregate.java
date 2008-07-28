@@ -18,7 +18,7 @@ package spiralcraft.data.access;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
-import spiralcraft.data.spi.ArrayListAggregate;
+import spiralcraft.data.spi.ListAggregate;
 
 /**
  * An Aggregate backed by a Cursor
@@ -26,7 +26,7 @@ import spiralcraft.data.spi.ArrayListAggregate;
  * @author mike
  */
 public class CursorAggregate<Tt extends Tuple>
-  extends ArrayListAggregate<Tt>
+  extends ListAggregate<Tt>
 {
 
   public CursorAggregate(SerialCursor<Tt> cursor)

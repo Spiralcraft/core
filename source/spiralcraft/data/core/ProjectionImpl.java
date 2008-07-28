@@ -17,6 +17,7 @@ package spiralcraft.data.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Projection;
@@ -157,7 +158,7 @@ public class ProjectionImpl
   }
   
   
-  public Channel<Tuple> bind(Focus<? extends Tuple> focus)
+  public Channel<Tuple> bind(Focus<?> focus)
     throws BindException
   { return new ProjectionChannel(focus);
   }
@@ -166,10 +167,10 @@ public class ProjectionImpl
     extends AbstractChannel<Tuple>
   {
      
-    private final Focus<? extends Tuple> focus;
+    private final Focus<?> focus;
     private final BoundTuple boundTuple;
     
-    public ProjectionChannel(Focus<? extends Tuple> masterFocus)
+    public ProjectionChannel(Focus<?> masterFocus)
       throws BindException
     { 
       super(new TupleReflector<Tuple>(ProjectionImpl.this,Tuple.class));

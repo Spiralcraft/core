@@ -19,13 +19,15 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
 /**
- * <P>A horizontal transformation of data described by one FieldSet (the Master
+ * <p>A horizontal transformation of data described by one FieldSet (the Master
  *   FieldSet) into data described by another FieldSet (the Projection
  *   FieldSet). Each Field of the Projection FieldSet is defined by a field
  *   or expression relative to the Master FieldSet.
+ * </p>
  *   
- * <P>The transformation is materialized by creating a Tuple of the Projection
+ * <p>The transformation is materialized by creating a Tuple of the Projection
  *   FieldSet for a tuple of the master FieldSet.
+ * </p>
  *  
  * @author mike
  */
@@ -35,12 +37,12 @@ public interface Projection
   /**
    *@return the master fieldSet from which this fieldSet is derived
    */
-  public FieldSet getMasterFieldSet();
+  //public FieldSet getMasterFieldSet();
   
   /**
    * Bind the Projection to a Focus which sources the master data.
    */
-  public Channel<Tuple> bind(Focus<? extends Tuple> focus)
+  public Channel<Tuple> bind(Focus<?> focus)
     throws BindException;
 
   
