@@ -24,6 +24,10 @@ import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.SerialCursor;
+import spiralcraft.data.lang.CursorBinding;
+
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 
@@ -162,6 +166,10 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
     { return getType();
     }
 
+    public Channel<Tt> bind()
+      throws BindException
+    { return new CursorBinding<Tt,UnionSerialCursor>(this);
+    }
   
   }
 

@@ -19,9 +19,15 @@ import java.util.WeakHashMap;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.TeleFocus;
 
+import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.BeanReflector;
 
 import spiralcraft.data.DataComposite;
@@ -29,6 +35,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Type;
+import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.session.BufferAggregate;
 import spiralcraft.data.session.BufferTuple;
 import spiralcraft.data.session.BufferType;
@@ -139,5 +146,54 @@ public abstract class DataReflector<T extends DataComposite>
   
   public String toString()
   { return super.toString();
+  }
+  
+  /**
+   * <p>Determines the Type of data represented by an Expression scoped against
+   *   this Type's FieldSet.
+   * 
+   * @param expr
+   * @return The type of an expression when scoped to a Focus that has a 
+   *   Channel with this Reflector as its subject.
+   */
+  @SuppressWarnings("unchecked")
+  public Type<?> getTypeAsSubject(Expression<?> expr)
+    throws DataException
+  {
+    Channel<?> channel=new AbstractChannel(this)
+    {
+
+      @Override
+      protected Object retrieve()
+      { return null;
+      }
+
+      @Override
+      protected boolean store(
+        Object val)
+        throws AccessException
+      { return false;
+      }
+    };
+    
+    Focus teleFocus=new TeleFocus(null,channel);
+    try
+    {
+      Reflector reflector=teleFocus.bind(expr).getReflector();
+      if (reflector instanceof DataReflector)
+      { return ((DataReflector) reflector).getType();
+      }
+      else
+      { 
+        return Type.resolve
+          (ReflectionType.canonicalURI(reflector.getContentType()));
+      }
+    }
+    catch (BindException x)
+    { throw new DataException("Error binding expression "+expr+" to "+this,x);
+    }
+      
+    
+    
   }
 }

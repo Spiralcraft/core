@@ -22,6 +22,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.util.KeyFunction;
@@ -30,12 +31,13 @@ public class DataKeyFunction<T>
   implements KeyFunction<KeyTuple,T>
 {
   
-  private ThreadLocalChannel<T> valueChannel;
-  private Channel<? extends Tuple> projectionChannel;
+  private final ThreadLocalChannel<T> valueChannel;
+  private final Channel<? extends Tuple> projectionChannel;
   
-  public DataKeyFunction(Projection projection)
+  public DataKeyFunction(Reflector<T> valueReflector,Projection projection)
     throws BindException
   { 
+    valueChannel=new ThreadLocalChannel<T>(valueReflector);
     Focus<T> focus=new SimpleFocus<T>(valueChannel);
     projectionChannel=projection.bind(focus);
   }

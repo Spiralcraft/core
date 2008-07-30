@@ -14,7 +14,13 @@
 //
 package spiralcraft.data.spi;
 
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+
 import spiralcraft.data.Identifier;
+import spiralcraft.data.KeyTuple;
+import spiralcraft.data.Projection;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
@@ -23,17 +29,25 @@ import spiralcraft.data.Type;
 import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.query.BoundQuery;
+import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Scan;
 
-
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.TeleFocus;
 
 /**
  * <p>Adapts the Queryable interface to an Aggregate, to provide the
  *   functionality of Querying a single Type. A wrapper or subclass will
  *   supply the actual data in the form of the Aggregate interface.
+ * </p>
+ * 
+ * <p>Queries against this Queryable will normally do a full scan of the
+ *   data, unless the extending class provides optimizations.
  * </p>
  *   
  */
@@ -63,10 +77,11 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
   public BoundQuery<?,T> query(Query q, Focus<?> context)
     throws DataException
   { 
-    // XXX Turn an Equijoin into an index scan
     
-    // Just do a scan
-    BoundQuery<?,T> ret=q.getDefaultBinding(context, this);
+    BoundQuery<?,T> ret;
+
+    // Just do a scan, because we're just a dumb list
+    ret=q.solve(context, this);
     ret.resolve();
     return ret;
   }
@@ -86,7 +101,8 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       if (aggregate==null)
       { throw new DataException("Aggregate is null- cannot perform query");
       }
-      return new BoundScanScrollableCursor(aggregate); 
+      // return new BoundScanScrollableCursor(aggregate); 
+      return new ListCursor<T>(aggregate);
     } 
     
     class BoundScanScrollableCursor
@@ -173,5 +189,65 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
   }
   
 
-  
+  public class BoundIndexScan
+    extends BoundQuery<EquiJoin,T>
+  {
+    private final Projection projection;
+    private final Channel<?>[] parameters;
+    
+    public BoundIndexScan(EquiJoin ej,Focus<?> context)
+      throws DataException
+    { 
+      // Create a focus to resolve all the LHSExpressions
+      Focus<?> focus=new TeleFocus<Void>(context,null);
+      
+      ArrayList<Expression<?>> lhsExpressions=ej.getLHSExpressions();
+
+      projection
+        =getResultType().getScheme().getProjection
+          (lhsExpressions.toArray(new Expression[0]));
+
+      ArrayList<Expression<?>> rhsExpressions=ej.getRHSExpressions();
+      parameters=new Channel<?>[rhsExpressions.size()];
+      int i=0;
+      for (Expression<?> expr : rhsExpressions)
+      { 
+        try
+        { parameters[i++]=focus.bind(expr);
+        }
+        catch (BindException x)
+        { 
+          throw new DataException
+            ("Error binding EquiJoin parameter expression "+expr,x);
+        }
+      }
+      
+      setQuery(ej);
+    }
+    
+    @Override
+    public SerialCursor<T> execute() throws DataException
+    { 
+      KeyedListAggregate<T> aggregate=(KeyedListAggregate<T>) getAggregate();
+      if (aggregate==null)
+      { throw new DataException("Aggregate is null- cannot perform query");
+      }
+      Aggregate.Index<T> index=aggregate.getIndex(projection, true);
+      
+      Object[] parameterData=new Object[parameters.length];
+      for (int i=0;i<parameters.length;i++)
+      { parameterData[i]=parameters[i].get();
+      }
+      KeyTuple key=new KeyTuple(projection,parameterData,true);
+      Aggregate<T> result=index.get(key);
+      if (result==null)
+      { 
+        return new ListCursor<T>
+          (getResultType().getScheme(),new LinkedList<T>());
+      }
+      else
+      { return new ListCursor<T>(result);
+      }
+    } 
+  }
 }

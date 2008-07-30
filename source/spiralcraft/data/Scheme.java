@@ -14,6 +14,8 @@
 //
 package spiralcraft.data;
 
+import spiralcraft.lang.Expression;
+
 /**
  * Describes a unit of structured data as a collection of Fields, Keys
  *   Methods, and Constraints.
@@ -62,6 +64,17 @@ public interface Scheme
    * @return The Key at the specified index
    */
   Key getKeyByIndex(int index);
+  
+  /**
+   * <p>The Projection signature is the set of Field expressions which define
+   *   a given Projection in reference to this type.
+   * </p>
+   * 
+   * @param signature
+   * @return the Key signature
+   */
+  Projection getProjection(Expression<?>[] signature)
+    throws DataException;
   
   /**
    * @returnn Iterable which provides access to 

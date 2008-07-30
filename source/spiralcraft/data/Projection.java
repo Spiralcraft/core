@@ -15,18 +15,19 @@
 package spiralcraft.data;
 
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
 /**
- * <p>A horizontal transformation of data described by one FieldSet (the Master
- *   FieldSet) into data described by another FieldSet (the Projection
- *   FieldSet). Each Field of the Projection FieldSet is defined by a field
- *   or expression relative to the Master FieldSet.
+ * <p>A horizontal transformation of data in an arbitrary form into 
+ *   a Tuple described by a FieldSet (the Projection). Each Field of the
+ *   Projection is defined by some expression evaluated against the data
+ *   available from the target of the projection. 
  * </p>
  *   
  * <p>The transformation is materialized by creating a Tuple of the Projection
- *   FieldSet for a tuple of the master FieldSet.
+ *   FieldSet for each instance of the target type. 
  * </p>
  *  
  * @author mike
@@ -34,16 +35,31 @@ import spiralcraft.lang.BindException;
 public interface Projection
   extends FieldSet
 {
-  /**
-   *@return the master fieldSet from which this fieldSet is derived
-   */
-  //public FieldSet getMasterFieldSet();
   
   /**
-   * Bind the Projection to a Focus which sources the master data.
+   * <p>Bind the Projection to a Focus which sources the master data.
+   * </p>
+   * 
+   * <p>The Tuple provided by the Channel is a view into the current
+   *   values(s) provided by the Focus, and is mutable- ie. will change
+   *   along with the backing values. Therefore, the user should call snapshot() 
+   *   if the value is to be used beyond the immediate context.
+   * </p>
    */
   public Channel<Tuple> bind(Focus<?> focus)
     throws BindException;
 
+  /**
+   * 
+   * @return The array of expressions evaluated against the master data that
+   *   defines this Projection.
+   */
+  Expression<?>[] getTargetExpressions();
+  
+  /**
+   *@return an Iterable which provides access to 
+   *   fields in order of their indexes
+   */
+  Iterable<? extends ProjectionField> fieldIterable();  
   
 }

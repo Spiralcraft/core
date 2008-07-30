@@ -19,6 +19,8 @@ import spiralcraft.data.FieldSet;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
 
 /**
  * A Cursor is a window onto one or more Tuples of compatible Types.<P>
@@ -51,4 +53,18 @@ public interface Cursor<T extends Tuple>
    */
   T dataGetTuple()
     throws DataException;
+  
+  /**
+   * <p>Create a Channel which exposes the Cursor's current data.
+   * </p>
+   * 
+   * <p>Note that since a Cursor is not normally re-usable, any associated
+   *   components must be re-bound to a different Cursor once this one has
+   *   been read. 
+   * </p>
+   * 
+   * @return A Channel which exposes the Tuple at the current cursor position.
+   */
+  Channel<T> bind()
+    throws BindException;
 }

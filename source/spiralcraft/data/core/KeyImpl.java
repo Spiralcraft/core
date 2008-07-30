@@ -24,6 +24,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldNotFoundException;
 
+import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Selection;
 import spiralcraft.data.query.Scan;
@@ -194,47 +195,67 @@ public class KeyImpl
 //      // Querying another type while resolving introduced a
 //      // cycle.
 //      
+//      // Reconfirmed this issue 2008-07-29
+//        //   foreign type is not resolved yet.
+//      
 //      Scheme importedScheme=foreignType.getScheme();
 //      if (importedScheme==null)
 //      { 
 //        throw new DataException
 //          ("Foreign Type must have a Scheme "+foreignType);
 //      }
-
-      
-      
+//
+//      
+//      
 //      importedKey.setScheme(importedScheme);
 //      importedKey.resolve();
       
-      StringBuilder expression=new StringBuilder();
-      String[] foreignFieldNames=importedKey.getFieldNames();
-      for (int i=0;i<fieldNames.length;i++)
-      {
-        if (expression.length()>0)
-        { expression.append(" && ");
-        }
-        expression.append("."+foreignFieldNames[i])
-          .append("==").append(fieldNames[i]);
-      }
-//      System.err.println("KeyImpl: expression= ["+expression+"]");
-      
-      try
-      {
-        foreignQuery
-          =new Selection
-            (new Scan(getForeignType())
-            ,Expression.<Boolean>parse(expression.toString())
-            );
-      }
-      catch (ParseException x)
-      { 
-        throw new DataException
-          ("Error parsing Key expression '"+expression.toString()+"':"+x,x);
-      }
+      createForeignEquiJoin();
+
       
       
     }
     
+    createLocalEquiJoin();
+
+    
+    super.resolve();
+    
+    
+  }
+
+  private void createLocalEquiJoin()
+    throws DataException
+   
+  {
+    EquiJoin ej=new EquiJoin();
+    Expression<?>[] rhsExpressions=new Expression<?>[fieldNames.length];
+    int i=0;
+    for (String fieldName : fieldNames)
+    {
+      try
+      { rhsExpressions[i++]=Expression.parse(fieldName);
+      }
+      catch (ParseException x)
+      {
+        throw new DataException
+          ("Error parsing Key expression '"+fieldName+"':"+x,x);
+      }
+
+    }
+//    ej.setDebug(true);
+    ej.setExpressions
+      (getTargetExpressions()
+      ,rhsExpressions
+      );
+    ej.setSource(new Scan(scheme.getType()));
+    query=ej;
+
+  }
+
+  protected void createLocalSelection()
+    throws DataException
+  {
     StringBuilder expression=new StringBuilder();
     for (String fieldName: fieldNames)
     { 
@@ -259,12 +280,95 @@ public class KeyImpl
         ("Error parsing Key expression '"+expression.toString()+"':"+x,x);
     }
 
+  }
+  
+  private void createForeignEquiJoin()
+    throws DataException
+  {
+    EquiJoin ej=new EquiJoin();
+//    ej.setDebug(true);
     
-    super.resolve();
+    // Build lhs Expressions with dot-prefix
+    String[] foreignFieldNames=importedKey.getFieldNames();
+    Expression<?>[] lhsExpressions=new Expression<?>[foreignFieldNames.length];
+    int i=0;
+    for (String fieldName : foreignFieldNames)
+    { 
+      try
+      { lhsExpressions[i++]=Expression.parse("."+fieldName);
+      }
+      catch (ParseException x)
+      {
+        throw new DataException
+          ("Error parsing Key expression '"+fieldName+"':"+x,x);
+      }
+    }
     
+    // Build rhs Expressions without dot-prefix
+    String[] localFieldNames=getFieldNames();
+    Expression<?>[] rhsExpressions=new Expression<?>[localFieldNames.length];
+    i=0;
+    for (String fieldName : localFieldNames)
+    { 
+      try
+      { rhsExpressions[i++]=Expression.parse(fieldName);
+      }
+      catch (ParseException x)
+      {
+        throw new DataException
+          ("Error parsing Key expression '"+fieldName+"':"+x,x);
+      }
+    }
+
+    ej.setExpressions
+      (lhsExpressions
+      ,rhsExpressions
+      );
+    if (ej.getLHSExpressions().size()!=ej.getRHSExpressions().size())
+    { 
+      throw new DataException
+        ("Key '"+name+"' of Type "+getScheme().getType()+" must have the"
+          +" same number of fields on both the imported and the local side"
+        );
+        	
+    }
+    foreignQuery=ej;
+    ej.setSource(new Scan(foreignType));
     
   }
- 
+  
+  protected void createForeignSelection()
+    throws DataException
+  {
+    // XXX May be obsolete
+    StringBuilder expression=new StringBuilder();
+    String[] foreignFieldNames=importedKey.getFieldNames();
+    for (int i=0;i<fieldNames.length;i++)
+    {
+      if (expression.length()>0)
+      { expression.append(" && ");
+      }
+      expression.append("."+foreignFieldNames[i])
+        .append("==").append(fieldNames[i]);
+    }
+//      System.err.println("KeyImpl: expression= ["+expression+"]");
+      
+    try
+    {
+      foreignQuery
+        =new Selection
+          (new Scan(getForeignType())
+          ,Expression.<Boolean>parse(expression.toString())
+          );
+    }
+    catch (ParseException x)
+    { 
+      throw new DataException
+        ("Error parsing Key expression '"+expression.toString()+"':"+x,x);
+    }
+  }
+  
+  
   public Reflector<Tuple> getReflector()
   { return reflector;
   }

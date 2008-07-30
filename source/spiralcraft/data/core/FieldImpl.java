@@ -438,7 +438,7 @@ public class FieldImpl
   }
 
   @Override
-  public Channel bind
+  public Channel<?> bind
     (Focus<? extends Tuple> focus)
     throws BindException
   { 

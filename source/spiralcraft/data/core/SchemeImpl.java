@@ -15,15 +15,18 @@
 package spiralcraft.data.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import spiralcraft.data.Key;
+import spiralcraft.data.Projection;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Field;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeMismatchException;
+import spiralcraft.lang.Expression;
 
 /**
  * Core implementation of a Scheme
@@ -48,10 +51,13 @@ public class SchemeImpl
 
   protected final ArrayList<KeyImpl> keys
     =new ArrayList<KeyImpl>();
-  protected final HashMap<String,KeyImpl> keyMap
-    =new HashMap<String,KeyImpl>();
+//  protected final HashMap<String,KeyImpl> keyMap
+//    =new HashMap<String,KeyImpl>();
   
   
+  protected final HashMap<Expression<?>[],ProjectionImpl> projectionMap
+    =new HashMap<Expression<?>[],ProjectionImpl>();
+    
   public Type<?> getType()
   { return type;
   }
@@ -357,5 +363,48 @@ public class SchemeImpl
   
   public Iterable<? extends Key> keyIterable()
   { return keys;
+  }
+
+  private ProjectionImpl createProjection(Expression<?>[] signature)
+    throws DataException
+  {
+    synchronized (projectionMap)
+    {
+    
+      ProjectionImpl projection=projectionMap.get(signature);
+      if (projection!=null)
+      { return projection;
+      }
+
+      for (KeyImpl key : keys)
+      { 
+        if (Arrays.deepEquals(key.getTargetExpressions(),signature))
+        { 
+          projectionMap.put(key.getTargetExpressions(),key);
+          return key;
+        }
+      }
+      
+      projection=new ProjectionImpl(this,signature);
+      projectionMap.put(signature,projection);
+      return projection;
+      
+    }
+    
+  }
+  
+  @Override
+  public Projection getProjection(Expression<?>[] signature)
+    throws DataException
+  {
+    Projection projection=projectionMap.get(signature);
+    if (projection!=null)
+    { return projection;
+    }
+    
+    
+    
+    
+    return createProjection(signature);
   }
 }

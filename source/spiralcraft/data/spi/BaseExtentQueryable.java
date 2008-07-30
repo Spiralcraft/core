@@ -102,7 +102,7 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
   { 
     
     // Get the default binding for the query
-    BoundQuery<?,Ttuple> ret=q.getDefaultBinding(context, this);
+    BoundQuery<?,Ttuple> ret=q.solve(context, this);
     ret.resolve();
     return ret;
   }

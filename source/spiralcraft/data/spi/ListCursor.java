@@ -15,6 +15,7 @@
 package spiralcraft.data.spi;
 
 import spiralcraft.data.access.ScrollableCursor;
+import spiralcraft.data.lang.CursorBinding;
 
 
 import java.util.List;
@@ -27,6 +28,8 @@ import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Type;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
 
 /**
  * <P>A ScrollableCursor which navigates a List of Tuples.
@@ -164,5 +167,10 @@ public class ListCursor<T extends Tuple>
     else
     { return pointer<data.size();
     }
+  }
+  
+  public Channel<T> bind()
+    throws BindException
+  { return new CursorBinding<T,ListCursor<T>>(this);
   }
 }

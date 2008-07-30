@@ -23,6 +23,7 @@ import spiralcraft.data.Projection;
 import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
+import spiralcraft.data.lang.DataReflector;
 import spiralcraft.lang.BindException;
 import spiralcraft.util.KeyedList;
 
@@ -331,7 +332,10 @@ public class KeyedListAggregate<T>
         backingIndex
           =list.<KeyTuple>addMap
             (mapImpl
-            ,new DataKeyFunction<T>(projection)
+            ,new DataKeyFunction<T>
+              (DataReflector.<T>getInstance(type.getContentType())
+              ,projection
+              )
             );
       }
       catch (BindException x)

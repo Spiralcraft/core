@@ -116,30 +116,31 @@ public abstract class Query
   }
   
   /**
-   * <P>When a Queryable cannot provide an optimized BoundQuery implementation for a given
-   *   operation in response to a query(Query) request, this method will factor the
-   *   Query by subdividing the Query into downstream and upstream Queries. 
+   * <p>When a Queryable cannot provide an optimized BoundQuery implementation
+   *   for a given operation in response to a query(Query) request, this method
+   *   will factor the Query by subdividing the Query into downstream and
+   *   upstream Queries. 
+   * </p>
    *   
-   * <P>The downstream Query (closer to the caller) will be implemented by a 
+   * <p>The downstream Query (closer to the caller) will be implemented by a 
    *   default implementation that receives data from upstream component(s).
+   * </p>
    *   
-   * <P>One or more upstream Queries will be passed back through the query(Query request),
-   *   providing the Queryable with an opportunity to optimize another level of the data
-   *   flow tree.
+   * <p>One or more upstream Queries will be passed back through the 
+   *   query(Query request), providing the Queryable with an opportunity to
+   *   optimize another level of the data flow tree.
+   * </p>
    * 
    * @return the standard BoundQuery for the downstream operation of this Query,
    *   bound to one or more sub-Query operations which will be bound against the
-   *   Queryable store. This will recursively bind the entire dataflow tree underneath this 
-   *   query and return the root BoundQuery.
+   *   Queryable store. This will recursively bind the entire dataflow tree 
+   *   underneath this query and return the root BoundQuery.
    */
-  public BoundQuery<?,?> solve(Focus<?> focus,Queryable<?> store)
+  public <Ttuple extends Tuple> BoundQuery<?,Ttuple> solve
+    (Focus<?> focus,Queryable<Ttuple> store)
     throws DataException
   { 
     Query factor=factor();
-    if (factor.getSources().size()==0)
-    { return null;
-    }
-
     return factor.getDefaultBinding(focus,store);
   }
 
@@ -151,8 +152,18 @@ public abstract class Query
    * 
    * <p>May retrieve all downstream query results to compute output.
    * </p>
+   * 
+   * <p>This method is typically called by solve(Focus,Queryable), after
+   *   solve() calls factor(). Queries
+   *   should not call this directly, because that would short circuit the
+   *   optimization process.
+   * </p>
+   * 
+   * <p>For complex query chains, this method should call store.query() to bind
+   *   all sources.
+   * </p>
    */
-  public abstract <T extends Tuple> BoundQuery<?,T> 
+  abstract <T extends Tuple> BoundQuery<?,T> 
     getDefaultBinding(Focus<?> focus,Queryable<?> store)
     throws DataException;
   
@@ -178,20 +189,25 @@ public abstract class Query
 
   
   /**
-   * <P>Factor a base Query into a downstream Query (returned) and 
-   *   one or more upstream Queries (from getSources()) that achieve the same result
-   *   as this Query. This method is used to provide Queryables with fine control
-   *   when implementing optimized versions of the various Query operations.
+   * <p>Factor a base Query into a downstream Query (returned) and 
+   *   one or more upstream Queries (from getSources()) that achieve the same
+   *   result as this Query. This method is used to provide Queryables with 
+   *   fine control when implementing optimized versions of the various Query
+   *   operations.
+   * </p>
    *   
-   * <P>The upstream Queries implement the bulk of the operations in the
+   * <p>The upstream Queries implement the bulk of the operations in the
    *   original Query, while the downstream Query implements a single operation 
    *   factored out of the base Query.
+   * </p>
    * 
-   * <P>The default implementation simple returns this Query as the downstream Query,
-   *   and this Query's sources as the upstream Queries.
+   * <p>The default implementation simple returns this Query as the downstream
+   *    Query, and this Query's sources as the upstream Queries.
+   * </p>
    *   
-   * <P>Overridden implementations will normally take a more granular approach to
-   *   factoring.
+   * <p>Overridden implementations will normally take a more granular approach 
+   *   to factoring.
+   * </p>
    * 
    * @return The upstream Queries resulting from factoring this Query, or null if
    *   the Query cannot be factored.

@@ -15,14 +15,18 @@
 package spiralcraft.data.xml;
 
 
+import spiralcraft.data.query.BoundQuery;
+import spiralcraft.data.query.EquiJoin;
+import spiralcraft.data.query.Query;
+import spiralcraft.data.query.Scan;
 import spiralcraft.data.spi.AbstractAggregateQueryable;
-import spiralcraft.data.spi.EditableArrayListAggregate;
+import spiralcraft.data.spi.EditableKeyedListAggregate;
+import spiralcraft.data.spi.KeyedListAggregate;
 
 import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.sax.DataWriter;
 
 import spiralcraft.data.Aggregate;
-import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
@@ -41,6 +45,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.IOException;
 
+import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLogger;
 
 /**
@@ -69,7 +74,7 @@ public class XmlQueryable
   
   private Type<?> type;
   
-  private Aggregate<Tuple> aggregate;
+  private KeyedListAggregate<Tuple> aggregate;
   private Exception exception;
   
   private boolean autoCreate;
@@ -90,8 +95,12 @@ public class XmlQueryable
           if (debug)
           { log.fine("Resource "+resource.getURI()+" changed");
           }
-          Aggregate<Tuple> data=(Aggregate<Tuple>) reader.readFromResource
-            (resource, type);
+          Aggregate<Tuple> origData
+            =(Aggregate<Tuple>) reader.readFromResource
+              (resource, type);
+          
+          EditableKeyedListAggregate data
+            =new EditableKeyedListAggregate(origData);
           setAggregate(data);
         }
         catch (Exception x)
@@ -112,6 +121,29 @@ public class XmlQueryable
   {
     this.type=type;
     setResourceURI(resourceURI);
+  }
+  
+  public BoundQuery<?,Tuple> query(Query q, Focus<?> context)
+    throws DataException
+  {   
+    BoundQuery<?,Tuple> ret;
+    // XXX Turn an Equijoin into an index scan
+    if ( (q instanceof EquiJoin)
+        && (q.getSources().get(0) instanceof Scan)
+        && q.getType().isAssignableFrom(getResultType())
+        )
+    { 
+      
+      EquiJoin ej=(EquiJoin) q;
+      
+      ret=new BoundIndexScan(ej,context);
+      ret.resolve();
+      return ret;
+      
+    }
+    else 
+    { return super.query(q, context);
+    }
   }
   
   protected void checkInit()
@@ -147,7 +179,7 @@ public class XmlQueryable
             if (autoCreate)
             {
               aggregate
-                =new EditableArrayListAggregate<Tuple>(type);
+                =new EditableKeyedListAggregate<Tuple>(type);
               flush(null);
             }
             else
@@ -218,7 +250,7 @@ public class XmlQueryable
   { this.type=Type.getAggregateType(type);
   }
   
-  private void setAggregate(Aggregate<Tuple> aggregate)
+  private void setAggregate(KeyedListAggregate<Tuple> aggregate)
   { this.aggregate=aggregate;
   }
   
@@ -326,11 +358,11 @@ public class XmlQueryable
   
   
   void add(Tuple t)
-  { ((EditableAggregate<Tuple>) this.aggregate).add(t);
+  { ((EditableKeyedListAggregate<Tuple>) this.aggregate).add(t);
   }
   
   void remove(Tuple t)
-  { ((EditableAggregate<Tuple>) this.aggregate).remove(t);
+  { ((EditableKeyedListAggregate<Tuple>) this.aggregate).remove(t);
   }
   
   

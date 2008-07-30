@@ -15,10 +15,13 @@
 package spiralcraft.data.spi;
 
 import spiralcraft.data.access.Cursor;
+import spiralcraft.data.lang.CursorBinding;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
 
 /**
  * A Cursor that provides access to Tuples that are provided by the
@@ -58,6 +61,11 @@ public class ManualCursor<T extends Tuple>
   
   public void setRelationId(Identifier relationId)
   { this.relationId=relationId;
+  }
+  
+  public Channel<T> bind()
+    throws BindException
+  { return new CursorBinding<T,ManualCursor<T>>(this);
   }
 
 }

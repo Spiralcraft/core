@@ -4,7 +4,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * A Telescoped Focus, referencing a context internal to a single expression
+ * <p>A Telescoped Focus, referencing a context internal to a single expression
+ * </p>
+ * 
+ * <p>The parent focus context is used to resolve all context names 
+ *   (non-dot-prefixed names), and subject references (dot-prefixed names)
+ *   will resolve to the provided subject
+ * </p>
  * 
  * @author mike
  *
@@ -14,6 +20,15 @@ public class TeleFocus<T>
   implements Focus<T>
 {
   
+ /**
+  * <p>The parent focus context is used to resolve all context names 
+  *   (non-dot-prefixed names), and subject references (dot-prefixed names)
+  *   will resolve to the provided subject
+  * </p>
+  * 
+  * @param parentFocus The parentFocus which provides the context
+  * @param subject The channel which provides the subject.
+  */
   public TeleFocus(Focus<?> parentFocus,Channel<T> subject)
   { 
     setParentFocus(parentFocus);

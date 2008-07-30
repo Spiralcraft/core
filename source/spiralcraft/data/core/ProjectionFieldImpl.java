@@ -14,8 +14,8 @@
 //
 package spiralcraft.data.core;
 
-import spiralcraft.data.Field;
 
+import spiralcraft.data.ProjectionField;
 import spiralcraft.lang.Expression;
 
 
@@ -35,40 +35,21 @@ import spiralcraft.lang.Expression;
  * 
  * @author mike
  */
-public class ProjectionField
+public class ProjectionFieldImpl
   extends FieldImpl
+  implements ProjectionField
 {
 
   private Expression<?> expression;
-  private Field masterField;
   
   public void setExpression(Expression<?> expression)
   { this.expression=expression;
   }
     
+  @Override
   public Expression<?> getExpression()
   { return expression;
   }
 
-  public void setMasterField(
-    Field masterField)
-  {
-    this.masterField=masterField;
-    
-  }
-  
-  public Field getMasterField()
-  { return masterField;
-  }
-
-
 }
-
-
-
-// History
-//
-// 2008-02-26 mike: Doc., pre integration to ProjectionImpl
-//
-//   
 

@@ -81,7 +81,25 @@ public abstract class AbstractStore
     throws DataException
   {
     if (query instanceof Scan)
-    { return getAll(query.getType());
+    { 
+      // Basic scan just calls getAll
+      return getAll(query.getType());
+    }
+    else if 
+      (query.getSources()!=null 
+      && query.getSources().size()==1
+      && query.getSources().get(0) instanceof Scan
+      )
+    { 
+      // Query derived from Scan goes to Queryable for optimization
+      
+      Type<?> queryType=query.getSources().get(0).getType();
+      Queryable<Tuple> queryable=getQueryable(queryType);
+      if (queryable==null)
+      { throw new DataException
+          ("This store cannot query type "+queryType.getURI());
+      }
+      return queryable.query(query, context);
     }
     else
     { 
