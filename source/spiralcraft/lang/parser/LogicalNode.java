@@ -61,6 +61,10 @@ public abstract class LogicalNode<T1,T2>
   }
   
   public abstract String getSymbol();
+  
+  protected String reconstruct(String operator)
+  { return _op1.reconstruct()+" "+operator+" "+_op2.reconstruct();
+  }
 
   public Node getLeftOperand()
   { return _op1;

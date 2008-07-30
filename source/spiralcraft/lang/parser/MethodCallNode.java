@@ -56,6 +56,26 @@ public class MethodCallNode
 //    debugTree(System.err);
   }
 
+  public String reconstruct()
+  { 
+    StringBuilder builder=new StringBuilder();
+    builder.append(_source.reconstruct());
+    builder.append("."+_identifierName);
+    builder.append(" ( ");
+    boolean first=true;
+    for (Node node:_parameterNodes)
+    { 
+      if (first)
+      { first=false;
+      }
+      else
+      { builder.append(" , ");
+      }
+      builder.append(node.reconstruct());
+    }
+    builder.append(" ) ");
+    return builder.toString();
+  }  
   /**
    * MethodCallNode operates on a source. If there is no direct source,
    *   the subject of the supplied focus will be used.

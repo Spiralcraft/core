@@ -34,6 +34,25 @@ public class ListNode<T>
   { this.sources=sources;
   }
 
+  public String reconstruct()
+  { 
+    StringBuilder builder=new StringBuilder();
+    builder.append(" { ");
+    boolean first=true;
+    for (Node node:sources)
+    { 
+      if (first)
+      { first=false;
+      }
+      else
+      { builder.append(" , ");
+      }
+      builder.append(node.reconstruct());
+    }
+    builder.append(" } ");
+    return builder.toString();
+  }
+  
   /**
    * MethodCallNode operates on a source. If there is no direct source,
    *   the subject of the supplied focus will be used.

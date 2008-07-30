@@ -30,6 +30,28 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
     _equals=equals;
   }
 
+  public String reconstruct()
+  {
+    if (_greaterThan)
+    {
+      if (_equals)
+      { return reconstruct(">=");
+      }
+      else
+      { return reconstruct(">");
+      }
+    }
+    else
+    {
+      if (_equals)
+      { return reconstruct("<=");
+      }
+      else
+      { return reconstruct("<");
+      }
+    }
+  }
+  
   @SuppressWarnings("unchecked") // Array is heterogeneous
   public Boolean translateForGet(T1 val,Channel<?>[] mods)
   { 

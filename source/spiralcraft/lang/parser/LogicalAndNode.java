@@ -25,6 +25,10 @@ public class LogicalAndNode
   { super(op1,op2);
   }
 
+  public String reconstruct()
+  { return reconstruct("&&");
+  }
+  
   @SuppressWarnings("unchecked") // Non-generic array
   public Boolean translateForGet(Boolean val,Channel<?>[] mods)
   { 

@@ -42,7 +42,11 @@ public abstract class AbstractAggregate<T>
    * @param type
    */
   protected AbstractAggregate(Type<?> type)
-  { this.type=type;
+  { 
+    if (type==null)
+    { throw new IllegalArgumentException("Aggregate Type cannot is null");
+    }
+    this.type=type;
   }
 
   public Identifier getId()

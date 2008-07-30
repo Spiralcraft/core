@@ -23,6 +23,10 @@ public class LogicalOrNode
   public LogicalOrNode(Node op1,Node op2)
   { super(op1,op2);
   }
+  
+  public String reconstruct()
+  { return reconstruct("!!");
+  }
 
   @SuppressWarnings("unchecked") // Heterogeneous Array
   public Boolean translateForGet(Boolean val,Channel<?>[] mods)

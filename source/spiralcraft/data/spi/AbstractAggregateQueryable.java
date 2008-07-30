@@ -225,6 +225,7 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       setQuery(ej);
     }
     
+    
     @Override
     public SerialCursor<T> execute() throws DataException
     { 

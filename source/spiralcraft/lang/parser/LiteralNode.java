@@ -38,6 +38,10 @@ public class LiteralNode<X>
     }
   }
 
+  public String reconstruct()
+  { return _optic.get().toString();
+  }
+  
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix)

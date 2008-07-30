@@ -74,18 +74,22 @@ public class ListCursor<T extends Tuple>
 
   public ListCursor(FieldSet fieldSet,T ... data)
   { 
+    this.type=fieldSet.getType();
     this.fieldSet=fieldSet;
     this.data=Arrays.<T>asList(data);
   }
   
   public ListCursor(FieldSet fieldSet,List<T> data)
   {
+    this.type=fieldSet.getType();
     this.fieldSet=fieldSet;
     this.data=data;
   }
   
   public ListCursor(FieldSet fieldSet)
-  { this.fieldSet=fieldSet;
+  { 
+    this.type=fieldSet.getType();
+    this.fieldSet=fieldSet;
   }
   
   /**

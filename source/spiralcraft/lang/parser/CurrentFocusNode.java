@@ -36,4 +36,7 @@ public class CurrentFocusNode
   { out.append(prefix).append("CurrentFocus");
   }
   
+  public String reconstruct()
+  { return " ";
+  }
 }

@@ -14,14 +14,11 @@
 //
 package spiralcraft.data.spi;
 
-import spiralcraft.data.DataComposite;
 import spiralcraft.data.Aggregate;
-import spiralcraft.data.Identifier;
 import spiralcraft.data.Key;
 import spiralcraft.data.KeyTuple;
 import spiralcraft.data.Projection;
 import spiralcraft.data.Type;
-import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.lang.BindException;
@@ -37,12 +34,10 @@ import java.util.Map;
  * Holds a aggregation of objects of a common type.
  */
 public class KeyedListAggregate<T>
-  implements Aggregate<T>
+  extends AbstractAggregate<T>
 {
   protected final KeyedList<T> list;
   
-  private final Type<?> type;
-  private Identifier id;
   private ArrayList<Index<T>> indices;
   private Map<Projection,Index<T>> indexMap;
   
@@ -54,7 +49,7 @@ public class KeyedListAggregate<T>
    */
   public KeyedListAggregate(Type<?> type,KeyedList<T> impl)
   { 
-    this.type=type;
+    super(type);
     list=impl;    
   }
 
@@ -66,7 +61,7 @@ public class KeyedListAggregate<T>
    */
   public KeyedListAggregate(Type<?> type)
   { 
-    this.type=type;
+    super(type);
     list=new KeyedList<T>(new ArrayList<T>());
   }
 
@@ -77,8 +72,8 @@ public class KeyedListAggregate<T>
    */
   public KeyedListAggregate(Aggregate<T> original)
   { 
+    super(original.getType());
     list=new KeyedList<T>(new ArrayList<T>(original.size()));
-    type=original.getType();
     for (T element:original)
     { list.add(element);
     }
@@ -91,42 +86,13 @@ public class KeyedListAggregate<T>
    */
   public KeyedListAggregate(Aggregate<T> original,KeyedList<T> impl)
   { 
+    super(original.getType());
     list=impl;
-    type=original.getType();
     for (T element:original)
     { list.add(element);
     }
   }
   
-  
-  public Identifier getId()
-  { return id;
-  }
-  
-  public void setId(Identifier id)
-  { this.id=id;
-  }
-  
-  public boolean isAggregate()
-  { return true;
-  }
-  
-  public Aggregate<?> asAggregate()
-  { return this;
-  }
-  
-  public boolean isTuple()
-  { return false;
-  }
-
-  public Tuple asTuple()
-  { throw new UnsupportedOperationException("An aggregate is not a Tuple");
-  }
-  
-  
-  public Type<?> getType()
-  { return type;
-  }
   
   public Iterator<T> iterator()
   { 
@@ -138,64 +104,11 @@ public class KeyedListAggregate<T>
   { return list.size();
   }
     
-  public String toString()
-  {
-    StringBuilder builder=new StringBuilder();
-    builder.append(getClass().getName()+"{");
-    boolean first=true;
-    for (Object o:list)
-    {
-      if (!first)
-      { builder.append(",");
-      }
-      else
-      { first=false;
-      }
-      builder.append(o.toString());
-      
-    }
-    builder.append("}");
-    return builder.toString();
-
-  }
-  
-  public String toText(String indent)
-    throws DataException
-  {
-    StringBuilder builder=new StringBuilder();
-    builder.append("\r\n").append(indent);
-    builder.append("{");
-    boolean first=true;
-    for (Object o:list)
-    {
-      if (!first)
-      { 
-        builder.append("\r\n").append(indent);
-        builder.append(",");
-      }
-      else
-      { first=false;
-      }
-      if (o instanceof DataComposite)
-      { builder.append(((DataComposite) o).toText(indent+"  "));
-      }
-      else
-      { builder.append(o.toString());
-      }
-      
-    }
-    builder.append("\r\n").append(indent);
-    builder.append("}");
-    return builder.toString();
-  }
 
   public T get(int index)
   { return list.get(index);
   }
 
-  public boolean isMutable()
-  { return false;
-  }
 
   @SuppressWarnings("unchecked")
   public Aggregate<T> snapshot() throws DataException
@@ -333,7 +246,7 @@ public class KeyedListAggregate<T>
           =list.<KeyTuple>addMap
             (mapImpl
             ,new DataKeyFunction<T>
-              (DataReflector.<T>getInstance(type.getContentType())
+              (DataReflector.<T>getInstance(getType().getContentType())
               ,projection
               )
             );

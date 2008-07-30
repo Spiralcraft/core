@@ -474,11 +474,21 @@ public class FieldImpl
         return null;
       }
       
-      try
-      { t=widenTuple(subtypeTuple);
+      if (fieldSet==subtypeTuple.getFieldSet())
+      { 
+        // This is the majority case
+        t=subtypeTuple;
       }
-      catch (DataException x)
-      { throw new AccessException(x.toString(),x);
+      else
+      {
+        try
+        { 
+          // This was is a hot spot block, this the short circuit above
+          t=widenTuple(subtypeTuple);
+        }
+        catch (DataException x)
+        { throw new AccessException(x.toString(),x);
+        }
       }
       
       if (t!=null)

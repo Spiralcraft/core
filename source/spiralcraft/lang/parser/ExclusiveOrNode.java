@@ -28,6 +28,10 @@ public class ExclusiveOrNode
     // System.out.println("ExclusiveOrNode:"+op1.toString()+"\r\n"+op2.toString());
     
   }
+  
+  public String reconstruct()
+  { return reconstruct("^^");
+  }
 
   @SuppressWarnings("unchecked") // Heterogeneous Array
   public Boolean translateForGet(Boolean val,Channel<?>[] mods)

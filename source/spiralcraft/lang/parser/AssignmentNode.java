@@ -52,6 +52,9 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
     this.target=target;
   }
 
+  public String reconstruct()
+  { return source.reconstruct()+" = "+target.reconstruct();
+  }
   
   @SuppressWarnings("unchecked") // Heterogeneous operation
   public Channel bind(final Focus focus)

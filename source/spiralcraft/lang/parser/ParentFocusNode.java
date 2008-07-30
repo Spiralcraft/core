@@ -35,6 +35,10 @@ public class ParentFocusNode
     _child=child;
   }
 
+  public String reconstruct()
+  { return "..";
+  }
+  
   public Focus<?> findFocus(final Focus<?> focus)
     throws BindException
   { 

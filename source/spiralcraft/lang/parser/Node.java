@@ -44,6 +44,14 @@ public abstract class Node
     return null;
   }
 
+  /** 
+   * <p>Recursively reconstruct the expression text that created this node.
+   * </p>
+   * 
+   * @return The expression text
+   */
+  public abstract String reconstruct();
+  
   public abstract void dumpTree(StringBuffer out,String prefix);
 
   public void debugTree(java.io.PrintStream err)

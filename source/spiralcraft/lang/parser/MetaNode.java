@@ -37,6 +37,10 @@ public class MetaNode<T extends Channel<?>>
   public MetaNode(Node source)
   { _source=source;
   }
+  
+  public String reconstruct()
+  { return _source+"@";
+  }
 
   public Node getSource()
   { return _source;

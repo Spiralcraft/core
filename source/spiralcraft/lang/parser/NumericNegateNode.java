@@ -43,6 +43,10 @@ public class NumericNegateNode<T extends Number>
   {  _node=node;
   }
 
+  public String reconstruct()
+  { return "-"+_node.reconstruct();
+  }
+  
   // Suppress Warnings notes:
   //   Translator cast at end of method from specific back to T- type checked against
   //   content type in type selector. Also Reflector is cast up to specific type, also safe

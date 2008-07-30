@@ -32,6 +32,10 @@ public class EqualityNode<X>
     super(op1,op2);
     _negate=negate;
   }
+  
+  public String reconstruct()
+  { return reconstruct(_negate?"!=":"==");
+  }
 
   public Boolean translateForGet(X val,Channel<?>[] mods)
   { 

@@ -36,6 +36,10 @@ public class ResolveNode<T>
     this.identifier=identifier;
   }
 
+  public String reconstruct()
+  { return _source.reconstruct()+"."+identifier;
+  }
+  
   public String getIdentifierName()
   { return identifier;
   }

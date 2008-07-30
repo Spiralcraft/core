@@ -94,6 +94,7 @@ public class QueryField
         BoundQuery boundQuery
           =((Queryable) queryableFocus.getSubject().get()).query
             (query,focus);
+        
         boundQuery.resolve();
         return new QueryFieldChannel(getType(),boundQuery);
       }
@@ -159,13 +160,13 @@ public class QueryField
         { 
           SerialCursor cursor=query.execute();
           if (cursor.getResultType()==null)
-          {
-            log.fine("cursor result type is null "+cursor);
+          { log.fine("Field "+getURI()+": cursor result type is null "+cursor+" from "+query
+                    );
           }
           
           
           CursorAggregate aggregate
-            =new CursorAggregate(query.execute());
+            =new CursorAggregate(cursor);
           // log.fine(aggregate.toString());
           return aggregate;
         }

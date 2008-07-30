@@ -46,6 +46,10 @@ public class SubscriptNode<T,C,I>
     _selector=selector;
   }
 
+  public String reconstruct()
+  { return _source.reconstruct()+"["+_selector.reconstruct()+"]";
+  }
+  
   public Channel<?> bind(Focus<?> focus)
     throws BindException
   {

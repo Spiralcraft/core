@@ -24,6 +24,10 @@ public class LogicalNegateNode
   { super(node,null);
   }
 
+  public String reconstruct()
+  { return " ! "+getLeftOperand().reconstruct();
+  }
+  
   public Boolean translateForGet(Boolean val,Channel<?>[] mods)
   { 
     if (val==null)

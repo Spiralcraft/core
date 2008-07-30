@@ -46,6 +46,10 @@ public class PrimaryIdentifierNode
     _identifier=identifier;
   }
 
+  public String reconstruct()
+  { return (_source!=null?_source.reconstruct():"")+_identifier;
+  }
+  
   public FocusNode getSource()
   { return _source;
   }

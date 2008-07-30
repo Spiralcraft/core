@@ -115,6 +115,13 @@ public class Expression<T>
     _root=root;
     _text=text;
   }
+  
+  public Expression(Node root)
+  { 
+    _root=root;
+    _text=root.reconstruct();
+  }
+  
 
   public String getText()
   { return _text;

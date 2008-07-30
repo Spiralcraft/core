@@ -14,11 +14,21 @@
 //
 package spiralcraft.data.query;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.TeleFocus;
+import spiralcraft.lang.parser.CurrentFocusNode;
+import spiralcraft.lang.parser.EqualityNode;
+import spiralcraft.lang.parser.LiteralNode;
+import spiralcraft.lang.parser.LogicalAndNode;
+import spiralcraft.lang.parser.Node;
+import spiralcraft.lang.parser.PrimaryIdentifierNode;
+import spiralcraft.lang.parser.ResolveNode;
 import spiralcraft.log.ClassLogger;
 
 
@@ -36,6 +46,9 @@ public class Selection
   extends Query
 {
  
+  private static final ClassLogger log
+    =ClassLogger.getInstance(Selection.class);
+  
   private Expression<Boolean> constraints;
   
   public Selection()
@@ -49,7 +62,7 @@ public class Selection
   public Selection(Query source,Expression<Boolean> constraints)
   { 
     this.constraints=constraints;
-    addSource(source);
+    setSource(source);
   }
   
   public FieldSet getFieldSet()
@@ -100,12 +113,194 @@ public class Selection
    
   }
   
+  
+  /**
+   * Recursively factor a node into EquiJoin expressions and a remainder.
+   * 
+   * @param lhsList
+   * @param rhsList
+   * @return The remainder
+   */
+  private Node factorNode
+    (Node original,List<Expression<?>> lhsList,List<Expression<?>> rhsList)
+  {
+    if (original instanceof LogicalAndNode)
+    {
+      LogicalAndNode andNode=(LogicalAndNode) original;
+      Node lhsRemainder
+        =factorNode(andNode.getLeftOperand(),lhsList,rhsList);
+      Node rhsRemainder
+        =factorNode(andNode.getRightOperand(),lhsList,rhsList);
+      
+      if (lhsRemainder!=null && rhsRemainder!=null)
+      { return lhsRemainder.and(rhsRemainder);
+      }
+      else if (lhsRemainder!=null)
+      { return lhsRemainder;
+      }
+      else
+      { return rhsRemainder;
+      }
+      
+    }
+    else if (original instanceof EqualityNode)
+    {
+      // Terminal case- EqualityNode
+      
+      EqualityNode<?> equalityNode=(EqualityNode<?>) original;
+      Node lhs=equalityNode.getLeftOperand();
+      boolean factored=false;
+      if (lhs instanceof ResolveNode)
+      {
+        ResolveNode<?> lhsResolve=(ResolveNode<?>) lhs;
+        if (lhsResolve.getSource() instanceof CurrentFocusNode)
+        { 
+          // Test right hand side for legal expressions
+          Node rhs=equalityNode.getRightOperand();
+          Node validRhs=null;
+          if (rhs instanceof PrimaryIdentifierNode)
+          {
+            PrimaryIdentifierNode rhsIdent=(PrimaryIdentifierNode) rhs;
+            if (rhsIdent.getSource()==null
+                || rhsIdent.getSource() instanceof CurrentFocusNode
+                )
+            { validRhs=rhsIdent;
+            }
+            else
+            { 
+              if (debug)
+              { 
+                log.fine
+                  ("Ident node source is not current focus "
+                  +rhsIdent.getSource()+" "+rhsIdent.getSource().reconstruct()
+                  );
+              }
+            }
+          }
+          else if (rhs instanceof LiteralNode)
+          { validRhs=rhs;
+          }
+          else
+          { 
+            if (debug)
+            { log.fine("Not a valid RHS for refactoring "+rhs.reconstruct());
+            }
+          }
+  
+          // XXX Some logic in Expressions to determine grounding is in
+          //   order.
+              
+          if (validRhs!=null)
+          {
+            lhsList.add(new Expression<Object>(lhsResolve));
+            rhsList.add(new Expression<Object>(validRhs));
+            if (debug)
+            { 
+              log.fine
+                ("Factored "
+                +lhsResolve.reconstruct()+" = "+validRhs.reconstruct()
+                );
+            }
+            factored=true;
+          }
+        }
+        else
+        {
+          if (debug)
+          { 
+            log.fine
+              ("Resolve node source is not current focus "
+              +lhsResolve.getSource()+" "+lhsResolve.getSource().reconstruct()
+              );
+          }
+        }
+      }
+      else
+      {
+        if (debug)
+        { log.fine("lhs is not a resolve node "+lhs.reconstruct());
+        }
+      }
+      if (factored)
+      { return null;
+      }
+      else
+      { return original;
+      }
+    }
+    else
+    { return original;
+    }
+        
+  }
+  
+  /**
+   * <p>Factor a base Query into a downstream Query (returned) and 
+   *   one or more upstream Queries (from getSources()) that achieve the same
+   *   result as this Query. This method is used to provide Queryables with 
+   *   fine control when implementing optimized versions of the various Query
+   *   operations.
+   * </p>
+   *   
+   * <p>The upstream Queries implement the bulk of the operations in the
+   *   original Query, while the downstream Query implements a single operation 
+   *   factored out of the base Query.
+   * </p>
+   * 
+   * 
+   * @return The downstream Query resulting from factoring this Query, or null if
+   *   the Query cannot be factored.
+   */
+  protected Query factor()
+  { 
+    if (debug)
+    { log.fine("factor()");
+    }
+    if (constraints!=null)
+    {
+      // Factor the expression
+      
+      ArrayList<Expression<?>> lhsExpressions=new ArrayList<Expression<?>>(5);
+      ArrayList<Expression<?>> rhsExpressions=new ArrayList<Expression<?>>(5);
+      
+      Node remainder=factorNode
+        (constraints.getRootNode(),lhsExpressions,rhsExpressions);
+      
+      if (lhsExpressions.isEmpty())
+      { 
+        // We didn't find anything to refactor
+        return this;
+      }
+      else
+      {
+        EquiJoin ej=new EquiJoin();
+        ej.setLHSExpressions(lhsExpressions.toArray(new Expression<?>[0]));
+        ej.setRHSExpressions(rhsExpressions.toArray(new Expression<?>[0]));
+        ej.setSource(getSources().get(0));
+        
+        if (remainder==null)
+        { return ej;
+        }
+        else
+        { return new Selection(ej,new Expression<Boolean>(remainder));
+        }
+        
+      }
+      
+      
+    } // Constraints!=null
+    
+    
+    return this;
+  }
+  
   public String toString()
   { return super.toString()
       +"[constraints="+constraints+"]: sources="
       +getSources().toString();
   }
-    
+
+  
 }
 
 class SelectionBinding<Tq extends Selection,Tt extends Tuple>
@@ -207,8 +402,18 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     }
     
     public Type<?> getResultType()
-    { return sourceCursor.getResultType();
+    { 
+      Type<?> ret=sourceCursor.getResultType();
+      if (ret!=null)
+      { return ret;
+      }
+      else
+      { 
+        log.fine("Source cursor result type is null "+sourceCursor);
+        return null;
+      }
     }
+
   }
 
   class SelectionScrollableCursor
@@ -248,7 +453,16 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     }
 
     public Type<?> getResultType()
-    { return sourceCursor.getResultType();
+    { 
+      Type<?> ret=sourceCursor.getResultType();
+      if (ret!=null)
+      { return ret;
+      }
+      else
+      { 
+        log.fine("Source cursor result type is null "+sourceCursor);
+        return null;
+      }
     }
   }
 }

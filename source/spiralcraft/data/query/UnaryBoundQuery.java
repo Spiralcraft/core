@@ -118,7 +118,7 @@ public abstract class UnaryBoundQuery
       resolved=true;
     }
     else
-    { throw new IllegalStateException("Already resolved");
+    { log.fine("Query "+this+" already resolved");
     }
   }
   

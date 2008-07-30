@@ -53,6 +53,9 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
 //    System.out.println("NumericOpNoe init: "+op+" : "+op1+" : "+op2);
   }
 
+  public String reconstruct()
+  { return _op1.reconstruct()+_op+_op2.reconstruct();
+  }
   
   @SuppressWarnings("unchecked") // More heterogeneus operations
   public Channel<T1> bind(Focus<?> focus)

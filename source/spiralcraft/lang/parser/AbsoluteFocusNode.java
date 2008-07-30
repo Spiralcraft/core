@@ -63,6 +63,19 @@ public class AbsoluteFocusNode
 
   }
 
+  public String reconstruct()
+  { 
+    if (namespace!=null)
+    { return "["+namespace+":"+suffix+"]";
+    }
+    else if (uri!=null)
+    { return "[:"+uri+"]";
+    }
+    else
+    { return "["+suffix+"]";
+    }
+  }
+  
   public Focus<?> findFocus(final Focus<?> focus)
     throws BindException
   { 

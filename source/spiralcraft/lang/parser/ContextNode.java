@@ -32,6 +32,10 @@ public class ContextNode
   { _source=source;
   }
 
+  public String reconstruct()
+  { return _source.reconstruct()+" ";
+  }
+  
   public FocusNode getSource()
   { return _source;
   }

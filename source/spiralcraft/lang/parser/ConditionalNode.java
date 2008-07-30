@@ -41,6 +41,13 @@ public class ConditionalNode
     _falseResult=falseResult;
   }
 
+  public String reconstruct()
+  { 
+    return _condition.reconstruct()
+      +" ? "+_trueResult.reconstruct()
+      +" : "+_falseResult.reconstruct();
+  }
+  
   public Channel bind(Focus focus)
     throws BindException
   { 
