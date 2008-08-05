@@ -546,6 +546,7 @@ public class PropertySpecifier
   { return _textData;
   }
 
+  @Override
   public String toString()
   { 
     return super.toString()

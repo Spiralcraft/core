@@ -127,6 +127,7 @@ public class AssemblyClass
     }
   }
 
+  @Override
   public String toString()
   { return super.toString()+":"+sourceURI+":"+_containerURI;
   }

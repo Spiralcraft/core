@@ -40,6 +40,7 @@ public class JarArchive
   { this.resource=resource;
   }
     
+  @Override
   public void open()
     throws IOException
   {
@@ -48,6 +49,7 @@ public class JarArchive
 
   }
   
+  @Override
   protected Entry loadEntry(String path)
   {
     JarEntry jarEntry=jarFile.getJarEntry(path);
@@ -59,6 +61,7 @@ public class JarArchive
     }
   }
   
+  @Override
   public void close()
   {
     if (jarFile!=null)

@@ -56,6 +56,7 @@ public class AssemblyFactoryTest
     new Arguments()
     {
 
+      @Override
       protected boolean processOption(String option)
       {
         if (option=="uri")

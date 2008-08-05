@@ -67,6 +67,7 @@ public class Loader
     precedentArchives.add(archive);
   }
 
+  @Override
   protected Class<?> loadClass(String formalName,boolean resolve)
     throws ClassNotFoundException
   {
@@ -93,6 +94,7 @@ public class Loader
    *@throws ClassNotFoundException if the class was not loadable by this
    *  ClassLoader.
    */
+  @Override
   public Class<?> findClass(String formalName)
     throws ClassNotFoundException
   { 
@@ -157,6 +159,7 @@ public class Loader
    * Find a resource by path (x/y/z) within the normal delegation model
    *   (assumes parent classloaders and precedent archives have been checked)
    */
+  @Override
   public URL findResource(String path)
   { return findResource(path,archives);
   }
@@ -165,6 +168,7 @@ public class Loader
   { return findResource(path,precedentArchives);
   }
   
+  @Override
   public URL getResource(String path)
   {
     URL resource=findPrecedentResource(path);
@@ -177,6 +181,7 @@ public class Loader
     return resource;
   }
 
+  @Override
   public Enumeration<URL> getResources(String path)
     throws IOException
   {
@@ -250,6 +255,7 @@ public class Loader
   { return findStream(path,precedentArchives);
   }
 
+  @Override
   public InputStream getResourceAsStream(String path)
   {
     InputStream in=findPrecedentStream(path);

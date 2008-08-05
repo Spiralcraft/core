@@ -114,6 +114,7 @@ public abstract class CommandAdapter<Ttarget,Tresult>
     }
   }
   
+  @Override
   @SuppressWarnings("unchecked") // Cast Object.clone() result
   public synchronized Command<Ttarget,Tresult> clone()
   {

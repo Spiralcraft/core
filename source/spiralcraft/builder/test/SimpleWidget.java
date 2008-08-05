@@ -141,6 +141,7 @@ public class SimpleWidget
   
   
   
+  @Override
   public String toString()
   { return super.toString()+":"+_instanceId+":\""+_title+"\"";
   }
