@@ -104,7 +104,7 @@ public class URLEncoder
         else
         {
           encoded.append('%');
-          String hex=(Integer.toHexString((int) c));
+          String hex=(Integer.toHexString(c));
           if (hex.length()==1)
           { encoded.append("0");
           }
