@@ -75,7 +75,7 @@ public class Order
       if (debug || Order.this.debug)
       { log.fine("OrderChannel ["+ArrayUtil.format(elements,"],[","")+"]");
       }
-      elementChannels=(Channel<Integer>[]) new Channel[elements.length];
+      elementChannels=new Channel[elements.length];
       for (int i=0;i<elements.length;i++)
       { elementChannels[i]=elements[i].bind(focusA,focusB);
       }

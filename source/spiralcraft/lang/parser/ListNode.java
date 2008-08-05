@@ -34,6 +34,7 @@ public class ListNode<T>
   { this.sources=sources;
   }
 
+  @Override
   public String reconstruct()
   { 
     StringBuilder builder=new StringBuilder();
@@ -57,6 +58,7 @@ public class ListNode<T>
    * MethodCallNode operates on a source. If there is no direct source,
    *   the subject of the supplied focus will be used.
    */
+  @Override
   @SuppressWarnings("unchecked")
   public Channel<?> bind(final Focus<?> focus)
     throws BindException
@@ -118,6 +120,7 @@ public class ListNode<T>
         return true;
       }
       
+      @Override
       public boolean isWritable()
       { 
         for (Channel<T> channel: channels)
@@ -134,6 +137,7 @@ public class ListNode<T>
 
   }
   
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   {
     out.append(prefix).append("List: ");
@@ -153,6 +157,7 @@ public class ListNode<T>
     }
   }
   
+  @Override
   public String toString()
   { return super.toString()+"{"+sources.toString()+"}";
   }

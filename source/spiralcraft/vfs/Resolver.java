@@ -53,6 +53,7 @@ public class Resolver
   private static final ThreadLocal<Stack<URI>> contextURI
     =new ThreadLocal<Stack<URI>>()
   {
+    @Override
     protected Stack<URI> initialValue()
     { 
       Stack<URI> stack=new Stack<URI>();

@@ -386,7 +386,7 @@ public class UnixCrypt
 
   private static final int byteToUnsigned(byte b)
   {
-     int value = (int)b;
+     int value = b;
 
      return(value >= 0 ? value : value + 256);
   }
@@ -593,7 +593,7 @@ public class UnixCrypt
 
      for(int i = 0; i < key.length && i < original.length(); i ++)
      {
-        int iChar = (int)original.charAt(i);
+        int iChar = original.charAt(i);
 
         key[i] = (byte)(iChar << 1);
      }
@@ -613,7 +613,7 @@ public class UnixCrypt
         {
            c <<= 1;
 
-           if(((int)b[y] & u) != 0)
+           if((b[y] & u) != 0)
               c |= 1;
 
            u >>>= 1;
@@ -672,8 +672,8 @@ public class UnixCrypt
    buffer[0]=charZero;
    buffer[1]=charOne;
 
-   final int Eswap0 = con_salt[(int)charZero];
-   final int Eswap1 = con_salt[(int)charOne] << 4;
+   final int Eswap0 = con_salt[charZero];
+   final int Eswap1 = con_salt[charOne] << 4;
 
    byte key[] = new byte[8];
 
@@ -682,7 +682,7 @@ public class UnixCrypt
 
    for(int i = 0; i < key.length && i < cleartext.length(); i ++)
    {
-      final int iChar = (int)cleartext.charAt(i);
+      final int iChar = cleartext.charAt(i);
 
       key[i] = (byte)(iChar << 1);
    }
@@ -702,7 +702,7 @@ public class UnixCrypt
       {
          c <<= 1;
 
-         if(((int)b[y] & u) != 0)
+         if((b[y] & u) != 0)
             c |= 1;
 
          u >>>= 1;

@@ -63,10 +63,12 @@ public class TypeImpl<T>
     this.packageURI=resolver.getPackageURI(uri);
   }
   
+  @Override
   public URI getPackageURI()
   { return packageURI;
   }
   
+  @Override
   public Type<?> getArchetype()
   { return archetype;
   }
@@ -86,6 +88,7 @@ public class TypeImpl<T>
    * <p>Does not search base types by design. Use isAssignableFrom(type)
    * </p>
    */
+  @Override
   public boolean hasArchetype(Type<?> type)
   {
     if (this==type)
@@ -99,6 +102,7 @@ public class TypeImpl<T>
     }
   }
   
+  @Override
   public Type<?> getBaseType()
   { return baseType;
   }
@@ -112,6 +116,7 @@ public class TypeImpl<T>
     this.baseType=baseType;
   }
   
+  @Override
   public boolean hasBaseType(Type<?> type)
   {
     if (this==type)
@@ -125,6 +130,7 @@ public class TypeImpl<T>
     }
   }
 
+  @Override
   public boolean isAssignableFrom(Type<?> type)
   {
     
@@ -169,6 +175,7 @@ public class TypeImpl<T>
     }
   }
   
+  @Override
   public Type<?> getMetaType()
   { 
     try
@@ -183,14 +190,17 @@ public class TypeImpl<T>
    * The public Java class or interface used to programatically access or
    *   manipulate this data element.
    */
+  @Override
   public Class<T> getNativeClass()
   { return nativeClass;
   }
   
+  @Override
   public TypeResolver getTypeResolver()
   { return resolver;
   }
   
+  @Override
   public URI getURI()
   { return uri;
   }
@@ -200,6 +210,7 @@ public class TypeImpl<T>
    * Default implementation is to set up the SchemeImpl scheme with 
    *   arechetype and base type and resolve it.
    */
+  @Override
   public void link()
     throws DataException
   { 
@@ -235,6 +246,7 @@ public class TypeImpl<T>
    * @return The Scheme which describes the structure of this type, or null if
    *   this type is not a complex type. 
    */
+  @Override
   public Scheme getScheme()
   { return scheme;
   }
@@ -262,6 +274,7 @@ public class TypeImpl<T>
    * @param name
    * @return
    */
+  @Override
   public Field getField(String name)
   {
     if (!linked)
@@ -280,6 +293,7 @@ public class TypeImpl<T>
   /**
    * Returns fields of this Type and base Types
    */
+  @Override
   public FieldSet getFieldSet()
   { return new UnifiedFieldSet(this);
   }
@@ -315,6 +329,7 @@ public class TypeImpl<T>
    * Default implementation of validate is to ensure that the supplied object
    *   is assignable to this Type's nativeClass.
    */
+  @Override
   public ValidationResult validate(Object o)
   { 
     if (nativeClass==null)
@@ -340,10 +355,12 @@ public class TypeImpl<T>
    * @return Whether this Type is an aggregate (array or collection) of another
    *   type.
    */
+  @Override
   public boolean isAggregate()
   { return aggregate;
   }
   
+  @Override
   public Type<?> getCoreType()
   {
     Type<?> ret=this;
@@ -353,18 +370,22 @@ public class TypeImpl<T>
     return ret;
   }
 
+  @Override
   public boolean isPrimitive()
   { return false;
   }
   
+  @Override
   public boolean isStringEncodable()
   { return false;
   }
   
+  @Override
   public boolean isDataEncodable()
   { return true;
   }
     
+  @Override
   public String toString()
   { 
     return super.toString()
@@ -375,25 +396,30 @@ public class TypeImpl<T>
       ;
   }
   
+  @Override
   public String toString(T val)
   { throw new UnsupportedOperationException("Not string encodable");
   }
   
+  @Override
   public T fromString(String val)
     throws DataException
   { throw new UnsupportedOperationException("Not string encodable");
   }
 
+  @Override
   public T fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
   { throw new UnsupportedOperationException("Not depersistable");
   }
   
+  @Override
   public DataComposite toData(T val)
     throws DataException
   { throw new UnsupportedOperationException("Not persistable: "+toString());
   }
   
+  @Override
   public Type<?> getContentType()
   { return contentType;
   }
@@ -428,10 +454,12 @@ public class TypeImpl<T>
     this.extendable=extendable;
   }
   
+  @Override
   public boolean isLinked()
   { return linked;
   }
   
+  @Override
   public Comparator<T> getComparator()
   { return comparator;
   }

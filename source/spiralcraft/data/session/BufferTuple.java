@@ -96,6 +96,7 @@ public class BufferTuple
   /**
    * Return the buffer to an unchanged state
    */
+  @Override
   public synchronized void revert()
   {
     reset();
@@ -442,6 +443,7 @@ public class BufferTuple
   { return toDirtyText("| ");
   }
   
+  @Override
   public String toString()
   { 
     StringBuffer buf=new StringBuffer();
@@ -560,10 +562,12 @@ public class BufferTuple
   { return baseExtent;
   }
   
+  @Override
   public void setEditable(boolean val)
   { editable=val;
   }
   
+  @Override
   public boolean isEditable()
   { 
     return ((original instanceof EditableTuple) 
@@ -575,6 +579,7 @@ public class BufferTuple
   
   
   
+  @Override
   public void save()
     throws DataException
   {

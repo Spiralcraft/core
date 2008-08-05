@@ -46,10 +46,12 @@ public class SubscriptNode<T,C,I>
     _selector=selector;
   }
 
+  @Override
   public String reconstruct()
   { return _source.reconstruct()+"["+_selector.reconstruct()+"]";
   }
   
+  @Override
   public Channel<?> bind(Focus<?> focus)
     throws BindException
   {
@@ -107,6 +109,7 @@ public class SubscriptNode<T,C,I>
 //    }
 //  }
   
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append("Subscript");

@@ -30,6 +30,7 @@ public class CharSequenceReader
     len=seq.length();
   }
   
+  @Override
   public int read(char[] cbuf, int off, int len)
   { 
     if (this.pos==this.len)
@@ -46,6 +47,7 @@ public class CharSequenceReader
     return count;        
   }
   
+  @Override
   public void close()
   { this.pos=this.len; 
   }

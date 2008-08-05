@@ -149,6 +149,7 @@ public class TupleDelegate<T>
   /**
    * Return the proxy interface
    */ 
+  @Override
   protected T retrieve()
   { return proxy;
   }
@@ -161,6 +162,7 @@ public class TupleDelegate<T>
   /**
    * We can't change the proxy here, as our implementation is fixed
    */
+  @Override
   public boolean store(T val)
   { return false;
   }
@@ -180,6 +182,7 @@ class TupleDelegateReflector<T>
 
   // We haven't genericized the data package builder yet
   // XXX TODO- this gets pretty hacked up using generics- figure out something cleaner
+  @Override
   @SuppressWarnings("unchecked")
   public <X> Channel<X> 
     resolve(Channel<T> source
@@ -189,19 +192,20 @@ class TupleDelegateReflector<T>
         )
     throws BindException
   { 
-    Channel<T> binding=(Channel<T>) ((TupleDelegate) source).getTupleBinding();
+    Channel<T> binding=((TupleDelegate) source).getTupleBinding();
     return binding.getReflector().<X>resolve(binding,focus,name,params);
   }
   
   // We haven't genericized the data package builder yet
   // XXX TODO- this gets pretty hacked up using generics- figure out something cleaner
+  @Override
   @SuppressWarnings("unchecked")
   public <D extends Decorator<T>> D 
     decorate(Channel<T> source,Class<D> decoratorInterface)
   { 
     try
     {
-      Channel<T> binding=(Channel<T>) ((TupleDelegate) source).getTupleBinding();
+      Channel<T> binding=((TupleDelegate) source).getTupleBinding();
       return binding.getReflector().decorate(binding,decoratorInterface);
     }
     catch (BindException x)

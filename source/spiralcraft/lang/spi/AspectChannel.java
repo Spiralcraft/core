@@ -51,10 +51,12 @@ public class AspectChannel<T>
   { return source.set(val);
   }
 
+  @Override
   public boolean isWritable()
   { return source.isWritable();
   }
   
+  @Override
   public boolean isStatic()
   { return source.isStatic();
   }

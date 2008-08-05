@@ -35,11 +35,13 @@ public class Characters
   { return _characters;
   }
 
+  @Override
   public void playEvents(ContentHandler handler)
     throws SAXException
   { handler.characters(_characters,0,_characters.length);
   }
 
+  @Override
   public String toString()
   { return super.toString()+"["+new String(_characters)+"]";
   }

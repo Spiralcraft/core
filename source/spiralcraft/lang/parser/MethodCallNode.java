@@ -56,6 +56,7 @@ public class MethodCallNode
 //    debugTree(System.err);
   }
 
+  @Override
   public String reconstruct()
   { 
     StringBuilder builder=new StringBuilder();
@@ -80,6 +81,7 @@ public class MethodCallNode
    * MethodCallNode operates on a source. If there is no direct source,
    *   the subject of the supplied focus will be used.
    */
+  @Override
   public Channel<?> bind(final Focus<?> focus)
     throws BindException
   { 
@@ -112,6 +114,7 @@ public class MethodCallNode
     return ret;
   }
   
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   {
     out.append(prefix).append("Method: ").append(_identifierName);
@@ -136,6 +139,7 @@ public class MethodCallNode
     }
   }
   
+  @Override
   public String toString()
   { return super.toString()+":"+_identifierName+"(...)";
   }

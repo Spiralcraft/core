@@ -231,6 +231,7 @@ public class XmlStore
 
   }
 
+  @Override
   protected Queryable<Tuple> getQueryable(Type<?> type)
   { return queryables.get(type);
   }
@@ -344,6 +345,7 @@ public class XmlStore
       this.queryable=queryable;
     }
     
+    @Override
     public void dataInitialize(FieldSet fieldSet)
       throws DataException
     { 
@@ -355,6 +357,7 @@ public class XmlStore
       
     }
     
+    @Override
     public void dataAvailable(DeltaTuple tuple)
       throws DataException
     {
@@ -405,6 +408,7 @@ public class XmlStore
       }
     }
     
+    @Override
     @SuppressWarnings("unchecked")
     public void dataFinalize()
       throws DataException

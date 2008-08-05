@@ -299,6 +299,7 @@ public  class TranslatorChannel<T,S>
     }
   }
 
+  @Override
   public String toString()
   { 
     StringBuilder out=new StringBuilder();

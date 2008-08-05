@@ -71,6 +71,7 @@ public class ArraySelectChannel<X>
   { return false;
   }
   
+  @Override
   public boolean isWritable()
   { return false;
   }

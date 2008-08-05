@@ -108,6 +108,7 @@ public class ReflectionType<T>
   private ThreadLocal<CycleDetector<Object>> cycleDetectorLocal
     =new ThreadLocal<CycleDetector<Object>>()
     {
+      @Override
       protected synchronized CycleDetector<Object> initialValue()
       { return new CycleDetector<Object>();
       }
@@ -404,6 +405,7 @@ public class ReflectionType<T>
     }    
   }
 
+  @Override
   public boolean isAssignableFrom(Type<?> type)
   {
     if (!(type instanceof ReflectionType))
@@ -414,10 +416,12 @@ public class ReflectionType<T>
     }
   }
     
+  @Override
   public boolean isStringEncodable()
   { return stringConstructor!=null;
   }
   
+  @Override
   public T fromString(String val)
     throws DataException
   {
@@ -449,6 +453,7 @@ public class ReflectionType<T>
     
   }
   
+  @Override
   public String toString(T val)
   {
     if (nativeClass==null)
@@ -539,6 +544,7 @@ public class ReflectionType<T>
   /**
    * Construct an Object using reflection to inject Bean properties.
    */
+  @Override
   public T fromData(DataComposite val,InstanceResolver context)
     throws DataException
   {
@@ -582,6 +588,7 @@ public class ReflectionType<T>
   }
 
   
+  @Override
   public DataComposite toData(Object val)
     throws DataException
   {
@@ -631,6 +638,7 @@ public class ReflectionType<T>
       
   }
   
+  @Override
   public String toString()
   { return super.toString()+" reflects "+this.reflectedClass.getName();
   }

@@ -28,6 +28,7 @@ public class DefaultFormatter
     =new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss.SSSZ");
   private String _cr=System.getProperty("line.separator");
 
+  @Override
   public synchronized String format(LogRecord record)
   { 
     StringBuffer out=new StringBuffer();

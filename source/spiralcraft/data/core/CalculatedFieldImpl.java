@@ -46,6 +46,7 @@ public class CalculatedFieldImpl
   { this.expression=expression;
   }
   
+  @Override
   void resolve()
     throws DataException
   {

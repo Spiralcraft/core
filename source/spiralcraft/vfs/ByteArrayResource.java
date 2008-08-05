@@ -38,18 +38,22 @@ public class ByteArrayResource
     _bytes=new byte[0];
   }
   
+  @Override
   public InputStream getInputStream()
   { return new ByteArrayInputStream(_bytes);
   }
   
+  @Override
   public boolean supportsRead()
   { return true;
   }
   
+  @Override
   public boolean exists()
   { return _bytes!=null;
   }
   
+  @Override
   public long getSize()
   { return _bytes.length;
   }

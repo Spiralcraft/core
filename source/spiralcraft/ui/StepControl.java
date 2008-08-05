@@ -30,10 +30,12 @@ public abstract class StepControl
   private final AbstractCommand _nextStepCommand
     =new AbstractCommand()
     {
+      @Override
       public void execute()
       { nextStep();
       }
 
+      @Override
       public boolean isEnabled()
       { return isNextStepEnabled();
       }
@@ -42,10 +44,12 @@ public abstract class StepControl
   private final AbstractCommand _previousStepCommand
     =new AbstractCommand()
     {
+      @Override
       public void execute()
       { previousStep();
       }
 
+      @Override
       public boolean isEnabled()
       { return isPreviousStepEnabled();
       }

@@ -53,15 +53,18 @@ public class URLResource
     }
   }
 
+  @Override
   public InputStream getInputStream()
     throws IOException
   { return _url.openStream();
   }
 
+  @Override
   public boolean supportsRead()
   { return true;
   }
 
+  @Override
   public OutputStream getOutputStream()
     throws IOException
   { 
@@ -70,10 +73,12 @@ public class URLResource
     return connection.getOutputStream();
   }
 
+  @Override
   public boolean supportsWrite()
   { return true;
   }
   
+  @Override
   public boolean exists()
     throws IOException
   {
@@ -84,6 +89,7 @@ public class URLResource
     return connection.getDate()>0;
   }
   
+  @Override
   public long getSize()
     throws IOException
   {

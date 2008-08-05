@@ -147,6 +147,7 @@ public class DataSessionFocus
     
   }
   
+  @Override
   public boolean isFocus(URI uri)
   { 
     boolean ret=super.isFocus(uri);

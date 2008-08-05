@@ -48,6 +48,7 @@ public class Document
     }
   }
 
+  @Override
   public void playEvents(ContentHandler handler)
     throws SAXException
   { 

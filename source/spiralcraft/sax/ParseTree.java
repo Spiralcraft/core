@@ -57,6 +57,7 @@ public class ParseTree
   { return _document;
   }
 
+  @Override
   public void startDocument()
     throws SAXException
   { 
@@ -64,6 +65,7 @@ public class ParseTree
     _currentElement=_document;
   }
 
+  @Override
   public void endDocument()
     throws SAXException
   { 
@@ -71,6 +73,7 @@ public class ParseTree
     _currentElement=null;
   }
    
+  @Override
   public void startPrefixMapping(String prefix,String uri)
   { 
     if (newPrefixResolver==null)
@@ -85,10 +88,12 @@ public class ParseTree
     newPrefixResolver.mapPrefix(prefix,uri); 
   }
   
+  @Override
   public void endPrefixMapping(String prefix)
   {
   }
   
+  @Override
   public void startElement
     (String uri
     ,String localName
@@ -107,6 +112,7 @@ public class ParseTree
     }
   }
 
+  @Override
   public void endElement
     (String uri
     ,String localName
@@ -116,6 +122,7 @@ public class ParseTree
   { _currentElement=_currentElement.getParent();
   }
   
+  @Override
   public void characters
     (char[] ch
     ,int start
@@ -125,6 +132,7 @@ public class ParseTree
   { _currentElement.addChild(new Characters(ch,start,length));
   }
 
+  @Override
   public void ignorableWhitespace
     (char[] ch
     ,int start

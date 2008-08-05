@@ -62,6 +62,7 @@ public class QueryField
     this.query=query;
   }
   
+  @Override
   public void resolveType()
     throws DataException
   {
@@ -80,6 +81,7 @@ public class QueryField
   
   
   
+  @Override
   @SuppressWarnings("unchecked")
   public Channel<?> bind(Focus<? extends Tuple> focus)
     throws BindException
@@ -137,6 +139,7 @@ public class QueryField
       this.query=query;
     }
     
+    @Override
     public boolean isWritable()
     { return false;
     }

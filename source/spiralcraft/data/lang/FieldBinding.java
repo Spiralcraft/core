@@ -40,6 +40,7 @@ public class FieldBinding
    * Field bindings are never static, since the data in a Tuple can
    *   change even if the Tuple does not.
    */
+  @Override
   public boolean isStatic()
   { 
     // XXX Find a way to incorporate Tuple immutability to give a more
@@ -47,6 +48,7 @@ public class FieldBinding
     return false;
   }
   
+  @Override
   public boolean set(Object val)
   {
     

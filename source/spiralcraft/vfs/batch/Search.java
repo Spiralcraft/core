@@ -73,6 +73,7 @@ public class Search
   {
     new Arguments()
     { 
+      @Override
       protected boolean processOption(String option)
       { 
         if (_currentOperation!=null 
@@ -98,6 +99,7 @@ public class Search
         return true;
       }
 
+      @Override
       protected boolean processArgument(String argument)
       { 
         if (_currentOperation!=null 

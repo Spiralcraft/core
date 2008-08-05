@@ -267,6 +267,7 @@ class Context
       return namespace;   
     }
 
+    @Override
     public boolean isNamespaceUsed(String namespace)
     { 
       if (reverseNamespaceMap.get(namespace)!=null)
@@ -277,6 +278,7 @@ class Context
       }
     }
     
+    @Override
     public String getNamespace(URI uri)
     {
       String namespace=namespaceMap.get(uri);
@@ -322,6 +324,7 @@ class Context
       this.singleContext=singleContext; 
     }
     
+    @Override
     public void next()
       throws SAXException
     {
@@ -352,6 +355,7 @@ class Context
     }
     
     
+    @Override
     public void next()
       throws SAXException
     {
@@ -416,6 +420,7 @@ class Context
     }
   
   
+    @Override
     public void next()
       throws SAXException,DataException
     {
@@ -507,6 +512,7 @@ class Context
     }
     
     
+    @Override
     public void next()
       throws SAXException,DataException
     {
@@ -564,6 +570,7 @@ class Context
     { super(tuple,field);
     }
     
+    @Override
     public void next()
       throws SAXException,DataException
     {

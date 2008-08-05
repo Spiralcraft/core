@@ -61,6 +61,7 @@ public class DataChannel<T extends DataComposite>
     return source.set(val);
   }
   
+  @Override
   public boolean isWritable()
   { return source.isWritable();
   }

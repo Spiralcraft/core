@@ -34,6 +34,7 @@ public class EditableArrayListAggregate<T>
   { list.add(val);
   }
   
+  @Override
   public boolean isMutable()
   { return true;
   }

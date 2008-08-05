@@ -226,6 +226,7 @@ public class Element
   { return _localName;
   }
 
+  @Override
   public void playEvents(ContentHandler handler)
     throws SAXException
   { 
@@ -243,6 +244,7 @@ public class Element
       );
   }
 
+  @Override
   public String toString()
   { 
     return super.toString()

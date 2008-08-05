@@ -29,6 +29,7 @@ public class ExclusiveOrNode
     
   }
   
+  @Override
   public String reconstruct()
   { return reconstruct("^^");
   }
@@ -60,6 +61,7 @@ public class ExclusiveOrNode
     throw new UnsupportedOperationException();
   }
   
+  @Override
   public String getSymbol()
   { return "^";
   }

@@ -68,11 +68,13 @@ public class AbstractCollectionType<T extends Collection>
   
   
   
+  @Override
   public TypeResolver getTypeResolver()
   { return resolver;
   }
   
 
+  @Override
   public ValidationResult validate(Object value)
   { 
     // More work here-
@@ -82,6 +84,7 @@ public class AbstractCollectionType<T extends Collection>
   }
   
   
+  @Override
   public T fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
   { 
@@ -133,14 +136,15 @@ public class AbstractCollectionType<T extends Collection>
     return collection;
   }
   
-  public DataComposite toData(T obj)
+  @Override
+  public DataComposite toData(T collection)
     throws DataException
   { 
-    if (!(obj instanceof Collection))
-    { throw new IllegalArgumentException("Not a collection");
-    }
-    
-    Collection<?> collection=(Collection<?>) obj;
+//    if (!(obj instanceof Collection))
+//    { throw new IllegalArgumentException("Not a collection");
+//    }
+//    
+//    Collection<?> collection=(Collection<?>) obj;
     
     if (contentType.isPrimitive())
     {
@@ -163,6 +167,7 @@ public class AbstractCollectionType<T extends Collection>
     }
   }
   
+  @Override
   protected String getAggregateQualifier()
   { return ".list";
   }

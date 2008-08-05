@@ -67,10 +67,12 @@ public class BeanPropertyChannel<T,S>
       
   }
 
+  @Override
   public boolean isStatic()
   { return _static;
   }
 
+  @Override
   public PropertyChangeSupport propertyChangeSupport()
   {
     // Install a propertyChangeListener for the specific property we are watching in
@@ -145,6 +147,7 @@ public class BeanPropertyChannel<T,S>
     }
   }
   
+  @Override
   public synchronized boolean set(Object val)
     throws AccessException
   {
@@ -195,6 +198,7 @@ public class BeanPropertyChannel<T,S>
   }
 
 
+  @Override
   public String toString()
   { 
     return super.toString()

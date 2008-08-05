@@ -89,6 +89,7 @@ public class ArrayTuple
   { return data[index];
   }
   
+  @Override
   public int hashCode()
   { return ArrayUtil.arrayHashCode(data);
   }

@@ -52,6 +52,9 @@ public abstract class BaseFocus<T>
   public synchronized <X> Channel<X> bind(Expression<X> expression)
     throws BindException
   { 
+    if (expression==null)
+    { throw new IllegalArgumentException("Expression cannot be null");
+    }
     Channel<X> channel=null;
     if (channels==null)
     { channels=new HashMap<Expression<?>,Channel<?>>();
@@ -95,6 +98,7 @@ public abstract class BaseFocus<T>
 
         private static final long serialVersionUID = 1L;
 
+        @Override
         public String toString()
         {
           StringBuilder buf=new StringBuilder();
@@ -114,6 +118,7 @@ public abstract class BaseFocus<T>
     
   }
   
+  @Override
   public String toString()
   { 
     return super.toString()+"["+subject+"] parentFocus="

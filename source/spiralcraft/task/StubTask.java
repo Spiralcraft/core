@@ -21,6 +21,7 @@ public class StubTask
   extends AbstractTask
 {
   
+  @Override
   protected void execute()
   {
     setUnitsInTask(1);

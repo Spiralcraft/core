@@ -33,6 +33,7 @@ public class SystemSecurityManager
     }
   }
   
+  @Override
   public void checkPermission(Permission perm)
   { 
     if (Spiralcraft.DEBUG)

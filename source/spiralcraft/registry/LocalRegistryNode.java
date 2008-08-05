@@ -114,6 +114,7 @@ public class LocalRegistryNode
     return child;
   }
 
+  @Override
   public String toString()
   { 
     StringBuffer out=new StringBuffer();

@@ -134,6 +134,7 @@ public class NamespaceReflector
     }
   }
   
+  @Override
   public String toString()
   { return super.toString()+attributeMap.keySet();
   }

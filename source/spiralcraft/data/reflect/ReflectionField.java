@@ -91,6 +91,7 @@ public class ReflectionField
   { return descriptor;
   }
   
+  @Override
   public void resolveType()
     throws DataException
   {
@@ -106,6 +107,7 @@ public class ReflectionField
     }
   }
   
+  @Override
   public void setArchetypeField(Field field)
     throws DataException
   {
@@ -134,6 +136,7 @@ public class ReflectionField
   }
   
   
+  @Override
   public boolean isFunctionalEquivalent(Field field)
   {
     if (!super.isFunctionalEquivalent(field))

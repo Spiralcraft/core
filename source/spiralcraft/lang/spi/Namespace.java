@@ -53,6 +53,7 @@ public class Namespace
   { return reflector.getOptic(this,name);
   }
   
+  @Override
   public String toString()
   { return super.toString()+"{"+reflector.toString()+"}";
   }

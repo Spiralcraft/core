@@ -39,6 +39,7 @@ public class ExpressionParserTest
     new Arguments()
     {
 
+      @Override
       protected boolean processOption(String option)
       {
         if (option=="expression")

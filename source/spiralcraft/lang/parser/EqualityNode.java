@@ -33,6 +33,7 @@ public class EqualityNode<X>
     _negate=negate;
   }
   
+  @Override
   public String reconstruct()
   { return reconstruct(_negate?"!=":"==");
   }
@@ -60,6 +61,7 @@ public class EqualityNode<X>
   { return _negate;
   }
   
+  @Override
   public String getSymbol()
   { return _negate?"!=":"==";
   }

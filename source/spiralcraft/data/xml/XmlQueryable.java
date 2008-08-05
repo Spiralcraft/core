@@ -123,6 +123,7 @@ public class XmlQueryable
     setResourceURI(resourceURI);
   }
   
+  @Override
   public BoundQuery<?,Tuple> query(Query q, Focus<?> context)
     throws DataException
   {   

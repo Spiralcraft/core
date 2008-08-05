@@ -144,6 +144,7 @@ public class EquiJoin
   }
   
   
+  @Override
   public FieldSet getFieldSet()
   { 
     if (sources.size()>0)
@@ -169,6 +170,7 @@ public class EquiJoin
   { return assignments;
   }
   
+  @Override
   public <T extends Tuple> BoundQuery<?,T> getDefaultBinding
      (Focus<?> focus,Queryable<?> store)
     throws DataException
@@ -258,6 +260,7 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
     
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public void resolve() throws DataException
   { 
@@ -294,11 +297,13 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
   }
   
   
+  @Override
   protected SerialCursor<Tt> newSerialCursor(SerialCursor<Tt> source)
     throws DataException
   { return new EquiJoinSerialCursor(source);
   }
   
+  @Override
   protected ScrollableCursor<Tt> newScrollableCursor(ScrollableCursor<Tt> source)
     throws DataException
   { return new EquiJoinScrollableCursor(source);
@@ -312,6 +317,7 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
     { super(source);
     }
   
+    @Override
     protected boolean integrate()
     { 
       Tt t=sourceChannel.get();
@@ -362,6 +368,7 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
     { super(source);
     }
 
+    @Override
     protected boolean integrate()
     { 
       Tt t=sourceChannel.get();

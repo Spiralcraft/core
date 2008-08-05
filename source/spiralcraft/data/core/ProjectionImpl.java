@@ -307,6 +307,7 @@ public class ProjectionImpl
     return fieldList.toString();
   }
   
+  @Override
   public String toString()
   { return contentsToString();
   }

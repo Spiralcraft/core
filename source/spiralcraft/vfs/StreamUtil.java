@@ -197,7 +197,7 @@ public class StreamUtil
       }
       bytes[start+i]=(byte) b;
       
-      if (b==(int) marker)
+      if (b== marker)
       { return i+1;
       }
     }

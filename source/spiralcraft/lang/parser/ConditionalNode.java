@@ -41,6 +41,7 @@ public class ConditionalNode
     _falseResult=falseResult;
   }
 
+  @Override
   public String reconstruct()
   { 
     return _condition.reconstruct()
@@ -48,6 +49,7 @@ public class ConditionalNode
       +" : "+_falseResult.reconstruct();
   }
   
+  @Override
   public Channel bind(Focus focus)
     throws BindException
   { 
@@ -65,6 +67,7 @@ public class ConditionalNode
       );
   }
   
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append("Condition");

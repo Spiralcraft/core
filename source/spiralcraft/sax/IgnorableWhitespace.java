@@ -31,6 +31,7 @@ public class IgnorableWhitespace
     System.arraycopy(ch,start,_characters,0,length);
   }
 
+  @Override
   public void playEvents(ContentHandler handler)
     throws SAXException
   { handler.ignorableWhitespace(_characters,0,_characters.length);

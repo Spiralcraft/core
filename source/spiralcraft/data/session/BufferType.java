@@ -70,6 +70,7 @@ public class BufferType
   /**
    * Buffer archetype 
    */
+  @Override
   public void link()
     throws DataException
   {

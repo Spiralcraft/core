@@ -43,10 +43,12 @@ public abstract class PrimitiveTypeImpl<T>
   { this.converter=converter;    
   }
   
+  @Override
   public boolean isPrimitive()
   { return true;
   }
   
+  @Override
   public final synchronized void link()
     throws DataException
   { 
@@ -60,6 +62,7 @@ public abstract class PrimitiveTypeImpl<T>
   
   
   
+  @Override
   public String toString(T val)
   { 
     if (val==null)
@@ -78,6 +81,7 @@ public abstract class PrimitiveTypeImpl<T>
 
   }
   
+  @Override
   public T fromString(String string)
     throws DataException
   { 
@@ -89,12 +93,14 @@ public abstract class PrimitiveTypeImpl<T>
     }
   }
   
+  @Override
   public DataComposite toData(T val)
   { 
     throw new UnsupportedOperationException
       ("Type "+uri+" is primitive");
   }
   
+  @Override
   public T fromData(DataComposite t,InstanceResolver resolver)
   {
     throw new UnsupportedOperationException
@@ -104,10 +110,12 @@ public abstract class PrimitiveTypeImpl<T>
   /**
    * Primitive types should always be String encodable
    */
+  @Override
   public boolean isStringEncodable()
   { return true;
   }
   
+  @Override
   public boolean isDataEncodable()
   { return dataEncodable;
   }

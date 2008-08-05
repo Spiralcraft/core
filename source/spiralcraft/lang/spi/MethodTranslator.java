@@ -106,6 +106,7 @@ class MethodTranslator<Tprop,Tbean>
   { return _reflector;
   }
 
+  @Override
   public String toString()
   { return super.toString()+":"+_method.toString();
   }

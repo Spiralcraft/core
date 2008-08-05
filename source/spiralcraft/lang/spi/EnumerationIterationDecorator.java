@@ -35,6 +35,7 @@ public class EnumerationIterationDecorator<I>
   { super(source,componentReflector);
   }
   
+  @Override
   public Iterator<I> createIterator()
   { 
     Enumeration<I> enumeration=source.get();

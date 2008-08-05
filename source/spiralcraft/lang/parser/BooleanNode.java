@@ -37,6 +37,7 @@ public abstract class BooleanNode
       
   }
   
+  @Override
   public abstract Channel<Boolean> bind(Focus<?> focus)
     throws BindException;
   

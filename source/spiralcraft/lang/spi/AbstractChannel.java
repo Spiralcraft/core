@@ -173,6 +173,7 @@ public abstract class AbstractChannel<T>
     return _propertyChangeSupport;
   }
   
+  @Override
   public String toString()
   { 
     return super.toString()

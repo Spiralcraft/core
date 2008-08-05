@@ -53,11 +53,13 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
 //    System.out.println("NumericOpNoe init: "+op+" : "+op1+" : "+op2);
   }
 
+  @Override
   public String reconstruct()
   { return _op1.reconstruct()+_op+_op2.reconstruct();
   }
   
-  @SuppressWarnings("unchecked") // More heterogeneus operations
+  @Override
+  @SuppressWarnings({ "unchecked", "cast" }) // More heterogeneus operations
   public Channel<T1> bind(Focus<?> focus)
     throws BindException
   {
@@ -91,6 +93,7 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
 
 
   
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append(_op);
@@ -203,10 +206,11 @@ class NumberBindingHelper
         translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
             
+          @Override
           public Tret get(T1 val1,T2 val2)
           { 
-            Number n1=(Number) val1;
-            Number n2=(Number) val2;
+            Number n1= val1;
+            Number n2= val2;
 
             if (val1==null)
             { return val2;
@@ -236,10 +240,11 @@ class NumberBindingHelper
         translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
             
+          @Override
           public Tret get(T1 val1,T2 val2)
           { 
-            Number n1=(Number) val1;
-            Number n2=(Number) val2;
+            Number n1=val1;
+            Number n2=val2;
 
             if (val1==null)
             { return val2;
@@ -269,10 +274,11 @@ class NumberBindingHelper
         translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
             
+          @Override
           public Tret get(T1 val1,T2 val2)
           { 
-            Number n1=(Number) val1;
-            Number n2=(Number) val2;
+            Number n1= val1;
+            Number n2= val2;
 
             if (val1==null)
             { return val2;
@@ -302,6 +308,7 @@ class NumberBindingHelper
         translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
             
+          @Override
           public Tret get(T1 val1,T2 val2)
           { 
 

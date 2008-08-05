@@ -27,18 +27,22 @@ public class FieldSetType
 
   }
   
+  @Override
   public Field getField(String name)
   { return fieldSet.getFieldByName(name);
   }
   
+  @Override
   public FieldSet getFieldSet()
   { return fieldSet;
   }
   
+  @Override
   public Scheme getScheme()
   { throw new UnsupportedOperationException("Use getFieldSet()");
   }
   
+  @Override
   public void link()
     throws DataException
   {

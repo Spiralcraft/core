@@ -45,7 +45,7 @@ import java.net.URI;
  * A Type based on a spiralcraft.builder Assembly. The Scheme is defined
  *   by a combination of the AssemblyClass members and Bean reflection.
  */
-@SuppressWarnings("unchecked") // Can't further specify Assembly generic
+@SuppressWarnings({ "unchecked", "cast" }) // Can't further specify Assembly generic
 public class BuilderType
   extends TypeImpl<Assembly<?>>
 {
@@ -72,6 +72,7 @@ public class BuilderType
   { return uri.getPath().endsWith(".assy");
   }
 
+  @Override
   public boolean isAssignableFrom(Type type)
   { 
     if (super.isAssignableFrom(type))
@@ -186,6 +187,7 @@ public class BuilderType
   
 
   
+  @Override
   public void link()
     throws DataException
   {
@@ -221,6 +223,7 @@ public class BuilderType
    *   either a new Assembly or an existing one in the
    *   the specified PropertyBinding context.
    */
+  @Override
   public Assembly<?> fromData(DataComposite composite,InstanceResolver resolver)
     throws DataException
   {

@@ -58,6 +58,7 @@ public class CursorBinding<T extends Tuple,C extends Cursor<T>>
   { return cursor;
   }
 
+  @Override
   protected T retrieve()
   { 
     try
@@ -68,6 +69,7 @@ public class CursorBinding<T extends Tuple,C extends Cursor<T>>
     }
   }
   
+  @Override
   protected boolean store(Tuple val)
   { throw new UnsupportedOperationException("Can't replace tuple");
   }

@@ -110,6 +110,7 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
     {
       private final ScrollableCursor<T> cursor;
      
+      @Override
       public Identifier getRelationId()
       { return null;
       }

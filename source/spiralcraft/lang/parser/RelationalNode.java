@@ -30,6 +30,7 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
     _equals=equals;
   }
 
+  @Override
   public String reconstruct()
   {
     if (_greaterThan)
@@ -104,6 +105,7 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
   { return _equals;
   }
   
+  @Override
   public String getSymbol()
   { 
     if (_greaterThan)

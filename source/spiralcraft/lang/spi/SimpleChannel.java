@@ -58,12 +58,14 @@ public class SimpleChannel<T>
     _object=val;
   }
   
+  @Override
   protected T retrieve()
   { 
     // System.out.println("SimpleBinding "+super.toString()+" - returning "+_object);
     return _object;
   }
   
+  @Override
   protected boolean store(T val)
   { 
     _object=val;

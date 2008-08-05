@@ -70,6 +70,7 @@ public class InputStreamCharSequence
   { return _buffer.charAt(index);
   }
   
+  @Override
   public String toString()
   { return _buffer.toString();
   }

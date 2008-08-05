@@ -77,6 +77,7 @@ public class Distinct
     }
   }
   
+  @Override
   public void resolve()
     throws DataException
   { 
@@ -99,6 +100,7 @@ public class Distinct
     
   }
   
+  @Override
   public FieldSet getFieldSet()
   { return projection;
   }
@@ -126,12 +128,14 @@ public class Distinct
   }
   
   
+  @Override
   public <T extends Tuple> BoundQuery<?,T> getDefaultBinding(Focus<?> focus,Queryable<?> store)
     throws DataException
   { return new DistinctBinding<Distinct,T,Tuple>(this,focus,store);
    
   }
   
+  @Override
   public String toString()
   { return super.toString()
       +"[projection="+projection+"]: sources="
@@ -163,6 +167,7 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
     
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public void resolve() throws DataException
   { 
@@ -191,11 +196,13 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
   }
   
 
+  @Override
   protected SerialCursor<T> newSerialCursor(SerialCursor<Ts> source)
     throws DataException
   { return new DistinctSerialCursor(source);
   }
   
+  @Override
   protected ScrollableCursor<T> newScrollableCursor(ScrollableCursor<Ts> source)
   { return null;
   }
@@ -212,6 +219,7 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
     { super(source);
     }
   
+    @Override
     @SuppressWarnings("unchecked")
     protected boolean integrate()
       throws DataException
@@ -249,6 +257,7 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
       return true;
     }
     
+    @Override
     public Type<?> getResultType()
     { return getQuery().getType();
     }

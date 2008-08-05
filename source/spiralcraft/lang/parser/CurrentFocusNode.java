@@ -27,15 +27,18 @@ public class CurrentFocusNode
   /**
    * Simply returns the specified Focus.
    */
+  @Override
   public Focus<?> findFocus(final Focus<?> focus)
     throws BindException
   { return focus;
   }
 
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { out.append(prefix).append("CurrentFocus");
   }
   
+  @Override
   public String reconstruct()
   { return " ";
   }

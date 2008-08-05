@@ -56,8 +56,8 @@ public class MetaType
   {  
     super(resolver
           ,uri
-          ,(Class<Type>) referencedTypeImplClass
-          ,(Class<Type>) referencedTypeImplClass
+          , referencedTypeImplClass
+          , referencedTypeImplClass
           );
 //    System.err.println
 //      ("New MetaType: "+uri+" of "+referencedTypeURI+"="+super.toString());
@@ -66,11 +66,13 @@ public class MetaType
   }
   
   
+  @Override
   public Type<?> fromString(String val)
     throws DataException
   { return getTypeResolver().resolve(URI.create(val));
   }
   
+  @Override
   public String toString(Type val)
   { return val.getURI().toString();
   } 
@@ -98,6 +100,7 @@ public class MetaType
     
   }
   
+  @Override
   public Type fromData(DataComposite composite,InstanceResolver instanceResolver)
     throws DataException
   {

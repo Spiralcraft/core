@@ -162,6 +162,7 @@ final class ConstructFromString
   { _constructor=constructor;
   }
   
+  @Override
   public Object fromString(String val)
   { 
     try
@@ -188,6 +189,7 @@ final class ToString
   extends StringConverter<Object>
 {
   
+  @Override
   public Object fromString(String val)
   { throw new UnsupportedOperationException();
   }
@@ -196,10 +198,12 @@ final class ToString
 final class StringToString
   extends StringConverter<String>
 {
+  @Override
   public String toString(String val)
   { return val;
   }
 
+  @Override
   public String fromString(String val)
   { return val;
   }
@@ -212,6 +216,7 @@ final class StringToString
 final class IntToString
   extends StringConverter<Integer>
 {
+  @Override
   public Integer fromString(String val)
   { return val!=null?Integer.parseInt(val):null;
   }
@@ -220,10 +225,12 @@ final class IntToString
 final class BooleanToString
   extends StringConverter<Boolean>
 {
+  @Override
   public String toString(Boolean val)
   { return val!=null?val.toString():null;
   }
 
+  @Override
   public Boolean fromString(String val)
   { 
     if (val==null)
@@ -245,6 +252,7 @@ final class BooleanToString
 final class FloatToString
   extends StringConverter<Float>
 {
+  @Override
   public Float fromString(String val)
   { return val!=null?Float.parseFloat(val):null;
   }
@@ -253,6 +261,7 @@ final class FloatToString
 final class LongToString
   extends StringConverter<Long>
 {
+  @Override
   public Long fromString(String val)
   { return val!=null?Long.parseLong(val):null;
   }
@@ -261,6 +270,7 @@ final class LongToString
 final class DoubleToString
   extends StringConverter<Double>
 {
+  @Override
   public Double fromString(String val)
   { return val!=null?Double.parseDouble(val):null;
   }
@@ -269,6 +279,7 @@ final class DoubleToString
 final class ShortToString
   extends StringConverter<Short>
 {
+  @Override
   public Short fromString(String val)
   { return val!=null?Short.parseShort(val):null;
   }
@@ -277,6 +288,7 @@ final class ShortToString
 final class CharacterToString
   extends StringConverter<Character>
 {
+  @Override
   public Character fromString(String val)
   { return (val!=null && val.length()==1)?new Character(val.charAt(0)):null;
   }
@@ -285,6 +297,7 @@ final class CharacterToString
 final class ByteToString
   extends StringConverter<Byte>
 {
+  @Override
   public Byte fromString(String val)
   { return val!=null?Byte.parseByte(val):null;
   }
@@ -293,6 +306,7 @@ final class ByteToString
 final class BigDecimalToString
   extends StringConverter<BigDecimal>
 {
+  @Override
   public BigDecimal fromString(String val)
   { return val!=null?new BigDecimal(val):null;
   }
@@ -301,6 +315,7 @@ final class BigDecimalToString
 final class BigIntegerToString
   extends StringConverter<BigInteger>
 {
+  @Override
   public BigInteger fromString(String val)
   { return val!=null?new BigInteger(val):null;
   }
@@ -309,6 +324,7 @@ final class BigIntegerToString
 final class ClassToString
   extends StringConverter<Class<?>>
 {
+  @Override
   public String toString(Class<?> val)
   { return val!=null?val.getName():null;
   }
@@ -322,6 +338,7 @@ final class ClassToString
    * Names of primitive types and primitive array types 
    *  resolve to their primitive class.
    */
+  @Override
   public Class<?> fromString(String val)
   { 
     val=val.intern();    
@@ -415,10 +432,12 @@ final class ClassToString
 final class URIToString
   extends StringConverter<URI>
 {
+  @Override
   public String toString(URI val)
   { return val!=null?(val).toString():null;
   }
 
+  @Override
   public URI fromString(String val)
   { return URI.create(val);
   }

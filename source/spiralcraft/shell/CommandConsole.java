@@ -134,7 +134,8 @@ public abstract class CommandConsole
     String commandName=tokens[0];
     if (commandName!=null) {}
     Command<?,?> command=null; // XXX Resolve command here
-    ArgumentSet parameterSet=null; // XXX Resolve command argument set
+    ArgumentSet parameterSet
+      =new ArgumentSet(new ArgumentDefinition()); // XXX Resolve command argument set
     
     for (int i=0;i<tokens.length;i++)
     { 

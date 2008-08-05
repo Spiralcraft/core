@@ -34,6 +34,7 @@ public class BufferReflector<T extends Tuple>
    * Resolve a Binding that provides access to a member of a Tuple given a 
    *   source that provides Tuples.
    */
+  @Override
   public synchronized <X> Channel<X> resolve
     (final Channel<T> source
     ,Focus<?> focus

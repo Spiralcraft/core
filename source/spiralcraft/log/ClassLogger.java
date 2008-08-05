@@ -63,10 +63,12 @@ public class ClassLogger
   { setLevel(Level.FINEST);
   }
 
+  @Override
   public void setLevel(Level level)
   { logger.setLevel(level);
   }
 
+  @Override
   public void warning(String msg)
   { 
     if (isLoggable(Level.WARNING))
@@ -83,6 +85,7 @@ public class ClassLogger
     }
   }
 
+  @Override
   public void fine(String msg)
   { 
     if (isLoggable(Level.FINE))
@@ -99,6 +102,7 @@ public class ClassLogger
     }
   }
 
+  @Override
   public void finer(String msg)
   { 
     if (isLoggable(Level.FINER))
@@ -116,6 +120,7 @@ public class ClassLogger
   }
 
   
+  @Override
   public void finest(String msg)
   { 
     if (isLoggable(Level.FINEST))
@@ -139,12 +144,14 @@ public class ClassLogger
 //  { logger.finest(msg);
 //  }
 
+  @Override
   public void log(LogRecord event)
   { 
     System.err.println(event);
     logger.log(event);
   }
   
+  @Override
   public boolean isLoggable(Level level)
   { return logger.isLoggable(level);
   }

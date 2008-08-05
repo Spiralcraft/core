@@ -254,6 +254,7 @@ public class ArrayDeltaTuple
     }
   }
   
+  @Override
   public Object get(int index)
     throws DataException
   { 

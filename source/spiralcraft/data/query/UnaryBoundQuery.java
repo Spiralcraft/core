@@ -76,6 +76,7 @@ public abstract class UnaryBoundQuery
   protected abstract ScrollableCursor<Tt> 
     newScrollableCursor(ScrollableCursor<Ts> source) throws DataException;
 
+  @Override
   @SuppressWarnings("unchecked") // Converting from source Tuple type
   public SerialCursor<Tt> execute()
     throws DataException
@@ -99,6 +100,7 @@ public abstract class UnaryBoundQuery
   }
 
 
+  @Override
   public void resolve()
     throws DataException
   { 

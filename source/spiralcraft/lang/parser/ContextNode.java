@@ -32,6 +32,7 @@ public class ContextNode
   { _source=source;
   }
 
+  @Override
   public String reconstruct()
   { return _source.reconstruct()+" ";
   }
@@ -41,6 +42,7 @@ public class ContextNode
   }
   
   
+  @Override
   public Channel<?> bind(final Focus<?> focus)
     throws BindException
   { 
@@ -66,6 +68,7 @@ public class ContextNode
     return ret;  
   }
 
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append("Context");

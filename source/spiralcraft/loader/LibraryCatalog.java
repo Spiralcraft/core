@@ -399,6 +399,7 @@ class JarLibrary
     }
   }
 
+  @Override
   public void catalogResources()
     throws IOException
   {
@@ -430,6 +431,7 @@ class JarLibrary
    
   }
 
+  @Override
   public synchronized void open()
     throws IOException
   { 
@@ -441,6 +443,7 @@ class JarLibrary
     openCount++;
   }
 
+  @Override
   public synchronized void close()
     throws IOException
   {
@@ -450,6 +453,7 @@ class JarLibrary
     }
   }
 
+  @Override
   public synchronized void forceClose()
     throws IOException
   { 
@@ -493,6 +497,7 @@ class JarLibrary
   /**
    * Return the list of libraries that this library depends on
    */
+  @Override
   public String[] getLibraryDependencies()
   {
     if (manifest==null)
@@ -531,26 +536,31 @@ class NativeLibrary
     }
   }
 
+  @Override
   public void catalogResources()
     throws IOException
   {
   }
 
+  @Override
   public synchronized void open()
     throws IOException
   { 
   }
 
+  @Override
   public synchronized void close()
     throws IOException
   {
   }
 
+  @Override
   public synchronized void forceClose()
     throws IOException
   { 
   }
   
+  @Override
   public String[] getLibraryDependencies()
   { return null;
   }
@@ -565,22 +575,27 @@ class FileLibrary
   { super(file);
   }
 
+  @Override
   public void catalogResources()
   {
   }
 
+  @Override
   public void open()
   {
   }
 
+  @Override
   public void close()
   {
   }
 
+  @Override
   public void forceClose()
   { 
   }
   
+  @Override
   public String[] getLibraryDependencies()
   { return null;
   }
@@ -603,11 +618,13 @@ class JarResource
 {
   JarEntry entry;
   
+  @Override
   public byte[] getData()
     throws IOException
   { return ((JarLibrary) library).getData(entry);
   }
 
+  @Override
   public URL getResource()
     throws IOException
   { return new URL("jar:file:///"+library.path.replace('\\','/')+"!/"+name);
@@ -619,10 +636,12 @@ class FileResource
 {
   File file;
 
+  @Override
   public byte[] getData()
   { return null;
   }
 
+  @Override
   public URL getResource()
     throws IOException
   { return new URL("file:/"+library.path+"/"+name);

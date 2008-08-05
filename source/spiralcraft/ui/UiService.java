@@ -31,11 +31,13 @@ public class UiService
   { _rootControl=val;
   }
 
+  @Override
   public void init(ServiceResolver resolver)
     throws ServiceException
   { _rootControl.init();
   }
 
+  @Override
   public void destroy()
     throws ServiceException
   { _rootControl.destroy();

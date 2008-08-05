@@ -32,6 +32,7 @@ public class AmbiguousServiceException
     _key=key;
   }
 
+  @Override
   public String toString()
   { return super.toString()+": "+_serviceInterface.getName()+"["+_key.toString()+"]";
   }

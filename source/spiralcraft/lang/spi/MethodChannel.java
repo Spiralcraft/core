@@ -36,6 +36,7 @@ public class MethodChannel<Tprop,Tbean>
   { super(source,translator,params);
   }
 
+  @Override
   public boolean isStatic()
   { return false;
   }

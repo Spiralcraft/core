@@ -39,6 +39,7 @@ public abstract class LogicalNode<T1,T2>
     _op2=op2;
   }
 
+  @Override
   public Channel<Boolean> bind(Focus<?> focus)
     throws BindException
   { 
@@ -60,6 +61,7 @@ public abstract class LogicalNode<T1,T2>
       
   }
   
+  @Override
   public abstract String getSymbol();
   
   protected String reconstruct(String operator)
@@ -74,6 +76,7 @@ public abstract class LogicalNode<T1,T2>
   { return _op2;
   }
   
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   {
     out.append(prefix).append(getClass().getName());

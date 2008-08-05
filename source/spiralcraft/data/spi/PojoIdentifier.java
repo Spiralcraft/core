@@ -47,6 +47,7 @@ public class PojoIdentifier<T>
 
   }
 
+  @Override
   public int hashCode()
   { return hashCode;
   }

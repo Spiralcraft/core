@@ -36,14 +36,17 @@ public class StaticTupleBinding<T extends Tuple>
     tuple=data;
   }
 
+  @Override
   public FieldSet getFieldSet()
   { return ((TupleReflector) getReflector()).getFieldSet();
   }
 
+  @Override
   protected T retrieve()
   { return tuple;
   }
   
+  @Override
   protected boolean store(Tuple val)
   { throw new UnsupportedOperationException("Can't replace tuple");
   }

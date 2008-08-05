@@ -24,6 +24,7 @@ public class LogicalNegateNode
   { super(node,null);
   }
 
+  @Override
   public String reconstruct()
   { return " ! "+getLeftOperand().reconstruct();
   }
@@ -54,6 +55,7 @@ public class LogicalNegateNode
     }
   }
   
+  @Override
   public String getSymbol()
   { return "!";
   }

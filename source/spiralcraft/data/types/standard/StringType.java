@@ -31,6 +31,7 @@ public class StringType
   }
   
   
+  @Override
   public String fromString(String val)
   { return val;
   }
@@ -43,6 +44,7 @@ public class StringType
   { return maxLength;
   }
   
+  @Override
   public ValidationResult validate(Object val)
   {
     if (val==null)

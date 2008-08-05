@@ -81,6 +81,7 @@ public class Union
     
   }
   
+  @Override
   public FieldSet getFieldSet()
   { return type.getScheme();
   }
@@ -88,6 +89,7 @@ public class Union
 
 
   
+  @Override
   public <T extends Tuple> BoundQuery<?,T> getDefaultBinding
     (Focus<?> focus,Queryable<?> store)
     throws DataException

@@ -50,10 +50,12 @@ public class ArrayType
   }
 
   
+  @Override
   public TypeResolver getTypeResolver()
   { return contentType.getTypeResolver();
   }
   
+  @Override
   public ValidationResult validate(Object value)
   { 
     // More work here-
@@ -65,6 +67,7 @@ public class ArrayType
   
 
   
+  @Override
   public Object[] fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
   { 
@@ -111,6 +114,7 @@ public class ArrayType
     return (Object[]) array;
   }
   
+  @Override
   public DataComposite toData(Object[] array)
     throws DataException
   { 
@@ -139,6 +143,7 @@ public class ArrayType
     
   }
 
+  @Override
   protected String getAggregateQualifier()
   { return ".list";
   }

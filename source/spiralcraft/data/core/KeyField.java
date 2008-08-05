@@ -79,6 +79,7 @@ public class KeyField
   }
   
   
+  @Override
   @SuppressWarnings("unchecked")
   public Channel<?> bind(Focus<? extends Tuple> focus)
     throws BindException
@@ -140,6 +141,7 @@ public class KeyField
       this.query=query;
     }
     
+    @Override
     public boolean isWritable()
     { return false;
     }

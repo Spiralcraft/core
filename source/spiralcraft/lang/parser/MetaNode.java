@@ -38,6 +38,7 @@ public class MetaNode<T extends Channel<?>>
   { _source=source;
   }
   
+  @Override
   public String reconstruct()
   { return _source+"@";
   }
@@ -46,6 +47,7 @@ public class MetaNode<T extends Channel<?>>
   { return _source;
   }
 
+  @Override
   @SuppressWarnings("unchecked") // Heterogeneous operation
   public Channel<T> bind(final Focus focus)
     throws BindException
@@ -75,6 +77,7 @@ public class MetaNode<T extends Channel<?>>
     return ret;
   }
 
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append("Meta");

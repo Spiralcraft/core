@@ -34,6 +34,7 @@ public class IterableDecorator<I>
   { super(source,componentReflector);
   }
   
+  @Override
   public Iterator<I> createIterator()
   { return source.get().iterator();
   }

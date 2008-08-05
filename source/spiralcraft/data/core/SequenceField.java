@@ -35,6 +35,7 @@ public class SequenceField
   }
   
   
+  @Override
   public void resolve()
     throws DataException
   {

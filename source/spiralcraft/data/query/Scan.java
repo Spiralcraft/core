@@ -42,10 +42,12 @@ public class Scan
   /**
    * @return the Type whos instances will be retrieved
    */
+  @Override
   public Type<?> getType()
   { return type;
   }
   
+  @Override
   public FieldSet getFieldSet()
   { 
     if (type!=null)
@@ -57,6 +59,7 @@ public class Scan
   }
 
 
+  @Override
   @SuppressWarnings("unchecked")
   public <T extends Tuple> BoundQuery<?,T> 
     getDefaultBinding(Focus<?> focus,Queryable<?> queryable)
@@ -65,6 +68,7 @@ public class Scan
     return (BoundQuery<?,T>) queryable.getAll(type);
   }
   
+  @Override
   public String toString()
   { return super.toString()+"[type="+getType()+"]";
   }

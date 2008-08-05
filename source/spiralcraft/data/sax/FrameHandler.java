@@ -332,6 +332,7 @@ public abstract class FrameHandler
       return true;
     }
     
+    @Override
     public boolean isWritable()
     { return true;
     }

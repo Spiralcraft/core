@@ -52,6 +52,7 @@ public class BuilderScheme
     }
   }
   
+  @Override
   protected BuilderField generateField(PropertyDescriptor prop)
     throws DataException
   { 
@@ -67,6 +68,7 @@ public class BuilderScheme
   /**
    * Copy data values from the Tuple into bean properties of the Object
    */
+  @Override
   public void depersistBeanProperties(Tuple tuple,Object assembly)
     throws DataException
   {
@@ -81,6 +83,7 @@ public class BuilderScheme
   /**
    * Copy data values from the Tuple into bean properties of the Object
    */
+  @Override
   public void persistBeanProperties(Object assembly,EditableTuple tuple)
     throws DataException
   {

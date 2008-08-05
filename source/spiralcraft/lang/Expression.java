@@ -152,6 +152,7 @@ public class Expression<T>
   }
 
   
+  @Override
   public String toString()
   { return super.toString()+"["+_text+"]:"+_root.toString();
   }

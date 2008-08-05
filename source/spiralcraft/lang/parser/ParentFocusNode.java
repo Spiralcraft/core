@@ -35,10 +35,12 @@ public class ParentFocusNode
     _child=child;
   }
 
+  @Override
   public String reconstruct()
   { return "..";
   }
   
+  @Override
   public Focus<?> findFocus(final Focus<?> focus)
     throws BindException
   { 
@@ -59,6 +61,7 @@ public class ParentFocusNode
   }
 
 
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append("ParentFocus");

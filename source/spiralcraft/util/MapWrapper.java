@@ -78,6 +78,7 @@ public class MapWrapper<K,V>
   { return map.entrySet();
   }
   
+  @Override
   public String toString()
   { return super.toString()+"["+map.toString()+"]";
   }

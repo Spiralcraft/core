@@ -84,21 +84,25 @@ public class ListAggregate<T>
     }
   }
     
+  @Override
   public Iterator<T> iterator()
   { 
     // XXX Block remove() if not mutable- create a ReadOnlyIterator wrapper
     return list.iterator();
   }
   
+  @Override
   public int size()
   { return list.size();
   }
     
 
+  @Override
   public T get(int index)
   { return list.get(index);
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public Aggregate<T> snapshot() throws DataException
   { 
@@ -130,6 +134,7 @@ public class ListAggregate<T>
     }
   }
   
+  @Override
   public Index<T> getIndex(Projection projection,boolean create)
     throws DataException
   { return null;

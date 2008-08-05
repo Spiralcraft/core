@@ -94,10 +94,12 @@ public class ReadOnlyFascadeTuple
   { return delegate.snapshot();
   }
   
+  @Override
   public boolean equals(Object o)
   { return delegate.equals(o);
   }
   
+  @Override
   public int hashCode()
   { return delegate.hashCode();
   }

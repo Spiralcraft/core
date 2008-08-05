@@ -46,6 +46,7 @@ public class PrimaryIdentifierNode
     _identifier=identifier;
   }
 
+  @Override
   public String reconstruct()
   { return (_source!=null?_source.reconstruct():"")+_identifier;
   }
@@ -58,6 +59,7 @@ public class PrimaryIdentifierNode
   { return _identifier;
   }
   
+  @Override
   public Channel<?> bind(final Focus<?> focus)
     throws BindException
   { 
@@ -109,6 +111,7 @@ public class PrimaryIdentifierNode
     return ret;  
   }
 
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append("PrimaryIdentifier '"+_identifier+"'");

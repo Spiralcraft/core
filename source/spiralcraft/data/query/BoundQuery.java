@@ -173,6 +173,7 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
     extends BoundQuerySerialCursor
     implements ScrollableCursor<Tt>
   {
+    @Override
     public CursorBinding<Tt,? extends ScrollableCursor<Tt>> bind()
       throws BindException
     { return new CursorBinding<Tt,ScrollableCursor<Tt>>(this);

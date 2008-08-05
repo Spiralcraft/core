@@ -51,10 +51,12 @@ public class EditableArrayTuple
     data[index]=val;
   }
   
+  @Override
   public boolean isMutable()
   { return true;
   }
   
+  @Override
   public EditableTuple widen(Type<?> type)
     throws DataException
   { return (EditableTuple) super.widen(type);

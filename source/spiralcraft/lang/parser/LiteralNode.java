@@ -38,10 +38,12 @@ public class LiteralNode<X>
     }
   }
 
+  @Override
   public String reconstruct()
   { return _optic.get().toString();
   }
   
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix)
@@ -52,6 +54,7 @@ public class LiteralNode<X>
       ;
   }
 
+  @Override
   public synchronized Channel<X> bind(final Focus<?> focus)
     throws BindException
   { 

@@ -134,6 +134,7 @@ public class PathTree<T>
   { return children.iterator();
   }
   
+  @Override
   public String toString()
   { return super.toString()+":["+name+"]";
   }

@@ -36,12 +36,14 @@ public class BufferField
 {
   protected final ClassLogger log=ClassLogger.getInstance(BufferField.class);
   
+  @Override
   @SuppressWarnings("unchecked")
   public Type<Buffer> getType()
   { return (Type<Buffer>) super.getType();
   }
   
   
+  @Override
   @SuppressWarnings("unchecked")
   public Channel<?> bind(Focus<? extends Tuple> focus)
     throws BindException
@@ -107,18 +109,11 @@ public class BufferField
     { return true;
     }
       
+    @Override
     public boolean store(Buffer val)
     { 
       try
       { 
-        if (val!=null && !(val instanceof Buffer))
-        { 
-          throw new AccessException
-            ("BufferField "+getURI()+" cannot be assigned a non-Buffer: "
-              +"\r\n      value="+val
-              );
-             
-        }
         BufferTuple parent=parentChannel.get();
         BufferField.this.setValue(parent,val);
         return true;
@@ -128,6 +123,7 @@ public class BufferField
       }
     }
 
+    @Override
     public Buffer retrieve()
     { 
       BufferTuple parent=parentChannel.get();
@@ -159,15 +155,6 @@ public class BufferField
         if (buffer==null)
         { 
           buffer=bufferSource.get();
-          
-          if (buffer!=null && !(buffer instanceof Buffer))
-          {
-            throw new AccessException
-              ("BufferField "+getURI()+" bufferSource returned a non-Buffer: "
-              +"\r\n    bufferSource="+bufferSource
-              +"\r\n      value="+maybeBuffer
-              );
-          }
           
           if (buffer!=null)
           { BufferField.this.setValue(parentChannel.get(),buffer);

@@ -33,6 +33,7 @@ public class Attribute
   { return _value;
   }
 
+  @Override
   public String toString()
   { return "["+_name+"=\""+_value+"\"]";
   }

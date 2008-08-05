@@ -143,10 +143,12 @@ public class Path
   { return _elements;
   }
   
+  @Override
   public int hashCode()
   { return _hashCode;
   }
   
+  @Override
   public boolean equals(Object o)
   { 
     if (!(o instanceof Path))
@@ -182,6 +184,7 @@ public class Path
   { return ArrayUtil.<String>iterator(_elements);
   }
   
+  @Override
   public String toString()
   { return super.toString()+":"+ArrayUtil.format(_elements,",","\"");
   }

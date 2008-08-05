@@ -29,6 +29,7 @@ public class ParseException
     _progress=progress;
   }
 
+  @Override
   public String toString()
   {
     return super.toString()+" position "+_pos+" after "+_progress;

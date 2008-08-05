@@ -37,6 +37,7 @@ public class BLOBType
   { super(resolver,uri,Resource.class);
   }
   
+  @Override
   public Resource fromString(String str)
     throws DataException
   { 
@@ -51,6 +52,7 @@ public class BLOBType
     }
   }
 
+  @Override
   public String toString(Resource resource)
   { 
     if (resource!=null)

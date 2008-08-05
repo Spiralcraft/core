@@ -217,7 +217,7 @@ public class BeanReflector<T>
     (Channel<T> source,Class<D> decoratorInterface)
     throws BindException
   { 
-    if (decoratorInterface==(Object) IterationDecorator.class)
+    if (decoratorInterface==(Class) IterationDecorator.class)
     { 
       
       if (targetClass.isArray())
@@ -565,7 +565,7 @@ public class BeanReflector<T>
           return new ArrayIndexChannel
             (componentReflector
             ,source
-            ,(Channel<Number>) subscriptChannel
+            ,subscriptChannel
             );
 //          return new TranslatorChannel
 //            (source
@@ -626,6 +626,7 @@ public class BeanReflector<T>
     }
   }
   
+  @Override
   public String toString()
   { return super.toString()+":"+targetClass.getName();
   }
@@ -644,6 +645,7 @@ class MethodKey
     System.arraycopy(params,0,instanceSig,1,params.length);
   }
   
+  @Override
   public boolean equals(Object o)
   {
     if (o instanceof Object[])
@@ -654,6 +656,7 @@ class MethodKey
     }
   }
   
+  @Override
   public int hashCode()
   { return ArrayUtil.arrayHashCode(instanceSig);
   }

@@ -87,6 +87,7 @@ public class ProxyChannel<T>
   { return channel.getReflector();
   }
   
+  @Override
   public String toString()
   { return super.toString()+":"+channel.toString();
   }

@@ -33,6 +33,7 @@ public class ExpressionType
   { super(resolver,uri,Expression.class);
   }
   
+  @Override
   public Expression<?> fromString(String str)
     throws DataException
   { 

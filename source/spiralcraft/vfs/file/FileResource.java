@@ -58,6 +58,7 @@ public class FileResource
   { return _file;
   }
   
+  @Override
   public InputStream getInputStream()
     throws IOException
   { 
@@ -69,10 +70,12 @@ public class FileResource
     return new FileInputStream(_file);
   }
 
+  @Override
   public boolean supportsRead()
   { return true;
   }
 
+  @Override
   public OutputStream getOutputStream()
     throws IOException
   { 
@@ -82,10 +85,12 @@ public class FileResource
     return new FileOutputStream(_file);
   }
 
+  @Override
   public boolean supportsWrite()
   { return true;
   }
 
+  @Override
   public Container asContainer()
   { 
     if (_file.isDirectory())
@@ -94,6 +99,7 @@ public class FileResource
     return null;
   }
 
+  @Override
   public Container ensureContainer()
     throws IOException
   {
@@ -118,6 +124,7 @@ public class FileResource
     
   }
   
+  @Override
   public Resource getParent()
   { 
     try
@@ -130,10 +137,12 @@ public class FileResource
     }
   }
 
+  @Override
   public String getLocalName()
   { return _file.getName();
   }
   
+  @Override
   public long getLastModified()
   { return _file.lastModified();
   }
@@ -187,10 +196,12 @@ public class FileResource
     }
   }
   
+  @Override
   public boolean exists()
   { return _file.exists();
   }
   
+  @Override
   public long getSize()
   { return _file.length();
   }
@@ -203,6 +214,7 @@ public class FileResource
     }
   }
   
+  @Override
   public void moveTo(Resource target)
     throws IOException
   { 

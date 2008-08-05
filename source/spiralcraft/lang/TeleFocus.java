@@ -36,6 +36,7 @@ public class TeleFocus<T>
    
   }
   
+  @Override
   public Channel<?> getContext()
   { 
     if (parent!=null)
@@ -80,6 +81,7 @@ public class TeleFocus<T>
     }
   }
   
+  @Override
   public String toString()
   {
     return super.toString()+"\r\n context:"+getContext().toString();

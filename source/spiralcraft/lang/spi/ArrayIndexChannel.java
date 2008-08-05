@@ -68,6 +68,7 @@ public class ArrayIndexChannel<T>
     return true;
   }
   
+  @Override
   public boolean isWritable()
   { return true;
   }

@@ -9,10 +9,12 @@ public class StringArrayToString
   { this.trim=trim;
   }
   
+  @Override
   public String toString(String[] val)
   { return ArrayUtil.format(val,",","");
   }
 
+  @Override
   public String[] fromString(String val)
   {
     if (trim)

@@ -26,6 +26,7 @@ public class TypeStringConverter<T>
     }
   }
   
+  @Override
   public String toString(T val)
   { return type.toString(val);
   }

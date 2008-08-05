@@ -73,6 +73,7 @@ public class XmlAssembly<Treferent>
   }
   
 
+  @Override
   protected void verifyType(Type type)
     throws DataException
   {
@@ -84,6 +85,7 @@ public class XmlAssembly<Treferent>
     }
   }
   
+  @Override
   protected Assembly newInstance()
     throws DataException
   { 
@@ -102,7 +104,7 @@ public class XmlAssembly<Treferent>
   /**
    *@return The Java object referred to and activated by this XmlObject
    */
-  @SuppressWarnings("unchecked") // Non-generic use of Builder
+  @Override
   public Treferent get()
   { return (Treferent) instance.get();
   }

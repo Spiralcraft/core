@@ -197,6 +197,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
     }
   }
 
+  @Override
   public String toString()
   { 
     return super.toString()

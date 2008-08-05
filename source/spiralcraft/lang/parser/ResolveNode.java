@@ -36,6 +36,7 @@ public class ResolveNode<T>
     this.identifier=identifier;
   }
 
+  @Override
   public String reconstruct()
   { return _source.reconstruct()+"."+identifier;
   }
@@ -48,6 +49,7 @@ public class ResolveNode<T>
   { return _source;
   }
 
+  @Override
   public Channel<T> bind(final Focus<?> focus)
     throws BindException
   { 
@@ -76,6 +78,7 @@ public class ResolveNode<T>
     return ret;
   }
 
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append("Resolve");

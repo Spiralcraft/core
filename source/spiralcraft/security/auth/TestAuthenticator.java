@@ -21,6 +21,7 @@ public class TestAuthenticator
   { realmName="test@test.test";
   }
   
+  @Override
   public TestSession createSession()
   { return new TestSession();
   }
@@ -34,6 +35,7 @@ class TestSession
 
   
   
+  @Override
   public boolean isAuthenticated()
   {
     UsernameCredential username

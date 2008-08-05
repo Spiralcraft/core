@@ -112,10 +112,12 @@ public class DataAuthenticator
   { this.source=source;
   }
   
+  @Override
   public AuthSession createSession()
   { return new DataAuthSession();
   }
   
+  @Override
   @SuppressWarnings("unchecked")
   public void bind(Focus<?> context)
     throws BindException
@@ -161,6 +163,7 @@ public class DataAuthenticator
     {
     }
         
+    @Override
     public boolean isAuthenticated()
     {
       if (boundQuery==null)
@@ -209,6 +212,7 @@ public class DataAuthenticator
               { return name;
               }
             
+              @Override
               public String toString()
               { return super.toString()+":"+name;
               }

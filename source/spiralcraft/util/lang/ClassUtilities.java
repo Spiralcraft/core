@@ -297,7 +297,7 @@ final class ClassUtilities {
     if (lhs.equals(rhs))
       return true;
 
-    Set<?> wideningSet = (Set<?>) primitiveWideningsMap.get(rhs);
+    Set<?> wideningSet = primitiveWideningsMap.get(rhs);
 
     if (wideningSet == null)
       return false;

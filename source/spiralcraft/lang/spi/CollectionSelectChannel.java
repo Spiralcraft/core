@@ -64,6 +64,7 @@ public class CollectionSelectChannel<X>
   { return false;
   }
   
+  @Override
   public boolean isWritable()
   { return false;
   }

@@ -27,18 +27,22 @@ public class SystemExecutionContext
   { ExecutionContext.setInstance(this);
   }
   
+  @Override
   public PrintStream out()
   { return System.out;
   }
 
+  @Override
   public InputStream in()
   { return System.in;
   }
   
+  @Override
   public PrintStream err()
   { return System.err;
   }
   
+  @Override
   public URI focusURI()
   { 
     return 

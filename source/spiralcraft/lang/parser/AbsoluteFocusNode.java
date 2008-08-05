@@ -63,6 +63,7 @@ public class AbsoluteFocusNode
 
   }
 
+  @Override
   public String reconstruct()
   { 
     if (namespace!=null)
@@ -76,6 +77,7 @@ public class AbsoluteFocusNode
     }
   }
   
+  @Override
   public Focus<?> findFocus(final Focus<?> focus)
     throws BindException
   { 
@@ -139,6 +141,7 @@ public class AbsoluteFocusNode
     }
   }
 
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append("Focus");

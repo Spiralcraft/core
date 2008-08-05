@@ -66,6 +66,7 @@ public class CompoundFocus<T>
     }
   }
 
+  @Override
   public Focus<?> findFocus(URI uri)
   { 
     if (isFocus(uri))
@@ -131,6 +132,7 @@ public class CompoundFocus<T>
     }
   }
   
+  @Override
   public String toString()
   { 
     StringBuffer buf=new StringBuffer();

@@ -68,6 +68,7 @@ public class ContextResource
     
   }
   
+  @Override
   protected Resource getDelegate()
   { return delegate;
   }    

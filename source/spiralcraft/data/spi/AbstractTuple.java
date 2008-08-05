@@ -238,6 +238,7 @@ public abstract class AbstractTuple
     return true;
   }
   
+  @Override
   public final boolean equals(Object o)
   {
     if (o==null)
@@ -251,6 +252,7 @@ public abstract class AbstractTuple
     return tupleEquals(this,(Tuple) o);
   }
   
+  @Override
   public String toString()
   { return tupleToString(this);
   }

@@ -44,6 +44,7 @@ public class AutoListMap<K,T>
   { add(_keyFunction.key(value),value);
   }
   
+  @Override
   @SuppressWarnings("unchecked")
   public boolean containsValue(Object value)
   { 

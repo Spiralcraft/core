@@ -60,6 +60,7 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
     
   }
 
+  @Override
   public void resolve() throws DataException
   { 
     super.resolve();
@@ -76,6 +77,7 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
     
   }
   
+  @Override
   public SerialCursor<Tt> execute()
     throws DataException
   {

@@ -78,10 +78,12 @@ public class BoundTuple
     
   }
 
+  @Override
   public boolean isMutable()
   { return true;
   }
   
+  @Override
   public int hashCode()
   { 
     Object[] data=new Object[bindings.length];
@@ -102,6 +104,7 @@ public class BoundTuple
   }
 
   
+  @Override
   public EditableTuple widen(Type<?> type)
     throws DataException
   { return (EditableTuple) super.widen(type);

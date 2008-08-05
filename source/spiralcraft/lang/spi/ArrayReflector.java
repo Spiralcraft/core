@@ -139,7 +139,7 @@ public class ArrayReflector<I>
     (Channel<I[]> source,Class<D> decoratorInterface)
     throws BindException
   { 
-    if (decoratorInterface==(Object) IterationDecorator.class)
+    if (decoratorInterface==(Class) IterationDecorator.class)
     { return (D) new ArrayIterationDecorator(source,componentReflector);
     }
     
@@ -231,6 +231,7 @@ public class ArrayReflector<I>
     }
   }
   
+  @Override
   public String toString()
   { return super.toString()+":"+targetClass.getName();
   }

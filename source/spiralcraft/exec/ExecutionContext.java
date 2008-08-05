@@ -28,7 +28,8 @@ public abstract class ExecutionContext
   private static ThreadLocal<ExecutionContext> _INSTANCE 
     = new ThreadLocal<ExecutionContext>() 
   {
-     protected synchronized ExecutionContext initialValue() 
+     @Override
+    protected synchronized ExecutionContext initialValue() 
      { return null;
      }
   };

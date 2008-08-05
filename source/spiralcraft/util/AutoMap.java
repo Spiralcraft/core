@@ -39,6 +39,7 @@ public class AutoMap<K,V>
   { remove(_keyFunction.key(value));
   }
   
+  @Override
   @SuppressWarnings("unchecked")
   public boolean containsValue(Object value)
   { 

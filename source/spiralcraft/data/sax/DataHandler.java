@@ -82,7 +82,7 @@ public class DataHandler
   abstract class ContainerFrame
     extends Frame
   { 
-    protected final Type<?> formalType;
+    protected final Type formalType;
 
     protected ContainerFrame(Type<?> formalType)
     { this.formalType=formalType;
@@ -193,16 +193,27 @@ public class DataHandler
     protected abstract void addObject(Object objet)
       throws SAXException;
       
+    @Override
     protected void closeFrame()
       throws SAXException,DataException
     { 
       String text=getCharacters();
       if (text.length()!=0)
       { 
+        if (formalType.isStringEncodable())
+        {
 //        System.err.println("DataHandler-ContainerFrame.closeFrame: "+text);
         // Instantiate from a literal string, if present
-        addObject(formalType.fromString(text));
-        
+          if (formalType.isPrimitive())
+          { addObject(formalType.fromString(text));
+          }
+          else
+          { addObject(formalType.toData(formalType.fromString(text)));
+          }
+        }
+        else
+        { throw new DataException("Type is not String encodable: "+formalType);
+        }
       }
       
     }
@@ -257,10 +268,12 @@ public class DataHandler
       }
     }
     
+    @Override
     public Object getObject()
     { return object;
     }
     
+    @Override
     protected void closeFrame()
       throws DataException
     {
@@ -301,6 +314,7 @@ public class DataHandler
     /**
      * Process a Field element
      */
+    @Override
     protected Frame newChild
       (String uri
       ,String localName
@@ -375,6 +389,7 @@ public class DataHandler
     /**
      * Collect the field value
      */
+    @Override
     protected void endChild(Frame frame)
       throws DataException
     { 
@@ -403,11 +418,13 @@ public class DataHandler
     { super(formalType);
     }
     
+    @Override
     public Object getObject()
     { return object;
     }
     
     
+    @Override
     protected void addObject(Object object)
       throws SAXException
     { 
@@ -423,6 +440,7 @@ public class DataHandler
     
     
     // We've encountered an Object
+    @Override
     public Frame newChild
       (String uri
       ,String localName
@@ -456,6 +474,7 @@ public class DataHandler
 
     }
     
+    @Override
     public void endChild(Frame child)
       throws SAXException
     { addObject(child.getObject());
@@ -488,10 +507,12 @@ public class DataHandler
     /**
      * No Data object is retained by the ConsumerFrame
      */
+    @Override
     public Object getObject()
     { return null;
     }
     
+    @Override
     protected void addObject(Object object)
       throws SAXException
     {
@@ -509,6 +530,7 @@ public class DataHandler
     }
     
     // We've encountered an Object
+    @Override
     public Frame newChild
       (String uri
       ,String localName
@@ -522,11 +544,13 @@ public class DataHandler
       return createFrame(type,null);
     }    
     
+    @Override
     public void endChild(Frame child)
       throws SAXException
     { addObject(child.getObject());
     }    
     
+    @Override
     protected void closeFrame()
       throws SAXException,DataException
     { 
@@ -565,16 +589,19 @@ public class DataHandler
       }
     }
     
+    @Override
     public Object getObject()
     { return aggregate;
     }
     
+    @Override
     protected void addObject(Object object)
       throws SAXException
     { aggregate.add(object);
     }
     
     // We've encountered an Object
+    @Override
     public Frame newChild
       (String uri
       ,String localName
@@ -602,6 +629,7 @@ public class DataHandler
       return createFrame(type,ref);
     }
     
+    @Override
     public void endChild(Frame child)
       throws SAXException
     { addObject(child.getObject());
@@ -621,6 +649,7 @@ public class DataHandler
     }
     
     // We've encountered an Object
+    @Override
     public Frame newChild
       (String uri
       ,String localName

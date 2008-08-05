@@ -20,6 +20,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.DataFactory;
 import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -157,8 +158,37 @@ public class TupleFrameHandler
       EditableAggregate<Tuple> container
         =containerChannel.get();
       
-      if (container!=null && channel.get()!=null)
-      { container.add(channel.get());
+      Tuple tuple=channel.get();
+      
+      if (tuple!=null)
+      {
+        if (container==null)
+        { 
+          if (!containerChannel.isWritable())
+          { 
+            throw new DataException
+              ("Container for "
+              +type.getURI()
+              +" does not exist and could not be created because "
+              +" the container channel is not writable." 
+              );
+          }
+          
+          container
+            =new EditableArrayListAggregate<Tuple>
+              (Type.getAggregateType(type));
+          
+          if (!containerChannel.set(container))
+          {
+            throw new DataException
+              ("Container for "
+              +type.getURI()
+              +" does not exist and could not be created because "
+              +" the container channel did not accept the new Container. "
+              );
+          }
+        }
+        container.add(tuple);
       }
     }
 

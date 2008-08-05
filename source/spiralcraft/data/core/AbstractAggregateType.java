@@ -44,10 +44,12 @@ public abstract class AbstractAggregateType<T>
   { this.uri=uri;
   }
   
+  @Override
   public Type<?> getArchetype()
   { return archetype;
   }
 
+  @Override
   public boolean hasArchetype(Type<?> type)
   {
     if (this==type)
@@ -61,14 +63,17 @@ public abstract class AbstractAggregateType<T>
     }
   }
   
+  @Override
   public URI getPackageURI()
   { return baseType.getPackageURI();
   }
   
+  @Override
   public Type<?> getBaseType()
   { return baseType;
   }
 
+  @Override
   public boolean hasBaseType(Type<?> type)
   {
     if (this==type)
@@ -82,6 +87,7 @@ public abstract class AbstractAggregateType<T>
     }
   }
 
+  @Override
   public boolean isAssignableFrom(Type<?> type)
   {
     
@@ -94,6 +100,7 @@ public abstract class AbstractAggregateType<T>
   }
   
   
+  @Override
   public Type<?> getMetaType()
   {
     try
@@ -108,6 +115,7 @@ public abstract class AbstractAggregateType<T>
    * The public Java class or interface used to programatically access or
    *   manipulate this data element.
    */
+  @Override
   public Class<T> getNativeClass()
   { return nativeClass;
   }
@@ -115,10 +123,12 @@ public abstract class AbstractAggregateType<T>
   /**
    * Aggregate Types are always represented by Aggregates in data
    */
+  @Override
   public boolean isPrimitive()
   { return false;
   }
   
+  @Override
   public URI getURI()
   { return uri;
   }
@@ -129,6 +139,7 @@ public abstract class AbstractAggregateType<T>
    *   
    * XXX Need an aggregateScheme- great for indexes, computations, etc.  
    */
+  @Override
   public Scheme getScheme()
   { return contentType.getScheme();
   }
@@ -138,6 +149,7 @@ public abstract class AbstractAggregateType<T>
    * 
    * XXX Need an aggregateScheme- great for indexes, computations, etc.  
    */
+  @Override
   public FieldSet getFieldSet()
   { return contentType.getFieldSet();
   }
@@ -145,18 +157,22 @@ public abstract class AbstractAggregateType<T>
   /**
    * Aggregates don't have fields, for now
    */
+  @Override
   public Field getField(String name)
   { return null;
   }
   
+  @Override
   public boolean isAggregate()
   { return true;
   }
   
+  @Override
   public Type<?> getContentType()
   { return contentType;
   }
   
+  @Override
   public Type<?> getCoreType()
   {
     Type<?> ret=this;
@@ -166,6 +182,7 @@ public abstract class AbstractAggregateType<T>
     return ret;
   }
   
+  @Override
   public void link()
     throws DataException
   { 
@@ -202,26 +219,32 @@ public abstract class AbstractAggregateType<T>
     }
   }
 
+  @Override
   public boolean isLinked()
   { return linked;
   }
   
+  @Override
   public boolean isStringEncodable()
   { return false;
   }
   
+  @Override
   public boolean isDataEncodable()
   { return true;
   }
   
+  @Override
   public T fromString(String val)
   { return null;
   }
   
+  @Override
   public String toString(T val)
   { return null;
   }  
 
+  @Override
   public String toString()
   { return super.toString()+":"+uri.toString();
   }  
@@ -244,6 +267,7 @@ public abstract class AbstractAggregateType<T>
     return contentType.isExtendable();
   }
   
+  @Override
   public Comparator<T> getComparator()
   { return null;
   }

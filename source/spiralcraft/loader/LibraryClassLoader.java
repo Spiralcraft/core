@@ -36,19 +36,23 @@ public class LibraryClassLoader
   { _libraryClasspath=libraryCatalog.createLibraryClasspath();
   }
 
+  @Override
   protected String findLibrary(String name)
   { return _libraryClasspath.findNativeLibrary(name);
   }
   
+  @Override
   protected String getRepositoryName()
   { return _libraryClasspath.toString();
   }
 
+  @Override
   protected byte[] loadData(String path)
     throws IOException
   { return _libraryClasspath.loadData(path);
   }
 
+  @Override
   protected URL findResource(String path)
   { 
     try
@@ -60,6 +64,7 @@ public class LibraryClassLoader
     return null;
   }
   
+  @Override
   public InputStream getResourceAsStream(String path)
   { 
     InputStream in=null;
@@ -94,6 +99,7 @@ public class LibraryClassLoader
   { _libraryClasspath.addModule(moduleName);
   }
   
+  @Override
   public void shutdown()
   { _libraryClasspath.release();
   }

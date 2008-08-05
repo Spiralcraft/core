@@ -82,6 +82,7 @@ public abstract class AbstractAggregate<T>
   
   public abstract int size();
     
+  @Override
   public String toString()
   {
     StringBuilder builder=new StringBuilder();

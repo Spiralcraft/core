@@ -143,6 +143,7 @@ public class ForeignDataHandler
      *   frame starts processing sub-frames
      * </p>
      */
+    @Override
     protected void openFrame()
       throws DataException
     { 
@@ -158,6 +159,7 @@ public class ForeignDataHandler
      *   its data but before control is returned to the parent frame.
      * </p>
      */
+    @Override
     protected void closeFrame()
       throws SAXException,DataException
     {

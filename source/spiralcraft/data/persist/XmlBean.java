@@ -64,10 +64,12 @@ public class XmlBean<T>
   }
   
 
+  @Override
   protected void verifyType(Type<?> type)
   {
   }
   
+  @Override
   protected T newInstance()
     throws DataException
   { 
@@ -83,6 +85,7 @@ public class XmlBean<T>
     
   }
   
+  @Override
   public T get()
   { return instance;
   }

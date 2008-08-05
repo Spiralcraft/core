@@ -109,6 +109,7 @@ public class ParsePosition
   { return contextURI;
   }
   
+  @Override
   public String toString()
   {
     StringBuilder str=new StringBuilder();
@@ -144,6 +145,7 @@ public class ParsePosition
     return str.toString();
   }
  
+  @Override
   public ParsePosition clone()
   { return new ParsePosition(line,column,index,context,contextURI);
   }

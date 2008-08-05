@@ -90,6 +90,7 @@ public abstract class AbstractResource
   { throw new IOException(getClass().getName()+" does not support containership");
   }
   
+  @Override
   public String toString()
   { return super.toString()+":"+_uri.toString();
   }

@@ -50,6 +50,7 @@ public abstract class DataHandlerBase
   protected DataFactory<? super DataComposite> dataFactory;
 
   
+  @Override
   public void setDocumentLocator(Locator locator)
   { 
     this.locator=locator;
@@ -90,6 +91,7 @@ public abstract class DataHandlerBase
   /**
    * Optionally start the document
    */
+  @Override
   public void startDocument()
     throws SAXException
   { 
@@ -104,6 +106,7 @@ public abstract class DataHandlerBase
   /**
    * End the document, only if startDocument has been called
    */
+  @Override
   public void endDocument()
     throws SAXException
   { 
@@ -117,6 +120,7 @@ public abstract class DataHandlerBase
    
 
 
+  @Override
   public void startElement
     (String uri
     ,String localName
@@ -138,6 +142,7 @@ public abstract class DataHandlerBase
     
   }
 
+  @Override
   public void endElement
     (String uri
     ,String localName
@@ -156,6 +161,7 @@ public abstract class DataHandlerBase
     }
   }
   
+  @Override
   public void characters
     (char[] ch
     ,int start
@@ -165,6 +171,7 @@ public abstract class DataHandlerBase
   { currentFrame.characters(ch,start,length);
   }
 
+  @Override
   public void ignorableWhitespace
     (char[] ch
     ,int start
@@ -374,14 +381,17 @@ public abstract class DataHandlerBase
     extends Frame
   {
 
+    @Override
     protected void endChild(Frame child)
       throws SAXException, DataException
     { }
 
+    @Override
     public Object getObject()
     { return null;
     }
 
+    @Override
     protected Frame newChild
       (String uri
       , String localName

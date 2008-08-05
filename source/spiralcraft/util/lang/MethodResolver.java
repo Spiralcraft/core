@@ -86,6 +86,7 @@ public final class MethodResolver
     loadConstructors();
   }
 
+  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
@@ -133,7 +134,7 @@ public final class MethodResolver
 
     for (Member member: memberList)
     {
-      Class<?>[] methodParamTypes = (Class[]) parameterMap.get(member);
+      Class<?>[] methodParamTypes =  parameterMap.get(member);
 
       if (Arrays.equals(methodParamTypes, parameterTypes))
         return member;
@@ -335,6 +336,7 @@ public final class MethodResolver
     return types;
   }
 
+  @Override
   public int hashCode() {
     return clazz.hashCode();
   }

@@ -52,10 +52,12 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
     this.target=target;
   }
 
+  @Override
   public String reconstruct()
   { return source.reconstruct()+" = "+target.reconstruct();
   }
   
+  @Override
   @SuppressWarnings("unchecked") // Heterogeneous operation
   public Channel bind(final Focus focus)
     throws BindException
@@ -65,6 +67,7 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
     
   }
 
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append("Assignment =");
@@ -113,6 +116,7 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
       return false;
     }
       
+    @Override
     public boolean isWritable()
     { return sourceChannel.isWritable() && targetChannel.isWritable();
     }

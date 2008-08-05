@@ -60,10 +60,12 @@ public class Daemon
   private Command _terminateCommand
     =new AbstractCommand()
   { 
+    @Override
     public boolean isEnabled()
     { return _running;
     }
 
+    @Override
     public void execute()
     { terminate();
     }
@@ -97,6 +99,7 @@ public class Daemon
   protected class DaemonArguments
     extends Arguments
   {
+    @Override
     protected boolean processOption(String option)
     { 
       if (option=="logLevel")
@@ -122,6 +125,7 @@ public class Daemon
       return true;
     }
 
+    @Override
     protected boolean processArgument(String argument)
     { return super.processArgument(argument);
     }

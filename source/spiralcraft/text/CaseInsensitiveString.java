@@ -22,18 +22,20 @@ public final class CaseInsensitiveString
     int hashcode=0;
     int len=chars.length;
     for (int i=0;i<len-1;i++)
-    { hashcode+=((int) Character.toLowerCase(chars[i])) * 31^(len-(i+1));
+    { hashcode+=(Character.toLowerCase(chars[i])) * 31^(len-(i+1));
     }
     if (len>0)
-    { hashcode+=((int) Character.toLowerCase(chars[len-1]));
+    { hashcode+=(Character.toLowerCase(chars[len-1]));
     }
     _hashcode=hashcode;
   }
 
+  @Override
   public final int hashCode()
   { return _hashcode;
   }
 
+  @Override
   public final boolean equals(final Object target)
   {
     if (this==target)
@@ -50,6 +52,7 @@ public final class CaseInsensitiveString
     }
   }
 
+  @Override
   public final String toString()
   { return _string;
   }

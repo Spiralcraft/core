@@ -40,15 +40,18 @@ public class ClasspathResource
     _classLoader=Thread.currentThread().getContextClassLoader();
   }
 
+  @Override
   public InputStream getInputStream()
     throws IOException
   { return _classLoader.getResourceAsStream(_path);
   }
 
+  @Override
   public boolean supportsRead()
   { return true;
   }
 
+  @Override
   public OutputStream getOutputStream()
     throws IOException
   { 
@@ -63,6 +66,7 @@ public class ClasspathResource
     return connection.getOutputStream();
   }
 
+  @Override
   public boolean supportsWrite()
   { return true;
   }
@@ -73,6 +77,7 @@ public class ClasspathResource
       ("A classpath resource cannot be renamed");
   }  
 
+  @Override
   public boolean exists()
     throws IOException
   {

@@ -43,6 +43,7 @@ public class NumericNegateNode<T extends Number>
   {  _node=node;
   }
 
+  @Override
   public String reconstruct()
   { return "-"+_node.reconstruct();
   }
@@ -51,6 +52,7 @@ public class NumericNegateNode<T extends Number>
   //   Translator cast at end of method from specific back to T- type checked against
   //   content type in type selector. Also Reflector is cast up to specific type, also safe
   //   due to API. There might be a cleaner way to do this. This class is heterogeneous.
+  @Override
   @SuppressWarnings("unchecked")
   public Channel<T> bind(Focus<?> focus)
     throws BindException
@@ -71,6 +73,7 @@ public class NumericNegateNode<T extends Number>
         
         translator=new NegateTranslator<Integer>((Reflector<Integer>) reflector)
         {
+          @Override
           public Integer negate(Integer val)
           { return -val;
           }
@@ -80,6 +83,7 @@ public class NumericNegateNode<T extends Number>
       {
         translator=new NegateTranslator<Float>((Reflector<Float>) reflector)
         {
+          @Override
           public Float negate(Float val)
           { return -val;
           }
@@ -89,6 +93,7 @@ public class NumericNegateNode<T extends Number>
       {
         translator=new NegateTranslator<Byte>((Reflector<Byte>) reflector)
         {
+          @Override
           public Byte negate(Byte val)
           { return Integer.valueOf(-val).byteValue();
           }
@@ -98,6 +103,7 @@ public class NumericNegateNode<T extends Number>
       {
         translator=new NegateTranslator<Short>((Reflector<Short>) reflector)
         {
+          @Override
           public Short negate(Short val)
           { return Integer.valueOf(-val).shortValue();
           }
@@ -107,6 +113,7 @@ public class NumericNegateNode<T extends Number>
       {
         translator=new NegateTranslator<Long>((Reflector<Long>) reflector)
         {
+          @Override
           public Long negate(Long val)
           { return -(val);
           }
@@ -116,6 +123,7 @@ public class NumericNegateNode<T extends Number>
       {
         translator=new NegateTranslator<Double>((Reflector<Double>) reflector)
         {
+          @Override
           public Double negate(Double val)
           { return -(val);
           }
@@ -125,6 +133,7 @@ public class NumericNegateNode<T extends Number>
       {
         translator=new NegateTranslator<BigDecimal>((Reflector<BigDecimal>) reflector)
         {
+          @Override
           public BigDecimal negate(BigDecimal val)
           { return val.multiply(BigDecimal.valueOf(-1));
           }
@@ -134,6 +143,7 @@ public class NumericNegateNode<T extends Number>
       {
         translator=new NegateTranslator<BigInteger>((Reflector<BigInteger>) reflector)
         {
+          @Override
           public BigInteger negate(BigInteger val)
           { return val.multiply(BigInteger.valueOf(-1));
           }
@@ -154,6 +164,7 @@ public class NumericNegateNode<T extends Number>
   }
   
   
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append("Negative");

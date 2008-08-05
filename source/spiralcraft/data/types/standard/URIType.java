@@ -27,6 +27,7 @@ public class URIType
   { super(resolver,uri,URI.class);
   }
   
+  @Override
   public URI fromString(String str)
   { return URI.create(str);
   }

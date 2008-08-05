@@ -65,6 +65,7 @@ public class Selection
     setSource(source);
   }
   
+  @Override
   public FieldSet getFieldSet()
   { 
     if (sources.size()>0)
@@ -107,6 +108,7 @@ public class Selection
   
 
   
+  @Override
   public <T extends Tuple> BoundQuery<?,T> getDefaultBinding(Focus<?> focus,Queryable<?> store)
     throws DataException
   { return new SelectionBinding<Selection,T>(this,focus,store);
@@ -251,6 +253,7 @@ public class Selection
    * @return The downstream Query resulting from factoring this Query, or null if
    *   the Query cannot be factored.
    */
+  @Override
   protected Query factor()
   { 
     if (debug)
@@ -294,6 +297,7 @@ public class Selection
     return this;
   }
   
+  @Override
   public String toString()
   { return super.toString()
       +"[constraints="+constraints+"]: sources="
@@ -326,6 +330,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     
   }
 
+  @Override
   public void resolve() throws DataException
   { 
     if (!resolved)
@@ -354,11 +359,13 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
   }
   
 
+  @Override
   protected SerialCursor<Tt> newSerialCursor(SerialCursor<Tt> source)
     throws DataException
   { return new SelectionSerialCursor(source);
   }
   
+  @Override
   protected ScrollableCursor<Tt> 
     newScrollableCursor(ScrollableCursor<Tt> source)
     throws DataException
@@ -373,6 +380,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     { super(source);
     }
   
+    @Override
     protected boolean integrate()
     { 
       Tt t=sourceChannel.get();
@@ -401,6 +409,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
       }
     }
     
+    @Override
     public Type<?> getResultType()
     { 
       Type<?> ret=sourceCursor.getResultType();
@@ -424,6 +433,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     { super(source);
     }
 
+    @Override
     protected boolean integrate()
     { 
       Tt t=sourceChannel.get();
@@ -452,6 +462,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
       }
     }
 
+    @Override
     public Type<?> getResultType()
     { 
       Type<?> ret=sourceCursor.getResultType();

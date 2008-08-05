@@ -115,6 +115,7 @@ public abstract class FocusWrapper<tFocus>
   { return focus.isFocus(specifier);
   }
 
+  @Override
   public String toString()
   { return focus.toString();
   }

@@ -16,6 +16,7 @@ public final class ArrayToString<Tdata>
     this.componentClass=componentClass;
   }
   
+  @Override
   public String toString(Tdata[] val)
   { 
     if (val==null)
@@ -33,6 +34,7 @@ public final class ArrayToString<Tdata>
     return buf.toString();
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public Tdata[] fromString(String val)
   { 

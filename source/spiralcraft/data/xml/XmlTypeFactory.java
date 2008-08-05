@@ -55,6 +55,7 @@ public class XmlTypeFactory
   private ThreadLocal<CycleDetector<URI>> cycleDetectorRef
     =new ThreadLocal<CycleDetector<URI>>()
   {
+    @Override
     protected synchronized CycleDetector<URI> initialValue() {
       return new CycleDetector<URI>();
     }

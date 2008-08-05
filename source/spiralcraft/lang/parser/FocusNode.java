@@ -33,6 +33,7 @@ public abstract class FocusNode
   public abstract Focus<?> findFocus(final Focus<?> focus)
     throws BindException;
   
+  @Override
   public Channel<?> bind(final Focus<?> focus)
     throws BindException
   { 

@@ -15,7 +15,7 @@
 package spiralcraft.data.query;
 
 import java.util.Collections;
-import java.util.Comparator;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -88,6 +88,7 @@ public class Sort
   { this.order=order;
   }
   
+  @Override
   public void resolve()
     throws DataException
   { 
@@ -108,6 +109,7 @@ public class Sort
     
   }
   
+  @Override
   public FieldSet getFieldSet()
   { 
     if (sources!=null)
@@ -122,12 +124,14 @@ public class Sort
   }
   
   
+  @Override
   public <T extends Tuple> BoundQuery<?,T> getDefaultBinding(Focus<?> focus,Queryable<?> store)
     throws DataException
   { return new SortBinding<Sort,T>(this,focus,store);
    
   }
   
+  @Override
   public String toString()
   { return super.toString()
       +"[order="+order+"]: sources="
@@ -166,6 +170,7 @@ class SortBinding<Tq extends Sort,T extends Tuple>
     
   }
 
+  @Override
   public void resolve() throws DataException
   { 
     if (!resolved)
@@ -189,6 +194,7 @@ class SortBinding<Tq extends Sort,T extends Tuple>
     }
   }
   
+  @Override
   public SerialCursor<T> execute()
     throws DataException
   {
@@ -214,7 +220,6 @@ class SortBinding<Tq extends Sort,T extends Tuple>
     
     
       
-    @SuppressWarnings("unchecked")
     public SortScrollableCursor(SerialCursor<T> source)
       throws DataException
     { 
@@ -222,10 +227,11 @@ class SortBinding<Tq extends Sort,T extends Tuple>
       while (source.dataNext())
       { data.add(source.dataGetTuple());
       }
-      Collections.sort(data,(Comparator<T>) comparator);
+      Collections.sort(data,comparator);
     }
   
     
+    @Override
     public Type<?> getResultType()
     { return getQuery().getType();
     }

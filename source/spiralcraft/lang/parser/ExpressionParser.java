@@ -60,37 +60,37 @@ public class ExpressionParser
     
     syntax.resetSyntax();
     
-    syntax.wordChars((int) 'a',(int) 'z');
-    syntax.wordChars((int) 'A',(int) 'Z');
-    syntax.wordChars((int) '_',(int) '_');
+    syntax.wordChars('a','z');
+    syntax.wordChars('A','Z');
+    syntax.wordChars('_','_');
 
-    syntax.whitespaceChars((int) '\r',(int) '\r');
-    syntax.whitespaceChars((int) '\n',(int) '\n');
-    syntax.whitespaceChars((int) '\t',(int) '\t');
-    syntax.whitespaceChars((int) ' ',(int) ' ');
+    syntax.whitespaceChars('\r','\r');
+    syntax.whitespaceChars('\n','\n');
+    syntax.whitespaceChars('\t','\t');
+    syntax.whitespaceChars(' ',' ');
     
-    syntax.ordinaryChar((int) '.');
-    syntax.ordinaryChar((int) '!');
-    syntax.ordinaryChar((int) '=');
-    syntax.ordinaryChar((int) ')');
-    syntax.ordinaryChar((int) '(');
-    syntax.ordinaryChar((int) ',');
-    syntax.ordinaryChar((int) '>');
-    syntax.ordinaryChar((int) '<');
-    syntax.ordinaryChar((int) '&');
-    syntax.ordinaryChar((int) '|');
-    syntax.ordinaryChar((int) '?');
-    syntax.ordinaryChar((int) ':');
-    syntax.ordinaryChar((int) '+');
-    syntax.ordinaryChar((int) '-');
-    syntax.ordinaryChar((int) '*');
-    syntax.ordinaryChar((int) '/');
-    syntax.ordinaryChar((int) '[');
-    syntax.ordinaryChar((int) ']');
+    syntax.ordinaryChar('.');
+    syntax.ordinaryChar('!');
+    syntax.ordinaryChar('=');
+    syntax.ordinaryChar(')');
+    syntax.ordinaryChar('(');
+    syntax.ordinaryChar(',');
+    syntax.ordinaryChar('>');
+    syntax.ordinaryChar('<');
+    syntax.ordinaryChar('&');
+    syntax.ordinaryChar('|');
+    syntax.ordinaryChar('?');
+    syntax.ordinaryChar(':');
+    syntax.ordinaryChar('+');
+    syntax.ordinaryChar('-');
+    syntax.ordinaryChar('*');
+    syntax.ordinaryChar('/');
+    syntax.ordinaryChar('[');
+    syntax.ordinaryChar(']');
     
-    syntax.wordChars((int) '0',(int) '9');
+    syntax.wordChars('0','9');
 
-    syntax.quoteChar((int) '"');
+    syntax.quoteChar('"');
 
     
     _progressBuffer=new StringBuffer();
@@ -331,7 +331,7 @@ public class ExpressionParser
       else
       {
         // This is an assignment operator, not a comparison operator
-        System.err.println("ttype=[ "+(char) _tokenizer.ttype+" ]");
+        // System.err.println("ttype=[ "+(char) _tokenizer.ttype+" ]");
         return firstOperand;
       }
     }

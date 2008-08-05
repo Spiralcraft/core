@@ -58,6 +58,7 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
     this.type=type;
   }
   
+  @Override
   public boolean isDirty()
   { 
     if (buffers==null)
@@ -74,6 +75,7 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
     return false;
   }
   
+  @Override
   public synchronized void revert()
   { buffers=null;
   }
@@ -90,6 +92,7 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   { return id;
   }
   
+  @Override
   public void setId(Identifier id)
   { this.id=id;
   }
@@ -223,6 +226,7 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   { return new ListAggregate<T>(this);
   }
 
+  @Override
   public String toString()
   {
     StringBuilder builder=new StringBuilder();
@@ -287,18 +291,22 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
     
   }
   
+  @Override
   public void setEditable(boolean val)
   { editable=val;
   }
   
+  @Override
   public boolean isEditable()
   { return (original instanceof EditableAggregate && editable);
   }
   
+  @Override
   public Aggregate<? extends DataComposite> getOriginal()
   { return original;
   }
 
+  @Override
   public void save()
     throws DataException
   {

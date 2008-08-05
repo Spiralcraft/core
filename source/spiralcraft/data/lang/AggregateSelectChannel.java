@@ -72,6 +72,7 @@ public class AggregateSelectChannel<T extends Aggregate<X>,X>
   { return false;
   }
   
+  @Override
   public boolean isWritable()
   { return false;
   }

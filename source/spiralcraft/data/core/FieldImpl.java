@@ -319,9 +319,9 @@ public class FieldImpl
       // System.err.println("FieldImpl "+getURI()+": getValue()="+val);
       return val;
     }
-      
+
     throw new IllegalArgumentException
-      ("Field '"+name+"' not in Tuple FieldSet "+t.getFieldSet());
+      ("Tuple does not belong to FieldSet "+getFieldSet());
       
   }
   
@@ -343,9 +343,7 @@ public class FieldImpl
     else
     {
       throw new IllegalArgumentException
-        ("Field "+getURI()
-        +" not in Tuple FieldSet "+t.getFieldSet()
-        );
+        ("Tuple does not belong to FieldSet "+getFieldSet());
     }
   }
   
@@ -392,6 +390,7 @@ public class FieldImpl
   
 
   
+  @Override
   public String toString()
   { return super.toString()+":"+uri;
   }
@@ -540,7 +539,9 @@ public class FieldImpl
       if (t!=null)
       { 
         try
-        { t.set(index,val);
+        { 
+          t.set(index,val);
+          return true;
         }
         catch (DataException x)
         { throw new AccessException(x.toString(),x);
@@ -550,12 +551,12 @@ public class FieldImpl
       else
       {
         throw new IllegalArgumentException
-          ("Field "+getURI()
-          +" not in Tuple FieldSet "+t.getFieldSet()
-          );
+          ("Tuple does not have field "
+           +getName()+" because it does not belong to FieldSet "
+           +getFieldSet()
+           );
+
       }      
-      // TODO Auto-generated method stub
-      return false;
     }
     
     

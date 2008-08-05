@@ -45,6 +45,7 @@ public class ResolverTest
     new Arguments()
     {
 
+      @Override
       protected boolean processOption(String option)
       {
         if (option=="file")

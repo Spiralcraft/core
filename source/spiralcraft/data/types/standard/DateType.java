@@ -36,6 +36,7 @@ public class DateType
   { super(resolver,uri,Date.class);
   }
   
+  @Override
   public synchronized  Date fromString(String str)
     throws DataException
   { 
@@ -61,6 +62,7 @@ public class DateType
     }
   }
   
+  @Override
   public synchronized String toString(Date date)
   { 
     if (date!=null)
@@ -71,6 +73,7 @@ public class DateType
     }
   }
 
+  @Override
   protected void linkPrimitive()
   { format=new SimpleDateFormat(dateFormat);
   }

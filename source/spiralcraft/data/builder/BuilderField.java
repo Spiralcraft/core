@@ -55,6 +55,7 @@ public class BuilderField
     this.specifier=specifier;
   }
   
+  @Override
   public void resolveType()
     throws DataException
   {
@@ -81,6 +82,7 @@ public class BuilderField
     }
   }
   
+  @Override
   public void depersistBeanProperty(Tuple tuple,Object subject)
     throws DataException
   {
@@ -168,6 +170,7 @@ public class BuilderField
   }
 
   
+  @Override
   @SuppressWarnings("unchecked")
   public void persistBeanProperty(Object object,EditableTuple tuple)
     throws DataException
@@ -248,6 +251,7 @@ public class BuilderField
     }
   }
   
+  @Override
   public boolean isFunctionalEquivalent(Field field)
   {
     if (!super.isFunctionalEquivalent(field))

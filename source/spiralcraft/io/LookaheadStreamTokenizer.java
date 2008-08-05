@@ -67,6 +67,7 @@ public class LookaheadStreamTokenizer
   { pushback=true;
   }
   
+  @Override
   public String toString()
   { 
     return super.toString()

@@ -36,10 +36,12 @@ public class BeanFieldChannel<Tprop,Tbean>
 
 
 
+  @Override
   public boolean isStatic()
   { return false;
   }
 
+  @Override
   public synchronized boolean set(Object val)
     throws AccessException
   {
@@ -55,6 +57,7 @@ public class BeanFieldChannel<Tprop,Tbean>
     }
   }
 
+  @Override
   public String toString()
   { 
     return super.toString()

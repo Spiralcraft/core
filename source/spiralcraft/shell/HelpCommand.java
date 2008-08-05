@@ -44,9 +44,10 @@ public class HelpCommand
   { return new ArgumentSet(_DEFINITION);
   }
   
+  @Override
   public void run()
   { 
-    List<Command<?,?>> commands=null;
+    List<Command<?,?>> commands=new ArrayList<Command<?,?>>();
 
     List<String> messageLines=new ArrayList<String>(commands.size()+10);
     messageLines.add("Use help <command> for more information");

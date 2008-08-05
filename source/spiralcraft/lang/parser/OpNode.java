@@ -37,10 +37,12 @@ public class OpNode<T1,T2 extends T1>
     _params=new Expression[] {new Expression<T2>(_op2,null)};
   }
 
+  @Override
   public String reconstruct()
   { return _op1.reconstruct()+_op+_op2.reconstruct();
   }
   
+  @Override
   @SuppressWarnings("unchecked") // Heterogeneous operation
   public Channel bind(final Focus focus)
     throws BindException
@@ -58,6 +60,7 @@ public class OpNode<T1,T2 extends T1>
     return ret;
   }
 
+  @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
     out.append(prefix).append("Op "+_op);

@@ -53,6 +53,7 @@ public class SystemConsole
     }
   }
   
+  @Override
   protected void writeMessage(CharSequence output)
   { 
     System.out.println();

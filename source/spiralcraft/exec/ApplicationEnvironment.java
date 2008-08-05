@@ -179,6 +179,7 @@ public class ApplicationEnvironment
   {
     new Arguments()
     {
+      @Override
       public boolean processArgument(String argument)
       { 
         if (_mainClass==null)
@@ -188,6 +189,7 @@ public class ApplicationEnvironment
         return true;
       }
 
+      @Override
       public boolean processOption(String option)
       { 
         if (_mainClass==null)

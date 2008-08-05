@@ -59,10 +59,12 @@ public class KeyTuple
     this.hashCode=ArrayUtil.arrayHashCode(data);
   }
   
+  @Override
   public int hashCode()
   { return hashCode;
   }
   
+  @Override
   public final boolean equals(Object o)
   {
     if (this==o)

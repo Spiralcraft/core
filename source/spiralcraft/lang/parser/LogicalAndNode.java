@@ -25,6 +25,7 @@ public class LogicalAndNode
   { super(op1,op2);
   }
 
+  @Override
   public String reconstruct()
   { return reconstruct("&&");
   }
@@ -47,6 +48,7 @@ public class LogicalAndNode
     throw new UnsupportedOperationException();
   }
   
+  @Override
   public String getSymbol()
   { return "&&";
   }
