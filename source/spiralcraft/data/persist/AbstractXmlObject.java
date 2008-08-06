@@ -26,6 +26,7 @@ import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DataComposite;
 
+import spiralcraft.data.builder.BuilderType;
 import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.sax.DataWriter;
 
@@ -36,6 +37,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.registry.Registrant;
+import spiralcraft.registry.Registry;
 import spiralcraft.registry.RegistryNode;
 
 import spiralcraft.builder.Lifecycle;
@@ -56,6 +58,75 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   implements Registrant,PersistentReference<Treferent>,Lifecycle
 {
 
+  
+  /**
+   * <p>Create a new AbstractXmlObject appropriate for the specified Type,
+   *   read from the optional instanceURI.
+   * </p>
+   * 
+   * <p>The AbstractXmlObject will be registered and started, where applicable.
+   * </p>
+   * 
+   * <p>If no RegistryNode is specified, and the object is a Registrant,  
+   *   the object will be registered with the local root registry node.
+   * </p>
+   * 
+   * @param <T> The Java generic type of object that is being referred to
+   * @param typeURI The spiralcraft.data.Type of the object being referred to
+   * @param instanceURI The URI of the resource from which to read the instance
+   * @param registryNode The RegistryNode under which to register this object
+   * @return The AbstractXmlObject
+   * @throws BindException
+   */
+  public static final <T> AbstractXmlObject<T,?> create
+    (URI typeURI,URI instanceURI,RegistryNode registryNode)
+    throws BindException
+  {
+    AbstractXmlObject<T,?> reference;
+    Type<?> type=null;
+    if (registryNode==null)
+    { registryNode=Registry.getLocalRoot();
+    }
+    
+    try
+    { type=Type.resolve(typeURI);
+    }
+    catch (DataException x)
+    { throw new BindException("Type "+typeURI+" could not be resolved",x);
+    }
+    
+    if (type instanceof BuilderType)
+    { 
+      try
+      { reference=new XmlAssembly<T>(type.getURI(),instanceURI);
+      }
+      catch (PersistenceException x)
+      { throw new BindException("Error creating XmlAssembly: "+x,x);
+      }
+    }
+    else
+    {
+      try
+      { reference=new XmlBean<T>(type.getURI(),instanceURI);
+      }
+      catch (PersistenceException x)
+      { throw new BindException("Error creating XmlBean",x);
+      }
+    }
+    
+    try
+    { 
+      reference.register(registryNode);
+      reference.start();
+    }
+    catch (LifecycleException x)
+    { throw new BindException("Error starting Xml object",x);
+    }
+    return reference;
+    
+  }
+
+  
   protected URI instanceURI;
   protected URI typeURI;
   protected Type<Tcontainer> type;
