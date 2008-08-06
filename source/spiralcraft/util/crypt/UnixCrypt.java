@@ -631,12 +631,13 @@ public class UnixCrypt
   }
 
  /**
-  * Determine whether the cleartext encrypts to crypt. The first two
+  * <p>Determine whether the cleartext encrypts to crypt. The first two
   *   characters of crypt are used as the salt.
+  * </p>
   * 
   * @param cleartext
   * @param crypt
-  * @return
+  * @return Whether crypt is a valid encryption of  cleartext
   */
  public static final boolean matches(String cleartext,String crypt)
  { return crypt(crypt.substring(0,2),cleartext).equals(crypt);
@@ -648,7 +649,7 @@ public class UnixCrypt
   *   
   * @param origSalt The salt to use for encryption
   * @param cleartext The cleartext string
-  * @return
+  * @return The encrypted string, which begins with the salt
   */
  public static final String crypt(String salt,final String cleartext)
  {
