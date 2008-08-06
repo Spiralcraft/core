@@ -647,7 +647,7 @@ public class UnixCrypt
   * Encrypt cleartext using the specified salt. The salt will always
   *   be the first two characters in the encrypted password.
   *   
-  * @param origSalt The salt to use for encryption
+  * @param salt The salt to use for encryption
   * @param cleartext The cleartext string
   * @return The encrypted string, which begins with the salt
   */
