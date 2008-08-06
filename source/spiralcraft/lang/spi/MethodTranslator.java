@@ -15,6 +15,7 @@
 package spiralcraft.lang.spi;
 
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
@@ -23,6 +24,7 @@ import spiralcraft.lang.Reflector;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 
 
 class MethodTranslator<Tprop,Tbean>
@@ -31,11 +33,13 @@ class MethodTranslator<Tprop,Tbean>
 
   private final Method _method;
   private final Reflector<Tprop> _reflector;
+  private final boolean _staticMethod;
   
   public MethodTranslator(Method method)
     throws BindException
   { 
     _method=method;
+    _staticMethod=Modifier.isStatic(method.getModifiers());
     _reflector=BeanReflector.<Tprop>getInstance
       (method.getGenericReturnType());
   }
@@ -64,9 +68,17 @@ class MethodTranslator<Tprop,Tbean>
         +_method.toString()
         );
     }
-    if (value==null)
+    
+    if (value==null && !_staticMethod)
     { return null;
     }
+    
+    if (value!=null && _staticMethod)
+    { 
+      throw new AccessException
+        ("Cannot invoke static method '"+_method.getName()+"' on an instance");
+    }
+    
     try
     { 
       Object[] paramValues=new Object[params.length];

@@ -83,7 +83,13 @@ public class SimpleFocus<T>
   }
   
   /**
-   * Identifies the application layer represented by the subject of the Focus.
+   *<p>Identifies the application layer represented by the subject of the Focus
+   * </p>
+   * 
+   * <p>XXX This needs to turn into an id, because "layer names" are too hidden
+   *   to be more useful than confusing. Primary purpose is to differentiate
+   *   when more than one of a given type is in the Focus chain.
+   * </p>
    * 
    * @return A String conforming to the syntax of Java package names, 
    *   representing the package which "implements" the layer. The layer name
