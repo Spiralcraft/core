@@ -62,9 +62,10 @@ public interface Container
     throws UnresolvableURIException;
   
   /**
-   * Return the Resource aspect of this Container
+   * <p>Return the Resource aspect of this Container
+   * </p>
    * 
-   * @return
+   * @return The resource which represents this Container (eg. a directory)
    */
   Resource asResource();
 }

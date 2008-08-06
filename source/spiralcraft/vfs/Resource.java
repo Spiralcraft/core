@@ -130,11 +130,13 @@ public interface Resource
     throws IOException;
 
   /**
-   * Move the content of the resource to the targetResource, overwriting
+   * <p>Move the content of the resource to the targetResource, overwriting
    *   the targetResource if it exists. If the targetResource specifies a
-   *   container (ie. a directory) the resource will be moved to it.
-   *   
-   * @param resource
+   *   container (ie. a directory) the resource will be moved into to it,
+   *   overwriting a resource of the same name.
+   * </p>
+   * 
+   * @param targetResource
    */
   public void moveTo(Resource targetResource)
     throws IOException;
