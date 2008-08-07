@@ -359,7 +359,8 @@ public class ArrayUtil
    * </p>
    *  
    * @param a
-   * @return
+   * @return Whether the array and all recursively referenced arrays
+   *   and object meet the .equals() test.
    */
   public static final boolean arrayEquals(final Object[] a,final Object[] b)
   { return Arrays.deepEquals(a,b);
@@ -389,7 +390,8 @@ public class ArrayUtil
    * </p>
    *  
    * @param a
-   * @return
+   * @return The hash code computed for the array and all recursively
+   *   referenced arrays.
    */
   public static final int arrayHashCode(final Object[] a)
   {

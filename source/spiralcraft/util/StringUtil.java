@@ -157,7 +157,7 @@ public class StringUtil
    * 
    * @param string
    * @param occurrences
-   * @return
+   * @return A StringBuilder containing the repeated string
    */
   public static StringBuilder repeat(String string,int occurrences)
   {

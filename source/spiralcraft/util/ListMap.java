@@ -99,7 +99,7 @@ public class ListMap<K,T>
    *   values added
    * 
    * @param target The list to append to
-   * @return
+   * @return The number of values added
    */
   public int toValueList(List<T> target)
   {
