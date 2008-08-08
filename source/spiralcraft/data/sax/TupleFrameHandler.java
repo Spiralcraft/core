@@ -14,14 +14,17 @@
 //
 package spiralcraft.data.sax;
 
+import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
 import spiralcraft.data.EditableAggregate;
+import spiralcraft.data.Key;
+import spiralcraft.data.KeyTuple;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.DataFactory;
 import spiralcraft.data.lang.DataReflector;
-import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.spi.EditableArrayTuple;
+import spiralcraft.data.spi.EditableKeyedListAggregate;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -43,7 +46,7 @@ import spiralcraft.lang.SimpleFocus;
  * </p>
  * 
  * <p>
- * The AttributeBinding expressions are bound to a Focus on the Tuple.
+ * The AttributeBinding expressions are scoped to the Tuple.
  * </p>
  * 
  * @author mike
@@ -59,19 +62,29 @@ public class TupleFrameHandler
   private Expression<Tuple> assignment;
   
   private Channel<Tuple> channel;
+  private Channel<Tuple> primaryKeyChannel;
+  
   private Channel<EditableAggregate<Tuple>> containerChannel;
   private Channel<Tuple> assignmentChannel;
   
-  private Tuple initialValue;
+  private boolean skipDuplicates;
   
   
   public void setType(Type<?> type)
   { this.type=type;
   }
 
-  public void setInitialValue(Tuple initialValue)
-  { this.initialValue=initialValue;
+  /**
+   * <p>Indicate whether duplicate keys should be skipped when
+   *   adding Tuples to a container.
+   * </p>
+   * 
+   * @param skipDuplicates
+   */
+  public void setSkipDuplicates(boolean skipDuplicates)
+  { this.skipDuplicates=skipDuplicates;
   }
+  
 
   /**
    * <p>An expression that references a container, such as a List or an
@@ -120,6 +133,22 @@ public class TupleFrameHandler
     { assignmentChannel=parentFocus.bind(assignment);
     }
     setFocus(new SimpleFocus<Tuple>(parentFocus,channel));
+    
+    Key key=type.getPrimaryKey();
+    if (key!=null)
+    { primaryKeyChannel=key.bind(getFocus());
+    }
+    else
+    {
+      if (skipDuplicates)
+      {
+        throw new BindException
+          ("Type "+type.getURI()+" does not have a primary key." +
+          " skipDuplicates cannot be set to true"
+          );
+      }
+    }
+    
     super.bind();
   }
   
@@ -127,17 +156,13 @@ public class TupleFrameHandler
   protected void openData()
     throws DataException
   {
-    Tuple tuple=initialValue;
-    if (tuple==null)
-    {
-    
-      DataFactory<?> factory=getFrame().getDataHandler().getDataFactory();
-      if (factory!=null)
-      { tuple=factory.<Tuple>create(type);
-      }
-      else
-      { tuple=new EditableArrayTuple(type);
-      }
+    Tuple tuple;
+    DataFactory<?> factory=getFrame().getDataHandler().getDataFactory();
+    if (factory!=null)
+    { tuple=factory.<Tuple>create(type);
+    }
+    else
+    { tuple=new EditableArrayTuple(type);
     }
     channel.set(tuple);
   }
@@ -175,7 +200,7 @@ public class TupleFrameHandler
           }
           
           container
-            =new EditableArrayListAggregate<Tuple>
+            =new EditableKeyedListAggregate<Tuple>
               (Type.getAggregateType(type));
           
           if (!containerChannel.set(container))
@@ -188,7 +213,31 @@ public class TupleFrameHandler
               );
           }
         }
-        container.add(tuple);
+        
+        if (skipDuplicates)
+        {
+          
+          Aggregate.Index<Tuple> index=container.getIndex
+            (type.getPrimaryKey(), true);
+          
+          if (index==null)
+          { 
+            throw new DataException
+              ("Could not get an Index to check for duplicates");
+          }
+          
+          if (index.getOne(new KeyTuple(primaryKeyChannel.get()))==null)
+          { container.add(tuple);
+          }
+          else
+          {
+            log.fine("Skipping duplicate "+tuple);
+          }
+        }
+        else
+        {
+          container.add(tuple);
+        }
       }
     }
 

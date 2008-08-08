@@ -15,43 +15,80 @@
 package spiralcraft.data.sax;
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.Type;
+import spiralcraft.data.lang.DataReflector;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.spi.SimpleChannel;
 
 /**
- * <p>Maps an XML element that serves as a container for another element
- *   but does not necessarily map directly to data.
+ * <p>Corresponds to the outermost FrameHandler of the set used to
+ *   translate a document, and provides an initial data context for the
+ *   document.
  * </p>
  * 
  * <p>If a target is specified, it will be made available to child
- *   elements. If no target is specified, the subject of the parent
- *   FrameHandler's focus will be made available as this FrameHandler's
- *   target.
+ *   elements. If no target is specified, the subject of the supplied
+ *   focus will be made available as this FrameHandler's target.
  * </p>
  * 
- * <p>A ContainerFrameHandler may be used as the root of the FrameHandler
- *   tree by supplying a focus via setFocus() before bind() is called.
- * </p>
  * 
  * @author mike
  *
  */
-public class ContainerFrameHandler<T>
+public class RootFrameHandler<T>
   extends FrameHandler
 {  
   
+  private Type<?> type;
   private Expression<T> target;
   private Channel<T> targetChannel;
   private FrameChannel<T> channel;
   
+  /**
+   * <p>Obtain the targetChannel, after binding, in order to access the
+   *   root data object.
+   * </p>
+   * 
+   * @param initialValue
+   */
+  public Channel<T> getTargetChannel()
+  { return targetChannel;
+  }
+  
+  /**
+   * <p>The spiralcraft.data.type which corresponds to the data scoped to
+   *   this RootFrameHandler.
+   * </p>
+   *   
+   * @param type
+   */
+  public void setType(Type<?> type)
+  { this.type=type;
+  }
 
+  /**
+   * <p>The spiralcraft.data.type which corresponds to the data scoped to
+   *   this RootFrameHandler.
+   * </p>
+   *   
+   * @param type
+   */
+  public Type<?> getType()
+  { return type;
+  }
+  
   /**
    * <p>An Expression which resolves the target object for this frame,
    *   if any, which will be made available through the Focus chain.
+   * </p>
+   * 
+   * <p>This is primarily used when the FrameHandler tree reads data into
+   *   part of a larger existing data model.
    * </p>
    * 
    * @param target
@@ -60,6 +97,7 @@ public class ContainerFrameHandler<T>
   { this.target=target;
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   public void bind()
     throws BindException
@@ -76,8 +114,42 @@ public class ContainerFrameHandler<T>
           );
       }
       targetChannel=parentFocus.bind(target);
+    }
+    else if (parentFocus!=null)
+    { targetChannel=(Channel<T>) parentFocus.getSubject();
+    }
+    else if (type!=null)
+    {
+      targetChannel
+        =new SimpleChannel<T>
+          (DataReflector.<T>getInstance(type));
+    }
+    
+    if (targetChannel!=null)
+    {
       channel=new FrameChannel<T>(targetChannel.getReflector());
       setFocus(new SimpleFocus<T>(parentFocus,channel));
+      
+      if (type!=null)
+      {
+        if (!(targetChannel.getReflector() instanceof DataReflector))
+        { 
+          throw new BindException
+            ("Target is not an instance of "+type.getURI());
+        }
+        else
+        {
+          Type<?> targetType
+            =((DataReflector) targetChannel.getReflector()).getType();
+        
+          if (!type.isAssignableFrom(targetType))
+          {
+            throw new BindException
+              (targetType.getURI()+" is not an instance of "+type.getURI());
+          }
+        }
+        
+      }
     }
     
     super.bind();

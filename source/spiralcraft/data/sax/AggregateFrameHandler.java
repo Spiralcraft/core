@@ -90,14 +90,20 @@ public class AggregateFrameHandler
   protected void openData()
     throws DataException
   {
-    EditableAggregate<?> aggregate;
-    
-    DataFactory<?> factory=getFrame().getDataHandler().getDataFactory();
-    if (factory!=null)
-    { aggregate=factory.<EditableAggregate<?>>create(type);
+    EditableAggregate<?> aggregate=null;
+    if (assignmentChannel!=null)
+    { aggregate=(EditableAggregate<?>) assignmentChannel.get();
     }
-    else
-    { aggregate=new EditableArrayListAggregate<Object>(type);
+    
+    if (aggregate==null)
+    {    
+      DataFactory<?> factory=getFrame().getDataHandler().getDataFactory();
+      if (factory!=null)
+      { aggregate=factory.<EditableAggregate<?>>create(type);
+      }
+      else
+      { aggregate=new EditableArrayListAggregate<Object>(type);
+      }
     }
     channel.set(aggregate);
     

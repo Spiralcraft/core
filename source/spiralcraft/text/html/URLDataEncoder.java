@@ -41,7 +41,9 @@ public class URLDataEncoder
       }
       else if ( ! ((c>='A' && c<='Z') || 
               (c>='a' && c<='z') || 
-              (c>='0' && c<='9')))
+              (c>='0' && c<='9') ||
+              ("$-_.+!*'()".indexOf(c)>-1)
+              ))
       {
         encoded.append('%');
         String hex=(Integer.toHexString(c));

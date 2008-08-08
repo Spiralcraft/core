@@ -22,8 +22,9 @@ import spiralcraft.lang.ParseException;
 import spiralcraft.util.StringConverter;
 
 /**
- * <p>Directs that the value of an XML attribute in the incoming data stream be
- *   assigned to an element in the data model.
+ * <p>Associates a loosely bound name, such as an XML attribute name or 
+ *   a variable in a URLEncoded query string with an Expression bound to
+ *   a data model.
  * </p>
  * 
  * @author mike
@@ -54,7 +55,7 @@ public class AttributeBinding<T>
    *  
    * <p>If the targetExpression is excluded, it will be set to the same as
    *   the attribute name, which relies on an identically named field in
-   *   the Type associated with the current FrameHandler.
+   *   the Type associated with the bound scope. 
    * </p> 
    * 
    * @param shortHand
@@ -111,6 +112,10 @@ public class AttributeBinding<T>
   
   public void set(String value)
   { targetChannel.set(converter.fromString(value));
+  }
+  
+  public String get()
+  { return converter.toString(targetChannel.get());
   }
   
 }

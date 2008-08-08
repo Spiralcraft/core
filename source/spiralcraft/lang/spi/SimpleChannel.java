@@ -28,6 +28,10 @@ public class SimpleChannel<T>
  
   private T _object;
   
+  public SimpleChannel(Reflector<T> reflector)
+  { super(reflector,false);
+  }
+  
   /**
    * Create a SimpleOptic with the specified Object as its target
    *   and with a targetClass equals to the Object's class.

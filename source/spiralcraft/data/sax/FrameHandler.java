@@ -44,14 +44,42 @@ public abstract class FrameHandler
   protected static final ClassLogger log
     =ClassLogger.getInstance(FrameHandler.class);
 
+  // Makes FrameHandler thread-safe
+  class LocalStack 
+    extends ThreadLocal<Stack<ForeignDataHandler.HandledFrame>>
+  {
+    @Override
+    protected Stack<ForeignDataHandler.HandledFrame> initialValue()
+    { return new Stack<ForeignDataHandler.HandledFrame>();
+    }
+      
+    public ForeignDataHandler.HandledFrame pop()
+    { 
+      Stack<ForeignDataHandler.HandledFrame> val=get();
+      ForeignDataHandler.HandledFrame frame=val.pop();
+      if (val.isEmpty())
+      { remove();
+      }
+      return frame;
+    }
+      
+    public void push(ForeignDataHandler.HandledFrame val)
+    { get().push(val);
+    }
+    
+    public ForeignDataHandler.HandledFrame peek()
+    { return get().peek();
+    }
+  };
+
   private String elementURI;
   private LinkedHashMap<String,FrameHandler> childMap
     =new LinkedHashMap<String,FrameHandler>();
   
   private boolean strictMapping;
   
-  private Stack<ForeignDataHandler.HandledFrame> stack
-    =new Stack<ForeignDataHandler.HandledFrame>();
+  private LocalStack stack=new LocalStack();
+  
   
   protected boolean debug;
   
