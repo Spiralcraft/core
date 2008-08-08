@@ -33,7 +33,7 @@ public class URLEncoder
    *   characters
    * 
    * @param encodedText
-   * @return
+   * @return The decoded string
    */
   public static String decode(String encodedText)
   {
