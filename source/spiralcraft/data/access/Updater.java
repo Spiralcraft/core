@@ -18,29 +18,35 @@ import java.net.URI;
 import java.util.ArrayList;
 
 import spiralcraft.data.DataException;
-import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Field;
 import spiralcraft.data.Sequence;
 import spiralcraft.data.Space;
+import spiralcraft.data.Tuple;
 
 import spiralcraft.data.core.SequenceField;
-import spiralcraft.data.lang.TupleFocus;
-import spiralcraft.data.session.BufferTuple;
+import spiralcraft.data.lang.TupleReflector;
+
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.NamespaceResolver;
 import spiralcraft.lang.Setter;
+import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLogger;
 
 
 
 /**
- * <p>Updates "downstream" data from changes specified in DeltaTuples.
+ * <p>Updates and validates field data before it is written to a store. 
  * </p> 
+ * 
+ * <p>Applies defaultExpression, fixedExpression and generates sequence
+ *   data where applicable.
+ * </p>
  * 
  * <p>May alter field data in Buffers to conform to Type constraints.
  * </p>
@@ -48,13 +54,15 @@ import spiralcraft.log.ClassLogger;
  * <p>Triggers validation of data in DeltaTuples according to Type constraints.
  * </p>
  * 
+ * <p>This component is generally thread-safe, as long as backing channels are.
+ * </p>
  * 
  * 
  * @author mike
  *
  * @param <T>
  */
-public class Updater<T extends DeltaTuple>
+public class Updater<T extends Tuple>
   implements DataConsumer<T>
 {
 
@@ -65,7 +73,8 @@ public class Updater<T extends DeltaTuple>
     =URI.create("class:/spiralcraft/data/");
 
   private Focus<?> context;
-  protected TupleFocus<T> localFocus;
+  protected SimpleFocus<T> localFocus;
+  protected ThreadLocalChannel<T> localChannel;
   
   
   private ArrayList<Setter<?>> fixedSetters;
@@ -81,7 +90,6 @@ public class Updater<T extends DeltaTuple>
    *   external references associated with Tuple fields
    * </p>
    *   
-   * 
    * @param context
    */
   public Updater(Focus<?> context)
@@ -100,10 +108,21 @@ public class Updater<T extends DeltaTuple>
     if (debug)
     { log.fine("Got "+tuple);
     }
-    localFocus.setTuple(tuple);
+    localChannel.push(tuple);
     
+    try
+    { handleData(tuple);
+    }
+    finally
+    { localChannel.pop();
+    }
+  }
+  
+  private void handleData(T tuple)
+    throws DataException
+  {
     
-    if (tuple instanceof BufferTuple)
+    if (tuple.isMutable())
     {
       if (sequence!=null)
       {
@@ -161,7 +180,7 @@ public class Updater<T extends DeltaTuple>
       if (debug)
       {
         log.fine
-          ("Not a BufferTuple "+tuple);
+          ("Not a mutable Tuple "+tuple);
       }
     }
      
@@ -173,16 +192,26 @@ public class Updater<T extends DeltaTuple>
   public void dataFinalize()
     throws DataException
   {
-    localFocus.setTuple(null);
+
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public void dataInitialize(
     FieldSet fieldSet)
-  throws DataException
+    throws DataException
   {
-    localFocus=new TupleFocus<T>(context,fieldSet);
+    try
+    { localChannel=new ThreadLocalChannel(TupleReflector.getInstance(fieldSet));
+    }
+    catch (BindException x)
+    { 
+      throw new DataException
+        ("Error creating channel for fieldSet "+fieldSet,x);
+    }
+    
+    localFocus=new SimpleFocus<T>(context,localChannel);
+
     localFocus.setNamespaceResolver
       (new NamespaceResolver()
         {
