@@ -18,6 +18,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Field;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Type;
 
 import spiralcraft.data.access.DataConsumer;
 
@@ -37,6 +38,7 @@ public class Writer
   private boolean _autoFlush=true;
   private String _newLine=System.getProperty("line.separator");
   private FieldSet fields;
+  private boolean writeHeader;
 
   public Writer(OutputStream out)
   { _out=new BufferedWriter(new OutputStreamWriter(out),524288);
@@ -46,6 +48,22 @@ public class Writer
   { 
     _out=new BufferedWriter(new OutputStreamWriter(out),524288);
     _autoFlush=autoFlush;
+  }
+  
+  public Writer()
+  {
+  }
+  
+  public void setAutoFlush(boolean autoFlush)
+  { this._autoFlush=autoFlush;
+  }
+  
+  public void setOutputStream(OutputStream out)
+  { this._out=new BufferedWriter(new OutputStreamWriter(out),524288);
+  }
+  
+  public void setWriteHeader(boolean writeHeader)
+  { this.writeHeader=writeHeader;
   }
 
   public void dataFinalize()
@@ -62,36 +80,40 @@ public class Writer
   public void dataInitialize(FieldSet fields)
   { 
     this.fields=fields;
-    try
+    if (writeHeader)
     {
-      boolean first=true;
-      for (Field field: fields.fieldIterable())
+      try
       {
-        if (!first)
-        { _out.write(",");
-        }
-        else
-        { first=false;
-        }
+        boolean first=true;
+        for (Field field: fields.fieldIterable())
+        {
+          if (!first)
+          { _out.write(",");
+          }
+          else
+          { first=false;
+          }
         
-        _out.write(field.getName());
-        if (field.getType()!=null)
-        { 
-          _out.write("(");
-          _out.write(field.getType().getURI().toString());
-          _out.write(")");
+          _out.write(field.getName());
+          if (field.getType()!=null)
+          { 
+            _out.write("(");
+            _out.write(field.getType().getURI().toString());
+            _out.write(")");
+          }
+        }
+        _out.write(_newLine);
+        if (_autoFlush)
+        { _out.flush();
         }
       }
-      _out.write(_newLine);
-      if (_autoFlush)
-      { _out.flush();
+      catch (IOException x)
+      { throw new RuntimeException("IOException writing header",x);
       }
-    }
-    catch (IOException x)
-    { throw new RuntimeException("IOException writing header",x);
     }
   }
   
+  @SuppressWarnings("unchecked")
   public void dataAvailable(Tuple data)
     throws DataException
   {
@@ -111,22 +133,30 @@ public class Writer
   
         if (val!=null)
         {
-          //XXX Deal with inputstreams
-          if (val instanceof String)
-          {
-            _out.write("\"");
-            _out.write(escape(val.toString()));
-            _out.write("\"");
-          }
-          else if (val instanceof Number)
+          if (val instanceof Number)
           { _out.write(_format.format(val));
           }
           else if (val instanceof Boolean)
           { _out.write( ((Boolean) val).booleanValue()?"true":"false");
           }
+          else
+          { 
+            if (field.getType().isStringEncodable())
+            {
+              // Let the Type turn it into a string
+              _out.write("\"");
+              _out.write
+                (escape
+                  (((Type<Object>) field.getType()).toString(val)
+                  )
+                );
+              _out.write("\"");
+            }
+          }
         }
   
       }
+      
       _out.write(_newLine);
       if (_autoFlush)
       { _out.flush();
