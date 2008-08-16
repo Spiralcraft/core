@@ -15,31 +15,19 @@
 package spiralcraft.security.auth;
 
 /**
- * <p>A data token used for Authentication. The Authenticator will
- *   consume this data, which is produced by the client specific
- *   connector.
+ * <p>A message digest
  * </p>
- *   
- * <p>Credentials are identified by their Class, and are immutable.
- * </p>
+ * 
+ * @author mike
  */
-public abstract class Credential<T>
+public class DigestCredential
+  extends Credential<byte[]>
 {
-  private final Class<T> tokenType;
-  private final T value;
-  
-  protected Credential(Class<T> dataType,T value)
-  { 
-    this.tokenType=dataType;
-    this.value=value;
+  public DigestCredential()
+  { super(byte[].class,null);
   }
   
-  public final Class<T> getTokenType()
-  { return tokenType;
+  public DigestCredential(byte[] digest)
+  { super(byte[].class,digest);
   }
-  
-  public final T getValue()
-  { return value;
-  }
-  
 }

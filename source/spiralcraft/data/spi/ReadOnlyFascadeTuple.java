@@ -38,6 +38,11 @@ public class ReadOnlyFascadeTuple
   { this.delegate=delegate;
   }
   
+  public Object get(String fieldName)
+    throws DataException
+  { return delegate.get(fieldName);
+  }
+  
   public Identifier getId()
   { return delegate.getId();
   }

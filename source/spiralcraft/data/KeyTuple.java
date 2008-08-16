@@ -59,6 +59,18 @@ public class KeyTuple
     this.hashCode=ArrayUtil.arrayHashCode(data);
   }
   
+  public Object get(String fieldName)
+    throws DataException
+  { 
+    Field field=fieldSet.getFieldByName(fieldName);
+    if (field==null)
+    { throw new FieldNotFoundException(fieldSet,fieldName);
+    }
+    else
+    { return field.getValue(this);
+    }
+  }
+  
   @Override
   public int hashCode()
   { return hashCode;

@@ -35,6 +35,7 @@ import java.beans.Introspector;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -83,11 +84,88 @@ public class BeanReflector<T>
 
   private static final ArrayLengthTranslator arrayLengthTranslator
     =new ArrayLengthTranslator();
+
+
+  private static final Translator booleanArrayEqualityTranslator
+    =new ArrayEqualityTranslator<boolean[]>()
+  {
+    @Override
+    public boolean compare(boolean[] source,boolean[] target)
+    { return Arrays.equals(source,target);
+    }
+  };
+
+  private static final Translator byteArrayEqualityTranslator
+    =new ArrayEqualityTranslator<byte[]>()
+  {
+    @Override
+    public boolean compare(byte[] source,byte[] target)
+    { return Arrays.equals(source,target);
+    }
+  };
+
+  private static final Translator charArrayEqualityTranslator
+    =new ArrayEqualityTranslator<char[]>()
+  {
+    @Override
+    public boolean compare(char[] source,char[] target)
+    { return Arrays.equals(source,target);
+    }
+  };
+
+  private static final Translator shortArrayEqualityTranslator
+    =new ArrayEqualityTranslator<short[]>()
+  {
+    @Override
+    public boolean compare(short[] source,short[] target)
+    { return Arrays.equals(source,target);
+    }
+  };
+
+  private static final Translator intArrayEqualityTranslator
+    =new ArrayEqualityTranslator<int[]>()
+  {
+    @Override
+    public boolean compare(int[] source,int[] target)
+    { return Arrays.equals(source,target);
+    }
+  };
+
+  private static final Translator longArrayEqualityTranslator
+    =new ArrayEqualityTranslator<long[]>()
+  {
+    @Override
+    public boolean compare(long[] source,long[] target)
+    { return Arrays.equals(source,target);
+    }
+  };
   
+  private static final Translator floatArrayEqualityTranslator
+    =new ArrayEqualityTranslator<float[]>()
+  {
+    @Override
+    public boolean compare(float[] source,float[] target)
+    { return Arrays.equals(source,target);
+    }
+  };
 
-  
+  private static final Translator doubleArrayEqualityTranslator
+    =new ArrayEqualityTranslator<double[]>()
+  {
+    @Override
+    public boolean compare(double[] source,double[] target)
+    { return Arrays.equals(source,target);
+    }
+  };
 
-
+  private static final Translator objectArrayEqualityTranslator
+    =new ArrayEqualityTranslator<Object[]>()
+  {
+    @Override
+    public boolean compare(Object[] source,Object[] target)
+    { return Arrays.deepEquals(source,target);
+    }
+  };
   
   /**
    * Find a BeanReflector which reflects the specified Java class
@@ -208,7 +286,15 @@ public class BeanReflector<T>
       for (int i=0;i<optics.length;i++)
       { optics[i]=focus.bind(params[i]);
       }
-      binding=this.<X>getMethod(source,name,optics);
+      if (targetClass.isArray())
+      { binding=this.<X>getArrayMethod(source,name,optics);
+      }
+      else
+      { binding=this.<X>getMethod(source,name,optics);
+      }
+      if (binding==null && targetClass.isArray())
+      { binding=this.<X>getArrayMethod(source,name);
+      }
     }
     return binding;
   }
@@ -391,6 +477,64 @@ public class BeanReflector<T>
     return null;
   }
 
+  private synchronized <X> Channel<X> getArrayMethod
+    (Channel<T> source,String name,Channel ... params)
+    throws BindException
+  {
+    Translator<X,T> translator=null;
+    if (name.equals("equals"))
+    { 
+      Class atype=source.getContentType();
+
+      if (atype==boolean[].class)
+      { translator=booleanArrayEqualityTranslator;
+      }
+      else if (atype==byte[].class)
+      { translator=byteArrayEqualityTranslator;
+      }
+      else if (atype==short[].class)
+      { translator=shortArrayEqualityTranslator;
+      }
+      else if (atype==int[].class)
+      { translator=intArrayEqualityTranslator;
+      }
+      else if (atype==long[].class)
+      { translator=longArrayEqualityTranslator;
+      }
+      else if (atype==double[].class)
+      { translator=doubleArrayEqualityTranslator;
+      }
+      else if (atype==float[].class)
+      { translator=floatArrayEqualityTranslator;
+      }
+      else if (atype==char[].class)
+      { translator=charArrayEqualityTranslator;
+      }
+      else if (Object[].class.isAssignableFrom(atype))
+      { translator=objectArrayEqualityTranslator;
+      }
+      else
+      { throw new BindException("Can't compare array type "+atype);
+      }
+    }
+    
+    if (translator!=null)
+    { 
+      Channel<X> binding=source.<X>getCached(translator);
+      if (binding==null)
+      { 
+        binding=new TranslatorChannel<X,T>
+          (source
+          ,translator
+          ,params
+          );
+        source.cache(translator,binding);
+      }
+      return binding;
+    }
+    return null;
+  }
+  
   private synchronized <X> Channel<X> 
     getMethod(Channel<T> source,String name,Channel ... params)
     throws BindException
@@ -661,4 +805,6 @@ class MethodKey
   { return ArrayUtil.arrayHashCode(instanceSig);
   }
 }
+
+
 

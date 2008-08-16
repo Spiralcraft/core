@@ -22,6 +22,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Field;
+import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.JournalTuple;
@@ -85,6 +86,16 @@ public class BufferTuple
     }
   }
 
+  public Object get(String fieldName)
+    throws DataException
+  { 
+    Field field=type.getField(fieldName);
+    if (field==null)
+    { throw new FieldNotFoundException(type,fieldName);
+    }
+    return field.getValue(this);
+  }
+  
   public void updateOriginal(Tuple tuple)
   { 
     if (debug)

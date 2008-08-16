@@ -23,11 +23,13 @@ import java.util.Map;
 import java.util.Iterator;
 
 /**
- * <P>Represents the state of the authentication process from a client's
+ * <p>Represents the state of the authentication process from a client's
  *   perspective.
+ * </p>
  *   
- * <P>Provides an interface to the credentials received from the client
+ * <p>Provides an interface to the credentials received from the client
  *   for authentication functionality.
+ * </p>
  * 
  * @author mike
  */
@@ -44,10 +46,6 @@ public abstract class AuthSession
   
   protected Principal principal;
   protected boolean authenticated;
-  protected boolean sticky;
-  
-  
-
   
   /**
    * @return The Principal currently authenticated in this session.
@@ -57,6 +55,10 @@ public abstract class AuthSession
    */
   public Principal getPrincipal()
   { return principal;
+  }
+  
+  public final boolean isAuthenticated()
+  { return authenticated;
   }
   
   @SuppressWarnings("unchecked") // Required downcast
@@ -99,9 +101,31 @@ public abstract class AuthSession
     }
   }
 
+  /**
+   * Authenticate the supplied credentials.
+   * 
+   * @return Whether a successful authentication has been performed 
+   */
+  public abstract boolean authenticate();
   
-  public abstract boolean isAuthenticated();
-  
+  /**
+   * <p>Compute a message digest which includes the specified input token
+   *   (eg. a password in some form) for later comparison as an authentication
+   *   step.
+   * </p>
+   * 
+   * <p>The digest may be computed by including other data such as the
+   *  realm name or another configured token.
+   * </p> 
+   * 
+   * <p>The digest may be used as part of an authentication "ticket"
+   * </p>
+   * 
+   * @param clearPass
+   * @return
+   */
+  public abstract byte[] opaqueDigest(String input);
+    
   /**
    * Logs out the user by clearing all credentials and principal data and
    *   setting authenticated to false.

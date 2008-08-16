@@ -47,7 +47,20 @@ Evaluator.parseAndEvaluateObject(".[2][2].length()",array);
 array=new String[] {"zero","one","two"};
 Evaluator.parseAndEvaluateObject(".[.startsWith(\"t\")][0]",array);
 
+"Array Equals";
+array2=new String[] {"zero","one","two"};
+holder=new String[][] {array,array2};
+Evaluator.parseAndEvaluateObject(".[0].equals(.[1])",holder);
 
+array=new byte[] {1,2,3};
+array2=new byte[] {1,2,3};
+holder=new byte[][] {array,array2};
+Evaluator.parseAndEvaluateObject(".[0].equals(.[1])",holder);
+
+array=new byte[] {1,2,3};
+array2=new byte[] {1,2,4};
+holder=new byte[][] {array,array2};
+Evaluator.parseAndEvaluateObject(".[0].equals(.[1])",holder);
 
 "==";
 Evaluator.parseAndEvaluateObject("1==1",new Object());

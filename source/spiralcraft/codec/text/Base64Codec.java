@@ -49,6 +49,28 @@ public class Base64Codec
     return new String(result.toByteArray());
   }
   
+  public static final String encodeBytes(byte[] input)
+    throws CodecException,IOException
+  {
+    ByteArrayOutputStream out=new ByteArrayOutputStream();
+    ByteArrayInputStream in=new ByteArrayInputStream(input);
+    new Base64Codec().encode(in,out);
+    return new String(out.toByteArray());
+  }
+  
+  
+  public static final byte[] decodeBytes(final String input)
+    throws IOException,CodecException
+  {
+    ByteArrayOutputStream out=new ByteArrayOutputStream();
+    ByteArrayInputStream in=new ByteArrayInputStream(input.getBytes());
+    new Base64Codec().decode(in,out);
+    return out.toByteArray();
+    
+  }
+  
+
+  
   /**
    * Encode byte 1 of output from a 1 byte input chunk (bits 0-5)
    */
@@ -160,6 +182,7 @@ public class Base64Codec
   }
   
 
+  
   public void decode(final InputStream inStr, final OutputStream out)
     throws IOException,CodecException
   {

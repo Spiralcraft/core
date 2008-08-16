@@ -96,7 +96,26 @@ public interface Tuple
   Object get(int index)
     throws DataException;
 
-  
+  /**
+   * <p>Retrieve a Tuple data value by field name.
+   * </p>
+   * 
+   * <p><b>IMPORTANT: THIS METHOD CARRIES A PERFORMANCE PENALTY!</b>
+   * 
+   *  For repeated usage, use Field.get(Tuple) or
+   *   spiralcraft.lang.Channel bindings, as this method may be orders of 
+   *   magnitude less efficient than the former methods due to the repeated
+   *   lookup and comparison of field names.
+   * </p> 
+   * 
+   *@return the Object in the field with the specified name.
+   *   
+   *@throws DataException If the Type does not contain a field by the
+   *  specified name, or an error occurs retrieving data.
+   */
+  Object get(String fieldName)
+    throws DataException;
+
   /**
    * Indicate whether the value returned by the get(int index) method may
    *   change at some point in the future. Some elements of data processing

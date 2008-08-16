@@ -18,6 +18,7 @@ import java.lang.ref.WeakReference;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
+import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.TypeMismatchException;
@@ -68,6 +69,28 @@ public abstract class AbstractTuple
 //    this.baseExtent=baseExtent;
 //  }
 
+  public Object get(String fieldName)
+    throws DataException
+  { 
+    Field field=null;
+    if (fieldSet.getType()!=null)
+    { 
+      field=fieldSet.getType().getField(fieldName);
+      if (field==null)
+      { throw new FieldNotFoundException(fieldSet.getType(),fieldName);
+      }
+    }
+    else
+    {
+      field=fieldSet.getFieldByName(fieldName);
+      if (field==null)
+      { throw new FieldNotFoundException(fieldSet,fieldName);
+      }
+    }
+    
+    return field.getValue(this);
+  }
+  
   public Tuple getBaseExtent()
   { return baseExtent;
   }

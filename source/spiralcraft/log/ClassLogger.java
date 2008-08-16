@@ -152,6 +152,14 @@ public class ClassLogger
   }
   
   @Override
+  public void log(Level level,String message,Throwable x)
+  { 
+    System.err.println("ClassLogger.log(): "+message);
+    x.printStackTrace(System.err);
+    logger.log(level,message,x);
+  }
+
+  @Override
   public boolean isLoggable(Level level)
   { return logger.isLoggable(level);
   }

@@ -47,22 +47,34 @@ public class CompoundFocus<T>
   }
   
   /**
-   * Bind a Focus to a name that will referenced via findFocus(), or by the
-   *   <CODE>[<I>name</I>]</CODE> or <CODE>[<I>namespace:name</I>]</CODE>
-   *   operator in the expression language.
+   * <p>Publish a Focus into the Focus chain that will be made visible via
+   *   this CompoundFocus. 
+   * </p>
+   * 
+   * <p>The differentiator will allow the provided Focus to be referenced
+   *   specifically if there are other Focii in the chain which provide
+   *   the same type
+   * </p>
+   *  
+   * <p>The Focus is normally referenced using the following construct
+   *   <CODE>[<I>namespace</I>:<I>name</I>]</CODE> or 
+   *   <CODE>[<I>namespace</I>:<I>name</I>#<I>differentiator</I>]</CODE>
+   *   in the expression language.
+   * </p>
    */
-  public synchronized void bindFocus(String layerName,Focus<?> focus)
+  public synchronized void bindFocus(String differentiator,Focus<?> focus)
     throws BindException
   { 
     
     if (layers==null)
     { layers=new HashMap<String,Focus<?>>();
     }
-    if (layers.get(layerName)==null)
-    { layers.put(layerName,focus);
+    if (layers.get(differentiator)==null)
+    { layers.put(differentiator,focus);
     }
     else
-    { throw new BindException("Layer Name '"+layerName+"' already bound");
+    { throw new BindException
+        ("Differentiator '"+differentiator+"' already bound");
     }
   }
 

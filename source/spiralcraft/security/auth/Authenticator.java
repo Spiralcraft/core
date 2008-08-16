@@ -17,7 +17,9 @@ package spiralcraft.security.auth;
 import java.util.HashMap;
 import java.util.Map;
 
+import spiralcraft.lang.BeanFocus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.CompoundFocus;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.BeanReflector;
@@ -38,15 +40,15 @@ public abstract class Authenticator
   protected Focus<AuthSession> sessionFocus;
   protected final HashMap<String,Credential<?>> protoMap
     =new HashMap<String,Credential<?>>();
-  protected Class<? extends Credential<?>>[] requiredCredentials;
+  protected Class<? extends Credential<?>>[] acceptedCredentials;
   
-  protected SimpleFocus<Map<String,Credential<?>>> credentialFocus;
+  protected CompoundFocus<Map<String,Credential<?>>> credentialFocus;
   
-  protected void setRequiredCredentials
-    (Class<? extends Credential<?>>[] requiredCredentials)
+  protected void setAcceptedCredentials
+    (Class<? extends Credential<?>>[] acceptedCredentials)
   { 
-    this.requiredCredentials=requiredCredentials;
-    for (Class<? extends Credential<?>> credClass: requiredCredentials)
+    this.acceptedCredentials=acceptedCredentials;
+    for (Class<? extends Credential<?>> credClass: acceptedCredentials)
     { 
       if (protoMap.get(credClass.getSimpleName())==null)
       { 
@@ -79,14 +81,15 @@ public abstract class Authenticator
   
       
   public Class<? extends Credential<?>>[] getRequiredCredentials()
-  { return requiredCredentials;
+  { return acceptedCredentials;
   }
   
   /**
    * @return The name of the realm this Authenticator will be serving.
    * 
-   * <P>The realm name should be as unique and as stable as possible. Specific
-   * paths in a web tree should be avoided, as the realm name is a factor in
+   * <P>The realm name should be as unique and as stable as possible. 
+   * Application names that may change (eg. paths in a web tree) should be 
+   * avoided, as the realm name is a factor in
    * authentication cryptography, and may require that all passwords are reset
    * if it is changed.
    * 
@@ -127,10 +130,11 @@ public abstract class Authenticator
     }
         
     credentialFocus
-      =new SimpleFocus<Map<String,Credential<?>>>
-      (new CredentialSetChannel(protoMap,sessionChannel)
+      =new CompoundFocus<Map<String,Credential<?>>>
+      (sessionFocus,new CredentialSetChannel(protoMap,sessionChannel)
       );
-
+    credentialFocus.bindFocus
+      ("",new BeanFocus<Authenticator>(this));
   }
   
 }

@@ -14,6 +14,9 @@
 //
 package spiralcraft.security.auth;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class TestAuthenticator
   extends Authenticator
 {
@@ -23,7 +26,7 @@ public class TestAuthenticator
   
   @Override
   public TestSession createSession()
-  { return new TestSession();
+  { return new TestSession(this);
   }
   
   
@@ -33,11 +36,15 @@ class TestSession
   extends AuthSession
 {
 
+  private final TestAuthenticator authenticator;
   
+  public TestSession(TestAuthenticator authenticator)
+  { this.authenticator=authenticator;
+  }
   
   @Override
-  public boolean isAuthenticated()
-  {
+  public boolean authenticate()
+  {    
     UsernameCredential username
       =getCredential(UsernameCredential.class);
     PasswordCleartextCredential password
@@ -48,8 +55,30 @@ class TestSession
         && password!=null
         && "test".equals(password.getValue())
         )
-    { return true;
+    { 
+      authenticated=true;
     }
-    return false;
+    else
+    { authenticated=false;
+    }
+    return authenticated;
   }
+
+  @Override
+  public byte[] opaqueDigest(
+    String input)
+  {
+    try
+    { 
+      return MessageDigest.getInstance("SHA-256").digest
+        ((authenticator.getRealmName()+input).getBytes());
+    }
+    catch (NoSuchAlgorithmException x)
+    { throw new RuntimeException("SHA256 not supported",x);
+    }
+    
+    
+
+  }
+  
 }

@@ -31,6 +31,8 @@ public class LoginEntry
   private Channel<AuthSession> sessionChannel;
   
   private String name;
+  private String password;
+  private byte[] digest;
    
   public LoginEntry(Channel<AuthSession> sessionChannel)
   { this.sessionChannel=sessionChannel;
@@ -51,9 +53,23 @@ public class LoginEntry
   { 
     sessionChannel.get().addCredentials
       (new Credential[] {new PasswordCleartextCredential(pass)});
+    this.password=pass;
   }
     
   public String getPasswordCleartext()
-  { return null;
+  { return password;
   }
+  
+  public void setOpaqueDigest(byte[] digest)
+  {
+    sessionChannel.get().addCredentials
+      (new Credential[] {new DigestCredential(digest)});
+    this.digest=digest;
+  }
+  
+  public byte[] getOpaqueDigest()
+  { return digest;
+  }
+  
+  
 }

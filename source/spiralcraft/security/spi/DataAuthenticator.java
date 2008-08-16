@@ -16,11 +16,13 @@ package spiralcraft.security.spi;
 
 import spiralcraft.security.auth.Authenticator;
 import spiralcraft.security.auth.AuthSession;
+import spiralcraft.security.auth.DigestCredential;
 import spiralcraft.security.auth.UsernameCredential;
 import spiralcraft.security.auth.PasswordCleartextCredential;
 
 import spiralcraft.data.access.SerialCursor;
 
+import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Selection;
@@ -30,23 +32,31 @@ import spiralcraft.data.query.BoundQuery;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Space;
+import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.ParseException;
+import spiralcraft.lang.TeleFocus;
+import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.log.ClassLogger;
 
 import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 
 /**
- * <P>Authenticates with a spiralcraft.data.query.Queryable for the backing store
- *   which holds login info.
+ * <p>Authenticates with a spiralcraft.data.query.Queryable for the 
+ *   backing store which holds login info.
+ * </p>
  *   
- * <P>The default behavior uses a login/cleartext-password scheme backed by
+ * <p>The default behavior uses a login/cleartext-password scheme backed by
  *   the class:/spiralcraft/security/Login data Type. Alternate behaviors and
  *   credential sets can be defined at the configuration level.
+ * </p>
  *   
  * @author mike
  *
@@ -55,25 +65,34 @@ public class DataAuthenticator
   extends Authenticator
 {
   
-  private Queryable<?> source;
+  private static final ClassLogger log
+    =ClassLogger.getInstance(DataAuthenticator.class);
+  
+  private Queryable<?> providedSource;
   private Focus<Space> spaceFocus;
   
   // XXX Make these both configurable
   private Type<?> loginDataType;
+
   private Query loginQuery;
   private BoundQuery<?,?> boundQuery;
+  private Channel<String> usernameChannel;
+  private boolean debug;
+  private TeleFocus<Tuple> comparisonFocus;
+  private ThreadLocalChannel<Tuple> loginChannel;
+  private Expression<Boolean> credentialComparison;
+  private Channel<Boolean> comparisonChannel;
   
   @SuppressWarnings("unchecked")
   public DataAuthenticator()
     throws DataException
   {
-    
-    try
-    {
-      setRequiredCredentials
+
+      setAcceptedCredentials
         (new Class[] 
           {UsernameCredential.class
           ,PasswordCleartextCredential.class
+          ,DigestCredential.class
           }
         );
       
@@ -81,24 +100,28 @@ public class DataAuthenticator
       loginDataType
         =Type.resolve(URI.create("class:/spiralcraft/security/Login"));
 
-      // XXX Make this an Equijoin to search type values in parameter
-      //  context
       loginQuery=new Selection
         (new Scan(loginDataType)
-        ,Expression.<Boolean>parse
-          (".searchname==UsernameCredential.toLowerCase() "
-          +" && .clearpass==PasswordCleartextCredential"
-          )
+        ,Expression.<Boolean>create
+          (".searchname==UsernameCredential.toLowerCase() ")
         );
       
-    }
-    catch (ParseException x)
-    { 
-      throw new RuntimeException
-        ("DataAuthenticator: Error parsing built-in",x);
-    }
-    
+      credentialComparison
+        =Expression.create
+          ("(PasswordCleartextCredential!=null "
+          +"&& .clearpass==PasswordCleartextCredential)"
+          +"|| (DigestCredential!=null " 
+          +"    && DigestCredential" 
+          +"	  .equals([:class:/spiralcraft/security/auth/AuthSession] " 
+          +"     opaqueDigest(.username+.clearpass)"
+          +"     )"
+          +"   )"
+          );
   
+  }
+
+  public void setDebug(boolean debug)
+  { this.debug=debug;
   }
   
   public void setRealmName(String realmName)
@@ -109,7 +132,7 @@ public class DataAuthenticator
    * @param source The Queryable which provides access to the login database
    */
   public void setSource(Queryable<?> source)
-  { this.source=source;
+  { this.providedSource=source;
   }
   
   @Override
@@ -122,9 +145,16 @@ public class DataAuthenticator
   public void bind(Focus<?> context)
     throws BindException
   { 
+    // superclass provides a credentialFocus member field which 
+    //   provides values for the various accepted credentials,
+    //   named according to the credential class simple name.
     super.bind(context);
-    if (source==null && context!=null)
+
+
+    // Resolve the source for the master credentials list
+    if (providedSource==null && context!=null)
     { 
+      // Look up the local Space to use as a source if no source was provided
       spaceFocus
         =(Focus<Space>) context.findFocus(Space.SPACE_URI);
       if (spaceFocus==null)
@@ -134,7 +164,7 @@ public class DataAuthenticator
       }
     }
 
-    Queryable source=DataAuthenticator.this.source;
+    Queryable source=providedSource;
         
     if (source==null || spaceFocus!=null)
     { source=spaceFocus.getSubject().get();
@@ -144,13 +174,29 @@ public class DataAuthenticator
       throw new BindException
         ("No data source for DataAuthenticator");
     }
+    
+    
+    // Bind the user lookup query to the credential Focus, which serves as
+    //   the parameter Focus.
     try
     { boundQuery=source.query(loginQuery,credentialFocus);
     }
     catch (DataException x)
     { throw new BindException("Error binding Authenticator query "+loginQuery,x);
     }
-
+    
+    usernameChannel
+      =credentialFocus.bind(Expression.<String>create("UsernameCredential"));
+    
+    // Set up a comparison to check password/etc
+    loginChannel
+      =new ThreadLocalChannel<Tuple>
+        (DataReflector.<Tuple>getInstance(loginDataType));
+    
+    comparisonFocus=new TeleFocus<Tuple>(credentialFocus,loginChannel);
+    
+    comparisonChannel=comparisonFocus.bind(credentialComparison);
+    
   }
   
 
@@ -164,7 +210,7 @@ public class DataAuthenticator
     }
         
     @Override
-    public boolean isAuthenticated()
+    public boolean authenticate()
     {
       if (boundQuery==null)
       { 
@@ -184,49 +230,82 @@ public class DataAuthenticator
       try
       {
         SerialCursor<?> cursor=boundQuery.execute();
+        Tuple loginEntry=null;
+        
         if (cursor.dataNext())
         { 
-          // We have a row where all the credentials in the database
-          //   match the supplied data
-          
-          // XXX Do something in a standard fashion to provide access to the
-          //   Principal resolved by this operation
-          
-          // cursor.discard()
-//          System.out.println
-//            ("DataAuthenticator:login: "+cursor.dataGetTuple());
-          
-          final String name=(String) loginDataType.getField("username")
-                .getValue(cursor.dataGetTuple());
-          
-          if (principal==null
-              || !principal.getName().equals(name)
-             )
-          {
-            principal
-              =new Principal()
-            {
+          loginEntry=cursor.dataGetTuple();
+        
+          if (cursor.dataNext())
+          { 
+            throw new SecurityException
+              ("Cardinality Violation: Multiple Login records for user "
+                +loginEntry.get("searchname")
+              );
+          }
 
-              @Override
-              public String getName()
-              { return name;
-              }
+          // We have valid username in loginEntry
+          //   run the password comparison expression
+
+          boolean valid;
+          loginChannel.push(loginEntry);
+          try
+          { 
+            Boolean result=comparisonChannel.get();
+            valid=(result!=null && result);
+          }
+          finally
+          { loginChannel.pop();
+          }
+          
+          
+          if (valid)
+          {
+          
+            // cursor.discard()
+            if (debug)
+            { log.fine("valid login: "+cursor.dataGetTuple());
+            }
+          
+            final String name=usernameChannel.get();
+          
+            if (principal==null
+                || !principal.getName().equals(name)
+               )
+            {
+              principal
+                =new Principal()
+              {
+
+                @Override
+                public String getName()
+                { return name;
+                }
             
-              @Override
-              public String toString()
-              { return super.toString()+":"+name;
-              }
-            };
+                @Override
+                public String toString()
+                { return super.toString()+":"+name;
+                }
+              };
+            }
+            authenticated=true;
+            return true;
           }
-          if (sticky)
-          { authenticated=true;
+          else
+          {
+            if (debug)
+            { log.fine("failed login: no token match for "+usernameChannel.get());
+            }
+            authenticated=false;
+            return false;
           }
-          return true;
         }
         else
         { 
-//          System.out.println
-//            ("DataAuthenticator:login: no match");
+          if (debug)
+          { log.fine("failed login: no username match for "+usernameChannel.get());
+          }
+          authenticated=false;
           return false;
         }
 
@@ -238,6 +317,19 @@ public class DataAuthenticator
       }
       finally
       { sessionChannel.pop();
+      }
+    }
+
+    @Override
+    public byte[] opaqueDigest(String input)
+    {
+      try
+      { 
+        return MessageDigest.getInstance("SHA-256").digest
+          ((getRealmName()+input).getBytes());
+      }
+      catch (NoSuchAlgorithmException x)
+      { throw new RuntimeException("SHA256 not supported",x);
       }
     }
   }
