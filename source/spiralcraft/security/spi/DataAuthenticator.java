@@ -77,11 +77,12 @@ public class DataAuthenticator
   private Query loginQuery;
   private BoundQuery<?,?> boundQuery;
   private Channel<String> usernameChannel;
-  private boolean debug;
+
   private TeleFocus<Tuple> comparisonFocus;
   private ThreadLocalChannel<Tuple> loginChannel;
   private Expression<Boolean> credentialComparison;
   private Channel<Boolean> comparisonChannel;
+  private boolean debug;
   
   @SuppressWarnings("unchecked")
   public DataAuthenticator()
@@ -119,13 +120,13 @@ public class DataAuthenticator
           );
   
   }
-
-  public void setDebug(boolean debug)
-  { this.debug=debug;
-  }
   
   public void setRealmName(String realmName)
   { this.realmName=realmName;
+  }
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
   }
   
   /**
@@ -137,7 +138,10 @@ public class DataAuthenticator
   
   @Override
   public AuthSession createSession()
-  { return new DataAuthSession();
+  { 
+    DataAuthSession session=new DataAuthSession();
+    session.setDebug(debug);
+    return session;
   }
   
   @Override
@@ -227,6 +231,10 @@ public class DataAuthenticator
       
       // Make sure the query is accessing this AuthSession
       sessionChannel.push(this);
+      if (debug)
+      { log.fine("Attempting authentication");
+      }
+      
       try
       {
         SerialCursor<?> cursor=boundQuery.execute();
@@ -235,6 +243,9 @@ public class DataAuthenticator
         if (cursor.dataNext())
         { 
           loginEntry=cursor.dataGetTuple();
+          if (debug)
+          { log.fine("Found user "+loginEntry.get("username"));
+          }
         
           if (cursor.dataNext())
           { 
@@ -253,6 +264,9 @@ public class DataAuthenticator
           { 
             Boolean result=comparisonChannel.get();
             valid=(result!=null && result);
+            if (debug)
+            { log.fine("Token comparison returned "+result);
+            }
           }
           finally
           { loginChannel.pop();
@@ -312,6 +326,11 @@ public class DataAuthenticator
       }
       catch (DataException x)
       { 
+        x.printStackTrace();
+        return false;
+      }
+      catch (RuntimeException x)
+      {
         x.printStackTrace();
         return false;
       }
