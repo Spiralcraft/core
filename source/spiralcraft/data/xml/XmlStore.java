@@ -332,8 +332,12 @@ public class XmlStore
     private ArrayList<Tuple> updateList=new ArrayList<Tuple>();
     private ArrayList<Tuple> deleteList=new ArrayList<Tuple>();
 
-    @SuppressWarnings("unchecked")
-    private BoundQuery originalQuery;
+    private BoundQuery<?,Tuple> originalQuery;
+    
+    private ArrayList<BoundQuery<?,Tuple>> uniqueQueries
+      =new ArrayList<BoundQuery<?,Tuple>>();
+    private ArrayList<Key> uniqueKeys
+      =new ArrayList<Key>();
     
     private DataWriter debugWriter=new DataWriter();
     
@@ -350,9 +354,21 @@ public class XmlStore
       throws DataException
     { 
       super.dataInitialize(fieldSet);
-      Key primaryKey=queryable.getResultType().getPrimaryKey();
+      Type<?> type=queryable.getResultType();
+      Key primaryKey=type.getPrimaryKey();
       if (primaryKey!=null)
       { originalQuery=queryable.query(primaryKey.getQuery(), localFocus);
+      }
+      
+      for (Key key: type.getScheme().keyIterable())
+      {
+        if (key.isUnique() || key.isPrimary())
+        { 
+          // Create queries for unique keys and associate the Key 
+          //   with the query via a parallel list for error reporting.
+          uniqueQueries.add(queryable.query(key.getQuery(),localFocus));
+          uniqueKeys.add(key);
+        }
       }
       
     }
@@ -365,6 +381,27 @@ public class XmlStore
       if (tuple.getOriginal()==null && !tuple.isDelete())
       { 
         // New case
+        
+        // Check unique keys
+        localChannel.push(tuple);
+        try
+        {
+          int i=0;
+          for (BoundQuery<?,Tuple> query: uniqueQueries)
+          {
+            SerialCursor<Tuple> cursor=query.execute();
+            if (cursor.dataNext())
+            { 
+              throw new DataException
+                ("Unique key violation "+uniqueKeys.get(i));
+            }
+            i++;
+            
+          }
+        }
+        finally
+        { localChannel.pop();
+        }
         
         // Copy
         EditableArrayTuple newTuple;
@@ -398,6 +435,36 @@ public class XmlStore
       }
       else if (!tuple.isDelete())
       { 
+        // Check unique keys
+        localChannel.push(tuple);
+        try
+        {
+          int i=0;
+          for (BoundQuery<?,Tuple> query: uniqueQueries)
+          {
+            SerialCursor<Tuple> cursor=query.execute();
+            if (cursor.dataNext())
+            { 
+              if (!cursor.dataGetTuple().equals(tuple.getOriginal()))
+              {
+                if (debug)
+                { 
+                  log.fine("\r\n  existing="+cursor.dataGetTuple()
+                    +"\r\n  new="+tuple.getOriginal()
+                    +"\r\n updated="+tuple
+                    );
+                }
+                throw new DataException
+                  ("Unique key violation "+uniqueKeys.get(i));
+              }
+            }
+            i++;
+            
+          }
+        }
+        finally
+        { localChannel.pop();
+        }
         // Update case
         updateList.add(tuple);
       }
@@ -409,7 +476,6 @@ public class XmlStore
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public void dataFinalize()
       throws DataException
     { 
@@ -440,42 +506,50 @@ public class XmlStore
               EditableTuple original=(EditableTuple) dt.getOriginal();
               if (originalQuery!=null)
               {
-                // Find a more certain original
-                SerialCursor<Tuple> cursor=originalQuery.execute();
-                if (!cursor.dataNext())
+                localChannel.push(dt);
+                try
                 {
-                  // Old one has been deleted
-                  log.warning("Adding back lost original on update"+t); 
-                  queryable.add(t);
-                }
-                else
-                { 
-                  EditableTuple newOriginal=(EditableTuple) cursor.dataGetTuple();
-                  if (newOriginal!=original)
-                  { 
-                    if (debug)
-                    { log.fine("Updating original to new version "+newOriginal);
-                    }
-                    if (t instanceof BufferTuple)
-                    { ((BufferTuple) t).updateOriginal(newOriginal);
-                    }
-                    original=newOriginal;
-
+                
+                  // Find a more certain original
+                  SerialCursor<Tuple> cursor=originalQuery.execute();
+                  if (!cursor.dataNext())
+                  {
+                    // Old one has been deleted
+                    log.warning("Adding back lost original on update"+t); 
+                    queryable.add(t);
                   }
                   else
                   { 
-                    if (debug)
-                    { log.fine("Read back same data"+original);
+                    EditableTuple newOriginal=(EditableTuple) cursor.dataGetTuple();
+                    if (newOriginal!=original)
+                    { 
+                      if (debug)
+                      { log.fine("Updating original to new version "+newOriginal);
+                      }
+                      if (t instanceof BufferTuple)
+                      { ((BufferTuple) t).updateOriginal(newOriginal);
+                      }
+                      original=newOriginal;
+
+                    }
+                    else
+                    { 
+                      if (debug)
+                      { log.fine("Read back same data"+original);
+                      }
                     }
                   }
-                }
 
-                if (cursor.dataNext())
-                {
-                  log.warning
-                  ("Cardinality violation: duplicate "
-                    +cursor.dataGetTuple()
-                  );
+                  if (cursor.dataNext())
+                  {
+                    log.warning
+                    ("Cardinality violation: duplicate "
+                      +cursor.dataGetTuple()
+                    );
+                  }
+                }
+                finally
+                { localChannel.pop();
                 }
               }
               else
