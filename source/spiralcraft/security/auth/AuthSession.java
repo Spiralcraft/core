@@ -18,9 +18,12 @@ import java.net.URI;
 import java.security.Principal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
+
+import spiralcraft.log.ClassLogger;
 
 /**
  * <p>Represents the state of the authentication process from a client's
@@ -35,6 +38,9 @@ import java.util.Iterator;
  */
 public abstract class AuthSession
 {
+  private static final ClassLogger log
+    =ClassLogger.getInstance(AuthSession.class);
+  
   public static final URI FOCUS_URI
     =URI.create("class:/spiralcraft/security/auth/AuthSession");
 
@@ -45,7 +51,8 @@ public abstract class AuthSession
     =new HashMap<String,Credential<?>>();
   
   protected Principal principal;
-  protected boolean authenticated;
+  protected boolean debug;
+  protected volatile boolean authenticated;
   
   /**
    * @return The Principal currently authenticated in this session.
@@ -59,6 +66,10 @@ public abstract class AuthSession
   
   public final boolean isAuthenticated()
   { return authenticated;
+  }
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
   }
   
   @SuppressWarnings("unchecked") // Required downcast
@@ -85,6 +96,15 @@ public abstract class AuthSession
     
   public void addCredentials(Credential<?>[] credentials)
   { 
+    if (debug)
+    { 
+      log.fine("Adding credentials "+Arrays.deepToString(credentials));
+      if (authenticated)
+      { 
+        log.fine("De-authenticating "+principal.toString());
+        new Exception().printStackTrace();
+      }
+    }
     principal=null;
     authenticated=false;
     for (Credential<?> cred: credentials)
