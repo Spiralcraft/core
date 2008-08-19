@@ -21,7 +21,13 @@ import spiralcraft.security.auth.PasswordCleartextCredential;
 import spiralcraft.security.auth.UsernameCredential;
 
 /**
- * Convenience class for supplying login credentials from a user interface
+ * <p>Convenience class for supplying login credentials from a user interface
+ * </p>
+ *
+ * <p>This class provides a fascade to the credential system. Calling
+ *   the bean set methods effectively adds credentials to the authentication
+ *   session
+ * </p>
  * 
  * @author mike
  *
@@ -33,6 +39,7 @@ public class LoginEntry
   private String name;
   private String password;
   private byte[] digest;
+  private boolean persistent;
    
   public LoginEntry(Channel<AuthSession> sessionChannel)
   { this.sessionChannel=sessionChannel;
@@ -69,6 +76,14 @@ public class LoginEntry
   
   public byte[] getOpaqueDigest()
   { return digest;
+  }
+  
+  public boolean isPersistent()
+  { return persistent;
+  }
+  
+  public void setPersistent(boolean persistent)
+  { this.persistent=persistent;
   }
   
   
