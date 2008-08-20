@@ -48,8 +48,8 @@ import java.net.URISyntaxException;
  *
  * 1. new Assembly(AssemblyClass class)
  *    Internal Java class is resolved 
- * 2. bind(parent) is called 
- *    Links this Assembly to its parent
+ * 2. bind(parentFocus) is called 
+ *    Links this Assembly to its parent focus
  *    Binds all of the parent's properties into an array of _propertyBindings
  *    Property source expressions are compiled
  *    Nested Assemblies are instantiated and bound
