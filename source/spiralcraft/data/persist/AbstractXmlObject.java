@@ -34,6 +34,8 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.registry.Registrant;
@@ -47,15 +49,41 @@ import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
 /**
- * A persistent object represented in an XML based portable data format.
+ * <p>A persistent object represented in an XML based portable data format.
+ * </p>
  *
- * Persistent objects can have their state saved and restored at runtime.
+ * <p>Persistent objects can have their state saved and restored at runtime.
+ * </p>
  *
- * An instance of a persistent object is tied to its non-volatile representation
- *   in a storage medium.
+ * <p>This class provides a useful mechanism to load beans from XML definition
+ *   files and optionally save their state back to the file.
+ * </p>
+ * 
+ * <p>If the Treferent class is assignable from 
+ *    spiralcraft.lang.FocusChainObject, it will be inserted into the
+ *    Focus Chain
+ * </p>
+ * 
+ * <p>If the Treferent class is assignable from spiralcraft.builder.LifeCycle,
+ *   this interface will be delegated to the referent object
+ * </p>
+ * 
+ * <p>If the Treferent implements spiralcraft.registry.Registrant, it
+ *   will be registered
+ * </p>
+ * 
+ * <p>An instance of a persistent object is tied to its non-volatile 
+ *   representation in a storage medium.
+ * </p>
+ * 
+ *
  */
 public abstract class AbstractXmlObject<Treferent,Tcontainer>
-  implements Registrant,PersistentReference<Treferent>,Lifecycle
+  implements 
+    Registrant
+    ,PersistentReference<Treferent>
+    ,Lifecycle
+    ,FocusChainObject
 {
 
   
@@ -133,6 +161,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   protected Tcontainer instance;
   protected RegistryNode registryNode;
   protected Channel<Treferent> channel;
+  protected Focus<Treferent> focus;
   
   /**
    * Construct an XmlObject from the given Type resource and instance
@@ -302,8 +331,12 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   }
   
 
+  public Focus<Treferent> getFocus()
+  { return focus;
+  }
   
-  public Channel<Treferent> bind(Focus<?> parentFocus)
+  @SuppressWarnings("unchecked") // Cast generic FocusChainObject Focus
+  public void bind(Focus<?> parentFocus)
     throws BindException
   { 
     if (channel==null)
@@ -333,7 +366,17 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
         }
       };
     }
-    return channel;
+    SimpleFocus<Treferent> intermediateFocus
+      =new SimpleFocus<Treferent>(parentFocus,channel);
+    
+    if (instance instanceof FocusChainObject)
+    {
+      ((FocusChainObject) instance).bind(intermediateFocus);
+      this.focus=(Focus<Treferent>) ((FocusChainObject) instance).getFocus();
+    }
+    else
+    { this.focus=intermediateFocus;
+    }
   }
     
 }

@@ -19,13 +19,14 @@ package spiralcraft.data.persist;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.FocusProvider;
-import spiralcraft.lang.SimpleFocus;
+
 
 /**
- * Wraps a PersistentReference to make it available in the hierarchical Focus
+ * <p>Wraps a PersistentReference to make it available in the hierarchical Focus
  *   context of the application. If the referent object is a FocusProvider
  *   itself, the referent will provide the Focus that extends the Focus
  *   hierarchy. 
+ * </>
  * 
  * @author mike
  *
@@ -58,12 +59,8 @@ public class PersistentFocusProvider<Treferent,Tfocus>
     }
     else
     { 
-      SimpleFocus<Treferent> simpleParent
-        =new SimpleFocus<Treferent>
-        (parent
-        ,ref.bind(parent)
-        );
-      return (Focus<Tfocus>) simpleParent;
+      ref.bind(parent);
+      return (Focus<Tfocus>) ref.getFocus();
     }
   }
 }

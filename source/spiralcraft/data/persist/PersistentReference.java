@@ -16,21 +16,21 @@ package spiralcraft.data.persist;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.Channel;
+import spiralcraft.lang.FocusChainObject;
 import spiralcraft.registry.Registrant;
 
 import java.net.URI;
 
 /**
- * A reference to a persistent object- one with a lifetime
- *   longer than than that its in-vm references. Using the Registry, internal
+ * <p>A reference to a persistent object- one with a lifetime
+ *   longer than than that of its in-vm references. Using the Registry, internal
  *   functionality can obtain a reference to this interface to request
  *   a 'save' or 'save as'.
  *
  *XXX This interface is incomplete
  */
 public interface PersistentReference<T>
-  extends Registrant
+  extends Registrant,FocusChainObject
 {
   /**
    * Save the state of this reference to the backing store
@@ -53,11 +53,14 @@ public interface PersistentReference<T>
   public void set(T object);
   
   /**
-   * Bind this reference into the local hierarchical context
+   * <p>Bind this reference into the Focus Chain
+   * </p>
    * 
    * @param parent
    * @return
    */
-  public Channel<T> bind(Focus<?> parent)
+  public void bind(Focus<?> parent)
     throws BindException;
+  
+  public Focus<T> getFocus();
 }
