@@ -34,12 +34,12 @@ public class DataKeyFunction<T>
   private final ThreadLocalChannel<T> valueChannel;
   private final Channel<? extends Tuple> projectionChannel;
   
-  public DataKeyFunction(Reflector<T> valueReflector,Projection projection)
+  public DataKeyFunction(Reflector<T> valueReflector,Projection<T> projection)
     throws BindException
   { 
     valueChannel=new ThreadLocalChannel<T>(valueReflector);
     Focus<T> focus=new SimpleFocus<T>(valueChannel);
-    projectionChannel=projection.bind(focus);
+    projectionChannel=projection.bindChannel(focus);
   }
   
   @Override

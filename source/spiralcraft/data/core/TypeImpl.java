@@ -18,6 +18,7 @@ package spiralcraft.data.core;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Method;
+import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
@@ -298,7 +299,7 @@ public class TypeImpl<T>
   { return new UnifiedFieldSet(this);
   }
   
-  public void setKeys(KeyImpl[] keyArray)
+  public void setKeys(KeyImpl<Tuple>[] keyArray)
   { 
     if (scheme==null)
     { scheme=new SchemeImpl();

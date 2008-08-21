@@ -53,7 +53,7 @@ public interface Aggregate<T>
    * @return The Index associated with the specified Projection, optionally
    *   creating it.
    */
-  public Index<T> getIndex(Projection projection,boolean create)
+  public Index<T> getIndex(Projection<T> projection,boolean create)
     throws DataException;
   
   /**

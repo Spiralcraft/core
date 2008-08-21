@@ -21,6 +21,7 @@ import java.util.List;
 
 import spiralcraft.data.Key;
 import spiralcraft.data.Projection;
+import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Field;
@@ -35,7 +36,7 @@ public class SchemeImpl
   implements Scheme
 {
   protected Type<?> type;
-  protected Key primaryKey;
+  protected Key<Tuple> primaryKey;
   private boolean resolved;
   private Scheme archetypeScheme;
 
@@ -49,14 +50,14 @@ public class SchemeImpl
   protected final HashMap<String,Field<?>> fieldMap
     =new HashMap<String,Field<?>>();
 
-  protected final ArrayList<KeyImpl> keys
-    =new ArrayList<KeyImpl>();
+  protected final ArrayList<KeyImpl<Tuple>> keys
+    =new ArrayList<KeyImpl<Tuple>>();
 //  protected final HashMap<String,KeyImpl> keyMap
 //    =new HashMap<String,KeyImpl>();
   
   
-  protected final HashMap<Expression<?>[],ProjectionImpl> projectionMap
-    =new HashMap<Expression<?>[],ProjectionImpl>();
+  protected final HashMap<Expression<?>[],ProjectionImpl<Tuple>> projectionMap
+    =new HashMap<Expression<?>[],ProjectionImpl<Tuple>>();
     
   public Type<?> getType()
   { return type;
@@ -284,7 +285,7 @@ public class SchemeImpl
     }
     
     int keyIndex=0;
-    for (KeyImpl key:keys)
+    for (KeyImpl<Tuple> key:keys)
     {
       key.setScheme(this);
       key.setIndex(keyIndex++);
@@ -346,7 +347,7 @@ public class SchemeImpl
     }
   }
 
-  public Key getKeyByIndex(int index)
+  public Key<Tuple> getKeyByIndex(int index)
   { return keys.get(index);
   }
 
@@ -354,7 +355,7 @@ public class SchemeImpl
   { return keys.size();
   }
 
-  public Key getPrimaryKey()
+  public Key<Tuple> getPrimaryKey()
   { 
     if (primaryKey==null 
         && type!=null
@@ -365,29 +366,29 @@ public class SchemeImpl
     return primaryKey;
   }
 
-  public void setKeys(KeyImpl[] keyArray)
+  public void setKeys(KeyImpl<Tuple>[] keyArray)
   { 
-    for (KeyImpl key: keyArray)
+    for (KeyImpl<Tuple> key: keyArray)
     { keys.add(key);
     }
   }
   
-  public Iterable<? extends Key> keyIterable()
+  public Iterable<? extends Key<Tuple>> keyIterable()
   { return keys;
   }
 
-  private ProjectionImpl createProjection(Expression<?>[] signature)
+  private ProjectionImpl<Tuple> createProjection(Expression<?>[] signature)
     throws DataException
   {
     synchronized (projectionMap)
     {
     
-      ProjectionImpl projection=projectionMap.get(signature);
+      ProjectionImpl<Tuple> projection=projectionMap.get(signature);
       if (projection!=null)
       { return projection;
       }
 
-      for (KeyImpl key : keys)
+      for (KeyImpl<Tuple> key : keys)
       { 
         if (Arrays.deepEquals(key.getTargetExpressions(),signature))
         { 
@@ -396,7 +397,7 @@ public class SchemeImpl
         }
       }
       
-      projection=new ProjectionImpl(this,signature);
+      projection=new ProjectionImpl<Tuple>(this,signature);
       projectionMap.put(signature,projection);
       return projection;
       
@@ -405,10 +406,10 @@ public class SchemeImpl
   }
   
   @Override
-  public Projection getProjection(Expression<?>[] signature)
+  public Projection<Tuple> getProjection(Expression<?>[] signature)
     throws DataException
   {
-    Projection projection=projectionMap.get(signature);
+    Projection<Tuple> projection=projectionMap.get(signature);
     if (projection!=null)
     { return projection;
     }

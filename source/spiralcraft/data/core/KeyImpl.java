@@ -35,9 +35,9 @@ import spiralcraft.lang.Reflector;
 
 import spiralcraft.util.StringUtil;
 
-public class KeyImpl
-  extends ProjectionImpl
-  implements Key
+public class KeyImpl<T>
+  extends ProjectionImpl<T>
+  implements Key<T>
 {
   private Scheme scheme;
   private String name;
@@ -45,7 +45,7 @@ public class KeyImpl
   private boolean primary;
   private boolean unique;
   private Type<?> foreignType;
-  private KeyImpl importedKey;
+  private KeyImpl<?> importedKey;
   private String[] fieldNames;
   private Query query;
   private Query foreignQuery;
@@ -138,12 +138,12 @@ public class KeyImpl
    * @return A Key from the foreign Type that originates the data values
    *   for this Key's Fields. 
    */
-  public Key getImportedKey()
+  public Key<?> getImportedKey()
   { return importedKey;
   }
   
-  public void setImportedKey(Key key)
-  { this.importedKey=(KeyImpl) key;
+  public void setImportedKey(Key<?> key)
+  { this.importedKey=(KeyImpl<?>) key;
   }
 
   public Query getQuery()

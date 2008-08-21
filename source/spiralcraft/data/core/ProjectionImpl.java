@@ -44,8 +44,8 @@ import spiralcraft.lang.spi.AbstractChannel;
  * @author mike
  *
  */
-public class ProjectionImpl
-  implements Projection
+public class ProjectionImpl<T>
+  implements Projection<T>
 {
   protected final ArrayList<ProjectionFieldImpl<?>> fields
   =new ArrayList<ProjectionFieldImpl<?>>();
@@ -224,8 +224,8 @@ public class ProjectionImpl
     return ret;
   }
   
-  
-  public Channel<Tuple> bind(Focus<?> focus)
+  @Override
+  public Channel<Tuple> bindChannel(Focus<T> focus)
     throws BindException
   { return new ProjectionChannel(focus);
   }

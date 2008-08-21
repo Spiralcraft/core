@@ -350,7 +350,8 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   { buffers.remove(val);
   }
   
-  public Index<T> getIndex(Projection projection,boolean create)
+  @Override
+  public Index<T> getIndex(Projection<T> projection,boolean create)
   {
     return null;
   }

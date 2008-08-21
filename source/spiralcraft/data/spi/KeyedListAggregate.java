@@ -39,7 +39,7 @@ public class KeyedListAggregate<T>
   protected final KeyedList<T> list;
   
   private ArrayList<Index<T>> indices;
-  private Map<Projection,Index<T>> indexMap;
+  private Map<Projection<T>,Index<T>> indexMap;
   
   /**
    * <p>Create a new ListAggregate backed by the specified List
@@ -148,10 +148,11 @@ public class KeyedListAggregate<T>
   private synchronized void createIndexMap()
   {
     if (indexMap==null)
-    { indexMap=new HashMap<Projection,Index<T>>();
+    { indexMap=new HashMap<Projection<T>,Index<T>>();
     }
   }
   
+  @SuppressWarnings("unchecked") // XXX Key<Tuple> -> Key<T>
   private synchronized Index<T> createKeyIndex(int keyIndex)
     throws DataException
   {
@@ -161,14 +162,14 @@ public class KeyedListAggregate<T>
     if (indices.get(keyIndex)!=null)
     { return indices.get(keyIndex);
     }
-    Key key=getType().getContentType().getScheme().getKeyByIndex(keyIndex);
+    Key<T> key=(Key<T>) getType().getContentType().getScheme().getKeyByIndex(keyIndex);
     HashMap<KeyTuple,List<T>> map=new HashMap<KeyTuple,List<T>>();
     Index<T> index=new ListIndex(map,key);
     indices.set(keyIndex,index);
     return index;
   }
   
-  private synchronized Index<T> createIndex(Projection projection)
+  private synchronized Index<T> createIndex(Projection<T> projection)
     throws DataException
   {
     Index<T> index=indexMap.get(projection);
@@ -183,7 +184,7 @@ public class KeyedListAggregate<T>
   }
 
   @Override
-  public Index<T> getIndex(Projection projection,boolean create)
+  public Index<T> getIndex(Projection<T> projection,boolean create)
     throws DataException
   {
     if (list==null)
@@ -204,7 +205,7 @@ public class KeyedListAggregate<T>
       { return null;
       }
       
-      Key key=(Key) projection;
+      Key<?> key=(Key<?>) projection;
       if (indices.size()>key.getIndex())
       { index=indices.get(key.getIndex());
       }
@@ -242,7 +243,7 @@ public class KeyedListAggregate<T>
     
     private final KeyedList<T>.Index<KeyTuple,T> backingIndex;
     
-    public ListIndex(Map<KeyTuple,List<T>> mapImpl,Projection projection)
+    public ListIndex(Map<KeyTuple,List<T>> mapImpl,Projection<T> projection)
       throws DataException
     { 
       try

@@ -45,14 +45,14 @@ public class KeyField<T extends DataComposite>
   protected static final ClassLogger log
     =ClassLogger.getInstance(KeyField.class);
   
-  private KeyImpl key;
+  private KeyImpl<Tuple> key;
   
-  public KeyField(KeyImpl key)
+  public KeyField(KeyImpl<Tuple> key)
   { 
     this.key=key;
   }
   
-  public KeyImpl getKey()
+  public KeyImpl<?> getKey()
   { return key;
   }
   
@@ -86,7 +86,7 @@ public class KeyField<T extends DataComposite>
     throws BindException
   { 
     
-    Focus keyFocus=new SimpleFocus(focus,key.bind(focus));
+    Focus keyFocus=new SimpleFocus(focus,key.bindChannel(focus));
 
     Query query=key.getForeignQuery();
     if (debug)

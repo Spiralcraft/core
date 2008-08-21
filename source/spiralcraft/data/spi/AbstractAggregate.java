@@ -144,7 +144,7 @@ public abstract class AbstractAggregate<T>
     throws DataException;
   
   
-  public Index<T> getIndex(Projection projection,boolean create)
+  public Index<T> getIndex(Projection<T> projection,boolean create)
     throws DataException
   { return null;
   }

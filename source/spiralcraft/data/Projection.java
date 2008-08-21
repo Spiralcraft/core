@@ -15,6 +15,7 @@
 package spiralcraft.data;
 
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
@@ -32,8 +33,8 @@ import spiralcraft.lang.BindException;
  *  
  * @author mike
  */
-public interface Projection
-  extends FieldSet
+public interface Projection<T>
+  extends FieldSet,ChannelFactory<Tuple,T>
 {
   
   /**
@@ -46,7 +47,8 @@ public interface Projection
    *   if the value is to be used beyond the immediate context.
    * </p>
    */
-  public Channel<Tuple> bind(Focus<?> focus)
+  @Override
+  public Channel<Tuple> bindChannel(Focus<T> focus)
     throws BindException;
 
   /**

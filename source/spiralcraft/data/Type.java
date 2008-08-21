@@ -153,14 +153,15 @@ public abstract class Type<T>
    */
   public abstract Type<?> getArchetype();
   
-  public Key getPrimaryKey()
+  @SuppressWarnings("unchecked") // Scheme is not genericized
+  public Key<T> getPrimaryKey()
   { 
-    Key key=null;
+    Key<T> key=null;
     if (getScheme()!=null)
-    { key=getScheme().getPrimaryKey();
+    { key=(Key<T>) getScheme().getPrimaryKey();
     }
     if (key==null && getBaseType()!=null)
-    { key=getBaseType().getPrimaryKey();
+    { key=(Key<T>) getBaseType().getPrimaryKey();
     }
     return key;
     

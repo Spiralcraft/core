@@ -58,12 +58,12 @@ public interface Scheme
   /**
    *@return The primary key for this Scheme. 
    */
-  Key getPrimaryKey();
+  Key<Tuple> getPrimaryKey();
   
   /**
    * @return The Key at the specified index
    */
-  Key getKeyByIndex(int index);
+  Key<Tuple> getKeyByIndex(int index);
   
   /**
    * <p>The Projection signature is the set of Field expressions which define
@@ -73,14 +73,14 @@ public interface Scheme
    * @param signature
    * @return the Key signature
    */
-  Projection getProjection(Expression<?>[] signature)
+  Projection<Tuple> getProjection(Expression<?>[] signature)
     throws DataException;
   
   /**
    * @returnn Iterable which provides access to 
    *   keys in the order in which they were defined
    */
-  Iterable<? extends Key> keyIterable();
+  Iterable<? extends Key<Tuple>> keyIterable();
   
   /**
    * @return The number of keys that have been defined for this Scheme

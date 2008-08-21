@@ -18,7 +18,7 @@ public interface BoundProjection
   /**
    * @return the Projection materialized by this BoundProjection
    */
-  public Projection getProjection();
+  public Projection<Tuple> getProjection();
   
   /**
    * <P>Materialize the projection for a single Tuple by computing the value for

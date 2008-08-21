@@ -141,9 +141,10 @@ public abstract class FrameHandler
   { this.focus=focus;
   }
   
-  public Focus<?> getFocus()
+  @SuppressWarnings("unchecked") // Cast current Focus to requested generic
+  public <X> Focus<X> getFocus()
   { 
-    Focus<?> ret=focus;
+    Focus<X> ret=(Focus<X>) focus;
     if (ret==null && parent!=null)
     { ret=parent.getFocus();
     }

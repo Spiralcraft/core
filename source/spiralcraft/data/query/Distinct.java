@@ -43,7 +43,7 @@ public class Distinct
   private static final ClassLogger log
     =ClassLogger.getInstance(Selection.class);
   
-  private Projection projection;
+  private Projection<Tuple> projection;
   private String[] names;
   
   public Distinct()
@@ -52,7 +52,7 @@ public class Distinct
   
   public Distinct
       (Distinct baseQuery
-      ,Projection projection
+      ,Projection<Tuple> projection
       )
   { 
     super(baseQuery);
@@ -63,7 +63,7 @@ public class Distinct
    * Construct a Selection which reads data from the specified source Query and filters
    *   data according to the specified constraints expression.
    */
-  public Distinct(Query source,Projection projection)
+  public Distinct(Query source,Projection<Tuple> projection)
   { 
     this.projection=projection;
     addSource(source);
@@ -92,8 +92,8 @@ public class Distinct
     if (debug)
     { log.fine("Creating projection for "+ArrayUtil.format(names,",",""));
     }
-    ProjectionImpl projectionImpl
-      =new ProjectionImpl(sources.get(0).getFieldSet(),names);
+    ProjectionImpl<Tuple> projectionImpl
+      =new ProjectionImpl<Tuple>(sources.get(0).getFieldSet(),names);
     projectionImpl.resolve();
     projection=projectionImpl;
     this.type=projection.getType();
@@ -111,7 +111,7 @@ public class Distinct
   /**
    * Specify the Expression which constrains the result
    */
-  public void setProjection(Projection projection)
+  public void setProjection(Projection<Tuple> projection)
   { this.projection=projection;
   }
  
@@ -123,7 +123,7 @@ public class Distinct
   /**
    *@return the Expression which constrains the result
    */
-  public Projection getProjection()
+  public Projection<Tuple> getProjection()
   { return projection;
   }
   
@@ -183,7 +183,8 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
       try
       { 
         projectionChannel
-          =(Channel<T>) getQuery().getProjection().bind(focus);
+          =(Channel<T>) getQuery().getProjection()
+            .bindChannel( (Focus<Tuple>) focus);
         if (debug)
         { projectionChannel.setDebug(true);
         }

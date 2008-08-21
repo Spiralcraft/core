@@ -15,12 +15,13 @@
 package spiralcraft.lang;
 
 /**
- * <p>Implemented by objects that create Channels from some element in the
- *   Focus chain. 
+ * <p>Implemented by objects that create Channels from a specifically typed
+ *   Focus.
  * </p>
  * 
  * <p>A single ChannelFactory instance may create many Channel instances from
- *   different Focus objects.
+ *   different Focus instances. It does not maintain a reference to anything
+ *   retrieved from the Focus chain.
  * </p>
  * 
  * @author mike

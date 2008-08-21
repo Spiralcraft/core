@@ -336,8 +336,8 @@ public class XmlStore
     
     private ArrayList<BoundQuery<?,Tuple>> uniqueQueries
       =new ArrayList<BoundQuery<?,Tuple>>();
-    private ArrayList<Key> uniqueKeys
-      =new ArrayList<Key>();
+    private ArrayList<Key<?>> uniqueKeys
+      =new ArrayList<Key<?>>();
     
     private DataWriter debugWriter=new DataWriter();
     
@@ -355,12 +355,12 @@ public class XmlStore
     { 
       super.dataInitialize(fieldSet);
       Type<?> type=queryable.getResultType();
-      Key primaryKey=type.getPrimaryKey();
+      Key<?> primaryKey=type.getPrimaryKey();
       if (primaryKey!=null)
       { originalQuery=queryable.query(primaryKey.getQuery(), localFocus);
       }
       
-      for (Key key: type.getScheme().keyIterable())
+      for (Key<?> key: type.getScheme().keyIterable())
       {
         if (key.isUnique() || key.isPrimary())
         { 

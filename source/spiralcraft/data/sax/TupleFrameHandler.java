@@ -110,6 +110,7 @@ public class TupleFrameHandler
   { this.assignment=assignment;
   }
   
+  @SuppressWarnings("unchecked") // getPrimaryKey() -> Key<Tuple>
   @Override
   public void bind()
     throws BindException
@@ -134,9 +135,9 @@ public class TupleFrameHandler
     }
     setFocus(new SimpleFocus<Tuple>(parentFocus,channel));
     
-    Key key=type.getPrimaryKey();
+    Key<Tuple> key=(Key<Tuple>) type.getPrimaryKey();
     if (key!=null)
-    { primaryKeyChannel=key.bind(getFocus());
+    { primaryKeyChannel=key.bindChannel(this.<Tuple>getFocus());
     }
     else
     {
@@ -167,6 +168,7 @@ public class TupleFrameHandler
     channel.set(tuple);
   }
   
+  @SuppressWarnings("unchecked") // getPrimaryKey() -> Key<Tuple>
   @Override
   protected void closeData()
     throws DataException
@@ -217,8 +219,9 @@ public class TupleFrameHandler
         if (skipDuplicates)
         {
           
-          Aggregate.Index<Tuple> index=container.getIndex
-            (type.getPrimaryKey(), true);
+          Aggregate.Index<Tuple> index
+            =container.getIndex
+              ((Key<Tuple>) type.getPrimaryKey(), true);
           
           if (index==null)
           { 

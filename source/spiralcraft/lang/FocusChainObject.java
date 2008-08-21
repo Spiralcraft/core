@@ -16,7 +16,7 @@ package spiralcraft.lang;
 
 /**
  * <p>An object that binds to the Focus chain and optionally contributes its
- *   own Focus to the chain. 
+ *   own Focus to the end of the chain. 
  * </p>
  * 
  * <p>Each instance of this object may only be bound into the FocusChain once.

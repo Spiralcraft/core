@@ -20,8 +20,8 @@ import spiralcraft.data.query.Query;
  * A set of Fields within a Scheme which uniquely identify a single Tuple 
  *   or distinctly identify a group of Tuples within a given Space.
  */
-public interface Key
-  extends Projection
+public interface Key<T>
+  extends Projection<T>
 {
 
   /**
@@ -63,7 +63,7 @@ public interface Key
    * @return A Key from the foreign Type that originates the data values
    *   for this Key's Fields. 
    */
-  public Key getImportedKey();
+  public Key<?> getImportedKey();
   
   /**
    * @return The Query that will return the Tuple or Tuples when provided with

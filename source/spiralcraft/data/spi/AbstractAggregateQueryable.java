@@ -193,9 +193,10 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
   public class BoundIndexScan
     extends BoundQuery<EquiJoin,T>
   {
-    private final Projection projection;
+    private final Projection<T> projection;
     private final Channel<?>[] parameters;
     
+    @SuppressWarnings("unchecked") // Projection<Tuple> to Projection<T>
     public BoundIndexScan(EquiJoin ej,Focus<?> context)
       throws DataException
     { 
@@ -205,7 +206,7 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       ArrayList<Expression<?>> lhsExpressions=ej.getLHSExpressions();
 
       projection
-        =getResultType().getScheme().getProjection
+        =(Projection<T>) getResultType().getScheme().getProjection
           (lhsExpressions.toArray(new Expression[0]));
 
       ArrayList<Expression<?>> rhsExpressions=ej.getRHSExpressions();

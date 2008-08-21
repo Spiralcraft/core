@@ -29,6 +29,7 @@ import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Assignment;
+import spiralcraft.lang.FocusChainObject;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
@@ -47,6 +48,7 @@ import spiralcraft.text.html.URLDataEncoder;
  *
  */
 public class RestClient
+  implements FocusChainObject
 {
   private static final ClassLogger log
     =ClassLogger.getInstance(RestClient.class);
@@ -58,7 +60,7 @@ public class RestClient
   private Assignment<?>[] assignments;
   private Setter<?>[] setters;
   
-  private Focus<?> focus;
+  private Focus<Tuple> focus;
   private boolean debug;
   
   /**
@@ -126,6 +128,10 @@ public class RestClient
     bindAssignments();
   }
 
+  public Focus<Tuple> getFocus()
+  { return focus;
+  }
+  
   protected void bindAssignments()
     throws BindException
   { 

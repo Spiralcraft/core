@@ -135,7 +135,7 @@ public class ListAggregate<T>
   }
   
   @Override
-  public Index<T> getIndex(Projection projection,boolean create)
+  public Index<T> getIndex(Projection<T> projection,boolean create)
     throws DataException
   { return null;
   }
