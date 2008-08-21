@@ -27,17 +27,17 @@ import spiralcraft.lang.spi.Translator;
 public class FieldTranslator
   implements Translator<Object,Object>
 {
-  private final Field field;
+  private final Field<?> field;
   private final Reflector<Object> reflector;
   
-  public FieldTranslator(Field field)
+  public FieldTranslator(Field<?> field)
     throws BindException
   { 
     this.field=field;
     reflector=DataReflector.getInstance(field.getType());
   }
 
-  public Field getField()
+  public Field<?> getField()
   { return field;
   }
   

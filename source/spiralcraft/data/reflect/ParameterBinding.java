@@ -30,7 +30,7 @@ public class ParameterBinding
 
   protected final FieldSet fieldSet;
   protected final Class<?>[] signature;
-  protected final Field[] fields;
+  protected final Field<?>[] fields;
   
   public ParameterBinding(FieldSet fieldSet,String ... fieldNames)
     throws DataException
@@ -41,7 +41,7 @@ public class ParameterBinding
     int i=0;
     for (String fieldName: fieldNames)
     {
-      Field field=fieldSet.getFieldByName(fieldName);
+      Field<?> field=fieldSet.getFieldByName(fieldName);
       if (field==null)
       { throw new FieldNotFoundException(fieldSet,fieldName);
       }
@@ -52,7 +52,7 @@ public class ParameterBinding
     }
   }
   
-  public Field[] getFields()
+  public Field<?>[] getFields()
   { return fields;
   }
   
@@ -65,7 +65,7 @@ public class ParameterBinding
   {
     Object[] values=new Object[fields.length];
     int i=0;
-    for (Field field: fields)
+    for (Field<?> field: fields)
     { values[i++]=field.getValue(tuple);
     }
     return values;

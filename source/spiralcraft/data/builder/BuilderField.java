@@ -38,6 +38,7 @@ import spiralcraft.builder.Assembly;
 import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.BuildException;
 
+@SuppressWarnings("unchecked") // Not genericized yet
 public class BuilderField
   extends ReflectionField
 {
@@ -171,7 +172,6 @@ public class BuilderField
 
   
   @Override
-  @SuppressWarnings("unchecked")
   public void persistBeanProperty(Object object,EditableTuple tuple)
     throws DataException
   {
@@ -253,7 +253,7 @@ public class BuilderField
   
   @Override
   public boolean isFunctionalEquivalent(Field field)
-  {
+  { 
     if (!super.isFunctionalEquivalent(field))
     { return false;
     }

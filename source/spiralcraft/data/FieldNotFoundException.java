@@ -27,7 +27,7 @@ public class FieldNotFoundException
   {
     StringBuilder fieldList=new StringBuilder();
     boolean first=true;
-    for (Field field:fieldSet.fieldIterable())
+    for (Field<?> field:fieldSet.fieldIterable())
     {
       if (first)
       { first=false;
@@ -48,7 +48,7 @@ public class FieldNotFoundException
     {
       if (type.getScheme()!=null)
       {
-        for (Field field:type.getScheme().fieldIterable())
+        for (Field<?> field:type.getScheme().fieldIterable())
         {
           if (first)
           { first=false;

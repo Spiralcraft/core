@@ -28,21 +28,21 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 
-@SuppressWarnings("unchecked")
+
 /**
  * A Field which provides a value based on an Expression.
  * 
  * @author mike
  */
-public class CalculatedFieldImpl
-  extends FieldImpl
+public class CalculatedFieldImpl<T>
+  extends FieldImpl<T>
 {
 
   private ThreadLocalChannel<Tuple> threadLocalBinding;
-  private Channel expressionBinding;
-  private Expression<?> expression;
+  private Channel<T> expressionBinding;
+  private Expression<T> expression;
   
-  public void setExpression(Expression<?> expression)
+  public void setExpression(Expression<T> expression)
   { this.expression=expression;
   }
   
@@ -56,7 +56,7 @@ public class CalculatedFieldImpl
       threadLocalBinding
         =new ThreadLocalChannel<Tuple>(TupleReflector.getInstance(getFieldSet()));
       SimpleFocus<Tuple> focus=new SimpleFocus<Tuple>(threadLocalBinding);
-      expressionBinding=bind(focus);
+      expressionBinding=bindChannel(focus);
     }
     catch (BindException x)
     { throw new DataException("Error resolving Field "+getURI()+": "+x,x);
@@ -65,12 +65,12 @@ public class CalculatedFieldImpl
   }
   
   @Override
-  protected Object getValueImpl(Tuple t)
+  protected T getValueImpl(Tuple t)
   { 
     threadLocalBinding.push(t);
     try
     { 
-      Object ret=expressionBinding.get();
+      T ret=expressionBinding.get();
 //      System.err.println
 //        ("CalculatedFieldImpl: "+expression.toString()+": "+ret);
       return ret;
@@ -82,7 +82,7 @@ public class CalculatedFieldImpl
   }
   
   @Override
-  protected void setValueImpl(EditableTuple t,Object val)
+  protected void setValueImpl(EditableTuple t,T val)
   { 
     threadLocalBinding.push(t);
     try
@@ -95,10 +95,10 @@ public class CalculatedFieldImpl
   }
   
   @Override
-  public Channel bind
-    (Focus<? extends Tuple> focus)
+  public Channel<T> bindChannel
+    (Focus<Tuple> focus)
     throws BindException
-  { return focus.bind(expression);
+  { return focus.<T>bind(expression);
   }
   
 }

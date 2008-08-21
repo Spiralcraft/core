@@ -28,8 +28,8 @@ public class FieldSetType
   }
   
   @Override
-  public Field getField(String name)
-  { return fieldSet.getFieldByName(name);
+  public <X> Field<X> getField(String name)
+  { return fieldSet.<X>getFieldByName(name);
   }
   
   @Override

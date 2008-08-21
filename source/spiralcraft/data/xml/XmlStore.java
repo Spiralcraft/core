@@ -143,7 +143,7 @@ public class XmlStore
         if (sequences==null)
         { sequences=new HashMap<URI,XmlSequence>();
         }
-        for (Field field : subtype.getScheme().fieldIterable())
+        for (Field<?> field : subtype.getScheme().fieldIterable())
         { 
           if (field instanceof SequenceField)
           { 
@@ -621,7 +621,7 @@ public class XmlStore
         if (!result.dataNext())
         {
           EditableTuple row=new EditableArrayTuple(sequenceType.getScheme());
-          sequenceType.getField("uri").setValue(row,uri);
+          sequenceType.<URI>getField("uri").setValue(row,uri);
           sequenceType.getField("nextValue").setValue(row,200);
           sequenceType.getField("increment").setValue(row,100);
           next=100;

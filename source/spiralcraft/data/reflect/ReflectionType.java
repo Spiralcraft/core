@@ -95,7 +95,7 @@ public class ReflectionType<T>
   private final Class<?> reflectedClass;
   private Constructor<T> stringConstructor;
   private Constructor<T> tupleConstructor;
-  private Field classField;
+  private Field<Class<?>> classField;
   private boolean linked;
   
   private String[] preferredConstructorFieldNames;
@@ -328,7 +328,7 @@ public class ReflectionType<T>
     addMethods();
     
     super.link();
-    classField=scheme.getFieldByName("class");
+    classField=scheme.<Class<?>>getFieldByName("class");
     
     resolvePreferredConstructor();
     resolveDepersistMethod();
@@ -375,7 +375,7 @@ public class ReflectionType<T>
           ,getNativeClass()
           ,preferredConstructorFieldNames
           );
-      for (Field field: preferredConstructorBinding.getFields())
+      for (Field<?> field: preferredConstructorBinding.getFields())
       { 
         ReflectionField rfield=(ReflectionField) field;
         rfield.setForcePersist(true);
@@ -396,7 +396,7 @@ public class ReflectionType<T>
           ,depersistMethodName
           ,depersistMethodFieldNames
           );
-      for (Field field: depersistMethodBinding.getFields())
+      for (Field<?> field: depersistMethodBinding.getFields())
       { 
         ReflectionField rfield=(ReflectionField) field;
         rfield.setForcePersist(true);
@@ -493,7 +493,7 @@ public class ReflectionType<T>
         referencedClass=nativeClass;
       }
       else if (classField.getValue(tuple)!=null)
-      { referencedClass=(Class) classField.getValue(tuple);
+      { referencedClass=classField.getValue(tuple);
       }
       else
       { referencedClass=nativeClass;

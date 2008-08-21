@@ -17,15 +17,18 @@ package spiralcraft.data;
 import java.net.URI;
 
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
 
 /**
- * <P>A description of a single element of a Tuple.
+ * <p>A description of a single data element of a Tuple.
+ * </p>
  */
-public interface Field
+public interface Field<T>
+  extends ChannelFactory<T,Tuple>
 {
   /**
    * The FieldSet to which this Field belongs. All Fields belong to a FieldSet.
@@ -55,7 +58,7 @@ public interface Field
   /**
    * The Type of the Field
    */
-  Type<?> getType();
+  Type<T> getType();
   
   
   /**
@@ -91,7 +94,8 @@ public interface Field
    * @param focus
    * @return A Binding bound to the focus
    */
-   Channel<?> bind(Focus<? extends Tuple> focus)
+   @Override
+   Channel<T> bindChannel(Focus<Tuple> focus)
     throws BindException;
   
   /**
@@ -103,13 +107,13 @@ public interface Field
   /**
    * Retrieve the value of this Field in the specified Tuple
    */
-  Object getValue(Tuple t)
+  T getValue(Tuple t)
     throws DataException;
   
   /**
    * Update the value of this Field in the specified Tuple
    */
-  void setValue(EditableTuple t,Object value)
+  void setValue(EditableTuple t,T value)
     throws DataException;
 
   

@@ -39,32 +39,32 @@ public class UnifiedFieldSet
   
   
   @Override
-  public Iterable<? extends Field> fieldIterable()
+  public Iterable<? extends Field<?>> fieldIterable()
   { 
-    return new Iterable<Field>()
+    return new Iterable<Field<?>>()
     {
 
       @SuppressWarnings("unchecked")
       @Override
-      public Iterator<Field> iterator()
+      public Iterator<Field<?>> iterator()
       { 
         if (base!=null)
         { 
           return 
-            new IteratorChain<Field>
-              ((Iterator<Field>) base.fieldIterable().iterator()
-              ,(Iterator<Field>) type.getScheme().fieldIterable().iterator()
+            new IteratorChain<Field<?>>
+              ((Iterator<Field<?>>) base.fieldIterable().iterator()
+              ,(Iterator<Field<?>>) type.getScheme().fieldIterable().iterator()
               );
         }
         else
-        { return (Iterator<Field>) type.getScheme().fieldIterable().iterator();
+        { return (Iterator<Field<?>>) type.getScheme().fieldIterable().iterator();
         }
       }
     };
   }
 
   @Override
-  public Field getFieldByIndex(
+  public <X> Field<X> getFieldByIndex(
     int index)
   { 
     if (index>=fieldCount)
@@ -79,8 +79,7 @@ public class UnifiedFieldSet
   }
 
   @Override
-  public Field getFieldByName(
-    String name)
+  public <X> Field<X> getFieldByName(String name)
   { return type.getField(name);
   }
 

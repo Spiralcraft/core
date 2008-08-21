@@ -60,6 +60,6 @@ public interface Projection
    *@return an Iterable which provides access to 
    *   fields in order of their indexes
    */
-  Iterable<? extends ProjectionField> fieldIterable();  
+  Iterable<? extends ProjectionField<?>> fieldIterable();  
   
 }

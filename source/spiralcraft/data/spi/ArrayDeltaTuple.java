@@ -52,7 +52,7 @@ public class ArrayDeltaTuple
     }
     else if (original==null)
     {
-      for (Field field: fieldSet.fieldIterable())
+      for (Field<?> field: fieldSet.fieldIterable())
       { 
         if (updated.get(field.getIndex())!=null)
         { setDirtyValue(field,makeDirtyValue(null,updated.get(field.getIndex())));
@@ -61,7 +61,7 @@ public class ArrayDeltaTuple
     }
     else
     {
-      for (Field field: fieldSet.fieldIterable())
+      for (Field<?> field: fieldSet.fieldIterable())
       { 
         Object originalValue=original.get(field.getIndex());
         Object updatedValue=updated.get(field.getIndex());
@@ -113,10 +113,10 @@ public class ArrayDeltaTuple
     if (updated==null)
     { throw new IllegalArgumentException("Can't copy from null");
     }
-    Field[] dirtyFields=updated.getExtentDirtyFields();
+    Field<?>[] dirtyFields=updated.getExtentDirtyFields();
     if (dirtyFields!=null)
     {
-      for (Field field : dirtyFields)
+      for (Field<?> field : dirtyFields)
       { 
         int i=field.getIndex();
         data[i]=updated.get(i);
@@ -140,14 +140,12 @@ public class ArrayDeltaTuple
         || (getType()!=null && getType().hasArchetype(dest.getType()))
        )
     { 
-      Field[] dirtyFields=getExtentDirtyFields();
+      Field<?>[] dirtyFields=getExtentDirtyFields();
       if (dirtyFields!=null)
       {
       
-        for (Field field : dirtyFields)
+        for (Field<?> field : dirtyFields)
         { 
-          Field destField
-            =dest.getFieldSet().getFieldByIndex(field.getIndex());
           Object value=field.getValue(this);
           if (value instanceof Buffer)
           { 
@@ -155,7 +153,7 @@ public class ArrayDeltaTuple
             
           }
           else
-          { destField.setValue(dest,field.getValue(this));
+          { copyFieldTo(field,dest);
           }
         }
       }
@@ -193,7 +191,7 @@ public class ArrayDeltaTuple
     }
   }
   
-  protected void setDirtyValue(Field field,Object value)
+  protected void setDirtyValue(Field<?> field,Object value)
   { 
     data[field.getIndex()]=value;
 //    System.err.println("ArrayDeltaTuple: "+field.getName()+"="+value);
@@ -201,25 +199,25 @@ public class ArrayDeltaTuple
     dirtyFlags.set(field.getIndex(),true);
   }
 
-  public Field[] getExtentDirtyFields()
+  public Field<?>[] getExtentDirtyFields()
   {
-    ArrayList<Field> fields=new ArrayList<Field>();
+    ArrayList<Field<?>> fields=new ArrayList<Field<?>>();
     for (int i=0;i<dirtyFlags.size();i++)
     { 
       if (dirtyFlags.get(i))
       { fields.add(fieldSet.getFieldByIndex(i));
       }
     }
-    Field[] ret=new Field[fields.size()];
+    Field<?>[] ret=new Field[fields.size()];
     fields.toArray(ret);
     return ret;
   }
 
-  public Field[] getDirtyFields()
+  public Field<?>[] getDirtyFields()
   {
-    Field[] baseDirty
+    Field<?>[] baseDirty
       =(baseExtent!=null?((ArrayDeltaTuple) baseExtent).getDirtyFields():null);
-    Field[] dirty=getExtentDirtyFields();
+    Field<?>[] dirty=getExtentDirtyFields();
     
     if (baseDirty!=null && dirty==null)
     { return baseDirty;

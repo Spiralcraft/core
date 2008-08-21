@@ -258,7 +258,7 @@ public class TypeImpl<T>
    * 
    * @param fields
    */
-  public void setFields(List<FieldImpl> fields)
+  public void setFields(List<FieldImpl<?>> fields)
   {
     if (linked)
     { throw new IllegalStateException("Type already linked: "+toString());
@@ -275,17 +275,17 @@ public class TypeImpl<T>
    * @return
    */
   @Override
-  public Field getField(String name)
+  public <X> Field<X> getField(String name)
   {
     if (!linked)
     { throw new IllegalStateException("Type not linked: "+this);
     }
-    Field field=null;
+    Field<X> field=null;
     if (getScheme()!=null)
-    { field=getScheme().getFieldByName(name);
+    { field=getScheme().<X>getFieldByName(name);
     }
     if (field==null && getBaseType()!=null)
-    { field=getBaseType().getField(name);
+    { field=getBaseType().<X>getField(name);
     }
     return field;
   }

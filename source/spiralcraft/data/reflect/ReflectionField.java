@@ -33,6 +33,7 @@ import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.Field;
 
+@SuppressWarnings("unchecked") // Not genericized yet
 public class ReflectionField
   extends FieldImpl
 {
@@ -137,9 +138,9 @@ public class ReflectionField
   
   
   @Override
-  public boolean isFunctionalEquivalent(Field field)
+  public boolean isFunctionalEquivalent(Field  field)
   {
-    if (!super.isFunctionalEquivalent(field))
+    if (!super.isFunctionalEquivalent(field)) 
     { return false;
     }
     if (!(field instanceof ReflectionField))
@@ -314,12 +315,11 @@ public class ReflectionField
   }
   
   
-  @SuppressWarnings("unchecked")
   public void persistBeanProperty(Object bean,EditableTuple tuple)
     throws DataException
   {
 //    System.err.println("ReflectionField "+getURI()+" persistBeanProperty");
-    Type<? super Object> type=(Type<? super Object>) getType();
+    Type<? super Object> type=getType();
     
     if ( (readMethod!=null && writeMethod!=null)
           || forcePersist

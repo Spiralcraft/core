@@ -72,7 +72,7 @@ public class BuilderScheme
   public void depersistBeanProperties(Tuple tuple,Object assembly)
     throws DataException
   {
-    for (Field field: fields)
+    for (Field<?> field: fields)
     { 
       if (field instanceof ReflectionField)
       { ((ReflectionField) field).depersistBeanProperty(tuple,assembly);
@@ -87,7 +87,7 @@ public class BuilderScheme
   public void persistBeanProperties(Object assembly,EditableTuple tuple)
     throws DataException
   {
-    for (Field field: fields)
+    for (Field<?> field: fields)
     { 
       if (field instanceof ReflectionField)
       { ((ReflectionField) field).persistBeanProperty(assembly,tuple);

@@ -48,8 +48,8 @@ public class ReflectionScheme
 
   private final Class<?> clazz;
   private final BeanInfo beanInfo;
-  private final HashMap<Method,FieldImpl> methodMap
-    =new HashMap<Method,FieldImpl>();
+  private final HashMap<Method,FieldImpl<?>> methodMap
+    =new HashMap<Method,FieldImpl<?>>();
   protected final TypeResolver resolver;
 
   public ReflectionScheme(TypeResolver resolver,Type<?> type,Class<?> clazz)
@@ -124,8 +124,9 @@ public class ReflectionScheme
   
 
   
-  public Field getField(Method method)
-  { return methodMap.get(method);
+  @SuppressWarnings("unchecked") // Heterogenous map
+  public <X> Field<X> getField(Method method)
+  { return (Field<X>) methodMap.get(method);
   }
   
   @Override
@@ -140,7 +141,7 @@ public class ReflectionScheme
   public void persistBeanProperties(Object bean,EditableTuple tuple)
     throws DataException
   {
-    for (Field field: fields)
+    for (Field<?> field: fields)
     { 
       if (field instanceof ReflectionField)
       { ((ReflectionField) field).persistBeanProperty(bean,tuple);
@@ -155,7 +156,7 @@ public class ReflectionScheme
   public void depersistBeanProperties(Tuple tuple,Object bean)
     throws DataException
   {
-    for (Field field: fields)
+    for (Field<?> field: fields)
     { 
       if (field instanceof ReflectionField)
       { ((ReflectionField) field).depersistBeanProperty(tuple,bean);

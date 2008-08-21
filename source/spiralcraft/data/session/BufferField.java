@@ -25,27 +25,20 @@ import spiralcraft.log.ClassLogger;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
-import spiralcraft.data.Type;
 
 import spiralcraft.data.core.FieldImpl;
 import spiralcraft.data.lang.DataReflector;
 
 
 public class BufferField
-  extends FieldImpl
+  extends FieldImpl<Buffer>
 {
   protected final ClassLogger log=ClassLogger.getInstance(BufferField.class);
   
-  @Override
-  @SuppressWarnings("unchecked")
-  public Type<Buffer> getType()
-  { return (Type<Buffer>) super.getType();
-  }
-  
   
   @Override
   @SuppressWarnings("unchecked")
-  public Channel<?> bind(Focus<? extends Tuple> focus)
+  public Channel<Buffer> bindChannel(Focus<Tuple> focus)
     throws BindException
   {
     // The Channel that provides the original field value
@@ -54,12 +47,12 @@ public class BufferField
     if (getArchetypeField()!=null)
     { 
       // Get the correct field behavior from the archetype
-      originalChannel=(Channel<DataComposite>) getArchetypeField().bind(focus);
+      originalChannel=getArchetypeField().bindChannel(focus);
       if (debug)
       { log.fine("Creating BufferFieldChannel for field " +getURI());
       }
       		
-      return new BufferFieldChannel(originalChannel,(Focus<BufferTuple>) focus);
+      return new BufferFieldChannel(originalChannel,focus);
       
     }
     else
@@ -68,7 +61,7 @@ public class BufferField
       // By extension?
       originalChannel=new FieldChannel(focus.getSubject());
       log.warning("Using Buffer with no archetype?!?");
-      return new BufferFieldChannel(originalChannel,(Focus<BufferTuple>) focus);
+      return new BufferFieldChannel(originalChannel,focus);
     }
 
   }
@@ -77,11 +70,11 @@ public class BufferField
     extends AbstractChannel<Buffer>
   {
     private Channel<? extends Buffer> bufferSource;
-    private Channel<BufferTuple> parentChannel;
+    private Channel<Tuple> parentChannel;
     
     public BufferFieldChannel
       (Channel<? extends DataComposite> originalChannel
-      ,Focus<BufferTuple> parentFocus
+      ,Focus<Tuple> parentFocus
       )
       throws BindException
     { 
@@ -114,7 +107,7 @@ public class BufferField
     { 
       try
       { 
-        BufferTuple parent=parentChannel.get();
+        BufferTuple parent=(BufferTuple) parentChannel.get();
         BufferField.this.setValue(parent,val);
         return true;
       }
@@ -126,7 +119,7 @@ public class BufferField
     @Override
     public Buffer retrieve()
     { 
-      BufferTuple parent=parentChannel.get();
+      BufferTuple parent=(BufferTuple) parentChannel.get();
       try
       {
         Object maybeBuffer=BufferField.this.getValue(parent);
@@ -157,7 +150,7 @@ public class BufferField
           buffer=bufferSource.get();
           
           if (buffer!=null)
-          { BufferField.this.setValue(parentChannel.get(),buffer);
+          { BufferField.this.setValue((BufferTuple) parentChannel.get(),buffer);
           }
         }
         return buffer;

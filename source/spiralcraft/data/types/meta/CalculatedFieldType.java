@@ -24,11 +24,16 @@ import java.net.URI;
 /**
  * A Type implementation that represents a Field
  */
+@SuppressWarnings("unchecked") // Not propagating field genericity
 public class CalculatedFieldType
   extends ReflectionType<CalculatedFieldImpl>
 {
   public CalculatedFieldType(TypeResolver resolver,URI uri)
-  { super(resolver,uri,CalculatedFieldImpl.class,CalculatedFieldImpl.class);
+  { super
+      (resolver,uri
+      ,CalculatedFieldImpl.class
+      ,CalculatedFieldImpl.class
+      );
   }
   
 

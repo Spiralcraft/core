@@ -35,9 +35,9 @@ import spiralcraft.lang.Expression;
  * 
  * @author mike
  */
-public class ProjectionFieldImpl
-  extends FieldImpl
-  implements ProjectionField
+public class ProjectionFieldImpl<T>
+  extends FieldImpl<T>
+  implements ProjectionField<T>
 {
 
   private Expression<?> expression;

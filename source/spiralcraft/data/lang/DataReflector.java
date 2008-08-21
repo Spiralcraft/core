@@ -158,7 +158,7 @@ public abstract class DataReflector<T extends DataComposite>
    *   Channel with this Reflector as its subject.
    */
   @SuppressWarnings("unchecked")
-  public Type<?> getTypeAsSubject(Expression<?> expr)
+  public <X> Type<X> getTypeAsSubject(Expression<X> expr)
     throws DataException
   {
     Channel<?> channel=new AbstractChannel(this)
@@ -186,7 +186,7 @@ public abstract class DataReflector<T extends DataComposite>
       }
       else
       { 
-        return Type.resolve
+        return Type.<X>resolve
           (ReflectionType.canonicalURI(reflector.getContentType()));
       }
     }

@@ -36,13 +36,13 @@ public interface Scheme
    *@return the Field that corresponds to the specified index. Fields are
    *   assigned indexes in order of their definition in the Scheme.
    */
-  Field getFieldByIndex(int index);
+  <X> Field<X> getFieldByIndex(int index);
 
   /**
    *@return the Field that corresponds to the specified name. 
    * Field names are unique within a Scheme. 
    */
-  Field getFieldByName(String name);
+  <X> Field<X> getFieldByName(String name);
   
   /**
    *@return the number of Fields in this scheme
@@ -53,7 +53,7 @@ public interface Scheme
    *@return an Iterable which provides access to 
    *   fields in order of their indices
    */
-  Iterable<? extends Field> fieldIterable();
+  Iterable<? extends Field<?>> fieldIterable();
   
   /**
    *@return The primary key for this Scheme. 

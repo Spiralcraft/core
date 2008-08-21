@@ -62,7 +62,7 @@ public class KeyTuple
   public Object get(String fieldName)
     throws DataException
   { 
-    Field field=fieldSet.getFieldByName(fieldName);
+    Field<?> field=fieldSet.getFieldByName(fieldName);
     if (field==null)
     { throw new FieldNotFoundException(fieldSet,fieldName);
     }

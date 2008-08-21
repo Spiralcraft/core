@@ -40,6 +40,9 @@ import spiralcraft.text.html.URLDataEncoder;
  * <p>Interactes with a web service that uses a REST-like interface
  * </p>
  * 
+ * <p>This component is thread-safe
+ * </p>
+ * 
  * @author mike
  *
  */
@@ -151,6 +154,9 @@ public class RestClient
    * <p>The query object is updated with current values according to
    *   the Assignments, and the items specified in the AttributeBindings
    *   are incorporated into the REST query URL.
+   * </p>
+   * 
+   * <p>This method is thread-safe
    * </p>
    */
   public Tuple query(Tuple query)

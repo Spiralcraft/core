@@ -12,17 +12,30 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data;
+package spiralcraft.lang;
 
-import spiralcraft.lang.Expression;
-
-public interface ProjectionField<T>
-  extends Field<T>
+/**
+ * <p>Implemented by objects that create Channels from some element in the
+ *   Focus chain. 
+ * </p>
+ * 
+ * <p>A single ChannelFactory instance may create many Channel instances from
+ *   different Focus objects.
+ * </p>
+ * 
+ * @author mike
+ *
+ */
+public interface ChannelFactory<Tchannel,Tfocus>
 {
-
   /**
+   * <p>Creates a new Channel given a Focus
+   * </p>
    * 
-   * @return The Expression associated with this Field
+   * @param focus
+   * @return
+   * @throws BindException
    */
-  Expression<?> getExpression();
+  Channel<Tchannel> bindChannel(Focus<Tfocus> focus)
+    throws BindException;
 }

@@ -85,7 +85,7 @@ public class Writer
       try
       {
         boolean first=true;
-        for (Field field: fields.fieldIterable())
+        for (Field<?> field: fields.fieldIterable())
         {
           if (!first)
           { _out.write(",");

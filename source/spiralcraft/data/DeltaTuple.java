@@ -39,12 +39,12 @@ public interface DeltaTuple
   /**
    *@return a List of modified fields (in this extent and in base extents)
    */
-  Field[] getDirtyFields();
+  Field<?>[] getDirtyFields();
 
   /**
    * @return a List of modified fields for this extent only
    */
-  Field[] getExtentDirtyFields();
+  Field<?>[] getExtentDirtyFields();
   
   /**
    * Indicate whether the field specified by the index has been locally modified

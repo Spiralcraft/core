@@ -41,7 +41,7 @@ import spiralcraft.data.query.Queryable;
 
 
 public class QueryField
-  extends FieldImpl
+  extends FieldImpl<DataComposite>
 {
   protected static ClassLogger log=ClassLogger.getInstance(QueryField.class);
   
@@ -62,6 +62,7 @@ public class QueryField
     this.query=query;
   }
   
+  @SuppressWarnings("unchecked") // Cast type
   @Override
   public void resolveType()
     throws DataException
@@ -70,7 +71,7 @@ public class QueryField
     { 
       query.resolve();
       if (getType()==null && query.getType()!=null)
-      { setType(Type.getAggregateType((query.getType())));
+      { setType((Type) Type.getAggregateType((query.getType())));
       }
     }
     else
@@ -83,7 +84,7 @@ public class QueryField
   
   @Override
   @SuppressWarnings("unchecked")
-  public Channel<?> bind(Focus<? extends Tuple> focus)
+  public Channel<DataComposite> bindChannel(Focus<Tuple> focus)
     throws BindException
   { 
     

@@ -39,8 +39,8 @@ import spiralcraft.data.query.Queryable;
 import spiralcraft.data.lang.DataReflector;
 
 
-public class KeyField
-  extends FieldImpl
+public class KeyField<T extends DataComposite>
+  extends FieldImpl<T>
 {
   protected static final ClassLogger log
     =ClassLogger.getInstance(KeyField.class);
@@ -56,6 +56,7 @@ public class KeyField
   { return key;
   }
   
+  @SuppressWarnings("unchecked") // Key.getForeignType() is not generic
   @Override
   public void resolve()
     throws DataException
@@ -67,10 +68,10 @@ public class KeyField
     }
     
     if (key.getImportedKey().isUnique())
-    { setType(key.getForeignType());
+    { setType((Type) key.getForeignType());
     }
     else
-    { setType(Type.getAggregateType(key.getForeignType()));
+    { setType((Type) Type.getAggregateType(key.getForeignType()));
     }
     if (key.getForeignQuery()!=null)
     { key.getForeignQuery().resolve();
@@ -81,7 +82,7 @@ public class KeyField
   
   @Override
   @SuppressWarnings("unchecked")
-  public Channel<?> bind(Focus<? extends Tuple> focus)
+  public Channel<T> bindChannel(Focus<Tuple> focus)
     throws BindException
   { 
     
@@ -130,14 +131,14 @@ public class KeyField
   
   @SuppressWarnings("unchecked")
   public class KeyFieldChannel
-    extends AbstractChannel<DataComposite>
+    extends AbstractChannel<T>
   {
     private BoundQuery query;
     
-    public KeyFieldChannel(Type<?> type,BoundQuery query)
+    public KeyFieldChannel(Type<T> type,BoundQuery query)
       throws BindException
     { 
-      super(DataReflector.<DataComposite>getInstance(type));
+      super(DataReflector.<T>getInstance(type));
       this.query=query;
     }
     
@@ -147,7 +148,7 @@ public class KeyField
     }
 
     @Override
-    protected DataComposite retrieve()
+    protected T retrieve()
       throws AccessException
     {
       try
@@ -168,7 +169,7 @@ public class KeyField
           CursorAggregate aggregate
             =new CursorAggregate(query.execute());
 //          log.fine(aggregate.toString());
-          return aggregate;
+          return (T) aggregate;
         }
         else
         { 
@@ -188,7 +189,7 @@ public class KeyField
             }
           }
 //          log.fine(val!=null?val.toString():"null");
-          return val;
+          return (T) val;
         }
       }
       catch (DataException x)

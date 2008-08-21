@@ -86,7 +86,7 @@ public class BufferType
     
     if (this.archetype.getScheme()!=null && !isAggregate()) 
     { 
-      for (Field field : this.archetype.getScheme().fieldIterable())
+      for (Field<?> field : this.archetype.getScheme().fieldIterable())
       { 
         if (field.getType()==null)
         { 
@@ -105,8 +105,8 @@ public class BufferType
         {
           if (field instanceof KeyField
               && isChildKey
-                (((KeyField) field).getKey().fieldIterable()
-                ,((KeyField) field).getScheme().getPrimaryKey().fieldIterable()
+                (((KeyField<?>) field).getKey().fieldIterable()
+                ,((KeyField<?>) field).getScheme().getPrimaryKey().fieldIterable()
                 )
               )
           {
@@ -144,10 +144,10 @@ public class BufferType
   
 
   private boolean isChildKey
-    (Iterable<? extends Field> relation,Iterable<? extends Field> primary)
+    (Iterable<? extends Field<?>> relation,Iterable<? extends Field<?>> primary)
   {
-    Iterator<? extends Field> primaryField=primary.iterator();
-    for (Field childField: relation)
+    Iterator<? extends Field<?>> primaryField=primary.iterator();
+    for (Field<?> childField: relation)
     {
       if (!primaryField.hasNext())
       { 

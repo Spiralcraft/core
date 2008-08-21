@@ -175,7 +175,7 @@ public class KeyImpl
 
     for (String fieldName: fieldNames)
     { 
-      Field masterField=masterFieldSet.getFieldByName(fieldName);
+      Field<?> masterField=masterFieldSet.getFieldByName(fieldName);
       if (masterField==null)
       { 
         

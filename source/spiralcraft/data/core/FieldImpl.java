@@ -39,15 +39,15 @@ import java.net.URI;
 /**
  * <P>Implementation of a standard Field.
  */
-public class FieldImpl
-  implements Field
+public class FieldImpl<T>
+  implements Field<T>
 {
   private boolean locked;
   private FieldSet fieldSet;
   private int index;
   private String name;
   private String title;
-  private Type<?> type;
+  private Type<T> type;
   private Field archetypeField;
   private URI uri;
   private boolean isScheme;
@@ -170,7 +170,7 @@ public class FieldImpl
    *@return Whether this field has the same type, constraints and attributes
    *   as the specified field.
    */
-  public boolean isFunctionalEquivalent(Field field)
+  public boolean isFunctionalEquivalent(Field<?> field)
   { return field.getType()==getType();
   }
   
@@ -235,7 +235,7 @@ public class FieldImpl
   /**
    * Set the data Type
    */
-  public void setType(Type<?> type)
+  public void setType(Type<T> type)
   { 
     assertUnlocked();
     this.type=type;
@@ -249,7 +249,7 @@ public class FieldImpl
     }
   }
   
-  public Type<?> getType()
+  public Type<T> getType()
   { return type;
   }
 
@@ -302,7 +302,7 @@ public class FieldImpl
     return t;
   }
   
-  public final Object getValue(Tuple t)
+  public final T getValue(Tuple t)
     throws DataException
   { 
     if (t==null)
@@ -315,7 +315,7 @@ public class FieldImpl
     
     if (t!=null)
     { 
-      Object val=getValueImpl(t);
+      T val=getValueImpl(t);
       // System.err.println("FieldImpl "+getURI()+": getValue()="+val);
       return val;
     }
@@ -326,7 +326,7 @@ public class FieldImpl
   }
   
 
-  public final void setValue(EditableTuple t,Object value)
+  public final void setValue(EditableTuple t,T value)
     throws DataException
   { 
     if (t==null)
@@ -402,9 +402,9 @@ public class FieldImpl
    * @return The data value of the Field in the specified Tuple
    * @throws DataException
    */
-  protected Object getValueImpl(Tuple tuple)
+  protected T getValueImpl(Tuple tuple)
     throws DataException
-  { return tuple.get(index);
+  { return (T) tuple.get(index);
   }
 
   /**
@@ -414,7 +414,7 @@ public class FieldImpl
    * @param value The data value to update
    * @throws DataException
    */
-  protected void setValueImpl(EditableTuple tuple,Object value)
+  protected void setValueImpl(EditableTuple tuple,T value)
     throws DataException
   { tuple.set(index,value);
   }
@@ -437,8 +437,8 @@ public class FieldImpl
   }
 
   @Override
-  public Channel<?> bind
-    (Focus<? extends Tuple> focus)
+  public Channel<T> bindChannel
+    (Focus<Tuple> focus)
     throws BindException
   { 
     Channel source=focus.getSubject();

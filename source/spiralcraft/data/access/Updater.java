@@ -81,7 +81,7 @@ public class Updater<T extends Tuple>
   private ArrayList<Setter<?>> defaultSetters;
   
   private Sequence sequence;
-  private Field sequenceField;
+  private Field<Object> sequenceField;
   private Space space;
   protected boolean debug;
   
@@ -140,7 +140,7 @@ public class Updater<T extends Tuple>
           sequenceField.setValue
             ((EditableTuple) tuple
               ,sequenceField.getType().fromString(sequenceVal)
-            );
+            ); 
         }
         else
         { 

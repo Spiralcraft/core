@@ -61,7 +61,7 @@ public class ArrayTuple
     super(original.getFieldSet());
     this.data=new Object[fieldSet.getFieldCount()];
     
-    for (Field field : fieldSet.fieldIterable())
+    for (Field<?> field : fieldSet.fieldIterable())
     { 
       Object originalValue=original.get(field.getIndex());
       if (originalValue instanceof Tuple)

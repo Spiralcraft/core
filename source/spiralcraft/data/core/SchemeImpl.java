@@ -39,15 +39,15 @@ public class SchemeImpl
   private boolean resolved;
   private Scheme archetypeScheme;
 
-  protected final ArrayList<FieldImpl> localFields
-    =new ArrayList<FieldImpl>();
-  protected final HashMap<String,FieldImpl> localFieldMap
-    =new HashMap<String,FieldImpl>();
+  protected final ArrayList<FieldImpl<?>> localFields
+    =new ArrayList<FieldImpl<?>>();
+  protected final HashMap<String,FieldImpl<?>> localFieldMap
+    =new HashMap<String,FieldImpl<?>>();
 
-  protected final ArrayList<Field> fields
-    =new ArrayList<Field>();
-  protected final HashMap<String,Field> fieldMap
-    =new HashMap<String,Field>();
+  protected final ArrayList<Field<?>> fields
+    =new ArrayList<Field<?>>();
+  protected final HashMap<String,Field<?>> fieldMap
+    =new HashMap<String,Field<?>>();
 
   protected final ArrayList<KeyImpl> keys
     =new ArrayList<KeyImpl>();
@@ -87,15 +87,17 @@ public class SchemeImpl
     this.type=type;
   }
   
-  public Field getFieldByIndex(int index)
-  { return fields.get(index);
+  @SuppressWarnings("unchecked") // Map cast
+  public <X> Field<X> getFieldByIndex(int index)
+  { return (Field<X>) fields.get(index);
   }
   
-  public Field getFieldByName(String name)
-  { return fieldMap.get(name);
+  @SuppressWarnings("unchecked") // Map cast
+  public <X> Field<X> getFieldByName(String name)
+  { return (Field<X>) fieldMap.get(name);
   }
   
-  public Field getLocalFieldByName(String name)
+  public Field<?> getLocalFieldByName(String name)
   { return localFieldMap.get(name);
   }
   
@@ -103,7 +105,7 @@ public class SchemeImpl
    *@return An Iterable that iterates through all fields of this Type and its
    *  archetype.
    */
-  public Iterable<? extends Field> fieldIterable()
+  public Iterable<? extends Field<?>> fieldIterable()
   { return fields;
   }
 
@@ -118,11 +120,11 @@ public class SchemeImpl
   /**
    * Set the list of local fields
    */
-  public void setFields(List<FieldImpl> fields)
+  public void setFields(List<FieldImpl<?>> fields)
   { 
     assertUnresolved();
     clearFields();
-    for (FieldImpl field : fields)
+    for (FieldImpl<?> field : fields)
     { 
       // System.out.println("Field "+field.toString());
       addField(field);
@@ -132,7 +134,7 @@ public class SchemeImpl
   /**
    * Add a local Field
    */
-  public void addField(FieldImpl field)
+  public void addField(FieldImpl<?> field)
   { 
     assertUnresolved();
     if (localFieldMap.get(field.getName())!=null)
@@ -168,7 +170,7 @@ public class SchemeImpl
     StringBuilder fieldList=new StringBuilder();
     fieldList.append("[");
     boolean first=true;
-    for (Field field:fields)
+    for (Field<?> field:fields)
     { 
       fieldList.append("\r\n       #");
       if (!first)
@@ -214,7 +216,7 @@ public class SchemeImpl
     if (archetypeScheme!=null)
     { 
       fieldIndex=archetypeScheme.getFieldCount();
-      for (Field field: archetypeScheme.fieldIterable())
+      for (Field<?> field: archetypeScheme.fieldIterable())
       { 
         fields.add(field);
         fieldMap.put(field.getName(),field);
@@ -222,13 +224,13 @@ public class SchemeImpl
     }
     
     
-    for (FieldImpl field:localFields)
+    for (FieldImpl<?> field:localFields)
     {
       if (field.getName()==null)
       { throw new DataException("Field "+field+" name is null");
       }
       
-      Field archetypeField=null;
+      Field<?> archetypeField=null;
       field.setScheme(this);
       field.resolveType();
       
@@ -272,7 +274,7 @@ public class SchemeImpl
       
     }
     
-    for (FieldImpl field: localFields)
+    for (FieldImpl<?> field: localFields)
     { 
       // XXX There may be fields in this list that were not made part of this
       //   scheme because they were redundant of their Archetype field. Should
@@ -311,7 +313,7 @@ public class SchemeImpl
             );
         }
         else
-        { addFieldPostResolve(new KeyField(key));
+        { addNewKeyField(key);
         }
       }
       
@@ -319,7 +321,15 @@ public class SchemeImpl
     
   }
   
-  private void addFieldPostResolve(FieldImpl field)
+  @SuppressWarnings("unchecked") // We only know the actual type at runtime
+  private void addNewKeyField(KeyImpl key)
+    throws DataException
+  { 
+    addFieldPostResolve
+      (new KeyField(key));
+  }
+  
+  private <X> void addFieldPostResolve(FieldImpl<X> field)
     throws DataException
   { 
     field.setIndex(fields.size());

@@ -24,6 +24,7 @@ import java.net.URI;
 /**
  * A Type implementation that represents a Field
  */
+@SuppressWarnings("unchecked") // Not propagating field genericity
 public class SequenceFieldType
   extends ReflectionType<SequenceField>
 {

@@ -20,14 +20,14 @@ import spiralcraft.data.Type;
 import spiralcraft.data.core.FieldImpl;
 
 
-public class SequenceField
-  extends FieldImpl
+public class SequenceField<X>
+  extends FieldImpl<X>
 {
   
   public SequenceField()
   { 
     try
-    { setType(Type.resolve("class:/spiralcraft/data/types/standard/Integer"));
+    { setType(Type.<X>resolve("class:/spiralcraft/data/types/standard/Integer"));
     }
     catch (DataException x)
     { x.printStackTrace();

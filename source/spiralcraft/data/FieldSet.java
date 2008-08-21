@@ -28,13 +28,13 @@ public interface FieldSet
   /**
    *@return the Field at the specified position in the FieldSet.
    */
-  Field getFieldByIndex(int index);
+  <X> Field<X> getFieldByIndex(int index);
 
   /**
    *@return the Field in the FieldSet that corresponds to the specified name.
    * Field names are unique within a FieldSet
    */
-  Field getFieldByName(String name);
+  <X> Field<X> getFieldByName(String name);
   
   /**
    *@return the number of Fields in this FieldSet
@@ -45,6 +45,6 @@ public interface FieldSet
    *@return an Iterable which provides access to 
    *   fields in order of their indexes
    */
-  Iterable<? extends Field> fieldIterable();
+  Iterable<? extends Field<?>> fieldIterable();
 
 }

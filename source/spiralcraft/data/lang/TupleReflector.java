@@ -154,7 +154,7 @@ public class TupleReflector<T extends Tuple>
       }
               
       if (binding==null)
-      { binding=field.bind(tupleFocus);
+      { binding=field.bindChannel(tupleFocus);
       }
       
       if (binding!=null)

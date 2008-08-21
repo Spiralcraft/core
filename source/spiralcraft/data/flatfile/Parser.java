@@ -35,7 +35,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.FieldSet;
-import spiralcraft.data.TypeResolver;
+import spiralcraft.data.Type;
 
 import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.access.DataConsumerChain;
@@ -280,10 +280,8 @@ public class Parser
 		
 		while (st.ttype!=StreamTokenizer.TT_EOF && st.ttype!=StreamTokenizer.TT_EOL)
 		{
-      FieldImpl field=new FieldImpl();
-			String name=readWord("field name",st);
-      field.setName(name);
       
+      String name=readWord("field name",st);
       String type=null;
       st.nextToken();
       if ((char) st.ttype=='(')
@@ -309,14 +307,24 @@ public class Parser
             =URI.create("class:/spiralcraft/data/types/standard/").resolve(typeUri);
         }
       }
-      field.setType(TypeResolver.getTypeResolver().resolve(typeUri));
+
+      FieldImpl<?> field=newField(Type.resolve(typeUri));
+      field.setName(name);
       
 			ensureDelim(st);
-      fields.addField(new FieldImpl());
+			
+      fields.addField(field);
 		}
     return fields;
 	}
 
+	private <X> FieldImpl<X> newField(Type<X> type)
+	{ 
+	  FieldImpl<X> field= new FieldImpl<X>();
+	  field.setType(type);
+	  return field;
+	}
+	
 	private void ensureDelim(StreamTokenizer st)
 		throws ParseException
 	{

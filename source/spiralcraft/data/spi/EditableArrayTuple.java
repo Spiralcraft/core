@@ -43,6 +43,11 @@ public class EditableArrayTuple
   { super(type.getFieldSet());
   }
 
+  protected <X> void copyFieldFrom(Field<X> field,Tuple source)
+    throws DataException
+  { field.setValue(this,field.getValue(source));
+  }
+  
   public void set(int index,Object val)
   { 
     if (debug)
@@ -70,8 +75,8 @@ public class EditableArrayTuple
         || (type!=null && type.hasArchetype(source.getType()))
        )
     { 
-      for (Field field: source.getFieldSet().fieldIterable())
-      { field.setValue(this,field.getValue(source));
+      for (Field<?> field: source.getFieldSet().fieldIterable())
+      { copyFieldFrom(field,source);
       }
     }
 

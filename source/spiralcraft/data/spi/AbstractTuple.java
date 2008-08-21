@@ -18,6 +18,7 @@ import java.lang.ref.WeakReference;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
+import spiralcraft.data.EditableTuple;
 import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.RuntimeDataException;
@@ -72,7 +73,7 @@ public abstract class AbstractTuple
   public Object get(String fieldName)
     throws DataException
   { 
-    Field field=null;
+    Field<?> field=null;
     if (fieldSet.getType()!=null)
     { 
       field=fieldSet.getType().getField(fieldName);
@@ -231,7 +232,7 @@ public abstract class AbstractTuple
   
   public static final boolean tupleEquals(Tuple a,Tuple t)
   {
-    for (Field field : a.getFieldSet().fieldIterable())
+    for (Field<?> field : a.getFieldSet().fieldIterable())
     { 
       Object thisVal;
       Object otherVal;
@@ -298,7 +299,7 @@ public abstract class AbstractTuple
     }
     sb.append("[");
     boolean first=true;
-    for (Field field : tuple.getFieldSet().fieldIterable())
+    for (Field<?> field : tuple.getFieldSet().fieldIterable())
     { 
       Object val;
       try
@@ -359,6 +360,14 @@ public abstract class AbstractTuple
     return sb.toString();
   }
   
+  protected <X> void copyFieldTo
+    (Field<X> field,EditableTuple dest)
+    throws DataException
+  { 
+    dest.getFieldSet().<X>getFieldByIndex(field.getIndex())
+      .setValue(dest,field.getValue(this));
+  }
+  
 
   
   public static String tupleToText(Tuple tuple,String indent)
@@ -381,7 +390,7 @@ public abstract class AbstractTuple
     sb.append("[");
     boolean first=true;
     String indent2=indent.concat("  ");
-    for (Field field : fieldSet.fieldIterable())
+    for (Field<?> field : fieldSet.fieldIterable())
     { 
       
       Object val=field.getValue(tuple);

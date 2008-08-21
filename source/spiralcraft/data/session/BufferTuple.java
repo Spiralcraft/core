@@ -89,7 +89,7 @@ public class BufferTuple
   public Object get(String fieldName)
     throws DataException
   { 
-    Field field=type.getField(fieldName);
+    Field<?> field=type.getField(fieldName);
     if (field==null)
     { throw new FieldNotFoundException(type,fieldName);
     }
@@ -207,8 +207,8 @@ public class BufferTuple
         || (getType()!=null && getType().hasArchetype(source.getType()))
        )
     { 
-      for (Field field: source.getFieldSet().fieldIterable())
-      { field.setValue(this,field.getValue(source));
+      for (Field<?> field: source.getFieldSet().fieldIterable())
+      { copyFieldFrom(field,source);
       }
     }
     if (source.getBaseExtent()!=null)
@@ -216,6 +216,12 @@ public class BufferTuple
     }
     
   }
+  
+  private <X> void copyFieldFrom(Field<X> field,Tuple source)
+    throws DataException
+  { field.setValue(this,field.getValue(source));
+  }
+  
   
   public void updateTo(
     EditableTuple dest)
@@ -225,21 +231,19 @@ public class BufferTuple
         || (getType()!=null && getType().hasArchetype(dest.getType()))
        )
     { 
-      Field[] dirtyFields=getExtentDirtyFields();
+      Field<?>[] dirtyFields=getExtentDirtyFields();
       if (dirtyFields!=null)
       {
       
-        for (Field field : dirtyFields)
+        for (Field<?> field : dirtyFields)
         { 
-          Field destField
-            =dest.getFieldSet().getFieldByIndex(field.getIndex());
           Object value=field.getValue(this);
           if (value instanceof Buffer)
           { 
             // Don't do anything
           }
           else
-          { destField.setValue(dest,field.getValue(this));
+          { copyFieldTo(field,dest);
           }
         }
       }
@@ -250,6 +254,14 @@ public class BufferTuple
     
   }
 
+  private <X> void copyFieldTo
+    (Field<X> field,EditableTuple dest)
+    throws DataException
+  { 
+    dest.getFieldSet().<X>getFieldByIndex(field.getIndex())
+      .setValue(dest,field.getValue(this));
+  }
+    
   @Override
   public void set(
     int index,
@@ -405,11 +417,11 @@ public class BufferTuple
     sb.append("[");
     boolean first=true;
     String indent2=indent.concat("  ");
-    Field[] dirtyFields=getDirtyFields();
+    Field<?>[] dirtyFields=getDirtyFields();
 
     if (dirtyFields!=null)
     {
-      for (Field field : getDirtyFields())
+      for (Field<?> field : getDirtyFields())
       { 
       
         Object val=field.getValue(this);
@@ -459,12 +471,12 @@ public class BufferTuple
   { 
     StringBuffer buf=new StringBuffer();
     buf.append(super.toString()+":"+getType().getURI()+"[");
-    Field[] dirtyFields=getDirtyFields();
+    Field<?>[] dirtyFields=getDirtyFields();
       
     if (dirtyFields!=null)
     {
       boolean first=true;
-      for (Field field : dirtyFields)
+      for (Field<?> field : dirtyFields)
       { 
         if (first)
         { first=false;
@@ -494,7 +506,7 @@ public class BufferTuple
   }
   
   @Override
-  public Field[] getExtentDirtyFields()
+  public Field<?>[] getExtentDirtyFields()
   {
     if (!dirty)
     { return null;
@@ -507,7 +519,7 @@ public class BufferTuple
       
       FieldSet fieldSet=getFieldSet();
       int j=0;
-      Field[] fields=new Field[dirtyFlags.cardinality()];
+      Field<?>[] fields=new Field[dirtyFlags.cardinality()];
       for(int i=dirtyFlags.nextSetBit(0); i>=0; i=dirtyFlags.nextSetBit(i+1)) 
       { fields[j++]=fieldSet.getFieldByIndex(i);
       }
@@ -515,10 +527,10 @@ public class BufferTuple
     }
   }
   
-  public Field[] getDirtyFields()
+  public Field<?>[] getDirtyFields()
   {
-    Field[] baseDirty=(baseExtent!=null?baseExtent.getDirtyFields():null);
-    Field[] dirty=getExtentDirtyFields();
+    Field<?>[] baseDirty=(baseExtent!=null?baseExtent.getDirtyFields():null);
+    Field<?>[] dirty=getExtentDirtyFields();
     
     if (baseDirty==null)
     { return dirty;

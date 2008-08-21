@@ -158,7 +158,7 @@ public abstract class AbstractAggregateType<T>
    * Aggregates don't have fields, for now
    */
   @Override
-  public Field getField(String name)
+  public <X> Field<X> getField(String name)
   { return null;
   }
   

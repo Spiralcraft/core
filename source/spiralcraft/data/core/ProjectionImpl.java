@@ -47,11 +47,11 @@ import spiralcraft.lang.spi.AbstractChannel;
 public class ProjectionImpl
   implements Projection
 {
-  protected final ArrayList<ProjectionFieldImpl> fields
-  =new ArrayList<ProjectionFieldImpl>();
+  protected final ArrayList<ProjectionFieldImpl<?>> fields
+  =new ArrayList<ProjectionFieldImpl<?>>();
 
-  protected final HashMap<String,ProjectionFieldImpl> fieldMap
-    =new HashMap<String,ProjectionFieldImpl>();
+  protected final HashMap<String,ProjectionFieldImpl<?>> fieldMap
+    =new HashMap<String,ProjectionFieldImpl<?>>();
  
   
   protected FieldSet masterFieldSet;
@@ -84,7 +84,7 @@ public class ProjectionImpl
     this.masterFieldSet=masterFieldSet;
     for (String fieldName : fieldNames)
     { 
-      Field masterField=masterFieldSet.getFieldByName(fieldName);
+      Field<?> masterField=masterFieldSet.getFieldByName(fieldName);
       if (masterField==null)
       { throw new FieldNotFoundException(masterFieldSet,fieldName);
       }
@@ -98,6 +98,7 @@ public class ProjectionImpl
     }
   }
 
+
   public ProjectionImpl(FieldSet masterFieldSet,Expression<?>[] expressions)
     throws DataException
   {    
@@ -105,22 +106,9 @@ public class ProjectionImpl
     int i=0;
     for (Expression<?> expression : expressions)
     {
-      ProjectionFieldImpl field=new ProjectionFieldImpl();
-      field.setFieldSet(this);
+      ProjectionFieldImpl<?> field=makeField(expression);
       field.setIndex(fields.size());
       field.setName("field"+(i++));
-      try
-      {
-        field.setType
-          (TupleReflector.getInstance
-            (masterFieldSet).getTypeAsSubject(expression)
-          );
-      }
-      catch (BindException x)
-      { throw new DataException("Error reflecting Scheme "+masterFieldSet,x);
-      }
-      
-      field.setExpression(expression);
       fields.add(field);
       fieldMap.put(field.getName(),field);
     }
@@ -132,20 +120,43 @@ public class ProjectionImpl
     }
   }  
   
+  private <X> ProjectionFieldImpl<X> makeField(Expression<X> expression)
+    throws DataException
+  {
+      ProjectionFieldImpl<X> field=new ProjectionFieldImpl<X>();
+      field.setFieldSet(this);
+      try
+      {
+        field.setType
+          (TupleReflector.getInstance
+            (masterFieldSet).<X>getTypeAsSubject(expression)
+          );
+      }
+      catch (BindException x)
+      { throw new DataException("Error reflecting Scheme "+masterFieldSet,x);
+      }
+      
+      field.setExpression(expression);
+      return field;
+    
+  }
+  
   public Type<?> getType()
   { return type;
   }
   
-  public Iterable<? extends ProjectionField> fieldIterable()
+  public Iterable<? extends ProjectionField<?>> fieldIterable()
   { return fields;
   }
 
-  public ProjectionField getFieldByIndex(int index)
-  { return fields.get(index);
+  @SuppressWarnings("unchecked") // Map value cast
+  public <X> ProjectionField<X> getFieldByIndex(int index)
+  { return (ProjectionField<X>) fields.get(index);
   }
 
-  public ProjectionField getFieldByName(String name)
-  { return fieldMap.get(name);
+  @SuppressWarnings("unchecked") // Map value cast
+  public <X> ProjectionField<X> getFieldByName(String name)
+  { return (ProjectionField<X>) fieldMap.get(name);
   }
   
   public int getFieldCount()
@@ -158,11 +169,11 @@ public class ProjectionImpl
 
 
   
-  protected void addMasterField(String name,Field masterField)
+  protected <X> void addMasterField(String name,Field<X> masterField)
   { 
     assertUnresolved();
     
-    ProjectionFieldImpl field=new ProjectionFieldImpl();
+    ProjectionFieldImpl<X> field=new ProjectionFieldImpl<X>();
     field.setFieldSet(this);
     field.setIndex(fields.size());
     field.setType(masterField.getType());
@@ -185,7 +196,7 @@ public class ProjectionImpl
     if (resolved)
     { return;
     }
-    for (ProjectionFieldImpl field: fields)
+    for (ProjectionFieldImpl<?> field: fields)
     { field.resolve();
     }
     
@@ -239,7 +250,7 @@ public class ProjectionImpl
 
       Channel<?>[] bindings=new Channel[fields.size()];
       int i=0;
-      for (ProjectionFieldImpl field : fields)
+      for (ProjectionFieldImpl<?> field : fields)
       { bindings[i++]=focus.bind(field.getExpression()); 
       }
       
@@ -292,7 +303,7 @@ public class ProjectionImpl
     StringBuilder fieldList=new StringBuilder();
     fieldList.append("[");
     boolean first=true;
-    for (Field field:fields)
+    for (Field<?> field:fields)
     { 
       fieldList.append("\r\n  ");
       if (!first)

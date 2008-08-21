@@ -32,29 +32,27 @@ public abstract class Type<T>
 {  
 //  private static final ClassLogger log=ClassLogger.getInstance(Type.class);
   
-  public static Type<?> resolve(String uriString)
+  public static <X> Type<X> resolve(String uriString)
     throws DataException
-  { return TypeResolver.getTypeResolver().resolve(URI.create(uriString));
+  { return TypeResolver.getTypeResolver().<X>resolve(URI.create(uriString));
   }
 
-  public static Type<?> resolve(URI uri)
+  public static <X> Type<X> resolve(URI uri)
     throws DataException
-  { return TypeResolver.getTypeResolver().resolve(uri);
+  { return TypeResolver.getTypeResolver().<X>resolve(uri);
   }
   
     
-  @SuppressWarnings("unchecked")
   public static <X> Type<List<X>> getAggregateType(Type<X> type)
   { 
     try
-    { return (Type<List<X>>) resolve(type.getURI().toString()+".list");
+    { return Type.<List<X>>resolve(type.getURI().toString()+".list");
     }
     catch (DataException x)
     { throw new RuntimeException(x);
     }
   }
 
-  @SuppressWarnings("unchecked")
   public static <X> Type<Buffer> getBufferType(Type<X> type)
   { 
     try
@@ -63,7 +61,7 @@ public abstract class Type<T>
 //        ("Buffer Type for "+type+" is "
 //        +resolve(type.getURI().toString()+".buffer")
 //        );
-      return (Type<Buffer>) resolve(type.getURI().toString()+".buffer");
+      return Type.<Buffer>resolve(type.getURI().toString()+".buffer");
       
     }
     catch (DataException x)
@@ -233,7 +231,7 @@ public abstract class Type<T>
    * @param name
    * @return the Field
    */
-  public abstract Field getField(String name);
+  public abstract <X> Field<X> getField(String name);
   
   /**
    * Returns the FieldSet composed of the fields in this Type and
