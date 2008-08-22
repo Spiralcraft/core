@@ -239,11 +239,15 @@ dataReader.readFromURI
 "//";
 "";
 
+rootFocus
+  =new spiralcraft.lang.BeanFocus
+    (spiralcraft.data.session.DataSession.class,null);
 
 focus=new spiralcraft.data.session.DataSessionFocus
-	(null,null,null);
+	(rootFocus,rootFocus.getSubject(),null);
 	
-focus.getSubject().set(new spiralcraft.data.session.DataSession());
+rootFocus.getSubject().set(focus.newDataSession());
+focus.initializeDataSession();
 
 
 queryable=new spiralcraft.data.xml.XmlQueryable

@@ -25,6 +25,8 @@ import spiralcraft.data.DataException;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Setter;
@@ -95,6 +97,9 @@ public abstract class FrameHandler
 
   private Assignment<?>[] defaultAssignments;
   protected Setter<?>[] defaultSetters;
+  
+  private Expression<String> textBinding;
+  private Channel<String> textChannel;
 
   
   public void setDefaultAssignments(Assignment<?>[] defaultAssignments)
@@ -108,6 +113,16 @@ public abstract class FrameHandler
   
   public void setDebug(boolean debug)
   { this.debug=debug;
+  }
+  
+  /**
+   * <p>Specify a destination for character data in the XML element
+   * </p>
+   * 
+   * @param textBinding
+   */
+  public void setTextBinding(Expression<String> textBinding)
+  { this.textBinding=textBinding;
   }
   
   public String getElementURI()
@@ -179,6 +194,9 @@ public abstract class FrameHandler
           );
       }
       
+    }
+    if (textBinding!=null)
+    { textChannel=focus.bind(textBinding);
     }
   }
 
@@ -318,6 +336,18 @@ public abstract class FrameHandler
   public final void closeFrame(ForeignDataHandler.HandledFrame frame)
     throws DataException
   { 
+    String chars=frame.getCharacters();
+    if (chars!=null && textChannel!=null)
+    { 
+      String orig=textChannel.get();
+      if (orig==null)
+      { textChannel.set(chars);
+      }
+      else
+      { textChannel.set(orig+chars);
+      }
+    }
+      
     closeData();
     
     if (parent!=null)

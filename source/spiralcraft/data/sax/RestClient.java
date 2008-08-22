@@ -22,11 +22,14 @@ import org.xml.sax.SAXException;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.spi.EditableArrayTuple;
 
 
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.FocusChainObject;
@@ -38,7 +41,7 @@ import spiralcraft.log.ClassLogger;
 import spiralcraft.text.html.URLDataEncoder;
 
 /**
- * <p>Interactes with a web service that uses a REST-like interface
+ * <p>Interacts with a web service that uses a REST-like interface
  * </p>
  * 
  * <p>This component is thread-safe
@@ -55,10 +58,14 @@ public class RestClient
 
   private URI baseURI;
   private AttributeBinding<?>[] urlQueryBindings;
-  private ThreadLocalChannel<Tuple> queryChannel;
+  private ThreadLocalChannel<Tuple> localQueryChannel;
   private RootFrameHandler<?> handler;
-  private Assignment<?>[] assignments;
-  private Setter<?>[] setters;
+  private Assignment<?>[] preAssignments;
+  private Assignment<?>[] postAssignments;
+  private Setter<?>[] preSetters;
+  private Setter<?>[] postSetters;
+  private Expression<Tuple> queryDataObject;
+  private Channel<Tuple> queryDataChannel;
   
   private Focus<Tuple> focus;
   private boolean debug;
@@ -72,6 +79,15 @@ public class RestClient
   public void setRootFrameHandler(RootFrameHandler<?> handler)
   { this.handler=handler;
   }
+  
+  /**
+   * @return The spiralcraft.data.Type of the data object which provides the
+   *   query parameters and optionally caches the result
+   */
+  public Type<?> getQueryDataType()
+  { return handler.getType();
+  }
+  
   
   public void setDebug(boolean debug)
   { this.debug=debug;
@@ -98,10 +114,33 @@ public class RestClient
   { this.urlQueryBindings=urlQueryBindings;
   }
   
-  public void setAssignments(Assignment<?>[] assignments)
-  { this.assignments=assignments;
+  /**
+   * <p>Specify the set of assignments that will be applied before 
+   *   the query is executed
+   * </p>
+   * 
+   * @param assignments
+   */
+  public void setPreAssignments(Assignment<?>[] preAssignments)
+  { this.preAssignments=preAssignments;
   }
   
+  /**
+   * <p>Specify the set of assignments that will be applied after the query 
+   *   completes
+   * </p>
+   * 
+   * @param assignments
+   */
+  public void setPostAssignments(Assignment<?>[] postAssignments)
+  { this.postAssignments=postAssignments;
+  }
+  
+  public void setQueryDataObject(Expression<Tuple> queryDataObject)
+  { this.queryDataObject=queryDataObject;
+  }
+  
+ 
   
   /**
    * <p>Resolve all expressions
@@ -110,17 +149,30 @@ public class RestClient
    * @param parentFocus
    * @throws BindException
    */
+  @SuppressWarnings("unchecked") // Checking wildcard Focus for right object
   public void bind(Focus<?> parentFocus)
     throws BindException
   {
 
+    if (parentFocus!=null)
+    {
+      if (queryDataObject!=null)
+      { queryDataChannel=parentFocus.bind(queryDataObject);
+      }
+      else
+      { 
+        if (parentFocus.isFocus(handler.getType().getURI()))
+        { queryDataChannel=(Channel<Tuple>) parentFocus.getSubject();
+        }
+      }
+    }
     
-    queryChannel
-      =new ThreadLocalChannel<Tuple>
-        (DataReflector.<Tuple>getInstance(handler.getType())
+    localQueryChannel
+        =new ThreadLocalChannel<Tuple>
+          (DataReflector.<Tuple>getInstance(handler.getType())
         );
     
-    focus=new SimpleFocus<Tuple>(parentFocus,queryChannel);
+    focus=new SimpleFocus<Tuple>(parentFocus,localQueryChannel);
     
     handler.setFocus(focus);
     handler.bind();
@@ -135,10 +187,13 @@ public class RestClient
   protected void bindAssignments()
     throws BindException
   { 
-    if (assignments!=null)
-    { setters=Assignment.bindArray(assignments, focus);
+    if (preAssignments!=null)
+    { preSetters=Assignment.bindArray(preAssignments, focus);
     }
     
+    if (postAssignments!=null)
+    { postSetters=Assignment.bindArray(postAssignments, focus);
+    }
   }
   
   protected void bindAttributes()
@@ -152,6 +207,32 @@ public class RestClient
       
     }
   }  
+  
+  
+  /**
+   * <p>Run the query, using the supplied query channel.
+   * </p>
+   * 
+   * <p>The query object is updated with current values according to
+   *   the Assignments, and the items specified in the AttributeBindings
+   *   are incorporated into the REST query URL.
+   * </p>
+   * 
+   * <p>This method is thread-safe
+   * </p>
+   */
+  public void query()
+    throws DataException
+  {
+    if (queryDataChannel!=null)
+    { queryDataChannel.set(query(queryDataChannel.get()));
+    }
+    else
+    { 
+      throw new DataException
+        ("No queryDataObject specified for type "+handler.getType().getURI());
+    }
+  }
   
   /**
    * <p>Run the query from the supplied query object.
@@ -173,14 +254,19 @@ public class RestClient
     }
     
     // Push the query object
-    queryChannel.push(query);
+    localQueryChannel.push(query);
     try
     {
       
-      if (setters!=null)
-      { Setter.applyArray(setters);
+      if (preSetters!=null)
+      { Setter.applyArray(preSetters);
       }
     
+      if (baseURI==null)
+      { 
+        throw new DataException
+          ("RestClient.baseURI has not specified");
+      }
       URI queryURI=baseURI;
       StringBuilder queryString=new StringBuilder();
       String original=baseURI.getQuery();
@@ -228,7 +314,12 @@ public class RestClient
       }
       DataReader dataReader=new DataReader();
       dataReader.setFrameHandler(handler);
-      return (Tuple) dataReader.readFromURI(queryURI,handler.getType());
+      
+      query = (Tuple) dataReader.readFromURI(queryURI,handler.getType());
+      if (postSetters!=null)
+      { Setter.applyArray(postSetters);
+      }
+      return query;
     }
     catch (SAXException x)
     { throw new DataException("Error reading response",x);
@@ -237,7 +328,7 @@ public class RestClient
     { throw new DataException("I/O error performing query",x);
     }
     finally
-    { queryChannel.pop();
+    { localQueryChannel.pop();
     }
   }
   

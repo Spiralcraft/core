@@ -31,13 +31,16 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.spi.BeanReflector;
-import spiralcraft.lang.spi.SimpleChannel;
+
 import spiralcraft.log.ClassLogger;
 
 /**
- * <p>A Focus which provides access to a DataSession object and its associated
- *   data Tuple of arbitrary Type.
+ * <p>A Focus which provides access to a DataSession object and its
+ *   associated data Tuple of arbitrary Type, which defines the
+ *   "working set" associated with the DataSession.
+ * </p>
+ * 
+ * <p>
  *   A source Channel provides access to the DataSession object.
  * </p>  
  * 
@@ -66,15 +69,13 @@ public class DataSessionFocus
     )
     throws BindException
   { 
-    super(parentFocus
-        ,source!=null
-          ?source
-          :new SimpleChannel<DataSession>
-            (BeanReflector.<DataSession>getInstance(DataSession.class)
-            ,null
-            ,false
-            )
-         );
+    super(parentFocus,source);
+    if (source==null)
+    { 
+      throw new BindException
+        ("Source channel (Channel<DataSession>) cannot be null"
+        );
+    }
     
     this.dataType=dataType;
     if (parentFocus!=null)
@@ -86,8 +87,8 @@ public class DataSessionFocus
       }
     }
     
-      if (dataType!=null)
-      {
+    if (dataType!=null)
+    {
 
 // To pre-buffer- no use case
 //
@@ -103,34 +104,36 @@ public class DataSessionFocus
 //      
 //         bindFocus("spiralcraft.data.buffer",dataBufferFocus);
 
-        dataFocus
-          =new SimpleFocus<DataComposite>
-            (this
-            ,new DataChannel<DataComposite>
-              (dataType
-              ,this.bind(DATA_EXPRESSION)
-              ,false
-              )
-            );
+      // Adapt a data channel to the bean channel returned from
+      //   the Data property
+      dataFocus
+        =new SimpleFocus<DataComposite>
+          (this
+          ,new DataChannel<DataComposite>
+            (dataType
+            ,this.bind(DATA_EXPRESSION)
+            ,false
+            )
+          );
     
-        bindFocus("spiralcraft.data",dataFocus);
+      bindFocus("spiralcraft.data",dataFocus);
 
-        // Take care of initial field value
-        for (Field field: dataType.getFieldSet().fieldIterable())
+      // Take care of initial field value
+      for (Field field: dataType.getFieldSet().fieldIterable())
+      {
+      
+      
+        // Takes care of timestamps
+        if (field.getNewExpression()!=null)
         {
-      
-      
-          // Takes care of timestamps
-          if (field.getNewExpression()!=null)
-          {
-            if (newSetters==null)
-            { newSetters=new ArrayList<Setter<?>>();
-            }
-            newSetters.add
-              (bindSetter(field,field.getNewExpression()));
+          if (newSetters==null)
+          { newSetters=new ArrayList<Setter<?>>();
           }
+          newSetters.add
+            (bindSetter(field,field.getNewExpression()));
         }
       }
+    }
         
     
   }
@@ -162,12 +165,20 @@ public class DataSessionFocus
     if (spaceChannel!=null)
     { dataSession.setSpace(spaceChannel.get());
     }
+    
+    // Note: The Focus is only used to bind the Updaters for 
+    //   this session
     dataSession.setFocus(this);
     
     return dataSession;
     
   }
   
+  /**
+   * Initializes the DataSession data object once the DataSession
+   *   returned from newDataSession is made accessible through the
+   *   supplied source Channel&lt;DataSession&gt;
+   */
   public void initializeDataSession()
   {
     if (newSetters!=null)

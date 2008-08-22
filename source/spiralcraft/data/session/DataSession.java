@@ -30,6 +30,7 @@ import spiralcraft.data.transaction.Branch;
 import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.data.transaction.Transaction.State;
 import spiralcraft.data.util.DebugDataConsumer;
+import spiralcraft.lang.Focus;
 
 
 import java.util.ArrayList;
@@ -55,13 +56,20 @@ public class DataSession
   private Space space;
   private ResourceManager<DataSessionBranch> resourceManager
     =new DataSessionResourceManager();
-  private DataSessionFocus focus;
+  private Focus<?> focus;
   
   public void setType(Type<DataComposite> type)
   { this.type=type;
   }
 
-  public void setFocus(DataSessionFocus focus)
+  /**
+   * <p>Note that the supplied Focus is only used to bind the Updaters
+   *   for this session.
+   * </p>
+   * 
+   * @param focus
+   */
+  void setFocus(Focus<?> focus)
   { this.focus=focus;
   }
   
@@ -170,7 +178,7 @@ public class DataSession
   }
   
   /**
-   * Saves changes to the store
+   * Save all edits in the DataSession to the store
    */
   public synchronized void save()
     throws DataException
