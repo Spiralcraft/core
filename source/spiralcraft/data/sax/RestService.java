@@ -242,7 +242,17 @@ public class RestService
         DataSession session=sessionChannel.get();
         Buffer buffer;
         if (modelSourceChannel!=null)
-        { buffer=session.buffer(modelSourceChannel.get());
+        { 
+          DataComposite modelObject=modelSourceChannel.get();
+          if (modelObject==null)
+          { 
+            throw new DataException
+              ("Model object is null, nothing to update ("
+              +modelSourceChannel.getReflector().getTypeURI()
+              +")"
+              );
+          }
+          buffer=session.buffer(modelSourceChannel.get());
         }
         else
         { buffer=session.buffer(session.getData());
