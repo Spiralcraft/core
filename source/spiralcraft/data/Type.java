@@ -364,16 +364,6 @@ public abstract class Type<T>
   public abstract DataComposite toData(T object)
     throws DataException;
   
-  
-  /**
-   * Determine whether a value is appropriate for the native type and 
-   *   other contraints of this Type.
-   *
-   * @return null, if the value is valid for this Type, or a ValidationResult
-   *   containing specifics of the failure.
-   */
-  public abstract ValidationResult validate(Object value);
-  
   /**
    * Get the Comparator that should be used to define orderings of values of
    *   this type.

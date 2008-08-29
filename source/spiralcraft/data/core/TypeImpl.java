@@ -23,7 +23,6 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.TypeResolver;
-import spiralcraft.data.ValidationResult;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.util.InstanceResolver;
 
@@ -326,31 +325,6 @@ public class TypeImpl<T>
     this.scheme=(SchemeImpl) scheme;
   }
   
-  /**
-   * Default implementation of validate is to ensure that the supplied object
-   *   is assignable to this Type's nativeClass.
-   */
-  @Override
-  public ValidationResult validate(Object o)
-  { 
-    if (nativeClass==null)
-    { return null;
-    }
-    
-    if (o!=null
-        && !(nativeClass.isAssignableFrom(o.getClass()))
-       )
-    { 
-      return new ValidationResult
-        (o.getClass().getName()
-        +" cannot be assigned to "
-        +nativeClass.getName()
-        );
-    }
-    else
-    { return null;
-    }    
-  }
   
   /**
    * @return Whether this Type is an aggregate (array or collection) of another

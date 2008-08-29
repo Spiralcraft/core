@@ -22,6 +22,10 @@ import java.net.URI;
 public class ParsePosition
 {
 
+  public static final ParsePosition atIndex(int index,CharSequence context)
+  { return new ParsePosition(-1,-1,index,context,null);
+  }
+  
   private int line=-1;
   private int column=-1;
   private int index;

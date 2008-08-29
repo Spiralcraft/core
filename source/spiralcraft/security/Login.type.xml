@@ -5,101 +5,109 @@
   xmlns:meta="class:/spiralcraft/data/types/meta"
   xmlns:security="class:/spiralcraft/security"
   >
-  <scheme>
-    <meta:Scheme>
-      <fields>
+  
+  <fields>
+  
+    <!--  Login.principalId -->
+    <meta:Field>
       
-        <!--  Login.principalId -->
-        <meta:Field>
-          
-          <name>principalId
-          </name>
-          
-          <type>
-            <String.type>
+      <name>principalId
+      </name>
+      
+      <type>
+        <String.type>
 
-              <maxLength>64
-              </maxLength>
-            
-            </String.type>
-          </type>
-
-        </meta:Field>
-
-      	<!--  Login.username -->
-        <meta:Field>
-          
-          <name>username
-          </name>
-          
-          <type>
-          	<String.type>
-
-		          <maxLength>64
-		          </maxLength>
-          	
-          	</String.type>
-          </type>
-
-        </meta:Field>
-
-      	<!--  Login.searchname -->
-        <meta:CalculatedField>
-
-          <name>searchname
-          </name>
-
-					<expression>username.toLowerCase()
-					</expression>
-					
-          <type>
-          	<String.type>
-
-		          <maxLength>64
-		          </maxLength>
-          	
-          	</String.type>
-          </type>
-
-        </meta:CalculatedField>
+          <maxLength>64
+          </maxLength>
         
-      	<!--  Login.clearpass -->
-        <meta:Field>
+        </String.type>
+      </type>
 
-          <name>clearpass
-          </name>
+    </meta:Field>
 
-          <type>
-          	<String.type>
+    <!--  Login.username -->
+    <meta:Field>
+      
+      <name>username
+      </name>
+      
+      <type>
+        <String.type>
 
-		          <maxLength>64
-		          </maxLength>
-          	
-          	</String.type>
-          </type>
-
-        </meta:Field>
-           
-      	<!--  Login.cryptpass -->
-        <meta:Field>
-
-          <name>cryptpass
-          </name>
-
-          <type>
-          	<String.type>
-
-		          <maxLength>64
-		          </maxLength>
-          	
-          	</String.type>
-          </type>
-
-        </meta:Field>
+          <maxLength>64
+          </maxLength>
         
+        </String.type>
+      </type>
+
+    </meta:Field>
+
+    <!--  Login.searchname -->
+    <meta:CalculatedField>
+
+      <name>searchname
+      </name>
+
+      <expression>username.toLowerCase()
+      </expression>
         
-      </fields>
-    </meta:Scheme>
-  </scheme>
+      <type>
+        <String.type>
+
+          <maxLength>64
+          </maxLength>
+        
+        </String.type>
+      </type>
+
+    </meta:CalculatedField>
+    
+    <!--  Login.clearpass -->
+    <meta:Field>
+
+      <name>clearpass
+      </name>
+
+      <type>
+        <String.type>
+
+          <maxLength>64
+          </maxLength>
+        
+        </String.type>
+      </type>
+
+    </meta:Field>
+       
+    <!--  Login.cryptpass -->
+    <meta:Field>
+
+      <name>cryptpass
+      </name>
+
+      <type>
+        <String.type>
+
+          <maxLength>64
+          </maxLength>
+        
+        </String.type>
+      </type>
+
+    </meta:Field>
+    
+    
+  </fields>
+  
+  <keys>
+    <meta:Key>
+      <primary>true
+      </primary>
+
+      <fieldList>searchname
+      </fieldList>
+    </meta:Key>
+      
+  </keys>
 
 </meta:Type>

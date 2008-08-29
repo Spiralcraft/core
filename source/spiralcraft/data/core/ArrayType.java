@@ -20,7 +20,6 @@ import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeResolver;
-import spiralcraft.data.ValidationResult;
 
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.util.InstanceResolver;
@@ -54,19 +53,7 @@ public class ArrayType
   public TypeResolver getTypeResolver()
   { return contentType.getTypeResolver();
   }
-  
-  @Override
-  public ValidationResult validate(Object value)
-  { 
-    // More work here-
-    //   Go through values and and call type.validate() on each one
-    // Validation result should accept multiple messages
-    return null;
-  }
-  
-  
-
-  
+    
   @Override
   public Object[] fromData(DataComposite data,InstanceResolver resolver)
     throws DataException

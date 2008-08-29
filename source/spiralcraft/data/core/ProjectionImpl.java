@@ -61,6 +61,8 @@ public class ProjectionImpl<T>
   protected TupleReflector<Tuple> reflector;
   
   private Type<?> type;
+  
+  protected boolean debug;
 
 
   public ProjectionImpl()
@@ -68,6 +70,7 @@ public class ProjectionImpl<T>
 
 
   }
+  
   
   /**
    * <p>Create a projection that targets another FieldSet and simply subsets
@@ -139,6 +142,10 @@ public class ProjectionImpl<T>
       field.setExpression(expression);
       return field;
     
+  }
+
+  public void setDebug(boolean debug)
+  { this.debug=debug;
   }
   
   public Type<?> getType()

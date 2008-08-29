@@ -15,7 +15,6 @@
 package spiralcraft.data.types.standard;
 
 import spiralcraft.data.TypeResolver;
-import spiralcraft.data.ValidationResult;
 
 import spiralcraft.data.core.PrimitiveTypeImpl;
 
@@ -44,24 +43,4 @@ public class StringType
   { return maxLength;
   }
   
-  @Override
-  public ValidationResult validate(Object val)
-  {
-    if (val==null)
-    { return null;
-    }
-    
-    ValidationResult ret=super.validate(val);
-    if (ret!=null)
-    { return ret;
-    }
-    
-    if (maxLength>-1)
-    {
-      if ( ((String) val).length()>maxLength)
-      { return new ValidationResult("String length exceeds "+maxLength);
-      }
-    }
-    return null;
-  }
 }

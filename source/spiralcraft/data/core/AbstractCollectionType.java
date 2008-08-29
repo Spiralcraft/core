@@ -20,8 +20,6 @@ import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeResolver;
-import spiralcraft.data.ValidationResult;
-
 
 import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.spi.EditableArrayListAggregate;
@@ -71,16 +69,6 @@ public class AbstractCollectionType<T extends Collection>
   @Override
   public TypeResolver getTypeResolver()
   { return resolver;
-  }
-  
-
-  @Override
-  public ValidationResult validate(Object value)
-  { 
-    // More work here-
-    //   Go through values and and call type.validate() on each one
-    // Validation result should accept multiple messages
-    return null;
   }
   
   

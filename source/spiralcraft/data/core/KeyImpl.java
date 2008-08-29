@@ -250,6 +250,7 @@ public class KeyImpl<T>
       ,rhsExpressions
       );
     ej.setSource(new Scan(scheme.getType()));
+    ej.setDebug(debug);
     query=ej;
 
   }
