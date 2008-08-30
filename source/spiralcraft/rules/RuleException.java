@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 1998,2008 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,24 +12,22 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang;
+package spiralcraft.rules;
 
-/**
- * <p>Thrown to indicate an abnormal failure reading or writing a value through 
- *   a Channel.
- * </p>
- */
-public class AccessException
-  extends RuntimeException
+public class RuleException
+  extends Exception
 {
-  private static final long serialVersionUID=1;
+
+  private static final long serialVersionUID = 1L;
   
-  public AccessException(String message)
-  { super(message);
-  }
+  private Violation<?>[] violations;
   
-  public AccessException(String message,Throwable cause)
-  {
-    super(message,cause);
+  public RuleException(Violation<?> ... violations)
+  { this.violations=violations;
   }
+
+  public Violation<?>[] getViolations()
+  { return violations;
+  }
+
 }

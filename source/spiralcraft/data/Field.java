@@ -26,6 +26,9 @@ import spiralcraft.lang.BindException;
 /**
  * <p>A description of a single data element of a Tuple.
  * </p>
+ * 
+ * <p>
+ * </p>
  */
 public interface Field<T>
   extends ChannelFactory<T,Tuple>
@@ -95,7 +98,7 @@ public interface Field<T>
    * @return A Binding bound to the focus
    */
    @Override
-   Channel<T> bindChannel(Focus<Tuple> focus)
+  Channel<T> bindChannel(Focus<Tuple> focus)
     throws BindException;
   
   /**

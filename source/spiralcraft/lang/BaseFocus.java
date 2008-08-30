@@ -59,6 +59,13 @@ public abstract class BaseFocus<T>
   { return subject;
   }
   
+  public <Tchannel> TeleFocus<Tchannel> telescope(Channel<Tchannel> channel)
+  { return new TeleFocus<Tchannel>(this,channel);
+  }
+  
+  public <Tchannel> Focus<Tchannel> chain(Channel<Tchannel> channel)
+  { return new SimpleFocus<Tchannel>(this,channel);
+  }
 
 
 

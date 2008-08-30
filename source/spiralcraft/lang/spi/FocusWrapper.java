@@ -23,6 +23,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.NamespaceResolver;
+import spiralcraft.lang.TeleFocus;
 
 
 /**
@@ -123,4 +124,20 @@ public abstract class FocusWrapper<tFocus>
   public LinkedList<Focus<?>> getFocusChain() 
   { return focus.getFocusChain();
   }
+
+
+  @Override
+  public <Tchannel> Focus<Tchannel> chain(
+    Channel<Tchannel> channel)
+  { return focus.<Tchannel>chain(channel);
+  }
+
+
+  @Override
+  public <Tchannel> TeleFocus<Tchannel> telescope(
+    Channel<Tchannel> subject)
+  { return focus.<Tchannel>telescope(subject);
+  }
+  
+  
 }

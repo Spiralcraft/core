@@ -265,4 +265,35 @@ public interface Focus<T>
    * @return The chain of Focus objects visible from this Focus.
    */
   public LinkedList<Focus<?>> getFocusChain();
+  
+  /**
+   * <p>Return a new Focus that has the same context as this Focus, but 
+   *   that has the specified subject
+   * </p>
+   * 
+   * <p>The context is accessed using non-dotted identifiers (eg. "name"),
+   *   whereas the subject is accessed using dotted identifiers (eg. ".name").
+   *   This provides the capability for simple in-context comparisions,
+   *   (eg. ".name==name")
+   * </p>
+   * 
+   * @param <Tchannel>
+   * @param channel
+   * @return The new Focus, which is a TeleFocus.
+   */
+  public <Tchannel> TeleFocus<Tchannel> telescope(Channel<Tchannel> subject);
+  
+  /**
+   * <p>Return a new Focus for the end of the Focus chain that references the
+   *   specified channel as its subject and context, and that has this Focus
+   *   as its parent.
+   * </p>
+   * 
+   * 
+   * @param <Tchannel>
+   * @param channel
+   * @return The new Focus
+   */
+  public <Tchannel> Focus<Tchannel> chain(Channel<Tchannel> channel);
+  
 }
