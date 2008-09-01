@@ -17,6 +17,7 @@ package spiralcraft.data.sax;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
 
 import org.xml.sax.SAXException;
 
@@ -38,6 +39,7 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLogger;
 
+import spiralcraft.sax.XmlWriter;
 import spiralcraft.text.html.URLDataEncoder;
 
 /**
@@ -314,6 +316,10 @@ public class RestClient
       }
       DataReader dataReader=new DataReader();
       dataReader.setFrameHandler(handler);
+      if (debug)
+      { dataReader.setTraceHandler(new XmlWriter(System.err));
+      }
+      
       
       query = (Tuple) dataReader.readFromURI(queryURI,handler.getType());
       if (postSetters!=null)
@@ -322,10 +328,18 @@ public class RestClient
       return query;
     }
     catch (SAXException x)
-    { throw new DataException("Error reading response",x);
+    { 
+      if (debug)
+      { log.log(Level.FINE,"Error reading response",x);
+      }
+      throw new DataException("Error reading response",x);
     }
     catch (IOException x)
-    { throw new DataException("I/O error performing query",x);
+    { 
+      if (debug)
+      { log.log(Level.FINE,"I/O error performing query",x);
+      }
+      throw new DataException("I/O error performing query",x);
     }
     finally
     { localQueryChannel.pop();

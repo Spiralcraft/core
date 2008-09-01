@@ -12,14 +12,41 @@ public class ClassLogger
   extends Logger
 {
   
-  private static ClassLogger instance;
+//  private static ClassLogger instance;
+  
+  static
+  {
+    try
+    {
+      Logger logger=Logger.getLogger("");
+
+
+      if (logger.getHandlers()==null || logger.getHandlers().length==0)
+      { 
+        Handler logHandler=new ConsoleHandler();
+
+        logHandler.setFormatter(new DefaultFormatter());
+        logHandler.setLevel(Level.ALL);
+      
+        logger.addHandler(new ConsoleHandler());
+      }
+      logger.setLevel(Level.ALL);
+    }
+    catch (SecurityException x)
+    { x.printStackTrace();
+    }
+
+  }
   
   public static synchronized final ClassLogger getInstance(Class<?> subject)
   {
-    if (instance==null)
-    { instance=new ClassLogger();
-    }
-    return instance;
+    
+    return new ClassLogger(subject.getName());
+
+//    if (instance==null)
+//    { instance=new ClassLogger();
+//    }
+//    return instance;
   }
 
   private Logger logger;
@@ -33,18 +60,13 @@ public class ClassLogger
   }
   
   
-  ClassLogger()
+  ClassLogger(String className)
   { 
-    super(
-      "spiralcraft.log.ClassLogger"
-      ,
-      null
-      );
+    super(className,null);
     logger=Logger.getLogger(getName());
-    if (logger.getHandlers()==null || logger.getHandlers().length==0)
-    { logger.addHandler(logHandler);
-    }
-    setLevel(Level.FINEST);
+    logger.setUseParentHandlers(true);
+    logger.addHandler(logHandler);
+    setLevel(Level.ALL);
   }
   
   public void levelSevere()
@@ -136,26 +158,21 @@ public class ClassLogger
         );
     }
   }
-//  public void fine(String msg)
-//  { logger.finer(msg);
-//  }
 
-//  public void fine(String msg)
-//  { logger.finest(msg);
-//  }
 
   @Override
   public void log(LogRecord event)
   { 
-    System.err.println(event);
+    // System.err.println(event);
     logger.log(event);
   }
   
   @Override
   public void log(Level level,String message,Throwable x)
   { 
-    System.err.println("ClassLogger.log(): "+message);
-    x.printStackTrace(System.err);
+    // System.err.println("ClassLogger.log(): "+message);
+    // x.printStackTrace(System.err);
+    
     logger.log(level,message,x);
   }
 

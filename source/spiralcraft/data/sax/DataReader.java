@@ -25,6 +25,7 @@ import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.access.DataFactory;
 import spiralcraft.data.Tuple;
 
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -46,6 +47,7 @@ public class DataReader
   private DataConsumer<? super Tuple> dataConsumer;
   private DataFactory<? super DataComposite> dataFactory;
   private FrameHandler frameHandler;
+  private ContentHandler traceHandler;
   
   /**
    * <p>Provide a DataConsumer to receive a stream of Tuples from the outermost
@@ -78,6 +80,10 @@ public class DataReader
    */
   public void setFrameHandler(FrameHandler frameHandler)
   { this.frameHandler=frameHandler;
+  }
+  
+  public void setTraceHandler(ContentHandler traceHandler)
+  { this.traceHandler=traceHandler;
   }
   
   /**
@@ -187,6 +193,10 @@ public class DataReader
     { handler.setDataFactory(dataFactory);
     }
 
+    if (traceHandler!=null)
+    { handler.setTraceHandler(traceHandler);
+    }
+    
     parser.parse(in,handler);
     return handler.getCurrentObject();
 

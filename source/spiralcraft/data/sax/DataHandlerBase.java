@@ -17,6 +17,7 @@ package spiralcraft.data.sax;
 import java.net.URI;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -49,6 +50,7 @@ public abstract class DataHandlerBase
   protected DataConsumer<? super Tuple> dataConsumer;
   protected DataFactory<? super DataComposite> dataFactory;
 
+  private ContentHandler traceHandler;
   
   @Override
   public void setDocumentLocator(Locator locator)
@@ -65,6 +67,10 @@ public abstract class DataHandlerBase
     position.setLine(locator.getLineNumber());
     position.setColumn(locator.getColumnNumber());
     return " ("+position+")";
+  }
+  
+  public void setTraceHandler(ContentHandler traceHandler)
+  { this.traceHandler=traceHandler;
   }
   
 
@@ -95,6 +101,10 @@ public abstract class DataHandlerBase
   public void startDocument()
     throws SAXException
   { 
+    if (traceHandler!=null)
+    { traceHandler.startDocument();
+    }
+    
     try
     { initialFrame.start(null);
     } 
@@ -110,6 +120,10 @@ public abstract class DataHandlerBase
   public void endDocument()
     throws SAXException
   { 
+    if (traceHandler!=null)
+    { traceHandler.endDocument();
+    }
+
     try
     { initialFrame.finish();
     } 
@@ -129,6 +143,10 @@ public abstract class DataHandlerBase
     )
     throws SAXException
   { 
+    if (traceHandler!=null)
+    { traceHandler.startElement(uri,localName,qName,attributes);
+    }
+    
     try
     { currentFrame.startElement(uri,localName,qName,attributes);
     }
@@ -150,6 +168,10 @@ public abstract class DataHandlerBase
     )
     throws SAXException
   { 
+    if (traceHandler!=null)
+    { traceHandler.endElement(uri,localName,qName);
+    }
+
     try
     { currentFrame.finish(); 
     }
@@ -168,7 +190,12 @@ public abstract class DataHandlerBase
     ,int length
     )
     throws SAXException
-  { currentFrame.characters(ch,start,length);
+  { 
+    if (traceHandler!=null)
+    { traceHandler.characters(ch,start,length);
+    }
+    
+    currentFrame.characters(ch,start,length);
   }
 
   @Override
@@ -179,6 +206,9 @@ public abstract class DataHandlerBase
     )
     throws SAXException
   {
+    if (traceHandler!=null)
+    { traceHandler.ignorableWhitespace(ch,start,length);
+    }
   }  
   
   protected void throwSAXException(String message)

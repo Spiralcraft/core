@@ -67,9 +67,9 @@ public class DataHandler
   
 
 
-  protected void pushResource(URI uri)
-  { 
-  }
+  //protected void pushResource(URI uri)
+  //{ 
+  //}
 
 
   
