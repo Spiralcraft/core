@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.sax;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -316,12 +317,20 @@ public class RestClient
       }
       DataReader dataReader=new DataReader();
       dataReader.setFrameHandler(handler);
+      
+      ByteArrayOutputStream out=null;
       if (debug)
-      { dataReader.setTraceHandler(new XmlWriter(System.err));
+      { 
+        out=new ByteArrayOutputStream();
+        dataReader.setTraceHandler(new XmlWriter(out));
       }
       
-      
       query = (Tuple) dataReader.readFromURI(queryURI,handler.getType());
+      
+      if (debug)
+      { log.fine(new String(out.toString()));
+      }
+      
       if (postSetters!=null)
       { Setter.applyArray(postSetters);
       }
