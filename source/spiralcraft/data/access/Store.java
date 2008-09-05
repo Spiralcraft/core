@@ -29,11 +29,13 @@ import spiralcraft.lang.Focus;
 import spiralcraft.builder.Lifecycle;
 
 /**
- * <P>A physical data container. Provides access to a set of data that is
+ * <p>A physical data container. Provides access to a set of data that is
  *   reachable through a single access mechanism, such as a database login,
  *   an XML file, the subtree of a filesystem directory, etc.
+ * </p>
  *   
- * <P>A Store is always participates in a single Space.
+ * <p>A Store is always participates in a single Space.
+ * </p>
  */
 public interface Store
   extends Queryable<Tuple>,Lifecycle

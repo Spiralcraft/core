@@ -21,6 +21,7 @@ import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
+import spiralcraft.rules.RuleSet;
 
 
 /**
@@ -74,19 +75,19 @@ public interface Field<T>
    * @return The expression that evaluates to an initial value for the Field
    *   when the containing Tuple is created.
    */
-  Expression<?> getNewExpression();
+  Expression<T> getNewExpression();
 
   /**
    * @return The expression that evaluates to a default value for the Field,
    *   applied if the Field value is null at the time updates are committed.
    */
-  Expression<?> getDefaultExpression();
+  Expression<T> getDefaultExpression();
 
   /**
    * @return The expression that evaluates to the Field value,
    *   applied at the time updates are committed. 
    */
-  Expression<?> getFixedExpression();
+  Expression<T> getFixedExpression();
   
   /**
    * <p>Create a Channel that accesses the value of this Field in the Tuple
@@ -102,10 +103,11 @@ public interface Field<T>
     throws BindException;
   
   /**
-   * @return Whether the value for this Field is stored or recomputed every
-   *   time it is accessed. 
+   * @return Indicates that values for this Field should not be persisted
    */
-  boolean isStored();
+  boolean isTransient();
+  
+  RuleSet<? extends Field<T>,T> getRuleSet();
 
   /**
    * Retrieve the value of this Field in the specified Tuple

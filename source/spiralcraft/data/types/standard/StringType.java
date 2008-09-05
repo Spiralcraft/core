@@ -14,9 +14,16 @@
 //
 package spiralcraft.data.types.standard;
 
+import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 
 import spiralcraft.data.core.PrimitiveTypeImpl;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
+import spiralcraft.rules.AbstractRule;
+import spiralcraft.rules.RuleChannel;
+import spiralcraft.rules.Violation;
 
 import java.net.URI;
 
@@ -26,9 +33,23 @@ public class StringType
   private int maxLength=-1;
   
   public StringType(TypeResolver resolver,URI uri)
-  { super(resolver,uri,String.class); 
+  { 
+    super(resolver,uri,String.class); 
+    
   }
   
+  @SuppressWarnings("unchecked") // Generic array in addRules
+  @Override
+  public void createRules()
+  { 
+    if (maxLength>0)
+    {
+      addRules
+        (new StringLengthRule()
+        );
+          
+    }
+  }
   
   @Override
   public String fromString(String val)
@@ -42,5 +63,45 @@ public class StringType
   public int getMaxLength()
   { return maxLength;
   }
-  
+
+    
+  class StringLengthRule
+    extends AbstractRule<Type<String>,String>
+  {
+
+    @Override
+    public Channel<Violation<String>> bindChannel(
+      Focus<String> focus)
+      throws BindException
+    { return new StringLengthRuleChannel(focus);
+    }   
+    
+    class StringLengthRuleChannel
+      extends RuleChannel<String>
+    {
+
+      private final Channel<String> source;
+    
+      public StringLengthRuleChannel(Focus<String> focus)
+        throws BindException
+      { source=focus.getSubject();
+      }      
+          
+      @Override
+      protected Violation<String> retrieve()
+      {
+        String value=source.get();
+        if (value==null)
+        { return null;
+        }
+        if (value.length()>maxLength)
+        { 
+          return new Violation<String>
+            (StringLengthRule.this,"Must be under "+maxLength+" characters");
+        }
+        return null;
+      }
+    }
+ 
+  }
 }

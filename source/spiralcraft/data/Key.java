@@ -50,6 +50,12 @@ public interface Key<T>
   public boolean isPrimary();
   
   /**
+   * 
+   * @return The title of this Key to appear in a UI
+   */
+  public String getTitle();
+  
+  /**
    * @return Whether this Key uniquely identifies a single Tuple
    */
   public boolean isUnique();

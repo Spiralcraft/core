@@ -48,6 +48,9 @@
       <name>searchname
       </name>
 
+      <transient>false
+      </transient>
+      
       <expression>username.toLowerCase()
       </expression>
         

@@ -42,6 +42,9 @@ public class CalculatedFieldImpl<T>
   private Channel<T> expressionBinding;
   private Expression<T> expression;
   
+  { setTransient(true);
+  }
+  
   public void setExpression(Expression<T> expression)
   { this.expression=expression;
   }

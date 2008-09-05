@@ -12,28 +12,34 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang;
+package spiralcraft.data;
 
 /**
- * <p>Thrown to indicate an unexpected failure reading or writing a value 
- *   through a Channel.
- * </p>
+ * Thrown when a BufferTuple is committed and the change is incompatible with
+ *   changes made in another journal update.
  */
-public class AccessException
-  extends RuntimeException
+public class UniqueKeyViolationException
+  extends DataException
 {
   private static final long serialVersionUID=1;
   
-  public AccessException(String message)
-  { super(message);
+  private DeltaTuple violatingTuple;
+  private Key<?> violatedKey;
+  
+  public UniqueKeyViolationException
+    (DeltaTuple dataToUpdate, Key<?> violatedKey)
+  { 
+    super(violatedKey.getTitle()+" must be unique");
+    this.violatingTuple=dataToUpdate;
+    this.violatedKey=violatedKey;
+    
   }
   
-  public AccessException(String message,Throwable cause)
-  { super(message,cause);
+  public Key<?> getViolatedKey()
+  { return violatedKey;
   }
-
-  public AccessException(Throwable cause)
-  { super(cause);
+  
+  public DeltaTuple getViolatingTuple()
+  { return violatingTuple;
   }
-
 }

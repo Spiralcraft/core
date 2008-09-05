@@ -1,15 +1,13 @@
 package spiralcraft.rules;
 
-import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.lang.spi.BeanReflector;
 
 /**
- * <p>A Rule which is Violated when a boolean expression fails.
+ * <p>A Rule which is Violated when a boolean expression fails when evaluated
+ *   against the subject value.
  * </p>
  * 
  * @author mike
@@ -23,6 +21,13 @@ public class ExpressionRule<C,T>
 
   private Expression<Boolean> expression;
   private boolean ignoreNull;
+  
+  public ExpressionRule()
+  { }
+  
+  public ExpressionRule(String expression)
+  { setExpression(Expression.<Boolean>create(expression));
+  }
   
   public void setExpression(Expression<Boolean> expression)
   { this.expression=expression;
@@ -42,20 +47,17 @@ public class ExpressionRule<C,T>
   public Channel<Violation<T>> bindChannel(
     Focus<T> focus)
     throws BindException
-  { return new RuleChannel(focus);
+  { return new ExpressionRuleChannel(focus);
   }
 
-  class RuleChannel
-    extends AbstractChannel<Violation<T>>
+  class ExpressionRuleChannel
+    extends RuleChannel<T>
   {
-
     private final Channel<Boolean> channel;
     
-    public RuleChannel(Focus<T> focus)
+    public ExpressionRuleChannel(Focus<T> focus)
       throws BindException
-    { 
-      super(BeanReflector.<Violation<T>>getInstance(Violation.class));
-      channel=focus.bind(expression);
+    { channel=focus.bind(expression);
     }
     
     @Override
@@ -71,13 +73,6 @@ public class ExpressionRule<C,T>
       else
       { return new Violation<T>(ExpressionRule.this,getMessage());
       }
-    }
-
-    @Override
-    protected boolean store(
-      Violation<T> val)
-      throws AccessException
-    { return false;
     }
     
   }

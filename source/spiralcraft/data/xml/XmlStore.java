@@ -33,6 +33,7 @@ import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Sequence;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
+import spiralcraft.data.UniqueKeyViolationException;
 import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.access.Updater;
@@ -392,8 +393,8 @@ public class XmlStore
             SerialCursor<Tuple> cursor=query.execute();
             if (cursor.dataNext())
             { 
-              throw new DataException
-                ("Unique key violation "+uniqueKeys.get(i));
+              throw new UniqueKeyViolationException
+                (tuple,uniqueKeys.get(i));
             }
             i++;
             
@@ -454,8 +455,8 @@ public class XmlStore
                     +"\r\n updated="+tuple
                     );
                 }
-                throw new DataException
-                  ("Unique key violation "+uniqueKeys.get(i));
+                throw new UniqueKeyViolationException
+                  (tuple,uniqueKeys.get(i));
               }
             }
             i++;

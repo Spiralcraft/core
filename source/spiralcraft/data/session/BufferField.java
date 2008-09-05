@@ -59,9 +59,11 @@ public class BufferField
     { 
       // We're not backed by an archetype? So we got our fields how?
       // By extension?
-      originalChannel=new FieldChannel(focus.getSubject());
+//      originalChannel=new FieldChannel<Buffer>(focus);
       log.warning("Using Buffer with no archetype?!?");
-      return new BufferFieldChannel(originalChannel,focus);
+      throw new BindException
+        ("BufferField not associated with a source field");
+//      return new BufferFieldChannel(originalChannel,focus);
     }
 
   }

@@ -49,6 +49,7 @@ public class KeyImpl<T>
   private String[] fieldNames;
   private Query query;
   private Query foreignQuery;
+  private String title;
 
   public String getName()
   { return name;
@@ -58,6 +59,14 @@ public class KeyImpl<T>
   { this.name=name;
   }
   
+  
+  public String getTitle()
+  { return title;
+  }
+  
+  public void setTitle(String title)
+  { this.title=title;
+  }
   
   /**
    * Construct an unresolved KeyImpl which will be configured and resolved
@@ -173,6 +182,7 @@ public class KeyImpl<T>
     { return;
     }
 
+    
     for (String fieldName: fieldNames)
     { 
       Field<?> masterField=masterFieldSet.getFieldByName(fieldName);
@@ -184,6 +194,26 @@ public class KeyImpl<T>
       }
       addMasterField(masterField.getName(),masterField);
     }
+    
+    
+    if (title==null)
+    { title=name;
+    }
+    if (title==null)
+    {
+      StringBuilder titleBuf=new StringBuilder();
+      for (String fieldName: fieldNames)
+      {
+        Field<?> field=masterFieldSet.getFieldByName(fieldName);
+        if (titleBuf.length()>0)
+        { titleBuf.append(",");
+        }
+        titleBuf.append(field.getTitle());
+      }
+      title=titleBuf.toString();
+    }
+    
+    
     if (importedKey!=null)
     { 
       

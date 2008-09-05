@@ -30,6 +30,11 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.rules.Inspector;
+import spiralcraft.rules.Rule;
+import spiralcraft.rules.RuleException;
+import spiralcraft.rules.RuleSet;
+import spiralcraft.rules.Violation;
 
 import spiralcraft.data.lang.DataReflector;
 
@@ -51,11 +56,13 @@ public class FieldImpl<T>
   private Field archetypeField;
   private URI uri;
   private boolean isScheme;
-  private boolean stored=true;
+  private boolean tranzient;
   private Reflector contentReflector;
-  private Expression<?> defaultExpression;
-  private Expression<?> fixedExpression;
-  private Expression<?> newExpression;
+  private Expression<T> defaultExpression;
+  private Expression<T> fixedExpression;
+  private Expression<T> newExpression;
+  private RuleSet<FieldImpl<T>,T> ruleSet;
+  private Rule<FieldImpl<T>,T>[] explicitRules;
   
   protected boolean debug;
   
@@ -94,6 +101,7 @@ public class FieldImpl<T>
     }
     
   }
+  
   public Field getArchetypeField()
   { return archetypeField;
   }
@@ -141,28 +149,44 @@ public class FieldImpl<T>
   public URI getURI()
   { return uri;
   }
+
+  public RuleSet<? extends FieldImpl<T>,T> getRuleSet()
+  { return ruleSet;
+  }
   
-  public Expression<?> getNewExpression()
+  public void setRules(Rule<FieldImpl<T>,T>[] rules)
+  { explicitRules=rules;
+  }
+  
+  protected void addRules(Rule<FieldImpl<T>,T> ... rules)
+  {
+    if (ruleSet==null)
+    { ruleSet=new RuleSet<FieldImpl<T>,T>(this);
+    }
+    ruleSet.addRules(rules);
+  }
+  
+  public Expression<T> getNewExpression()
   { return newExpression;
   }
   
-  public void setNewExpression(Expression newExpression)
+  public void setNewExpression(Expression<T> newExpression)
   { this.newExpression=newExpression;
   }
 
-  public Expression<?> getDefaultExpression()
+  public Expression<T> getDefaultExpression()
   { return defaultExpression;
   }
   
-  public void setDefaultExpression(Expression defaultExpression)
+  public void setDefaultExpression(Expression<T> defaultExpression)
   { this.defaultExpression=defaultExpression;
   }
   
-  public Expression<?> getFixedExpression()
+  public Expression<T> getFixedExpression()
   { return fixedExpression;
   }
   
-  public void setFixedExpression(Expression fixedExpression)
+  public void setFixedExpression(Expression<T> fixedExpression)
   { this.fixedExpression=fixedExpression;
   }
 
@@ -178,13 +202,13 @@ public class FieldImpl<T>
    *@return Whether this field is stored or whether it is recomputed every time
    *  the value is accessed.
    */
-  public boolean isStored()
-  { return stored;
+  public boolean isTransient()
+  { return tranzient;
   }
   
 
-  public void setStored(boolean stored)
-  { this.stored=stored;
+  public void setTransient(boolean tranzient)
+  { this.tranzient=tranzient;
   }
   
   /**
@@ -373,6 +397,9 @@ public class FieldImpl<T>
       throw new DataException("Field must have a type: "+uri);
     }
     generateURI();
+    if (explicitRules!=null)
+    { addRules(explicitRules);
+    }
     
   }
   
@@ -445,25 +472,45 @@ public class FieldImpl<T>
     Channel binding=source.getCached(this);
     if (binding==null)
     { 
-      binding=new FieldChannel(source);
+      binding=new FieldChannel(focus);
       source.cache(this,binding);
     }
     return binding;
   }
   
   public class FieldChannel
-    extends AbstractChannel
+    extends AbstractChannel<T>
   {
     protected final Channel<? extends Tuple> source;
+    protected final Inspector<FieldImpl<T>,T> inspector;
+    protected final Inspector<Type<T>,T> typeInspector;
     
-    public FieldChannel(Channel<? extends Tuple> source)
+    public FieldChannel(Focus<? extends Tuple> focus)
+      throws BindException
     { 
       super(contentReflector);
-      this.source=source;
+      this.source=focus.getSubject();
+      
+      if (ruleSet!=null)
+      { inspector=ruleSet.bind(DataReflector.<T>getInstance(type),focus);
+      }
+      else
+      { inspector=null;
+      }
+      
+      if (type.getRuleSet()!=null)
+      { 
+        typeInspector=getType().getRuleSet().bind
+          (DataReflector.<T>getInstance(type),focus);
+      }
+      else
+      { typeInspector=null;
+      }
+
     }
 
     @Override
-    protected Object retrieve()
+    protected T retrieve()
     {
       Tuple t;
       Tuple subtypeTuple=source.get();
@@ -493,7 +540,7 @@ public class FieldImpl<T>
       if (t!=null)
       { 
         try
-        { return t.get(index);
+        { return (T) t.get(index);
         }
         catch (DataException x)
         { throw new AccessException(x.toString(),x);
@@ -522,7 +569,7 @@ public class FieldImpl<T>
     }
     
     @Override
-    protected boolean store(Object val)
+    protected boolean store(T val)
     {
       EditableTuple t=(EditableTuple) source.get();
       if (t==null)
@@ -538,6 +585,27 @@ public class FieldImpl<T>
       
       if (t!=null)
       { 
+        if (typeInspector!=null)
+        {
+          Violation<T>[] violations=typeInspector.inspect(val);
+          if (violations!=null)
+          { 
+            throw new AccessException
+              (new RuleException(violations));
+          }
+        }
+
+        if (inspector!=null)
+        {
+          Violation<T>[] violations=inspector.inspect(val);
+          if (violations!=null)
+          { 
+            throw new AccessException
+              (new RuleException(violations));
+          }
+        }
+        
+        
         try
         { 
           t.set(index,val);

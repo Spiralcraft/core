@@ -40,6 +40,7 @@ public abstract class AbstractAggregateType<T>
   protected Type<?> baseType;
   protected boolean linked;
   
+  
   protected AbstractAggregateType(URI uri)
   { this.uri=uri;
   }

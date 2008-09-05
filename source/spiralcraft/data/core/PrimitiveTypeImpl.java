@@ -35,12 +35,20 @@ public abstract class PrimitiveTypeImpl<T>
   { 
     super(resolver,uri);
     this.nativeClass=nativeClass;
-    
     converter=(StringConverter<T>) StringConverter.getInstance(nativeClass);
   }
   
   protected void setStringConverter(StringConverter<T> converter)
   { this.converter=converter;    
+  }
+  
+  /**
+   * <p>Override to create rules by calling the addRules(Rule) method. Default
+   *  behavior does nothing. This method is called during link()
+   * </p>
+   */
+  protected void createRules()
+  {
   }
   
   @Override
@@ -54,6 +62,7 @@ public abstract class PrimitiveTypeImpl<T>
   { 
     if (!linked)
     { 
+      createRules();
       linkPrimitive();
       super.link();
       linked=true;

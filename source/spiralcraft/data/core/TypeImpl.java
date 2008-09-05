@@ -31,6 +31,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import spiralcraft.log.ClassLogger;
+import spiralcraft.rules.Rule;
+import spiralcraft.rules.RuleSet;
 
 /**
  * Core implementation of a Type
@@ -63,6 +65,14 @@ public class TypeImpl<T>
     this.packageURI=resolver.getPackageURI(uri);
   }
   
+  protected void addRules(Rule<Type<T>,T> ... rules)
+  {
+    if (ruleSet==null)
+    { ruleSet=new RuleSet<Type<T>,T>(this);
+    }
+    ruleSet.addRules(rules);
+  }
+  
   @Override
   public URI getPackageURI()
   { return packageURI;
@@ -80,7 +90,7 @@ public class TypeImpl<T>
     }
     this.archetype=archetype;
   }
-  
+   
   /**
    * <p>Whether this specific type is patterned after the specified archetype
    * </p>

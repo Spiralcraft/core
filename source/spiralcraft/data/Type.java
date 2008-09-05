@@ -23,6 +23,7 @@ import java.util.List;
 import spiralcraft.data.session.Buffer;
 // import spiralcraft.log.ClassLogger;
 import spiralcraft.data.util.InstanceResolver;
+import spiralcraft.rules.RuleSet;
 
 
 /**
@@ -73,6 +74,7 @@ public abstract class Type<T>
     =new ArrayList<Method>();
   protected final HashMap<String,Method[]> methodMap
     =new HashMap<String,Method[]>();
+  protected RuleSet<Type<T>,T> ruleSet;
   
   /**
    * The TypeResolver which instantiated this particular Type.
@@ -369,6 +371,14 @@ public abstract class Type<T>
    *   this type.
    */
   public abstract Comparator<T> getComparator();
+  
+  /**
+   * 
+   * @return The RuleSet associated with this type.
+   */
+  public RuleSet<Type<T>,T> getRuleSet()
+  { return ruleSet;
+  }
   
   /**
    * Called by the TypeResolver to allow the type to recursively resolve any

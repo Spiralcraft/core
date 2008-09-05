@@ -48,6 +48,8 @@ public class QueryField
   private Query query;
 //  private boolean resolved;
   
+  { setTransient(true);
+  }
   
   public QueryField()
   { 
