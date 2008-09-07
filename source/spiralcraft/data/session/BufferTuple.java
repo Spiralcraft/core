@@ -628,7 +628,19 @@ public class BufferTuple
       DataConsumer<DeltaTuple> updater
         =branch.getUpdater(getType());
       if (updater!=null)
-      { updater.dataAvailable(this);
+      { 
+        boolean ok=false;
+        try
+        { 
+          updater.dataAvailable(this);
+          ok=true;
+        }
+        finally
+        { 
+          if (!ok)
+          { transaction.rollbackOnComplete();
+          }
+        }
       }
       else
       { log.fine("No updater in Space for Type "+getType());
@@ -648,16 +660,28 @@ public class BufferTuple
           =session.getResourceManager().branch(transaction);
         branch.addBuffer(this);
         
-        DataConsumer<DeltaTuple> updater=branch.getUpdater(getType());
-        if (updater!=null)
-        { updater.dataAvailable(this);
+        boolean ok=false;
+        try
+        {
+          DataConsumer<DeltaTuple> updater=branch.getUpdater(getType());
+          if (updater!=null)
+          { 
+            updater.dataAvailable(this);
+            ok=true;
+          }
+          else
+          { log.fine("No updater in Space for Type "+getType());
+          }
         }
-        else
-        { log.fine("No updater in Space for Type "+getType());
+        finally
+        {
+          if (ok)
+          { transaction.commit();
+          }
+          else
+          { transaction.rollback();
+          }
         }
-        
-        
-        transaction.commit();
       }
       finally
       {
