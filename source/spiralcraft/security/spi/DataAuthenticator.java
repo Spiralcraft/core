@@ -160,7 +160,7 @@ public class DataAuthenticator
     { 
       // Look up the local Space to use as a source if no source was provided
       spaceFocus
-        =(Focus<Space>) context.findFocus(Space.SPACE_URI);
+        =context.<Space>findFocus(Space.SPACE_URI);
       if (spaceFocus==null)
       { 
         throw new BindException

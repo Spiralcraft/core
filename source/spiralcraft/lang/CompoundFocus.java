@@ -78,8 +78,9 @@ public class CompoundFocus<T>
     }
   }
 
+  @SuppressWarnings("unchecked") // Cast for requested interface
   @Override
-  public Focus<?> findFocus(URI uri)
+  public <X> Focus<X> findFocus(URI uri)
   { 
     if (isFocus(uri))
     {
@@ -89,12 +90,12 @@ public class CompoundFocus<T>
       if (query==null)
       {
         if (fragment==null || fragment.equals(getLayerName()))
-        { return this;
+        { return (Focus<X>) this;
         }
         
         Focus<?> altLayer=layers.get(fragment);
         if (altLayer!=null)
-        { return altLayer;
+        { return (Focus<X>) altLayer;
         }
       }
       else
@@ -116,7 +117,7 @@ public class CompoundFocus<T>
           {
             if (fragment==null)
             {
-              return focus;
+              return (Focus<X>) focus;
             }
             else
             {
@@ -126,7 +127,7 @@ public class CompoundFocus<T>
 
               Focus<?> altLayer=layers.get(fragment);
               if (altLayer!=null)
-              { return altLayer;
+              { return (Focus<X>) altLayer;
               }
             }
 

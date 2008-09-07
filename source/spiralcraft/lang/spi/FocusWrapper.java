@@ -85,9 +85,9 @@ public abstract class FocusWrapper<tFocus>
 //  }
 
   @Override
-  public Focus<?> findFocus(
+  public <X>Focus<X> findFocus(
     URI specifier)
-  { return focus.findFocus(specifier);
+  { return focus.<X>findFocus(specifier);
   }
 
   @Override

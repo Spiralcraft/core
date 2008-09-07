@@ -61,7 +61,8 @@ public class TeleFocus<T>
     return false;
   }
 
-  public Focus<?> findFocus(URI uri)
+  @SuppressWarnings("unchecked") // Cast for requested interface
+  public <X> Focus<X> findFocus(URI uri)
   {       
     if (isFocus(uri))
     {
@@ -69,12 +70,12 @@ public class TeleFocus<T>
       String fragment=uri.getFragment();
       
       if (query==null && fragment==null)
-      { return this;
+      { return (Focus<X>) this;
       }
     }
     
     if (parent!=null)
-    { return parent.findFocus(uri);
+    { return parent.<X>findFocus(uri);
     }
     else
     { return null;

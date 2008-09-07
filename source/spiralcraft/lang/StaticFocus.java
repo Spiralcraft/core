@@ -42,16 +42,17 @@ public class StaticFocus<T>
     setSubject(binding);
   }
 
+  @SuppressWarnings("unchecked") // Cast for requested interface
   @Override
-  public Focus<?> findFocus(URI specifier)
+  public <X> Focus<X> findFocus(URI specifier)
   {
     
     if (isFocus(specifier))
-    { return this;
+    { return (Focus<X>) this;
     }
     
     if (parent!=null)
-    { return parent.findFocus(specifier);
+    { return parent.<X>findFocus(specifier);
     }
     
     return null;

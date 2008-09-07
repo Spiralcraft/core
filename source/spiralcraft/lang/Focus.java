@@ -225,7 +225,7 @@ public interface Focus<T>
    *   and has a parent.
    * </p>
    */
-  Focus<?> findFocus(URI specifier);
+  <X> Focus<X> findFocus(URI specifier);
 
   /**
    * <p>Indicate whether this Focus responds to the URI specifier, 

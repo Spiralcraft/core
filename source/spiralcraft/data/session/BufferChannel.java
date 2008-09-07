@@ -126,14 +126,13 @@ public class BufferChannel
 
   }
 
-  @SuppressWarnings("unchecked")
   private void setupSession(Focus<?> focus)
     throws BindException
   {
     metaChannel=this;
     
     Focus<DataSession> sessionFocus
-      =(Focus<DataSession>) focus.findFocus(DataSession.FOCUS_URI);
+      =focus.<DataSession>findFocus(DataSession.FOCUS_URI);
     if (sessionFocus!=null)
     {
       sessionChannel

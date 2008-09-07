@@ -81,7 +81,7 @@ public class DataSessionFocus
     if (parentFocus!=null)
     {
       Focus<Space> spaceFocus
-        =(Focus<Space>) parentFocus.findFocus(Space.SPACE_URI);
+        =parentFocus.<Space>findFocus(Space.SPACE_URI);
       if (spaceFocus!=null)
       { spaceChannel=spaceFocus.getSubject();
       }

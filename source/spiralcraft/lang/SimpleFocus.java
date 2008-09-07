@@ -126,7 +126,8 @@ public class SimpleFocus<T>
     return false;
   }
 
-  public Focus<?> findFocus(URI uri)
+  @SuppressWarnings("unchecked") // Cast for requested interface
+  public <X> Focus<X> findFocus(URI uri)
   {       
     if (isFocus(uri))
     {
@@ -136,14 +137,14 @@ public class SimpleFocus<T>
       if (query==null)
       {
         if (fragment==null || fragment.equals(layerName))
-        { return this;
+        { return (Focus<X>) this;
         }
       }
 
     }
     
     if (parent!=null)
-    { return parent.findFocus(uri);
+    { return parent.<X>findFocus(uri);
     }
     else
     { return null;
