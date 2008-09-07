@@ -64,7 +64,7 @@ public class ClassLogger
   { 
     super(className,null);
     logger=Logger.getLogger(getName());
-    logger.setUseParentHandlers(true);
+    logger.setUseParentHandlers(false);
     logger.addHandler(logHandler);
     setLevel(Level.ALL);
   }

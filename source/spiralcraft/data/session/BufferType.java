@@ -65,6 +65,9 @@ public class BufferType
       this.aggregate=true;
       this.contentType=getBufferType(archetype.getContentType());
     }
+    if (archetype.getDebug())
+    { debug=true;
+    }
   }
   
   /**
