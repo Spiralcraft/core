@@ -75,6 +75,7 @@ public abstract class Type<T>
   protected final HashMap<String,Method[]> methodMap
     =new HashMap<String,Method[]>();
   protected RuleSet<Type<T>,T> ruleSet;
+  protected boolean debug;
   
   /**
    * The TypeResolver which instantiated this particular Type.
@@ -163,7 +164,7 @@ public abstract class Type<T>
     { key=(Key<T>) getScheme().getPrimaryKey();
     }
     if (key==null && getBaseType()!=null)
-    { key=(Key<T>) getBaseType().getPrimaryKey();
+    { key=getBaseType().getPrimaryKey();
     }
     return key;
     
@@ -202,7 +203,7 @@ public abstract class Type<T>
    *   storage to maintain their relationship to other Tuples of the same
    *   instance.<P>
    */
-  public abstract Type<?> getBaseType();
+  public abstract Type<T> getBaseType();
   
   /**
    * 
@@ -377,7 +378,14 @@ public abstract class Type<T>
    * @return The RuleSet associated with this type.
    */
   public RuleSet<Type<T>,T> getRuleSet()
-  { return ruleSet;
+  { 
+    if (ruleSet!=null)
+    { return ruleSet;
+    }
+    else if (getBaseType()!=null)
+    { return getBaseType().getRuleSet();
+    }
+    return null;
   }
   
   /**
@@ -393,6 +401,8 @@ public abstract class Type<T>
    */
   public abstract boolean isLinked();
   
-  
+  public boolean getDebug()
+  { return debug;
+  }
   
 }

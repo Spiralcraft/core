@@ -93,7 +93,7 @@ public class KeyField<T extends DataComposite>
     { log.fine("Foreign query is "+query);
     }
     Focus<Queryable> queryableFocus
-      =(Focus<Queryable>) focus.findFocus(Queryable.QUERYABLE_URI);
+      =focus.<Queryable>findFocus(Queryable.QUERYABLE_URI);
     if (queryableFocus!=null)
     { 
       

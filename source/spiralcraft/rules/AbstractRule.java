@@ -4,7 +4,8 @@ public abstract class AbstractRule<C, T>
   implements Rule<C, T>
 {
   private String message;
-  private C context;
+  protected C context;
+  protected boolean debug;
   
   public void setMessage(String message)
   { this.message=message;
@@ -22,6 +23,8 @@ public abstract class AbstractRule<C, T>
   { this.context=context;
   }
   
-  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
 
 }

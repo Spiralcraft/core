@@ -20,6 +20,7 @@ import java.util.Iterator;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
+import spiralcraft.util.IteratorChain;
 
 
 /**
@@ -33,11 +34,33 @@ public class RuleSet<Tcontext,Tvalue>
 {
   
   private final Tcontext context;
+  private final RuleSet<Tcontext,Tvalue> baseSet;
   
+  /**
+   * <p>Create a new RuleSet for the specified Context
+   * </p>
+   * 
+   * @param context
+   */
   public RuleSet(Tcontext context)
-  { this.context=context;
+  { 
+    this.context=context;
+    this.baseSet=null;
   }
   
+  /**
+   * <p>Create a new RuleSet for the specified Context, that includes all
+   *   the rules in the baseSet, which is checked first
+   * </p>
+   * 
+   * @param context
+   */
+  public RuleSet(Tcontext context,RuleSet<Tcontext,Tvalue> baseSet)
+  { 
+    this.context=context;
+    this.baseSet=baseSet;
+  }
+
   public Tcontext getContext()
   { return context;
   }
@@ -46,9 +69,18 @@ public class RuleSet<Tcontext,Tvalue>
     =new ArrayList<Rule<Tcontext,Tvalue>>();
   
 
+  @SuppressWarnings("unchecked") // Varargs parameter
   @Override
   public Iterator<Rule<Tcontext,Tvalue>> iterator()
-  { return rules.iterator();
+  { 
+    if (baseSet!=null)
+    { 
+      return new IteratorChain<Rule<Tcontext,Tvalue>>
+        (baseSet.iterator(),rules.iterator());
+    }
+    else
+    { return rules.iterator();
+    }
   }
 
   public Inspector<Tcontext,Tvalue> 
@@ -68,7 +100,7 @@ public class RuleSet<Tcontext,Tvalue>
   
 
   public int getRuleCount()
-  { return rules.size();
+  { return rules.size()+(baseSet!=null?baseSet.getRuleCount():0);
   }
   
 }

@@ -37,7 +37,7 @@ public abstract class AbstractAggregateType<T>
   protected Type<? super Object> contentType;
   protected Class<T> nativeClass;
   protected Type<?> archetype;
-  protected Type<?> baseType;
+  protected Type<T> baseType;
   protected boolean linked;
   
   
@@ -70,7 +70,7 @@ public abstract class AbstractAggregateType<T>
   }
   
   @Override
-  public Type<?> getBaseType()
+  public Type<T> getBaseType()
   { return baseType;
   }
 

@@ -63,6 +63,7 @@ public class FieldImpl<T>
   private Expression<T> newExpression;
   private RuleSet<FieldImpl<T>,T> ruleSet;
   private Rule<FieldImpl<T>,T>[] explicitRules;
+  private boolean uniqueValue;
   
   protected boolean debug;
   
@@ -131,6 +132,22 @@ public class FieldImpl<T>
    */
   public FieldSet getFieldSet()
   { return fieldSet;
+  }
+  
+  /**
+   * <p>Indicates that the field must contain a unique value, if non-null, 
+   *   across all instances available in the space. This is less restrictive
+   *   than a Unique key, because it allows for multiple null values
+   * </p>
+   * 
+   * @param unique
+   */
+  public void setUniqueValue(boolean uniqueValue)
+  { this.uniqueValue=uniqueValue;
+  }
+  
+  public boolean isUniqueValue()
+  { return this.uniqueValue;
   }
   
   /**
@@ -399,9 +416,12 @@ public class FieldImpl<T>
     generateURI();
     if (explicitRules!=null)
     { addRules(explicitRules);
-    }
-    
+    }    
   }
+  
+  
+  
+  
   
   protected void generateURI()
   {

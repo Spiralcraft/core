@@ -29,6 +29,7 @@ import spiralcraft.data.util.InstanceResolver;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import spiralcraft.log.ClassLogger;
 import spiralcraft.rules.Rule;
@@ -40,8 +41,7 @@ import spiralcraft.rules.RuleSet;
 public class TypeImpl<T>
   extends Type<T>
 {  
-  protected static final ClassLogger log=ClassLogger.getInstance(TypeImpl.class);
-  protected static boolean debug=false;
+  protected static final Logger log=ClassLogger.getInstance(TypeImpl.class);
   
   protected Class<T> nativeClass;
   protected SchemeImpl scheme;
@@ -49,12 +49,13 @@ public class TypeImpl<T>
   protected final URI uri;
   protected final URI packageURI;
   protected Type<?> archetype;
-  protected Type<?> baseType;
+  protected Type<T> baseType;
   protected boolean aggregate=false;
   protected Type<?> contentType=null;
   protected boolean extendable;
   protected boolean abztract;
   protected Comparator<T> comparator;
+
   
   private boolean linked;
   
@@ -66,11 +67,35 @@ public class TypeImpl<T>
   }
   
   protected void addRules(Rule<Type<T>,T> ... rules)
-  {
+  {    
     if (ruleSet==null)
-    { ruleSet=new RuleSet<Type<T>,T>(this);
+    { createRuleSet();
     }
     ruleSet.addRules(rules);
+  }
+  
+  @SuppressWarnings("unchecked") // Vararg array and Rule cast from archetyp
+  private void createRuleSet()
+  {
+    RuleSet<Type<T>,T> baseRules
+      =(baseType!=null)?(baseType.getRuleSet()):null;
+        
+    ruleSet=new RuleSet<Type<T>,T>(this,baseRules);
+    if (archetype!=null && archetype.getRuleSet()!=null)
+    {
+      if (debug)
+      { 
+        log.fine
+          ("Adding archetype rules for "
+          +getURI()
+          +" from "
+          +archetype.getURI()
+          );
+      }      
+      for (Rule<?,?> rule : archetype.getRuleSet())
+      { ruleSet.addRules((Rule<Type<T>,T>) rule);
+      }
+    }
   }
   
   @Override
@@ -83,7 +108,7 @@ public class TypeImpl<T>
   { return archetype;
   }
   
-  public void setArchetype(Type<?> archetype)
+  public void setArchetype(Type<T> archetype)
   { 
     if (linked)
     { throw new IllegalStateException("Type already linked");
@@ -91,6 +116,10 @@ public class TypeImpl<T>
     this.archetype=archetype;
   }
    
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
   /**
    * <p>Whether this specific type is patterned after the specified archetype
    * </p>
@@ -113,12 +142,12 @@ public class TypeImpl<T>
   }
   
   @Override
-  public Type<?> getBaseType()
+  public Type<T> getBaseType()
   { return baseType;
   }
   
   
-  public void setBaseType(Type<?> baseType)
+  public void setBaseType(Type<T> baseType)
   { 
     if (linked)
     { throw new IllegalStateException("Type already linked");
@@ -220,6 +249,7 @@ public class TypeImpl<T>
    * Default implementation is to set up the SchemeImpl scheme with 
    *   arechetype and base type and resolve it.
    */
+  @SuppressWarnings("unchecked") // Dealing with rule
   @Override
   public void link()
     throws DataException
@@ -227,7 +257,10 @@ public class TypeImpl<T>
     if (linked)
     { return;
     }
-    // log.fine("Linking "+toString());
+    
+    if (debug)
+    { log.fine("Linking Type "+getURI());
+    }
     linked=true;
     
     if (baseType!=null && scheme==null)
@@ -243,6 +276,18 @@ public class TypeImpl<T>
       { scheme.setArchetypeScheme(archetype.getScheme());
       }
       scheme.resolve();
+      
+      // Add contextual field based rules
+      for (FieldImpl<?> field:scheme.getFields())
+      {
+        if (field.isUniqueValue())
+        { 
+          if (debug)
+          { log.fine("Adding field unique rule for "+field.getURI());
+          }
+          addRules((Rule<Type<T>,T>) new UniqueRule(this,field));
+        }
+      }
     }
     if (methods!=null)
     {
@@ -250,8 +295,23 @@ public class TypeImpl<T>
       { ((MethodImpl) method).resolve();
       }
     }
+    
+    if (ruleSet==null)
+    { 
+      if (archetype!=null
+          && archetype.getRuleSet()!=null
+         )
+      { createRuleSet();
+      }
+    }
+    
+        
+    if (debug)
+    { log.fine("Done Linking Type "+getURI());
+    }
+    
   }
-  
+    
   /**
    * @return The Scheme which describes the structure of this type, or null if
    *   this type is not a complex type. 

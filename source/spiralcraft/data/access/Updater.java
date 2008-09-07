@@ -24,6 +24,7 @@ import spiralcraft.data.Field;
 import spiralcraft.data.Sequence;
 import spiralcraft.data.Space;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 
 import spiralcraft.data.core.SequenceField;
 import spiralcraft.data.lang.TupleReflector;
@@ -37,6 +38,10 @@ import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLogger;
+import spiralcraft.rules.Inspector;
+import spiralcraft.rules.RuleException;
+import spiralcraft.rules.RuleSet;
+import spiralcraft.rules.Violation;
 
 
 
@@ -84,6 +89,7 @@ public class Updater<T extends Tuple>
   private Field<Object> sequenceField;
   private Space space;
   protected boolean debug;
+  private Inspector<Type<T>,T> inspector;
   
   /**
    * <p>Create a new Updater, which uses the provided context to to resolve any
@@ -184,7 +190,13 @@ public class Updater<T extends Tuple>
       }
     }
      
-    
+    if (inspector!=null)
+    {
+      Violation<T>[] violations=inspector.inspect(tuple);
+      if (violations!=null)
+      { throw new DataException(null,new RuleException(violations));
+      }
+    }
     
   }
 
@@ -201,6 +213,10 @@ public class Updater<T extends Tuple>
     FieldSet fieldSet)
     throws DataException
   {
+    if (fieldSet.getType()!=null && fieldSet.getType().getDebug())
+    { debug=true;
+    }
+    
     try
     { localChannel=new ThreadLocalChannel(TupleReflector.getInstance(fieldSet));
     }
@@ -239,7 +255,7 @@ public class Updater<T extends Tuple>
       );
     if (space==null)
     {
-      Focus<Space> spaceFocus=(Focus<Space>) context.findFocus(Space.SPACE_URI);
+      Focus<Space> spaceFocus=context.<Space>findFocus(Space.SPACE_URI);
       if (spaceFocus!=null)
       { space=spaceFocus.getSubject().get();
       }
@@ -298,8 +314,36 @@ public class Updater<T extends Tuple>
           (bindSetter(field,field.getFixedExpression()));
       }
     }
-
     
+    Type<T> type=(Type<T>) fieldSet.getType();
+    if (type!=null)
+    {
+      RuleSet<Type<T>,T> ruleSet=type.getRuleSet();
+      if (ruleSet!=null)
+      { 
+        try
+        {
+          if (debug)
+          { log.fine("Binding type rules");
+          }
+          inspector
+            =ruleSet.bind(localChannel.getReflector(), localFocus);
+        }
+        catch (BindException x)
+        { 
+          throw new DataException
+            ("Error binding rules for Type "+type.getURI(),x);
+        }
+
+      }
+      else
+      {
+        if (debug)
+        { log.fine("Not binding type rules");
+        }
+      }
+    }
+
   }
 
   @SuppressWarnings("unchecked")
