@@ -145,9 +145,11 @@ public class Selection
       }
       
     }
-    else if (original instanceof EqualityNode)
+    else if (original instanceof EqualityNode
+             && !((EqualityNode<?>) original).isNegated()
+            )
     {
-      // Terminal case- EqualityNode
+      // Terminal case- EqualityNode (==)
       
       EqualityNode<?> equalityNode=(EqualityNode<?>) original;
       Node lhs=equalityNode.getLeftOperand();
