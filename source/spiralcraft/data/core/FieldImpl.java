@@ -64,6 +64,7 @@ public class FieldImpl<T>
   private RuleSet<FieldImpl<T>,T> ruleSet;
   private Rule<FieldImpl<T>,T>[] explicitRules;
   private boolean uniqueValue;
+  private boolean required;
   
   protected boolean debug;
   
@@ -226,6 +227,16 @@ public class FieldImpl<T>
 
   public void setTransient(boolean tranzient)
   { this.tranzient=tranzient;
+  }
+  
+  
+  public void setRequired(boolean required)
+  { this.required=required;
+  }
+  
+  @Override
+  public boolean isRequired()
+  { return required;
   }
   
   /**
@@ -414,6 +425,7 @@ public class FieldImpl<T>
       throw new DataException("Field must have a type: "+uri);
     }
     generateURI();
+    
     if (explicitRules!=null)
     { addRules(explicitRules);
     }    

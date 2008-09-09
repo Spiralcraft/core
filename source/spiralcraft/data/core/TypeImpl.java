@@ -287,6 +287,15 @@ public class TypeImpl<T>
           }
           addRules((Rule<Type<T>,T>) new UniqueRule(this,field));
         }
+        
+        if (field.isRequired())
+        {
+          if (debug)
+          { log.fine("Adding field required rule for "+field.getURI());
+          }
+          addRules((Rule<Type<T>,T>) new RequiredRule(this,field));
+        }
+        
       }
     }
     if (methods!=null)

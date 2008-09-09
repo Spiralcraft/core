@@ -107,6 +107,11 @@ public interface Field<T>
    */
   boolean isTransient();
   
+  /**
+   * @return Indicates that the field, when persisted, cannot have a null value
+   */
+  boolean isRequired();
+  
   RuleSet<? extends Field<T>,T> getRuleSet();
 
   /**
