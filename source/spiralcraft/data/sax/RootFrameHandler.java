@@ -36,6 +36,10 @@ import spiralcraft.lang.spi.SimpleChannel;
  *   focus will be made available as this FrameHandler's target.
  * </p>
  * 
+ * <p>If a Type target is specified, it will be made available to child
+ *   elements. If no target is specified, the subject of the supplied
+ *   focus will be made available as this FrameHandler's target.
+ * </p>
  * 
  * @author mike
  *
@@ -44,7 +48,7 @@ public class RootFrameHandler<T>
   extends FrameHandler
 {  
   
-  private Type<?> type;
+  private Type<T> type;
   private Expression<T> target;
   private Channel<T> targetChannel;
   private FrameChannel<T> channel;
@@ -67,7 +71,7 @@ public class RootFrameHandler<T>
    *   
    * @param type
    */
-  public void setType(Type<?> type)
+  public void setType(Type<T> type)
   { this.type=type;
   }
 
@@ -78,7 +82,7 @@ public class RootFrameHandler<T>
    *   
    * @param type
    */
-  public Type<?> getType()
+  public Type<T> getType()
   { return type;
   }
   
@@ -160,7 +164,12 @@ public class RootFrameHandler<T>
     throws DataException
   { 
     if (targetChannel!=null)
-    { channel.set(targetChannel.get());
+    { 
+      T target=targetChannel.get();
+      if (target==null)
+      { log.info("Channel for enclosing data context returned null");
+      }
+      channel.set(target);
     }
   }
   

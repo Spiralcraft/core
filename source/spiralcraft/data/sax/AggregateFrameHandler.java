@@ -29,7 +29,7 @@ import spiralcraft.lang.SimpleFocus;
 
 /**
  * <p>Creates an Aggregate and publishes it in the Focus chain so it can receive
- *   updates. The AttributeBinding expressions reference the Tuple by default.
+ *   updates. The AttributeBinding expressions reference the Aggregate by default.
  * </p>
  * 
  * @author mike
