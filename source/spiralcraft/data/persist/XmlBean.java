@@ -18,6 +18,7 @@ import java.net.URI;
 
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
+import spiralcraft.data.reflect.ReflectionType;
 
 
 /**
@@ -35,6 +36,30 @@ import spiralcraft.data.DataException;
 public class XmlBean<T>
   extends AbstractXmlObject<T,T>
 {
+  /**
+   * Construct an XmlObject of the given Class read from the specified instance
+   *   data resource.
+   *
+   * The instanceURI references a data resource which contains the instance data
+   *   (persistent properties) for the specified Class. This data will be 
+   *   applied
+   *   to the object after it is instantiated, and will be transferred
+   *   from the object to the resource as a result of the save() method.
+   * 
+   * If the Class is not specified, the instanceURI must be specified. The Class
+   *   will be inferred from the data resource.
+   *   
+   * If the instanceURI is not specified, or does not exist, the Class must be
+   *   specified. A new instance of the Java Class will be created. If the
+   *   instanceURI is specified but does not exist, the save() method will 
+   *   create it and store persistent properties from the object.
+   */
+  public XmlBean(Class<T> clazz,URI instanceURI)
+    throws PersistenceException
+  {
+    super(ReflectionType.canonicalURI(clazz),instanceURI);
+    load();
+  }
   
   /**
    * Construct an XmlObject from the given Type resource and instance
