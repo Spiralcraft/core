@@ -16,6 +16,7 @@ package spiralcraft.service;
 
 import spiralcraft.util.Arguments;
 
+import spiralcraft.builder.LifecycleException;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
 
@@ -138,11 +139,11 @@ public class Daemon
     { 
       _args=args;
       processArguments();
-      init(this);
+      start();
       handleEvents();
-      destroy();
+      stop();
     }
-    catch (ServiceException x)
+    catch (LifecycleException x)
     { x.printStackTrace();
     }
   }

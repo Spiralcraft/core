@@ -14,9 +14,9 @@
 //
 package spiralcraft.ui;
 
+import spiralcraft.builder.LifecycleException;
 import spiralcraft.service.ServiceAdapter;
-import spiralcraft.service.ServiceException;
-import spiralcraft.service.ServiceResolver;
+
 
 /**
  * Generic UI service, typically subclassed for a soecific View, 
@@ -32,14 +32,14 @@ public class UiService
   }
 
   @Override
-  public void init(ServiceResolver resolver)
-    throws ServiceException
+  public void start()
+    throws LifecycleException
   { _rootControl.init();
   }
 
   @Override
-  public void destroy()
-    throws ServiceException
+  public void stop()
+    throws LifecycleException
   { _rootControl.destroy();
   }
 

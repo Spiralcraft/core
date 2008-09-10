@@ -14,17 +14,19 @@
 //
 package spiralcraft.service;
 
+import spiralcraft.builder.LifecycleException;
+
 public abstract class ServiceAdapter
   implements Service
 {
 
   private Object _selector;
 
-  public abstract void init(ServiceResolver resolver)
-    throws ServiceException;
+  public abstract void start()
+    throws LifecycleException;
 
-  public abstract void destroy()
-    throws ServiceException;
+  public abstract void stop()
+    throws LifecycleException;
 
   public boolean providesInterface(Class<?> serviceClass)
   { return serviceClass.isAssignableFrom(getClass());
