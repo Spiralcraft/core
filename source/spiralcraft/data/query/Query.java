@@ -22,6 +22,7 @@ import spiralcraft.lang.Expression;
 
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Space;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
@@ -80,6 +81,26 @@ public abstract class Query
   
   public Type<?> getType()
   { return type;
+  }
+  
+  /**
+   * <p>Bind the Query to the nearest available Space in the contextual
+   *   Focus chain.
+   * </p>
+   * 
+   * @param context The Focus chain
+   * @return A bound query
+   * @throws DataException If no Space is resolvable in the Focus chain,
+   *   or space.query() throws a DataException
+   */
+  public BoundQuery<?,?> bind(Focus<?> context)
+    throws DataException
+  {
+    Space space=Space.find(context);
+    if (space==null)
+    { throw new DataException("No Space resolvable from Focus to run Query");
+    }
+    return space.query(this, context);
   }
 
   /**

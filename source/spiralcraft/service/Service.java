@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2008 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -23,7 +23,7 @@ import spiralcraft.builder.LifecycleException;
  * </p>
  * 
  * <p>
- * A Service instance has a life cycle longer than the components
+ *   A Service instance has a life cycle longer than the components
  *   which use it, and normally has a state which involves
  *   external resources. The start() and stop() methods are used
  *   by a container to give the Service an opportunity to manage

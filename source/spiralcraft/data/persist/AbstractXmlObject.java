@@ -99,6 +99,13 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
    *   the object will be registered with the local root registry node.
    * </p>
    * 
+   * <p>If the object implements the FocusChainObject interface, it will
+   *   be bound onto the Focus chain at the Focus that references the object
+   *   itself.
+   * </p>
+   * 
+   * XXX Should be createAndStart, and should accept a Focus to bind to
+   * 
    * @param <T> The Java generic type of object that is being referred to
    * @param typeURI The spiralcraft.data.Type of the object being referred to
    * @param instanceURI The URI of the resource from which to read the instance
@@ -107,7 +114,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
    * @throws BindException
    */
   public static final <T> AbstractXmlObject<T,?> create
-    (URI typeURI,URI instanceURI,RegistryNode registryNode)
+    (URI typeURI,URI instanceURI,RegistryNode registryNode,Focus<?> focus)
     throws BindException
   {
     AbstractXmlObject<T,?> reference;
@@ -145,6 +152,9 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     try
     { 
       reference.register(registryNode);
+      if (focus!=null)
+      { reference.bind(focus);
+      }
       reference.start();
     }
     catch (LifecycleException x)

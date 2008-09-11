@@ -4,7 +4,6 @@ import java.util.logging.Logger;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Field;
-import spiralcraft.data.Space;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.SerialCursor;
@@ -81,24 +80,16 @@ public class UniqueRule<T extends Tuple>
     { 
       source=focus.getSubject();
       fieldChannel=field.bindChannel((Focus<Tuple>) focus);
-      Focus<Space> spaceFocus=focus.<Space>findFocus(Space.SPACE_URI);
-      if (spaceFocus!=null)
+      
+      try
       { 
-        try
-        { 
-          boundQuery
-            =(BoundQuery<?,T>) spaceFocus.getSubject().get().query(query, focus);
-        }
-        catch (DataException x)
-        { 
-          throw new BindException
-            ("Error binding field unique query for "+context.getURI(),x);
-        }
+        boundQuery
+          =(BoundQuery<?,T>) query.bind(focus);
       }
-      else
+      catch (DataException x)
       { 
         throw new BindException
-          ("Could not bind UniqueRule- no Space in Focus chain to query");
+          ("Error binding field unique query for "+context.getURI(),x);
       }
     }      
           

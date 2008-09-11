@@ -69,7 +69,6 @@ public class DataAuthenticator
     =ClassLogger.getInstance(DataAuthenticator.class);
   
   private Queryable<?> providedSource;
-  private Focus<Space> spaceFocus;
   
   // XXX Make these both configurable
   private Type<?> loginDataType;
@@ -155,23 +154,18 @@ public class DataAuthenticator
     super.bind(context);
 
 
+    Space space=null;
     // Resolve the source for the master credentials list
     if (providedSource==null && context!=null)
     { 
       // Look up the local Space to use as a source if no source was provided
-      spaceFocus
-        =context.<Space>findFocus(Space.SPACE_URI);
-      if (spaceFocus==null)
-      { 
-        throw new BindException
-          ("'source' not set, and no Space was found in Focus chain");
-      }
+      space=Space.find(context);
     }
 
     Queryable source=providedSource;
         
-    if (source==null || spaceFocus!=null)
-    { source=spaceFocus.getSubject().get();
+    if (source==null || space!=null)
+    { source=space;
     }
     if (source==null)
     { 

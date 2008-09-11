@@ -41,7 +41,8 @@ import spiralcraft.builder.LifecycleException;
  * A Space that consists of a single Store.
  */
 public class SingleSpace
-  implements Space,Registrant
+  extends Space
+  implements Registrant
 {
   
   private Store store;
@@ -105,16 +106,19 @@ public class SingleSpace
   { return store.getTypes();
   }
   
+  @Override
   public DataConsumer<DeltaTuple> getUpdater(Type<?> type,Focus<?> focus)
     throws DataException
   { return store.getUpdater(type,focus);
   }
   
+  @Override
   public Sequence getSequence(URI uri)
     throws DataException
   { return store.getSequence(uri);
   }
   
+  @Override
   public Date getNowTime()
   { return new Date();
   }

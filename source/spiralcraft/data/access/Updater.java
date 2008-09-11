@@ -254,11 +254,7 @@ public class Updater<T extends Tuple>
         }
       );
     if (space==null)
-    {
-      Focus<Space> spaceFocus=context.<Space>findFocus(Space.SPACE_URI);
-      if (spaceFocus!=null)
-      { space=spaceFocus.getSubject().get();
-      }
+    { space=Space.find(context);
     }
 
     // Takes care of key sequences? Nope.

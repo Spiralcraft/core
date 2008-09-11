@@ -20,7 +20,6 @@ public abstract class ServiceAdapter
   implements Service
 {
 
-  private Object _selector;
 
   public abstract void start()
     throws LifecycleException;
@@ -28,26 +27,5 @@ public abstract class ServiceAdapter
   public abstract void stop()
     throws LifecycleException;
 
-  public boolean providesInterface(Class<?> serviceClass)
-  { return serviceClass.isAssignableFrom(getClass());
-  }
-
-  public Object getInterface(Class<?> serviceClass)
-  { 
-    if (serviceClass.isAssignableFrom(getClass()))
-    { return this;
-    }
-    else
-    { return null;
-    }
-  }
-
-  public Object getSelector()
-  { return _selector;
-  }
-
-  public void setSelector(Object val)
-  { _selector=val;
-  }
-
+  
 }

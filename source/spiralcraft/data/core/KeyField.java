@@ -86,7 +86,7 @@ public class KeyField<T extends DataComposite>
     throws BindException
   { 
     
-    Focus keyFocus=new SimpleFocus(focus,key.bindChannel(focus));
+    Focus<Tuple> keyFocus=new SimpleFocus(focus,key.bindChannel(focus));
 
     Query query=key.getForeignQuery();
     if (debug)
@@ -110,7 +110,7 @@ public class KeyField<T extends DataComposite>
               ("Got null query from "+queryable+" for query "+query);
           }
           boundQuery.resolve();
-          return new KeyFieldChannel(getType(),boundQuery);
+          return new KeyFieldChannel(getType(),boundQuery,keyFocus.getSubject());
           
         }
         else
@@ -133,13 +133,17 @@ public class KeyField<T extends DataComposite>
   public class KeyFieldChannel
     extends AbstractChannel<T>
   {
-    private BoundQuery query;
+    private final BoundQuery query;
     
-    public KeyFieldChannel(Type<T> type,BoundQuery query)
+    private final Channel<Tuple> keyChannel;
+    
+    public KeyFieldChannel
+      (Type<T> type,BoundQuery query,Channel<Tuple> keyChannel)
       throws BindException
     { 
       super(DataReflector.<T>getInstance(type));
       this.query=query;
+      this.keyChannel=keyChannel;
     }
     
     @Override
@@ -151,6 +155,41 @@ public class KeyField<T extends DataComposite>
     protected T retrieve()
       throws AccessException
     {
+      // Make sure parameter fields are not null
+      Tuple keyVal=keyChannel.get();
+      if (keyVal==null)
+      { 
+        
+        if (debug)
+        { log.fine("Key value is null for "+getURI());
+        }
+        return null;
+      }
+      
+      int count=keyVal.getFieldSet().getFieldCount();
+      for (int i=0;i<count;i++)
+      { 
+        try
+        {
+          if (keyVal.get(i)==null)
+          { 
+            if (debug)
+            { 
+              log.fine
+                ("Key field '"
+                 +keyVal.getFieldSet().getFieldByIndex(i).getName()
+                 +"' value is null for "+getURI()
+                );
+            }
+          
+            return null;
+          }
+        }
+        catch (DataException x)
+        { throw new AccessException("Error reading key value for "+getURI());
+        }
+      }
+      
       try
       {
         

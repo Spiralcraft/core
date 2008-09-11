@@ -25,17 +25,28 @@ import spiralcraft.lang.Focus;
 import spiralcraft.builder.Lifecycle;
 
 /**
- * A logical data container. Provides access to a complete set of data used by
+ * <p>A logical data container. Provides access to a complete set of data used by
  *   one or more applications. Data reachable from a Space may be contained 
  *   contained in or more Stores. 
+ * </p>
  *   
- * There is normally only one Space associated with an application. A Space is
- *   never contained within another Space.
  */
-public interface Space
-  extends Queryable<Tuple>,Lifecycle
+public abstract class Space
+  implements Queryable<Tuple>,Lifecycle
 {
-  URI SPACE_URI = URI.create("class:/spiralcraft/data/Space");
+  public static final URI SPACE_URI 
+    = URI.create("class:/spiralcraft/data/Space");
+  
+  public static final Space find(Focus<?> focus)
+  {
+    Focus<Space> spaceFocus=focus.<Space>findFocus(SPACE_URI);
+    if (spaceFocus==null)
+    { return null;
+    }
+    else
+    { return spaceFocus.getSubject().get();
+    }
+  }
   
   /**
    * <p>Retrieve an update 'channel'. The DataConsumer can be used once to update
@@ -50,7 +61,8 @@ public interface Space
    * @return A DataConsumer which is used to push one or more updates into
    *   this Space. 
    */
-  DataConsumer<DeltaTuple> getUpdater(Type<?> type,Focus<?> focus)
+  public abstract DataConsumer<DeltaTuple> 
+    getUpdater(Type<?> type,Focus<?> focus)
     throws DataException;
   
   /**
@@ -64,7 +76,7 @@ public interface Space
    * @return
    * @throws DataException
    */
-  Sequence getSequence(URI uri)
+  public abstract Sequence getSequence(URI uri)
     throws DataException;
   
   /**
@@ -76,6 +88,6 @@ public interface Space
    * 
    * @return The current time according to the Space
    */
-  Date getNowTime();
+  public abstract Date getNowTime();
 
 }
