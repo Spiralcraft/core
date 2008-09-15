@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.net.URI;
 
 @SuppressWarnings("unchecked") // Runtime resolution
-public class ArrayListType
-  extends AbstractCollectionType<ArrayList>
+public class ArrayListType<T>
+  extends AbstractCollectionType<ArrayList,T>
 {
   public ArrayListType(TypeResolver resolver,URI uri)
   { super(resolver,null,uri,ArrayList.class);

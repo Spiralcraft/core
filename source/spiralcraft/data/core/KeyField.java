@@ -26,6 +26,7 @@ import spiralcraft.log.ClassLogger;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
@@ -79,6 +80,10 @@ public class KeyField<T extends DataComposite>
     super.resolve();
   }
   
+  @Override
+  public boolean isFunctionalEquivalent(Field<?> field)
+  { return false;
+  }
   
   @Override
   @SuppressWarnings("unchecked")

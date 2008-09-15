@@ -85,7 +85,12 @@ public class RestService
   
   /**
    * <p>Specify an expression that resolves to the application data model
-   *   object which will be buffered for update
+   *   object which will be buffered for update and available to
+   *   the Assignments specified via the postAssignments property.
+   *   
+   *   XXX Buffering functionality should be integrated into TupleFrameHandler
+   *     which can avail itself of the spiralcraft.data.editor package to do the
+   *     buffer management.
    * </p>
    * 
    * @param modelExpression

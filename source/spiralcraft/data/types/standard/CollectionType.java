@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.net.URI;
 
 @SuppressWarnings("unchecked") // Runtime resolution
-public class CollectionType<T extends Collection>
-  extends AbstractCollectionType<Collection>
+public class CollectionType<T extends Collection<Tcontent>,Tcontent>
+  extends AbstractCollectionType<Collection,Tcontent>
 {
   public CollectionType(TypeResolver resolver,URI uri)
   { super(resolver,null,uri,Collection.class);

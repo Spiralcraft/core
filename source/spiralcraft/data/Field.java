@@ -112,6 +112,16 @@ public interface Field<T>
    */
   boolean isRequired();
   
+  /**
+   * @return Indicates that the field, when persisted, must have a unique value
+   *   within the set of Tuples managed by a given Store.
+   */
+  boolean isUniqueValue();
+  
+  /**
+   * 
+   * @return The RuleSet that validates data for this Field.
+   */
   RuleSet<? extends Field<T>,T> getRuleSet();
 
   /**

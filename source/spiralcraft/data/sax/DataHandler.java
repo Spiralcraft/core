@@ -190,9 +190,18 @@ public class DataHandler
     /**
      * Deal with adding an object
      */
-    protected abstract void addObject(Object objet)
+    protected abstract void addObject(Object object)
       throws SAXException;
       
+    /**
+     * Add the set of objects composed from the character content
+     * 
+     * @param object
+     * @throws SAXException
+     */
+    protected abstract void addAggregateFromChars(Object object)
+      throws SAXException;
+    
     @Override
     protected void closeFrame()
       throws SAXException,DataException
@@ -204,11 +213,24 @@ public class DataHandler
         {
 //        System.err.println("DataHandler-ContainerFrame.closeFrame: "+text);
         // Instantiate from a literal string, if present
-          if (formalType.isPrimitive())
-          { addObject(formalType.fromString(text));
+          if (formalType.isAggregate())
+          {
+            if (formalType.isPrimitive())
+            { addAggregateFromChars(formalType.fromString(text));
+            }
+            else
+            { addAggregateFromChars
+                (formalType.toData(formalType.fromString(text)));
+            }
           }
           else
-          { addObject(formalType.toData(formalType.fromString(text)));
+          {
+            if (formalType.isPrimitive())
+            { addObject(formalType.fromString(text));
+            }
+            else
+            { addObject(formalType.toData(formalType.fromString(text)));
+            }
           }
         }
         else
@@ -423,13 +445,18 @@ public class DataHandler
     { return object;
     }
     
+    @Override
+    protected void addAggregateFromChars(Object object)
+      throws SAXException
+    { addObject(object);
+    }
     
     @Override
     protected void addObject(Object object)
       throws SAXException
     { 
       if (this.object!=null)
-      { throw new SAXException("Cannot contain more than one Object");
+      { throwSAXException("Cannot contain more than one Object");
       }
       else
       { 
@@ -450,7 +477,7 @@ public class DataHandler
       throws SAXException,DataException
     {
       if (object!=null)
-      { throw new SAXException("Cannot contain more than one Object");
+      { throwSAXException("Cannot contain more than one Object");
       }
       
       URI ref=null;
@@ -510,6 +537,15 @@ public class DataHandler
     @Override
     public Object getObject()
     { return null;
+    }
+    
+    @Override
+    protected void addAggregateFromChars(Object object)
+      throws SAXException
+    {
+      for (Tuple tuple : (Aggregate<Tuple>) object)
+      { addObject(tuple);
+      }
     }
     
     @Override
@@ -589,9 +625,28 @@ public class DataHandler
       }
     }
     
+    
     @Override
     public Object getObject()
     { return aggregate;
+    }
+
+    @Override
+    protected void addAggregateFromChars(Object object)
+      throws SAXException
+    {
+      if (formalType.isPrimitive())
+      { 
+        throw new UnsupportedOperationException
+          ("Primitive aggregates not supported");
+
+      }
+      else
+      {
+        for (Object val : (Aggregate) object)
+        { addObject(val);
+        }
+      }
     }
     
     @Override

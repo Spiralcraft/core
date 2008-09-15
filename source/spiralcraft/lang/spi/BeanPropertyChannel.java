@@ -183,6 +183,11 @@ public class BeanPropertyChannel<T,S>
       { return false;
       }
     }
+    catch (RuntimeException x)
+    {
+      throw new AccessException
+        ("Runtime exception writing bean property '"+_property.getName()+"'",x);
+    }
     catch (IllegalAccessException x)
     { 
       throw new AccessException

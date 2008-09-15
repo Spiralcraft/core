@@ -56,15 +56,16 @@ public class FieldImpl<T>
   private Field archetypeField;
   private URI uri;
   private boolean isScheme;
-  private boolean tranzient;
   private Reflector contentReflector;
   private Expression<T> defaultExpression;
   private Expression<T> fixedExpression;
   private Expression<T> newExpression;
   private RuleSet<FieldImpl<T>,T> ruleSet;
   private Rule<FieldImpl<T>,T>[] explicitRules;
+
   private boolean uniqueValue;
   private boolean required;
+  private boolean tranzient;
   
   protected boolean debug;
   
@@ -148,7 +149,9 @@ public class FieldImpl<T>
   }
   
   public boolean isUniqueValue()
-  { return this.uniqueValue;
+  { 
+    return this.uniqueValue 
+      || (archetypeField!=null && archetypeField.isUniqueValue());
   }
   
   /**
@@ -179,13 +182,19 @@ public class FieldImpl<T>
   protected void addRules(Rule<FieldImpl<T>,T> ... rules)
   {
     if (ruleSet==null)
-    { ruleSet=new RuleSet<FieldImpl<T>,T>(this);
+    { 
+      ruleSet
+        =new RuleSet<FieldImpl<T>,T>
+          (this,archetypeField!=null?archetypeField.getRuleSet():null);
     }
     ruleSet.addRules(rules);
   }
   
   public Expression<T> getNewExpression()
-  { return newExpression;
+  { 
+    return (newExpression==null && archetypeField!=null)
+      ?archetypeField.getNewExpression()
+      :newExpression;
   }
   
   public void setNewExpression(Expression<T> newExpression)
@@ -193,7 +202,10 @@ public class FieldImpl<T>
   }
 
   public Expression<T> getDefaultExpression()
-  { return defaultExpression;
+  { 
+    return (defaultExpression==null && archetypeField!=null)
+      ?archetypeField.getDefaultExpression()
+      :defaultExpression;
   }
   
   public void setDefaultExpression(Expression<T> defaultExpression)
@@ -201,7 +213,10 @@ public class FieldImpl<T>
   }
   
   public Expression<T> getFixedExpression()
-  { return fixedExpression;
+  { 
+    return (fixedExpression==null && archetypeField!=null)
+      ?archetypeField.getFixedExpression()
+      :fixedExpression;
   }
   
   public void setFixedExpression(Expression<T> fixedExpression)
@@ -213,7 +228,18 @@ public class FieldImpl<T>
    *   as the specified field.
    */
   public boolean isFunctionalEquivalent(Field<?> field)
-  { return field.getType()==getType();
+  { 
+    return field.getType()==getType()
+      && newExpression==null
+      && defaultExpression==null
+      && fixedExpression==null
+      && explicitRules==null
+      && tranzient==field.isTransient()
+      && (required?field.isRequired():true)
+      && (uniqueValue?field.isUniqueValue():true)
+      && (title!=null?title.equals(field.getTitle()):true)
+      ;
+        
   }
   
   /**
@@ -236,7 +262,7 @@ public class FieldImpl<T>
   
   @Override
   public boolean isRequired()
-  { return required;
+  { return required || (archetypeField!=null && archetypeField.isRequired());
   }
   
   /**
@@ -271,7 +297,7 @@ public class FieldImpl<T>
   public String getTitle()
   { 
     if (title==null)
-    { return name;
+    { return archetypeField!=null?archetypeField.getTitle():name;
     }
     else
     { return title;

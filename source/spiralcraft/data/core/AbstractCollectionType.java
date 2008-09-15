@@ -32,14 +32,14 @@ import java.util.Collection;
  * Base type for Collections
  */
 @SuppressWarnings("unchecked") // Runtime resolution
-public class AbstractCollectionType<T extends Collection>
-  extends AbstractAggregateType<T>
+public class AbstractCollectionType<T extends Collection,Tcontent>
+  extends AbstractAggregateType<T,Tcontent>
 {  
   private final TypeResolver resolver;
   
   public AbstractCollectionType
     (TypeResolver resolver
-    ,Type<? super Object> contentType
+    ,Type<Tcontent> contentType
     ,URI uri
     ,Class<T> nativeClass
     )
@@ -116,8 +116,9 @@ public class AbstractCollectionType<T extends Collection>
       }
       else
       { 
-        Type valueType=((DataComposite) val).getType();
-        Object convertedVal=valueType.fromData((DataComposite) val,resolver);
+        Type<Tcontent> valueType
+          =(Type<Tcontent>) ((DataComposite) val).getType();
+        Tcontent convertedVal=valueType.fromData((DataComposite) val,resolver);
         collection.add(convertedVal);
       }
     }
@@ -148,7 +149,7 @@ public class AbstractCollectionType<T extends Collection>
     {
       EditableAggregate<DataComposite> aggregate
       	=new EditableArrayListAggregate<DataComposite>(this);
-      for (Object o: collection)
+      for (Tcontent o: (Collection<Tcontent>) collection)
       { aggregate.add(contentType.toData(o));
       }
       return aggregate;

@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.core;
 
+import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
@@ -47,6 +48,23 @@ public class CalculatedFieldImpl<T>
   
   public void setExpression(Expression<T> expression)
   { this.expression=expression;
+  }
+  
+  public Expression<T> getExpression()
+  { return expression;
+  }
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public boolean isFunctionalEquivalent(Field<?> field)
+  { 
+    return
+      field instanceof CalculatedFieldImpl
+      && (expression!=null
+          ?expression.equals(((CalculatedFieldImpl<T>) field).getExpression())
+          :((CalculatedFieldImpl<T>) field).getExpression()==null
+         )
+      && super.isFunctionalEquivalent(field);
   }
   
   @Override
@@ -103,5 +121,6 @@ public class CalculatedFieldImpl<T>
     throws BindException
   { return focus.<T>bind(expression);
   }
+  
   
 }

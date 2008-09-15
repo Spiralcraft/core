@@ -218,7 +218,7 @@ public class TypeResolver
     }
 
     // Create and map the list type
-    type=new AbstractCollectionType<ArrayList>
+    type=new AbstractCollectionType
       (this
       ,baseType
       ,typeURI

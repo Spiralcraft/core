@@ -29,12 +29,12 @@ import java.util.Comparator;
 /**
  * Implementation base class for common aggregate type functionality
  */
-public abstract class AbstractAggregateType<T>
+public abstract class AbstractAggregateType<T,Tcontent>
   extends Type<T>
 {
   protected final URI uri;
   
-  protected Type<? super Object> contentType;
+  protected Type<Tcontent> contentType;
   protected Class<T> nativeClass;
   protected Type<?> archetype;
   protected Type<T> baseType;
@@ -237,6 +237,7 @@ public abstract class AbstractAggregateType<T>
   
   @Override
   public T fromString(String val)
+    throws DataException
   { return null;
   }
   

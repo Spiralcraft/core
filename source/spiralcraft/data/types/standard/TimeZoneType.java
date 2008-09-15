@@ -16,18 +16,26 @@ package spiralcraft.data.types.standard;
 
 import spiralcraft.data.TypeResolver;
 
-import spiralcraft.data.core.AbstractCollectionType;
-
-import java.util.List;
+import spiralcraft.data.core.PrimitiveTypeImpl;
 
 import java.net.URI;
+import java.util.TimeZone;
 
-@SuppressWarnings("unchecked") // Runtime resolution
-public class ListType<Tcontent>
-  extends AbstractCollectionType<List,Tcontent>
+public class TimeZoneType
+  extends PrimitiveTypeImpl<TimeZone>
 {
-  public ListType(TypeResolver resolver,URI uri)
-  { super(resolver,null,uri,List.class);
+  public TimeZoneType(TypeResolver resolver,URI uri)
+  { super(resolver,uri,TimeZone.class);
   }
   
+  @Override
+  public TimeZone fromString(String str)
+  { 
+    return TimeZone.getTimeZone(str);
+  }
+  
+  @Override
+  public String toString(TimeZone zone)
+  { return zone.getID();
+  }
 }

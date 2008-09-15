@@ -25,6 +25,7 @@ import spiralcraft.log.ClassLogger;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
@@ -62,6 +63,18 @@ public class QueryField
   public void setQuery(Query query)
   {
     this.query=query;
+  }
+  
+  @Override
+  public boolean isFunctionalEquivalent(Field<?> field)
+  { 
+    return
+      field instanceof QueryField
+      && (query!=null
+          ?query.equals(((QueryField) field).getQuery())
+          :((QueryField) field).getQuery()==null
+         )
+      && super.isFunctionalEquivalent(field);
   }
   
   @SuppressWarnings("unchecked") // Cast type

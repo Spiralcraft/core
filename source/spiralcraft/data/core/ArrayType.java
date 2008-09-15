@@ -27,21 +27,26 @@ import spiralcraft.data.util.InstanceResolver;
 import java.lang.reflect.Array;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * An Array version of a base type
  */
-public class ArrayType
-  extends AbstractAggregateType<Object[]>
+public class ArrayType<T>
+  extends AbstractAggregateType<T[],T>
 {  
   
   @SuppressWarnings("unchecked") // Array creation via reflection
-  public ArrayType(Type<? super Object> contentType,URI uri)
+  public ArrayType(Type<T> contentType,URI uri)
   { 
     super(uri);
     this.contentType=contentType;
     if (contentType.getNativeClass()!=null)
-    { nativeClass=(Class<Object[]>) Array.newInstance(contentType.getNativeClass(),0).getClass();
+    { nativeClass
+        =(Class<T[]>) Array.newInstance
+          (contentType.getNativeClass(),0).getClass();
     }
     else
     { nativeClass=null;
@@ -54,8 +59,9 @@ public class ArrayType
   { return contentType.getTypeResolver();
   }
     
+  @SuppressWarnings("unchecked")
   @Override
-  public Object[] fromData(DataComposite data,InstanceResolver resolver)
+  public T[] fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
   { 
     Aggregate<?> aggregate=data.asAggregate();
@@ -98,9 +104,10 @@ public class ArrayType
         }
       }
     }
-    return (Object[]) array;
+    return (T[]) array;
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   public DataComposite toData(Object[] array)
     throws DataException
@@ -123,7 +130,7 @@ public class ArrayType
 
       int len=Array.getLength(array);
       for (int index=0;index<len;index++)
-      { aggregate.add(contentType.toData(Array.get(array,index)));
+      { aggregate.add(contentType.toData((T) Array.get(array,index)));
       }
       return aggregate;
     }
@@ -134,7 +141,82 @@ public class ArrayType
   protected String getAggregateQualifier()
   { return ".list";
   }
-
+  
+  @Override
+  public boolean isStringEncodable()
+  { return contentType.isStringEncodable();
+  }
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public T[] fromString(String val)
+    throws DataException
+  { 
+    if (val==null)
+    { return null;
+    }
+    
+    StringTokenizer tok=new StringTokenizer(val,"\\|",true);
+    
+    List<T> values=new ArrayList<T>();
+    StringBuilder buf=new StringBuilder();
+    boolean escaping=false;
+    while (tok.hasMoreTokens())
+    {
+      String token=tok.nextToken();
+      if (escaping)
+      {
+        escaping=false;
+        buf.append(token);
+      }
+      else if (token.equals("|"))
+      { 
+        values.add(contentType.fromString(buf.toString()));
+        buf.setLength(0);
+      }
+      else if (token.equals("\\"))
+      { escaping=true;
+      }
+      else
+      { buf.append(token);
+      }
+    }
+    
+    if (escaping)
+    { 
+      throw new DataException
+        ("Incomplete escape sequence in "+val+" reading "+getURI());
+    }
+    values.add(contentType.fromString(buf.toString()));
+    
+    return values.toArray
+      ((T[]) Array.newInstance(contentType.getNativeClass(), values.size()));
+  }
+  
+  @Override
+  public String toString(T[] valArray)
+  {
+    if (valArray==null)
+    { return null;
+    }
+    boolean first=true;
+    StringBuilder buf=new StringBuilder();
+    for (T val: valArray)
+    {
+      if (!first)
+      { buf.append("|");
+      }
+      else
+      { first=false;
+      }
+      String str=contentType.toString(val);
+      if (str!=null)
+      { buf.append(str.replace("\\","\\\\").replace("|","\\|"));
+      }
+    }
+    return buf.toString();
+  }
+  
 
   
 }

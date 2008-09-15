@@ -31,12 +31,14 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.spi.BeanReflector;
+import spiralcraft.lang.spi.SimpleChannel;
 
 import spiralcraft.log.ClassLogger;
 
 /**
  * <p>A Focus which provides access to a DataSession object and its
- *   associated data Tuple of arbitrary Type, which defines the
+ *   optional associated data Tuple of arbitrary Type, which defines the
  *   "working set" associated with the DataSession.
  * </p>
  * 
@@ -56,16 +58,39 @@ public class DataSessionFocus
   private static final Expression<DataComposite> DATA_EXPRESSION
     =Expression.<DataComposite>create("data");
 
+  
+  public static final DataSessionFocus 
+    create(Focus<?> parentFocus,Type<? extends DataComposite> dataType)
+    throws BindException
+  {
+    SimpleChannel<DataSession> source
+      =new SimpleChannel<DataSession>
+        (BeanReflector.<DataSession>getInstance(DataSession.class));
+    
+    return new DataSessionFocus(parentFocus,source,dataType);
+  }
+  
+  
   private Channel<Space> spaceChannel;
-  private Type<DataComposite> dataType;
+  private Type<? extends DataComposite> dataType;
   private Focus<DataComposite> dataFocus;
   private ArrayList<Setter<?>> newSetters;
-
+  private boolean debug;
+ 
+  /**
+   * <p>Create a DataSession focus which uses an externally managed
+   *   dataSession
+   * </p>
+   * @param parentFocus The contextual Focus chain
+   * @param source The channel which will hold the data session
+   * @param dataType The data type of the Tuple associated with the DataSession
+   * @throws BindException
+   */
   @SuppressWarnings("unchecked")
   public DataSessionFocus
     (Focus<?> parentFocus
     ,Channel<DataSession> source
-    ,Type<DataComposite> dataType
+    ,Type<? extends DataComposite> dataType
     )
     throws BindException
   { 
@@ -158,6 +183,17 @@ public class DataSessionFocus
     return ret;
   }
   
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
+  public void reset()
+  {
+    getSubject().set(newDataSession());
+    initializeDataSession();
+  }
+  
   public DataSession newDataSession()
   {
     DataSession dataSession=new DataSession();
@@ -185,7 +221,11 @@ public class DataSessionFocus
     { 
       for (Setter<?> setter: newSetters)
       { 
-        log.fine("Setting "+setter.toString()+" on "+dataFocus.getSubject().get());
+        if (debug)
+        { 
+          log.fine
+            ("Setting "+setter.toString()+" on "+dataFocus.getSubject().get());
+        }
         if (!setter.set())
         { 
           log.fine("Assignment had no effect"

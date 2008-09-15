@@ -52,13 +52,13 @@ public class DataSession
   
   private HashMap<Identifier,Buffer> buffers;  
   private DataComposite data;
-  private Type<DataComposite> type;
+  private Type<? extends DataComposite> type;
   private Space space;
   private ResourceManager<DataSessionBranch> resourceManager
     =new DataSessionResourceManager();
   private Focus<?> focus;
   
-  public void setType(Type<DataComposite> type)
+  public void setType(Type<? extends DataComposite> type)
   { this.type=type;
   }
 
@@ -86,7 +86,7 @@ public class DataSession
   { return space;
   }
   
-  public Type<DataComposite> getType()
+  public Type<? extends DataComposite> getType()
   { return type;
   }
   
@@ -144,7 +144,7 @@ public class DataSession
   }
   
   @SuppressWarnings("unchecked")
-  public synchronized Buffer newBuffer(Type<?> type)
+  public synchronized <Tbuffer extends Buffer> Tbuffer newBuffer(Type<?> type)
     throws DataException
   {
     if (buffers==null)
@@ -160,7 +160,7 @@ public class DataSession
     buffer.setId(new PojoIdentifier(buffer));
     
     buffers.put(buffer.getId(),buffer);
-    return buffer;
+    return (Tbuffer) buffer;
   }
   
   /**
