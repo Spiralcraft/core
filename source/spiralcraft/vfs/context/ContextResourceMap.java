@@ -47,8 +47,8 @@ public class ContextResourceMap
 {
   
   
-  private static final ThreadLocal<ContextResourceMap> threadMap
-    =new ThreadLocal<ContextResourceMap>();
+  private static final InheritableThreadLocal<ContextResourceMap> threadMap
+    =new InheritableThreadLocal<ContextResourceMap>();
 
   public static final URI lookup(String name)
   { return threadMap.get().get(name);
