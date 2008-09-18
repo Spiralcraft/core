@@ -269,6 +269,40 @@ class NumberBindingHelper
           }
         };
       }
+      else if (clazz==Long.class || clazz==long.class)
+      {
+        translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
+        {
+            
+          @Override
+          public Tret get(T1 val1,T2 val2)
+          { 
+            Number n1= val1;
+            Number n2= val2;
+
+            if (val1==null)
+            { return val2;
+            }
+            if (val2==null)
+            { return val1;
+            }
+            
+            switch (oper)
+            {
+              case '+':
+                return (Tret) Long.valueOf(n1.longValue()+n2.longValue());
+              case '-':
+                return (Tret) Long.valueOf(n1.longValue()-n2.longValue());
+              case '*':
+                return (Tret) Long.valueOf(n1.longValue()*n2.longValue());
+              case '/':
+                return (Tret) Long.valueOf(n1.longValue()/n2.longValue());
+              default:
+                return null;                
+            }
+          }
+        };
+      }
       else if (clazz==Double.class || clazz==double.class)
       {
         translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
