@@ -35,6 +35,26 @@ public interface EditableTuple
    */
   EditableTuple widen(Type<?> type)
     throws DataException;
+
+  /**
+   * <p>Update a -raw- Tuple data value by field name. Intended for
+   *   development / diagnostic use only.
+   * </p>
+   * 
+   * <p><b>IMPORTANT: THIS METHOD CARRIES A PERFORMANCE PENALTY!</b>
+   * 
+   *  For repeated usage, use Field.set(Tuple,Object) or
+   *   spiralcraft.lang.Channel bindings, as this method may be orders of 
+   *   magnitude less efficient than the former methods due to the repeated
+   *   lookup and comparison of field names.
+   * </p> 
+   * 
+   *   
+   *@throws DataException If the Type does not contain a field by the
+   *  specified name, or an error occurs updating data.
+   */
+  void set(String fieldName,Object data)
+    throws DataException;
   
   /**
    * Copy data from the source Tuple which is of the same Type or an archetype

@@ -96,6 +96,16 @@ public class BufferTuple
     return field.getValue(this);
   }
   
+  public void set(String fieldName,Object data)
+    throws DataException
+  {
+    Field<Object> field=type.getField(fieldName);
+    if (field==null)
+    { throw new FieldNotFoundException(type,fieldName);
+    }
+    field.setValue(this,data);
+  }  
+  
   public void updateOriginal(Tuple tuple)
   { 
     if (debug)

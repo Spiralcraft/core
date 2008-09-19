@@ -16,6 +16,8 @@ package spiralcraft.data.lang;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.EditableTuple;
+import spiralcraft.data.Field;
+import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
@@ -74,10 +76,19 @@ public class BoundTuple
     Object data)
     throws DataException
   { bindings[index].set(data);
-    // TODO Auto-generated method stub
     
   }
 
+  public void set(String fieldName,Object data)
+    throws DataException
+  {
+    Field field=fieldSet.getFieldByName(fieldName);
+    if (field==null)
+    { throw new FieldNotFoundException(fieldSet,fieldName);
+    }
+    field.setValue(this,data);
+  }
+  
   @Override
   public boolean isMutable()
   { return true;

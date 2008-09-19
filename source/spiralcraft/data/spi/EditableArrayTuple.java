@@ -15,6 +15,7 @@
 package spiralcraft.data.spi;
 
 import spiralcraft.data.EditableTuple;
+import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.Type;
 import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
@@ -66,6 +67,16 @@ public class EditableArrayTuple
     throws DataException
   { return (EditableTuple) super.widen(type);
   }
+  
+  public void set(String fieldName,Object data)
+    throws DataException
+  {
+    Field<Object> field=fieldSet.getFieldByName(fieldName);
+    if (field==null)
+    { throw new FieldNotFoundException(fieldSet,fieldName);
+    }
+    field.setValue(this,data);
+  } 
   
   public void copyFrom(Tuple source)
     throws DataException
