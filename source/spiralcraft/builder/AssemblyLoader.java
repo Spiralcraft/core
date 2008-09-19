@@ -18,6 +18,7 @@ import java.net.URI;
 
 
 import spiralcraft.util.Path;
+import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
 import java.io.IOException;
@@ -179,9 +180,14 @@ public class AssemblyLoader
     throws BuildException
   {
     ParseTree parseTree=null;
+
     
     try
-    { parseTree=ParseTreeFactory.fromResource(resource);
+    { 
+      if (!resource.exists())
+      { return null;
+      }
+      parseTree=ParseTreeFactory.fromResource(resource);
     }
     catch (SAXException x)
     { throw new BuildException("Error parsing "+resource.toString(),x);
@@ -206,15 +212,25 @@ public class AssemblyLoader
   private AssemblyClass loadAssemblyDefinition(URI resourceUri)
     throws BuildException
   {
+    // Note: This is coded specifically because we may want to
+    //   preserve the originally supplied resourceURI, even though
+    //   the loaded resource may have a different canonical URI.
     
     if (!resourceUri.isAbsolute())
     { throw new BuildException("The assembly URI '"+resourceUri+"' is not absolute and cannot be resolved");
     }
-
+    
     ParseTree parseTree=null;
     
     try
-    { parseTree=ParseTreeFactory.fromURI(resourceUri);
+    { 
+      Resource resource=Resolver.getInstance().resolve(resourceUri);
+      
+      if (!resource.exists())
+      { return null;
+      }
+      
+      parseTree=ParseTreeFactory.fromURI(resourceUri);
     }
     catch (SAXException x)
     { throw new BuildException("Error parsing "+resourceUri.toString(),x);
