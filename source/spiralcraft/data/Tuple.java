@@ -97,7 +97,8 @@ public interface Tuple
     throws DataException;
 
   /**
-   * <p>Retrieve a Tuple data value by field name.
+   * <p>Retrieve a -raw- Tuple data value by field name. Intended for
+   *   development / diagnostic use only.
    * </p>
    * 
    * <p><b>IMPORTANT: THIS METHOD CARRIES A PERFORMANCE PENALTY!</b>
