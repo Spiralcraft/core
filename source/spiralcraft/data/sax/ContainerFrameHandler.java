@@ -97,7 +97,7 @@ public class ContainerFrameHandler<T>
     throws DataException
   {     
 
-    if (getFrame().getCharacters().trim().length()>0)
+    if (getFrame().getCharacters().trim().length()>0 && textChannel==null)
     { log.fine("Unprocessed character data: "+getFrame().getCharacters());
     }
     Setter.applyArrayIfNull(defaultSetters);

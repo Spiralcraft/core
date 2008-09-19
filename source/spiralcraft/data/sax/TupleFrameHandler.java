@@ -68,12 +68,30 @@ public class TupleFrameHandler
   private Channel<Tuple> assignmentChannel;
   
   private boolean skipDuplicates;
+  private boolean updateAssignment;
   
   
   public void setType(Type<?> type)
   { this.type=type;
   }
 
+  /**
+   * <p>Indicate that an existing Tuple associated with the expression in the
+   *   assignment property should be updated instead of being overwritten
+   *   with a new Tuple
+   * </p>
+   * 
+   * <p>When set to false, a new Tuple will always be created by this
+   *   FrameHandler
+   * </p>
+   *   
+   * 
+   * @param updateAssignment
+   */
+  public void setUpdateAssignment(boolean updateAssignment)
+  { this.updateAssignment=updateAssignment;
+  }
+  
   /**
    * <p>Indicate whether duplicate keys should be skipped when
    *   adding Tuples to a container.
@@ -157,13 +175,20 @@ public class TupleFrameHandler
   protected void openData()
     throws DataException
   {
-    Tuple tuple;
-    DataFactory<?> factory=getFrame().getDataHandler().getDataFactory();
-    if (factory!=null)
-    { tuple=factory.<Tuple>create(type);
+    Tuple tuple=null;
+    if (updateAssignment && assignmentChannel!=null)
+    { tuple=assignmentChannel.get();
     }
-    else
-    { tuple=new EditableArrayTuple(type);
+      
+    if (tuple==null)
+    {
+      DataFactory<?> factory=getFrame().getDataHandler().getDataFactory();
+      if (factory!=null)
+      { tuple=factory.<Tuple>create(type);
+      }
+      else
+      { tuple=new EditableArrayTuple(type);
+      }
     }
     channel.set(tuple);
   }

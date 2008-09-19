@@ -82,6 +82,10 @@ public class DataReader
   { this.frameHandler=frameHandler;
   }
   
+  public FrameHandler getFrameHandler()
+  { return this.frameHandler;
+  }
+  
   public void setTraceHandler(ContentHandler traceHandler)
   { this.traceHandler=traceHandler;
   }

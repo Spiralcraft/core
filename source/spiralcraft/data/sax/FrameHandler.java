@@ -100,7 +100,7 @@ public abstract class FrameHandler
   protected Setter<?>[] defaultSetters;
   
   private Expression<String> textBinding;
-  private Channel<String> textChannel;
+  protected Channel<String> textChannel;
 
   
   public void setDefaultAssignments(Assignment<?>[] defaultAssignments)
@@ -197,7 +197,7 @@ public abstract class FrameHandler
       
     }
     if (textBinding!=null)
-    { textChannel=focus.bind(textBinding);
+    { textChannel=getFocus().bind(textBinding);
     }
   }
 
