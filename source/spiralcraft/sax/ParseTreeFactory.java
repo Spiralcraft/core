@@ -54,15 +54,11 @@ public class ParseTreeFactory
   /**
    * Load a ParseTree from a resource. 
    *
-   *@return The ParseTree, or null if the target of the resource does
-   *  not exist.
+   *@return The ParseTree
    */
   public static ParseTree fromResource(Resource resource)
     throws SAXException,IOException
   { 
-    if (!resource.exists())
-    { return null;
-    }
     InputStream in=resource.getInputStream();
     try
     { return fromInputStream(in);

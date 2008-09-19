@@ -104,7 +104,7 @@ public class URLResource
     throws IOException
   {
     URLConnection connection=_url.openConnection();
-    connection.setDoInput(false);
+    connection.setDoInput(true);
     connection.setDoOutput(false);
     connection.connect();
     return connection.getContentLength();
