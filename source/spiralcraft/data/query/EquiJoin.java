@@ -245,6 +245,7 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
   private final Focus<?> paramFocus;
   private TeleFocus<Tt> focus;
   private Channel<Boolean>[] filter;
+  private boolean resolved;
   
   public EquiJoinBinding
     (Tq query
@@ -265,34 +266,37 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
   public void resolve() throws DataException
   { 
     super.resolve();
-    source.resolve();
-    focus=new TeleFocus<Tt>(paramFocus,sourceChannel);
-    focus.setParentFocus(paramFocus);
-    try
-    { 
-      int i=0;
-      ArrayList<Expression<?>> rhsExpressions=getQuery().getRHSExpressions();
-      filter=new Channel[rhsExpressions.size()];
-      for (Expression lhsExpression : getQuery().getLHSExpressions() )
+    if (!resolved)
+    {
+      source.resolve();
+      focus=new TeleFocus<Tt>(paramFocus,sourceChannel);
+      focus.setParentFocus(paramFocus);
+      try
       { 
-        Expression<Boolean> comparison
-          =new Expression<Boolean>
-            (lhsExpression.getRootNode()
-              .isEqual(rhsExpressions.get(i).getRootNode())
-              ,lhsExpression.getText()+"=="+rhsExpressions.get(i).getText()
-            );
-        
-        filter[i++]=focus.<Boolean>bind(comparison);
-        if (debug)
+        int i=0;
+        ArrayList<Expression<?>> rhsExpressions=getQuery().getRHSExpressions();
+        filter=new Channel[rhsExpressions.size()];
+        for (Expression lhsExpression : getQuery().getLHSExpressions() )
         { 
-          log.fine("Added filter "+comparison);
-          filter[i-1].setDebug(true);
+          Expression<Boolean> comparison
+            =new Expression<Boolean>
+              (lhsExpression.getRootNode()
+                .isEqual(rhsExpressions.get(i).getRootNode())
+              ,lhsExpression.getText()+"=="+rhsExpressions.get(i).getText()
+              );
+        
+          filter[i++]=focus.<Boolean>bind(comparison);
+          if (debug)
+          { 
+            log.fine("Added filter "+comparison);
+            filter[i-1].setDebug(true);
+          }
         }
+        resolved=true;
       }
-      
-    }
-    catch (BindException x)
-    { throw new DataException("Error binding constraints "+x,x);
+      catch (BindException x)
+      { throw new DataException("Error binding constraints "+x,x);
+      }
     }
   }
   

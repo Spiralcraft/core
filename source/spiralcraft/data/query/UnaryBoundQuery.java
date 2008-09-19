@@ -119,9 +119,6 @@ public abstract class UnaryBoundQuery
       }
       resolved=true;
     }
-    else
-    { log.fine("Query "+this+" already resolved");
-    }
   }
   
   abstract class UnaryBoundQuerySerialCursor

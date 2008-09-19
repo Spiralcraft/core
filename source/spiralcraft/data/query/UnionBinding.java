@@ -70,11 +70,7 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
       { source.resolve();
       }
       resolved=true;
-    }
-    else
-    { throw new IllegalStateException("Already resolved");
-    }
-    
+    }    
   }
   
   @Override
