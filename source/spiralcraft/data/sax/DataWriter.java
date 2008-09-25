@@ -112,6 +112,11 @@ class Context
   public void write(DataComposite data)
     throws IOException,SAXException,DataException
   {
+    if (data==null)
+    { 
+      throw new IllegalArgumentException
+        ("Cannot write a null DataComposite object");
+    }
     writer.startDocument();
     if (data.isTuple())
     { currentFrame=new TupleFrame(data.asTuple());
