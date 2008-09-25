@@ -213,10 +213,10 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   public int size()
   {
     if (buffers==null)
-    { return original.size();
+    { return original!=null?original.size():0;
     }
     else
-    { return Math.max(original.size(),buffers.size());
+    { return Math.max(original!=null?original.size():0,buffers.size());
     }
   }
 
