@@ -41,12 +41,39 @@ import spiralcraft.lang.SimpleFocus;
  *   updated by child FrameHandlers.
  * </p>
  * 
+ * <p>Effective order of operations:
+ * </p>
+ * 
+ * <ul>
+ *   <li>openData(): A Tuple is either resolved the assignment channel, if
+ *     specified.
+ *   </li>
+ *   <li>openData(): A new Tuple is created if no existing Tuple was resolved. 
+ *   </li>
+ *   <li>openFrame(): Attribute bindings are applied
+ *   </li>
+ *   <li> ... children are read ...
+ *   </li>
+ *   <li>closeFrame(): Any textual data is applied to the textBinding, if
+ *     specified
+ *   </li>
+ *   <li>closeData(): DefaultAssignments are applied
+ *   </li>
+ *   <li>closeData(): The assignment, if specified, is updated with a reference
+ *     to the Tuple.
+ *   </li>
+ *   <li>closeData(): The container, if specified, gets a reference to the Tuple
+ *     added to it.
+ *   </li>
+ *   <li>closeFrame(): The parent is notified of the completed Frame.
+ *   </li>
+ * </ul>
  * <p> When the XML Frame is complete, optionally 
  *   updates or appends to a target.
  * </p>
  * 
- * <p>
- * The AttributeBinding expressions are scoped to the Tuple.
+ * <p>The AttributeBinding expressions are relative to a Focus on the Tuple
+ *   reference by the current frame. 
  * </p>
  * 
  * @author mike
