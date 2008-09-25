@@ -193,6 +193,11 @@ public abstract class FrameHandler
           (binding.getAttribute()
           ,binding
           );
+        if (debug)
+        {
+          log.fine
+            ("URI="+elementURI+": Bound attribute "+binding.getAttribute());
+        }
       }
       
     }
@@ -264,7 +269,13 @@ public abstract class FrameHandler
         =attributeMap!=null?attributeMap.get(fullName):null;
         
       if (binding!=null)
-      { binding.set(value);
+      { 
+        binding.set(value);
+        if (debug)
+        { 
+          log.fine
+            ("URI="+elementURI+": Applying attribute "+fullName+" = "+value);
+        }
       }
       else
       {
