@@ -66,12 +66,12 @@ public class AttributeBinding<T>
     int eqPos=shortHand.indexOf("=");
     if (eqPos<0)
     { 
-      setAttribute(shortHand);
+      setAttribute(shortHand.trim());
       setTarget(Expression.<T>parse(shortHand));
     }
     else
     {
-      setAttribute(shortHand.substring(0,eqPos));
+      setAttribute(shortHand.substring(0,eqPos).trim());
       setTarget(Expression.<T>parse(shortHand.substring(eqPos+1)));
     }
   }
