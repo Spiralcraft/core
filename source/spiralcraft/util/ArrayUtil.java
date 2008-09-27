@@ -209,6 +209,9 @@ public class ArrayUtil
   public static String format(Object[] array,String separator,String delimiter)
   {
     StringBuilder buf=new StringBuilder();
+    if (array==null)
+    { return null;
+    }
     for (int i=0;i<array.length;i++)
     { 
       if (i>0)
