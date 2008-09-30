@@ -40,7 +40,9 @@ public class LiteralNode<X>
 
   @Override
   public String reconstruct()
-  { return _optic.get().toString();
+  { 
+    X val=_optic.get();
+    return val!=null?val.toString():"null";
   }
   
   @Override
