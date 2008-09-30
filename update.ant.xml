@@ -4,10 +4,12 @@
   	<copy 
   	  file="../main/lib/spiralcraft-main.jar"
   	  todir="lib"
+  	  preservelastmodified="true"
   	/>  	
   	<copy
   	  file="../../build/resources/ant/build-common.xml"
   	  todir="."
+      preservelastmodified="true"
   	/>
   </target>
   
