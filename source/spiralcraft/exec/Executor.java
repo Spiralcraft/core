@@ -14,12 +14,13 @@
 //
 package spiralcraft.exec;
 
-import spiralcraft.data.persist.XmlAssembly;
+import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.data.persist.PersistenceException;
 
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.Arguments;
 
+import spiralcraft.lang.BindException;
 import spiralcraft.registry.Registry;
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
@@ -63,7 +64,7 @@ public class Executor
   private URI typeURI;
   private URI instanceURI;
   private boolean persistOnCompletion;
-  private XmlAssembly<Executable> wrapper;
+  private AbstractXmlObject<Executable,?> wrapper;
   private RegistryNode registryNode;  
   private int argCounter=-2;
   
@@ -153,8 +154,16 @@ public class Executor
   private Executable resolveExecutable()
     throws PersistenceException
   {
-    wrapper=new XmlAssembly<Executable>(typeURI,instanceURI);
-      
+    try
+    { 
+      wrapper
+        =AbstractXmlObject.<Executable>create
+          (typeURI,instanceURI,registryNode,null);
+    }
+    catch (BindException x)
+    { throw new PersistenceException("Error instantiating Executable",x);
+    }
+    
     if (registryNode==null)
     { registryNode=Registry.getLocalRoot();
     }
