@@ -130,10 +130,22 @@ public interface Resource
     throws IOException;
 
   /**
+   * <p>Copy the content of the resource to the targetResource, overwriting
+   *   the targetResource if it exists. If the targetResource specifies a
+   *   container (ie. a directory) the resource will be copied into to it,
+   *   overwriting a resource of the same local name.
+   * </p>
+   * 
+   * @param targetResource
+   */
+  public void copyTo(Resource targetResource)
+    throws IOException;  
+  
+  /**
    * <p>Move the content of the resource to the targetResource, overwriting
    *   the targetResource if it exists. If the targetResource specifies a
    *   container (ie. a directory) the resource will be moved into to it,
-   *   overwriting a resource of the same name.
+   *   overwriting a resource of the same local name.
    * </p>
    * 
    * @param targetResource

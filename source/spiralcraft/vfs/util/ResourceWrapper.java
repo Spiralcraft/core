@@ -103,6 +103,11 @@ public abstract class ResourceWrapper
   { getDelegate().delete();
   }
 
+  public void copyTo(Resource target)
+    throws IOException
+  { getDelegate().copyTo(target);
+  }
+  
   public void moveTo(Resource target)
     throws IOException
   { getDelegate().moveTo(target);

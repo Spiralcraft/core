@@ -209,6 +209,19 @@ public abstract class AbstractResource
     
   }  
   
+  public void copyTo(Resource target)
+    throws IOException
+  { 
+    Container container=target.asContainer();
+    if (target.exists() && container!=null)
+    { container.getChild(getLocalName()).copyFrom(this);
+    }
+    else
+    { target.copyFrom(this);
+    }
+
+  }  
+  
   public long getSize()
     throws IOException
   { return 0;
