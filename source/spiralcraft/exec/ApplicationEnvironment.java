@@ -72,18 +72,23 @@ public class ApplicationEnvironment
   private String _mainClass;
   private String[] _mainArguments=new String[0];
   private String[] _modules;
+  private boolean debug;
 
   /**
    * The ApplicationManager provides access to the entire installed
    *   codebase.
    */
-  public void setApplicationManager(ApplicationManager manager)
+  void resolve(ApplicationManager manager)
   { 
     // _applicationManager=manager;
     _classLoader=new LibraryClassLoader(manager.getLibraryCatalog());
-    
+    _classLoader.setDebug(debug);
   }
 
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
   /**
    * Standard arguments to the main class, as a String to be tokenized.
    *   These arguments will preceed any arguments passed to the exec() method.

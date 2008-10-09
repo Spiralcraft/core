@@ -20,27 +20,36 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
+import java.util.logging.Logger;
 
 import spiralcraft.builder.Lifecycle;
 import spiralcraft.builder.LifecycleException;
 
+import spiralcraft.log.ClassLogger;
 import spiralcraft.util.IteratorEnumeration;
 
 public class Loader
   extends ClassLoader
   implements Lifecycle
 {
+  private static final Logger log
+    =ClassLogger.getInstance(Loader.class);
   
   private final ArrayList<Archive> archives=new ArrayList<Archive>();
   private final ArrayList<Archive> precedentArchives=new ArrayList<Archive>();
   private boolean started;
-    
+  private boolean debug;
+  
   public Loader()
   {
   }
   
   public Loader(ClassLoader parent)
   { super(parent);
+  }
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
   }
   
   /**
@@ -280,7 +289,11 @@ public class Loader
     { 
       Archive.Entry entry=archive.getEntry(path);
       if (entry!=null)
-      { return entry;
+      { 
+        if (debug)
+        { log.fine("Found entry "+entry.toString()+" in "+archive.toString());
+        }
+        return entry;
       }
     }
     return null;
@@ -290,14 +303,26 @@ public class Loader
   public void start()
     throws LifecycleException
   {
+    if (debug)
+    { log.fine("starting...");
+    }
+    
     try
     {
       for (Archive archive: archives)
-      { archive.open();
+      { 
+        if (debug)
+        { log.fine("Opening local archive "+archive);
+        }
+        archive.open();
       }
     
       for (Archive archive: precedentArchives)
-      { archive.open();
+      { 
+        if (debug)
+        { log.fine("Opening precedent archive "+archive);
+        }
+        archive.open();
       }
       started=true;
     }

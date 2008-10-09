@@ -23,6 +23,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
+import java.util.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -33,6 +34,7 @@ import java.util.List;
 
 import java.net.URL;
 
+import spiralcraft.log.ClassLogger;
 import spiralcraft.util.StringUtil;
 
 /**
@@ -47,9 +49,9 @@ public class LibraryCatalog
 {
 
 
-  private final String _masterLibraryPath;
+  private final String codebaseRootPath;
 
-  private ArrayList<Library> _libraries=new ArrayList<Library>();
+  private ArrayList<Library> codebaseLibraries=new ArrayList<Library>();
   
   /**
    * Create a new LibraryCatalog for the library located at the specified
@@ -57,17 +59,17 @@ public class LibraryCatalog
    */
   public LibraryCatalog(File path)
   { 
-    _masterLibraryPath=path.getAbsolutePath();
+    codebaseRootPath=path.getAbsolutePath();
     loadCatalog();
   }
   
   public List<Library> listLibraries()
-  { return _libraries;
+  { return codebaseLibraries;
   }
   
   public void close()
   {
-    for (Library library: _libraries)
+    for (Library library: codebaseLibraries)
     { 
       try
       { library.forceClose();
@@ -88,7 +90,7 @@ public class LibraryCatalog
   {
     Library library
       =getLibrary
-        (new File(_masterLibraryPath+File.separator+fileName)
+        (new File(codebaseRootPath+File.separator+fileName)
           .getAbsolutePath()
         );
     return library;
@@ -97,7 +99,7 @@ public class LibraryCatalog
 
   private Library getLibrary(String fullPath)
   { 
-    for (Library library: _libraries)
+    for (Library library: codebaseLibraries)
     { 
       if (library.path.equals(fullPath))
       { return library;
@@ -126,7 +128,7 @@ public class LibraryCatalog
     throws IOException
   { 
     File[] libs
-      =new File(_masterLibraryPath)
+      =new File(codebaseRootPath)
         .listFiles
           (new FilenameFilter()
           {
@@ -140,7 +142,7 @@ public class LibraryCatalog
           }
           );
 
-    _libraries.clear();
+    codebaseLibraries.clear();
 
     if (libs!=null)
     {
@@ -167,7 +169,7 @@ public class LibraryCatalog
     else
     { lib=new FileLibrary(file);
     }
-    _libraries.add(lib);
+    codebaseLibraries.add(lib);
   }
 
   /**
@@ -177,31 +179,53 @@ public class LibraryCatalog
   class LibraryClasspathImpl
     implements LibraryClasspath
   {
-    private final HashMap<String,Resource> _resources
+    private final Logger log
+      =ClassLogger.getInstance(LibraryClasspathImpl.class);
+    
+    private final HashMap<String,Resource> resources
       =new HashMap<String,Resource>();
-    private final ArrayList<Library> _myLibraries
+    private final ArrayList<Library> classpathLibraries
       =new ArrayList<Library>();
 
+    private boolean debug;
+    
+    public void setDebug(boolean debug)
+    { this.debug=debug;
+    }
+    
     public void release()
     {
-      for (Library library: _myLibraries)
+      if (debug)
+      { log.fine("Releasing...");
+      }
+      
+      for (Library library: classpathLibraries)
       {
         try
-        { library.close();
+        { 
+          if (debug)
+          { log.fine("Closing "+library.name);
+          }
+          library.close();
         }
         catch (IOException x)
         { }
       }
-      _myLibraries.clear();
-      _resources.clear();
+      classpathLibraries.clear();
+      resources.clear();
     }
     
     public byte[] loadData(String path)
       throws IOException
     {
-      Resource resource=_resources.get(path);
+      Resource resource=resources.get(path);
       if (resource==null)
       { throw new IOException("Not found: "+path);
+      }
+      if (debug)
+      { 
+        log.fine
+          ("Loading data from  "+resource.library.path+"!"+resource.name);
       }
       return resource.getData();
     }
@@ -209,9 +233,16 @@ public class LibraryCatalog
     public URL getResource(String path)
       throws IOException
     {
-      Resource resource=_resources.get(path);
+      Resource resource=resources.get(path);
       if (resource==null)
       { return null;
+      }
+      if (debug)
+      {
+        log.fine
+          ("Returning reference to resource "
+          +resource.library.path+"!"+resource.name
+          );
       }
       return resource.getResource();
     }
@@ -226,7 +257,7 @@ public class LibraryCatalog
     { 
       LinkedList<Library> libraries
         =new LinkedList<Library>();
-      for (Library library: _libraries)
+      for (Library library: codebaseLibraries)
       {
         if (library.isModule(name))
         { libraries.add(library);
@@ -237,6 +268,9 @@ public class LibraryCatalog
       { throw new IOException("Module not found: "+name);
       }
       
+      if (debug)
+      { log.fine("Adding module "+name+" to classpath");
+      }
       addLibrary(libraries.get(0));
     }
 
@@ -244,7 +278,7 @@ public class LibraryCatalog
       throws IOException
     { 
       boolean found=false;
-      for (Library library: _libraries)
+      for (Library library: codebaseLibraries)
       { 
         // Use versioning logic to find the best
         //   library in the future
@@ -263,10 +297,17 @@ public class LibraryCatalog
     private void addLibrary(Library library)
       throws IOException
     {
+      if (classpathLibraries.contains(library))
+      { return;
+      }
+      
+      if (debug)
+      { log.fine("Adding library "+library.path+" to classpath");
+      }
       
       library.open();
-      _myLibraries.add(library);
-      _resources.putAll(library.resources);
+      classpathLibraries.add(library);
+      resources.putAll(library.resources);
       
       String[] dependencies
         =library.getLibraryDependencies();
@@ -294,7 +335,7 @@ public class LibraryCatalog
     { 
       List<Library> libraries=new LinkedList<Library>();
 
-      Iterator<Library> it=_libraries.iterator();
+      Iterator<Library> it=codebaseLibraries.iterator();
       while (it.hasNext())
       { 
         Library library=it.next();
@@ -315,7 +356,7 @@ public class LibraryCatalog
     public String findNativeLibrary(String name)
     {
 
-      for (Library library: _libraries)
+      for (Library library: codebaseLibraries)
       { 
         if ((library instanceof NativeLibrary)
             && library.name.equals(name)

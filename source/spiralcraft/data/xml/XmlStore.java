@@ -592,9 +592,9 @@ public class XmlStore
     implements Sequence
   {
 
-    private int next;
     private int increment;
-    private int stop;
+    private volatile int next;
+    private volatile int stop;
     private BoundQuery<?,Tuple> boundQuery;
     private Focus<URI> uriFocus;
     private URI uri;

@@ -60,6 +60,11 @@ public class JarArchive
     { return null;
     }
   }
+
+  @Override
+  public String toString()
+  { return super.toString()+":"+resource.getURI();
+  }
   
   @Override
   public void close()
@@ -86,6 +91,11 @@ public class JarArchive
     { this.jarEntry=jarEntry;
     }
 
+    @Override
+    public String toString()
+    { return super.toString()+": "+jarEntry.getName();
+    }
+    
     @Override
     public byte[] getData()
       throws IOException

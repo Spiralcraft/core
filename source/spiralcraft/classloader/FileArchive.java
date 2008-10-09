@@ -62,6 +62,11 @@ public class FileArchive
   }
   
   @Override
+  public String toString()
+  { return super.toString()+":"+resource.getURI();
+  }
+  
+  @Override
   public void close()
   { super.close();
   }
@@ -91,6 +96,11 @@ public class FileArchive
     { this.resource=resource;
     }
 
+    @Override
+    public String toString()
+    { return super.toString()+": "+resource.getURI();
+    }
+    
     @Override
     public byte[] getData()
       throws IOException

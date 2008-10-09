@@ -18,6 +18,7 @@ import spiralcraft.registry.Registry;
 import spiralcraft.registry.RegistryNode;
 
 import spiralcraft.loader.LibraryCatalog;
+import spiralcraft.log.ClassLogger;
 
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.vfs.Resolver;
@@ -32,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 
 import java.net.URI;
+import java.util.logging.Logger;
 
 /**
  * Controls the execution of applications via one or more ApplicationEnvironments.
@@ -53,7 +55,9 @@ import java.net.URI;
 public class ApplicationManager
 {
 
-
+  private static final Logger log
+    =ClassLogger.getInstance(ApplicationManager.class);
+  
   private static RegistryNode _REGISTRY_ROOT
     =Registry.getLocalRoot().createChild("applicationManager");
 
@@ -74,7 +78,7 @@ public class ApplicationManager
 
   private int _nextEnvironmentId=0;
 
-  private boolean DEBUG=false;
+  private boolean debug=false;
   
 
   public ApplicationManager(String userId,File codebase)
@@ -90,7 +94,7 @@ public class ApplicationManager
   }
   
   public void setDebug(boolean val)
-  { DEBUG=val;
+  { debug=val;
   }
   
   public void shutdown()
@@ -134,7 +138,7 @@ public class ApplicationManager
         (_registryNode.createChild(Integer.toString(_nextEnvironmentId++)));
       
       ApplicationEnvironment environment=environmentRef.get();
-      environment.setApplicationManager(this);
+      environment.resolve(this);
     
       environment.exec(args);
     }
@@ -184,7 +188,7 @@ public class ApplicationManager
 
   private boolean isEnvironment(URI uri)
   {
-    if (DEBUG)
+    if (debug)
     { System.err.println("Searching for "+uri);
     }
     
@@ -193,7 +197,7 @@ public class ApplicationManager
       Resource resource = Resolver.getInstance().resolve(uri);
       if (resource.exists())
       { 
-        if (DEBUG)
+        if (debug)
         { System.err.println("Found "+uri);
         }
         return true;

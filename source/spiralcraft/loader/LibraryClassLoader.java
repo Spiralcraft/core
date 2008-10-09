@@ -30,33 +30,40 @@ import java.net.URL;
 public class LibraryClassLoader
   extends AbstractClassLoader
 {
-  private LibraryClasspath _libraryClasspath;
+  private final LibraryClasspath libraryClasspath;
 
   public LibraryClassLoader(LibraryCatalog libraryCatalog)
-  { _libraryClasspath=libraryCatalog.createLibraryClasspath();
+  { libraryClasspath=libraryCatalog.createLibraryClasspath();
   }
 
   @Override
+  public void setDebug(boolean debug)
+  { 
+    super.setDebug(debug);
+    libraryClasspath.setDebug(debug);
+  }
+  
+  @Override
   protected String findLibrary(String name)
-  { return _libraryClasspath.findNativeLibrary(name);
+  { return libraryClasspath.findNativeLibrary(name);
   }
   
   @Override
   protected String getRepositoryName()
-  { return _libraryClasspath.toString();
+  { return libraryClasspath.toString();
   }
 
   @Override
   protected byte[] loadData(String path)
     throws IOException
-  { return _libraryClasspath.loadData(path);
+  { return libraryClasspath.loadData(path);
   }
 
   @Override
   protected URL findResource(String path)
   { 
     try
-    { return _libraryClasspath.getResource(path);
+    { return libraryClasspath.getResource(path);
     }
     catch (IOException x)
     { x.printStackTrace();
@@ -87,7 +94,7 @@ public class LibraryClassLoader
     throws IOException
   {
     String resourceName=className.replace('.','/')+".class";
-    _libraryClasspath.resolveLibrariesForResource(resourceName);
+    libraryClasspath.resolveLibrariesForResource(resourceName);
   }
 
   /**
@@ -96,11 +103,11 @@ public class LibraryClassLoader
    */
   public void addModule(String moduleName)
     throws IOException
-  { _libraryClasspath.addModule(moduleName);
+  { libraryClasspath.addModule(moduleName);
   }
   
   @Override
   public void shutdown()
-  { _libraryClasspath.release();
+  { libraryClasspath.release();
   }
 }
