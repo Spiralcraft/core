@@ -47,7 +47,9 @@ public abstract class Type<T>
   public static <X> Type<List<X>> getAggregateType(Type<X> type)
   { 
     try
-    { return Type.<List<X>>resolve(type.getURI().toString()+".list");
+    { 
+      return type.getTypeResolver().<List<X>>resolve
+        (URI.create(type.getURI().toString()+".list"));
     }
     catch (DataException x)
     { throw new RuntimeException(x);
@@ -62,7 +64,8 @@ public abstract class Type<T>
 //        ("Buffer Type for "+type+" is "
 //        +resolve(type.getURI().toString()+".buffer")
 //        );
-      return Type.<Buffer>resolve(type.getURI().toString()+".buffer");
+      return type.getTypeResolver().<Buffer>resolve
+        (URI.create(type.getURI().toString()+".buffer"));
       
     }
     catch (DataException x)
