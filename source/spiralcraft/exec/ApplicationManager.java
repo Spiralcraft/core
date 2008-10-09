@@ -18,7 +18,7 @@ import spiralcraft.registry.Registry;
 import spiralcraft.registry.RegistryNode;
 
 import spiralcraft.loader.LibraryCatalog;
-import spiralcraft.log.ClassLogger;
+//import spiralcraft.log.ClassLogger;
 
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.vfs.Resolver;
@@ -33,7 +33,7 @@ import java.io.File;
 import java.io.IOException;
 
 import java.net.URI;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 /**
  * Controls the execution of applications via one or more ApplicationEnvironments.
@@ -55,8 +55,8 @@ import java.util.logging.Logger;
 public class ApplicationManager
 {
 
-  private static final Logger log
-    =ClassLogger.getInstance(ApplicationManager.class);
+//  private static final Logger log
+//    =ClassLogger.getInstance(ApplicationManager.class);
   
   private static RegistryNode _REGISTRY_ROOT
     =Registry.getLocalRoot().createChild("applicationManager");
