@@ -50,8 +50,9 @@ public abstract class AuthSession
   protected final HashMap<String,Credential<?>> credentialMap
     =new HashMap<String,Credential<?>>();
   
-  protected Principal principal;
   protected boolean debug;
+
+  protected volatile Principal principal;
   protected volatile boolean authenticated;
   
   /**
@@ -60,11 +61,11 @@ public abstract class AuthSession
    * <P>In the case of Principal escalation, the most privileged Principal
    *   will be returned.
    */
-  public Principal getPrincipal()
+  public synchronized Principal getPrincipal()
   { return principal;
   }
   
-  public final boolean isAuthenticated()
+  public synchronized final boolean isAuthenticated()
   { return authenticated;
   }
   
@@ -73,7 +74,7 @@ public abstract class AuthSession
   }
   
   @SuppressWarnings("unchecked") // Required downcast
-  protected <T extends Credential> T 
+  protected synchronized <T extends Credential> T 
     getCredential(Class<T> clazz)
   {
     for (Credential cred: credentialList)
@@ -94,7 +95,7 @@ public abstract class AuthSession
   { return credentialMap;
   }
     
-  public void addCredentials(Credential<?>[] credentials)
+  public synchronized void addCredentials(Credential<?>[] credentials)
   { 
     if (debug)
     { 
@@ -150,7 +151,7 @@ public abstract class AuthSession
    * Logs out the user by clearing all credentials and principal data and
    *   setting authenticated to false.
    */
-  public void logout()
+  public synchronized void logout()
   {
     credentialList.clear();
     credentialMap.clear();

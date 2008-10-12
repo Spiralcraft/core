@@ -208,7 +208,7 @@ public class DataAuthenticator
     }
         
     @Override
-    public boolean authenticate()
+    public synchronized boolean authenticate()
     {
       if (boundQuery==null)
       { 
