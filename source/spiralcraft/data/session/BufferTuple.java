@@ -251,6 +251,7 @@ public class BufferTuple
           if (value instanceof Buffer)
           { 
             // Don't do anything
+            // XXX Need option to cascade. Buffer.getParent()==this?
           }
           else
           { copyFieldTo(field,dest);
