@@ -614,6 +614,17 @@ public class BufferTuple
   
   
   @Override
+  /**
+   * <p>Write the buffer to the store
+   * </p>
+   * 
+   * <p>Starts a transaction if necessary
+   * </p>
+   * 
+   * <p>A buffer will send itself to the updater of the appropriate
+   *   type obtained from the space
+   * </p>
+   */
   public void save()
     throws DataException
   {
