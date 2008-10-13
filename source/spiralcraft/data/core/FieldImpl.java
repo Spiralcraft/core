@@ -68,6 +68,7 @@ public class FieldImpl<T>
   private boolean tranzient;
   
   protected boolean debug;
+//  protected boolean debugData;
   
   
   /**
@@ -517,9 +518,26 @@ public class FieldImpl<T>
     }
   }
   
+  /**
+   * <p>Log link stage and special conditions for debugging purposes
+   * </p>
+   * 
+   * 
+   * @param debug
+   */
   public void setDebug(boolean debug)
   { this.debug=debug;
   }
+  
+  /**
+   * <p>Log data updates
+   * </p>
+   * 
+   * @param debugData
+   */
+//  public void setDebugData(boolean debugData)
+//  { this.debugData=debugData;
+//  }
 
   @Override
   public Channel<T> bindChannel
