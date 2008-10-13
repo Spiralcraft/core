@@ -75,8 +75,9 @@ public class DataAuthenticator
 
   private Query loginQuery;
   private BoundQuery<?,?> boundQuery;
+  private Channel<String> usernameCredentialChannel;
   private Channel<String> usernameChannel;
-
+  
   private TeleFocus<Tuple> comparisonFocus;
   private ThreadLocalChannel<Tuple> loginChannel;
   private Expression<Boolean> credentialComparison;
@@ -183,7 +184,7 @@ public class DataAuthenticator
     { throw new BindException("Error binding Authenticator query "+loginQuery,x);
     }
     
-    usernameChannel
+    usernameCredentialChannel
       =credentialFocus.bind(Expression.<String>create("UsernameCredential"));
     
     // Set up a comparison to check password/etc
@@ -194,6 +195,8 @@ public class DataAuthenticator
     comparisonFocus=new TeleFocus<Tuple>(credentialFocus,loginChannel);
     
     comparisonChannel=comparisonFocus.bind(credentialComparison);
+    usernameChannel
+      =comparisonFocus.bind(Expression.<String>create(".username"));
     
   }
   
@@ -234,6 +237,8 @@ public class DataAuthenticator
         SerialCursor<?> cursor=boundQuery.execute();
         Tuple loginEntry=null;
         
+        String username=null;
+        
         if (cursor.dataNext())
         { 
           loginEntry=cursor.dataGetTuple();
@@ -261,6 +266,9 @@ public class DataAuthenticator
             if (debug)
             { log.fine("Token comparison returned "+result);
             }
+            if (valid)
+            { username=usernameChannel.get();
+            }
           }
           finally
           { loginChannel.pop();
@@ -275,16 +283,16 @@ public class DataAuthenticator
             { log.fine("valid login: "+cursor.dataGetTuple());
             }
           
-            final String name=usernameChannel.get();
           
             if (principal==null
-                || !principal.getName().equals(name)
+                || !principal.getName().equals(username)
                )
             {
+              final String name=username;
               principal
                 =new Principal()
               {
-
+                
                 @Override
                 public String getName()
                 { return name;
@@ -302,7 +310,11 @@ public class DataAuthenticator
           else
           {
             if (debug)
-            { log.fine("failed login: no token match for "+usernameChannel.get());
+            { 
+              log.fine
+                ("failed login: no token match for "
+                +usernameCredentialChannel.get()
+                );
             }
             authenticated=false;
             return false;
@@ -311,7 +323,7 @@ public class DataAuthenticator
         else
         { 
           if (debug)
-          { log.fine("failed login: no username match for "+usernameChannel.get());
+          { log.fine("failed login: no username match for "+usernameCredentialChannel.get());
           }
           authenticated=false;
           return false;
