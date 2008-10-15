@@ -15,6 +15,7 @@
 package spiralcraft.text.xml;
 
 import spiralcraft.text.ParseException;
+import spiralcraft.text.LookaheadParserContext;
 
 /**
  * An XML name token (tag, entity or attribute name)
@@ -26,7 +27,7 @@ public class NameTokenReader
    * Read a name token. The context should be positioned
    *   on the first character.
    */
-  public void readNameToken(ParserContext context)
+  public void readNameToken(LookaheadParserContext context)
     throws ParseException
   {
     _buffer=new StringBuffer();

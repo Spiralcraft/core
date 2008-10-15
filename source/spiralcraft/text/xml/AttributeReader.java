@@ -15,6 +15,7 @@
 package spiralcraft.text.xml;
 
 import spiralcraft.text.ParseException;
+import spiralcraft.text.LookaheadParserContext;
 
 /**
  * Reads and XML attribute name/value pair
@@ -37,7 +38,7 @@ public class AttributeReader
    *   positioned on the first character of the
    *   attribute name token.
    */
-  public void readAttribute(ParserContext context)
+  public void readAttribute(LookaheadParserContext context)
     throws ParseException
   {
     _attribute=null;

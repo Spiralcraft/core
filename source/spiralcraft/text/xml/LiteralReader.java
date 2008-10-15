@@ -15,6 +15,7 @@
 package spiralcraft.text.xml;
 
 import spiralcraft.text.ParseException;
+import spiralcraft.text.LookaheadParserContext;
 
 /**
  * Reads a literal in double quotes
@@ -26,7 +27,7 @@ public class LiteralReader
    * Read a literal. The context should be positioned
    *   on the first quotation mark.
    */
-  public void readLiteral(ParserContext context)
+  public void readLiteral(LookaheadParserContext context)
     throws ParseException
   { 
     _buffer=new StringBuffer();

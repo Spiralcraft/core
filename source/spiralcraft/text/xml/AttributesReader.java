@@ -17,6 +17,7 @@ package spiralcraft.text.xml;
 import java.util.LinkedList;
 
 import spiralcraft.text.ParseException;
+import spiralcraft.text.LookaheadParserContext;
 
 /**
  * A set of attributes in an XML tag
@@ -36,7 +37,7 @@ public class AttributesReader
    * Read a list of attributes. The context should be positioned
    *   on the first attribute name token.
    */
-  public void read(ParserContext context)
+  public void read(LookaheadParserContext context)
     throws ParseException
   { 
     LinkedList<Attribute> attributes=new LinkedList<Attribute>();

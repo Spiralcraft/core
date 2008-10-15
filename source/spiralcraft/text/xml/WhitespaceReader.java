@@ -15,6 +15,7 @@
 package spiralcraft.text.xml;
 
 import spiralcraft.text.ParseException;
+import spiralcraft.text.LookaheadParserContext;
 
 /**
  * XML whitespace
@@ -24,7 +25,7 @@ public class WhitespaceReader
 
   private StringBuffer _buffer;
 
-  public void readWhitespace(ParserContext context)
+  public void readWhitespace(LookaheadParserContext context)
     throws ParseException
   {
     _buffer=new StringBuffer();

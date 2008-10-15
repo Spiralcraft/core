@@ -17,6 +17,7 @@ package spiralcraft.text.xml;
 import spiralcraft.util.ArrayUtil;
 
 import spiralcraft.text.ParseException;
+import spiralcraft.text.LookaheadParserContext;
 
 /**
  * Reads an XML tag (name and attributes)
@@ -54,7 +55,7 @@ public class TagReader
    */
   public void readTag(CharSequence markup)
     throws ParseException
-  { readTag(new ParserContext(markup));
+  { readTag(new LookaheadParserContext(markup));
   }
   
   /**
@@ -62,7 +63,7 @@ public class TagReader
    *   positioned on the first character of the
    *   tag name.
    */
-  public void readTag(ParserContext context)
+  public void readTag(LookaheadParserContext context)
     throws ParseException
   {
     _nameTokenReader.readNameToken(context);
