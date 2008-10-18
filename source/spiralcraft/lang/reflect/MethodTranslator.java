@@ -15,7 +15,6 @@
 package spiralcraft.lang.reflect;
 
 
-import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
