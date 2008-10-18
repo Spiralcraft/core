@@ -17,12 +17,12 @@ package spiralcraft.security.auth;
 import java.util.HashMap;
 import java.util.Map;
 
-import spiralcraft.lang.BeanFocus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.CompoundFocus;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.spi.BeanReflector;
+import spiralcraft.lang.reflect.BeanFocus;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
 

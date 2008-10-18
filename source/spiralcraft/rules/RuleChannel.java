@@ -16,8 +16,8 @@ package spiralcraft.rules;
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.lang.spi.BeanReflector;
 
 public abstract class RuleChannel<T>
   extends AbstractChannel<Violation<T>>

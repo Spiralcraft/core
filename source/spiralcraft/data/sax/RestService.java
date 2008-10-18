@@ -29,7 +29,6 @@ import spiralcraft.data.session.DataSession;
 import spiralcraft.data.spi.EditableArrayTuple;
 
 import spiralcraft.lang.Assignment;
-import spiralcraft.lang.BeanFocus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.CompoundFocus;
@@ -38,6 +37,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.FocusChainObject;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLogger;
 

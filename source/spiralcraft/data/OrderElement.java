@@ -23,8 +23,8 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.lang.spi.BeanReflector;
 
 /**
  * A group of OrderElements describes how to sort a set of objects.

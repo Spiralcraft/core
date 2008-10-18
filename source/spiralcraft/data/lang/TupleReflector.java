@@ -22,8 +22,8 @@ import spiralcraft.lang.Decorator;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AspectChannel;
-import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.log.ClassLogger;
 
 import spiralcraft.data.DataException;

@@ -18,6 +18,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.Translator;
 
 /**

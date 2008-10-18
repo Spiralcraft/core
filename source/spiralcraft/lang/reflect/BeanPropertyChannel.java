@@ -1,4 +1,4 @@
-package spiralcraft.lang.spi;
+package spiralcraft.lang.reflect;
 
 import java.beans.PropertyDescriptor;
 import java.beans.PropertyChangeSupport;
@@ -25,8 +25,9 @@ import java.lang.reflect.InvocationTargetException;
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.spi.TranslatorChannel;
 
-public class BeanPropertyChannel<T,S>
+class BeanPropertyChannel<T,S>
   extends TranslatorChannel<T,S>
 {
   private static final Object[] EMPTY_PARAMS=new Object[0];
@@ -156,6 +157,10 @@ public class BeanPropertyChannel<T,S>
     }
 
     Method method=_property.getWriteMethod();
+    if (method==null)
+    { return false;
+    }
+    
     Object target=getSourceValue();
     try
     {
@@ -186,7 +191,8 @@ public class BeanPropertyChannel<T,S>
     catch (RuntimeException x)
     {
       throw new AccessException
-        ("Runtime exception writing bean property '"+_property.getName()+"'",x);
+        (x.toString()+" writing bean property '"+_property.getName()+"':"
+        ,x);
     }
     catch (IllegalAccessException x)
     { 

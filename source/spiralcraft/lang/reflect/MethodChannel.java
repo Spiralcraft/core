@@ -12,13 +12,14 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang.spi;
+package spiralcraft.lang.reflect;
 
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.spi.TranslatorChannel;
 
 
 
-public class MethodChannel<Tprop,Tbean>
+class MethodChannel<Tprop,Tbean>
   extends TranslatorChannel<Tprop,Tbean>
 {
   public MethodChannel

@@ -47,19 +47,21 @@ public class PushbackParserContext
   { return position;
   }
   
-  public void throwParseException(String message,String context)
+  public void throwParseException(String message)
     throws ParseException
-  { 
-    position.setContext(context);
-    throw new ParseException(message,position);
+  { throw new ParseException(message,position);
   }
   
-  public void expect(char chr,String context)
+  public void expect(char chr)
     throws ParseException
   { 
     if (read()!=chr)
-    { throwParseException("Expected '"+chr+"'",context);
+    { throwParseException("Expected '"+chr+"'");
     }
+  }
+  
+  public boolean isEOF()
+  { return eof;
   }
   
   public final int read()

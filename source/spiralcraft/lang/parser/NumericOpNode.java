@@ -20,7 +20,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Reflector;
 
-import spiralcraft.lang.spi.BeanReflector;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
 import spiralcraft.lang.spi.StringConcatTranslator;

@@ -19,8 +19,8 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ArrayIndexTranslator;
-import spiralcraft.lang.spi.BeanReflector;
 import spiralcraft.lang.spi.TranslatorChannel;
 
 

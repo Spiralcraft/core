@@ -27,8 +27,8 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
 
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.lang.spi.BeanReflector;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;

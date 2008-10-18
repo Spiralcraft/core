@@ -31,7 +31,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.spi.BeanReflector;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.SimpleChannel;
 
 import spiralcraft.log.ClassLogger;

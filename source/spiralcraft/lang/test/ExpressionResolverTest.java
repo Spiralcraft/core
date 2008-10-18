@@ -15,7 +15,7 @@
 package spiralcraft.lang.test;
 
 import spiralcraft.lang.parser.ExpressionParser;
-import spiralcraft.lang.spi.BeanReflector;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.Namespace;
 import spiralcraft.lang.spi.NamespaceReflector;
 import spiralcraft.lang.spi.SimpleChannel;

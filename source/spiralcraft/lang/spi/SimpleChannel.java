@@ -16,6 +16,7 @@ package spiralcraft.lang.spi;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.reflect.BeanReflector;
 
 
 /**

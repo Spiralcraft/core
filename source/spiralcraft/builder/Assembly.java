@@ -18,7 +18,7 @@ import spiralcraft.lang.BaseFocus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 
-import spiralcraft.lang.spi.BeanReflector;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 

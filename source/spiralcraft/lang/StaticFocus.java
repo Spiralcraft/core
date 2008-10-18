@@ -16,8 +16,8 @@ package spiralcraft.lang;
 
 import java.net.URI;
 
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.lang.spi.BeanReflector;
 
 /**
  * <p>A Focus which provides access to static members of a Java class.

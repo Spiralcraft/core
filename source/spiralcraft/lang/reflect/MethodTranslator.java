@@ -12,13 +12,14 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang.spi;
+package spiralcraft.lang.reflect;
 
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.spi.Translator;
 
 // import spiralcraft.util.ArrayUtil;
 
@@ -71,12 +72,6 @@ class MethodTranslator<Tprop,Tbean>
     
     if (value==null && !_staticMethod)
     { return null;
-    }
-    
-    if (value!=null && _staticMethod)
-    { 
-      throw new AccessException
-        ("Cannot invoke static method '"+_method.getName()+"' on an instance");
     }
     
     try

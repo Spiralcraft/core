@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang.spi;
+package spiralcraft.lang.reflect;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -22,6 +22,12 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
+import spiralcraft.lang.spi.ArrayIndexChannel;
+import spiralcraft.lang.spi.ArrayIterationDecorator;
+import spiralcraft.lang.spi.ArraySelectChannel;
+import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.lang.spi.Translator;
+import spiralcraft.lang.spi.TranslatorChannel;
 
 
 import java.util.WeakHashMap;

@@ -1,10 +1,11 @@
-package spiralcraft.lang.spi;
+package spiralcraft.lang.reflect;
 
 import java.lang.reflect.Array;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.spi.Translator;
 
 class ArrayLengthTranslator<S>
   implements Translator<Integer,S>
