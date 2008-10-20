@@ -240,7 +240,7 @@ dataReader.readFromURI
 "";
 
 rootFocus
-  =new spiralcraft.lang.BeanFocus
+  =new spiralcraft.lang.reflect.BeanFocus
     (spiralcraft.data.session.DataSession.class,null);
 
 focus=new spiralcraft.data.session.DataSessionFocus
