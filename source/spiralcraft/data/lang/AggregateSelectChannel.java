@@ -46,6 +46,9 @@ public class AggregateSelectChannel<T extends Aggregate<X>,X>
   protected Aggregate<X> retrieve()
   {
     T aggregate=source.get();
+    if (aggregate==null)
+    { return null;
+    }
     EditableAggregate<X> ret=new EditableArrayListAggregate<X>(aggregate.getType());
     componentChannel.push(null);
     try
