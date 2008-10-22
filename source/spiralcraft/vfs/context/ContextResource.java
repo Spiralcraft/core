@@ -24,23 +24,28 @@ import java.net.URI;
 
 
 /**
- * <P>A named virtual resource backed by a physical resource. Used to simplify
+ * <p>A named virtual resource backed by a physical resource. Used to simplify
  *   and make more portable components which access external resources.
+ * </p>
  * 
- * <P>A ContextResource is a simple wrapper for another resource. All methods,
- *   including 'getURI()', will return the details of the specific resource.
+ * <p>A ContextResource is a simple wrapper for another resource. All methods,
+ *   including 'getURI()', delegate to the specific resource.
+ * </p>
  * 
  * 
- * <P>A ContextResource is created when a container binds a name to a URI for
+ * <p>A ContextResource is created when a container binds a name to a URI for
  *   the duration of a method call which invokes user subcomponents. The
  *   container will restore the previous URI bound to the name, if any, before
  *   the Thread returns from the method call.
+ * </p>
  *   
  * 
- * <P>Examples:
- * <BR>context://war/WEB-INF/web.xml
- * <BR>context://home/myFile.xyz
- * <BR>context://temp/xyz
+ * <p>Examples:
+ * <br/>context://war/WEB-INF/web.xml
+ * <br/>context://home/myFile.xyz
+ * <br/>context://temp/xyz
+ * <br/>context:/dir/from/virtual/root
+ * </p>
  */
 public class ContextResource
   extends ResourceWrapper
