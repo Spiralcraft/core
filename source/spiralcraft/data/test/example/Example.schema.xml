@@ -1,9 +1,9 @@
 <transport:Schema
-	xmlns:transport="class:/spiralcraft/data/transport"
+	xmlns:transport="class:/spiralcraft/data/access"
 	xmlns:example="class:/spiralcraft/data/test/example"
 	>
 	 
-	<types>
-		<example:Customer.type/>
-	</types>
+	<type>
+	  <example:Customer.type/>
+	</type>
 </transport:Schema>

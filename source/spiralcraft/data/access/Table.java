@@ -14,41 +14,39 @@
 //
 package spiralcraft.data.access;
 
-import java.util.ArrayList;
-
 import spiralcraft.data.Type;
 
-
 /**
- * The collection of Tables associated with a unit of data storage.
+ * <p>A unit of data storage for a type, to be implemented by a store
+ * </p>
+ * 
+ * @author mike
+ *
  */
-public class Schema
+public class Table
 {
-  private final ArrayList<Table> tables=new ArrayList<Table>();
+  private Type<?> type;
+  private String storeName;
   
+  public Type<?> getType()
+  { return type;
+  }
   
-  public void setTypes(Type<?>[] types)
+  public void setType(Type<?> type)
+  { this.type=type;
+  }
+  
+  public void setStoreName(String storeName)
+  { this.storeName=storeName;
+  }
+  
+  public String getStoreName()
   { 
-    for (Type<?> type : types)
-    { 
-      Table table=new Table();
-      table.setType(type);
-      tables.add(table);
+    if (storeName!=null)
+    { return storeName;
     }
-    
-  }
-
-
-  
-  public Table[] getTables()
-  { return tables.toArray(new Table[tables.size()]);
-  }
-  
-  public void setTables(Table[] tables)
-  { 
-    this.tables.clear();
-    for (Table table:tables)
-    { this.tables.add(table);
+    else
+    { return type.getPackageURI().relativize(type.getURI()).getPath();
     }
   }
 }

@@ -35,8 +35,11 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.UniqueKeyViolationException;
 import spiralcraft.data.access.DataConsumer;
+import spiralcraft.data.access.Schema;
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.access.Updater;
+import spiralcraft.data.access.Table;
+
 import spiralcraft.data.core.SequenceField;
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.EquiJoin;
@@ -82,6 +85,7 @@ public class XmlStore
   private XmlQueryable sequenceQueryable
     =new XmlQueryable();
 
+  private Schema schema;
   
   public XmlStore()
   {
@@ -112,6 +116,9 @@ public class XmlStore
   { baseResourceURI=uri;
   }
   
+  public void setSchema(Schema schema)
+  { this.schema=schema;
+  }
   
 //  public XmlQueryable[] getQueryables()
 //  { 
@@ -121,18 +128,22 @@ public class XmlStore
 //    
 //  }
   
+  
+  private void addQueryable(XmlQueryable queryable)
+  {
+    xmlQueryables.add(queryable);
+    
+    Type<?> subtype=queryable.getResultType();
+    queryables.put(subtype,queryable);
+    
+    addBaseTypes(queryable);    
+  }
+    
   public void setQueryables(XmlQueryable[] list)
   { 
     
     for (XmlQueryable queryable:list)
-    { 
-      xmlQueryables.add(queryable);
-      
-      Type<?> subtype=queryable.getResultType();
-      queryables.put(subtype,queryable);
-      
-      addBaseTypes(queryable);
-      
+    { addQueryable(queryable);
     }
   }
   
@@ -260,7 +271,17 @@ public class XmlStore
     throws LifecycleException
   {
     
-    // TODO Auto-generated method stub
+    if (schema!=null)
+    {
+      for (Table table: schema.getTables())
+      {
+        XmlQueryable queryable=new XmlQueryable();
+        queryable.setResultType(table.getType());
+        queryable.setResourceURI(URI.create(table.getStoreName()+".data.xml"));
+        queryable.setAutoCreate(true);
+      }
+    }
+    
     for (XmlQueryable queryable:xmlQueryables)
     { 
       try
