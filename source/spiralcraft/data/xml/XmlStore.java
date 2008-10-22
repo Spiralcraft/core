@@ -279,6 +279,7 @@ public class XmlStore
         queryable.setResultType(table.getType());
         queryable.setResourceURI(URI.create(table.getStoreName()+".data.xml"));
         queryable.setAutoCreate(true);
+        addQueryable(queryable);
       }
     }
     

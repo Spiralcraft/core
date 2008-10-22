@@ -71,7 +71,12 @@ public class SingleSpace
       throw new LifecycleException
         ("SingleSpace: must call register() before start()");
     }
-    store.start();
+    if (store!=null)
+    { store.start();
+    }
+    else
+    { throw new LifecycleException("Store is null");
+    }
   }
   
   public void stop()
