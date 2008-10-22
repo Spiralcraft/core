@@ -57,12 +57,26 @@ public class ContextResource
   { 
     path=uri.getPath().substring(1);
     String authority=uri.getAuthority();
-    URI root=ContextResourceMap.lookup(authority);
-    if (root==null)
+    URI root;
+    if (authority!=null)
     { 
-      throw new UnresolvableURIException
-        (uri,"Unknown resource context '"+authority+"'");
+      root=ContextResourceMap.lookup(authority);
+      if (root==null)
+      { 
+        throw new UnresolvableURIException
+          (uri,"Unknown resource context '"+authority+"' for "+uri);
+      }
     }
+    else
+    { 
+      root=ContextResourceMap.getDefault();
+      if (root==null)
+      { 
+        throw new UnresolvableURIException
+          (uri,"No default resource context for "+uri);
+      }
+    }
+    
     URI target=root.resolve(path);
     delegate=Resolver.getInstance().resolve(target);
     
