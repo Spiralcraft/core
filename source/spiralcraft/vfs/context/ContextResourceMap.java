@@ -54,12 +54,20 @@ public class ContextResourceMap
   { return threadMap.get().get(name);
   }
   
+  public static final URI getDefault()
+  { return threadMap.get().get("_DEFAULT");
+  }
+
   private final HashMap<String,URI> map
     =new HashMap<String,URI>();
   
   private ContextResourceMap parent;
 
 
+  public void putDefault(URI uri)
+  { put("_DEFAULT",uri);
+  }
+  
   public void put(String name,URI uri)
   { map.put(name,uri);
   }
