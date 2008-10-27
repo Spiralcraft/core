@@ -92,6 +92,11 @@ public class AttributeBinding<T>
   { return attribute;
   }
   
+  public void setConverter(StringConverter<T> converter)
+  { this.converter=converter;
+  }
+  
+  
   @SuppressWarnings("unchecked")
   public void bind(Focus<?> focus)
     throws BindException
