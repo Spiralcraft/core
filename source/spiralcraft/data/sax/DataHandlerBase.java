@@ -15,6 +15,7 @@
 package spiralcraft.data.sax;
 
 import java.net.URI;
+import java.util.HashMap;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -146,7 +147,7 @@ public abstract class DataHandlerBase
     if (traceHandler!=null)
     { traceHandler.startElement(uri,localName,qName,attributes);
     }
-    
+
     try
     { currentFrame.startElement(uri,localName,qName,attributes);
     }
@@ -180,6 +181,25 @@ public abstract class DataHandlerBase
       SAXException sx=new SAXException(x.toString()+formatPosition());
       sx.initCause(x);
       throw sx;
+    }
+  }
+  
+  @Override
+  public void startPrefixMapping(String prefix,String uri)
+    throws SAXException
+  { 
+    if (traceHandler!=null)
+    { traceHandler.startPrefixMapping(prefix,uri);
+    }
+    currentFrame.startPrefixMapping(prefix,uri);
+  }
+
+  @Override
+  public void endPrefixMapping(String prefix)
+    throws SAXException
+  { 
+    if (traceHandler!=null)
+    { traceHandler.endPrefixMapping(prefix);
     }
   }
   
@@ -237,7 +257,16 @@ public abstract class DataHandlerBase
     private Frame parentFrame;
     private boolean hasElements;
     private boolean preserveWhitespace=false;
+    private HashMap<String,String> prefixMappings;
 
+    public final void startPrefixMapping(String prefix,String uri)
+    {
+      if (prefixMappings==null)
+      { prefixMappings=new HashMap<String,String>();
+      }
+      prefixMappings.put(prefix,uri);
+    }
+    
     // Begin SAX API
     
     public final void startElement
