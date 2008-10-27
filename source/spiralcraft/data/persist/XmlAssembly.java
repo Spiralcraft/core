@@ -22,7 +22,6 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.builder.BuilderType;
 import spiralcraft.lang.AccessException;
 
-
 import spiralcraft.builder.Assembly;
 import spiralcraft.builder.BuildException;
 
@@ -113,7 +112,6 @@ public class XmlAssembly<Treferent>
   public void set(
     Treferent object)
   { throw new AccessException("Cannot change contents of Assembly");
-    // TODO Auto-generated method stub
     
   }
 

@@ -45,6 +45,9 @@ import spiralcraft.registry.RegistryNode;
 import spiralcraft.builder.Lifecycle;
 import spiralcraft.builder.LifecycleException;
 
+import spiralcraft.util.thread.ContextFrame;
+import spiralcraft.util.thread.Delegate;
+import spiralcraft.util.thread.DelegateException;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
@@ -172,6 +175,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   protected RegistryNode registryNode;
   protected Channel<Treferent> channel;
   protected Focus<Treferent> focus;
+  protected ContextFrame next;
   
   /**
    * Construct an XmlObject from the given Type resource and instance
@@ -388,5 +392,37 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     { this.focus=intermediateFocus;
     }
   }
+  
+
+
+  @Override
+  public <T> T runInContext(
+    Delegate<T> delegate)
+    throws DelegateException
+  {
+    if (instance instanceof FocusChainObject)
+    { return ((FocusChainObject) instance).runInContext(delegate);
+    }
+    else if (next!=null)
+    { return next.runInContext(delegate);
+    }
+    else
+    { return delegate.run();
+    }
+  }
+
+
+  @Override
+  public void setNext(
+    ContextFrame next)
+  { 
+    if (instance instanceof FocusChainObject)
+    { ((FocusChainObject) instance).setNext(next);
+    }
+    else
+    { this.next=next;
+    }
+  }
+
     
 }

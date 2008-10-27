@@ -40,6 +40,9 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLogger;
+import spiralcraft.util.thread.ContextFrame;
+import spiralcraft.util.thread.Delegate;
+import spiralcraft.util.thread.DelegateException;
 
 /**
  * <p>Integrates the results of a rest query into the application data model
@@ -78,6 +81,21 @@ public class RestService
   private int errorRetryDelayMS;
   
   private boolean debug;
+  
+  private Delegate<Tuple> delegate
+    =new Delegate<Tuple>()
+  { 
+    public Tuple run()
+      throws DelegateException
+    {
+      try
+      { return queryImpl();
+      }
+      catch (Exception x)
+      { throw new DelegateException(x);
+      }
+    }
+  };
   
   public void setRestClient(RestClient client)
   { restClient=client;
@@ -229,7 +247,28 @@ public class RestService
     };
   }
   
+  public Delegate<Tuple> queryDelegate()
+  { return delegate;
+  }
+  
   public Tuple query()
+    throws DataException
+  { 
+    try
+    { return runInContext(delegate);
+    }
+    catch (DelegateException x)
+    { 
+      if (x.getCause() instanceof DataException)
+      { throw (DataException) x.getCause();
+      }
+      else
+      { throw new RuntimeException(x);
+      }
+    }
+  }
+  
+  private Tuple queryImpl()
     throws DataException
   {
     if (debug)
@@ -240,71 +279,58 @@ public class RestService
     boolean errorCondition=false;
     do
     {
-      localQueryChannel.push
+      localQueryChannel.set
         (new EditableArrayTuple(restClient.getQueryDataType()));
-      try
+
+      DataSession session=sessionChannel.get();
+      Buffer buffer;
+      if (modelSourceChannel!=null)
       { 
-        DataSession session=sessionChannel.get();
-        Buffer buffer;
-        if (modelSourceChannel!=null)
-        { 
-          DataComposite modelObject=modelSourceChannel.get();
-          if (modelObject==null)
-          { 
-            throw new DataException
-              ("Model object is null, nothing to update ("
-              +modelSourceChannel.getReflector().getTypeURI()
-              +")"
-              );
-          }
-          buffer=session.buffer(modelSourceChannel.get());
+        DataComposite modelObject=modelSourceChannel.get();
+        if (modelObject==null)
+       { 
+          throw new DataException
+            ("Model object is null, nothing to update ("
+            +modelSourceChannel.getReflector().getTypeURI()
+            +")"
+            );
         }
-        else
-        { buffer=session.buffer(session.getData());
-        }
+        buffer=session.buffer(modelSourceChannel.get());
+      }
+      else
+      { buffer=session.buffer(session.getData());
+      }
         
+      if (debug)
+      { log.fine("Buffered "+buffer);
+      }
+        
+      if (localModelChannel!=null)
+      { localModelChannel.set(buffer);
+      }
+        
+      restClient.query();
+         
+      if (debug)
+      { log.fine("RestClient.query() finished");
+      }
+          
+      Boolean errorResult=(errorChannel!=null?errorChannel.get():null);
+      if (errorResult==null || !errorResult)
+      {
+        if (postSetters!=null)
+        { Setter.applyArray(postSetters);
+        }
+        buffer.save();
         if (debug)
-        { log.fine("Buffered "+buffer);
+        { log.fine("Saved buffer "+buffer);
         }
-        
-        if (localModelChannel!=null)
-        { localModelChannel.push(buffer);
-        }
-        try
-        {
-        
-          restClient.query();
-          
-          if (debug)
-          { log.fine("RestClient.query() finished");
-          }
-          
-          Boolean errorResult=(errorChannel!=null?errorChannel.get():null);
-          if (errorResult==null || !errorResult)
-          {
-            if (postSetters!=null)
-            { Setter.applyArray(postSetters);
-            }
-            buffer.save();
-            if (debug)
-            { log.fine("Saved buffer "+buffer);
-            }
-            return localQueryChannel.get();
-          }
-          else
-          { errorCondition=true;
-          }
-        }
-        finally
-        { 
-          if (localModelChannel!=null)
-          { localModelChannel.pop();
-          }
-        }
+        return localQueryChannel.get();
       }
-      finally
-      { localQueryChannel.pop();
+      else
+      { errorCondition=true;
       }
+        
       if (errorCondition)
       { 
         try
@@ -320,6 +346,35 @@ public class RestService
     while(errorCondition && tries++<errorRetries);
     return null;
 
+  }
+
+  @Override
+  public void setNext(
+    ContextFrame next)
+  { 
+    restClient.setNext(next);
+  }
+
+  @Override
+  public <T> T runInContext(
+    Delegate<T> delegate)
+    throws DelegateException
+  {
+    localQueryChannel.push(null);
+    if (localModelChannel!=null)
+    { localModelChannel.push(null);
+    }
+    try
+    { return restClient.runInContext(delegate);
+    }
+    finally
+    { 
+      if (localModelChannel!=null)
+      { localModelChannel.pop();
+      }
+      
+      localQueryChannel.pop();
+    }
   }
 
 }

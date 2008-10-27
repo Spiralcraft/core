@@ -42,6 +42,9 @@ import spiralcraft.log.ClassLogger;
 
 import spiralcraft.sax.XmlWriter;
 import spiralcraft.text.html.URLDataEncoder;
+import spiralcraft.util.thread.ContextFrame;
+import spiralcraft.util.thread.Delegate;
+import spiralcraft.util.thread.DelegateException;
 
 /**
  * <p>Interacts with a web service that uses a REST-like interface
@@ -69,6 +72,7 @@ public class RestClient
   private Setter<?>[] postSetters;
   private Expression<Tuple> queryDataObject;
   private Channel<Tuple> queryDataChannel;
+  private ContextFrame nextFrame;
   
   private Focus<Tuple> focus;
   private boolean debug;
@@ -257,7 +261,18 @@ public class RestClient
     }
     
     // Push the query object
-    localQueryChannel.push(query);
+    // localQueryChannel.push(query);
+    try
+    { return queryImpl(query);
+    }
+    finally
+    { //localQueryChannel.pop();
+    }
+  }
+
+  private Tuple queryImpl(Tuple query)
+    throws DataException
+  {
     try
     {
       
@@ -350,9 +365,36 @@ public class RestClient
       }
       throw new DataException("I/O error performing query",x);
     }
+    
+  }
+
+  @Override
+  public <T> T runInContext(
+    Delegate<T> delegate)
+    throws DelegateException
+  {
+    Tuple query=queryDataChannel.get();    
+    // Push the query object
+    localQueryChannel.push(query);
+    try
+    { 
+      if (nextFrame!=null)
+      { return nextFrame.runInContext(delegate);
+      }
+      else
+      { return delegate.run();
+      }
+    }
     finally
     { localQueryChannel.pop();
     }
+  }
+
+  @Override
+  public void setNext(
+    ContextFrame next)
+  { this.nextFrame=next;
+    
   }
   
 }

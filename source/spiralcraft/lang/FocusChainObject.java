@@ -14,6 +14,8 @@
 //
 package spiralcraft.lang;
 
+import spiralcraft.util.thread.ContextChain;
+
 /**
  * <p>An object that binds to the Focus chain and optionally contributes its
  *   own Focus to the end of the chain. 
@@ -26,6 +28,7 @@ package spiralcraft.lang;
  *
  */
 public interface FocusChainObject
+  extends ContextChain
 {
 
   /**
@@ -39,7 +42,7 @@ public interface FocusChainObject
    * @param parentFocus
    * @throws BindException If any resources are not found
    */
-  public void bind(Focus<?> focusChain)
+  void bind(Focus<?> focusChain)
     throws BindException;
   
   /**
@@ -48,5 +51,7 @@ public interface FocusChainObject
    * 
    * @return The Focus into which this BoundObject publishes any data. 
    */
-  public Focus<?> getFocus();
+  Focus<?> getFocus();
+  
+  
 }
