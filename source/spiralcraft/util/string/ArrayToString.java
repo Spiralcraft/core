@@ -1,6 +1,8 @@
-package spiralcraft.util;
+package spiralcraft.util.string;
 
 import java.lang.reflect.Array;
+
+import spiralcraft.util.StringUtil;
 
 public final class ArrayToString<Tdata>
   extends StringConverter<Tdata[]>

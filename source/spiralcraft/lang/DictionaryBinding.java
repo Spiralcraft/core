@@ -19,7 +19,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
-import spiralcraft.util.StringConverter;
+import spiralcraft.util.string.StringConverter;
 
 /**
  * <p>Associates a loosely bound name, such as used to reference 

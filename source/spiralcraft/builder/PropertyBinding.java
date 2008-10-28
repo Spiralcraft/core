@@ -14,7 +14,7 @@
 //
 package spiralcraft.builder;
 
-import spiralcraft.util.StringConverter;
+import spiralcraft.util.string.StringConverter;
 
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;

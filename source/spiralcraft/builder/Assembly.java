@@ -31,7 +31,7 @@ import spiralcraft.registry.RegistryNode;
 import spiralcraft.registry.Registrant;
 
 
-import spiralcraft.util.StringConverter;
+import spiralcraft.util.string.StringConverter;
 
 import spiralcraft.lang.AccessException;
 

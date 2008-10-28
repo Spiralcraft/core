@@ -1,4 +1,7 @@
-package spiralcraft.util;
+package spiralcraft.util.string;
+
+import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.StringUtil;
 
 public class StringArrayToString
   extends StringConverter<String[]>

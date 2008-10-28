@@ -2,7 +2,7 @@ package spiralcraft.data.util;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
-import spiralcraft.util.StringConverter;
+import spiralcraft.util.string.StringConverter;
 
 public class TypeStringConverter<T>
   extends StringConverter<T>

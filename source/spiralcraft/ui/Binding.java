@@ -21,7 +21,7 @@ import spiralcraft.lang.ParseException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.AccessException;
 
-import spiralcraft.util.StringConverter;
+import spiralcraft.util.string.StringConverter;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;

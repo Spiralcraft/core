@@ -19,7 +19,7 @@ import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataException;
 import spiralcraft.data.util.InstanceResolver;
 
-import spiralcraft.util.StringConverter;
+import spiralcraft.util.string.StringConverter;
 
 import java.net.URI;
 
