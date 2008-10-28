@@ -30,7 +30,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * <p>Converts a String to an object of a specific type in a consistent manner.
+ * <p>Converts bidirectionally between a String and an object of a specific
+ *    type in a consistent manner.
  * </p>
  * 
  * <p>Provides a static interface for registering standard StringConverters 
