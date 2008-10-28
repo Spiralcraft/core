@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.sax;
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -84,14 +85,36 @@ public class AttributeBinding<T>
   { this.attribute=attribute;
   }
   
+  
+  /**
+   * <p>The expression referencing the Channel to be updated.
+   * </p>
+   * 
+   * @return The attribute name
+   */
   public Expression<?> getTarget()
   { return target;
   }
-
+  
+  /**
+   * <p>The name of the XML attribute
+   * </p>
+   * 
+   * @return The attribute name
+   */
   public String getAttribute()
   { return attribute;
   }
   
+  /**
+   * 
+   * <p>Specify the StringConverter that manages this attribute's value
+   * </p>
+   * 
+   * @param converter The StringConverter that will be used to convert
+   *   the attribute value text to the target's type, if the default
+   *   converter should be overridden. 
+   */
   public void setConverter(StringConverter<T> converter)
   { this.converter=converter;
   }
@@ -116,7 +139,13 @@ public class AttributeBinding<T>
   }
   
   public void set(String value)
-  { targetChannel.set(converter.fromString(value));
+  { 
+    try
+    { targetChannel.set(converter.fromString(value));
+    }
+    catch (IllegalArgumentException x)
+    { throw new AccessException("Error reading '"+value+"'",x);
+    }
   }
   
   public String get()
