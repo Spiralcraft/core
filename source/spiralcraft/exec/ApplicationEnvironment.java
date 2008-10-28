@@ -18,8 +18,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
 import spiralcraft.util.Arguments;
-import spiralcraft.util.StringUtil;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.string.StringUtil;
 
 
 import spiralcraft.loader.LibraryClassLoader;

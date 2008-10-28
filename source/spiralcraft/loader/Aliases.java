@@ -17,7 +17,7 @@ package spiralcraft.loader;
 import java.util.HashMap;
 
 import spiralcraft.util.ArrayUtil;
-import spiralcraft.util.StringUtil;
+import spiralcraft.util.string.StringUtil;
 
 import spiralcraft.registry.RegistryNode;
 import spiralcraft.registry.Registrant;

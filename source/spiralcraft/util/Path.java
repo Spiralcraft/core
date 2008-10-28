@@ -16,6 +16,8 @@ package spiralcraft.util;
 
 import java.util.Iterator;
 
+import spiralcraft.util.string.StringUtil;
+
 /**
  * An immutable sequence of Strings which represent elements in an abstract hierarchy.
  */ 

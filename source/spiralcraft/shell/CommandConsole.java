@@ -15,7 +15,7 @@
 package spiralcraft.shell;
 
 import spiralcraft.util.ArrayUtil;
-import spiralcraft.util.StringUtil;
+import spiralcraft.util.string.StringUtil;
 
 import spiralcraft.lang.Focus;
 

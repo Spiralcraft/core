@@ -17,8 +17,8 @@ package spiralcraft.builder;
 import java.util.Collection;
 import java.util.ArrayList;
 
-import spiralcraft.util.StringUtil;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.string.StringUtil;
 
 import spiralcraft.lang.Expression;
 

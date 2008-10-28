@@ -35,7 +35,7 @@ import java.util.List;
 import java.net.URL;
 
 import spiralcraft.log.ClassLogger;
-import spiralcraft.util.StringUtil;
+import spiralcraft.util.string.StringUtil;
 
 /**
  * <P>Catalog of the code and resource Libraries available for use by a

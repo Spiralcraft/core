@@ -25,7 +25,7 @@ import spiralcraft.data.DataException;
 
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.EmptyIterator;
-import spiralcraft.util.StringUtil;
+import spiralcraft.util.string.StringUtil;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 

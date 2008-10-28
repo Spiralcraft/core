@@ -33,7 +33,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.Reflector;
 
-import spiralcraft.util.StringUtil;
+import spiralcraft.util.string.StringUtil;
 
 public class KeyImpl<T>
   extends ProjectionImpl<T>
