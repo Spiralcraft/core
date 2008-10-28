@@ -219,7 +219,7 @@ final class IntToString
 {
   @Override
   public Integer fromString(String val)
-  { return val!=null?Integer.parseInt(val):null;
+  { return (val!=null && !val.isEmpty())?Integer.parseInt(val):null;
   }
 }
 
