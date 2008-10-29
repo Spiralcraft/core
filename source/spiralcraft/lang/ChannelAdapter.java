@@ -55,7 +55,7 @@ public abstract class ChannelAdapter<T>
   /**
    * The underlying value is not guaranteed to remain unchanged
    */
-  public boolean isStatic()
+  public boolean isConstant()
   { return false;
   }
 

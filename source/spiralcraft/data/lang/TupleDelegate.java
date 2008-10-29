@@ -192,6 +192,9 @@ class TupleDelegateReflector<T>
         )
     throws BindException
   { 
+    if (name.startsWith("@"))
+    { return this.<X>resolveMeta(source,focus,name,params);
+    }
     Channel<T> binding=((TupleDelegate) source).getTupleBinding();
     return binding.getReflector().<X>resolve(binding,focus,name,params);
   }

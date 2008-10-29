@@ -15,26 +15,88 @@
 package spiralcraft.lang;
 
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.spi.SimpleChannel;
 
 import java.net.URI;
 
 /**
- * <P>A Reflector is a "type broker" which exposes parts of an object model 
+ * <p>A Reflector is a "type broker" which exposes parts of an object model 
  *   by creating data pipes (Channels) based on elements of Expression syntax
  *   as it applies to the underlying typing model.
+ * </p>
  *   
- * <P>Given a data source and a Focus, a Reflector will resolve a name and a set of
+ * <p>Given a data source and a Focus, a Reflector will resolve a name and a set of
  *   modifiers into another data source (Channel) bound to the first and to the
  *   Focus, in order to effect some transformation or computation.
+ * </p>
  */
-public interface Reflector<T>
+public abstract class Reflector<T>
 {
 
+  private volatile Channel<Reflector<T>> selfChannel;
+  
+
   /**
-   * Generate a new Channel which resolves the name and the given parameter 
-   *   expressions against the source Channel and the supplied Focus.
+   * <p>Generate a new Channel which resolves the meta name (@ prefixed name)
+   *  and the given parameter expressions against the source Channel and the
+   *  supplied Focus.
+   * </p>
+   * 
+   * <p>Subclasses are free to add their own meta names by overriding this 
+   *   method but must call this superclass method to resolve standard names.
+   * </p>
    */
-  public <X> Channel<X> resolve
+  @SuppressWarnings("unchecked")
+  public <X> Channel<X> resolveMeta
+    (Channel<T> source
+    ,Focus<?> focus
+    ,String name
+    ,Expression<?>[] params
+    )
+    throws BindException
+  {
+    Channel<?> channel=null;
+    if (!name.startsWith("@"))
+    { return null;
+    }
+    if (name.equals("@type"))
+    { 
+      if (selfChannel==null)
+      {
+        try
+        {
+          selfChannel
+            =new SimpleChannel<Reflector<T>>(this,true);
+        }
+        catch (BindException x)
+        { x.printStackTrace();
+        }
+      }
+      
+      channel=selfChannel;
+    }
+    else if (name.equals("@channel"))
+    { 
+      channel=source.getCached("@channel");
+      if (channel==null)
+      { 
+        channel=new SimpleChannel(source,true);
+        source.cache("@channel",channel);
+      }
+    }
+    else if (name.equals("@focus"))
+    { channel=focus.getSelfChannel();
+    }
+    return (Channel<X>) channel;
+  }
+  
+
+  /**
+   * <p>Generate a new Channel which resolves the name and the given parameter 
+   *   expressions against the source Channel and the supplied Focus.
+   * </p>
+   */
+  public abstract <X> Channel<X> resolve
     (Channel<T> source
     ,Focus<?> focus
     ,String name
@@ -46,7 +108,7 @@ public interface Reflector<T>
    * Decorate the specified Channel with a decorator that implements the
    *   specified interface
    */
-  public <D extends Decorator<T>> D decorate
+  public abstract <D extends Decorator<T>> D decorate
     (Channel<T> source,Class<D> decoratorInterface)
     throws BindException;
   
@@ -54,14 +116,14 @@ public interface Reflector<T>
    * Return the Java class of the data object accessible through Channels 
    *   associated with this Reflector
    */
-  public Class<T> getContentType();
+  public abstract Class<T> getContentType();
   
   /**
    * @return The URI that identifies the specific type of the data objects
    *   described by this Reflector. The URI is defined by the type system
    *   that provides the Reflector implementation.
    */
-  public URI getTypeURI();
+  public abstract URI getTypeURI();
   
   /**
    * @return Whether the data object described by this Reflector can be
@@ -70,5 +132,5 @@ public interface Reflector<T>
    *   is defined by the type system that provides the Reflector 
    *   implementation.
    */
-  public boolean isAssignableTo(URI typeURI);
+  public abstract boolean isAssignableTo(URI typeURI);
 }

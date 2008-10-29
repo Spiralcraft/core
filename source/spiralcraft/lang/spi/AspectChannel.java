@@ -57,8 +57,8 @@ public class AspectChannel<T>
   }
   
   @Override
-  public boolean isStatic()
-  { return source.isStatic();
+  public boolean isConstant()
+  { return source.isConstant();
   }
   
 }

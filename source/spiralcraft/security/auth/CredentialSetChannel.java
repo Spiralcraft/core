@@ -63,7 +63,7 @@ public class CredentialSetChannel
 
 @SuppressWarnings("unchecked") // Complex to genericize
 class CredentialMapReflector
-  implements Reflector<Map<String,Credential<?>>>
+  extends Reflector<Map<String,Credential<?>>>
 {
   // XXX Consider the use of namespaces, now that they are implemented
   
@@ -91,6 +91,10 @@ class CredentialMapReflector
     , Expression<?>[] params
     ) throws BindException
   {
+    if (name.startsWith("@"))
+    { return this.<X>resolveMeta(source,focus,name,params);
+    }
+    
     if (protoMap.get(name)==null)
     { 
       throw new BindException

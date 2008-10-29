@@ -296,4 +296,6 @@ public interface Focus<T>
    */
   public <Tchannel> Focus<Tchannel> chain(Channel<Tchannel> channel);
   
+  public Channel<Focus<T>> getSelfChannel();
+  
 }

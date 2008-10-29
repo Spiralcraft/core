@@ -63,13 +63,13 @@ class BeanPropertyChannel<T,S>
     _static=
       (_property.getWriteMethod()==null
         && _propertyChangeEventSetDescriptor==null
-        && isSourceStatic()
+        && isSourceConstant()
       );
       
   }
 
   @Override
-  public boolean isStatic()
+  public boolean isConstant()
   { return _static;
   }
 

@@ -38,7 +38,7 @@ public class NamespaceChannel<T>
   public boolean set(T val)
     throws AccessException
   { 
-    if (_static)
+    if (_constant)
     { return false;
     }
     ((Channel<T>) source.get().getOptic(translator.getIndex())).set(val);

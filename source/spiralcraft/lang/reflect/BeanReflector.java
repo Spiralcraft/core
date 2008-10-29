@@ -71,7 +71,7 @@ import spiralcraft.log.ClassLogger;
  */
 @SuppressWarnings("unchecked") // Various levels of heterogeneous runtime ops
 public class BeanReflector<T>
-  implements Reflector<T>
+  extends Reflector<T>
 {
   private static enum CollectionType
   {
@@ -278,6 +278,10 @@ public class BeanReflector<T>
         )
     throws BindException
   { 
+    if (name.startsWith("@"))
+    { return this.<X>resolveMeta(source,focus,name,params);
+    }
+    
     Channel<X> binding=null;
     if (name.equals("[]"))
     { binding=(Channel<X>) this.subscript(source,focus,params[0]);

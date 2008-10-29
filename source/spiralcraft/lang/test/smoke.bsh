@@ -79,6 +79,12 @@ array[0]="orig";
 Evaluator.parseAndEvaluateObject(".[0]=\"test\"",array);
 array[0];
 
+"// Meta names";
+Evaluator.parseAndEvaluateObject(".concat(.).@type","test");
+Evaluator.parseAndEvaluateObject(".concat(.).@channel","test");
+Evaluator.parseAndEvaluateObject(".concat(.).@focus","test");
+
+
 "// ExpressionResolverTest";
 import spiralcraft.lang.test.ExpressionResolverTest;
 "//// Perf 1: retrieval";

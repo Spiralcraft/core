@@ -154,7 +154,7 @@ public abstract class AbstractChannel<T>
   { return _reflector;
   }
 
-  public boolean isStatic()
+  public boolean isConstant()
   { return _static;
   }
 

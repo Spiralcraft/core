@@ -44,7 +44,7 @@ import spiralcraft.log.ClassLogger;
  */
 @SuppressWarnings("unchecked") // Various levels of heterogeneous runtime ops
 public class ArrayReflector<I>
-  implements Reflector<I[]>
+  extends Reflector<I[]>
 {
 
 
@@ -131,6 +131,10 @@ public class ArrayReflector<I>
         )
     throws BindException
   { 
+    if (name.startsWith("@"))
+    { return this.<X>resolveMeta(source,focus,name,params);
+    }
+    
     Channel<X> binding=null;
     if (name.equals("[]"))
     { binding=(Channel<X>) this.subscript(source,focus,params[0]);

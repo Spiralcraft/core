@@ -38,7 +38,7 @@ class BeanFieldChannel<Tprop,Tbean>
 
 
   @Override
-  public boolean isStatic()
+  public boolean isConstant()
   { return false;
   }
 

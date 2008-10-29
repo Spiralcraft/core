@@ -41,7 +41,7 @@ public class FieldBinding
    *   change even if the Tuple does not.
    */
   @Override
-  public boolean isStatic()
+  public boolean isConstant()
   { 
     // XXX Find a way to incorporate Tuple immutability to give a more
     //  intelligent response here.

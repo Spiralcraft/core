@@ -48,7 +48,7 @@ import java.util.Map;
  * 
  */
 public class NamespaceReflector
-  implements Reflector<Namespace>
+  extends Reflector<Namespace>
 {
   
   private int index=0;
@@ -72,6 +72,9 @@ public class NamespaceReflector
     )
     throws BindException
   { 
+    if (name.startsWith("@"))
+    { return this.<X>resolveMeta(source,focus,name,params);
+    }
     NamespaceAttribute translator=attributeMap.get(name);
     
     if (translator==null)

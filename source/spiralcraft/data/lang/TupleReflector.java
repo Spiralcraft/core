@@ -94,6 +94,39 @@ public class TupleReflector<T extends Tuple>
   public FieldSet getFieldSet()
   { return fieldSet;
   }
+  
+  /**
+   * Resolve a meta name
+   */
+  @SuppressWarnings("unchecked") // We haven't genericized the data package yet
+  public synchronized <X> Channel<X> resolveMeta
+    (final Channel<T> source
+    ,Focus<?> focus
+    ,String name
+    ,Expression<?>[] params
+    )
+    throws BindException
+  {  
+    Channel<X> channel=super.<X>resolveMeta(source,focus,name,params);
+    if (channel!=null)
+    { return channel;
+    }
+    if (name.equals("@tuple"))
+    { 
+      // Provide access to 
+      Channel binding=source.getCached("_tuple");
+      if (binding==null)
+      { 
+        binding=new AspectChannel
+          (BeanReflector.getInstance(contentType)
+          ,source
+          );
+        source.cache("_tuple",binding);
+      }
+      return binding;
+    }
+    return null;
+  }
 
   /**
    * Resolve a Binding that provides access to a member of a Tuple given a 
@@ -108,6 +141,10 @@ public class TupleReflector<T extends Tuple>
     )
     throws BindException
   {    
+    if (name.startsWith("@"))
+    { return this.<X>resolveMeta(source,focus,name,params);
+    }
+    
     if (name.equals("_tuple"))
     { 
       // Provide access to 

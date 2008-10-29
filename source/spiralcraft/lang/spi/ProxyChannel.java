@@ -79,8 +79,8 @@ public class ProxyChannel<T>
   { return channel.propertyChangeSupport();
   }
 
-  public boolean isStatic()
-  { return channel.isStatic();
+  public boolean isConstant()
+  { return channel.isConstant();
   }
 
   public Reflector<T> getReflector()

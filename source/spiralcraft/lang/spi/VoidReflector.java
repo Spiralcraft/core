@@ -28,7 +28,7 @@ import spiralcraft.lang.Channel;
  * Type that is undefined (ie. null)
  */
 public class VoidReflector
-  implements Reflector<Void>
+  extends Reflector<Void>
 {
 
   URI uri=URI.create("class:/java/lang/Void");
@@ -42,6 +42,10 @@ public class VoidReflector
     (Channel<Void> source,Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
   { 
+    if (name.startsWith("@"))
+    { return this.<X>resolveMeta(source,focus,name,params);
+    }
+    
     // We should implement .equals()
     return null;
   }

@@ -53,25 +53,25 @@ public class ResolveNode<T>
   public Channel<T> bind(final Focus<?> focus)
     throws BindException
   { 
-    Channel<?> sourceOptic;
+    Channel<?> source;
     if (_source!=null)
     { 
-      sourceOptic=_source.bind(focus);
-      if (sourceOptic==null)
+      source=_source.bind(focus);
+      if (source==null)
       { throw new BindException(_source+" returned null from bind()");
       }
     }
     else
     { 
       log.fine("ResolveNode:"+super.toString()+" DEFAULT Using Focus subject");
-      sourceOptic=focus.getSubject();
-      if (sourceOptic==null)
+      source=focus.getSubject();
+      if (source==null)
       { throw new BindException("Focus "+focus+" has no subject");
       }
     }
 
     
-    Channel<T> ret=sourceOptic.<T>resolve(focus,identifier,null);
+    Channel<T> ret=source.<T>resolve(focus,identifier,null);
     if (ret==null)
     { throw new BindException("Name '"+identifier+"' not found.");
     }

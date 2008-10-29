@@ -139,7 +139,7 @@ public interface Channel<T>
    * Indicates whether the referenced data value is guaranteed to
    *   remain unchanged.
    */
-  boolean isStatic();
+  boolean isConstant();
   
   /**
    * Return the spiralcraft.lang.Reflector extended type of the referenced data 

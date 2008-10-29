@@ -48,7 +48,7 @@ import spiralcraft.data.session.BufferType;
  * @param <T> The type of DataComposite we are mapping
  */
 public abstract class DataReflector<T extends DataComposite>
-  implements Reflector<T>
+  extends Reflector<T>
 {
   // 
   // XXX Use weak map

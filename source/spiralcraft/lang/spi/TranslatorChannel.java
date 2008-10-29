@@ -42,7 +42,7 @@ public  class TranslatorChannel<T,S>
   protected final int id;
 
   protected final Channel<S> source;
-  protected final boolean _static;
+  protected final boolean _constant;
 
   private final Translator<T,? super S> translator;
   private final Channel<?>[] _modifiers;
@@ -68,22 +68,22 @@ public  class TranslatorChannel<T,S>
     
     // Determine default static by checking source, modifiers.
     // If all dependencies are static, this is static
-    boolean isStatic=true;
-    if (!source.isStatic())
-    { isStatic=false;
+    boolean isConstant=true;
+    if (!source.isConstant())
+    { isConstant=false;
     }
     if (_modifiers!=null)
     { 
       for (int i=0;i<_modifiers.length;i++)
       { 
-        if (!_modifiers[i].isStatic())
+        if (!_modifiers[i].isConstant())
         { 
-          isStatic=false;
+          isConstant=false;
           break;
         }
       }
     }
-    _static=isStatic;
+    _constant=isConstant;
     id=_ID++;  
 
   }
@@ -132,8 +132,8 @@ public  class TranslatorChannel<T,S>
   { return source.get();
   }
 
-  protected final boolean isSourceStatic()
-  { return source.isStatic();
+  protected final boolean isSourceConstant()
+  { return source.isConstant();
   }
 
   /**
@@ -196,8 +196,8 @@ public  class TranslatorChannel<T,S>
   /**
    * Override if standard definition of isStatic is false
    */
-  public boolean isStatic()
-  { return _static;
+  public boolean isConstant()
+  { return _constant;
   }
 
   @SuppressWarnings("unchecked") // PropertyChange is not generic- values are Object type
@@ -244,7 +244,7 @@ public  class TranslatorChannel<T,S>
 
   public PropertyChangeSupport propertyChangeSupport()
   { 
-    if (isStatic())
+    if (isConstant())
     { return null;
     }
     

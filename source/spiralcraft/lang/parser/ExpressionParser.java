@@ -63,6 +63,7 @@ public class ExpressionParser
     syntax.wordChars('a','z');
     syntax.wordChars('A','Z');
     syntax.wordChars('_','_');
+    syntax.wordChars('@','@');
 
     syntax.whitespaceChars('\r','\r');
     syntax.whitespaceChars('\n','\n');

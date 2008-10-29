@@ -47,6 +47,7 @@ public abstract class FocusWrapper<tFocus>
 {
   protected final Focus<tFocus> focus;
   private HashMap<Expression<?>,Channel<?>> channels;
+  private volatile Channel<Focus<tFocus>> selfChannel;
   
   public FocusWrapper(Focus<tFocus> delegate)
   { this.focus=delegate;
@@ -126,6 +127,20 @@ public abstract class FocusWrapper<tFocus>
   }
 
 
+  public Channel<Focus<tFocus>> getSelfChannel()
+  {
+    if (selfChannel==null)
+    { 
+      try
+      { selfChannel=new SimpleChannel<Focus<tFocus>>(this,true);
+      }
+      catch (BindException x)
+      { x.printStackTrace();
+      }
+    }
+    return selfChannel;
+  }
+  
   @Override
   public <Tchannel> Focus<Tchannel> chain(
     Channel<Tchannel> channel)
