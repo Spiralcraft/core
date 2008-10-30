@@ -15,6 +15,7 @@
 package spiralcraft.lang;
 
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.SimpleChannel;
 
 import java.net.URI;
@@ -73,6 +74,27 @@ public abstract class Reflector<T>
     }
     else if (name.equals("@focus"))
     { channel=focus.getSelfChannel();
+    }
+    else if (name.equals("@cast"))
+    { 
+      if (params.length!=1)
+      { throw new BindException("@cast accepts a single parameter");
+      }
+      Channel<Reflector<X>> typeChannel
+        =focus.bind((Expression<Reflector<X>>) params[1]);
+      if (!Reflector.class.isAssignableFrom(typeChannel.getContentType()))
+      { throw new BindException("@cast only accepts a type");
+      }
+      if (!typeChannel.isConstant())
+      { throw new BindException("@cast cannot accept a dynamic type");
+      }
+      Reflector<X> type=typeChannel.get();
+      channel=source.getCached(type.getTypeURI());
+      if (channel==null)
+      { 
+        channel=new CastChannel(source,type);
+        source.cache(type.getTypeURI(),channel);
+      }
     }
     return (Channel<X>) channel;
   }
@@ -158,5 +180,31 @@ public abstract class Reflector<T>
    */
   public TypeModel getTypeModel()
   { return null;
+  }
+  
+}
+
+class CastChannel<S,T extends S>
+  extends AbstractChannel<T>
+{
+  private Channel<S> source;
+  
+  public CastChannel(Channel<S> source,Reflector<T> type)
+  { 
+    super(type);
+    this.source=source;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  protected T retrieve()
+  { return (T) source.get();
+  }
+
+  @Override
+  protected boolean store(
+    T val)
+    throws AccessException
+  { return source.set(val);
   }
 }
