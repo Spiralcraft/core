@@ -902,7 +902,13 @@ public class ExpressionParser
       switch (_tokenizer.ttype)
       {
         case ']':
-          return new AbsoluteFocusNode(focusName.toString());
+          String focusString=focusName.toString();
+          if (focusString.startsWith("@"))
+          { return new TypeFocusNode(focusString.substring(1));
+          }
+          else
+          { return new AbsoluteFocusNode(focusString);
+          }
         case StreamTokenizer.TT_EOF:
           throwUnexpected();
         case StreamTokenizer.TT_WORD:

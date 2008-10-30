@@ -96,13 +96,14 @@ public class BeanInfoCache
    * @return The Class identified by the URI, if the URI scheme is "class" and
    *   the Class is accessible from the context ClassLoader.
    */
-  public static final synchronized Class<?> getClassForURI(URI uri)
+  @SuppressWarnings("unchecked") 
+  public static final synchronized <X> Class<X> getClassForURI(URI uri)
   { 
     if (uri==null || uri.getScheme()==null || !uri.getScheme().equals("class"))
     { return null;
     }
     
-    Class<?> result=null;
+    Class result=null;
     WeakReference<Class<?>> classRef=uriMap.get(uri);
     if (classRef!=null)
     { result=classRef.get();

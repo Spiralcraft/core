@@ -215,17 +215,20 @@ public interface Focus<T>
    */
   Channel<T> getSubject();
 
+
+  
   /**
-   * <p>Find a Focus that responds to the URI specifier.
+   * <p>Find a Focus in the chain with a subject Channel that provides data of 
+   *   the type specified by the URI.
    * </p>
    * 
    * <p>A given Focus implementation may provide a reference to itself or
    *   a different Focus for a given specifier. The specifier is resolved up 
-   *   the Focus hierarchy if this Focus does not respond to the specifier
-   *   and has a parent.
+   *   the Focus chain. If this Focus does not respond to the specifier, it
+   *   will delegate to its parent if it has one.
    * </p>
    */
-  <X> Focus<X> findFocus(URI specifier);
+  <X> Focus<X> findFocus(URI specifier);  
 
   /**
    * <p>Indicate whether this Focus responds to the URI specifier, 
@@ -242,7 +245,7 @@ public interface Focus<T>
   boolean isFocus(URI specifier);
 
   /**
-   * @return the NamespaceResolver that associated namespace prefixes with
+   * @return the NamespaceResolver that associates namespace prefixes with
    *   URIs
    */
   NamespaceResolver getNamespaceResolver();
@@ -296,6 +299,13 @@ public interface Focus<T>
    */
   public <Tchannel> Focus<Tchannel> chain(Channel<Tchannel> channel);
   
+  /**
+   * <p>A Channel that references the Focus object itself (primarily for
+   *   metadata and development purposes)
+   * </p>
+   * 
+   * @return The selfChannel
+   */
   public Channel<Focus<T>> getSelfChannel();
   
 }

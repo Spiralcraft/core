@@ -22,6 +22,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
+import spiralcraft.lang.TypeModel;
 import spiralcraft.lang.spi.ArrayIndexChannel;
 import spiralcraft.lang.spi.ArrayIterationDecorator;
 import spiralcraft.lang.spi.ArraySelectChannel;
@@ -102,6 +103,7 @@ public class ArrayReflector<I>
 
   }
 
+  @Override
   public Class<I[]> getContentType()
   { return targetClass;
   }
@@ -123,6 +125,7 @@ public class ArrayReflector<I>
     return componentReflector.isAssignableTo(baseURI);
   }
   
+  @Override
   public synchronized <X> Channel<X> 
     resolve(Channel<I[]> source
         ,Focus<?> focus
@@ -145,6 +148,7 @@ public class ArrayReflector<I>
     return binding;
   }
 
+  @Override
   public <D extends Decorator<I[]>> D decorate
     (Channel<I[]> source,Class<D> decoratorInterface)
     throws BindException
@@ -246,7 +250,10 @@ public class ArrayReflector<I>
   { return super.toString()+":"+targetClass.getName();
   }
 
-
+  @Override
+  public TypeModel getTypeModel()
+  { return componentReflector.getTypeModel();
+  }
 }
 
 

@@ -60,20 +60,7 @@ public abstract class Reflector<T>
     { return null;
     }
     if (name.equals("@type"))
-    { 
-      if (selfChannel==null)
-      {
-        try
-        {
-          selfChannel
-            =new SimpleChannel<Reflector<T>>(this,true);
-        }
-        catch (BindException x)
-        { x.printStackTrace();
-        }
-      }
-      
-      channel=selfChannel;
+    { channel=getSelfChannel();
     }
     else if (name.equals("@channel"))
     { 
@@ -90,7 +77,27 @@ public abstract class Reflector<T>
     return (Channel<X>) channel;
   }
   
-
+  public Channel<Reflector<T>> getSelfChannel()
+  { 
+    makeSelfChannel();
+    return selfChannel;
+  }
+  
+  private synchronized void makeSelfChannel()
+  { 
+    if (selfChannel==null)
+    {
+      try
+      {
+        selfChannel
+          =new SimpleChannel<Reflector<T>>(this,true);
+      }
+      catch (BindException x)
+      { x.printStackTrace();
+      }
+    }
+  }
+  
   /**
    * <p>Generate a new Channel which resolves the name and the given parameter 
    *   expressions against the source Channel and the supplied Focus.
@@ -133,4 +140,23 @@ public abstract class Reflector<T>
    *   implementation.
    */
   public abstract boolean isAssignableTo(URI typeURI);
+  
+  /**
+   * <p>A Reflector which represents a formally named type is usually associated
+   *   with a TypeModel, which supports the retrieval of type Reflectors from
+   *   their URIs.
+   * </p>
+   * 
+   * <p>Some Reflectors which represent "anonymous" types-
+   *   ie. arbitrary collections of members- and may not have a formal naming
+   *   system and or an associated TypeModel.
+   * </p>
+   *   
+   * 
+   * @return The TypeModel, if any, to which this Reflector belongs, or null
+   *   if this Reflector is not associated with a TypeModel. 
+   */
+  public TypeModel getTypeModel()
+  { return null;
+  }
 }

@@ -34,32 +34,32 @@ public class SimpleChannel<T>
   }
   
   /**
-   * Create a SimpleOptic with the specified Object as its target
-   *   and with a targetClass equals to the Object's class.
+   * <p>Publish an object's Bean interface
+   * </p>
    */
   @SuppressWarnings("unchecked") // does not return properly scoped class
-  public SimpleChannel(T val,boolean isStatic)
+  public SimpleChannel(T val,boolean isConstant)
     throws BindException
   { 
-    super(BeanReflector.<T>getInstance((Class<T>) val.getClass()),isStatic);
+    super(BeanReflector.<T>getInstance((Class<T>) val.getClass()),isConstant);
     _object=val;
 
     // System.out.println("SimpleBinding- noclass:"+super.toString()+":["+val+"]");
   }
 
-  public SimpleChannel(Class<T> clazz,T val,boolean isStatic)
+  public SimpleChannel(Class<T> clazz,T val,boolean isConstant)
     throws BindException
   { 
      
-    super(BeanReflector.<T>getInstance(clazz),isStatic);
+    super(BeanReflector.<T>getInstance(clazz),isConstant);
     _object=val; 
 
     //System.out.println("SimpleBinding- with class:"+super.toString()+":["+val+"]");
   }
 
-  public SimpleChannel(Reflector<T> reflector,T val,boolean isStatic)
+  public SimpleChannel(Reflector<T> reflector,T val,boolean isConstant)
   { 
-    super(reflector,isStatic);
+    super(reflector,isConstant);
     _object=val;
   }
   

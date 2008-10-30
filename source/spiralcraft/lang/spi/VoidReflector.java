@@ -38,6 +38,7 @@ public class VoidReflector
    *   expressions against the source Binding within the context of the supplied
    *   Focus.
    */
+  @Override
   public <X> Channel<X> resolve
     (Channel<Void> source,Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
@@ -54,6 +55,7 @@ public class VoidReflector
    * Decorate the specified optic with a decorator that implements the
    *   specified interface
    */
+  @Override
   public <D extends Decorator<Void>> D decorate
       (Channel<Void> source
       ,Class<D> decoratorInterface
@@ -66,6 +68,7 @@ public class VoidReflector
    * Return the Java class of the data object accessible through Bindings 
    *   associated with this Reflector
    */
+  @Override
   public Class<Void> getContentType()
   { return Void.class;
   }

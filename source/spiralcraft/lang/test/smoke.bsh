@@ -84,6 +84,10 @@ Evaluator.parseAndEvaluateObject(".concat(.).@type","test");
 Evaluator.parseAndEvaluateObject(".concat(.).@channel","test");
 Evaluator.parseAndEvaluateObject(".concat(.).@focus","test");
 
+Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math]","test");
+Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math] typeURI","test");
+Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math] @static.@type","test");
+Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math] @static.min(1,2)","test");
 
 "// ExpressionResolverTest";
 import spiralcraft.lang.test.ExpressionResolverTest;

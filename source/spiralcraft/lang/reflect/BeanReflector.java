@@ -22,6 +22,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
+import spiralcraft.lang.TypeModel;
 import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;
 import spiralcraft.lang.spi.ArrayIterationDecorator;
@@ -30,6 +31,7 @@ import spiralcraft.lang.spi.CollectionSelectChannel;
 import spiralcraft.lang.spi.EnumerationIterationDecorator;
 import spiralcraft.lang.spi.IterableDecorator;
 import spiralcraft.lang.spi.MapIndexTranslator;
+import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
@@ -88,7 +90,6 @@ public class BeanReflector<T>
   
   private static final BeanInfoCache _BEAN_INFO_CACHE
     =BeanInfoCache.getInstance(Introspector.IGNORE_ALL_BEANINFO);
-
   
   private static final WeakHashMap<Type,WeakReference<Reflector>> reflectorMap
     =new WeakHashMap<Type,WeakReference<Reflector>>();
@@ -216,6 +217,7 @@ public class BeanReflector<T>
   private Type targetType;
   private URI uri;
   private MethodResolver methodResolver;
+  private volatile Channel<T> staticChannel;
   
   public BeanReflector(Type type)
   { 
@@ -232,7 +234,7 @@ public class BeanReflector<T>
     else
     { 
       throw new IllegalArgumentException
-        ("BeanReflector: unrecognized type "+type);
+        ("BeanReflector: unrecognized type "+type+" "+type.getClass().getName());
     }
     
     targetClass=clazz;
@@ -251,6 +253,7 @@ public class BeanReflector<T>
 
   }
 
+  @Override
   public Class<T> getContentType()
   { return targetClass;
   }
@@ -270,6 +273,40 @@ public class BeanReflector<T>
     return false;
   }
   
+  
+  public synchronized <X> Channel<X> getStaticChannel()
+  { 
+    if (staticChannel==null)
+    { staticChannel=new SimpleChannel(this,null,true);
+    }
+    return (Channel<X>) staticChannel;
+  }
+  
+  @Override
+  public synchronized <X> Channel<X> 
+    resolveMeta(Channel<T> source
+        ,Focus<?> focus
+        ,String name
+        ,Expression<?>[] params
+        )
+    throws BindException
+  { 
+    if (name.equals("@static"))
+    { 
+      if (BeanReflector.class.isAssignableFrom(source.getContentType()))
+      { return ((BeanReflector<X>) source.get()).<X>getStaticChannel();
+      }
+      else
+      { throw new BindException("@static not supported by "+source);
+      }
+    }
+    else
+    { return super.resolveMeta(source, focus, name, params);
+    }
+  }
+  
+  
+  @Override
   public synchronized <X> Channel<X> 
     resolve(Channel<T> source
         ,Focus<?> focus
@@ -315,6 +352,7 @@ public class BeanReflector<T>
     return binding;
   }
 
+  @Override
   public <D extends Decorator<T>> D decorate
     (Channel<T> source,Class<D> decoratorInterface)
     throws BindException
@@ -789,6 +827,11 @@ public class BeanReflector<T>
   @Override
   public String toString()
   { return super.toString()+":"+targetClass.getName();
+  }
+
+  @Override
+  public TypeModel getTypeModel()
+  { return BeanTypeModel.getInstance();
   }
 
 

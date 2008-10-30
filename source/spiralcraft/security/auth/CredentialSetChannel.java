@@ -73,17 +73,18 @@ class CredentialMapReflector
   { this.protoMap=protoMap;
   }
   
-  
+  @Override
   public Decorator decorate(Channel source, Class decoratorInterface)
     throws BindException
   { return null;
   }
 
-  
+  @Override
   public Class getContentType()
   { return Map.class;
   }
-
+  
+  @Override
   public <X> Channel<X> resolve
     (Channel<Map<String,Credential<?>>> source
     , Focus<?> focus

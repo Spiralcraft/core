@@ -1,0 +1,6 @@
+<project name="spiralcraft-core" basedir="." default="smoke">
+    
+  <import file="build.xml"/>
+  
+
+</project>

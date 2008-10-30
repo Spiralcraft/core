@@ -99,6 +99,7 @@ public class TupleReflector<T extends Tuple>
    * Resolve a meta name
    */
   @SuppressWarnings("unchecked") // We haven't genericized the data package yet
+  @Override
   public synchronized <X> Channel<X> resolveMeta
     (final Channel<T> source
     ,Focus<?> focus
@@ -133,6 +134,7 @@ public class TupleReflector<T extends Tuple>
    *   source that provides Tuples.
    */
   @SuppressWarnings("unchecked") // We haven't genericized the data package yet
+  @Override
   public synchronized <X> Channel<X> resolve
     (final Channel<T> source
     ,Focus<?> focus
@@ -318,6 +320,7 @@ public class TupleReflector<T extends Tuple>
   }
   
   
+  @Override
   public <D extends Decorator<T>> D 
     decorate(Channel<T> binding,Class<D> decoratorInterface)
   { 
@@ -326,6 +329,7 @@ public class TupleReflector<T extends Tuple>
     return null;
   }
   
+  @Override
   public Class<T> getContentType()
   { return contentType;
   }

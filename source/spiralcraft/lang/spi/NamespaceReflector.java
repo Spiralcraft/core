@@ -57,13 +57,14 @@ public class NamespaceReflector
     =new HashMap<String,NamespaceAttribute<?>>();
   
   
-  
+  @Override
   public Class<Namespace> getContentType()
   { return Namespace.class;
   }
   
   
   @SuppressWarnings("unchecked") // Expression array params heterogeneous
+  @Override
   public synchronized <X> Channel<X> resolve
     (Channel<Namespace> source
     ,Focus<?> focus
@@ -92,6 +93,7 @@ public class NamespaceReflector
     
   }
 
+  @Override
   public <D extends Decorator<Namespace>> D decorate
     (Channel<Namespace> source,Class<D> decoratorInterface)
     throws BindException
