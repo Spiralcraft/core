@@ -39,13 +39,6 @@ import spiralcraft.lang.FocusChainObject;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.spi.TranslatorChannel;
 import spiralcraft.log.ClassLogger;
-import spiralcraft.util.thread.ContextFrame;
-import spiralcraft.util.thread.Delegate;
-import spiralcraft.util.thread.DelegateException;
-
-
-
-
 
 /**
  * Provides lifecycle management and WebUI control bindings for
@@ -66,7 +59,6 @@ public class TupleEditor
   private Setter<?>[] defaultSetters;
   private Setter<?>[] newSetters;
   private Setter<?>[] publishedSetters;
-  private ContextFrame next;
 
 
   
@@ -444,28 +436,6 @@ public class TupleEditor
     publishedSetters=Assignment.bindArray(publishedAssignments,focus);
     
   }
-  
-  @Override
-  public <T> T runInContext(
-    Delegate<T> delegate)
-    throws DelegateException
-  {
-    // XXX Default implementation is inconvenient
-    
-    if (next!=null)
-    { return next.runInContext(delegate);
-    }
-    else
-    { return delegate.run();
-    }
-  }
-
-
-  @Override
-  public void setNext(
-    ContextFrame next)
-  { this.next=next;
-  }  
 
 }
 

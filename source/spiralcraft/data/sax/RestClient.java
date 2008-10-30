@@ -34,9 +34,10 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Assignment;
-import spiralcraft.lang.FocusChainObject;
+
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.ThreadedFocusChainObject;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLogger;
 
@@ -57,7 +58,7 @@ import spiralcraft.util.thread.DelegateException;
  *
  */
 public class RestClient
-  implements FocusChainObject
+  implements ThreadedFocusChainObject
 {
   private static final ClassLogger log
     =ClassLogger.getInstance(RestClient.class);

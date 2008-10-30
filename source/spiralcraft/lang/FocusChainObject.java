@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.util.thread.ContextChain;
+
 
 /**
  * <p>An object that binds to the Focus chain and optionally contributes its
@@ -28,7 +28,6 @@ import spiralcraft.util.thread.ContextChain;
  *
  */
 public interface FocusChainObject
-  extends ContextChain
 {
 
   /**

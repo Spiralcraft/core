@@ -34,9 +34,10 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.CompoundFocus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.ThreadedFocusChainObject;
 import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLogger;
@@ -52,7 +53,7 @@ import spiralcraft.util.thread.DelegateException;
  * @author mike
  */
 public class RestService
-  implements FocusChainObject
+  implements ThreadedFocusChainObject
 {
   
   private static final ClassLogger log

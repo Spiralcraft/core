@@ -36,6 +36,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.FocusChainObject;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.ThreadedFocusChainObject;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.registry.Registrant;
@@ -86,7 +87,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     Registrant
     ,PersistentReference<Treferent>
     ,Lifecycle
-    ,FocusChainObject
+    ,ThreadedFocusChainObject
 {
 
   
@@ -400,8 +401,8 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     Delegate<T> delegate)
     throws DelegateException
   {
-    if (instance instanceof FocusChainObject)
-    { return ((FocusChainObject) instance).runInContext(delegate);
+    if (instance instanceof ThreadedFocusChainObject)
+    { return ((ThreadedFocusChainObject) instance).runInContext(delegate);
     }
     else if (next!=null)
     { return next.runInContext(delegate);
@@ -416,8 +417,8 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   public void setNext(
     ContextFrame next)
   { 
-    if (instance instanceof FocusChainObject)
-    { ((FocusChainObject) instance).setNext(next);
+    if (instance instanceof ThreadedFocusChainObject)
+    { ((ThreadedFocusChainObject) instance).setNext(next);
     }
     else
     { this.next=next;
