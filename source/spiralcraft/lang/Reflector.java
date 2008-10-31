@@ -27,7 +27,7 @@ import java.net.URI;
  * </p>
  *   
  * <p>Given a data source and a Focus, a Reflector will resolve a name and a set of
- *   modifiers into another data source (Channel) bound to the first and to the
+ *   modifiers, providing another data source (Channel) bound to the first and to the
  *   Focus, in order to effect some transformation or computation.
  * </p>
  */
@@ -89,14 +89,43 @@ public abstract class Reflector<T>
       { throw new BindException("@cast cannot accept a dynamic type");
       }
       Reflector<X> type=typeChannel.get();
-      channel=source.getCached(type.getTypeURI());
-      if (channel==null)
-      { 
-        channel=new CastChannel(source,type);
-        source.cache(type.getTypeURI(),channel);
+      if (type.canCast(this))
+      {
+        channel=source.getCached(type.getTypeURI());
+        if (channel==null)
+        { 
+          channel=new CastChannel(source,type);
+          source.cache(type.getTypeURI(),channel);
+        }
       }
+      else
+      { 
+        throw new BindException
+          ("Incompatible cast from "
+          +getTypeURI()
+          +" to "
+          +type.getTypeURI()
+          );
+      }
+      
     }
     return (Channel<X>) channel;
+  }
+  
+  /**
+   * <p>Indicate whether the source type can be cast to this type
+   * </p>
+   * 
+   * <p>This should be implemented in a permissive manner if not enough
+   *   information is available (ie. a runtime determination). This is a
+   *   binding time check.
+   * </p>
+   * 
+   * @param source
+   * @return
+   */
+  public boolean canCast(Reflector<?> source)
+  { return true;
   }
   
   public Channel<Reflector<T>> getSelfChannel()
@@ -182,6 +211,18 @@ public abstract class Reflector<T>
   { return null;
   }
   
+  /**
+   * <p>Perform a runtime check to see if this value is compatible with this
+   *   type
+   * </p>
+   * @param val
+   * @return true, if the value is compatible
+   */
+  public boolean accepts(Object val)
+  { 
+    return true;
+  }
+  
 }
 
 class CastChannel<S,T extends S>
@@ -198,7 +239,14 @@ class CastChannel<S,T extends S>
   @SuppressWarnings("unchecked")
   @Override
   protected T retrieve()
-  { return (T) source.get();
+  { 
+    S val=source.get();
+    if (getReflector().accepts(val))
+    { return (T) val;
+    }
+    else
+    { return null;
+    }
   }
 
   @Override
