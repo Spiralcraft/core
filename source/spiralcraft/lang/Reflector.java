@@ -17,6 +17,7 @@ package spiralcraft.lang;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.util.ArrayUtil;
 
 import java.net.URI;
 
@@ -78,10 +79,14 @@ public abstract class Reflector<T>
     else if (name.equals("@cast"))
     { 
       if (params.length!=1)
-      { throw new BindException("@cast accepts a single parameter");
+      { 
+        throw new BindException
+          ("@cast accepts a single parameter: "
+          +ArrayUtil.format(params,"|",null)
+          );
       }
       Channel<Reflector<X>> typeChannel
-        =focus.bind((Expression<Reflector<X>>) params[1]);
+        =focus.bind(((Expression<Reflector<X>>) params[0]));
       if (!Reflector.class.isAssignableFrom(typeChannel.getContentType()))
       { throw new BindException("@cast only accepts a type");
       }
@@ -213,8 +218,9 @@ public abstract class Reflector<T>
   
   /**
    * <p>Perform a runtime check to see if this value is compatible with this
-   *   type
+   *   type. This may be expensive.
    * </p>
+   * 
    * @param val
    * @return true, if the value is compatible
    */

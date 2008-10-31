@@ -834,6 +834,11 @@ public class BeanReflector<T>
   { return BeanTypeModel.getInstance();
   }
 
+  @Override
+  public boolean accepts(Object val)
+  { return val==null || targetClass.isAssignableFrom(val.getClass());
+  }
+  
 
 }
 

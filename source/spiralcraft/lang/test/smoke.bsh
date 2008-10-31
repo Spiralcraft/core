@@ -89,6 +89,10 @@ Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math] typeURI","test");
 Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math] @static.@type","test");
 Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math] @static.min(1,2)","test");
 
+Evaluator.parseAndEvaluateObject("@cast([@:class:/java/lang/Number]).@type",new Integer(3));
+Evaluator.parseAndEvaluateObject("@cast([@:class:/java/lang/Number]).@cast([@:class:/java/lang/Integer]).@type",new Integer(3));
+
+
 "// ExpressionResolverTest";
 import spiralcraft.lang.test.ExpressionResolverTest;
 "//// Perf 1: retrieval";

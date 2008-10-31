@@ -602,11 +602,9 @@ public class ExpressionParser
         //   catch this as a case not to use a resolve()
         return parsePrimaryExpression(focusNode);
       default:
-        if (focusNode==null)
-        { focusNode=new CurrentFocusNode();
-        }
-        return parsePrimaryExpression(focusNode);
-        
+        Node result = parsePrimaryExpression(new CurrentFocusNode());
+        // focusNode will only be present if it was explicit
+        return result!=null?result:focusNode;
     }
   }
 

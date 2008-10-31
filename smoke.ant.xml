@@ -1,6 +1,15 @@
-<project name="spiralcraft-core" basedir="." default="smoke">
+<project name="spiralcraft-core" basedir="." default="justSmoke">
     
   <import file="build.xml"/>
   
-
+  <target name="justSmoke" >
+    <java
+      classpath="${spiralcraft.build}/lib/bsh.jar;lib/spiralcraft-${module}.jar;${classpath}"
+      classname="bsh.Interpreter" 
+      failonerror="true"
+      fork="true"
+      >
+      <arg value="smoke.bsh"/>
+    </java>
+  </target>
 </project>

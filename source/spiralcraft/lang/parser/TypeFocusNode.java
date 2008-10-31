@@ -162,7 +162,7 @@ public class TypeFocusNode
     { newFocus=focus.chain(reflector.getSelfChannel());
     }
     
-    if (newFocus!=null)
+    if (newFocus!=null && newFocus.getSubject()!=null)
     { return newFocus;
     }
     else
