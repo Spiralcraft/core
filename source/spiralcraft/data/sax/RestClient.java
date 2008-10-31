@@ -254,28 +254,53 @@ public class RestClient
    * <p>This method is thread-safe
    * </p>
    */
-  public Tuple query(Tuple query)
+  public Tuple query(final Tuple query)
     throws DataException
-  {
-    if (query==null)
-    { query=new EditableArrayTuple(handler.getType());
-    }
-    
-    // Push the query object
-    // localQueryChannel.push(query);
+  { 
     try
-    { return queryImpl(query);
+    { 
+      return runInContext
+        (new Delegate<Tuple>()
+        {
+          @Override
+          public Tuple run()
+            throws DelegateException
+          { 
+            try
+            { return queryImpl(query);
+            }
+            catch (DataException x)
+            { throw new DelegateException(x);
+            }
+          }
+        }
+        );
     }
-    finally
-    { //localQueryChannel.pop();
+    catch (DelegateException x)
+    { 
+      if (x.getCause() instanceof DataException)
+      { throw (DataException) x.getCause();
+      }
+      else
+      { throw new RuntimeException(x);
+      }
     }
-  }
+  }  
 
   private Tuple queryImpl(Tuple query)
     throws DataException
   {
     try
     {
+   
+      if (query==null && queryDataChannel!=null)
+      { query=queryDataChannel.get();    
+      }
+      
+      if (query==null)
+      { query=new EditableArrayTuple(handler.getType());
+      }
+      localQueryChannel.set(query);
       
       if (preSetters!=null)
       { Setter.applyArray(preSetters);
@@ -374,9 +399,10 @@ public class RestClient
     Delegate<T> delegate)
     throws DelegateException
   {
-    Tuple query=queryDataChannel.get();    
+
+    
     // Push the query object
-    localQueryChannel.push(query);
+    localQueryChannel.push(null);
     try
     { 
       if (nextFrame!=null)
