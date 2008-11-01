@@ -64,6 +64,15 @@ public abstract class Reflector<T>
     if (name.equals("@type"))
     { channel=getSelfChannel();
     }
+    else if (name.equals("@subtype"))
+    { 
+      channel=source.getCached("@subtype");
+      if (channel==null)
+      { 
+        channel=new SubtypeChannel(source);
+        source.cache("@subtype",channel);
+      }
+    }
     else if (name.equals("@channel"))
     { 
       channel=source.getCached("@channel");
@@ -115,6 +124,12 @@ public abstract class Reflector<T>
       
     }
     return (Channel<X>) channel;
+  }
+  
+  public Reflector<T> subtype(T val)
+  { 
+    throw new AccessException
+      ("Subtype not supported for type system "+getClass().getName());
   }
   
   /**
@@ -218,15 +233,41 @@ public abstract class Reflector<T>
   
   /**
    * <p>Perform a runtime check to see if this value is compatible with this
-   *   type. This may be expensive.
+   *   type. This may be expensive, but is required for a cast to return null
+   *   if the type is not compatible.
    * </p>
    * 
    * @param val
-   * @return true, if the value is compatible
+   * @return true, if the value is compatible with this type
    */
   public boolean accepts(Object val)
   { 
     return true;
+  }
+  
+  class SubtypeChannel
+    extends AbstractChannel<Reflector<T>>
+  {
+
+    private Channel<T> source;
+    
+    public SubtypeChannel(Channel<T> source)
+      throws BindException
+    { 
+      super(getSelfChannel().getReflector());
+      this.source=source;
+    }
+    @Override
+    protected Reflector<T> retrieve()
+    { return subtype(source.get());
+    }
+
+    @Override
+    protected boolean store(
+      Reflector<T> val)
+      throws AccessException
+    { return false;
+    }
   }
   
 }

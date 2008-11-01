@@ -14,6 +14,7 @@
 //
 package spiralcraft.security.auth;
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
@@ -119,6 +120,12 @@ class CredentialMapReflector
   {
     // Undefined
     return false;
+  }
+
+  @Override
+  public Reflector<Map<String, Credential<?>>> subtype(
+    Map<String, Credential<?>> val)
+  { throw new AccessException("Subtyping not supported");
   } 
   
 }

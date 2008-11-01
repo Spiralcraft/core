@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.reflect;
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationDecorator;
@@ -40,6 +41,7 @@ import spiralcraft.lang.spi.VoidReflector;
 
 import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
+
 
 import spiralcraft.util.ArrayUtil;
 
@@ -839,6 +841,22 @@ public class BeanReflector<T>
   { return val==null || targetClass.isAssignableFrom(val.getClass());
   }
   
+  @Override
+  public Reflector<T> subtype(T val)
+  {
+    if (val==null)
+    { return null;
+    }
+    
+    try
+    { return BeanReflector.getInstance(val.getClass());
+    }
+    catch (BindException x)
+    { 
+      throw new AccessException
+        ("Error retrieving type reflector: "+val.getClass().getName());
+    }
+  }
 
 }
 

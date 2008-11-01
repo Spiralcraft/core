@@ -91,6 +91,8 @@ Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math] @static.min(1,2)","t
 
 Evaluator.parseAndEvaluateObject("@cast([@:class:/java/lang/Number]).@type",new Integer(3));
 Evaluator.parseAndEvaluateObject("@cast([@:class:/java/lang/Number]).@cast([@:class:/java/lang/Integer]).@type",new Integer(3));
+Evaluator.parseAndEvaluateObject("@cast([@:class:/java/lang/Number]).@subtype",new Integer(3));
+Evaluator.parseAndEvaluateObject("@cast([@:class:/java/lang/Number]).@subtype == [@:class:/java/lang/Integer]",new Integer(3));
 
 
 "// ExpressionResolverTest";

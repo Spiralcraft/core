@@ -109,7 +109,48 @@ public abstract class DataReflector<T extends DataComposite>
   { this.type=type;;
   }
   
-  
+  @SuppressWarnings("unchecked")
+  @Override
+  public Reflector<T> subtype(T val)
+  {
+    if (val==null)
+    { return null;
+    }
+    
+    Type<T> type=(Type<T>) val.getType();
+    try
+    { 
+      if (type!=null)
+      { return DataReflector.getInstance(type);
+      }
+      else
+      { return null;
+      }
+    }
+    catch (BindException x)
+    { 
+      throw new AccessException
+        ("Error retrieving type reflector: "+val.getType());
+    }
+  }
+
+  @Override
+  public boolean accepts(Object val)
+  {
+    if (val==null)
+    { return true;
+    }
+    
+    if (!(val instanceof DataComposite))
+    { return false;
+    }
+    
+    Type<?> type=((DataComposite) val).getType();
+    if (type!=null)  
+    { return this.type.isAssignableFrom(type);
+    }
+    return false;
+  }
   
   public Type<?> getType()
   { return type;
@@ -125,7 +166,6 @@ public abstract class DataReflector<T extends DataComposite>
   }
 
 
-  
   @Override
   public boolean isAssignableTo(URI typeURI)
   {

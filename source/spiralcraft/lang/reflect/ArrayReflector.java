@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.reflect;
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationDecorator;
@@ -254,6 +255,32 @@ public class ArrayReflector<I>
   public TypeModel getTypeModel()
   { return componentReflector.getTypeModel();
   }
+
+  @Override
+  public Reflector<I[]> subtype(I[] val)
+  { 
+    throw new AccessException
+       ("Array does not support subtyping");
+  }
+
+  @Override
+  public boolean accepts(Object val)
+  {
+    if (val==null)
+    { return true;
+    }
+    
+    if (!(val.getClass().isArray()))
+    { return false;
+    }
+    else
+    { 
+      return componentReflector.getContentType()
+        .isAssignableFrom(val.getClass().getComponentType());
+    }
+    
+  }
+  
 }
 
 

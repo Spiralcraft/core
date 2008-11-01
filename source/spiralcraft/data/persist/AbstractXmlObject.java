@@ -27,6 +27,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.DataComposite;
 
 import spiralcraft.data.builder.BuilderType;
+import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.sax.DataWriter;
 
@@ -90,7 +91,10 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     ,ThreadedFocusChainObject
 {
 
-  
+
+  public static final URI typeFromClass(Class<?> clazz)
+  { return ReflectionType.canonicalURI(clazz);
+  }
   /**
    * <p>Create a new AbstractXmlObject appropriate for the specified Type,
    *   read from the optional instanceURI.
