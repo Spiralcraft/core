@@ -1,4 +1,5 @@
 build.number
+*.local
 *.class
 out
 bin
