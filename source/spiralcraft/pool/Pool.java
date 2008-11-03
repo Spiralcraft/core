@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Collection;
 
+import spiralcraft.builder.Lifecycle;
 import spiralcraft.registry.RegistryNode;
 import spiralcraft.registry.Registrant;
 
@@ -32,7 +33,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 public class Pool
-  implements Registrant
+  implements Registrant,Lifecycle
 {
 
   private int _overdueSeconds=600;
@@ -144,7 +145,8 @@ public class Pool
    * Start the pool by filling it up to the minumum size and
    *   starting the Keeper.
    */
-  public void init()
+  @Override
+  public void start()
   {
     synchronized (_monitor)
     {
@@ -160,6 +162,7 @@ public class Pool
   /**
    * Stop the pool and discard all resources
    */
+  @Override
   public void stop()
   {
     synchronized (_monitor)
@@ -186,9 +189,10 @@ public class Pool
    */
   public Object checkout()
   {
-    _lastUse=Clock.instance().approxTimeMillis();
+    long lastUse=Clock.instance().approxTimeMillis();
     synchronized (_monitor)
     {
+      _lastUse=lastUse;
       if (!_started)
       { 
         logFine("Waiting for pool to start");

@@ -25,7 +25,7 @@ public class ThreadPool
   implements ResourceFactory
 {
 
-  private static int _THREAD_COUNT=0;
+  private static volatile int _THREAD_COUNT=0;
 
   { setResourceFactory(this);
   }
@@ -54,9 +54,9 @@ public class ThreadPool
     extends Thread
   {
     private ClassLoader _contextClassLoader;
-    private Runnable _runnable=null;
     private final Object _monitor=new Object();
-    private boolean _finished=false;
+    private volatile Runnable _runnable=null;
+    private volatile boolean _finished=false;
 
     public PooledThread()
     { 

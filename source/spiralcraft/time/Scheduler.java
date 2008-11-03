@@ -93,7 +93,7 @@ public class Scheduler
     {
       if (!_started)
       { 
-        _pool.init();
+        _pool.start();
         _started=true;
       }
 
