@@ -73,14 +73,19 @@ public interface Task
   boolean isRunning();
   
   /**
-   * Start the task
+   * Start the task asynchronously in a new thread
    */
   void start();
 
   /**
-   * Stop the task
+   * Signal that the task should stop
    */
   void stop();
+  
+  /**
+   * Run the task in the current thread and return when complete
+   */
+  void run();
 
   /**
    * Register a listener to be notified of property changes

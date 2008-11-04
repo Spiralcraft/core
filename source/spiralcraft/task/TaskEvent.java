@@ -24,4 +24,8 @@ public class TaskEvent
   public TaskEvent(Task source)
   { super(source);
   }
+  
+  public Task getSource()
+  { return (Task) getSource();
+  }
 }
