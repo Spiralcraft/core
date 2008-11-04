@@ -73,10 +73,12 @@ public class RestClient
   private Setter<?>[] postSetters;
   private Expression<Tuple> queryDataObject;
   private Channel<Tuple> queryDataChannel;
-  private ContextFrame nextFrame;
   
   private Focus<Tuple> focus;
   private boolean debug;
+
+  // Related to ThreadContext 
+  private ContextFrame nextFrame;
   
   /**
    * <p>Provide the Handler which translates the query response
