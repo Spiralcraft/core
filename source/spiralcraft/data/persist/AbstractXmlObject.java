@@ -132,13 +132,16 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     }
     
     try
-    { type=Type.resolve(typeURI);
+    { 
+      if (typeURI!=null)
+      { type=Type.resolve(typeURI);
+      }
     }
     catch (DataException x)
     { throw new BindException("Type "+typeURI+" could not be resolved",x);
     }
     
-    if (type instanceof BuilderType)
+    if (type!=null && type instanceof BuilderType)
     { 
       try
       { reference=new XmlAssembly<T>(type.getURI(),instanceURI);
@@ -150,7 +153,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     else
     {
       try
-      { reference=new XmlBean<T>(type.getURI(),instanceURI);
+      { reference=new XmlBean<T>(type!=null?type.getURI():null,instanceURI);
       }
       catch (PersistenceException x)
       { throw new BindException("Error creating XmlBean",x);
@@ -247,16 +250,24 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
         Resource resource=Resolver.getInstance().resolve(instanceURI);
         if (!resource.exists())
         { 
-          try
-          { instance=newInstance();
+          if (typeURI!=null)
+          {
+            try
+            { instance=newInstance();
+            }
+            catch (DataException x)
+            {  
+              throw new DataException
+                ("Resource '"+resource.getURI()+"' does not exist, and a new " +
+                   type.getNativeClass().getName() +" could not be created"
+                ,x
+                );
+            }
           }
-          catch (DataException x)
+          else
           { 
             throw new DataException
-              ("Resource '"+resource.getURI()+"' does not exist, and a new " +
-                 type.getNativeClass().getName() +" could not be created"
-              ,x
-              );
+              ("Resource '"+resource.getURI()+"' does not exist");
           }
         }
         else
