@@ -36,10 +36,10 @@ public class LoginEntry
 {
   private Channel<AuthSession> sessionChannel;
   
-  private String name;
-  private String password;
-  private byte[] digest;
-  private boolean persistent;
+  private volatile String name;
+  private volatile String password;
+  private volatile byte[] digest;
+  private volatile boolean persistent;
    
   public LoginEntry(Channel<AuthSession> sessionChannel)
   { this.sessionChannel=sessionChannel;
