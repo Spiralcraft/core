@@ -12,20 +12,22 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.sax;
+package spiralcraft.data.rest;
 
 
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
+
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
 import spiralcraft.data.lang.DataReflector;
-import spiralcraft.data.sax.RestClient;
+
 import spiralcraft.data.session.Buffer;
 import spiralcraft.data.session.DataSession;
+
 import spiralcraft.data.spi.EditableArrayTuple;
 
 import spiralcraft.lang.Assignment;
@@ -40,7 +42,9 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.ThreadedFocusChainObject;
 import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+
 import spiralcraft.log.ClassLogger;
+
 import spiralcraft.util.thread.ContextFrame;
 import spiralcraft.util.thread.Delegate;
 import spiralcraft.util.thread.DelegateException;

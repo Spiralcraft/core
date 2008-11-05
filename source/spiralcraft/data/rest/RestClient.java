@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.sax;
+package spiralcraft.data.rest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,6 +26,11 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
+
+import spiralcraft.data.sax.AttributeBinding;
+import spiralcraft.data.sax.DataReader;
+import spiralcraft.data.sax.RootFrameHandler;
+
 import spiralcraft.data.spi.EditableArrayTuple;
 
 
@@ -42,7 +47,9 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLogger;
 
 import spiralcraft.sax.XmlWriter;
+
 import spiralcraft.text.html.URLDataEncoder;
+
 import spiralcraft.util.thread.ContextFrame;
 import spiralcraft.util.thread.Delegate;
 import spiralcraft.util.thread.DelegateException;

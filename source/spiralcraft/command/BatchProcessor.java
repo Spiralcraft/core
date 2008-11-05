@@ -59,7 +59,7 @@ import spiralcraft.util.thread.DelegateException;
 public class BatchProcessor<I>
   implements FocusChainObject
 {
-  private Focus<?> focus;
+  protected Focus<?> focus;
   private Expression<?> source;
   private Expression<Command<?,?>> command;
   private URI targetTypeURI;
