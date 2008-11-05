@@ -6,7 +6,6 @@ import spiralcraft.command.BatchProcessor;
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
 
-import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.spi.EditableArrayListAggregate;
@@ -18,25 +17,25 @@ import spiralcraft.lang.Focus;
 
 
 /**
- * <p>Runs multiple RestService invocations based on the contents of 
- *   a set of application objects and binds the result (an Aggregate of 
- *   the result-containing rest query objects) to an arbitrary part of the 
+ * <p>Runs multiple invocations of a Command based on the contents of 
+ *   a set of application data objects and binds the result (an Aggregate of 
+ *   the individual command results) to an arbitrary part of the 
  *   FocusChain.
  * </p>
  *   
  * @author mike
  *
  */
-public class DataBatchProcessor
-  extends BatchProcessor<Tuple>
+public class DataBatchProcessor<I,R>
+  extends BatchProcessor<I,R>
 {
 
-  private Expression<Aggregate<Tuple>> resultAssignment;
-  private Channel<Aggregate<Tuple>> resultChannel;
+  private Expression<Aggregate<R>> resultAssignment;
+  private Channel<Aggregate<R>> resultChannel;
   
   
   public void setResultAssignment
-    (Expression<Aggregate<Tuple>> resultAssignment)
+    (Expression<Aggregate<R>> resultAssignment)
   { this.resultAssignment=resultAssignment;
   }
   
@@ -51,22 +50,22 @@ public class DataBatchProcessor
   }
 
   @Override
-  public Command<BatchProcessor<Tuple>,List<Command<?,?>>> runCommand()
+  public Command<BatchProcessor<I,R>,List<Command<?,R>>> runCommand()
   {
-    return new CommandAdapter<BatchProcessor<Tuple>,List<Command<?,?>>>()
+    return new CommandAdapter<BatchProcessor<I,R>,List<Command<?,R>>>()
     { 
       @Override
       public void run()
       { 
         setResult(runBatch());
-        EditableArrayListAggregate<Tuple> result
-          =new EditableArrayListAggregate<Tuple>
-            (((DataReflector<Aggregate<Tuple>>) resultChannel.getReflector())
+        EditableArrayListAggregate<R> result
+          =new EditableArrayListAggregate<R>
+            (((DataReflector<Aggregate<R>>) resultChannel.getReflector())
                .getType()
             );
-        for (Command<?,?> command:getResult())
+        for (Command<?,R> command:getResult())
         { 
-          Tuple resultItem=(Tuple) command.getResult();
+          R resultItem=command.getResult();
           result.add(resultItem);
         }
         resultChannel.set(result);

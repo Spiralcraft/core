@@ -55,13 +55,14 @@ import spiralcraft.util.thread.DelegateException;
  * @author mike
  *
  * @param <I> The batched item type
+ * @param <I> The result item type
  */
-public class BatchProcessor<I>
+public class BatchProcessor<I,R>
   implements FocusChainObject
 {
   protected Focus<?> focus;
   private Expression<?> source;
-  private Expression<Command<?,?>> command;
+  private Expression<Command<?,R>> command;
   private URI targetTypeURI;
   private URI targetURI;
   
@@ -72,7 +73,7 @@ public class BatchProcessor<I>
   
   private ThreadLocalChannel<I> item; 
   
-  private Channel<Command<?,?>> commandChannel;  
+  private Channel<Command<?,R>> commandChannel;  
   
   private CommandDelegate delegate;
   
@@ -110,7 +111,7 @@ public class BatchProcessor<I>
   /**
    * @return The expression which resolves the Command object
    */
-  public Expression<Command<?,?>> getCommand()
+  public Expression<Command<?,R>> getCommand()
   { return command;
   }
 
@@ -118,7 +119,7 @@ public class BatchProcessor<I>
    * @param The expression which resolves the Command object
    */
   public void setCommand(
-    Expression<Command<?,?>> command)
+    Expression<Command<?,R>> command)
   { this.command = command;
   }
 
@@ -154,7 +155,7 @@ public class BatchProcessor<I>
     this.targetURI = targetURI;
   }
   
-  public List<Command<?,?>> runBatch()
+  public List<Command<?,R>> runBatch()
   { 
     if (parallel)
     { return runBatchParallel();
@@ -165,13 +166,13 @@ public class BatchProcessor<I>
   }
 
   
-  private List<Command<?,?>> runBatchSeries()
+  private List<Command<?,R>> runBatchSeries()
   { 
     
     IterationCursor<I> cursor=decorator.iterator();
     
-    LinkedList<Command<?,?>> results
-      =new LinkedList<Command<?,?>>();
+    LinkedList<Command<?,R>> results
+      =new LinkedList<Command<?,R>>();
     
     while (cursor.hasNext())
     { 
@@ -184,7 +185,7 @@ public class BatchProcessor<I>
     
   }
   
-  private List<Command<?,?>> runBatchParallel()
+  private List<Command<?,R>> runBatchParallel()
   { 
     
     IterationCursor<I> cursor=decorator.iterator();
@@ -199,17 +200,17 @@ public class BatchProcessor<I>
     AsyncTask batchTask=new AsyncTask(taskList);
     batchTask.run();
     
-    ArrayList<Command<?,?>> results
-      =new ArrayList<Command<?,?>>(taskList.size());
+    ArrayList<Command<?,R>> results
+      =new ArrayList<Command<?,R>>(taskList.size());
     for (CommandTask task: taskList)
     { results.add(task.getCompletedCommand());
     }
     return results;    
   }  
   
-  public Command<BatchProcessor<I>,List<Command<?,?>>> runCommand()
+  public Command<BatchProcessor<I,R>,List<Command<?,R>>> runCommand()
   {
-    return new CommandAdapter<BatchProcessor<I>,List<Command<?,?>>>()
+    return new CommandAdapter<BatchProcessor<I,R>,List<Command<?,R>>>()
     { 
       @Override
       public void run()
@@ -242,13 +243,13 @@ public class BatchProcessor<I>
     extends AbstractTask
   {
     private final I value;
-    private Command<?,?> completedCommand;
+    private Command<?,R> completedCommand;
     
     public CommandTask(I value)
     { this.value=value;
     }
     
-    public Command<?,?> getCompletedCommand()
+    public Command<?,R> getCompletedCommand()
     { return completedCommand;
     }
     
@@ -280,13 +281,13 @@ public class BatchProcessor<I>
   }  
   
   class CommandDelegate
-    implements Delegate<Command<?,?>>
+    implements Delegate<Command<?,R>>
   {
 
     @Override
-    public Command<?,?> run()
+    public Command<?,R> run()
     { 
-      Command<?,?> command=commandChannel.get();
+      Command<?,R> command=commandChannel.get();
       command.execute();
       return command;
     }
