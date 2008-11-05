@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2008 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -16,6 +16,14 @@ package spiralcraft.lang;
 
 import spiralcraft.util.thread.ContextChain;
 
+/**
+ * <p>A FocusChainObject which provides the ContextChain interface to 
+ *   encapsulate the setup and teardown of thread local state for an arbitrary
+ *   operation.
+ * </p>
+ * 
+ * @author mike
+ */
 public interface ThreadedFocusChainObject
   extends FocusChainObject, ContextChain
 {

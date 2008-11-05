@@ -66,6 +66,11 @@ public class CommandBlock
     this.commands=commands;
   }
   
+  /**
+   * <p>Run the provided set of sub-Commands, and set this Command's result 
+   *   to that of the last executed Command
+   * </p>
+   */
   @Override
   protected void run()
   {
@@ -83,8 +88,6 @@ public class CommandBlock
         }
       }
     }
-  // TODO Auto-generated method stub
-
   }
 
 }

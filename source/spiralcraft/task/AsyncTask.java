@@ -25,7 +25,7 @@ public class AsyncTask
   implements TaskListener
 {
   
-  private List<Task> tasks;
+  private List<? extends Task> tasks;
   private final Object monitor=new Object();
 
   private final HashSet<Task> runningTasks=new HashSet<Task>();
@@ -64,7 +64,7 @@ public class AsyncTask
     }
   }
   
-  public AsyncTask(List<Task> tasks)
+  public AsyncTask(List<? extends Task> tasks)
   { this.tasks=tasks;
   }
   

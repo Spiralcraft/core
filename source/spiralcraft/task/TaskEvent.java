@@ -25,7 +25,8 @@ public class TaskEvent
   { super(source);
   }
   
+  @Override
   public Task getSource()
-  { return (Task) getSource();
+  { return getSource();
   }
 }

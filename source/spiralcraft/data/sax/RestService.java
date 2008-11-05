@@ -225,6 +225,13 @@ public class RestService
   { return parentFocus;
   }
   
+  /**
+   * <p>A command to execute the query. Must be called from within
+   *   the thread context of this FocusChainObject
+   * </p>
+   * 
+   * @return The Command object
+   */
   public Command<?,?> queryCommand()
   {
     return new CommandAdapter<RestService,Tuple>()
@@ -237,9 +244,7 @@ public class RestService
       protected void run()
       { 
         try
-        { 
-          setResult(getTarget().query());
-          
+        { setResult(getTarget().queryImpl());
         }
         catch (DataException x)
         { this.setException(x);
