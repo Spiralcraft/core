@@ -57,7 +57,7 @@ public class XmlBean<T>
   public XmlBean(Class<T> clazz,URI instanceURI)
     throws PersistenceException
   {
-    super(ReflectionType.canonicalURI(clazz),instanceURI);
+    super(clazz!=null?ReflectionType.canonicalURI(clazz):null,instanceURI);
     load();
   }
   
