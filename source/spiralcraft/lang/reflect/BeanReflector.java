@@ -303,8 +303,23 @@ public class BeanReflector<T>
       }
     }
     else
-    { return super.resolveMeta(source, focus, name, params);
+    { 
+      Channel<X> ret=super.resolveMeta(source, focus, name, params);
+      if (ret!=null)
+      { return ret;
+      }
+      else if (BeanReflector.class.isAssignableFrom(source.getContentType()))
+      { 
+        // Check static channel for fluent syntax
+        return ((BeanReflector<?>) source.get()).getStaticChannel()
+          .<X>resolve(focus,name.substring(1),params);
+      }
+      else
+      { return null;
+      }
     }
+    
+
   }
   
   
