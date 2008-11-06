@@ -20,7 +20,14 @@ public class BeanTypeModel
   @Override
   public <X> Reflector<X> findType(URI typeURI)
     throws BindException
-  { return BeanReflector.getInstance(BeanInfoCache.<X>getClassForURI(typeURI));
+  { 
+    Class<?> clazz=BeanInfoCache.<X>getClassForURI(typeURI);
+    if (clazz!=null)
+    { return BeanReflector.getInstance(clazz);
+    }
+    else
+    { return null;
+    }
   }
 
   @Override

@@ -16,6 +16,7 @@ package spiralcraft.lang;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 
 /**
@@ -146,17 +147,59 @@ public class CompoundFocus<T>
   }
   
   @Override
+  public LinkedList<Focus<?>> getFocusChain()
+  {
+    LinkedList<Focus<?>> list;
+    if (parent==null)
+    { 
+      
+      list=new LinkedList<Focus<?>>()
+      {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public String toString()
+        {
+          StringBuilder buf=new StringBuilder();
+          int i=0;
+          for (Focus<?> focus : this)
+          { buf.append("\r\n    focusChain #"+(i++)+": "+focus);
+          }
+          return buf.toString();
+        }
+      };
+    }
+    else
+    { list=parent.getFocusChain();
+    }
+    if (layers!=null)
+    {
+      for (Focus<?> focus: layers.values())
+      { list.push(focus);
+      }
+    }
+    list.push(this);
+    return list;
+    
+  }  
+  @Override
   public String toString()
   { 
     StringBuffer buf=new StringBuffer();
     if (layers!=null)
     {
       for (String name:layers.keySet())
-      { buf.append("\r\n  #"+name+"="+layers.get(name));
+      { 
+        buf.append("\r\n         #"+name+"=")
+          .append(layers.get(name).getSubject()!=null
+                  ?layers.get(name).getSubject().getReflector().getTypeURI()
+                  :layers.get(name).getContext().getReflector().getTypeURI()
+                  );
       }
     }
     
-    return super.toString()+"\r\n["+buf.toString()+"\r\n]";
+    return super.toString()+buf.toString()+"\r\n";
   }
 
 }

@@ -214,8 +214,6 @@ public interface Focus<T>
    * Return the subject of expression evaluation
    */
   Channel<T> getSubject();
-
-
   
   /**
    * <p>Find a Focus in the chain with a subject Channel that provides data of 

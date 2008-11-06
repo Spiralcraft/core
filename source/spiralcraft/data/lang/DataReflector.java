@@ -26,6 +26,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
+import spiralcraft.lang.TypeModel;
 
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
@@ -35,6 +36,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Type;
+import spiralcraft.data.TypeResolver;
 import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.session.BufferAggregate;
 import spiralcraft.data.session.BufferTuple;
@@ -50,6 +52,37 @@ import spiralcraft.data.session.BufferType;
 public abstract class DataReflector<T extends DataComposite>
   extends Reflector<T>
 {
+  private static final TypeModel TYPE_MODEL
+    =new TypeModel()
+  {
+
+    @Override
+    public <X> Reflector<X> findType(
+      URI typeURI)
+      throws BindException
+    { 
+      Type<?> type=null;
+      try
+      { type=TypeResolver.getTypeResolver().resolve(typeURI);
+      }
+      catch (DataException x)
+      {
+      }
+      if (type!=null)
+      { return DataReflector.<X>getInstance(type);
+      }
+      else
+      { return null;
+      }
+
+    }
+
+    @Override
+    public String getModelId()
+    { return "spiralcraft";
+    }
+  };
+  
   // 
   // XXX Use weak map
   private static final WeakHashMap<Type<?>,WeakReference<Reflector<?>>>
@@ -107,6 +140,11 @@ public abstract class DataReflector<T extends DataComposite>
   
   public DataReflector(Type<?> type)
   { this.type=type;;
+  }
+  
+  @Override
+  public TypeModel getTypeModel()
+  { return TYPE_MODEL;
   }
   
   @SuppressWarnings("unchecked")

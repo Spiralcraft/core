@@ -86,6 +86,7 @@ public class RestService
   private int errorRetryDelayMS;
   
   private boolean debug;
+  private Boolean useDataSession;
   
   private Delegate<Tuple> delegate
     =new Delegate<Tuple>()
@@ -104,6 +105,17 @@ public class RestService
   
   public void setRestClient(RestClient client)
   { restClient=client;
+  }
+
+  /**
+   * <p>Indicate whether a DataSession should be used to edit persistent
+   *   model objects. Defaults to false, but automatically set to true
+   *   if the model object is supplied.
+   * </p>
+   * @param useDataSession
+   */
+  public void setUseDataSession(boolean useDataSession)
+  { this.useDataSession=useDataSession;
   }
   
   /**
@@ -165,6 +177,7 @@ public class RestService
     
     if (modelExpression!=null)
     { 
+      useDataSession=true;
       modelSourceChannel=parentFocus.bind(modelExpression);
       if (!(modelSourceChannel.getReflector() instanceof DataReflector))
       { 
@@ -181,6 +194,11 @@ public class RestService
       localModelChannel
         =new ThreadLocalChannel<Buffer>
           (DataReflector.<Buffer>getInstance(bufferType));
+    }
+    
+    // If not specified already, don't use it
+    if (useDataSession==null)
+    { useDataSession=false;
     }
     
     
@@ -292,23 +310,26 @@ public class RestService
       localQueryChannel.set
         (new EditableArrayTuple(restClient.getQueryDataType()));
 
-      DataSession session=sessionChannel.get();
-      Buffer buffer;
-      if (modelSourceChannel!=null)
-      { 
-        DataComposite modelObject=modelSourceChannel.get();
-        if (modelObject==null)
-       { 
-          throw new DataException
-            ("Model object is null, nothing to update ("
-            +modelSourceChannel.getReflector().getTypeURI()
-            +")"
-            );
+      Buffer buffer=null;
+      if (useDataSession)
+      {
+        DataSession session=sessionChannel.get();
+        if (modelSourceChannel!=null)
+        { 
+          DataComposite modelObject=modelSourceChannel.get();
+          if (modelObject==null)
+          { 
+            throw new DataException
+              ("Model object is null, nothing to update ("
+              +modelSourceChannel.getReflector().getTypeURI()
+              +")"
+              );
+          }
+          buffer=session.buffer(modelSourceChannel.get());
         }
-        buffer=session.buffer(modelSourceChannel.get());
-      }
-      else
-      { buffer=session.buffer(session.getData());
+        else
+        { buffer=session.buffer(session.getData());
+        }
       }
         
       if (debug)
@@ -331,9 +352,12 @@ public class RestService
         if (postSetters!=null)
         { Setter.applyArray(postSetters);
         }
-        buffer.save();
-        if (debug)
-        { log.fine("Saved buffer "+buffer);
+        if (buffer!=null)
+        {
+          buffer.save();
+          if (debug)
+          { log.fine("Saved buffer "+buffer);
+          }
         }
         return localQueryChannel.get();
       }

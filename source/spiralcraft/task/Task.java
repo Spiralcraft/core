@@ -16,6 +16,8 @@ package spiralcraft.task;
 
 import java.beans.PropertyChangeListener;
 
+import spiralcraft.time.Scheduler;
+
 /**
  * A unit of work that can be managed and monitored. A Task can be composed
  *   of a number of sub-units, each of which can be composed of a number of operations.
@@ -71,6 +73,18 @@ public interface Task
    * Whether the task is currently running
    */
   boolean isRunning();
+  
+  /**
+   * Activate debug logging
+   */
+  void setDebug(boolean debug);
+  
+  /**
+   * <p>The Scheduler context that should run the task
+   * </p>
+   * @param scheduler
+   */
+  void setScheduler(Scheduler scheduler);
   
   /**
    * Start the task asynchronously in a new thread

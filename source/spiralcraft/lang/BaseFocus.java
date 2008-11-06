@@ -111,6 +111,7 @@ public abstract class BaseFocus<T>
   { this.namespaceResolver=resolver;
   }
   
+  @Override
   public LinkedList<Focus<?>> getFocusChain()
   {
     LinkedList<Focus<?>> list;

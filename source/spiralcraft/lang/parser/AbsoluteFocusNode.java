@@ -153,18 +153,7 @@ public class AbsoluteFocusNode
   }
   
   private String focusChain(Focus<?> focus)
-  { 
-    StringBuilder buf=new StringBuilder();
-    buf.append("[");
-    while (focus!=null)
-    { 
-      buf.append("\r\n");
-      buf.append(focus.toString());
-      focus=focus.getParentFocus();
-    }
-    buf.append("\r\n");
-    buf.append("]");
-    return buf.toString();
+  { return focus.getFocusChain().toString();
   }
   
   

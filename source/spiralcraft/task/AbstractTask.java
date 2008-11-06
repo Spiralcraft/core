@@ -52,11 +52,13 @@ public abstract class AbstractTask
   private int _unitsCompletedInTask;
   private String _currentOpTitle;
   private String _currentUnitTitle;
-  private boolean _startable=false;
+  private boolean _startable=true;
   private boolean _stoppable=false;
   private boolean _running=false;
   private boolean _stopRequested=false;
-
+  protected boolean debug;
+  protected Scheduler scheduler;
+  
   // private Thread _runThread;
   
   private PropertyChangeSupport _propertyChangeSupport;
@@ -70,6 +72,20 @@ public abstract class AbstractTask
    */
   protected abstract void execute();
 
+  @Override
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
+  /**
+   * <p>The thread Scheduler that should run the Task
+   * </p>
+   * @param scheduler
+   */
+  public void setScheduler(Scheduler scheduler)
+  { this.scheduler=scheduler;
+  }
+  
   public int getOpsInUnit()
   { return _opsInUnit;
   }
@@ -117,7 +133,12 @@ public abstract class AbstractTask
       if (_startable)
       {
         setStartable(false);
-        Scheduler.instance().scheduleNow(this);
+        if (scheduler!=null)
+        { scheduler.scheduleNow(this);
+        }
+        else
+        { Scheduler.instance().scheduleNow(this);
+        }
       }
     }
   }

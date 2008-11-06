@@ -16,6 +16,9 @@ package spiralcraft.task;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Logger;
+
+import spiralcraft.log.ClassLogger;
 
 /**
  * Executes a number of other Tasks in parallel
@@ -24,11 +27,25 @@ public class AsyncTask
   extends AbstractTask
   implements TaskListener
 {
+  private static final Logger log
+    =ClassLogger.getInstance(AsyncTask.class);
   
   private List<? extends Task> tasks;
   private final Object monitor=new Object();
 
   private final HashSet<Task> runningTasks=new HashSet<Task>();
+  private boolean useScheduler;
+  
+  
+  /**
+   * <p>Use the contextual thread Scheduler to run the tasks. If false,
+   *   creates and destroys a thread-per-task.
+   * </p>
+   * @param usePool
+   */
+  public void setUseScheduler(boolean useScheduler)
+  { this.useScheduler=useScheduler;
+  }
   
   private void subtaskStarting(Task task)
   { 
@@ -39,6 +56,9 @@ public class AsyncTask
   
   private void subtaskCompleted(Task task)
   { 
+    if (debug)
+    { log.fine("Completed subtask "+task);
+    }
     synchronized (monitor)
     {
       runningTasks.remove(task);
@@ -81,9 +101,19 @@ public class AsyncTask
     { 
       task.addTaskListener(this);
       subtaskStarting(task);
+      
     }
     for (Task task: runningTasks)
-    { task.start();
+    { 
+      if (useScheduler)
+      { 
+        task.setScheduler(scheduler);
+        task.start();
+      }
+      else
+      { new Thread(task).start();
+      }
+      
     }
     
     waitForComplete();

@@ -18,6 +18,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.lang.BindException;
@@ -28,8 +30,10 @@ import spiralcraft.lang.FocusChainObject;
 import spiralcraft.lang.IterationCursor;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.log.ClassLogger;
 import spiralcraft.task.AbstractTask;
 import spiralcraft.task.AsyncTask;
+import spiralcraft.time.Scheduler;
 import spiralcraft.util.thread.Delegate;
 import spiralcraft.util.thread.DelegateException;
 
@@ -60,6 +64,9 @@ import spiralcraft.util.thread.DelegateException;
 public class BatchProcessor<I,R>
   implements FocusChainObject
 {
+  private static final Logger log
+    =ClassLogger.getInstance(BatchProcessor.class);
+  
   protected Focus<?> focus;
   private Expression<?> source;
   private Expression<Command<?,R>> command;
@@ -78,7 +85,9 @@ public class BatchProcessor<I,R>
   private CommandDelegate delegate;
   
   private boolean parallel;
-
+  
+  private Scheduler scheduler;
+  
   @Override
   public Focus<?> getFocus()
   { return focus;
@@ -176,10 +185,10 @@ public class BatchProcessor<I,R>
     
     while (cursor.hasNext())
     { 
+      cursor.next();
       CommandTask task=new CommandTask(cursor.getValue());
       task.run();
       results.add(task.getCompletedCommand());
-      cursor.next();
     }
     return results;    
     
@@ -192,9 +201,12 @@ public class BatchProcessor<I,R>
     LinkedList<CommandTask> taskList=new LinkedList<CommandTask>();
     while (cursor.hasNext())
     { 
-      
-      taskList.add(new CommandTask(cursor.getValue()));
       cursor.next();
+      CommandTask task=new CommandTask(cursor.getValue());
+      if (scheduler!=null)
+      { task.setScheduler(scheduler);
+      }
+      taskList.add(task);
     }
     
     AsyncTask batchTask=new AsyncTask(taskList);
@@ -203,7 +215,19 @@ public class BatchProcessor<I,R>
     ArrayList<Command<?,R>> results
       =new ArrayList<Command<?,R>>(taskList.size());
     for (CommandTask task: taskList)
-    { results.add(task.getCompletedCommand());
+    { 
+      Command<?,R> completedCommand=task.getCompletedCommand();
+      results.add(completedCommand);
+      log.fine(""+completedCommand.getResult());
+      if (completedCommand.getException()!=null)
+      { 
+        log.log
+          (Level.FINE,"Error: "
+            +completedCommand.getException()
+          ,completedCommand.getException()
+          );
+        completedCommand.getException().printStackTrace();
+      }
     }
     return results;    
   }  
@@ -237,13 +261,16 @@ public class BatchProcessor<I,R>
     this.focus=focusChain;
     
     delegate=new CommandDelegate();
+    if (parallel)
+    { scheduler=new Scheduler();
+    }
   }
   
   public class CommandTask
     extends AbstractTask
   {
     private final I value;
-    private Command<?,R> completedCommand;
+    private volatile Command<?,R> completedCommand;
     
     public CommandTask(I value)
     { this.value=value;

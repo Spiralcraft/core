@@ -15,6 +15,7 @@
 package spiralcraft.lang.spi;
 
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
@@ -35,11 +36,23 @@ public class ThreadLocalChannel<T>
   extends AbstractChannel<T>
   implements Channel<T>
 {
-  private final ThreadLocal<ThreadReference<T>> threadLocal
-    =new ThreadLocal<ThreadReference<T>>();
+  private final ThreadLocal<ThreadReference<T>> threadLocal;
   
+  public ThreadLocalChannel(Reflector<T> reflector,boolean inheritable)
+  { 
+    super(reflector);
+    if (inheritable)
+    { threadLocal=new InheritableThreadLocal<ThreadReference<T>>();
+    }
+    else
+    { threadLocal=new ThreadLocal<ThreadReference<T>>();
+    }
+  }
+
   public ThreadLocalChannel(Reflector<T> reflector)
-  { super(reflector);
+  { 
+    super(reflector);
+    threadLocal=new ThreadLocal<ThreadReference<T>>();    
   }
   
   @Override
@@ -49,14 +62,33 @@ public class ThreadLocalChannel<T>
   
   @Override
   public T retrieve()
-  { return threadLocal.get().object;
+  { 
+    ThreadReference<T> r=threadLocal.get();
+    if (r!=null)
+    { return r.object;
+    }
+    else
+    { 
+      throw new AccessException
+        ("ThreadLocal not initialized for "+getReflector().getTypeURI());
+    }
   }
 
   @Override
   public boolean store(T val)
   { 
-    threadLocal.get().object=val;
-    return true;
+    ThreadReference<T> r=threadLocal.get();
+    if (r!=null)
+    { 
+      r.object=val;
+      return true;
+    }
+    else
+    { 
+      throw new AccessException
+        ("ThreadLocal not initialized for "+getReflector().getTypeURI());
+    }
+
   }
   
   /**

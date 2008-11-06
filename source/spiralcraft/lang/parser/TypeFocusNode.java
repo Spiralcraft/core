@@ -22,6 +22,7 @@ import spiralcraft.lang.BindException;
 import java.net.URI;
 import java.util.HashSet;
 
+
 import spiralcraft.log.ClassLogger;
 import spiralcraft.lang.TypeModel;
 
@@ -136,18 +137,20 @@ public class TypeFocusNode
       uri=namespaceURI.resolve(suffix);
     }
     
+    // Get the set of distinct type models in the chain
     HashSet<TypeModel> systems=new HashSet<TypeModel>();
     for (Focus<?> chainFocus: focus.getFocusChain())
     {
-      if (focus.getSubject()!=null)
+      if (chainFocus.getSubject()!=null)
       { 
         TypeModel model=chainFocus.getSubject().getReflector().getTypeModel();
-        if (!systems.contains(model))
+        if (model!=null && !systems.contains(model))
         { systems.add(model);
         }
       }
     }
-    
+
+    // Search the type models for the type
     Reflector<?> reflector=null;
     for (TypeModel model : systems)
     { 
@@ -182,18 +185,7 @@ public class TypeFocusNode
   }
   
   private String focusChain(Focus<?> focus)
-  { 
-    StringBuilder buf=new StringBuilder();
-    buf.append("[");
-    while (focus!=null)
-    { 
-      buf.append("\r\n");
-      buf.append(focus.toString());
-      focus=focus.getParentFocus();
-    }
-    buf.append("\r\n");
-    buf.append("]");
-    return buf.toString();
+  { return focus.getFocusChain().toString();
   }
   
   

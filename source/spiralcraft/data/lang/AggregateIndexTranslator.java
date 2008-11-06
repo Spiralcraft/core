@@ -55,6 +55,10 @@ public class AggregateIndexTranslator<T>
     if (source==null)
     { return null;
     }
+    if (index.intValue()>=source.size())
+    { return null;
+    }
+
     try
     { return source.get(index.intValue());
     }

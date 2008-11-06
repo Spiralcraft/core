@@ -14,6 +14,9 @@
 //
 package spiralcraft.time;
 
+//import java.util.logging.Logger;
+
+//import spiralcraft.log.ClassLogger;
 import spiralcraft.pool.ThreadPool;
 
 /**
@@ -22,6 +25,8 @@ import spiralcraft.pool.ThreadPool;
  */
 public class Scheduler
 {
+//  private static final Logger log
+//    =ClassLogger.getInstance(Scheduler.class);
 
   private static final Scheduler _INSTANCE=new Scheduler();
   private ScheduledItem _nextItem;
@@ -35,7 +40,7 @@ public class Scheduler
   }
 
 
-  Scheduler()
+  public Scheduler()
   { 
     _thread.setDaemon(true);
     _thread.start();
@@ -125,7 +130,9 @@ public class Scheduler
   }
 
   protected void dispatch(Runnable runnable)
-  { _pool.run(runnable);
+  { 
+    
+    _pool.run(runnable);
   }
 
   class Dispatcher
