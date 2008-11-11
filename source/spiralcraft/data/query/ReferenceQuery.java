@@ -34,36 +34,36 @@ import spiralcraft.lang.Expression;
  * A Query which provides access to all instances of a given Type. This is usually the 
  *   eventual upstream source for all Queries. 
  */
-public class ChannelScan
+public class ReferenceQuery
   extends Query
 {
   
-  private Expression<Aggregate<?>> source;
+  private Expression<Aggregate<?>> reference;
 
   
   /**
    * Construct an unconfigured Scan
    */
-  public ChannelScan()
+  public ReferenceQuery()
   { }
   
-  public ChannelScan(String source)
-  { this.source=Expression.<Aggregate<?>>create(source);
+  public ReferenceQuery(String reference)
+  { this.reference=Expression.<Aggregate<?>>create(reference);
   }
   
   /**
    * Construct a new Scan for the given Type
    */
-  public ChannelScan(Expression<Aggregate<?>> source)
-  { this.source=source;
+  public ReferenceQuery(Expression<Aggregate<?>> reference)
+  { this.reference=reference;
   }
   
-  public ChannelScan(Query baseQuery)
+  public ReferenceQuery(Query baseQuery)
   { super(baseQuery);
   }
     
-  public Expression<Aggregate<?>> getSource()
-  { return source;
+  public Expression<Aggregate<?>> getReference()
+  { return reference;
   }
   
   public void setType(Type<?> type)
@@ -88,29 +88,34 @@ public class ChannelScan
     getDefaultBinding(Focus<?> focus,Queryable<?> queryable)
     throws DataException
   { 
-    return (BoundQuery<?,T>) queryable.getAll(type);
+    try
+    { return new BoundReferenceQuery(this,focus);
+    }
+    catch (BindException x)
+    { throw new DataException("Error binding Shuffle",x);
+    }
   }
   
   @Override
   public String toString()
-  { return super.toString()+"[source="+source+"]";
+  { return super.toString()+"[source="+reference+"]";
   }
   
   
 }
 
-class BoundChannelScan<T extends Tuple>
-  extends BoundQuery<ChannelScan,T>
+class BoundReferenceQuery<T extends Tuple>
+  extends BoundQuery<ReferenceQuery,T>
 {
 
   private Channel<Aggregate<T>> source;
   
   @SuppressWarnings("unchecked") // Expression is untyped
-  public BoundChannelScan(ChannelScan query,Focus<?> focus)
+  public BoundReferenceQuery(ReferenceQuery query,Focus<?> focus)
     throws BindException
   { 
     setQuery(query);
-    Channel channel=focus.bind(query.getSource());
+    Channel channel=focus.bind(query.getReference());
     source=channel;
   }
   
