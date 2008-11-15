@@ -387,59 +387,15 @@ public class PropertyBinding
       try
       {
         Channel sourceChannel=_focus.bind(_specifier.getSourceExpression());
-        if (_target.getContentType()==Focus.class
-            && !Focus.class.isAssignableFrom
-              (sourceChannel.getContentType())
-           )
-        {
-          // XXX This should be reconsidered- implicit crossing of layers
 
-          // Property is looking for a Focus for further expression
-          //   bindings. Convert the source value into a Focus and pass the
-          //   Focus to the property.
-          //
-          // This feature effectively allows components to evaluate expressions
-          //   at runtime against the containing assembly hierarchy or any
-          //   object accessible from it.
-          
-          // !!! It is important to call get() to NARROW the type to that of
-          //   the actual object. Otherwise, the formal property type will
-          //   be used and some names will not resolve as expected.
-          apply
-            (new SimpleFocus
-              (new SimpleChannel(sourceChannel.get(),false)
-              )
-            );
-          // XXX reconsider
-        }
-        else if (_target.getContentType()==Channel.class
-            && !Channel.class.isAssignableFrom
-              (sourceChannel.getContentType())
-           )
+        // Property is looking for a standard Object or value
+        apply(sourceChannel.get());
+        if (_specifier.isDynamic())
         {
-          // XXX This should be reconsidered- implicit crossing of layers
-          
-          // Property is looking for a Channel 
-          //
-          // This is another special case- components looking for a Channel
-          //   are looking for a view on a property, not a property itself,
-          //   primarily so the components can subscribe to property change
-          //   events and manage updates.
-          apply(sourceChannel);
-          
-          // XXX Reconsider
-        }
-        else
-        { 
-          // Property is looking for a standard Object or value
-          apply(sourceChannel.get());
-          if (_specifier.isDynamic())
-          {
-            // Propogate property changes
-            sourceChannel
-              .propertyChangeSupport()
-                .addPropertyChangeListener(this);
-          }
+          // Propagate property changes
+          sourceChannel
+            .propertyChangeSupport()
+              .addPropertyChangeListener(this);
         }
       }
       catch (BindException x)
