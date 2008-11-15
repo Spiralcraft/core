@@ -254,6 +254,13 @@ public abstract class DataReflector<T extends DataComposite>
     if (alternate instanceof BeanReflector)
     { return alternate;
     }
-    return this;
+    else if (getTypeModel()==alternate.getTypeModel())
+    { return this;
+    }
+    else
+    { 
+      // Defer to dependent type model
+      return alternate.disambiguate(this);
+    }
   }  
 }
