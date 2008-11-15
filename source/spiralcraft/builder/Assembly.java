@@ -116,7 +116,8 @@ public class Assembly<T>
     }
 
   }
-    
+
+  
   /**
    * Called from resolve() to actually instantiate object
    * 

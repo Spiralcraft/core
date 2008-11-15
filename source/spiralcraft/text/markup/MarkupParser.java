@@ -24,17 +24,30 @@ import spiralcraft.text.KmpMatcher;
  */
 public class MarkupParser
 {
-  private MarkupHandler _markupHandler;
+  private MarkupHandler handler;
   private final KmpMatcher _beginTagMatcher;
   private final KmpMatcher _endTagMatcher;
   private final KmpMatcher _lineMatcher;
   private final int _startDelimiterLength;
   private final int _endDelimiterLength;
   private final CharSequence _endDelimiter;
+  private final CharSequence _startDelimiter;
+  private char _escapeChar;
   private ParsePosition position;
   
+  public MarkupParser
+    (CharSequence startDelimiter
+    ,CharSequence endDelimiter
+    ,char escapeChar
+    )
+  { 
+    this(startDelimiter,endDelimiter);
+    _escapeChar=escapeChar;
+  }
+    
   public MarkupParser(CharSequence startDelimiter,CharSequence endDelimiter)
   { 
+    _startDelimiter=startDelimiter;
     _endDelimiter=endDelimiter;
     _beginTagMatcher=new KmpMatcher(startDelimiter);
     _startDelimiterLength=startDelimiter.length();
@@ -52,13 +65,27 @@ public class MarkupParser
    *   the text and code fragments read from the input.
    */
   public void setMarkupHandler(MarkupHandler val)
-  { _markupHandler=val;
+  { handler=val;
   }
   
   public void parse(CharSequence sequence)
     throws ParseException,MarkupException
+  { parse(sequence,handler,position);
+  }
+
+  public void parse
+    (CharSequence sequence
+    ,MarkupHandler handler
+    ,ParsePosition position
+    )
+    throws ParseException,MarkupException
   {
+    if (position==null)
+    { position=new ParsePosition();
+    }
+    this.position=position;
     boolean inText=true;
+    boolean inEscape=false;
     _beginTagMatcher.reset();
     _endTagMatcher.reset();
     _lineMatcher.reset();
@@ -66,9 +93,10 @@ public class MarkupParser
     int mark=0;
     for (int i=0;i<sequence.length();i++)
     {
+      char chr=sequence.charAt(i);
       position.incIndex(1);
       position.incColumn(1);
-      if (_lineMatcher.match(sequence.charAt(i)))
+      if (_lineMatcher.match(chr))
       { 
         position.incLine(1);
         position.setColumn(1);
@@ -77,10 +105,31 @@ public class MarkupParser
 
       if (inText)
       { 
-        if (_beginTagMatcher.match(sequence.charAt(i)))
+        if (!inEscape && chr==_escapeChar)
+        { inEscape=true;
+        }
+        else if (inEscape)
+        {
+          if (chr==_escapeChar
+              || chr==_startDelimiter.charAt(0)
+             )
+          { 
+            // Drop the escape char and queue the current position
+            handler.setPosition(position);
+            handler.handleContent
+              (sequence.subSequence
+                (mark
+                ,i-1
+                )
+              );
+            mark=i;
+          }
+          inEscape=false;
+        }
+        else if (_beginTagMatcher.match(chr))
         { 
-          _markupHandler.setPosition(position);
-          _markupHandler.handleContent
+          handler.setPosition(position);
+          handler.handleContent
           (sequence.subSequence
               (mark
                   ,i-(_startDelimiterLength-1)
@@ -92,10 +141,10 @@ public class MarkupParser
       }
       else
       {
-        if (_endTagMatcher.match(sequence.charAt(i)))
+        if (_endTagMatcher.match(chr))
         { 
-          _markupHandler.setPosition(position);
-          _markupHandler.handleMarkup
+          handler.setPosition(position);
+          handler.handleMarkup
           (sequence.subSequence
               (mark
                   ,i-(_endDelimiterLength-1)
@@ -114,8 +163,8 @@ public class MarkupParser
         ,position
         );
     }
-    _markupHandler.setPosition(position);
-    _markupHandler.handleContent
+    handler.setPosition(position);
+    handler.handleContent
       (sequence.subSequence(mark,sequence.length()));
   }
 }

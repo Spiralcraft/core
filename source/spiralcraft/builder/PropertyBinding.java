@@ -14,6 +14,10 @@
 //
 package spiralcraft.builder;
 
+import spiralcraft.text.ParseException;
+import spiralcraft.text.ParsePosition;
+import spiralcraft.text.markup.MarkupHandler;
+import spiralcraft.text.markup.MarkupParser;
 import spiralcraft.util.string.StringConverter;
 
 import spiralcraft.lang.Channel;
@@ -38,6 +42,7 @@ import java.lang.reflect.Array;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
+
 import spiralcraft.registry.RegistryNode;
 
 import spiralcraft.sax.PrefixResolver;
@@ -50,6 +55,9 @@ import spiralcraft.sax.PrefixResolver;
 public class PropertyBinding
   implements PropertyChangeListener
 {
+  private static final MarkupParser substitutionParser
+    =new MarkupParser("${","}",'\\');
+  
   private Assembly _container;
   private PropertySpecifier _specifier;
 
@@ -344,7 +352,11 @@ public class PropertyBinding
             );
         for (int i=0;i<_contents.length;i++)
         { 
-          Array.set(array,i,_contents[i].get());
+          Object val=_contents[i].get();
+          if (_contents[i].getAssemblyClass().getJavaClass()==String.class)
+          { val=substitute((String) val);
+          }
+          Array.set(array,i,val);
           if (_specifier.getExport())
           { exportSingletons(_contents[i]);
           }
@@ -354,7 +366,8 @@ public class PropertyBinding
     }
     else if (_specifier.getTextData()!=null)
     {
-      String text=_specifier.getTextData();
+      String text=substitute(_specifier.getTextData());
+      
       _converter=StringConverter.getInstance(_target.getContentType());
       if (_converter==null)
       { 
@@ -437,6 +450,50 @@ public class PropertyBinding
       }
       
     }
+  }
+  
+  public String substitute(String raw)
+    throws BuildException
+  {
+    final StringBuffer ret=new StringBuffer();
+    try
+    {
+      substitutionParser.parse
+        (raw
+        ,new MarkupHandler()
+        {
+
+          @Override
+          public void handleContent(
+            CharSequence text)
+            throws ParseException
+          { ret.append(text);
+          }
+
+          @Override
+          public void handleMarkup(
+            CharSequence code)
+            throws ParseException
+          { 
+            String substitution=System.getProperty(code.toString());
+            if (substitution!=null)
+            { ret.append(substitution);
+            }
+          }
+
+          @Override
+          public void setPosition(
+            ParsePosition position)
+          { } 
+        }
+        ,null
+        );
+    }
+    catch (ParseException x)
+    { throw new BuildException("Error parsing text property "+_specifier); 
+    }
+
+    return ret.toString();
   }
   
   public void propertyChange(PropertyChangeEvent event)

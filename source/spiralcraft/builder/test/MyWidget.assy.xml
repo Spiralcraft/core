@@ -41,9 +41,9 @@
     </test:SimpleWidget>
   </children>  
   <aliases>
-    <String id="0">alias 1</String>
-    <String id="1">alias 2</String>
-    <String id="2">alias 3</String>
+    <String id="0">alias 1 ${user.name}</String>
+    <String id="1">alias 2 ${user.home}</String>
+    <String id="2">alias 3 ${user.dir} \${notmarkup</String>
   </aliases>
 
   <dateFormat>

@@ -1,9 +1,13 @@
 // BUILDER TEST
 show(); 
-new spiralcraft.lang.reflect.BeanFocus
+x=new spiralcraft.lang.reflect.BeanFocus
   (new spiralcraft.data.persist.XmlAssembly
     (URI.create("class:/spiralcraft/builder/test/MyWidget.assy"),null)
     .get()
   );
     
- 
+x.getSubject();
+b=x.getSubject().get();
+b.getAliases()[0];
+b.getAliases()[1];
+b.getAliases()[2];
