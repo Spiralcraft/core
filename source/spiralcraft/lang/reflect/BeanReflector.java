@@ -453,8 +453,19 @@ public class BeanReflector<T>
     return null;
   }
   
+
+  @Override
+  public Reflector<?> disambiguate(Reflector<?> alternate)
+  {
+    if (alternate==this || alternate.getTypeModel()!=getTypeModel())
+    { return this;
+    }
+    else
+    { return alternate.disambiguate(this);
+    }
+  }
   
- private synchronized <X> Channel<X> getField(Channel<T> source,String name)
+  private synchronized <X> Channel<X> getField(Channel<T> source,String name)
     throws BindException
   {
     BeanFieldTranslator<X,T> fieldTranslator=null;

@@ -192,10 +192,7 @@ public class CompoundFocus<T>
       for (String name:layers.keySet())
       { 
         buf.append("\r\n         #"+name+"=")
-          .append(layers.get(name).getSubject()!=null
-                  ?layers.get(name).getSubject().getReflector().getTypeURI()
-                  :layers.get(name).getContext().getReflector().getTypeURI()
-                  );
+          .append(layers.get(name));
       }
     }
     

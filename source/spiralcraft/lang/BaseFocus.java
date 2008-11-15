@@ -160,8 +160,14 @@ public abstract class BaseFocus<T>
   @Override
   public String toString()
   { 
-    return super.toString()+"["+subject+"] parentFocus="
-      +(parent!=null?parent.getClass().getName():null);
+    return super.toString()
+      +"["+(subject!=null
+        ?(subject.getContentType().getName()
+         +"-[@"+subject.getReflector().getTypeURI()+"] "
+         +"("+subject.getClass().getName()+")"
+         )
+        :"")
+      +"]";
   }
 
 

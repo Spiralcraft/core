@@ -232,6 +232,19 @@ public abstract class Reflector<T>
   }
   
   /**
+   * <p>Return the more responsive Reflector of two reflectors that have the
+   *   same type URI. Permits type models which utilize others to avoid hiding
+   *   underlying types. Returns Reflector.this by default.
+   * </p>
+   * 
+   * @param alternate
+   * @return
+   */
+  public Reflector<?> disambiguate(Reflector<?> alternate)
+  { return this;
+  }
+  
+  /**
    * <p>Perform a runtime check to see if this value is compatible with this
    *   type. This may be expensive, but is required for a cast to return null
    *   if the type is not compatible.

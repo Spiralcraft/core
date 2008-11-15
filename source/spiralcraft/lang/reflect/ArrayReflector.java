@@ -115,6 +115,17 @@ public class ArrayReflector<I>
   }
 
   @Override
+  public Reflector<?> disambiguate(Reflector<?> alternate)
+  {
+    if (alternate==this || alternate.getTypeModel()!=getTypeModel())
+    { return this;
+    }
+    else
+    { return alternate.disambiguate(this);
+    }
+  }
+  
+  @Override
   public boolean isAssignableTo(URI typeURI)
   { 
     String uriString=typeURI.toString();

@@ -154,9 +154,17 @@ public class TypeFocusNode
     Reflector<?> reflector=null;
     for (TypeModel model : systems)
     { 
-      reflector=model.findType(uri);
-      if (reflector!=null)
-      { break;
+      if (reflector==null)
+      { reflector=model.findType(uri);
+      }
+      else
+      {
+        Reflector<?> altReflector=model.findType(uri);
+        if (altReflector!=null)
+        { 
+          reflector
+            =reflector.disambiguate(altReflector);    
+        }
       }
     }
     

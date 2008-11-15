@@ -100,7 +100,6 @@ public class NamespaceReflector
   { return null;
   }
   
-
   @SuppressWarnings("unchecked") // We don't know specific type
   public void register(String name,Reflector val)
     throws BindException

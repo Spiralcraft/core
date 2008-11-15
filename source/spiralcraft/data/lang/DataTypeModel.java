@@ -4,6 +4,7 @@ import java.net.URI;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
+import spiralcraft.data.TypeResolver;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TypeModel;
@@ -17,22 +18,33 @@ public class DataTypeModel
   public static final DataTypeModel getInstance()
   { return instance;
   }
-  
+
   @Override
-  public <X> Reflector<X> findType(URI typeURI)
+  public <X> Reflector<X> findType(
+    URI typeURI)
     throws BindException
   { 
+    Type<?> type=null;
     try
-    { return DataReflector.getInstance(Type.resolve(typeURI));
+    { type=TypeResolver.getTypeResolver().resolve(typeURI);
     }
     catch (DataException x)
-    { throw new BindException("Error resolving type "+typeURI);
+    {
     }
+    if (type!=null)
+    { return DataReflector.<X>getInstance(type);
+    }
+    else
+    { return null;
+    }
+
   }
 
   @Override
   public String getModelId()
-  { return "spiralcraft.data";
+  { return "spiralcraft";
   }
+    
+
 
 }

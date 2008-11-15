@@ -36,7 +36,6 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Type;
-import spiralcraft.data.TypeResolver;
 import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.session.BufferAggregate;
 import spiralcraft.data.session.BufferTuple;
@@ -53,35 +52,7 @@ public abstract class DataReflector<T extends DataComposite>
   extends Reflector<T>
 {
   private static final TypeModel TYPE_MODEL
-    =new TypeModel()
-  {
-
-    @Override
-    public <X> Reflector<X> findType(
-      URI typeURI)
-      throws BindException
-    { 
-      Type<?> type=null;
-      try
-      { type=TypeResolver.getTypeResolver().resolve(typeURI);
-      }
-      catch (DataException x)
-      {
-      }
-      if (type!=null)
-      { return DataReflector.<X>getInstance(type);
-      }
-      else
-      { return null;
-      }
-
-    }
-
-    @Override
-    public String getModelId()
-    { return "spiralcraft";
-    }
-  };
+    =DataTypeModel.getInstance();
   
   // 
   // XXX Use weak map
@@ -275,4 +246,14 @@ public abstract class DataReflector<T extends DataComposite>
     
     
   }
+  
+  @Override
+  public Reflector<?> disambiguate(Reflector<?> alternate)
+  {
+    // Don't hide BeanReflectors
+    if (alternate instanceof BeanReflector)
+    { return alternate;
+    }
+    return this;
+  }  
 }
