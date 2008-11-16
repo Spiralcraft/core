@@ -40,8 +40,9 @@ public class AssemblyFactoryTest
   // private boolean _dump=false;
   // private int _repeats=0;
 
-  public void execute(final ExecutionContext context,String[] args)
+  public void execute(String ... args)
   {
+    final ExecutionContext context=ExecutionContext.getInstance();
     try
     { 
       _uri=

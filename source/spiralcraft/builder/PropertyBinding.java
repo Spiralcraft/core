@@ -18,6 +18,7 @@ import spiralcraft.text.ParseException;
 import spiralcraft.text.ParsePosition;
 import spiralcraft.text.markup.MarkupHandler;
 import spiralcraft.text.markup.MarkupParser;
+import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.string.StringConverter;
 
 import spiralcraft.lang.Channel;
@@ -25,11 +26,9 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.NamespaceResolver;
 
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.AccessException;
 
 import spiralcraft.lang.spi.FocusWrapper;
-import spiralcraft.lang.spi.SimpleChannel;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -431,7 +430,9 @@ public class PropertyBinding
             CharSequence code)
             throws ParseException
           { 
-            String substitution=System.getProperty(code.toString());
+            String substitution
+              =ContextDictionary.getInstance().find
+                (code.toString(),"${"+code.toString()+"}");
             if (substitution!=null)
             { ret.append(substitution);
             }

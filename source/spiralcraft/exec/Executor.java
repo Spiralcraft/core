@@ -19,6 +19,7 @@ import spiralcraft.data.persist.PersistenceException;
 
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.Arguments;
+import spiralcraft.util.ContextDictionary;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.registry.Registry;
@@ -59,7 +60,7 @@ import java.io.IOException;
  * </p>
  */
 public class Executor
-  implements Registrant
+  implements Registrant,Executable
 {
   private URI typeURI;
   private URI instanceURI;
@@ -69,7 +70,10 @@ public class Executor
   private int argCounter=-2;
   
   protected ExecutionContext context
-    =new SystemExecutionContext();
+    =ExecutionContext.getInstance();
+  
+  protected ContextDictionary properties
+    =new ContextDictionary(ContextDictionary.getInstance());
     
   protected String[] arguments=new String[0];
   
@@ -81,7 +85,7 @@ public class Executor
    * @throws PersistenceException
    * @throws ExecutionException
    */
-  public static void main(String ... args)
+  public static void launch(String ... args)
     throws IOException
             ,URISyntaxException
             ,PersistenceException
@@ -106,48 +110,71 @@ public class Executor
   }
   
   /**
-   * Load and execute an Executable specified by the first two arguments.<p>
+   * <p>Load and execute an Executable (the executable is specified by the 
+   *   first two arguments).
+   * </p>
    * 
-   * The first argument is the Type resource URI. If no Type resource is
-   *   specified, use "-" in the argument in place of the URI.<p>
+   * <p>The first argument is the Type resource URI. If no Type resource is
+   *   specified, use "-" in the argument in place of the URI.
+   * </p>
    *   
-   * The second argument is the instance resource URI. If no instance resource
-   *   is specified, use "-" in the argument in place of the URI.<p>
+   * <p>The second argument is the instance resource URI. If no instance resource
+   *   is specified, use "-" in the argument in place of the URI.
+   * </p>
    *   
    * The remaining arguments will be passed along to the Executable in its
    *   execute method.
    */
-  public void execute(String[] args)
+  public void execute(String ... args)
     throws ExecutionException
-            ,IOException
-            ,URISyntaxException
-            ,PersistenceException
   {
-    processArguments(args);
-    if (argCounter<0)
-    { 
-      throw new IllegalArgumentException
-        ("Executor requires at least 2 arguments");
-    }
 
-    if (typeURI==null && instanceURI==null)
+    
+    ExecutionContext.pushInstance(context);
+    ContextDictionary.pushInstance(properties);
+    try
     { 
-      throw new IllegalArgumentException
-        ("No Type URI or instance URI specified. Nothing to execute.");
-    }
+      
+      processArguments(args);
+      if (argCounter<0)
+      { 
+        throw new IllegalArgumentException
+          ("Executor requires at least 2 arguments");
+      }
+
+      if (typeURI==null && instanceURI==null)
+      { 
+        throw new IllegalArgumentException
+          ("No Type URI or instance URI specified. Nothing to execute.");
+      }
     
-    if (typeURI!=null)
-    { typeURI=context.canonicalize(typeURI);
-    }
+      if (typeURI!=null)
+      { typeURI=context.canonicalize(typeURI);
+      }
     
-    if (instanceURI!=null)
-    { instanceURI=context.canonicalize(instanceURI);
-    }
+      if (instanceURI!=null)
+      { instanceURI=context.canonicalize(instanceURI);
+      }
     
-    Executable executable=resolveExecutable(); 
-    executable.execute(context,arguments);
-    if (persistOnCompletion && instanceURI!=null)
-    { wrapper.save();
+      Executable executable=resolveExecutable(); 
+      
+      
+      executable.execute(arguments);
+      if (persistOnCompletion && instanceURI!=null)
+      { wrapper.save();
+      }
+
+    
+    }
+    catch (Exception x)
+    { 
+      throw new ExecutionException
+        ("Error executing "+ArrayUtil.format(args," ",null),x);
+    }
+    finally
+    { 
+      ContextDictionary.popInstance();
+      ExecutionContext.popInstance();
     }
   }
 
@@ -184,11 +211,15 @@ public class Executor
   }
   
   /**
-   * Process arguments. The first non-option argument is the Type URI. If the
-   *   type URI is immediately followed by a    
+   * Process arguments. The first non-option argument is the Type URI. If there
+   *   is more than one argument, the second non-option argument is either
+   *   an instance URI or a "-", indicating no instance.
+   *   
    */
   private void processArguments(String[] args)
   {
+//    context.err().println(ArrayUtil.format(args, ",", "\""));
+
     new Arguments()
     {
       @Override
@@ -217,7 +248,23 @@ public class Executor
       { 
         if (argCounter==-2)
         { 
-          if (!option.equals(""))
+          if (option.startsWith("D"))
+          { 
+            String assignment=option.substring(1);
+            int eqpos=assignment.indexOf('=');
+            if (eqpos<0)
+            { properties.set(assignment,null);
+            }
+            else
+            { 
+              properties.set
+                (assignment.substring(0,eqpos)
+                ,assignment.substring(eqpos+1)
+                );
+//              context.err().println(assignment);
+            }
+          }
+          else if (!option.equals(""))
           { 
             throw new IllegalArgumentException
               ("Unrecognized option '-"+option+"': "
@@ -225,7 +272,9 @@ public class Executor
               +" must be specified as first parameter to Executor."    
               );
           }
-          argCounter++;
+          else
+          { argCounter++;
+          }
         }
         else if (argCounter==-1)
         {

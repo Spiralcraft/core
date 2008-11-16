@@ -133,7 +133,7 @@ public class Daemon
 
   }
 
-  public final void execute(ExecutionContext context,String[] args)
+  public final void execute(String ... args)
   {
     try
     { 
@@ -144,7 +144,7 @@ public class Daemon
       stop();
     }
     catch (LifecycleException x)
-    { x.printStackTrace();
+    { x.printStackTrace(ExecutionContext.getInstance().out());
     }
   }
 

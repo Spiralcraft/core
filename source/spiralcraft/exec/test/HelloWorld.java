@@ -24,8 +24,10 @@ public class HelloWorld
 {
   private Object _testObject;
 
-  public void execute(ExecutionContext context,String[] args)
+  public void execute(String ... args)
   { 
+    ExecutionContext context=ExecutionContext.getInstance();
+    
     context.out().println("HelloWorld");
     context.out().println("args: "+ArrayUtil.format(args," ","\""));
     context.out().println("testObject:");

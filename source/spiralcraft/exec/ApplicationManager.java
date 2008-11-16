@@ -17,6 +17,7 @@ package spiralcraft.exec;
 import spiralcraft.registry.Registry;
 import spiralcraft.registry.RegistryNode;
 
+import spiralcraft.lang.BindException;
 import spiralcraft.loader.LibraryCatalog;
 //import spiralcraft.log.ClassLogger;
 
@@ -25,8 +26,7 @@ import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
 
-import spiralcraft.data.persist.XmlAssembly;
-import spiralcraft.data.persist.PersistenceException;
+import spiralcraft.data.persist.AbstractXmlObject;
 
 
 import java.io.File;
@@ -127,22 +127,21 @@ public class ApplicationManager
 
     try
     {
-      URI environmentTypeRef
-        =URI.create("class:/spiralcraft/exec/ApplicationEnvironment.assy");
-        
-      XmlAssembly<ApplicationEnvironment> environmentRef
-        =new XmlAssembly<ApplicationEnvironment>
-          (environmentTypeRef,applicationURI);
+      AbstractXmlObject<ApplicationEnvironment,?> environmentRef
+        =AbstractXmlObject.<ApplicationEnvironment>create
+          (null
+          ,applicationURI
+          ,_registryNode.createChild(Integer.toString(_nextEnvironmentId++))
+          ,null
+          );
       
-      environmentRef.register
-        (_registryNode.createChild(Integer.toString(_nextEnvironmentId++)));
       
       ApplicationEnvironment environment=environmentRef.get();
       environment.resolve(this);
     
       environment.exec(args);
     }
-    catch (PersistenceException x)
+    catch (BindException x)
     { throw new ExecutionTargetException(x);
     }
   }

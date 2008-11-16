@@ -58,13 +58,16 @@ public class Main
   static
   {
     if (Main.class.getClassLoader()==ClassLoader.getSystemClassLoader())
-    { throw new IllegalStateException
-        ("This class cannot be loaded into the System ClassLoader");
+    { 
+      Spiralcraft.err.println
+        ("WARNING: spiralcraft-core module should not in the system classpath "
+        +" as this may interfere with some dynamic loading functionality"
+        );
     }
     // System.setSecurityManager(new SystemSecurityManager());
   }
 
-  public static void main(String[] args)
+  public static void exec(String[] args)
     throws Throwable
   {
 

@@ -22,4 +22,9 @@ public class ExecutionException
   public ExecutionException(String message)
   { super(message);
   }
+
+  public ExecutionException(String message,Throwable cause)
+  { super(message,cause);
+  }
+
 }

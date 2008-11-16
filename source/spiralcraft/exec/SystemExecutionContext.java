@@ -23,9 +23,6 @@ import java.net.URI;
 public class SystemExecutionContext
   extends ExecutionContext
 {
-  public SystemExecutionContext()
-  { ExecutionContext.setInstance(this);
-  }
   
   @Override
   public PrintStream out()

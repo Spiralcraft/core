@@ -23,12 +23,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 
+import spiralcraft.exec.Executable;
 import spiralcraft.util.Arguments;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.StreamUtil;
 
 public class ResolverTest
+  implements Executable
 {
 
   private URI _uri;
@@ -36,11 +38,8 @@ public class ResolverTest
   // private boolean _dump=false;
   // private int _repeats=0;
 
-  public static void main(String[] args)
-  { new ResolverTest().run(args);
-  }
   
-  public void run(String[] args)
+  public void execute(String ... args)
   {
     new Arguments()
     {

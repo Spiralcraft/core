@@ -28,8 +28,6 @@ import java.net.URI;
 
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
-import spiralcraft.exec.SystemExecutionContext;
-
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
@@ -64,11 +62,10 @@ public class Parser
   private boolean _useEscapes=true;
   private DataConsumerChain<Tuple>[] _filters;
   private String _charsetName;
-  private ExecutionContext _context;
   
-	public void execute(final ExecutionContext context,String[] args)
+	public void execute(String ... args)
 	{
-    _context=context;
+    final ExecutionContext context=ExecutionContext.getInstance();
 		try
 		{
       String filename=null;
@@ -205,11 +202,7 @@ public class Parser
 
 	public void parse(InputStream in,DataConsumer<Tuple> sink)
 		throws IOException,ParseException,DataException
-	{
-    if (_context==null)
-    { _context=new SystemExecutionContext();
-    }
-    
+	{    
 		consumer=sink;
 		_in=in;
     
@@ -411,6 +404,7 @@ public class Parser
 	private void readData(StreamTokenizer st)
 		throws IOException,ParseException,DataException
 	{
+	  ExecutionContext context=ExecutionContext.getInstance();
     resetSyntaxForData(st);
     
     
@@ -535,7 +529,7 @@ public class Parser
             { throw new ParseException(err);
             }
             else
-            { _context.err().println("WARNING: "+err);
+            { context.err().println("WARNING: "+err);
             }
           }
         }
@@ -581,7 +575,7 @@ public class Parser
           { throw new ParseException(err);
           }
           else
-          { _context.err().println("WARNING: "+err);
+          { context.err().println("WARNING: "+err);
           }
         }
       }
@@ -611,7 +605,7 @@ public class Parser
           { throw new ParseException(err);
           }
           else
-          { _context.err().println("WARNING: "+err);
+          { context.err().println("WARNING: "+err);
           }
         }
 			}
@@ -630,7 +624,7 @@ public class Parser
         { throw new ParseException(err);
         }
         else
-        { _context.err().println("WARNING: "+err);
+        { context.err().println("WARNING: "+err);
         }
 			}
 		}

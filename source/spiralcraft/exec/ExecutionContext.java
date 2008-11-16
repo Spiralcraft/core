@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2008 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -19,29 +19,58 @@ import java.io.InputStream;
 
 import java.net.URI;
 
+import spiralcraft.util.thread.ThreadLocalStack;
+
 /**
- * Provides a minimal representation of a user environment for user driven 
- *   entry points.
+ * <p>Provides contextual information for specific invocations of user driven
+ *   entry points to decouple coarse-grained application logic from using
+ *   java.lang.System as a "global" context.
+ * </p>
  */
 public abstract class ExecutionContext
 {
-  private static ThreadLocal<ExecutionContext> _INSTANCE 
-    = new ThreadLocal<ExecutionContext>() 
+  private static final ExecutionContext _SYSTEM_CONTEXT
+    =new SystemExecutionContext();
+  
+  private static ThreadLocalStack<ExecutionContext> _INSTANCE 
+    = new ThreadLocalStack<ExecutionContext>(true)
   {
-     @Override
-    protected synchronized ExecutionContext initialValue() 
-     { return null;
-     }
+    @Override
+    public ExecutionContext defaultValue()
+    { return _SYSTEM_CONTEXT;
+    }
   };
-    
+  
+  /**
+   * <p>Obtain the thread-local singleton instance of the ExecutionContext
+   * </p>
+   * 
+   * @return
+   */
   public static final ExecutionContext getInstance()
   { return _INSTANCE.get();
   }
 
-  static final void setInstance(ExecutionContext context)
-  { 
-    _INSTANCE.set(context);
-    return;
+  /**
+   * <p>Set the current thread-local singleton instance of the ExecutionContext
+   * </p>
+   * 
+   * <p>This instance must be reset by calling popInstance() when the operation
+   *   is complete
+   * </p>
+   * 
+   * @return
+   */
+  static final void pushInstance(ExecutionContext context)
+  { _INSTANCE.push(context);
+  }
+  
+  /**
+   * <p>Reset the current thread-local singleton instance
+   * </p>
+   */
+  static final void popInstance()
+  { _INSTANCE.pop();
   }
  
   public abstract PrintStream out();
@@ -49,7 +78,7 @@ public abstract class ExecutionContext
   public abstract InputStream in();
 
   public abstract PrintStream err();
-
+  
   /**
    * Return the user focus URI- the URI equivalent of the "current directory"
    *   in a file system

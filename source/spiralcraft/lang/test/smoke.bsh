@@ -99,7 +99,7 @@ Evaluator.parseAndEvaluateObject("@cast([@:class:/java/lang/Number]).@subtype ==
 "// ExpressionResolverTest";
 import spiralcraft.lang.test.ExpressionResolverTest;
 "//// Perf 1: retrieval";
-ExpressionResolverTest.main
+new ExpressionResolverTest().execute
 	(new String[] 
 		{"-expression","test"
 		,"-bindRepeats","1000000"
@@ -107,7 +107,7 @@ ExpressionResolverTest.main
 		}
   );
 "//// Perf 2: reflect";
-ExpressionResolverTest.main
+new ExpressionResolverTest().execute
 	(new String[] 
 		{"-expression","test.length()"
 		,"-bindRepeats","1000"
@@ -115,7 +115,7 @@ ExpressionResolverTest.main
 		}
   );
 "//// Perf 3: reflect+compare";
-ExpressionResolverTest.main
+new ExpressionResolverTest().execute
 	(new String[] 
 		{"-expression","test.length()>2"
 		,"-bindRepeats","1000"
@@ -123,7 +123,7 @@ ExpressionResolverTest.main
 		}
   );
 "//// Perf 4: reflect+compare+add";
-ExpressionResolverTest.main
+new ExpressionResolverTest().execute
 	(new String[] 
 		{"-expression","test.length()>(2+2)"
 		,"-bindRepeats","1000"

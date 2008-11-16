@@ -57,8 +57,9 @@ public class Search
   /**
    * Execute a search specified by arguments
    */
-  public void execute(ExecutionContext context,String[] args)
+  public void execute(String ... args)
   { 
+    ExecutionContext context=ExecutionContext.getInstance();
     configure(args);
     if (getRootURI()==null)
     { setRootURI(context.focusURI());

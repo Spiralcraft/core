@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.test;
 
+import spiralcraft.exec.Executable;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.parser.ExpressionParser;
@@ -22,13 +23,14 @@ import spiralcraft.lang.parser.ExpressionParser;
 import spiralcraft.util.Arguments;
 
 public class ExpressionParserTest
+  implements Executable
 {
 
   private String _expression=null;
   private boolean _dump=false;
   private int _repeats=0;
 
-  public static void main(String[] args)
+  public void execute(String ... args)
   {
     final ExpressionParserTest test=new ExpressionParserTest();
     test.run(args);

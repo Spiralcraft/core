@@ -20,6 +20,7 @@ import javax.xml.parsers.SAXParser;
 
 import org.xml.sax.SAXException;
 
+import spiralcraft.exec.Executable;
 import spiralcraft.sax.ParseTree;
 import spiralcraft.sax.ParseTreeFactory;
 import spiralcraft.sax.Node;
@@ -34,22 +35,15 @@ import java.io.File;
 import spiralcraft.util.Arguments;
 
 public class ParseTreeTest
+  implements Executable
 {
 
   private File _file=null;
   private boolean _dump=false;
   private int _repeats=0;
   private File _outputFile=null;
-
-  public static void main(String[] args)
-  {
-    final ParseTreeTest test=new ParseTreeTest();
-    test.run(args);
  
-
-  }
-  
-  public void run(String[] args)
+  public void execute(String ... args)
   {
     new Arguments()
     {

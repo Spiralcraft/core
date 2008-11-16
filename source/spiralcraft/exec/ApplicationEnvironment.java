@@ -70,7 +70,9 @@ public class ApplicationEnvironment
   private LibraryClassLoader _classLoader;
   // private ApplicationManager _applicationManager;
   private String _mainClass;
+  private String _mainMethodName;
   private String[] _mainArguments=new String[0];
+  private String[] _commandLineArguments=new String[0];
   private String[] _modules;
   private boolean debug;
 
@@ -94,7 +96,7 @@ public class ApplicationEnvironment
    *   These arguments will preceed any arguments passed to the exec() method.
    */
   public void setCommandLine(String val)
-  { _mainArguments=StringUtil.tokenizeCommandLine(val);
+  { _commandLineArguments=StringUtil.tokenizeCommandLine(val);
   }
   
   /**
@@ -103,6 +105,16 @@ public class ApplicationEnvironment
    */
   public void setMainClass(String val)
   { _mainClass=val;
+  }
+  
+  /**
+   * <p>The name of the "main" method. Any static method with a single String[]
+   *   parameter can be used as the entry point.
+   * </p>
+   * @param val
+   */
+  public void setMainMethodName(String val)
+  { _mainMethodName=val;
   }
 
   /**
@@ -136,7 +148,9 @@ public class ApplicationEnvironment
     processArguments(args);
 
     if (_mainClass==null)
-    { _mainClass="spiralcraft.exec.Executor";
+    { 
+      _mainClass="spiralcraft.exec.Executor";
+      _mainMethodName="launch";
     }
 
     try  
@@ -152,7 +166,7 @@ public class ApplicationEnvironment
       }
   
       Class<?> clazz=_classLoader.loadClass(_mainClass);
-      Method mainMethod=clazz.getMethod("main",new Class[] {String[].class});
+      Method mainMethod=clazz.getMethod(_mainMethodName,new Class[] {String[].class});
       
       ClassLoader oldLoader=Thread.currentThread().getContextClassLoader();
       try
@@ -182,13 +196,17 @@ public class ApplicationEnvironment
    */
   private void processArguments(String[] args)
   {
+    _mainArguments
+      =(String[]) ArrayUtil.appendArrays(_mainArguments,_commandLineArguments);
     new Arguments()
     {
       @Override
       public boolean processArgument(String argument)
       { 
         if (_mainClass==null)
-        { _mainClass="spiralcraft.exec.Executor";
+        { 
+          _mainClass="spiralcraft.exec.Executor";
+          _mainMethodName="launch";
         }
         _mainArguments=(String[]) ArrayUtil.append(_mainArguments,argument);
         return true;
@@ -203,8 +221,12 @@ public class ApplicationEnvironment
           { _modules=(String[]) ArrayUtil.append(_modules,nextArgument());
           }
           else if (option=="main")
-          { _mainClass=nextArgument();
+          { 
+            _mainClass=nextArgument();
             //XXX Figure out what to do if null
+            if (_mainMethodName==null)
+            { _mainMethodName="main";
+            }
           }
           else if (option=="exec")
           { _mainClass="spiralcraft.exec.ClassExecutor";

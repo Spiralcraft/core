@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.test;
 
+import spiralcraft.exec.Executable;
 import spiralcraft.lang.parser.ExpressionParser;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.Namespace;
@@ -34,6 +35,7 @@ import spiralcraft.log.ClassLogger;
 import spiralcraft.util.Arguments;
 
 public class ExpressionResolverTest
+  implements Executable
 {
 
   private static final ClassLogger log
@@ -43,15 +45,8 @@ public class ExpressionResolverTest
   private boolean _dump=false;
   private int _bindRepeats=0;
   private int _getRepeats=0;
-
-  public static void main(String ... args)
-  {
-    final ExpressionResolverTest test
-      =new ExpressionResolverTest();
-    test.run(args);
-  }
   
-  public void run(String ... args)
+  public void execute(String ... args)
   {
     new Arguments()
     {

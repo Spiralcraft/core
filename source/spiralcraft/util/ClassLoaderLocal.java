@@ -17,14 +17,17 @@ package spiralcraft.util;
 import java.util.WeakHashMap;
 
 /**
- * A tool which permits classes to associate an instance with a ClassLoader.
+ * <p>A tool which permits classes to associate an instance with a ClassLoader.
+ * </p>
  *
- * This class is not synchronized. 
+ * <p>This class is not synchronized. 
+ * </p>
  *
- * An instance of this Class is intended to be used as a static member of
+ * <p>An instance of this Class is intended to be used as a static member of
  *   class <T> where a synchronized static method in <T> interacts with the
  *   methods of this class to return a singleton associated with the current
  *   or parent ClassLoader.
+ * </p>
  */
 public class ClassLoaderLocal<T>
 {
