@@ -1,12 +1,7 @@
 <project name="spiralcraft-textgen" default="build" basedir=".">
 
   <target name="build">
-  	<copy 
-  	  file="../main/lib/spiralcraft-main.jar"
-  	  todir="lib"
-  	  preservelastmodified="true"
-      verbose="true"
-  	/>  	
+
   	<copy
   	  file="../../build/resources/ant/build-common.xml"
   	  todir="."
