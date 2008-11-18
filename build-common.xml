@@ -55,7 +55,7 @@
     >
     <and>
       <isset property="isIvy"/>
-      <isset property="buildNumber"/>
+      <isset property="artifactsDir"/>
     </and>
       
   </condition>
