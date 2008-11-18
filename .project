@@ -15,6 +15,5 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>tk.eclipse.plugin.htmleditor.HTMLProjectNature</nature>
-		<nature>net.sourceforge.metrics.nature</nature>
 	</natures>
 </projectDescription>

@@ -1,0 +1,16 @@
+<ivysettings>
+  <resolvers>
+    <url name="spiralcraft">
+      <ivy 
+        pattern="http://publish.spiralcraft.com/[module]/current/[revision]/artifacts/ivy.xml"
+      />
+      <artifact pattern="http://publish.spiralcraft.com/[module]/current/[revision]/artifacts/[module].[ext]" 
+      />
+    </url>
+  
+  </resolvers>
+  <settings defaultResolver="spiralcraft"/>
+  <modules>
+    <module organisation="spiralcraft" name=".*" resolver="spiralcraft" />
+  </modules>
+</ivysettings>

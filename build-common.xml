@@ -1,8 +1,14 @@
-<project name="build-common">
+<project name="build-common"
+  xmlns:ivy="antlib:org.apache.ivy.ant"
+  >
 	<!--
 	  Master Template
-	  Last updated 2008-11-03 20:16
+	  Last updated 2008-11-17 22:06
   -->
+  <taskdef 
+    resource="org/apache/ivy/ant/antlib.xml" 
+    uri="antlib:org.apache.ivy.ant"
+  />
 
   <tstamp>
     <format property="now" pattern="yyyyMMdd-HHmmss"/>
@@ -14,13 +20,22 @@
   
   <property name="build.id" value="${user.name}@${host.name}-${now}"/>
   
+  <!-- default luntbuild name -->
+  <property
+    name="version" value="${buildVersion}"
+  />
+  
+  
+  
   <property 
     name="build.name" value="spiralcraft-${module}-${version}-${build.id}"
   />
   <property name="manifest.class.path" value="" />
   <property name="spiralcraft.build" value="../../build"/>
+
+
   
-  <target name="build" depends="clean,compile,jar,smoke" />
+  <target name="build" depends="resolve,clean,compile,jar,smoke" />
   
   <target name="clean">
     <mkdir dir="out"/>
@@ -28,8 +43,22 @@
       <fileset dir="out" includes="**/*"/>
     </delete>
   </target>
+
+  <condition property="isIvy">
+    <available file="ivy.xml"/>
+  </condition>
   
-  <target name="compile">
+  <target name="resolve" 
+    description="--> retrieve dependencies with ivy"
+    if="isIvy"
+    >
+    
+    <ivy:configure file="ivy.settings.xml"/> 
+    
+    <ivy:retrieve pattern="${ivy.lib.dir}/[artifact].[ext]"/>
+  </target>
+      
+  <target name="compile" depends="resolve">
     <echo message= "build: ${build.name}"/>
     <javac 
       classpath="${classpath}"
@@ -61,7 +90,11 @@
     </propertyfile>
   </target>
 
-  <target name="smoke" depends="jar">
+	<condition property="isSmoke">
+    <available file="lib/bsh.jar"/>
+	</condition>
+	
+  <target name="smoke" depends="jar" if="isSmoke">
     <java
       classpath="${spiralcraft.build}/lib/bsh.jar;lib/spiralcraft-${module}.jar;${classpath}"
       classname="bsh.Interpreter" 
@@ -78,7 +111,7 @@
       destfile="lib/spiralcraft-${module}.jar" 
       basedir="out"
       level="9"
-            >
+      >
       <Manifest>
         <attribute name="Class-Path" value="${manifest.class.path}"/>
         <attribute name="Main-Class" value="${manifest.main.class}"/>   
@@ -112,6 +145,18 @@
       </bottom>
     </javadoc>
   </target>
+	
+	<target name="ivyPublish" depends="doc" if="isIvy">
+    
+    <ivy:publish pubrevision="${buildVersion}" resolver="luntlocal">
+      <artifacts pattern="lib/[module].[ext]"/>
+    </ivy:publish>
+    
+  </target>
+  
+  <target name="lunt" depends="ivyPublish">
+
+	</target>
   
 </project>
 

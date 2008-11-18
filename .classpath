@@ -3,5 +3,6 @@
 	<classpathentry kind="src" path="source"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/spiralcraft-main.jar"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/build.xml/*"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
