@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0">
-  <info organisation="spiralcraft" module="spiralcraft-core">
+  <info organisation="spiralcraft" module="spiralcraft-core" status="integration">
   </info>
   
   <publications>
@@ -8,7 +8,7 @@
   </publications> 
   
   <dependencies>
-    <dependency org="spiralcraft" name="spiralcraft-main" rev="0.2.1-b20"/>
+    <dependency org="spiralcraft" name="spiralcraft-main" rev="0.2.1-b29"/>
   </dependencies>
   
   <conflicts>

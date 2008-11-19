@@ -83,10 +83,6 @@
     >
     
   </target>
-
-  <target name="updateCommon">
-    
-  </target>
   
   <target name="resolve" 
     if="isIvy"
@@ -196,7 +192,7 @@
     
   </target>
   
-  <target name="lunt" depends="resolve,jar,doc,ivyPublish">
+  <target name="lunt" depends="freshBuild,jar,doc,ivyPublish">
 
 	</target>
   
