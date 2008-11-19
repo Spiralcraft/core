@@ -1,5 +1,6 @@
 package spiralcraft.log;
 
+import java.util.WeakHashMap;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -38,10 +39,18 @@ public class ClassLogger
 
   }
   
+  private static final WeakHashMap<Class<?>,ClassLogger> map
+    =new WeakHashMap<Class<?>,ClassLogger>();
+  
   public static synchronized final ClassLogger getInstance(Class<?> subject)
   {
-    
-    return new ClassLogger(subject.getName());
+    ClassLogger ret=map.get(subject);
+    if (ret!=null)
+    { return ret;
+    }
+    ret=new ClassLogger(subject.getName());
+    map.put(subject,ret);
+    return ret;
 
 //    if (instance==null)
 //    { instance=new ClassLogger();

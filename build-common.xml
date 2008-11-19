@@ -3,7 +3,7 @@
   >
 	<!--
 	  Master Template
-	  Last updated 2008-11-18 12:09
+	  Last updated 2008-11-19 1:01
   -->
   <taskdef 
     resource="org/apache/ivy/ant/antlib.xml" 
@@ -25,6 +25,9 @@
     name="version" value="${buildVersion}"
   />
   
+  <property
+    name="spiralcraft-build" value="../../build/"
+  />
   
   
   <property 
@@ -60,7 +63,31 @@
       
   </condition>
 
+  <target name="copyCommon">
+    <copy
+      file="${spiralcraft-build}/ivy.settings.xml"
+      todir="."
+      preservelastmodified="true"
+      verbose="true"
+    />
+    <copy
+      file="${spiralcraft-build}/ivy.lunt.settings.xml"
+      todir="."
+      preservelastmodified="true"
+      verbose="true"
+    />
+  </target>
+  
+  <target name="freshBuild"
+    depends="copyCommon,resolve,build"
+    >
+    
+  </target>
 
+  <target name="updateCommon">
+    
+  </target>
+  
   <target name="resolve" 
     if="isIvy"
     >

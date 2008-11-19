@@ -3,3 +3,5 @@ build.number
 *.class
 out
 bin
+ivy.settings.xml
+ivy.lunt.settings.xml

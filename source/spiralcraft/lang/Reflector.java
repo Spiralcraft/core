@@ -31,6 +31,38 @@ import java.net.URI;
  *   modifiers, providing another data source (Channel) bound to the first and to the
  *   Focus, in order to effect some transformation or computation.
  * </p>
+ * 
+ * <p>Reflectors support meta-operations on their associated Channels.
+ * </p>
+ * 
+ * <ul>
+ *   <li><b>@type</b>
+ *     <p>Binds to this Reflector
+ *     </p>
+ *   </li>
+ *   <li><b>@subtype</b>
+ *     <p>Dynamically provides the type of the value in the Channel  
+ *     </p>
+ *   </li>
+ *   <li><b>@channel</b>
+ *     <p>Binds to the Channel object itself
+ *     </p>
+ *   </li>
+ *   <li><b>@focus</b>
+ *     <p>Binds to the Focus object itself
+ *     </p> 
+ *   </li>
+ *   <li><b>@cast(&lt;typeFocus&gt;)</b>
+ *     <p>A new Channel which provides data that is a subtype of
+ *       the source
+ *     </p>
+ *   </li>
+ *   <li><b>@nil</b>
+ *     <p>A Channel which returns nothing and discards any data applied.
+ *       Useful as a source of type inference when storage is not needed.
+ *     </p> 
+ *   </li>
+ * </ul>
  */
 public abstract class Reflector<T>
 {
@@ -123,6 +155,9 @@ public abstract class Reflector<T>
       }
       
     }
+    else if (name.equals("@nil"))
+    { channel=((Channel<Reflector<?>>) source).get().getNilChannel();
+    }
     return (Channel<X>) channel;
   }
   
@@ -130,6 +165,33 @@ public abstract class Reflector<T>
   { 
     throw new AccessException
       ("Subtype not supported for type system "+getClass().getName());
+  }
+  
+  /**
+   * @return A Channel<T> connected to nothing, useful for type
+   *   inference.
+   */
+  public Channel<T> getNilChannel()
+  { 
+    return new AbstractChannel<T>(this)
+    {
+
+      @Override
+      protected T retrieve()
+      { return null;
+      }
+
+      @Override
+      protected boolean store(T val)
+        throws AccessException
+      { return true;
+      }
+      
+      @Override
+      public boolean isWritable()
+      { return true;
+      }
+    };
   }
   
   /**

@@ -3,7 +3,7 @@
   <target name="build">
 
   	<copy
-  	  file="../../build/resources/ant/build-common.xml"
+  	  file="../../build/build-common.xml"
   	  todir="."
       preservelastmodified="true"
       verbose="true"

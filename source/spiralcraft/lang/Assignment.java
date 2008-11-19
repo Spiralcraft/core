@@ -45,6 +45,7 @@ public class Assignment<T>
   
   private Expression<? extends T> source;
   private Expression<T> target;
+  private boolean debug;
   
   public Assignment()
   { }
@@ -59,6 +60,10 @@ public class Assignment<T>
     this.source=source;
     this.target=target;
   
+  }
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
   }
   
   public void setSource(Expression<? extends T> source)
@@ -93,6 +98,10 @@ public class Assignment<T>
       sourceChannel
         =((AssignmentNode.AssignmentChannel) sourceChannel).sourceChannel;
     }
-    return new Setter<T>(sourceChannel,targetChannel);
+    Setter setter=new Setter<T>(sourceChannel,targetChannel);
+    if (debug)
+    { setter.setDebug(true);
+    }
+    return setter;
   }
 }

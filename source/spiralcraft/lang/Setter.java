@@ -1,5 +1,9 @@
 package spiralcraft.lang;
 
+import java.util.logging.Logger;
+
+import spiralcraft.log.ClassLogger;
+
 /**
  * Copies the value of a source channel to a target
  * 
@@ -7,6 +11,8 @@ package spiralcraft.lang;
  */
 public class Setter<T>
 {
+  private static final Logger log=ClassLogger.getInstance(Setter.class);
+  
   public static final void applyArray(Setter<?>[] setters)
   {
     if (setters!=null)
@@ -32,6 +38,7 @@ public class Setter<T>
 
   private Channel<? extends T> source;
   private Channel<T> target;
+  private boolean debug;
   
   public Setter(Channel<? extends T> source,Channel<T> target)
   { 
@@ -39,10 +46,18 @@ public class Setter<T>
     this.target=target;
   }
   
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
   public boolean set()
   { 
     if (target!=null)
-    { return target.set(source.get());
+    { 
+      if (debug)
+      { log.fine("setting "+source.get()+" from "+source+" to "+target);
+      }
+      return target.set(source.get());
     }
     else
     { 

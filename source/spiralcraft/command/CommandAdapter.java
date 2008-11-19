@@ -39,6 +39,7 @@ public abstract class CommandAdapter<Ttarget,Tresult>
   private Exception exception;
   private Tresult result;
   private Ttarget target;
+  protected String name;
   
   public boolean isStarted()
   { return started;
@@ -138,5 +139,10 @@ public abstract class CommandAdapter<Ttarget,Tresult>
   
   public void undo()
   { throw new IllegalStateException("Command cannot be undone");
+  }
+  
+  @Override
+  public String toString()
+  { return super.toString()+":"+(name!=null?name:"(anon)");
   }
 }

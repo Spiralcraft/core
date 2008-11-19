@@ -2,7 +2,19 @@
 <ivy-module version="2.0">
   <info organisation="spiralcraft" module="spiralcraft-core">
   </info>
+  
+  <publications>
+    <artifact/>
+  </publications> 
+  
   <dependencies>
     <dependency org="spiralcraft" name="spiralcraft-main" rev="0.2.1-b20"/>
   </dependencies>
+  
+  <conflicts>
+    <manager name="latest-revision"/>
+  </conflicts>
+ 
+
 </ivy-module>
+

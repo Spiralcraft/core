@@ -359,10 +359,12 @@ public class XmlQueryable
   
   
   void add(Tuple t)
+    throws DataException
   { ((EditableKeyedListAggregate<Tuple>) this.aggregate).add(t);
   }
   
   void remove(Tuple t)
+    throws DataException
   { ((EditableKeyedListAggregate<Tuple>) this.aggregate).remove(t);
   }
   

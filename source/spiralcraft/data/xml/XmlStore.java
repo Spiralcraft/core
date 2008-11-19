@@ -394,6 +394,9 @@ public class XmlStore
         }
       }
       
+      // Make sure queryable has had a chance to init.
+      queryable.getAggregate();
+      
     }
     
     @Override
