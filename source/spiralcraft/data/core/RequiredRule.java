@@ -63,7 +63,7 @@ public class RequiredRule<T extends Tuple>
       if (fieldChannel.get()==null)
       {
         return new Violation<T>
-          (RequiredRule.this,field.getTitle()+" most contain a value");
+          (RequiredRule.this,field.getTitle()+" must contain a value");
       }
       return null;      
     }

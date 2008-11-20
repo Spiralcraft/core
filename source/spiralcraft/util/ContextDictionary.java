@@ -16,6 +16,11 @@ package spiralcraft.util;
 
 import java.util.HashMap;
 
+import spiralcraft.builder.BuildException;
+import spiralcraft.text.ParseException;
+import spiralcraft.text.ParsePosition;
+import spiralcraft.text.markup.MarkupHandler;
+import spiralcraft.text.markup.MarkupParser;
 import spiralcraft.util.thread.ThreadLocalStack;
 
 /**
@@ -29,6 +34,8 @@ import spiralcraft.util.thread.ThreadLocalStack;
  */
 public class ContextDictionary
 {
+  
+  
   private static final ContextDictionary _SYSTEM_CONTEXT
     =new ContextDictionary(null)
   {
@@ -43,6 +50,7 @@ public class ContextDictionary
     }     
   };
   
+  
   private static ThreadLocalStack<ContextDictionary> _INSTANCE 
     = new ThreadLocalStack<ContextDictionary>(true)
   {
@@ -51,6 +59,52 @@ public class ContextDictionary
     { return _SYSTEM_CONTEXT;
     }
   };
+
+  private static final MarkupParser substitutionParser
+    =new MarkupParser("${","}",'\\');
+  
+  public static String substitute(String raw)
+    throws ParseException
+  {
+    final StringBuffer ret=new StringBuffer();
+
+      substitutionParser.parse
+        (raw
+        ,new MarkupHandler()
+        {
+
+          @Override
+          public void handleContent(
+            CharSequence text)
+            throws ParseException
+          { ret.append(text);
+          }
+
+          @Override
+          public void handleMarkup(
+            CharSequence code)
+            throws ParseException
+          { 
+            String substitution
+              =ContextDictionary.getInstance().find
+                (code.toString(),"${"+code.toString()+"}");
+            if (substitution!=null)
+            { ret.append(substitution);
+            }
+          }
+
+          @Override
+          public void setPosition(
+            ParsePosition position)
+          { } 
+        }
+        ,null
+        );
+
+    return ret.toString();
+  }
+  
+  
   
   /**
    * <p>Obtain the thread-local singleton instance of the ContextDictionary

@@ -54,8 +54,7 @@ import spiralcraft.sax.PrefixResolver;
 public class PropertyBinding
   implements PropertyChangeListener
 {
-  private static final MarkupParser substitutionParser
-    =new MarkupParser("${","}",'\\');
+
   
   private Assembly _container;
   private PropertySpecifier _specifier;
@@ -353,7 +352,13 @@ public class PropertyBinding
         { 
           Object val=_contents[i].get();
           if (_contents[i].getAssemblyClass().getJavaClass()==String.class)
-          { val=substitute((String) val);
+          { 
+            try
+            { val=ContextDictionary.substitute((String) val);
+            }
+            catch (ParseException x)
+            { throw new BuildException("Error parsing properties in "+val,x);
+            }
           }
           Array.set(array,i,val);
           if (_specifier.getExport())
@@ -365,7 +370,15 @@ public class PropertyBinding
     }
     else if (_specifier.getTextData()!=null)
     {
-      String text=substitute(_specifier.getTextData());
+      String text;
+      try
+      { text=ContextDictionary.substitute(_specifier.getTextData());
+      }
+      catch (ParseException x)
+      { 
+        throw new BuildException
+          ("Error parsing properties in "+_specifier.getTextData(),x);
+      }
       
       _converter=StringConverter.getInstance(_target.getContentType());
       if (_converter==null)
@@ -407,51 +420,7 @@ public class PropertyBinding
     }
   }
   
-  public String substitute(String raw)
-    throws BuildException
-  {
-    final StringBuffer ret=new StringBuffer();
-    try
-    {
-      substitutionParser.parse
-        (raw
-        ,new MarkupHandler()
-        {
 
-          @Override
-          public void handleContent(
-            CharSequence text)
-            throws ParseException
-          { ret.append(text);
-          }
-
-          @Override
-          public void handleMarkup(
-            CharSequence code)
-            throws ParseException
-          { 
-            String substitution
-              =ContextDictionary.getInstance().find
-                (code.toString(),"${"+code.toString()+"}");
-            if (substitution!=null)
-            { ret.append(substitution);
-            }
-          }
-
-          @Override
-          public void setPosition(
-            ParsePosition position)
-          { } 
-        }
-        ,null
-        );
-    }
-    catch (ParseException x)
-    { throw new BuildException("Error parsing text property "+_specifier); 
-    }
-
-    return ret.toString();
-  }
   
   public void propertyChange(PropertyChangeEvent event)
   { applySafe(event.getNewValue());

@@ -248,6 +248,10 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
       {
         DataReader reader=new DataReader();
         Resource resource=Resolver.getInstance().resolve(instanceURI);
+        
+        // XXX This should be an option
+        // reader.setContextAware(true);
+        
         if (!resource.exists())
         { 
           if (typeURI!=null)

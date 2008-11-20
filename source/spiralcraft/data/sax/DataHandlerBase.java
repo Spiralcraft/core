@@ -28,7 +28,9 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.access.DataFactory;
+import spiralcraft.text.ParseException;
 import spiralcraft.text.ParsePosition;
+import spiralcraft.util.ContextDictionary;
 
 /**
  * <p>Implements a SAX handler using a stack of Frames. A Frame is
@@ -52,6 +54,7 @@ public abstract class DataHandlerBase
   protected DataFactory<? super DataComposite> dataFactory;
 
   private ContentHandler traceHandler;
+  private boolean contextAware;
   
   @Override
   public void setDocumentLocator(Locator locator)
@@ -61,6 +64,10 @@ public abstract class DataHandlerBase
     position.setLine(locator.getLineNumber());
     position.setColumn(locator.getColumnNumber());
     position.setContextURI(resourceURI);
+  }
+  
+  public void setContextAware(boolean contextAware)
+  { this.contextAware=contextAware;
   }
   
   public String formatPosition()
@@ -423,13 +430,26 @@ public abstract class DataHandlerBase
     }
     
     protected String getCharacters()
+      throws DataException
     { 
+      String ret;
       if (preserveWhitespace)
-      { return chars.toString();
+      { ret=chars.toString();
       }
       else
-      { return chars.toString().trim();
+      { ret=chars.toString().trim();
       }
+      if (contextAware)
+      { 
+        try
+        { ret=ContextDictionary.substitute(ret);
+        }
+        catch (ParseException x)
+        { throw new DataException("Error substituting properties in "+ret,x);
+        }
+      }
+      return ret;
+    
     }
   }
   

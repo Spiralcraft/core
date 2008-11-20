@@ -48,6 +48,7 @@ public class DataReader
   private DataFactory<? super DataComposite> dataFactory;
   private FrameHandler frameHandler;
   private ContentHandler traceHandler;
+  private boolean contextAware;
   
   /**
    * <p>Provide a DataConsumer to receive a stream of Tuples from the outermost
@@ -58,6 +59,10 @@ public class DataReader
    */
   public void setDataConsumer(DataConsumer<? super Tuple> dataConsumer)
   { this.dataConsumer=dataConsumer;
+  }
+  
+  public void setContextAware(boolean val)
+  { this.contextAware=val;
   }
   
   /**
@@ -200,6 +205,8 @@ public class DataReader
     if (traceHandler!=null)
     { handler.setTraceHandler(traceHandler);
     }
+    
+    handler.setContextAware(contextAware);
     
     parser.parse(in,handler);
     return handler.getCurrentObject();
