@@ -143,7 +143,7 @@ public abstract class Node
 
   @SuppressWarnings("unchecked") // Generics for internal use only
   public Node greaterThanOrEquals(Node op)
-  { return new RelationalNode(false,true,this,op);
+  { return new RelationalNode(true,true,this,op);
   }
   
   @SuppressWarnings("unchecked") // Generics for internal use only

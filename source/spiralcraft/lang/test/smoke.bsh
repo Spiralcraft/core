@@ -3,28 +3,61 @@ import spiralcraft.lang.test.Evaluator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.SimpleFocus;
 
+var eval(expr,val)
+{ return Evaluator.parseAndEvaluateObject(expr,val);
+}
+
+var assert(expr,val,test)
+{ 
+  check=Evaluator.parseAndEvaluateObject(expr,val);
+  if (!(check==test))
+  { 
+    msg="!!!!!!!!!!\r\nFAIL: { "+expr+" } on ["+val+"] : "+check+" != "+test+" \r\n!!!!!!!!!!!";
+    Expression.parse(expr).getRootNode().debugTree(System.err);
+    return msg;
+  }
+  else 
+  { 
+    msg="PASS: { "+expr+" } on ["+val+"] : "+check+" == "+test;
+    return msg;
+  }
+}
+
 "Basic Ops";
 "--Get class from an Object";
-Evaluator.parseAndEvaluateObject("class",new Object());
+assert("class",new Object(),Class.forName("java.lang.Object"));
 Evaluator.parseAndEvaluateObject("\"XXX\".getClass().toString().length()",new Object());
 "--Get hashCode from an Object";
 Evaluator.parseAndEvaluateObject(".hashCode()",new Object());
 "Boolean Ops (alternating pattern)";
-Evaluator.parseAndEvaluateObject(".equals(true)",Boolean.FALSE);
-Evaluator.parseAndEvaluateObject(".equals(false)",Boolean.FALSE);
-Evaluator.parseAndEvaluateObject(".equals(false) && .equals(true)",Boolean.FALSE);
-Evaluator.parseAndEvaluateObject(".equals(false) && .equals(false)",Boolean.FALSE);
-Evaluator.parseAndEvaluateObject(".equals(true) || .equals(true)",Boolean.FALSE);
-Evaluator.parseAndEvaluateObject(".equals(true) || .equals(false)",Boolean.FALSE);
-Evaluator.parseAndEvaluateObject(".equals(false) ^ .equals(false)",Boolean.FALSE);
-Evaluator.parseAndEvaluateObject(".equals(true) ^ .equals(false)",Boolean.FALSE);
-Evaluator.parseAndEvaluateObject(".equals(\"test\")","not test");
-Evaluator.parseAndEvaluateObject(".equals(\"test\")","test");
-Evaluator.parseAndEvaluateObject("!.equals(\"test\")","test");
+assert(".equals(true)",Boolean.FALSE,false);
+assert(".equals(false)",Boolean.FALSE,true);
+assert(".equals(false) && .equals(true)",Boolean.FALSE,false);
+assert(".equals(false) && .equals(false)",Boolean.FALSE,true);
+assert(".equals(true) || .equals(true)",Boolean.FALSE,false);
+assert(".equals(true) || .equals(false)",Boolean.FALSE,true);
+assert(".equals(false) ^ .equals(false)",Boolean.FALSE,false);
+assert(".equals(true) ^ .equals(false)",Boolean.FALSE,true);
+assert(".equals(\"test\")","not test",false);
+assert(".equals(\"test\")","test",true);
+assert("!.equals(\"test\")","test",false);
 "String ops";
 Evaluator.parseAndEvaluateObject(".length()","initial");
 Evaluator.parseAndEvaluateObject("\"[\"+.toString()+\"]\"","bracketed");
 Evaluator.parseAndEvaluateObject(".substring(1,.length()-1)","[unbracketed]");
+
+"";
+"";
+"Arithmetic";
+assert("2>1","",true);
+assert("1>2","",false);
+assert("2>=1","",true);
+assert("1>=2","",false);
+assert("1<=2","",true);
+assert("2<=1","",false);
+"";
+"";
+
 "Array ops";
 array=new String[] {"zero","one","two"};
 Evaluator.parseAndEvaluateObject(".[0]",array);
@@ -46,6 +79,7 @@ Evaluator.parseAndEvaluateObject(".[2][2].length()",array);
 "Array Selection";
 array=new String[] {"zero","one","two"};
 Evaluator.parseAndEvaluateObject(".[.startsWith(\"t\")][0]",array);
+
 
 "Array Equals";
 array2=new String[] {"zero","one","two"};
