@@ -32,14 +32,14 @@ import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 
 public abstract class EditorBase<Tbuffer extends Buffer>
 {
 
-  private static final ClassLogger log
-    =ClassLogger.getInstance(EditorBase.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(EditorBase.class);
 
   
   protected Channel<Buffer> bufferChannel;

@@ -16,9 +16,8 @@ package spiralcraft.task;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Logger;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * Executes a number of other Tasks in parallel
@@ -27,8 +26,8 @@ public class AsyncTask
   extends AbstractTask
   implements TaskListener
 {
-  private static final Logger log
-    =ClassLogger.getInstance(AsyncTask.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(AsyncTask.class);
   
   private List<? extends Task> tasks;
   private final Object monitor=new Object();

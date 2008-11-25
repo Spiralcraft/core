@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * <p>Represents the state of the authentication process from a client's
@@ -38,8 +38,8 @@ import spiralcraft.log.ClassLogger;
  */
 public abstract class AuthSession
 {
-  private static final ClassLogger log
-    =ClassLogger.getInstance(AuthSession.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(AuthSession.class);
   
   public static final URI FOCUS_URI
     =URI.create("class:/spiralcraft/security/auth/AuthSession");

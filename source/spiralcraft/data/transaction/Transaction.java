@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * <P>Represents a Transaction- a set of data modifications that comprise an atomic unit of
@@ -31,8 +31,8 @@ import spiralcraft.log.ClassLogger;
  */
 public class Transaction
 {
-  private static final ClassLogger log
-    =ClassLogger.getInstance(Transaction.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(Transaction.class);
 
   
   private static ThreadLocal<Transaction> TRANSACTION_LOCAL

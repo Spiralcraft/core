@@ -29,7 +29,7 @@ import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.EditableArrayListAggregate;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 
 import org.xml.sax.SAXException;
@@ -48,7 +48,7 @@ import java.io.IOException;
 public class DataHandler
   extends DataHandlerBase
 {
-  private static final ClassLogger log=ClassLogger.getInstance(DataHandler.class);
+  private static final ClassLog log=ClassLog.getInstance(DataHandler.class);
   private static final String STANDARD_PATH
     ="class:/spiralcraft/data/types/standard/";
   

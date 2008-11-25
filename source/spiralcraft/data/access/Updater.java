@@ -37,7 +37,7 @@ import spiralcraft.lang.NamespaceResolver;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 import spiralcraft.rules.Inspector;
 import spiralcraft.rules.RuleException;
 import spiralcraft.rules.RuleSet;
@@ -71,8 +71,8 @@ public class Updater<T extends Tuple>
   implements DataConsumer<T>
 {
 
-  protected static final ClassLogger log
-    =ClassLogger.getInstance(Updater.class);
+  protected static final ClassLog log
+    =ClassLog.getInstance(Updater.class);
 
   private static final URI dataURI
     =URI.create("class:/spiralcraft/data/");

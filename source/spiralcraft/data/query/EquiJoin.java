@@ -20,7 +20,7 @@ import spiralcraft.lang.ParseException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.TeleFocus;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
@@ -66,8 +66,8 @@ import java.util.ArrayList;
 public class EquiJoin
   extends Query
 {
-  private static final ClassLogger log
-    =ClassLogger.getInstance(EquiJoin.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(EquiJoin.class);
   
   private ArrayList<Expression<?>> rhsExpressions;
   private ArrayList<Expression<?>> lhsExpressions;

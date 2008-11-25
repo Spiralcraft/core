@@ -35,7 +35,7 @@ import spiralcraft.data.session.DataSession.DataSessionBranch;
 import spiralcraft.data.spi.ArrayTuple;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.util.StaticInstanceResolver;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.ArrayUtil;
 
 /**
@@ -47,7 +47,7 @@ public class BufferTuple
   extends Buffer
   implements EditableTuple,DeltaTuple
 {
-  private static final ClassLogger log=ClassLogger.getInstance(BufferTuple.class);
+  private static final ClassLog log=ClassLog.getInstance(BufferTuple.class);
   
   private DataSession session;
   private Tuple original;

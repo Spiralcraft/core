@@ -23,7 +23,7 @@ import java.net.URI;
 import java.util.HashSet;
 
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 import spiralcraft.lang.TypeModel;
 
 /**
@@ -37,8 +37,8 @@ public class TypeFocusNode
   extends FocusNode
 {
   @SuppressWarnings("unused")
-  private static final ClassLogger log
-    =ClassLogger.getInstance(TypeFocusNode.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(TypeFocusNode.class);
   
   private static final URI NULL_URI=URI.create("");
   

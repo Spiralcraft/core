@@ -20,7 +20,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
@@ -33,7 +33,7 @@ import spiralcraft.data.lang.DataReflector;
 public class BufferField
   extends FieldImpl<Buffer>
 {
-  protected final ClassLogger log=ClassLogger.getInstance(BufferField.class);
+  protected final ClassLog log=ClassLog.getInstance(BufferField.class);
   
   
   @Override

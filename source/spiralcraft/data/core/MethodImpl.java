@@ -10,13 +10,13 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 public abstract class MethodImpl
   implements Method
 {
-  protected static final ClassLogger log
-    =ClassLogger.getInstance(MethodImpl.class);
+  protected static final ClassLog log
+    =ClassLog.getInstance(MethodImpl.class);
   
   private static final Type<?>[] NULL_TYPES=new Type<?>[0];
   

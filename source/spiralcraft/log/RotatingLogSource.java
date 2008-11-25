@@ -1,9 +1,9 @@
+package spiralcraft.log;
+
 /**
  * Provides application specific information
  *   for a RotatingLog.
  */
-package spiralcraft.log;
-
 public interface RotatingLogSource
 {
 

@@ -25,7 +25,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.Translator;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * A Translator associated with a single bean property. The 'get' transformation
@@ -36,8 +36,8 @@ class BeanPropertyTranslator<Tprop,Tbean>
 {
   private static final Object[] EMPTY_PARAMS=new Object[0];
   
-  private static final ClassLogger log
-    =ClassLogger.getInstance(BeanPropertyTranslator.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(BeanPropertyTranslator.class);
 
   private final PropertyDescriptor _property;
   private final Method _readMethod;

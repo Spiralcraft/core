@@ -28,13 +28,13 @@ import spiralcraft.data.Identifier;
 
 import spiralcraft.data.spi.ListAggregate;
 import spiralcraft.data.transaction.Transaction;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   extends Buffer
   implements EditableAggregate<T>
 { 
-  private final ClassLogger log=ClassLogger.getInstance(BufferAggregate.class);
+  private final ClassLog log=ClassLog.getInstance(BufferAggregate.class);
 
   
   private final DataSession session;

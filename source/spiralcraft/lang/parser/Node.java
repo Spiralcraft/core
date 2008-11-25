@@ -18,7 +18,7 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 import java.util.List;
 
@@ -29,8 +29,8 @@ import java.util.List;
 public abstract class Node
 {
 
-  protected static final ClassLogger log
-    =ClassLogger.getInstance(Node.class);
+  protected static final ClassLog log
+    =ClassLog.getInstance(Node.class);
   
   /**
    * Stubbed bind method for unimplemented nodes.

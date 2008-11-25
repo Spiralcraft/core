@@ -21,7 +21,7 @@ import java.util.List;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.ArrayUtil;
 
 import spiralcraft.data.Order;
@@ -41,8 +41,8 @@ import spiralcraft.data.spi.OrderComparator;
 public class Sort
   extends Query
 {
-  private static final ClassLogger log
-    =ClassLogger.getInstance(Selection.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(Selection.class);
   
   private Order order;
   private String[] names;

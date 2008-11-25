@@ -30,7 +30,7 @@ import spiralcraft.data.Scheme;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Field;
 import spiralcraft.data.util.StaticInstanceResolver;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * Abstract Base class for Tuple functionality.
@@ -38,8 +38,8 @@ import spiralcraft.log.ClassLogger;
 public abstract class AbstractTuple
   implements Tuple
 {
-  protected static final ClassLogger log
-    =ClassLogger.getInstance(AbstractTuple.class);
+  protected static final ClassLog log
+    =ClassLog.getInstance(AbstractTuple.class);
   
   protected final FieldSet fieldSet;
   protected AbstractTuple baseExtent;

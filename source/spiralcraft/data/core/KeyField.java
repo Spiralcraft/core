@@ -22,7 +22,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.SimpleFocus;
 
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
@@ -43,8 +43,8 @@ import spiralcraft.data.lang.DataReflector;
 public class KeyField<T extends DataComposite>
   extends FieldImpl<T>
 {
-  protected static final ClassLogger log
-    =ClassLogger.getInstance(KeyField.class);
+  protected static final ClassLog log
+    =ClassLog.getInstance(KeyField.class);
   
   private KeyImpl<Tuple> key;
   

@@ -39,7 +39,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.net.URI;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * A Reflector which exposes an Array of an extended type.
@@ -51,8 +51,8 @@ public class ArrayReflector<I>
 
 
   @SuppressWarnings("unused")
-  private static final ClassLogger log
-    =ClassLogger.getInstance(ArrayReflector.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(ArrayReflector.class);
   
  
   private static final WeakHashMap<Reflector,WeakReference<ArrayReflector>> 

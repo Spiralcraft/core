@@ -20,20 +20,19 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
-import java.util.logging.Logger;
 
 import spiralcraft.builder.Lifecycle;
 import spiralcraft.builder.LifecycleException;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.IteratorEnumeration;
 
 public class Loader
   extends ClassLoader
   implements Lifecycle
 {
-  private static final Logger log
-    =ClassLogger.getInstance(Loader.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(Loader.class);
   
   private final ArrayList<Archive> archives=new ArrayList<Archive>();
   private final ArrayList<Archive> precedentArchives=new ArrayList<Archive>();

@@ -15,9 +15,6 @@
 package spiralcraft.builder;
 
 import spiralcraft.text.ParseException;
-import spiralcraft.text.ParsePosition;
-import spiralcraft.text.markup.MarkupHandler;
-import spiralcraft.text.markup.MarkupParser;
 import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.string.StringConverter;
 

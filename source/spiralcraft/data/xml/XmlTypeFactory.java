@@ -36,7 +36,7 @@ import spiralcraft.data.spi.EditableArrayTuple;
 
 import spiralcraft.data.util.ConstructorInstanceResolver;
 import spiralcraft.data.util.StaticInstanceResolver;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -49,7 +49,7 @@ public class XmlTypeFactory
 {
   
 
-  private static final ClassLogger log=ClassLogger.getInstance(XmlTypeFactory.class);
+  private static final ClassLog log=ClassLog.getInstance(XmlTypeFactory.class);
   private boolean debug;
   
   private ThreadLocal<CycleDetector<URI>> cycleDetectorRef

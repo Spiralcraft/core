@@ -18,8 +18,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.lang.BindException;
@@ -30,7 +28,7 @@ import spiralcraft.lang.FocusChainObject;
 import spiralcraft.lang.IterationCursor;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 import spiralcraft.task.AbstractTask;
 import spiralcraft.task.AsyncTask;
 import spiralcraft.time.Scheduler;
@@ -64,8 +62,8 @@ import spiralcraft.util.thread.DelegateException;
 public class BatchProcessor<I,R>
   implements FocusChainObject
 {
-  private static final Logger log
-    =ClassLogger.getInstance(BatchProcessor.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(BatchProcessor.class);
   
   protected Focus<?> focus;
   private Expression<?> source;
@@ -222,7 +220,7 @@ public class BatchProcessor<I,R>
       if (completedCommand.getException()!=null)
       { 
         log.log
-          (Level.FINE,"Error: "
+          (ClassLog.FINE,"Error: "
             +completedCommand.getException()
           ,completedCommand.getException()
           );

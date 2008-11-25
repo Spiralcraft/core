@@ -21,7 +21,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.ArrayUtil;
 
 /**
@@ -34,7 +34,7 @@ public class Order
 {
 
   private OrderElement<?>[] elements;
-  private final ClassLogger log=ClassLogger.getInstance(Order.class);
+  private final ClassLog log=ClassLog.getInstance(Order.class);
   private boolean debug;
   
   public void setElements(OrderElement<?>[] elements)

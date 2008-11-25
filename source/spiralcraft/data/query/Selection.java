@@ -29,7 +29,7 @@ import spiralcraft.lang.parser.LogicalAndNode;
 import spiralcraft.lang.parser.Node;
 import spiralcraft.lang.parser.PrimaryIdentifierNode;
 import spiralcraft.lang.parser.ResolveNode;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 
 import spiralcraft.data.DataException;
@@ -46,8 +46,8 @@ public class Selection
   extends Query
 {
  
-  private static final ClassLogger log
-    =ClassLogger.getInstance(Selection.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(Selection.class);
   
   private Expression<Boolean> constraints;
   
@@ -312,7 +312,7 @@ public class Selection
 class SelectionBinding<Tq extends Selection,Tt extends Tuple>
   extends UnaryBoundQuery<Tq,Tt,Tt>
 {
-  private static final ClassLogger log=ClassLogger.getInstance(SelectionBinding.class);
+  private static final ClassLog log=ClassLog.getInstance(SelectionBinding.class);
 
   private final Focus<?> paramFocus;
   private Focus<Tt> focus;

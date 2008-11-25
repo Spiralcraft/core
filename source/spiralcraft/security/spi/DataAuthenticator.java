@@ -41,7 +41,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 import java.net.URI;
 import java.security.MessageDigest;
@@ -65,8 +65,8 @@ public class DataAuthenticator
   extends Authenticator
 {
   
-  private static final ClassLogger log
-    =ClassLogger.getInstance(DataAuthenticator.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(DataAuthenticator.class);
   
   private Queryable<?> providedSource;
   

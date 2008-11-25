@@ -29,9 +29,8 @@ import spiralcraft.data.util.InstanceResolver;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Logger;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 import spiralcraft.rules.Rule;
 import spiralcraft.rules.RuleSet;
 
@@ -41,7 +40,7 @@ import spiralcraft.rules.RuleSet;
 public class TypeImpl<T>
   extends Type<T>
 {  
-  protected static final Logger log=ClassLogger.getInstance(TypeImpl.class);
+  protected static final ClassLog log=ClassLog.getInstance(TypeImpl.class);
   
   protected Class<T> nativeClass;
   protected SchemeImpl scheme;

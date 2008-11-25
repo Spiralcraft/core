@@ -16,7 +16,7 @@ package spiralcraft.data.sax;
 
 import spiralcraft.data.DataException;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 
 import org.xml.sax.SAXException;
@@ -35,8 +35,8 @@ public class ForeignDataHandler
   extends DataHandlerBase
 {
   @SuppressWarnings("unused")
-  private static final ClassLogger log
-    =ClassLogger.getInstance(ForeignDataHandler.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(ForeignDataHandler.class);
   
   
   /**

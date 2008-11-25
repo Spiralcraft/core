@@ -21,7 +21,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.TeleFocus;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.ArrayUtil;
 
 import spiralcraft.data.Projection;
@@ -40,8 +40,8 @@ import spiralcraft.data.spi.ArrayTuple;
 public class Distinct
   extends Query
 {
-  private static final ClassLogger log
-    =ClassLogger.getInstance(Selection.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(Selection.class);
   
   private Projection<Tuple> projection;
   private String[] names;
@@ -147,7 +147,7 @@ public class Distinct
 class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
   extends UnaryBoundQuery<Tq,T,Ts>
 {
-  private static final ClassLogger log=ClassLogger.getInstance(SelectionBinding.class);
+  private static final ClassLog log=ClassLog.getInstance(SelectionBinding.class);
 
   private final Focus<?> paramFocus;
   private Focus<Ts> focus;

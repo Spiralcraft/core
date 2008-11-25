@@ -35,7 +35,7 @@ import spiralcraft.util.string.StringConverter;
 
 import spiralcraft.lang.AccessException;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -68,7 +68,7 @@ public class Assembly<T>
   implements Registrant,Lifecycle
 {
   @SuppressWarnings("unused")
-  private static ClassLogger log=ClassLogger.getInstance(Assembly.class);
+  private static ClassLog log=ClassLog.getInstance(Assembly.class);
   
   private final AssemblyClass _assemblyClass;
   // private Assembly<?> _parent;

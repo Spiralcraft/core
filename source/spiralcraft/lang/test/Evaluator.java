@@ -24,12 +24,12 @@ import spiralcraft.lang.Channel;
 
 import spiralcraft.lang.spi.SimpleChannel;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 public class Evaluator
 {
 
-  static ClassLogger log=ClassLogger.getInstance(Evaluator.class);
+  static ClassLog log=ClassLog.getInstance(Evaluator.class);
   
   public static <X,Y> X parseAndEvaluateObject(String expression,Y subject)
     throws BindException,ParseException

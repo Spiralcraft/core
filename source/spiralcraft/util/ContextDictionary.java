@@ -16,7 +16,6 @@ package spiralcraft.util;
 
 import java.util.HashMap;
 
-import spiralcraft.builder.BuildException;
 import spiralcraft.text.ParseException;
 import spiralcraft.text.ParsePosition;
 import spiralcraft.text.markup.MarkupHandler;

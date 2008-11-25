@@ -14,7 +14,7 @@
 //
 package spiralcraft.vfs.url;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 import spiralcraft.vfs.AbstractResource;
 import spiralcraft.vfs.UnresolvableURIException;
 
@@ -30,8 +30,8 @@ import java.io.OutputStream;
 public class URLResource
   extends AbstractResource
 {
-  private static final ClassLogger log
-    =ClassLogger.getInstance(URLResource.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(URLResource.class);
   
   private static final boolean debug=false;
     

@@ -32,7 +32,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * <p>Implements a mapping from a foreign XML data element to part of a
@@ -44,8 +44,8 @@ import spiralcraft.log.ClassLogger;
  */
 public abstract class FrameHandler
 {
-  protected static final ClassLogger log
-    =ClassLogger.getInstance(FrameHandler.class);
+  protected static final ClassLog log
+    =ClassLog.getInstance(FrameHandler.class);
 
   // Makes FrameHandler thread-safe
   class LocalStack 

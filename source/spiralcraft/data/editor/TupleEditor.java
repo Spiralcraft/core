@@ -38,7 +38,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.FocusChainObject;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.spi.TranslatorChannel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * Provides lifecycle management and WebUI control bindings for
@@ -51,8 +51,8 @@ public class TupleEditor
   extends EditorBase<BufferTuple>
   implements FocusChainObject
 {
-  private static final ClassLogger log
-    =ClassLogger.getInstance(TupleEditor.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(TupleEditor.class);
 
   private Setter<?>[] fixedSetters;
   private Setter<?>[] initialSetters;

@@ -6,7 +6,6 @@ package spiralcraft.log;
 import java.io.RandomAccessFile;
 import java.io.File;
 
-import java.util.logging.Level;
 
 import spiralcraft.time.Scheduler;
 import spiralcraft.util.ArrayUtil;
@@ -14,7 +13,6 @@ import spiralcraft.util.ArrayUtil;
 import spiralcraft.builder.Lifecycle;
 import spiralcraft.builder.LifecycleException;
 
-import spiralcraft.log.ClassLogger;
 
 
 
@@ -23,7 +21,8 @@ public class RotatingLog
 {
 
   private RandomAccessFile _file;
-  private ClassLogger _log=ClassLogger.getInstance(RotatingLog.class);
+  private ClassLog _log=ClassLog.getInstance(RotatingLog.class);
+  
   private long _pollIntervalMs=1000;
 //  private boolean _initialized=false;
   private long _maxLengthKB=10000;

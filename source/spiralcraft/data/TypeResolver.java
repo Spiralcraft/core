@@ -40,7 +40,7 @@ import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.reflect.ReflectionTypeFactory;
 
 import spiralcraft.data.xml.XmlTypeFactory;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 
 /**
@@ -65,7 +65,7 @@ import spiralcraft.log.ClassLogger;
  */
 public class TypeResolver
 {
-  private static final ClassLogger log=ClassLogger.getInstance(TypeResolver.class);
+  private static final ClassLog log=ClassLog.getInstance(TypeResolver.class);
   
   private static final ClassLoaderLocal<TypeResolver> classLoaderLocal
     =new ClassLoaderLocal<TypeResolver>();

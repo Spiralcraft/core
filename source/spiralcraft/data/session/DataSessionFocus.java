@@ -34,7 +34,7 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.SimpleChannel;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * <p>A Focus which provides access to a DataSession object and its
@@ -52,8 +52,8 @@ import spiralcraft.log.ClassLogger;
 public class DataSessionFocus
   extends CompoundFocus<DataSession>
 {
-  private static final ClassLogger log
-    =ClassLogger.getInstance(DataSessionFocus.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(DataSessionFocus.class);
   
   private static final Expression<DataComposite> DATA_EXPRESSION
     =Expression.<DataComposite>create("data");

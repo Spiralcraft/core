@@ -1,8 +1,7 @@
 package spiralcraft.lang;
 
-import java.util.logging.Logger;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * Copies the value of a source channel to a target
@@ -11,7 +10,7 @@ import spiralcraft.log.ClassLogger;
  */
 public class Setter<T>
 {
-  private static final Logger log=ClassLogger.getInstance(Setter.class);
+  private static final ClassLog log=ClassLog.getInstance(Setter.class);
   
   public static final void applyArray(Setter<?>[] setters)
   {

@@ -20,7 +20,7 @@ import spiralcraft.lang.NamespaceResolver;
 import spiralcraft.lang.BindException;
 import java.net.URI;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * An expression node which resolves a Focus from somewhere in the hierarchy
@@ -33,7 +33,7 @@ public class AbsoluteFocusNode
   extends FocusNode
 {
   @SuppressWarnings("unused")
-  private static final ClassLogger log=ClassLogger.getInstance(AbsoluteFocusNode.class);
+  private static final ClassLog log=ClassLog.getInstance(AbsoluteFocusNode.class);
   
   private static final URI NULL_URI=URI.create("");
   

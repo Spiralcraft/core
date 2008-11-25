@@ -43,7 +43,7 @@ import spiralcraft.lang.ThreadedFocusChainObject;
 import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 import spiralcraft.util.thread.ContextFrame;
 import spiralcraft.util.thread.Delegate;
@@ -60,8 +60,8 @@ public class RestService
   implements ThreadedFocusChainObject
 {
   
-  private static final ClassLogger log
-    =ClassLogger.getInstance(RestService.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(RestService.class);
   
   private Expression<DataComposite> modelExpression;
   

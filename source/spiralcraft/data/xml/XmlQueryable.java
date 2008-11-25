@@ -46,7 +46,7 @@ import java.util.Date;
 import java.io.IOException;
 
 import spiralcraft.lang.Focus;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * <P>Provides basic query functionality for an XML document which contains 
@@ -59,8 +59,8 @@ import spiralcraft.log.ClassLogger;
 public class XmlQueryable
   extends AbstractAggregateQueryable<Tuple>
 {
-  private static final ClassLogger log
-    =ClassLogger.getInstance(XmlQueryable.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(XmlQueryable.class);
   
   
   private SimpleDateFormat dateFormat

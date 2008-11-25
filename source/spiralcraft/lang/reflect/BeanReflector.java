@@ -67,7 +67,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * A Reflector which uses Java Beans introspection and reflection
@@ -86,7 +86,7 @@ public class BeanReflector<T>
   }
 
   @SuppressWarnings("unused")
-  private static final ClassLogger log=ClassLogger.getInstance(BeanReflector.class);
+  private static final ClassLog log=ClassLog.getInstance(BeanReflector.class);
   
   private static final boolean ENABLE_METHOD_BINDING_CACHE=true;
   

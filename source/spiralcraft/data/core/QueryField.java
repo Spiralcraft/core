@@ -20,7 +20,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 
 import spiralcraft.data.DataComposite;
@@ -44,7 +44,7 @@ import spiralcraft.data.query.Queryable;
 public class QueryField
   extends FieldImpl<DataComposite>
 {
-  protected static ClassLogger log=ClassLogger.getInstance(QueryField.class);
+  protected static ClassLog log=ClassLog.getInstance(QueryField.class);
   
   private Query query;
 //  private boolean resolved;

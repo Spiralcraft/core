@@ -14,11 +14,9 @@
 //
 package spiralcraft.service;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import spiralcraft.builder.LifecycleException;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 import spiralcraft.time.Clock;
 
 /**
@@ -34,8 +32,8 @@ public abstract class ThreadService
   implements Runnable
 {
 
-  private static final Logger log
-    =ClassLogger.getInstance(ThreadService.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(ThreadService.class);
   
   protected Thread thread;
   private volatile boolean stop=true;
@@ -114,7 +112,7 @@ public abstract class ThreadService
       }
       catch (Throwable x)
       { 
-        log.log(Level.SEVERE,"Uncaught exception in service thread",x);
+        log.log(ClassLog.SEVERE,"Uncaught exception in service thread",x);
         x.printStackTrace();
         if (stopOnError)
         { stop();

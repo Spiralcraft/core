@@ -18,7 +18,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
 
 import org.xml.sax.SAXException;
 
@@ -44,7 +43,7 @@ import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.ThreadedFocusChainObject;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 import spiralcraft.sax.XmlWriter;
 
@@ -67,8 +66,8 @@ import spiralcraft.util.thread.DelegateException;
 public class RestClient
   implements ThreadedFocusChainObject
 {
-  private static final ClassLogger log
-    =ClassLogger.getInstance(RestClient.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(RestClient.class);
 
   private URI baseURI;
   private AttributeBinding<?>[] urlQueryBindings;
@@ -389,14 +388,14 @@ public class RestClient
     catch (SAXException x)
     { 
       if (debug)
-      { log.log(Level.FINE,"Error reading response",x);
+      { log.log(ClassLog.FINE,"Error reading response",x);
       }
       throw new DataException("Error reading response",x);
     }
     catch (IOException x)
     { 
       if (debug)
-      { log.log(Level.FINE,"I/O error performing query",x);
+      { log.log(ClassLog.FINE,"I/O error performing query",x);
       }
       throw new DataException("I/O error performing query",x);
     }

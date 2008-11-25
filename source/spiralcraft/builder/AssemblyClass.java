@@ -28,7 +28,7 @@ import java.util.HashMap;
 import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.lang.Focus;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.ArrayUtil;
 
 import spiralcraft.vfs.classpath.ClasspathResourceFactory;
@@ -47,8 +47,8 @@ public class AssemblyClass
   private static final BeanInfoCache _BEAN_INFO_CACHE
     =BeanInfoCache.getInstance(Introspector.IGNORE_ALL_BEANINFO);
   
-  private static final ClassLogger log
-    =ClassLogger.getInstance(AssemblyClass.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(AssemblyClass.class);
   
   private final URI sourceURI;
   

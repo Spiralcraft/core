@@ -33,8 +33,8 @@ import java.util.logging.Level;
 
 import java.lang.reflect.Field;
 
-import spiralcraft.log.RegistryLogger;
-import spiralcraft.log.DefaultFormatter;
+import spiralcraft.log.jul.DefaultFormatter;
+import spiralcraft.log.jul.RegistryLogger;
 
 /**
  * An executable that starts, responds to events, and terminates

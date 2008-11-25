@@ -21,7 +21,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Decorator;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
@@ -34,8 +34,8 @@ import java.beans.PropertyChangeEvent;
 public  class TranslatorChannel<T,S>
   implements Channel<T>,PropertyChangeListener
 {
-  private static final ClassLogger log
-    =ClassLogger.getInstance(TranslatorChannel.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(TranslatorChannel.class);
   
   private static int _ID=0;
   

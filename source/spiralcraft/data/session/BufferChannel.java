@@ -27,7 +27,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 /**
  * Returns a Buffer of a source
@@ -37,7 +37,7 @@ import spiralcraft.log.ClassLogger;
 public class BufferChannel
   extends AbstractChannel<Buffer>
 {
-  private static final ClassLogger log=ClassLogger.getInstance(BufferChannel.class);
+  private static final ClassLog log=ClassLog.getInstance(BufferChannel.class);
   
   private Channel<? extends DataComposite> originalChannel;
   private Channel<DataSession> sessionChannel;

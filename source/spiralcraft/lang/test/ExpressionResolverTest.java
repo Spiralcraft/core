@@ -28,7 +28,8 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 
 
@@ -38,8 +39,8 @@ public class ExpressionResolverTest
   implements Executable
 {
 
-  private static final ClassLogger log
-    =ClassLogger.getInstance(ExpressionResolverTest.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(ExpressionResolverTest.class);
   
   private String _expression=null;
   private boolean _dump=false;
@@ -79,13 +80,13 @@ public class ExpressionResolverTest
     {
       long time=System.currentTimeMillis();
       Expression<Object> expression = parser.parse(_expression);
-      log.fine("Initial read time "+(System.currentTimeMillis()-time));
+      log.log(Level.INFO,"Initial read time "+(System.currentTimeMillis()-time));
       
       if (_dump)
       { 
         StringBuffer out=new StringBuffer();
         expression.dumpParseTree(out);
-        log.fine(out.toString());
+        log.log(Level.INFO,out.toString());
       }
 
       SimpleFocus<Namespace> focus=new SimpleFocus<Namespace>();
@@ -103,7 +104,7 @@ public class ExpressionResolverTest
 
       Channel<Object> channel=expression.bind(focus);
 
-      log.fine("Bind time "+(System.currentTimeMillis()-time));
+      log.log(Level.INFO,"Bind time "+(System.currentTimeMillis()-time));
 
       if (_bindRepeats>0)
       {
@@ -111,7 +112,7 @@ public class ExpressionResolverTest
         for (int i=0;i<_bindRepeats;i++)
         { expression.bind(focus);
         }
-        log.fine(_bindRepeats+" repeats bind time "+(System.currentTimeMillis()-time));
+        log.log(Level.INFO,_bindRepeats+" repeats bind time "+(System.currentTimeMillis()-time));
       }
 
       System.out.println(channel.get());      
@@ -122,19 +123,17 @@ public class ExpressionResolverTest
         for (int i=0;i<_getRepeats;i++)
         { channel.get();
         }
-        log.fine(_getRepeats+" repeats get time "+(System.currentTimeMillis()-time));
+        log.log(Level.INFO,_getRepeats+" repeats get time "+(System.currentTimeMillis()-time));
       }
     } 
     catch (ParseException e) 
     { 
-      log.fine(e.getMessage());
-      e.printStackTrace();
+      log.log(Level.WARNING,e.getMessage(),e);
 
     }
     catch (BindException e) 
     { 
-      log.fine(e.getMessage());
-      e.printStackTrace();
+      log.log(Level.WARNING,e.getMessage(),e);
 
     }
 

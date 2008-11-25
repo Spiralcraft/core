@@ -24,7 +24,7 @@ import spiralcraft.data.core.KeyField;
 import spiralcraft.data.core.TypeImpl;
 import spiralcraft.data.core.SchemeImpl;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 
 import java.net.URI;
@@ -36,7 +36,7 @@ import java.util.Iterator;
 public class BufferType
   extends TypeImpl<Buffer>
 {
-  private static final ClassLogger log=ClassLogger.getInstance(BufferType.class);
+  private static final ClassLog log=ClassLog.getInstance(BufferType.class);
   
 //  public static final BufferType getBufferType(Type<?> bufferedType)
 //    throws DataException

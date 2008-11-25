@@ -24,7 +24,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AspectChannel;
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
@@ -44,8 +44,8 @@ import spiralcraft.data.reflect.ReflectionType;
 public class TupleReflector<T extends Tuple>
   extends DataReflector<T>
 {
-  private static final ClassLogger log
-    =ClassLogger.getInstance(TupleReflector.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(TupleReflector.class);
   
   private static boolean debug;
   

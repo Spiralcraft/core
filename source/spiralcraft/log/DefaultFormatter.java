@@ -14,44 +14,55 @@
 //
 package spiralcraft.log;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
 
 import java.util.Date;
 
 public class DefaultFormatter
-  extends Formatter
+  implements Formatter
 {
   private SimpleDateFormat _dateFormat
     =new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss.SSSZ");
   private String _cr=System.getProperty("line.separator");
 
   @Override
-  public synchronized String format(LogRecord record)
+  public synchronized String format(Event event)
   { 
     StringBuffer out=new StringBuffer();
-    out.append(_dateFormat.format(new Date(record.getMillis())));
+    out.append("[");
+    out.append(_dateFormat.format(new Date(event.getTime())));
+    out.append("]");
     out.append(" ");
-    out.append(record.getLevel().getName());
+    out.append(event.getLevel().getName());
     out.append(" ");
-    out.append(Integer.toString(record.getThreadID()));
+    out.append(Long.toString(event.getThreadId()));
+    out.append(":");
+    out.append(event.getThreadName());
     out.append(" ");
-    out.append(record.getLoggerName());
-    out.append(" (");
-    out.append(record.getSourceClassName());
-    out.append(".");
-    out.append(record.getSourceMethodName());
-    out.append(")");
+    out.append(event.getContext().format(":"));
+    if (Level.DEBUG.getValue()>=event.getLevel().getValue())
+    {
+      out.append(_cr+"        ");
+      out.append(event.getCallSite().getClassName());
+      out.append(".");
+      out.append(event.getCallSite().getMethodName());
+      out.append(" (");
+      out.append(event.getCallSite().getFileName());
+      out.append(":"+event.getCallSite().getLineNumber());
+      out.append(")");
+    }
     out.append(_cr);
     out.append("  ");
-    out.append(formatMessage(record));
+    out.append(event.getMessage());
     out.append(_cr);
-    if (record.getThrown()!=null)
+    if (event.getThrown()!=null)
     { 
-      out.append(record.getThrown().toString());
-      out.append(_cr);
+      StringWriter writer=new StringWriter();
+      event.getThrown().printStackTrace(new PrintWriter(writer,true));
+      out.append(writer.toString());
     }
     return out.toString();
   }

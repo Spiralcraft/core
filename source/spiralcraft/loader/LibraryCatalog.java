@@ -23,7 +23,6 @@ import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
-import java.util.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -34,7 +33,7 @@ import java.util.List;
 
 import java.net.URL;
 
-import spiralcraft.log.ClassLogger;
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.string.StringUtil;
 
 /**
@@ -179,8 +178,8 @@ public class LibraryCatalog
   class LibraryClasspathImpl
     implements LibraryClasspath
   {
-    private final Logger log
-      =ClassLogger.getInstance(LibraryClasspathImpl.class);
+    private final ClassLog log
+      =ClassLog.getInstance(LibraryClasspathImpl.class);
     
     private final HashMap<String,Resource> resources
       =new HashMap<String,Resource>();
