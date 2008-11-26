@@ -57,9 +57,9 @@ public class DefaultFormatter
     out.append(_cr);
     out.append("  ");
     out.append(event.getMessage());
-    out.append(_cr);
     if (event.getThrown()!=null)
     { 
+      out.append(_cr);
       StringWriter writer=new StringWriter();
       event.getThrown().printStackTrace(new PrintWriter(writer,true));
       out.append(writer.toString());
