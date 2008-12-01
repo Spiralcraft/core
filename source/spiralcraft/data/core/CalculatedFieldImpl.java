@@ -119,7 +119,13 @@ public class CalculatedFieldImpl<T>
   public Channel<T> bindChannel
     (Focus<Tuple> focus)
     throws BindException
-  { return focus.<T>bind(expression);
+  { 
+    if (expression==null)
+    { 
+      throw new BindException
+        ("CalculatedField "+getURI()+" must have an expression");
+    }
+    return focus.<T>bind(expression);
   }
   
   
