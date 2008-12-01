@@ -281,7 +281,11 @@ public class SchemeImpl
       //   scheme because they were redundant of their Archetype field. Should
       //   we always extend an Archetype field (in the above block) to avoid
       //   this?
-      field.resolve();
+      
+      // Concrete fields first
+      if (!field.isTransient())
+      { field.resolve();
+      }
     }
     
     int keyIndex=0;
@@ -318,6 +322,14 @@ public class SchemeImpl
         }
       }
       
+    }
+    
+    // Transient fields 
+    for (FieldImpl<?> field: localFields)
+    { 
+      if (field.isTransient())
+      { field.resolve();
+      }
     }
     
   }
