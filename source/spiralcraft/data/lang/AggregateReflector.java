@@ -105,6 +105,12 @@ public class AggregateReflector<T extends Aggregate<I>,I>
       }
       return binding;
     }
+    else if (name.startsWith("@"))
+    { 
+      // Map bean properties of aggregate into meta space.
+      return this.<Aggregate>resolveMeta(source,focus,"@aggregate",null)
+        .resolve(focus,name.substring(1),params);
+    }
     return null;
   }
   
