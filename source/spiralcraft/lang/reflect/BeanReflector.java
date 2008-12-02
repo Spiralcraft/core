@@ -256,6 +256,11 @@ public class BeanReflector<T>
   }
 
   @Override
+  public boolean isAssignableFrom(Reflector<?> other)
+  { return getContentType().isAssignableFrom(other.getContentType());
+  }
+  
+  @Override
   public Class<T> getContentType()
   { return targetClass;
   }

@@ -85,27 +85,15 @@ class ConditionalTranslator<T>
 {
   private Reflector<T> reflector;
   
+  @SuppressWarnings("unchecked") // Type comparison
   public ConditionalTranslator
     (Reflector<T> trueReflector
     ,Reflector<T> falseReflector
     )
     throws BindException
   { 
-    if (trueReflector.getContentType()==Void.class)
-    { reflector=falseReflector;
-    }
-    else if (falseReflector.getContentType()==Void.class)
-    { reflector=trueReflector;
-    }
-    else if (trueReflector.getContentType().isAssignableFrom(falseReflector.getContentType()))
-    { reflector=trueReflector;
-    }
-    else if (falseReflector.getContentType().isAssignableFrom(trueReflector.getContentType()))
-    { reflector=falseReflector;
-    }
-    else
-    { throw new BindException("Can't disambiguate conditional");
-    }
+    reflector=(Reflector<T>) trueReflector.getCommonType(falseReflector);
+    
   }
   
   public Reflector<T> getReflector()
