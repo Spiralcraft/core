@@ -194,6 +194,17 @@ public abstract class DataReflector<T extends DataComposite>
   }
   
   @Override
+  public boolean isAssignableFrom(Reflector<?> other)
+  { 
+    if (other instanceof DataReflector)
+    { return getType().isAssignableFrom(((DataReflector<?>) other).getType());
+    }
+    else
+    { return false;
+    }
+  }  
+  
+  @Override
   public String toString()
   { return super.toString();
   }
