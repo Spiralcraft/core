@@ -56,7 +56,8 @@ public class AggregateSelectChannel<T extends Aggregate<X>,X>
       for (X item: aggregate)
       {
         componentChannel.set(item);
-        if (selector.get())
+        Boolean val=selector.get();
+        if (val!=null && val)
         { ret.add(item);
         }
       }
