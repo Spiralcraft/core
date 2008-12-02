@@ -274,6 +274,10 @@ public abstract class Reflector<T>
    */
   public abstract boolean isAssignableTo(URI typeURI);
   
+  public boolean isAssignableFrom(Reflector<?> reflector)
+  { return reflector.isAssignableTo(getTypeURI());
+  }
+  
   /**
    * <p>A Reflector which represents a formally named type is usually associated
    *   with a TypeModel, which supports the retrieval of type Reflectors from
@@ -304,6 +308,30 @@ public abstract class Reflector<T>
    */
   public Reflector<?> disambiguate(Reflector<?> alternate)
   { return this;
+  }
+  
+  public Reflector<?> getCommonType(Reflector<T> other)
+    throws BindException
+  {
+    Reflector<?> reflector;
+    if (getContentType()==Void.class)
+    { reflector=other;
+    }
+    else if (other.getContentType()==Void.class)
+    { reflector=this;
+    }
+    else if (isAssignableFrom(other))
+    { reflector=this;
+    }
+    else if (other.isAssignableFrom(this))
+    { reflector=other;
+    }
+    else
+    { 
+      throw new BindException
+        (getTypeURI()+" has no common type with "+other.getTypeURI());
+    }
+    return reflector;
   }
   
   /**
