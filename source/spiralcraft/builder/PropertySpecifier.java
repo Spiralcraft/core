@@ -428,7 +428,10 @@ public class PropertySpecifier
     if (_contents!=null)
     {
       for (AssemblyClass assemblyClass:_contents)
-      { assemblyClass.resolve();
+      { 
+        if (!assemblyClass.isResolved())
+        { assemblyClass.resolve();
+        }
       }
     }
   }
@@ -498,10 +501,13 @@ public class PropertySpecifier
     { _contents=new ArrayList<AssemblyClass>(1);
     }
     _contents.add(assemblyClass);
-    assemblyClass.setContainingProperty(this);
+    if (!assemblyClass.isResolved())
+    { assemblyClass.setContainingProperty(this);
+    }
     
   }
 
+  
   public void addCharacters(char[] characters)
   {
     if (_textContent==null)

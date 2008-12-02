@@ -334,6 +334,10 @@ public class AssemblyClass
   { return _containingProperty;
   }
   
+  boolean isResolved()
+  { return _resolved;
+  }
+  
   void setContainingProperty(PropertySpecifier specifier)
   { 
     assertUnresolved();
