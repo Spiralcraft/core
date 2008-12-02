@@ -29,6 +29,8 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 /**
  * A Field which provides a value based on an Expression.
@@ -39,6 +41,9 @@ public class CalculatedFieldImpl<T>
   extends FieldImpl<T>
 {
 
+  private static final ClassLog log
+    =ClassLog.getInstance(CalculatedFieldImpl.class);
+  
   private ThreadLocalChannel<Tuple> threadLocalBinding;
   private Channel<T> expressionBinding;
   private Expression<T> expression;
@@ -80,7 +85,7 @@ public class CalculatedFieldImpl<T>
       expressionBinding=bindChannel(focus);
     }
     catch (BindException x)
-    { throw new DataException("Error resolving Field "+getURI()+": "+x,x);
+    { 
     }
     
   }
@@ -88,12 +93,21 @@ public class CalculatedFieldImpl<T>
   @Override
   protected T getValueImpl(Tuple t)
   { 
+    if (expressionBinding==null)
+    { 
+      log.log
+        (Level.INFO
+        ,"CalculatedField "
+          +getURI()
+          +" has unresolved dependencies and must be bound"
+        );
+      return null;
+    }
+    
     threadLocalBinding.push(t);
     try
     { 
       T ret=expressionBinding.get();
-//      System.err.println
-//        ("CalculatedFieldImpl: "+expression.toString()+": "+ret);
       return ret;
     }
     finally
@@ -105,6 +119,18 @@ public class CalculatedFieldImpl<T>
   @Override
   protected void setValueImpl(EditableTuple t,T val)
   { 
+    if (expressionBinding==null)
+    { 
+      log.log
+        (Level.INFO
+        ,"CalculatedField "
+          +getURI()
+          +" has unresolved dependencies and must be bound"
+        );
+      return;
+    }
+    
+    
     threadLocalBinding.push(t);
     try
     { expressionBinding.set(val);
