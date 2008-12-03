@@ -160,14 +160,35 @@ public abstract class BaseFocus<T>
   @Override
   public String toString()
   { 
-    return super.toString()
-      +"["+(subject!=null
-        ?(subject.getContentType().getName()
-         +"-[@"+subject.getReflector().getTypeURI()+"] "
-         +"("+subject.getClass().getName()+")"
-         )
-        :"")
-      +"]";
+    StringBuilder buf=new StringBuilder();
+    buf.append(super.toString());
+    buf.append("[");
+    if (subject!=null)
+    {
+      if (subject.getContentType()!=null)
+      { buf.append(subject.getContentType().getName());
+      }
+      else
+      { buf.append("(no content type!)");
+      }
+      if (subject.getReflector()!=null)
+      { buf.append("-[@"+subject.getReflector().getTypeURI()+"]");
+      }
+      buf.append("("+subject.getClass().getName()+")");
+    }
+    else
+    { buf.append("(no subject)");
+    }
+    buf.append("[");
+    return buf.toString();
+//    return super.toString()
+//      +"["+(subject!=null
+//        ?(subject.getContentType().getName()
+//         +"-[@"+subject.getReflector().getTypeURI()+"] "
+//         +"("+subject.getClass().getName()+")"
+//         )
+//        :"")
+//      +"]";
   }
 
 
