@@ -44,6 +44,9 @@ public class OrderComparator
   public OrderComparator(Order order,FieldSet fieldSet,Focus<?> context)
     throws BindException
   {
+    if (order==null)
+    { throw new BindException("An Order must be supplied");
+    }
     aChannel=new ThreadLocalChannel<Tuple>
       (TupleReflector.getInstance(fieldSet));
     aFocus=new TeleFocus<Tuple>(context,aChannel);
@@ -51,6 +54,7 @@ public class OrderComparator
     bChannel=new ThreadLocalChannel<Tuple>
       (TupleReflector.getInstance(fieldSet));
     bFocus=new TeleFocus<Tuple>(context,bChannel);
+    
     result=order.bind(aFocus,bFocus);
   }
   

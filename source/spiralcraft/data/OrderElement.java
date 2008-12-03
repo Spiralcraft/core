@@ -25,6 +25,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.util.lang.ClassUtil;
 
 /**
  * A group of OrderElements describes how to sort a set of objects.
@@ -81,8 +82,23 @@ public class OrderElement<T>
       { expression=Expression.parse(val);
       }
     }
+    if (expression==null)
+    { throw new IllegalArgumentException("Must contain an expression: "+val);
+    }
   }
   
+  public void setExpression(Expression<T> expression)
+  { this.expression=expression;
+  }
+  
+  public Expression<T> getExpression()
+  { return expression;
+  }
+  
+  public boolean getReverse()
+  { return weight==-1;
+  }
+    
   public void setReverse(boolean reverse)
   { 
     if (reverse)
@@ -93,12 +109,20 @@ public class OrderElement<T>
     }
   }
   
+  public Comparator<T> getComparator()
+  { return comparator;
+  }
+  
   public void setComparator(Comparator<T> comparator)
   { this.comparator=comparator;
   }
   
   public void setNullLast(boolean val)
   { this.nullLast=val;
+  }
+  
+  public boolean isNullLast()
+  { return nullLast;
   }
   
   public Channel<Integer> bind(Focus<?> focusA,Focus<?> focusB)
@@ -139,7 +163,8 @@ public class OrderElement<T>
       
       if (comparator==null)
       {
-        if (Comparable.class.isAssignableFrom(chA.getContentType()))
+        if (Comparable.class.isAssignableFrom
+            (ClassUtil.boxedEquivalent(chA.getContentType())))
         { comparator=new DefaultComparator();
         }
       }

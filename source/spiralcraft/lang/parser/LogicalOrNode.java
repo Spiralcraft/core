@@ -24,6 +24,10 @@ public class LogicalOrNode
   { super(op1,op2);
   }
   
+  public Node copy(Object visitor)
+  { return new LogicalOrNode(_op1.copy(visitor),_op2.copy(visitor));
+  }
+  
   @Override
   public String reconstruct()
   { return reconstruct("!!");

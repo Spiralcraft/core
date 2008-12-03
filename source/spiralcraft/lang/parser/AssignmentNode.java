@@ -52,6 +52,12 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
     this.target=target;
   }
 
+  public Node copy(Object visitor)
+  { 
+    return new AssignmentNode<Ttarget,Tsource>
+      (target.copy(visitor),source.copy(visitor));
+  }
+  
   @Override
   public String reconstruct()
   { return source.reconstruct()+" = "+target.reconstruct();

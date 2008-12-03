@@ -44,6 +44,8 @@ public abstract class Node
     return null;
   }
 
+  public abstract Node copy(Object visitor);
+  
   /** 
    * <p>Recursively reconstruct the expression text that created this node.
    * </p>

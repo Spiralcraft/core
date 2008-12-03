@@ -26,8 +26,12 @@ import org.xml.sax.helpers.DefaultHandler;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.access.DataFactory;
+import spiralcraft.lang.Expression;
+import spiralcraft.lang.NamespaceResolver;
+import spiralcraft.log.ClassLog;
 import spiralcraft.text.ParseException;
 import spiralcraft.text.ParsePosition;
 import spiralcraft.util.ContextDictionary;
@@ -45,6 +49,9 @@ public abstract class DataHandlerBase
   extends DefaultHandler
 {
   
+
+  private static final ClassLog log=ClassLog.getInstance(DataHandler.class);
+  
   protected Frame initialFrame;
   private Frame currentFrame;
   private ParsePosition position;
@@ -55,6 +62,7 @@ public abstract class DataHandlerBase
 
   private ContentHandler traceHandler;
   private boolean contextAware;
+  protected boolean debug;
   
   @Override
   public void setDocumentLocator(Locator locator)
@@ -256,6 +264,7 @@ public abstract class DataHandlerBase
    *   frames.
    */
   abstract class Frame
+    implements NamespaceResolver
   { 
     protected String qName;
     protected final StringBuilder chars
@@ -451,6 +460,53 @@ public abstract class DataHandlerBase
       return ret;
     
     }
+    
+    @Override
+    public URI getDefaultNamespaceURI()
+    { 
+      String ret=null;
+      if (prefixMappings!=null)
+      { ret=prefixMappings.get("default");
+      }
+      if (ret==null && parentFrame!=null)
+      { return parentFrame.getDefaultNamespaceURI();
+      }
+      return ret!=null?URI.create(ret):null;
+    }
+
+    @Override
+    public URI resolveNamespace(
+      String prefix)
+    {
+      String ret=null;
+      if (prefixMappings!=null)
+      { ret=prefixMappings.get(prefix);
+      }
+      if (ret==null && parentFrame!=null)
+      { return parentFrame.resolveNamespace(prefix);
+      }
+      return ret!=null?URI.create(ret):null;
+    }
+    
+    public Object fromString(Type<?> type,String text)
+      throws DataException
+    {
+      Object nativeObject=type.fromString(text);
+    
+      if (nativeObject.getClass()==Expression.class)
+      { 
+        if (debug)
+        { log.fine("Resolving "+nativeObject.toString());
+        }
+
+        nativeObject=((Expression<?>) nativeObject).resolveNamespaces(this);
+        
+        if (debug)
+        { log.fine("Resolved "+nativeObject.toString());
+        }
+      }
+      return nativeObject;
+    }        
   }
   
   /**
@@ -480,7 +536,8 @@ public abstract class DataHandlerBase
       throws SAXException, DataException
     { throw new SAXException("Element '"+qName+"' not permitted here");
     }
-    
+
+
   }
 
 }

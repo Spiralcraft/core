@@ -23,6 +23,9 @@ import spiralcraft.lang.BindException;
 public class CurrentFocusNode
   extends FocusNode
 {
+  public Node copy(Object visitor)
+  { return this;
+  }
 
   /**
    * Simply returns the specified Focus.

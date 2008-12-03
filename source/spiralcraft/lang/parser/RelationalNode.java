@@ -30,6 +30,12 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
     _equals=equals;
   }
 
+  public Node copy(Object visitor)
+  { 
+    return new RelationalNode<T1,T2>
+      (_greaterThan,_equals,_op1.copy(visitor),_op2.copy(visitor));
+  }
+  
   @Override
   public String reconstruct()
   {

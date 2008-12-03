@@ -122,6 +122,9 @@ public class Expression<T>
     _text=root.reconstruct();
   }
   
+  public Expression<T> resolveNamespaces(NamespaceResolver resolver)
+  { return new Expression<T>(_root.copy(resolver));
+  }
 
   public String getText()
   { return _text;

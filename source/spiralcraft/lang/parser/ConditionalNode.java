@@ -41,6 +41,15 @@ public class ConditionalNode
     _falseResult=falseResult;
   }
 
+  public Node copy(Object visitor)
+  { 
+    return new ConditionalNode
+      (_condition.copy(visitor)
+      ,_trueResult.copy(visitor)
+      ,_falseResult.copy(visitor)
+      );
+  }
+  
   @Override
   public String reconstruct()
   { 

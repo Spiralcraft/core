@@ -30,8 +30,8 @@ public abstract class LogicalNode<T1,T2>
 {
   public static Reflector<Boolean> BOOLEAN_REFLECTOR;
   
-  private final Node _op1;
-  private final Node _op2;
+  protected final Node _op1;
+  protected final Node _op2;
 
   public LogicalNode(Node op1,Node op2)
   { 
@@ -39,6 +39,7 @@ public abstract class LogicalNode<T1,T2>
     _op2=op2;
   }
 
+  
   @Override
   public Channel<Boolean> bind(Focus<?> focus)
     throws BindException

@@ -62,7 +62,40 @@ public class AbsoluteFocusNode
     }
 
   }
+  
+  public AbsoluteFocusNode(String suffix,String namespace,URI uri)
+  { 
+    this.suffix=suffix;
+    this.namespace=namespace;
+    this.uri=uri;
+  }
 
+  @Override
+  public Node copy(Object visitor)
+  { 
+    URI uri=null;
+    if (visitor instanceof NamespaceResolver && suffix!=null)
+    {
+      NamespaceResolver nsr=(NamespaceResolver) visitor;
+      if (namespace!=null)
+      { uri=nsr.resolveNamespace(namespace);
+      }
+      else
+      { uri=nsr.getDefaultNamespaceURI();
+      }
+      if (uri!=null)
+      { uri=uri.resolve(suffix);
+      }
+    }
+    
+    if (uri!=null)
+    { return new AbsoluteFocusNode(null,null,uri);
+    }
+    else
+    { return new AbsoluteFocusNode(suffix,namespace,this.uri);
+    }
+  } 
+  
   @Override
   public String reconstruct()
   { 
@@ -155,6 +188,8 @@ public class AbsoluteFocusNode
   private String focusChain(Focus<?> focus)
   { return focus.getFocusChain().toString();
   }
+
+
   
   
 }

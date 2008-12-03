@@ -24,6 +24,10 @@ public class LogicalNegateNode
   { super(node,null);
   }
 
+  public Node copy(Object visitor)
+  { return new LogicalNegateNode(_op1.copy(visitor));
+  }
+  
   @Override
   public String reconstruct()
   { return " ! "+getLeftOperand().reconstruct();

@@ -31,6 +31,10 @@ public class ContextNode
   public ContextNode(FocusNode source)
   { _source=source;
   }
+  
+  public Node copy(Object visitor)
+  { return new ContextNode((FocusNode) _source.copy(visitor));
+  }
 
   @Override
   public String reconstruct()

@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import spiralcraft.lang.Expression;
@@ -29,6 +30,7 @@ public class MethodCallNode
   private final String _identifierName;
   private final Expression<?>[] _parameters;
   private final Node[] _parameterNodes;
+  
 
   
   @SuppressWarnings("unchecked") // Raw type for parameter node array
@@ -56,6 +58,15 @@ public class MethodCallNode
 //    debugTree(System.err);
   }
 
+  public Node copy(Object visitor)
+  {
+    List<Node> params=new ArrayList<Node>();
+    for (Node node:_parameterNodes)
+    { params.add(node.copy(visitor));
+    }
+    return new MethodCallNode(_source.copy(visitor),_identifierName,params);
+  }
+  
   @Override
   public String reconstruct()
   { 

@@ -178,6 +178,9 @@ class SortBinding<Tq extends Sort,T extends Tuple>
       super.resolve();
       try
       {
+        if (getQuery().getOrder()==null)
+        { throw new DataException("No ordering supplied");
+        }
         comparator
           =new OrderComparator
             (getQuery().getOrder()

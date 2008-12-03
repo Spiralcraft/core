@@ -34,6 +34,16 @@ public class ListNode<T>
   { this.sources=sources;
   }
 
+  public Node copy(Object visitor)
+  {
+    ArrayList<Node> copy=new ArrayList<Node>(sources.size());
+    for (Node node:sources)
+    {
+      copy.add(node.copy(visitor));
+    }
+    return new ListNode<T>(copy);
+  }
+  
   @Override
   public String reconstruct()
   { 

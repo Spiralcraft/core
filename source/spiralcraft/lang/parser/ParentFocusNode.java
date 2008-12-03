@@ -35,6 +35,10 @@ public class ParentFocusNode
     _child=child;
   }
 
+  public Node copy(Object visitor)
+  { return new ParentFocusNode((FocusNode) _child.copy(visitor));
+  }
+  
   @Override
   public String reconstruct()
   { return "..";

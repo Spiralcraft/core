@@ -37,7 +37,15 @@ public class LiteralNode<X>
     { throw new IllegalArgumentException(x.toString());
     }
   }
+  
+  LiteralNode(SimpleChannel<X> _optic)
+  { this._optic=_optic; 
+  }
 
+  public Node copy(Object visitor)
+  { return new LiteralNode<X>(_optic);
+  }
+  
   @Override
   public String reconstruct()
   { 

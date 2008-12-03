@@ -216,20 +216,20 @@ public class DataHandler
           if (formalType.isAggregate())
           {
             if (formalType.isPrimitive())
-            { addAggregateFromChars(formalType.fromString(text));
+            { addAggregateFromChars(fromString(formalType,text));
             }
             else
             { addAggregateFromChars
-                (formalType.toData(formalType.fromString(text)));
+                (formalType.toData(fromString(formalType,text)));
             }
           }
           else
           {
             if (formalType.isPrimitive())
-            { addObject(formalType.fromString(text));
+            { addObject(fromString(formalType,text));
             }
             else
-            { addObject(formalType.toData(formalType.fromString(text)));
+            { addObject(formalType.toData(fromString(formalType,text)));
             }
           }
         }
@@ -295,6 +295,8 @@ public class DataHandler
     { return object;
     }
     
+
+    
     @Override
     protected void closeFrame()
       throws DataException
@@ -305,7 +307,8 @@ public class DataHandler
         if (type.isStringEncodable())
         { 
           // XXX Never return a native object for a non-primitive Type.
-          Object nativeObject=type.fromString(text);
+          Object nativeObject=fromString(type,text);
+                    
           if (!type.isPrimitive())
           { object=type.toData(nativeObject);
           }

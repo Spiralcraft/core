@@ -46,6 +46,12 @@ public class SubscriptNode<T,C,I>
     _selector=selector;
   }
 
+  public Node copy(Object visitor)
+  { 
+    return new SubscriptNode<T,C,I>
+      (_source.copy(visitor),_selector.copy(visitor));
+  }
+  
   @Override
   public String reconstruct()
   { return _source.reconstruct()+"["+_selector.reconstruct()+"]";

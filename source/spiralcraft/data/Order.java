@@ -36,6 +36,11 @@ public class Order
   private OrderElement<?>[] elements;
   private final ClassLog log=ClassLog.getInstance(Order.class);
   private boolean debug;
+
+  public Order()
+  { 
+  }
+  
   
   public void setElements(OrderElement<?>[] elements)
   { this.elements=elements;

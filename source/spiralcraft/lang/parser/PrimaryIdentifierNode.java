@@ -46,6 +46,12 @@ public class PrimaryIdentifierNode
     _identifier=identifier;
   }
 
+  public Node copy(Object visitor)
+  { 
+    return new PrimaryIdentifierNode
+      (_source!=null?(FocusNode) _source.copy(visitor):null,_identifier);
+  }
+  
   @Override
   public String reconstruct()
   { return (_source!=null?_source.reconstruct():"")+_identifier;
