@@ -42,6 +42,10 @@ import spiralcraft.text.ParseException;
  *   In some cases, data may be lost in the translation process. (eg.
  *   whitespace and extraneous characters may be removed in one direction).
  * </p>
+ * 
+ * <p>When represented as a Channel, it should be bound to the DataModel where
+ *   get() calls translateOut() and set() calls translateIn().
+ * </p>
  *   
  *   
  * 
