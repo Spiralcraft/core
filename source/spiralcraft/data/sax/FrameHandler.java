@@ -31,7 +31,10 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Setter;
+import spiralcraft.lang.parser.AssignmentNode;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 
 /**
@@ -100,13 +103,18 @@ public abstract class FrameHandler
   protected Setter<?>[] defaultSetters;
   
   private Expression<String> textBinding;
-  protected Channel<String> textChannel;
+  private Channel<String> textChannel;
+  private boolean textAssignment;
+  private ThreadLocalChannel<String> text;
 
   
   public void setDefaultAssignments(Assignment<?>[] defaultAssignments)
   { this.defaultAssignments=defaultAssignments;
   }
   
+  protected boolean isHandlingText()
+  { return textChannel!=null;
+  }
   
   void setParent(FrameHandler parent)
   { this.parent=parent;
@@ -202,7 +210,18 @@ public abstract class FrameHandler
       
     }
     if (textBinding!=null)
-    { textChannel=getFocus().bind(textBinding);
+    { 
+      if (textBinding.getRootNode() instanceof AssignmentNode)
+      { 
+        textAssignment=true;
+        
+        text=new ThreadLocalChannel<String>
+          (BeanReflector.<String>getInstance(String.class));
+        textChannel=getFocus().telescope(text).bind(textBinding);
+      }
+      else
+      { textChannel=getFocus().bind(textBinding);
+      }
     }
   }
 
@@ -351,12 +370,26 @@ public abstract class FrameHandler
     String chars=frame.getCharacters();
     if (chars!=null && textChannel!=null)
     { 
-      String orig=textChannel.get();
-      if (orig==null)
-      { textChannel.set(chars);
+      
+      if (textAssignment)
+      { 
+        text.push(chars);
+        try
+        { textChannel.get();
+        }
+        finally
+        { text.pop();
+        }
       }
       else
-      { textChannel.set(orig+chars);
+      {
+        String orig=textChannel.get();
+        if (orig==null)
+        { textChannel.set(chars);
+        }
+        else
+        { textChannel.set(orig+chars);
+        }
       }
     }
       
