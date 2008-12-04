@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 
 /**
@@ -46,6 +47,9 @@ public class ExpressionParser
     consumeToken();
     Node ret=parseExpression();
     if (ret==null)
+    { throwUnexpected();
+    }
+    if (_tokenizer.ttype!=StreamTokenizer.TT_EOF)
     { throwUnexpected();
     }
     return new Expression<X>(ret,text);    
@@ -100,7 +104,12 @@ public class ExpressionParser
 
   private void throwUnexpected()
     throws ParseException
-  { throw new ParseException("Not expecting "+_tokenizer.toString(),_pos,_progressBuffer.toString());
+  { 
+    throw new ParseException
+      ("Not expecting '"+tokenString()+"' @line "+_tokenizer.lineno()
+      ,_pos
+      ,_progressBuffer.toString()
+      );
   }
 
   private void alert(String message)
@@ -114,9 +123,25 @@ public class ExpressionParser
     throws ParseException
   {
     if (_tokenizer.ttype!=chr)
-    { throw new ParseException("Expected '"+chr+"', not "+_tokenizer.toString(),_pos,_progressBuffer.toString());
+    { 
+      throw new ParseException
+        ("Expected '"+chr+"', not '"+tokenString()+"'"
+        ,_pos
+        ,_progressBuffer.toString()
+        );
+    		
     }
     consumeToken();
+  }
+  
+  private String tokenString()
+  {
+    if (_tokenizer.ttype==StreamTokenizer.TT_WORD)
+    { return _tokenizer.sval;
+    }
+    else
+    { return Character.toString((char) _tokenizer.ttype);
+    }
   }
   
   /**
