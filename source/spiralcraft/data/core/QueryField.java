@@ -123,23 +123,8 @@ public class QueryField
     else
     { 
       throw new BindException
-        ("No Queryable reachable from Focus "+focusChain(focus));
+        ("No Queryable reachable from Focus "+focus.getFocusChain());
     }
-  }
-  
-  private String focusChain(Focus<?> focus)
-  { 
-    StringBuilder buf=new StringBuilder();
-    buf.append("[");
-    while (focus!=null)
-    { 
-      buf.append("\r\n");
-      buf.append(focus.toString());
-      focus=focus.getParentFocus();
-    }
-    buf.append("\r\n");
-    buf.append("]");
-    return buf.toString();
   }
   
   @SuppressWarnings("unchecked")

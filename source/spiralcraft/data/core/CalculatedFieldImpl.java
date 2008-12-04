@@ -86,6 +86,15 @@ public class CalculatedFieldImpl<T>
     }
     catch (BindException x)
     { 
+      if (debug && log.canLog(Level.DEBUG))
+      {
+        log.log
+          (Level.DEBUG
+          ,"CalculatedField "
+            +getURI()
+            +" deferring binding due to contextual dependencies"
+          );
+      }      
     }
     
   }
@@ -95,12 +104,15 @@ public class CalculatedFieldImpl<T>
   { 
     if (expressionBinding==null)
     { 
-      log.log
-        (Level.INFO
-        ,"CalculatedField "
-          +getURI()
-          +" has unresolved dependencies and must be bound"
-        );
+      if (debug && log.canLog(Level.FINE))
+      {
+        log.log
+          (Level.FINE
+          ,"CalculatedField "
+            +getURI()
+            +" has unresolved dependencies and must be bound"
+          );
+      }
       return null;
     }
     
@@ -121,12 +133,15 @@ public class CalculatedFieldImpl<T>
   { 
     if (expressionBinding==null)
     { 
-      log.log
-        (Level.INFO
-        ,"CalculatedField "
-          +getURI()
-          +" has unresolved dependencies and must be bound"
-        );
+      if (debug && log.canLog(Level.FINE))
+      {
+        log.log
+          (Level.FINE
+          ,"CalculatedField "
+            +getURI()
+            +" has unresolved dependencies and must be bound"
+          );
+      }
       return;
     }
     
