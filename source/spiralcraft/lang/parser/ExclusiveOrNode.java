@@ -29,6 +29,7 @@ public class ExclusiveOrNode
     
   }
   
+  @Override
   public Node copy(Object visitor)
   { return new ExclusiveOrNode(_op1.copy(visitor),_op2.copy(visitor));
   }

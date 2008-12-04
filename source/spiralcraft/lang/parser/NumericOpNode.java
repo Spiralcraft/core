@@ -53,6 +53,7 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
 //    System.out.println("NumericOpNoe init: "+op+" : "+op1+" : "+op2);
   }
 
+  @Override
   public Node copy(Object visitor)
   { return new NumericOpNode<T1,T2>(_op1.copy(visitor),_op2.copy(visitor),_op);
   }

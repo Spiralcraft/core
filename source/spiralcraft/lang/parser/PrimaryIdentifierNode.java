@@ -46,6 +46,7 @@ public class PrimaryIdentifierNode
     _identifier=identifier;
   }
 
+  @Override
   public Node copy(Object visitor)
   { 
     return new PrimaryIdentifierNode

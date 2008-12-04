@@ -37,6 +37,7 @@ public class OpNode<T1,T2 extends T1>
     _params=new Expression[] {new Expression<T2>(_op2,null)};
   }
 
+  @Override
   public Node copy(Object visitor)
   { return new OpNode<T1,T2>(_op1.copy(visitor),_op2.copy(visitor),_op.charAt(0));
   }

@@ -34,6 +34,7 @@ public class ListNode<T>
   { this.sources=sources;
   }
 
+  @Override
   public Node copy(Object visitor)
   {
     ArrayList<Node> copy=new ArrayList<Node>(sources.size());

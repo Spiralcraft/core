@@ -42,6 +42,7 @@ public class LiteralNode<X>
   { this._optic=_optic; 
   }
 
+  @Override
   public Node copy(Object visitor)
   { return new LiteralNode<X>(_optic);
   }

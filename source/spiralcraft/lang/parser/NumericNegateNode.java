@@ -43,6 +43,7 @@ public class NumericNegateNode<T extends Number>
   {  _node=node;
   }
 
+  @Override
   public Node copy(Object visitor)
   { return new NumericNegateNode<T>(_node.copy(visitor));
   }

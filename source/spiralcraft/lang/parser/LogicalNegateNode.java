@@ -24,6 +24,7 @@ public class LogicalNegateNode
   { super(node,null);
   }
 
+  @Override
   public Node copy(Object visitor)
   { return new LogicalNegateNode(_op1.copy(visitor));
   }

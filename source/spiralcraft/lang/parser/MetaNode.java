@@ -38,6 +38,7 @@ public class MetaNode<T extends Channel<?>>
   { _source=source;
   }
   
+  @Override
   public Node copy(Object visitor)
   { return new MetaNode<T>(_source.copy(visitor));
   }

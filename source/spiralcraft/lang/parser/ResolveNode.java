@@ -36,6 +36,7 @@ public class ResolveNode<T>
     this.identifier=identifier;
   }
   
+  @Override
   public Node copy(Object visitor)
   { return new ResolveNode<T>(_source.copy(visitor),identifier);
   }

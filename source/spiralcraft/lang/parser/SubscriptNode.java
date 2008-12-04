@@ -46,6 +46,7 @@ public class SubscriptNode<T,C,I>
     _selector=selector;
   }
 
+  @Override
   public Node copy(Object visitor)
   { 
     return new SubscriptNode<T,C,I>

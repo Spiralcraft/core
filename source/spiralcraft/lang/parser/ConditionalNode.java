@@ -41,6 +41,7 @@ public class ConditionalNode
     _falseResult=falseResult;
   }
 
+  @Override
   public Node copy(Object visitor)
   { 
     return new ConditionalNode

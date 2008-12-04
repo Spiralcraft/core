@@ -30,6 +30,7 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
     _equals=equals;
   }
 
+  @Override
   public Node copy(Object visitor)
   { 
     return new RelationalNode<T1,T2>

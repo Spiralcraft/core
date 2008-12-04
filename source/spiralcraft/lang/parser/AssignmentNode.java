@@ -52,6 +52,7 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
     this.target=target;
   }
 
+  @Override
   public Node copy(Object visitor)
   { 
     return new AssignmentNode<Ttarget,Tsource>
