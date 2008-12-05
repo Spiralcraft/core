@@ -150,6 +150,11 @@ class BeanPropertyTranslator<Tprop,Tbean>
       x.getTargetException().printStackTrace();
       return null;
     }
+    catch (IllegalArgumentException x)
+    { 
+      throw new IllegalArgumentException
+        ("Invoking method "+_readMethod+" on "+value,x);
+    }
   }
 
   public Tbean translateForSet(Tprop val,Channel<?>[] modifiers)

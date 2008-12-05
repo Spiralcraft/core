@@ -19,6 +19,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.Translator;
+import spiralcraft.util.ArrayUtil;
 
 // import spiralcraft.util.ArrayUtil;
 
@@ -61,7 +62,9 @@ class MethodTranslator<Tprop,Tbean>
 
     }
     
-    if (params.length!=_method.getParameterTypes().length)
+    Class[] parameterTypes=_method.getParameterTypes();
+    
+    if (params.length!=parameterTypes.length)
     { 
       throw new IllegalArgumentException
         ("Wrong number of parameters ("+params.length+") for "
@@ -73,15 +76,25 @@ class MethodTranslator<Tprop,Tbean>
     { return null;
     }
     
+    Object[] paramValues=new Object[params.length];
     try
     { 
-      Object[] paramValues=new Object[params.length];
       int i=0;
       for (Channel channel:params)
       { 
 //        System.out.println("MethodTranslator "+toString()+" translateForGet: parameter["+i+"] "+optic);
 
-        paramValues[i++]=channel.get();
+        Object paramValue=channel.get();
+        if (paramValue==null && parameterTypes[i].isPrimitive())
+        { 
+          throw new RuntimeException
+            ("Can't assign null to primitive parameter at index "+i
+            +": invoking method "+_method
+            +" on "+value
+            );
+        }
+        paramValues[i++]=paramValue;
+        
       }
 
 //      System.out.println
@@ -100,7 +113,22 @@ class MethodTranslator<Tprop,Tbean>
     }
     catch (InvocationTargetException x)
     { 
-      throw new RuntimeException("Error invoking method:",x.getTargetException());
+      throw new RuntimeException
+        ("Error invoking method "+_method.toString()
+        +" on "+value.toString()+" with "
+        +"["+ArrayUtil.format(paramValues,",","\"")+"]"
+        ,x.getTargetException()
+        );
+    }
+    catch (IllegalArgumentException x)
+    {
+      throw new RuntimeException
+        ("Error invoking method "+_method
+        +" on "+value+" with "
+        +"["+ArrayUtil.format(paramValues,",","\"")+"]"
+        ,x
+        );
+      
     }
   }
 
