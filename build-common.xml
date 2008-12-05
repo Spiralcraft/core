@@ -62,24 +62,9 @@
     </and>
       
   </condition>
-
-  <target name="copyCommon">
-    <copy
-      file="${spiralcraft-build}/ivy.settings.xml"
-      todir="."
-      preservelastmodified="true"
-      verbose="true"
-    />
-    <copy
-      file="${spiralcraft-build}/ivy.lunt.settings.xml"
-      todir="."
-      preservelastmodified="true"
-      verbose="true"
-    />
-  </target>
   
   <target name="freshBuild"
-    depends="copyCommon,resolve,build"
+    depends="resolve,build"
     >
     
   </target>
@@ -88,7 +73,7 @@
     if="isIvy"
     >
     
-    <ivy:configure file="${ivySettings}"/> 
+    <ivy:configure file="${spiralcraft-build}${ivySettings}"/> 
     
     <ivy:retrieve pattern="${ivy.lib.dir}/[artifact].[ext]"/>
   </target>
