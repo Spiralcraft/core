@@ -177,6 +177,7 @@ public class ProjectionImpl<T>
 
   
   protected <X> void addMasterField(String name,Field<X> masterField)
+    throws DataException
   { 
     assertUnresolved();
     

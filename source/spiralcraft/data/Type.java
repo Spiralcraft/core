@@ -118,7 +118,18 @@ public abstract class Type<T>
    * @return Whether this is a primitive type.
    */
   public abstract boolean isPrimitive();
-
+  //
+  // Usage survey: 2008-12-04
+  //
+  //   AbstractCollectionType.toData()
+  //   ArrayType.fromData()
+  //   ArrayType.toData()
+  //   TypeImpl.isAssignableFrom() (delegates to native type)
+  //   DataReflector.getInstance()
+  //   ReflectionField.depersistBeanProperty()
+  //   ReflectionField.persistBeanProperty()
+  //   DataHandler.AggregateFrame,ContainerFrame,DetailFrame - Tuple<->Native
+  //   BufferType.link() which fields to auto-buffer (only relationships)
   
   /**
    * @return The Scheme which describes the structure of this type, or null if

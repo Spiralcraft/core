@@ -56,7 +56,6 @@ public class FieldImpl<T>
   private Field archetypeField;
   private URI uri;
   private boolean isScheme;
-  private Reflector contentReflector;
   private Expression<T> defaultExpression;
   private Expression<T> fixedExpression;
   private Expression<T> newExpression;
@@ -68,6 +67,9 @@ public class FieldImpl<T>
   private boolean tranzient;
   
   protected boolean debug;
+
+  protected Reflector contentReflector;
+
 //  protected boolean debugData;
   
   
@@ -104,6 +106,10 @@ public class FieldImpl<T>
 //      this.uri=URI.create("untyped#"+getName());
     }
     
+  }
+  
+  public Reflector<T> getContentReflector()
+  { return contentReflector;
   }
   
   public Field getArchetypeField()
@@ -315,6 +321,7 @@ public class FieldImpl<T>
    * Set the data Type
    */
   public void setType(Type<T> type)
+    throws DataException
   { 
     assertUnlocked();
     this.type=type;
@@ -568,7 +575,7 @@ public class FieldImpl<T>
       this.source=focus.getSubject();
       
       if (ruleSet!=null)
-      { inspector=ruleSet.bind(DataReflector.<T>getInstance(type),focus);
+      { inspector=ruleSet.bind(contentReflector,focus);
       }
       else
       { inspector=null;
@@ -577,7 +584,7 @@ public class FieldImpl<T>
       if (type.getRuleSet()!=null)
       { 
         typeInspector=getType().getRuleSet().bind
-          (DataReflector.<T>getInstance(type),focus);
+          (contentReflector,focus);
       }
       else
       { typeInspector=null;

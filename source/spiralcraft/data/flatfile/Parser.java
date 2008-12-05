@@ -312,6 +312,7 @@ public class Parser
 	}
 
 	private <X> FieldImpl<X> newField(Type<X> type)
+	  throws DataException
 	{ 
 	  FieldImpl<X> field= new FieldImpl<X>();
 	  field.setType(type);

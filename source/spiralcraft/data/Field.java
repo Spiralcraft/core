@@ -21,6 +21,7 @@ import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Reflector;
 import spiralcraft.rules.RuleSet;
 
 
@@ -117,6 +118,14 @@ public interface Field<T>
    *   within the set of Tuples managed by a given Store.
    */
   boolean isUniqueValue();
+  
+  /**
+   * 
+   * @return The spiralcraft.lang.Reflector that provides type metadata for 
+   *   the field value.
+   *     
+   */
+  Reflector<T> getContentReflector();
   
   /**
    * 
