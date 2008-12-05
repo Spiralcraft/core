@@ -74,27 +74,41 @@ public abstract class StringConverter<T>
   }
 
   /**
-   * Get an appropriate instance of the StringConverter for the specified type
+   * <p>Get an appropriate instance of the StringConverter for the specified 
+   *   type.
+   * </p>
    */
-  public static StringConverter<?> getInstance(Class<?> type)
+  @SuppressWarnings("unchecked") // Type logic
+  public static <T> StringConverter<T> getInstance(Class type)
   { 
+    
     synchronized (_MAP)
     { 
-      StringConverter<?> ret=_MAP.get(type);
+      StringConverter<T> ret=(StringConverter<T>) _MAP.get(type);
       if (ret==null)
       { 
         // Discover single argument constructor and create a new
         //   stringConverter for the class
-
-        Constructor<?> constructor=null;
-        try
-        { constructor=type.getConstructor(new Class[] {String.class});
+        if (type.isArray())
+        { 
+          StringConverter componentInstance
+            =getInstance(type.getComponentType());
+          if (componentInstance!=null)
+          { ret=new ArrayToString(componentInstance,type.getComponentType());
+          }
         }
-        catch (Exception x)
-        { }
+        else
+        {
+          Constructor<T> constructor=null;
+          try
+          { constructor=type.getConstructor(new Class[] {String.class});
+          }
+          catch (Exception x)
+          { }
 
-        if (constructor!=null)
-        { ret=new ConstructFromString(constructor);
+          if (constructor!=null)
+          { ret=new ConstructFromString<T>(constructor);
+          }
         }
         
         if (ret!=null)
@@ -154,17 +168,17 @@ public abstract class StringConverter<T>
   
 }
 
-final class ConstructFromString
-  extends StringConverter<Object>
+final class ConstructFromString<T>
+  extends StringConverter<T>
 {
-  private Constructor<?> _constructor;
+  private Constructor<T> _constructor;
 
-  public ConstructFromString(Constructor<?> constructor)
+  public ConstructFromString(Constructor<T> constructor)
   { _constructor=constructor;
   }
   
   @Override
-  public Object fromString(String val)
+  public T fromString(String val)
   { 
     try
     { return _constructor.newInstance(new Object[] {val});

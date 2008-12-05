@@ -2,7 +2,14 @@ package spiralcraft.util.string;
 
 import java.lang.reflect.Array;
 
-
+/**
+ * <p>Translates an array of objects to a comma-delimited list and back. 
+ * </p>
+ * 
+ * @author mike
+ *
+ * @param <Tdata>
+ */
 public final class ArrayToString<Tdata>
   extends StringConverter<Tdata[]>
 {
@@ -14,6 +21,15 @@ public final class ArrayToString<Tdata>
   { 
     this.converter
       =(StringConverter<Tdata>) StringConverter.getInstance(componentClass);
+    this.componentClass=componentClass;
+  }
+  
+  public ArrayToString
+    (StringConverter<Tdata> converter
+    ,Class<Tdata> componentClass
+    )
+  {
+    this.converter=converter;
     this.componentClass=componentClass;
   }
   
@@ -37,8 +53,16 @@ public final class ArrayToString<Tdata>
 
   @Override
   @SuppressWarnings("unchecked")
+  /**
+   * <p>Turns a comma delimited list into an array of the target type.
+   * </p>
+   * 
+   * <p>XXX: Add escaping code commas in strings ie. \, and \\
+   * </p>
+   */
   public Tdata[] fromString(String val)
   { 
+    
     String[] strings=StringUtil.tokenize(val,",");
     Tdata[] data=(Tdata[]) Array.newInstance(componentClass,strings.length);
     for (int i=0;i<strings.length;i++)
