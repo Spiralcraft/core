@@ -17,7 +17,6 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.Key;
 import spiralcraft.data.Scheme;
-import spiralcraft.data.FieldSet;
 import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;

@@ -369,7 +369,8 @@ public class TypeImpl<T>
   }
 
   /**
-   * Returns fields of this Type and base Types
+   * Returns a unified FieldSet that contains fields of this Type and of all 
+   *   base Types
    */
   @Override
   public FieldSet getFieldSet()
