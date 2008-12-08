@@ -75,10 +75,10 @@ public class KeyImpl<T>
   public KeyImpl()
   { }
   
-  public KeyImpl(FieldSet fieldSet,String fieldList)
-  {
-  
-  }
+//  public KeyImpl(FieldSet fieldSet,String fieldList)
+//  {
+//  
+//  }
   
   /**
    * @return The Scheme to which this Key belongs.
@@ -91,7 +91,14 @@ public class KeyImpl<T>
   { 
     assertUnresolved();
     this.scheme=scheme;
-    this.masterFieldSet=scheme;
+    if (scheme.getType()!=null)
+    { 
+      // Make sure we include base types.
+      this.masterFieldSet=scheme.getType().getFieldSet();
+    }
+    else
+    { this.masterFieldSet=scheme;
+    }
   }
   
   
