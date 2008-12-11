@@ -35,13 +35,14 @@ public class StringUtil
   /**
    * Tokenize a String into a List
    */
-  public static int tokenize(String input,String tokens,List<String> output)
+  public static int tokenize
+    (String input,String tokens,List<String> output,boolean includeTokens)
   {
     if (input==null)
     { return 0;
     }
 
-    StringTokenizer tok=new StringTokenizer(input,tokens);
+    StringTokenizer tok=new StringTokenizer(input,tokens,includeTokens);
     int count=0;
     while (tok.hasMoreTokens())
     { 
@@ -61,7 +62,27 @@ public class StringUtil
     }
 
     List<String> tokenList=new LinkedList<String>();
-    tokenize(input,tokens,tokenList);
+    tokenize(input,tokens,tokenList,false);
+    String[] ret=new String[tokenList.size()];
+    tokenList.toArray(ret);
+    return ret;
+  }
+
+  /**
+   * Tokenize a String to a String[]
+   */
+  public static String[] tokenize
+    (String input
+    ,String tokens
+    ,boolean includeTokens
+    )
+  {
+    if (input==null)
+    { return new String[0];
+    }
+
+    List<String> tokenList=new LinkedList<String>();
+    tokenize(input,tokens,tokenList,includeTokens);
     String[] ret=new String[tokenList.size()];
     tokenList.toArray(ret);
     return ret;
