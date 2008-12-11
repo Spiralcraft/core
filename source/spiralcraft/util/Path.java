@@ -25,8 +25,10 @@ public class Path
   implements Iterable<String>
 {
   private boolean _absolute=false;
+  private boolean _container=false;
   private final String[] _elements;
   private final int _hashCode;
+  private char _delimiter;
   
   /**
    * Construct an empty Path
@@ -46,10 +48,30 @@ public class Path
     if (source.startsWith(Character.toString(delimiter)))
     { _absolute=true;
     }
+    if (source.endsWith(Character.toString(delimiter)))
+    { _container=true;
+    }
+    _delimiter=delimiter;
     _elements=StringUtil.tokenize(source,Character.toString(delimiter));
-    _hashCode=ArrayUtil.arrayHashCode(_elements)*(_absolute?13:1);
+    _hashCode=computeHash();
   }
   
+  private int computeHash()
+  { return ArrayUtil.arrayHashCode(_elements)*(_absolute?13:1)*(_container?13:1);
+  }
+  
+  /**
+   * Construct a path made up of the set of tokens in the specified String[].
+   */
+  public Path(String[] elements,char delimiter,boolean absolute,boolean container)
+  { 
+    _absolute=absolute;
+    _elements=elements;
+    _delimiter=delimiter;
+    _container=container;
+    _hashCode=computeHash();
+  }
+
   /**
    * Construct a path made up of the set of tokens in the specified String[].
    */
@@ -57,21 +79,61 @@ public class Path
   { 
     _absolute=absolute;
     _elements=elements;
-    _hashCode=ArrayUtil.arrayHashCode(_elements)*(_absolute?13:1);
+    _delimiter='/';
+    _container=false;
+    _hashCode=computeHash();
   }
 
   /**
    * Append the specified array of elements to the path 
    */
   public Path append(String[] elements)
-  { return new Path( (String[]) ArrayUtil.appendArrays(_elements,elements),_absolute);
+  { 
+    return new Path
+      ( (String[]) ArrayUtil.appendArrays(_elements,elements)
+      ,_delimiter
+      ,_absolute
+      ,false
+      );
+  }
+  
+  /**
+   * Append the specified array of elements to the path 
+   */
+  public Path append(String[] elements,boolean container)
+  { 
+    return new Path
+      ( (String[]) ArrayUtil.appendArrays(_elements,elements)
+      ,_delimiter
+      ,_absolute
+      ,container
+      );
   }
 
   /**
    * Append a single element to the path
    */
   public Path append(String element)
-  { return new Path( (String[]) ArrayUtil.append(_elements,element),_absolute);
+  { 
+    return new Path
+      ( (String[]) ArrayUtil.append(_elements,element)
+      ,_delimiter
+      ,_absolute
+      ,false
+      );
+  }
+  
+  /**
+   * Append a single element to the path
+   */
+  public Path append(String element,boolean container)
+  { 
+    return new Path
+      ( (String[]) ArrayUtil.append(_elements,element)
+      ,_delimiter
+      ,_absolute
+      ,container
+      );
   }
 
   /**
@@ -98,7 +160,7 @@ public class Path
     { 
       String[] newElements=new String[_elements.length-1];
       System.arraycopy(_elements,0,newElements,0,newElements.length);
-      return new Path(newElements,_absolute);
+      return new Path(newElements,_delimiter,_absolute,true);
     }
     else
     { return new Path();
@@ -114,7 +176,7 @@ public class Path
     { 
       String[] newElements=new String[_elements.length-startElement];
       System.arraycopy(_elements,startElement,newElements,0,newElements.length);
-      return new Path(newElements,false);
+      return new Path(newElements,_delimiter,false,_container);
     }
     else
     { return new Path();
@@ -174,12 +236,22 @@ public class Path
   }
   
   /**
+   * @return Whether the ends with a trailing delimiter, signifying a
+   *   container
+   */
+  public boolean isContainer()
+  { return _container;
+  }
+  
+  /**
    * 
    * @return A String representation of the path with the elements separated by the
    *   specified separator string
    */
   public String format(String separator)
-  { return (_absolute?separator:"")+ArrayUtil.format(_elements,separator,null);
+  { return (_absolute?separator:"")
+           +ArrayUtil.format(_elements,separator,null)
+           +(_container?separator:"");
   }
   
   public Iterator<String> iterator()
@@ -188,6 +260,6 @@ public class Path
   
   @Override
   public String toString()
-  { return super.toString()+":"+ArrayUtil.format(_elements,",","\"");
+  { return super.toString()+":"+format("/");
   }
 }

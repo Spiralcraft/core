@@ -17,9 +17,9 @@ package spiralcraft.vfs.filters;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import spiralcraft.util.PathPattern;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.ResourceFilter;
-import spiralcraft.vfs.VfsUtil;
 
 /**
  * A ResourceFilter which accepts resources where the last path element
@@ -39,7 +39,7 @@ public class NameGlobFilter
 
   public NameGlobFilter(String expression)
     throws PatternSyntaxException
-  { _pattern=VfsUtil.globToPattern(expression);
+  { _pattern=PathPattern.globToPattern(expression);
   }
 
   public boolean accept(Resource resource)

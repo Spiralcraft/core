@@ -26,33 +26,6 @@ public class VfsUtil
     }
   }
   
-  /**
-   * Convert a glob expression to
-   *   a regexp pattern.
-   */
-  public static Pattern globToPattern(String orig)
-    throws PatternSyntaxException
-  {
-    StringBuffer out=new StringBuffer();
-    for (int i=0;i<orig.length();i++)
-    { 
-      char chr=orig.charAt(i);
-      switch (chr)
-      {
-      case '?':
-        out.append('.');
-        break;
-      case '*':
-        out.append(".*");
-        break;
-      case '.':
-        out.append("\\.");
-        break;
-      default:
-        out.append(chr);
-      }
-    }
-    return Pattern.compile(out.toString());
-  }  
+
 }
 

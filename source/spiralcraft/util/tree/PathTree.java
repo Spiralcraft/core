@@ -61,7 +61,7 @@ public class PathTree<T>
     }
     String[] pathArray=new String[stack.size()];
     stack.toArray(pathArray);
-    return new Path(pathArray,true);
+    return new Path(pathArray,'/',true,!isLeaf());
   }
   
   public PathTree<T> getChild(String name)
