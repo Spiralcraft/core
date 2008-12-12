@@ -33,7 +33,8 @@ public class StringUtil
 {
 
   /**
-   * Tokenize a String into a List
+   * <p>Tokenize a String into a List</p>
+   * 
    */
   public static int tokenize
     (String input,String tokens,List<String> output,boolean includeTokens)

@@ -4,3 +4,11 @@ source("source/spiralcraft/lang/test/smoke.bsh");
 source("source/spiralcraft/util/tree/smoke.bsh");
 source("source/spiralcraft/text/xml/smoke.bsh");
 
+
+import spiralcraft.util.PathPattern;
+import spiralcraft.util.Path;
+
+print(new PathPattern("CVS").matches(new Path("CVS",'/')));
+print(new PathPattern("**/CVS").matches(new Path("CVS",'/')));
+
+print(new PathPattern("**/CVS/").matches(new Path("/CVS",'/')));

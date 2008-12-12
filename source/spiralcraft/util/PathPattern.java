@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import spiralcraft.log.ClassLog;
+
 
 /**
  * <p>A Path matching pattern.
@@ -39,6 +41,10 @@ import java.util.regex.PatternSyntaxException;
  */
 public class PathPattern
 {
+  public static final ClassLog log
+    =ClassLog.getInstance(PathPattern.class);
+  public static boolean debug;
+  
   enum Type
   { TREE,GLOB,ROOT;
   }
@@ -59,6 +65,11 @@ public class PathPattern
       this.type=type;
       this.pattern=pattern;
     }
+    
+    @Override
+    public String toString()
+    { return super.toString()+":"+type+":"+pattern;
+    }
   }
   
   private Token[] tokens;
@@ -69,6 +80,10 @@ public class PathPattern
   
   public boolean matches(Path path)
   {
+    if (debug)
+    { log.fine("["+path.format(" : ")+"] : "+ArrayUtil.format(tokens,",","\""));
+    }
+    
     int tokenPos=0;
     
     if (tokens[0].type==Type.ROOT)
@@ -92,16 +107,29 @@ public class PathPattern
         tokenPos++;
         type=tokenPos<tokens.length?tokens[tokenPos].type:null;
       }
+      
+      if (debug)
+      { log.fine("["+element+"] : "+tokens[tokenPos]);
+      }
+      
       if (type==Type.GLOB)
       {
         if (!tokens[tokenPos].pattern.matcher(element).matches())
         {
+          if (debug)
+          { log.fine("No match");
+          }
+          
           if (!tree)
-          { return false;
+          { 
+            return false;
           }
         }
         else
         {
+          if (debug)
+          { log.fine("Match");
+          }
           if (tree)
           { tree=false;
           }
@@ -115,6 +143,19 @@ public class PathPattern
         }
         // End of pattern
       }
+    }
+    
+    if (debug)
+    { log.fine(tokenPos+" "+tokens.length);
+    }
+    
+    if (tokenPos==tokens.length-1 
+        && tokens[tokenPos].type==Type.TREE
+        )
+    { 
+      // A pattern that ends in **, and that has matched all the path elements
+      //   should return a match. 
+      return true;
     }
     return tokenPos==tokens.length;
 

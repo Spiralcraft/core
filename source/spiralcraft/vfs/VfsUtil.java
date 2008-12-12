@@ -3,13 +3,19 @@ package spiralcraft.vfs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 public class VfsUtil
 {
 
-  
+  /**
+   * <p>Return the contents of the URI as a String using an ASCII character
+   *    encoding.
+   * </p>
+   * 
+   * @param uri
+   * @return
+   * @throws IOException
+   */
   public static String fetchAsciiText(String uri)
     throws IOException
   {

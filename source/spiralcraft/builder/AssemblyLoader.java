@@ -127,7 +127,7 @@ public class AssemblyLoader
       Path path=new Path(classUri.getPath(),'/');
       
       URI packageUri
-        =classUri.resolve(URI.create(path.parentPath().format("/")+"/"));
+        =classUri.resolve(URI.create(path.parentPath().format("/")));
       String className
         =packageUri.relativize(classUri).toString();
       

@@ -14,6 +14,7 @@
 //
 package spiralcraft.util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import spiralcraft.util.string.StringUtil;
@@ -52,7 +53,13 @@ public class Path
     { _container=true;
     }
     _delimiter=delimiter;
-    _elements=StringUtil.tokenize(source,Character.toString(delimiter));
+    
+    ArrayList<String> elements=new ArrayList<String>();
+    StringUtil.tokenize(source,Character.toString(delimiter),elements,false);
+    if (elements.size()>0 && elements.get(0).equals(""))
+    { elements.remove(0);
+    }
+    _elements=elements.toArray(new String[elements.size()]);
     _hashCode=computeHash();
   }
   
@@ -260,6 +267,6 @@ public class Path
   
   @Override
   public String toString()
-  { return super.toString()+":"+format("/");
+  { return format(new String(new char[] {_delimiter}));
   }
 }
