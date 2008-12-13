@@ -1,3 +1,33 @@
+import spiralcraft.data.Type;
+import spiralcraft.data.Order;
+
+import spiralcraft.data.query.Scan;
+
+import spiralcraft.data.access.SerialCursor;
+
+import spiralcraft.data.xml.XmlQueryable;
+
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.SimpleFocus;
+
+var stdType(String localName)
+{ return Type.resolve("class:/spiralcraft/data/types/standard/"+localName);
+}
+
+dumpQuery(SerialCursor cursor)
+{
+  while (cursor.dataNext())
+  { print(cursor.dataGetTuple().toText("   "));
+  }
+}
+
+dumpQueryField(SerialCursor cursor,String fieldName)
+{
+  while (cursor.dataNext())
+  { print(cursor.dataGetTuple().get(fieldName));
+  }
+}
+
 show();
 "";
 "";
@@ -15,34 +45,43 @@ tr=typeResolver=spiralcraft.data.TypeResolver.getTypeResolver();
 "// Basic types";
 "//";
 "";
-t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Boolean"));
+t=stdType("Boolean");
 t.toString(true);
 t.fromString("true");
-t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/String"));
+"-------------";
+t=stdType("String");
 t.toString("test");
 t.fromString("test");
-t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Character"));
+"-------------";
+t=stdType("Character");
 t.toString('a');
 t.fromString("a");
-t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Byte"));
+"-------------";
+t=stdType("Byte");
 t.toString(Byte.parseByte("127"));
 t.fromString("127");
-t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Short"));
+"-------------";
+t=stdType("Short");
 t.toString(Short.parseShort("12345"));
 t.fromString("12345");
-t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Integer"));
+"-------------";
+t=stdType("Integer");
 t.toString(Integer.parseInt("12345"));
 t.fromString("12345");
-t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Long"));
+"-------------";
+t=stdType("Long");
 t.toString(Long.parseLong("12345"));
 t.fromString("12345");
-t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Float"));
+"-------------";
+t=stdType("Float");
 t.toString(Float.parseFloat("12345.6789"));
 t.fromString("12345.6789");
-t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/Double"));
+"-------------";
+t=stdType("Double");
 t.toString(Double.parseDouble("12345.6789"));
 t.fromString("12345.6789");
-t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/BigDecimal"));
+"-------------";
+t=stdType("BigDecimal");
 t.toString(new java.math.BigDecimal("12345.6789"));
 t.fromString("12345.6789");
 
@@ -53,7 +92,7 @@ t.fromString("12345.6789");
 "//   specific precision and scale";
 "//";
 "";
-t=typeResolver.resolve(URI.create("class:/spiralcraft/data/types/standard/BigDecimalType"));
+t=stdType("BigDecimalType.type");
 
 "";
 "/////////////////////////////////////////";
@@ -235,6 +274,80 @@ dataReader.readFromURI
 "";
 "/////////////////////////////////////////";
 "//";
+"// Test Queries";
+"//";
+"";
+Focus focus=new SimpleFocus(null);
+
+queryable=new XmlQueryable
+        (Type.getAggregateType(customerType)
+        ,URI.create("class:/spiralcraft/data/test/example/Customer.data.xml")
+        );
+
+"// Scan";
+boundQuery = 
+        queryable.query(new Scan(customerType),focus);
+dumpQuery(boundQuery.execute());
+
+"// Sort by String";
+boundQuery = 
+  queryable.query
+    (new Scan(customerType)
+      .sort(new Order(new String[]{"displayName"}))
+    ,focus
+    );
+dumpQueryField(boundQuery.execute(),"displayName");
+    
+"// Sort by String descending";
+boundQuery = 
+  queryable.query
+    (new Scan(customerType)
+      .sort(new Order(new String[]{"-displayName"}))
+    ,focus
+    );
+dumpQueryField(boundQuery.execute(),"displayName");
+
+"// Sort by Integer";
+boundQuery = 
+  queryable.query
+    (new Scan(customerType)
+      .sort(new Order(new String[]{"id"}))
+    ,focus
+    );
+dumpQueryField(boundQuery.execute(),"id");
+
+"// Sort by Integer descending";
+boundQuery = 
+  queryable.query
+    (new Scan(customerType)
+      .sort(new Order(new String[]{"-id"}))
+    ,focus
+    );
+dumpQueryField(boundQuery.execute(),"id");
+
+"";
+"// Sort by Float";
+boundQuery = 
+  queryable.query
+    (new Scan(customerType)
+      .sort(new Order(new String[]{"score"}))
+    ,focus
+    );
+dumpQueryField(boundQuery.execute(),"score");
+
+"";
+"// Sort by Float descending";
+boundQuery = 
+  queryable.query
+    (new Scan(customerType)
+      .sort(new Order(new String[]{"-score"}))
+    ,focus
+    );
+dumpQueryField(boundQuery.execute(),"score");
+
+"";
+"/////////////////////////////////////////";
+"//";
 "// Test DataSession buffering- simple mode";
 "//";
 "";
@@ -250,13 +363,13 @@ rootFocus.getSubject().set(focus.newDataSession());
 focus.initializeDataSession();
 
 
-queryable=new spiralcraft.data.xml.XmlQueryable
-	(spiralcraft.data.Type.getAggregateType(customerType)
+queryable=new XmlQueryable
+	(Type.getAggregateType(customerType)
 	,URI.create("class:/spiralcraft/data/test/example/Customer.data.xml")
 	);
 
 boundQuery = 
-	queryable.query(new spiralcraft.data.query.Scan(customerType),focus);
+	queryable.query(new Scan(customerType),focus);
 
 bAchannel=boundQuery.bind().buffer(focus);
 bAchannel.get();

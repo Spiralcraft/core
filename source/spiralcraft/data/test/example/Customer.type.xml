@@ -23,11 +23,11 @@
         
         <meta:Field>
         
-        	<name>active
-        	</name>
+          <name>active
+          </name>
         	
-        	<type><Boolean.type/>
-        	</type>
+          <type><Boolean.type/>
+          </type>
         	
         </meta:Field>
         
@@ -37,25 +37,35 @@
           </name>
 
           <type>
-          	<String.type>
+            <String.type>
           	
               <maxLength>32
               </maxLength>
               
-          	</String.type>
+            </String.type>
           </type>
 
+        </meta:Field>
+        
+        <meta:Field>
+          
+          <name>score
+          </name>
+        
+          <type>
+            <Float.type/>
+          </type>
         </meta:Field>
       </fields>
       
       <keys>
       	<meta:Key>
 
-      		<fieldList>id
-      		</fieldList>
+      	  <fieldList>id
+      	  </fieldList>
       		
-      		<primary>true
-      		</primary>
+      	  <primary>true
+      	  </primary>
       		
       	</meta:Key>
       </keys>

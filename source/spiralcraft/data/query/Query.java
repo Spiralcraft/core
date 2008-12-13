@@ -22,6 +22,7 @@ import spiralcraft.lang.Expression;
 
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Order;
 import spiralcraft.data.Space;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
@@ -189,9 +190,29 @@ public abstract class Query
     throws DataException;
   
   
+  /**
+   * <p>Select from the output of this query
+   * </p>
+   * 
+   * @param constraints
+   * @return
+   */
   public Selection select(Expression<Boolean> constraints)
   { return new Selection(this,constraints);
   }
+
+  
+  /**
+   * <p>Select from the output of this query
+   * </p>
+   * 
+   * @param constraints
+   * @return
+   */
+  public Sort sort(Order order)
+  { return new Sort(this,order);
+  }
+
   
   public void setDebug(boolean val)
   { this.debug=val;

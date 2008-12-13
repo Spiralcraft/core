@@ -25,6 +25,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.lang.ClassUtil;
 
 /**
@@ -35,11 +36,14 @@ import spiralcraft.util.lang.ClassUtil;
  */
 public class OrderElement<T>
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(OrderElement.class);
     
   private Expression<T> expression;
   private int weight=1;
   private Comparator<T> comparator;
   private boolean nullLast;
+  private boolean debug;
   
   /**
    * Construct an OrderElement from a String, which contains an optional
@@ -56,6 +60,10 @@ public class OrderElement<T>
   public OrderElement()
   { }
     
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
   /**
    * Specify the ordering description, which contains an optional
    *   indicator for direction as the first character, and an expression
@@ -175,6 +183,9 @@ public class OrderElement<T>
           ("Unable to determine suitable comparator for "+chA.getContentType());
         
       }
+      if (OrderElement.this.debug)
+      { log.fine("Comparator is "+comparator);
+      }
     }
 
     @Override
@@ -186,7 +197,7 @@ public class OrderElement<T>
       if (o1==null)
       { 
         if (o2!=null)
-        { return weight*(nullLast?1:0);
+        { return weight*(nullLast?1:-1);
         }
         else
         { return 0;
@@ -195,7 +206,7 @@ public class OrderElement<T>
       else
       {
         if (o2==null)
-        { return weight*(nullLast?-1:0);
+        { return weight*(nullLast?-1:1);
         }
         else
         {

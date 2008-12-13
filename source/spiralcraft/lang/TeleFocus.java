@@ -85,7 +85,11 @@ public class TeleFocus<T>
   @Override
   public String toString()
   {
-    return super.toString()+"\r\n context:"+getContext().toString();
+    return super.toString()
+      +(getContext()!=null
+        ?"\r\n context:"+getContext().toString()
+        :"null context"
+       );
   }
 
 

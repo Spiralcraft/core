@@ -19,6 +19,7 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.ParseException;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.log.ClassLog;
@@ -41,6 +42,28 @@ public class Order
   { 
   }
   
+  /**
+   * <p>Create new Ordering by parsing the specified set of Strings as 
+   *   OrderElement expressions. 
+   * </p>
+   * 
+   * <p>This constructor is primarily intended for use with the fluent query
+   *   construction interface
+   * </p>
+   * 
+   * @param elements
+   * @throws ParseException
+   */
+  @SuppressWarnings("unchecked")
+  public Order(String ... elements) 
+    throws ParseException
+  {
+    this.elements=new OrderElement[elements.length];
+    int i=0;
+    for (String str:elements)
+    { this.elements[i++]=new OrderElement(str);
+    }
+  }
   
   public void setElements(OrderElement<?>[] elements)
   { this.elements=elements;

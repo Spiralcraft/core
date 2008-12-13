@@ -1,87 +1,94 @@
 
 <example:Customer.list
-	xmlns:example="class:/spiralcraft/data/test/example"
-	>
-	
-	<example:Customer>
-		<id>1
-		</id>
-  	
-  	<displayName>Johnny First
-  	</displayName>
-  	
-  	<address>
-    	<example:Address>
-      	
-      	<address1>111 First St.
-      	</address1>
-      	
-      	<address2>Suite 1
-      	</address2>
-      	
-      	<city>New York
-      	</city>
-    	
-    	</example:Address>
-  	</address>
-	  
-	  <paymentTerms>net 10
-	  </paymentTerms>
-	
-	</example:Customer>
+  xmlns:example="class:/spiralcraft/data/test/example"
+  >
+  
+  <example:Customer>
+    <id>1
+    </id>
+    
+    <displayName>Johnny First
+    </displayName>
+    
+    <address>
+      <example:Address>
+        
+        <address1>111 First St.
+        </address1>
+        
+        <address2>Suite 1
+        </address2>
+        
+        <city>New York
+        </city>
+      
+      </example:Address>
+    </address>
+    
+    <paymentTerms>net 10
+    </paymentTerms>
+    
+    <score>20.216
+    </score>
+  
+  </example:Customer>
 
-	<example:Customer>
-		<id>2
-		</id>
-  	
-  	<displayName>Mary Second
-  	</displayName>
-  	
-  	<address>
-    	<example:Address>
+  <example:Customer>
+    <id>2
+    </id>
+    
+    <displayName>Mary Second
+    </displayName>
+    
+    <address>
+      <example:Address>
      
-      	<address1>222 Second St.
-      	</address1>
-      	
-      	<address2>Suite 2
-      	</address2>
-      	
-      	<city>New York
-      	</city>
-    	
-    	</example:Address>
-  	</address>
-	  
-	  <paymentTerms>net 20
-	  </paymentTerms>
-	
-	</example:Customer>
+        <address1>222 Second St.
+        </address1>
+        
+        <address2>Suite 2
+        </address2>
+        
+        <city>New York
+        </city>
+      
+      </example:Address>
+    </address>
+    
+    <paymentTerms>net 20
+    </paymentTerms>
+    
+    
+  
+  </example:Customer>
 
-	<example:Customer>
-		<id>3
-		</id>
-  	
-  	<displayName>Tommy Third
-  	</displayName>
-  	
-  	<address>
-    	<example:Address>
+  <example:Customer>
+    <id>3
+    </id>
+    
+    <displayName>Tommy Third
+    </displayName>
+    
+    <address>
+      <example:Address>
      
-      	<address1>333 Third St.
-      	</address1>
-      	
-      	<address2>Suite 3
-      	</address2>
-      	
-      	<city>New York City
-      	</city>
-    	
-    	</example:Address>
-  	</address>
-	  
-	  <paymentTerms>net 30
-	  </paymentTerms>
-	
-	</example:Customer>
+        <address1>333 Third St.
+        </address1>
+        
+        <address2>Suite 3
+        </address2>
+        
+        <city>New York City
+        </city>
+      
+      </example:Address>
+    </address>
+    
+    <paymentTerms>net 30
+    </paymentTerms>
+  
+    <score>50.423
+    </score>
+  </example:Customer>
 
 </example:Customer.list>
