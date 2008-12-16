@@ -14,7 +14,6 @@
 //
 package spiralcraft.loader;
 
-import spiralcraft.main.AbstractClassLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,13 +21,15 @@ import java.io.ByteArrayInputStream;
 
 import java.net.URL;
 
+import spiralcraft.main.LauncherClassLoader;
+
 /**
  * <P>Loads classes contained in the Library
  * </P>
  * 
  */
 public class LibraryClassLoader
-  extends AbstractClassLoader
+  extends LauncherClassLoader
 {
   private final LibraryClasspath libraryClasspath;
 
@@ -49,10 +50,6 @@ public class LibraryClassLoader
   { return libraryClasspath.findNativeLibrary(name);
   }
   
-  @Override
-  protected String getRepositoryName()
-  { return libraryClasspath.toString();
-  }
 
   @Override
   protected byte[] loadData(String path)
