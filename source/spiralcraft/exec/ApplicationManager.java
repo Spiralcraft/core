@@ -36,21 +36,34 @@ import java.net.URI;
 //import java.util.logging.Logger;
 
 /**
- * Controls the execution of applications via one or more ApplicationEnvironments.
- *
- * An ApplicationEnvironment defines the code modules (.jar or directory trees)
+ * <p>Controls the execution of applications via one or more
+ *   ApplicationEnvironments.
+ * </p>
+ * 
+ * <p>An ApplicationEnvironment defines the code modules (.jar or directory trees)
  *   and an entry point necessary to run an application.
+ * </p>
  *
+ * <p>
  * ApplicationEnvironments are stored in Resources identified by a URI, which
  *   is provided to the exec() method.
+ * </p>
  *
+ * <p>
  * If the URI is relative, the ApplicationManager will search for the
  *   Resource according to the following rules:
  *
- *   1. "user.dir" Java system property
- *   2. User environment path (<user-home>/.spiralcraft/env)
- *   3. System environment path (<spiralcraft-home>/env)
- *
+ *   <ol>
+ *     <li>"user.dir" Java system property
+ *     </li>
+ *     <li>User environment path (<user-home>/.spiralcraft/env)
+ *     </li>
+ *     <li>System environment path (<spiralcraft-home>/env)
+ *     </li>
+ *   </ol>
+ * </p>
+ * 
+ * @author mike
  */
 public class ApplicationManager
 {
@@ -114,35 +127,47 @@ public class ApplicationManager
       throw new IllegalArgumentException
         ("Please specify an application environment");
     }
-
-    URI applicationURI=findEnvironment(args[0]);
-    if (applicationURI==null)
-    { 
-      // Show environments in-scope
-      throw new IllegalArgumentException
-        ("Unknown application environment '"+args[0]+"'");
-    }
-        
-    args=(String[]) ArrayUtil.truncateBefore(args,1);
-
-    try
+    else if (args[0].equals("start"))
     {
-      AbstractXmlObject<ApplicationEnvironment,?> environmentRef
+      ApplicationEnvironment environment=new ApplicationEnvironment();
+      environment.resolve(this);
+      args[0]=args[1]; // Instance 
+      
+      args=(String[]) ArrayUtil.truncateBefore(args,1);
+      environment.exec(args);
+    }
+    else
+    {
+
+      URI applicationURI=findEnvironment(args[0]);
+      if (applicationURI==null)
+      { 
+        // Show environments in-scope
+        throw new IllegalArgumentException
+        ("Unknown application environment '"+args[0]+"'");
+      }
+
+      args=(String[]) ArrayUtil.truncateBefore(args,1);
+
+      try
+      {
+        AbstractXmlObject<ApplicationEnvironment,?> environmentRef
         =AbstractXmlObject.<ApplicationEnvironment>create
-          (null
+        (null
           ,applicationURI
           ,_registryNode.createChild(Integer.toString(_nextEnvironmentId++))
           ,null
-          );
-      
-      
-      ApplicationEnvironment environment=environmentRef.get();
-      environment.resolve(this);
-    
-      environment.exec(args);
-    }
-    catch (BindException x)
-    { throw new ExecutionTargetException(x);
+        );
+
+
+        ApplicationEnvironment environment=environmentRef.get();
+        environment.resolve(this);
+
+        environment.exec(args);
+      }
+      catch (BindException x)
+      { throw new ExecutionTargetException(x);
+      }
     }
   }
 

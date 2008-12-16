@@ -14,6 +14,8 @@
 //
 package spiralcraft.exec;
 
+import spiralcraft.data.Type;
+import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.data.persist.PersistenceException;
 
@@ -62,12 +64,13 @@ import java.io.IOException;
 public class Executor
   implements Registrant,Executable
 {
+  private URI uri;
   private URI typeURI;
   private URI instanceURI;
   private boolean persistOnCompletion;
   private AbstractXmlObject<Executable,?> wrapper;
   private RegistryNode registryNode;  
-  private int argCounter=-2;
+  private int argCounter=-1;
   
   protected ExecutionContext context
     =ExecutionContext.getInstance();
@@ -139,23 +142,26 @@ public class Executor
       if (argCounter<0)
       { 
         throw new IllegalArgumentException
-          ("Executor requires at least 2 arguments");
+          ("Executor requires at least 1 argument");
       }
 
-      if (typeURI==null && instanceURI==null)
-      { 
+      if (uri==null)
+      {
         throw new IllegalArgumentException
           ("No Type URI or instance URI specified. Nothing to execute.");
       }
     
-      if (typeURI!=null)
-      { typeURI=context.canonicalize(typeURI);
+      uri=context.canonicalize(uri);
+      
+      try
+      { 
+        Type.resolve(uri);
+        typeURI=uri;
       }
-    
-      if (instanceURI!=null)
-      { instanceURI=context.canonicalize(instanceURI);
+      catch (TypeNotFoundException x)
+      { instanceURI=uri;
       }
-    
+        
       Executable executable=resolveExecutable(); 
       
       
@@ -225,14 +231,9 @@ public class Executor
       @Override
       public boolean processArgument(String argument)
       { 
-        if (argCounter==-2)
+        if (argCounter==-1)
         { 
-          typeURI=URI.create(argument);
-          argCounter++;
-        }
-        else if (argCounter==-1)
-        { 
-          instanceURI=URI.create(argument);
+          uri=URI.create(argument);
           argCounter++;
         }
         else
@@ -246,7 +247,7 @@ public class Executor
       @Override
       public boolean processOption(String option)
       { 
-        if (argCounter==-2)
+        if (argCounter==-1)
         { 
           if (option.startsWith("D"))
           { 
@@ -264,33 +265,23 @@ public class Executor
 //              context.err().println(assignment);
             }
           }
-          else if (!option.equals(""))
+          else 
           { 
             throw new IllegalArgumentException
-              ("Unrecognized option '-"+option+"': "
-              +"Type URI for Executable (or '-' for unspecified Type)"
-              +" must be specified as first parameter to Executor."    
+              ("Unrecognized Executor option '-"+option+"'"    
               );
           }
-          else
-          { argCounter++;
-          }
-        }
-        else if (argCounter==-1)
-        {
-          if (!option.equals(""))
-          { 
-            throw new IllegalArgumentException
-              ("Unrecognized option '-"+option+"': "
-              +"Instance URI for Executable (or '-' for unspecified data resource)"
-              +" must be specified as second parameter to Executor."    
-              );
-          }
-          argCounter++;
         }
         else
         { 
-          arguments=(String[]) ArrayUtil.append(arguments,"-"+option);
+          if (argCounter==0 && option.equals(""))
+          { 
+            ExecutionContext.getInstance().err()
+              .println("Executor parameter '-' is deprecated");
+          }
+          else
+          { arguments=(String[]) ArrayUtil.append(arguments,"-"+option);
+          }
           argCounter++;
         }
         return true;

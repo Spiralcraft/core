@@ -162,7 +162,13 @@ public class ApplicationEnvironment
         }
       }
       else
-      { _classLoader.resolveLibrariesForClass(_mainClass);
+      { 
+        _classLoader.addAllModules();
+        
+        // This is unreliable- we might need something we can't reach
+        //   from the main class.
+        
+        // _classLoader.resolveLibrariesForClass(_mainClass);
       }
   
       Class<?> clazz=_classLoader.loadClass(_mainClass);
@@ -246,8 +252,8 @@ public class ApplicationEnvironment
   
 }
 
-/* Notes and ramblings
-
+/* Notes
+ 
 2007-11-14
 
 For the most part, we're going to use the ApplicationEnvironment to setup a

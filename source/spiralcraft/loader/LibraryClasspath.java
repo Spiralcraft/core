@@ -59,4 +59,12 @@ public interface LibraryClasspath
   void release();
   
   void setDebug(boolean debug);
+  
+  /**
+   * Add the latest versions of all the modules in the library to the
+   *   classpath
+   */
+  void addAllModules()
+    throws IOException;
+  
 }

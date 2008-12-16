@@ -272,7 +272,21 @@ public class LibraryCatalog
       }
       addLibrary(libraries.get(0));
     }
+    
+    public void addAllModules()
+      throws IOException
+    {
 
+      for (Library library: codebaseLibraries)
+      { addLibrary(getLatestVersion(library));
+      }
+       
+    }
+
+    public Library getLatestVersion(Library library)
+    { return library;
+    }
+    
     public void addLibrary(String path)
       throws IOException
     { 

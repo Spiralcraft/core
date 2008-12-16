@@ -42,6 +42,7 @@ public class LibraryClassLoader
     super.setDebug(debug);
     libraryClasspath.setDebug(debug);
   }
+
   
   @Override
   protected String findLibrary(String name)
@@ -104,6 +105,16 @@ public class LibraryClassLoader
   public void addModule(String moduleName)
     throws IOException
   { libraryClasspath.addModule(moduleName);
+  }
+  
+  
+  /**
+   * Add the latest versions of all the modules in the library
+   *   to the class path
+   */
+  public void addAllModules()
+    throws IOException
+  { libraryClasspath.addAllModules();
   }
   
   @Override
