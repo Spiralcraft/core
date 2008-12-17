@@ -24,6 +24,7 @@ import spiralcraft.data.DataException;
 
 import spiralcraft.data.core.TypeImpl;
 
+import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.lang.Focus;
@@ -32,6 +33,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.builder.AssemblyLoader;
 import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.Assembly;
+import spiralcraft.builder.PropertySpecifier;
 
 import spiralcraft.builder.PropertyBinding;
 import spiralcraft.builder.BuildException;
@@ -78,6 +80,13 @@ public class BuilderType
     if (super.isAssignableFrom(type))
     { return true;
     }
+    if (isAggregate() 
+        && type.isAggregate()
+        && getContentType().isAssignableFrom(type.getContentType())
+        )
+    { return true;
+    }
+        
     if (getURI().equals(GENERIC_BUILDER_TYPE_URI)
         && type instanceof BuilderType
         )
@@ -93,33 +102,47 @@ public class BuilderType
   {
     if (assemblyClass!=null)
     {
-      URI baseUri=
-        TypeResolver.desuffix(assemblyClass.getSourceURI(),".assy.xml");
-      
-      String path="";
-      
-      while (assemblyClass!=null && assemblyClass.getDefiningClass()!=null)
+      URI baseUri=null;
+      if (assemblyClass.getSourceURI()!=null)
       { 
-        if (path.length()>0)
-        { path="/".concat(path);
-        }
-        if (assemblyClass.getId()!=null)
-        { path=".".concat(assemblyClass.getId()).concat(path);
-        }
-        if (assemblyClass.getContainingProperty()==null)
+        baseUri=TypeResolver.desuffix(assemblyClass.getSourceURI(),".assy.xml");
+      
+        String path="";
+      
+        while (assemblyClass!=null && assemblyClass.getDefiningClass()!=null)
         { 
-          System.err.println("Null containing property "
-            +assemblyClass.toString()+" defined in "
-            +assemblyClass.getDefiningClass().toString());
+          if (path.length()>0)
+          { path="/".concat(path);
+          }
+          if (assemblyClass.getId()!=null)
+          { path=".".concat(assemblyClass.getId()).concat(path);
+          }
+          if (assemblyClass.getContainingProperty()==null)
+          { 
+            System.err.println("Null containing property "
+              +assemblyClass.toString()+" defined in "
+              +assemblyClass.getDefiningClass().toString());
+          }
+          path=assemblyClass.getContainingProperty().getTargetName().concat(path);
+          assemblyClass=assemblyClass.getDefiningClass();
         }
-        path=assemblyClass.getContainingProperty().getTargetName().concat(path);
-        assemblyClass=assemblyClass.getDefiningClass();
+        if (path.length()>0)
+        { return URI.create(baseUri.toString()+INNER_PATH_SEPARATOR+path+".assy");
+        }
+        else
+        { return URI.create(baseUri.toString()+".assy");
+        }
       }
-      if (path.length()>0)
-      { return URI.create(baseUri.toString()+INNER_PATH_SEPARATOR+path+".assy");
+      else if (assemblyClass.getBaseClass()==null
+              && assemblyClass.getDefiningClass()==null
+              )
+      { 
+        // No source URI, no base class, no defining class = java class
+        return ReflectionType.canonicalURI(assemblyClass.getJavaClass());
+        
       }
       else
-      { return URI.create(baseUri.toString()+".assy");
+      { return null;
       }
     }
     else
@@ -132,6 +155,59 @@ public class BuilderType
   { return TypeResolver.getTypeResolver().<Assembly>resolve(canonicalURI(assemblyClass));
   }
   
+  /**
+   * <p>Return the canonical type of the object represented by a
+   *   property specifier
+   * </p>
+   * 
+   * @param specifier
+   * @return
+   * @throws DataException
+   */
+  public static Type<?> canonicalType(PropertySpecifier specifier)
+    throws DataException
+  { 
+    Class javaClass;
+    if (specifier.getPropertyDescriptor()==null)
+    { throw new DataException("PropertyDescriptor is null: "+specifier);
+    }
+    else
+    { javaClass=specifier.getPropertyDescriptor().getPropertyType();
+    }
+    
+    if (!AssemblyClass.isManaged(javaClass))
+    { return ReflectionType.canonicalType(javaClass);
+    }
+    
+    boolean array=false;
+    if (javaClass.isArray())
+    { 
+      array=true;
+      javaClass=javaClass.getComponentType();
+    }
+
+    try
+    {
+      AssemblyClass assemblyClass
+        =AssemblyLoader.getInstance().findAssemblyClass(javaClass);
+      if (assemblyClass==null)
+      { throw new DataException("No AssemblyClass associated with "+javaClass);
+      }
+      if (!array)
+      { return canonicalType(assemblyClass);
+      }
+      else
+      { 
+        return Type.getArrayType
+          (canonicalType(assemblyClass));
+      }
+    }
+    catch (BuildException x)
+    { throw new DataException("Error finding AssemblyClass for "+javaClass,x);
+    }
+    
+  }
+
   public static Type<?> genericBuilderType()
     throws DataException
   { return TypeResolver.getTypeResolver().resolve(GENERIC_BUILDER_TYPE_URI);

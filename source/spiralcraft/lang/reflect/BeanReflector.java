@@ -61,7 +61,9 @@ import java.util.Enumeration;
 
 import java.lang.ref.WeakReference;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.ParameterizedType;
@@ -233,10 +235,31 @@ public class BeanReflector<T>
     else if (type instanceof ParameterizedType)
     { clazz=(Class<T>) ((ParameterizedType) type).getRawType();
     }
+    else if (type instanceof GenericArrayType)
+    { 
+      Type componentType=((GenericArrayType) type).getGenericComponentType();
+      if (componentType instanceof Class)
+      { clazz=(Class<T>) Array.newInstance((Class) componentType,0).getClass();
+      }
+      else if (componentType instanceof ParameterizedType)
+      { 
+        clazz=(Class<T>) Array.newInstance
+          ((Class) ((ParameterizedType) componentType).getRawType(),0
+            ).getClass();
+
+      }
+      else
+      {
+        throw new IllegalArgumentException
+          ("BeanReflector: unrecognized type "+componentType
+            +" "+componentType.getClass().getName());
+        
+      }
+    }
     else
     { 
-      throw new IllegalArgumentException
-        ("BeanReflector: unrecognized type "+type+" "+type.getClass().getName());
+        throw new IllegalArgumentException
+          ("BeanReflector: unrecognized type "+type+" "+type.getClass().getName());
     }
     
     targetClass=clazz;

@@ -43,6 +43,17 @@ public abstract class Type<T>
   { return TypeResolver.getTypeResolver().<X>resolve(uri);
   }
   
+  public static <X> Type<List<X>> getArrayType(Type<X> type)
+  { 
+    try
+    { 
+      return type.getTypeResolver().<List<X>>resolve
+        (URI.create(type.getURI().toString()+".array"));
+    }
+    catch (DataException x)
+    { throw new RuntimeException(x);
+    }
+  }
     
   public static <X> Type<List<X>> getAggregateType(Type<X> type)
   { 

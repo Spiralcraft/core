@@ -19,6 +19,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.net.URI;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,6 +50,26 @@ public class AssemblyClass
   
   private static final ClassLog log
     =ClassLog.getInstance(AssemblyClass.class);
+
+  
+  /**
+   * <p>
+   * Whether the specified class will be managed by a sub-assembly, or whether
+   *   it represents a primitive value
+   * </p>
+   * @param clazz
+   * @return
+   */
+  public static final boolean isManaged(Class<?> clazz)
+  {
+    return !clazz.isPrimitive()
+     && !(clazz.isArray() && !isManaged(clazz.getComponentType()))
+     && !(clazz==String.class)
+     ;
+  }
+  
+  
+  
   
   private final URI sourceURI;
   
@@ -79,12 +100,14 @@ public class AssemblyClass
   private Assembly<?> _singletonInstance;
   
   private Class<?>[] _singletons;
-  private LinkedList<PropertySpecifier> _members;
+  private LinkedList<PropertySpecifier> _localMembers;
   private HashMap<String,PropertySpecifier> _memberMap;
   private boolean _resolved;
   private String _constructorText;
   private PropertySpecifier _containingProperty;
   private boolean _resolving;
+  private MappedBeanInfo beanInfo;
+
   
   private boolean debug;
   
@@ -205,7 +228,10 @@ public class AssemblyClass
   
 
   /**
-   * Register a PropertySpecifier as member of this assembly class.
+   * <p>Register a PropertySpecifier as member of this assembly class, when
+   *   sorting out the set of PropertySpecifiers collected in the definition
+   *   of the root element of a given AssemblyClass. 
+   * </p>
    * 
    * If a PropertySpecifier has already been registered with the specified
    *   name, replace it with the new one.
@@ -215,9 +241,9 @@ public class AssemblyClass
   { 
     // assertUnresolved();
     
-    if (_members==null)
+    if (_localMembers==null)
     { 
-      _members=new LinkedList<PropertySpecifier>();
+      _localMembers=new LinkedList<PropertySpecifier>();
       _memberMap=new HashMap<String,PropertySpecifier>();
     }
     
@@ -226,12 +252,12 @@ public class AssemblyClass
     { 
       // Property has been set multiple times in the same definition
       _memberMap.put(name,prop);
-      _members.set(_members.indexOf(oldProp),prop);
+      _localMembers.set(_localMembers.indexOf(oldProp),prop);
     }
     else
     {
       _memberMap.put(name,prop);
-      _members.add(prop);
+      _localMembers.add(prop);
     }
 
     if (_compositeMembers!=null)
@@ -253,26 +279,40 @@ public class AssemblyClass
         }
       }
       if (!found)
-      { _compositeMembers.add(prop);
+      { 
+        prop.setTargetSequence(_compositeMembers.size());
+        _compositeMembers.add(prop);
       }
     }
   }
 
   /**
-   * Return an Iterable of the members of this AssemblyClass. The members
+   * <p>Return an Iterable of the members of this AssemblyClass. The members
    *   include declared PropertySpecifiers for the root Bean of this
-   *   AssemblyClass and its base classes. Bean properties not explicitly
-   *   declared in the AssemblyClass definition are not included.
+   *   AssemblyClass and its base classes. 
+   * </p>
    */
   public Iterable<PropertySpecifier> memberIterable()
   { return _compositeMembers;
   }
   
   /**
+   * <p>Return an Iterable of the local members of this AssemblyClass.
+   *  The local members include declared PropertySpecifiers for the root Bean 
+   *   of this AssemblyClass only, excluding members of base classes. 
+   *   Bean properties not explicitly declared in the AssemblyClass definition
+   *   are not included.
+   * </p>
+   */
+  public Iterable<PropertySpecifier> localMemberIterable()
+  { return _localMembers;
+  }
+  
+  /**
    * Return the specified member of this AssemblyClass or its inheritance
    *   chain.
    */
-  public PropertySpecifier getMember(String name)
+  private PropertySpecifier getMember(String name,boolean discover)
     throws BuildException
   { 
     PropertySpecifier member=null;
@@ -287,41 +327,12 @@ public class AssemblyClass
     if (member==null && _javaClass!=null)
     {
       // Set up a default association
-      try
-      {
-        MappedBeanInfo beanInfo
-          =_BEAN_INFO_CACHE.getBeanInfo(_javaClass);
-      
-        PropertyDescriptor descriptor=beanInfo.findProperty(name);
-        if (descriptor!=null)
-        {
-          member=new PropertySpecifier(this,name);
-          Class<?> propertyType=descriptor.getPropertyType();
-          if (!propertyType.isArray()
-              && 
-              !Collection.class.isAssignableFrom(propertyType)
-             )
-          { 
-            AssemblyClass sourceBaseClass
-              =_loader.findAssemblyClass(propertyType);
+    
+      PropertyDescriptor descriptor=beanInfo.findProperty(name);
+      if (descriptor!=null)
+      { member=addMemberForProperty(descriptor,discover);
+      }
 
-            member.addAssemblyClass
-              (innerSubclass(sourceBaseClass)
-              );
-          }
-          if (_resolving || _resolved)
-          { member.resolve();
-          }
-          _memberMap.put(name,member);
-          if (_compositeMembers!=null)
-          { _compositeMembers.add(member);
-          }
-          
-        }
-      }
-      catch (IntrospectionException x)
-      { throw new BuildException("Error introspecting "+_javaClass.getName(),x);
-      }
     }
     
     if (member==null)
@@ -329,7 +340,86 @@ public class AssemblyClass
     }
     return member;
   }
+  
+  public PropertySpecifier getMember(String name)
+    throws BuildException
+  { return getMember(name,false);
+  }
+  
+  PropertySpecifier discoverMember(String name)
+    throws BuildException
+  { return getMember(name,true);
+  }
+  
 
+  PropertyDescriptor getPropertyDescriptor(String name)
+  { 
+    if (beanInfo!=null)
+    { return beanInfo.findProperty(name);
+    }
+    else if (_baseAssemblyClass!=null)
+    { return _baseAssemblyClass.getPropertyDescriptor(name);
+    }
+    return null;
+  }
+  
+  /**
+   * <p>Add a member to handle the specified Bean PropertyDescriptor.
+   * </p>
+   * 
+   * <p>This method assumes that a member with the same
+   *   name has been checked and found not to exist
+   * </p>
+   * 
+   * @param descriptor
+   * @param addSubAssembly
+   * @return
+   * @throws BuildException
+   */
+  private PropertySpecifier addMemberForProperty
+    (PropertyDescriptor descriptor,boolean addSubAssembly)
+    throws BuildException
+  { 
+    String name=descriptor.getName();
+    PropertySpecifier member=new PropertySpecifier(this,name);
+    member.setPropertyDescriptor(descriptor);
+    
+    Class<?> propertyType=descriptor.getPropertyType();
+    if (addSubAssembly)
+    {
+      // XXX Factor addSubAssembly into appropriate intelligence
+      
+      // Create a new sub-assembly to provide a context to accept configuration
+      //   data in the non-collection case.
+      if (!propertyType.isArray()
+          && 
+          !Collection.class.isAssignableFrom(propertyType)
+          &&
+          isManaged(propertyType)
+         )
+      { 
+        AssemblyClass sourceBaseClass
+          =_loader.findAssemblyClass(propertyType);
+
+        member.addAssemblyClass
+          (innerSubclass(sourceBaseClass)
+          );
+      }
+    }
+    
+    if (_resolving || _resolved)
+    { member.resolve();
+    }
+    //_localMembers.add(member);
+    // _memberMap.put(name,member);
+    if (_compositeMembers!=null)
+    { 
+      member.setTargetSequence(_compositeMembers.size());
+      _compositeMembers.add(member);
+    }
+    return member;
+  }
+  
   public PropertySpecifier getContainingProperty()
   { return _containingProperty;
   }
@@ -470,6 +560,19 @@ public class AssemblyClass
   private void resolveProperties()
     throws BuildException
   {
+
+//
+// Removed for now, because when bean properties are created on demand
+//   the reference graph is discovered. To discover recursively now
+//   would suck in a lot of unused data.
+//    
+//    if (_baseAssemblyClass==null)
+//    { 
+//      for (PropertySpecifier prop:getBeanProperties())
+//      { prop.resolve();
+//      }
+//    }
+
     if (_propertySpecifiers!=null)
     {
       while (_propertySpecifiers.size()>0)
@@ -480,11 +583,52 @@ public class AssemblyClass
       }
     }
     
-    _compositeMembers=new LinkedList<PropertySpecifier>();
+  
+      
+    _compositeMembers
+      =new LinkedList<PropertySpecifier>();
     composeMembers(_compositeMembers,new HashMap<String,PropertySpecifier>());
-    
   }
-
+  
+  /**
+   * 
+   * @return The list of bean properties 
+   * @throws BuildException
+   */
+  public List<String> getMemberNames()
+    throws BuildException
+  {
+    ArrayList<String> names
+      =new ArrayList<String>();
+    for (PropertyDescriptor prop:beanInfo.getPropertyDescriptors())
+    { names.add(prop.getName());
+    }
+    return names;
+  }
+  
+//
+//  Make autodiscovery a switch
+//
+//  private LinkedList<PropertySpecifier> getBeanProperties()
+//    throws BuildException
+//  {
+//    if (_baseAssemblyClass==null)
+//    {
+//      // Add java members
+//      LinkedList<PropertySpecifier> props=new LinkedList<PropertySpecifier>();
+//      for (PropertyDescriptor prop:beanInfo.getPropertyDescriptors())
+//      { 
+//        
+//        PropertySpecifier specifier
+//          =new PropertySpecifier(this,prop);
+//        props.add(specifier);;
+//      }
+//      return props;
+//    }
+//
+//    return null;
+//  }
+  
   /**
    * Compose the list of members, overriding members with the same target name
    */
@@ -496,10 +640,11 @@ public class AssemblyClass
   {
     if (_baseAssemblyClass!=null)
     { _baseAssemblyClass.composeMembers(list,map);
-    }
-    if (_members!=null)
+    }    
+    
+    if (_localMembers!=null)
     { 
-      for (PropertySpecifier prop:_members)
+      for (PropertySpecifier prop:_localMembers)
       {
         PropertySpecifier oldProp
           =map.get(prop.getTargetName());
@@ -570,6 +715,16 @@ public class AssemblyClass
         }
       }
     }
+    if (_javaClass!=null)
+    { 
+      try
+      { beanInfo=_BEAN_INFO_CACHE.getBeanInfo(_javaClass);
+      }
+      catch (IntrospectionException x)
+      { throw new BuildException("Error introspecting "+_javaClass,x);
+      }
+    }
+    
   }
 
   /**

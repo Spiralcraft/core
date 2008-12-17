@@ -480,7 +480,9 @@ public class DataHandler
       throws SAXException,DataException
     {
       if (object!=null)
-      { throwSAXException("Cannot contain more than one Object");
+      { 
+        throwSAXException
+          ("Type "+formalType.getURI()+" cannot contain more than one Object");
       }
       
       URI ref=null;

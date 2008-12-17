@@ -190,15 +190,10 @@ public class ReflectionField
     
   }
   
-  public void depersistBeanProperty(Tuple tuple,Object bean)
+  
+  public void writeValueToBean(Object value,Object bean)
     throws DataException
-  { 
-    
-    if (!depersist)
-    { return;
-    }
-    
-    Object value=getValue(tuple);
+  {
     Type<?> type=getType();
     
     if (value instanceof DataComposite)
@@ -312,6 +307,19 @@ public class ReflectionField
         }
       }
     }
+    
+  }
+  
+  public void depersistBeanProperty(Tuple tuple,Object bean)
+    throws DataException
+  { 
+    
+    if (!depersist)
+    { return;
+    }
+    
+    Object value=getValue(tuple);
+    writeValueToBean(value,bean);
   }
   
   

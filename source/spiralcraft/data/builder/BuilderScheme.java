@@ -14,84 +14,156 @@
 //
 package spiralcraft.data.builder;
 
+import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
-import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 
 import spiralcraft.data.reflect.ReflectionField;
-import spiralcraft.data.reflect.ReflectionScheme;
+import spiralcraft.data.reflect.ReflectionType;
 
+import spiralcraft.data.core.SchemeImpl;
+import spiralcraft.log.ClassLog;
 
+import spiralcraft.builder.Assembly;
 import spiralcraft.builder.AssemblyClass;
+import spiralcraft.builder.BuildException;
 import spiralcraft.builder.PropertySpecifier;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-import java.beans.PropertyDescriptor;
 
 /**
  * A Scheme derived from an AssemblyClass definition.
  */
 public class BuilderScheme
-  extends ReflectionScheme
+  extends SchemeImpl
 {
+  private static final ClassLog log=ClassLog.getInstance(BuilderScheme.class);
   
-  // private final AssemblyClass assemblyClass;
   private final HashMap<String,PropertySpecifier> memberMap
     =new HashMap<String,PropertySpecifier>();
   
-  public BuilderScheme(TypeResolver resolver,Type<?> type,AssemblyClass assemblyClass)
+  private final AssemblyClass assemblyClass;
+  private final TypeResolver resolver;
+  private final ReflectionType<?> reflectionType;
+  
+  public BuilderScheme
+    (TypeResolver resolver
+    ,Type<?> type
+    ,AssemblyClass assemblyClass
+    )
+    throws DataException
   { 
-    super(resolver,type,assemblyClass.getJavaClass());
-    // this.assemblyClass=assemblyClass;
-    for (PropertySpecifier specifier : assemblyClass.memberIterable())
-    { memberMap.put(specifier.getTargetName(),specifier);
+    this.resolver=resolver;
+    this.type=type;
+    this.assemblyClass=assemblyClass;
+    Type<?> nativeTypeWrapper
+      =ReflectionType.canonicalType(assemblyClass.getJavaClass());
+    if (nativeTypeWrapper!=null && nativeTypeWrapper instanceof ReflectionType)
+    { reflectionType=(ReflectionType<?>) nativeTypeWrapper;
+    }
+    else
+    { reflectionType=null;
+    }
+
+    if (assemblyClass.localMemberIterable()!=null)
+    {
+      for (PropertySpecifier specifier : assemblyClass.localMemberIterable())
+      { memberMap.put(specifier.getTargetName(),specifier);
+      }
     }
   }
   
-  @Override
-  protected BuilderField generateField(PropertyDescriptor prop)
+  /**
+   * Call after creating Scheme to populate fields
+   */
+  public void addFields()
+    throws DataException
+  {
+    List<? extends BuilderField> fieldList
+      =generateFields(assemblyClass);
+
+    for (BuilderField field: fieldList)
+    { addField(field);
+    }
+    
+  }
+  
+  
+  protected List<? extends BuilderField>
+    generateFields(AssemblyClass assemblyClass)
+      throws DataException
+  {
+    List<BuilderField> fieldList=new ArrayList<BuilderField>();
+    
+    for (Field<?> field:reflectionType.getFieldSet().fieldIterable())
+    { 
+      try
+      { assemblyClass.getMember(field.getName());
+      }
+      catch (BuildException x)
+      { throw new DataException("Error getting member "+field.getName(),x);
+      }
+    }
+    
+    for (PropertySpecifier prop : assemblyClass.localMemberIterable())
+    { 
+      BuilderField field=generateField(prop);
+      fieldList.add(field);
+    }
+    return fieldList;
+  }
+  
+  protected BuilderField generateField(PropertySpecifier prop)
     throws DataException
   { 
+    if (false)
+    { log.fine("Generating "+prop+" "+prop.getTargetName());
+    }
+    
     BuilderField field = new BuilderField
       (resolver
       ,prop
-      ,memberMap.get(prop.getName())
+      ,reflectionType!=null
+        ?(ReflectionField) reflectionType.getField(prop.getTargetName())
+        :null
       );
     field.resolveType();
     return field;
   }
   
   /**
-   * Copy data values from the Tuple into bean properties of the Object
+   * Copy bean properties of the Object into the Tuple
    */
-  @Override
-  public void depersistBeanProperties(Tuple tuple,Object assembly)
+  public void persistBeanProperties(Assembly<?> bean,EditableTuple tuple)
     throws DataException
   {
     for (Field<?> field: fields)
     { 
-      if (field instanceof ReflectionField)
-      { ((ReflectionField) field).depersistBeanProperty(tuple,assembly);
+      if (field instanceof BuilderField)
+      { ((BuilderField) field).persistBeanProperty(bean,tuple);
       }
     }
   }
   
+  
   /**
    * Copy data values from the Tuple into bean properties of the Object
    */
-  @Override
-  public void persistBeanProperties(Object assembly,EditableTuple tuple)
+  public void depersistBeanProperties(Tuple tuple,Object bean)
     throws DataException
   {
     for (Field<?> field: fields)
     { 
-      if (field instanceof ReflectionField)
-      { ((ReflectionField) field).persistBeanProperty(assembly,tuple);
+      if (field instanceof BuilderField)
+      { ((BuilderField) field).depersistBeanProperty(tuple,bean);
       }
     }
-  }
+  }  
+  
 }

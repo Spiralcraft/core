@@ -144,6 +144,10 @@ public class ReflectionType<T>
   { return clazz.isArray() || Collection.class.isAssignableFrom(clazz);
   }
 
+  public static <X> Type<X> canonicalType(Class<X> iface)
+    throws DataException
+  { return Type.resolve(canonicalURI(iface));
+  }
  
   public static URI canonicalURI(Class<?> iface)
   {

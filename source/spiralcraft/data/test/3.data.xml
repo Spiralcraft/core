@@ -12,11 +12,11 @@
     <String>alias6</String>
   </aliases>
   <children>
-    <dt:SimpleWidget>
+    <dt:SimpleWidget.assy>
       <title>First ChildWidget</title>
-    </dt:SimpleWidget>
-    <dt:SimpleWidget>
+    </dt:SimpleWidget.assy>
+    <dt:SimpleWidget.assy>
       <title>Second ChildWidget</title>
-    </dt:SimpleWidget>
+    </dt:SimpleWidget.assy>
   </children>
 </dt:SimpleWidget.assy>

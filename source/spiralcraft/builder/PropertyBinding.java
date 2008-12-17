@@ -357,7 +357,17 @@ public class PropertyBinding
             { throw new BuildException("Error parsing properties in "+val,x);
             }
           }
-          Array.set(array,i,val);
+          try
+          { Array.set(array,i,val);
+          }
+          catch (IllegalArgumentException x)
+          { 
+            throw new BuildException
+              ("Error setting index "+i+" of array "+array+" to "+val
+              +" for target "+_target
+              ,x);
+          }
+          
           if (_specifier.getExport())
           { exportSingletons(_contents[i]);
           }

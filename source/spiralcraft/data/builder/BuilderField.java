@@ -14,9 +14,8 @@
 //
 package spiralcraft.data.builder;
 
-import java.util.List;
 
-import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 
 import spiralcraft.data.Field;
 import spiralcraft.data.TypeResolver;
@@ -26,34 +25,46 @@ import spiralcraft.data.DataComposite;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 
-
 import spiralcraft.data.reflect.ReflectionField;
 import spiralcraft.data.reflect.ReflectionType;
+
+import spiralcraft.data.core.FieldImpl;
+
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.util.StaticInstanceResolver;
+import spiralcraft.log.ClassLog;
 
 import spiralcraft.builder.PropertySpecifier;
 import spiralcraft.builder.PropertyBinding;
 import spiralcraft.builder.Assembly;
-import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.BuildException;
 
 @SuppressWarnings("unchecked") // Not genericized yet
 public class BuilderField
-  extends ReflectionField
+  extends FieldImpl
 {
+  private static final ClassLog log=ClassLog.getInstance(BuilderField.class);
  
   private final PropertySpecifier specifier;
+  private final ReflectionField reflectionField;
   
   public BuilderField
     (TypeResolver resolver
-    ,PropertyDescriptor prop
     ,PropertySpecifier specifier
+    ,ReflectionField reflectionField
     )
     throws DataException
   { 
-    super(resolver,prop);
     this.specifier=specifier;
+    this.reflectionField=reflectionField;
+    setName(specifier.getTargetName());
+    Type type=BuilderType.canonicalType(specifier);
+    if (type==null)
+    { throw new DataException("No builder type for "+specifier);
+    }
+    else
+    { setType(type);
+    }
   }
   
   @Override
@@ -62,28 +73,28 @@ public class BuilderField
   {
     super.resolveType();
     if (specifier!=null)
-    {
-      List<AssemblyClass> contents=specifier.getContents();
-      if (contents!=null && contents.size()>0)
-      {
-        if (getType().isAggregate())
-        { 
-          // XXX Figure out aggregate type
-          
-          // Using Object.array is safe, but not very useful
-          setType(BuilderType.genericBuilderArrayType());
-          
-          // XXX This is dangerous
-          // setType(BuilderType.canonicalType(contents.get(0)));
-        }
-        else
-        { setType(BuilderType.canonicalType(contents.get(0)));
-        }
-      }
+    { setType(BuilderType.canonicalType(specifier));
+//      
+//      List<AssemblyClass> contents=specifier.getContents();
+//      if (contents!=null && contents.size()>0)
+//      {
+//        if (getType().isAggregate())
+//        { 
+//          // XXX Figure out aggregate type
+//          
+//          // Using Object.array is safe, but not very useful
+//          setType(BuilderType.genericBuilderArrayType());
+//          
+//          // XXX This is dangerous
+//          // setType(BuilderType.canonicalType(contents.get(0)));
+//        }
+//        else
+//        { setType(BuilderType.canonicalType(contents.get(0)));
+//        }
+//      }
     }
   }
   
-  @Override
   public void depersistBeanProperty(Tuple tuple,Object subject)
     throws DataException
   {
@@ -134,7 +145,7 @@ public class BuilderField
             // System.out.println("Not a builder type "+type.getCoreType());
             // Use bean method to depersist
             Object bean=assembly.get();
-            super.depersistBeanProperty(tuple,bean);
+            reflectionField.writeValueToBean(getValue(tuple),bean);
           }
           
           
@@ -156,7 +167,7 @@ public class BuilderField
             // We -can- depersist a bean value into a property
             //   that has no descriptor
             Object bean=assembly.get();
-            super.depersistBeanProperty(tuple,bean);
+            reflectionField.writeValueToBean(getValue(tuple),bean);
           }
         }
       }
@@ -171,11 +182,9 @@ public class BuilderField
   }
 
   
-  @Override
-  public void persistBeanProperty(Object object,EditableTuple tuple)
+  public void persistBeanProperty(Assembly<?> assembly,EditableTuple tuple)
     throws DataException
   {
-    Assembly assembly=(Assembly) object;
     if (specifier!=null)
     {
       // Use Assembly scaffold to persist
@@ -223,32 +232,65 @@ public class BuilderField
           }
           else
           { 
+            // not an aggregate
+            
             Type type=BuilderType.canonicalType(assemblies[0].getAssemblyClass());
             if (type instanceof BuilderType)
             {
               setValue(tuple,type.toData(assemblies[0]));
             }
             else 
-            { super.persistBeanProperty(assembly.get(),tuple);
+            { persistPropertyUsingReflection(assembly,tuple);
             }
           }
         }
         else
         {    
 //          System.err.println("BuilderField: persisting "+getName()+" as bean");
-          Object bean=assembly.get();
-          super.persistBeanProperty(bean,tuple);
+          persistPropertyUsingReflection(assembly,tuple);
         }
       } // if (specifier.isPersistent() && assembly!=null);
+      else
+      {
+        if (debug && !specifier.isPersistent())
+        { log.fine(specifier.getTargetName()+" is not persistent");
+        }
+      }
     } // if (specifier!=null);
     else
     {
       if (!(getType().getCoreType() instanceof BuilderType))
       { 
-        Object bean=assembly.get();
-        super.persistBeanProperty(bean,tuple);
+        persistPropertyUsingReflection(assembly,tuple);
       }
     }
+  }
+  
+  private void persistPropertyUsingReflection
+    (Assembly assembly,EditableTuple tuple)
+    throws DataException
+  {
+    try
+    {
+      setValue
+        (tuple
+        ,reflectionField.getReadMethod().invoke
+          (assembly.get(),(Object[]) null)
+        );
+    }
+    catch (IllegalAccessException x)
+    { 
+      throw new DataException
+      ("Error persisting bean property "+getURI(),x);
+    }
+    catch (InvocationTargetException x)
+    {
+      throw new DataException
+      ("Error persisting bean property "
+        +getURI(),x.getTargetException()
+      );
+    }
+
   }
   
   @Override

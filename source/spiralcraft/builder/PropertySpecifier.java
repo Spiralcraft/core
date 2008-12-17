@@ -14,6 +14,7 @@
 //
 package spiralcraft.builder;
 
+import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.ArrayList;
 
@@ -46,7 +47,7 @@ public class PropertySpecifier
   private String _targetSelector;
   
   private AssemblyClass _targetAssemblyClass;
-  private int _targetSequence;
+  private int _targetSequence=-1;
   private Expression<?> _sourceExpression;
   private boolean _literalWhitespace;
   private String _expression;
@@ -56,7 +57,22 @@ public class PropertySpecifier
   private String _collectionClassName;
   private Class<? extends Collection<?>> _collectionClass;
   private boolean _export;
+  
   private PrefixResolver prefixResolver;
+  private PropertyDescriptor descriptor;
+
+  public PropertySpecifier
+    (AssemblyClass container
+    ,PropertyDescriptor descriptor
+    )
+  {
+    if (container==null)
+    { throw new IllegalArgumentException("Container cannot be null");
+    }
+    _container=container;
+    _specifier=new String[] {descriptor.getName()};
+    this.descriptor=descriptor;
+  }
   
   public PropertySpecifier
     (AssemblyClass container
@@ -97,6 +113,25 @@ public class PropertySpecifier
     addAssemblyClass(content);
   }
   
+  
+  public PropertyDescriptor getPropertyDescriptor()
+  { 
+    if (this.descriptor!=null)
+    { return this.descriptor;
+    }
+    else if (_baseMember!=null)
+    { return _baseMember.getPropertyDescriptor();
+    }
+    else
+    { return null;
+    }
+       
+  }
+  
+  public void setPropertyDescriptor(PropertyDescriptor descriptor)
+  { this.descriptor=descriptor;
+  }
+  
   public void setPrefixResolver(PrefixResolver resolver)
   { this.prefixResolver=resolver;
   }
@@ -129,7 +164,7 @@ public class PropertySpecifier
       :_persistent
       ;
   }
-
+  
   public void setExport(boolean export)
   { _export=export;
   }
@@ -249,6 +284,7 @@ public class PropertySpecifier
   void resolve()
     throws BuildException
   { 
+    
     if (_textContent!=null)
     { 
       String trimmedText=_textContent.toString().trim();
@@ -286,6 +322,10 @@ public class PropertySpecifier
     
     resolveTarget();
     
+    if (this.descriptor==null)
+    { this.descriptor=_container.getPropertyDescriptor(_targetName);
+    }
+
   }
 
   /**
@@ -327,7 +367,7 @@ public class PropertySpecifier
       
       
       PropertySpecifier targetAssemblyPropertySpecifier
-        =targetAssemblyClass.getMember(pathElement);
+        =targetAssemblyClass.discoverMember(pathElement);
 
       if (targetAssemblyPropertySpecifier==null)
       { 
@@ -339,7 +379,7 @@ public class PropertySpecifier
       {
       
         List<AssemblyClass> contents
-          =targetAssemblyPropertySpecifier.getContents();
+          =targetAssemblyPropertySpecifier.getCombinedContents();
         
         if (selector!=null)
         { 
@@ -473,6 +513,11 @@ public class PropertySpecifier
   void setBaseMember(PropertySpecifier prop)
     throws BuildException
   { 
+    if (prop==this)
+    { 
+      throw new IllegalArgumentException
+        ("baseMember "+prop+" cannot be a self reference");
+    }
     _baseMember=prop;
     _targetSequence=prop.getTargetSequence();
     resolveCollection();
@@ -557,6 +602,7 @@ public class PropertySpecifier
   { 
     return super.toString()
       +":"+ArrayUtil.format(_container.getInnerPath(),".","")
-      +"."+ArrayUtil.format(_specifier,".","");
+      +"."+ArrayUtil.format(_specifier,".","")
+      +"("+_container.getSourceURI()+")";
   }
 }
