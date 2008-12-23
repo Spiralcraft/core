@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2008 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -29,6 +29,13 @@ import java.io.IOException;
 
 import java.text.DecimalFormat;
 
+/**
+ * 
+ * <p>Writes the data stream to a .csv formatted file
+ * </p>
+ * @author mike
+ *
+ */
 public class Writer
   implements DataConsumer<Tuple>
 {
