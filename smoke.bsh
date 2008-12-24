@@ -1,8 +1,8 @@
-source("source/spiralcraft/builder/test/smoke.bsh");
-source("source/spiralcraft/data/test/smoke.bsh");
-source("source/spiralcraft/lang/test/smoke.bsh");
-source("source/spiralcraft/util/tree/smoke.bsh");
-source("source/spiralcraft/text/xml/smoke.bsh");
+source("test-source/spiralcraft/builder/test/smoke.bsh");
+source("test-source/spiralcraft/data/test/smoke.bsh");
+source("test-source/spiralcraft/lang/test/smoke.bsh");
+source("test-source/spiralcraft/util/tree/smoke.bsh");
+source("test-source/spiralcraft/text/xml/smoke.bsh");
 
 
 import spiralcraft.util.PathPattern;
