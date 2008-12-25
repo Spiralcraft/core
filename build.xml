@@ -1,10 +1,10 @@
 <project name="spiralcraft-core" basedir="." default="build">
 
-  <property name="classpath" value="lib/spiralcraft-main.jar"/>
+  <property name="classpath" value=""/>
   <property name="module" value="core"/>
   <property name="buildVersion" value="0.3.1-dev"/>
     
-  <import file="build-common.xml"/>
+  <import file="../../build/build-common.xml"/>
   
 
 </project>

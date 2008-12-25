@@ -16,7 +16,8 @@ package spiralcraft.security;
 
 import java.security.Permission;
 
-import spiralcraft.main.Spiralcraft;
+import spiralcraft.log.ClassLog;
+
 
 /**
  * Stub for Classloader level permissions implementation
@@ -26,18 +27,23 @@ import spiralcraft.main.Spiralcraft;
 public class SystemSecurityManager
   extends SecurityManager
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(SystemSecurityManager.class);
+  
+  public static boolean DEBUG;
+  
   public SystemSecurityManager()
   {
-    if (Spiralcraft.DEBUG)
-    { System.err.println("SystemSecurityManager<init>()");
+    if (DEBUG)
+    { log.fine("SystemSecurityManager<init>()");
     }
   }
   
   @Override
   public void checkPermission(Permission perm)
   { 
-    if (Spiralcraft.DEBUG)
-    { System.err.println("SystemSecurityManager.checkPermission("+perm+")");
+    if (DEBUG)
+    { log.fine("SystemSecurityManager.checkPermission("+perm+")");
     }
     
     super.checkPermission(perm);

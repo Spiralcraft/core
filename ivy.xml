@@ -9,7 +9,6 @@
   </publications> 
   
   <dependencies>
-    <dependency org="spiralcraft" name="spiralcraft-main" rev="0.2.1-b30"/>
   </dependencies>
   
   <conflicts> 
