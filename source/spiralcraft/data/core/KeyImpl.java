@@ -15,6 +15,7 @@
 package spiralcraft.data.core;
 
 
+import spiralcraft.data.FieldSet;
 import spiralcraft.data.Key;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Field;
@@ -50,6 +51,19 @@ public class KeyImpl<T>
   private Query foreignQuery;
   private String title;
 
+  /**
+   * Construct an unresolved KeyImpl which will be configured and resolved
+   *   manually by the containing object.
+   */
+  public KeyImpl()
+  { }
+
+  
+  public KeyImpl(FieldSet fieldSet,String fieldList)
+    throws DataException
+  { super(fieldSet,StringUtil.tokenize(fieldList,","));
+  }
+  
   public String getName()
   { return name;
   }
@@ -67,17 +81,7 @@ public class KeyImpl<T>
   { this.title=title;
   }
   
-  /**
-   * Construct an unresolved KeyImpl which will be configured and resolved
-   *   manually by the containing object.
-   */
-  public KeyImpl()
-  { }
-  
-//  public KeyImpl(FieldSet fieldSet,String fieldList)
-//  {
-//  
-//  }
+
   
   /**
    * @return The Scheme to which this Key belongs.
@@ -196,7 +200,10 @@ public class KeyImpl<T>
       { 
         
         throw new FieldNotFoundException
-          ("Error binding Key "+name,scheme.getType(),fieldName);
+          ("Error binding Key "+name
+           ,scheme!=null?scheme.getType():null
+           ,fieldName
+          );
       }
       addMasterField(masterField.getName(),masterField);
     }
@@ -265,6 +272,9 @@ public class KeyImpl<T>
     throws DataException
    
   {
+    if (scheme==null)
+    { return;
+    }
     EquiJoin ej=new EquiJoin();
     Expression<?>[] rhsExpressions=new Expression<?>[fieldNames.length];
     int i=0;
@@ -294,6 +304,9 @@ public class KeyImpl<T>
   protected void createLocalSelection()
     throws DataException
   {
+    if (scheme==null)
+    { return;
+    }
     StringBuilder expression=new StringBuilder();
     for (String fieldName: fieldNames)
     { 
@@ -323,6 +336,10 @@ public class KeyImpl<T>
   private void createForeignEquiJoin()
     throws DataException
   {
+    if (scheme==null)
+    { return;
+    }
+    
     EquiJoin ej=new EquiJoin();
 //    ej.setDebug(true);
     
@@ -378,6 +395,10 @@ public class KeyImpl<T>
   protected void createForeignSelection()
     throws DataException
   {
+    if (scheme==null)
+    { return;
+    }
+    
     // XXX May be obsolete
     StringBuilder expression=new StringBuilder();
     String[] foreignFieldNames=importedKey.getFieldNames();
