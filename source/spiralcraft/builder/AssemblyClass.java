@@ -802,7 +802,7 @@ public class AssemblyClass
     { throw new BuildException(message+" ("+sourceURI.toString()+")",cause);
     }
     else
-    { throw new BuildException(message,cause);
+    { throw new BuildException(message+" ("+toString()+")",cause);
     }
   }
 
