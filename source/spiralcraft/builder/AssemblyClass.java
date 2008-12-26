@@ -31,6 +31,7 @@ import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.lang.ClassUtil;
 
 import spiralcraft.vfs.classpath.ClasspathResourceFactory;
 
@@ -65,6 +66,7 @@ public class AssemblyClass
     return !clazz.isPrimitive()
      && !(clazz.isArray() && !isManaged(clazz.getComponentType()))
      && !(clazz==String.class)
+     && ClassUtil.primitiveEquivalent(clazz)==null
      ;
   }
   
@@ -312,7 +314,7 @@ public class AssemblyClass
    * Return the specified member of this AssemblyClass or its inheritance
    *   chain.
    */
-  private PropertySpecifier getMember(String name,boolean discover)
+  PropertySpecifier getMember(String name,boolean discover)
     throws BuildException
   { 
     PropertySpecifier member=null;
@@ -321,7 +323,7 @@ public class AssemblyClass
     }
     
     if (member==null && _baseAssemblyClass!=null)
-    { member=_baseAssemblyClass.getMember(name);
+    { member=_baseAssemblyClass.getMember(name,discover);
     }
        
     if (member==null && _javaClass!=null)
@@ -405,6 +407,9 @@ public class AssemblyClass
           (innerSubclass(sourceBaseClass)
           );
       }
+    }
+    else
+    { // log.fine("Adding empty member "+member+" to "+toString());
     }
     
     if (_resolving || _resolved)

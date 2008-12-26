@@ -1,15 +1,21 @@
+import spiralcraft.lang.reflect.BeanFocus;
+import spiralcraft.data.persist.XmlAssembly;
+
 // BUILDER TEST
 show(); 
 
 
 
+"//";
+"// Builder Standard mode";
+"//";
 
 
 "//";
 "// Builder Data mode";
 "//";
-x=new spiralcraft.lang.reflect.BeanFocus
-  (new spiralcraft.data.persist.XmlAssembly
+x=new BeanFocus
+  (new XmlAssembly
     (URI.create("class:/spiralcraft/builder/test/MyWidget.assy"),null)
     .get()
   );
@@ -19,3 +25,24 @@ b=x.getSubject().get();
 b.getAliases()[0];
 b.getAliases()[1];
 b.getAliases()[2];
+
+x=new BeanFocus
+  (new XmlAssembly
+    (URI.create("class:/spiralcraft/builder/test/MyOtherWidget.assy"),null)
+    .get()
+  );
+x.getSubject();
+b=x.getSubject().get();
+
+"//";
+"// Configure already contained bean"; 
+x=new BeanFocus
+  (new XmlAssembly
+    (URI.create("class:/spiralcraft/builder/test/MyFoo.assy"),null)
+    .get()
+  );
+x.getSubject();
+b=x.getSubject().get();
+b=x.getSubject().get().getFriend();
+
+    

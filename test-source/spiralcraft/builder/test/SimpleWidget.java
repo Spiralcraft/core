@@ -32,7 +32,7 @@ public class SimpleWidget
   private boolean _on;
   private float _amount;
   private long _milliseconds;
-  private SimpleWidget _friend;
+  protected SimpleWidget _friend;
   private SimpleWidget[] _children;
   private String[] _aliases;
   private DateFormat _dateFormat;

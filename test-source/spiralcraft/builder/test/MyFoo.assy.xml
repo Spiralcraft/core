@@ -1,0 +1,19 @@
+<!--
+  Create an assembly which exposes a JavaBean naming context for
+    access to the properties of SimpleWidget. 
+    
+  New instances of the assembly will configure MyWidget with the
+    specified properties.
+    
+  Assemblies which extend this assembly will inherit the property
+    settings for MyWidget and its 'friend' widget.
+-->
+
+<Foo>
+
+  <title>My Foo</title>
+
+  <friend.title>My renamed friend</friend.title>
+  <friend.id>2</friend.id>
+
+</Foo>

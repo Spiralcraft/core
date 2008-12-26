@@ -432,7 +432,11 @@ public class PropertySpecifier
           if (contents==null || contents.size()==0)
           { 
             throw new BuildException
-              ("Property '"+pathElement+"' does not contain any Assemblies");
+              ("Property '"+pathElement
+              +"' does not contain any Assemblies (in "
+              +localContainer
+              +"'"
+              );
           }
 
           if (contents.size()>1)
