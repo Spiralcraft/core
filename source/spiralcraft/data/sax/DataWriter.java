@@ -78,7 +78,7 @@ public class DataWriter
     (OutputStream out
     ,DataComposite data
     )
-    throws IOException,DataException
+    throws DataException
   {
     try
     { new Context(out).write(data);
@@ -110,7 +110,7 @@ class Context
   }
   
   public void write(DataComposite data)
-    throws IOException,SAXException,DataException
+    throws SAXException,DataException
   {
     if (data==null)
     { 
@@ -135,7 +135,7 @@ class Context
    */
   abstract class Frame
   { 
-    protected String qName;
+//    protected String qName;
     protected final Frame parentFrame;
     protected final String indentString;
 

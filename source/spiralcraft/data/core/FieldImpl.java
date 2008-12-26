@@ -319,6 +319,8 @@ public class FieldImpl<T>
   
   /**
    * Set the data Type
+   * 
+   * @throws DataException
    */
   public void setType(Type<T> type)
     throws DataException

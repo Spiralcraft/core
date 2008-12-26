@@ -264,7 +264,7 @@ class Base64Input
    * @return The number of bytes read
    */
   public int read(byte[] chunk)
-    throws IOException,CodecException
+    throws IOException
   {
     int chunkPos=0;
     while (!done && chunkPos<4)

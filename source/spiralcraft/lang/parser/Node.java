@@ -29,13 +29,15 @@ import java.util.List;
 public abstract class Node
 {
 
-  protected static final ClassLog log
-    =ClassLog.getInstance(Node.class);
+  protected final ClassLog log
+    =ClassLog.getInstance(getClass());
   
   /**
    * Stubbed bind method for unimplemented nodes.
    *
-   *@return An optic with no functionality
+   * @param focus 
+   * @return An optic with no functionality
+   * @throws BindException 
    */
   public Channel<?> bind(Focus<?> focus)
     throws BindException

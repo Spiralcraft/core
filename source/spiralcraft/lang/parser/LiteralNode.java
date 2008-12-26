@@ -27,15 +27,7 @@ public class LiteralNode<X>
   private final SimpleChannel<X> _optic;
 
   public LiteralNode(X value,Class<X> valueClass)
-  { 
-    try
-    { 
-//      System.out.println("LiteralNode: Creating SimpleBinding with "+value);
-      _optic=new SimpleChannel<X>(valueClass,value,true);
-    }
-    catch (BindException x)
-    { throw new IllegalArgumentException(x.toString());
-    }
+  { _optic=new SimpleChannel<X>(valueClass,value,true);
   }
   
   LiteralNode(SimpleChannel<X> _optic)
@@ -61,7 +53,7 @@ public class LiteralNode<X>
       .append("Literal: ").append(_optic.getContentType().getName())
       .append(":[")
       .append(_optic.get().toString())
-      .append("]");
+      .append("]")
       ;
   }
 

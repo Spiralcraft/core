@@ -36,7 +36,6 @@ public class JarArchive
   private JarFile jarFile;
   
   public JarArchive(FileResource resource)
-    throws IOException
   { this.resource=resource;
   }
     

@@ -14,7 +14,6 @@
 //
 package spiralcraft.lang.spi;
 
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
@@ -31,17 +30,8 @@ import spiralcraft.lang.spi.Translator;
 public abstract class ArrayEqualityTranslator<T>
   implements Translator<Boolean,T>
 {
-  private final Reflector<Boolean> _reflector;
-  
-  public ArrayEqualityTranslator()
-  { 
-    try
-    { _reflector=BeanReflector.getInstance(Boolean.class);
-    }
-    catch (BindException x)
-    { throw new RuntimeException("Couldn't bind boolean");
-    }
-  }
+  private final Reflector<Boolean> _reflector
+    =BeanReflector.getInstance(Boolean.class);
   
   public Reflector<Boolean> getReflector()
   { return _reflector;

@@ -28,7 +28,7 @@ public class ContextLog
        @Override
        public Log defaultValue()
        { return DEFAULT_LOG;
-       };
+       }
     };
   
   public static void push(Log log)

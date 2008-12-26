@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.core;
 
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.reflect.BeanReflector;
 
 import spiralcraft.data.DataException;
@@ -43,18 +42,7 @@ public class BeanField<T>
     throws DataException
   {
     super.setType(type);
-    try
-    { contentReflector=BeanReflector.getInstance(type.getNativeClass());
-    }
-    catch (BindException x)
-    { 
-      throw new DataException
-        ("Could not find spiralcraft.lang.reflect.BeanReflector for Class "
-        +type.getNativeClass().getName()
-        ,x
-        );
-    }    
-    
+    contentReflector=BeanReflector.getInstance(type.getNativeClass());    
   }
   
 }

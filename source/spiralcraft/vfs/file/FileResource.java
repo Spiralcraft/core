@@ -44,7 +44,6 @@ public class FileResource
   }
   
   public FileResource(URI uri)
-    throws UnresolvableURIException
   { 
     super(uri);
     _file=new File(uri);
@@ -126,15 +125,7 @@ public class FileResource
   
   @Override
   public Resource getParent()
-  { 
-    try
-    { return new FileResource(_file.getParentFile().toURI());
-    }
-    catch (UnresolvableURIException x)
-    { 
-      x.printStackTrace();
-      return null;
-    }
+  { return new FileResource(_file.getParentFile().toURI());
   }
 
   @Override
@@ -177,22 +168,16 @@ public class FileResource
 
   private void makeContents()
   { 
-    try
+    File[] contents=_file.listFiles();
+    if (contents!=null)
     {
-      File[] contents=_file.listFiles();
-      if (contents!=null)
-      {
-        _contents=new Resource[contents.length];
-        for (int i=0;i<contents.length;i++)
-        { _contents[i]=new FileResource(contents[i].toURI());
-        }
-      }
-      else
-      { _contents=null;
+      _contents=new Resource[contents.length];
+      for (int i=0;i<contents.length;i++)
+      { _contents[i]=new FileResource(contents[i].toURI());
       }
     }
-    catch (UnresolvableURIException x)
-    { x.printStackTrace();
+    else
+    { _contents=null;
     }
   }
   

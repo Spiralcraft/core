@@ -15,7 +15,6 @@
 package spiralcraft.lang.reflect;
 
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.Translator;
 
@@ -28,7 +27,6 @@ class BeanFieldTranslator<Tprop,Tbean>
   private final Reflector<Tprop> _reflector;
   
   public BeanFieldTranslator(Field field)
-    throws BindException
   { 
     _field=field;
     _reflector=BeanReflector.<Tprop>getInstance(_field.getType());

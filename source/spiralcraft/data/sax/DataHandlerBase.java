@@ -309,6 +309,10 @@ public abstract class DataHandlerBase
     }
     
 
+    /**
+     * @param uri
+     * @param localName
+     */
     public final void endElement
       (String uri
       ,String localName
@@ -401,6 +405,8 @@ public abstract class DataHandlerBase
      *   the document structure and made the current frame, but before this
      *   frame starts processing sub-frames
      * </p>
+     * 
+     * @throws DataException 
      */
     protected void openFrame()
       throws DataException
@@ -411,6 +417,8 @@ public abstract class DataHandlerBase
      * <p>Can be overridden to do something once this frame has received all
      *   its data but before control is returned to the parent frame.
      * </p>
+     * @throws SAXException 
+     * @throws DataException 
      */
     protected void closeFrame()
       throws SAXException,DataException

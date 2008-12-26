@@ -134,11 +134,9 @@ class ArrayIndexHelper
   
   @SuppressWarnings("unchecked") // Upcasts bc/we narrowed operation type
   public static final <T,C> Channel<T> bind
-    (Focus<?> focus
-     ,Channel<C> collection
+    (Channel<C> collection
      ,Channel selector
      )
-     throws BindException
   {
     return new TranslatorChannel<T,T[]>
       ((Channel<T[]>) collection

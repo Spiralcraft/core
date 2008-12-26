@@ -83,7 +83,6 @@ public class StringType
       private final Channel<String> source;
     
       public StringLengthRuleChannel(Focus<String> focus)
-        throws BindException
       { source=focus.getSubject();
       }      
           

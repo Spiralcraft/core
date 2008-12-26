@@ -93,12 +93,7 @@ public class ProjectionImpl<T>
       }
       addMasterField(fieldName,masterField);
     }
-    try
-    { reflector=new TupleReflector<Tuple>(this,Tuple.class);
-    }
-    catch (BindException x)
-    { throw new DataException(x.toString());
-    }
+    reflector=new TupleReflector<Tuple>(this,Tuple.class);
   }
 
 
@@ -115,12 +110,8 @@ public class ProjectionImpl<T>
       fields.add(field);
       fieldMap.put(field.getName(),field);
     }
-    try
-    { reflector=new TupleReflector<Tuple>(this,Tuple.class);
-    }
-    catch (BindException x)
-    { throw new DataException(x.toString());
-    }
+    reflector=new TupleReflector<Tuple>(this,Tuple.class);
+    
   }  
   
   private <X> ProjectionFieldImpl<X> makeField(Expression<X> expression)

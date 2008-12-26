@@ -16,7 +16,6 @@ package spiralcraft.lang.reflect;
 
 
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.util.ArrayUtil;
@@ -37,7 +36,6 @@ class MethodTranslator<Tprop,Tbean>
   private final boolean _staticMethod;
   
   public MethodTranslator(Method method)
-    throws BindException
   { 
     _method=method;
     _staticMethod=Modifier.isStatic(method.getModifiers());

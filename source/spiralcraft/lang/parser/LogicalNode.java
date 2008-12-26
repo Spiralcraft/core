@@ -19,7 +19,6 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
-import spiralcraft.lang.Reflector;
 
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
@@ -28,8 +27,6 @@ public abstract class LogicalNode<T1,T2>
   extends BooleanNode
   implements Translator<Boolean,T1>
 {
-  public static Reflector<Boolean> BOOLEAN_REFLECTOR;
-  
   protected final Node _op1;
   protected final Node _op2;
 

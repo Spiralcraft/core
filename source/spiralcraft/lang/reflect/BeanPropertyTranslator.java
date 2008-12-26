@@ -21,7 +21,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import spiralcraft.beans.MappedBeanInfo;
 
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.Translator;
@@ -46,7 +45,6 @@ class BeanPropertyTranslator<Tprop,Tbean>
   
   @SuppressWarnings("unchecked") // PropertyDescriptor is not generic
   public BeanPropertyTranslator(PropertyDescriptor property,MappedBeanInfo beanInfo)
-    throws BindException
   { 
     
     _property=property;

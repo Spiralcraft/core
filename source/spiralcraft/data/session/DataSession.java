@@ -238,7 +238,7 @@ public class DataSession
     implements Branch
   {
 
-    private ArrayList<BufferTuple> buffers
+    private ArrayList<BufferTuple> branchBuffers
       =new ArrayList<BufferTuple>();
     
     private HashMap<Type<?>,DataConsumer<DeltaTuple>> updaterMap
@@ -247,7 +247,7 @@ public class DataSession
     private State state=State.STARTED;
 
     public void addBuffer(BufferTuple buffer)
-    { buffers.add(buffer);
+    { branchBuffers.add(buffer);
     }
     
     public  DataConsumer<DeltaTuple> getUpdater(Type<?> type)
@@ -272,7 +272,7 @@ public class DataSession
     public void prepare()
       throws TransactionException
     {
-      Iterator<BufferTuple> it=buffers.iterator();
+      Iterator<BufferTuple> it=branchBuffers.iterator();
       while (it.hasNext())
       { 
         BufferTuple tuple=it.next();
@@ -304,7 +304,7 @@ public class DataSession
       throws TransactionException
     {
       // TODO Auto-generated method stub
-      Iterator<BufferTuple> it=buffers.iterator();
+      Iterator<BufferTuple> it=branchBuffers.iterator();
       while (it.hasNext())
       { 
         it.next().rollback();
@@ -318,7 +318,7 @@ public class DataSession
     public void commit()
       throws TransactionException
     {
-      Iterator<BufferTuple> it=buffers.iterator();
+      Iterator<BufferTuple> it=branchBuffers.iterator();
       while (it.hasNext())
       { 
         BufferTuple buffer=it.next();
@@ -339,9 +339,9 @@ public class DataSession
     @Override
     public void complete()
     {
-      if (!buffers.isEmpty())
+      if (!branchBuffers.isEmpty())
       { 
-        Iterator<BufferTuple> it=buffers.iterator();
+        Iterator<BufferTuple> it=branchBuffers.iterator();
         while (it.hasNext())
         { 
           it.next().rollback();

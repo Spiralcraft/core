@@ -312,8 +312,6 @@ public class Selection
 class SelectionBinding<Tq extends Selection,Tt extends Tuple>
   extends UnaryBoundQuery<Tq,Tt,Tt>
 {
-  private static final ClassLog log=ClassLog.getInstance(SelectionBinding.class);
-
   private final Focus<?> paramFocus;
   private Focus<Tt> focus;
   private Channel<Boolean> filter;
@@ -467,13 +465,13 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     @Override
     public Type<?> getResultType()
     { 
-      Type<?> ret=sourceCursor.getResultType();
+      Type<?> ret=scrollableSourceCursor.getResultType();
       if (ret!=null)
       { return ret;
       }
       else
       { 
-        log.fine("Source cursor result type is null "+sourceCursor);
+        log.fine("Source cursor result type is null "+scrollableSourceCursor);
         return null;
       }
     }

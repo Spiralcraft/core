@@ -131,13 +131,13 @@ public class QueryField
   public class QueryFieldChannel
     extends AbstractChannel<DataComposite>
   {
-    private BoundQuery query;
+    private BoundQuery boundQuery;
         
     public QueryFieldChannel(Type<?> type,BoundQuery query)
       throws BindException
     { 
       super(DataReflector.<DataComposite>getInstance(type));
-      this.query=query;
+      this.boundQuery=query;
     }
     
     @Override
@@ -162,9 +162,9 @@ public class QueryField
         
         if (getType().isAggregate())
         { 
-          SerialCursor cursor=query.execute();
+          SerialCursor cursor=boundQuery.execute();
           if (cursor.getResultType()==null)
-          { log.fine("Field "+getURI()+": cursor result type is null "+cursor+" from "+query
+          { log.fine("Field "+getURI()+": cursor result type is null "+cursor+" from "+boundQuery
                     );
           }
           
@@ -177,7 +177,7 @@ public class QueryField
         else
         { 
           Tuple val=null;
-          SerialCursor cursor=query.execute();
+          SerialCursor cursor=boundQuery.execute();
           while (cursor.dataNext())
           { 
             if (val!=null)

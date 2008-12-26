@@ -41,7 +41,7 @@ public class OrderElement<T>
     
   private Expression<T> expression;
   private int weight=1;
-  private Comparator<T> comparator;
+  private Comparator<T> specifiedComparator;
   private boolean nullLast;
   private boolean debug;
   
@@ -118,11 +118,11 @@ public class OrderElement<T>
   }
   
   public Comparator<T> getComparator()
-  { return comparator;
+  { return specifiedComparator;
   }
   
   public void setComparator(Comparator<T> comparator)
-  { this.comparator=comparator;
+  { this.specifiedComparator=comparator;
   }
   
   public void setNullLast(boolean val)
@@ -149,7 +149,7 @@ public class OrderElement<T>
     extends AbstractChannel<Integer>
   {
     private final Channel<T> chA,chB;
-    private Comparator<T> comparator=OrderElement.this.comparator;
+    private Comparator<T> comparator=OrderElement.this.specifiedComparator;
     
     @SuppressWarnings("unchecked")
     public OrderElementChannel(Channel<T> chA,Channel<T> chB)

@@ -225,7 +225,6 @@ final class ClassUtilities {
     Class<?>[] interfaces = aClass.getInterfaces();
 
     for (int i = 0; i < interfaces.length; ++i) {
-      overriddenMethod = null;
 
       if (classIsAccessible(interfaces[i])) {
         try {
@@ -239,7 +238,6 @@ final class ClassUtilities {
       }
     }
 
-    overriddenMethod = null;
 
     // Try superclass's superclass and implemented interfaces.
     if (superclass != null) {

@@ -34,16 +34,14 @@ public class FileArchive
   extends Archive
 {
   
-  private FileResource resource;
+  private FileResource rootResource;
   
   public FileArchive(File file)
-    throws IOException
   { this(new FileResource(file));
   }
   
   public FileArchive(FileResource resource)
-    throws IOException
-  { this.resource=resource;
+  { this.rootResource=resource;
   }
   
   
@@ -51,19 +49,19 @@ public class FileArchive
   public void open()
     throws IOException
   {
-    if (!resource.exists())
-    { throw new IOException("Resource not found "+resource.getURI());
+    if (!rootResource.exists())
+    { throw new IOException("Resource not found "+rootResource.getURI());
     }
     
-    if (resource.asContainer()==null)
-    { throw new IOException("Resource is not a directory "+resource.getURI());
+    if (rootResource.asContainer()==null)
+    { throw new IOException("Resource is not a directory "+rootResource.getURI());
     }
     
   }
   
   @Override
   public String toString()
-  { return super.toString()+":"+resource.getURI();
+  { return super.toString()+":"+rootResource.getURI();
   }
   
   @Override
@@ -77,7 +75,7 @@ public class FileArchive
   {
     FileResource fileResource
       =(FileResource) Resolver.getInstance().resolve
-        (resource.getURI().resolve(path));
+        (rootResource.getURI().resolve(path));
     
     if (fileResource.exists())
     { return new FileEntry(fileResource);

@@ -69,7 +69,6 @@ public class ArrayReflector<I>
   // Map is heterogeneous, T is ambiguous for VoidReflector
   public static final synchronized <I> ArrayReflector<I> 
     getInstance(Reflector<I> componentReflector)
-    throws BindException
   { 
     ArrayReflector<I> result=null;
     WeakReference<ArrayReflector> ref=reflectorMap.get(componentReflector);
@@ -176,7 +175,6 @@ public class ArrayReflector<I>
   
 
   private synchronized <X> Channel<X> getArrayProperty(Channel<I[]> source,String name)
-    throws BindException
   {
     Translator<X,I[]> translator=null;
     if (name.equals("length"))

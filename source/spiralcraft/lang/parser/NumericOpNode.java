@@ -75,14 +75,13 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
     if (String.class.isAssignableFrom(op1.getContentType()))
     { return (Channel<T1>) (Object) 
         StringBindingHelper.bindString
-          (focus,(Channel<String>) (Object) op1,op2,_op);
+          ((Channel<String>) (Object) op1,op2,_op);
     }
     else if (ClassUtil.isNumber(op1.getContentType()))
     { 
       return (Channel<T1>) (Object)
         NumberBindingHelper.bindNumber
-        (focus
-        ,(Channel<? extends Number>) op1
+        ((Channel<? extends Number>) op1
         ,(Channel<? extends Number>) op2
         ,_op
         );
@@ -113,23 +112,13 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
 class StringBindingHelper
 {
 
-  private static Translator<String,String> _stringConcatTranslator;
-  static
-  {
-    try
-    { 
-      _stringConcatTranslator
-        =new StringConcatTranslator
-          (BeanReflector.<String>getInstance(String.class)
-          );
-    }
-    catch (BindException x)
-    { x.printStackTrace();
-    }
-  }
+  private static Translator<String,String> _stringConcatTranslator
+    =new StringConcatTranslator
+      (BeanReflector.<String>getInstance(String.class)
+      );
   
   public static final Channel<String> 
-    bindString(Focus<?> focus,Channel<String> op1,Channel<?> op2,char operator)
+    bindString(Channel<String> op1,Channel<?> op2,char operator)
     throws BindException
   {
     if (operator=='+')
@@ -172,7 +161,7 @@ class NumberBindingHelper
   
   @SuppressWarnings("unchecked")
   public static final <Tret extends Number,T1 extends Tret,T2 extends Tret> Channel<Tret> 
-    bindNumber(Focus<?> focus,Channel<T1> op1,Channel<T2> op2,char operator)
+    bindNumber(Channel<T1> op1,Channel<T2> op2,char operator)
     throws BindException
   {
     
@@ -555,6 +544,11 @@ abstract class NumericTranslator<Tret extends Number,T1 extends Tret,T2 extends 
   
   protected abstract Tret get(T1 val1,T2 val2);
   
+  /**
+   * 
+   * @param val1
+   * @param val2 
+   */
   protected T1 set(Tret val1,T2 val2)
   { throw new UnsupportedOperationException(oper+" is not reversible");
   }

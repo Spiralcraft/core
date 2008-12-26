@@ -70,7 +70,6 @@ public class TupleReflector<T extends Tuple>
   
 
   TupleReflector(Type<?> type,Class<T> contentType)
-    throws BindException
   { 
     super(type);
     this.fieldSet=type.getFieldSet();
@@ -81,7 +80,6 @@ public class TupleReflector<T extends Tuple>
   }
   
   public TupleReflector(FieldSet fieldSet,Class<T> contentType)
-    throws BindException
   { 
     super(fieldSet.getType());
     this.fieldSet=fieldSet;
@@ -177,8 +175,6 @@ public class TupleReflector<T extends Tuple>
     
     if (field!=null)
     {
-      Channel binding=null;
-      
       Focus tupleFocus;
       
       // Make sure the Focus for evaluating expressions in the Scheme is 
@@ -192,9 +188,8 @@ public class TupleReflector<T extends Tuple>
       { tupleFocus=focus;
       }
               
-      if (binding==null)
-      { binding=field.bindChannel(tupleFocus);
-      }
+      Channel binding=field.bindChannel(tupleFocus);
+      
       
       if (binding!=null)
       { return binding;      

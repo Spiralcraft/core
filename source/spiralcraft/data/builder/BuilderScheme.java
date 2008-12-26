@@ -18,7 +18,6 @@ import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
-import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataException;
 
 import spiralcraft.data.reflect.ReflectionField;
@@ -49,17 +48,14 @@ public class BuilderScheme
     =new HashMap<String,PropertySpecifier>();
   
   private final AssemblyClass assemblyClass;
-  private final TypeResolver resolver;
   private final ReflectionType<?> reflectionType;
   
   public BuilderScheme
-    (TypeResolver resolver
-    ,Type<?> type
+    (Type<?> type
     ,AssemblyClass assemblyClass
     )
     throws DataException
   { 
-    this.resolver=resolver;
     this.type=type;
     this.assemblyClass=assemblyClass;
     Type<?> nativeTypeWrapper
@@ -127,8 +123,7 @@ public class BuilderScheme
     }
     
     BuilderField field = new BuilderField
-      (resolver
-      ,prop
+      (prop
       ,reflectionType!=null
         ?(ReflectionField) reflectionType.getField(prop.getTargetName())
         :null

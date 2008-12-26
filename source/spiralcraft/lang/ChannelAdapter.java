@@ -36,7 +36,7 @@ public abstract class ChannelAdapter<T>
    */
   public T get()
   { return null;
-  };
+  }
 
   /**
    * The target cannot be modified 

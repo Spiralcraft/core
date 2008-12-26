@@ -28,7 +28,7 @@ import spiralcraft.data.lang.CursorBinding;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.Focus;
+//import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 
 class UnionBinding<Tq extends Union,Tt extends Tuple>
@@ -45,7 +45,7 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
   @SuppressWarnings("unchecked")
   public UnionBinding
     (Tq query
-    ,Focus<?> paramFocus
+//    ,Focus<?> paramFocus
     ,Queryable<?> store
     )
     throws DataException

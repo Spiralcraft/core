@@ -111,7 +111,7 @@ public abstract class StepControl
     for (;nextStepNum<_steps.length 
           && _steps[nextStepNum].getSkipNext()
         ;nextStepNum++
-        );
+        ) {}
     
     
     Step nextStep=_steps[nextStepNum];
@@ -128,7 +128,7 @@ public abstract class StepControl
     for (;nextStepNum>=0 
           && _steps[nextStepNum].getSkipBack()
         ;nextStepNum--
-        );
+        ) {}
     
     
     Step nextStep=_steps[nextStepNum];

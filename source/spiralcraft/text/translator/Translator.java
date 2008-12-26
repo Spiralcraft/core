@@ -15,7 +15,6 @@
 package spiralcraft.text.translator;
 
 import spiralcraft.lang.AccessException;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.reflect.BeanReflector;
@@ -74,7 +73,6 @@ class TranslatorChannel
     (Translator translator
     ,Channel<String> source
     )
-    throws BindException
   { 
     super(BeanReflector.<String>getInstance(String.class));
     this.translator=translator;

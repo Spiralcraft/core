@@ -15,7 +15,6 @@
 package spiralcraft.lang.reflect;
 
 import spiralcraft.lang.AccessException;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 
@@ -29,7 +28,6 @@ public class BeanFocus<T>
   SimpleChannel<T> binding;
   
   public BeanFocus(Class<T> clazz,T bean)
-    throws BindException
   { 
     binding=new SimpleChannel<T>(clazz,bean,false);
     setSubject(binding);
@@ -37,7 +35,6 @@ public class BeanFocus<T>
   
   @SuppressWarnings("unchecked") // Stupid cast 
   public BeanFocus(T bean)
-    throws BindException
   { 
     binding=new SimpleChannel<T>( (Class<T>) bean.getClass(),bean,true);
     setBean(bean);

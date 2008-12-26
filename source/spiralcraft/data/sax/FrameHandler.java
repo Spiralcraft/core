@@ -76,7 +76,7 @@ public abstract class FrameHandler
     public ForeignDataHandler.HandledFrame peek()
     { return get().peek();
     }
-  };
+  }
 
   private String elementURI;
   private LinkedHashMap<String,FrameHandler> childMap

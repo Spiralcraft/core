@@ -86,10 +86,7 @@ public class ParseTreeFactory
     { toOutputStream(parseTree,out);
     }
     finally
-    { 
-      if (out!=null)
-      { out.close();
-      }
+    { out.close();
     }
   }
 
@@ -126,7 +123,7 @@ public class ParseTreeFactory
    * Write a parse tree to an OutputStream.
    */
   public static void toOutputStream(ParseTree tree,OutputStream out)
-    throws SAXException,IOException
+    throws SAXException
   {
     XmlWriter writer=new XmlWriter(out);
     tree.playEvents(writer);

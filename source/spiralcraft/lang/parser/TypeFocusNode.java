@@ -22,8 +22,6 @@ import spiralcraft.lang.BindException;
 import java.net.URI;
 import java.util.HashSet;
 
-
-import spiralcraft.log.ClassLog;
 import spiralcraft.lang.TypeModel;
 
 /**
@@ -36,10 +34,7 @@ import spiralcraft.lang.TypeModel;
 public class TypeFocusNode
   extends FocusNode
 {
-  @SuppressWarnings("unused")
-  private static final ClassLog log
-    =ClassLog.getInstance(TypeFocusNode.class);
-  
+ 
   private static final URI NULL_URI=URI.create("");
   
   private final String suffix;

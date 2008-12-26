@@ -26,7 +26,6 @@ public class BufferReflector<T extends Tuple>
 {
 
   BufferReflector(Type<?> type,Class<T> contentType)
-    throws BindException
   { super(type,contentType);
   }
   

@@ -226,9 +226,7 @@ public class Path
     { return false;
     }
     Path path=(Path) o;
-    if (path==null)
-    { return false;
-    }
+
     if (path.isAbsolute()!=_absolute)
     { return false;
     }

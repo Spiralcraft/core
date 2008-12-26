@@ -53,11 +53,6 @@ public class ForeignDataHandler
   }
   
 
-
-  protected void pushResource(URI uri)
-  { 
-  }
-
   class HandledFrame
     extends Frame
   {

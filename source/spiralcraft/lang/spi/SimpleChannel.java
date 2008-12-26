@@ -14,7 +14,6 @@
 //
 package spiralcraft.lang.spi;
 
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 
@@ -39,7 +38,6 @@ public class SimpleChannel<T>
    */
   @SuppressWarnings("unchecked") // does not return properly scoped class
   public SimpleChannel(T val,boolean isConstant)
-    throws BindException
   { 
     super(BeanReflector.<T>getInstance((Class<T>) val.getClass()),isConstant);
     _object=val;
@@ -48,7 +46,6 @@ public class SimpleChannel<T>
   }
 
   public SimpleChannel(Class<T> clazz,T val,boolean isConstant)
-    throws BindException
   { 
      
     super(BeanReflector.<T>getInstance(clazz),isConstant);

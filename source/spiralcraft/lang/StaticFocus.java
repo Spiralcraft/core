@@ -35,7 +35,6 @@ public class StaticFocus<T>
   private final StaticChannel<T> binding;
   
   public StaticFocus(Focus<?> parentFocus,Class<T> clazz)
-    throws BindException
   { 
     setParentFocus(parentFocus);
     binding=new StaticChannel<T>(clazz);
@@ -79,7 +78,6 @@ class StaticChannel<T>
 {
 
   public StaticChannel(Class<T> clazz)
-    throws BindException
   { super(BeanReflector.<T>getInstance(clazz));
   }
   

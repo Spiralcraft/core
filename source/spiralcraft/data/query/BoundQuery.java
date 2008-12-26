@@ -43,8 +43,8 @@ import spiralcraft.log.ClassLog;
  */
 public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
 {
-  protected static final ClassLog log
-    =ClassLog.getInstance(BoundQuery.class);
+  protected final ClassLog log
+    =ClassLog.getInstance(getClass());
   
   private Tq query;
   // private BoundQueryBinding resultBinding;
@@ -83,13 +83,15 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
   
   
   /**
-   * <P>A BoundQuery is often composed of nested BoundQueries, which form a 
+   * <p>A BoundQuery is often composed of nested BoundQueries, which form a 
    *   data flow  tree. Once the tree is created, the field names and parameter
    *   references must be resolved to various points in this data flow tree.
    *   In some cases, nodes in this data flow tree may be collapsed for 
    *   efficiency.
    *   
-   * <P>
+   * </p>
+   * 
+   * @throws DataException
    */
   public void resolve()
     throws DataException

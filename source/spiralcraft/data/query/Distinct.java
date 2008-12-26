@@ -147,7 +147,6 @@ public class Distinct
 class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
   extends UnaryBoundQuery<Tq,T,Ts>
 {
-  private static final ClassLog log=ClassLog.getInstance(SelectionBinding.class);
 
   private final Focus<?> paramFocus;
   private Focus<Ts> focus;

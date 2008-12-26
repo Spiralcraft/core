@@ -130,13 +130,7 @@ public abstract class FocusWrapper<tFocus>
   public Channel<Focus<tFocus>> getSelfChannel()
   {
     if (selfChannel==null)
-    { 
-      try
-      { selfChannel=new SimpleChannel<Focus<tFocus>>(this,true);
-      }
-      catch (BindException x)
-      { x.printStackTrace();
-      }
+    { selfChannel=new SimpleChannel<Focus<tFocus>>(this,true);
     }
     return selfChannel;
   }

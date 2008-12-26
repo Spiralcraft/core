@@ -34,12 +34,10 @@ public class PushbackParserContext
   private ParsePosition position=new ParsePosition();
 
   public PushbackParserContext(PushbackReader reader)
-    throws ParseException
   { this._reader=reader;
   }
 
   public PushbackParserContext(CharSequence text)
-    throws ParseException
   { this._reader=new PushbackReader(new CharSequenceReader(text));
   }
 

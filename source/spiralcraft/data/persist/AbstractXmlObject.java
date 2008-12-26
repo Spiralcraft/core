@@ -200,7 +200,6 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
    * The subclass extending this should call load() once construction is complete.
    */
   protected AbstractXmlObject(URI typeURI,URI instanceURI)
-    throws PersistenceException
   { 
     this.typeURI=typeURI;
     this.instanceURI=instanceURI;

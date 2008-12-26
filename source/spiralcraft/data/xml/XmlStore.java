@@ -51,7 +51,6 @@ import spiralcraft.data.session.BufferType;
 import spiralcraft.data.spi.AbstractStore;
 import spiralcraft.data.spi.BaseExtentQueryable;
 import spiralcraft.data.spi.EditableArrayTuple;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
@@ -148,7 +147,6 @@ public class XmlStore
   }
   
   private void addSequences(Type<?> subtype)
-    throws BindException
   {
       if (subtype.getScheme()!=null)
       {
@@ -307,16 +305,7 @@ public class XmlStore
     }
 
     for (Queryable<?> queryable:queryables.values())
-    { 
-      try
-      { addSequences(queryable.getTypes()[0]);
-      }
-      catch (BindException x)
-      { 
-        throw new LifecycleException
-          ("Error initializing sequences for "+queryable,x);
-      }
-
+    { addSequences(queryable.getTypes()[0]);
     }
     
     for (XmlSequence sequence : sequences.values())
@@ -366,7 +355,6 @@ public class XmlStore
     
     
     public XmlUpdater(Focus<?> context,XmlQueryable queryable)
-      throws DataException
     { 
       super(context);
       this.queryable=queryable;
@@ -447,16 +435,11 @@ public class XmlStore
         
         addList.add(newTuple);
         
-        try
-        { 
-          if (debug)
-          {
-            debugWriter.writeToOutputStream(System.out, tuple);
-            System.out.flush();
-          }
-        }
-        catch (IOException x)
-        { x.printStackTrace();
+
+        if (debug)
+        {
+          debugWriter.writeToOutputStream(System.out, tuple);
+          System.out.flush();
         }
       }
       else if (!tuple.isDelete())
@@ -625,7 +608,6 @@ public class XmlStore
     private URI uri;
     
     public XmlSequence (URI uri)
-      throws BindException
     { 
       this.uri=uri;
       uriFocus=new SimpleFocus<URI>(new SimpleChannel<URI>(uri,true));

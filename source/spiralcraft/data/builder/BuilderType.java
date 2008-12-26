@@ -70,7 +70,6 @@ public class BuilderType
   }
   
   public static final boolean isApplicable(URI uri)
-    throws DataException
   { return uri.getPath().endsWith(".assy");
   }
 
@@ -223,7 +222,6 @@ public class BuilderType
     (BuilderType outerType
     ,AssemblyClass innerClass
     )
-    throws DataException
   { 
     super
       (outerType.getTypeResolver()
@@ -281,7 +279,7 @@ public class BuilderType
           (canonicalURI(baseAssemblyClass)
           );
     }
-    BuilderScheme scheme=new BuilderScheme(resolver,this,targetAssemblyClass);
+    BuilderScheme scheme=new BuilderScheme(this,targetAssemblyClass);
     scheme.addFields();
     this.scheme=scheme;
     super.link();

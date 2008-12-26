@@ -16,7 +16,6 @@ package spiralcraft.data.query;
 
 import java.util.List;
 
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
@@ -108,15 +107,10 @@ public abstract class UnaryBoundQuery
     if (!resolved)
     { 
       source.resolve();
-      try
-      {
-        sourceChannel
-          =new ThreadLocalChannel<Ts>
-            (new TupleReflector<Ts>(source.getQuery().getFieldSet(),null));
-      }
-      catch (BindException x)
-      { throw new DataException("Error resolving Query",x);
-      }
+      sourceChannel
+        =new ThreadLocalChannel<Ts>
+          (new TupleReflector<Ts>(source.getQuery().getFieldSet(),null));
+
       resolved=true;
     }
   }
@@ -230,21 +224,21 @@ public abstract class UnaryBoundQuery
     extends UnaryBoundQuerySerialCursor
     implements ScrollableCursor<Tt>
   {
-    protected final ScrollableCursor<Ts> sourceCursor;
+    protected final ScrollableCursor<Ts> scrollableSourceCursor;
 
     public UnaryBoundQueryScrollableCursor(ScrollableCursor<Ts> sourceCursor)
       throws DataException
     { 
       super(sourceCursor);
-      this.sourceCursor=sourceCursor;
+      this.scrollableSourceCursor=sourceCursor;
     }
 
     public void dataMoveAfterLast() throws DataException
-    { while(dataNext());
+    { while(dataNext()) {}
     }
 
     public void dataMoveBeforeFirst() throws DataException
-    { while(dataPrevious());
+    { while(dataPrevious()) {}
     }
 
     public boolean dataMoveFirst() throws DataException
@@ -270,7 +264,7 @@ public abstract class UnaryBoundQuery
           //   data in the reverse direction.
           if (!bos)
           { 
-            if (!sourceCursor.dataPrevious())
+            if (!scrollableSourceCursor.dataPrevious())
             { 
               // End of stream
               // The end of the stream is always consumed
@@ -291,7 +285,7 @@ public abstract class UnaryBoundQuery
         }
         
         lookahead=0;
-        if (integrate(sourceCursor.dataGetTuple()))
+        if (integrate(scrollableSourceCursor.dataGetTuple()))
         { return true;
         }
         else

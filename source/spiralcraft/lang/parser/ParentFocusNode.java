@@ -17,13 +17,9 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
-import spiralcraft.log.ClassLog;
-
 public class ParentFocusNode
   extends FocusNode
 {
-
-  private static final ClassLog log=ClassLog.getInstance(ParentFocusNode.class);
   
   private final FocusNode _child;
 

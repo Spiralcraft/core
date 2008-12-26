@@ -93,7 +93,7 @@ public class Union
   public <T extends Tuple> BoundQuery<?,T> getDefaultBinding
     (Focus<?> focus,Queryable<?> store)
     throws DataException
-  { return new UnionBinding<Union,T>(this,focus,store);
+  { return new UnionBinding<Union,T>(this,store);
    
   }
   

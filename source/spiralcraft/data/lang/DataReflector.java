@@ -110,7 +110,7 @@ public abstract class DataReflector<T extends DataComposite>
   }
   
   public DataReflector(Type<?> type)
-  { this.type=type;;
+  { this.type=type;
   }
   
   @Override

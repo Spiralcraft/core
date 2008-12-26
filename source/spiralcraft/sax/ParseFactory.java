@@ -57,10 +57,7 @@ public class ParseFactory
     { parseInputStream(in,handler);
     }
     finally
-    { 
-      if (in!=null)
-      { in.close();
-      }
+    { in.close();
     }
   }
 

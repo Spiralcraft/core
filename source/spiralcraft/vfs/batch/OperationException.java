@@ -21,12 +21,19 @@ public class OperationException
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * 
+   * @param operation
+   */
   public OperationException(Operation operation,String message)
   { 
     super(message);
     // _operation=operation;
   }
   
+  /**
+   * @param operation
+   */
   public OperationException(Operation operation,String message,Throwable cause)
   { 
     super(message,cause);

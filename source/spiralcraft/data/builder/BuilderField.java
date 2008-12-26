@@ -48,9 +48,8 @@ public class BuilderField
   private final PropertySpecifier specifier;
   private final ReflectionField reflectionField;
   
-  public BuilderField
-    (TypeResolver resolver
-    ,PropertySpecifier specifier
+  BuilderField
+    (PropertySpecifier specifier
     ,ReflectionField reflectionField
     )
     throws DataException

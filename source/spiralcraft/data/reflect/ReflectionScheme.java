@@ -110,7 +110,7 @@ public class ReflectionScheme
   {
     List<ReflectionField> fieldList=new ArrayList<ReflectionField>();
     
-    for (PropertyDescriptor prop : beanInfo.getPropertyDescriptors())
+    for (PropertyDescriptor prop : propertyDescriptors)
     { 
       if (prop.getPropertyType()!=null)
       {

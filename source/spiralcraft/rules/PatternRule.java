@@ -59,7 +59,6 @@ public class PatternRule<C,T>
     private final Channel<T> source;
     
     public PatternRuleChannel(Focus<T> focus)
-      throws BindException
     { source=focus.getSubject();
     }
     

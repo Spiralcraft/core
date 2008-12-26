@@ -484,7 +484,6 @@ public class PropertyBinding
   }
 
   private void exportSingletons(Assembly source)
-    throws BuildException
   {
     Class[] interfaces=source.getSingletons();
     if (interfaces!=null)

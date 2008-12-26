@@ -290,7 +290,7 @@ public class AssemblyLoader
       =baseUriString!=null
       ?sourceUri.resolve(baseUriString)
       :sourceUri.resolve("./").normalize();
-      ;
+      
 
     AssemblyClass assemblyClass
       =new AssemblyClass

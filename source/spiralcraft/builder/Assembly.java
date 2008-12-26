@@ -96,24 +96,20 @@ public class Assembly<T>
     if (javaClass==null)
     { throw new BuildException("No java class defined for assembly");
     }
-    try 
-    { 
-      focus=new AssemblyFocus();
-      if (factoryMode)
-      {
-        focus.setSubject
-          (new ThreadLocalChannel(BeanReflector.getInstance(javaClass))
-          );
-      }
-      else
-      {
-        focus.setSubject(new SimpleChannel(javaClass,null,false));
-      }
+
+    focus=new AssemblyFocus();
+    if (factoryMode)
+    {
+      focus.setSubject
+        (new ThreadLocalChannel(BeanReflector.getInstance(javaClass))
+        );
+    }
+    else
+    {
+      focus.setSubject(new SimpleChannel(javaClass,null,false));
+    }
         
-    }
-    catch (BindException x)
-    { throw new BuildException("Error binding class "+javaClass.getName()+": "+x,x);
-    }
+
 
   }
 
@@ -354,7 +350,6 @@ public class Assembly<T>
 //  }
 
   public void registerSingletons(Class[] singletonInterfaces,Assembly singleton)
-    throws BuildException
   { 
     if (_importedSingletons==null)
     { _importedSingletons=new HashMap<String,Assembly>();

@@ -68,7 +68,6 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   
 
   AggregateReflector(Type<?> type,Class<T> contentType)
-    throws BindException
   { 
     super(type);
     this.contentType=contentType;

@@ -78,6 +78,8 @@ public abstract class MethodImpl
 
   /**
    * Resolve any external dependencies.
+   * 
+   * @throws DataException
    */
   public void resolve()
     throws DataException
@@ -90,7 +92,6 @@ public abstract class MethodImpl
   }
   
   protected void subclassResolve()
-    throws DataException
   { }
   
   @Override

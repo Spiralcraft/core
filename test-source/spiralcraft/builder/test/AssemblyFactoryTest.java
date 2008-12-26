@@ -24,7 +24,6 @@ import spiralcraft.builder.Assembly;
 
 import spiralcraft.util.Arguments;
 
-import java.io.PrintWriter;
 
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
@@ -106,8 +105,5 @@ public class AssemblyFactoryTest
     }
   }
 
-  public void dump(PrintWriter writer,String linePrefix)
-  {
-  }
 
 }

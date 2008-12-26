@@ -15,7 +15,6 @@
 package spiralcraft.security.auth;
 
 
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 
 import spiralcraft.lang.reflect.BeanReflector;
@@ -39,7 +38,6 @@ public class CredentialChannel<T>
   @SuppressWarnings("unchecked") // Heterogeneous map
   public CredentialChannel
     (Channel<Map<String,Credential<?>>> mapChannel,Class tokenType,String name)
-    throws BindException
   { 
     super
       ((BeanReflector<T>) BeanReflector

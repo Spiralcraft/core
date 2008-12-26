@@ -18,14 +18,9 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
-import spiralcraft.log.ClassLog;
-
-
 public class ResolveNode<T>
   extends Node
 {
-  
-  private static final ClassLog log=ClassLog.getInstance(ResolveNode.class);
 
   private final Node _source;
   private final String identifier;

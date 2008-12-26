@@ -28,6 +28,9 @@ public class DebugInvocationHandler
   
   // private final Class _interface;
   
+  /***
+   * @param clazz
+   */
   public DebugInvocationHandler(Class<?> clazz)
   { // _interface=clazz;
   }

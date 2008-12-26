@@ -26,17 +26,9 @@ public abstract class BooleanNode
   extends Node
 {
 
-  public static Reflector<Boolean> BOOLEAN_REFLECTOR;
-  
-  { 
-    try
-    { BOOLEAN_REFLECTOR=BeanReflector.<Boolean>getInstance(Boolean.class);
-    }
-    catch (BindException x)
-    { }
-      
-  }
-  
+  public static Reflector<Boolean> BOOLEAN_REFLECTOR
+    =BeanReflector.<Boolean>getInstance(Boolean.class);
+    
   @Override
   public abstract Channel<Boolean> bind(Focus<?> focus)
     throws BindException;

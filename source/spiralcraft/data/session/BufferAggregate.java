@@ -191,9 +191,6 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
           buffer=(T) session.buffer(original.get(index));
           buffers.set(index,buffer);
         }
-        else
-        { buffer=null;
-        }
       }
       return buffer;
     }

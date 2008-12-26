@@ -332,26 +332,25 @@ public abstract class AbstractTuple
       else
       {
         DataComposite compositeVal=(DataComposite) val;
-        if (compositeVal!=null)
-        {
-          if (!first)
-          { sb.append(",");
-          }
-          else
-          { first=false;
-          }
-          
-          String stringVal
-            =compositeVal.getClass().getName()+":"
-              +compositeVal.getType().getURI();
-          sb.append(field.getName())
-            .append("=")
-            .append("<")
-            .append(stringVal)
-            .append(">");
-          
+
+        if (!first)
+        { sb.append(",");
         }
+        else
+        { first=false;
+        }
+          
+        String stringVal
+          =compositeVal.getClass().getName()+":"
+            +compositeVal.getType().getURI();
+        sb.append(field.getName())
+          .append("=")
+          .append("<")
+          .append(stringVal)
+          .append(">");
+          
       }
+      
     }
     sb.append("]");
     if (tuple.getBaseExtent()!=null)

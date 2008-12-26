@@ -40,7 +40,7 @@ import spiralcraft.rules.RuleSet;
 public class TypeImpl<T>
   extends Type<T>
 {  
-  protected static final ClassLog log=ClassLog.getInstance(TypeImpl.class);
+  protected final ClassLog log=ClassLog.getInstance(getClass());
   
   protected Class<T> nativeClass;
   protected SchemeImpl scheme;

@@ -29,7 +29,7 @@ public class UpdateConflictException
   public UpdateConflictException
     (DeltaTuple requested, DeltaTuple existing)
   { 
-    super();
+    super("Update Conflict: "+requested+" conflicts with "+existing);
     // this.buffer=buffer;
     // this.journal=journal;
     // XXX Generate message for conflict

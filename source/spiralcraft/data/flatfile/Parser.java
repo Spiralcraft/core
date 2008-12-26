@@ -421,7 +421,7 @@ public class Parser
       if (st.ttype==StreamTokenizer.TT_EOF)
       { 
         // Handle last line or end of file
-        if (dataObject!=null || (dataObject==null && dataPos>0))
+        if (dataObject!=null || dataPos>0)
         {
           // If current line is not empty
           tuple.set(dataPos++,dataObject);

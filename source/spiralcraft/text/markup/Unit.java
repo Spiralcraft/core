@@ -95,6 +95,11 @@ public abstract class Unit<T extends Unit<T>>
   { return false;
   }
   
+  /**
+   * <p>Called by the compiler after the entire unit has been read
+   * </p>
+   * @throws MarkupException
+   */
   public void close()
     throws MarkupException
   {

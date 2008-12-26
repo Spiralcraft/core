@@ -42,11 +42,11 @@ public class Transaction
   
   public enum Nesting
   { PROPOGATE,ISOLATE;
-  };
+  }
   
   public enum State
   { STARTED,PREPARED,COMMITTED,ABORTED,COMPLETED
-  };
+  }
 
   /**
    * <P>Start a new Transaction for the current Thread context, with the specified
@@ -99,6 +99,9 @@ public class Transaction
   
   /**
    * Create a new Transaction nested in the given Transaction 
+   *
+   * @param parent
+   * @param nesting
    */
   Transaction(Transaction parent,Nesting nesting)
   { 

@@ -15,7 +15,6 @@
 package spiralcraft.rules;
 
 import spiralcraft.lang.AccessException;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 
@@ -24,7 +23,6 @@ public abstract class RuleChannel<T>
 {
   
   public RuleChannel()
-    throws BindException
   { super(BeanReflector.<Violation<T>>getInstance(Violation.class));
   }
 

@@ -14,7 +14,6 @@
 //
 package spiralcraft.lang.reflect;
 
-import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationDecorator;
@@ -190,7 +189,6 @@ public class BeanReflector<T>
   // Map is heterogeneous, T is ambiguous for VoidReflector
   public static final synchronized <T> Reflector<T> 
     getInstance(Type clazz)
-    throws BindException
   { 
     Reflector<T> result=null;
     WeakReference<Reflector> ref=reflectorMap.get(clazz);
@@ -494,7 +492,6 @@ public class BeanReflector<T>
   }
   
   private synchronized <X> Channel<X> getField(Channel<T> source,String name)
-    throws BindException
   {
     BeanFieldTranslator<X,T> fieldTranslator=null;
     if (fields==null)
@@ -528,7 +525,6 @@ public class BeanReflector<T>
   }
 
   private synchronized <X> Channel<X> getProperty(Channel<T> source,String name)
-    throws BindException
   {
     BeanPropertyTranslator<X,T> translator=null;
     if (properties==null)
@@ -563,7 +559,6 @@ public class BeanReflector<T>
   }
 
   private synchronized <X> Channel<X> getArrayProperty(Channel<T> source,String name)
-    throws BindException
   {
     Translator<X,T> translator=null;
     if (name.equals("length"))
@@ -902,14 +897,7 @@ public class BeanReflector<T>
     { return null;
     }
     
-    try
-    { return BeanReflector.getInstance(val.getClass());
-    }
-    catch (BindException x)
-    { 
-      throw new AccessException
-        ("Error retrieving type reflector: "+val.getClass().getName());
-    }
+    return BeanReflector.getInstance(val.getClass());
   }
 
 }

@@ -66,6 +66,7 @@ public abstract class Arguments
    * Subclass should process an option, and return true
    *   if the option was recognized. String will be 'interned'
    *   for convenience using == as a comparator.
+   * @param option 
    */
   protected boolean processOption(String option)
   { return false;
@@ -74,6 +75,7 @@ public abstract class Arguments
   /**
    * Subclass should process a stand-alone argument, and return
    *   true if the argument was recognized.
+   * @param argument 
    */
   protected boolean processArgument(String argument)
   { return false;

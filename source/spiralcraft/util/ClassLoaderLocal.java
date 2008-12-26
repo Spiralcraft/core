@@ -46,7 +46,7 @@ public class ClassLoaderLocal<T>
     { return getInstance(ClassLoader.getSystemClassLoader());
     }
     
-  };
+  }
   
   
   /**

@@ -31,7 +31,7 @@ public class FocusCommand
   @Override
   public void run()
   { 
-    if (targetName!=null) {};
+    if (targetName!=null) {}
   }
 
 }

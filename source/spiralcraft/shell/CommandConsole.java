@@ -107,9 +107,12 @@ public abstract class CommandConsole
   { this.focus=focus;
   }
   
+  /**
+   * @param focusExpression
+   */
   public void changeFocus(String focusExpression)
   {
-    if (focus!=null) {};
+    if (focus!=null) {}
   }
   
   public String getFocusPathString()
@@ -128,6 +131,10 @@ public abstract class CommandConsole
     writeMessage("> ");
   }
   
+  /**
+   * 
+   * @throws UnrecognizedCommandException
+   */
   private Command<?,?> newCommand(String[] tokens)
     throws UnrecognizedCommandException
   {

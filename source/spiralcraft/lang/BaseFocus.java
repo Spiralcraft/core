@@ -146,13 +146,7 @@ public abstract class BaseFocus<T>
   public Channel<Focus<T>> getSelfChannel()
   { 
     if (selfChannel==null)
-    {   
-      try
-      { selfChannel=new SimpleChannel<Focus<T>>(this,true);
-      }
-      catch (BindException x)
-      { x.printStackTrace();
-      }
+    { selfChannel=new SimpleChannel<Focus<T>>(this,true);
     }
     return selfChannel;
   }

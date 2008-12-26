@@ -15,7 +15,6 @@
 package spiralcraft.vfs.classpath;
 
 import spiralcraft.vfs.AbstractResource;
-import spiralcraft.vfs.UnresolvableURIException;
 
 import java.net.URI;
 import java.net.URL;
@@ -33,7 +32,6 @@ public class ClasspathResource
   private URL _url;
 
   public ClasspathResource(URI uri)
-    throws UnresolvableURIException
   { 
     super(uri);
     _path=uri.getPath().substring(1);

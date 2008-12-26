@@ -161,6 +161,9 @@ public abstract class Reflector<T>
     return (Channel<X>) channel;
   }
   
+  /**
+   * @param val
+   */
   public Reflector<T> subtype(T val)
   { 
     throw new AccessException
@@ -220,14 +223,9 @@ public abstract class Reflector<T>
   { 
     if (selfChannel==null)
     {
-      try
-      {
-        selfChannel
-          =new SimpleChannel<Reflector<T>>(this,true);
-      }
-      catch (BindException x)
-      { x.printStackTrace();
-      }
+      selfChannel
+        =new SimpleChannel<Reflector<T>>(this,true);
+
     }
   }
   
@@ -355,7 +353,6 @@ public abstract class Reflector<T>
     private Channel<T> source;
     
     public SubtypeChannel(Channel<T> source)
-      throws BindException
     { 
       super(getSelfChannel().getReflector());
       this.source=source;
