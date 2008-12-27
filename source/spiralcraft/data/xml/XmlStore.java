@@ -456,6 +456,8 @@ public class XmlStore
             { 
               if (!cursor.dataGetTuple().equals(tuple.getOriginal()))
               {
+                // XXX We need to check if tuple is a later version of
+                //  original, and then check for an update conflict
                 if (debug)
                 { 
                   log.fine("\r\n  existing="+cursor.dataGetTuple()

@@ -43,8 +43,8 @@ public class Path
   }
 
   /**
-   * Construct a path made up of a set of tokens embedded in a String and separated by
-   *   the specified delimiter
+   * Construct a path made up of a set of tokens embedded in a String and
+   *   separated by the specified delimiter
    */
   @PermittedDependency(StringUtil.class)
   public Path(String source,char delimiter)
