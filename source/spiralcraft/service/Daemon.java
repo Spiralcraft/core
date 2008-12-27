@@ -16,7 +16,7 @@ package spiralcraft.service;
 
 import spiralcraft.util.Arguments;
 
-import spiralcraft.builder.LifecycleException;
+import spiralcraft.common.LifecycleException;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
 

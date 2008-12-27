@@ -22,6 +22,8 @@ import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
+import spiralcraft.common.Lifecycle;
+import spiralcraft.common.LifecycleException;
 import spiralcraft.data.lang.TupleDelegate;
 import spiralcraft.data.DataException;
 

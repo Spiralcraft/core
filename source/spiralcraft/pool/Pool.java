@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Collection;
 
-import spiralcraft.builder.Lifecycle;
+import spiralcraft.common.Lifecycle;
 import spiralcraft.registry.RegistryNode;
 import spiralcraft.registry.Registrant;
 

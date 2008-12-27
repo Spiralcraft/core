@@ -15,7 +15,7 @@
 package spiralcraft.service;
 
 
-import spiralcraft.builder.LifecycleException;
+import spiralcraft.common.LifecycleException;
 import spiralcraft.log.ClassLog;
 import spiralcraft.time.Clock;
 

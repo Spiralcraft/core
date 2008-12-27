@@ -14,8 +14,8 @@
 //
 package spiralcraft.data.spi;
 
-import spiralcraft.builder.Lifecycle;
-import spiralcraft.builder.LifecycleException;
+import spiralcraft.common.Lifecycle;
+import spiralcraft.common.LifecycleException;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Space;

@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.builder;
+package spiralcraft.common;
 
 /**
  * An interface for components that need to perform internal configuration and

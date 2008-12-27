@@ -17,12 +17,12 @@ package spiralcraft.data;
 import java.net.URI;
 import java.util.Date;
 
+import spiralcraft.common.Lifecycle;
 import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.query.Queryable;
 
 import spiralcraft.lang.Focus;
 
-import spiralcraft.builder.Lifecycle;
 
 /**
  * <p>A logical data container. Provides access to a complete set of data used by

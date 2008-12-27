@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import org.xml.sax.SAXException;
 
+import spiralcraft.common.Lifecycle;
+import spiralcraft.common.LifecycleException;
 import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.TypeResolver;
@@ -44,8 +46,6 @@ import spiralcraft.registry.Registrant;
 import spiralcraft.registry.Registry;
 import spiralcraft.registry.RegistryNode;
 
-import spiralcraft.builder.Lifecycle;
-import spiralcraft.builder.LifecycleException;
 
 import spiralcraft.util.thread.ContextFrame;
 import spiralcraft.util.thread.Delegate;

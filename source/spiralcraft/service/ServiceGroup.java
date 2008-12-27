@@ -14,8 +14,7 @@
 //
 package spiralcraft.service;
 
-import spiralcraft.builder.LifecycleException;
-//import spiralcraft.util.ArrayUtil;
+import spiralcraft.common.LifecycleException;
 
 /**
  * A group of Services managed as unit

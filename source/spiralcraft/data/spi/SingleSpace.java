@@ -18,6 +18,7 @@ package spiralcraft.data.spi;
 import java.net.URI;
 import java.util.Date;
 
+import spiralcraft.common.LifecycleException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Sequence;
 import spiralcraft.data.Space;
@@ -35,7 +36,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
 
-import spiralcraft.builder.LifecycleException;
 
 /**
  * A Space that consists of a single Store.

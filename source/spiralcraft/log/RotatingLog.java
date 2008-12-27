@@ -10,8 +10,8 @@ import java.io.File;
 import spiralcraft.time.Scheduler;
 import spiralcraft.util.ArrayUtil;
 
-import spiralcraft.builder.Lifecycle;
-import spiralcraft.builder.LifecycleException;
+import spiralcraft.common.Lifecycle;
+import spiralcraft.common.LifecycleException;
 
 
 

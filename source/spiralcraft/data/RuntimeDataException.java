@@ -5,7 +5,7 @@ public class RuntimeDataException
 {
   public static final long serialVersionUID=0;
   
-  public RuntimeDataException(String message,DataException cause)
+  public RuntimeDataException(String message,Exception cause)
   { super(message,cause);
   }
 }

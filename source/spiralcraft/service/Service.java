@@ -14,8 +14,8 @@
 //
 package spiralcraft.service;
 
-import spiralcraft.builder.Lifecycle;
-import spiralcraft.builder.LifecycleException;
+import spiralcraft.common.Lifecycle;
+import spiralcraft.common.LifecycleException;
 
 /**
  * <p>Represents a software subsystem which cooperates with other such

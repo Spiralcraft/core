@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
 
-import spiralcraft.builder.Lifecycle;
-import spiralcraft.builder.LifecycleException;
+import spiralcraft.common.Lifecycle;
+import spiralcraft.common.LifecycleException;
 
 import spiralcraft.log.ClassLog;
 import spiralcraft.util.IteratorEnumeration;

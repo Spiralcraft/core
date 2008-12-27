@@ -14,7 +14,7 @@
 //
 package spiralcraft.ui;
 
-import spiralcraft.builder.LifecycleException;
+import spiralcraft.common.LifecycleException;
 import spiralcraft.service.ServiceAdapter;
 
 

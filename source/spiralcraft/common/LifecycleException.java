@@ -1,4 +1,4 @@
-package spiralcraft.builder;
+package spiralcraft.common;
 
 /**
  * An exception related to the failure of a Lifecycle implementation to start

@@ -29,17 +29,17 @@ import spiralcraft.vfs.UnresolvableURIException;
 
 import spiralcraft.data.core.ArrayType;
 import spiralcraft.data.core.AbstractCollectionType;
-import spiralcraft.data.core.CoreTypeFactory;
+//import spiralcraft.data.core.CoreTypeFactory;
 import spiralcraft.data.core.MetaType;
 
 import spiralcraft.data.session.BufferType;
 
-import spiralcraft.data.builder.BuilderTypeFactory;
+//import spiralcraft.data.builder.BuilderTypeFactory;
 
 import spiralcraft.data.reflect.ReflectionType;
-import spiralcraft.data.reflect.ReflectionTypeFactory;
+//import spiralcraft.data.reflect.ReflectionTypeFactory;
 
-import spiralcraft.data.xml.XmlTypeFactory;
+//import spiralcraft.data.xml.XmlTypeFactory;
 import spiralcraft.log.ClassLog;
 
 
@@ -116,11 +116,37 @@ public class TypeResolver
       (Thread.currentThread().getContextClassLoader()
       );
       
-    
-    factories.add(new XmlTypeFactory());
-    factories.add(new CoreTypeFactory());
-    factories.add(new BuilderTypeFactory());
-    factories.add(new ReflectionTypeFactory());
+    String[] factoryClassNames
+      =new String[]
+      {"spiralcraft.data.xml.XmlTypeFactory"
+      ,"spiralcraft.data.core.CoreTypeFactory"
+      ,"spiralcraft.data.builder.BuilderTypeFactory"
+      ,"spiralcraft.data.reflect.ReflectionTypeFactory"
+      };
+
+    for (String className:factoryClassNames)
+    { 
+      try
+      {
+        factories.add
+          ((TypeFactory) Class.forName
+            (className,true,Thread.currentThread().getContextClassLoader())
+              .newInstance()
+          );
+      }
+      catch (Exception x)
+      { 
+        throw new RuntimeDataException
+          ("Error loading class factory "+className,x);
+      }
+    }
+  
+//  Dynamically load type factories    
+//    factories.add(new XmlTypeFactory());
+//    factories.add(new CoreTypeFactory());
+//    factories.add(new BuilderTypeFactory());
+//    factories.add(new ReflectionTypeFactory());
+
     if (parent==null)
     { getMetaType();
     }

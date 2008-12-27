@@ -16,6 +16,7 @@ package spiralcraft.data.access;
 
 import java.net.URI;
 
+import spiralcraft.common.Lifecycle;
 import spiralcraft.data.query.Queryable;
 
 import spiralcraft.data.DataException;
@@ -26,7 +27,6 @@ import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Tuple;
 import spiralcraft.lang.Focus;
 
-import spiralcraft.builder.Lifecycle;
 
 /**
  * <p>A physical data container. Provides access to a set of data that is

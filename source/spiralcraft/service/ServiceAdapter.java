@@ -14,7 +14,7 @@
 //
 package spiralcraft.service;
 
-import spiralcraft.builder.LifecycleException;
+import spiralcraft.common.LifecycleException;
 
 public abstract class ServiceAdapter
   implements Service
