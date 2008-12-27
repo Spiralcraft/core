@@ -19,6 +19,8 @@ import java.util.Iterator;
 
 import spiralcraft.util.string.StringUtil;
 
+import spiralcraft.annotation.PermittedDependency;
+
 /**
  * An immutable sequence of Strings which represent elements in an abstract hierarchy.
  */ 
@@ -44,6 +46,7 @@ public class Path
    * Construct a path made up of a set of tokens embedded in a String and separated by
    *   the specified delimiter
    */
+  @PermittedDependency(StringUtil.class)
   public Path(String source,char delimiter)
   { 
     if (source.startsWith(Character.toString(delimiter)))

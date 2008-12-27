@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.sax;
 
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.EditableTuple;
@@ -26,7 +27,6 @@ import spiralcraft.data.TypeMismatchException;
 import spiralcraft.data.FieldNotFoundException;
 
 
-import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.log.ClassLog;

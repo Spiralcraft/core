@@ -17,6 +17,7 @@ package spiralcraft.data.access;
 import java.net.URI;
 import java.util.ArrayList;
 
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.FieldSet;

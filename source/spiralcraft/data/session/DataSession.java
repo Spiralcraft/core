@@ -16,12 +16,12 @@ package spiralcraft.data.session;
 
 
 import spiralcraft.data.DataComposite;
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.Space;
 import spiralcraft.data.Type;
-import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.PojoIdentifier;
 import spiralcraft.data.transaction.Transaction;

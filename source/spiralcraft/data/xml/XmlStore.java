@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import spiralcraft.common.LifecycleException;
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.EditableTuple;
@@ -34,7 +35,6 @@ import spiralcraft.data.Sequence;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.UniqueKeyViolationException;
-import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.access.Schema;
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.access.Updater;

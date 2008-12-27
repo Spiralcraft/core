@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.access;
 
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.Tuple;
 
 /**

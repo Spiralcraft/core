@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.Date;
 
 import spiralcraft.common.LifecycleException;
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Sequence;
 import spiralcraft.data.Space;
@@ -26,7 +27,6 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Tuple;
 
-import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.access.Store;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.BoundQuery;

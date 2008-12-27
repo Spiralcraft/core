@@ -14,13 +14,13 @@
 //
 package spiralcraft.data.flatfile;
 
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Field;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 
-import spiralcraft.data.access.DataConsumer;
 
 import java.io.OutputStreamWriter;
 import java.io.BufferedWriter;

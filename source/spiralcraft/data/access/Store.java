@@ -19,6 +19,7 @@ import java.net.URI;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.data.query.Queryable;
 
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Sequence;
 import spiralcraft.data.Space;

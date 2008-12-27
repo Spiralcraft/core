@@ -29,13 +29,13 @@ import java.net.URI;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
 
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
 
-import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.access.DataConsumerChain;
 import spiralcraft.data.core.SchemeImpl;
 import spiralcraft.data.core.FieldImpl;

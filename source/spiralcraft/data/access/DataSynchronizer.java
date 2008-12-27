@@ -16,6 +16,7 @@ package spiralcraft.data.access;
 
 
 
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Space;

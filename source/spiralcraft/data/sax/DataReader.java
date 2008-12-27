@@ -18,10 +18,10 @@ import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
 import spiralcraft.data.DataComposite;
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 
-import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.access.DataFactory;
 import spiralcraft.data.Tuple;
 

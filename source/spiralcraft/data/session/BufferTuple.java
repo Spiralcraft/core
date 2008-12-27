@@ -18,6 +18,7 @@ import java.lang.ref.WeakReference;
 import java.util.BitSet;
 
 import spiralcraft.data.DataComposite;
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DeltaTuple;
@@ -30,7 +31,6 @@ import spiralcraft.data.Type;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.TypeMismatchException;
 
-import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.session.DataSession.DataSessionBranch;
 import spiralcraft.data.spi.ArrayTuple;
 import spiralcraft.data.transaction.Transaction;

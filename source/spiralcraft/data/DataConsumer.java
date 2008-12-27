@@ -12,11 +12,8 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.access;
+package spiralcraft.data;
 
-import spiralcraft.data.DataException;
-import spiralcraft.data.FieldSet;
-import spiralcraft.data.Tuple;
 
 /**
  * A passive consumer of Tuple data, implemented by components that process a stream

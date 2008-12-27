@@ -2,11 +2,11 @@ package spiralcraft.data.util;
 
 import java.io.PrintStream;
 
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 
-import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.access.DataConsumerChain;
 
 /**

@@ -24,10 +24,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import spiralcraft.data.DataComposite;
+import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
-import spiralcraft.data.access.DataConsumer;
 import spiralcraft.data.access.DataFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.NamespaceResolver;
