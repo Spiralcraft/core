@@ -12,25 +12,25 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.command;
+package spiralcraft.task;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import spiralcraft.command.Command;
+import spiralcraft.command.CommandAdapter;
+import spiralcraft.common.LifecycleException;
 import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
 import spiralcraft.lang.IterationCursor;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
-import spiralcraft.task.AbstractTask;
-import spiralcraft.task.AsyncTask;
 import spiralcraft.time.Scheduler;
 import spiralcraft.util.thread.Delegate;
 import spiralcraft.util.thread.DelegateException;
@@ -57,13 +57,13 @@ import spiralcraft.util.thread.DelegateException;
  * @author mike
  *
  * @param <I> The batched item type
- * @param <I> The result item type
+ * @param <R> The result item type
  */
-public class BatchProcessor<I,R>
-  implements FocusChainObject
+public class BatchScenario<I,R>
+  implements Scenario
 {
   private static final ClassLog log
-    =ClassLog.getInstance(BatchProcessor.class);
+    =ClassLog.getInstance(BatchScenario.class);
   
   protected Focus<?> focus;
   private Expression<?> source;
@@ -192,9 +192,49 @@ public class BatchProcessor<I,R>
     
   }
   
-  private List<Command<?,R>> runBatchParallel()
+  /**
+   * <p>Override to handle the result on completion
+   * </p>
+   * 
+   * 
+   * @param completedCommands
+   */
+  protected void postResult(List<Command<?,R>> completedCommands)
+  {
+    log.fine(""+completedCommands);
+  }
+  
+  public Task task()
+  {
+   
+    if (parallel)
+    {
+      final List<CommandTask> taskList=taskList();
+      return new ParallelTask(taskList)
+      {
+        @Override
+        public void execute()
+        { 
+          super.execute();
+          postResult(completedCommands(taskList));
+        }
+      };
+    }
+    else
+    {
+      return new AbstractTask()
+      {
+        @Override
+        public void execute()
+        { postResult(runBatchSeries());
+        }
+        
+      };
+    }
+  }
+  
+  private LinkedList<CommandTask> taskList()
   { 
-    
     IterationCursor<I> cursor=decorator.iterator();
     LinkedList<CommandTask> taskList=new LinkedList<CommandTask>();
     while (cursor.hasNext())
@@ -206,12 +246,13 @@ public class BatchProcessor<I,R>
       }
       taskList.add(task);
     }
-    
-    AsyncTask batchTask=new AsyncTask(taskList);
-    batchTask.run();
-    
+    return taskList;
+  }
+  
+  private List<Command<?,R>> completedCommands(List<CommandTask> taskList)
+  {
     ArrayList<Command<?,R>> results
-      =new ArrayList<Command<?,R>>(taskList.size());
+    =new ArrayList<Command<?,R>>(taskList.size());
     for (CommandTask task: taskList)
     { 
       Command<?,R> completedCommand=task.getCompletedCommand();
@@ -227,16 +268,29 @@ public class BatchProcessor<I,R>
         completedCommand.getException().printStackTrace();
       }
     }
-    return results;    
+    return results;      
+  }
+
+  private List<Command<?,R>> runBatchParallel()
+  { 
+    
+    LinkedList<CommandTask> taskList=taskList();
+
+    ParallelTask batchTask=new ParallelTask(taskList);
+    batchTask.run();
+    return completedCommands(taskList);
+
   }  
   
-  public Command<BatchProcessor<I,R>,List<Command<?,R>>> runCommand()
+  public Command<BatchScenario<I,R>,List<Command<?,R>>> runCommand()
   {
-    return new CommandAdapter<BatchProcessor<I,R>,List<Command<?,R>>>()
+    return new CommandAdapter<BatchScenario<I,R>,List<Command<?,R>>>()
     { 
       @Override
       public void run()
-      { setResult(runBatch());
+      { 
+        setResult(runBatch());
+        postResult(getResult());
       }
     };
   }
@@ -316,6 +370,21 @@ public class BatchProcessor<I,R>
       command.execute();
       return command;
     }
+  }
+
+  @Override
+  public void start()
+    throws LifecycleException
+  {
+    // TODO: start the sub-scenario
+  }
+
+  @Override
+  public void stop()
+    throws LifecycleException
+  {
+    // TODO: stop the sub-scenario
+    
   }
   
 }

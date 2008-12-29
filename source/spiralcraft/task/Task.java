@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2008 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -19,10 +19,21 @@ import java.beans.PropertyChangeListener;
 import spiralcraft.time.Scheduler;
 
 /**
- * A unit of work that can be managed and monitored. A Task can be composed
- *   of a number of sub-units, each of which can be composed of a number of operations.
+ * <p>A unit of work that can be managed and monitored. A Task instance 
+ *   represents the state and progress of the invocation of some function,
+ *   and thus has a life-cycle scoped to that invocation.
+ * </p>
+ * 
+ * <p>A Task can be composed of a number of sub-units, each of which can be 
+ *   composed of a number of operations.
+ * </p>
  *
- * Tasks report on their progress and provide a means to start and stop them.
+ * <p>Tasks report on their progress and provide a means to asynchronously
+ *   start and stop them, or to run them synchronously.
+ * </p>
+ * 
+ * <p>A Task is generally created and configured by a Scenario.
+ * </p>
  */
 public interface Task
   extends Runnable

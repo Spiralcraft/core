@@ -1,15 +1,19 @@
-<project name="spiralcraft-core" basedir="." default="justSmoke">
+<project name="spiralcraft-core-smoke" basedir="." default="smoke">
     
   <import file="build.xml"/>
   
-  <target name="justSmoke" >
+	
+	<target name="smoke" >
     <java
-      classpath="${spiralcraft.build}/lib/bsh.jar;lib/spiralcraft-${module}.jar;${classpath}"
-      classname="bsh.Interpreter" 
+      jar="../../build/lib/spiralcraft.jar"
       failonerror="true"
       fork="true"
       >
-      <arg value="smoke.bsh"/>
+      <arg value="-codebase"/>
+      <arg value="."/>
+      <arg value="exec"/>
+    	<arg value="class:/spiralcraft/task/test/Test.assy"/>
     </java>
-  </target>
+		
+	</target>
 </project>

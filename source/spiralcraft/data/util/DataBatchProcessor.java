@@ -2,9 +2,7 @@ package spiralcraft.data.util;
 
 import java.util.List;
 
-import spiralcraft.command.BatchProcessor;
 import spiralcraft.command.Command;
-import spiralcraft.command.CommandAdapter;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.lang.DataReflector;
@@ -14,6 +12,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.task.BatchScenario;
 
 
 /**
@@ -27,7 +26,7 @@ import spiralcraft.lang.Focus;
  *
  */
 public class DataBatchProcessor<I,R>
-  extends BatchProcessor<I,R>
+  extends BatchScenario<I,R>
 {
 
   private Expression<Aggregate<R>> resultAssignment;
@@ -50,26 +49,19 @@ public class DataBatchProcessor<I,R>
   }
 
   @Override
-  public Command<BatchProcessor<I,R>,List<Command<?,R>>> runCommand()
+  public void postResult(List<Command<?,R>> completedCommands)
   {
-    return new CommandAdapter<BatchProcessor<I,R>,List<Command<?,R>>>()
+    EditableArrayListAggregate<R> result
+    =new EditableArrayListAggregate<R>
+      (((DataReflector<Aggregate<R>>) resultChannel.getReflector())
+         .getType()
+      );
+    for (Command<?,R> command:completedCommands)
     { 
-      @Override
-      public void run()
-      { 
-        setResult(runBatch());
-        EditableArrayListAggregate<R> result
-          =new EditableArrayListAggregate<R>
-            (((DataReflector<Aggregate<R>>) resultChannel.getReflector())
-               .getType()
-            );
-        for (Command<?,R> command:getResult())
-        { 
-          R resultItem=command.getResult();
-          result.add(resultItem);
-        }
-        resultChannel.set(result);
-      }
-    };
-  }  
+      R resultItem=command.getResult();
+      result.add(resultItem);
+    }
+    resultChannel.set(result);
+  }
+    
 }

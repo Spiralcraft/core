@@ -1,0 +1,8 @@
+<task:TaskRunner
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/task/test/"
+  >
+  <scenario>
+    <test:StubScenario/>
+  </scenario>
+</task:TaskRunner>

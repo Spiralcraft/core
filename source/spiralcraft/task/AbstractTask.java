@@ -22,13 +22,14 @@ import spiralcraft.util.ArrayUtil;
 import spiralcraft.time.Scheduler;
 
 /**
- * An abstract implementation of a Task which handles progress tracking,
- *   and synchronization, running the actual work routine in a separate thread.
+ * <p>An abstract implementation of a Task which handles progress tracking,
+ *   and synchronization
+ * </p>
  *
- * Subclasses need to implement the execute() method which is called to perform
- *   actual task work. This abstract base class will only allow one Thread at a
- *   time into the execute() method by virtue of a synchronized Runnable.run()
- *   implementation.
+ * <p>Subclasses need to implement the execute() method which is called to 
+ *   perform actual task work. This abstract base class will only allow one 
+ *   Thread at a time into the execute() method by virtue of a synchronized 
+ *   Runnable.run() implementation.
  *
  * The execute() method should update the metrics and progress of the task.
  *

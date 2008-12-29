@@ -22,12 +22,12 @@ import spiralcraft.log.ClassLog;
 /**
  * Executes a number of other Tasks in parallel
  */
-public class AsyncTask
+public class ParallelTask
   extends AbstractTask
   implements TaskListener
 {
   private static final ClassLog log
-    =ClassLog.getInstance(AsyncTask.class);
+    =ClassLog.getInstance(ParallelTask.class);
   
   private List<? extends Task> tasks;
   private final Object monitor=new Object();
@@ -83,7 +83,7 @@ public class AsyncTask
     }
   }
   
-  public AsyncTask(List<? extends Task> tasks)
+  public ParallelTask(List<? extends Task> tasks)
   { this.tasks=tasks;
   }
   

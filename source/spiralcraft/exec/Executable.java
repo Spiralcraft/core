@@ -15,10 +15,10 @@
 package spiralcraft.exec;
 
 /**
- * Supplies an entry point for application execution.
+ * <p>Supplies an entry point for the execution of coarse grained 
+ *   functionality. 
+ * </p>
  *
- * Implemented by the root object of the runtime object hierarchy
- *   for an application instance or other coarse grained component.
  */
 public interface Executable
 {
