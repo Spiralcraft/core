@@ -79,6 +79,7 @@ public class Updater<T extends Tuple>
     =URI.create("class:/spiralcraft/data/");
 
   private Focus<?> context;
+  
   protected SimpleFocus<T> localFocus;
   protected ThreadLocalChannel<T> localChannel;
   
@@ -125,7 +126,28 @@ public class Updater<T extends Tuple>
     }
   }
   
-  private void handleData(T tuple)
+  /**
+   * <p>Performs the following standard operations in order
+   *   <ul>
+   *     <li>Apply relevant sequences
+   *     </li>
+   *     <li>Apply default values
+   *     </li>
+   *     <li>Apply fixed values
+   *     </li>
+   *     <li>Validate rules
+   *     </li>
+   *   </ul>
+   * </p>
+   * 
+   * <p>This method is called by dataAvailable(Tuple t) with the subject
+   *   tuple made available via the localChannel
+   * </p>
+   *  
+   * @param tuple
+   * @throws DataException
+   */
+  protected void handleData(T tuple)
     throws DataException
   {
     
