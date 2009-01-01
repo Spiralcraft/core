@@ -15,9 +15,21 @@
 package spiralcraft.common;
 
 /**
- * An interface for components that need to perform internal configuration and
- *   resource allocation after external configuration is complete but before
- *   accepting calls to its public API.
+ * <p>An interface for components that need to be started and stopped.
+ * </p>
+ * 
+ * <p>A Component implements this interface to:
+ *   <ul><li>
+ *     be atomically configured before its public API is called
+ *   </li>
+ *   <li>explicitly manage resource allocation and de-allocation
+ *   </li>
+ *   <li>be coordinated by a container which manages dependencies
+ *   </li>
+ *   <li>contain other components which implement Lifecycle in order to
+ *     propogate start() and stop() events down the containership hierarchy.
+ *   </li>
+ * </p>
  * 
  * @author mike
  */
