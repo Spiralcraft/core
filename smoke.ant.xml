@@ -3,7 +3,7 @@
   <import file="build.xml"/>
   
 	
-	<target name="smoke" >
+  <target name="smoke" >
     <java
       jar="../../build/lib/spiralcraft.jar"
       failonerror="true"
@@ -12,8 +12,9 @@
       <arg value="-codebase"/>
       <arg value="."/>
       <arg value="exec"/>
-    	<arg value="class:/spiralcraft/task/test/Test.assy"/>
+   
+      <arg value="class:/spiralcraft/task/test/Test.assy"/>
     </java>
-		
-	</target>
+
+  </target>
 </project>

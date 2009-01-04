@@ -25,6 +25,7 @@ import spiralcraft.ui.AbstractCommand;
 
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
+import spiralcraft.shell.InputDispatcher;
 
 import java.util.logging.Handler;
 import java.util.logging.ConsoleHandler;
@@ -37,10 +38,12 @@ import spiralcraft.log.jul.DefaultFormatter;
 import spiralcraft.log.jul.RegistryLogger;
 
 /**
- * An executable that starts, responds to events, and terminates
+ * <p>An executable that starts, responds to events, and terminates
  *   upon receipt of an applicable signal.
+ * </p>
  *
- * A daemon is the outermost layer of the services framework.
+ * <p>A daemon is the outermost layer of the services framework.
+ * </p>
  */
 public class Daemon
   extends ServiceGroup
@@ -49,6 +52,7 @@ public class Daemon
   private Object _eventMonitor=new Object();
   private boolean _running=true;
   private String[] _args;
+  private InputDispatcher input=new InputDispatcher();
 
   private Handler _logHandler=new ConsoleHandler();
   { 
@@ -165,14 +169,20 @@ public class Daemon
   {
     try
     { 
+      input.setInputStream(ExecutionContext.getInstance().in());
+      input.start();
       while (_running)
       {
         synchronized (_eventMonitor)
         { _eventMonitor.wait();
         }
       }
+      input.stop();
     }
     catch (InterruptedException x)
+    { x.printStackTrace();
+    }
+    catch (LifecycleException x)
     { x.printStackTrace();
     }
     

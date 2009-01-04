@@ -6,3 +6,4 @@ bin
 ivy.settings.xml
 ivy.lunt.settings.xml
 test-out
+build-local.xml
