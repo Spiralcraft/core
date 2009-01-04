@@ -21,7 +21,7 @@ import spiralcraft.time.Clock;
 
 /**
  * <p>An asychronous Service that does work in its own continuously
- *   running Thread.
+ *   running Thread at a specified interval.
  * </p>
  * 
  * @author mike
