@@ -203,6 +203,7 @@ public class PropertyBinding
       { 
         throw new BuildException
           (_specifier.getTargetName()
+          +" ("+_target.getContentType()+") "
           +" in "+_container.getAssemblyClass().getJavaClass()
           +" cannot have multiple values"
           );
@@ -281,6 +282,7 @@ public class PropertyBinding
         {
           throw new BuildException
             (_specifier.getTargetName()
+            +" ("+_target.getContentType()+") "
             +" in "+_container.getAssemblyClass().getJavaClass()
             +" cannot have multiple values"
             );
