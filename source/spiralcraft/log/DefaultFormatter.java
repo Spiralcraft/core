@@ -41,8 +41,9 @@ public class DefaultFormatter
     out.append(Long.toString(event.getThreadId()));
     out.append(":");
     out.append(event.getThreadName());
-    out.append(" ");
+    out.append(" (");
     out.append(event.getContext().format(":"));
+    out.append("): ");
     if (Level.DEBUG.getValue()>=event.getLevel().getValue())
     {
       out.append(_cr+"        ");
@@ -53,9 +54,9 @@ public class DefaultFormatter
       out.append(event.getCallSite().getFileName());
       out.append(":"+event.getCallSite().getLineNumber());
       out.append(")");
+      out.append(_cr);
+      out.append("  ");
     }
-    out.append(_cr);
-    out.append("  ");
     out.append(event.getMessage());
     if (event.getThrown()!=null)
     { 
