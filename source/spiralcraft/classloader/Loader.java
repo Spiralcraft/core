@@ -89,6 +89,12 @@ public class Loader
     if (clazz==null)
     { clazz=findClass(formalName);
     }
+    if (debug)
+    { log.fine( (clazz!=null?"FOUND":"FAIL")+":"+formalName );
+    }
+    if (resolve && clazz!=null)
+    { this.resolveClass(clazz);
+    }
     return clazz;
     
   }
@@ -103,7 +109,7 @@ public class Loader
    *  ClassLoader.
    */
   @Override
-  public Class<?> findClass(String formalName)
+  protected Class<?> findClass(String formalName)
     throws ClassNotFoundException
   { 
     Class<?> clazz=findClass(formalName,archives);
@@ -122,7 +128,7 @@ public class Loader
    *@throws ClassNotFoundException if the class was not loadable by this
    *  ClassLoader.
    */
-  public Class<?> findClass(String formalName,ArrayList<Archive> archives)
+  private Class<?> findClass(String formalName,ArrayList<Archive> archives)
   { 
     try
     {
@@ -185,6 +191,9 @@ public class Loader
     }
     if (resource==null)
     { resource=findResource(path);
+    }
+    if (debug)
+    { log.fine( (resource!=null?"FOUND":"FAIL")+":"+path );
     }
     return resource;
   }
@@ -273,6 +282,10 @@ public class Loader
     if (in==null)
     { in=findStream(path);
     }
+    if (debug)
+    { log.fine( (in!=null?"FOUND":"FAIL")+":"+path );
+    }
+    
     return in;
     
   } 
