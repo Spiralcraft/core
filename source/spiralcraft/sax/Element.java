@@ -22,6 +22,7 @@ import spiralcraft.util.ArrayUtil;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Set;
@@ -172,7 +173,53 @@ public class Element
   }
   
    
+  /**
+   * <p>Get the first Element child that has the specified qualified name
+   * </p>
+   * 
+   * @param qname
+   * @return The Element, or null, if not found
+   */
+  public Element getChildByQName(String qname)
+  {
+    if (!hasChildren())
+    { return null;
+    }
+    
+    for (Element element:getChildren(Element.class))
+    {
+      if (element.getQName().equals(qname))
+      { return element;
+      }
+    }
+    return null;
+  }
+  
 
+  /**
+   * <p>Get the list of children with the specified qualified name
+   * </p>
+   * 
+   * @param qname
+   * @return A list of zero or more elements, or null if this element has no
+   *   children.
+   */
+  public List<Element> getChildrenByQName(String qname)
+  {
+    if (!hasChildren())
+    { return null;
+    }
+    
+    List<Element> ret=new LinkedList<Element>();
+    for (Element element:getChildren(Element.class))
+    {
+      if (element.getQName().equals(qname))
+      { ret.add(element);
+      }
+    }
+    return ret;
+    
+  }
   
 
   /**
