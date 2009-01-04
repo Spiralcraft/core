@@ -160,6 +160,25 @@ public class StringUtil
   }
 
   /**
+   * Remove the part of the String including and after the specified
+   *   character, if it exists.
+   */
+  public static String discardAfter(String string,char chr)
+  {
+    if (string==null)
+    { return null;
+    }
+    
+    int chrPos=string.indexOf(chr);
+    if (chrPos>=0)
+    { return string.substring(0,chrPos);
+    }
+    else
+    { return string;
+    }
+  }
+  
+  /**
    * Find an instance of any of the specified chars
    */
   public static int findAny(CharSequence source,int start,String chars)
