@@ -41,6 +41,7 @@ public abstract class AsyncRunner
   protected volatile boolean started;
   protected long timeout=0;
   protected volatile boolean stop=true;
+  protected boolean daemon=false;
   
   protected boolean debug=false;
   
@@ -112,7 +113,12 @@ public abstract class AsyncRunner
   }
 
   protected Thread createThread()
-  { return new Thread(threadGroup,this,name);
+  { 
+    Thread thread=new Thread(threadGroup,this,name);
+    if (daemon)
+    { thread.setDaemon(true);
+    }
+    return thread;
   }
   
   protected final boolean shouldStop()

@@ -170,6 +170,8 @@ public class Daemon
     try
     { 
       input.setInputStream(ExecutionContext.getInstance().in());
+      input.setDaemon(true);
+      input.setPollPeriodMs(100);
       input.start();
       while (_running)
       {

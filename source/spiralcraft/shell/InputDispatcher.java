@@ -31,9 +31,37 @@ public class InputDispatcher
 {
   
   protected InputStream in;
+  protected int pollMs;
   
   public void setInputStream(InputStream in)
   { this.in=in;
+  }
+  
+  /**
+   * <p>Indicate how often the source InputStream.available() method will be
+   *  polled. A non-zero value avoids blocking reads, which may have
+   *  side effects. 
+   * </p>
+   * 
+   * <p>This option is not compatible with InputStreams that do not provide
+   *   a functional available() method (ie. the method always returns 0).
+   * </p>
+   * 
+   * @param The period in milliseconds between checks to 
+   *   InputStream.available()
+   */
+  public void setPollPeriodMs(int pollMs)
+  { this.pollMs=pollMs;
+  }
+  
+  /**
+   * <p>Whether the Thread should allow the VM to terminate while it is
+   *   still running.
+   * </p>
+   * @param daemon Whether a daemon thread should be created
+   */
+  public void setDaemon(boolean daemon)
+  { this.daemon=daemon;
   }
   
   @Override
@@ -48,6 +76,19 @@ public class InputDispatcher
       int i=-1;
       try
       {
+        while (pollMs>0 && in.available()<1)
+        { 
+          try
+          { Thread.sleep(pollMs);
+          }
+          catch (InterruptedException x)
+          { }
+          if (this.shouldStop())
+          { return;
+          }
+          
+        }
+        
         i=in.read();
         if (i==-1)
         {   
@@ -71,4 +112,5 @@ public class InputDispatcher
     
     
   }
+  
 }
