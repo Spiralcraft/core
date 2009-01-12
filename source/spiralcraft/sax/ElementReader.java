@@ -176,6 +176,7 @@ public class ElementReader<Tpeer>
    * </p>
    * 
    * @param element
+   * @throws SAXException 
    */
   protected void close(Element element)
     throws SAXException
