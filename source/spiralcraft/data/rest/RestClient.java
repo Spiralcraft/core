@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 
 import org.xml.sax.SAXException;
 
@@ -371,7 +372,7 @@ public class RestClient
       if (debug)
       { 
         out=new ByteArrayOutputStream();
-        dataReader.setTraceHandler(new XmlWriter(out));
+        dataReader.setTraceHandler(new XmlWriter(out,Charset.defaultCharset()));
       }
       
       query = (Tuple) dataReader.readFromURI(queryURI,handler.getType());

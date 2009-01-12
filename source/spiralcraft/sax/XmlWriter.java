@@ -22,17 +22,17 @@ import org.xml.sax.Locator;
 import spiralcraft.util.string.StringUtil;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 
 /**
  * Writes XML as SAX events are fired through the ContentHandler interface
  * 
- * When connected to a SAX parser, this class should write an exact copy
+ * When connected to a SAX parser, this class should write a copy
  *   of the document being read.
  */
 public class XmlWriter
@@ -44,21 +44,26 @@ public class XmlWriter
   private boolean format;
   private int indentLevel;
   private String indentString="  ";
+  private Charset encoding=Charset.forName("UTF-8");
   
 
-  public XmlWriter(OutputStream out)
+  public XmlWriter(OutputStream out,Charset charset)
   { 
-    try
-    {
-      _writer=new BufferedWriter(new OutputStreamWriter(out,"UTF-8"));
+    
+    if (charset!=null)
+    { this.encoding=charset;
     }
-    catch (UnsupportedEncodingException x)
-    { 
-      // Unfathomable?
-      throw new RuntimeException("Platform does not support UTF-8",x);
-    }
+    _writer=new BufferedWriter(new OutputStreamWriter(out,this.encoding));
   }
   
+  public XmlWriter(Writer writer,Charset encoding)
+  { 
+    this._writer=writer;
+    if (encoding!=null)
+    { this.encoding=encoding;
+    }
+  }
+
   public void setDocumentLocator(Locator locator)
   { _locator=locator;
   }
@@ -261,8 +266,7 @@ public class XmlWriter
     throws SAXException
   { 
     try
-    {
-      _writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
+    { _writer.write("<?xml version=\"1.0\" encoding=\""+encoding+"\"?>\r\n");
     }
     catch (IOException x)
     { fail(x);

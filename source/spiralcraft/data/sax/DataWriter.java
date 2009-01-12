@@ -106,7 +106,7 @@ class Context
   private Frame currentFrame; 
   
   public Context(OutputStream out)
-  { writer=new XmlWriter(out);
+  { writer=new XmlWriter(out,null);
   }
   
   public void write(DataComposite data)

@@ -125,7 +125,7 @@ public class ParseTreeFactory
   public static void toOutputStream(ParseTree tree,OutputStream out)
     throws SAXException
   {
-    XmlWriter writer=new XmlWriter(out);
+    XmlWriter writer=new XmlWriter(out,null);
     tree.playEvents(writer);
   }
 
