@@ -44,20 +44,13 @@ public class StubScenario
   }
 
   @Override
-  public void bind(
+  public Focus<?> bind(
     Focus<?> focusChain)
     throws BindException
-  {
-  // TODO Auto-generated method stub
+  { return focusChain;
 
   }
 
-  @Override
-  public Focus<?> getFocus()
-  {
-    // TODO Auto-generated method stub
-    return null;
-  }
 
   @Override
   public void start()

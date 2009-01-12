@@ -81,7 +81,7 @@ public class RestClient
   private Expression<Tuple> queryDataObject;
   private Channel<Tuple> queryDataChannel;
   
-  private Focus<Tuple> focus;
+//  private Focus<Tuple> focus;
   private boolean debug;
 
   // Related to ThreadContext 
@@ -167,7 +167,7 @@ public class RestClient
    * @throws BindException
    */
   @SuppressWarnings("unchecked") // Checking wildcard Focus for right object
-  public void bind(Focus<?> parentFocus)
+  public Focus<?> bind(Focus<?> parentFocus)
     throws BindException
   {
 
@@ -189,19 +189,17 @@ public class RestClient
           (DataReflector.<Tuple>getInstance(handler.getType())
         );
     
-    focus=new SimpleFocus<Tuple>(parentFocus,localQueryChannel);
+    Focus<?> focus=new SimpleFocus<Tuple>(parentFocus,localQueryChannel);
     
     handler.setFocus(focus);
     handler.bind();
-    bindAttributes();
-    bindAssignments();
+    bindAttributes(focus);
+    bindAssignments(focus);
+    return focus;
   }
 
-  public Focus<Tuple> getFocus()
-  { return focus;
-  }
   
-  protected void bindAssignments()
+  protected void bindAssignments(Focus<?> focus)
     throws BindException
   { 
     if (preAssignments!=null)
@@ -213,7 +211,7 @@ public class RestClient
     }
   }
   
-  protected void bindAttributes()
+  protected void bindAttributes(Focus<?> focus)
     throws BindException
   {
     if (urlQueryBindings!=null)

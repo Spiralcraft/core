@@ -23,7 +23,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
 /**
- * <p>Executes a command
+ * <p>Executes a command (incomplete)
  * </p>
  * 
  * @author mike
@@ -110,20 +110,13 @@ public class CommandScenario<I,R>
   }
 
   @Override
-  public void bind(
+  public Focus<?> bind(
     Focus<?> focusChain)
     throws BindException
-  {
-  // TODO Auto-generated method stub
+  { return focusChain;
 
   }
 
-  @Override
-  public Focus<?> getFocus()
-  {
-    // TODO Auto-generated method stub
-    return null;
-  }
 
 }
 

@@ -65,7 +65,6 @@ public class BatchScenario<I,R>
   private static final ClassLog log
     =ClassLog.getInstance(BatchScenario.class);
   
-  protected Focus<?> focus;
   private Expression<?> source;
   private Expression<Command<?,R>> command;
   private URI targetTypeURI;
@@ -85,11 +84,6 @@ public class BatchScenario<I,R>
   private boolean parallel;
   
   private Scheduler scheduler;
-  
-  @Override
-  public Focus<?> getFocus()
-  { return focus;
-  }
   
   /**
    * @return The expression which resolves the set of items to process
@@ -297,7 +291,7 @@ public class BatchScenario<I,R>
   
   @SuppressWarnings("unchecked")
   @Override
-  public void bind(
+  public Focus<?> bind(
     Focus<?> focusChain)
     throws BindException
   {
@@ -310,12 +304,13 @@ public class BatchScenario<I,R>
     
     commandChannel=target.getFocus().bind(command);
 
-    this.focus=focusChain;
+    Focus<?> focus=focusChain;
     
     delegate=new CommandDelegate();
     if (parallel)
     { scheduler=new Scheduler();
     }
+    return focus;
   }
   
   public class CommandTask

@@ -321,7 +321,7 @@ public class TupleEditor
    */
   @SuppressWarnings("unchecked")
   @Override
-  public void bind
+  public Focus<?> bind
     (Focus<?> parentFocus)
       throws BindException
   { 
@@ -403,15 +403,16 @@ public class TupleEditor
     
     focus=parentFocus.chain(bufferChannel);
     setupSession(parentFocus);
-    bindExports();
+    bindExports(focus);
+    return focus;
   }
   
   @SuppressWarnings("unchecked")
-  protected void bindExports()
+  protected void bindExports(Focus<?> focus)
     throws BindException
   {
     DataReflector<Buffer> reflector
-     =(DataReflector<Buffer>) getFocus().getSubject().getReflector();
+     =(DataReflector<Buffer>) focus.getSubject().getReflector();
   
     Type<?> type=reflector.getType();
 

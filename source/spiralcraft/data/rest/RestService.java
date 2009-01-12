@@ -75,7 +75,6 @@ public class RestService
   private Assignment<?>[] postAssignments;
   private Setter<?>[] postSetters;
   
-  private Focus<?> parentFocus;
   private CompoundFocus<Tuple> focus;
   
   private RestClient restClient;
@@ -162,10 +161,9 @@ public class RestService
   }
   
   @Override
-  public void bind(Focus<?> parentFocus) 
+  public Focus<?> bind(Focus<?> parentFocus) 
     throws BindException
   {
-    this.parentFocus=parentFocus;
     
     // Note: We can't expose any of the ThreadLocalChannels, because they
     //   are only populated under this objects stack, and the data won't be
@@ -220,17 +218,18 @@ public class RestService
       ,new BeanFocus<RestService>(this)
       );
 
-    this.focus=restFocus;
+    Focus<?> focus=restFocus;
 
     if (errorExpression!=null)
     { errorChannel=this.focus.bind(errorExpression);
     }
    
-    bindAssignments();
+    bindAssignments(focus);
     restClient.bind(focus);
+    return parentFocus;
   }
 
-  protected void bindAssignments()
+  protected void bindAssignments(Focus<?> focus)
     throws BindException
   { 
 //    if (preAssignments!=null)
@@ -241,11 +240,6 @@ public class RestService
     { postSetters=Assignment.bindArray(postAssignments, focus);
     }
   }  
-  
-  @Override
-  public Focus<?> getFocus()
-  { return parentFocus;
-  }
   
   /**
    * <p>A command to execute the query. Must be called from within

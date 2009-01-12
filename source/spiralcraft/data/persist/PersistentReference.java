@@ -59,8 +59,8 @@ public interface PersistentReference<T>
    * @param parent
    * @return
    */
-  public void bind(Focus<?> parent)
+  @Override
+  public Focus<?> bind(Focus<?> parent)
     throws BindException;
   
-  public Focus<T> getFocus();
 }

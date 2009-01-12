@@ -39,18 +39,12 @@ public interface FocusChainObject
    * </p>
    * 
    * @param parentFocus
+   * @return The Focus into which this BoundObject publishes any data, or the
+   *   passed-in reference if no chained focus is created.
+   *   
    * @throws BindException If any resources are not found
    */
-  void bind(Focus<?> focusChain)
-    throws BindException;
-  
-  /**
-   * <p>This BoundObject may publish its own references into the Focus chain.
-   * </p>
-   * 
-   * @return The Focus into which this BoundObject publishes any data. 
-   */
-  Focus<?> getFocus();
-  
+  Focus<?> bind(Focus<?> focusChain)
+    throws BindException;  
   
 }

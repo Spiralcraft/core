@@ -40,12 +40,13 @@ public class DataBatchProcessor<I,R>
   
   
   @Override
-  public void bind(
+  public Focus<?> bind(
     Focus<?> focusChain)
     throws BindException
   {
-    super.bind(focusChain);
+    Focus<?> focus=super.bind(focusChain);
     resultChannel=focus.bind(resultAssignment);
+    return focus;
   }
 
   @Override

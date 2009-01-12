@@ -69,10 +69,6 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   public void setSource(Channel<Tuple> source)
   { this.source=source;
   }
-
-  public Focus<?> getFocus()
-  { return focus;
-  }
   
   protected void setupSession(Focus<?> parentFocus)
   {

@@ -182,7 +182,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   protected Tcontainer instance;
   protected RegistryNode registryNode;
   protected Channel<Treferent> channel;
-  protected Focus<Treferent> focus;
+  protected Focus<?> focus;
   protected ContextFrame next;
   
   /**
@@ -364,12 +364,18 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   }
   
 
-  public Focus<Treferent> getFocus()
+  /**
+   * <p>Return the Focus created by this XmlObject as a result of binding.
+   * </p>
+   * 
+   * @return
+   */
+  public Focus<?> getFocus()
   { return focus;
   }
   
-  @SuppressWarnings("unchecked") // Cast generic FocusChainObject Focus
-  public void bind(Focus<?> parentFocus)
+  @Override
+  public Focus<?> bind(Focus<?> parentFocus)
     throws BindException
   { 
     if (channel==null)
@@ -399,17 +405,18 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
         }
       };
     }
+    
     SimpleFocus<Treferent> intermediateFocus
       =new SimpleFocus<Treferent>(parentFocus,channel);
     
     if (instance instanceof FocusChainObject)
     {
-      ((FocusChainObject) instance).bind(intermediateFocus);
-      this.focus=(Focus<Treferent>) ((FocusChainObject) instance).getFocus();
+      this.focus=((FocusChainObject) instance).bind(intermediateFocus);
     }
     else
     { this.focus=intermediateFocus;
     }
+    return getFocus();
   }
   
 
