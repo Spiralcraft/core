@@ -19,6 +19,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import spiralcraft.text.xml.AttributeEncoder;
+import spiralcraft.text.xml.XmlEncoder;
 import spiralcraft.util.string.StringUtil;
 
 import java.io.IOException;
@@ -45,6 +47,8 @@ public class XmlWriter
   private int indentLevel;
   private String indentString="  ";
   private Charset encoding=Charset.forName("UTF-8");
+  private final AttributeEncoder attributeEncoder=new AttributeEncoder();
+  private final XmlEncoder xmlEncoder=new XmlEncoder();
   
 
   public XmlWriter(OutputStream out,Charset charset)
@@ -59,9 +63,7 @@ public class XmlWriter
   public XmlWriter(Writer writer,Charset encoding)
   { 
     this._writer=writer;
-    if (encoding!=null)
-    { this.encoding=encoding;
-    }
+    this.encoding=encoding;
   }
 
   public void setDocumentLocator(Locator locator)
@@ -117,6 +119,11 @@ public class XmlWriter
     }
   }
 
+  public void startElementContent()
+    throws SAXException
+  { checkElementClose();
+  }
+  
   public void startPrefixMapping(String prefix,String uri)
   { System.err.println("XmlWriter.startPrefixMapping("+prefix+","+uri+")");
   }
@@ -153,6 +160,7 @@ public class XmlWriter
     }
   }
 
+  
   private boolean isWhitespace(char c)
   { return c=='\t' || c=='\r' || c=='\n' || c==' ';
   }
@@ -170,26 +178,7 @@ public class XmlWriter
         }
       }
       
-      for (int i=start;i<length;i++)
-      {
-
-        
-        switch (ch[i])
-        {
-        case '&':
-          _writer.write("&amp;");
-          break;
-        case '<':
-          _writer.write("&lt;");
-          break;
-        case '>':
-          _writer.write("&gt;");
-          break;
-        default:
-          _writer.write(ch[i]);
-          break;
-        }
-      }
+      xmlEncoder.encode(new String(ch,start,length),_writer);
     }
     catch (IOException x)
     { fail(x);
@@ -199,39 +188,8 @@ public class XmlWriter
   public void writeAttributeValue(String value)
     throws SAXException
   { 
-    char[] chars=value.toCharArray();
     try
-    { 
-      for (int i=0;i<chars.length;i++)
-      {
-        switch (chars[i])
-        {
-        case '&':
-          _writer.write("&amp;");
-          break;
-        case '<':
-          _writer.write("&lt;");
-          break;
-        case '>':
-          _writer.write("&gt;");
-          break;
-        case '"':
-          _writer.write("&quot;");
-          break;
-        case '\r':
-          _writer.write("&#xD;");
-          break;
-        case '\n':
-          _writer.write("&#xA;");
-          break;
-        case '\t':
-          _writer.write("&#x9;");
-          break;
-        default:
-          _writer.write(chars[i]);
-          break;
-        }
-      }
+    { attributeEncoder.encode(value,_writer);
     }
     catch (IOException x)
     { fail(x);
@@ -266,7 +224,12 @@ public class XmlWriter
     throws SAXException
   { 
     try
-    { _writer.write("<?xml version=\"1.0\" encoding=\""+encoding+"\"?>\r\n");
+    { 
+      _writer.write("<?xml version=\"1.0\" ");
+      if (encoding!=null)
+      { _writer.write("encoding=\""+encoding+"\"");
+      }
+      _writer.write("?>\r\n");
     }
     catch (IOException x)
     { fail(x);

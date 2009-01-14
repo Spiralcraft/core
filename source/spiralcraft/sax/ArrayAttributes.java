@@ -23,6 +23,9 @@ import org.xml.sax.Attributes;
 public class ArrayAttributes
   implements Attributes
 {
+  public static final ArrayAttributes EMPTY_INSTANCE
+    =new ArrayAttributes(null);
+  
   private Attribute[] _attributes;
 
   public ArrayAttributes(Attribute[] attribs)

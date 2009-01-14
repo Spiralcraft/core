@@ -14,6 +14,8 @@
 //
 package spiralcraft.lang;
 
+import spiralcraft.common.NamespaceResolver;
+import spiralcraft.lang.parser.LiteralNode;
 import spiralcraft.lang.parser.Node;
 
 import spiralcraft.lang.parser.ExpressionParser;
@@ -66,6 +68,8 @@ public class Expression<T>
     }
   }
   
+ 
+  
   /**
    * Create an Expression by parsing an expression language String. This is
    *   the preferred way to create an expression as it utilizes a cache to
@@ -90,6 +94,17 @@ public class Expression<T>
       }
       return ret;
     }
+  }
+  
+  /**
+   * Create a constant literal Expression from the specified value
+   * 
+   * @param <X>
+   * @param value
+   * @return
+   */
+  public static <X> Expression<X> literal(X value)
+  { return new Expression<X>(new LiteralNode<X>(value));
   }
   
   /**

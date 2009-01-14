@@ -189,6 +189,14 @@ class Context
       }
     }
     
+    protected void writeWhitespace(String str)
+      throws SAXException
+    { 
+      if (str!=null)
+      { writer.ignorableWhitespace(str.toCharArray(),0,str.length());
+      }
+    }
+    
     protected void pushCompositeFrame(DataComposite data)
     {
       if (data.isTuple())
@@ -297,8 +305,8 @@ class Context
     protected final void startType()
       throws SAXException
     {
-      writeString("\r\n");
-      writeString(indentString);
+      writeWhitespace("\r\n");
+      writeWhitespace(indentString);
       writer.startElement(null,null,qName,attributes);
     }
     
@@ -307,8 +315,8 @@ class Context
     {
       if (addLine)
       {
-        writeString("\r\n");
-        writeString(indentString);
+        writeWhitespace("\r\n");
+        writeWhitespace(indentString);
       }
       writer.endElement(null,null,qName);
     }
@@ -483,8 +491,8 @@ class Context
     protected final void openField()
       throws SAXException
     {
-      writeString("\r\n");
-      writeString(indentString);
+      writeWhitespace("\r\n");
+      writeWhitespace(indentString);
       writer.startElement(null,null,field.getName(),NULL_ATTRIBUTES);
     }
     
@@ -493,8 +501,8 @@ class Context
     { 
       if (addLine)
       {
-        writeString("\r\n");
-        writeString(indentString);
+        writeWhitespace("\r\n");
+        writeWhitespace(indentString);
       }
       writer.endElement(null,null,field.getName());
     }

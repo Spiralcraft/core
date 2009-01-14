@@ -20,7 +20,7 @@ import java.io.Writer;
 
 
 /**
- * <p>A means to render text
+ * <p>A means to render streaming text in a concurrent context
  * </p>
  * 
  * @author mike
@@ -38,14 +38,5 @@ public interface Renderer
    */
   public void render(Writer writer)
     throws IOException;
-  
-  /**
-   * <p>Render markup to a String
-   * </p>
-   * 
-   * @return The rendered markup
-   * @throws IOException
-   */
-  public String render()
-    throws IOException;
+
 }

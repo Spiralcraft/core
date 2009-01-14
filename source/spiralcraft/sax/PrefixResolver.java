@@ -1,6 +1,9 @@
 package spiralcraft.sax;
 
+import java.net.URI;
 import java.util.HashMap;
+
+import spiralcraft.common.NamespaceResolver;
 
 /**
  * Resolves namespace prefixes in a memory efficient manner
@@ -8,22 +11,23 @@ import java.util.HashMap;
  * @author mike
  */
 public class PrefixResolver
+  implements NamespaceResolver
 {
-  private final PrefixResolver parent;
-  private final HashMap<String,String> map
-    =new HashMap<String,String>();
+  private final NamespaceResolver parent;
+  private final HashMap<String,URI> map
+    =new HashMap<String,URI>();
   
   public PrefixResolver()
   { this.parent=null;
   }
   
-  public PrefixResolver(PrefixResolver parent)
+  public PrefixResolver(NamespaceResolver parent)
   { this.parent=parent;
   }
   
-  public String resolvePrefix(String prefix)
+  public URI resolvePrefix(String prefix)
   {
-    String uri=map.get(prefix);
+    URI uri=map.get(prefix);
     if (uri!=null)
     { return uri;
     } 
@@ -33,7 +37,21 @@ public class PrefixResolver
     return null;
   }
   
-  public void mapPrefix(String prefix,String uri)
+  public URI getDefaultURI()
+  { 
+    URI ret=map.get("default");
+    if (ret!=null)
+    { return ret;
+    }
+    else if (parent!=null)
+    { return parent.getDefaultURI();
+    }
+    else
+    { return null;
+    }
+  }
+  
+  public void mapPrefix(String prefix,URI uri)
   { map.put(prefix,uri);
   }
 }

@@ -20,6 +20,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
+
 import spiralcraft.util.string.StringConverter;
 
 /**
@@ -87,17 +88,17 @@ public class AttributeBinding<T>
   
   
   /**
-   * <p>The expression referencing the Channel to be updated.
+   * <p>The expression referencing the Channel to be updated or read
    * </p>
    * 
-   * @return The attribute name
+   * @return The target expression
    */
   public Expression<?> getTarget()
   { return target;
   }
   
   /**
-   * <p>The name of the XML attribute
+   * <p>The name of the attribute
    * </p>
    * 
    * @return The attribute name

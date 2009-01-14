@@ -17,7 +17,10 @@ package spiralcraft.lang;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import spiralcraft.common.NamespaceResolver;
+
 import spiralcraft.lang.spi.SimpleChannel;
+
 
 public abstract class BaseFocus<T>
   implements Focus<T>
@@ -70,7 +73,10 @@ public abstract class BaseFocus<T>
   { return new SimpleFocus<Tchannel>(this,channel);
   }
 
-
+  public Focus<T> chain(NamespaceResolver resolver)
+  { return new NamespaceFocus<T>(this,resolver);
+  }
+  
 
   @SuppressWarnings("unchecked") // Heterogeneous hash map
   public synchronized <X> Channel<X> bind(Expression<X> expression)

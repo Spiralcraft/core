@@ -17,6 +17,8 @@ package spiralcraft.lang;
 import java.net.URI;
 import java.util.LinkedList;
 
+import spiralcraft.common.NamespaceResolver;
+
 /**
  * <p>A starting point for the evaluation of an Expression, which provides
  *   access to a chain of different contexts that can be referenced by the
@@ -296,6 +298,19 @@ public interface Focus<T>
    * @return The new Focus
    */
   public <Tchannel> Focus<Tchannel> chain(Channel<Tchannel> channel);
+
+  /**
+   * <p>Return a new Focus for the end of the Focus chain that adds a set
+   *   of namespace prefix definitions.
+   * </p>
+   * 
+   * 
+   * @param <Tchannel>
+   * @param channel
+   * @return The new Focus
+   */
+  public Focus<T> chain(NamespaceResolver resolver);
+  
   
   /**
    * <p>A Channel that references the Focus object itself (primarily for

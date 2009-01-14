@@ -23,6 +23,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import spiralcraft.common.NamespaceResolver;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
@@ -30,7 +31,6 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.DataFactory;
 import spiralcraft.lang.Expression;
-import spiralcraft.lang.NamespaceResolver;
 import spiralcraft.log.ClassLog;
 import spiralcraft.text.ParseException;
 import spiralcraft.text.ParsePosition;
@@ -470,20 +470,20 @@ public abstract class DataHandlerBase
     }
     
     @Override
-    public URI getDefaultNamespaceURI()
+    public URI getDefaultURI()
     { 
       String ret=null;
       if (prefixMappings!=null)
       { ret=prefixMappings.get("default");
       }
       if (ret==null && parentFrame!=null)
-      { return parentFrame.getDefaultNamespaceURI();
+      { return parentFrame.getDefaultURI();
       }
       return ret!=null?URI.create(ret):null;
     }
 
     @Override
-    public URI resolveNamespace(
+    public URI resolvePrefix(
       String prefix)
     {
       String ret=null;
@@ -491,7 +491,7 @@ public abstract class DataHandlerBase
       { ret=prefixMappings.get(prefix);
       }
       if (ret==null && parentFrame!=null)
-      { return parentFrame.resolveNamespace(prefix);
+      { return parentFrame.resolvePrefix(prefix);
       }
       return ret!=null?URI.create(ret):null;
     }

@@ -14,8 +14,8 @@
 //
 package spiralcraft.lang.parser;
 
+import spiralcraft.common.NamespaceResolver;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.NamespaceResolver;
 import spiralcraft.lang.Reflector;
 
 import spiralcraft.lang.BindException;
@@ -79,10 +79,10 @@ public class TypeFocusNode
     {
       NamespaceResolver nsr=(NamespaceResolver) visitor;
       if (namespace!=null)
-      { uri=nsr.resolveNamespace(namespace);
+      { uri=nsr.resolvePrefix(namespace);
       }
       else
-      { uri=nsr.getDefaultNamespaceURI();
+      { uri=nsr.getDefaultURI();
       }
       if (uri!=null)
       { uri=uri.resolve(suffix);
@@ -123,10 +123,10 @@ public class TypeFocusNode
       if (resolver!=null)
       {
         if (namespace==null || namespace.equals(""))
-        { namespaceURI=resolver.getDefaultNamespaceURI();
+        { namespaceURI=resolver.getDefaultURI();
         }
         else
-        { namespaceURI=resolver.resolveNamespace(namespace);
+        { namespaceURI=resolver.resolvePrefix(namespace);
         }
       }
       else if (namespace!=null)

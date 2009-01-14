@@ -1,4 +1,4 @@
-package spiralcraft.text.html;
+package spiralcraft.text.xml;
 
 import spiralcraft.text.Encoder;
 

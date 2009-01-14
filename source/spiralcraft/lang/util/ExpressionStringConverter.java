@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.util.string;
+package spiralcraft.lang.util;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -21,6 +21,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.util.string.StringConverter;
 
 /**
  * <p>A StringConverter which returns the result of an Expression evaluated

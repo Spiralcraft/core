@@ -21,7 +21,7 @@ class NamespaceAttribute<T>
 
   @SuppressWarnings("unchecked") // Heterogeneous collection
   public T translateForGet(Namespace source, Channel<?>[] modifiers)
-  { return (T) source.getOptic(index).get();
+  { return (T) source.getChannel(index).get();
   }
 
   

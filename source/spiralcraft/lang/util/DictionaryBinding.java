@@ -12,8 +12,9 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang;
+package spiralcraft.lang.util;
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -22,9 +23,9 @@ import spiralcraft.lang.ParseException;
 import spiralcraft.util.string.StringConverter;
 
 /**
- * <p>Associates a loosely bound name, such as used to reference 
- *   objects in a map, with an Expression bound to
- *   a data model.
+ * <p>Binds a textual value mapped to a name (eg. as
+ *   in a String dictionary) to a spiralcraft.lang expression of an arbitrary
+ *   type.
  * </p>
  * 
  * @author mike
@@ -66,12 +67,12 @@ public class DictionaryBinding<T>
     int eqPos=shortHand.indexOf("=");
     if (eqPos<0)
     { 
-      setName(shortHand);
+      setName(shortHand.trim());
       setTarget(Expression.<T>parse(shortHand));
     }
     else
     {
-      setName(shortHand.substring(0,eqPos));
+      setName(shortHand.substring(0,eqPos).trim());
       setTarget(Expression.<T>parse(shortHand.substring(eqPos+1)));
     }
   }
@@ -111,7 +112,13 @@ public class DictionaryBinding<T>
   }
   
   public void set(String value)
-  { targetChannel.set(converter.fromString(value));
+  { 
+    try
+    { targetChannel.set(converter.fromString(value));
+    }
+    catch (IllegalArgumentException x)
+    { throw new AccessException("Error reading '"+value+"'",x);
+    }
   }
   
   public String get()

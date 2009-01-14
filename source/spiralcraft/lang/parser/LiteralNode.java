@@ -26,6 +26,11 @@ public class LiteralNode<X>
 
   private final SimpleChannel<X> _optic;
 
+  @SuppressWarnings("unchecked") // Type check
+  public LiteralNode(X value)
+  { _optic=new SimpleChannel<X>((Class<X>) value.getClass(),value,true);
+  }
+
   public LiteralNode(X value,Class<X> valueClass)
   { _optic=new SimpleChannel<X>(valueClass,value,true);
   }

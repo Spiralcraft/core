@@ -21,7 +21,6 @@ import spiralcraft.lang.Focus;
 
 import spiralcraft.command.Command;
 
-import spiralcraft.places.UserAgent;
 
 /**
  * <p>Abstract mechanism to implement a stateful command line interface
@@ -67,7 +66,7 @@ import spiralcraft.places.UserAgent;
  *
  */
 public abstract class CommandConsole
-  implements MessageHandler,UserAgent
+  implements MessageHandler
 {
 
   private Focus<?> focus;

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -20,8 +20,9 @@ import java.io.Writer;
 import java.io.IOException;
 
 /**
- * An encoder which encodes a CharSequence for 
- *   embedding anywhere within an XML document
+ * <p>An encoder which encodes a CharSequence for embedding 
+ *      within an XML document
+ * </p>
  */
 public class XmlEncoder
   implements Encoder
@@ -32,7 +33,21 @@ public class XmlEncoder
     for (int i=0;i<in.length();i++)
     { 
       final char value=in.charAt(i);
-      switch (value)
+      if (value < ' ')
+      { 
+        switch (value)
+        {
+          case '\r':
+          case '\n':
+          case '\t':
+//            out.write(value);
+            out.write("&#"+((int) value)+";"); 
+            break;
+          default:
+            out.write("&#"+((int) value)+";"); 
+        }
+      }      
+      else switch (value)
       { 
         case '&':
           out.write("&amp;");

@@ -20,18 +20,15 @@ import spiralcraft.util.string.StringConverter;
 
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.NamespaceResolver;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.AccessException;
 
-import spiralcraft.lang.spi.FocusWrapper;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import java.net.URI;
 
 import java.lang.reflect.Array;
 
@@ -41,7 +38,6 @@ import java.beans.PropertyChangeEvent;
 
 import spiralcraft.registry.RegistryNode;
 
-import spiralcraft.sax.PrefixResolver;
 
 /**
  * Associates a PropertySpecifier with some value or value source
@@ -70,9 +66,11 @@ public class PropertyBinding
   { 
     _specifier=specifier;
     _container=container;
-    _focus=new NamespaceFocus
-      (container.getFocus(),specifier.getPrefixResolver());
-
+    _focus=container.getFocus();
+    if (specifier.getPrefixResolver()!=null)
+    { _focus=_focus.chain(specifier.getPrefixResolver());
+    }
+    
     // Resolve the target first to determine how we are to interpret
     //   the contents/source information
     createTargetChannel();
@@ -495,39 +493,5 @@ public class PropertyBinding
   }
 }
 
-class NamespaceFocus<tFocus>
-  extends FocusWrapper<tFocus>
-{ 
-  private NamespaceResolver resolver;
-  
-  public NamespaceFocus(Focus<tFocus> delegate,final PrefixResolver resolver)
-  { 
-    super(delegate);
-    this.resolver
-      =new NamespaceResolver()
-    {
 
-      @Override
-      public URI getDefaultNamespaceURI()
-      {
-        // TODO Auto-generated method stub
-        return URI.create(resolver.resolvePrefix("default"));
-      }
-
-      @Override
-      public URI resolveNamespace(
-        String prefix)
-      {
-        // TODO Auto-generated method stub
-        return URI.create(resolver.resolvePrefix(prefix));
-      }
-    };
-  }
-  
-  @Override
-  public NamespaceResolver getNamespaceResolver()
-  { return resolver;
-  }
-
-}
 

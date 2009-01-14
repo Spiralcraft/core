@@ -41,7 +41,7 @@ public class NamespaceChannel<T>
     if (_constant)
     { return false;
     }
-    ((Channel<T>) source.get().getOptic(translator.getIndex())).set(val);
+    ((Channel<T>) source.get().getChannel(translator.getIndex())).set(val);
     return true;
   }
 }

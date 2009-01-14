@@ -35,22 +35,22 @@ public class Namespace
     this.data=new Channel[reflector.getAttributeCount()];
   }
   
-  Channel<?> getOptic(int index)
+  Channel<?> getChannel(int index)
   { return data[index];
   }
   
-  void setOptic(int index,Channel<?> channel)
+  void setChannel(int index,Channel<?> channel)
   { data[index]=channel;
   }
   
-  public void putOptic(String name,Channel<?> value)
+  public void putChannel(String name,Channel<?> value)
     throws BindException
   { reflector.putOptic(this,name,value);
   }
   
-  public Object getOptic(String name)
+  public Channel<?> getChannel(String name)
     throws BindException
-  { return reflector.getOptic(this,name);
+  { return reflector.getChannel(this,name);
   }
   
   @Override

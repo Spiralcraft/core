@@ -89,6 +89,14 @@ public class ElementReader<Tpeer>
   { return elementName;
   }
   
+  /**
+   * <p>Recursively read the tree starting at the specified element
+   * </p>
+   * 
+   * @param element
+   * @return
+   * @throws SAXException
+   */
   public final Tpeer read(Element element)
     throws SAXException
   { 

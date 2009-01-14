@@ -34,15 +34,7 @@ import java.util.Map;
  * <h3>EXPERIMENTAL CODE</h3>
  * <p>This class is experimental. It's necessity lies in
  *   exposing as strongly typed named Channels members of a collection that are
- *   heterogeneously typed. Specifically, the set of named Views in a dataset,
- *   which expose different data types.
- * </p>
- *   
- * <p>This may be also accomplished by spiralcraft.data
- *   methods, or by using chained Focus objects that expose various interfaces.
- *   Because use of this requires an object to generate a focus, it is possible
- *   that simply using chained Focus objects would achieve the same result with
- *   greater elegance and simplicity.
+ *   heterogeneously typed. 
  * </p>
  *   
  * 
@@ -114,12 +106,12 @@ public class NamespaceReflector
   { return index;
   }
   
-  Object getOptic(Namespace namespace,String name)
+  Channel<?> getChannel(Namespace namespace,String name)
     throws BindException
   { 
     NamespaceAttribute<?> translator=attributeMap.get(name);
     if (translator!=null)
-    { return namespace.getOptic(translator.getIndex());
+    { return namespace.getChannel(translator.getIndex());
     }
     else
     { throw new BindException("Name '"+name+"' not found");
@@ -131,7 +123,7 @@ public class NamespaceReflector
   { 
     NamespaceAttribute<?> translator=attributeMap.get(name);
     if (translator!=null)
-    { namespace.setOptic(translator.getIndex(),value);      
+    { namespace.setChannel(translator.getIndex(),value);      
     }
     else
     { throw new BindException("Name '"+name+"' not found");

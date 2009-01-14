@@ -14,6 +14,8 @@
 //
 package spiralcraft.sax;
 
+import java.net.URI;
+
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
@@ -85,7 +87,7 @@ public class ParseTree
           :null
           );
     }
-    newPrefixResolver.mapPrefix(prefix,uri); 
+    newPrefixResolver.mapPrefix(prefix,URI.create(uri)); 
   }
   
   @Override

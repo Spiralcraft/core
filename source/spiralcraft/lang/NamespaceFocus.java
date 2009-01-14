@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 2009,2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,12 +12,33 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.places;
+package spiralcraft.lang;
+
+import spiralcraft.common.NamespaceResolver;
+
 
 /**
- * A focal point of user interaction
+ * <p>Wraps a Focus to provide additional namespace mappings
+ * </p>
+ * 
+ * @author mike
+ *
+ * @param <tFocus>
  */
-public interface Place
-{
+public class NamespaceFocus<T>
+  extends FocusWrapper<T>
+{ 
+  private NamespaceResolver resolver;
   
+  public NamespaceFocus(Focus<T> delegate,final NamespaceResolver resolver)
+  { 
+    super(delegate);
+    this.resolver=resolver;
+  }
+  
+  @Override
+  public NamespaceResolver getNamespaceResolver()
+  { return resolver;
+  }
+
 }

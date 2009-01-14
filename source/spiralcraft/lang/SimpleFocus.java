@@ -18,6 +18,8 @@ package spiralcraft.lang;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import spiralcraft.common.NamespaceResolver;
+
 /**
  * Simple implementation of a Focus
  */

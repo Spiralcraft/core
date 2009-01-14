@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 2007,2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,18 +12,14 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang.spi;
+package spiralcraft.lang;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import spiralcraft.lang.BindException;
-import spiralcraft.lang.Channel;
-import spiralcraft.lang.Expression;
-import spiralcraft.lang.Focus;
-import spiralcraft.lang.NamespaceResolver;
-import spiralcraft.lang.TeleFocus;
+import spiralcraft.common.NamespaceResolver;
+import spiralcraft.lang.spi.SimpleChannel;
 
 
 /**
@@ -38,18 +34,18 @@ import spiralcraft.lang.TeleFocus;
  * 
  * @author mike
  *
- * @param <tFocus>
+ * @param <Tfocus>
  * 
  * 
  */
-public abstract class FocusWrapper<tFocus>
-  implements Focus<tFocus>
+public abstract class FocusWrapper<Tfocus>
+  implements Focus<Tfocus>
 {
-  protected final Focus<tFocus> focus;
+  protected final Focus<Tfocus> focus;
   private HashMap<Expression<?>,Channel<?>> channels;
-  private volatile Channel<Focus<tFocus>> selfChannel;
+  private volatile Channel<Focus<Tfocus>> selfChannel;
   
-  public FocusWrapper(Focus<tFocus> delegate)
+  public FocusWrapper(Focus<Tfocus> delegate)
   { this.focus=delegate;
   }
   
@@ -107,7 +103,7 @@ public abstract class FocusWrapper<tFocus>
   }
 
   @Override
-  public Channel<tFocus> getSubject()
+  public Channel<Tfocus> getSubject()
   { return focus.getSubject();
   }
 
@@ -127,20 +123,23 @@ public abstract class FocusWrapper<tFocus>
   }
 
 
-  public Channel<Focus<tFocus>> getSelfChannel()
+  public Channel<Focus<Tfocus>> getSelfChannel()
   {
     if (selfChannel==null)
-    { selfChannel=new SimpleChannel<Focus<tFocus>>(this,true);
+    { selfChannel=new SimpleChannel<Focus<Tfocus>>(this,true);
     }
     return selfChannel;
   }
   
   @Override
-  public <Tchannel> Focus<Tchannel> chain(
-    Channel<Tchannel> channel)
-  { return focus.<Tchannel>chain(channel);
+  public <Tchannel> Focus<Tchannel> chain(Channel<Tchannel> channel)
+  { return new SimpleFocus<Tchannel>(this,channel);
   }
 
+  @Override
+  public Focus<Tfocus> chain(NamespaceResolver resolver)
+  { return new NamespaceFocus<Tfocus>(this,resolver);
+  }
 
   @Override
   public <Tchannel> TeleFocus<Tchannel> telescope(

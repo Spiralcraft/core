@@ -96,7 +96,7 @@ public class ExpressionResolverTest
       Namespace namespace=new Namespace(defs);
       
       
-      namespace.putOptic("test",new SimpleChannel<String>("testValue",true));
+      namespace.putChannel("test",new SimpleChannel<String>("testValue",true));
 
       focus.setSubject(new SimpleChannel<Namespace>(defs,namespace,false));
 

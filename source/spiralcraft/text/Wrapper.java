@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 2009,2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,14 +12,27 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.places;
+package spiralcraft.text;
+
+import java.io.IOException;
+import java.io.Writer;
 
 /**
- * A means for a UserAgent to interact with a Place.
+ * <p>A means to render nested streaming text in a concurrent context
+ * </p>
+ * 
+ * @author mike
  *
- * A View is spawned from a Gate for a particular UserAgent
  */
-public interface View
+public interface Wrapper
 {
-  
+  /**
+   * <p>Wrap the output of the Renderer, sending it to the Writer
+   * </p>
+   * 
+   * @param writer
+   * @throws IOException
+   */
+  void render(Writer writer,Renderer renderer)
+    throws IOException;
 }
