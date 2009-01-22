@@ -3,9 +3,15 @@ package spiralcraft.io;
 import java.io.InputStream;
 import java.io.IOException;
 
+//
+// 2009-01-22 Used by:
+//   spiralcraft.net.mime.MultipartParser
+//
+
 /**
- * Permits a client to view a fixed window of data before
- *   it is consumed.
+ * <p>Exposes a fixed size lookahead window into another InputStream.
+ * </p>
+ *
  */
 public class WindowInputStream
   extends InputStream
@@ -19,11 +25,11 @@ public class WindowInputStream
   private final boolean _drain;
   
   /**
-   * <P>Create a new WindowInputStream.
-   * </P>
+   * <p>Create a new WindowInputStream.
+   * </p>
    * 
-   * <P>Allocates a buffer of windowSize
-   * </P>
+   * <p>Allocates a buffer of windowSize
+   * </p>
    *
    *@param in The InputStream to read from
    *@param windowSize The size in bytes of the window
