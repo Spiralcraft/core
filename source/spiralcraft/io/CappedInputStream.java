@@ -8,6 +8,10 @@ import java.io.InputStream;
  *   bytes or reaching the end of the stream.
  * </p>
  * 
+ * <p>Useful for dispatching a fixed length chunk of data from a
+ *  longer longer stream for processing.
+ * </p>
+ * 
  * @author mike
  *
  */
