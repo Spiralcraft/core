@@ -14,6 +14,7 @@
 //
 package spiralcraft.log;
 
+
 /**
  * <p>A means for application code to record programmatic events. 
  * </p>

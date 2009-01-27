@@ -22,7 +22,7 @@ import spiralcraft.util.Path;
 
 
 public class ClassLog
-  extends GenericLog
+  extends ContextLog
 {
   
   private static final WeakHashMap<Class<?>,ClassLog> map
@@ -34,11 +34,42 @@ public class ClassLog
     if (ret!=null)
     { return ret;
     }
+    
     ret=new ClassLog(subject.getName());
+//    try
+//    { ret.start();
+//    }
+//    catch (LifecycleException x)
+//    { 
+//      throw new IllegalArgumentException
+//        ("Error starting log for "+subject.getName(),x);
+//    }
     map.put(subject,ret);
     return ret;
   }
 
+//  static
+//  {
+//    Runtime.getRuntime().addShutdownHook
+//      (new Thread()
+//      {
+//        @Override
+//        public void run()
+//        { 
+//          for (ClassLog log:map.values())
+//          { 
+//            try
+//            { log.stop();
+//            }
+//            catch (LifecycleException x)
+//            { x.printStackTrace();
+//            }
+//          }
+//        }
+//      }
+//      
+//      );
+//  }
 
   public void fine(String message)
   { log(FINE,message,null,1);
@@ -53,7 +84,7 @@ public class ClassLog
   }
   
   ClassLog(String className)
-  { context=new Path(className,'/');
+  { this.context=new Path(className,'/');
   }
    
 

@@ -17,7 +17,9 @@ package spiralcraft.time;
 //import java.util.logging.Logger;
 
 //import spiralcraft.log.ClassLogger;
+
 import spiralcraft.pool.ThreadPool;
+import spiralcraft.util.thread.ThreadLocalStack;
 
 /**
  * Schedules Runnable items to be executed at
@@ -29,15 +31,35 @@ public class Scheduler
 //    =ClassLogger.getInstance(Scheduler.class);
 
   private static final Scheduler _INSTANCE=new Scheduler();
+  
+  private static ThreadLocalStack<Scheduler> stack
+    =new ThreadLocalStack<Scheduler>(true)
+    {
+       @Override
+       public Scheduler defaultValue()
+       { return _INSTANCE;
+       }
+    };
+  
+  public static void push(Scheduler scheduler)
+  { stack.push(scheduler);
+  }
+  
+  public static void pop()
+  { stack.pop();
+  }
+  
+  public static Scheduler instance()
+  { return stack.get();
+  }
+    
   private ScheduledItem _nextItem;
   private final Object _sync=new Object();
   private final Thread _thread=new Thread(new Dispatcher(),"Scheduler");
   private ThreadPool _pool=new ThreadPool();
   private boolean _started=false;
   
-  public static Scheduler instance()
-  { return _INSTANCE;
-  }
+
 
 
   public Scheduler()

@@ -1,17 +1,21 @@
 package spiralcraft.task;
 
-import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
+
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionException;
 
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.spi.SimpleChannel;
+
 public class TaskRunner
-  implements Executable,Lifecycle
+  implements Executable
 {
 
-  private Scenario scenario;
+  private Scenario<? extends Task> scenario;
   
-  public void setScenario(Scenario scenario)
+  public void setScenario(Scenario<? extends Task> scenario)
   { this.scenario=scenario;
   }
   
@@ -20,19 +24,24 @@ public class TaskRunner
     String... args)
     throws ExecutionException
   {
-    scenario.task().run();
-  }
+    try
+    {
+      scenario.bind
+        (new SimpleFocus<TaskRunner>
+          (new SimpleChannel<TaskRunner>(this,true)
+          )
+        );
 
-  @Override
-  public void start()
-    throws LifecycleException
-  { scenario.start();
-  }
-
-  @Override
-  public void stop()
-    throws LifecycleException
-  { scenario.stop();
+      scenario.start();
+      scenario.task().run();
+      scenario.stop();
+    }
+    catch (BindException x)
+    { throw new ExecutionException("Error binding focus",x);
+    }    
+    catch (LifecycleException x)
+    { throw new ExecutionException("Error starting/stopping scenario",x);
+    }    
   }
 
 }

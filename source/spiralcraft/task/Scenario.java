@@ -19,8 +19,8 @@ import spiralcraft.common.Lifecycle;
 import spiralcraft.lang.FocusChainObject;
 
 /**
- * <p>Implements a runnable operation in the form of a Task that is bound into
- *   a Context via the FocusChain. 
+ * <p>A Scenario is a Task factory. It Implements a runnable operation in the 
+ *   form of a Task that is bound into a Context via the FocusChain. 
  * </p>
  *
  * <p>Scenarios may reference and contain other Scenarios to compose a program
@@ -29,7 +29,7 @@ import spiralcraft.lang.FocusChainObject;
  * 
  * @author mike
  */
-public interface Scenario
+public interface Scenario<Ttask>
   extends Lifecycle,FocusChainObject
 {
 
@@ -40,7 +40,12 @@ public interface Scenario
    * 
    * @return A Task that is ready to be started or run.
    */
-  Task task();
+  Ttask task();
   
-  Command<? extends Scenario,?> runCommand();
+  /**
+   * 
+   * @return A command which runs this Scenario when invoked. Used to wire 
+   *   together behavioral elements in a set of Scenarios.
+   */
+  Command<? extends Scenario<Ttask>,Ttask> runCommand();
 }

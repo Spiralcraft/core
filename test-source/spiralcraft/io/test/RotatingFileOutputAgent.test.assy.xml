@@ -1,0 +1,38 @@
+<task:TaskRunner
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:io="class:/spiralcraft/io/"
+  xmlns:iotest="class:/spiralcraft/io/test/"
+  >
+  
+  <scenario>
+    <iotest:OutputAgentTest>
+      
+      <agent>
+        <io:RotatingFileOutputAgent>
+          <filePrefix>test
+          </filePrefix>
+          
+          <fileSuffix>log
+          </fileSuffix>
+
+          <directory>out/io
+          </directory>
+          
+          <maxLengthKB>128
+          </maxLengthKB>
+          
+        </io:RotatingFileOutputAgent>
+      </agent>
+      
+      <entryLimit>20000
+      </entryLimit>
+      
+      <delayMS>100
+      </delayMS>
+      
+      <threadCount>100
+      </threadCount>
+      
+    </iotest:OutputAgentTest>
+  </scenario>
+</task:TaskRunner>

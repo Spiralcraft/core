@@ -60,7 +60,7 @@ import spiralcraft.util.thread.DelegateException;
  * @param <R> The result item type
  */
 public class BatchScenario<I,R>
-  implements Scenario
+  implements Scenario<MultiTask>
 {
   private static final ClassLog log
     =ClassLog.getInstance(BatchScenario.class);
@@ -156,35 +156,6 @@ public class BatchScenario<I,R>
     this.targetURI = targetURI;
   }
   
-  public List<Command<?,R>> runBatch()
-  { 
-    if (parallel)
-    { return runBatchParallel();
-    }
-    else
-    { return runBatchSeries();
-    }
-  }
-
-  
-  private List<Command<?,R>> runBatchSeries()
-  { 
-    
-    IterationCursor<I> cursor=decorator.iterator();
-    
-    LinkedList<Command<?,R>> results
-      =new LinkedList<Command<?,R>>();
-    
-    while (cursor.hasNext())
-    { 
-      cursor.next();
-      CommandTask task=new CommandTask(cursor.getValue());
-      task.run();
-      results.add(task.getCompletedCommand());
-    }
-    return results;    
-    
-  }
   
   /**
    * <p>Override to handle the result on completion
@@ -198,12 +169,12 @@ public class BatchScenario<I,R>
     log.fine(""+completedCommands);
   }
   
-  public Task task()
+  public MultiTask task()
   {
    
+    final List<CommandSubTask> taskList=taskList();
     if (parallel)
     {
-      final List<CommandTask> taskList=taskList();
       return new ParallelTask(taskList)
       {
         @Override
@@ -216,25 +187,27 @@ public class BatchScenario<I,R>
     }
     else
     {
-      return new AbstractTask()
+      return new SerialTask(taskList)
       {
         @Override
         public void execute()
-        { postResult(runBatchSeries());
+        { 
+          super.execute();
+          postResult(completedCommands(taskList));
         }
         
       };
     }
   }
   
-  private LinkedList<CommandTask> taskList()
+  private LinkedList<CommandSubTask> taskList()
   { 
     IterationCursor<I> cursor=decorator.iterator();
-    LinkedList<CommandTask> taskList=new LinkedList<CommandTask>();
+    LinkedList<CommandSubTask> taskList=new LinkedList<CommandSubTask>();
     while (cursor.hasNext())
     { 
       cursor.next();
-      CommandTask task=new CommandTask(cursor.getValue());
+      CommandSubTask task=new CommandSubTask(cursor.getValue());
       if (scheduler!=null)
       { task.setScheduler(scheduler);
       }
@@ -243,11 +216,11 @@ public class BatchScenario<I,R>
     return taskList;
   }
   
-  private List<Command<?,R>> completedCommands(List<CommandTask> taskList)
+  private List<Command<?,R>> completedCommands(List<CommandSubTask> taskList)
   {
     ArrayList<Command<?,R>> results
     =new ArrayList<Command<?,R>>(taskList.size());
-    for (CommandTask task: taskList)
+    for (CommandSubTask task: taskList)
     { 
       Command<?,R> completedCommand=task.getCompletedCommand();
       results.add(completedCommand);
@@ -264,27 +237,18 @@ public class BatchScenario<I,R>
     }
     return results;      
   }
-
-  private List<Command<?,R>> runBatchParallel()
-  { 
-    
-    LinkedList<CommandTask> taskList=taskList();
-
-    ParallelTask batchTask=new ParallelTask(taskList);
-    batchTask.run();
-    return completedCommands(taskList);
-
-  }  
   
-  public Command<BatchScenario<I,R>,List<Command<?,R>>> runCommand()
+  
+  public Command<BatchScenario<I,R>,MultiTask> runCommand()
   {
-    return new CommandAdapter<BatchScenario<I,R>,List<Command<?,R>>>()
+    return new CommandAdapter<BatchScenario<I,R>,MultiTask>()
     { 
       @Override
       public void run()
       { 
-        setResult(runBatch());
-        postResult(getResult());
+        MultiTask task=task();
+        task.run();
+        setResult(task);
       }
     };
   }
@@ -312,21 +276,29 @@ public class BatchScenario<I,R>
     }
     return focus;
   }
-  
-  public class CommandTask
+ 
+  /** 
+   * <p>Sets up a value (the batch item) in a ThreadLocal context and executes
+   *   the configured command within that context
+   * </p>
+   * 
+   * @author mike
+   *
+   */
+  public class CommandSubTask
     extends AbstractTask
   {
     private final I value;
     private volatile Command<?,R> completedCommand;
-    
-    public CommandTask(I value)
+
+    public CommandSubTask(I value)
     { this.value=value;
     }
-    
+
     public Command<?,R> getCompletedCommand()
     { return completedCommand;
     }
-    
+
     @Override
     public void execute()
     {
@@ -341,7 +313,7 @@ public class BatchScenario<I,R>
           catch (DelegateException x)
           { throw new RuntimeException(x);
           }
-        
+
         }
         else
         { completedCommand=delegate.run();
@@ -351,8 +323,8 @@ public class BatchScenario<I,R>
       { item.pop();
       }
     }
-    
-  }  
+
+  }   
   
   class CommandDelegate
     implements Delegate<Command<?,R>>

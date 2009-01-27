@@ -10,14 +10,14 @@ import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 
 public class StubScenario
-  implements Scenario
+  implements Scenario<Task>
 {
 
   private static final ClassLog log
     =ClassLog.getInstance(StubScenario.class);
   
   @Override
-  public Command<? extends Scenario, ?> runCommand()
+  public Command<StubScenario,Task> runCommand()
   {
     // TODO Auto-generated method stub
     return null;

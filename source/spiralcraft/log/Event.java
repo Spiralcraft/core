@@ -36,6 +36,8 @@ public class Event
   private static DateFormat DEFAULT_DATE_FORMAT
     =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 
+  private static final Path DEFAULT_CONTEXT=new Path("",'/');
+  
   private final Level level;
   private final String message;
   private final String threadName;
@@ -45,7 +47,39 @@ public class Event
   private final Throwable thrown;
   private final StackTraceElement callSite;
 
+  public static Event create
+    (Path context
+    ,Level level
+    ,String message
+    )
+  { 
+    return new Event
+      (Thread.currentThread().getStackTrace()[2]
+      ,context
+      ,level
+      ,message
+      ,null
+      ,null
+      );
+  }
   
+  public static Event create
+    (Path context
+    ,Level level
+    ,String message
+    ,Throwable thrown
+    )
+  { 
+    return new Event
+      (Thread.currentThread().getStackTrace()[2]
+      ,null
+      ,level
+      ,message
+      ,thrown
+      ,null
+      );
+  }
+
   public static Event create
     (Path context
     ,Level level
@@ -84,7 +118,12 @@ public class Event
     
     this.threadName=Thread.currentThread().getName();
     this.threadId=Thread.currentThread().getId();
-    this.context=context;
+    if (context==null)
+    { this.context=DEFAULT_CONTEXT;
+    }
+    else
+    { this.context=context;
+    }
     this.thrown=thrown;
     this.callSite=callSite;
   }

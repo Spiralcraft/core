@@ -23,18 +23,20 @@ import spiralcraft.log.ClassLog;
  * Executes a number of other Tasks in parallel
  */
 public class ParallelTask
-  extends AbstractTask
+  extends MultiTask
   implements TaskListener
 {
   private static final ClassLog log
     =ClassLog.getInstance(ParallelTask.class);
   
-  private List<? extends Task> tasks;
   private final Object monitor=new Object();
 
   private final HashSet<Task> runningTasks=new HashSet<Task>();
   private boolean useScheduler;
   
+  public ParallelTask(List<? extends Task> tasks)
+  { super(tasks);
+  }
   
   /**
    * <p>Use the contextual thread Scheduler to run the tasks. If false,
@@ -83,9 +85,7 @@ public class ParallelTask
     }
   }
   
-  public ParallelTask(List<? extends Task> tasks)
-  { this.tasks=tasks;
-  }
+
   
   @Override
   protected void execute()

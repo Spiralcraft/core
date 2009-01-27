@@ -1,10 +1,11 @@
 package spiralcraft.log;
 
+import spiralcraft.util.Path;
 import spiralcraft.util.thread.ThreadLocalStack;
 
 /**
- * <p>An implementation of the Log interface which uses the ThreadContext to
- *   locate the appropriate Log to delegate to.
+ * <p>An implementation of the Log interface which delegates to the 
+ *   Thread context log. 
  * </p>
  * 
  * @author mike
@@ -13,17 +14,14 @@ import spiralcraft.util.thread.ThreadLocalStack;
 public class ContextLog
   implements Log
 {
-  private static final GenericLog DEFAULT_LOG
-    =new GenericLog(null);
-  static
-  {
-    DEFAULT_LOG.setHandlers
-      (new ConsoleHandler());
-  }
-
+  private static GenericLog DEFAULT_LOG
+    =GlobalLog.instance();
+  
+  protected Path context;
+   
   
   private static ThreadLocalStack<Log> stack
-    =new ThreadLocalStack<Log>()
+    =new ThreadLocalStack<Log>(true)
     {
        @Override
        public Log defaultValue()
@@ -52,9 +50,7 @@ public class ContextLog
   public void log(
     Level level,
     String message)
-  {
-    // TODO Auto-generated method stub
-    
+  { log(level,message,null,1);
   }
 
   @Override
@@ -62,15 +58,39 @@ public class ContextLog
     Level level,
     String message,
     Throwable thrown)
-  {
-    // TODO Auto-generated method stub
-    
+  { 
+    log(level,message,thrown,1);
   }
 
   @Override
   public void log(
     Event event)
   { getInstance().log(event);
+  }
+  
+
+  protected void log(
+    Level level,
+    String message,
+    Throwable thrown
+    ,int traceDepth
+    )
+  {
+    Log log=getInstance();
+    if (log.canLog(level))
+    { 
+      log.log
+        (new Event
+          (Thread.currentThread().getStackTrace()[2+traceDepth]
+          ,context
+          ,level
+          ,message
+          ,thrown
+          ,null
+          )
+        );
+    }
+    
   }
 
 }

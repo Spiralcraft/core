@@ -1,4 +1,4 @@
-<project name="spiralcraft-core-shell" basedir="." default="test">
+<project name="spiralcraft-core-shell" basedir="." default="all-tests">
 
   <macrodef name="spiralcraft">
     <attribute name="assy"/>
@@ -11,14 +11,35 @@
         <arg value="-codebase"/>
         <arg value=".."/>
         <arg value="exec"/>
+        <arg value="--log"/>
+        <arg value="out/spiralcraft"/>
        
         <arg value="@{assy}"/>
       </java>
     </sequential>
   </macrodef>
     	
-  <target name="test" >
-    <spiralcraft assy="class:/spiralcraft/task/test/Test.assy"/>
+  <target name="all-tests" 
+    depends="clean,spiralcraft-task-test,spiralcraft-io-test"
+    >
+
+  </target>
+
+  <target name="clean">
+    <delete>
+      <fileset dir="out" includes="**/*.log"/>
+    </delete>    
+  </target>
+  	
+  <target name="spiralcraft-task-test">
+  </target>
+  	
+  <target name="spiralcraft-io-test">
+    <mkdir dir="out/io"/>
+    <delete>
+      <fileset dir="out/io" includes="**/*.log"/>
+    </delete>    
+
     <spiralcraft 
       assy="class:/spiralcraft/io/test/RotatingFileOutputAgent.test.assy"
     />

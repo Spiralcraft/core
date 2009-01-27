@@ -39,7 +39,7 @@ public class ContextDictionary
     =new ContextDictionary(null)
   {
     @Override
-    public synchronized String get(String name)
+    protected synchronized String get(String name)
     { return System.getProperty(name);
     }
   
@@ -138,23 +138,33 @@ public class ContextDictionary
   }
   
   
-  private final ContextDictionary defaults;
+  private final ContextDictionary parent;
   private final HashMap<String,String> map=new HashMap<String,String>();
   
-  public ContextDictionary(ContextDictionary defaults)
-  { this.defaults=defaults;
+  public ContextDictionary(ContextDictionary parent)
+  { this.parent=parent;
   }
   
   public String find(String name,String defaultVal)
   { 
-    String val=get(name);
-    if (val==null && defaults!=null)
-    { val=defaults.find(name,defaultVal);
-    }
-    return val==null?defaultVal:val;
+    String val=find(name);
+    return val!=null?val:defaultVal;
   }
   
-  public synchronized String get(String name)
+  public String find(String name)
+  {
+    String val=null;
+    if (parent!=null)
+    { val=parent.find(name);
+    }
+    if (val==null)
+    { val=get(name);
+    }    
+    return val;
+    
+  }
+  
+  protected synchronized String get(String name)
   { return map.get(name);
   }
   

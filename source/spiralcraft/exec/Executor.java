@@ -14,16 +14,22 @@
 //
 package spiralcraft.exec;
 
+import spiralcraft.common.LifecycleException;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.data.persist.PersistenceException;
 
+import spiralcraft.time.Scheduler;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.Arguments;
 import spiralcraft.util.ContextDictionary;
+import spiralcraft.util.Path;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.log.EventHandler;
+import spiralcraft.log.GlobalLog;
+import spiralcraft.log.RotatingFileHandler;
 import spiralcraft.registry.Registry;
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
@@ -35,30 +41,31 @@ import java.io.IOException;
 
 /**
  * <p>The Executor is the standard "Main" class for invoking coarse grained
- *   functionality in the Spiralcraft framework.
+ *   functionality in the Spiralcraft framework via the Executable interface.
  * </p>
  * 
  * <p>The Executor loads an Executable using the 
  *   <code>spiralcraft.data.persist.XmlObject</code>
  *   persistence mechanism, using a Type resource URI and/or an instance 
- *   resource URI.
+ *   resource URI. However the XmlObject is specified, the constructed 
+ *   instance must implement the spiralcraft.exec.Executable interface.
  * </p>
  * 
- * <p>The Type resource URI, if specified, must resolve to a
+ * <p>Typically, the Type resource URI, if specified, resolves to a
  *   BuilderType (spiralcraft.data.builder.BuilderType), which means that a 
  *   resource <code>[Type resource URI].assy.xml</code> must exist, and must
  *   build an object that implements the Executable interface.
  * </p>
  * 
- * <p>The instance resource URI, if it points to an existing resource, must
- *   contain an object of a Type that satisfies the above constraint.
+ * <p>
+ *   The Executor is invoked via its static launch(String ... args) method
+ *     from another ClassLoader, and expects to be a singleton within its own
+ *     ClassLoader. As such, options preceding the Executable
+ *     URI will be used to configure static fields and other invariants of
+ *     the application context such as logging, thread scheduling, etc.
  * </p>
  * 
- * <p>If a Type resource URI is specified and either the instance resource URI
- *   is not specified, or the resource it refers to does not exist, a new 
- *   instance of the builder Assembly will be created. If a Type resource URI
- *   is provided, the properties of this Assembly will be saved to the 
- *   specified resource upon normal termination of the Executable.
+ * <p> 
  * </p>
  */
 public class Executor
@@ -71,6 +78,7 @@ public class Executor
   private AbstractXmlObject<Executable,?> wrapper;
   private RegistryNode registryNode;  
   private int argCounter=-1;
+  private EventHandler logHandler;
   
   protected ExecutionContext context
     =ExecutionContext.getInstance();
@@ -81,6 +89,8 @@ public class Executor
   protected String[] arguments=new String[0];
   
   /**
+   * Entry point from launcher
+   * 
    * @see execute(String[] args)
    * @param args
    * @throws IOException
@@ -113,20 +123,18 @@ public class Executor
   }
   
   /**
-   * <p>Load and execute an Executable (the executable is specified by the 
-   *   first two arguments).
+   * <p>Load and execute an Executable specified by a URI
    * </p>
    * 
-   * <p>The first argument is the Type resource URI. If no Type resource is
-   *   specified, use "-" in the argument in place of the URI.
+   * <p>The first (non-option) argument either refers to either a Type or an
+   *   instance resource that provides an implementation of 
+   *   spiralcraft.exec.Executable.
    * </p>
    *   
-   * <p>The second argument is the instance resource URI. If no instance resource
-   *   is specified, use "-" in the argument in place of the URI.
+   * <p>Remaining options and arguments after the URI are passed to the
+   *   Executable via its execute() method.
    * </p>
    *   
-   * The remaining arguments will be passed along to the Executable in its
-   *   execute method.
    */
   public void execute(String ... args)
     throws ExecutionException
@@ -135,10 +143,26 @@ public class Executor
     
     ExecutionContext.pushInstance(context);
     ContextDictionary.pushInstance(properties);
+    boolean logStarted=false;
+    boolean schedulerCreated=false;
     try
     { 
       
       processArguments(args);
+      if (logHandler!=null)
+      {
+        try
+        { 
+          GlobalLog.instance().addHandler(logHandler);
+          logStarted=true;
+        }
+        catch (LifecycleException x)
+        { throw new ExecutionException("Error starting log handler "+logHandler);
+        }
+      }
+      Scheduler.push(new Scheduler());
+      schedulerCreated=true;
+      
       if (argCounter<0)
       { 
         throw new IllegalArgumentException
@@ -169,7 +193,7 @@ public class Executor
       if (persistOnCompletion && instanceURI!=null)
       { wrapper.save();
       }
-
+      
     
     }
     catch (Exception x)
@@ -179,6 +203,20 @@ public class Executor
     }
     finally
     { 
+      if (logHandler!=null && logStarted)
+      { 
+        
+        try
+        { GlobalLog.instance().removeHandler(logHandler);
+        }
+        catch (LifecycleException x)
+        { x.printStackTrace();
+        }
+        
+      }
+      if (schedulerCreated)
+      { Scheduler.pop();
+      }
       ContextDictionary.popInstance();
       ExecutionContext.popInstance();
     }
@@ -264,6 +302,12 @@ public class Executor
                 );
 //              context.err().println(assignment);
             }
+          }
+          else if (option.equals("-log"))
+          { 
+            RotatingFileHandler handler=new RotatingFileHandler();
+            handler.setPath(new Path(nextArgument(),'/'));
+            Executor.this.logHandler=handler;
           }
           else 
           { 

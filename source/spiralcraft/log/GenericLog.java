@@ -14,32 +14,78 @@
 //
 package spiralcraft.log;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
+import spiralcraft.common.Lifecycle;
+import spiralcraft.common.LifecycleException;
 import spiralcraft.util.Path;
 
 /**
- * <p>Generic implementation of a Log
+ * <p>Generic implementation of a Log.
  * </p>
+ * 
+ * <p>A level can be specified to limit reporting detail and the associated
+ *   performance cost.
+ * </p>
+ * 
+ * <p>Will forward events to the optional parent log
+ * </p>
+
+ * <p>A list of handlers can be specified to receive events that match the
+ *   specified detail level. If there are no specified handlers, and no
+ *   parent log, the default ConsoleHandler() will send events to
+ *   the error stream of the spiralcraft.exec.ExecutionContext associated
+ *   with the logging thread.
+ * </p>
+ * 
  * 
  * @author mike
  *
  */
 public class GenericLog
-  implements Log
+  implements Log,Lifecycle
 {
+  private static EventHandler DEFAULT_HANDLER=new ConsoleHandler();
 
   protected Level level=ALL;
   protected Path context;
   protected LinkedList<EventHandler> handlers=new LinkedList<EventHandler>();
   private Log parent;
   
+  
   public GenericLog()
-  { parent=ContextLog.getInstance();
+  { 
   }
   
   public GenericLog(Log parent)
   { this.parent=parent;
+  }
+  
+  public void addHandler(EventHandler handler)
+    throws LifecycleException
+  { 
+    if (handlers==null)
+    { handlers=new LinkedList<EventHandler>();
+    }
+    this.handlers.add(handler);
+    handler.start();
+  }
+  
+  public void removeHandler(EventHandler handler)
+    throws LifecycleException
+  {
+    Iterator<EventHandler> it=handlers.iterator();
+    while (it.hasNext())
+    {
+      EventHandler comp=it.next();
+      if (handler==comp)
+      { 
+        it.remove();
+        break;
+      }
+    }
+    
   }
   
   public void setHandlers(EventHandler ... handlers)
@@ -120,20 +166,51 @@ public class GenericLog
   }
   
   @Override
+  /**
+   * Dispatches a log event to handlers and the parent log 
+   */
   public void log(Event event)
   {
     if (level.canLog(event.getLevel()))
     {
-      if (handlers!=null)
+      if (handlers!=null && handlers.size()>0)
       { 
         for (EventHandler handler: handlers)
         { handler.handleEvent(event);
         }
       }
+      else if (parent==null)
+      { DEFAULT_HANDLER.handleEvent(event);
+      }
     }
     if (parent!=null)
     { parent.log(event);
     }
+  }
+  
+  @Override
+  public void start()
+    throws LifecycleException
+  { 
+    if (handlers!=null)
+    { 
+      for (EventHandler handler: handlers)
+      { handler.start();
+      }
+    }
+      
+  }
+  
+  @Override
+  public void stop()
+    throws LifecycleException
+  { 
+    if (handlers!=null)
+    { 
+      for (EventHandler handler: handlers)
+      { handler.stop();
+      }
+    }   
   }
 
 }

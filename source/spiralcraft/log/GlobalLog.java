@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2008,2009 Michael Toth
+// Copyright (c) 2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -10,15 +10,23 @@
 // at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
 //
 // Unless otherwise agreed to in writing, this software is distributed on an
-//
+// "AS 
 package spiralcraft.log;
 
-
-public interface Formatter
+/**
+ * References the root logger
+ * 
+ * @author mike
+ */
+public class GlobalLog
+  extends GenericLog
 {
-  /**
-   * Format the event
-   */
-  public String format(Event evt);
 
+  private static GlobalLog _INSTANCE
+    =new GlobalLog();
+  
+  public static GlobalLog instance()
+  { return _INSTANCE;
+  }
+  
 }

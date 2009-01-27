@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2008 Michael Toth
+// Copyright (c) 2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -18,58 +18,55 @@ import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
+import spiralcraft.log.ClassLog;
 
 /**
- * <p>Executes a command (incomplete)
+ * <p>A Scenario that functions as a simple Task factory when the task() method
+ *   is implemented.
  * </p>
  * 
  * @author mike
  *
- * @param <I> The command target type
- * @param <R> The command result type
  */
-public class CommandScenario<I,R>
-  implements Scenario<CommandTask<I,R>>
-{  
-  private Channel<Command<I,R>> commandChannel;  
+public abstract class AbstractScenario<T extends Task>
+  implements Scenario<T>
+{
+
+  protected final ClassLog log=ClassLog.getInstance(getClass());
   
   @Override
-  public Command<CommandScenario<I,R>,CommandTask<I,R>> runCommand()
-  {
-    return new CommandAdapter<CommandScenario<I,R>,CommandTask<I,R>>()
+  public Command<AbstractScenario<T>, T> runCommand()
+  { 
+    return new CommandAdapter<AbstractScenario<T>,T>()
     {
-
-      @Override
-      protected void run()
-      {
-        CommandTask<I,R> task=task();
-        task.run();
-        setResult(task);
+      { setTarget(AbstractScenario.this);
       }
+      
+      @Override
+      public void run()
+      {
+        T task=task();
+        setResult(task);
+        task.run();
+      }
+        
     };
   }
 
   @Override
-  public CommandTask<I,R> task()
-  { return new CommandTask<I,R>(commandChannel.get());
-  }
+  public abstract T task();
 
   @Override
   public void start()
     throws LifecycleException
   {
-  // TODO Auto-generated method stub
-
   }
 
   @Override
   public void stop()
     throws LifecycleException
-  {
-  // TODO Auto-generated method stub
-
+  {    
   }
 
   @Override
@@ -77,9 +74,6 @@ public class CommandScenario<I,R>
     Focus<?> focusChain)
     throws BindException
   { return focusChain;
-
   }
-  
+
 }
-
-
