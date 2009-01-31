@@ -75,8 +75,6 @@ public class RestService
   private Assignment<?>[] postAssignments;
   private Setter<?>[] postSetters;
   
-  private CompoundFocus<Tuple> focus;
-  
   private RestClient restClient;
   
   private Expression<Boolean> errorExpression;
@@ -204,6 +202,8 @@ public class RestService
       =new ThreadLocalChannel<Tuple>
         (DataReflector.<Tuple>getInstance(restClient.getQueryDataType()));
 
+    // Set up the Focus that provides the input source and output target for
+    //   the REST operation.
     CompoundFocus<Tuple> restFocus
       =new CompoundFocus<Tuple>(parentFocus,localQueryChannel);
     if (localModelChannel!=null)
@@ -221,7 +221,7 @@ public class RestService
     Focus<?> focus=restFocus;
 
     if (errorExpression!=null)
-    { errorChannel=this.focus.bind(errorExpression);
+    { errorChannel=focus.bind(errorExpression);
     }
    
     bindAssignments(focus);
