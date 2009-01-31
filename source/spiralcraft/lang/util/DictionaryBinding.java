@@ -84,6 +84,17 @@ public class DictionaryBinding<T>
   public void setName(String name)
   { this.name=name;
   }
+
+  /**
+   * <p>Provide a StringConverter to translate the bound type to and from
+   *   a String
+   * </p>
+   *    
+   * @param converter
+   */
+  public void setConverter(StringConverter<T> converter)
+  { this.converter=converter;
+  }
   
   public Expression<?> getTarget()
   { return target;
