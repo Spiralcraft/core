@@ -50,9 +50,10 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
   // private BoundQueryBinding resultBinding;
   private boolean resolved;
   protected boolean debug;
+  protected Type<?> boundType;
   
   public Type<?> getType()
-  { return query.getType();
+  { return boundType!=null?boundType:query.getType();
   }
   
   /**

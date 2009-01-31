@@ -76,7 +76,6 @@ public class Sort
     order.setElements(elements);
   }
   
-  
   /**
    *@return the Order which defines this Sort query
    */
@@ -167,6 +166,7 @@ class SortBinding<Tq extends Sort,T extends Tuple>
         ("Querying "+store+" returned null (unsupported Type?) for "
           +getQuery().getSources().get(0));
     }
+    boundType=source.getType();
     
   }
 
@@ -235,8 +235,10 @@ class SortBinding<Tq extends Sort,T extends Tuple>
   
     
     @Override
+    // TODO: Determine if we really need this override
+    //   this is most likely redundant
     public Type<?> getResultType()
-    { return getQuery().getType();
+    { return SortBinding.this.getType();
     }
 
   }
