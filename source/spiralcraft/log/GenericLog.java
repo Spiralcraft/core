@@ -142,7 +142,7 @@ public class GenericLog
     
   }
 
-  protected void log(
+  public void log(
     Level level,
     String message,
     Throwable thrown

@@ -67,6 +67,8 @@ public interface Log
   
   public void log(Level level,String message,Throwable thrown);
   
+  public void log(Level level,String message,Throwable thrown,int stackOffset);
+  
   public void log(Event event);
   
 }

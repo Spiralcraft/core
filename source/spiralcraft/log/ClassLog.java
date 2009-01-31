@@ -74,6 +74,10 @@ public class ClassLog
   public void fine(String message)
   { log(FINE,message,null,1);
   }
+
+  public void fine(String message,int stackOffset)
+  { log(FINE,message,null,1+stackOffset);
+  }
   
   public void warning(String message)
   { log(WARNING,message,null,1);
