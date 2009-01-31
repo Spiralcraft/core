@@ -25,8 +25,6 @@ import spiralcraft.ui.AbstractCommand;
 
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
-import spiralcraft.shell.InputDispatcher;
-
 import java.util.logging.Handler;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
@@ -52,7 +50,6 @@ public class Daemon
   private Object _eventMonitor=new Object();
   private boolean _running=true;
   private String[] _args;
-  private InputDispatcher input=new InputDispatcher();
 
   private Handler _logHandler=new ConsoleHandler();
   { 
@@ -169,22 +166,14 @@ public class Daemon
   {
     try
     { 
-      input.setInputStream(ExecutionContext.getInstance().in());
-      input.setDaemon(true);
-      input.setPollPeriodMs(100);
-      input.start();
       while (_running)
       {
         synchronized (_eventMonitor)
         { _eventMonitor.wait();
         }
       }
-      input.stop();
     }
     catch (InterruptedException x)
-    { x.printStackTrace();
-    }
-    catch (LifecycleException x)
     { x.printStackTrace();
     }
     
