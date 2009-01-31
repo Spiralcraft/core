@@ -16,6 +16,7 @@ package spiralcraft.util;
 
 import java.util.HashMap;
 
+//import spiralcraft.log.ClassLog;
 import spiralcraft.text.ParseException;
 import spiralcraft.text.ParsePosition;
 import spiralcraft.text.markup.MarkupHandler;
@@ -33,7 +34,8 @@ import spiralcraft.util.thread.ThreadLocalStack;
  */
 public class ContextDictionary
 {
-  
+//  private static final ClassLog log
+//    =ClassLog.getInstance(ContextDictionary.class);
   
   private static final ContextDictionary _SYSTEM_CONTEXT
     =new ContextDictionary(null)
@@ -90,6 +92,11 @@ public class ContextDictionary
             if (substitution!=null)
             { ret.append(substitution);
             }
+            
+//            if (substitution!=code.toString())
+//            { log.fine(code.toString()+" >>> "+substitution);
+//            }
+            
           }
 
           @Override
