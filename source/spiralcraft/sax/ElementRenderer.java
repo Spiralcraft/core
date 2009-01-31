@@ -147,6 +147,15 @@ public abstract class ElementRenderer
     leaves.add(binding);
   }
   
+  protected void addLeaf(DictionaryBinding<?> binding)
+  {
+    if (leaves==null)
+    { leaves=new ArrayList<DictionaryBinding<?>>();
+    }
+    leaves.add(binding);
+  }
+  
+  
   protected void renderXML(ContentHandler handler)
     throws SAXException
   {
