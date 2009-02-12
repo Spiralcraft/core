@@ -34,8 +34,10 @@ public class URLResource
     =ClassLog.getInstance(URLResource.class);
   
   private static final boolean debug=false;
+  private int timeoutMS=-1;
     
   private final URL _url;
+ 
 
   public URLResource(URL url)
   { 
@@ -59,12 +61,36 @@ public class URLResource
     }
   }
 
+  /**
+   * Specify the default timeout in milleseconds for IO operations. A value
+   *   of -1 indicates that the platform defaults for URLConnection should be
+   *   used.
+   * 
+   * @param timeoutMS
+   */
+  public void setTimeout(int timeoutMS)
+  { this.timeoutMS=timeoutMS;
+  }
+  
   @Override
   public InputStream getInputStream()
     throws IOException
-  { return _url.openStream();
+  { 
+    URLConnection connection=_url.openConnection();
+    setupConnection(connection);
+    connection.setDoInput(true);
+    return connection.getInputStream();
   }
 
+  private void setupConnection(URLConnection connection)
+  {
+    if (timeoutMS>-1)
+    { 
+      connection.setConnectTimeout(timeoutMS);
+      connection.setReadTimeout(timeoutMS);
+    }
+  }
+  
   @Override
   public boolean supportsRead()
   { return true;

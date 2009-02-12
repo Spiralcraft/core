@@ -53,6 +53,7 @@ import spiralcraft.text.html.URLDataEncoder;
 import spiralcraft.util.thread.ContextFrame;
 import spiralcraft.util.thread.Delegate;
 import spiralcraft.util.thread.DelegateException;
+import spiralcraft.vfs.url.URLResource;
 
 /**
  * <p>Interacts with a web service that uses a REST-like interface
@@ -382,8 +383,13 @@ public class RestClient
         dataReader.setTraceHandler(new XmlWriter(out,Charset.defaultCharset()));
       }
       
+      URLResource resource=new URLResource(queryURI);
+      if (timeoutSeconds>0)
+      { resource.setTimeout(timeoutSeconds*1000);
+      }
+      
       // TODO: 2009-02-11 mike: Add timeout here
-      query = (Tuple) dataReader.readFromURI(queryURI,handler.getType());
+      query = (Tuple) dataReader.readFromResource(resource,handler.getType());
       
       if (debug)
       { log.fine(new String(out.toString()));
