@@ -80,6 +80,7 @@ public class RestClient
   private Setter<?>[] postSetters;
   private Expression<Tuple> queryDataObject;
   private Channel<Tuple> queryDataChannel;
+  private int timeoutSeconds;
   
 //  private Focus<Tuple> focus;
   private boolean debug;
@@ -95,6 +96,14 @@ public class RestClient
    */
   public void setRootFrameHandler(RootFrameHandler<?> handler)
   { this.handler=handler;
+  }
+  
+  /**
+   * Number of milliseconds to 
+   * @param timeoutMs
+   */
+  public void setTimeoutSeconds(int timeoutSeconds)
+  { this.timeoutSeconds=timeoutSeconds;
   }
   
   /**
@@ -373,6 +382,7 @@ public class RestClient
         dataReader.setTraceHandler(new XmlWriter(out,Charset.defaultCharset()));
       }
       
+      // TODO: 2009-02-11 mike: Add timeout here
       query = (Tuple) dataReader.readFromURI(queryURI,handler.getType());
       
       if (debug)
