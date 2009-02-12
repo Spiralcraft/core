@@ -22,6 +22,10 @@ import java.util.HashMap;
  */
 public class CycleDetector<T>
 {
+  // TODO: 2009-02-11 mike: All uses of this use it within a ThreadLocal. 
+  //    Incorporate the ThreadLocal into this object to simplify client code
+  //    and make this utility much more useful
+  
   private final Stack<T> stack=new Stack<T>();
   private final HashMap<T,T> map=new HashMap<T,T>();
 
