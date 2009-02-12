@@ -53,7 +53,6 @@ public class GenericLog
   protected LinkedList<EventHandler> handlers=new LinkedList<EventHandler>();
   private Log parent;
   
-  
   public GenericLog()
   { 
   }
@@ -171,6 +170,7 @@ public class GenericLog
    */
   public void log(Event event)
   {
+
     if (level.canLog(event.getLevel()))
     {
       if (handlers!=null && handlers.size()>0)
