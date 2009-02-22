@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2008 Michael Toth
+// Copyright (c) 1998,2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -71,6 +71,12 @@ public class GenericLog
     handler.start();
   }
   
+  
+  /**
+   * Remove the specified EventHandler from the notification list
+   * 
+   * @throws LifecycleException
+   */
   public void removeHandler(EventHandler handler)
     throws LifecycleException
   {
@@ -81,6 +87,7 @@ public class GenericLog
       if (handler==comp)
       { 
         it.remove();
+        handler.stop();
         break;
       }
     }
