@@ -72,7 +72,7 @@ public class Event
   { 
     return new Event
       (Thread.currentThread().getStackTrace()[2]
-      ,null
+      ,context
       ,level
       ,message
       ,thrown
