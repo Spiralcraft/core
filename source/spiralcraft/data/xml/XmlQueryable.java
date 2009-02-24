@@ -36,8 +36,8 @@ import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
-import spiralcraft.vfs.util.Watcher;
-import spiralcraft.vfs.util.WatcherHandler;
+import spiralcraft.vfs.watcher.ResourceWatcher;
+import spiralcraft.vfs.watcher.WatcherHandler;
 
 
 import java.net.URI;
@@ -72,7 +72,7 @@ public class XmlQueryable
   private URI resourceURI;
   private URI resourceContextURI;
   
-  private Watcher watcher;
+  private ResourceWatcher watcher;
   
   private Type<?> type;
   
@@ -88,7 +88,7 @@ public class XmlQueryable
     =new WatcherHandler()
     {
       @SuppressWarnings("unchecked") // Downcast
-      public int handleUpdate()
+      public int handleUpdate(Resource resource)
       {
         DataReader reader=new DataReader();
         try
@@ -130,7 +130,6 @@ public class XmlQueryable
     throws DataException
   {   
     BoundQuery<?,Tuple> ret;
-    // XXX Turn an Equijoin into an index scan
     if ( (q instanceof EquiJoin)
         && (q.getSources().get(0) instanceof Scan)
         && q.getType().isAssignableFrom(getResultType())
@@ -210,7 +209,7 @@ public class XmlQueryable
     }
           
     if (watcher==null)
-    { watcher=new Watcher(resource,1000,handler);    
+    { watcher=new ResourceWatcher(resource,1000,handler);    
     }
   }
   

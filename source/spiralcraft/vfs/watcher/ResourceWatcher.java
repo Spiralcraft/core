@@ -1,4 +1,4 @@
-package spiralcraft.vfs.util;
+package spiralcraft.vfs.watcher;
 
 import java.io.IOException;
 
@@ -6,19 +6,24 @@ import spiralcraft.time.Clock;
 import spiralcraft.vfs.Resource;
 
 /**
- * <P>Watches a Resource for updates and performs a task when the Resource is 
- *   updated. 
+ * <p>Watches a Resource for updates and calls a handler when the Resource is 
+ *   updated. A Resource is considered updated solely on the basis of a
+ *   change to the lastModified time.
+ * </p>
  * 
- * <P>The Resource will be checked for an update every pollInterval seconds.
+ * <p>The Resource will be checked for an update every pollInterval seconds.
+ * </p>
  * 
- * <P>When an update is detected, the handleUpdate() method will be called.
+ * <p>When an update is detected, the handleUpdate() method will be called.
+ * </p>
  * 
- * <P>The result of the handleUpdate() method provides control over 
- *   the succeeding behavior.
+ * <p>The result of the handleUpdate() method provides optional feedback to
+ *   adjust the polling interval.
+ * </p>
  * 
  * @author mike
  */
-public class Watcher
+public class ResourceWatcher
 {
 
   protected final Resource resource;
@@ -30,7 +35,11 @@ public class Watcher
   private boolean firstTime=true;
   
   
-  public Watcher(Resource resource,int pollIntervalMS,WatcherHandler handler)
+  public ResourceWatcher
+    (Resource resource
+    ,int pollIntervalMS
+    ,WatcherHandler handler
+    )
   { 
     this.resource=resource;
     this.pollIntervalMS=pollIntervalMS;
@@ -49,13 +58,13 @@ public class Watcher
   }
   
   /**
-   * Force a reload of the resource
+   * Force a call to the handler as if the resource was modified
    */
   public synchronized void refresh()
     throws IOException
   {
     this.lastModified=resource.getLastModified();
-    int result=handler.handleUpdate();
+    int result=handler.handleUpdate(resource);
     if (result>=0)
     { 
       this.lastModified=resource.getLastModified();
@@ -91,7 +100,7 @@ public class Watcher
     if (lastModified!=this.lastModified || firstTime)
     { 
       firstTime=false;
-      int result=handler.handleUpdate();
+      int result=handler.handleUpdate(resource);
       if (result>=0)
       { 
         this.lastModified=resource.getLastModified();
