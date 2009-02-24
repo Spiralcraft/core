@@ -49,10 +49,12 @@ import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
 
 /**
- * <P>Provides basic query functionality for an XML document which contains 
+ * <p>Provides basic query functionality for an XML document which contains 
  *   an Aggregate (a set of Tuples of a common Type)
+ * </p>
  * 
- * <P>The document is polled for updates
+ * <p>The document is polled for updates
+ * </p>
  * 
  * @author mike
  */
