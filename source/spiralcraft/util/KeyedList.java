@@ -17,6 +17,7 @@ package spiralcraft.util;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>A data structure comprised of a List and a number of Maps. Elements
@@ -123,6 +124,10 @@ public class KeyedList<T>
     
     public Tdata getOne(Tkey key)
     { return _map.getOne(key);
+    }
+    
+    public Set<Tkey> keySet()
+    { return _map.keySet();
     }
   }
 }
