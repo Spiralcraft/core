@@ -25,7 +25,8 @@ import java.io.IOException;
  */
 
 //
-// XXX Support constructors for java.io.InputStreamReader
+// TODO: Support constructors for java.io.InputStreamReader
+// TODO: Support character encoding
 // 
 
 public class InputStreamCharSequence
