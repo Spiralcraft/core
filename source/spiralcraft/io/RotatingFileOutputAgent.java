@@ -24,9 +24,6 @@ import java.io.RandomAccessFile;
 import java.util.Calendar;
 import java.util.Date;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
 import java.io.File;
 
 /**
@@ -38,11 +35,9 @@ public class RotatingFileOutputAgent
   extends OutputAgent
 {
 
-  private String _filePrefix;
-  private String _fileSuffix;
-  private DateFormat _fileDateFormat=new SimpleDateFormat("-yyyy-MM-dd--HH-mm-ss");
-  private File _directory=new File(System.getProperty("user.dir"));
-  private File targetFile;
+  
+  private FileSequence fileSequence;
+  
   private RandomAccessFile _file;
   
   private long _maxLengthKB=16384;
@@ -54,28 +49,10 @@ public class RotatingFileOutputAgent
   { _maxLengthKB=maxLengthKB;
   }
 
-  /**
-   * The first part of the filename
-   * 
-   * @param filePrefix
-   */
-  public void setFilePrefix(String filePrefix)
-  { _filePrefix=filePrefix;
+  public void setFileSequence(FileSequence fileSequence)
+  { this.fileSequence=fileSequence;
   }
 
-  /**
-   * The last part of the filename (not including the leading '.')
-   * 
-   * @param fileSuffix
-   */
-  public void setFileSuffix(String fileSuffix)
-  { _fileSuffix=fileSuffix;
-  }
-
-
-  public void setDirectory(File directory)
-  { _directory=directory;
-  }
   
   /**
    * <p>The Calender field (eg. Calendar.DAY_OF_YEAR) that will trigger a
@@ -114,13 +91,9 @@ public class RotatingFileOutputAgent
   {
     if (_file==null)
     { 
-      targetFile=
-        new File
-          (_directory
-          ,_filePrefix
-          +"."
-          +_fileSuffix
-          );
+      File targetFile
+        =fileSequence.getActiveFile();
+      
 
       if (targetFile.exists())
       { 
@@ -155,10 +128,7 @@ public class RotatingFileOutputAgent
     {
       log.info(getLogPrefix()+": Rotating output file");
       _file.close();
-      String lastModified=
-        _fileDateFormat.format(new Date(targetFile.lastModified()));
-      new File(_directory,_filePrefix+"."+_fileSuffix)
-        .renameTo(new File(_directory,_filePrefix+lastModified+"."+_fileSuffix));
+      fileSequence.rotate();
       _file=null;
     }    
   }
@@ -180,7 +150,9 @@ public class RotatingFileOutputAgent
   
   @Override
   protected String getLogPrefix()
-  { return _directory.toURI().getPath()+_filePrefix;
+  { 
+    return fileSequence.getDirectory().toURI().getPath()
+      +fileSequence.getPrefix();
   }
   
   @Override
@@ -188,15 +160,15 @@ public class RotatingFileOutputAgent
     throws LifecycleException
   { 
     periodId=calendar.get(calendarField);
-    if (_filePrefix==null)
+    if (fileSequence.getPrefix()==null || fileSequence.getPrefix().isEmpty())
     { 
       throw new LifecycleException
-        ("RotatingFileOutputAgent.filePrefix must be specified");
+        ("RotatingFileOutputAgent.fileSequence.prefix must be specified");
     }
-    if (_fileSuffix==null)
+    if (fileSequence.getSuffix()==null || fileSequence.getSuffix().isEmpty())
     { 
       throw new LifecycleException
-        ("RotatingFileOutputAgent.fileSuffix must be specified");
+        ("RotatingFileOutputAgent.fileSequence.suffix must be specified");
     }
     if (maxBufferSize==0)
     { maxBufferSize=(int) _maxLengthKB*1024;

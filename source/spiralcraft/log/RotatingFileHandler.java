@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import spiralcraft.common.LifecycleException;
 import spiralcraft.io.RotatingFileOutputAgent;
+import spiralcraft.io.TimestampFileSequence;
 import spiralcraft.util.Path;
 
 public class RotatingFileHandler
@@ -24,9 +25,13 @@ public class RotatingFileHandler
   {
     Path dir=path.parentPath();
     String name=path.lastElement();
-    out.setDirectory(new File(dir.format("/")));
-    out.setFilePrefix(name);
-    out.setFileSuffix("log");
+    
+    TimestampFileSequence fileSequence=new TimestampFileSequence();
+    out.setFileSequence(fileSequence);
+    
+    fileSequence.setDirectory(new File(dir.format("/")));
+    fileSequence.setPrefix(name);
+    fileSequence.setSuffix(".log");
     
   }
   
