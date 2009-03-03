@@ -48,6 +48,11 @@ public abstract class Node
 
   public abstract Node copy(Object visitor);
   
+  /**
+   * Obtain the immediate children of this Node within the syntax tree
+   *
+   * @return the Nodes that this Node directly depends on
+   */
   public abstract Node[] getSources();
   
   /** 
