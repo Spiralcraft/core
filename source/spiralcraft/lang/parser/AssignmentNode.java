@@ -53,6 +53,11 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
   }
 
   @Override
+  public Node[] getSources()
+  { return new Node[] {source,target};
+  }
+  
+  @Override
   public Node copy(Object visitor)
   { 
     return new AssignmentNode<Ttarget,Tsource>

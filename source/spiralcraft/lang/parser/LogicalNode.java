@@ -36,6 +36,10 @@ public abstract class LogicalNode<T1,T2>
     _op2=op2;
   }
 
+  @Override
+  public Node[] getSources()
+  { return new Node[] {_op1,_op2};
+  }
   
   @Override
   public Channel<Boolean> bind(Focus<?> focus)

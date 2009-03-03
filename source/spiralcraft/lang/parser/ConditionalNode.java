@@ -42,6 +42,11 @@ public class ConditionalNode
   }
 
   @Override
+  public Node[] getSources()
+  { return new Node[] {_condition,_trueResult,_falseResult};
+  }
+  
+  @Override
   public Node copy(Object visitor)
   { 
     return new ConditionalNode

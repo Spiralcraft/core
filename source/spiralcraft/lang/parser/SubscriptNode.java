@@ -47,6 +47,11 @@ public class SubscriptNode<T,C,I>
   }
 
   @Override
+  public Node[] getSources()
+  { return new Node[] {_source,_selector};
+  }
+    
+  @Override
   public Node copy(Object visitor)
   { 
     return new SubscriptNode<T,C,I>

@@ -48,6 +48,8 @@ public abstract class Node
 
   public abstract Node copy(Object visitor);
   
+  public abstract Node[] getSources();
+  
   /** 
    * <p>Recursively reconstruct the expression text that created this node.
    * </p>

@@ -68,6 +68,11 @@ public class AbsoluteFocusNode
   }
 
   @Override
+  public Node[] getSources()
+  { return null;
+  }
+  
+  @Override
   public Node copy(Object visitor)
   { 
     URI uri=null;

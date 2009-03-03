@@ -23,6 +23,12 @@ import spiralcraft.lang.BindException;
 public class CurrentFocusNode
   extends FocusNode
 {
+  
+  @Override
+  public Node[] getSources()
+  { return null;
+  }
+  
   @Override
   public Node copy(Object visitor)
   { return this;

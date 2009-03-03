@@ -32,6 +32,11 @@ public class ParentFocusNode
   }
 
   @Override
+  public Node[] getSources()
+  { return new Node[] {_child};
+  }
+  
+  @Override
   public Node copy(Object visitor)
   { return new ParentFocusNode((FocusNode) _child.copy(visitor));
   }

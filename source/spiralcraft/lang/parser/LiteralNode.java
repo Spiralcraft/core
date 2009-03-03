@@ -40,6 +40,11 @@ public class LiteralNode<X>
   }
 
   @Override
+  public Node[] getSources()
+  { return null;
+  }
+  
+  @Override
   public Node copy(Object visitor)
   { return new LiteralNode<X>(_optic);
   }

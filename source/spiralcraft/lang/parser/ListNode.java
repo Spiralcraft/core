@@ -35,6 +35,11 @@ public class ListNode<T>
   }
 
   @Override
+  public Node[] getSources()
+  { return sources.toArray(new Node[sources.size()]);
+  }
+  
+  @Override
   public Node copy(Object visitor)
   {
     ArrayList<Node> copy=new ArrayList<Node>(sources.size());

@@ -46,6 +46,10 @@ public class ContextNode
   { return _source;
   }
   
+  @Override
+  public Node[] getSources()
+  { return new Node[] {_source};
+  }
   
   @Override
   public Channel<?> bind(final Focus<?> focus)

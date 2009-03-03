@@ -59,6 +59,15 @@ public class MethodCallNode
   }
 
   @Override
+  public Node[] getSources()
+  { 
+    Node[] ret=new Node[_parameterNodes.length+1];
+    ret[0]=_source;
+    System.arraycopy(_parameterNodes,0,ret,1,_parameterNodes.length);
+    return ret;
+  }
+  
+  @Override
   public Node copy(Object visitor)
   {
     List<Node> params=new ArrayList<Node>();

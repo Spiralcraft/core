@@ -54,6 +54,11 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
   }
 
   @Override
+  public Node[] getSources()
+  { return new Node[] {_op1,_op2};
+  }
+  
+  @Override
   public Node copy(Object visitor)
   { return new NumericOpNode<T1,T2>(_op1.copy(visitor),_op2.copy(visitor),_op);
   }

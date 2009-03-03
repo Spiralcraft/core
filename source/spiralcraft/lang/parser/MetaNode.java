@@ -37,6 +37,11 @@ public class MetaNode<T extends Channel<?>>
   public MetaNode(Node source)
   { _source=source;
   }
+
+  @Override
+  public Node[] getSources()
+  { return new Node[] {_source};
+  }
   
   @Override
   public Node copy(Object visitor)

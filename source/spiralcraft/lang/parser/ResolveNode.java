@@ -32,6 +32,11 @@ public class ResolveNode<T>
   }
   
   @Override
+  public Node[] getSources()
+  { return new Node[] {_source};
+  }
+    
+  @Override
   public Node copy(Object visitor)
   { return new ResolveNode<T>(_source.copy(visitor),identifier);
   }

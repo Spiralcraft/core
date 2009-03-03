@@ -47,6 +47,11 @@ public class PrimaryIdentifierNode
   }
 
   @Override
+  public Node[] getSources()
+  { return new Node[] {_source};
+  }
+  
+  @Override
   public Node copy(Object visitor)
   { 
     return new PrimaryIdentifierNode
