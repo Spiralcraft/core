@@ -68,6 +68,6 @@ public interface Queryable<Ttuple extends Tuple>
    *@return a BoundQuery that implements the data flow path and provides the
    *  data requested by the Query
    */
-  BoundQuery<?,?> query(Query q,Focus<?> context)
+  BoundQuery<?,Ttuple> query(Query q,Focus<?> context)
     throws DataException;
 }

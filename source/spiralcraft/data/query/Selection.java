@@ -27,6 +27,7 @@ import spiralcraft.lang.parser.EqualityNode;
 import spiralcraft.lang.parser.LiteralNode;
 import spiralcraft.lang.parser.LogicalAndNode;
 import spiralcraft.lang.parser.Node;
+import spiralcraft.lang.parser.ParentFocusNode;
 import spiralcraft.lang.parser.PrimaryIdentifierNode;
 import spiralcraft.lang.parser.ResolveNode;
 import spiralcraft.log.ClassLog;
@@ -115,6 +116,31 @@ public class Selection
    
   }
   
+  private boolean referencesCurrentFocus(Node node)
+  {
+    if (node instanceof CurrentFocusNode)
+    { return true;
+    }
+    if (node instanceof ParentFocusNode)
+    { return false;
+    }
+    
+    Node[] children=node.getSources();
+    if (children!=null)
+    {
+      for (Node child:children)
+      { 
+        if (child==null)
+        { log.warning(node+" returned null child");
+        }
+        else if (referencesCurrentFocus(child))
+        { return true;
+        }
+      }
+    }
+    return false;
+  }
+  
   
   /**
    * Recursively factor a node into EquiJoin expressions and a remainder.
@@ -160,6 +186,12 @@ public class Selection
         if (lhsResolve.getSource() instanceof CurrentFocusNode)
         { 
           // Test right hand side for legal expressions
+          
+          // We're doing this by inclusion right now to be safe
+          
+          // What cannot be allowed is a CurrentFocusNode on the RHS, because
+          //  that is the variant node. 
+          
           Node rhs=equalityNode.getRightOperand();
           Node validRhs=null;
           if (rhs instanceof PrimaryIdentifierNode)
@@ -184,10 +216,18 @@ public class Selection
           else if (rhs instanceof LiteralNode)
           { validRhs=rhs;
           }
+          else if (!referencesCurrentFocus(rhs))
+          { validRhs=rhs;
+          }
           else
           { 
             if (debug)
-            { log.fine("Not a valid RHS for refactoring "+rhs.reconstruct());
+            { 
+              log.fine
+                ("Not a valid RHS for refactoring "
+                +rhs.reconstruct()
+                + " ("+rhs.toString()+")"
+                );
             }
           }
   
@@ -274,7 +314,7 @@ public class Selection
       if (lhsExpressions.isEmpty())
       { 
         // We didn't find anything to refactor
-        return this;
+        return null;
       }
       else
       {
@@ -283,11 +323,18 @@ public class Selection
         ej.setRHSExpressions(rhsExpressions.toArray(new Expression<?>[0]));
         ej.setSource(getSources().get(0));
         
+        Query result;
         if (remainder==null)
-        { return ej;
+        { result=ej;
         }
         else
-        { return new Selection(ej,new Expression<Boolean>(remainder));
+        { result=new Selection(ej,new Expression<Boolean>(remainder));
+        }
+        if (result!=null)
+        {  
+          result.setDebug(debug);
+          result.setLogStatistics(logStatistics);
+          return result;
         }
         
       }
@@ -296,7 +343,7 @@ public class Selection
     } // Constraints!=null
     
     
-    return this;
+    return null;
   }
   
   @Override

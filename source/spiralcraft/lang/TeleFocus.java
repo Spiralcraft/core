@@ -33,7 +33,6 @@ public class TeleFocus<T>
   { 
     setParentFocus(parentFocus);
     setSubject(subject);
-   
   }
   
   @Override
@@ -51,7 +50,7 @@ public class TeleFocus<T>
     {
       URI shortURI
         =new URI(uri.getScheme(),uri.getAuthority(),uri.getPath(),null,null);
-      if  (subject.getReflector().isAssignableTo(shortURI))
+      if  (subject!=null && subject.getReflector().isAssignableTo(shortURI))
       { return true;
       }
     }

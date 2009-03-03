@@ -200,7 +200,7 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
     public BoundIndexScan(EquiJoin ej,Focus<?> context)
       throws DataException
     { 
-      // Create a focus to resolve all the LHSExpressions
+      // Create a focus to resolve all the RHSExpressions
       Focus<?> focus=new TeleFocus<Void>(context,null);
       
       ArrayList<Expression<?>> lhsExpressions=ej.getLHSExpressions();

@@ -14,6 +14,10 @@
 //
 package spiralcraft.data.spi;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 
@@ -28,6 +32,7 @@ import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Scan;
+// import spiralcraft.data.query.Scan;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.registry.Registrant;
@@ -74,38 +79,75 @@ public abstract class AbstractStore
    */
   protected abstract Queryable<Tuple> getQueryable(Type<?> type);
   
+  protected void getScanTypes(Query q,Set<Type<?>> result)
+  { 
+   
+    
+    if (q instanceof Scan)
+    { result.add(q.getType());
+    }
+    
+    List<Query> sources=q.getSources();
+    if (sources!=null)
+    { 
+      for (Query sq : sources)
+      { getScanTypes(sq,result);
+      }
+    }
+    
+  }
+  
   @Override
-  public BoundQuery<?,?> query(
+  public BoundQuery<?,Tuple> query(
     Query query,
     Focus<?> context)
     throws DataException
-  {
-    if (query instanceof Scan)
-    { 
-      // Basic scan just calls getAll
-      return getAll(query.getType());
-    }
-    else if 
-      (query.getSources()!=null 
-      && query.getSources().size()==1
-      && query.getSources().get(0) instanceof Scan
-      )
-    { 
-      // Query derived from Scan goes to Queryable for optimization
-      
-      Type<?> queryType=query.getSources().get(0).getType();
-      Queryable<Tuple> queryable=getQueryable(queryType);
+  { 
+    HashSet<Type<?>> typeSet=new HashSet<Type<?>>();
+    getScanTypes(query,typeSet);
+    Type<?>[] types=typeSet.toArray(new Type[typeSet.size()]);
+    
+    if (types.length==1)
+    {
+      Queryable<Tuple> queryable=getQueryable(types[0]);
       if (queryable==null)
-      { throw new DataException
-          ("This store cannot query type "+queryType.getURI());
+      { return null;
       }
-      return queryable.query(query, context);
+      else
+      { return queryable.query(query, context);
+      }
     }
-    else
-    { 
-      // Solve it until we get something we can understand
-      return query.solve(context,getSpace());
-    }    
+    
+    BoundQuery<?,Tuple> ret=query.solve(context,this);
+    ret.resolve();
+    return ret;
+
+//    if (query instanceof Scan)
+//    { 
+//      // Basic scan just calls getAll
+//      return getAll(query.getType());
+//    }
+//    else if 
+//      (query.getSources()!=null 
+//      && query.getSources().size()==1
+//      && query.getSources().get(0) instanceof Scan
+//      )
+//    { 
+//      // Query derived from Scan goes to Queryable for optimization
+//      
+//      Type<?> queryType=query.getSources().get(0).getType();
+//      Queryable<Tuple> queryable=getQueryable(queryType);
+//      if (queryable==null)
+//      { throw new DataException
+//          ("This store cannot query type "+queryType.getURI());
+//      }
+//      return queryable.query(query, context);
+//    }
+//    else
+//    { 
+//      // Solve it until we get something we can understand
+//      return query.solve(context,getSpace());
+//    }    
 
   }
   

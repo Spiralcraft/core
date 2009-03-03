@@ -84,11 +84,11 @@ public class SingleSpace
   { store.stop();
   }
   
-  public BoundQuery<?,?> query(Query query,Focus<?> focus)
+  public BoundQuery<?,Tuple> query(Query query,Focus<?> focus)
     throws DataException
   { 
     // Pass it through
-    BoundQuery<?,?> boundQuery
+    BoundQuery<?,Tuple> boundQuery
       =store.query(query,focus);
     if (boundQuery==null)
     { throw new DataException("No path to process Query "+query);

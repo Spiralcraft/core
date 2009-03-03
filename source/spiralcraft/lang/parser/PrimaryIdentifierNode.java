@@ -48,7 +48,7 @@ public class PrimaryIdentifierNode
 
   @Override
   public Node[] getSources()
-  { return new Node[] {_source};
+  { return _source==null?null:new Node[] {_source};
   }
   
   @Override
