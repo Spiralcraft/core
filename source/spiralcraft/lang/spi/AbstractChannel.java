@@ -101,7 +101,9 @@ public abstract class AbstractChannel<T>
   { 
     Channel<X> binding=_reflector.<X>resolve(this,focus,name,params);    
     if (binding==null)
-    { throw new BindException("'"+name+"' not found. ("+toString()+")");
+    { 
+      throw new 
+        BindException("'"+name+"' not found. ("+toString()+")");
     }
     return binding;
   }
