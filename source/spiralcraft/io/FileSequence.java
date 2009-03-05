@@ -15,6 +15,11 @@
 package spiralcraft.io;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.util.Arrays;
+import java.util.Comparator;
+
+import spiralcraft.log.ClassLog;
 
 /**
  * <p>Identifies a sequence of files closely related to each other where the
@@ -31,9 +36,75 @@ import java.io.File;
  */
 public abstract class FileSequence
 {
+  protected ClassLog log=ClassLog.getInstance(getClass());
+  
   private String prefix="";
   private String suffix="";
   private File directory;
+  protected boolean debug;
+  
+  
+  private FileFilter filter
+    =new FileFilter()
+    {
+
+      @Override
+      public boolean accept(File pathname)
+      {
+        String identifier="";
+        String path=pathname.getPath();
+        
+        if (path.startsWith(directory.getPath()))
+        { 
+          // Remove directory + trailing slash
+          path=path.substring(directory.getPath().length()+1);
+        }
+        
+        if (path.startsWith(prefix)
+            && path.endsWith(suffix)
+            )
+        {
+          identifier
+            =path.substring(prefix.length(),path.length()-suffix.length());
+          if (isSequenceId(identifier))
+          { 
+            if (debug)
+            { log.fine("Included "+pathname+" ("+identifier+")");
+            }
+            return true;
+          }
+        }
+        if (debug)
+        { log.fine("Excluded "+pathname+" ("+identifier+")");
+        }
+        return false;
+      }
+    };
+    
+  private final Comparator<String> comparator
+    =new Comparator<String>()
+  {
+    final Comparator<String> idComparator
+      =getSequenceIdComparator();
+    
+    @Override
+    public int compare(String p1,String p2)
+    {
+      
+      String id1=p1.substring(prefix.length(),p1.length()-suffix.length());
+      String id2=p2.substring(prefix.length(),p2.length()-suffix.length());
+      return idComparator.compare(id1, id2);
+    }
+  };
+  
+  /**
+   * Output information on path calculations, etc.
+   * 
+   * @param val
+   */
+  public void setDebug(boolean val)
+  { debug=val;
+  }
   
   /**
    * 
@@ -88,6 +159,10 @@ public abstract class FileSequence
 
   public abstract String getNextSequenceId();
   
+  public abstract boolean isSequenceId(String sequenceId);
+  
+  public abstract Comparator<String> getSequenceIdComparator();
+  
   public File getActiveFile()
   { return new File(directory,prefix+suffix);
   }
@@ -100,7 +175,37 @@ public abstract class FileSequence
   { getActiveFile().renameTo(getNextFile());
   }
   
-  
-  
+  /**
+   * List the paths of all the files in the set, relative to the 
+   *   directory of this FileSequence
+   *   
+   * @return
+   */
+  public String[] listFilePaths()
+  {
+    if (debug)
+    { log.fine("Listing "+directory.getPath());
+    }
+    File[] allFiles
+      =directory.listFiles(filter);
+    
+    String[] paths=new String[allFiles.length];
+    for (int i=0;i<allFiles.length;i++)
+    {
+      File file=allFiles[i];
+      if (file.getPath().startsWith(directory.getPath()))
+      { 
+        paths[i]
+          =file.getPath().substring(directory.getPath().length()+1);
+      }
+      else
+      { paths[i]=file.getPath();
+      }
+              
+    }
+    
+    Arrays.sort(paths,comparator);
+    return paths;
+  }
   
 }

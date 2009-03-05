@@ -16,7 +16,9 @@ package spiralcraft.io;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -59,6 +61,58 @@ public class TimestampFileSequence
     }
     else
     { return dateFormat.format(new Date());
+    }
+  }
+
+  @Override
+  public Comparator<String> getSequenceIdComparator()
+  {
+    return new Comparator<String>()
+    {
+
+      @Override
+      public int compare(String o1,String o2)
+      {
+        if (o1.length()==0)
+        { return 1;
+        }
+        else if (o2.length()==0)
+        { return -1;
+        }
+        else
+        { 
+          try
+          {
+            Date d1=dateFormat.parse(o1);
+            Date d2=dateFormat.parse(o2);
+            
+            if (d1.getTime()<d2.getTime())
+            { return -1;
+            }
+            else if (d1.getTime()>d2.getTime())
+            { return 1;
+            }
+            else
+            { return 0;
+            }
+          }
+          catch (ParseException x)
+          { throw new IllegalArgumentException(x);
+          }
+        }
+      }
+    };
+  }
+
+  @Override
+  public boolean isSequenceId(
+    String sequenceId)
+  { 
+    try
+    { return sequenceId.length()==0 || dateFormat.parse(sequenceId)!=null;
+    }
+    catch (ParseException x)
+    { return false;
     }
   }
   
