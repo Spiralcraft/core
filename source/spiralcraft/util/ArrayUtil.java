@@ -461,4 +461,14 @@ public class ArrayUtil
       }
     };
   }
+  
+  public static final Object reverse(Object array)
+  {
+    int len=Array.getLength(array);
+    Object ret=Array.newInstance(array.getClass().getComponentType(),len);
+    for (int i=0;i<len;i++)
+    { Array.set(ret,len-i-1,Array.get(array,i));
+    }
+    return ret;
+  }
 }
