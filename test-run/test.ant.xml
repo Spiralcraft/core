@@ -26,8 +26,9 @@
   </target>
 
   <target name="clean">
+    <mkdir dir="out"/>
     <delete>
-      <fileset dir="out" includes="**/*.log"/>
+      <fileset dir="out" includes="**/*"/>
     </delete>    
   </target>
   	
@@ -35,14 +36,15 @@
   </target>
   	
   <target name="spiralcraft-io-test">
-    <mkdir dir="out/io"/>
-    <delete>
-      <fileset dir="out/io" includes="**/*.log"/>
-    </delete>    
 
     <spiralcraft 
       assy="class:/spiralcraft/io/test/RotatingFileOutputAgent.test.assy"
     />
 
+    <spiralcraft 
+      assy="class:/spiralcraft/io/test/RotatingFileOutputAgent.test.assy"
+    />
   </target>
+	
+	
 </project>
