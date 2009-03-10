@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URI;
 
-import spiralcraft.io.FileRecordIterator;
+import spiralcraft.io.record.FileRecordIterator;
 import spiralcraft.log.Level;
 import spiralcraft.task.AbstractTask;
 import spiralcraft.task.Scenario;
