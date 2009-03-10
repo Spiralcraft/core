@@ -12,11 +12,12 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.io;
+package spiralcraft.io.record;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import spiralcraft.io.KmpMatcher;
 import spiralcraft.util.ArrayUtil;
 
 /**
@@ -35,6 +36,7 @@ import spiralcraft.util.ArrayUtil;
  *
  */
 public class FileRecordIterator
+  implements ScrollableRecordIterator
 {
  
   private final RandomAccessFile file;
@@ -201,6 +203,17 @@ public class FileRecordIterator
   }
   
 
+  public void skip(int count)
+    throws IOException
+  {
+    for (int i=0;i<count;i++)
+    {
+      if (!next())
+      { break;
+      }
+    }
+  }
+  
   /**
    * Position the record pointer on the previous record
    * 
