@@ -8,13 +8,13 @@ import spiralcraft.io.OutputAgent;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.Level;
-import spiralcraft.task.AbstractScenario;
 import spiralcraft.task.AbstractTask;
 import spiralcraft.task.ParallelTask;
+import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 
 public class OutputAgentTest
-  extends AbstractScenario<Task>
+  extends Scenario<Task,Void>
 {
   
   private OutputAgent agent;
@@ -39,8 +39,9 @@ public class OutputAgentTest
   { this.threadCount=threadCount;
   }
   
+  
   @Override
-  public Task task()
+  protected Task task()
   {
     ArrayList<Task> list=new ArrayList<Task>();
     for (int i=0;i<threadCount;i++)
@@ -50,7 +51,7 @@ public class OutputAgentTest
         {
             
           @Override
-          public void execute()
+          public void work()
           { 
             try
             {
@@ -64,7 +65,12 @@ public class OutputAgentTest
                   );
                 long waited=System.currentTimeMillis()-time;
                 if (waited>250)
-                { log.warning("OutputAgent.write call "+threadNum+"-#"+useSeq+" took "+waited+" ms");
+                { 
+                  log.log
+                    (Level.WARNING
+                     ,"OutputAgent.write call "+threadNum
+                     +"-#"+useSeq+" took "+waited+" ms"
+                     );
                 }
                 if (delay>0)
                 { Thread.sleep(delay);
@@ -79,7 +85,7 @@ public class OutputAgentTest
           }
         });
     }
-    return new ParallelTask(list);
+    return new ParallelTask<Task>(list);
   }
 
   @Override

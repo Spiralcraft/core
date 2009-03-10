@@ -133,7 +133,8 @@ public interface Command<Ttarget,Tresult>
    * @return A copy of this Command which references the same target(s) and
    *   parameters as this Command but is in a pre-execution state.
    */
-  Command<Ttarget,Tresult> clone();
+  Command<Ttarget,Tresult> clone()
+    throws CloneNotSupportedException;
   
   /**
    * 

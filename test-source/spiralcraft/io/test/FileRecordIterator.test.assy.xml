@@ -1,0 +1,10 @@
+<task:TaskRunner
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:io="class:/spiralcraft/io/"
+  xmlns:iotest="class:/spiralcraft/io/test/"
+  >
+  
+  <scenario>
+    <iotest:FileRecordIteratorTest/>
+  </scenario>
+</task:TaskRunner>

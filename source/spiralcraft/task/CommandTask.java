@@ -40,7 +40,7 @@ public class CommandTask<T,R>
   }
 
   @Override
-  public void execute()
+  public void work()
   { command.execute();
   }
 

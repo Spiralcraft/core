@@ -21,27 +21,27 @@ import java.util.List;
 /**
  * Executes a number of other Tasks in series
  */
-public class SerialTask
-  extends MultiTask
+public class SerialTask<Tsubtask extends Task>
+  extends MultiTask<Tsubtask>
 {
 //  private static final ClassLog log
 //    =ClassLog.getInstance(SerialTask.class);
   
-  public SerialTask(List<? extends Task> tasks)
+  public SerialTask(List<Tsubtask> tasks)
   { super(tasks);
   }
  
   
   @Override
-  protected void execute()
+  protected void work()
   {
-    setUnitsInTask(tasks.size());
+    setUnitsInTask(subtasks.size());
     setOpsInUnit(1);
     setUnitsCompletedInTask(0);
     setOpsCompletedInUnit(0);
     setCurrentUnitTitle("Counting");
     
-    for (Task task: tasks)
+    for (Task task: subtasks)
     { task.run();
     }
 

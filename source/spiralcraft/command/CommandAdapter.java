@@ -101,7 +101,7 @@ public abstract class CommandAdapter<Ttarget,Tresult>
    *   method instead.
    * </p>
    */
-  public void execute()
+  public final void execute()
   {
     notifyStarted();
     try

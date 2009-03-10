@@ -16,7 +16,15 @@ package spiralcraft.task;
 
 import spiralcraft.command.Command;
 import spiralcraft.common.Lifecycle;
+import spiralcraft.common.LifecycleException;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
+import spiralcraft.log.Log;
 
 /**
  * <p>A Scenario is a Task factory. It Implements a runnable operation in the 
@@ -29,23 +37,53 @@ import spiralcraft.lang.FocusChainObject;
  * 
  * @author mike
  */
-public interface Scenario<Ttask>
-  extends Lifecycle,FocusChainObject
+public abstract class Scenario<Ttask extends Task,Tresult>
+  implements Lifecycle,FocusChainObject
 {
 
-  /**
-   * <p>Generate a new Task to run this Scenario. The Task may invoke other
-   *   Tasks generated from contained and references Scenarios as required.
-   * </p>
-   * 
-   * @return A Task that is ready to be started or run.
-   */
-  Ttask task();
+  protected Log log=ClassLog.getInstance(getClass());
+  protected ThreadLocalChannel<TaskCommand<Ttask,Tresult>> commandChannel;
   
   /**
    * 
    * @return A command which runs this Scenario when invoked. Used to wire 
-   *   together behavioral elements in a set of Scenarios.
+   *   together behavioral elements in a set of Scenarios. The Command
+   *   target is the scenario, and the result is implementation specific.
    */
-  Command<? extends Scenario<Ttask>,Ttask> runCommand();
+  public Command<Scenario<Ttask,Tresult>,Tresult> 
+    command()
+  { return new TaskCommand<Ttask,Tresult>(task());
+  }
+
+  protected abstract Ttask task();
+  
+  protected Focus<TaskCommand<Ttask,Tresult>> 
+    bindCommand(Focus<?> focusChain,Class<TaskCommand<Ttask,Tresult>> clazz)
+  {
+    commandChannel
+      =new ThreadLocalChannel<TaskCommand<Ttask,Tresult>>
+        (BeanReflector.<TaskCommand<Ttask,Tresult>>getInstance(clazz));
+    return focusChain.chain(commandChannel);
+  }
+
+  @Override
+  public Focus<?> bind(
+    Focus<?> focusChain)
+    throws BindException
+  { return focusChain;
+
+  }
+
+
+  @Override
+  public void start()
+    throws LifecycleException
+  { log.log(Level.FINE,this+": starting");
+  }
+
+  @Override
+  public void stop()
+    throws LifecycleException
+  { log.log(Level.FINE,this+": stopping");
+  }
 }

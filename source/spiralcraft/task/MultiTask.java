@@ -24,12 +24,16 @@ import java.util.List;
  * @author mike
  *
  */
-public abstract class MultiTask
+public abstract class MultiTask<Tsubtask>
   extends AbstractTask
 {
-  protected final List<? extends Task> tasks;
+  protected final List<Tsubtask> subtasks;
   
-  public MultiTask(final List<? extends Task> tasks)
-  { this.tasks=tasks;
+  public MultiTask(final List<Tsubtask> subtasks)
+  { this.subtasks=subtasks;
+  }
+  
+  public List<Tsubtask> getSubtasks()
+  { return subtasks;
   }
 }

@@ -22,8 +22,8 @@ import spiralcraft.log.ClassLog;
 /**
  * Executes a number of other Tasks in parallel
  */
-public class ParallelTask
-  extends MultiTask
+public class ParallelTask<Tsubtask extends Task>
+  extends MultiTask<Tsubtask>
   implements TaskListener
 {
   private static final ClassLog log
@@ -34,7 +34,7 @@ public class ParallelTask
   private final HashSet<Task> runningTasks=new HashSet<Task>();
   private boolean useScheduler;
   
-  public ParallelTask(List<? extends Task> tasks)
+  public ParallelTask(List<Tsubtask> tasks)
   { super(tasks);
   }
   
@@ -88,15 +88,15 @@ public class ParallelTask
 
   
   @Override
-  protected void execute()
+  protected void work()
   {
-    setUnitsInTask(tasks.size());
+    setUnitsInTask(subtasks.size());
     setOpsInUnit(1);
     setUnitsCompletedInTask(0);
     setOpsCompletedInUnit(0);
     setCurrentUnitTitle("Counting");
     
-    for (Task task: tasks)
+    for (Task task: subtasks)
     { 
       task.addTaskListener(this);
       subtaskStarting(task);

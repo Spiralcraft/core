@@ -20,8 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import spiralcraft.command.Command;
-import spiralcraft.command.CommandAdapter;
-import spiralcraft.common.LifecycleException;
 import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -60,7 +58,7 @@ import spiralcraft.util.thread.DelegateException;
  * @param <R> The result item type
  */
 public class BatchScenario<I,R>
-  implements Scenario<MultiTask>
+  extends Scenario<MultiTask<BatchScenario<I,R>.CommandSubTask>,List<Command<?,R>>>
 {
   private static final ClassLog log
     =ClassLog.getInstance(BatchScenario.class);
@@ -169,34 +167,16 @@ public class BatchScenario<I,R>
     log.fine(""+completedCommands);
   }
   
-  public MultiTask task()
+  @Override
+  protected MultiTask<CommandSubTask> task()
   {
    
     final List<CommandSubTask> taskList=taskList();
     if (parallel)
-    {
-      return new ParallelTask(taskList)
-      {
-        @Override
-        public void execute()
-        { 
-          super.execute();
-          postResult(completedCommands(taskList));
-        }
-      };
+    { return new ParallelTask<CommandSubTask>(taskList);
     }
     else
-    {
-      return new SerialTask(taskList)
-      {
-        @Override
-        public void execute()
-        { 
-          super.execute();
-          postResult(completedCommands(taskList));
-        }
-        
-      };
+    { return new SerialTask<CommandSubTask>(taskList);
     }
   }
   
@@ -216,41 +196,46 @@ public class BatchScenario<I,R>
     return taskList;
   }
   
-  private List<Command<?,R>> completedCommands(List<CommandSubTask> taskList)
-  {
-    ArrayList<Command<?,R>> results
-    =new ArrayList<Command<?,R>>(taskList.size());
-    for (CommandSubTask task: taskList)
-    { 
-      Command<?,R> completedCommand=task.getCompletedCommand();
-      results.add(completedCommand);
-      log.fine(""+completedCommand.getResult());
-      if (completedCommand.getException()!=null)
-      { 
-        log.log
-          (ClassLog.FINE,"Error: "
-            +completedCommand.getException()
-          ,completedCommand.getException()
-          );
-        completedCommand.getException().printStackTrace();
-      }
-    }
-    return results;      
-  }
   
-  
-  public Command<BatchScenario<I,R>,MultiTask> runCommand()
+  @Override
+  public TaskCommand
+    <MultiTask<CommandSubTask>,List<Command<?,R>>>
+    command()
   {
-    return new CommandAdapter<BatchScenario<I,R>,MultiTask>()
-    { 
-      @Override
-      public void run()
+    return 
+      new TaskCommand
+        <MultiTask<CommandSubTask>,List<Command<?,R>>>
+        ()
       { 
-        MultiTask task=task();
-        task.run();
-        setResult(task);
-      }
-    };
+        { task=task();
+        }
+        
+        @Override
+        public void run()
+        { 
+          super.run();
+          List<CommandSubTask> subtasks=task.getSubtasks();
+          List<Command<?,R>> results
+            =new ArrayList<Command<?,R>>(subtasks.size());
+          for (CommandSubTask subtask: subtasks)
+          { 
+            Command<?,R> completedCommand=subtask.getCompletedCommand();
+            log.fine(""+completedCommand.getResult());
+            results.add(completedCommand);
+            if (completedCommand.getException()!=null)
+            { 
+              log.log
+                (ClassLog.WARNING,"Error: "
+                +completedCommand.getException()
+                ,completedCommand.getException()
+                );
+              completedCommand.getException().printStackTrace();
+            }
+          }
+          setResult(results);
+          postResult(results);
+        }
+      };
   }
   
   @SuppressWarnings("unchecked")
@@ -300,7 +285,7 @@ public class BatchScenario<I,R>
     }
 
     @Override
-    public void execute()
+    public void work()
     {
       item.push(value);
       try
@@ -339,19 +324,6 @@ public class BatchScenario<I,R>
     }
   }
 
-  @Override
-  public void start()
-    throws LifecycleException
-  {
-    // TODO: start the sub-scenario
-  }
 
-  @Override
-  public void stop()
-    throws LifecycleException
-  {
-    // TODO: stop the sub-scenario
-    
-  }
   
 }

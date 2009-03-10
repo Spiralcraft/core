@@ -19,6 +19,8 @@ import java.beans.PropertyChangeListener;
 
 import spiralcraft.util.ArrayUtil;
 
+import spiralcraft.log.ContextLog;
+import spiralcraft.log.Log;
 import spiralcraft.time.Scheduler;
 
 /**
@@ -57,8 +59,10 @@ public abstract class AbstractTask
   private boolean _stoppable=false;
   private boolean _running=false;
   private boolean _stopRequested=false;
+  private boolean _completed=false;
   protected boolean debug;
   protected Scheduler scheduler;
+  protected Log log;
   
   // private Thread _runThread;
   
@@ -71,7 +75,7 @@ public abstract class AbstractTask
   /**
    * Perform the work specified by the task
    */
-  protected abstract void execute();
+  protected abstract void work();
 
   @Override
   public void setDebug(boolean debug)
@@ -127,6 +131,10 @@ public abstract class AbstractTask
   { return _stopRequested;
   }
   
+  public boolean isCompleted()
+  { return _completed;
+  }
+  
   public void start()
   {
     synchronized (_lock)
@@ -146,6 +154,7 @@ public abstract class AbstractTask
   
   public final synchronized void run()
   {
+    log=ContextLog.getInstance();
     synchronized (_lock)
     { 
       if (_running)
@@ -159,7 +168,7 @@ public abstract class AbstractTask
     }
     
     try
-    { execute();
+    { work();
     }
     finally
     { 
@@ -169,6 +178,7 @@ public abstract class AbstractTask
         setStartable(true);
         setStopRequested(false);
         // _runThread=null;
+        _completed=true;
         fireTaskCompleted();
       }
     }

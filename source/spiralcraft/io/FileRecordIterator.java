@@ -28,6 +28,9 @@ import spiralcraft.util.ArrayUtil;
  *   EOF.
  * </p>
  * 
+ * <p>The FileRecordIterator starts out before the first record, signified
+ *   by isBOF() == true and recordPointer == -1
+ * </p>
  * @author mike
  *
  */
@@ -36,27 +39,33 @@ public class FileRecordIterator
  
   private final RandomAccessFile file;
   private final byte[] delimiter;
-  private long recordPointer;
+  private int recordPointer=-1;
   private final KmpMatcher forwardMatcher;
   private final KmpMatcher reverseMatcher;
   private byte[] fileBuffer=new byte[1024];
   
   
   public FileRecordIterator(RandomAccessFile file,byte[] delimiter)
+    throws IOException
   {
     this.file=file;
     this.delimiter=delimiter;
     forwardMatcher=new KmpMatcher(delimiter);
     reverseMatcher=new KmpMatcher((byte[]) ArrayUtil.reverse(delimiter));
+    file.seek(0);
   }
   
-  public long getRecordPointer()
+  public int getRecordPointer()
   { return recordPointer;
   }
   
   public boolean isEOF()
     throws IOException
   { return file.getFilePointer()>=file.length();
+  }
+  
+  public boolean isBOF()
+  { return recordPointer<0;
   }
   
   /**
@@ -75,13 +84,67 @@ public class FileRecordIterator
   public int read(int recordOffset,byte[] buffer,int bufferOffset,int len)
     throws IOException
   { 
+    if (isBOF())
+    { return -1;
+    }
+    if (isEOF())
+    { return -1;
+    }
+        
     
     long filePos=file.getFilePointer();
     
     try
     { 
-      file.skipBytes(recordOffset);
-      return file.read(buffer,bufferOffset,len);
+      
+      forwardMatcher.reset();
+      int skipCount=0;
+      int readCount=0;
+      
+      while (true)
+      {
+        int bytes=file.read(fileBuffer,0,len);
+        if (bytes==-1)
+        { 
+          if (readCount>0)
+          { return readCount;
+          }
+          else
+          { return -1;
+          }
+        }
+        for (int i=0;i<bytes;i++)
+        {   
+          if (forwardMatcher.match(fileBuffer[i]))
+          { 
+            forwardMatcher.reset();
+            readCount=Math.max(0,readCount-(delimiter.length-1));
+            if (readCount>0)
+            { return readCount;
+            }
+            else
+            { return -1;
+            }
+          }
+          else if (skipCount<recordOffset)
+          { skipCount++;
+          }
+          else if (readCount<len)
+          { 
+            buffer[bufferOffset+readCount]=fileBuffer[i];
+            readCount++;
+          }
+          else
+          {
+            if (readCount>0)
+            { return readCount;
+            }
+            else
+            { return -1;
+            }
+          }
+        }
+      }
     }
     finally
     { file.seek(filePos);
@@ -98,6 +161,17 @@ public class FileRecordIterator
   public boolean next()
     throws IOException
   { 
+    if (isEOF())
+    { return false;
+    }
+    
+    if (isBOF())
+    { 
+      file.seek(0);
+      recordPointer=0;
+      return !isEOF();
+    }
+    
     long filePos=file.getFilePointer();
     try
     {
@@ -106,23 +180,22 @@ public class FileRecordIterator
       {
         int bytes=file.read(fileBuffer);
         if (bytes==-1)
-        { 
-          filePos=file.getFilePointer();
-          return false;
+        { return false;
         }
         for (int i=0;i<bytes;i++)
         {   
+          filePos++;
           if (forwardMatcher.match(fileBuffer[i]))
           { 
             forwardMatcher.reset();
             recordPointer++;
-            filePos=file.getFilePointer();
-            return true;
+            file.seek(filePos);
+            return !isEOF();
           }
         }
       }
     }
-    finally
+    finally 
     { file.seek(filePos);
     }
   }
@@ -138,15 +211,18 @@ public class FileRecordIterator
     throws IOException
   { 
     long filePos=file.getFilePointer();
-    if (filePos==0)
-    { return false;
+    if (recordPointer==0 || filePos==0)
+    { 
+      recordPointer=-1;
+      file.seek(0);
+      return false;
     }
     
     try
     {
       
       reverseMatcher.reset();
-      boolean inPrevious=isEOF()?true:false;
+      boolean inPrevious=false;
       while (true)
       {
         
@@ -163,6 +239,7 @@ public class FileRecordIterator
         
         for (int i=0;i<bytes;i++)
         {   
+          filePos--;
           if (reverseMatcher.match(fileBuffer[fileBuffer.length-i-1]))
           { 
             reverseMatcher.reset();
@@ -171,8 +248,7 @@ public class FileRecordIterator
             }
             else
             {
-              file.skipBytes(delimiter.length);
-              filePos=file.getFilePointer();
+              filePos=filePos+delimiter.length;
               recordPointer--;
               return true;
             }

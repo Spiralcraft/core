@@ -22,7 +22,7 @@ public class StubTask
 {
   
   @Override
-  protected void execute()
+  protected void work()
   {
     setUnitsInTask(1);
     setOpsInUnit(100);

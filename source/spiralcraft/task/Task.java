@@ -20,11 +20,11 @@ import spiralcraft.time.Scheduler;
 
 /**
  * <p>A unit of work that can be managed and monitored. A Task instance 
- *   represents the state and progress of the invocation of some function,
+ *   represents the state and progress of the invocation of some operation,
  *   and thus has a life-cycle scoped to that invocation.
  * </p>
  * 
- * <p>A Task can be composed of a number of sub-units, each of which can be 
+ * <p>A Task can be composed of a number of "sub-units", each of which can be 
  *   composed of a number of operations.
  * </p>
  *
@@ -84,6 +84,13 @@ public interface Task
    * Whether the task is currently running
    */
   boolean isRunning();
+  
+  /**
+   * Whether the task has completed
+   * 
+   * @return
+   */
+  boolean isCompleted();
   
   /**
    * Activate debug logging

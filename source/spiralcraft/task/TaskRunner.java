@@ -13,9 +13,9 @@ public class TaskRunner
   implements Executable
 {
 
-  private Scenario<? extends Task> scenario;
+  private Scenario<? extends Task,?> scenario;
   
-  public void setScenario(Scenario<? extends Task> scenario)
+  public void setScenario(Scenario<? extends Task,?> scenario)
   { this.scenario=scenario;
   }
   
@@ -33,7 +33,7 @@ public class TaskRunner
         );
 
       scenario.start();
-      scenario.task().run();
+      scenario.command().execute();
       scenario.stop();
     }
     catch (BindException x)

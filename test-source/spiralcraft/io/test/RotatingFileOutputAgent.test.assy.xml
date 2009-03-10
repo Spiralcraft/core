@@ -9,14 +9,18 @@
       
       <agent>
         <io:RotatingFileOutputAgent>
-          <filePrefix>test
-          </filePrefix>
+          <fileSequence>
+            <io:TimestampFileSequence>
+              <prefix>test
+              </prefix>
           
-          <fileSuffix>log
-          </fileSuffix>
+              <suffix>.log
+              </suffix>
 
-          <directory>out/io
-          </directory>
+              <directory>out/io
+              </directory>
+            </io:TimestampFileSequence>
+          </fileSequence>
           
           <maxLengthKB>128
           </maxLengthKB>
