@@ -1,0 +1,19 @@
+[2009/03/09-17:24:54.296-0700] INFO 1:main (): RotatingFileHandler started
+[2009/03/09-17:24:56.796-0700] INFO 12:PooledThread1 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:24:59.046-0700] INFO 11:PooledThread0 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:02.046-0700] INFO 11:PooledThread0 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:05.062-0700] INFO 11:PooledThread0 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:07.078-0700] INFO 12:PooledThread1 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:10.109-0700] INFO 11:PooledThread0 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:13.140-0700] INFO 116:PooledThread4 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:14.640-0700] INFO 1:main (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Waiting for flush...
+[2009/03/09-17:25:16.593-0700] INFO 1:main (): RotatingFileHandler started
+[2009/03/09-17:25:17.843-0700] INFO 12:PooledThread1 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:20.093-0700] INFO 12:PooledThread1 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:22.359-0700] INFO 12:PooledThread1 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:24.609-0700] INFO 12:PooledThread1 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:27.609-0700] INFO 12:PooledThread1 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:30.609-0700] INFO 12:PooledThread1 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:32.656-0700] INFO 12:PooledThread1 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:35.656-0700] INFO 11:PooledThread0 (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Rotating output file
+[2009/03/09-17:25:37.156-0700] INFO 1:main (spiralcraft.io.RotatingFileOutputAgent): /C:/work/sandbox/spiralcraft/modules/core/test-run/out/io/test: Waiting for flush...
