@@ -44,7 +44,7 @@
     <mkdir dir="out/io"/>
   	
     <spiralcraft 
-      assy="class:/spiralcraft/io/test/FileRecordIterator.test.assy"
+      assy="class:/spiralcraft/io/test/RecordIterator.test.assy"
     />
   </target>
   	

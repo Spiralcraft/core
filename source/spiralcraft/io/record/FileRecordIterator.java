@@ -19,6 +19,7 @@ import java.io.RandomAccessFile;
 
 import spiralcraft.io.KmpMatcher;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.ByteBuffer;
 
 /**
  * <p>Provides a record based interface into a RandomAccessFile that is
@@ -40,11 +41,13 @@ public class FileRecordIterator
 {
  
   private final RandomAccessFile file;
+  private final ByteBuffer tempBuffer=new ByteBuffer();
   private final byte[] delimiter;
   private int recordPointer=-1;
   private final KmpMatcher forwardMatcher;
   private final KmpMatcher reverseMatcher;
   private byte[] fileBuffer=new byte[1024];
+  private byte[] recordBuffer;
   
   
   public FileRecordIterator(RandomAccessFile file,byte[] delimiter)
@@ -69,7 +72,7 @@ public class FileRecordIterator
   public boolean isBOF()
   { return recordPointer<0;
   }
-  
+
   /**
    * <p>Read len bytes of the the current record, starting at the
    *   specifed recordOffset, into the specified
@@ -92,58 +95,58 @@ public class FileRecordIterator
     if (isEOF())
     { return -1;
     }
-        
     
+    if (recordOffset>=recordBuffer.length)
+    { return -1;
+    }
+    
+    len=Math.min(recordBuffer.length-recordOffset,len);
+    if (len==0)
+    { return -1;
+    }
+    System.arraycopy(recordBuffer,recordOffset,buffer,bufferOffset,len);
+    return len;
+  }
+  
+  private void finalizeRecordBuffer()
+  {
+    if (tempBuffer.length()<=delimiter.length)
+    { recordBuffer=new byte[0];
+    }
+    else
+    {
+      recordBuffer=new byte[tempBuffer.length()-delimiter.length];
+      tempBuffer.toArray(recordBuffer);
+    }
+  }
+  
+  private void buffer()
+    throws IOException
+  {
     long filePos=file.getFilePointer();
-    
     try
-    { 
-      
+    {
       forwardMatcher.reset();
-      int skipCount=0;
-      int readCount=0;
       
+      tempBuffer.clear();
       while (true)
       {
-        int bytes=file.read(fileBuffer,0,len);
+        int bytes=file.read(fileBuffer,0,fileBuffer.length);
         if (bytes==-1)
         { 
-          if (readCount>0)
-          { return readCount;
-          }
-          else
-          { return -1;
-          }
+          // Tolerate premature EOF
+          finalizeRecordBuffer();
+          return;
         }
+
         for (int i=0;i<bytes;i++)
         {   
+          tempBuffer.append(fileBuffer[i]);
           if (forwardMatcher.match(fileBuffer[i]))
           { 
             forwardMatcher.reset();
-            readCount=Math.max(0,readCount-(delimiter.length-1));
-            if (readCount>0)
-            { return readCount;
-            }
-            else
-            { return -1;
-            }
-          }
-          else if (skipCount<recordOffset)
-          { skipCount++;
-          }
-          else if (readCount<len)
-          { 
-            buffer[bufferOffset+readCount]=fileBuffer[i];
-            readCount++;
-          }
-          else
-          {
-            if (readCount>0)
-            { return readCount;
-            }
-            else
-            { return -1;
-            }
+            finalizeRecordBuffer();
+            return;
           }
         }
       }
@@ -151,9 +154,9 @@ public class FileRecordIterator
     finally
     { file.seek(filePos);
     }
-    
+
   }
-  
+
   /**
    * Position the record pointer on the next record
    * 
@@ -163,13 +166,16 @@ public class FileRecordIterator
   public boolean next()
     throws IOException
   { 
+    // Positions the file pointer at the beginning of the next record
     if (isEOF())
     { return false;
     }
     
     if (isBOF())
     { 
+      
       file.seek(0);
+      buffer();
       recordPointer=0;
       return !isEOF();
     }
@@ -192,6 +198,7 @@ public class FileRecordIterator
             forwardMatcher.reset();
             recordPointer++;
             file.seek(filePos);
+            buffer();
             return !isEOF();
           }
         }
@@ -263,6 +270,8 @@ public class FileRecordIterator
             {
               filePos=filePos+delimiter.length;
               recordPointer--;
+              file.seek(filePos);
+              buffer();
               return true;
             }
           }

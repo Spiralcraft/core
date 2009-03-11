@@ -113,4 +113,14 @@ public final class ByteBuffer
   public final String toAsciiString()
   { return new String(toAsciiCharArray());
   }
+
+  /**
+   * Copy the bytes to the specified target array. This method will copy as
+   *   many bytes as will fit into the target array. 
+   * 
+   * @param target
+   */
+  public void toArray(byte[] target)
+  { System.arraycopy(_array,0,target,0,Math.min(_array.length,target.length));
+  }
 }

@@ -5,6 +5,6 @@
   >
   
   <scenario>
-    <iotest:FileRecordIteratorTest/>
+    <iotest:RecordIteratorTest/>
   </scenario>
 </task:TaskRunner>
