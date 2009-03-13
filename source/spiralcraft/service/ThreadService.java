@@ -17,6 +17,8 @@ package spiralcraft.service;
 
 import spiralcraft.common.LifecycleException;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
+import spiralcraft.log.Log;
 import spiralcraft.time.Clock;
 
 /**
@@ -32,8 +34,8 @@ public abstract class ThreadService
   implements Runnable
 {
 
-  private static final ClassLog log
-    =ClassLog.getInstance(ThreadService.class);
+  protected final Log log
+    =ClassLog.getInstance(getClass());
   
   protected Thread thread;
   private volatile boolean stop=true;
@@ -75,16 +77,17 @@ public abstract class ThreadService
     stop=false;
     thread=new Thread(this);
     thread.start();
-    log.fine("started");
+    log.log(Level.FINE,("started"));
   }
 
   @Override
   public synchronized void stop()
+    throws LifecycleException
   {
     if (stop)
     { return;
     }
-    log.fine("stopping");
+    log.log(Level.FINE,"stopping");
     stop=true;
     this.notify();
     try
@@ -94,7 +97,7 @@ public abstract class ThreadService
     { x.printStackTrace();
     }
     thread=null;
-    log.fine("stopped");
+    log.log(Level.FINE,"stopped");
 
   }
   
@@ -106,7 +109,7 @@ public abstract class ThreadService
       { 
         lastRun=Clock.instance().approxTimeMillis();
         if (debug)
-        { log.fine("Running...");
+        { log.log(Level.FINE,"Running...");
         }
         runOnce();
       }
@@ -115,18 +118,25 @@ public abstract class ThreadService
         log.log(ClassLog.SEVERE,"Uncaught exception in service thread",x);
         x.printStackTrace();
         if (stopOnError)
-        { stop();
+        { 
+          try
+          { stop();
+          }
+          catch (LifecycleException x2)
+          {  log.log(ClassLog.SEVERE,"Exception stopping service",x2);
+          }
         }
       }
       
       long elapsedTime
         =(Clock.instance().approxTimeMillis()-lastRun);
-      if (elapsedTime<runIntervalMs)
+      if (!stop && elapsedTime<runIntervalMs)
       { 
         try
         { 
           if (debug)
-          { log.fine("Sleeping for "+(runIntervalMs-elapsedTime)+"ms");
+          { log.log
+              (Level.FINE,"Sleeping for "+(runIntervalMs-elapsedTime)+"ms");
           }
           synchronized (this)
           { wait(runIntervalMs-elapsedTime);
@@ -135,7 +145,12 @@ public abstract class ThreadService
         catch (InterruptedException x)
         { 
           x.printStackTrace();
-          stop();
+          try
+          { stop();
+          }
+          catch (LifecycleException x2)
+          { log.log(ClassLog.SEVERE,"Exception stopping service",x2);
+          }
         }
       }
     }
