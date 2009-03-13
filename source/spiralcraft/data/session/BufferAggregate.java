@@ -58,6 +58,10 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
     this.type=type;
   }
   
+  public void clear()
+  { buffers.clear();
+  }
+  
   @Override
   public boolean isDirty()
   { 

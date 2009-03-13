@@ -35,5 +35,15 @@ public interface EditableAggregate<T>
    */
   void addAll(Aggregate<T> values);
 
+  /**
+   * Remove the specifed value from this aggregation
+   * 
+   * @param val
+   */
   void remove(T val);
+  
+  /**
+   * Remove all values from this aggregation
+   */
+  void clear();
 }

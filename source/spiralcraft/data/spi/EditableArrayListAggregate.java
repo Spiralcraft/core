@@ -49,4 +49,8 @@ public class EditableArrayListAggregate<T>
   public void remove(T value)
   { list.remove(value);
   }
+  
+  public void clear()
+  { list.clear();
+  }
 }
