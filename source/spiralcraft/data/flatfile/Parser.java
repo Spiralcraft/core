@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -28,19 +28,30 @@ import java.net.URI;
 
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.log.ClassLog;
 
+import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Field;
+import spiralcraft.data.Projection;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
 
 import spiralcraft.data.access.DataConsumerChain;
+import spiralcraft.data.core.ProjectionImpl;
 import spiralcraft.data.core.SchemeImpl;
 import spiralcraft.data.core.FieldImpl;
 
+import spiralcraft.data.lang.TupleReflector;
 import spiralcraft.data.spi.EditableArrayTuple;
+import spiralcraft.data.util.DataAggregator;
 
 
 /**
@@ -49,20 +60,31 @@ import spiralcraft.data.spi.EditableArrayTuple;
 public class Parser
   implements Executable
 {
+  private static final ClassLog log=ClassLog.getInstance(Parser.class);
 	private DataConsumer<Tuple> consumer;
 	private InputStream _in;
   private boolean _readHeader=true;
-  private boolean _notypes=false;
+  private boolean _useImplicitTypes=false;
   private char _delimiter=',';
   private char _quoteChar='"';
   private boolean _useQuotes=true;
   private EditableTuple tuple;
+  private Channel<Tuple> tupleChannel;
+  private FieldSet _targetFieldSet;
   private FieldSet _fields;
   private boolean _haltOnErrors=false;
   private boolean _useEscapes=true;
   private DataConsumerChain<Tuple>[] _filters;
   private String _charsetName;
+  private boolean debug;
   
+  private Channel<Tuple> _projectionBinding;
+  private Projection<Tuple> _projection;
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+    
 	public void execute(String ... args)
 	{
     final ExecutionContext context=ExecutionContext.getInstance();
@@ -75,8 +97,8 @@ public class Parser
         if (args[i].equals("-noheader"))
         { setReadHeader(false);
         }
-        else if (args[i].equals("-notypes"))
-        { setNoTypes(true);
+        else if (args[i].equals("-implicitTypes"))
+        { setUseImplicitTypes(true);
         }
         else if (args[i].equals("-delimiter"))
         { setDelimiter(args[++i].charAt(0));
@@ -120,6 +142,10 @@ public class Parser
 		}
 	}
 	
+	public void setTargetFieldSet(FieldSet targetFieldSet)
+	{ this._targetFieldSet=targetFieldSet;
+	}
+	
   /**
    * Indicate whether the parser should halt on
    *   recoverable data errors. If false, the parser will report
@@ -158,8 +184,8 @@ public class Parser
    * Treat all data as Strings- relaxes the 
    *   constraint to quote strings.
    */
-  public void setNoTypes(boolean notypes)
-  { _notypes=notypes;
+  public void setUseImplicitTypes(boolean useImplicitTypes)
+  { _useImplicitTypes=useImplicitTypes;
   }
 
   /**
@@ -200,6 +226,16 @@ public class Parser
   }
   
 
+  public Aggregate<Tuple> readData(InputStream in)
+    throws IOException,ParseException,DataException
+  {
+    DataAggregator<Tuple> aggregator
+      =new DataAggregator<Tuple>();
+    parse(in,aggregator);
+    return aggregator.getAggregate();
+    
+  }
+  
 	public void parse(InputStream in,DataConsumer<Tuple> sink)
 		throws IOException,ParseException,DataException
 	{    
@@ -239,9 +275,48 @@ public class Parser
       { readHeader(st);
       }
     }
+    
+    if (_targetFieldSet==null)
+    { 
+      _targetFieldSet=_fields;
+      try
+      {
+        tupleChannel
+          =new SimpleChannel<Tuple>
+            (TupleReflector.getInstance(_targetFieldSet));
+      }
+      catch (BindException x)
+      { throw new DataException("Error mapping fields",x);
+      }
+    }
+    else
+    {
+      String[] fieldNames=new String[_fields.getFieldCount()];
+      if (fieldNames.length==0)
+      { throw new DataException("Field list cannot be empty");
+      }
+      
+      int i=0;
+      for (Field<?> field: _fields.fieldIterable())
+      { fieldNames[i++]=field.getName();
+      }
+      _projection=new ProjectionImpl<Tuple>(_targetFieldSet,fieldNames);
+      try
+      {
+        tupleChannel
+          =new SimpleChannel<Tuple>
+            (TupleReflector.getInstance(_targetFieldSet));
+        _projectionBinding
+          =_projection.bindChannel(new SimpleFocus<Tuple>(tupleChannel));
+      }
+      catch (BindException x)
+      { throw new DataException("Error mapping fields",x);
+      }
+      _fields=_projection;
+    }
 
-    if (_fields!=null)
-    { consumer.dataInitialize(_fields);
+    if (_targetFieldSet!=null)
+    { consumer.dataInitialize(_targetFieldSet);
     }
     else
     { 
@@ -308,6 +383,7 @@ public class Parser
 			
       fields.addField(field);
 		}
+		fields.resolve();
     return fields;
 	}
 
@@ -333,23 +409,38 @@ public class Parser
   public void setFieldInfo(FieldSet fieldSet)
   { 
     _fields=fieldSet;
-    clearBuffer();
+    if (debug)
+    { log.fine(_fields.toString());
+    }
+    if (tuple!=null)
+    { clearBuffer();
+    }
   }
 
   private void clearBuffer()
-  { tuple=new EditableArrayTuple(_fields);
+  { 
+    if (_targetFieldSet==_fields)
+    { 
+      tuple=new EditableArrayTuple(_fields);
+      tupleChannel.set(tuple);
+    }
+    else
+    {
+      tupleChannel.set(new EditableArrayTuple(_targetFieldSet));
+      tuple=(EditableTuple) _projectionBinding.get();
+    }
   }
   
   private void resetSyntaxForData(StreamTokenizer st)
   {
     st.resetSyntax();
-    if (!_notypes)
+    if (_useImplicitTypes)
     { st.parseNumbers();
     }
     if (!_useQuotes || _quoteChar!='"')
     { st.wordChars('"','"');
     }
-    if (!_notypes)
+    if (_useImplicitTypes)
     { 
       st.whitespaceChars(' ',' ');
       if (_delimiter!='\t')
@@ -408,7 +499,6 @@ public class Parser
 	  ExecutionContext context=ExecutionContext.getInstance();
     resetSyntaxForData(st);
     
-    
     clearBuffer();
     int dataPos=0;
     int inputRows=0;
@@ -431,7 +521,7 @@ public class Parser
           if (!errorFlag)
           { 
             try
-            { consumer.dataAvailable(tuple);
+            { consumer.dataAvailable(tupleChannel.get());
             }
             catch (Exception x)
             { 
@@ -450,6 +540,12 @@ public class Parser
         break;
       }
 
+      
+      Type<?> dataType
+        =dataPos<_fields.getFieldCount()
+        ?_fields.getFieldByIndex(dataPos).getType()
+        :null;
+        
       if (st.ttype==StreamTokenizer.TT_EOL || st.ttype==_delimiter)
       {
         // Encountered end of field or end of record
@@ -468,7 +564,7 @@ public class Parser
           }
           else
           {
-            System.err.println
+            log.warning
               ("line "+(inputRows+1)+": Read too many fields (>"+_fields.getFieldCount()+")"
               +" at "+dataObject+" after '"+(char) st.ttype+"' ("+st.ttype+")"
               +": buffer is "+tuple
@@ -485,7 +581,7 @@ public class Parser
           if (!errorFlag)
           { 
             try
-            { consumer.dataAvailable(tuple);
+            { consumer.dataAvailable(tupleChannel.get());
             }
             catch (DataException x)
             { throw x;
@@ -509,11 +605,11 @@ public class Parser
       else if (st.ttype=='"')
 			{ 
         if (dataObject==null)
-        { dataObject=st.sval;
+        { dataObject=dataType.fromString(st.sval);
         }
         else
         { 
-          if (_notypes)
+          if (!_useImplicitTypes && (dataObject instanceof String))
           { dataObject=((String) dataObject).concat(st.sval);
           }
           else
@@ -538,28 +634,7 @@ public class Parser
       else if (st.ttype==StreamTokenizer.TT_WORD)
       { 
         if (dataObject==null)
-        { 
-          if (!_notypes)
-          { 
-            // XXX Re-handle base64
-            // XXX Re-handle textfile
-            if (st.sval.equals("true"))
-            { dataObject=Boolean.TRUE;
-            }
-            else if (st.sval.equals("false"))
-            { dataObject=Boolean.FALSE;
-            }
-            else
-            { 
-              String err=
-                "Unrecognized token '"+st.sval+"' at line "+inputRows
-                ;
-              throw new ParseException(err);
-            }
-          }
-          else
-          { dataObject=st.sval;
-          }
+        { dataObject=dataType.fromString(st.sval);
         }
         else
         { 
@@ -584,11 +659,13 @@ public class Parser
 			{ 
         if (dataObject==null)
         { 
-          if (!_notypes)
-          { dataObject=new Double(st.nval);
+          if (_useImplicitTypes)
+          { dataObject=Double.valueOf(st.nval);
           }
           else
-          { dataObject=String.valueOf(st.nval);
+          { 
+            throw new ParseException
+              ("Didn't expect a number with noImplicitTypes=true");
           }
         }
         else

@@ -73,6 +73,15 @@ public class FileRecordIterator
   { return recordPointer<0;
   }
 
+  public byte[] read()
+  { return recordBuffer;
+  }
+  
+  public void close()
+    throws IOException
+  { file.close();
+  }
+  
   /**
    * <p>Read len bytes of the the current record, starting at the
    *   specifed recordOffset, into the specified

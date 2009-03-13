@@ -50,6 +50,12 @@ public interface RecordIterator
   public boolean isBOF();
   
   /**
+   * Close the underlying resource
+   */
+  public void close()
+    throws IOException;
+  
+  /**
    * <p>Read len bytes of the the current record, starting at the
    *   specifed recordOffset, into the specified
    *   buffer at the specified bufferOffset
@@ -63,6 +69,15 @@ public interface RecordIterator
    * @throws IOException If there is a problem reading data
    */
   public int read(int recordOffset,byte[] buffer,int bufferOffset,int len)
+    throws IOException;
+  
+  /**
+   * Return a copy of the record buffer
+   * 
+   * @return
+   * @throws IOException
+   */
+  public byte[] read()
     throws IOException;
   
   /**
