@@ -24,6 +24,7 @@ import spiralcraft.data.session.Buffer;
 // import spiralcraft.log.ClassLogger;
 import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.rules.RuleSet;
+import spiralcraft.util.string.StringConverter;
 
 
 /**
@@ -83,6 +84,32 @@ public abstract class Type<T>
     { throw new RuntimeException(x);
     }
   }
+  
+  static
+  {
+    StringConverter.registerInstance
+      (Type.class
+      ,new StringConverter<Type<?>>()
+      {
+        @Override
+        public Type<?> fromString(String val)
+        { 
+          try
+          { return resolve(val);
+          }
+          catch (DataException x)
+          { throw new IllegalArgumentException(x);
+          }
+        }
+        
+        @Override
+        public String toString(Type<?> val)
+        { return val!=null?val.getURI().toString():null;
+        }
+      }
+      );
+  }
+  
 
   protected final ArrayList<Method> methods
     =new ArrayList<Method>();
