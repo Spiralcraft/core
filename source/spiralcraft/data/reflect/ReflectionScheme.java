@@ -26,10 +26,10 @@ import spiralcraft.data.core.SchemeImpl;
 import spiralcraft.data.core.FieldImpl;
 
 import spiralcraft.beans.BeanInfoCache;
+import spiralcraft.beans.MappedBeanInfo;
 
 import java.beans.Introspector;
 import java.beans.IntrospectionException;
-import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
 
 import java.lang.reflect.Method;
@@ -47,7 +47,7 @@ public class ReflectionScheme
     =BeanInfoCache.getInstance(Introspector.IGNORE_ALL_BEANINFO);
 
   private final Class<?> clazz;
-  private final BeanInfo beanInfo;
+  private final MappedBeanInfo beanInfo;
   private final HashMap<Method,FieldImpl<?>> methodMap
     =new HashMap<Method,FieldImpl<?>>();
   protected final TypeResolver resolver;
@@ -75,7 +75,7 @@ public class ReflectionScheme
     throws DataException
   {
     List<? extends ReflectionField> fieldList
-    =generateFields(beanInfo.getPropertyDescriptors());
+      =generateFields(beanInfo);
 
     for (ReflectionField field: fieldList)
     { 
@@ -105,12 +105,11 @@ public class ReflectionScheme
   }
   
   protected List<? extends ReflectionField>
-    generateFields(PropertyDescriptor[] propertyDescriptors)
+    generateFields(MappedBeanInfo beanInfo)
       throws DataException
   {
     List<ReflectionField> fieldList=new ArrayList<ReflectionField>();
-    
-    for (PropertyDescriptor prop : propertyDescriptors)
+    for (PropertyDescriptor prop : beanInfo.getPropertyDescriptors())
     { 
       if (prop.getPropertyType()!=null)
       {
@@ -119,6 +118,8 @@ public class ReflectionScheme
         
       }
     }
+
+    // TODO: Create Field objects for public Java fields of bean.
     return fieldList;
   }
   
