@@ -94,6 +94,10 @@ public class BoundTuple
   { return true;
   }
   
+  public boolean isVolatile()
+  { return true;
+  }
+  
   @Override
   public int hashCode()
   { 

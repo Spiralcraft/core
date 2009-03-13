@@ -366,6 +366,10 @@ public class BufferTuple
   { return true;
   }
 
+  public boolean isVolatile()
+  { return false;
+  }
+  
   @Override
   public Tuple snapshot()
     throws DataException

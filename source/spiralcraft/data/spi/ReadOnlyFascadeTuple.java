@@ -94,6 +94,10 @@ public class ReadOnlyFascadeTuple
   { return delegate.isMutable();
   }
   
+  public boolean isVolatile()
+  { return delegate.isVolatile();
+  }
+  
   public Tuple snapshot()
     throws DataException
   { return delegate.snapshot();

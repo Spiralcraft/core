@@ -101,6 +101,10 @@ public class KeyTuple
   public boolean isMutable()
   { return false;
   }
+  
+  public boolean isVolatile()
+  { return false;
+  }
 
   @Override
   public String dumpData()

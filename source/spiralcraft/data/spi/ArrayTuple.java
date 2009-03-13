@@ -52,6 +52,7 @@ public class ArrayTuple
     }
   }
   
+  
   /**
    * Construct an ArrayTuple that is a copy of another Tuple
    */
@@ -94,6 +95,9 @@ public class ArrayTuple
   { return ArrayUtil.arrayHashCode(data);
   }
 
+  public boolean isVolatile()
+  { return false;
+  }
 
   @Override
   protected AbstractTuple createBaseExtent(

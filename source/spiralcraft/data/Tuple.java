@@ -125,7 +125,21 @@ public interface Tuple
   boolean isMutable();
   
   /**
-   * @return an immutable snapshot copy of this Tuple.
+   * <p>Indicate that this Tuple reference is weakly bound to its data and 
+   *   cannot be retained across multiple invocations of the method that
+   *   generated it. 
+   * </p>
+   * 
+   * <p>Use snapshot() to create a non-volatile copy.
+   * </p>
+   * 
+   * @return
+   */
+  boolean isVolatile();
+  
+  /**
+   * @return an immutable, non-volatile snapshot copy of this Tuple, 
+   *   strongly bound to its data.
    */
   Tuple snapshot()
     throws DataException;
