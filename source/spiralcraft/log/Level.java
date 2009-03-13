@@ -41,7 +41,7 @@ public class Level
   
   public static final Level ALL=new Level("ALL",0);
   public static final Level FINE=new Level("FINE",1000);
-  public static final Level TRACE=new Level("COURSE",2000);
+  public static final Level TRACE=new Level("TRACE",2000);
   public static final Level DEBUG=new Level("DEBUG",3000);
   public static final Level CONFIG=new Level("CONFIG",4000);
   public static final Level INFO=new Level("INFO",5000);

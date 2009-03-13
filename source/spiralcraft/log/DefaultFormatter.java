@@ -44,7 +44,7 @@ public class DefaultFormatter
     out.append(" (");
     out.append(event.getContext().format(":"));
     out.append("): ");
-    if (Level.DEBUG.getValue()>=event.getLevel().getValue())
+    if (Level.DEBUG.getValue()>event.getLevel().getValue())
     {
       out.append(_cr+"        ");
       out.append(event.getCallSite().getClassName());

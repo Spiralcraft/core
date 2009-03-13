@@ -27,6 +27,7 @@ import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.Path;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.log.ConsoleHandler;
 import spiralcraft.log.EventHandler;
 import spiralcraft.log.GlobalLog;
 import spiralcraft.log.RotatingFileHandler;
@@ -59,8 +60,8 @@ import java.io.IOException;
  * 
  * <p>
  *   The Executor is invoked via its static launch(String ... args) method
- *     from another ClassLoader, and expects to be a singleton within its own
- *     ClassLoader. As such, options preceding the Executable
+ *     from another ClassLoader, and <b><i>expects to be a singleton within its
+ *     own ClassLoader</i></b>. As such, options preceding the Executable
  *     URI will be used to configure static fields and other invariants of
  *     the application context such as logging, thread scheduling, etc.
  * </p>
@@ -79,6 +80,8 @@ public class Executor
   private RegistryNode registryNode;  
   private int argCounter=-1;
   private EventHandler logHandler;
+  private EventHandler consoleHandler;
+  private boolean consoleLog;
   
   protected ExecutionContext context
     =ExecutionContext.getInstance();
@@ -149,17 +152,25 @@ public class Executor
     { 
       
       processArguments(args);
+
       if (logHandler!=null)
       {
         try
         { 
           GlobalLog.instance().addHandler(logHandler);
+          
+          if (consoleLog)
+          { 
+            consoleHandler=new ConsoleHandler();
+            GlobalLog.instance().addHandler(consoleHandler);
+          }
           logStarted=true;
         }
         catch (LifecycleException x)
         { throw new ExecutionException("Error starting log handler "+logHandler);
         }
       }
+      
       Scheduler.push(new Scheduler());
       schedulerCreated=true;
       
@@ -207,11 +218,16 @@ public class Executor
       { 
         
         try
-        { GlobalLog.instance().removeHandler(logHandler);
+        { 
+          GlobalLog.instance().removeHandler(logHandler);
+          if (consoleLog)
+          { GlobalLog.instance().removeHandler(consoleHandler);
+          }
         }
         catch (LifecycleException x)
         { x.printStackTrace();
         }
+        
         
       }
       if (schedulerCreated)
@@ -308,6 +324,9 @@ public class Executor
             RotatingFileHandler handler=new RotatingFileHandler();
             handler.setPath(new Path(nextArgument(),'/'));
             Executor.this.logHandler=handler;
+          }
+          else if (option.equals("-consoleLog"))
+          { Executor.this.consoleLog=true;
           }
           else 
           { 

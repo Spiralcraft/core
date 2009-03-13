@@ -67,8 +67,11 @@ public class GenericLog
     if (handlers==null)
     { handlers=new LinkedList<EventHandler>();
     }
-    this.handlers.add(handler);
-    handler.start();
+    synchronized(this.handlers)
+    {
+      this.handlers.add(handler);
+      handler.start();
+    }
   }
   
   
@@ -80,15 +83,18 @@ public class GenericLog
   public void removeHandler(EventHandler handler)
     throws LifecycleException
   {
-    Iterator<EventHandler> it=handlers.iterator();
-    while (it.hasNext())
+    synchronized (handlers)
     {
-      EventHandler comp=it.next();
-      if (handler==comp)
-      { 
-        it.remove();
-        handler.stop();
-        break;
+      Iterator<EventHandler> it=handlers.iterator();
+      while (it.hasNext())
+      {
+        EventHandler comp=it.next();
+        if (handler==comp)
+        { 
+          it.remove();
+          handler.stop();
+          break;
+        }
       }
     }
     
@@ -97,8 +103,11 @@ public class GenericLog
   public void setHandlers(EventHandler ... handlers)
   { 
     this.handlers=new LinkedList<EventHandler>();
-    for (EventHandler handler:handlers)
-    { this.handlers.add(handler);
+    synchronized (this.handlers)
+    {
+      for (EventHandler handler:handlers)
+      { this.handlers.add(handler);
+      }
     }
   }
   
@@ -182,8 +191,11 @@ public class GenericLog
     {
       if (handlers!=null && handlers.size()>0)
       { 
-        for (EventHandler handler: handlers)
-        { handler.handleEvent(event);
+        synchronized (handlers)
+        {
+          for (EventHandler handler: handlers)
+          { handler.handleEvent(event);
+          }
         }
       }
       else if (parent==null)
