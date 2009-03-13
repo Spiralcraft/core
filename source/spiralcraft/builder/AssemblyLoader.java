@@ -389,7 +389,9 @@ public class AssemblyLoader
       {
         String name=attribs[i].getLocalName().intern();
         if (name=="expression")
-        { prop.setExpression(attribs[i].getValue());
+        { 
+        	// TODO: Consider using "x" for this, as a convention
+        	prop.setExpression(attribs[i].getValue());
         }
         else if (name=="whitespace")
         { prop.setLiteralWhitespace(readBoolean(attribs[i]));
