@@ -1,14 +1,21 @@
+var assert(cond,description)
+{ 
+  if (!cond)
+  { 
+    msg="!!!!!!!!!!\r\nFAIL: "+description+"\r\n!!!!!!!!!!!";
+    return msg;
+  }
+  else 
+  { 
+    msg="PASS: "+description;
+    return msg;
+  }
+}
+
 source("test-source/spiralcraft/builder/test/smoke.bsh");
 source("test-source/spiralcraft/data/test/smoke.bsh");
 source("test-source/spiralcraft/lang/test/smoke.bsh");
 source("test-source/spiralcraft/util/tree/smoke.bsh");
 source("test-source/spiralcraft/text/xml/smoke.bsh");
+source("test-source/spiralcraft/util/test/smoke.bsh");
 
-
-import spiralcraft.util.PathPattern;
-import spiralcraft.util.Path;
-
-print(new PathPattern("CVS").matches(new Path("CVS",'/')));
-print(new PathPattern("**/CVS").matches(new Path("CVS",'/')));
-
-print(new PathPattern("**/CVS/").matches(new Path("/CVS",'/')));
