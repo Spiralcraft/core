@@ -43,6 +43,8 @@ public abstract class Scenario<Ttask extends Task,Tresult>
 
   protected Log log=ClassLog.getInstance(getClass());
   protected ThreadLocalChannel<TaskCommand<Ttask,Tresult>> commandChannel;
+  protected boolean debug;
+  
   
   /**
    * 
@@ -52,7 +54,12 @@ public abstract class Scenario<Ttask extends Task,Tresult>
    */
   public Command<Scenario<Ttask,Tresult>,Tresult> 
     command()
-  { return new TaskCommand<Ttask,Tresult>(task());
+  { 
+    Ttask task=task();
+    if (debug)
+    { task.setDebug(debug);
+    }
+  	return new TaskCommand<Ttask,Tresult>(task);
   }
 
   protected abstract Ttask task();
@@ -74,6 +81,9 @@ public abstract class Scenario<Ttask extends Task,Tresult>
 
   }
 
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
 
   @Override
   public void start()
