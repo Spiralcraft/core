@@ -25,12 +25,16 @@ import spiralcraft.ui.AbstractCommand;
 
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
+
 import java.util.logging.Handler;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import java.lang.reflect.Field;
+
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Log;
 
 import spiralcraft.log.jul.DefaultFormatter;
 import spiralcraft.log.jul.RegistryLogger;
@@ -47,9 +51,16 @@ public class Daemon
   extends ServiceGroup
   implements Executable,Registrant
 {
+  private static final Log log=ClassLog.getInstance(Daemon.class);
+  
   private Object _eventMonitor=new Object();
   private boolean _running=true;
   private String[] _args;
+  
+  private ShutdownHook _shutdownHook=new ShutdownHook();
+  
+  { Runtime.getRuntime().addShutdownHook(_shutdownHook);
+  }
 
   private Handler _logHandler=new ConsoleHandler();
   { 
@@ -143,6 +154,9 @@ public class Daemon
       start();
       handleEvents();
       stop();
+      synchronized(_shutdownHook)
+      { _shutdownHook.notify();
+      }
     }
     catch (LifecycleException x)
     { x.printStackTrace(ExecutionContext.getInstance().out());
@@ -162,6 +176,7 @@ public class Daemon
 
   }
 
+  
   private void handleEvents()
   {
     try
@@ -177,6 +192,27 @@ public class Daemon
     { x.printStackTrace();
     }
     
+  }
+  
+  class ShutdownHook
+    extends Thread
+  { 
+    @Override
+    public void run()
+    { 
+      terminate();
+      synchronized(this)
+      { 
+        log.log(spiralcraft.log.Level.INFO,"Waiting for stop...");
+        try
+        { wait(10000);
+        }
+        catch (InterruptedException x)
+        {
+        }
+        log.log(spiralcraft.log.Level.INFO,"Done waiting for stop.");
+      }
+    }
   }
 
 }
