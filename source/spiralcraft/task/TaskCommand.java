@@ -51,7 +51,9 @@ public class TaskCommand<Ttask extends Task,Tresult>
       { throw new IllegalStateException("No task specified");
       }
       else
-      { task.run();
+      { 
+        task.run();
+        setException(task.getException());
       }
     }
     catch (RuntimeException x)

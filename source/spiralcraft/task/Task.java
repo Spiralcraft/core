@@ -105,6 +105,12 @@ public interface Task
   void setScheduler(Scheduler scheduler);
   
   /**
+   * @return The Exception, if any, that caused the task to prematurely
+   *   terminate
+   */
+  Exception getException();
+  
+  /**
    * Start the task asynchronously in a new thread
    */
   void start();

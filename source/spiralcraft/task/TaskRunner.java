@@ -21,6 +21,14 @@ public class TaskRunner
   
   private final Log log=ClassLog.getInstance(TaskRunner.class);
   
+  private Thread executeThread;
+
+  private Thread shutdownThread=new ShutdownHook();
+  
+  {
+    Runtime.getRuntime().addShutdownHook(shutdownThread);
+  }
+  
   
   public void setScenario(Scenario<? extends Task,?> scenario)
   { this.scenario=scenario;
@@ -31,6 +39,7 @@ public class TaskRunner
     String... args)
     throws ExecutionException
   {
+    executeThread=Thread.currentThread();
     try
     {
       scenario.bind
@@ -71,5 +80,16 @@ public class TaskRunner
     { throw new ExecutionException("Error starting/stopping scenario",x);
     }    
   }
-
+ 
+  
+  class ShutdownHook
+    extends Thread
+  { 
+    @Override
+    public void run()
+    { 
+      log.log(Level.INFO,"Interrupting for shutdown");
+      executeThread.interrupt();
+    }
+  }  
 }

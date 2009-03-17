@@ -19,8 +19,8 @@ import java.beans.PropertyChangeListener;
 
 import spiralcraft.util.ArrayUtil;
 
-import spiralcraft.log.ContextLog;
-import spiralcraft.log.Log;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.time.Scheduler;
 
 /**
@@ -62,7 +62,8 @@ public abstract class AbstractTask
   private boolean _completed=false;
   protected boolean debug;
   protected Scheduler scheduler;
-  protected Log log;
+  protected ClassLog log=ClassLog.getInstance(getClass());
+  protected Exception exception;
   
   // private Thread _runThread;
   
@@ -75,11 +76,16 @@ public abstract class AbstractTask
   /**
    * Perform the work specified by the task
    */
-  protected abstract void work();
+  protected abstract void work()
+    throws InterruptedException;
 
   @Override
   public void setDebug(boolean debug)
   { this.debug=debug;
+  }
+  
+  public Exception getException()
+  { return exception;
   }
   
   /**
@@ -154,14 +160,15 @@ public abstract class AbstractTask
   
   public final synchronized void run()
   {
-    log=ContextLog.getInstance();
     synchronized (_lock)
     { 
       if (_running)
       { throw new IllegalStateException("Task is already running");
       }
       setStartable(false);
+      setStoppable(true);
       setRunning(true);
+      _completed=false;
       // _runThread=Thread.currentThread();
       setStopRequested(false);
       fireTaskStarted();
@@ -170,11 +177,22 @@ public abstract class AbstractTask
     try
     { work();
     }
+    catch (InterruptedException x)
+    { 
+      log.log(Level.WARNING,"Interrupted",x);
+      exception=x;
+    }
+    catch (RuntimeException x)
+    { 
+      exception=x;
+      throw x;
+    }
     finally
     { 
       synchronized(_lock)
       { 
         setRunning(false);
+        setStoppable(false);
         setStartable(true);
         setStopRequested(false);
         // _runThread=null;
@@ -188,10 +206,13 @@ public abstract class AbstractTask
   {
     synchronized (_lock)
     {
-      if (_stoppable && !_stopRequested)
-      { setStopRequested(true);
+      if (!_completed)
+      {
+        if (_stoppable && !_stopRequested)
+        { setStopRequested(true);
+        }
+        _lock.notifyAll();
       }
-      _lock.notifyAll();
     }
     
   }
