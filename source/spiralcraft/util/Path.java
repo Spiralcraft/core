@@ -100,7 +100,7 @@ public class Path
   public Path append(String[] elements)
   { 
     return new Path
-      ( (String[]) ArrayUtil.appendArrays(_elements,elements)
+      ( (String[]) ArrayUtil.concat(_elements,elements)
       ,_delimiter
       ,_absolute
       ,false
@@ -113,7 +113,7 @@ public class Path
   public Path append(String[] elements,boolean container)
   { 
     return new Path
-      ( (String[]) ArrayUtil.appendArrays(_elements,elements)
+      ( (String[]) ArrayUtil.concat(_elements,elements)
       ,_delimiter
       ,_absolute
       ,container
@@ -160,6 +160,16 @@ public class Path
     }
   }
 
+  public String firstElement()
+  {
+    if (_elements.length==0)
+    { return null;
+    }
+    else
+    { return _elements[0];
+    }
+  }
+  
   /**
    * 
    * @return the path up to, but not including the last element
@@ -251,13 +261,18 @@ public class Path
   { return _container;
   }
   
+  public String format(char separator)
+  { return format(Character.toString(separator));
+  }
+  
   /**
    * 
    * @return A String representation of the path with the elements separated by the
    *   specified separator string
    */
   public String format(String separator)
-  { return (_absolute?separator:"")
+  { 
+    return (_absolute?separator:"")
            +ArrayUtil.format(_elements,separator,null)
            +(_container?separator:"");
   }
