@@ -17,8 +17,6 @@ package spiralcraft.data.flatfile.test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.URI;
 
 import spiralcraft.data.DataException;
@@ -110,7 +108,7 @@ public class FormatTest
           {
             count++;
             if (debug)
-            { log.log(Level.FINE,"Processing "+recordCursor.dataGetTuple());
+            { log.log(Level.DEBUG,"Processing "+recordCursor.dataGetTuple());
             }
             
             out.write(recordFormat.format(recordCursor.dataGetTuple()));
