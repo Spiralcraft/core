@@ -52,6 +52,10 @@ public class RotatingFileOutputAgent
   public void setFileSequence(FileSequence fileSequence)
   { this.fileSequence=fileSequence;
   }
+  
+  public FileSequence getFileSequence()
+  { return fileSequence;
+  }
 
   
   /**
