@@ -303,15 +303,18 @@ public abstract class OutputAgent
         if (!_initialized)
         { 
           try
-          { wait();
+          { wait(10000);
           }
           catch (InterruptedException x)
-          { throw new RuntimeException("Interrupted waiting for initialization");
+          { 
+            throw new RuntimeException
+              ("Interrupted or timed out waiting for initialization");
           }
         }
       }
       if (!_initialized)
-      { throw new RuntimeException("RotatingFileAccessLog has not been initialized");
+      { throw new RuntimeException
+          ("RotatingFileAccessLog has not been initialized");
       }
     }
   }
