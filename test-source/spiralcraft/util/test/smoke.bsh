@@ -2,14 +2,24 @@
 import spiralcraft.util.PathPattern;
 import spiralcraft.util.Path;
 
-var assertMatch(pattern,path)
+var assertPatternMatch(pattern,path)
 {
   return assert(new PathPattern(pattern).matches(new Path(path,'/'))
         ,"Pattern ["+pattern+"] matches path ["+path+"]"
         );
 }
 
-print(assertMatch("CVS","CVS"));
-print(assertMatch("**/CVS","CVS"));
-print(assertMatch("**/CVS/","/CVS"));
 
+
+print(assertPatternMatch("CVS","CVS"));
+print(assertPatternMatch("**/CVS","CVS"));
+print(assertPatternMatch("**/CVS/","/CVS"));
+
+
+test("new Path(\"/\",'/').firstElement()",null);
+test("new Path(\"/check\",'/').firstElement()","check");
+test("new Path(\"/check/\",'/').firstElement()","check");
+test("new Path(\"/x/y/z/\",'/').format('/')","/x/y/z/");
+test("new Path(\"x/y/z/\",'/').format('/')","x/y/z/");
+test("new Path(\"/x/y/z\",'/').format('/')","/x/y/z");
+test("new Path(\"x/y/z\",'/').format('/')","x/y/z");

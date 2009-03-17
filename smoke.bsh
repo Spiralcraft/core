@@ -1,16 +1,4 @@
-var assert(cond,description)
-{ 
-  if (!cond)
-  { 
-    msg="!!!!!!!!!!\r\nFAIL: "+description+"\r\n!!!!!!!!!!!";
-    return msg;
-  }
-  else 
-  { 
-    msg="PASS: "+description;
-    return msg;
-  }
-}
+source("../../build/test-functions.bsh");
 
 source("test-source/spiralcraft/builder/test/smoke.bsh");
 source("test-source/spiralcraft/data/test/smoke.bsh");
