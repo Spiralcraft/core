@@ -64,13 +64,21 @@ public class ArrayUtil
   /**
    * Append an array to an array
    */
-  public static Object appendArrays(Object array1,Object array2)
+  public static Object concat(Object array1,Object array2)
   { 
     int appendPoint=Array.getLength(array1);
     int appendElements=Array.getLength(array2);
     array1=expandBy(array1,appendElements);
     System.arraycopy(array2, 0, array1, appendPoint, appendElements);
     return array1;
+  }
+  
+  /**
+   * Append an array to an array
+   */
+  @Deprecated
+  public static Object appendArrays(Object array1,Object array2)
+  { return concat(array1,array2);
   }
 
   /**

@@ -554,7 +554,7 @@ public class BufferTuple
     { return baseDirty;
     }
     else
-    { return (Field[]) ArrayUtil.appendArrays(baseDirty,dirty);
+    { return (Field[]) ArrayUtil.concat(baseDirty,dirty);
     }
   }
 

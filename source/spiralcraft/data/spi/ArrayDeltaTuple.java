@@ -226,7 +226,7 @@ public class ArrayDeltaTuple
     { return dirty;
     }
     else
-    { return (Field[]) ArrayUtil.appendArrays(baseDirty,dirty);
+    { return (Field[]) ArrayUtil.concat(baseDirty,dirty);
     }
   }  
   
