@@ -163,6 +163,11 @@ public abstract class FileSequence
   
   public abstract Comparator<String> getSequenceIdComparator();
   
+  /**
+   * 
+   * @return The File (whether it exists or not) that represents the 
+   *   component of the FileSequence that data will be appended to.
+   */
   public File getActiveFile()
   { return new File(directory,prefix+suffix);
   }
