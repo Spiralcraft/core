@@ -39,8 +39,8 @@ public class RecordCursor
   implements SerialCursor<Tuple>
 {
 
-  private RecordIterator recordIterator;
-  private RecordFormat format;
+  private final RecordIterator recordIterator;
+  private final RecordFormat format;
   private Tuple tuple;
   
   public RecordCursor
@@ -71,16 +71,13 @@ public class RecordCursor
     {
       if (recordIterator.next())
       {
-      
-        if (tuple==null)
-        { tuple=new EditableArrayTuple(dataGetFieldSet());
-        }
-        byte[] record=recordIterator.read();
-        format.parse(record, tuple);
+        update();
         return true;
       }
       else
-      { return false;
+      { 
+        tuple=null;
+        return false;
       }
     }
     catch (IOException x)
@@ -88,6 +85,35 @@ public class RecordCursor
     }
   }
 
+  protected void update()
+    throws DataException
+  {
+    try
+    {
+      if (!recordIterator.isEOF() && !recordIterator.isBOF())
+      {
+        byte[] record=recordIterator.read();
+        if (tuple==null)
+        { 
+          tuple=new EditableArrayTuple(dataGetFieldSet())
+          {
+            @Override
+            public boolean isVolatile()
+            { return true;
+            }
+          };
+        }
+        format.parse(record,tuple);
+      }
+      else
+      { tuple=null;
+      }
+    }
+    catch (IOException x)
+    { throw new DataException("Error checking EOF",x);
+    }
+  }
+  
   @Override
   public Channel<Tuple> bind()
     throws BindException
