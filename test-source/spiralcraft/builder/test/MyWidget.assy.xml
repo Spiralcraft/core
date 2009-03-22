@@ -24,7 +24,7 @@
       <title>My Friend</title>
       <friend>
         <test:SimpleWidget>
-          <title expression="...title"/>
+          <title x="...title"/>
         </test:SimpleWidget>
       </friend>
     </test:SimpleWidget>
