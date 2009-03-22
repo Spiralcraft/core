@@ -55,12 +55,12 @@ public class Daemon
   
   private Object _eventMonitor=new Object();
   private boolean _running=true;
+  private boolean _stopRequested=false;
   private String[] _args;
   
   private ShutdownHook _shutdownHook=new ShutdownHook();
   
-  { Runtime.getRuntime().addShutdownHook(_shutdownHook);
-  }
+
 
   private Handler _logHandler=new ConsoleHandler();
   { 
@@ -161,6 +161,7 @@ public class Daemon
     catch (LifecycleException x)
     { x.printStackTrace(ExecutionContext.getInstance().out());
     }
+    
   }
 
   public Command getTerminateCommand()
@@ -169,7 +170,7 @@ public class Daemon
 
   public void terminate()
   { 
-    _running=false;
+    _stopRequested=true;
     synchronized (_eventMonitor)
     { _eventMonitor.notify();
     }
@@ -179,9 +180,10 @@ public class Daemon
   
   private void handleEvents()
   {
+    Runtime.getRuntime().addShutdownHook(_shutdownHook);
     try
     { 
-      while (_running)
+      while (_running && !_stopRequested)
       {
         synchronized (_eventMonitor)
         { _eventMonitor.wait();
@@ -190,6 +192,13 @@ public class Daemon
     }
     catch (InterruptedException x)
     { x.printStackTrace();
+    }
+    _running=false;
+    try
+    { Runtime.getRuntime().removeShutdownHook(_shutdownHook);
+    }
+    catch (IllegalStateException x)
+    {
     }
     
   }
@@ -205,7 +214,10 @@ public class Daemon
       { 
         log.log(spiralcraft.log.Level.INFO,"Waiting for stop...");
         try
-        { wait(10000);
+        { 
+          if (_running)
+          { wait(10000);
+          }
         }
         catch (InterruptedException x)
         {
