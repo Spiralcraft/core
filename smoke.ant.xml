@@ -1,7 +1,7 @@
 <project name="spiralcraft-core-smoke" basedir="." default="smoke">
     
   <import file="build.xml"/>
-  
+	
 	
   <target name="smoke" >
     <java
