@@ -19,13 +19,13 @@ import spiralcraft.util.ArrayUtil;
 /**
  * Updates time from the System clock at a specified
  *   precision. The static instance is set to a precision
- *   of 250ms.
+ *   of 100ms.
  */
 public final class Clock
   implements Runnable
 {
 
-  private static final Clock _INSTANCE=new Clock(250);
+  private static final Clock _INSTANCE=new Clock(100);
 
   private final int _precision;
   private final Thread _thread=new Thread(this,"Clock");
