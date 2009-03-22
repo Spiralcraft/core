@@ -15,6 +15,7 @@
 package spiralcraft.exec;
 
 import spiralcraft.common.LifecycleException;
+import spiralcraft.common.Initializer;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.persist.AbstractXmlObject;
@@ -37,6 +38,7 @@ import spiralcraft.registry.RegistryNode;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ServiceLoader;
 
 import java.io.IOException;
 
@@ -143,9 +145,14 @@ public class Executor
     throws ExecutionException
   {
 
-    
     ExecutionContext.pushInstance(context);
     ContextDictionary.pushInstance(properties);
+
+    
+    for (Initializer loader: ServiceLoader.load(Initializer.class))
+    { loader.getClass();
+    }
+    
     boolean logStarted=false;
     boolean schedulerCreated=false;
     try
