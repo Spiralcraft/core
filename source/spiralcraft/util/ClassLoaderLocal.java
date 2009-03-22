@@ -14,6 +14,8 @@
 //
 package spiralcraft.util;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.WeakHashMap;
 
 /**
@@ -31,12 +33,13 @@ import java.util.WeakHashMap;
  */
 public class ClassLoaderLocal<T>
 {
+  // TODO: Make a reference to T so we don't have a strong ref to classloader
   private final WeakHashMap<ClassLoader,T> map=new WeakHashMap<ClassLoader,T>();
 
   /**
    * Return the instance associated with this thread's contextClassLoader
    */
-  public T getInstance()
+  public T getContextInstance()
   {
     ClassLoader loader=Thread.currentThread().getContextClassLoader();
     if (loader!=null)
@@ -48,12 +51,13 @@ public class ClassLoaderLocal<T>
     
   }
   
+
   
   /**
    * Return the instance associated with this thread's contextClassLoader's
    *   parent ClassLoader
    */
-  public T getParentInstance()
+  public T getParentContextInstance()
   {
     ClassLoader loader=Thread.currentThread().getContextClassLoader();
     if (loader==null)
@@ -74,7 +78,7 @@ public class ClassLoaderLocal<T>
   /**
    * Assign the specified instance to this thread's contextClassLoader
    */
-  public void setInstance(T instance)
+  public void setContextInstance(T instance)
   {
     ClassLoader loader=Thread.currentThread().getContextClassLoader();
     if (loader!=null)
@@ -82,11 +86,48 @@ public class ClassLoaderLocal<T>
     }
   }
   
-  private T getInstance(ClassLoader loader)
+  /**
+   * Assign the specified instance to the specified ClassLoader
+   */
+  public void setInstance(ClassLoader loader,T instance)
+  { 
+    if (map.get(loader)==null)
+    { map.put(loader,instance);
+    }
+    else
+    { 
+      throw new IllegalStateException
+        ("Instance already mapped to ClassLoader "+instance);
+    }
+
+  }
+
+  public T getInstance(ClassLoader loader)
   { 
     // Tickle map to flush GC'd keys
     map.isEmpty(); 
 
     return map.get(loader);
   }
+  
+  /**
+   * 
+   * @return The instances for the thread context Classloader and all 
+   *   parent Classloaders, starting with the thread context Classloader.
+   */
+  public List<T> getAllContextInstances()
+  {
+    LinkedList<T> list=new LinkedList<T>();
+    ClassLoader loader=Thread.currentThread().getContextClassLoader();
+    while (loader!=null)
+    { 
+      T instance=getInstance(loader);
+      if (instance!=null)
+      { list.add(instance);
+      }
+      loader=loader.getParent();
+    }
+    return list;
+  }
+  
 }

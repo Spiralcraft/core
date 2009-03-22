@@ -83,12 +83,12 @@ public class TypeResolver
   
   public static synchronized final TypeResolver getTypeResolver()
   { 
-    TypeResolver resolver=classLoaderLocal.getInstance();
+    TypeResolver resolver=classLoaderLocal.getContextInstance();
     if (resolver==null)
     { 
       resolver=new TypeResolver
-        (classLoaderLocal.getParentInstance());
-      classLoaderLocal.setInstance(resolver);
+        (classLoaderLocal.getParentContextInstance());
+      classLoaderLocal.setContextInstance(resolver);
       
     }
     return resolver;
