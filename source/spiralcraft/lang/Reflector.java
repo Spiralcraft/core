@@ -67,6 +67,7 @@ import java.net.URI;
 public abstract class Reflector<T>
 {
 
+  
   private volatile Channel<Reflector<T>> selfChannel;
   
 
