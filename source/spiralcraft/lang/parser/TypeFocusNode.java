@@ -171,19 +171,29 @@ public class TypeFocusNode
       uri=namespaceURI.resolve(suffix);
     }
     
-    // Get the set of distinct type models in the chain
     HashSet<TypeModel> systems=new HashSet<TypeModel>();
-    for (Focus<?> chainFocus: focus.getFocusChain())
-    {
-      if (chainFocus.getSubject()!=null)
-      { 
-        TypeModel model=chainFocus.getSubject().getReflector().getTypeModel();
-        if (model!=null && !systems.contains(model))
-        { systems.add(model);
-        }
+    
+// Not used anymore because we now have TypeModel registration
+//
+//    // Get the set of distinct type models in the chain
+//    for (Focus<?> chainFocus: focus.getFocusChain())
+//    {
+//      if (chainFocus.getSubject()!=null)
+//      { 
+//        TypeModel model=chainFocus.getSubject().getReflector().getTypeModel();
+//        if (model!=null && !systems.contains(model))
+//        { systems.add(model);
+//        }
+//      }
+//    }
+
+    for (TypeModel model : TypeModel.getRegisteredModels())
+    { 
+      if (!systems.contains(model))
+      { systems.add(model);
       }
     }
-
+      
     // Search the type models for the type
     Reflector<?> reflector=null;
     for (TypeModel model : systems)
@@ -194,7 +204,7 @@ public class TypeFocusNode
       else
       {
         Reflector<?> altReflector=model.findType(uri);
-        if (altReflector!=null)
+        if (altReflector!=null && altReflector!=reflector)
         { 
           reflector
             =reflector.disambiguate(altReflector);    
@@ -211,7 +221,7 @@ public class TypeFocusNode
     { return newFocus;
     }
     else
-    { throw new BindException("Type '"+uri+"' not found. "+focusChain(focus));
+    { throw new BindException("Type '"+uri+"' not found. "+systems);
     }
   }
 
@@ -226,9 +236,7 @@ public class TypeFocusNode
     }
   }
   
-  private String focusChain(Focus<?> focus)
-  { return focus.getFocusChain().toString();
-  }
+
   
   
 }

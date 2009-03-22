@@ -78,6 +78,11 @@ import spiralcraft.log.ClassLog;
 public class BeanReflector<T>
   extends Reflector<T>
 {
+  { 
+    // Tickle the TypeModel so we can dynamically resolve these types
+    BeanTypeModel.getInstance();
+  }
+  
   private static enum CollectionType
   {
     ARRAY

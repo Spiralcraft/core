@@ -8,7 +8,7 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TypeModel;
 
 public class BeanTypeModel 
-  implements TypeModel
+  extends TypeModel
 {
   private static final BeanTypeModel instance
     =new BeanTypeModel();

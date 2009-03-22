@@ -10,7 +10,7 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TypeModel;
 
 public class DataTypeModel
-  implements TypeModel
+  extends TypeModel
 {
   private static final DataTypeModel instance
     =new DataTypeModel();
