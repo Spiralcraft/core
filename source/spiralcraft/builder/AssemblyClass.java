@@ -30,7 +30,9 @@ import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
+import spiralcraft.text.ParseException;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.lang.ClassUtil;
 
 import spiralcraft.vfs.classpath.ClasspathResourceFactory;
@@ -110,6 +112,7 @@ public class AssemblyClass
   private boolean _resolving;
   private MappedBeanInfo beanInfo;
 
+  private String overlayId;
   
   private boolean debug;
   
@@ -159,6 +162,23 @@ public class AssemblyClass
 
   public URI getContainerURI()
   { return _containerURI;
+  }
+  
+  /**
+   * <p>Specifies the id of the optional customization overlay that will be 
+   *   applied, if it exists, when
+   *   searching for the base assembly class. The overlayId is appended
+   *   to the assembly class name as:
+   * </p>
+   *   
+   *   <code>assembly class name + "." +overlayId</code>
+   *   
+   * <p>If the overlay assembly class is not found, it will not be used.
+   * </p>
+   *   
+   */
+  public void setOverlayId(String overlayId)
+  { this.overlayId=overlayId;
   }
   
   public void setConstructor(String constructor)
@@ -678,48 +698,98 @@ public class AssemblyClass
   }
 
   /**
-   * Resolve the external base class for this AssemblyClass. Called during
+   * <p>Resolve the external base class for this AssemblyClass. Called during
    *   resolution when the assembly hasn't been constructed with an existing
    *   base class.
+   * </p>
+   * 
+   * <p>
+   * </p>
    */
   private void resolveExternalBaseClass()
     throws BuildException
   {
-    URI baseResource
-      =_basePackage.resolve(_baseName+".assy.xml");
-
-    // URI baseUri
-    //  =_basePackage.resolve(_baseName);
+    // Check for optional existence of overlay class
+    if (overlayId!=null)
+    {
+      String translatedOverlayId;
+      try
+      { translatedOverlayId=ContextDictionary.substitute(overlayId);
+      }
+      catch (ParseException x)
+      { throw new BuildException("Error resolving overlayId "+overlayId,x);
+      }
       
-    if (baseResource.equals(sourceURI) && _outerClass==null)
-    { 
-      // Circular definition
-      // Use Java class instead
-      _javaClass=resolveJavaClass();
-      if (_javaClass==null)
+      URI baseResource
+        =_basePackage.resolve(_baseName+"."+translatedOverlayId+".assy.xml");
+      if (baseResource.equals(sourceURI) && _outerClass==null)
       { 
         throw new BuildException
-          ("Assembly "+sourceURI+" is not contained in a Java package and "
-          +" thus cannot be based on a Java class of the same name"
-          );
+          ("Circular AssemblyClass definition "+baseResource);
+        
       }
-    }
-    else
-    {
       _baseAssemblyClass=_loader.findAssemblyDefinition(baseResource);
-      if (_baseAssemblyClass==null)
+    }
+    
+    if (_baseAssemblyClass==null)
+    {
+      URI baseResource
+        =_basePackage.resolve(_baseName+".assy.xml");
+
+      // URI baseUri
+      //  =_basePackage.resolve(_baseName);
+      
+      if (baseResource.equals(sourceURI) && _outerClass==null)
       { 
-        _javaClass=resolveJavaClass();
+        // Circular definition
+        // Use Java class instead
+        try
+        { _javaClass=resolveJavaClass();
+        }
+        catch (ClassNotFoundException x)
+        { 
+          throwBuildException
+            ("Could not resolve Java class as basis for "+baseResource,x);
+        }
         if (_javaClass==null)
-        {
+        { 
           throw new BuildException
-            ("Assembly "+baseResource+" is not contained in a Java package and "
-            +" thus cannot be automatically derived from a Java class of the same" 
-            +" name"
+            ("Assembly "+sourceURI+" is not contained in a Java package and "
+            +" thus cannot be based on a Java class of the same name"
             );
         }
       }
+      else
+      {
+        _baseAssemblyClass=_loader.findAssemblyDefinition(baseResource);
+        if (_baseAssemblyClass==null)
+        { 
+          try
+          { _javaClass=resolveJavaClass();
+          }
+          catch (ClassNotFoundException x)
+          {
+            throw new BuildException
+              ("Could not find "+baseResource+" and failed to load "
+              +" default assembly for Java class"
+              ,x
+              );
+                
+          }
+          
+          if (_javaClass==null)
+          {
+            throw new BuildException
+              ("Assembly "+baseResource+" is not contained in a Java package and "
+              +" thus cannot be automatically derived from a Java class of the same" 
+              +" name"
+              );
+          }
+        }
+      }
+    
     }
+    
     if (_javaClass!=null)
     { 
       try
@@ -738,7 +808,7 @@ public class AssemblyClass
    *
    */
   private Class<?> resolveJavaClass()
-    throws BuildException
+    throws BuildException,ClassNotFoundException
   { 
     
     if (ClasspathResourceFactory.isClasspathScheme(_basePackage.getScheme()))
@@ -769,27 +839,19 @@ public class AssemblyClass
               );
         }
         catch (ClassNotFoundException y)
-        { throwBuildException("Class not found: '"+className+"'",x);
+        { throw x;
         }
       }
     }
     
     String langClassName="java.lang."+_baseName;
-    try
-    {
-      return
-        Class.forName
-          (langClassName
-          ,false
-          ,Thread.currentThread().getContextClassLoader()
-          );
+    return
+      Class.forName
+        (langClassName
+        ,false
+        ,Thread.currentThread().getContextClassLoader()
+        );
       
-    }
-    catch (ClassNotFoundException y)
-    { throwBuildException("Class not found: '"+langClassName+"'",y);
-    }
-      
-    return null;
   }
 
   /**

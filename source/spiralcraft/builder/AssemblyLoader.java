@@ -24,6 +24,7 @@ import spiralcraft.vfs.Resource;
 import java.io.IOException;
 
 import spiralcraft.lang.Focus;
+import spiralcraft.log.ClassLog;
 import spiralcraft.sax.ParseTreeFactory;
 import spiralcraft.sax.ParseTree;
 import spiralcraft.sax.Node;
@@ -44,6 +45,8 @@ import java.util.HashMap;
  */
 public class AssemblyLoader
 {
+  private static final ClassLog log=ClassLog.getInstance(AssemblyLoader.class);
+  
   private static final AssemblyLoader _INSTANCE=new AssemblyLoader();
   
   private final HashMap<URI,AssemblyClass> _classCache
@@ -261,7 +264,8 @@ public class AssemblyLoader
   }
   
   /**
-   * Define an AssemblyClass based on the information in an XML Element
+   * Define an AssemblyClass based on the information in an XML Element. This
+   *   method handles all top-level and nested assembly classes.
    * 
    * @param sourceURI The URI of the document container in which the 
    *   Assemblyclass is referenced
@@ -322,6 +326,9 @@ public class AssemblyLoader
         }
         else if (name=="id")
         { assemblyClass.setId(attribs[i].getValue());
+        }
+        else if (name=="overlayId")
+        { assemblyClass.setOverlayId(attribs[i].getValue());
         }
         else
         { 
@@ -388,10 +395,18 @@ public class AssemblyLoader
       for (int i=0;i<attribs.length;i++)
       {
         String name=attribs[i].getLocalName().intern();
-        if (name=="expression")
+        if (name=="x")
         { 
         	// TODO: Consider using "x" for this, as a convention
         	prop.setExpression(attribs[i].getValue());
+        }
+        else if (name=="expression")
+        { 
+          log.warning
+            ("The spiralcraft.builder assembly attribute 'expression'" +
+            		" has been deprecated. Use 'x' instead."
+            );
+          prop.setExpression(attribs[i].getValue());
         }
         else if (name=="whitespace")
         { prop.setLiteralWhitespace(readBoolean(attribs[i]));
