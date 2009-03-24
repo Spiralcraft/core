@@ -16,6 +16,8 @@ package spiralcraft.io;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -187,12 +189,21 @@ public abstract class FileSequence
    * @return
    */
   public String[] listFilePaths()
+    throws IOException
   {
     if (debug)
     { log.fine("Listing "+directory.getPath());
     }
     File[] allFiles
       =directory.listFiles(filter);
+    
+    if (allFiles==null)
+    { 
+      if (!directory.exists())
+      { throw new FileNotFoundException(directory.getPath());
+      }
+      return null;
+    }
     
     String[] paths=new String[allFiles.length];
     for (int i=0;i<allFiles.length;i++)
