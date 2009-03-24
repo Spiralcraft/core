@@ -41,30 +41,73 @@ public class Base64Codec
   private static final int WINDOW_SIZE = 1024; 
 
   public static final String encodeAsciiString(String input)
-    throws CodecException,IOException
   {
+    
     ByteArrayOutputStream result=new ByteArrayOutputStream();
-    new Base64Codec().encode
-      (new ByteArrayInputStream(input.getBytes()), result);
-    return new String(result.toByteArray());
+    try
+    {
+      byte[] bytes=input.getBytes();
+      
+      new Base64Codec().encode
+        (new ByteArrayInputStream(bytes), result);
+    }
+    catch (CodecException x)
+    { throw new RuntimeException(x);
+    }
+    catch (IOException x)
+    { throw new RuntimeException(x);
+    }
+    
+    String encoded=new String(result.toByteArray());
+    return encoded;
   }
   
+  public static final String decodeAsciiString(String input)
+  {
+    try
+    { return new String(decodeBytes(input));
+    }
+    catch (CodecException x)
+    { throw new RuntimeException(x);
+    }
+
+  }
+  
+  
   public static final String encodeBytes(byte[] input)
-    throws CodecException,IOException
   {
     ByteArrayOutputStream out=new ByteArrayOutputStream();
     ByteArrayInputStream in=new ByteArrayInputStream(input);
-    new Base64Codec().encode(in,out);
+    
+    try
+    {
+      new Base64Codec().encode(in,out);
+    }
+    catch (CodecException x)
+    { throw new RuntimeException(x);
+    }
+    catch (IOException x)
+    { throw new RuntimeException(x);
+    }
+
     return new String(out.toByteArray());
   }
   
   
   public static final byte[] decodeBytes(final String input)
-    throws IOException,CodecException
+    throws CodecException
   {
     ByteArrayOutputStream out=new ByteArrayOutputStream();
     ByteArrayInputStream in=new ByteArrayInputStream(input.getBytes());
-    new Base64Codec().decode(in,out);
+    try
+    { new Base64Codec().decode(in,out);
+    }
+    catch (CodecException x)
+    { throw new RuntimeException(x);
+    }
+    catch (IOException x)
+    { throw new RuntimeException(x);
+    }
     return out.toByteArray();
     
   }
@@ -163,6 +206,8 @@ public class Base64Codec
     // Output the remainder bytes:
     switch (windowPos) 
     {
+    case 0:
+      break;
     case 1:
       out.write(encode1(window,0));
       out.write(encode2(window,0));
@@ -176,8 +221,9 @@ public class Base64Codec
       out.write('=');
       break;
     default:
-      throw new CodecException
-        ("Base64Codec: Internal error: "+windowPos+" bytes remaining");
+      
+     throw new CodecException
+       ("Base64Codec: Internal error: "+windowPos+" bytes remaining");
     }
   }
   
