@@ -42,7 +42,7 @@ public class ReferenceQuery
 
   
   /**
-   * Construct an unconfigured Scan
+   * Construct an unconfigured ReferenceQuery
    */
   public ReferenceQuery()
   { }
@@ -64,6 +64,10 @@ public class ReferenceQuery
     
   public Expression<Aggregate<?>> getReference()
   { return reference;
+  }
+  
+  public void setReference(Expression<Aggregate<?>> reference)
+  { this.reference=reference;
   }
   
   public void setType(Type<?> type)
@@ -135,7 +139,7 @@ class BoundReferenceQuery<T extends Tuple>
     if (aggregate==null)
     { 
       aggregate
-        =new ListAggregate<T>(getType());
+        =new ListAggregate<T>(Type.getAggregateType(getType()));
     }
     return new ListCursor<T>(aggregate);
   } 
