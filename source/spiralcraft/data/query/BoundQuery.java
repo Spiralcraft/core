@@ -52,6 +52,11 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
   protected boolean debug;
   protected Type<?> boundType;
   
+  /**
+   * Return the element Type of the relation returned by the bound query.
+   * 
+   * @return
+   */
   public Type<?> getType()
   { return boundType!=null?boundType:query.getType();
   }

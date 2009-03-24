@@ -81,6 +81,10 @@ public abstract class Query
    */
   public abstract FieldSet getFieldSet();
   
+  /**
+   * 
+   * @return the Type of the Tuples that this query will produce
+   */
   public Type<?> getType()
   { return type;
   }
