@@ -1,6 +1,7 @@
 
 import spiralcraft.util.PathPattern;
 import spiralcraft.util.Path;
+import spiralcraft.codec.text.Base64Codec;
 
 var assertPatternMatch(pattern,path)
 {
@@ -23,3 +24,11 @@ test("new Path(\"/x/y/z/\",'/').format('/')","/x/y/z/");
 test("new Path(\"x/y/z/\",'/').format('/')","x/y/z/");
 test("new Path(\"/x/y/z\",'/').format('/')","/x/y/z");
 test("new Path(\"x/y/z\",'/').format('/')","x/y/z");
+
+test("Base64Codec.encodeAsciiString(\"admin:change!me\")"
+    ,"YWRtaW46Y2hhbmdlIW1l"
+    );
+    
+test("new String(Base64Codec.decodeAsciiString(\"YWRtaW46Y2hhbmdlIW1l\"))"
+    ,"admin:change!me"
+    );
