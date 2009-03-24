@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <ivy-module version="2.0">
-  <info organisation="spiralcraft" module="spiralcraft-core" status="integration">
+  <info organisation="spiralcraft" module="core" status="integration">
   </info>
   
   <publications>
-    <artifact/>
+    <artifact name="spiralcraft-core" type="jar" ext="jar"/>
+    <artifact name="spiralcraft-core-test" type="jar" ext="jar"/>
   </publications> 
   
   <dependencies>
   </dependencies>
   
-  <conflicts> 
-    <manager name="latest-revision"/>
-  </conflicts>
+
  
 
 </ivy-module>
