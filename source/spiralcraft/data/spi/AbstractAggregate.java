@@ -44,7 +44,7 @@ public abstract class AbstractAggregate<T>
   protected AbstractAggregate(Type<?> type)
   { 
     if (type==null)
-    { throw new IllegalArgumentException("Aggregate Type cannot is null");
+    { throw new IllegalArgumentException("Aggregate Type cannot be null");
     }
     this.type=type;
   }
@@ -73,7 +73,9 @@ public abstract class AbstractAggregate<T>
   { throw new UnsupportedOperationException("An aggregate is not a Tuple");
   }
   
-  
+  /**
+   * Return the Aggregate Type (ie. MyType.list)
+   */
   public Type<?> getType()
   { return type;
   }
