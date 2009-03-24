@@ -203,12 +203,14 @@ public class StreamUtil
     }
     return len;
   }  
+
   /**
    * Discard [bytes] bytes of the input stream
    */
   public static long discard(InputStream in,long bytes)
     throws IOException
   { 
+    
     long count=0;
     while (count<bytes)
     {
@@ -223,5 +225,25 @@ public class StreamUtil
     return count;
   }
 
+  /**
+   * Discard the remainder of the input stream
+   */
+  public static long drain(InputStream in)
+    throws IOException
+  { 
+    
+    long count=0;
+    while (true)
+    {
+      long ret=in.skip(Long.MAX_VALUE);
+      if (ret==-1)
+      { break;
+      }
+      else
+      { count+=ret;
+      }
+    }
+    return count;
+  }
 
 }
