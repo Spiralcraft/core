@@ -327,7 +327,9 @@ public class AssemblyClass
    * </p>
    */
   public Iterable<PropertySpecifier> localMemberIterable()
-  { return _localMembers;
+  { return _localMembers!=null
+      ?_localMembers
+      :new LinkedList<PropertySpecifier>();
   }
   
   /**
