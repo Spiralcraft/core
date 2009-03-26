@@ -127,22 +127,39 @@ public abstract class Reflector<T>
           +ArrayUtil.format(params,"|",null)
           );
       }
-      Channel<Reflector<X>> typeChannel
-        =focus.bind(((Expression<Reflector<X>>) params[0]));
-      if (!Reflector.class.isAssignableFrom(typeChannel.getContentType()))
+      channel=this.castChannel
+        (source,focus,(Expression) params[0]);
+      
+      
+    }
+    else if (name.equals("@nil"))
+    { channel=((Channel<Reflector<?>>) source).get().getNilChannel();
+    }
+    return (Channel<X>) channel;
+  }
+  
+  private <X extends T> Channel<X> castChannel
+    (Channel<T> source,Focus<?> focus,Expression<Reflector<X>> target)
+      throws BindException
+  {
+      Channel<X> channel=null;
+      Channel<Reflector<X>> targetTypeChannel
+        =focus.bind(target);
+      
+      if (!Reflector.class.isAssignableFrom(targetTypeChannel.getContentType()))
       { throw new BindException("@cast only accepts a type");
       }
-      if (!typeChannel.isConstant())
+      if (!targetTypeChannel.isConstant())
       { throw new BindException("@cast cannot accept a dynamic type");
       }
-      Reflector<X> type=typeChannel.get();
-      if (type.canCast(this))
+      Reflector<X> targetType=targetTypeChannel.get();
+      if (canCastTo(targetType))
       {
-        channel=source.getCached(type.getTypeURI());
+        channel=source.getCached(targetType.getTypeURI());
         if (channel==null)
         { 
-          channel=new CastChannel(source,type);
-          source.cache(type.getTypeURI(),channel);
+          channel=this.<X>newCastChannel(source,targetType);
+          source.cache(targetType.getTypeURI(),channel);
         }
       }
       else
@@ -151,15 +168,26 @@ public abstract class Reflector<T>
           ("Incompatible cast from "
           +getTypeURI()
           +" to "
-          +type.getTypeURI()
+          +targetType.getTypeURI()
           );
       }
-      
-    }
-    else if (name.equals("@nil"))
-    { channel=((Channel<Reflector<?>>) source).get().getNilChannel();
-    }
-    return (Channel<X>) channel;
+      return channel;
+    
+  }
+  
+  
+  
+  /**
+   * Override this method to return a custom cast
+   * 
+   * @param <X>
+   * @param source
+   * @param targetType
+   * @return
+   */
+  protected <X extends T> CastChannel<T,X> newCastChannel
+    (Channel<T> source,Reflector<X> targetType)
+  { return new CastChannel<T,X>(source,targetType);
   }
   
   /**
@@ -210,8 +238,27 @@ public abstract class Reflector<T>
    * @param source
    * @return
    */
-  public boolean canCast(Reflector<?> source)
+  public boolean canCastFrom(Reflector<?> source)
   { return true;
+  }
+  
+  /**
+   * <p>Indicates whether this type supports being cast to another type. By
+   *   default, this method returns source.canCastFrom(this).
+   * </p>
+   *   
+   * <p> 
+   *  If the Reflector instance supports a custom newCastChannel() method for
+   *   adaptive type conversion, this method should determine whether a
+   *   custom conversion is supported, if source.canCastFrom(this) returns
+   *   false.
+   * </p>
+   * 
+   * @param source
+   * @return
+   */
+  public boolean canCastTo(Reflector<?> source)
+  { return source.canCastFrom(this);
   }
   
   public Channel<Reflector<T>> getSelfChannel()
