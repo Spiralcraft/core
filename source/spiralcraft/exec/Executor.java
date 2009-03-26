@@ -201,7 +201,11 @@ public class Executor
         typeURI=uri;
       }
       catch (TypeNotFoundException x)
-      { instanceURI=uri;
+      { 
+        if (instanceURI!=null)
+        { throw x;
+        }
+        instanceURI=uri;
       }
         
       Executable executable=resolveExecutable(); 
@@ -334,6 +338,11 @@ public class Executor
           }
           else if (option.equals("-consoleLog"))
           { Executor.this.consoleLog=true;
+          }
+          else if (option.equals("-persist"))
+          { 
+            instanceURI=URI.create(nextArgument());
+            persistOnCompletion=true;
           }
           else 
           { 
