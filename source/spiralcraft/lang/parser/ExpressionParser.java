@@ -519,6 +519,9 @@ public class ExpressionParser
         consumeToken();
         return parseUnaryExpression().not();
       case '{':
+        // TODO: Dynamic lists are kludgy- this should be the Tuple operator
+        // Specifically, a heterogeneous list of composed of arbitrary data
+        ///  sources breaks type safety. Good news it isn't really used.
         consumeToken();
         Node ret=parseListExpression();
         expect('}');
