@@ -17,7 +17,6 @@ package spiralcraft.task;
 import java.util.HashSet;
 import java.util.List;
 
-import spiralcraft.log.ClassLog;
 
 /**
  * Executes a number of other Tasks in parallel
@@ -26,8 +25,6 @@ public class ParallelTask<Tsubtask extends Task>
   extends MultiTask<Tsubtask>
   implements TaskListener
 {
-  private static final ClassLog log
-    =ClassLog.getInstance(ParallelTask.class);
   
   private final Object monitor=new Object();
 

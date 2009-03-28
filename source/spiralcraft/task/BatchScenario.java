@@ -29,6 +29,7 @@ import spiralcraft.lang.IterationCursor;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.time.Scheduler;
 import spiralcraft.util.thread.Delegate;
 import spiralcraft.util.thread.DelegateException;
@@ -60,8 +61,6 @@ import spiralcraft.util.thread.DelegateException;
 public class BatchScenario<I,R>
   extends Scenario<MultiTask<BatchScenario<I,R>.CommandSubTask>,List<Command<?,R>>>
 {
-  private static final ClassLog log
-    =ClassLog.getInstance(BatchScenario.class);
   
   private Expression<?> source;
   private Expression<Command<?,R>> command;
@@ -75,7 +74,7 @@ public class BatchScenario<I,R>
   
   private ThreadLocalChannel<I> item; 
   
-  private Channel<Command<?,R>> commandChannel;  
+  private Channel<Command<?,R>> subCommandChannel;  
   
   private CommandDelegate delegate;
   
@@ -164,7 +163,7 @@ public class BatchScenario<I,R>
    */
   protected void postResult(List<Command<?,R>> completedCommands)
   {
-    log.fine(""+completedCommands);
+    log.log(Level.FINE,""+completedCommands);
   }
   
   @Override
@@ -220,7 +219,7 @@ public class BatchScenario<I,R>
           for (CommandSubTask subtask: subtasks)
           { 
             Command<?,R> completedCommand=subtask.getCompletedCommand();
-            log.fine(""+completedCommand.getResult());
+            log.log(Level.FINE,""+completedCommand.getResult());
             results.add(completedCommand);
             if (completedCommand.getException()!=null)
             { 
@@ -251,7 +250,7 @@ public class BatchScenario<I,R>
     target=AbstractXmlObject.create
       (targetTypeURI,targetURI,null,focusChain.chain(item));
     
-    commandChannel=target.getFocus().bind(command);
+    subCommandChannel=target.getFocus().bind(command);
 
     Focus<?> focus=focusChain;
     
@@ -318,7 +317,7 @@ public class BatchScenario<I,R>
     @Override
     public Command<?,R> run()
     { 
-      Command<?,R> command=commandChannel.get();
+      Command<?,R> command=subCommandChannel.get();
       command.execute();
       return command;
     }
