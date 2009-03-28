@@ -330,12 +330,10 @@ public class Selection
         else
         { result=new Selection(ej,new Expression<Boolean>(remainder));
         }
-        if (result!=null)
-        {  
-          result.setDebug(debug);
-          result.setLogStatistics(logStatistics);
-          return result;
-        }
+        
+        result.setDebug(debug);
+        result.setLogStatistics(logStatistics);
+        return result;
         
       }
       

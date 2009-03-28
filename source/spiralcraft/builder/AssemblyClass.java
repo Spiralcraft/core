@@ -810,7 +810,7 @@ public class AssemblyClass
    *
    */
   private Class<?> resolveJavaClass()
-    throws BuildException,ClassNotFoundException
+    throws ClassNotFoundException
   { 
     
     if (ClasspathResourceFactory.isClasspathScheme(_basePackage.getScheme()))

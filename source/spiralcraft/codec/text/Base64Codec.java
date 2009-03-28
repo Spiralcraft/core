@@ -63,14 +63,7 @@ public class Base64Codec
   }
   
   public static final String decodeAsciiString(String input)
-  {
-    try
-    { return new String(decodeBytes(input));
-    }
-    catch (CodecException x)
-    { throw new RuntimeException(x);
-    }
-
+  { return new String(decodeBytes(input));
   }
   
   
@@ -95,7 +88,6 @@ public class Base64Codec
   
   
   public static final byte[] decodeBytes(final String input)
-    throws CodecException
   {
     ByteArrayOutputStream out=new ByteArrayOutputStream();
     ByteArrayInputStream in=new ByteArrayInputStream(input.getBytes());

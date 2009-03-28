@@ -49,7 +49,6 @@ public class InputStreamRecordIterator
   
   
   public InputStreamRecordIterator(InputStream in,byte[] delimiter)
-    throws IOException
   {
     this.in=in;
     this.delimiter=delimiter;
