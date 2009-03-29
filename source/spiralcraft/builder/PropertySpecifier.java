@@ -267,7 +267,14 @@ public class PropertySpecifier
         
       }
     }
-    return assembly.getPropertyBinding(_targetSequence);
+    try
+    { return assembly.getPropertyBinding(_targetSequence);
+    }
+    catch (ArrayIndexOutOfBoundsException x)
+    { 
+      throw new RuntimeException
+        ("Unexpected error getting binding for property "+this,x);
+    }
   }
   
   void setTargetSequence(int sequence)
