@@ -153,28 +153,32 @@ public abstract class Reflector<T>
       { throw new BindException("@cast cannot accept a dynamic type");
       }
       Reflector<X> targetType=targetTypeChannel.get();
-      if (canCastTo(targetType))
+      if (targetType.canCastFrom(this))
       {
         channel=source.getCached(targetType.getTypeURI());
         if (channel==null)
         { 
-          channel=this.<X>newCastChannel(source,targetType);
+          channel=new CastChannel<T,X>(source,targetType);
           source.cache(targetType.getTypeURI(),channel);
         }
       }
       else
       { 
-        throw new BindException
-          ("Incompatible cast from "
-          +getTypeURI()
-          +" to "
-          +targetType.getTypeURI()
-          );
+        channel=newConversionChannel(source,targetType);
+        if (channel==null)
+        {
+          throw new BindException
+            ("Incompatible cast from "
+            +getTypeURI()
+            +" to "
+            +targetType.getTypeURI()
+            +" and no default conversion"
+            );
+        }
       }
       return channel;
     
   }
-  
   
   
   /**
@@ -185,9 +189,9 @@ public abstract class Reflector<T>
    * @param targetType
    * @return
    */
-  protected <X extends T> CastChannel<T,X> newCastChannel
+  protected <X> Channel<X> newConversionChannel
     (Channel<T> source,Reflector<X> targetType)
-  { return new CastChannel<T,X>(source,targetType);
+  { return null;
   }
   
   /**
@@ -240,25 +244,6 @@ public abstract class Reflector<T>
    */
   public boolean canCastFrom(Reflector<?> source)
   { return true;
-  }
-  
-  /**
-   * <p>Indicates whether this type supports being cast to another type. By
-   *   default, this method returns source.canCastFrom(this).
-   * </p>
-   *   
-   * <p> 
-   *  If the Reflector instance supports a custom newCastChannel() method for
-   *   adaptive type conversion, this method should determine whether a
-   *   custom conversion is supported, if source.canCastFrom(this) returns
-   *   false.
-   * </p>
-   * 
-   * @param source
-   * @return
-   */
-  public boolean canCastTo(Reflector<?> source)
-  { return source.canCastFrom(this);
   }
   
   public Channel<Reflector<T>> getSelfChannel()
