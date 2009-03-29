@@ -176,6 +176,10 @@ public class TypeImpl<T>
     { return false;
     }
     
+    if (type==this)
+    { return true;
+    }
+    
     if (type.isPrimitive())
     { return getNativeClass().isAssignableFrom(type.getNativeClass());
     }
