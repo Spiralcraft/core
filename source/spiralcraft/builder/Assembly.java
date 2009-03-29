@@ -218,8 +218,9 @@ public class Assembly<T>
   }
   
   /**
-   * Specify a default instance for this Assembly to apply properties to, as opposed to
-   *   constructing a new instance. Must be called before resolve().
+   * Specify a default instance for this Assembly to apply properties to,
+   *   as opposed to constructing a new instance. Must be called before
+   *   resolve().
    */
   void setDefaultInstance(T val)
   {
