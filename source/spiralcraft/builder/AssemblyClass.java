@@ -72,7 +72,14 @@ public class AssemblyClass
      ;
   }
   
+
+  public static final String classNameToPath(String className)
+  { return className.replace(".","/").replace("$","-");
+  }
   
+  public static final String pathToClassName(String path)
+  { return path.replace("/",".").replace("-","$");
+  }
   
   
   private final URI sourceURI;
@@ -530,9 +537,15 @@ public class AssemblyClass
     if (_outerClass==null)
     { 
       // If the source file URI matches an outer class, that works
-      if (sourceURI.relativize(uri)!=uri)
+      if (sourceURI!=null && sourceURI.relativize(uri)!=uri)
       { return true;
       }
+      else if (_javaClass!=null)
+      { 
+        return uri.getScheme().equals("class")
+          && uri.getPath().equals(classNameToPath(_javaClass.getName()));
+      }
+
     }
     else
     {
@@ -763,7 +776,30 @@ public class AssemblyClass
       }
       else
       {
+        
         _baseAssemblyClass=_loader.findAssemblyDefinition(baseResource);
+
+        // 2009-03-28 mike
+        //
+        //   Block added to resolve a canonical base AssemblyClass for
+        //     a given raw Java class, if this isn't said AssemblyClass.
+        //
+        //   This was added to support data persistence of Builder assys.
+        //     and eventual use of annotations
+        //
+        if (_baseAssemblyClass==null 
+            && sourceURI!=null 
+            && !baseResource.equals(sourceURI)
+            )
+        { 
+          // Load the canonical assembly class for the specified qualified
+          //   class URI.
+          
+          _baseAssemblyClass
+            =_loader.findAssemblyClass(_basePackage.resolve(_baseName));
+        }
+        
+        
         if (_baseAssemblyClass==null)
         { 
           try
@@ -817,8 +853,8 @@ public class AssemblyClass
     {
         
       String className
-        =_basePackage.getPath().substring(1).replace('/','.')
-          +_baseName.replace('-','$');
+        =pathToClassName(_basePackage.getPath().substring(1)+_baseName);
+      
       try
       { 
         return
@@ -846,13 +882,17 @@ public class AssemblyClass
       }
     }
     
-    String langClassName="java.lang."+_baseName;
-    return
-      Class.forName
-        (langClassName
-        ,false
-        ,Thread.currentThread().getContextClassLoader()
-        );
+    if (_basePackage==null || _basePackage.toString().isEmpty())
+    {
+      String langClassName="java.lang."+_baseName;
+      return
+        Class.forName
+          (langClassName
+          ,false
+          ,Thread.currentThread().getContextClassLoader()
+          );
+    }
+    return null;
       
   }
 
@@ -1036,6 +1076,26 @@ public class AssemblyClass
     }
     return assembly;    
   }
+  
+  /**
+   * Create a new instance of this AssemblyClass in the context of the
+   *   optional specified parent Focus.
+   */
+  @SuppressWarnings("unchecked") // Reflected type at Runtime
+  public <T> Assembly<T> wrap(Focus<?> parentFocus,T val)
+    throws BuildException
+  { 
+    Assembly<T> assembly=(Assembly<T>) newInstance(false);
+    if (!assembly.isBound())
+    { assembly.bind(parentFocus);
+    }
+    assembly.setDefaultInstance(val);
+    if (!assembly.isResolved())
+    { assembly.resolve();
+    }
+    return assembly;    
+  }
+  
   
   /**
    * <p>Create a new instance of this AssemblyClass in the context of the

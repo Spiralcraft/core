@@ -148,6 +148,12 @@ public class ReflectionType<T>
     throws DataException
   { return Type.resolve(canonicalURI(iface));
   }
+  
+  public static boolean isManaged(Class<?> iface)
+  { 
+    return CANONICAL_MAP.get(iface)!=null
+      || (iface.isArray() && isManaged(iface.getComponentType()));
+  }
  
   public static URI canonicalURI(Class<?> iface)
   {

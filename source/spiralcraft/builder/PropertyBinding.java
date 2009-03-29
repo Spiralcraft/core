@@ -126,6 +126,48 @@ public class PropertyBinding
   }
   
 
+  public Assembly[] pullContents()
+  {
+    if (isAggregate())
+    { return _contents;
+    }
+    else
+    {
+      Object val=_target.get();
+      if (val!=null)
+      {
+        if (_contents==null || _contents.length==0)
+        { 
+          try
+          {
+            AssemblyClass newAssemblyClass
+              =AssemblyLoader.getInstance().findAssemblyClass(val.getClass());
+        
+            Assembly newAssembly
+              =newAssemblyClass.wrap(_container.getFocus(),val);
+        
+            return new Assembly[] {newAssembly};
+          }
+          catch (BuildException x)
+          { throw new RuntimeException(x);
+          }
+        
+        } 
+        else
+        { 
+          _contents[0].getFocus().getSubject().set(val);
+          return _contents;
+        }
+      }
+      else
+      { 
+        // XXX We need to consider further what to do with null object value
+        
+        return _contents;
+      }
+    }
+  }
+  
   public Assembly[] getContents()
   { return _contents;
   }

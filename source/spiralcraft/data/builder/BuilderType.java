@@ -76,6 +76,7 @@ public class BuilderType
   @Override
   public boolean isAssignableFrom(Type type)
   { 
+    
     if (super.isAssignableFrom(type))
     { return true;
     }
@@ -92,6 +93,13 @@ public class BuilderType
     { 
       // All builder types are compatible with the degenerate AssemblyClass
       return true;
+    }
+    
+    if (type instanceof BuilderType
+        && getTargetType().isAssignableFrom
+          (((BuilderType) type).getTargetType())
+        )
+    { return true;
     }
     System.out.println("BuilderType -isAssignableFrom "+this+" : "+type);
     return false;
@@ -137,7 +145,35 @@ public class BuilderType
               )
       { 
         // No source URI, no base class, no defining class = java class
-        return ReflectionType.canonicalURI(assemblyClass.getJavaClass());
+        try
+        {
+          Type<?> reflectionType
+            =ReflectionType.canonicalType(assemblyClass.getJavaClass());
+          if (!reflectionType.isPrimitive())
+          {
+            // Don't use ReflectionType alternates map.
+            return 
+              URI.create
+                ("class:/"
+                  +AssemblyClass.classNameToPath
+                    (assemblyClass.getJavaClass().getName())
+                  +".assy"
+                );
+          }
+          else
+          { 
+            return
+              URI.create
+                ("class:/"
+                  +AssemblyClass.classNameToPath
+                  (assemblyClass.getJavaClass().getName())
+                );
+          }          
+        }
+        catch (DataException x)
+        { throw new RuntimeException(x);
+        }
+        
         
       }
       else
@@ -174,8 +210,12 @@ public class BuilderType
     { javaClass=specifier.getPropertyDescriptor().getPropertyType();
     }
     
-    if (!AssemblyClass.isManaged(javaClass))
-    { return ReflectionType.canonicalType(javaClass);
+    if (!AssemblyClass.isManaged(javaClass)
+        || ReflectionType.isManaged(javaClass)
+        )
+    { 
+      
+      return ReflectionType.canonicalType(javaClass);
     }
     
     boolean array=false;
@@ -278,12 +318,46 @@ public class BuilderType
         resolver.resolve
           (canonicalURI(baseAssemblyClass)
           );
+      
     }
+    else
+    {
+      
+      // 2009-03-28 mike
+      //
+      //   Handles ensuring that an AssemblyClass based on a subclass 
+      //     is type compatible with the AssemblyClass based on the 
+      //     superclass.
+      
+// This is foiled because we also need interface compatibility. Solving
+//   issue by checking native type in isAssignableFrom
+//
+//      Class<?> baseClass=targetAssemblyClass.getJavaClass().getSuperclass();
+//      if (baseClass!=null)
+//      { 
+//        try
+//        {
+//          archetype=
+//            canonicalType
+//              (AssemblyLoader.getInstance().findAssemblyClass(baseClass));
+//        }
+//        catch (BuildException x)
+//        { 
+//          throw new DataException
+//            ("Error resolving BuilderType for "+baseClass,x);
+//        }
+//      }
+    }
+
     BuilderScheme scheme=new BuilderScheme(this,targetAssemblyClass);
     scheme.addFields();
     this.scheme=scheme;
     super.link();
     classField=scheme.getFieldByName("class");
+
+//    if (archetype!=null)
+//    { log.fine("Archetype of "+this.getURI()+" is "+archetype.getURI());
+//    }
 
   }
 
@@ -317,6 +391,9 @@ public class BuilderType
         { 
           // Disambiguate by Class
           // XXX now we have better typing- make sure this is appropriate
+          if (classField==null)
+          { throw new DataException("No class field in "+this);
+          }
           Class<?> tupleClass=(Class<?>) classField.getValue(t);
           for (Assembly<?> assembly: contextBinding.getContents())
           { 
@@ -332,7 +409,7 @@ public class BuilderType
         else
         { 
           Assembly<?>[] contents=contextBinding.getContents();
-          if (contents.length>0)
+          if (contents!=null && contents.length>0)
           { 
 //            System.err.println("BuilderType: resolved existing target assembly for "+getURI());
             instance=contents[0];
@@ -372,7 +449,7 @@ public class BuilderType
     
     if (assembly.getAssemblyClass()!=targetAssemblyClass)
     { 
-      // System.out.println("Narrowing "+getUri());
+      // log.fine("Narrowing "+getURI());
       Type<Assembly<?>> targetType
         =(BuilderType) getTypeResolver().<Assembly<?>>resolve
           (canonicalURI(assembly.getAssemblyClass())
@@ -381,7 +458,7 @@ public class BuilderType
     }
     else
     {
-      // System.out.println("Not narrowing "+getUri());
+      // log.fine("Not narrowing "+getURI());
       EditableTuple t=new EditableArrayTuple(scheme);
       ((BuilderScheme) scheme).persistBeanProperties( assembly ,t);
       return t;

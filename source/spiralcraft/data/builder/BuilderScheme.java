@@ -25,6 +25,7 @@ import spiralcraft.data.reflect.ReflectionType;
 
 import spiralcraft.data.core.SchemeImpl;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 import spiralcraft.builder.Assembly;
 import spiralcraft.builder.AssemblyClass;
@@ -97,20 +98,29 @@ public class BuilderScheme
   {
     List<BuilderField> fieldList=new ArrayList<BuilderField>();
     
-    for (Field<?> field:reflectionType.getFieldSet().fieldIterable())
-    { 
-      try
-      { assemblyClass.getMember(field.getName());
-      }
-      catch (BuildException x)
-      { throw new DataException("Error getting member "+field.getName(),x);
+    if (reflectionType!=null)
+    {
+      for (Field<?> field:reflectionType.getFieldSet().fieldIterable())
+      { 
+        try
+        { assemblyClass.getMember(field.getName());
+        }
+        catch (BuildException x)
+        { throw new DataException("Error getting member "+field.getName(),x);
+        }
       }
     }
     
     for (PropertySpecifier prop : assemblyClass.localMemberIterable())
     { 
-      BuilderField field=generateField(prop);
-      fieldList.add(field);
+      try
+      { 
+        BuilderField field=generateField(prop);
+        fieldList.add(field);
+      }
+      catch (DataException x)
+      { log.log(Level.WARNING,"Ignoring builder property on exception ",x);
+      }
     }
     return fieldList;
   }
@@ -118,9 +128,6 @@ public class BuilderScheme
   protected BuilderField generateField(PropertySpecifier prop)
     throws DataException
   { 
-    if (false)
-    { log.fine("Generating "+prop+" "+prop.getTargetName());
-    }
     
     BuilderField field = new BuilderField
       (prop
@@ -129,6 +136,13 @@ public class BuilderScheme
         :null
       );
     field.resolveType();
+
+    if (false)
+    { log.fine
+        ("Generated "+prop+" "+prop.getTargetName()+" = "
+          +field.getType().getURI()
+        );
+    }
     return field;
   }
   

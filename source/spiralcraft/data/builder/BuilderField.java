@@ -32,6 +32,7 @@ import spiralcraft.data.core.FieldImpl;
 
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.util.StaticInstanceResolver;
+
 import spiralcraft.log.ClassLog;
 
 import spiralcraft.builder.PropertySpecifier;
@@ -57,12 +58,20 @@ public class BuilderField
     this.specifier=specifier;
     this.reflectionField=reflectionField;
     setName(specifier.getTargetName());
-    Type type=BuilderType.canonicalType(specifier);
-    if (type==null)
-    { throw new DataException("No builder type for "+specifier);
+    try
+    {
+      Type type=BuilderType.canonicalType(specifier);
+      if (type==null)
+      { throw new DataException("No builder type for "+specifier);
+      }
+      else
+      { setType(type);
+      }
     }
-    else
-    { setType(type);
+    catch (DataException x)
+    { 
+      log.fine(""+specifier+"  "+reflectionField);
+      throw x;
     }
   }
   
@@ -92,6 +101,7 @@ public class BuilderField
 //        }
 //      }
     }
+
   }
   
   public void depersistBeanProperty(Tuple tuple,Object subject)
@@ -189,77 +199,99 @@ public class BuilderField
       // Use Assembly scaffold to persist
       if (specifier.isPersistent() && assembly!=null)
       { 
-        PropertyBinding binding=specifier.getPropertyBinding(assembly);
-        Assembly[] assemblies=binding.getContents();
-        if (assemblies!=null && assemblies.length > 0)
+        // log.fine("Persisting "+getURI()+" "+specifier+" "+assembly);
+        
+        
+        if (getType().getCoreType() instanceof BuilderType)
         {
-          // We definitely have a builder subtype here
-          if (getType().isAggregate())
-          { 
-            // Even though specifier is present, we don't have a Builder type
-            //   for aggregates, so getType() will return probably a reflection
-            //   type aggregate. getType() doesn't help us much.
-            
-            EditableArrayListAggregate aggregate
-              =new EditableArrayListAggregate(getType());
-            for (Assembly subAssembly: assemblies)
+          PropertyBinding binding=specifier.getPropertyBinding(assembly);
+          Assembly[] assemblies=binding.pullContents();
+          if (assemblies!=null && assemblies.length > 0)
+          {
+            // log.fine("Read "+assemblies);
+            // We definitely have a builder subtype here
+            if (getType().isAggregate())
             { 
-              Type type=BuilderType.canonicalType(subAssembly.getAssemblyClass());
-              
-              if (type instanceof BuilderType)
+              // Even though specifier is present, we don't have a Builder type
+              //   for aggregates, so getType() will return probably a reflection
+              //   type aggregate. getType() doesn't help us much.
+            
+              EditableArrayListAggregate aggregate
+                =new EditableArrayListAggregate(getType());
+              for (Assembly subAssembly: assemblies)
               { 
+                Type type=BuilderType.canonicalType(subAssembly.getAssemblyClass());
+              
+                if (type instanceof BuilderType)
+                { 
                 // Narrow the data conversion
 //                System.err.println("BuilderField: Adding "+type);
-                aggregate.add(type.toData(subAssembly));
-              }
-              else
-              {
-                System.out.println("BuilderField: Unpacking "+subAssembly);
-                // Not a builder type, and can't get type from assembly
-                // Unpackage the assembly and store as a reflection type
-                Object subjectBean=subAssembly.get();
-                type=
-                  TypeResolver.getTypeResolver().resolve
-                    (ReflectionType.canonicalURI(subjectBean.getClass()));
-                // Narrow the data conversion
-                aggregate.add(type.toData(subjectBean));
+                  aggregate.add(type.toData(subAssembly));
+                }
+                else
+                {
+                  System.out.println("BuilderField: Unpacking "+subAssembly);
+                  // Not a builder type, and can't get type from assembly
+                  // Unpackage the assembly and store as a reflection type
+                  Object subjectBean=subAssembly.get();
+                  type=
+                    TypeResolver.getTypeResolver().resolve
+                      (ReflectionType.canonicalURI(subjectBean.getClass()));
+                  // Narrow the data conversion
+                  aggregate.add(type.toData(subjectBean));
                 
-              }
+                }
               
-            } // for
-            setValue(tuple,aggregate);
-          }
-          else
-          { 
-            // not an aggregate
+              } // for
+              setValue(tuple,aggregate);
+            }
+            else
+            { 
+              // not an aggregate
             
-            Type type=BuilderType.canonicalType(assemblies[0].getAssemblyClass());
-            if (type instanceof BuilderType)
-            {
-              setValue(tuple,type.toData(assemblies[0]));
+              Type type
+                =BuilderType.canonicalType(assemblies[0].getAssemblyClass());
+              if (type instanceof BuilderType)
+              {
+                setValue(tuple,type.toData(assemblies[0]));
+              }
+              else 
+              { persistPropertyUsingReflection(assembly,tuple);
+              }
             }
-            else 
-            { persistPropertyUsingReflection(assembly,tuple);
-            }
+          } // contents not empty
+          else 
+          {  
+            // Empty contents really do mean nothing to persist
+           
+            // System.err.println("BuilderField: persisting "+getName()+" as bean");
+            // Can't do this- we must use assy container to persist
+            // persistPropertyUsingReflection(assembly,tuple);
           }
-        }
-        else
-        {    
-//          System.err.println("BuilderField: persisting "+getName()+" as bean");
+        } // (getType() instanceof BuilderType)
+        else 
+        {
+          // Not a builder type
           persistPropertyUsingReflection(assembly,tuple);
+          
         }
       } // if (specifier.isPersistent() && assembly!=null);
       else
       {
-        if (debug && !specifier.isPersistent())
-        { log.fine(specifier.getTargetName()+" is not persistent");
+        if (false && !specifier.isPersistent())
+        { 
+          log.fine
+            (specifier.getTargetName()+" ("+getURI()+") is not persistent");
         }
       }
-    } // if (specifier!=null);
+    } // if (specifier!=null && !specifier.persistAsBean())
     else
     {
-      if (!(getType().getCoreType() instanceof BuilderType))
+      if ( (specifier==null || specifier.isPersistent())
+          && !(getType().getCoreType() instanceof BuilderType)
+         )
       { 
+        log.fine("Persisting non-builder type "+getType().getCoreType().getURI());
         persistPropertyUsingReflection(assembly,tuple);
       }
     }
@@ -269,13 +301,31 @@ public class BuilderField
     (Assembly assembly,EditableTuple tuple)
     throws DataException
   {
+    if (reflectionField.getReadMethod()==null)
+    { 
+      log.fine("No read method "+reflectionField.getURI());
+      return;
+    }
+    
     try
     {
-      setValue
-        (tuple
-        ,reflectionField.getReadMethod().invoke
-          (assembly.get(),(Object[]) null)
-        );
+      Object val
+        =reflectionField.getReadMethod().invoke
+          (assembly.get(),(Object[]) null);
+      if (getType().isPrimitive())
+      {
+        setValue
+          (tuple
+          ,val
+          );
+      }
+      else
+      { 
+        setValue
+          (tuple
+          ,getType().toData(val)
+          );
+      }
     }
     catch (IllegalAccessException x)
     { 
@@ -302,7 +352,10 @@ public class BuilderField
     { return false;
     }
     
-//    BuilderField bfield=(BuilderField) field;
+    BuilderField bfield=(BuilderField) field;
+    if (specifier!=bfield.specifier)
+    { return false;
+    }
 
     return true;
     
