@@ -36,6 +36,13 @@ public interface CommandFactory<Ttarget,Tresult>
   /**
    * @return A new Command object
    */
-  Command<Ttarget,Tresult> newCommand();
+  Command<Ttarget,Tresult> command();
+  
+  /**
+   * 
+   * @return Whether the Command supplied by this CommandFactory can be
+   *   executed in the supplied context.
+   */
+  boolean isCommandEnabled();
   
 }

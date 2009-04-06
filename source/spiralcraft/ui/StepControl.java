@@ -14,6 +14,11 @@
 //
 package spiralcraft.ui;
 
+import spiralcraft.common.LifecycleException;
+
+import spiralcraft.command.CommandFactory;
+import spiralcraft.command.CommandAdapter;
+import spiralcraft.command.Command;
 
 /**
  * Controls a user interface component which presents a
@@ -27,41 +32,54 @@ public abstract class StepControl
   private int _currentStep;
   private boolean _skip;
 
-  private final AbstractCommand _nextStepCommand
-    =new AbstractCommand()
+  private final CommandFactory<StepControl,Void> _nextStepCommand
+    =new CommandFactory<StepControl,Void>()
     {
       @Override
-      public void execute()
-      { nextStep();
+      public Command<StepControl,Void> command()
+      { 
+        return new CommandAdapter<StepControl,Void>()
+        {
+          @Override
+          public void run()
+          { nextStep();
+          }
+        };
       }
 
       @Override
-      public boolean isEnabled()
+      public boolean isCommandEnabled()
       { return isNextStepEnabled();
       }
     };
 
-  private final AbstractCommand _previousStepCommand
-    =new AbstractCommand()
+  private final CommandFactory<StepControl,Void> _previousStepCommand
+    =new CommandFactory<StepControl,Void>()
     {
       @Override
-      public void execute()
-      { previousStep();
+      public Command<StepControl,Void> command()
+      { 
+        return new CommandAdapter<StepControl,Void>()
+        {
+          @Override
+          public void run()
+          { previousStep();
+          }
+        };
       }
 
       @Override
-      public boolean isEnabled()
+      public boolean isCommandEnabled()
       { return isPreviousStepEnabled();
       }
     };
 
+
+
   protected abstract void stepChanged(Step oldStep,Step newStep);
 
   private void changeStep(Step oldStep,Step newStep)
-  { 
-    stepChanged(oldStep,newStep);
-    _nextStepCommand.reset();
-    _previousStepCommand.reset();
+  { stepChanged(oldStep,newStep);
   }
 
   public void setSkip(boolean val)
@@ -72,22 +90,24 @@ public abstract class StepControl
   { return _skip;
   }
   
-  public void init()
+  public void start()
+    throws LifecycleException
   { 
     for (int i=0;i<_steps.length;i++)
-    { _steps[i].init();
+    { _steps[i].start();
     }
 
     _steps[_currentStep].stepEntered();
     changeStep(null,_steps[_currentStep]);
   }
 
-  public void destroy()
+  public void stop()
+    throws LifecycleException
   { 
     _steps[_currentStep].stepExited();
     changeStep(_steps[_currentStep],null);
     for (int i=0;i<_steps.length;i++)
-    { _steps[i].destroy();
+    { _steps[i].stop();
     }
   }
 
@@ -95,11 +115,11 @@ public abstract class StepControl
   { _steps=val;
   }
 
-  public Command getNextStepCommand()
+  public CommandFactory<StepControl,Void> getNextStepCommand()
   { return _nextStepCommand;
   }
 
-  public Command getPreviousStepCommand()
+  public CommandFactory<StepControl,Void> getPreviousStepCommand()
   { return _previousStepCommand;
   }
   

@@ -14,6 +14,8 @@
 //
 package spiralcraft.ui;
 
+import spiralcraft.common.Lifecycle;
+import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
@@ -40,6 +42,7 @@ import spiralcraft.lang.spi.SimpleChannel;
  *   upon receiving an appropriate event.
  */
 public abstract class BindingGroup
+  implements Lifecycle
 {
 
   private Binding[] _bindings;
@@ -89,7 +92,8 @@ public abstract class BindingGroup
   protected abstract Object getModelObject();
 
   @SuppressWarnings("unchecked") // Not a specific use of generics
-	public void init()
+	public void start()
+    throws LifecycleException
 	{  
     try
     { 
@@ -124,7 +128,8 @@ public abstract class BindingGroup
     }
   }
 
-  public void destroy()
+  public void stop()
+    throws LifecycleException
   {
     if (_bindings!=null)
     {

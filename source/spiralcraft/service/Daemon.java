@@ -20,23 +20,22 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
 
-import spiralcraft.ui.Command;
-import spiralcraft.ui.AbstractCommand;
+import spiralcraft.command.Command;
+import spiralcraft.command.CommandAdapter;
+import spiralcraft.command.CommandFactory;
 
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
 
 import java.util.logging.Handler;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import java.lang.reflect.Field;
 
 import spiralcraft.log.ClassLog;
-import spiralcraft.log.Log;
 
-import spiralcraft.log.jul.DefaultFormatter;
+import spiralcraft.log.jul.HandlerAdapter;
 import spiralcraft.log.jul.RegistryLogger;
 
 /**
@@ -51,7 +50,7 @@ public class Daemon
   extends ServiceGroup
   implements Executable,Registrant
 {
-  private static final Log log=ClassLog.getInstance(Daemon.class);
+  private static final ClassLog log=ClassLog.getInstance(Daemon.class);
   
   private Object _eventMonitor=new Object();
   private boolean _running=true;
@@ -60,29 +59,31 @@ public class Daemon
   
   private ShutdownHook _shutdownHook=new ShutdownHook();
   
-
-
-  private Handler _logHandler=new ConsoleHandler();
-  { 
-    _logHandler.setFormatter(new DefaultFormatter());
-    _logHandler.setLevel(Level.ALL);
-  }
-
-  private Logger _logger;
-
-  private Command _terminateCommand
-    =new AbstractCommand()
-  { 
-    @Override
-    public boolean isEnabled()
+  private CommandFactory<Daemon,Void> _terminateCommandFactory
+    =new CommandFactory<Daemon,Void>()
+  {    
+    public boolean isCommandEnabled()
     { return _running;
     }
-
-    @Override
-    public void execute()
-    { terminate();
+    
+    public Command<Daemon,Void> command()
+    {
+    
+      return new CommandAdapter<Daemon,Void>()
+      {
+        @Override
+        public void run()
+        { 
+          log.info("Received terminate Command");
+          terminate();
+        }
+      };
     }
   };
+
+
+  private Handler _logHandler=new HandlerAdapter();
+  private Logger _logger;
 
   public void register(RegistryNode node)
   {
@@ -164,8 +165,8 @@ public class Daemon
     
   }
 
-  public Command getTerminateCommand()
-  { return _terminateCommand;
+  public CommandFactory<Daemon,Void> getTerminateCommand()
+  { return _terminateCommandFactory;
   }
 
   public void terminate()

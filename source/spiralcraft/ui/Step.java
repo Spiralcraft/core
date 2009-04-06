@@ -14,6 +14,8 @@
 //
 package spiralcraft.ui;
 
+import spiralcraft.command.CommandFactory;
+
 /**
  * A Step for use in a StepControl. In concrete subclasses
  *   a Step usually references a concrete UI component
@@ -22,8 +24,8 @@ package spiralcraft.ui;
 public abstract class Step
   implements Control
 {
-  private Command _onEnter;
-  private Command _onExit;
+  private CommandFactory<?,?> _onEnter;
+  private CommandFactory<?,?> _onExit;
   private boolean _skipNext;
   private boolean _skipBack;
   private boolean _backEnabled=true;
@@ -61,25 +63,25 @@ public abstract class Step
   { _nextEnabled=val;
   }
 
-  public void setOnEnter(Command command)
-  { _onEnter=command;
+  public void setOnEnter(CommandFactory<?,?> commandFactory)
+  { _onEnter=commandFactory;
   }
 
-  public void setOnExit(Command command)
-  { _onExit=command;
+  public void setOnExit(CommandFactory<?,?> commandFactory)
+  { _onExit=commandFactory;
   }
 
   void stepEntered()
   { 
     if (_onEnter!=null)
-    { _onEnter.execute();
+    { _onEnter.command().execute();
     }
   }
 
   void stepExited()
   {
     if (_onExit!=null)
-    { _onExit.execute();
+    { _onExit.command().execute();
     }
   }
 }

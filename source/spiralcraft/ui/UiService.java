@@ -34,13 +34,13 @@ public class UiService
   @Override
   public void start()
     throws LifecycleException
-  { _rootControl.init();
+  { _rootControl.start();
   }
 
   @Override
   public void stop()
     throws LifecycleException
-  { _rootControl.destroy();
+  { _rootControl.stop();
   }
 
 }
