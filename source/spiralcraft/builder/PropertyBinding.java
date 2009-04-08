@@ -23,6 +23,7 @@ import spiralcraft.lang.Focus;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.AccessException;
+import spiralcraft.log.ClassLog;
 
 
 import java.util.List;
@@ -48,6 +49,8 @@ public class PropertyBinding
   implements PropertyChangeListener
 {
 
+  private static final ClassLog log
+    =ClassLog.getInstance(PropertyBinding.class);
   
   private Assembly _container;
   private PropertySpecifier _specifier;
@@ -60,6 +63,7 @@ public class PropertyBinding
   private StringConverter _converter;
   // private RegistryNode _registryNode;
   private RegistryNode propertyNode;
+  private boolean existingTargetValueUsed;
 
   public PropertyBinding(PropertySpecifier specifier,Assembly container)
     throws BuildException
@@ -96,7 +100,9 @@ public class PropertyBinding
       //   one.
       Object defaultVal=_target.get();
       if (defaultVal!=null)
-      { _contents[0].setDefaultInstance(defaultVal);
+      { 
+        _contents[0].setDefaultInstance(defaultVal);
+        existingTargetValueUsed=true;
       }
     }
     
@@ -486,14 +492,23 @@ public class PropertyBinding
     {
       if (sourceVal!=null && !_target.set(sourceVal))
       { 
-        // Log something here- value didn't didn't need to change
-        
-        //        System.err.println(_source.toSt
-        //        throwBuildException
-        //          ("Could not write ["+_source.toString()+"] value to property \""
-        //          +_specifier.getTargetName()+"\"- not a writable property"
-        //          ,null
-        //          );
+        if (!existingTargetValueUsed)
+        {
+          if (!_target.isWritable())
+          { 
+            log.warning("Non-writable property '"+_specifier.getTargetName()
+                        +"'- rejected value ["+sourceVal+"] "
+                        +", defined at "+_specifier.getSourceCodeLocation()
+                        );
+          }
+          else
+          {
+            log.warning("Target '"+_specifier.getTargetName()
+                        +"' rejected value ["+sourceVal+"] "
+                        +", defined at "+_specifier.getSourceCodeLocation()
+                        );
+          }
+        }
       }
     }
     catch (AccessException x)
