@@ -95,7 +95,9 @@ public interface Channel<T>
    * Update the content this view, if the transformation associated with
    *   this Channel and its data sources is reversible.
    *
-   *@return Whether the modification was successful or not.
+   *@return Whether the modification was successful or not. A value of false
+   *  indicates that the modification request was ignored. If isWritable()
+   *  returns false, this method should return false.
    *@throws AccessException if the target of the write throws an exception
    */
   boolean set(T value)
