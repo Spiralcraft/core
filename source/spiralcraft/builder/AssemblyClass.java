@@ -344,7 +344,7 @@ public class AssemblyClass
    * Return the specified member of this AssemblyClass or its inheritance
    *   chain.
    */
-  PropertySpecifier getMember(String name,boolean discover)
+  private PropertySpecifier getMember(String name,boolean discover)
     throws BuildException
   { 
     PropertySpecifier member=null;
