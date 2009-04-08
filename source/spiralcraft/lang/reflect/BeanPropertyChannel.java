@@ -149,6 +149,22 @@ class BeanPropertyChannel<T,S>
   }
   
   @Override
+  public boolean isWritable()
+  {
+    if (_static)
+    { return false;
+    }
+    
+    Method method=_property.getWriteMethod();
+    if (method==null)
+    { return false;
+    }
+    
+    return true;
+  }
+  
+  
+  @Override
   public synchronized boolean set(Object val)
     throws AccessException
   {
@@ -164,28 +180,38 @@ class BeanPropertyChannel<T,S>
     Object target=getSourceValue();
     try
     {
-      Object oldValue=null;
-      if (_readMethod!=null)
+      if (isPropertyChangeSupportActive())
       {
-        oldValue
-          =_readMethod.invoke(target,EMPTY_PARAMS);
-      }
-      
-      if (oldValue!=val || _readMethod==null)
-      { 
-        _params[0]=val;
-        method.invoke(target,_params);
-        // System.out.println(toString()+".set: "+val);
-        if (_propertyChangeEventSetDescriptor==null)
-        { 
-          // Only fire propertyChange if the bean has no facility 
-          //   to do so itself
-          firePropertyChange(_property.getName(),oldValue,val);
+        Object oldValue=null;
+        if (_readMethod!=null)
+        {
+          oldValue
+            =_readMethod.invoke(target,EMPTY_PARAMS);
         }
-        return true;
+      
+        if (oldValue!=val || _readMethod==null)
+        { 
+          _params[0]=val;
+          method.invoke(target,_params);
+          // System.out.println(toString()+".set: "+val);
+          if (_propertyChangeEventSetDescriptor==null)
+          { 
+            // Only fire propertyChange if the bean has no facility 
+            //   to do so itself
+            firePropertyChange(_property.getName(),oldValue,val);
+          }
+          return true;
+        }
+        else
+        { return false;
+        }
       }
       else
-      { return false;
+      {
+        // Don't compare values if we're not tracking property changes
+        _params[0]=val;
+        method.invoke(target,_params);
+        return true;
       }
     }
     catch (RuntimeException x)
