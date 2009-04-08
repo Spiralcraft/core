@@ -16,6 +16,8 @@ package spiralcraft.builder;
 
 import spiralcraft.lang.BaseFocus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.lang.reflect.BeanReflector;
@@ -69,7 +71,6 @@ import java.net.URISyntaxException;
 public class Assembly<T>
   implements Registrant,Lifecycle
 {
-  @SuppressWarnings("unused")
   private static ClassLog log=ClassLog.getInstance(Assembly.class);
   
   private final AssemblyClass _assemblyClass;
@@ -80,6 +81,8 @@ public class Assembly<T>
   private boolean resolved=false;
   private final AssemblyFocus<T> focus;
   private boolean factoryMode=false;
+  private Expression<T> instanceSource;
+  private Channel<T> instanceSourceChannel;
   
   
   /**
@@ -116,6 +119,7 @@ public class Assembly<T>
   }
 
   
+  
   /**
    * Called from resolve() to actually instantiate object
    * 
@@ -124,7 +128,25 @@ public class Assembly<T>
   private void constructInstance()
     throws BuildException
   {
-    Class javaClass=_assemblyClass.getJavaClass();
+    Class<T> javaClass=(Class<T>) _assemblyClass.getJavaClass();
+
+    if (instanceSourceChannel!=null)
+    { 
+      T instance=instanceSourceChannel.get();
+      if (instance!=null)
+      {
+        focus.getSubject().set(instance);
+        return;
+      }
+      else
+      { 
+        log.warning
+          ("Instance source channel returned null, attempting instantiation of "
+          +javaClass
+          );
+      }
+    }
+    
     if (javaClass==null)
     { throw new BuildException("No java class defined for assembly");
     }
@@ -134,14 +156,14 @@ public class Assembly<T>
       try
       {
         String constructor=_assemblyClass.getConstructor();
-        Object instance;
+        T instance;
         if (constructor!=null)
         { instance=constructFromString(javaClass,constructor);
         }
         else
         { instance=javaClass.newInstance();
         }
-        focus.getSubject().set((T) instance);
+        focus.getSubject().set(instance);
       }
       catch (AccessException x)
       { throw new BuildException("Error publishing instance in Focus chain",x);
@@ -173,14 +195,18 @@ public class Assembly<T>
     
   }
   
+  void setInstanceSourceChannel(Channel<T> sourceChannel)
+  { this.instanceSourceChannel=sourceChannel;
+  }
+  
   boolean isFactoryMode()
   { return factoryMode;
   }
   
-  Object constructFromString(Class clazz,String constructor)
+  T constructFromString(Class clazz,String constructor)
     throws BuildException
   {
-    StringConverter converter=StringConverter.getInstance(clazz);
+    StringConverter<T> converter=StringConverter.<T>getInstance(clazz);
     if (converter!=null)
     { return converter.fromString(constructor);
     }
@@ -204,7 +230,17 @@ public class Assembly<T>
     { throw new BuildException("Already bound properties");
     }
     bound=true;
-
+    if (instanceSource!=null)
+    { 
+      try
+      { instanceSourceChannel=parentFocus.bind(instanceSource);
+      }
+      catch (BindException x)
+      { 
+        throw new BuildException
+          ("Error binding to instance source "+instanceSource,x);
+      }
+    }
     focus.setParentFocus(parentFocus);
     _propertyBindings=_assemblyClass.bindProperties(this);
   }
