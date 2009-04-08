@@ -22,7 +22,10 @@ import java.beans.BeanInfo;
 import java.beans.PropertyChangeListener;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.beans.IntrospectionException;
+
+import spiralcraft.log.ClassLog;
 
 /**
  * Extends the BeanInfo interface and implementation to enhance the performance
@@ -40,6 +43,9 @@ import java.beans.IntrospectionException;
 public class MappedBeanInfo
   extends BeanInfoProxy
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(MappedBeanInfo.class);
+  
   private HashMap<String,PropertyDescriptor> _propertyMap;
   private HashMap<String,Field> _fieldMap;
   private Field[] _fields;
@@ -147,5 +153,43 @@ public class MappedBeanInfo
 
   public Field findField(String name)
   { return _fieldMap.get(name);
+  }
+  
+  
+  public Method getCovariantReadMethod
+    (PropertyDescriptor property)
+  {
+    
+    Method readMethod=property.getReadMethod();
+    
+    if (readMethod!=null)
+    {
+      // Get the actual readMethod from the actual class we're introspecting,
+      //   because the PropertyDescriptor might not pick up a co-variant return
+      //   type
+      //
+      // (this is a problem that strangely cropped up only on linux and not
+      //   on windows, with identical binaries and java version 6u6)
+      try
+      {
+        Method altReadMethod
+          =getBeanDescriptor().getBeanClass()
+            .getMethod(readMethod.getName(), new Class[0]);
+        if (altReadMethod!=null)
+        { readMethod=altReadMethod;
+        }
+      }    
+      catch (NoSuchMethodException x)
+      { 
+        log.fine
+          ("NoSuchMethodException getting alt read method "
+            +beanInfo.getBeanDescriptor().getBeanClass()+"."
+            +readMethod.getName()+"()"
+          );        
+      }    
+    }
+    
+    return readMethod;
+    
   }
 }

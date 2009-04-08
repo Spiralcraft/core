@@ -24,7 +24,7 @@ import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.Translator;
-import spiralcraft.log.ClassLog;
+//import spiralcraft.log.ClassLog;
 
 /**
  * A Translator associated with a single bean property. The 'get' transformation
@@ -35,8 +35,8 @@ class BeanPropertyTranslator<Tprop,Tbean>
 {
   private static final Object[] EMPTY_PARAMS=new Object[0];
   
-  private static final ClassLog log
-    =ClassLog.getInstance(BeanPropertyTranslator.class);
+//  private static final ClassLog log
+//    =ClassLog.getInstance(BeanPropertyTranslator.class);
 
   private final PropertyDescriptor _property;
   private final Method _readMethod;
@@ -48,38 +48,7 @@ class BeanPropertyTranslator<Tprop,Tbean>
   { 
     
     _property=property;
-    Method readMethod=property.getReadMethod();
-    
-    if (readMethod!=null)
-    {
-      // Get the actual readMethod from the actual class we're introspecting,
-      //   because the PropertyDescriptor might not pick up a co-variant return
-      //   type
-      //
-      // (this is a problem that strangely cropped up only on linux and not
-      //   on windows, with identical binaries and java version 6u6)
-      try
-      {
-        Method altReadMethod
-          =beanInfo.getBeanDescriptor().getBeanClass()
-            .getMethod(readMethod.getName(), new Class[0]);
-        if (altReadMethod!=null)
-        { readMethod=altReadMethod;
-        }
-      }
-      catch (NoSuchMethodException x)
-      { 
-        log.fine
-          ("NoSuchMethodException getting alt read method "
-            +beanInfo.getBeanDescriptor().getBeanClass()+"."
-            +readMethod.getName()+"()"
-          );
-      }
-      _readMethod=readMethod;
-    }
-    else
-    { _readMethod=null;
-    }
+    _readMethod=beanInfo.getCovariantReadMethod(property);
     
     _beanInfo=beanInfo;
     if (_readMethod!=null)

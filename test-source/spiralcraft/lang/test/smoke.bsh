@@ -167,9 +167,17 @@ new ExpressionResolverTest().execute
   );
 
 
+"//// Covariant bindings";
 
+import spiralcraft.lang.test.*;
+import spiralcraft.lang.spi.SimpleChannel;
 
+obj = new CovariantBase();
+chan = new SimpleChannel(obj,true);
+focus= new SimpleFocus(chan);
+result = focus.bind(Expression.create(".foo"));
 
+test("result.getReflector().getContentType()",ConcreteFoo.class);
 
 
 

@@ -17,6 +17,7 @@ package spiralcraft.builder;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.net.URI;
 
 import java.util.ArrayList;
@@ -415,7 +416,14 @@ public class AssemblyClass
     PropertySpecifier member=new PropertySpecifier(this,name);
     member.setPropertyDescriptor(descriptor);
     
-    Class<?> propertyType=descriptor.getPropertyType();
+    Method readMethod=beanInfo.getCovariantReadMethod(descriptor);
+    
+    Class<?> propertyType
+      =readMethod==null
+      ?descriptor.getPropertyType()
+      :readMethod.getReturnType()
+      ;
+        
     if (addSubAssembly)
     {
       // XXX Factor addSubAssembly into appropriate intelligence
