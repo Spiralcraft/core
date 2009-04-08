@@ -18,6 +18,8 @@ import java.beans.PropertyDescriptor;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 
 import spiralcraft.beans.MappedBeanInfo;
 
@@ -53,8 +55,16 @@ class BeanPropertyTranslator<Tprop,Tbean>
     _beanInfo=beanInfo;
     if (_readMethod!=null)
     {
-      _reflector=BeanReflector.<Tprop>getInstance
-        (_readMethod.getGenericReturnType());
+      Type genericType=_readMethod.getGenericReturnType();
+      if (!(genericType instanceof TypeVariable))
+      {
+        _reflector=BeanReflector.<Tprop>getInstance(genericType);
+      }
+      else
+      {
+        _reflector
+          =BeanReflector.<Tprop>getInstance(_readMethod.getReturnType());
+      }
     }
     else
     {
