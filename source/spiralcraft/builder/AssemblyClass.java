@@ -826,9 +826,10 @@ public class AssemblyClass
           if (_javaClass==null)
           {
             throw new BuildException
-              ("Assembly "+baseResource+" is not contained in a Java package and "
-              +" thus cannot be automatically derived from a Java class of the same" 
-              +" name"
+              ("Base AssemblyClass not found for AssemblyClass in "
+              +this.getSourceURI()
+              +": Could not resolve "+baseResource+" to an assy.xml or a" 
+              +" Java class "
               );
           }
         }
