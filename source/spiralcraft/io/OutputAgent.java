@@ -53,15 +53,33 @@ public abstract class OutputAgent
     =ClassLog.getInstance(getClass());
   
   private final ByteBuffer[] _buffers={new ByteBuffer(),new ByteBuffer()};
-  private Object _mutex=new Object();
+  
+  // _mutex synchronizes the double buffer 
+  private volatile Object _mutex=new Object();  
+
   private volatile int _currentBuffer=0;
+  
   private long maxDelayMs=1000;
   private long minDelayMs=0;
   private volatile boolean _initialized=false;
   private volatile boolean waiting=false;
   protected int maxBufferSize;
   private volatile boolean stopping=false;
+  private volatile boolean stopped=false;
   private boolean asyncIO=true;
+  
+  private Thread shutdownHook=new Thread()
+  { 
+    @Override
+    public void run() 
+    { 
+      synchronized(this) 
+      {
+        stopped=true;
+        notify();
+      } 
+    };
+  };
   
   /**
    * <p>Specify the maximum number of bytes that can accumulate in the buffer
@@ -142,6 +160,7 @@ public abstract class OutputAgent
       if (blocked)
       { log.log(Level.WARNING,getLogPrefix()+": Unblocking on "+_currentBuffer);
       }
+      blocked=false;
       _buffers[_currentBuffer].append(bytes,start,len);
       waiting=true;
      
@@ -176,6 +195,7 @@ public abstract class OutputAgent
     
     _initialized=true;
     stopping=false;
+    stopped=false;
     if (asyncIO)
     {
       Scheduler.instance().scheduleIn
@@ -184,6 +204,7 @@ public abstract class OutputAgent
         );
       
     }
+    Runtime.getRuntime().addShutdownHook(shutdownHook);
     notify();
     
   }
@@ -191,11 +212,14 @@ public abstract class OutputAgent
   @Override
   public synchronized void stop()
   {
+    if (!_initialized)
+    { return;
+    }
     _initialized=false;
     stopping=true;
     notify();
     
-    if (asyncIO)
+    if (asyncIO && !stopped)
     {
       try
       { 
@@ -206,6 +230,7 @@ public abstract class OutputAgent
       {
       }
     }
+    Runtime.getRuntime().removeShutdownHook(shutdownHook);
     destroy();
   }
 
@@ -258,16 +283,39 @@ public abstract class OutputAgent
         synchronized(this)
         { notify();
         }
+        stopped=true;
       }
     }
     catch (Exception x)
     { 
       // Back off for a minute
+      x.printStackTrace();
+      
+      // Note- could cause deadlock if log we are writing to uses this
+      //   output agent.
       log.log(Level.SEVERE,getLogPrefix()+"Error writing output",x);
-      Scheduler.instance().scheduleIn
-        (this
-        ,60000
-        );
+
+      boolean end;
+      synchronized (this)
+      { end=stopping;
+      }
+      
+      if (!end)
+      {
+        Scheduler.instance().scheduleIn
+          (this
+          ,60000
+          );
+      }
+      else
+      {
+        synchronized(this)
+        { 
+          notify();
+          stopped=true;
+        }
+      }
+      
     }
 
   }
