@@ -7,6 +7,7 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.io.RotatingFileOutputAgent;
 import spiralcraft.io.TimestampFileSequence;
 import spiralcraft.util.Path;
+import spiralcraft.util.thread.CycleDetector;
 
 public class RotatingFileHandler
   implements EventHandler
@@ -21,6 +22,9 @@ public class RotatingFileHandler
   
   private ClassLog log=ClassLog.getInstance(RotatingFileHandler.class);
   
+  private CycleDetector<RotatingFileHandler> cycleDetector
+    =new CycleDetector<RotatingFileHandler>();
+  
   public void setPath(Path path)
   {
     Path dir=path.parentPath();
@@ -28,6 +32,9 @@ public class RotatingFileHandler
     
     TimestampFileSequence fileSequence=new TimestampFileSequence();
     out.setFileSequence(fileSequence);
+    
+    // Activity logs should never use asyncIO.
+    out.setAsyncIO(false);
     
     fileSequence.setDirectory(new File(dir.format("/")));
     fileSequence.setPrefix(name);
@@ -48,8 +55,20 @@ public class RotatingFileHandler
     }
     catch (IOException x)
     { 
-      log.log(Level.SEVERE,"Error logging event..",x);
-      log.log(event);
+      if (!cycleDetector.detectOrPush(this))
+      {
+        try
+        {
+          log.log(Level.SEVERE,"Error logging event..",x);
+          log.log(event);
+        }
+        finally
+        { cycleDetector.pop();
+        }
+      }
+      else
+      { x.printStackTrace();
+      }
     }
 
     
