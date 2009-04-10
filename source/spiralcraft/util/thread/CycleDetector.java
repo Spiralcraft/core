@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,24 +12,25 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.util;
+package spiralcraft.util.thread;
 
-import java.util.Stack;
-import java.util.HashMap;
+import spiralcraft.util.SetStack;
 
 /**
  * Detects cycles using hashCode() and equals()
  */
 public class CycleDetector<T>
 {
-  // TODO: 2009-02-11 mike: All uses of this use it within a ThreadLocal. 
-  //    Incorporate the ThreadLocal into this object to simplify client code
-  //    and make this utility much more useful
-  //
-  // TODO: 2009-04-10 mike: Replace with spiralcraft.util.thread.CycleDetector
   
-  private final Stack<T> stack=new Stack<T>();
-  private final HashMap<T,T> map=new HashMap<T,T>();
+  private final ThreadLocal<SetStack<T>> stack
+    =new ThreadLocal<SetStack<T>>()
+    {
+      @Override
+      public SetStack<T> initialValue()
+      { return new SetStack<T>();
+      }
+    };
+  
 
   /**
    * Detects a duplicate object in the stack. If there is no duplicate
@@ -37,14 +38,7 @@ public class CycleDetector<T>
    *   a duplicate, returns true.
    */
   public boolean detectOrPush(T object)
-  { 
-    if (map.get(object)!=null)
-    { return true;
-    }
-    stack.push(object);
-    map.put(object,object);    
-    // System.err.println(this.toString()+":"+object.toString());
-    return false;
+  { return !stack.get().push(object);
   }
 
   /**
@@ -54,7 +48,17 @@ public class CycleDetector<T>
    */
   public void pop()
   { 
-    map.remove(stack.pop());
+    SetStack<T> set=stack.get();
+    set.pop();
+    if (set.isEmpty())
+    { stack.remove();
+    }
+  }
+  
+  class StackRef
+  {
+    public T object;
+    public StackRef last;
   }
   
 }
