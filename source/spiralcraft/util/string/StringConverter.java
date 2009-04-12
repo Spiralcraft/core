@@ -97,6 +97,9 @@ public abstract class StringConverter<T>
           { ret=new ArrayToString(componentInstance,type.getComponentType());
           }
         }
+        else if (type.isEnum())
+        { ret=new EnumToString(type);
+        }
         else
         {
           Constructor<T> constructor=null;
