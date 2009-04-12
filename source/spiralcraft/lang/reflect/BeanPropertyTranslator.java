@@ -52,6 +52,7 @@ class BeanPropertyTranslator<Tprop,Tbean>
     _property=property;
     _readMethod=beanInfo.getCovariantReadMethod(property);
     
+    
     _beanInfo=beanInfo;
     if (_readMethod!=null)
     {
@@ -85,6 +86,14 @@ class BeanPropertyTranslator<Tprop,Tbean>
 //    }
   }
 
+  public Method getReadMethod()
+  { return _readMethod;
+  }
+  
+  public MappedBeanInfo getSourceBeanInfo()
+  { return _beanInfo;
+  }
+  
   public MappedBeanInfo getBeanInfo()
   { return _beanInfo;
   }

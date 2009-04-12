@@ -34,6 +34,7 @@ class BeanPropertyChannel<T,S>
   private final Object[] _params=new Object[1];
   private final PropertyDescriptor _property;
   private final Method _readMethod;
+  private final Method _writeMethod;
   private final boolean _static;
   private final EventSetDescriptor _propertyChangeEventSetDescriptor;
   private final Object[] _beanPropertyChangeListenerParams;
@@ -45,7 +46,21 @@ class BeanPropertyChannel<T,S>
   {
     super(source,translator,null);
     _property=translator.getProperty();
-    _readMethod=_property.getReadMethod();
+    _readMethod=translator.getReadMethod();
+    
+    if (_property.getWriteMethod()!=null)
+    { _writeMethod=_property.getWriteMethod();
+    }
+    else
+    { 
+      // Expensive, but may be required
+      _writeMethod
+        =translator.getSourceBeanInfo()
+          .getSpecificWriteMethod
+            (_property
+            ,translator.getReflector().getContentType()
+            );
+    }
 
 
     _propertyChangeEventSetDescriptor
@@ -61,7 +76,7 @@ class BeanPropertyChannel<T,S>
     }
 
     _static=
-      (_property.getWriteMethod()==null
+      (_writeMethod==null
         && _propertyChangeEventSetDescriptor==null
         && isSourceConstant()
       );
@@ -155,8 +170,7 @@ class BeanPropertyChannel<T,S>
     { return false;
     }
     
-    Method method=_property.getWriteMethod();
-    if (method==null)
+    if (_writeMethod==null)
     { return false;
     }
     
@@ -172,8 +186,7 @@ class BeanPropertyChannel<T,S>
     { return false;
     }
 
-    Method method=_property.getWriteMethod();
-    if (method==null)
+    if (_writeMethod==null)
     { return false;
     }
     
@@ -192,7 +205,7 @@ class BeanPropertyChannel<T,S>
         if (oldValue!=val || _readMethod==null)
         { 
           _params[0]=val;
-          method.invoke(target,_params);
+          _writeMethod.invoke(target,_params);
           // System.out.println(toString()+".set: "+val);
           if (_propertyChangeEventSetDescriptor==null)
           { 
@@ -210,7 +223,7 @@ class BeanPropertyChannel<T,S>
       {
         // Don't compare values if we're not tracking property changes
         _params[0]=val;
-        method.invoke(target,_params);
+        _writeMethod.invoke(target,_params);
         return true;
       }
     }
@@ -239,7 +252,11 @@ class BeanPropertyChannel<T,S>
   public String toString()
   { 
     return super.toString()
-      +":[property="+_property.getName()+" ("+_property.getPropertyType()+")]";
+      +":[property="
+      +_property.getName()+" ("+_property.getPropertyType()+")" 
+      +" getter="+_readMethod
+      +" setter="+_property.getWriteMethod()
+      +"]";
   }
   
   class BeanPropertyChangeListener

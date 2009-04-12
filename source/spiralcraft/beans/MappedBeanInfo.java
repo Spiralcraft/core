@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 import java.beans.IntrospectionException;
 
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.lang.ClassUtil;
 
 /**
  * Extends the BeanInfo interface and implementation to enhance the performance
@@ -45,6 +46,7 @@ public class MappedBeanInfo
 {
   private static final ClassLog log
     =ClassLog.getInstance(MappedBeanInfo.class);
+  private static final boolean debug=false;
   
   private HashMap<String,PropertyDescriptor> _propertyMap;
   private HashMap<String,Field> _fieldMap;
@@ -155,7 +157,71 @@ public class MappedBeanInfo
   { return _fieldMap.get(name);
   }
   
+  public String recapitalize(String propertyName)
+  {
+    if (Character.isLowerCase(propertyName.charAt(0)))
+    { 
+      return Character.toUpperCase(propertyName.charAt(0))
+        +(propertyName.length()>1?propertyName.substring(1):"")
+        ;
+    }
+    else
+    { return propertyName;
+    }
+  }
   
+  /**
+   * Get the actual setter Method from the actual class we're introspecting,
+   *  for an extended property type,
+   *  because the PropertyDescriptor might not pick up a co-variant return
+   *  type
+   * 
+   * @param property
+   * @return The read method
+   */
+  public Method getSpecificWriteMethod
+    (PropertyDescriptor property,Class<?> type)
+  {
+    Method writeMethod=property.getWriteMethod();
+
+    String searchMethod
+      =writeMethod!=null
+        ?writeMethod.getName()
+        :"set"+recapitalize(property.getName());
+
+    Method altWriteMethod
+      =ClassUtil.getMethod
+        (getBeanDescriptor().getBeanClass()
+        ,searchMethod
+        ,new Class[] {type}
+        );
+      
+    if (altWriteMethod!=null)
+    { writeMethod=altWriteMethod;
+    }
+    else
+    { 
+      if (debug)
+      {
+        log.debug
+          ("No alternate write method "+searchMethod+"("+type.getName()+") in " 
+          +getBeanDescriptor().getBeanClass()
+          );
+      }
+    }
+
+    return writeMethod;
+    
+  }
+  
+  /**
+   * Get the actual getter Method from the actual class we're introspecting,
+   *  because the PropertyDescriptor might not pick up a co-variant return
+   *  type
+   * 
+   * @param property
+   * @return The read method
+   */
   public Method getCovariantReadMethod
     (PropertyDescriptor property)
   {
@@ -164,12 +230,6 @@ public class MappedBeanInfo
     
     if (readMethod!=null)
     {
-      // Get the actual readMethod from the actual class we're introspecting,
-      //   because the PropertyDescriptor might not pick up a co-variant return
-      //   type
-      //
-      // (this is a problem that strangely cropped up only on linux and not
-      //   on windows, with identical binaries and java version 6u6)
       try
       {
         Method altReadMethod
