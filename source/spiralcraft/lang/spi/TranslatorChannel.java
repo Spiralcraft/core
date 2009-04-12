@@ -304,7 +304,8 @@ public  class TranslatorChannel<T,S>
   { 
     StringBuilder out=new StringBuilder();
     out.append
-      (super.toString()+":"+id+"("+translator.toString()+"):"+source.toString()+"(");
+      (super.toString()+":"+id+"("+translator.toString()+")<-["
+        +source.toString()+"](");
     boolean first=true;
     if (_modifiers!=null)
     {

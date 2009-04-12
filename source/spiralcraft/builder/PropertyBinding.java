@@ -499,7 +499,9 @@ public class PropertyBinding
             log.warning("Non-writable property '"+_specifier.getTargetName()
                         +"'- rejected value ["+sourceVal+"] "
                         +", defined at "+_specifier.getSourceCodeLocation()
+                        +": target is "+_target
                         );
+            
           }
           else
           {
