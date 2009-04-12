@@ -49,7 +49,9 @@ public class HandlerAdapter
   }
 
   private Object[] translateDetails(LogRecord record)
-  { return null;
+  { 
+    record.getLevel();
+    return null;
   }
     
   private spiralcraft.log.Level translateLevel(java.util.logging.Level level)

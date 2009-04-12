@@ -78,7 +78,7 @@ public abstract class OutputAgent
         stopped=true;
         notify();
       } 
-    };
+    }
   };
   
   /**
