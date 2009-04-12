@@ -79,14 +79,27 @@ public class ClassLog
   { log(FINE,message,null,1+stackOffset);
   }
   
-  public void warning(String message)
-  { log(WARNING,message,null,1);
+  public void trace(String message)
+  { log(TRACE,message,null,1);
+  }
+  
+
+  public void debug(String message)
+  { log(DEBUG,message,null,1);
   }
   
   public void info(String message)
   { log(INFO,message,null,1);
   }
-  
+
+  public void warning(String message)
+  { log(WARNING,message,null,1);
+  }
+
+  public void severe(String message)
+  { log(SEVERE,message,null,1);
+  }
+
   ClassLog(String className)
   { this.context=new Path(className,'/');
   }
