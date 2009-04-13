@@ -277,14 +277,19 @@ public class Assembly<T>
     { 
       // XXX: Remove warning once functionality is well verified
       //
-      // If we opt to create an incompatible type, that's still valid as long as it 
-      //   is still compatible with the formal property type, not the actual type of the
+      // If we opt to create an incompatible type, that's still valid as long 
+      //   as it 
+      //   is still compatible with the formal property type, not the actual
+      //   type of the
       //   default object. 
-      System.err.println
+      log.debug
         ("Assembly: Default value of type "
         +val.getClass()
         +" is not compatible with "
         +_assemblyClass.getJavaClass()
+        +_assemblyClass.getContainingProperty()!=null
+          ?" ("+_assemblyClass.getContainingProperty()+")"
+          :""
         );
     }
   }
