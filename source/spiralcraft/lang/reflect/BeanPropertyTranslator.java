@@ -16,8 +16,10 @@ package spiralcraft.lang.reflect;
 
 import java.beans.PropertyDescriptor;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
@@ -26,7 +28,7 @@ import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.Translator;
-//import spiralcraft.log.ClassLog;
+import spiralcraft.log.ClassLog;
 
 /**
  * A Translator associated with a single bean property. The 'get' transformation
@@ -37,55 +39,111 @@ class BeanPropertyTranslator<Tprop,Tbean>
 {
   private static final Object[] EMPTY_PARAMS=new Object[0];
   
-//  private static final ClassLog log
-//    =ClassLog.getInstance(BeanPropertyTranslator.class);
+  private static final ClassLog log
+    =ClassLog.getInstance(BeanPropertyTranslator.class);
 
   private final PropertyDescriptor _property;
   private final Method _readMethod;
   private final MappedBeanInfo _beanInfo;
   private final Reflector<Tprop> _reflector;
+  private final Field _publicField;
   
   @SuppressWarnings("unchecked") // PropertyDescriptor is not generic
-  public BeanPropertyTranslator(PropertyDescriptor property,MappedBeanInfo beanInfo)
+  public BeanPropertyTranslator
+    (PropertyDescriptor property
+    ,MappedBeanInfo beanInfo
+    )
   { 
     
     _property=property;
     _readMethod=beanInfo.getCovariantReadMethod(property);
-    
-    
     _beanInfo=beanInfo;
+    
+    Class beanClass=beanInfo.getBeanDescriptor().getBeanClass();
+    
+    
+    
+    Reflector<Tprop> reflector;
+    
     if (_readMethod!=null)
     {
       Type genericType=_readMethod.getGenericReturnType();
       if (!(genericType instanceof TypeVariable))
       {
-        _reflector=BeanReflector.<Tprop>getInstance(genericType);
+        reflector=BeanReflector.<Tprop>getInstance(genericType);
       }
       else
       {
-        _reflector
+        reflector
           =BeanReflector.<Tprop>getInstance(_readMethod.getReturnType());
       }
     }
     else
     {
-      _reflector=BeanReflector.<Tprop>getInstance
+      reflector=BeanReflector.<Tprop>getInstance
         ((Class<Tprop>)_property.getPropertyType());
     }
-//    if (_property.getName().equals("state"))
-//    { 
-//      if (_readMethod!=null)
-//      {
-//        log.fine("State "
-//                +_property.getReadMethod().getReturnType()+"\r\n"
-//                +_property.getReadMethod().getGenericReturnType()+"\r\n"
-//                +_property.getPropertyType()+"\r\n"
-//              );
-//      }
-//      log.fine(beanInfo.getBeanDescriptor().getBeanClass().toString());
-//    }
+
+    
+    Field field=null;
+    try
+    {
+      field
+        =beanClass
+          .getField(_property.getName());
+      if (!Modifier.isPublic(field.getModifiers()))
+      { field=null;
+      }
+      else if 
+        (!reflector.getContentType()
+          .isAssignableFrom(field.getType())
+        && !field.getType().isAssignableFrom(reflector.getContentType())
+        )
+      { 
+        log.debug("Class member field "+field.toString()
+                  +" is not type compatible with property "
+                 +beanClass.getName()+"."+_property.getName()+" ("
+                 +reflector.getContentType().getName()+")"
+                 );
+        field=null;
+      }
+        
+    }
+    catch (NoSuchFieldException x)
+    {  
+    }
+    _publicField=field;
+    
+    
+    if (_property.getWriteMethod()==null 
+        && _publicField!=null
+       )
+    {
+      if (_readMethod==null 
+         || _readMethod.getReturnType().isAssignableFrom(_publicField.getType())
+         )
+      { 
+        // Property is writable through a public field that is typed 
+        //   more specifically than the read method. We need to
+        //   make the property type more specific.
+        reflector
+          =BeanReflector.<Tprop>getInstance(_publicField.getType());
+        log.debug
+          ("Property "+beanClass.getName()+"."+property.getName()
+          +" narrowed to type "+_publicField.getType().getName()
+          +" due to existence of public field setter"
+          );
+      }
+    }
+    
+    _reflector=reflector;
+
   }
 
+  public Field getPublicField()
+  { return _publicField;
+  }
+  
   public Method getReadMethod()
   { return _readMethod;
   }

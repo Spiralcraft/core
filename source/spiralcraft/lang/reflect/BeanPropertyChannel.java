@@ -1,8 +1,3 @@
-package spiralcraft.lang.reflect;
-
-import java.beans.PropertyDescriptor;
-import java.beans.PropertyChangeSupport;
-import java.beans.EventSetDescriptor;
 //
 // Copyright (c) 1998,2005 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
@@ -17,9 +12,15 @@ import java.beans.EventSetDescriptor;
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
+package spiralcraft.lang.reflect;
+
+import java.beans.PropertyDescriptor;
+import java.beans.PropertyChangeSupport;
+import java.beans.EventSetDescriptor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
@@ -35,6 +36,7 @@ class BeanPropertyChannel<T,S>
   private final PropertyDescriptor _property;
   private final Method _readMethod;
   private final Method _writeMethod;
+  private final Field _writeField;
   private final boolean _static;
   private final EventSetDescriptor _propertyChangeEventSetDescriptor;
   private final Object[] _beanPropertyChangeListenerParams;
@@ -62,6 +64,11 @@ class BeanPropertyChannel<T,S>
             );
     }
 
+    _writeField
+      =_writeMethod==null
+      ?translator.getPublicField()
+      :null;
+    
 
     _propertyChangeEventSetDescriptor
       =translator.getBeanInfo().getPropertyChangeEventSetDescriptor();
@@ -76,7 +83,7 @@ class BeanPropertyChannel<T,S>
     }
 
     _static=
-      (_writeMethod==null
+      (_writeMethod==null && _writeField==null
         && _propertyChangeEventSetDescriptor==null
         && isSourceConstant()
       );
@@ -170,7 +177,7 @@ class BeanPropertyChannel<T,S>
     { return false;
     }
     
-    if (_writeMethod==null)
+    if (_writeMethod==null && _writeField==null)
     { return false;
     }
     
@@ -186,7 +193,7 @@ class BeanPropertyChannel<T,S>
     { return false;
     }
 
-    if (_writeMethod==null)
+    if (_writeMethod==null && _writeField==null)
     { return false;
     }
     
@@ -204,8 +211,14 @@ class BeanPropertyChannel<T,S>
       
         if (oldValue!=val || _readMethod==null)
         { 
-          _params[0]=val;
-          _writeMethod.invoke(target,_params);
+          if (_writeMethod!=null)
+          { 
+            _params[0]=val;
+            _writeMethod.invoke(target,_params);
+          }
+          else
+          { _writeField.set(target,val);
+          }
           // System.out.println(toString()+".set: "+val);
           if (_propertyChangeEventSetDescriptor==null)
           { 
@@ -222,8 +235,14 @@ class BeanPropertyChannel<T,S>
       else
       {
         // Don't compare values if we're not tracking property changes
-        _params[0]=val;
-        _writeMethod.invoke(target,_params);
+        if (_writeMethod!=null)
+        {
+          _params[0]=val;
+          _writeMethod.invoke(target,_params);
+        }
+        else
+        { _writeField.set(target,val);
+        }
         return true;
       }
     }
@@ -255,7 +274,10 @@ class BeanPropertyChannel<T,S>
       +":[property="
       +_property.getName()+" ("+_property.getPropertyType()+")" 
       +" getter="+_readMethod
-      +" setter="+_property.getWriteMethod()
+      +(_writeField!=null
+          ?" setterField="+_writeField
+          :" setter="+_writeMethod
+       )
       +"]";
   }
   
