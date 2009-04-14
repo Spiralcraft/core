@@ -720,6 +720,10 @@ public class AssemblyClass
   { return sourceURI;
   }
 
+  private boolean isUnqualifiedDeclaration()
+  { return _declarationName!=null && _baseName.equals(_declarationName);
+  }
+  
   /**
    * <p>Resolve the external base class for this AssemblyClass. Called during
    *   resolution when the assembly hasn't been constructed with an existing
@@ -787,6 +791,13 @@ public class AssemblyClass
         
         _baseAssemblyClass=_loader.findAssemblyDefinition(baseResource);
 
+
+        // 2009-04-14
+        //
+        //   XXX Don't attempt this if _baseName.equals(_declarationName) -
+        //     ie. "String". There may be a conflict between how BuilderType
+        //     loads stuff and the standard loading mechanism.
+        //
         // 2009-03-28 mike
         //
         //   Block added to resolve a canonical base AssemblyClass for
@@ -798,10 +809,12 @@ public class AssemblyClass
         if (_baseAssemblyClass==null 
             && sourceURI!=null 
             && !baseResource.equals(sourceURI)
+            && !isUnqualifiedDeclaration()
             )
         { 
           // Load the canonical assembly class for the specified qualified
           //   class URI.
+          
           
           _baseAssemblyClass
             =_loader.findAssemblyClass(_basePackage.resolve(_baseName));
@@ -827,7 +840,8 @@ public class AssemblyClass
           {
             throw new BuildException
               ("Base AssemblyClass not found for AssemblyClass in "
-              +this.getSourceURI()
+              +this.getSourceURI()+" "+this.getContainingProperty()+" "
+              + this.getDeclarationName()
               +": Could not resolve "+baseResource+" to an assy.xml or a" 
               +" Java class "
               );
@@ -891,7 +905,12 @@ public class AssemblyClass
       }
     }
     
-    if (_basePackage==null || _basePackage.toString().isEmpty())
+    // XXX 2009-04-14 mike  For now, _basePackage will not be null due
+    //   to the way it is set when reading the PropertySpecifier. So
+    //   we can't depend on this for checking the Java package. Use
+    //   isUnqualifiedDeclaratiod() temporarily instead, until we can
+    //   disambiguate between java.lang and "current dir" spec.
+    if (isUnqualifiedDeclaration())
     {
       String langClassName="java.lang."+_baseName;
       return
