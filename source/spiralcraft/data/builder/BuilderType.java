@@ -451,7 +451,7 @@ public class BuilderType
     { 
       // log.fine("Narrowing "+getURI());
       Type<Assembly<?>> targetType
-        =(BuilderType) getTypeResolver().<Assembly<?>>resolve
+        =(BuilderType) Type.<Assembly<?>>resolve
           (canonicalURI(assembly.getAssemblyClass())
           );
       return targetType.toData(assembly);    

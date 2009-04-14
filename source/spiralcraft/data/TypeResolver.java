@@ -115,7 +115,14 @@ public class TypeResolver
     this.classLoaderRef=new WeakReference<ClassLoader>
       (Thread.currentThread().getContextClassLoader()
       );
-      
+    if (debug)
+    {
+      log.debug
+        ("Creating "+getClass().getName()+" for classloader "
+        + classLoaderRef.get()
+        );
+    }
+    
     String[] factoryClassNames
       =new String[]
       {"spiralcraft.data.xml.XmlTypeFactory"

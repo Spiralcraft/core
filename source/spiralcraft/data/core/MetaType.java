@@ -69,7 +69,7 @@ public class MetaType
   @Override
   public Type<?> fromString(String val)
     throws DataException
-  { return getTypeResolver().resolve(URI.create(val));
+  { return Type.resolve(URI.create(val));
   }
   
   @Override
@@ -80,7 +80,8 @@ public class MetaType
   /**
    * Create a new subtype instance for type extension (making new instances
    *   of various Type implementations), to bypass the type reference behavior
-   *   which returns canonical instances.
+   *   which returns canonical instances- e.g. providing an in-line extension
+   *   for String.type
    * 
    * @param composite
    * @param uri
@@ -94,7 +95,7 @@ public class MetaType
     InstanceResolver instanceResolver
       =new ConstructorInstanceResolver
         (new Class[] {TypeResolver.class,URI.class}
-        ,new Object[] {getTypeResolver(),uri}
+        ,new Object[] {TypeResolver.getTypeResolver(),uri}
         );
     return super.fromData(composite,instanceResolver);
     
@@ -143,7 +144,7 @@ public class MetaType
         instanceResolver
           =new ConstructorInstanceResolver
             (new Class[] {TypeResolver.class,URI.class}
-            ,new Object[] {getTypeResolver(),uri}
+            ,new Object[] {TypeResolver.getTypeResolver(),uri}
             );
 
         if (debug)
