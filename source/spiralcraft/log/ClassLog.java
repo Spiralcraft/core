@@ -16,6 +16,7 @@ package spiralcraft.log;
 
 import java.util.WeakHashMap;
 
+import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.Path;
 
 
@@ -27,6 +28,26 @@ public class ClassLog
   
   private static final WeakHashMap<Class<?>,ClassLog> map
     =new WeakHashMap<Class<?>,ClassLog>();
+  
+  /**
+   * Return the initial level at which the given class should output
+   *   debug messages. Defaults to OFF, but may be set using a 
+   *   system property [classname].debugLevel
+   *   
+   * @param subject
+   * @return
+   */
+  public static final Level 
+    getInitialDebugLevel(Class<?> subject,Level defaultLevel)
+  { 
+    String level=ContextDictionary.getInstance()
+      .find(subject.getName()+".debugLevel"
+            ,defaultLevel!=null?defaultLevel.getName():"OFF"
+            );
+    
+    return Level.valueOf(level);
+  }
+  
   
   public static synchronized final ClassLog getInstance(Class<?> subject)
   {

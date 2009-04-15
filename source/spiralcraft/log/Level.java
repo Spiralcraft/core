@@ -36,9 +36,20 @@ package spiralcraft.log;
  * @author mike
  *
  */
-public class Level
+public enum Level
 {
+  ALL("ALL",0)
+  ,FINE("FINE",1000)
+  ,TRACE("TRACE",2000)
+  ,DEBUG("DEBUG",3000)
+  ,CONFIG("CONFIG",4000)
+  ,INFO("INFO",5000)
+  ,WARNING("WARNING",6000)
+  ,SEVERE("SEVERE",7000)
+  ,OFF("OFF",Integer.MAX_VALUE)
+  ;
   
+/*  
   public static final Level ALL=new Level("ALL",0);
   public static final Level FINE=new Level("FINE",1000);
   public static final Level TRACE=new Level("TRACE",2000);
@@ -48,11 +59,13 @@ public class Level
   public static final Level WARNING=new Level("WARNING",6000);
   public static final Level SEVERE=new Level("SEVERE",7000);
   public static final Level OFF=new Level("OFF",Integer.MAX_VALUE);
-  
+/*
+ *   
+ */
   private final String name;
   private final int value;
   
-  protected Level(String name,int value)
+  private Level(String name,int value)
   { 
     this.name=name;
     this.value=value;
