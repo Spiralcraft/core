@@ -29,6 +29,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 /**
  * A Translator associated with a single bean property. The 'get' transformation
@@ -41,6 +42,9 @@ class BeanPropertyTranslator<Tprop,Tbean>
   
   private static final ClassLog log
     =ClassLog.getInstance(BeanPropertyTranslator.class);
+  
+  private static Level debugLevel
+    =ClassLog.getInitialDebugLevel(BeanPropertyTranslator.class,null);
 
   private final PropertyDescriptor _property;
   private final Method _readMethod;
@@ -100,11 +104,14 @@ class BeanPropertyTranslator<Tprop,Tbean>
         && !field.getType().isAssignableFrom(reflector.getContentType())
         )
       { 
-        log.debug("Class member field "+field.toString()
+        if (Level.DEBUG.canLog(debugLevel))
+        {
+          log.debug("Class member field "+field.toString()
                   +" is not type compatible with property "
                  +beanClass.getName()+"."+_property.getName()+" ("
                  +reflector.getContentType().getName()+")"
                  );
+        }
         field=null;
       }
         
@@ -128,11 +135,15 @@ class BeanPropertyTranslator<Tprop,Tbean>
         //   make the property type more specific.
         reflector
           =BeanReflector.<Tprop>getInstance(_publicField.getType());
-        log.debug
-          ("Property "+beanClass.getName()+"."+property.getName()
-          +" narrowed to type "+_publicField.getType().getName()
-          +" due to existence of public field setter"
-          );
+        
+        if (Level.DEBUG.canLog(debugLevel))
+        {
+          log.debug
+            ("Property "+beanClass.getName()+"."+property.getName()
+            +" narrowed to type "+_publicField.getType().getName()
+            +" due to existence of public field setter"
+            );
+        }
       }
     }
     
@@ -174,13 +185,25 @@ class BeanPropertyTranslator<Tprop,Tbean>
         { return null;
         }
       }
+      else if (_publicField!=null)
+      { 
+        if (value!=null)
+        { return (Tprop) _publicField.get(value);
+        }
+        else
+        { return null;
+        }
+      }
       else
       { 
-//        System.err.println
-//          ("BeanPropertyTranslator: No read method for '"
-//          +value.getClass().getName()
-//          +"."+_property.getName()+"'"
-//          );
+        if (Level.TRACE.canLog(debugLevel))
+        {
+          log.debug
+            ("No read method or public field for '"
+            +value.getClass().getName()
+            +"."+_property.getName()+"'"
+            );
+        }
         return null;
       }
     }
