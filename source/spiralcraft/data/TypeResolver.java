@@ -41,6 +41,7 @@ import spiralcraft.data.reflect.ReflectionType;
 
 //import spiralcraft.data.xml.XmlTypeFactory;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 
 /**
@@ -65,7 +66,10 @@ import spiralcraft.log.ClassLog;
  */
 public class TypeResolver
 {
+  private static volatile int NEXT_ID=0;
   private static final ClassLog log=ClassLog.getInstance(TypeResolver.class);
+  private Level debugLevel
+    =ClassLog.getInitialDebugLevel(TypeResolver.class,null);
   
   private static final ClassLoaderLocal<TypeResolver> classLoaderLocal
     =new ClassLoaderLocal<TypeResolver>();
@@ -78,8 +82,7 @@ public class TypeResolver
   private final WeakReference<ClassLoader> classLoaderRef;
 
   private final ArrayList<TypeFactory> factories=new ArrayList<TypeFactory>();
-  
-  private boolean debug=false;
+  private final int id=NEXT_ID++;
   
   public static synchronized final TypeResolver getTypeResolver()
   { 
@@ -115,11 +118,12 @@ public class TypeResolver
     this.classLoaderRef=new WeakReference<ClassLoader>
       (Thread.currentThread().getContextClassLoader()
       );
-    if (debug)
+    
+    if (debugLevel.canLog(Level.DEBUG))
     {
       log.debug
-        ("Creating "+getClass().getName()+" for classloader "
-        + classLoaderRef.get()
+        (logMessage("Creating "+getClass().getName()+" for classloader "
+        + classLoaderRef.get())
         );
     }
     
@@ -175,9 +179,11 @@ public class TypeResolver
   public final <T> Type<T> resolve(URI typeUri)
     throws DataException
   { 
+    
     if (typeUri==null)
     { return null;
     }
+
 
 //    if (!typeUri.isAbsolute())
 //    { 
@@ -286,8 +292,8 @@ public class TypeResolver
   private final Type<?> loadMetaType(Type<?> baseType,URI typeURI)
     throws DataException
   {
-    if (debug)
-    { log.fine("Loading MetaType for "+baseType);
+    if (debugLevel.canLog(Level.FINE))
+    { log.fine(logMessage("Loading MetaType for "+baseType));
     }
     
     Type<?> type=map.get(typeURI);
@@ -376,16 +382,20 @@ public class TypeResolver
         ("Type "+uri+" already registered as "+map.get(uri));
     }
     map.put(uri,type);
-    if (debug)
-    { log.fine("register "+type);
+    
+    if (debugLevel.canLog(Level.FINE))
+    { 
+      log.fine(logMessage("register "+type));
+      new Exception().printStackTrace();
     }
+    
     // Type may not be ready to be linked
   }
   
   public synchronized void unregister(URI uri,Type<?> type)
   {
     if (map.get(uri)!=type)
-    { log.fine("Unregister non-registered type"+type);
+    { log.fine(logMessage("Unregister non-registered type"+type));
     }
     else
     { map.remove(uri);
@@ -400,7 +410,7 @@ public class TypeResolver
     { 
       if (existing!=type)
       {
-        log.fine("NOT remapping type "+type+" from "+existing);
+        log.fine(logMessage("NOT remapping type "+type+" from "+existing));
         new Exception("FAILED REMAP").printStackTrace();
       }
       return existing;
@@ -496,6 +506,9 @@ public class TypeResolver
     { return type;
     }
     
+    if (debugLevel.canLog(Level.FINE))
+    { log.fine(logMessage("Cache miss- loading "+typeUri));
+    }
     
 
     // Delegate to parent
@@ -512,11 +525,19 @@ public class TypeResolver
     type=findTypeExtended(typeUri);
 
     if (type!=null)
-    { type.link();
+    { 
+      type.link();
+      if (debugLevel.canLog(Level.FINE))
+      { log.fine(logMessage("Finished loading "+typeUri));
+      }
     }
     return type;
   }
 
+  private String logMessage(String message)
+  { return "#"+id+": "+message;
+  }
+  
   
   /**
    * Called when a Type is not already loaded and needs to be found.
@@ -524,15 +545,39 @@ public class TypeResolver
   protected final Type<?> findType(URI typeUri)
     throws DataException
   { 
-    Type<?> type=null;
-    for (TypeFactory factory: factories)
-    { 
-      type=factory.createType(this,typeUri);
-      if (type!=null)
-      { break;
+    
+    // 2009-04-14 mike Added fix
+    // 
+    //   Maintain isolation between TypeResolvers for different
+    //   ClassLoaders. The TypeFactories should not be able to see the leaf
+    //   ClassLoader or any of its classes or resources, otherwise we will
+    //   pollute this ClassLoader with information from the leaf ClassLoader
+    //   and break the isolation mechanism.
+    //
+    final ClassLoader childClassLoader
+      =Thread.currentThread().getContextClassLoader();
+    
+    Thread.currentThread().setContextClassLoader(classLoaderRef.get());
+    try
+    {
+      Type<?> type=null;
+      for (TypeFactory factory: factories)
+      { 
+        type=factory.createType(this,typeUri);
+        if (type!=null)
+        { 
+          if (debugLevel.canLog(Level.TRACE))
+          { log.trace(logMessage("Created "+typeUri));
+          }
+          
+          break;
+        }
       }
+      return type;
     }
-    return type;
+    finally
+    { Thread.currentThread().setContextClassLoader(childClassLoader);
+    }
   }
 
   
