@@ -12,7 +12,8 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.util;
+package spiralcraft.exec;
+
 
 /**
  * Generic 'command line' argument handling. Command line arguments
@@ -23,11 +24,17 @@ public abstract class Arguments
 {
   private int _pos=0;
   private String[] _args;
-
+  protected char optionIndicator='-';
+  
+  
+  public Arguments()
+  {
+  }
+  
   /**
    * Process the specified arguments
    */
-  public void process(String[] args,char optionIndicator)
+  public void process(String[] args)
   {
     _args=args;
 

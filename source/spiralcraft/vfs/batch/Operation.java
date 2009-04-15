@@ -14,7 +14,7 @@
 //
 package spiralcraft.vfs.batch;
 
-import spiralcraft.util.Arguments;
+import spiralcraft.exec.Arguments;
 import spiralcraft.vfs.Resource;
 
 

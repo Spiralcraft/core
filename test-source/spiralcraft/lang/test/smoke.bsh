@@ -136,33 +136,33 @@ import spiralcraft.lang.test.ExpressionResolverTest;
 "//// Perf 1: retrieval";
 new ExpressionResolverTest().execute
 	(new String[] 
-		{"-expression","test"
-		,"-bindRepeats","1000000"
-		,"-getRepeats","1000000"
+		{"--expression","test"
+		,"--bindRepeats","1000000"
+		,"--getRepeats","1000000"
 		}
   );
 "//// Perf 2: reflect";
 new ExpressionResolverTest().execute
 	(new String[] 
-		{"-expression","test.length()"
-		,"-bindRepeats","1000"
-		,"-getRepeats","1000000"
+		{"--expression","test.length()"
+		,"--bindRepeats","1000"
+		,"--getRepeats","1000000"
 		}
   );
 "//// Perf 3: reflect+compare";
 new ExpressionResolverTest().execute
 	(new String[] 
-		{"-expression","test.length()>2"
-		,"-bindRepeats","1000"
-		,"-getRepeats","1000000"
+		{"--expression","test.length()>2"
+		,"--bindRepeats","1000"
+		,"--getRepeats","1000000"
 		}
   );
 "//// Perf 4: reflect+compare+add";
 new ExpressionResolverTest().execute
 	(new String[] 
-		{"-expression","test.length()>(2+2)"
-		,"-bindRepeats","1000"
-		,"-getRepeats","1000000"
+		{"--expression","test.length()>(2+2)"
+		,"--bindRepeats","1000"
+		,"--getRepeats","1000000"
 		}
   );
 

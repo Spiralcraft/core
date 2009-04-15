@@ -14,10 +14,10 @@
 //
 package spiralcraft.vfs.batch;
 
+import spiralcraft.exec.Arguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
 
-import spiralcraft.util.Arguments;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -82,16 +82,16 @@ public class Search
            )
         { return true;
         }
-        else if (option=="name")
-        { setNameGlob(nextArgument());
+        else if (option=="-name")
+        { setName(nextArgument());
         }
-        else if (option=="contains")
+        else if (option=="-contains")
         { setContains(nextArgument());
         }
-        else if (option=="prepend")
+        else if (option=="-prepend")
         { addOperation(new PrependOperation());
         }
-        else if (option=="print")
+        else if (option=="-print")
         { addOperation(new PrintOperation());
         }
         else
@@ -113,7 +113,7 @@ public class Search
       }
       
     }
-    .process(args,'-');
+    .process(args);
   }
   
   /**
@@ -198,8 +198,8 @@ public class Search
   public URI getRootURI()
   { return _rootUri;
   }
-
-  public void setNameGlob(String name)
+  
+  public void setName(String name)
   { _nameFilter=new NameGlobFilter(name);
   }
 

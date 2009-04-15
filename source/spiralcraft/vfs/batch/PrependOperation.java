@@ -16,7 +16,7 @@ package spiralcraft.vfs.batch;
 
 import java.net.URI;
 
-import spiralcraft.util.Arguments;
+import spiralcraft.exec.Arguments;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.StreamUtil;

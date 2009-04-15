@@ -20,6 +20,7 @@ import javax.xml.parsers.SAXParser;
 
 import org.xml.sax.SAXException;
 
+import spiralcraft.exec.Arguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.sax.ParseTree;
 import spiralcraft.sax.ParseTreeFactory;
@@ -32,7 +33,6 @@ import java.io.OutputStreamWriter;
 import java.io.FileOutputStream;
 import java.io.File;
 
-import spiralcraft.util.Arguments;
 
 public class ParseTreeTest
   implements Executable
@@ -51,16 +51,16 @@ public class ParseTreeTest
       @Override
       protected boolean processOption(String option)
       {
-        if (option=="file")
+        if (option=="-file")
         { _file=new File(nextArgument());
         }
-        else if (option=="dump")
+        else if (option=="-dump")
         { _dump=true;
         }
-        else if (option=="outputFile")
+        else if (option=="-outputFile")
         { _outputFile=new File(nextArgument());
         }
-        else if (option=="repeats")
+        else if (option=="-repeats")
         { _repeats=Integer.parseInt(nextArgument());
         }
         else
@@ -68,7 +68,7 @@ public class ParseTreeTest
         }
         return true;
       }
-    }.process(args,'-');
+    }.process(args);
 
     SAXParserFactory factory = SAXParserFactory.newInstance();
     try 

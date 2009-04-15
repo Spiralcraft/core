@@ -23,8 +23,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 
+import spiralcraft.exec.Arguments;
 import spiralcraft.exec.Executable;
-import spiralcraft.util.Arguments;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.StreamUtil;
@@ -47,10 +47,10 @@ public class ResolverTest
       @Override
       protected boolean processOption(String option)
       {
-        if (option=="file")
+        if (option=="-file")
         { _file=new File(nextArgument());
         }
-        else if (option=="uri")
+        else if (option=="-uri")
         { 
           try
           { _uri=new URI(nextArgument());
@@ -59,7 +59,7 @@ public class ResolverTest
           { throw new IllegalArgumentException(x.toString());
           }
         }
-        else if (option=="repeats")
+        else if (option=="-repeats")
         { // _repeats=Integer.parseInt(nextArgument());
         }
         else
@@ -67,7 +67,7 @@ public class ResolverTest
         }
         return true;
       }
-    }.process(args,'-');
+    }.process(args);
 
     if (_uri==null)
     { 

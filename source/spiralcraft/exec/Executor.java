@@ -23,7 +23,6 @@ import spiralcraft.data.persist.PersistenceException;
 
 import spiralcraft.time.Scheduler;
 import spiralcraft.util.ArrayUtil;
-import spiralcraft.util.Arguments;
 import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.Path;
 
@@ -366,7 +365,7 @@ public class Executor
         return true;
       }
 
-    }.process(args,'-');
+    }.process(args);
   }    
 
 }

@@ -83,5 +83,9 @@ public class Configurator<T>
   { return getBinding(targetExpression).get();
   }
   
+  public Class<?> getType(String targetExpression)
+  { return getBinding(targetExpression).getTargetChannel().getContentType();
+  }
+  
  
 }

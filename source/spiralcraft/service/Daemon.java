@@ -14,9 +14,9 @@
 //
 package spiralcraft.service;
 
-import spiralcraft.util.Arguments;
 
 import spiralcraft.common.LifecycleException;
+import spiralcraft.exec.BeanArguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
 
@@ -30,8 +30,6 @@ import spiralcraft.registry.RegistryNode;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-
-import java.lang.reflect.Field;
 
 import spiralcraft.log.ClassLog;
 
@@ -102,56 +100,19 @@ public class Daemon
   { return _args;
   }
 
-  protected DaemonArguments newArgumentProcessor()
-  { return new DaemonArguments();
+  
+  
+  public void setLogLevel(Level level)
+  { _logger.setLevel(level);
   }
   
-  private void processArguments()
-  { newArgumentProcessor().process(_args,'-');
-  }
-  
-  protected class DaemonArguments
-    extends Arguments
-  {
-    @Override
-    protected boolean processOption(String option)
-    { 
-      if (option=="logLevel")
-      { 
-        String level=nextArgument();
-        try
-        {
-          Field field=Level.class.getField(level);
-          if (field!=null)
-          { _logger.setLevel((Level) field.get(null));
-          }
-          else
-          { throw new IllegalArgumentException("Unknown log level '"+level+"'");
-          }
-        }
-        catch (Exception x)
-        { throw new IllegalArgumentException("Unknown log level '"+level+"'");
-        }
-      }
-      else
-      { return super.processOption(option);
-      }
-      return true;
-    }
-
-    @Override
-    protected boolean processArgument(String argument)
-    { return super.processArgument(argument);
-    }
-
-  }
 
   public final void execute(String ... args)
   {
     try
     { 
-      _args=args;
-      processArguments();
+      new BeanArguments(this).process(args);
+      
       start();
       handleEvents();
       stop();

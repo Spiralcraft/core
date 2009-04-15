@@ -96,10 +96,14 @@ public class DictionaryBinding<T>
   { this.converter=converter;
   }
   
-  public Expression<?> getTarget()
+  public Expression<T> getTarget()
   { return target;
   }
 
+  public Channel<T> getTargetChannel()
+  { return targetChannel;
+  }
+  
   public String getName()
   { return name;
   }

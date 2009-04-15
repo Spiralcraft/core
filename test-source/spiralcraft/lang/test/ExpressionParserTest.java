@@ -14,13 +14,13 @@
 //
 package spiralcraft.lang.test;
 
+import spiralcraft.exec.Arguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.parser.ExpressionParser;
 
 
-import spiralcraft.util.Arguments;
 
 public class ExpressionParserTest
   implements Executable
@@ -44,13 +44,13 @@ public class ExpressionParserTest
       @Override
       protected boolean processOption(String option)
       {
-        if (option=="expression")
+        if (option=="-expression")
         { _expression=nextArgument();
         }
-        else if (option=="dump")
+        else if (option=="-dump")
         { _dump=true;
         }
-        else if (option=="repeats")
+        else if (option=="-repeats")
         { _repeats=Integer.parseInt(nextArgument());
         }
         else
@@ -58,7 +58,7 @@ public class ExpressionParserTest
         }
         return true;
       }
-    }.process(args,'-');
+    }.process(args);
 
     ExpressionParser parser = new ExpressionParser();
 

@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.test;
 
+import spiralcraft.exec.Arguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.lang.parser.ExpressionParser;
 import spiralcraft.lang.reflect.BeanReflector;
@@ -33,7 +34,6 @@ import spiralcraft.log.Level;
 
 
 
-import spiralcraft.util.Arguments;
 
 public class ExpressionResolverTest
   implements Executable
@@ -55,16 +55,16 @@ public class ExpressionResolverTest
       @Override
       protected boolean processOption(String option)
       {
-        if (option=="expression")
+        if (option=="-expression")
         { _expression=nextArgument();
         }
-        else if (option=="dump")
+        else if (option=="-dump")
         { _dump=true;
         }
-        else if (option=="bindRepeats")
+        else if (option=="-bindRepeats")
         { _bindRepeats=Integer.parseInt(nextArgument());
         }
-        else if (option=="getRepeats")
+        else if (option=="-getRepeats")
         { _getRepeats=Integer.parseInt(nextArgument());
         }
         else
@@ -72,7 +72,7 @@ public class ExpressionResolverTest
         }
         return true;
       }
-    }.process(args,'-');
+    }.process(args);
 
     ExpressionParser parser = new ExpressionParser();
 

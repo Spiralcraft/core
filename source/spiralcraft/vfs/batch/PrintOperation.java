@@ -14,10 +14,10 @@
 //
 package spiralcraft.vfs.batch;
 
-import spiralcraft.util.Arguments;
 import spiralcraft.vfs.Resource;
 
 
+import spiralcraft.exec.Arguments;
 import spiralcraft.exec.ExecutionContext;
 
 public class PrintOperation

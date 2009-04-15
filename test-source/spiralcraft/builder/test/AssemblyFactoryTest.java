@@ -22,9 +22,9 @@ import spiralcraft.builder.AssemblyLoader;
 import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.Assembly;
 
-import spiralcraft.util.Arguments;
 
 
+import spiralcraft.exec.Arguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
 
@@ -59,10 +59,10 @@ public class AssemblyFactoryTest
       @Override
       protected boolean processOption(String option)
       {
-        if (option=="uri")
+        if (option=="-uri")
         { _uri=context.canonicalize(URI.create(nextArgument()));
         }
-        else if (option=="repeats")
+        else if (option=="-repeats")
         { // _repeats=Integer.parseInt(nextArgument());
         }
         else
@@ -70,7 +70,7 @@ public class AssemblyFactoryTest
         }
         return true;
       }
-    }.process(args,'-');
+    }.process(args);
 
      
     try
