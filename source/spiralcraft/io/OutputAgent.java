@@ -67,14 +67,17 @@ public abstract class OutputAgent
   private volatile boolean stopping=false;
   private volatile boolean stopped=false;
   private boolean asyncIO=true;
+  private volatile boolean shuttingDown=false;
   
   private Thread shutdownHook=new Thread()
   { 
     @Override
     public void run() 
     { 
+      
       synchronized(this) 
       {
+        shuttingDown=true;
         stopped=true;
         notify();
       } 
@@ -230,7 +233,9 @@ public abstract class OutputAgent
       {
       }
     }
-    Runtime.getRuntime().removeShutdownHook(shutdownHook);
+    if (!shuttingDown)
+    { Runtime.getRuntime().removeShutdownHook(shutdownHook);
+    }
     destroy();
   }
 
