@@ -1,9 +1,14 @@
-<transport:Schema
+<meta:Schema
 	xmlns:transport="class:/spiralcraft/data/access"
 	xmlns:example="class:/spiralcraft/data/test/example"
 	>
 	 
-	<type>
-	  <example:Customer.type/>
-	</type>
-</transport:Schema>
+	<entities>
+
+    <meta:Entity>
+      <type><example:Customer.type/>
+      </type>
+    </meta:Entity>
+
+	</entities>
+</meta:Schema>

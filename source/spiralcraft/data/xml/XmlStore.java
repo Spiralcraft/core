@@ -38,7 +38,7 @@ import spiralcraft.data.UniqueKeyViolationException;
 import spiralcraft.data.access.Schema;
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.access.Updater;
-import spiralcraft.data.access.Table;
+import spiralcraft.data.access.Entity;
 
 import spiralcraft.data.core.SequenceField;
 import spiralcraft.data.query.BoundQuery;
@@ -271,11 +271,11 @@ public class XmlStore
     
     if (schema!=null)
     {
-      for (Table table: schema.getTables())
+      for (Entity entity: schema.getEntities())
       {
         XmlQueryable queryable=new XmlQueryable();
-        queryable.setResultType(table.getType());
-        queryable.setResourceURI(URI.create(table.getStoreName()+".data.xml"));
+        queryable.setResultType(entity.getType());
+        queryable.setResourceURI(URI.create(entity.getName()+".data.xml"));
         queryable.setAutoCreate(true);
         addQueryable(queryable);
       }

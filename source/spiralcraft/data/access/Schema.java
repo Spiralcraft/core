@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2008 Michael Toth
+// Copyright (c) 1998,2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -20,35 +20,36 @@ import spiralcraft.data.Type;
 
 
 /**
- * The collection of Tables associated with a unit of data storage.
+ * A collection of inter-related Entities. A Schema is implemented by a Store
+ *   which provides access to the data.
  */
 public class Schema
 {
-  private final ArrayList<Table> tables=new ArrayList<Table>();
+  private final ArrayList<Entity> entities=new ArrayList<Entity>();
   
   
   public void setTypes(Type<?>[] types)
   { 
     for (Type<?> type : types)
     { 
-      Table table=new Table();
+      Entity table=new Entity();
       table.setType(type);
-      tables.add(table);
+      entities.add(table);
     }
     
   }
 
 
   
-  public Table[] getTables()
-  { return tables.toArray(new Table[tables.size()]);
+  public Entity[] getEntities()
+  { return entities.toArray(new Entity[entities.size()]);
   }
   
-  public void setTables(Table[] tables)
+  public void setEntities(Entity[] entities)
   { 
-    this.tables.clear();
-    for (Table table:tables)
-    { this.tables.add(table);
+    this.entities.clear();
+    for (Entity entity:entities)
+    { this.entities.add(entity);
     }
   }
 }

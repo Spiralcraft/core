@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2008 Michael Toth
+// Copyright (c) 1998,2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -17,16 +17,18 @@ package spiralcraft.data.access;
 import spiralcraft.data.Type;
 
 /**
- * <p>A unit of data storage for a type, to be implemented by a store
+ * <p>Defines the role of a Type within a Schema. A Store will map the
+ *   Entity definitions in a Schema to storage and retrieval pathways,
+ *   eg. tables.
  * </p>
  * 
  * @author mike
  *
  */
-public class Table
+public class Entity
 {
   private Type<?> type;
-  private String storeName;
+  private String name;
   
   public Type<?> getType()
   { return type;
@@ -36,14 +38,14 @@ public class Table
   { this.type=type;
   }
   
-  public void setStoreName(String storeName)
-  { this.storeName=storeName;
+  public void setName(String storeName)
+  { this.name=storeName;
   }
   
-  public String getStoreName()
+  public String getName()
   { 
-    if (storeName!=null)
-    { return storeName;
+    if (name!=null)
+    { return name;
     }
     else
     { return type.getPackageURI().relativize(type.getURI()).getPath();
