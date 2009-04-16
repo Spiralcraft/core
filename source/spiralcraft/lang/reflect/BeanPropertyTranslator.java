@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -104,7 +104,7 @@ class BeanPropertyTranslator<Tprop,Tbean>
         && !field.getType().isAssignableFrom(reflector.getContentType())
         )
       { 
-        if (Level.DEBUG.canLog(debugLevel))
+        if (debugLevel.canLog(Level.DEBUG))
         {
           log.debug("Class member field "+field.toString()
                   +" is not type compatible with property "
@@ -136,7 +136,7 @@ class BeanPropertyTranslator<Tprop,Tbean>
         reflector
           =BeanReflector.<Tprop>getInstance(_publicField.getType());
         
-        if (Level.DEBUG.canLog(debugLevel))
+        if (debugLevel.canLog(Level.DEBUG))
         {
           log.debug
             ("Property "+beanClass.getName()+"."+property.getName()
@@ -196,7 +196,7 @@ class BeanPropertyTranslator<Tprop,Tbean>
       }
       else
       { 
-        if (Level.TRACE.canLog(debugLevel))
+        if (debugLevel.canLog(Level.TRACE))
         {
           log.debug
             ("No read method or public field for '"
