@@ -1,23 +1,6 @@
 <project name="spiralcraft-core-shell" basedir="." default="smoke-tests">
 
-  <macrodef name="spiralcraft">
-    <attribute name="assy"/>
-    <sequential>
-      <java
-        jar="../../../build/lib/spiralcraft.jar"
-        failonerror="true"
-        fork="true"
-        >
-        <arg value="-codebase"/>
-        <arg value=".."/>
-        <arg value="exec"/>
-        <arg value="--log"/>
-        <arg value="out/spiralcraft"/>
-       
-        <arg value="@{assy}"/>
-      </java>
-    </sequential>
-  </macrodef>
+	<import file="../build.xml"/>
   
   <target name="smoke-tests"
     depends="clean,spiralcraft-task,spiralcraft-io-smoke"
@@ -43,15 +26,23 @@
   <target name="spiralcraft-io-smoke">
     <mkdir dir="out/io"/>
   	
-    <spiralcraft 
-      assy="class:/spiralcraft/io/test/RecordIterator.test.assy"
+    <devtask
+      codebase=".."
+      exec
+        ="--log out/spiralcraft --consoleLog
+         class:/spiralcraft/io/test/RecordIterator.test.assy
+         "
     />
   </target>
   	
   <target name="spiralcraft-io-long">
   	
-    <spiralcraft 
-      assy="class:/spiralcraft/io/test/RotatingFileOutputAgent.test.assy"
+    <devtask
+      codebase=".." 
+      exec
+        ="--log out/spiralcraft --consoleLog
+         class:/spiralcraft/io/test/RotatingFileOutputAgent.test.assy
+         "
     />
 
   </target>
