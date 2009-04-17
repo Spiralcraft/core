@@ -37,6 +37,7 @@ public class Configurator<T>
   {
     Configurator<X> ci
       =new Configurator<X>(BeanReflector.<X>getInstance(target.getClass()));
+    ci.set(target);
     return ci;
     
   }
@@ -53,6 +54,10 @@ public class Configurator<T>
     this.focus=new SimpleFocus<T>(channel);
   }
  
+  public void set(T target)
+  { channel.set(target);
+  }
+
   @SuppressWarnings("unchecked")
   private DictionaryBinding getBinding(String targetExpression)
   {
