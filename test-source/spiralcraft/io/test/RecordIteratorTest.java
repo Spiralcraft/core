@@ -18,7 +18,7 @@ public class RecordIteratorTest
   extends Scenario<Task,Void>
 {
  
-  private URI fileURI=URI.create("data/io/RecordFile.small.log");
+  private URI fileURI=null;
   
   public void setFileURI(URI fileURI)
   { this.fileURI=fileURI;

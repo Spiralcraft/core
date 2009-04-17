@@ -5,6 +5,9 @@
   >
   
   <scenario>
-    <iotest:RecordIteratorTest/>
+    <iotest:RecordIteratorTest>
+      <fileURI>in/io/RecordFile.small.log
+      </fileURI>
+    </iotest:RecordIteratorTest>
   </scenario>
 </task:TaskRunner>

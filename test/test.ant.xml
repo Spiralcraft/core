@@ -29,7 +29,7 @@
     <devtask
       codebase=".."
       exec
-        ="--log out/spiralcraft --consoleLog
+        ="--log log/spiralcraft --consoleLog
          class:/spiralcraft/io/test/RecordIterator.test.assy
          "
     />
