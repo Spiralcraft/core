@@ -17,6 +17,24 @@
     
     <detail>
       <scm:Change>
+        <date>2009-04-20
+        </date>
+        
+        <path>/source/spiralcraft/builder
+        </path>
+        
+        <notes>
+          <scm:Note>Fix problem using drill-down property specifier - 
+            "More than one Assembly in property" introduced
+            with latest builder upgrade set. PropertySpecifier now correctly
+            uses "replace" mode when computing override for non-aggregate
+            properties.
+            
+          </scm:Note>
+        </notes>
+      </scm:Change>
+
+      <scm:Change>
         <date>2009-04-19
         </date>
         

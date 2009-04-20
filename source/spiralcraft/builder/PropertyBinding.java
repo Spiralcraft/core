@@ -305,9 +305,7 @@ public class PropertyBinding
    * Indicate whether the target is an aggregate type
    */
   public boolean isAggregate()
-  { 
-    return _target.getContentType().isArray()
-      || Collection.class.isAssignableFrom(_target.getContentType());
+  { return AssemblyClass.isAggregate(_target.getContentType());
   }
   
   /**

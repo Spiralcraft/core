@@ -479,8 +479,11 @@ public class PropertySpecifier
 
           if (contents.size()>1)
           {
+            
             throw new BuildException
-              ("Property '"+pathElement+"' contains more than one Assembly");
+              ("Property '"+pathElement+"' contains more than one Assembly: "
+              +contents.toString()
+              );
           }
           else
           { targetAssemblyClass=contents.get(0);
@@ -608,6 +611,12 @@ public class PropertySpecifier
   }
 
   
+  /**
+   * Retrieve the combined Contents of this PropertySpecifier and any
+   *   base PropertySpecifiers.
+   *   
+   * @return
+   */
   public List<AssemblyClass> getCombinedContents()
   { 
     List<AssemblyClass> ret=new ArrayList<AssemblyClass>();
@@ -625,6 +634,20 @@ public class PropertySpecifier
             ret.set(i,_contents.get(0));
             break;
           }
+        }
+      }
+      else if 
+        (_contents.size()==1 
+        && !AssemblyClass.isAggregate(_contents.get(0).getJavaClass())
+        )
+      { 
+        // If this is not an aggregate property, and we are specifying a
+        //   value here, replace the value specified in the base type
+        if (ret.size()>0)
+        { ret.set(0,_contents.get(0));
+        }
+        else
+        { ret.add(_contents.get(0));
         }
       }
       else

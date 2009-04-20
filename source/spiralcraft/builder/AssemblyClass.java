@@ -73,6 +73,19 @@ public class AssemblyClass
      ;
   }
   
+  /**
+   * <p>
+   * Whether the specified class accepts a collection of values. Aggregate
+   *   properties are handled specifically in the builder framework.
+   * </p>
+   * @param clazz
+   * @return
+   */
+  public static final boolean isAggregate(Class<?> clazz)
+  { return clazz.isArray() || Collection.class.isAssignableFrom(clazz);
+  }
+  
+  
 
   public static final String classNameToPath(String className)
   { return className.replace(".","/").replace("$","-");
@@ -378,6 +391,17 @@ public class AssemblyClass
   { return getMember(name,false);
   }
   
+  /**
+   * Will attempt to find the member with the specified name. If the member
+   *   has not been explicitly declared, but is a non-aggregate bean property
+   *   of the base Java class, the "default" member Assembly for the property
+   *   type will be returned.
+   *   
+   * 
+   * @param name
+   * @return
+   * @throws BuildException
+   */
   PropertySpecifier discoverMember(String name)
     throws BuildException
   { return getMember(name,true);
