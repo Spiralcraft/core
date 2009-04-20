@@ -46,7 +46,7 @@ public class DefaultFormatter
     
     if (event.getContext()!=null)
     {
-      out.append("{");
+      out.append("  {");
       out.append(event.getContext().format(":"));
       out.append("}");
     }
