@@ -73,7 +73,9 @@ public class Configurator<T>
         bindingMap.put(targetExpression, binding);
       }
       catch (BindException x)
-      { throw new IllegalArgumentException("Error binding "+targetExpression,x);
+      { 
+        throw new IllegalArgumentException
+          ("Error binding property '"+targetExpression+"'",x);
       }
     }
     return binding;
