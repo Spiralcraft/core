@@ -94,20 +94,18 @@
         <date>2009-04-17
         </date>
         
-        <path>/source/spiralcraft/log/DefaultFormatter
+        <path>/source/spiralcraft/log
         </path>
         
         <notes>
-          <scm:Note>Improved readability by putting message up front and
+          <scm:Note>Improved readability of default formatter by putting 
+            message up front and
             source data at end of single line, eliminating the previous
             multi-line format.
           </scm:Note>
-          
-          <scm:Note>Auto-configure DelimitedRecordFormat from supplied Type
-            or FieldSet when no  FieldMapping[] is provided.
-          </scm:Note>
         
         </notes>
+        
       </scm:Change>
 
       <scm:Change>
