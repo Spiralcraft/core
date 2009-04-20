@@ -24,9 +24,10 @@
         </path>
         
         <notes>
-          <scm:Note>When trying to set a property of a null value, return false
-                 from set() instead of throwing an exception. This should be
-                 a soft failure.
+          <scm:Note>Fix null exception thrown in WebUI on REQUEST event in
+                 Editor. When trying to set a property of a null value, return
+                 false from set() instead of throwing an exception. Encountering
+                 a null should be a soft failure.
           </scm:Note>
         </notes>
       </scm:Change>
