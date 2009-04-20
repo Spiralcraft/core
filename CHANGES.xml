@@ -20,6 +20,52 @@
         <date>2009-04-19
         </date>
         
+        <path>/source/spiralcraft/lang/reflect/BeanPropertyChannel
+        </path>
+        
+        <notes>
+          <scm:Note>When trying to set a property of a null value, return false
+                 from set() instead of throwing an exception. This should be
+                 a soft failure.
+          </scm:Note>
+        </notes>
+      </scm:Change>
+          
+      <scm:Change>
+        <date>2009-04-19
+        </date>
+        
+        <path>/source/spiralcraft/task/Scenario
+        </path>
+        
+        <notes>
+          <scm:Note>Removed bindCommand and associated ThreadLocalChannel for
+            command, as it appears that this functionality is no longer used
+            and no longer has a purpose.
+          </scm:Note>
+        </notes>
+      </scm:Change>
+    
+      <scm:Change>
+        <date>2009-04-19
+        </date>
+        
+        <path>/source/spiralcraft/task/TaskRunner
+        </path>
+        
+        <notes>
+          <scm:Note>Provide bean configuration for the root Focus into
+            which the referenced Scenario will be bound. This is anticipated
+            as being generally useful, but the specific case that prompted
+            it is no longer applicable.
+          </scm:Note>
+        </notes>
+      </scm:Change>
+    
+      <scm:Change>
+        <date>2009-04-19
+        </date>
+        
         <path>/source/spiralcraft/builder
         </path>
         
@@ -30,9 +76,20 @@
         </notes>
       </scm:Change>
     
-    </detail>
-    
-    <detail>
+      <scm:Change>
+        <date>2009-04-17
+        </date>
+        
+        <path>/source/spiralcraft/lang/util/Configurator
+        </path>
+        
+        <notes>
+          <scm:Note>Improved debug message when bean property is not found
+          </scm:Note>
+                  
+        </notes>
+      </scm:Change>
+          
       <scm:Change>
         <date>2009-04-17
         </date>
