@@ -50,7 +50,7 @@ public class DefaultFormatter
       out.append(event.getContext().format(":"));
       out.append("}");
     }
-    if (Level.TRACE.canLog(event.getLevel()))
+    if (event.getLevel().isFinerThan(Level.DEBUG))
     {
       out.append(" (");
       out.append(event.getCallSite().getClassName());

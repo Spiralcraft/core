@@ -82,6 +82,17 @@ public enum Level
   { return value<=level.value;
   }
   
+  /**
+   * <p>Indicate whether messages of the specified level are finer than 
+   *  (exclusively) the specified level
+   * </p>
+   * @param level
+   * @return
+   */
+  public boolean isFinerThan(Level level)
+  { return value<level.value;
+  }
+  
   public String getName()
   { return name;
   }
