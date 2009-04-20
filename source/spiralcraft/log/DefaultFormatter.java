@@ -44,22 +44,24 @@ public class DefaultFormatter
     out.append(" ");
     out.append(event.getMessage());
     
-    out.append(" (");
-    out.append(event.getContext().format(":"));
-    if (Level.DEBUG.canLog(event.getLevel()))
+    if (event.getContext()!=null)
+    {
+      out.append("{");
+      out.append(event.getContext().format(":"));
+      out.append("}");
+    }
+    if (Level.TRACE.canLog(event.getLevel()))
     {
       out.append(" (");
       out.append(event.getCallSite().getClassName());
       out.append(".");
       out.append(event.getCallSite().getMethodName());
-      out.append(" (");
+      out.append("(");
       out.append(event.getCallSite().getFileName());
       out.append(":"+event.getCallSite().getLineNumber());
       out.append(")");
       out.append(")");
-      out.append("  ");
     }
-    out.append(") ");
     if (event.getThrown()!=null)
     { 
       out.append(_cr);
