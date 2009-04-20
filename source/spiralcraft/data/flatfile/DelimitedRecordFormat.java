@@ -19,11 +19,15 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import spiralcraft.data.Field;
+import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.lang.TupleReflector;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.SimpleChannel;
 
@@ -36,6 +40,7 @@ public class DelimitedRecordFormat
   private FieldMapping<?>[] fields;
   private Channel<Tuple> channel;
   private Type<?> type;
+  private FieldSet fieldSet;
   
   public void setFields(FieldMapping<?>[] fields)
   { this.fields=fields;
@@ -49,8 +54,17 @@ public class DelimitedRecordFormat
   { this.type=type;
   }
   
+  
+  public void setFieldSet(FieldSet fieldSet)
+  { this.fieldSet=fieldSet;
+  }
+  
   public Type<?> getType()
   { return type;
+  }
+  
+  public FieldSet getFieldSet()
+  { return type!=null?type.getFieldSet():fieldSet;
   }
   
   @Override
@@ -110,11 +124,38 @@ public class DelimitedRecordFormat
     }
   }
   
+  @SuppressWarnings("unchecked")
+  private void automapFields()
+  {
+    FieldSet fieldSet=type!=null?type.getFieldSet():this.fieldSet;
+    fields=new FieldMapping[fieldSet.getFieldCount()];
+    int i=0;
+    for (Field<?> field: fieldSet.fieldIterable())
+    { 
+      FieldMapping mapping=new FieldMapping();
+      mapping.setX(Expression.create(field.getName()));
+      fields[i++]=mapping;
+    }
+  }
+  
   @Override
   public Focus<?> bind(Focus<?> focusChain)
     throws BindException
   {
-    channel=new SimpleChannel<Tuple>(DataReflector.<Tuple>getInstance(type));
+    
+    if (type!=null)
+    { channel=new SimpleChannel<Tuple>(DataReflector.<Tuple>getInstance(type));
+    }
+    else
+    { 
+      channel=new SimpleChannel<Tuple>
+        (TupleReflector.<Tuple>getInstance(fieldSet));
+    }
+    
+    if (fields==null)
+    { automapFields();
+    }
+    
     focusChain=focusChain.chain(channel);
     for (FieldMapping<?> mapping : fields)
     {

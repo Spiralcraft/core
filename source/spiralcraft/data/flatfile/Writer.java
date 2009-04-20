@@ -19,7 +19,8 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Field;
 import spiralcraft.data.DataException;
-import spiralcraft.data.Type;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.SimpleFocus;
 
 
 import java.io.OutputStreamWriter;
@@ -27,7 +28,7 @@ import java.io.BufferedWriter;
 import java.io.OutputStream;
 import java.io.IOException;
 
-import java.text.DecimalFormat;
+//import java.text.DecimalFormat;
 
 /**
  * 
@@ -40,12 +41,14 @@ public class Writer
   implements DataConsumer<Tuple>
 {
   private BufferedWriter _out;
-  private DecimalFormat _format
-    =new DecimalFormat("##############################0.#####################");
+//  private DecimalFormat _format
+//    =new DecimalFormat("##############################0.#####################");
   private boolean _autoFlush=true;
   private String _newLine=System.getProperty("line.separator");
-  private FieldSet fields;
+//  private FieldSet fields;
   private boolean writeHeader;
+  
+  private DelimitedRecordFormat recordFormat;
 
   public Writer(OutputStream out)
   { _out=new BufferedWriter(new OutputStreamWriter(out),524288);
@@ -73,6 +76,10 @@ public class Writer
   { this.writeHeader=writeHeader;
   }
 
+  public void setRecordFormat(DelimitedRecordFormat recordFormat)
+  { this.recordFormat=recordFormat;
+  }
+  
   public void dataFinalize()
     throws DataException
   { 
@@ -85,8 +92,42 @@ public class Writer
   }
 
   public void dataInitialize(FieldSet fields)
+    throws DataException
   { 
-    this.fields=fields;
+    // TODO: Make sure that the supplied FieldSet is compatible with
+    //   that in the RecordFormat. 
+    
+    
+//    this.fields=fields;
+    if (recordFormat==null)
+    { 
+      DelimitedRecordFormat recordFormat
+        =new DelimitedRecordFormat();
+      recordFormat.setFieldSeparator(",");
+      recordFormat.setFieldSet(fields);
+      this.recordFormat=recordFormat;
+      
+      try
+      { recordFormat.bind(new SimpleFocus<Void>());
+      }
+      catch (BindException x)
+      { throw new DataException("Error setting up record format",x);
+      }
+      
+    }
+    else
+    { 
+      if (!(recordFormat.getFieldSet()==fields))
+      { 
+        throw new DataException
+          ("FieldSet must be identical to that provided "
+          +" by the supplied DelimitedRecordFormat");
+      }
+    }
+
+    // TODO: Provide a generic way to have RecordFormat write a header.
+    
+    
     if (writeHeader)
     {
       try
@@ -120,12 +161,14 @@ public class Writer
     }
   }
   
-  @SuppressWarnings("unchecked")
+//  @SuppressWarnings("unchecked")
   public void dataAvailable(Tuple data)
     throws DataException
   {
     try
     {
+      _out.write(new String(recordFormat.format(data)));
+/*
       boolean first=true;
       for (Field field: fields.fieldIterable())
       {
@@ -163,7 +206,7 @@ public class Writer
         }
   
       }
-      
+*/      
       _out.write(_newLine);
       if (_autoFlush)
       { _out.flush();
