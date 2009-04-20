@@ -198,6 +198,11 @@ class BeanPropertyChannel<T,S>
     }
     
     Object target=getSourceValue();
+    
+    if (target==null)
+    { return false;
+    }
+    
     try
     {
       if (isPropertyChangeSupportActive())
@@ -234,11 +239,13 @@ class BeanPropertyChannel<T,S>
       }
       else
       {
+
         // Don't compare values if we're not tracking property changes
         if (_writeMethod!=null)
         {
           _params[0]=val;
           _writeMethod.invoke(target,_params);
+
         }
         else
         { _writeField.set(target,val);
