@@ -1,0 +1,75 @@
+<scm:Change.list
+  xmlns:scm="class:/spiralcraft/scm/meta/"
+  >
+  <scm:Change>
+    <revision>0.3.2
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <notes>
+      <scm:Note>Change management system testing
+      </scm:Note>
+      <scm:Note>Ongoing spiralcraft-sql module support and integration
+      </scm:Note>
+    </notes>
+    
+    <detail>
+      <scm:Change>
+        <date>2009-04-19
+        </date>
+        
+        <path>/source/spiralcraft/builder
+        </path>
+        
+        <notes>
+          <scm:Note>Functionally transparent refactoring to modularize 
+            configuration source scenarios and split up large methods.
+          </scm:Note>
+        </notes>
+      </scm:Change>
+    
+    </detail>
+    
+    <detail>
+      <scm:Change>
+        <date>2009-04-17
+        </date>
+        
+        <path>/source/spiralcraft/log/DefaultFormatter
+        </path>
+        
+        <notes>
+          <scm:Note>Improved readability by putting message up front and
+            source data at end of single line, eliminating the previous
+            multi-line format.
+          </scm:Note>
+          
+          <scm:Note>Auto-configure DelimitedRecordFormat from supplied Type
+            or FieldSet when no  FieldMapping[] is provided.
+          </scm:Note>
+        
+        </notes>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-04-16
+        </date>
+        
+        <path>/source/spiralcraft/data/flatfile
+        </path>
+        
+        <notes>
+          <scm:Note>Integrated DelimitedRecordFormat into Writer
+          </scm:Note>
+          
+          <scm:Note>Auto-configure DelimitedRecordFormat from supplied Type
+            or FieldSet when no  FieldMapping[] is provided.
+          </scm:Note>
+        
+        </notes>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+</scm:Change.list>
