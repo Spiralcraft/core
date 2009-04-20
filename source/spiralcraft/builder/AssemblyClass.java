@@ -487,7 +487,7 @@ public class AssemblyClass
       
       int i=0;
       for (PropertySpecifier prop: _compositeMembers)
-      { bindings[i++]=new PropertyBinding(prop,container);
+      { bindings[i++]=prop.bind(container);
       }
       return bindings;
     }

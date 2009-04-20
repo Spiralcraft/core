@@ -18,6 +18,7 @@ import spiralcraft.text.ParseException;
 import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.string.StringConverter;
 
+import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 
@@ -247,7 +248,7 @@ public class PropertyBinding
       contents=_specifier.getContents();
       if (contents!=null && contents.size()>1)
       { 
-        throw new BuildException
+        throwBuildException
           (_specifier.getTargetName()
           +" ("+_target.getContentType()+") "
           +" in "+_container.getAssemblyClass().getJavaClass()
@@ -292,7 +293,7 @@ public class PropertyBinding
     }
     catch (BindException x)
     {
-      throw new BuildException
+      throwBuildException
         ("Property '"+_specifier.getTargetName()+"' not found"
         +" ("+_specifier.getSourceCodeLocation()+")"
         ,x
@@ -310,168 +311,225 @@ public class PropertyBinding
   }
   
   /**
-   * Resolve the source data for this property. At this point, all sub-assemblies must 
-   *   have had their contents instantiated and configured.
+   * Apply the literally included contents (Assemblies) of the property
+   * 
+   * @throws BuildException
+   */
+  private void applyContents()
+    throws BuildException
+  {
+    if (!isAggregate())
+    {
+      // Source is a single object
+      if (_contents.length==1)
+      { apply(_contents[0].get());
+      }
+      else
+      {
+        throwBuildException
+          (_specifier.getTargetName()
+          +" ("+_target.getContentType()+") "
+          +" in "+_container.getAssemblyClass().getJavaClass()
+          +" cannot have multiple values"
+          );
+      }
+    }
+    else if (Collection.class.isAssignableFrom(_target.getContentType()))
+    { 
+      Collection collection=null;
+      if (_specifier.getCollectionClass()!=null)
+      {
+        try
+        { 
+          collection
+            =_specifier.getCollectionClass().newInstance();
+        }
+        catch (Exception x)
+        { 
+          throw new BuildException
+            ("Error instantiating "+_specifier.getCollectionClass(),x);
+        } 
+      }
+      else if (_target.getContentType()==List.class)
+      { collection=new ArrayList<Object>(_contents.length);
+      }
+      else if (!_target.getContentType().isInterface())
+      { 
+        try
+        { 
+          collection
+            =(Collection) _target.getContentType().newInstance();
+        }
+        catch (Exception x)
+        { 
+          throw new BuildException
+            ("Error instantiating "+_target.getContentType(),x);
+        }
+      }
+      else
+      {
+        throwBuildException
+          ("Not enough information to instantiate a Collection suitable"
+          +" to implement "+_target.getContentType()
+          );
+      }
+         
+        
+      for (int i=0;i<_contents.length;i++)
+      { 
+        collection.add(_contents[i].get());
+        if (_specifier.getExport())
+        { exportSingletons(_contents[i]);
+        }
+      }
+      apply(collection);
+        
+    }
+    else
+    {
+      // Source is an Array
+      Object array
+        =Array.newInstance
+          (_target.getContentType().getComponentType()
+          ,_contents.length
+          );
+      for (int i=0;i<_contents.length;i++)
+      { 
+        Object val=_contents[i].get();
+        if (_contents[i].getAssemblyClass().getJavaClass()==String.class)
+        { 
+          try
+          { val=ContextDictionary.substitute((String) val);
+          }
+          catch (ParseException x)
+          { throwBuildException("Error parsing properties in "+val,x);
+          }
+        }
+        try
+        { Array.set(array,i,val);
+        }
+        catch (IllegalArgumentException x)
+        { 
+          throwBuildException
+            ("Error setting index "+i+" of array "+array+" to "+val
+            +" for target "+_target
+            ,x);
+        }
+        
+        if (_specifier.getExport())
+        { exportSingletons(_contents[i]);
+        }
+      }
+      apply(array);
+    }
+    
+  }
+  
+  /**
+   * Apply the textual data provided in the specifier
+   * 
+   * @throws BuildException
+   */
+  private void applyText()
+    throws BuildException
+  {
+    String text=null;
+    try
+    { text=ContextDictionary.substitute(_specifier.getTextData());
+    }
+    catch (ParseException x)
+    { 
+      throwBuildException
+        ("Error parsing properties in "+_specifier.getTextData(),x);
+    }
+      
+    _converter=StringConverter.getInstance(_target.getContentType());
+    if (_converter==null)
+    { 
+      throwBuildException
+        ("No StringConverter registered for "
+        +_target.getContentType().getName()
+        );
+    }
+    apply(_converter.fromString(text));
+  }
+  
+  /**
+   * Apply the expression provided in the specifier
+   * 
+   * @throws BuildException
+   */
+  private void applyExpression()
+    throws BuildException
+  {
+    try
+    {
+      Channel sourceChannel=_focus.bind(_specifier.getSourceExpression());
+
+      // Property is looking for a standard Object or value
+      apply(sourceChannel.get());
+      if (_specifier.isDynamic())
+      {
+        // Propagate property changes
+        sourceChannel
+          .propertyChangeSupport()
+            .addPropertyChangeListener(this);
+      }
+    }
+    catch (BindException x)
+    { 
+      throwBuildException
+        ("Error binding "+_specifier.getSourceExpression().getText(),x);
+    }
+      
+    
+  }
+  
+  /**
+   * Read the property value from data
+   * 
+   * @throws BuildException
+   */
+  private void applyData()
+    throws BuildException
+  { 
+    try
+    {
+      apply
+        (AbstractXmlObject.create
+            (null
+            , _specifier.getDataURI()
+            ,null
+            , _container.getFocus()
+            ).get()
+        );
+    }
+    catch (BindException x)
+    { 
+      throwBuildException
+        ("Error creating property value "+_specifier.getDataURI(),x);
+    }
+  }
+  
+  
+  /**
+   * Resolve the source data for this property. At this point, all 
+   *   sub-assemblies must have had their contents instantiated and configured.
    */
   private void applySource()
     throws BuildException
   {
     if (_contents!=null && _contents.length>0)
-    {
-      if (!isAggregate())
-      {
-        // Source is a single object
-        if (_contents.length==1)
-        { apply(_contents[0].get());
-        }
-        else
-        {
-          throw new BuildException
-            (_specifier.getTargetName()
-            +" ("+_target.getContentType()+") "
-            +" in "+_container.getAssemblyClass().getJavaClass()
-            +" cannot have multiple values"
-            );
-        }
-      }
-      else if (Collection.class.isAssignableFrom(_target.getContentType()))
-      { 
-        Collection collection;
-        if (_specifier.getCollectionClass()!=null)
-        {
-          try
-          { 
-            collection
-              =_specifier.getCollectionClass().newInstance();
-          }
-          catch (Exception x)
-          { 
-            throw new BuildException
-              ("Error instantiating "+_specifier.getCollectionClass(),x);
-          } 
-        }
-        else if (_target.getContentType()==List.class)
-        { collection=new ArrayList<Object>(_contents.length);
-        }
-        else if (!_target.getContentType().isInterface())
-        { 
-          try
-          { 
-            collection
-              =(Collection) _target.getContentType().newInstance();
-          }
-          catch (Exception x)
-          { 
-            throw new BuildException
-              ("Error instantiating "+_target.getContentType(),x);
-          }
-        }
-        else
-        {
-          throw new BuildException
-            ("Not enough information to instantiate a Collection suitable"
-            +" to implement "+_target.getContentType()
-            );
-        }
-           
-        
-        for (int i=0;i<_contents.length;i++)
-        { 
-          collection.add(_contents[i].get());
-          if (_specifier.getExport())
-          { exportSingletons(_contents[i]);
-          }
-        }
-        apply(collection);
-        
-      }
-      else
-      {
-        // Source is an Array
-        Object array
-          =Array.newInstance
-            (_target.getContentType().getComponentType()
-            ,_contents.length
-            );
-        for (int i=0;i<_contents.length;i++)
-        { 
-          Object val=_contents[i].get();
-          if (_contents[i].getAssemblyClass().getJavaClass()==String.class)
-          { 
-            try
-            { val=ContextDictionary.substitute((String) val);
-            }
-            catch (ParseException x)
-            { throw new BuildException("Error parsing properties in "+val,x);
-            }
-          }
-          try
-          { Array.set(array,i,val);
-          }
-          catch (IllegalArgumentException x)
-          { 
-            throw new BuildException
-              ("Error setting index "+i+" of array "+array+" to "+val
-              +" for target "+_target
-              ,x);
-          }
-          
-          if (_specifier.getExport())
-          { exportSingletons(_contents[i]);
-          }
-        }
-        apply(array);
-      }
+    { applyContents();
     }
     else if (_specifier.getTextData()!=null)
-    {
-      String text;
-      try
-      { text=ContextDictionary.substitute(_specifier.getTextData());
-      }
-      catch (ParseException x)
-      { 
-        throw new BuildException
-          ("Error parsing properties in "+_specifier.getTextData(),x);
-      }
-      
-      _converter=StringConverter.getInstance(_target.getContentType());
-      if (_converter==null)
-      { 
-        throw new BuildException
-          ("No StringConverter registered for "
-          +_target.getContentType().getName()
-          );
-      }
-      apply(_converter.fromString(text));
+    { applyText();
     }
-    else
-    { 
+    else if (_specifier.getSourceExpression()!=null)
+    { applyExpression();
     }
-    
-    if (_specifier.getSourceExpression()!=null)
-    {
-      try
-      {
-        Channel sourceChannel=_focus.bind(_specifier.getSourceExpression());
-
-        // Property is looking for a standard Object or value
-        apply(sourceChannel.get());
-        if (_specifier.isDynamic())
-        {
-          // Propagate property changes
-          sourceChannel
-            .propertyChangeSupport()
-              .addPropertyChangeListener(this);
-        }
-      }
-      catch (BindException x)
-      { 
-        x.printStackTrace();
-        throw new BuildException
-          ("Error binding "+_specifier.getSourceExpression().getText(),x);
-      }
-      
+    else if (_specifier.getDataURI()!=null)
+    { applyData();
     }
   }
   
@@ -532,6 +590,11 @@ public class PropertyBinding
   { throw new BuildException(message+" ("+_specifier.getSourceCodeLocation()+")",source);
   }
 
+  private void throwBuildException(String message)
+    throws BuildException
+  { throw new BuildException(message+" ("+_specifier.getSourceCodeLocation()+")");
+  }
+    
   private void applySafe(Object value)
   {
     try

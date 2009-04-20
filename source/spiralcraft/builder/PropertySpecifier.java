@@ -15,6 +15,7 @@
 package spiralcraft.builder;
 
 import java.beans.PropertyDescriptor;
+import java.net.URI;
 import java.util.Collection;
 import java.util.ArrayList;
 
@@ -57,6 +58,7 @@ public class PropertySpecifier
   private String _collectionClassName;
   private Class<? extends Collection<?>> _collectionClass;
   private boolean _export;
+  private URI _dataURI;
   
   private PrefixResolver prefixResolver;
   private PropertyDescriptor descriptor;
@@ -234,6 +236,20 @@ public class PropertySpecifier
   }
   
   /**
+   * Specify the URI of the data resource that will provide the value
+   *   for this property. 
+   * 
+   * @param dataURI
+   */
+  public void setDataURI(URI dataURI)
+  { this._dataURI=dataURI;
+  }
+  
+  public URI getDataURI()
+  { return _dataURI;
+  }
+  
+  /**
    * Using a PropertySpecifier scoped to an AssemblyClass, efficiently
    *   return the associated PropertyBinding from an instance of the
    *   AssemblyClass.
@@ -275,6 +291,21 @@ public class PropertySpecifier
       throw new RuntimeException
         ("Unexpected error getting binding for property "+this,x);
     }
+  }
+  
+  /**
+   * Create a new PropertyBinding for this specifier that is bound to the
+   *   provided Assembly.
+   * 
+   * @param assembly
+   * @return
+   */
+  public PropertyBinding bind(Assembly<?> assembly)
+    throws BuildException
+  { 
+    
+    
+    return new PropertyBinding(this,assembly);
   }
   
   void setTargetSequence(int sequence)
