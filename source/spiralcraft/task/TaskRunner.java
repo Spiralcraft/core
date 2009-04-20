@@ -7,6 +7,7 @@ import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionException;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
@@ -18,12 +19,14 @@ public class TaskRunner
 {
 
   private Scenario<? extends Task,?> scenario;
+  private Focus<?> rootFocus=new SimpleFocus<Void>();
   
   private final Log log=ClassLog.getInstance(TaskRunner.class);
   
   private Thread executeThread;
 
   private Thread shutdownThread=new ShutdownHook();
+  
   
   {
     Runtime.getRuntime().addShutdownHook(shutdownThread);
@@ -34,16 +37,26 @@ public class TaskRunner
   { this.scenario=scenario;
   }
   
+  /**
+   * Provide a specific Focus chain into which the Scenario will be bound.
+   * 
+   * @param focus
+   */
+  public void setRootFocus(Focus<?> focus)
+  { this.rootFocus=focus;
+  }
+  
   @Override
   public void execute(
     String... args)
     throws ExecutionException
   {
     executeThread=Thread.currentThread();
+      
     try
     {
       scenario.bind
-        (new SimpleFocus<TaskRunner>
+        (rootFocus.chain
           (new SimpleChannel<TaskRunner>(this,true)
           )
         );
