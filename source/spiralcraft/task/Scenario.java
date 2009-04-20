@@ -20,8 +20,8 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.FocusChainObject;
-import spiralcraft.lang.reflect.BeanReflector;
-import spiralcraft.lang.spi.ThreadLocalChannel;
+//import spiralcraft.lang.reflect.BeanReflector;
+//import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.log.Log;
@@ -42,7 +42,7 @@ public abstract class Scenario<Ttask extends Task,Tresult>
 {
 
   protected Log log=ClassLog.getInstance(getClass());
-  protected ThreadLocalChannel<TaskCommand<Ttask,Tresult>> commandChannel;
+//  protected ThreadLocalChannel<TaskCommand<Ttask,Tresult>> commandChannel;
   protected boolean debug;
   
   
@@ -64,14 +64,14 @@ public abstract class Scenario<Ttask extends Task,Tresult>
 
   protected abstract Ttask task();
   
-  protected Focus<TaskCommand<Ttask,Tresult>> 
-    bindCommand(Focus<?> focusChain,Class<TaskCommand<Ttask,Tresult>> clazz)
-  {
-    commandChannel
-      =new ThreadLocalChannel<TaskCommand<Ttask,Tresult>>
-        (BeanReflector.<TaskCommand<Ttask,Tresult>>getInstance(clazz));
-    return focusChain.chain(commandChannel);
-  }
+//  protected Focus<TaskCommand<Ttask,Tresult>> 
+//    bindCommand(Focus<?> focusChain,Class<TaskCommand<Ttask,Tresult>> clazz)
+//  {
+//    commandChannel
+//      =new ThreadLocalChannel<TaskCommand<Ttask,Tresult>>
+//        (BeanReflector.<TaskCommand<Ttask,Tresult>>getInstance(clazz));
+//    return focusChain.chain(commandChannel);
+//  }
 
   @Override
   public Focus<?> bind(
