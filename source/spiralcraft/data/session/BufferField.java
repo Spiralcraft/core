@@ -124,7 +124,11 @@ public class BufferField
       BufferTuple parent=(BufferTuple) parentChannel.get();
       try
       {
-        Object maybeBuffer=BufferField.this.getValue(parent);
+        Object maybeBuffer
+          =parent!=null
+          ?BufferField.this.getValue(parent)
+          :null;
+          
         if (maybeBuffer!=null && !(maybeBuffer instanceof Buffer))
         { 
           log.warning("BufferField "+getURI()+" field value was a non-Buffer: "
@@ -142,7 +146,7 @@ public class BufferField
             && buffer.getOriginal()!=null
             )
         { 
-          // Don't re-reference non-dirty buffers
+          // Don't re-reference non-dirty buffers of existing data
           buffer=null;
           store(null);
         }
@@ -151,8 +155,8 @@ public class BufferField
         { 
           buffer=bufferSource.get();
           
-          if (buffer!=null)
-          { BufferField.this.setValue((BufferTuple) parentChannel.get(),buffer);
+          if (buffer!=null && parent!=null)
+          { BufferField.this.setValue(parent,buffer);
           }
         }
         return buffer;
