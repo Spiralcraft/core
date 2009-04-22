@@ -24,17 +24,9 @@ import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
 import spiralcraft.command.CommandFactory;
 
-import spiralcraft.registry.Registrant;
-import spiralcraft.registry.RegistryNode;
-
-import java.util.logging.Handler;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 
 import spiralcraft.log.ClassLog;
 
-import spiralcraft.log.jul.HandlerAdapter;
-import spiralcraft.log.jul.RegistryLogger;
 
 /**
  * <p>An executable that starts, responds to events, and terminates
@@ -46,7 +38,7 @@ import spiralcraft.log.jul.RegistryLogger;
  */
 public class Daemon
   extends ServiceGroup
-  implements Executable,Registrant
+  implements Executable
 {
   private static final ClassLog log=ClassLog.getInstance(Daemon.class);
   
@@ -80,32 +72,10 @@ public class Daemon
   };
 
 
-  private Handler _logHandler=new HandlerAdapter();
-  private Logger _logger;
-
-  public void register(RegistryNode node)
-  {
-    Logger logger=node.findInstance(Logger.class);    
-    if (logger==null)
-    { 
-      logger=new RegistryLogger();
-      logger.addHandler(_logHandler);
-      node.registerInstance(Logger.class,logger);
-    }
-    _logger=logger;
-    _logger.config("Registered root logger");
-  }
 
   public String[] getArguments()
   { return _args;
-  }
-
-  
-  
-  public void setLogLevel(Level level)
-  { _logger.setLevel(level);
-  }
-  
+  }  
 
   public final void execute(String ... args)
   {

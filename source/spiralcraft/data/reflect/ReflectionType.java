@@ -56,6 +56,9 @@ import java.math.BigDecimal;
 public class ReflectionType<T>
   extends TypeImpl<T>
 {
+//  private static final Level debugLevel
+//    =ClassLog.getInitialDebugLevel(ReflectionType.class,null);
+  
   public static final String INNER_CLASS_SEPARATOR="-";
   
   private static final HashMap<Class<?>,URI> CANONICAL_MAP
@@ -457,7 +460,9 @@ public class ReflectionType<T>
       }
     }
     else
-    { System.err.println("ReflectionType.fromString()  "+getURI()+": No string constructor");
+    { 
+      log.info
+        ("ReflectionType.fromString()  "+getURI()+": No string constructor");
     }
     return null;
     
@@ -499,7 +504,7 @@ public class ReflectionType<T>
       
       if (classField==null)
       { 
-        System.err.println("No classField in "+getURI());
+        log.trace("No classField in "+getURI());
         referencedClass=nativeClass;
       }
       else if (classField.getValue(tuple)!=null)
@@ -531,7 +536,7 @@ public class ReflectionType<T>
         }
         catch (NoSuchMethodException x)
         { 
-          System.err.println
+          log.trace
             ("ReflectionType: "+referencedClass.getName()
             +" has no default constructor"
             );

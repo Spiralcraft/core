@@ -423,6 +423,9 @@ public class AssemblyLoader
         else if (name=="export")
         { prop.setExport(readBoolean(attribs[i]));
         }
+        else if (name=="dataURI")
+        { prop.setDataURI(URI.create(attribs[i].getValue()));
+        }
         else
         { 
           throw new BuildException

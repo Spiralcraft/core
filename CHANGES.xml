@@ -2,6 +2,215 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
+    <revision>0.3.3
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <notes>
+      <scm:Note>Ongoing spiralcraft-sql module support and integration
+      </scm:Note>
+    </notes>
+    
+
+    <detail>
+      <scm:Change>
+        <date>2009-04-21
+        </date>
+        
+        <path>/source/spiralcraft/io/
+        </path>
+        
+        <resources>
+          <URI>FileSequence.java</URI>
+          <URI>RotatingFileOutputAgent.java</URI>
+        </resources>
+        
+        <notes>
+          <scm:Note>Handle situation where log fails to rotate because file
+            is opened by something else. Put off rotate for 2 seconds
+            default.
+          </scm:Note>
+        </notes>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-04-20
+        </date>
+        
+        <path>/source/spiralcraft/data/sax/
+        </path>
+        
+        <resources>
+          <URI>DataHandler.java</URI>
+          <URI>DataHandlerBase.java</URI>
+          <URI>DataReader.java</URI>
+          <URI>DataSAXException.java</URI>
+        </resources>
+        
+        <notes>
+          <scm:Note>Ensure that document location is provided for parser
+            generated SAX exceptions
+          </scm:Note>
+        </notes>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-04-20
+        </date>
+        
+        <path>/source/spiralcraft/builder/AssemblyLoader.java
+        </path>
+        
+        <notes>
+          <scm:Note>Write dataURI builder attribute to PropertySpecifier
+          </scm:Note>
+        </notes>
+      </scm:Change>
+    
+      <scm:Change>
+        <date>2009-04-20
+        </date>
+        
+        <path>/source/spiralcraft/task/TaskRunner.java
+        </path>
+        
+        <notes>
+          <scm:Note>Throw better exception when no scenario configured
+          </scm:Note>
+
+          <scm:Note>Integrate a Service (or ServiceGroup) to be run
+            along with the Scenario.
+          </scm:Note>
+        </notes>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-04-20
+        </date>
+        
+        <resources>
+          <URI>/source/spiralcraft/data/persist/AbstractXmlObject.java
+          </URI>
+        </resources>
+            
+        
+        <notes>
+          <scm:Note>Renamed method create() to activate(). New method
+             create() only instantiates object.
+          </scm:Note>
+        </notes>
+        
+        <detail>
+        
+          <resources>
+            <URI>/source/spiralcraft/builder/PropertyBinding.java
+            </URI>
+            <URI>/source/spiralcraft/exec/Executor.java
+            </URI>
+            <URI>/source/spiralcraft/task/BatchScenario.java
+            </URI>
+          </resources>
+          
+          <notes>
+            <scm:Note>Refactoring sorted out
+            </scm:Note>
+          </notes>
+        </detail>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-04-20
+        </date>
+        
+        <path>/source/spiralcraft/data/reflect/
+        </path>
+        
+        <resources>
+          <URI>ReflectionType.java
+          </URI>
+          <URI>ReflectioTypeFactory.java
+          </URI>
+        </resources>
+        
+        <notes>
+          <scm:Note>Remove spiralcraft.data related ClassNotFoundException that
+           prints to stderr. Move to using ClassLog instead of stderr
+          </scm:Note>
+        </notes>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <date>2009-04-20
+        </date>
+        
+        <resources>
+          <URI>/source/spiralcraft/service/Service.java
+          </URI>
+          <URI>/source/spiralcraft/service/ThreadService.java
+          </URI>
+          <URI>/source/spiralcraft/service/ServiceGroup.java
+          </URI>
+        </resources>
+        
+        <notes>
+          <scm:Note>spiralcraft.service.Service interface now extends
+             Registrant, as many components that fit in the Service role
+             are also Registrants, and would benefit from top-down
+             reachability.
+          </scm:Note>
+        </notes>
+        <detail>
+
+          
+          <scm:Change>
+            <path>/source/spiralcraft/data/Space
+            </path>
+            
+            <notes>
+              <scm:Note>Implements Service
+              </scm:Note>
+            </notes>
+          </scm:Change>
+          
+          <scm:Change>
+            <notes>
+              <scm:Note>ServiceAdapter obsoleted
+              </scm:Note>
+              
+            </notes>
+            <resources>
+              <URI>/source/spiralcraft/service/ServiceAdapter.java
+              </URI>
+              <URI>/source/spiralcraft/service/ThreadService.java
+              </URI>
+              <URI>/source/spiralcraft/ui/UiService.java
+              </URI>
+              
+            </resources>
+          </scm:Change>
+
+          <scm:Change>
+            <path>/source/spiralcraft/service/Daemon.java
+            </path>
+
+            <notes>
+            
+              <scm:Note>Removed old JUL logging code
+                 in register(), remove method and defer to super.register()
+              </scm:Note>  
+            </notes>
+          </scm:Change>
+                    
+        </detail>
+        
+      </scm:Change>    
+    </detail>
+  </scm:Change>
+  
+  <scm:Change>
     <revision>0.3.2
     </revision>
     
@@ -9,6 +218,8 @@
     </authorId>
     
     <notes>
+      <scm:Note>Bug fixes
+      </scm:Note>
       <scm:Note>Change management system testing
       </scm:Note>
       <scm:Note>Ongoing spiralcraft-sql module support and integration
@@ -99,7 +310,7 @@
         <date>2009-04-17
         </date>
         
-        <path>/source/spiralcraft/lang/util/Configurator
+        <path>/source/spiralcraft/lang/util/Configurator.java
         </path>
         
         <notes>
@@ -113,8 +324,13 @@
         <date>2009-04-17
         </date>
         
-        <path>/source/spiralcraft/log
+        <path>/source/spiralcraft/log/
         </path>
+        
+        <resources>
+          <URI>DefaultFormatter.java
+          </URI>
+        </resources>
         
         <notes>
           <scm:Note>Improved readability of default formatter by putting 
@@ -131,8 +347,15 @@
         <date>2009-04-16
         </date>
         
-        <path>/source/spiralcraft/data/flatfile
+        <path>/source/spiralcraft/data/flatfile/
         </path>
+        
+        <resources>
+          <URI>DelimitedRecordFormat.java
+          </URI>
+          <URI>Writer.java
+          </URI>
+        </resources>
         
         <notes>
           <scm:Note>Integrated DelimitedRecordFormat into Writer

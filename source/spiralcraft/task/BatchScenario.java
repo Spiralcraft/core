@@ -247,7 +247,7 @@ public class BatchScenario<I,R>
     decorator=sourceChannel.decorate(IterationDecorator.class);
     
     item=new ThreadLocalChannel(decorator.getComponentReflector());
-    target=AbstractXmlObject.create
+    target=AbstractXmlObject.activate
       (targetTypeURI,targetURI,null,focusChain.chain(item));
     
     subCommandChannel=target.getFocus().bind(command);

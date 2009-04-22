@@ -15,11 +15,13 @@
 package spiralcraft.service;
 
 import spiralcraft.common.LifecycleException;
+import spiralcraft.registry.RegistryNode;
 
 /**
  * A group of Services managed as unit
  */
 public class ServiceGroup
+  implements Service
 {
   private Service[] _services;
 
@@ -31,6 +33,14 @@ public class ServiceGroup
   { return _services;
   }
 
+  
+  @Override
+  public void register(RegistryNode node)
+  {
+    for (Service service : _services)
+    { service.register(node);
+    }
+  }
   
   /**
    * Initialize Services. If an exception occurs, all Services
@@ -98,5 +108,6 @@ public class ServiceGroup
     { throw exception;
     }
   }
+
 
 }

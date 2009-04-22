@@ -19,6 +19,7 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.log.Log;
+import spiralcraft.registry.RegistryNode;
 import spiralcraft.time.Clock;
 
 /**
@@ -30,8 +31,7 @@ import spiralcraft.time.Clock;
  *
  */
 public abstract class ThreadService
-  extends ServiceAdapter
-  implements Runnable
+  implements Service,Runnable
 {
 
   protected final Log log
@@ -65,6 +65,11 @@ public abstract class ThreadService
   public void setRunIntervalMs(int runIntervalMs)
   { this.runIntervalMs=runIntervalMs;
   }
+  
+  @Override
+  public synchronized void register(RegistryNode registryNode)
+  { }
+  
   
   @Override
   public synchronized void start()

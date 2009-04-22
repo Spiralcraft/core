@@ -15,6 +15,7 @@
 package spiralcraft.io;
 
 import spiralcraft.common.LifecycleException;
+import spiralcraft.log.Level;
 import spiralcraft.time.Clock;
 
 import java.io.IOException;
@@ -44,6 +45,8 @@ public class RotatingFileOutputAgent
   private Calendar calendar=Calendar.getInstance();
   private int calendarField=Calendar.DAY_OF_YEAR;
   private int periodId;
+  private long lastRotate;
+  private long minRotateIntervalSeconds=2;
 
   public void setMaxLengthKB(long maxLengthKB)
   { _maxLengthKB=maxLengthKB;
@@ -130,22 +133,41 @@ public class RotatingFileOutputAgent
     _file.getFD().sync();
     if (periodChanged() || _file.length()>=_maxLengthKB*1024)
     {
-      log.info(getLogPrefix()+": Rotating output file");
-      _file.close();
-      fileSequence.rotate();
-      _file=null;
-    }    
+      if (Clock.instance().approxTimeMillis()-lastRotate 
+          > minRotateIntervalSeconds * 1000
+          )
+      {
+        lastRotate=Clock.instance().approxTimeMillis();
+        log.info(getLogPrefix()+": Rotating output file");
+        _file.close();
+        try
+        {
+          fileSequence.rotate();
+          updatePeriod();
+        }
+        catch (IOException x)
+        { 
+          log.log(Level.WARNING
+                  ,x.getMessage()
+                  );
+        }
+        _file=null;
+      }
+    }
   }
   
+  private void updatePeriod()
+  {
+    calendar.setTime(new Date(Clock.instance().approxTimeMillis()));
+    periodId=calendar.get(calendarField);
+  }
   
   private boolean periodChanged()
   { 
     calendar.setTime(new Date(Clock.instance().approxTimeMillis()));
     int newPeriodId=calendar.get(calendarField);
     if (newPeriodId!=periodId)
-    { 
-      periodId=newPeriodId;
-      return true;
+    { return true;
     }
     else
     { return false;

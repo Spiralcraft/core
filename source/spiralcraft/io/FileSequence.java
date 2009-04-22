@@ -179,7 +179,16 @@ public abstract class FileSequence
   }
   
   public void rotate()
-  { getActiveFile().renameTo(getNextFile());
+    throws IOException
+  { 
+    File activeFile=getActiveFile();
+    File nextFile=getNextFile();
+    if (!activeFile.renameTo(nextFile))
+    { 
+      throw new IOException
+        ("Rotation failed. Could not rename "+activeFile+" to "+nextFile);
+      
+    }
   }
   
   /**

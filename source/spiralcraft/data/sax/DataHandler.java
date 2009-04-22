@@ -357,14 +357,16 @@ public class DataHandler
         }
         else
         { 
-          throw new SAXException
-            ("Unrecognized attribute '"+attributes.getQName(i)+"'");
+          throw new DataSAXException
+            ("Unrecognized attribute '"+attributes.getQName(i)+"':"
+            +formatPosition()
+            );
         }
       }
         
       if (scheme==null)
       { 
-        throw new DataException
+        throw new DataSAXException
           ("Primitive Type "+type+" does not accept field data:"
            +formatPosition()
           );
@@ -494,8 +496,10 @@ public class DataHandler
         }
         else
         { 
-          throw new SAXException
-            ("Unrecognized attribute '"+attributes.getQName(i)+"'");
+          throw new DataSAXException
+            ("Unrecognized attribute '"+attributes.getQName(i)+"': "
+            +formatPosition()
+            );
         }
       }
       
@@ -562,9 +566,8 @@ public class DataHandler
       }
       catch (DataException x)
       { 
-        SAXException sx=new SAXException("Error handling Tuple "+x);
-        sx.initCause(x);
-        throw sx;
+        throw new DataSAXException
+          ("Error handling Tuple: "+formatPosition(),x);
       }
       
       
@@ -679,8 +682,10 @@ public class DataHandler
         }
         else
         { 
-          throw new SAXException
-            ("Unrecognized attribute '"+attributes.getQName(i)+"'");
+          throw new DataSAXException
+            ("Unrecognized attribute '"+attributes.getQName(i)+"': "
+            +formatPosition()
+            );
         }
       }
       
@@ -727,8 +732,10 @@ public class DataHandler
         }
         else
         { 
-          throw new SAXException
-            ("Unrecognized attribute '"+attributes.getQName(i)+"'");
+          throw new DataSAXException
+            ("Unrecognized attribute '"+attributes.getQName(i)+"': "
+            +formatPosition()
+            );
         }
       }
 

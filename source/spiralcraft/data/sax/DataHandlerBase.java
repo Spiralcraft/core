@@ -167,11 +167,7 @@ public abstract class DataHandlerBase
     { currentFrame.startElement(uri,localName,qName,attributes);
     }
     catch (DataException x)
-    { 
-      SAXException sx=new SAXException(x.toString()+formatPosition());
-      sx.initCause(x);
-      throw sx;
-      
+    { throw new DataSAXException(x.getMessage()+formatPosition(),x);
     }
     
   }
@@ -193,9 +189,7 @@ public abstract class DataHandlerBase
     }
     catch (DataException x)
     { 
-      SAXException sx=new SAXException(x.toString()+formatPosition());
-      sx.initCause(x);
-      throw sx;
+      throw new DataSAXException(x.getMessage()+formatPosition(),x);
     }
   }
   
@@ -248,15 +242,12 @@ public abstract class DataHandlerBase
   
   protected void throwSAXException(String message)
     throws SAXException
-  { throw new SAXException(message+": "+formatPosition());
+  { throw new DataSAXException(message+": "+formatPosition());
   }
   
   protected void throwSAXException(String message,Throwable cause)
     throws SAXException
-  { 
-    SAXException x=new SAXException(message+": "+formatPosition());
-    x.initCause(cause);
-    throw x;
+  { throw new DataSAXException(message+": "+formatPosition(),cause);
   }
 
   /**
@@ -300,7 +291,7 @@ public abstract class DataHandlerBase
       }
       else
       { 
-        throw new SAXException
+        throw new DataSAXException
           ("Element already contains text '"+getCharacters()+"', it cannot "
           +"also contain another Element <"+qName+">"+formatPosition()
           );
@@ -324,7 +315,7 @@ public abstract class DataHandlerBase
       { finish(); 
       }
       else
-      { throw new SAXException("Expected </"+qName+">"+formatPosition());
+      { throw new DataSAXException("Expected </"+qName+">"+formatPosition());
       }
     }
   
@@ -342,7 +333,7 @@ public abstract class DataHandlerBase
       { 
         if (preserveWhitespace)
         {
-          throw new SAXException
+          throw new DataSAXException
           ("Element already contains other elements."
           +" It cannot contain preserved whitespace."
           +formatPosition()
@@ -351,7 +342,7 @@ public abstract class DataHandlerBase
         
         if (new String(ch,start,length).trim().length()>0)
         {
-          throw new SAXException
+          throw new DataSAXException
             ("Element '"+qName+"' already contains other elements."
             +" It cannot contain text '"+new String(ch,start,length).trim()+"'"
             +formatPosition()+" (frame="+toString()
@@ -542,7 +533,9 @@ public abstract class DataHandlerBase
       , Attributes attributes
       ) 
       throws SAXException, DataException
-    { throw new SAXException("Element '"+qName+"' not permitted here");
+    { 
+      throw new DataSAXException
+        ("Element '"+qName+"' not permitted here"+formatPosition());
     }
 
 

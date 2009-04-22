@@ -32,7 +32,6 @@ import spiralcraft.log.EventHandler;
 import spiralcraft.log.GlobalLog;
 import spiralcraft.log.RotatingFileHandler;
 import spiralcraft.registry.Registry;
-import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
 
 import java.net.URI;
@@ -71,7 +70,6 @@ import java.io.IOException;
  * </p>
  */
 public class Executor
-  implements Registrant,Executable
 {
   private URI uri;
   private URI typeURI;
@@ -110,9 +108,6 @@ public class Executor
   { new Executor().execute(args);
   }
 
-  public void register(RegistryNode registryNode)
-  { this.registryNode=registryNode;
-  }
   
   public void setTypeURI(URI typeURI)
   { this.typeURI=typeURI;
@@ -140,7 +135,7 @@ public class Executor
    * </p>
    *   
    */
-  public void execute(String ... args)
+  protected void execute(String ... args)
     throws ExecutionException
   {
 
@@ -209,7 +204,6 @@ public class Executor
         
       Executable executable=resolveExecutable(); 
       
-      
       executable.execute(arguments);
       if (persistOnCompletion && instanceURI!=null)
       { wrapper.save();
@@ -255,7 +249,7 @@ public class Executor
     { 
       wrapper
         =AbstractXmlObject.<Executable>create
-          (typeURI,instanceURI,registryNode,null);
+          (typeURI,instanceURI);
     }
     catch (BindException x)
     { throw new PersistenceException("Error instantiating Executable",x);

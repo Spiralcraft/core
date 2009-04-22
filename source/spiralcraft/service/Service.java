@@ -16,6 +16,7 @@ package spiralcraft.service;
 
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.registry.Registrant;
 
 /**
  * <p>Represents a software subsystem which cooperates with other such
@@ -31,7 +32,7 @@ import spiralcraft.common.LifecycleException;
  * </p>
  */
 public interface Service
-  extends Lifecycle
+  extends Lifecycle,Registrant
 {
 
   /**

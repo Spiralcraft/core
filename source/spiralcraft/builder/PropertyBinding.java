@@ -493,12 +493,12 @@ public class PropertyBinding
   { 
     try
     {
+      log.debug("PropertyBinding.applyData() is experimental.");
+
       apply
         (AbstractXmlObject.create
             (null
             , _specifier.getDataURI()
-            ,null
-            , _container.getFocus()
             ).get()
         );
     }

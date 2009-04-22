@@ -15,7 +15,8 @@
 package spiralcraft.ui;
 
 import spiralcraft.common.LifecycleException;
-import spiralcraft.service.ServiceAdapter;
+import spiralcraft.registry.RegistryNode;
+import spiralcraft.service.Service;
 
 
 /**
@@ -23,7 +24,7 @@ import spiralcraft.service.ServiceAdapter;
  *   such as Swing or WebUI. 
  */
 public class UiService
-  extends ServiceAdapter
+  implements Service
 {
   private Control _rootControl;
 
@@ -41,6 +42,11 @@ public class UiService
   public void stop()
     throws LifecycleException
   { _rootControl.stop();
+  }
+
+  @Override
+  public void register(RegistryNode node)
+  { node.registerInstance(UiService.class,this);    
   }
 
 }

@@ -95,6 +95,59 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   public static final URI typeFromClass(Class<?> clazz)
   { return ReflectionType.canonicalURI(clazz);
   }
+  
+  /**
+   * <p>Create a new AbstractXmlObject appropriate for the specified Type,
+   *   read from the optional instanceURI. The returned reference will not
+   *   be registered or started.
+   * </p>
+   * 
+   * @param <T> The Java generic type of object that is being referred to
+   * @param typeURI The spiralcraft.data.Type of the object being referred to
+   * @param instanceURI The URI of the resource from which to read the instance
+   * @return The AbstractXmlObject
+   * @throws BindException
+   * 
+   */   
+  public static final <T> AbstractXmlObject<T,?> create
+    (URI typeURI,URI instanceURI)
+    throws BindException
+  {  
+    AbstractXmlObject<T,?> reference;
+    Type<?> type=null;
+
+    
+    try
+    { 
+      if (typeURI!=null)
+      { type=Type.resolve(typeURI);
+      }
+    }
+    catch (DataException x)
+    { throw new BindException("Type "+typeURI+" could not be resolved",x);
+    }
+    
+    if (type!=null && type instanceof BuilderType)
+    { 
+      try
+      { reference=new XmlAssembly<T>(type.getURI(),instanceURI);
+      }
+      catch (PersistenceException x)
+      { throw new BindException("Error creating XmlAssembly: "+x,x);
+      }
+    }
+    else
+    {
+      try
+      { reference=new XmlBean<T>(type!=null?type.getURI():null,instanceURI);
+      }
+      catch (PersistenceException x)
+      { throw new BindException("Error creating XmlBean",x);
+      }
+    }
+    return reference;
+  }
+  
   /**
    * <p>Create a new AbstractXmlObject appropriate for the specified Type,
    *   read from the optional instanceURI.
@@ -112,8 +165,6 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
    *   itself.
    * </p>
    * 
-   * XXX Should be createAndStart, and should accept a Focus to bind to
-   * 
    * @param <T> The Java generic type of object that is being referred to
    * @param typeURI The spiralcraft.data.Type of the object being referred to
    * @param instanceURI The URI of the resource from which to read the instance
@@ -121,15 +172,13 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
    * @return The AbstractXmlObject
    * @throws BindException
    */
-  public static final <T> AbstractXmlObject<T,?> create
+  public static final <T> AbstractXmlObject<T,?> activate
     (URI typeURI,URI instanceURI,RegistryNode registryNode,Focus<?> focus)
     throws BindException
   {
     AbstractXmlObject<T,?> reference;
     Type<?> type=null;
-    if (registryNode==null)
-    { registryNode=Registry.getLocalRoot();
-    }
+
     
     try
     { 
@@ -160,6 +209,9 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
       }
     }
     
+    if (registryNode==null)
+    { registryNode=Registry.getLocalRoot();
+    }
     try
     { 
       reference.register(registryNode);

@@ -17,10 +17,10 @@ package spiralcraft.data;
 import java.net.URI;
 import java.util.Date;
 
-import spiralcraft.common.Lifecycle;
 import spiralcraft.data.query.Queryable;
 
 import spiralcraft.lang.Focus;
+import spiralcraft.service.Service;
 
 
 /**
@@ -31,7 +31,7 @@ import spiralcraft.lang.Focus;
  *   
  */
 public abstract class Space
-  implements Queryable<Tuple>,Lifecycle
+  implements Queryable<Tuple>,Service
 {
   public static final URI SPACE_URI 
     = URI.create("class:/spiralcraft/data/Space");

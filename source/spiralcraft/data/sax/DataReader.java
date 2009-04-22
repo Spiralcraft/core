@@ -208,7 +208,18 @@ public class DataReader
     
     handler.setContextAware(contextAware);
     
-    parser.parse(in,handler);
+    try
+    { parser.parse(in,handler);
+    }
+    catch (SAXException x)
+    {
+      if (x instanceof DataSAXException)
+      { throw x;
+      }
+      else
+      { throw new DataSAXException(x.getMessage()+handler.formatPosition(),x);
+      }
+    }
     return handler.getCurrentObject();
 
   }  

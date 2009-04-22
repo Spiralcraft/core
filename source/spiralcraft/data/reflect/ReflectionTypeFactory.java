@@ -42,9 +42,7 @@ public class ReflectionTypeFactory
     { clazz = (Class<Object>) loader.loadClass(className);
     }
     catch (ClassNotFoundException x)
-    { 
-      System.err.println(x);
-      return null;
+    { return null;
     }
     
     return new ReflectionType<Object>(resolver,uri,clazz);

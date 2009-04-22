@@ -1,3 +1,17 @@
+//
+// Copyright (c) 2009 Michael Toth
+// Spiralcraft Inc., All Rights Reserved
+//
+// This package is part of the Spiralcraft project and is licensed under
+// a multiple-license framework.
+//
+// You may not use this file except in compliance with the terms found in the
+// SPIRALCRAFT-LICENSE.txt file at the top of this distribution, or available
+// at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
+//
+// Unless otherwise agreed to in writing, this software is distributed on an
+// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+//
 package spiralcraft.task;
 
 import spiralcraft.command.Command;
@@ -13,9 +27,12 @@ import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.log.Log;
+import spiralcraft.registry.Registrant;
+import spiralcraft.registry.RegistryNode;
+import spiralcraft.service.Service;
 
 public class TaskRunner
-  implements Executable
+  implements Executable,Registrant
 {
 
   private Scenario<? extends Task,?> scenario;
@@ -26,12 +43,21 @@ public class TaskRunner
   private Thread executeThread;
 
   private Thread shutdownThread=new ShutdownHook();
+  private Service service;
   
   
   {
     Runtime.getRuntime().addShutdownHook(shutdownThread);
   }
   
+  /**
+   * A Service (or ServiceGroup) to activate before running the Scenario.
+   * 
+   * @param service
+   */
+  public void setService(Service service)
+  { this.service=service;
+  }
   
   public void setScenario(Scenario<? extends Task,?> scenario)
   { this.scenario=scenario;
@@ -47,12 +73,25 @@ public class TaskRunner
   }
   
   @Override
+  public void register(RegistryNode registryNode)
+  { 
+    if (service!=null)
+    { service.register(registryNode);
+    }
+    
+  }
+  
+  @Override
   public void execute(
     String... args)
     throws ExecutionException
   {
     executeThread=Thread.currentThread();
       
+    if (scenario==null)
+    { throw new ExecutionException("No scenario provided");
+    }
+    
     try
     {
       scenario.bind
@@ -61,6 +100,10 @@ public class TaskRunner
           )
         );
 
+      if (service!=null)
+      { service.start();
+      }
+      
       scenario.start();
       try
       { 
@@ -85,12 +128,18 @@ public class TaskRunner
       { log.log(Level.SEVERE,"Uncaught exception running "+scenario,x);
       }
       scenario.stop();
+      
+      if (service!=null)
+      { service.stop();
+      }
     }
     catch (BindException x)
     { throw new ExecutionException("Error binding focus",x);
     }    
     catch (LifecycleException x)
-    { throw new ExecutionException("Error starting/stopping scenario",x);
+    { 
+      throw new ExecutionException
+        ("Error starting/stopping scenario or service",x);
     }    
   }
  
