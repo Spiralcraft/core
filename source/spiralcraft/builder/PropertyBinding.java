@@ -20,6 +20,7 @@ import spiralcraft.util.string.StringConverter;
 
 import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.lang.BindException;
@@ -449,7 +450,15 @@ public class PropertyBinding
         +_target.getContentType().getName()
         );
     }
-    apply(_converter.fromString(text));
+    
+    Object value=_converter.fromString(text);
+    if (value instanceof Expression)
+    { 
+      // XXX Come up with a more generic way to achieve this.
+      value=((Expression) value)
+        .resolveNamespaces(_specifier.getPrefixResolver());
+    }
+    apply(value);
   }
   
   /**
