@@ -61,7 +61,7 @@ public class FormatTest
   @Override
   protected Task task()
   {
-    return new AbstractTask()
+    return new AbstractTask<Void>()
     {
       { debug=FormatTest.this.debug;
       }

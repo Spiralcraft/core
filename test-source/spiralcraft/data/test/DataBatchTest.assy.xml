@@ -1,0 +1,55 @@
+<task:Session
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:query="class:/spiralcraft/data/query/"
+  xmlns:dutil="class:/spiralcraft/data/util/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  >
+  
+  <type x="[@example:BatchSession].type"/>
+  
+  <scenario>
+    <task:Sequence>
+      <scenarios>
+        <query:QueryScenario>
+          
+          <logTaskResults>true
+          </logTaskResults>
+          
+          <query>
+            <query:Scan>
+              <type x="[@example:Customer].type"/>
+            </query:Scan>
+          </query>
+      
+          <scenario>
+            <task:Sequence>
+              <scenarios>
+        
+                <DataBatchProcessor>
+                  <parallel>false
+                  </parallel>
+                </DataBatchProcessor>
+
+                <DataBatchProcessor>
+                  <parallel>true
+                  </parallel>
+                </DataBatchProcessor>
+
+
+              </scenarios>
+           
+            </task:Sequence>
+          </scenario>
+      
+        </query:QueryScenario>
+        
+        <test:Stub>
+          <messageX>[example:BatchSession].results
+          </messageX>
+        </test:Stub>
+        
+      </scenarios>
+    </task:Sequence>
+  </scenario>
+</task:Session>

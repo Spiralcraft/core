@@ -1,5 +1,9 @@
 package spiralcraft.task.test;
 
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
+import spiralcraft.lang.Focus;
 import spiralcraft.log.Level;
 import spiralcraft.task.AbstractTask;
 import spiralcraft.task.Scenario;
@@ -9,22 +13,41 @@ public class StubScenario
   extends Scenario<Task,Void>
 {
 
+  protected Expression<Object> resultX;
+  protected Channel<Object> resultChannel;
+  
+  { setLogTaskResults(true);
+  }
+  
+  public void setResultX(Expression<Object> resultX)
+  { this.resultX=resultX;
+  }
+  
   @Override
   protected Task task()
   {
     // TODO Auto-generated method stub
-    return new AbstractTask()
+    return new AbstractTask<Object>()
     {
 
       @Override
       protected void work()
       { 
         log.log(Level.FINE,this+": executing");
-        
-        // TODO Auto-generated method stub
-        
+        if (resultChannel!=null)
+        { addResult(resultChannel.get());
+        }
       }
     };    
   }
 
+  @Override
+  protected Focus<?> bindChildren(Focus<?> focusChain)
+    throws BindException
+  {  
+    if (resultX!=null)
+    { resultChannel=focusChain.bind(resultX);
+    }
+    return focusChain;
+  }
 }

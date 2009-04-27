@@ -11,11 +11,14 @@ import spiralcraft.io.record.FileRecordIterator;
 import spiralcraft.io.record.InputStreamRecordIterator;
 import spiralcraft.log.Level;
 import spiralcraft.task.AbstractTask;
-import spiralcraft.task.Scenario;
+
 import spiralcraft.task.Task;
 
+import spiralcraft.test.Test;
+import spiralcraft.test.TestResult;
+
 public class RecordIteratorTest
-  extends Scenario<Task,Void>
+  extends Test<Task,TestResult>
 {
  
   private URI fileURI=null;
@@ -27,7 +30,7 @@ public class RecordIteratorTest
   @Override
   protected Task task()
   {
-    return new AbstractTask()
+    return new AbstractTask<TestResult>()
     {      
       @Override
       public void work()
@@ -42,36 +45,62 @@ public class RecordIteratorTest
               (file,delimiter);
           byte[] data=new byte[256];
           
+          int counter=0;
           while (fri.next())
           { 
             int bytes=fri.read(0,data,0,data.length);
-            log.log
-              (Level.FINE,fri.getRecordPointer()+": "+new String(data,0,bytes));
+            
+            if (counter!=fri.getRecordPointer())
+            {
+              log.log
+                (Level.FINE,"Error: "+counter+"!="+fri.getRecordPointer()+": "
+                +new String(data,0,bytes)
+                );
+            }
+            counter++;
           }
           
           while (fri.previous())
           {
+            
+            counter--;
             int bytes=fri.read(0,data,0,data.length);
-            log.log
-              (Level.FINE,fri.getRecordPointer()+": "
-              +new String(data,0,bytes)
-              );
+            if (counter!=fri.getRecordPointer())
+            {
+              log.log
+                (Level.FINE,"Error: "+counter+"!="+fri.getRecordPointer()+": "
+                +new String(data,0,bytes)
+                );
+            }
           }
   
           InputStream in=new FileInputStream(fileURI.getPath());
           InputStreamRecordIterator isri
             =new InputStreamRecordIterator(in,delimiter);
+          counter=0;
           while (isri.next())
           { 
             int bytes=isri.read(0,data,0,data.length);
-            log.log
-              (Level.FINE
-              ,isri.getRecordPointer()+": "+new String(data,0,bytes)
-              );
+            if (counter!=isri.getRecordPointer())
+            {
+              log.log
+                (Level.FINE,"Error: "+counter+"!="+isri.getRecordPointer()+": "
+                +new String(data,0,bytes)
+                );
+            }
+            counter++;
           }
+          addResult(new TestResult(RecordIteratorTest.this,true));
         }
         catch (Exception x)
-        { log.log(Level.WARNING,"Error",x);
+        { 
+          addResult
+            (new TestResult
+                (RecordIteratorTest.this,false,"Caught exception",x)
+            );
+          
+          addException(x);
+          log.log(Level.WARNING,"Error",x);
         }
         finally
         { 

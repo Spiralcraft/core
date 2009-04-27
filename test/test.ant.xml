@@ -3,8 +3,17 @@
 	<import file="../build.xml"/>
   
   <target name="smoke-tests"
-    depends="clean,spiralcraft-task,spiralcraft-io-smoke"
+    depends="clean,spiralcraft-task"
     >
+    <mkdir dir="out/io"/>
+ 
+    <devtask
+      codebase=".."
+      exec
+        ="--log log/spiralcraft --consoleLog
+         SmokeRunner.assy
+         "
+    />
   </target>
 	
   <target name="all-tests" 
@@ -22,19 +31,7 @@
   	
   <target name="spiralcraft-task">
   </target>
-  	
-  <target name="spiralcraft-io-smoke">
-    <mkdir dir="out/io"/>
-  	
-    <devtask
-      codebase=".."
-      exec
-        ="--log log/spiralcraft --consoleLog
-         class:/spiralcraft/io/test/RecordIterator.test.assy
-         "
-    />
-  </target>
-  	
+  	  	
   <target name="spiralcraft-io-long">
   	
     <devtask

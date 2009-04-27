@@ -47,7 +47,7 @@ public class OutputAgentTest
     for (int i=0;i<threadCount;i++)
     { 
       final int threadNum=i;
-      list.add(new AbstractTask()
+      list.add(new AbstractTask<Void>()
         {
             
           @Override
@@ -85,7 +85,7 @@ public class OutputAgentTest
           }
         });
     }
-    return new ParallelTask<Task>(list);
+    return new ParallelTask<Task,Void>(list);
   }
 
   @Override

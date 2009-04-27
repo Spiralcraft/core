@@ -5,10 +5,8 @@
   xmlns:example="class:/spiralcraft/data/test/example/"
   >
 
-  
-
   <fields>
-		
+    
     <meta:Field>
 
       <name>searchName
@@ -28,28 +26,37 @@
       </type>
       
     </meta:Field>
+
+    <meta:Field>
+      <name>results
+      </name>
+      
+      <type><example:Customer.list.type/>
+      </type>
+    </meta:Field>
   </fields>
       
   <keys>
-   	<meta:Key>
-			<name>customers</name>
-			
-	 		<fieldList>selectId
- 			</fieldList>
-      		
- 			<primary>true
- 			</primary>
-      		
-      <foreignType><Customer.type/>
+    <meta:Key>
+      <name>customers
+      </name>
+      
+      <fieldList>selectId
+      </fieldList>
+          
+      <primary>true
+      </primary>
+          
+      <foreignType><example:Customer.type/>
       </foreignType>
       
       <importedKey>
-      	<meta:Key>
-      		<fieldList>id
-      		</fieldList>
-      	</meta:Key>
+        <meta:Key>
+          <fieldList>id
+          </fieldList>
+        </meta:Key>
       </importedKey>
-  	</meta:Key>
+    </meta:Key>
       
   </keys>
 

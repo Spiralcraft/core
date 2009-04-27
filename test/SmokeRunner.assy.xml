@@ -1,0 +1,50 @@
+<task:TaskRunner
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:io="class:/spiralcraft/io/"
+  xmlns:iotest="class:/spiralcraft/io/test/"
+  xmlns:service="class:/spiralcraft/service/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:dxml="class:/spiralcraft/data/xml/"
+  xmlns:spi="class:/spiralcraft/data/spi/"
+  xmlns:query="class:/spiralcraft/data/query/"
+  xmlns:dtest="class:/spiralcraft/data/test/"
+  >
+  
+  <service>
+    <spi:SingleSpace>
+      <store>
+        <dxml:XmlStore>
+          <baseResourceURI>class:/spiralcraft/data/test/example/
+          </baseResourceURI>
+          
+          <schema 
+            dataURI="class:/spiralcraft/data/test/example/Example.schema.xml"
+          />
+          
+          <debugLevel>DEBUG
+          </debugLevel>
+        </dxml:XmlStore>
+      </store>
+    </spi:SingleSpace>
+  </service>
+  
+  <scenario>
+    <task:Sequence>
+
+      
+      <scenarios>
+
+        <iotest:RecordIteratorTest>
+
+          <fileURI>in/io/RecordFile.small.log
+          </fileURI>
+      
+        </iotest:RecordIteratorTest>
+        
+        <dtest:DataBatchTest/>
+        
+      </scenarios>
+    </task:Sequence>
+  </scenario>
+    
+</task:TaskRunner>
