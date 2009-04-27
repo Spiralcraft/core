@@ -46,7 +46,7 @@ import spiralcraft.time.Scheduler;
  *   is running, the subclass should call assertStoppedState(), which throws an IllegalStateException
  *   if the task is running.
  */
-public abstract class AbstractTask
+public abstract class AbstractTask<Tresult>
   implements Task
 {
   private int _opsInUnit;
@@ -70,7 +70,9 @@ public abstract class AbstractTask
   private PropertyChangeSupport _propertyChangeSupport;
   private final Object _lock=new Object();
 
-  private TaskListener[] _taskListeners=new TaskListener[0];
+  private TaskListener[] _taskListeners
+    =new TaskListener[0];
+  
   private final TaskEvent _taskEvent=new TaskEvent(this);
   
   /**
@@ -180,11 +182,11 @@ public abstract class AbstractTask
     catch (InterruptedException x)
     { 
       log.log(Level.WARNING,"Interrupted",x);
-      exception=x;
+      addException(x);
     }
     catch (RuntimeException x)
     { 
-      exception=x;
+      addException(x);
       throw x;
     }
     finally
@@ -353,7 +355,30 @@ public abstract class AbstractTask
     }
   }
   
+  /**
+   * Generate one or more results, to be handled in an application specific
+   *   manner.
+   * 
+   * @param result
+   */
+  protected void addResult(Tresult result)
+  {
+    for (int i=0;i<_taskListeners.length;i++)
+    { 
+      _taskListeners[i]
+        .taskAddedResult(_taskEvent,result);
+    }    
+  }
+  
+  protected void addException(Exception exception)
+  { 
+    this.exception=exception;
+    for (int i=0;i<_taskListeners.length;i++)
+    { _taskListeners[i].taskThrewException(_taskEvent,exception);
+    }    
+  }
 
+  
   public void addTaskListener(TaskListener listener)
   { 
     _taskListeners
@@ -366,6 +391,16 @@ public abstract class AbstractTask
       =(TaskListener[]) ArrayUtil.remove(_taskListeners,listener);
   }
 
+  protected TaskCommand<?,?> executeChild(Scenario<?,?> scenario)
+  { 
+    TaskCommand<?,?> command=scenario.command();
+    command.execute();
+    if (command.getException()!=null)
+    { addException(command.getException());
+    }
+    return command;
+  }
+  
   private void fireTaskStarted()
   { 
     for (int i=0;i<_taskListeners.length;i++)
@@ -379,4 +414,5 @@ public abstract class AbstractTask
     { _taskListeners[i].taskCompleted(_taskEvent);
     }
   }
+  
 }

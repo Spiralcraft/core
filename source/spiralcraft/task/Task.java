@@ -34,6 +34,10 @@ import spiralcraft.time.Scheduler;
  * 
  * <p>A Task is generally created and configured by a Scenario.
  * </p>
+ * 
+ * <p>A Task may generate results at any time during its running. The results
+ *   are sent to the TaskListeners registered with the Task.
+ * </p>
  */
 public interface Task
   extends Runnable

@@ -17,8 +17,33 @@ package spiralcraft.task;
 public interface TaskListener
 {
  
+  /**
+   * Called when a task is started
+   * 
+   * @param event
+   */
   public void taskStarted(TaskEvent event);
   
+  /**
+   * Called when a task is completed
+   * 
+   * @param event
+   */
   public void taskCompleted(TaskEvent event);
+
+  /**
+   * Called when a task generated a result
+   * 
+   * @param event
+   * @param result
+   */
+  public <Tresult> void taskAddedResult(TaskEvent event,Tresult result);
   
+  /**
+   * Called when a task threw an Exception 
+   * 
+   * @param event
+   * @param result
+   */
+  public void taskThrewException(TaskEvent event,Exception exception);
 }

@@ -22,6 +22,7 @@ import spiralcraft.exec.ExecutionException;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.FocusChainObject;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
@@ -92,17 +93,44 @@ public class TaskRunner
     { throw new ExecutionException("No scenario provided");
     }
     
+    Focus<?> focus=rootFocus;
+    
+    if (service!=null)
+    {
+      // Provide access to the Service
+      
+      if (service instanceof FocusChainObject)
+      { 
+        // Service will export into the Focus- ie. a ServiceGroup
+        try
+        { focus=((FocusChainObject) service).bind(focus);
+        }
+        catch (BindException x)
+        { 
+          throw new ExecutionException
+            ("Error binding service into Focus chain",x);
+        }
+      }
+      else
+      { 
+        // Service is simply exposed into the FocusChain
+        focus=focus.<Service>chain(new SimpleChannel<Service>(service,true));
+      }
+    }
+    
     try
     {
+      if (service!=null)
+      { service.start();
+      }
+            
       scenario.bind
-        (rootFocus.chain
+        (focus.chain
           (new SimpleChannel<TaskRunner>(this,true)
           )
         );
 
-      if (service!=null)
-      { service.start();
-      }
+
       
       scenario.start();
       try
@@ -151,7 +179,9 @@ public class TaskRunner
     public void run()
     { 
       log.log(Level.INFO,"Interrupting for shutdown");
-      executeThread.interrupt();
+      if (executeThread!=null && executeThread.isAlive())
+      { executeThread.interrupt();
+      }
     }
   }  
 }

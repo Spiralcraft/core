@@ -14,6 +14,7 @@
 //
 package spiralcraft.task;
 
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -24,10 +25,16 @@ import java.util.List;
  * @author mike
  *
  */
-public abstract class MultiTask<Tsubtask>
-  extends AbstractTask
+public abstract class MultiTask<Tsubtask,Tresult>
+  extends AbstractTask<Tresult>
+  implements TaskListener
 {
+  
   protected final List<Tsubtask> subtasks;
+  protected final HashSet<Task> runningTasks
+    =new HashSet<Task>();
+  
+  protected final Object monitor=new Object();  
   
   public MultiTask(final List<Tsubtask> subtasks)
   { this.subtasks=subtasks;
@@ -36,4 +43,55 @@ public abstract class MultiTask<Tsubtask>
   public List<Tsubtask> getSubtasks()
   { return subtasks;
   }
+  
+  
+  protected void subtaskStarting(Task task)
+  { 
+    synchronized (monitor)
+    { runningTasks.add(task);
+    }
+  }
+  
+  protected void subtaskCompleted(Task task)
+  { 
+    if (debug)
+    { log.fine("Completed subtask "+task);
+    }
+    
+    synchronized (monitor)
+    {
+      runningTasks.remove(task);
+      if (runningTasks.isEmpty())
+      { monitor.notify();
+      }
+    }
+  }  
+  
+  @Override
+  public void taskCompleted(
+    TaskEvent event)
+  { subtaskCompleted(event.getSource());
+  }
+
+  @Override
+  public void taskStarted(
+    TaskEvent event)
+  {
+    
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> void taskAddedResult(
+    TaskEvent event,
+    T result)
+  { addResult((Tresult) result);
+  }
+
+  @Override
+  public void taskThrewException(
+    TaskEvent event,
+    Exception exception)
+  { addException(exception);
+  }  
 }

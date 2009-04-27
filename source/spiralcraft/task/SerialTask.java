@@ -16,22 +16,19 @@ package spiralcraft.task;
 
 import java.util.List;
 
-//import spiralcraft.log.ClassLog;
-
 /**
  * Executes a number of other Tasks in series
  */
-public class SerialTask<Tsubtask extends Task>
-  extends MultiTask<Tsubtask>
+public class SerialTask<Tsubtask extends Task,Tresult>
+  extends MultiTask<Tsubtask,Tresult>
 {
-//  private static final ClassLog log
-//    =ClassLog.getInstance(SerialTask.class);
   
   public SerialTask(List<Tsubtask> tasks)
   { super(tasks);
   }
  
   
+
   @Override
   protected void work()
   {
@@ -42,7 +39,10 @@ public class SerialTask<Tsubtask extends Task>
     setCurrentUnitTitle("Counting");
     
     for (Task task: subtasks)
-    { task.run();
+    { 
+      task.addTaskListener(this);
+      subtaskStarting(task);
+      task.run();
     }
 
   }

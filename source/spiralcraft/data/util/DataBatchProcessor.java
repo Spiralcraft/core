@@ -2,7 +2,6 @@ package spiralcraft.data.util;
 
 import java.util.List;
 
-import spiralcraft.command.Command;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.lang.DataReflector;
@@ -12,7 +11,9 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.task.BatchScenario;
+import spiralcraft.task.Batch;
+import spiralcraft.task.Task;
+import spiralcraft.task.TaskCommand;
 
 
 /**
@@ -26,7 +27,7 @@ import spiralcraft.task.BatchScenario;
  *
  */
 public class DataBatchProcessor<I,R>
-  extends BatchScenario<I,R>
+  extends Batch<I,R>
 {
 
   private Expression<Aggregate<R>> resultAssignment;
@@ -45,24 +46,49 @@ public class DataBatchProcessor<I,R>
     throws BindException
   {
     Focus<?> focus=super.bind(focusChain);
-    resultChannel=focus.bind(resultAssignment);
+    if (resultAssignment!=null)
+    { resultChannel=focus.bind(resultAssignment);
+    }
     return focus;
   }
 
   @Override
-  public void postResult(List<Command<?,R>> completedCommands)
+  public void postResult(List<TaskCommand<Task,R>> completedCommands)
   {
-    EditableArrayListAggregate<R> result
-    =new EditableArrayListAggregate<R>
-      (((DataReflector<Aggregate<R>>) resultChannel.getReflector())
-         .getType()
-      );
-    for (Command<?,R> command:completedCommands)
-    { 
-      R resultItem=command.getResult();
-      result.add(resultItem);
+    if (debug)
+    {
+      for (TaskCommand<Task,R> command:completedCommands)
+      { 
+        List<R> resultItems=command.getResult();
+        for (R resultItem : resultItems)
+        { log.debug("Result posted: "+resultItem);
+        }
+      }
     }
-    resultChannel.set(result);
+      
+    if (resultChannel!=null)
+    {
+      EditableArrayListAggregate<R> result
+      =new EditableArrayListAggregate<R>
+        (((DataReflector<Aggregate<R>>) resultChannel.getReflector())
+           .getType()
+        );
+      for (TaskCommand<Task,R> command:completedCommands)
+      { 
+        List<R> resultItems=command.getResult();
+        for (R resultItem : resultItems)
+        { result.add(resultItem);
+        }
+      }
+      resultChannel.set(result);
+    }
+    else
+    {
+      log.info
+        ("No resultAssigment expression specified. Discarding results from "
+          +completedCommands.size()+" completed subtasks."
+        );
+    }
   }
     
 }

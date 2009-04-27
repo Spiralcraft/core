@@ -14,21 +14,17 @@
 //
 package spiralcraft.task;
 
-import java.util.HashSet;
 import java.util.List;
 
 
 /**
  * Executes a number of other Tasks in parallel
  */
-public class ParallelTask<Tsubtask extends Task>
-  extends MultiTask<Tsubtask>
-  implements TaskListener
+public class ParallelTask<Tsubtask extends Task,Tresult>
+  extends MultiTask<Tsubtask,Tresult>
 {
   
-  private final Object monitor=new Object();
 
-  private final HashSet<Task> runningTasks=new HashSet<Task>();
   private boolean useScheduler;
   
   public ParallelTask(List<Tsubtask> tasks)
@@ -43,27 +39,6 @@ public class ParallelTask<Tsubtask extends Task>
    */
   public void setUseScheduler(boolean useScheduler)
   { this.useScheduler=useScheduler;
-  }
-  
-  private void subtaskStarting(Task task)
-  { 
-    synchronized (monitor)
-    { runningTasks.add(task);
-    }
-  }
-  
-  private void subtaskCompleted(Task task)
-  { 
-    if (debug)
-    { log.fine("Completed subtask "+task);
-    }
-    synchronized (monitor)
-    {
-      runningTasks.remove(task);
-      if (runningTasks.isEmpty())
-      { monitor.notify();
-      }
-    }
   }
   
   private void waitForComplete()
@@ -115,18 +90,6 @@ public class ParallelTask<Tsubtask extends Task>
     waitForComplete();
   }
 
-  @Override
-  public void taskCompleted(
-    TaskEvent event)
-  { subtaskCompleted(event.getSource());
-  }
 
-  @Override
-  public void taskStarted(
-    TaskEvent event)
-  {
-    
-    
-  }
   
 }

@@ -14,13 +14,9 @@
 //
 package spiralcraft.task;
 
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import spiralcraft.command.Command;
-import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -31,8 +27,6 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.time.Scheduler;
-import spiralcraft.util.thread.Delegate;
-import spiralcraft.util.thread.DelegateException;
 
 
 /**
@@ -58,29 +52,25 @@ import spiralcraft.util.thread.DelegateException;
  * @param <I> The batched item type
  * @param <R> The result item type
  */
-public class BatchScenario<I,R>
-  extends Scenario<MultiTask<BatchScenario<I,R>.CommandSubTask>,List<Command<?,R>>>
+public class Batch<I,R>
+  extends Scenario
+    <MultiTask<Batch<I,R>.SubTask,TaskCommand<Task,R>>
+    ,TaskCommand<Task,R>
+    >
 {
   
   private Expression<?> source;
-  private Expression<Command<?,R>> command;
-  private URI targetTypeURI;
-  private URI targetURI;
-  
-  private AbstractXmlObject<?,?> target;
   
   private Channel<?> sourceChannel;
   protected IterationDecorator<?,I> decorator;
   
   private ThreadLocalChannel<I> item; 
   
-  private Channel<Command<?,R>> subCommandChannel;  
-  
-  private CommandDelegate delegate;
-  
   private boolean parallel;
   
   private Scheduler scheduler;
+  
+  private Scenario<Task,R> scenario;
   
   /**
    * @return The expression which resolves the set of items to process
@@ -92,11 +82,14 @@ public class BatchScenario<I,R>
   /**
    * @param source The expression which resolves the set of items to process
    */
-  public void setSource(
-    Expression<?> source)
+  public void setSource(Expression<?> source)
   { this.source = source;
   }
 
+  public void setScenario(Scenario<Task,R> scenario)
+  { this.scenario=scenario;
+  }
+  
   /**
    * <p>Whether the items of the batch should be run asynchronously in parallel
    * </p>
@@ -105,54 +98,7 @@ public class BatchScenario<I,R>
   public void setParallel(boolean parallel)
   { this.parallel=parallel;
   }
-  
-  /**
-   * @return The expression which resolves the Command object
-   */
-  public Expression<Command<?,R>> getCommand()
-  { return command;
-  }
 
-  /**
-   * @param The expression which resolves the Command object
-   */
-  public void setCommand(
-    Expression<Command<?,R>> command)
-  { this.command = command;
-  }
-
-  /**
-   * @return the targetTypeURI
-   */
-  public URI getTargetTypeURI()
-  { return targetTypeURI;
-  }
-
-  /**
-   * @param targetTypeURI the targetTypeURI to set
-   */
-  public void setTargetTypeURI(
-    URI targetTypeURI)
-  { this.targetTypeURI = targetTypeURI;
-  }
-
-  /**
-   * @return the targetURI
-   */
-  public URI getTargetURI()
-  {
-    return targetURI;
-  }
-
-  /**
-   * @param targetURI the targetURI to set
-   */
-  public void setTargetURI(
-    URI targetURI)
-  {
-    this.targetURI = targetURI;
-  }
-  
   
   /**
    * <p>Override to handle the result on completion
@@ -161,32 +107,32 @@ public class BatchScenario<I,R>
    * 
    * @param completedCommands
    */
-  protected void postResult(List<Command<?,R>> completedCommands)
+  protected void postResult(List<TaskCommand<Task,R>> completedCommands)
   {
     log.log(Level.FINE,""+completedCommands);
   }
   
   @Override
-  protected MultiTask<CommandSubTask> task()
+  protected MultiTask<SubTask,TaskCommand<Task,R>> task()
   {
    
-    final List<CommandSubTask> taskList=taskList();
+    final List<SubTask> taskList=taskList();
     if (parallel)
-    { return new ParallelTask<CommandSubTask>(taskList);
+    { return new ParallelTask<SubTask,TaskCommand<Task,R>>(taskList);
     }
     else
-    { return new SerialTask<CommandSubTask>(taskList);
+    { return new SerialTask<SubTask,TaskCommand<Task,R>>(taskList);
     }
   }
   
-  private LinkedList<CommandSubTask> taskList()
+  private LinkedList<SubTask> taskList()
   { 
     IterationCursor<I> cursor=decorator.iterator();
-    LinkedList<CommandSubTask> taskList=new LinkedList<CommandSubTask>();
+    LinkedList<SubTask> taskList=new LinkedList<SubTask>();
     while (cursor.hasNext())
     { 
       cursor.next();
-      CommandSubTask task=new CommandSubTask(cursor.getValue());
+      SubTask task=new SubTask(cursor.getValue());
       if (scheduler!=null)
       { task.setScheduler(scheduler);
       }
@@ -197,30 +143,41 @@ public class BatchScenario<I,R>
   
   
   @Override
-  public TaskCommand
-    <MultiTask<CommandSubTask>,List<Command<?,R>>>
-    command()
+  protected TaskCommand
+    <MultiTask<SubTask,TaskCommand<Task,R>>
+    ,TaskCommand<Task,R>
+    >
+    createCommand(MultiTask<SubTask,TaskCommand<Task,R>> task)
   {
     return 
       new TaskCommand
-        <MultiTask<CommandSubTask>,List<Command<?,R>>>
-        ()
+        <MultiTask<SubTask,TaskCommand<Task,R>>
+        ,TaskCommand<Task,R>
+        >
+        (Batch.this,task)
       { 
-        { task=task();
+      
+      
+        { collectResults=true;
         }
         
         @Override
         public void run()
         { 
           super.run();
-          List<CommandSubTask> subtasks=task.getSubtasks();
-          List<Command<?,R>> results
-            =new ArrayList<Command<?,R>>(subtasks.size());
-          for (CommandSubTask subtask: subtasks)
+          List<SubTask> subtasks=task.getSubtasks();
+//          List<Command<?,R>> results
+//            =new ArrayList<Command<?,R>>(subtasks.size());
+          for (SubTask subtask: subtasks)
           { 
-            Command<?,R> completedCommand=subtask.getCompletedCommand();
-            log.log(Level.FINE,""+completedCommand.getResult());
-            results.add(completedCommand);
+            TaskCommand<Task,R> completedCommand
+              =subtask.getCompletedTaskCommand();
+            
+            if (debug)
+            { log.log(Level.FINE,""+completedCommand.getResult());
+            }
+//            results.add(completedCommand);
+            
             if (completedCommand.getException()!=null)
             { 
               log.log
@@ -231,15 +188,16 @@ public class BatchScenario<I,R>
               completedCommand.getException().printStackTrace();
             }
           }
-          setResult(results);
-          postResult(results);
+//          setResult(results);
+          
+          postResult(getResult());
         }
       };
   }
   
   @SuppressWarnings("unchecked")
   @Override
-  public Focus<?> bind(
+  public Focus<?> bindChildren(
     Focus<?> focusChain)
     throws BindException
   {
@@ -247,18 +205,12 @@ public class BatchScenario<I,R>
     decorator=sourceChannel.decorate(IterationDecorator.class);
     
     item=new ThreadLocalChannel(decorator.getComponentReflector());
-    target=AbstractXmlObject.activate
-      (targetTypeURI,targetURI,null,focusChain.chain(item));
+    focusChain=scenario.bind(focusChain.chain(item));
     
-    subCommandChannel=target.getFocus().bind(command);
-
-    Focus<?> focus=focusChain;
-    
-    delegate=new CommandDelegate();
     if (parallel)
     { scheduler=new Scheduler();
     }
-    return focus;
+    return focusChain;
   }
  
   /** 
@@ -269,18 +221,18 @@ public class BatchScenario<I,R>
    * @author mike
    *
    */
-  public class CommandSubTask
-    extends AbstractTask
+  public class SubTask
+    extends AbstractTask<TaskCommand<Task,R>>
   {
     private final I value;
-    private volatile Command<?,R> completedCommand;
+    private volatile TaskCommand<Task,R> completedTaskCommand;
 
-    public CommandSubTask(I value)
+    public SubTask(I value)
     { this.value=value;
     }
 
-    public Command<?,R> getCompletedCommand()
-    { return completedCommand;
+    public TaskCommand<Task,R> getCompletedTaskCommand()
+    { return completedTaskCommand;
     }
 
     @Override
@@ -289,19 +241,10 @@ public class BatchScenario<I,R>
       item.push(value);
       try
       { 
-        if (target!=null)
-        {
-          try
-          { completedCommand=target.runInContext(delegate);
-          }
-          catch (DelegateException x)
-          { throw new RuntimeException(x);
-          }
-
-        }
-        else
-        { completedCommand=delegate.run();
-        }
+        completedTaskCommand=scenario.command();
+        completedTaskCommand.setCollectResults(true);
+        completedTaskCommand.execute();
+        addResult(completedTaskCommand);
       }
       finally
       { item.pop();
@@ -309,19 +252,8 @@ public class BatchScenario<I,R>
     }
 
   }   
-  
-  class CommandDelegate
-    implements Delegate<Command<?,R>>
-  {
 
-    @Override
-    public Command<?,R> run()
-    { 
-      Command<?,R> command=subCommandChannel.get();
-      command.execute();
-      return command;
-    }
-  }
+
 
 
   
