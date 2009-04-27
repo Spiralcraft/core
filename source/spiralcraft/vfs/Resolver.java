@@ -21,6 +21,8 @@ import java.util.Stack;
 
 import java.io.File;
 
+import spiralcraft.exec.ExecutionContext;
+import spiralcraft.util.string.StringConverter;
 import spiralcraft.vfs.classpath.ClasspathResourceFactory;
 import spiralcraft.vfs.context.ContextResourceFactory;
 import spiralcraft.vfs.file.FileResourceFactory;
@@ -108,6 +110,36 @@ public class Resolver
   
   public static final void popThreadContextURI()
   { contextURI.get().pop();
+  }
+  
+  static { 
+    StringConverter.registerInstance
+      (Resource.class
+      ,new StringConverter<Resource>()
+      {
+        @Override
+        public Resource fromString(String val)
+        { 
+          try
+          {
+            return Resolver.getInstance()
+              .resolve(ExecutionContext.getInstance()
+                 .canonicalize(URI.create(val))
+                 );
+          }
+          catch (Exception x)
+          { throw new IllegalArgumentException(x);
+          }
+        
+        }
+        
+        @Override
+        public String toString(Resource resource)
+        { return resource.getURI().toString();
+        }
+      }
+      );
+      
   }
   
   /**

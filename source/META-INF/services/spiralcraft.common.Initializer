@@ -1,2 +1,3 @@
 spiralcraft.lang.reflect.Initializer
 spiralcraft.data.lang.Initializer
+spiralcraft.vfs.Initializer
