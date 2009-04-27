@@ -54,6 +54,7 @@ import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.log.Level;
 
 
 /**
@@ -148,22 +149,22 @@ public class XmlStore
   
   private void addSequences(Type<?> subtype)
   {
-      if (subtype.getScheme()!=null)
-      {
-        if (sequences==null)
-        { sequences=new HashMap<URI,XmlSequence>();
-        }
-        for (Field<?> field : subtype.getScheme().fieldIterable())
+    if (subtype.getScheme()!=null)
+    {
+      if (sequences==null)
+      { sequences=new HashMap<URI,XmlSequence>();
+      }
+      for (Field<?> field : subtype.getScheme().fieldIterable())
+      { 
+        if (field instanceof SequenceField)
         { 
-          if (field instanceof SequenceField)
-          { 
-            sequences.put
-            (field.getURI()
-            ,new XmlSequence(field.getURI())
-            );
-          }
+          sequences.put
+          (field.getURI()
+          ,new XmlSequence(field.getURI())
+          );
         }
       }
+    }
     
   }
  
@@ -177,41 +178,41 @@ public class XmlStore
   @SuppressWarnings("unchecked")
   private void addBaseTypes(XmlQueryable queryable)
   {
-      Type<?> subtype=queryable.getResultType();
-      Type<?> type=subtype.getBaseType();
-      while (type!=null)
+    Type<?> subtype=queryable.getResultType();
+    Type<?> type=subtype.getBaseType();
+    while (type!=null)
+    { 
+      // Set up a queryable for each of the XmlQueryable's base types
+      
+      Queryable<?> candidateQueryable=queryables.get(type);
+      BaseExtentQueryable baseQueryable;
+        
+      if (candidateQueryable==null)
       { 
-        // Set up a queryable for each of the XmlQueryable's base types
-        
-        Queryable<?> candidateQueryable=queryables.get(type);
-        BaseExtentQueryable baseQueryable;
-        
-        if (candidateQueryable==null)
-        { 
-          baseQueryable=new BaseExtentQueryable(type);
-          queryables.put(type, baseQueryable);
-          baseQueryable.addExtent(subtype,queryable);
-        }
-        else if (!(candidateQueryable instanceof BaseExtentQueryable))
-        {
-          // The base extent queryable is already "concrete"
-          // This is ambiguous, though. The base extent queryable only
-          //   contains the non-subtyped concrete instances of the
-          //   base type.
-          
-          baseQueryable=new BaseExtentQueryable(type);
-          queryables.put(type, baseQueryable);
-          baseQueryable.addExtent(type,candidateQueryable);
-          baseQueryable.addExtent(subtype,queryable);
-        }
-        else
-        {
-          ((BaseExtentQueryable) candidateQueryable)
-            .addExtent(subtype, queryable);
-        }
-        type=type.getBaseType();
-        
+        baseQueryable=new BaseExtentQueryable(type);
+        queryables.put(type, baseQueryable);
+        baseQueryable.addExtent(subtype,queryable);
       }
+      else if (!(candidateQueryable instanceof BaseExtentQueryable))
+      {
+        // The base extent queryable is already "concrete"
+        // This is ambiguous, though. The base extent queryable only
+        //   contains the non-subtyped concrete instances of the
+        //   base type.
+          
+        baseQueryable=new BaseExtentQueryable(type);
+        queryables.put(type, baseQueryable);
+        baseQueryable.addExtent(type,candidateQueryable);
+        baseQueryable.addExtent(subtype,queryable);
+      }
+      else
+      {
+        ((BaseExtentQueryable) candidateQueryable)
+          .addExtent(subtype, queryable);
+      }
+      type=type.getBaseType();
+      
+    }
     
   }
   
@@ -271,6 +272,8 @@ public class XmlStore
     
     if (schema!=null)
     {
+
+      
       for (Entity entity: schema.getEntities())
       {
         XmlQueryable queryable=new XmlQueryable();
@@ -278,6 +281,10 @@ public class XmlStore
         queryable.setResourceURI(URI.create(entity.getName()+".data.xml"));
         queryable.setAutoCreate(true);
         addQueryable(queryable);
+        
+        if (debugLevel.canLog(Level.DEBUG))
+        { log.debug("Added XmlQueryable from schema");
+        }        
       }
     }
     
@@ -318,15 +325,13 @@ public class XmlStore
       }
       
     }
-    
+    super.start();
   }
 
   @Override
   public void stop()
     throws LifecycleException
-  {
-    // TODO Auto-generated method stub
-    
+  { super.stop();
   }
 
 
