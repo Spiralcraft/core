@@ -2,8 +2,169 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
+    <revision>0.3.4
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <notes>
+      <scm:Note>Ongoing spiralcraft-sql module support and integration
+      </scm:Note>
+    </notes>
+
+        
+    <detail>
+      <scm:Change>
+        <date>2009-04-26
+        </date>
+        
+        <path>/source/spiralcraft/test/
+        </path>
+        
+        <notes>
+          <scm:Note>A package for implementing automated test cases built on 
+            the Task/Scenario system, to produce TestResults in a wide variety
+            of scenarios. 
+          </scm:Note>
+        </notes>
+      </scm:Change>
+      
+      <scm:Change>
+        <date>2009-04-26
+        </date>
+        
+        <path>/source/spiralcraft/command/BoundCommandFactory.java
+        </path>
+        
+        <notes>
+          <scm:Note>Encapsulates the situation where a Command is specified
+            by an Expression or other device resolved against the Focus chain.
+          </scm:Note>
+          <scm:Note>This anticipates
+            that Expression driven command resolution will need to support
+            just-in time customization of the generated Command objects via
+            property injection, for more control in the declarative layer.
+          </scm:Note>
+        </notes>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <date>2009-04-26
+        </date>
+        
+        <path>/source/spiralcraft/builder/PropertyBinding.java
+        </path>
+        
+        <notes>
+          <scm:Note>Builder resolves namespaces in Expressions when
+            the target is of type Expression, before
+            applying the Expression object to the target.
+          </scm:Note>
+        </notes>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-04-26
+        </date>
+        
+        <path>/source/
+        </path>
+        
+        <resources>
+          <URI>spiralcraft/vfs/Initializer.java
+          </URI>
+          <URI>spiralcraft/vfs/Resolver.java
+          </URI>
+          <URI>META-INF/services/spiralcraft.common.Initializer
+          </URI>
+        </resources>
+        
+        <notes>
+          <scm:Note>Register a StringConverter for Resource objects
+          </scm:Note>
+        </notes>
+      </scm:Change>
+      
+      <scm:Change>
+        <date>2009-04-26
+        </date>
+        
+        <path>/source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>spi/SingleSpace.java
+          </URI>
+          <URI>spi/AbstractStore.java
+          </URI>
+          <URI>xml/XmlStore.java
+          </URI>
+        </resources>
+        
+        <notes>
+          <scm:Note>Debugging and logging functionality
+          </scm:Note>
+          <scm:Note>Startup assertion- ensure that Store is started when
+             trying to query.
+          </scm:Note>
+          <scm:Note>XmlStore now calls super Lifecycle interface
+          </scm:Note>
+          <scm:Note>Space now implements Service, which extends Registrant. 
+            Removed redundant implements Registrant declaration from
+            SingleSpace.
+          </scm:Note>
+        </notes>
+      </scm:Change>
+      
+      <scm:Change>
+        <date>2009-04-24
+        </date>
+        
+        <path>/source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>task/*
+          </URI>
+          <URI>data/query/QueryScenario
+          </URI>
+          <URI>data/util/DataBatchProcessor
+          </URI>
+        </resources>
+        
+        
+        <notes>
+          <scm:Note>Scenario is now a CommandFactory, and always creates 
+            TaskCommands to allow for interaction between tasks.
+          </scm:Note>
+          <scm:Note>Created a QueryScenario to run data queries from a Task
+          </scm:Note>
+          <scm:Note>Added stateless result processing chain to Task
+             infrastructure
+          </scm:Note>
+          <scm:Note>TaskRunner publishes the Service tree into into the
+            Focus.
+          </scm:Note>
+          <scm:Note>Clarified Scenario hierarchical compositional model.
+          </scm:Note>
+          <scm:Note>Refactored the BatchScenario into multiple components-
+            Batch, Model and Commander.
+          </scm:Note>
+        </notes>
+      </scm:Change>
+    </detail>
+    
+  </scm:Change>
+  
+  <scm:Change>
     <revision>0.3.3
     </revision>
+    
+    <date>2009-04-21
+    </date>
     
     <authorId>miketoth
     </authorId>
