@@ -42,7 +42,6 @@ import spiralcraft.registry.RegistryNode;
  */
 public class SingleSpace
   extends Space
-  implements Registrant
 {
   
   private Store store;
@@ -53,6 +52,7 @@ public class SingleSpace
     this.store=store;
   }
 
+  @Override
   public void register(RegistryNode node)
   { 
 
@@ -63,6 +63,7 @@ public class SingleSpace
     }
   }
   
+  @Override
   public void start()
     throws LifecycleException
   { 
@@ -79,6 +80,7 @@ public class SingleSpace
     }
   }
   
+  @Override
   public void stop()
     throws LifecycleException
   { store.stop();

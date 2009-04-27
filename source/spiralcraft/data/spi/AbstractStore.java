@@ -35,6 +35,8 @@ import spiralcraft.data.query.Scan;
 // import spiralcraft.data.query.Scan;
 
 import spiralcraft.lang.Focus;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
 
@@ -52,8 +54,13 @@ import spiralcraft.registry.RegistryNode;
 public abstract class AbstractStore
   implements Store,Registrant,Lifecycle
 {
+  protected final ClassLog log=ClassLog.getInstance(getClass());
+  protected Level debugLevel=ClassLog.getInitialDebugLevel(getClass(),null);
+
   protected RegistryNode registryNode;
   protected Space space;
+  private boolean started;
+  
   
   public void register(RegistryNode node)
   { 
@@ -69,7 +76,13 @@ public abstract class AbstractStore
   @Override
   public boolean containsType(
     Type<?> type)
-  { return getQueryable(type)!=null;
+  { 
+    assertStarted();
+    return getQueryable(type)!=null;
+  }
+  
+  public void setDebugLevel(Level debugLevel)
+  { this.debugLevel=debugLevel;
   }
   
   /**
@@ -103,6 +116,7 @@ public abstract class AbstractStore
     Focus<?> context)
     throws DataException
   { 
+    assertStarted();
     HashSet<Type<?>> typeSet=new HashSet<Type<?>>();
     getScanTypes(query,typeSet);
     Type<?>[] types=typeSet.toArray(new Type[typeSet.size()]);
@@ -120,6 +134,9 @@ public abstract class AbstractStore
     
     BoundQuery<?,Tuple> ret=query.solve(context,this);
     ret.resolve();
+    if (debugLevel.canLog(Level.DEBUG))
+    { log.debug("returning "+ret+" from query("+query+")");
+    }
     return ret;
 
 //    if (query instanceof Scan)
@@ -156,6 +173,8 @@ public abstract class AbstractStore
     Type<?> type)
     throws DataException
   {
+    assertStarted();
+    
     Queryable<Tuple> queryable=getQueryable(type);
     if (queryable!=null)
     { return queryable.getAll(type);
@@ -166,17 +185,19 @@ public abstract class AbstractStore
   @Override
   public void start()
     throws LifecycleException
-  {
-
+  { started=true;
   }
 
   @Override
   public void stop()
     throws LifecycleException
-  {
-    // TODO Auto-generated method stub
-    
+  { started=false;
   }  
   
-  
+  protected void assertStarted()
+  { 
+    if (!started)
+    { throw new IllegalStateException("Store has not been started");
+    }
+  }
 }
