@@ -98,25 +98,30 @@ public class FormatTest
           RecordCursor recordCursor
             =new RecordCursor(recordIterator,recordFormat);  
         
-          log.log
-            (Level.FINE,"Record separator= ["
+          try
+          {
+            log.log
+              (Level.FINE,"Record separator= ["
                 +ArrayUtil.format(recordSeparator.getBytes(),",",null)
                 +"]");
            
-          int count=0;
-          while (recordCursor.dataNext())
-          {
-            count++;
-            if (debug)
-            { log.log(Level.DEBUG,"Processing "+recordCursor.dataGetTuple());
-            }
+            int count=0;
+            while (recordCursor.next())
+            {
+              count++;
+              if (debug)
+              { log.log(Level.DEBUG,"Processing "+recordCursor.getTuple());
+              }
             
-            out.write(recordFormat.format(recordCursor.dataGetTuple()));
-            out.write(recordSeparator.getBytes());
+              out.write(recordFormat.format(recordCursor.getTuple()));
+              out.write(recordSeparator.getBytes());
           
+            }
+            log.log(Level.FINE,"Processed "+count+" records");
           }
-          
-          log.log(Level.FINE,"Processed "+count+" records");
+          finally
+          { recordCursor.close();
+          }
           
           out.flush();
           in.close();

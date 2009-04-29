@@ -25,14 +25,6 @@ public interface ScrollableCursor<T extends Tuple>
   extends SerialCursor<T>
 {
 
-  /**
-   * Move the cursor to the next Tuple, if any.
-   * 
-   *@return Whether the Cursor moved to another Tuple, or false if the Cursor
-   *   encountered the end of the structure.   
-   */
-  boolean dataNext()
-    throws DataException;
 
   /**
    * Move the cursor to the previous Tuple, if any.
@@ -40,7 +32,7 @@ public interface ScrollableCursor<T extends Tuple>
    *@return Whether the Cursor moved to another Tuple, or false if the Cursor
    *   encountered the beginning of the structure.   
    */
-  boolean dataPrevious()
+  boolean previous()
     throws DataException;
 
   /**
@@ -50,7 +42,7 @@ public interface ScrollableCursor<T extends Tuple>
    *@return Whether the Cursor moved to another Tuple, or false if the Cursor
    *   encountered the beginning of the structure.   
    */
-  boolean dataMoveFirst()
+  boolean moveFirst()
     throws DataException;
   
   /**
@@ -59,19 +51,19 @@ public interface ScrollableCursor<T extends Tuple>
    *@return Whether the Cursor moved to another Tuple, or false if the Cursor
    *   encountered the end of the structure.   
    */
-  boolean dataMoveLast()
+  boolean moveLast()
     throws DataException;
 
   /**
    * Move the cursor to the beginning of the structure, before the first Tuple.
    */
-  void dataMoveBeforeFirst()
+  void moveBeforeFirst()
     throws DataException;
 
   /**
    * Move the cursor to the end of the structure, after the last Tuple.
    */
-  void dataMoveAfterLast()
+  void moveAfterLast()
     throws DataException;
 
 }

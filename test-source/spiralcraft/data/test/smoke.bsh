@@ -16,15 +16,15 @@ var stdType(String localName)
 
 dumpQuery(SerialCursor cursor)
 {
-  while (cursor.dataNext())
-  { print(cursor.dataGetTuple().toText("   "));
+  while (cursor.next())
+  { print(cursor.getTuple().toText("   "));
   }
 }
 
 dumpQueryField(SerialCursor cursor,String fieldName)
 {
-  while (cursor.dataNext())
-  { print(cursor.dataGetTuple().get(fieldName));
+  while (cursor.next())
+  { print(cursor.getTuple().get(fieldName));
   }
 }
 
@@ -385,23 +385,23 @@ tChannel=cursor.bind();
 bTchannel=cursor.bind().buffer(focus);
 
 	
-cursor.dataNext();
+cursor.next();
 tChannel.get();
 bTchannel.get();
 
-cursor.dataNext();
+cursor.next();
 tChannel.get();
 bTchannel.get();
 
-cursor.dataNext();
+cursor.next();
 tChannel.get();
 bTchannel.get();
 
-cursor.dataPrevious();
+cursor.previous();
 tChannel.get();
 bTchannel.get();
 
-cursor.dataPrevious();
+cursor.previous();
 tChannel.get();
 bTchannel.get();
 

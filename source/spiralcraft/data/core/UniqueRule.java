@@ -113,18 +113,24 @@ public class UniqueRule<T extends Tuple>
       try
       {
         SerialCursor<T> cursor=boundQuery.execute();
-        while (cursor.dataNext())
+        try
         {
-          if (debug)
-          { 
-            log.fine("Checking against "+cursor.dataGetTuple().toText("| "));
-            log.fine(source.get().getId()+" ? "+cursor.dataGetTuple().getId());
+          while (cursor.next())
+          {
+            if (debug)
+            { 
+              log.fine("Checking against "+cursor.getTuple().toText("| "));
+              log.fine(source.get().getId()+" ? "+cursor.getTuple().getId());
+            }
+            if (!cursor.getTuple().getId().equals(source.get().getId()))
+            { 
+              return new Violation<T>
+                (UniqueRule.this,field.getTitle()+" must be unique");
+            }
           }
-          if (!cursor.dataGetTuple().getId().equals(source.get().getId()))
-          { 
-            return new Violation<T>
-              (UniqueRule.this,field.getTitle()+" must be unique");
-          }
+        }
+        finally
+        { cursor.close();
         }
       }
       catch (DataException x)

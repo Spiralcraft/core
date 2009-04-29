@@ -5,6 +5,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.CursorAggregate;
+import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.session.BufferChannel;
 import spiralcraft.lang.AccessException;
@@ -42,11 +43,13 @@ public class QueryChannel
   {
     try
     { 
-      
-      CursorAggregate aggregate=new CursorAggregate(query.execute());
-      
-      return aggregate;
-      
+      SerialCursor<?> cursor=query.execute();
+      try
+      { return new CursorAggregate(cursor);
+      }
+      finally
+      { cursor.close();
+      }
     }
     catch (DataException x)
     { throw new AccessException("Error performing query",x);

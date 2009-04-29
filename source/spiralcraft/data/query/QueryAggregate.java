@@ -31,6 +31,7 @@ public class QueryAggregate<Tq extends Query,Tt extends Tuple>
   extends ListAggregate<Tt>
 {
 
+  @SuppressWarnings("unchecked")
   public QueryAggregate(BoundQuery<Tq,Tt> query)
     throws DataException
   { 
@@ -39,9 +40,22 @@ public class QueryAggregate<Tq extends Query,Tt extends Tuple>
     
     
     SerialCursor<Tt> cursor=query.execute();
-    while (cursor.dataNext())
-    { list.add(cursor.dataGetTuple());
+    try
+    {
+      while (cursor.next())
+      { 
+        Tt tuple=cursor.getTuple();
+        if (tuple.isVolatile())
+        { tuple=(Tt) tuple.snapshot();
+        }
+      
+        list.add(tuple);
+      }
     }
+    finally
+    { cursor.close();
+    }
+    
     
   }
   

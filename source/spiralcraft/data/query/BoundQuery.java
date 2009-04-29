@@ -139,7 +139,7 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
   }
   
   
-  public abstract class BoundQuerySerialCursor
+  protected abstract class BoundQuerySerialCursor
     implements SerialCursor<Tt>
   { 
     private Tt tuple;
@@ -155,11 +155,13 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
       // TODO: Notify?
     }
 
-    public Tt dataGetTuple()
+    @Override
+    public Tt getTuple()
     { return tuple;
     }
     
-    public FieldSet dataGetFieldSet()
+    @Override
+    public FieldSet getFieldSet()
     { return query.getFieldSet();
     }
         
@@ -177,7 +179,7 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
     }
   }
 
-  public abstract class BoundQueryScrollableCursor
+  protected abstract class BoundQueryScrollableCursor
     extends BoundQuerySerialCursor
     implements ScrollableCursor<Tt>
   {

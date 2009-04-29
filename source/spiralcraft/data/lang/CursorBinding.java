@@ -36,7 +36,7 @@ public class CursorBinding<T extends Tuple,C extends Cursor<T>>
   public CursorBinding(C cursor)
     throws BindException
   { 
-    super(cursor.dataGetFieldSet(),false);
+    super(cursor.getFieldSet(),false);
     this.cursor=cursor;
   }
   
@@ -47,7 +47,7 @@ public class CursorBinding<T extends Tuple,C extends Cursor<T>>
   
   public void setCursor(C cursor)
   { 
-    if (cursor.dataGetFieldSet()!=getFieldSet())
+    if (cursor.getFieldSet()!=getFieldSet())
     { throw new IllegalArgumentException
         ("Cursor is incompatible with existing binding");
     }
@@ -62,7 +62,7 @@ public class CursorBinding<T extends Tuple,C extends Cursor<T>>
   protected T retrieve()
   { 
     try
-    { return cursor.dataGetTuple();
+    { return cursor.getTuple();
     }
     catch (DataException x)
     { throw new RuntimeException("Caught exception getting value",x);

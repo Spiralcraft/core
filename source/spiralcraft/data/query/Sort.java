@@ -30,7 +30,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
-import spiralcraft.data.access.ScrollableCursor;
+
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.spi.ListCursor;
 import spiralcraft.data.spi.OrderComparator;
@@ -201,20 +201,17 @@ class SortBinding<Tq extends Sort,T extends Tuple>
   public SerialCursor<T> execute()
     throws DataException
   {
-    return new SortScrollableCursor(source.execute());
+    SerialCursor<T> sourceCursor=source.execute();
+    try
+    { return new SortScrollableCursor(sourceCursor);
+    }
+    finally
+    { sourceCursor.close();
+    }
   }
   
-  protected SerialCursor<T> newSerialCursor(SerialCursor<T> source)
-    throws DataException
-  { return new SortScrollableCursor(source);
-  }
-  
-  protected ScrollableCursor<T> newScrollableCursor(SerialCursor<T> source)
-    throws DataException
-  { return new SortScrollableCursor(source);
-  }
 
-  class SortScrollableCursor
+  protected class SortScrollableCursor
     extends ListCursor<T>
   {
     
@@ -223,12 +220,18 @@ class SortBinding<Tq extends Sort,T extends Tuple>
     
     
       
+    @SuppressWarnings("unchecked")
     public SortScrollableCursor(SerialCursor<T> source)
       throws DataException
     { 
-      super(source.dataGetFieldSet());
-      while (source.dataNext())
-      { data.add(source.dataGetTuple());
+      super(source.getFieldSet());
+      while (source.next())
+      { 
+        T tuple=source.getTuple();
+        if (tuple.isVolatile())
+        { tuple=(T) tuple.snapshot();
+        }
+        data.add(tuple);
       }
       Collections.sort(data,comparator);
     }

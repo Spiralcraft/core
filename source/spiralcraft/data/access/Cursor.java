@@ -23,10 +23,12 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 
 /**
- * A Cursor is a window onto one or more Tuples of compatible Types.<P>
+ * <p>A Cursor is a window onto one or more Tuples of compatible Types.
+ * </p>
  * 
- * Cursors provide a means for data processing components to bind to a data
- *   stream, and for streaming data providers to expose data.
+ * <p>Cursors provide a means for data processing components to bind to a
+ *   lazy data stream, and for streaming data providers to expose data.
+ * </p>
  */
 public interface Cursor<T extends Tuple>
 {
@@ -46,12 +48,12 @@ public interface Cursor<T extends Tuple>
   /**
    *@return The FieldSet common to all the Tuples that will be returned by this Cursor
    */
-  FieldSet dataGetFieldSet();
+  FieldSet getFieldSet();
   
   /**
    *@return The Tuple currently positioned under the Cursor
    */
-  T dataGetTuple()
+  T getTuple()
     throws DataException;
   
   /**
@@ -67,4 +69,7 @@ public interface Cursor<T extends Tuple>
    */
   Channel<T> bind()
     throws BindException;
+  
+  void close()
+    throws DataException;
 }

@@ -234,25 +234,12 @@ public class DataAuthenticator
       
       try
       {
-        SerialCursor<?> cursor=boundQuery.execute();
-        Tuple loginEntry=null;
         
         String username=null;
-        
-        if (cursor.dataNext())
-        { 
-          loginEntry=cursor.dataGetTuple();
-          if (debug)
-          { log.fine("Found user "+loginEntry.get("username"));
-          }
-        
-          if (cursor.dataNext())
-          { 
-            throw new SecurityException
-              ("Cardinality Violation: Multiple Login records for user "
-                +loginEntry.get("searchname")
-              );
-          }
+        Tuple loginEntry=queryLoginEntry();
+
+        if (loginEntry!=null)
+        {
 
           // We have valid username in loginEntry
           //   run the password comparison expression
@@ -280,7 +267,7 @@ public class DataAuthenticator
           
             // cursor.discard()
             if (debug)
-            { log.fine("valid login: "+cursor.dataGetTuple());
+            { log.fine("valid login: "+loginEntry);
             }
           
           
@@ -356,6 +343,37 @@ public class DataAuthenticator
       catch (NoSuchAlgorithmException x)
       { throw new RuntimeException("SHA256 not supported",x);
       }
+    }
+    
+    private Tuple queryLoginEntry()
+      throws DataException,SecurityException
+    {
+      SerialCursor<?> cursor=boundQuery.execute();
+        
+      try
+      {
+        if (cursor.next())
+        { 
+          Tuple loginEntry=cursor.getTuple();
+          if (debug)
+          { log.fine("Found user "+loginEntry.get("username"));
+          }
+          
+          if (cursor.next())
+          { 
+            throw new SecurityException
+              ("Cardinality Violation: Multiple Login records for user "
+                +loginEntry.get("searchname")
+              );
+          }
+          return loginEntry.snapshot();
+        }
+      }
+      finally
+      { cursor.close();
+      }
+      return null;
+
     }
   }
 }

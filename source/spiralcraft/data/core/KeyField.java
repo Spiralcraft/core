@@ -204,33 +204,45 @@ public class KeyField<T extends DataComposite>
         if (getType().isAggregate())
         { 
           SerialCursor cursor=query.execute();
-          if (cursor.getResultType()==null)
+          try
           {
-            log.fine("cursor result type is null "+cursor);
+            if (cursor.getResultType()==null)
+            { log.fine("cursor result type is null "+cursor);
+            }
+          
+          
+            CursorAggregate aggregate
+              =new CursorAggregate(cursor);
+//            log.fine(aggregate.toString());
+            return (T) aggregate;
+          }
+          finally
+          { cursor.close();
           }
           
-          
-          CursorAggregate aggregate
-            =new CursorAggregate(query.execute());
-//          log.fine(aggregate.toString());
-          return (T) aggregate;
         }
         else
         { 
           Tuple val=null;
           SerialCursor cursor=query.execute();
-          while (cursor.dataNext())
-          { 
-            if (val!=null)
+          try
+          {
+            while (cursor.next())
             { 
-              throw new AccessException
-                (getURI()+": Cardinality violation: non-aggregate query returned more" +
-                " than one result"
-                );
+              if (val!=null)
+              { 
+                throw new AccessException
+                  (getURI()+": Cardinality violation: non-aggregate query returned more" +
+                  " than one result"
+                  );
+              }
+              else
+              { val=cursor.getTuple();
+              }
             }
-            else
-            { val=cursor.dataGetTuple();
-            }
+          }
+          finally
+          { cursor.close();
           }
 //          log.fine(val!=null?val.toString():"null");
           return (T) val;

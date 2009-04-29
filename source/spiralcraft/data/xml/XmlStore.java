@@ -409,10 +409,16 @@ public class XmlStore
           for (BoundQuery<?,Tuple> query: uniqueQueries)
           {
             SerialCursor<Tuple> cursor=query.execute();
-            if (cursor.dataNext())
-            { 
-              throw new UniqueKeyViolationException
-                (tuple,uniqueKeys.get(i));
+            try
+            {
+              if (cursor.next())
+              { 
+                throw new UniqueKeyViolationException
+                  (tuple,uniqueKeys.get(i));
+              }
+            }
+            finally
+            { cursor.close();
             }
             i++;
             
@@ -457,22 +463,28 @@ public class XmlStore
           for (BoundQuery<?,Tuple> query: uniqueQueries)
           {
             SerialCursor<Tuple> cursor=query.execute();
-            if (cursor.dataNext())
-            { 
-              if (!cursor.dataGetTuple().equals(tuple.getOriginal()))
-              {
-                // XXX We need to check if tuple is a later version of
-                //  original, and then check for an update conflict
-                if (debug)
-                { 
-                  log.fine("\r\n  existing="+cursor.dataGetTuple()
-                    +"\r\n  new="+tuple.getOriginal()
-                    +"\r\n updated="+tuple
-                    );
+            try
+            {
+              if (cursor.next())
+              { 
+                if (!cursor.getTuple().equals(tuple.getOriginal()))
+                {
+                  // XXX We need to check if tuple is a later version of
+                  //  original, and then check for an update conflict
+                  if (debug)
+                  { 
+                    log.fine("\r\n  existing="+cursor.getTuple()
+                      +"\r\n  new="+tuple.getOriginal()
+                      +"\r\n updated="+tuple
+                      );
+                  }
+                  throw new UniqueKeyViolationException
+                    (tuple,uniqueKeys.get(i));
                 }
-                throw new UniqueKeyViolationException
-                  (tuple,uniqueKeys.get(i));
               }
+            }
+            finally
+            { cursor.close();
             }
             i++;
             
@@ -528,40 +540,49 @@ public class XmlStore
                 
                   // Find a more certain original
                   SerialCursor<Tuple> cursor=originalQuery.execute();
-                  if (!cursor.dataNext())
+                  try
                   {
-                    // Old one has been deleted
-                    log.warning("Adding back lost original on update"+t); 
-                    queryable.add(t);
-                  }
-                  else
-                  { 
-                    EditableTuple newOriginal=(EditableTuple) cursor.dataGetTuple();
-                    if (newOriginal!=original)
-                    { 
-                      if (debug)
-                      { log.fine("Updating original to new version "+newOriginal);
-                      }
-                      if (t instanceof BufferTuple)
-                      { ((BufferTuple) t).updateOriginal(newOriginal);
-                      }
-                      original=newOriginal;
-
+                    if (!cursor.next())
+                    {
+                      // Old one has been deleted
+                      log.warning("Adding back lost original on update"+t); 
+                      queryable.add(t);
                     }
                     else
                     { 
-                      if (debug)
-                      { log.fine("Read back same data"+original);
+                      EditableTuple newOriginal
+                        =(EditableTuple) cursor.getTuple();
+                      if (newOriginal!=original)
+                      { 
+                        if (debug)
+                        { 
+                          log.fine
+                            ("Updating original to new version "+newOriginal);
+                        }
+                        if (t instanceof BufferTuple)
+                        { ((BufferTuple) t).updateOriginal(newOriginal);
+                        }
+                        original=newOriginal;
+
+                      }
+                      else
+                      { 
+                        if (debug)
+                        { log.fine("Read back same data"+original);
+                        }
                       }
                     }
-                  }
 
-                  if (cursor.dataNext())
-                  {
-                    log.warning
-                    ("Cardinality violation: duplicate "
-                      +cursor.dataGetTuple()
-                    );
+                    if (cursor.next())
+                    {
+                      log.warning
+                      ("Cardinality violation: duplicate "
+                        +cursor.getTuple()
+                      );
+                    }
+                  }
+                  finally
+                  { cursor.close();
                   }
                 }
                 finally
@@ -633,32 +654,40 @@ public class XmlStore
       synchronized(sequenceQueryable)
       {
         SerialCursor<Tuple> result=boundQuery.execute();
-        if (!result.dataNext())
+        try
         {
-          EditableTuple row=new EditableArrayTuple(sequenceType.getScheme());
-          sequenceType.<URI>getField("uri").setValue(row,uri);
-          sequenceType.getField("nextValue").setValue(row,200);
-          sequenceType.getField("increment").setValue(row,100);
-          next=100;
-          stop=200;
-          increment=100;
-          sequenceQueryable.add(row);
-        }
-        else
-        {
-          EditableTuple row=(EditableTuple) result.dataGetTuple();
-          next=(Integer) sequenceType.getField("nextValue").getValue(row);
-          increment=(Integer) sequenceType.getField("increment").getValue(row);
+          if (!result.next())
+          {
+            EditableTuple row=new EditableArrayTuple(sequenceType.getScheme());
+            sequenceType.<URI>getField("uri").setValue(row,uri);
+            sequenceType.getField("nextValue").setValue(row,200);
+            sequenceType.getField("increment").setValue(row,100);
+            next=100;
+            stop=200;
+            increment=100;
+            sequenceQueryable.add(row);
+          }
+          else
+          {
+            EditableTuple row=(EditableTuple) result.getTuple();
+            next=(Integer) sequenceType.getField("nextValue").getValue(row);
+            increment
+              =(Integer) sequenceType.getField("increment").getValue(row);
           
-          stop=next+increment;
-          sequenceType.getField("nextValue").setValue(row,next+increment);
+            stop=next+increment;
+            sequenceType.getField("nextValue").setValue(row,next+increment);
           
+          }
+          if (result.next())
+          {
+            throw new DataException
+              ("Cardinality violation in Sequence store- non unique URI "+uri); 
+          }
         }
-        if (result.dataNext())
-        {
-          throw new DataException
-            ("Cardinality violation in Sequence store- non unique URI "+uri); 
+        finally
+        { result.close();
         }
+        
         try
         {
           sequenceQueryable.flush(".new");

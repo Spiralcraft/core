@@ -53,18 +53,18 @@ public class RecordCursor
   }
   
   @Override
-  public FieldSet dataGetFieldSet()
+  public FieldSet getFieldSet()
   { return format.getType().getFieldSet();
   }
 
   @Override
-  public Tuple dataGetTuple()
+  public Tuple getTuple()
     throws DataException
   { return tuple;
   }
 
   @Override
-  public boolean dataNext()
+  public boolean next()
     throws DataException
   {
     try
@@ -95,7 +95,7 @@ public class RecordCursor
         byte[] record=recordIterator.read();
         if (tuple==null)
         { 
-          tuple=new EditableArrayTuple(dataGetFieldSet())
+          tuple=new EditableArrayTuple(getFieldSet())
           {
             @Override
             public boolean isVolatile()
@@ -129,7 +129,18 @@ public class RecordCursor
 
   @Override
   public Type<?> getResultType()
-  { return dataGetFieldSet().getType();
+  { return getFieldSet().getType();
   }
 
+  @Override
+  public void close()
+    throws DataException
+  { 
+    try
+    { recordIterator.close();
+    }
+    catch (IOException x)
+    { throw new DataException("Error closing recordIterator: "+x);
+    }
+  }
 }

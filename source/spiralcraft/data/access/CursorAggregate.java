@@ -29,13 +29,24 @@ public class CursorAggregate<Tt extends Tuple>
   extends ListAggregate<Tt>
 {
 
+  @SuppressWarnings("unchecked")
+  
+  /**
+   * Construct the CursorAggregate by reading the specified cursor
+   */
   public CursorAggregate(SerialCursor<Tt> cursor)
     throws DataException
   { 
     super( Type.getAggregateType(cursor.getResultType()));
 
-    while (cursor.dataNext())
-    { list.add(cursor.dataGetTuple());
+    while (cursor.next())
+    { 
+      Tt tuple=cursor.getTuple();
+      if (tuple.isVolatile())
+      { tuple=(Tt) tuple.snapshot();
+      }
+      
+      list.add(tuple);
     }
     
   }

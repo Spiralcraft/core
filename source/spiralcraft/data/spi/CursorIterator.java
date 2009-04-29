@@ -18,7 +18,7 @@ public class CursorIterator<T extends Tuple>
   { 
     this.cursor=cursor;
     try
-    { this.hasNext=cursor.dataNext();
+    { this.hasNext=cursor.next();
     }
     catch (DataException x)
     { throw new RuntimeDataException("Error iterating through cursor:"+x,x);
@@ -38,8 +38,8 @@ public class CursorIterator<T extends Tuple>
     
     try
     { 
-      T ret=cursor.dataGetTuple();
-      hasNext=cursor.dataNext();
+      T ret=cursor.getTuple();
+      hasNext=cursor.next();
       return ret;
     }
     catch (DataException x)

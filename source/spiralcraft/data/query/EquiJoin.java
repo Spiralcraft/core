@@ -313,7 +313,7 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
   { return new EquiJoinScrollableCursor(source);
   }
 
-  class EquiJoinSerialCursor
+  protected class EquiJoinSerialCursor
     extends UnaryBoundQuerySerialCursor
   {
     public EquiJoinSerialCursor(SerialCursor<Tt> source)
@@ -364,7 +364,7 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
     }
   }
 
-  class EquiJoinScrollableCursor
+  protected class EquiJoinScrollableCursor
     extends UnaryBoundQueryScrollableCursor
   {
     public EquiJoinScrollableCursor(ScrollableCursor<Tt> source)

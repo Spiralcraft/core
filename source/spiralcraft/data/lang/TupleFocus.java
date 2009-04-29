@@ -61,7 +61,7 @@ public class TupleFocus<T extends Tuple>
   }
   
   public void setTuple(T tuple)
-  { cursor.dataSetTuple(tuple);
+  { cursor.setTuple(tuple);
   }
   
 }

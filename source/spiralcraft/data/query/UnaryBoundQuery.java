@@ -115,7 +115,7 @@ public abstract class UnaryBoundQuery
     }
   }
   
-  abstract class UnaryBoundQuerySerialCursor
+  protected abstract class UnaryBoundQuerySerialCursor
     extends BoundQuerySerialCursor
   {
     protected final SerialCursor<Ts> sourceCursor;
@@ -173,7 +173,8 @@ public abstract class UnaryBoundQuery
     { lookahead+=direction;
     }
     
-    public boolean dataNext()
+    @Override
+    public boolean next()
       throws DataException
     {
       direction=1;
@@ -185,7 +186,7 @@ public abstract class UnaryBoundQuery
           //   data in the forward direction.
           if (!eos)
           { 
-            if (!sourceCursor.dataNext())
+            if (!sourceCursor.next())
             { 
               // End of stream
               // The end of the stream is always consumed
@@ -207,7 +208,7 @@ public abstract class UnaryBoundQuery
 //        System.err.println
 //          ("UnaryBoundQuery: dataNext() "+sourceCursor.dataGetTuple());
         lookahead=0;
-        if (integrate(sourceCursor.dataGetTuple()))
+        if (integrate(sourceCursor.getTuple()))
         { return true;
         }
         else
@@ -218,9 +219,15 @@ public abstract class UnaryBoundQuery
         
       } 
     }
+    
+    @Override
+    public void close()
+      throws DataException
+    { sourceCursor.close();
+    }
   }
 
-  abstract class UnaryBoundQueryScrollableCursor
+  protected abstract class UnaryBoundQueryScrollableCursor
     extends UnaryBoundQuerySerialCursor
     implements ScrollableCursor<Tt>
   {
@@ -233,27 +240,32 @@ public abstract class UnaryBoundQuery
       this.scrollableSourceCursor=sourceCursor;
     }
 
-    public void dataMoveAfterLast() throws DataException
-    { while(dataNext()) {}
+    @Override
+    public void moveAfterLast() throws DataException
+    { while(next()) {}
+    }
+    
+    @Override
+    public void moveBeforeFirst() throws DataException
+    { while(previous()) {}
     }
 
-    public void dataMoveBeforeFirst() throws DataException
-    { while(dataPrevious()) {}
-    }
-
-    public boolean dataMoveFirst() throws DataException
+    @Override
+    public boolean moveFirst() throws DataException
     { 
-      dataMoveBeforeFirst();
-      return dataNext();
+      moveBeforeFirst();
+      return next();
     }
 
-    public boolean dataMoveLast() throws DataException
+    @Override
+    public boolean moveLast() throws DataException
     {
-      dataMoveAfterLast();
-      return dataPrevious();
+      moveAfterLast();
+      return previous();
     }
 
-    public boolean dataPrevious() throws DataException
+    @Override
+    public boolean previous() throws DataException
     {
       direction=-1;
       while (true)
@@ -264,7 +276,7 @@ public abstract class UnaryBoundQuery
           //   data in the reverse direction.
           if (!bos)
           { 
-            if (!scrollableSourceCursor.dataPrevious())
+            if (!scrollableSourceCursor.previous())
             { 
               // End of stream
               // The end of the stream is always consumed
@@ -285,7 +297,7 @@ public abstract class UnaryBoundQuery
         }
         
         lookahead=0;
-        if (integrate(scrollableSourceCursor.dataGetTuple()))
+        if (integrate(scrollableSourceCursor.getTuple()))
         { return true;
         }
         else

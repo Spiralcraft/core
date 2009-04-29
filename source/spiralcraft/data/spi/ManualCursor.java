@@ -39,22 +39,26 @@ public class ManualCursor<T extends Tuple>
   { this.fieldSet=fieldSet;
   }
   
+  @Override
   public Type<?> getResultType()
   { return fieldSet.getType();
   }
   
-  public FieldSet dataGetFieldSet()
+  @Override
+  public FieldSet getFieldSet()
   { return fieldSet;
   }
   
-  public T dataGetTuple()
+  @Override
+  public T getTuple()
   { return tuple;
   }
   
-  public void dataSetTuple(T tuple)
+  public void setTuple(T tuple)
   { this.tuple=tuple;
   }
   
+  @Override
   public Identifier getRelationId()
   { return relationId;
   }
@@ -63,9 +67,16 @@ public class ManualCursor<T extends Tuple>
   { this.relationId=relationId;
   }
   
+  @Override
   public Channel<T> bind()
     throws BindException
   { return new CursorBinding<T,ManualCursor<T>>(this);
   }
 
+  /**
+   * Do nothing
+   */
+  @Override
+  public void close()
+  { }
 }

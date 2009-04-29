@@ -119,12 +119,13 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       { cursor=new ListCursor<T>(aggregate);
       }
       
-      public boolean dataNext()
+      @Override
+      public boolean next()
         throws DataException
       {
-        if (cursor.dataNext())
+        if (cursor.next())
         { 
-          dataAvailable(cursor.dataGetTuple());
+          dataAvailable(cursor.getTuple());
           return true;
         }
         else
@@ -133,24 +134,24 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       }
 
       @Override
-      public void dataMoveAfterLast()
+      public void moveAfterLast()
         throws DataException
-      { cursor.dataMoveAfterLast();
+      { cursor.moveAfterLast();
       }
 
       @Override
-      public void dataMoveBeforeFirst()
+      public void moveBeforeFirst()
         throws DataException
-      { cursor.dataMoveBeforeFirst();
+      { cursor.moveBeforeFirst();
       }
 
       @Override
-      public boolean dataMoveFirst()
+      public boolean moveFirst()
         throws DataException
       { 
-        if (cursor.dataMoveFirst())
+        if (cursor.moveFirst())
         { 
-          dataAvailable(cursor.dataGetTuple());
+          dataAvailable(cursor.getTuple());
           return true;
         }
         else
@@ -159,12 +160,12 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       }
 
       @Override
-      public boolean dataMoveLast()
+      public boolean moveLast()
         throws DataException
       { 
-        if (cursor.dataMoveLast())
+        if (cursor.moveLast())
         { 
-          dataAvailable(cursor.dataGetTuple());
+          dataAvailable(cursor.getTuple());
           return true;
         }
         else
@@ -173,18 +174,23 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       }
 
       @Override
-      public boolean dataPrevious()
+      public boolean previous()
         throws DataException
       { 
-        if (cursor.dataPrevious())
+        if (cursor.previous())
         { 
-          dataAvailable(cursor.dataGetTuple());
+          dataAvailable(cursor.getTuple());
           return true;
         }
         else
         { return false;
         }
         
+      }
+      
+      public void close()
+        throws DataException
+      { cursor.close();
       }
     }
   }

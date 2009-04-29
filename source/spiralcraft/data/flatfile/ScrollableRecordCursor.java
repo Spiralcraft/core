@@ -38,7 +38,7 @@ public class ScrollableRecordCursor
   }
   
   @Override
-  public void dataMoveAfterLast()
+  public void moveAfterLast()
     throws DataException
   {
     try
@@ -53,7 +53,7 @@ public class ScrollableRecordCursor
   }
 
   @Override
-  public void dataMoveBeforeFirst()
+  public void moveBeforeFirst()
     throws DataException
   {
     try
@@ -67,7 +67,7 @@ public class ScrollableRecordCursor
   }
 
   @Override
-  public boolean dataMoveFirst()
+  public boolean moveFirst()
     throws DataException
   {
     try
@@ -83,7 +83,7 @@ public class ScrollableRecordCursor
   }
 
   @Override
-  public boolean dataMoveLast()
+  public boolean moveLast()
     throws DataException
   {
     try
@@ -100,7 +100,7 @@ public class ScrollableRecordCursor
   }
 
   @Override
-  public boolean dataPrevious()
+  public boolean previous()
     throws DataException
   {
     try

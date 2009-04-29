@@ -163,34 +163,49 @@ public class QueryField
         if (getType().isAggregate())
         { 
           SerialCursor cursor=boundQuery.execute();
-          if (cursor.getResultType()==null)
-          { log.fine("Field "+getURI()+": cursor result type is null "+cursor+" from "+boundQuery
-                    );
-          }
+          try
+          {
+            if (cursor.getResultType()==null)
+            { 
+              log.fine("Field "+getURI()
+                +": cursor result type is null "+cursor+" from "+boundQuery
+                );
+            }
           
           
-          CursorAggregate aggregate
-            =new CursorAggregate(cursor);
+            CursorAggregate aggregate
+              =new CursorAggregate(cursor);
           // log.fine(aggregate.toString());
-          return aggregate;
+            return aggregate;
+          }
+          finally
+          { cursor.close();
+          }
         }
         else
         { 
           Tuple val=null;
           SerialCursor cursor=boundQuery.execute();
-          while (cursor.dataNext())
-          { 
-            if (val!=null)
+          try
+          {
+            while (cursor.next())
             { 
-              throw new AccessException
-                (getURI()+": Cardinality violation: non-aggregate query returned more" +
-                " than one result"
-                );
-            }
-            else
-            { val=cursor.dataGetTuple();
+              if (val!=null)
+              { 
+                throw new AccessException
+                  (getURI()+": Cardinality violation: non-aggregate query returned more" +
+                  " than one result"
+                  );
+              }
+              else
+              { val=cursor.getTuple();
+              }
             }
           }
+          finally
+          { cursor.close();
+          }
+          
           // log.fine(val!=null?val.toString():"null");
           return val;
         }

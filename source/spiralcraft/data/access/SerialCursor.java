@@ -15,7 +15,6 @@
 package spiralcraft.data.access;
 
 import spiralcraft.data.DataException;
-import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 
 /**
@@ -31,17 +30,7 @@ public interface SerialCursor<T extends Tuple>
    *@return Whether the Cursor advanced to another Tuple, or false if the Cursor
    *   encountered the end of the stream.   
    */
-  boolean dataNext()
+  boolean next()
     throws DataException;
   
-  /**
-   *@return The FieldSet common to all the Tuples that will be returned by this Cursor
-   */
-  FieldSet dataGetFieldSet();
-  
-  /**
-   *@return The Tuple currently positioned under the Cursor
-   */
-  T dataGetTuple()
-    throws DataException;
 }

@@ -112,16 +112,22 @@ public class DataSynchronizer
     BoundQuery<?,?> query=space.query(primaryKey.getQuery(),primaryKeyFocus);
     SerialCursor<?> cursor=query.execute();
     Tuple storeTuple=null;
-    while (cursor.dataNext())
+    try
     {
-      if (storeTuple==null)
-      { storeTuple=cursor.dataGetTuple();
+      while (cursor.next())
+      {
+        if (storeTuple==null)
+        { storeTuple=cursor.getTuple();
+        }
+        else
+        { 
+          throw new DataException
+            ("Ambiguous primary key for ["+cursor.getTuple()+"]");
+        }
       }
-      else
-      { 
-        throw new DataException
-          ("Ambiguous primary key for ["+cursor.dataGetTuple()+"]");
-      }
+    }
+    finally
+    { cursor.close();
     }
     return storeTuple;
   }

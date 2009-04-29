@@ -85,7 +85,7 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
   
 
 
-  class UnionSerialCursor
+  protected class UnionSerialCursor
     implements SerialCursor<Tt>
   {
 
@@ -102,14 +102,14 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
     }
     
     @Override
-    public boolean dataNext()
+    public boolean next()
       throws DataException
     {
       boolean done=false;
       while (!done)
       {
         
-        if (currentSource.dataNext())
+        if (currentSource.next())
         { 
           if (!checkDuplicate())
           { return true;
@@ -118,7 +118,11 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
         else
         {
           if (sourceIterator.hasNext())
-          { currentSource=sourceIterator.next().execute();
+          { 
+            if (currentSource!=null)
+            { currentSource.close();
+            }
+            currentSource=sourceIterator.next().execute();
           }
           else
           { done=true;
@@ -136,16 +140,16 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
     }
 
     @Override
-    public FieldSet dataGetFieldSet()
+    public FieldSet getFieldSet()
     { return getType().getScheme();
     }
 
     @Override
-    public Tt dataGetTuple()
+    public Tt getTuple()
       throws DataException
     {
       if (currentSource!=null)
-      { return currentSource.dataGetTuple();
+      { return currentSource.getTuple();
       }
       else
       { return null;
@@ -167,6 +171,14 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
     public Channel<Tt> bind()
       throws BindException
     { return new CursorBinding<Tt,UnionSerialCursor>(this);
+    }
+    
+    public void close()
+      throws DataException
+    { 
+      if (currentSource!=null)
+      { currentSource.close();
+      }
     }
   
   }

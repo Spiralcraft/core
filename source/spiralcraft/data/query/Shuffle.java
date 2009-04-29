@@ -28,12 +28,16 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
-import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.spi.ListCursor;
 
 /**
- * A Query which returns the results of a a source Query in random order
+ * <p>A Query which returns the results of a a source Query in random order
+ * </p>
+ * 
+ * <p>The random order is determined by XORing the Tuple's hash code by
+ *   a random value determined at the beginning of each shuffle.
+ * </p>
  */
 public class Shuffle
   extends Query
@@ -136,17 +140,14 @@ class ShuffleBinding<Tq extends Shuffle,T extends Tuple>
   public SerialCursor<T> execute()
     throws DataException
   {
-    return new ShuffleScrollableCursor(source.execute());
-  }
-  
-  protected SerialCursor<T> newSerialCursor(SerialCursor<T> source)
-    throws DataException
-  { return new ShuffleScrollableCursor(source);
-  }
-  
-  protected ScrollableCursor<T> newScrollableCursor(SerialCursor<T> source)
-    throws DataException
-  { return new ShuffleScrollableCursor(source);
+    SerialCursor<T> sourceCursor=source.execute();
+    try
+    { return new ShuffleScrollableCursor(sourceCursor);
+    }
+    finally
+    { sourceCursor.close();
+    }
+    
   }
 
   class ShuffleComparator
@@ -166,19 +167,25 @@ class ShuffleBinding<Tq extends Shuffle,T extends Tuple>
 
   }
   
-  class ShuffleScrollableCursor
+  protected class ShuffleScrollableCursor
     extends ListCursor<T>
   {
     
     { data=new LinkedList<T>();
     }
     
+    @SuppressWarnings("unchecked")
     public ShuffleScrollableCursor(SerialCursor<T> source)
       throws DataException
     { 
-      super(source.dataGetFieldSet());
-      while (source.dataNext())
-      { data.add(source.dataGetTuple());
+      super(source.getFieldSet());
+      while (source.next())
+      { 
+        T tuple=source.getTuple();
+        if (tuple.isVolatile())
+        { tuple=(T) tuple.snapshot();
+        }
+        data.add(tuple);        
       }
       Collections.sort(data,new ShuffleComparator());
     }

@@ -57,23 +57,29 @@ public class QueryScenario
       try
       {
         SerialCursor<Tuple> cursor=boundQuery.execute();
-        if (debug)
-        { log.fine("Got "+cursor);
-        }
-        
-        CursorAggregate<Tuple> result=new CursorAggregate<Tuple>(cursor);
-        if (scenario!=null)
+        try
         {
-          resultChannel.push(result);
+          if (debug)
+          { log.fine("Got "+cursor);
+          }
         
-          try
-          { executeChild(scenario);
+          CursorAggregate<Tuple> result=new CursorAggregate<Tuple>(cursor);
+          if (scenario!=null)
+          {
+            resultChannel.push(result);
+        
+            try
+            { executeChild(scenario);
+            }
+            finally
+            { resultChannel.pop();
+            }
           }
-          finally
-          { resultChannel.pop();
-          }
+          addResult(result);
         }
-        addResult(result);
+        finally
+        { cursor.close();
+        }
       }
       catch (DataException x)
       { 

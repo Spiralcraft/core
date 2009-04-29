@@ -19,6 +19,54 @@
         <date>2009-04-26
         </date>
         
+        <notes>
+          <scm:Note>Refactor Cursor interface to account for need to use
+            close(), and removal of legacy requirement to avoid name 
+            clash using the dataXXX method names.
+          </scm:Note>
+        </notes>
+        
+        <path>/source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/access/Cursor.java</URI>
+          <URI>data/access/SerialCursor.java</URI>
+          <URI>data/access/ScrollableCursor.java</URI>
+          <URI>data/access/CursorAggregate.java</URI>
+          <URI>data/access/DataSynchronizer.java</URI>
+          <URI>data/core/KeyField.java</URI>
+          <URI>data/core/QueryField.java</URI>
+          <URI>data/core/UniqueRule.java</URI>
+          <URI>data/flatfile/RecordCursor.java</URI>
+          <URI>data/flatfile/ScrollableRecordCursor.java</URI>
+          <URI>data/lang/CursorBinding.java</URI>
+          <URI>data/lang/TupleFocus.java</URI>
+          <URI>data/query/QueryAggregate.java</URI>
+          <URI>data/query/BoundQuery.java</URI>
+          <URI>data/query/UnaryBoundQuery.java</URI>
+          <URI>data/query/Sort.java</URI>
+          <URI>data/query/Shuffle.java</URI>
+          <URI>data/query/Equijoin.java</URI>
+          <URI>data/query/Selection.java</URI>
+          <URI>data/query/Distinct.java</URI>
+          <URI>data/query/UnionBinding.java</URI>
+          <URI>data/query/QueryChannel.java</URI>
+          <URI>data/query/QueryScenario.java</URI>
+          <URI>data/spi/AbstractAggregateQueryable.java</URI>
+          <URI>data/spi/CursorIterator.java</URI>
+          <URI>data/spi/ListCursor.java</URI>
+          <URI>data/spi/ManualCursor.java</URI>
+          <URI>security/spi/DataAuthenticator.java</URI>
+          <URI>data/xml/XmlStore.java</URI>
+        </resources>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <date>2009-04-26
+        </date>
+        
         <path>/source/spiralcraft/test/
         </path>
         

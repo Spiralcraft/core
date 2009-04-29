@@ -417,7 +417,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
   { return new SelectionScrollableCursor(source);
   }
 
-  class SelectionSerialCursor
+  protected class SelectionSerialCursor
     extends UnaryBoundQuerySerialCursor
   {
     public SelectionSerialCursor(SerialCursor<Tt> source)
@@ -470,7 +470,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
 
   }
 
-  class SelectionScrollableCursor
+  protected class SelectionScrollableCursor
     extends UnaryBoundQueryScrollableCursor
   {
     public SelectionScrollableCursor(ScrollableCursor<Tt> source)

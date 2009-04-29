@@ -207,7 +207,7 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
   { return null;
   }
 
-  class DistinctSerialCursor
+  protected class DistinctSerialCursor
     extends UnaryBoundQuerySerialCursor
   {
     private HashSet<T> distinctMap

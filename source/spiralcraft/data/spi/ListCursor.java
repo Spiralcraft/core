@@ -95,7 +95,8 @@ public class ListCursor<T extends Tuple>
   /**
    *@return The FieldSet common to all the Tuples that will be returned by this Cursor
    */
-  public FieldSet dataGetFieldSet()
+  @Override
+  public FieldSet getFieldSet()
   { return fieldSet;
   }
   
@@ -103,7 +104,8 @@ public class ListCursor<T extends Tuple>
   /**
    *@return The Tuple currently positioned under the Cursor
    */
-  public T dataGetTuple()
+  @Override
+  public T getTuple()
     throws DataException
   {
     if (pointer<0 || pointer>=data.size())
@@ -112,6 +114,7 @@ public class ListCursor<T extends Tuple>
     return data.get(pointer);
   }
 
+  @Override
   public Identifier getRelationId()
   { return relationId;
   }
@@ -120,31 +123,36 @@ public class ListCursor<T extends Tuple>
   { this.relationId=relationId;
   }
   
-  public void dataMoveAfterLast() throws DataException
+  @Override
+  public void moveAfterLast() throws DataException
   { pointer=data.size();
   }
 
 
-  public void dataMoveBeforeFirst() throws DataException
+  @Override
+  public void moveBeforeFirst() throws DataException
   { pointer=-1;
   }
 
 
-  public boolean dataMoveFirst() throws DataException
+  @Override
+  public boolean moveFirst() throws DataException
   { 
     pointer=0;
     return pointer<data.size();
   }
 
 
-  public boolean dataMoveLast() throws DataException
+  @Override
+  public boolean moveLast() throws DataException
   {
     pointer=data.size()-1;
     return pointer>=0;
   }
 
 
-  public boolean dataNext() throws DataException
+  @Override
+  public boolean next() throws DataException
   { 
     pointer++;
 //    System.err.println
@@ -160,7 +168,8 @@ public class ListCursor<T extends Tuple>
   }
 
 
-  public boolean dataPrevious() throws DataException
+  @Override
+  public boolean previous() throws DataException
   {
     pointer--;
     if (pointer<0)
@@ -173,8 +182,17 @@ public class ListCursor<T extends Tuple>
     }
   }
   
+  @Override
   public Channel<T> bind()
     throws BindException
   { return new CursorBinding<T,ListCursor<T>>(this);
+  }
+  
+  /**
+   * Does nothing
+   */
+  @Override
+  public void close()
+  {
   }
 }
