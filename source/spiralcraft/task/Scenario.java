@@ -130,6 +130,7 @@ public abstract class Scenario
    * </p>
    * 
    * @param focusChain
+   * @throws BindException
    */
   protected Focus<?> bindChildren(Focus<?> focusChain)
     throws BindException

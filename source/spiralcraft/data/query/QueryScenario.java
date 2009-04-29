@@ -89,7 +89,7 @@ public class QueryScenario
         addException(x);
       }
     }
-  };
+  }
   
   @Override
   protected QueryTask task()
