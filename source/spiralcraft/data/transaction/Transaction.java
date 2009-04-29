@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 1998,2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -21,13 +21,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import spiralcraft.log.ClassLog;
 
 /**
- * <P>Represents a Transaction- a set of data modifications that comprise an atomic unit of
- *   work. A Transaction supports A.C.I.D. properties- Atomicity, Consistency, Isolation
- *   and Durability.
+ * <p>Represents a Transaction- a set of data modifications that comprise 
+ *   an atomic unit of work. A Transaction supports A.C.I.D. properties-
+ *   Atomicity, Consistency, Isolation and Durability.
+ * </p>
  * 
- * <P>A Transaction consists of a number of Branches and optionally nested Transactions.
- *   Each branch is responsible for managing a given data resource that participates in the
- *   transaction. 
+ * <p>A Transaction consists of a number of Branches and optionally nested 
+ *   Transactions. Each branch is responsible for managing a given data
+ *   resource (eg. database connection, uncommitted buffers, etc) that
+ *   participates in the transaction. 
  */
 public class Transaction
 {
@@ -42,6 +44,10 @@ public class Transaction
   
   public enum Nesting
   { PROPOGATE,ISOLATE;
+  }
+  
+  public enum Requirement
+  { REQUIRED,OPTIONAL,NONE;
   }
   
   public enum State

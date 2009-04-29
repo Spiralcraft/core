@@ -16,6 +16,27 @@
         
     <detail>
       <scm:Change>
+        <date>2009-04-29
+        </date>
+        
+        <notes>
+          <scm:Note>Provide encapsulation of standard Transaction management
+            logic in a WorkUnit callback object
+          </scm:Note>
+        </notes>
+        
+        <path>/source/spiralcraft/data/transaction/
+        </path>
+        
+        <resources>
+          <URI>Transaction.java</URI>
+          <URI>WorkUnit.java</URI>
+          <URI>WorkException.java</URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <date>2009-04-26
         </date>
         
