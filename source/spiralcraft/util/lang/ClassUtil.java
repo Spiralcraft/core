@@ -19,8 +19,13 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
 
 /**
  * Utilities for dealing with Classes and types
@@ -248,5 +253,36 @@ public abstract class ClassUtil
     }
   }
 
+  /**
+   * Get the underlying class for a type,
+   *  or null if the type is a variable type.
+   * 
+   * @param type the type
+   * @return the underlying class
+   */
+  @SuppressWarnings("unchecked")
+  public static Class<?> getClass(Type type) 
+  {
+    if (type instanceof Class) 
+    { return (Class) type;
+    }
+    else if (type instanceof ParameterizedType) 
+    { return getClass(((ParameterizedType) type).getRawType());
+    }
+    else if (type instanceof GenericArrayType) 
+    {
+      Type componentType = ((GenericArrayType) type).getGenericComponentType();
+      Class<?> componentClass = getClass(componentType);
+      if (componentClass != null ) {
+        return Array.newInstance(componentClass, 0).getClass();
+      }
+      else {
+        return null;
+      }
+    }
+    else {
+      return null;
+    }
+  }   
 
 }
