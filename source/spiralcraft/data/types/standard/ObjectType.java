@@ -14,18 +14,45 @@
 //
 package spiralcraft.data.types.standard;
 
+import spiralcraft.data.DataException;
+import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 
 import spiralcraft.data.core.PrimitiveTypeImpl;
+import spiralcraft.data.reflect.ReflectionType;
 
 import java.net.URI;
 
 public class ObjectType
   extends PrimitiveTypeImpl<Object>
 {
+  private Type<Void> voidType;
+  
   public ObjectType(TypeResolver resolver,URI uri)
-  { super(resolver,uri,Object.class);
+  { 
+    super(resolver,uri,Object.class);
   }
   
+  
+  @Override
+  public boolean isAssignableFrom(Type<?> type)
+  { 
+    if (voidType!=null)
+    { 
+      try
+      { voidType=ReflectionType.canonicalType(Void.class);
+      }
+      catch (DataException x)
+      { throw new RuntimeException("Couldn't load Void type",x);
+      }
+    }
+    return type!=voidType;
+  }
 
+  
+  @Override
+  public boolean isPrimitive()
+  { return false;
+  }
+       
 }
