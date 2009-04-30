@@ -91,6 +91,12 @@ public class PropertyBinding
   public void resolve()
     throws BuildException
   {
+    // 2009-04-30 miketoth
+    //
+    //   Don't apply member contents instantiated by default.
+    // 
+    boolean defaultMember=_specifier.isDefaultMember();
+    
     if (!isAggregate() 
        && _contents!=null
        && _contents.length==1
@@ -113,11 +119,40 @@ public class PropertyBinding
       for (Assembly assembly:_contents)
       { 
         if (!assembly.isResolved())
-        { assembly.resolve();
+        { 
+          if (defaultMember)
+          { assembly.resolveDefault();
+          }
+          else
+          { assembly.resolve();
+          }
         }
       }
     }
-    applySource();
+    
+    if (!defaultMember)
+    { applySource();
+    }
+  }
+  
+  /**
+   * Called instead of resolve() when in a default sub-tree to avoid
+   *   instantiating anything
+   * 
+   * @throws BuildException
+   */
+  public void resolveDefault()
+    throws BuildException
+  {   
+    if (_contents!=null)
+    {
+      for (Assembly assembly:_contents)
+      { 
+        if (!assembly.isResolved())
+        { assembly.resolveDefault();
+        }
+      }
+    }
   }
   
   public void release()

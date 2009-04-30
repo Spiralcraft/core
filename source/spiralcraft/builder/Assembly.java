@@ -172,7 +172,14 @@ public class Assembly<T>
       { throw new BuildException("Error instantiating assembly",x);
       }
       catch (IllegalAccessException x)
-      { throw new BuildException("Error instantiating assembly",x);
+      { 
+        AssemblyClass dumpClass=_assemblyClass;
+        while (dumpClass!=null)
+        { 
+          log.debug(dumpClass.toString());
+          dumpClass=dumpClass.getBaseClass();
+        }
+        throw new BuildException("Error instantiating assembly",x);
       }
     }
     else
@@ -320,6 +327,34 @@ public class Assembly<T>
     {
       for (PropertyBinding binding: _propertyBindings)
       { binding.resolve();
+      }
+    }
+  }
+  
+  /**
+   * When the property that created this Assembly is something created by
+   *   default, don't construct a default instance
+   */
+  public void resolveDefault()
+    throws BuildException
+  {
+    // 2009-04-30 miketoth
+    //
+    //   Don't construct anything automatically when referenced by a 
+    //     PropertyDescriptor automatically constructed by discovery.
+    //
+    
+    if (resolved)
+    { throw new IllegalStateException("Already resolved");
+    }
+    if (!factoryMode)
+    { resolved=true;
+    }
+    
+    if (_propertyBindings!=null)
+    {
+      for (PropertyBinding binding: _propertyBindings)
+      { binding.resolveDefault();
       }
     }
   }
