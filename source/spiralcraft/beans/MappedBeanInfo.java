@@ -23,6 +23,7 @@ import java.beans.PropertyChangeListener;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.beans.IntrospectionException;
 
 import spiralcraft.log.ClassLog;
@@ -211,6 +212,79 @@ public class MappedBeanInfo
     }
 
     return writeMethod;
+    
+  }
+  
+  /**
+   * Returns the most specific type of either the PropertyDescriptor, the
+   *   read method, or a compatible public field
+   * 
+   * @param property
+   * @return
+   */
+  public Class<?> getCovariantPropertyType(PropertyDescriptor property)
+  {
+    Class<?> clazz=property.getPropertyType();
+    
+    Method readMethod=getCovariantReadMethod(property);
+    if (readMethod!=null)
+    { 
+      Class<?> genericType
+        =ClassUtil.getClass(readMethod.getGenericReturnType());
+      if (genericType!=null
+        && clazz.isAssignableFrom(genericType))
+      {
+        // Generic type is more specific
+        clazz=genericType;
+      }
+      else
+      {
+        if (clazz.isAssignableFrom(readMethod.getReturnType()))
+        { clazz=readMethod.getReturnType();
+        }
+      }
+    }
+  
+    Field field=null;
+    try
+    {
+      field
+        =getBeanDescriptor().getBeanClass()
+          .getField(property.getName());
+      if (!Modifier.isPublic(field.getModifiers()))
+      { field=null;
+      }
+      else if 
+        (!clazz.isAssignableFrom(field.getType())
+         && !field.getType().isAssignableFrom(clazz)
+        )
+      { field=null;
+      }
+    }
+    catch (NoSuchFieldException x)
+    {  
+    }
+  
+  
+   
+    if (property.getWriteMethod()==null 
+       && field!=null
+       && field.getType()!=clazz
+       )
+    {
+      if (readMethod==null 
+         || readMethod.getReturnType().isAssignableFrom(field.getType())
+       )
+      { 
+        // Property is writable through a public field that is typed 
+        //   more specifically than the read method. We need to
+        //   make the property type more specific.
+        if (clazz.isAssignableFrom(field.getType()))
+        { clazz=field.getType();
+        }
+      }
+    }
+    return clazz;
     
   }
   
