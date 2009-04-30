@@ -31,9 +31,9 @@ public class TypeMismatchException
   
   public TypeMismatchException(String message,Type<?> formalType,Type<?> actualType)
   { super(message
-          +": expected "
+          +": type "
           +(formalType!=null?formalType.getURI():"(null)")
-          +" but found "
+          +" cannot be assigned a value of type "
           +(actualType!=null?actualType.getURI():"(null)")
           );
   }
