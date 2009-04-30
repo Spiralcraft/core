@@ -15,6 +15,7 @@
 package spiralcraft.builder;
 
 import java.beans.PropertyDescriptor;
+
 import java.net.URI;
 import java.util.Collection;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringUtil;
 
+import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.lang.Expression;
 
 import java.util.List;
@@ -62,6 +64,9 @@ public class PropertySpecifier
   
   private PrefixResolver prefixResolver;
   private PropertyDescriptor descriptor;
+  private boolean defaultMember;
+  
+  private Class<?> propertyType;
 
   public PropertySpecifier
     (AssemblyClass container
@@ -132,6 +137,24 @@ public class PropertySpecifier
   
   public void setPropertyDescriptor(PropertyDescriptor descriptor)
   { this.descriptor=descriptor;
+  }
+  
+  public boolean isDefaultMember()
+  { return defaultMember;
+  }
+  
+  public Class<?> getPropertyType()
+  { return propertyType;
+  }
+  
+  /**
+   * Specified when this member is created automatically by the discovery
+   *   mechanism as opposed to being explicitly declared.
+   *   
+   * @param defaultMember
+   */
+  public void setDefaultMember(boolean defaultMember)
+  { this.defaultMember=defaultMember;
   }
   
   public void setPrefixResolver(PrefixResolver resolver)
@@ -361,11 +384,21 @@ public class PropertySpecifier
     resolveTarget();
     
     if (this.descriptor==null)
-    { this.descriptor=_container.getPropertyDescriptor(_targetName);
+    { this.descriptor=_targetAssemblyClass.getPropertyDescriptor(_targetName);
     }
+    resolveType();
 
   }
 
+  private void resolveType()
+  { 
+    MappedBeanInfo beanInfo
+      =_targetAssemblyClass.getBeanInfo();
+    
+    propertyType=beanInfo.getCovariantPropertyType(descriptor);
+    
+  }
+  
   /**
    * Resolve the target spec (property pathname string)
    */

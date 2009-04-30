@@ -22,6 +22,7 @@ import java.net.URI;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
@@ -55,6 +56,34 @@ public class AssemblyClass
   private static final ClassLog log
     =ClassLog.getInstance(AssemblyClass.class);
 
+  private static final HashSet<String> langClassNames
+    =new HashSet<String>();
+
+  static
+  {
+    String[] names=new String[]
+      {"Boolean"
+      ,"Byte"
+      ,"Character"
+      ,"Class"
+      ,"Double"
+      ,"Float"
+      ,"Integer"
+      ,"Long"
+      ,"Number"
+      ,"Object"
+      ,"RuntimePermission"
+      ,"Short"
+      ,"String"
+      ,"StringBuffer"
+      ,"Thread"
+      ,"ThreadGroup"
+      };
+    for (String name:names)
+    { langClassNames.add(name);
+    }
+
+  }
   
   /**
    * <p>
@@ -388,7 +417,18 @@ public class AssemblyClass
   
   public PropertySpecifier getMember(String name)
     throws BuildException
-  { return getMember(name,false);
+  { 
+    // 2009-04-30 miketoth
+    //
+    //   Changed from getMember(name,false) to avoid instability caused
+    //   by use of false option on a given property before discoverMember()
+    //   is called, causing different composition of base AssemblyClass.
+    //
+    //   The 'false' option was originally used to help with Assembly types
+    //   manually referenced within data, which will probably be deemed not
+    //   a good practice.
+    
+    return getMember(name,true);
   }
   
   /**
@@ -467,6 +507,7 @@ public class AssemblyClass
         member.addAssemblyClass
           (innerSubclass(sourceBaseClass)
           );
+        member.setDefaultMember(true);
       }
     }
     else
@@ -662,6 +703,8 @@ public class AssemblyClass
     composeMembers(_compositeMembers,new HashMap<String,PropertySpecifier>());
   }
   
+
+  
   /**
    * 
    * @return The list of bean properties 
@@ -815,12 +858,16 @@ public class AssemblyClass
         
         _baseAssemblyClass=_loader.findAssemblyDefinition(baseResource);
 
-
+        // 2009-04-30 miketoth 
+        //
+        //   Exclude lang classes like "String", which are available by
+        //     default using unqualified names, instead of excluding all
+        //     unqualified decls, usig the langClassNames set.
+        //
         // 2009-04-14
         //
-        //   XXX Don't attempt this if _baseName.equals(_declarationName) -
-        //     ie. "String". There may be a conflict between how BuilderType
-        //     loads stuff and the standard loading mechanism.
+        //   Exclude unqualified declarations, since they get in the way
+        //     of loading the standard java.lang types.
         //
         // 2009-03-28 mike
         //
@@ -833,15 +880,17 @@ public class AssemblyClass
         if (_baseAssemblyClass==null 
             && sourceURI!=null 
             && !baseResource.equals(sourceURI)
-            && !isUnqualifiedDeclaration()
+            && !(isUnqualifiedDeclaration() 
+                 && langClassNames.contains(_baseName)
+                )
             )
         { 
           // Load the canonical assembly class for the specified qualified
           //   class URI.
-          
-          
+
           _baseAssemblyClass
             =_loader.findAssemblyClass(_basePackage.resolve(_baseName));
+
         }
         
         
@@ -887,6 +936,17 @@ public class AssemblyClass
     
   }
 
+  public MappedBeanInfo getBeanInfo()
+  { 
+    if (beanInfo!=null)
+    { return beanInfo;
+    }
+    else if (_baseAssemblyClass!=null)
+    { return _baseAssemblyClass.getBeanInfo();
+    }
+    return null;
+  }
+  
   /**
    * Resolve the Java class- called when the top of the AssemblyClass tree is
    *   reached during resolveExternalBaseClass
@@ -895,46 +955,8 @@ public class AssemblyClass
   private Class<?> resolveJavaClass()
     throws ClassNotFoundException
   { 
-    
-    if (ClasspathResourceFactory.isClasspathScheme(_basePackage.getScheme()))
-    {
-        
-      String className
-        =pathToClassName(_basePackage.getPath().substring(1)+_baseName);
-      
-      try
-      { 
-        return
-          Class.forName
-            (className
-            ,false
-            ,Thread.currentThread().getContextClassLoader()
-            );
-      }
-      catch (ClassNotFoundException x)
-      { 
-        String langClassName="java.lang."+_baseName;
-        try
-        {
-          return
-            Class.forName
-              (langClassName
-              ,false
-              ,Thread.currentThread().getContextClassLoader()
-              );
-        }
-        catch (ClassNotFoundException y)
-        { throw x;
-        }
-      }
-    }
-    
-    // XXX 2009-04-14 mike  For now, _basePackage will not be null due
-    //   to the way it is set when reading the PropertySpecifier. So
-    //   we can't depend on this for checking the Java package. Use
-    //   isUnqualifiedDeclaratiod() temporarily instead, until we can
-    //   disambiguate between java.lang and "current dir" spec.
-    if (isUnqualifiedDeclaration())
+
+    if (isUnqualifiedDeclaration() && langClassNames.contains(_baseName))
     {
       String langClassName="java.lang."+_baseName;
       return
@@ -944,8 +966,23 @@ public class AssemblyClass
           ,Thread.currentThread().getContextClassLoader()
           );
     }
-    return null;
-      
+    else
+      if (ClasspathResourceFactory.isClasspathScheme(_basePackage.getScheme()))
+    {
+        
+      String className
+        =pathToClassName(_basePackage.getPath().substring(1)+_baseName);
+  
+      return
+        Class.forName
+          (className
+          ,false
+          ,Thread.currentThread().getContextClassLoader()
+          );
+    }
+    else
+    { return null;
+    }
   }
 
   /**
