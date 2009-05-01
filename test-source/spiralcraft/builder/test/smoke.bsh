@@ -1,15 +1,17 @@
 import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.data.persist.XmlAssembly;
+import spiralcraft.builder.AssemblyLoader;
 
 // BUILDER TEST
 show(); 
 
-
+loader=AssemblyLoader.getInstance();
 
 "//";
 "// Builder Standard mode";
 "//";
-
+x=loader.instantiateAssembly
+  (URI.create("class:/spiralcraft/builder/test/MyOtherFoo"),null);
 
 "//";
 "// Builder Data mode";
