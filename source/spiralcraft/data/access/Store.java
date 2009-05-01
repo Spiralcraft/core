@@ -16,7 +16,6 @@ package spiralcraft.data.access;
 
 import java.net.URI;
 
-import spiralcraft.common.Lifecycle;
 import spiralcraft.data.query.Queryable;
 
 import spiralcraft.data.DataConsumer;
@@ -27,6 +26,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Tuple;
 import spiralcraft.lang.Focus;
+import spiralcraft.service.Service;
 
 
 /**
@@ -39,7 +39,7 @@ import spiralcraft.lang.Focus;
  * </p>
  */
 public interface Store
-  extends Queryable<Tuple>,Lifecycle
+  extends Queryable<Tuple>,Service
 {
   /**
    * @return The Space to which this store belongs
@@ -71,5 +71,16 @@ public interface Store
    */
   Sequence getSequence(URI uri)
     throws DataException;
+
+  /**
+   * <p>Indicate whether this Store contains authoritative data for the 
+   *   specified Type. If so, the store can generate IDs and process data
+   *   updates for the Type.
+   * </p>
+   * 
+   * @param type
+   * @return
+   */
+  boolean isAuthoritative(Type<?> type);
 
 }
