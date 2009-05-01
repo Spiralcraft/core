@@ -5,7 +5,7 @@ public class Foo
 {
   {
     _friend=new SimpleWidget();
-    _friend.setTitle("Friend of SimpleWidget");
+    _friend.setTitle("Hardcoded title in object initializer");
   }
 
 }
