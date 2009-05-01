@@ -144,7 +144,11 @@ public class PropertySpecifier
   }
   
   public Class<?> getPropertyType()
-  { return propertyType;
+  { 
+    if (propertyType==null)
+    { resolveType();
+    }
+    return propertyType;
   }
   
   /**
@@ -386,6 +390,7 @@ public class PropertySpecifier
     if (this.descriptor==null)
     { this.descriptor=_targetAssemblyClass.getPropertyDescriptor(_targetName);
     }
+    
     resolveType();
 
   }
@@ -395,7 +400,10 @@ public class PropertySpecifier
     MappedBeanInfo beanInfo
       =_targetAssemblyClass.getBeanInfo();
     
-    propertyType=beanInfo.getCovariantPropertyType(descriptor);
+    PropertyDescriptor desc=getPropertyDescriptor();
+    if (desc!=null)
+    { propertyType=beanInfo.getCovariantPropertyType(getPropertyDescriptor());
+    }
     
   }
   
