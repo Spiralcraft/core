@@ -15,6 +15,32 @@
 
         
     <detail>
+      <scm:Change>
+        <date>2009-04-30
+        </date>
+        
+        <notes>
+          <scm:Note>Refactor Space to support multiple Stores, as originally
+            intended. class SingleSpace has been removed in favor of a 
+            concrete spiralcraft.data.Space.
+          </scm:Note>
+        </notes>
+        
+        <path>/source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>spi/SingleSpace.java
+          </URI>
+          <URI>Space.java
+          </URI>
+          <URI>query/Concatenation.java
+          </URI>
+          <URI>query/ConcatenationBinding.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
       
       <scm:Change>
         <date>2009-04-30
