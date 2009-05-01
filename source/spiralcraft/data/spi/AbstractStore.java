@@ -16,7 +16,6 @@ package spiralcraft.data.spi;
 
 import java.util.HashSet;
 
-import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 
 import spiralcraft.data.DataException;
@@ -29,12 +28,10 @@ import spiralcraft.data.access.Store;
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
-// import spiralcraft.data.query.Scan;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
-import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
 
 /**
@@ -49,7 +46,7 @@ import spiralcraft.registry.RegistryNode;
  *
  */
 public abstract class AbstractStore
-  implements Store,Registrant,Lifecycle
+  implements Store
 {
   protected final ClassLog log=ClassLog.getInstance(getClass());
   protected Level debugLevel=ClassLog.getInitialDebugLevel(getClass(),null);
