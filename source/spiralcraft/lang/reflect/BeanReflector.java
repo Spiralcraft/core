@@ -531,6 +531,32 @@ public class BeanReflector<T>
 
   private synchronized <X> Channel<X> getProperty(Channel<T> source,String name)
   {
+    
+    BeanPropertyTranslator<X,T> translator=this.<X>getTranslator(name);
+    
+    if (translator!=null)
+    { 
+      Channel<X> binding=source.<X>getCached(translator);
+      if (binding==null)
+      { 
+        binding=new BeanPropertyChannel<X,T>(source,translator);
+        source.cache(translator,binding);
+      }
+      return binding;
+    }
+    return null;
+  }
+
+  /**
+   * Get the Translator for the specified property
+   * 
+   * @param <X>
+   * @param name
+   * @return
+   */
+  public synchronized 
+    <X> BeanPropertyTranslator<X,T> getTranslator(String name)
+  { 
     BeanPropertyTranslator<X,T> translator=null;
     if (properties==null)
     { properties=new HashMap<String,BeanPropertyTranslator<?,T>>();
@@ -550,19 +576,9 @@ public class BeanReflector<T>
         properties.put(name,translator);
       }
     }
-    if (translator!=null)
-    { 
-      Channel<X> binding=source.<X>getCached(translator);
-      if (binding==null)
-      { 
-        binding=new BeanPropertyChannel<X,T>(source,translator);
-        source.cache(translator,binding);
-      }
-      return binding;
-    }
-    return null;
+    return translator;
   }
-
+  
   private synchronized <X> Channel<X> getArrayProperty(Channel<T> source,String name)
   {
     Translator<X,T> translator=null;

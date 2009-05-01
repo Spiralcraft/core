@@ -20,6 +20,7 @@ import java.net.URI;
 
 import java.beans.PropertyDescriptor;
 
+import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.data.core.FieldImpl;
 
 import spiralcraft.data.util.StaticInstanceResolver;
@@ -33,21 +34,48 @@ import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.Field;
 
+import spiralcraft.lang.Reflector;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.reflect.BeanPropertyTranslator;
+import spiralcraft.log.Level;
+
 @SuppressWarnings("unchecked") // Not genericized yet
 public class ReflectionField
   extends FieldImpl
 {
-  private final PropertyDescriptor descriptor;
+  private final BeanPropertyTranslator translator;
   protected final TypeResolver resolver;
   private Method readMethod;
   private Method writeMethod;
   private boolean forcePersist;
   private boolean depersist=true;
   
-  public ReflectionField(TypeResolver resolver,PropertyDescriptor descriptor)
+  public ReflectionField
+    (TypeResolver resolver
+    ,MappedBeanInfo parentInfo
+    ,PropertyDescriptor descriptor)
   {
-    this.descriptor=descriptor;
-    readMethod=descriptor.getReadMethod();
+    Reflector reflector
+      =BeanReflector
+        .getInstance(parentInfo.getBeanDescriptor().getBeanClass());
+    if (reflector instanceof BeanReflector)
+    { 
+      translator
+        =((BeanReflector) reflector).getTranslator(descriptor.getName());
+    
+      readMethod=translator.getReadMethod();
+
+      
+    }
+    else
+    { 
+      throw new RuntimeException
+        ("Can't get property "+descriptor.getName()+" from Void for "
+        +parentInfo.getBeanDescriptor().getBeanClass()
+        );
+    }
+    
+    
     writeMethod=descriptor.getWriteMethod();
     setName(descriptor.getName());
 
@@ -89,7 +117,7 @@ public class ReflectionField
   }
   
   public PropertyDescriptor getPropertyDescriptor()
-  { return descriptor;
+  { return translator.getProperty();
   }
   
   @Override
@@ -98,7 +126,7 @@ public class ReflectionField
   {
     try
     { 
-      setType(findType(descriptor.getPropertyType()));
+      setType(findType(translator.getReflector().getContentType()));
     }
     catch (TypeNotFoundException x)
     { 
@@ -363,10 +391,13 @@ public class ReflectionField
         }
       }
       catch (IllegalAccessException x)
-      { throw new DataException("Error depersisting field '"+getName()+"'",x);
+      { throw new DataException("Error depersisting field '"+getURI()+"'",x);
       }
       catch (InvocationTargetException x)
-      { throw new DataException("Error depersisting field '"+getName()+"'",x);
+      { 
+        log.log
+          (Level.WARNING,"Error depersisting field '"+getURI()+"'"
+          ,x);
       }
     }
     

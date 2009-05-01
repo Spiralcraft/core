@@ -74,6 +74,10 @@ public class ReflectionScheme
   public void addFields()
     throws DataException
   {
+    if (clazz==Void.class)
+    { return;
+    }
+    
     List<? extends ReflectionField> fieldList
       =generateFields(beanInfo);
 
@@ -96,10 +100,11 @@ public class ReflectionScheme
     
   }
   
-  protected ReflectionField generateField(PropertyDescriptor prop)
+  protected ReflectionField generateField
+    (MappedBeanInfo beanInfo,PropertyDescriptor prop)
     throws DataException
   { 
-    ReflectionField field=new ReflectionField(resolver,prop);
+    ReflectionField field=new ReflectionField(resolver,beanInfo,prop);
     field.resolveType();
     return field;
   }
@@ -109,11 +114,13 @@ public class ReflectionScheme
       throws DataException
   {
     List<ReflectionField> fieldList=new ArrayList<ReflectionField>();
+    
+    
     for (PropertyDescriptor prop : beanInfo.getPropertyDescriptors())
     { 
       if (prop.getPropertyType()!=null)
       {
-        ReflectionField field=generateField(prop);
+        ReflectionField field=generateField(beanInfo,prop);
         fieldList.add(field);
         
       }

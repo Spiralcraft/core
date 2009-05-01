@@ -20,8 +20,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 
 import spiralcraft.beans.MappedBeanInfo;
 
@@ -30,12 +28,13 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.lang.ClassUtil;
 
 /**
  * A Translator associated with a single bean property. The 'get' transformation
  *   simply retrieves the value of the property from the supplied bean.
  */
-class BeanPropertyTranslator<Tprop,Tbean>
+public class BeanPropertyTranslator<Tprop,Tbean>
   implements Translator<Tprop,Tbean>
 {
   private static final Object[] EMPTY_PARAMS=new Object[0];
@@ -67,27 +66,30 @@ class BeanPropertyTranslator<Tprop,Tbean>
     
     
     
-    Reflector<Tprop> reflector;
+    Reflector<Tprop> reflector
+      =BeanReflector.<Tprop>getInstance
+        ((Class<Tprop>)_property.getPropertyType());
     
     if (_readMethod!=null)
     {
-      Type genericType=_readMethod.getGenericReturnType();
-      if (!(genericType instanceof TypeVariable))
+      Class genericType=ClassUtil.getClass(_readMethod.getGenericReturnType());
+      if (genericType!=null
+          && reflector.getContentType().isAssignableFrom(genericType))
       {
+        // Generic type is more specific
         reflector=BeanReflector.<Tprop>getInstance(genericType);
       }
       else
       {
-        reflector
-          =BeanReflector.<Tprop>getInstance(_readMethod.getReturnType());
+        if (reflector.getContentType().isAssignableFrom
+          (_readMethod.getReturnType()))
+        {
+          // Read method actual return type is more specific 
+          reflector
+            =BeanReflector.<Tprop>getInstance(_readMethod.getReturnType());
+        }
       }
     }
-    else
-    {
-      reflector=BeanReflector.<Tprop>getInstance
-        ((Class<Tprop>)_property.getPropertyType());
-    }
-
     
     Field field=null;
     try
@@ -133,16 +135,22 @@ class BeanPropertyTranslator<Tprop,Tbean>
         // Property is writable through a public field that is typed 
         //   more specifically than the read method. We need to
         //   make the property type more specific.
-        reflector
-          =BeanReflector.<Tprop>getInstance(_publicField.getType());
-        
-        if (debugLevel.canLog(Level.DEBUG))
+        if (reflector.getContentType().isAssignableFrom
+              (_publicField.getType())
+           )
         {
-          log.debug
-            ("Property "+beanClass.getName()+"."+property.getName()
-            +" narrowed to type "+_publicField.getType().getName()
-            +" due to existence of public field setter"
-            );
+          
+          reflector
+            =BeanReflector.<Tprop>getInstance(_publicField.getType());
+        
+          if (debugLevel.canLog(Level.DEBUG))
+          {
+            log.debug
+              ("Property "+beanClass.getName()+"."+property.getName()
+              +" narrowed to type "+_publicField.getType().getName()
+              +" due to existence of public field setter"
+              );
+          }
         }
       }
     }
@@ -231,6 +239,7 @@ class BeanPropertyTranslator<Tprop,Tbean>
   public Reflector<Tprop> getReflector()
   { return _reflector;
   }
+
 
 }
 
