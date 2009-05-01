@@ -15,6 +15,97 @@
 
         
     <detail>
+      
+      <scm:Change>
+        <date>2009-04-30
+        </date>
+        
+        <notes>
+          <scm:Note>Summary- Fix builder regression for persistence mechanism,
+            which got tripped up on some other issues.
+          </scm:Note>
+          <scm:Note>MappedBeaninfo provides a CovariantPropertyType service,
+            because java.beans.PropertyDescriptor is not powerful enough
+            for Covariants and Generics.
+          </scm:Note>
+          <scm:Note>We now avoid instantiating and configuring assemblies
+            created by default PropertySpecifiers.
+          </scm:Note>
+          <scm:Note>More intelligent property type resolution in 
+            PropertySpecifier via MappedBeanInfo
+          </scm:Note>
+          <scm:Note>java.lang types are now explicitly dealt with in 
+            AssemblyClass, so they do not get in the way of other unqualified 
+            declarations for "local" assys.
+          </scm:Note>
+          <scm:Note>For consistency, PropertySpecifiers will always contain
+            a "default" Assembly as contents. The distinction between 
+            getProperty() and discoverProperty() is no longer.
+          </scm:Note>
+          <scm:Note>Clarified TypeMismatchException output
+          </scm:Note>
+          <scm:Note>ClassUtil has tool to determine root type of
+            ParameterizedType
+          </scm:Note>
+          <scm:Note>ObjectType is no longer primitive, and can be assigned
+            from anything but Void.
+          </scm:Note>
+          <scm:Note>data.reflect.ReflectionType now uses type inference 
+            mechanism from lang.reflect package to handle java.beans
+            issues in an identical fashion.
+          </scm:Note>
+          <scm:Note>Fields now get log from base class
+          </scm:Note>
+        </notes>
+        
+        <path>/source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>beans/MappedBeanInfo.java
+          </URI>
+          <URI>builder/Assembly.java
+          </URI>
+          <URI>builder/AssemblyClass.java
+          </URI>
+          <URI>builder/PropertyBinding.java
+          </URI>
+          <URI>builder/PropertySpecifier.java
+          </URI>
+          <URI>data/TypeMismatchException.java
+          </URI>
+          <URI>data/types/standard/ObjectType.java
+          </URI>
+          <URI>data/reflect/ReflectionScheme.java
+          </URI>
+          <URI>data/reflect/ReflectionField.java
+          </URI>
+          <URI>util/lang/ClassUtil.java
+          </URI>
+          <URI>lang/reflect/BeanPropertyTranslator.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>data/builder/BuilderField.java
+          </URI>
+          <URI>data/builder/BuilderScheme.java
+          </URI>
+          <URI>data/builder/BuilderType.java
+          </URI>
+          <URI>data/core/CalculatedFieldImpl.java
+          </URI>
+          <URI>data/core/CalculatedFieldImpl.java
+          </URI>
+          <URI>data/core/FieldImpl.java
+          </URI>
+          <URI>data/core/KeyField.java
+          </URI>
+          <URI>data/core/QueryField.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
       <scm:Change>
         <date>2009-04-29
         </date>
