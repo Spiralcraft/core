@@ -34,7 +34,6 @@ import spiralcraft.data.query.Concatenation;
 import spiralcraft.data.query.ConcatenationBinding;
 
 import spiralcraft.lang.Focus;
-import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
 import spiralcraft.service.Service;
 import spiralcraft.util.ListMap;
@@ -90,10 +89,7 @@ public class Space
     registryNode=node;
     node=node.createChild(Space.class,this);
     for (Store store: stores)
-    { 
-      if (store instanceof Registrant)
-      { ((Registrant) store).register(node);
-      }
+    { store.register(node);
     }
   }
   
