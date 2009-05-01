@@ -32,6 +32,10 @@
             relevant Space in which to recursively solve the query. Implemented
             in AbstractStore.
           </scm:Note>
+          <scm:Note>Store interface is now a Service, and provides new method
+            isAuthoritative to identify master store when multiple stores 
+            support a Type.
+          </scm:Note>
           <scm:Note>XmlStore defines authoritative types from the 
             XmlQueryable tables.
           </scm:Note>
@@ -54,6 +58,8 @@
           <URI>spi/AbstractStore.java
           </URI>
           <URI>xml/XmlStore.java
+          </URI>
+          <URI>access/Store.java
           </URI>
         </resources>
         
