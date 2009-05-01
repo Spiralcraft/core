@@ -103,7 +103,8 @@ public class BuilderScheme
       for (Field<?> field:reflectionType.getFieldSet().fieldIterable())
       { 
         try
-        { assemblyClass.getMember(field.getName());
+        { 
+          assemblyClass.getMember(field.getName());
         }
         catch (BuildException x)
         { throw new DataException("Error getting member "+field.getName(),x);

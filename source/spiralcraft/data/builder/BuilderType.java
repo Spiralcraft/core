@@ -202,13 +202,8 @@ public class BuilderType
   public static Type<?> canonicalType(PropertySpecifier specifier)
     throws DataException
   { 
-    Class javaClass;
-    if (specifier.getPropertyDescriptor()==null)
-    { throw new DataException("PropertyDescriptor is null: "+specifier);
-    }
-    else
-    { javaClass=specifier.getPropertyDescriptor().getPropertyType();
-    }
+    Class javaClass=specifier.getPropertyType();
+
     
     if (!AssemblyClass.isManaged(javaClass)
         || ReflectionType.isManaged(javaClass)
@@ -441,28 +436,29 @@ public class BuilderType
   public DataComposite toData(Assembly<?> obj)
     throws DataException
   {
-    if (!(obj instanceof Assembly))
-    { throw new DataException(obj.getClass().getName()+" is not an Assembly");
-    }
+          
+      if (!(obj instanceof Assembly))
+      { throw new DataException(obj.getClass().getName()+" is not an Assembly");
+      }
     
-    Assembly<?> assembly=(Assembly<?>) obj;
+      Assembly<?> assembly=(Assembly<?>) obj;
     
-    if (assembly.getAssemblyClass()!=targetAssemblyClass)
-    { 
-      // log.fine("Narrowing "+getURI());
-      Type<Assembly<?>> targetType
-        =(BuilderType) Type.<Assembly<?>>resolve
-          (canonicalURI(assembly.getAssemblyClass())
-          );
-      return targetType.toData(assembly);    
-    }
-    else
-    {
-      // log.fine("Not narrowing "+getURI());
-      EditableTuple t=new EditableArrayTuple(scheme);
-      ((BuilderScheme) scheme).persistBeanProperties( assembly ,t);
-      return t;
-    }
+      if (assembly.getAssemblyClass()!=targetAssemblyClass)
+      {   
+        // log.fine("Narrowing "+getURI());
+        Type<Assembly<?>> targetType
+          =(BuilderType) Type.<Assembly<?>>resolve
+            (canonicalURI(assembly.getAssemblyClass())
+            );
+        return targetType.toData(assembly);    
+      }
+      else
+      {
+        // log.fine("Not narrowing "+getURI());
+        EditableTuple t=new EditableArrayTuple(scheme);
+        ((BuilderScheme) scheme).persistBeanProperties( assembly ,t);
+        return t;
+      }
   }
   
 }

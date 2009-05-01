@@ -60,6 +60,14 @@ public class BuilderField
     setName(specifier.getTargetName());
     try
     {
+      
+      if (specifier.getPropertyType()==Object.class)
+      { 
+        log.debug("Property "
+                  +reflectionField.getScheme().getType().getNativeClass()
+                    +"."+specifier.getTargetName()+" has Object type");
+      }
+      
       Type type=BuilderType.canonicalType(specifier);
       if (type==null)
       { throw new DataException("No builder type for "+specifier);
@@ -81,7 +89,7 @@ public class BuilderField
   {
     super.resolveType();
     if (specifier!=null)
-    { setType(BuilderType.canonicalType(specifier));
+    { //setType(BuilderType.canonicalType(specifier));
 //      
 //      List<AssemblyClass> contents=specifier.getContents();
 //      if (contents!=null && contents.size()>0)
@@ -287,13 +295,17 @@ public class BuilderField
     } // if (specifier!=null && !specifier.persistAsBean())
     else
     {
-      if ( (specifier==null || specifier.isPersistent())
-          && !(getType().getCoreType() instanceof BuilderType)
-         )
-      { 
-        log.fine("Persisting non-builder type "+getType().getCoreType().getURI());
-        persistPropertyUsingReflection(assembly,tuple);
-      }
+      // 2009-04-30 miketoth
+      //
+      // Don't try to persist anything without a specifier
+      //
+//      if ( (specifier==null || specifier.isPersistent())
+//          && !(getType().getCoreType() instanceof BuilderType)
+//         )
+//      { 
+//        log.fine("Persisting non-builder type "+getType().getCoreType().getURI());
+//        persistPropertyUsingReflection(assembly,tuple);
+//      }
     }
   }
   
@@ -312,6 +324,8 @@ public class BuilderField
       Object val
         =reflectionField.getReadMethod().invoke
           (assembly.get(),(Object[]) null);
+      
+      
       if (getType().isPrimitive())
       {
         setValue
@@ -321,10 +335,14 @@ public class BuilderField
       }
       else
       { 
-        setValue
-          (tuple
-          ,getType().toData(val)
-          );
+        if (val!=null)
+        {
+          setValue
+            (tuple
+            ,((Type<Object>) ReflectionType.canonicalType(val.getClass()))
+              .toData(val)
+            );
+        }
       }
     }
     catch (IllegalAccessException x)
