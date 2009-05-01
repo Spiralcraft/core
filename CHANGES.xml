@@ -24,6 +24,17 @@
             intended. class SingleSpace has been removed in favor of a 
             concrete spiralcraft.data.Space.
           </scm:Note>
+          <scm:Note>Query supports recursive search for Scan types to 
+            better narrow the set of stores to Query. This function was moved
+            from AbstractStore.
+          </scm:Note>
+          <scm:Note>Query resolution should use the Focus chain to obtain the 
+            relevant Space in which to recursively solve the query. Implemented
+            in AbstractStore.
+          </scm:Note>
+          <scm:Note>XmlStore defines authoritative types from the 
+            XmlQueryable tables.
+          </scm:Note>
         </notes>
         
         <path>/source/spiralcraft/data/
@@ -34,9 +45,15 @@
           </URI>
           <URI>Space.java
           </URI>
+          <URI>query/Query.java
+          </URI>
           <URI>query/Concatenation.java
           </URI>
           <URI>query/ConcatenationBinding.java
+          </URI>
+          <URI>spi/AbstractStore.java
+          </URI>
+          <URI>xml/XmlStore.java
           </URI>
         </resources>
         
