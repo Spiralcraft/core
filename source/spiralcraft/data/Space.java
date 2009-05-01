@@ -17,9 +17,11 @@ package spiralcraft.data;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import spiralcraft.common.LifecycleException;
 
@@ -171,9 +173,26 @@ public class Space
     List<BoundQuery<?,Tuple>> queries
       =new LinkedList<BoundQuery<?,Tuple>>();
     
+    Set<Type<?>> scanTypes=query.getScanTypes(null);
+    
+    Set<Store> stores=new HashSet<Store>();
+    for (Type<?> type: scanTypes)
+    { 
+      List<Store> typeStoreList=typeStores.get(type);
+      if (typeStoreList!=null)
+      { stores.addAll(typeStores.get(type));
+      }
+      else
+      { 
+        throw new DataException
+          ("Type "+type.getURI()+" is not stored in this Space");
+      }
+    }
+    
+    
     for (Store store: stores)
     {
-      // Pass it through
+      // Stores that can't process the type should return null
       BoundQuery<?,Tuple> boundQuery=store.query(query,focus);
       if (boundQuery!=null)
       { queries.add(boundQuery);
@@ -237,10 +256,10 @@ public class Space
     if (stores!=null)
     {
       for (Store store: stores)
-      {
-        // XXX Need to add to store interface to determine if
-        //  authoritative for type
-        return store;
+      { 
+        if (store.isAuthoritative(type))
+        { return store;
+        }
       }
     }
     return null;
