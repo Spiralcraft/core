@@ -16,6 +16,7 @@ package spiralcraft.data.query;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
@@ -87,6 +88,31 @@ public abstract class Query
    */
   public Type<?> getType()
   { return type;
+  }
+  
+  /**
+   * Gather the leaf Types of the Query operation-  the full set of Types the
+   *   query will access.
+   * 
+   * @param q
+   * @param result
+   */
+  public void getScanTypes(Set<Type<?>> result)
+  { 
+
+    
+    if (this instanceof Scan)
+    { result.add(getType());
+    }
+    
+    List<Query> sources=getSources();
+    if (sources!=null)
+    { 
+      for (Query sq : sources)
+      { sq.getScanTypes(result);
+      }
+    }
+    
   }
   
   /**
