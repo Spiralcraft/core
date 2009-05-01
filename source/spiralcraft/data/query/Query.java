@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.query;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -91,15 +92,19 @@ public abstract class Query
   }
   
   /**
-   * Gather the leaf Types of the Query operation-  the full set of Types the
+   * Search for the leaf Types of the Query operation- the full set of Types the
    *   query will access.
    * 
-   * @param q
-   * @param result
+   * @param result A set to fill with the results
+   * @return The filled result passed in, or if null was passed in, a new Set 
+   *   filled with the results
    */
-  public void getScanTypes(Set<Type<?>> result)
+  public Set<Type<?>> getScanTypes(Set<Type<?>> result)
   { 
-
+    
+    if (result==null)
+    { result=new HashSet<Type<?>>();
+    }
     
     if (this instanceof Scan)
     { result.add(getType());
@@ -112,6 +117,7 @@ public abstract class Query
       { sq.getScanTypes(result);
       }
     }
+    return result;
     
   }
   
