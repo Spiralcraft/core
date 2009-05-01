@@ -40,7 +40,7 @@ import spiralcraft.util.ListMap;
 
 /**
  * <p>A logical data container. Provides access to a complete set of data used by
- *   one or more applications. Data reachable from a Space may be contained 
+ *   one or more applications. Data reachable from a Space may be
  *   contained in or more Stores. 
  * </p>
  *   
