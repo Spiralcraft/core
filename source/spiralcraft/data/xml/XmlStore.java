@@ -129,12 +129,16 @@ public class XmlStore
 //  }
   
   
+
+  
   private void addQueryable(XmlQueryable queryable)
   {
     xmlQueryables.add(queryable);
     
     Type<?> subtype=queryable.getResultType();
     queryables.put(subtype,queryable);
+    
+    addAuthoritativeType(subtype);
     
     addBaseTypes(queryable);    
   }
