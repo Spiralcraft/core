@@ -77,8 +77,6 @@ public class XmlStore
   
   private URI baseResourceURI;
   
-//  private Focus<XmlStore> focus;
-  
   private Type<?> sequenceType;
   private HashMap<URI,XmlSequence> sequences;
   private EquiJoin sequenceQuery;
@@ -89,9 +87,6 @@ public class XmlStore
   
   public XmlStore()
   {
-//      focus=new SimpleFocus<XmlStore>
-//        (new SimpleChannel<XmlStore>(this,true)
-//        );
     try
     {
       sequenceType=Type.resolve("class:/spiralcraft/data/spi/Sequence");
