@@ -15,8 +15,6 @@
 package spiralcraft.data.spi;
 
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
@@ -31,7 +29,6 @@ import spiralcraft.data.access.Store;
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
-import spiralcraft.data.query.Scan;
 // import spiralcraft.data.query.Scan;
 
 import spiralcraft.lang.Focus;
@@ -61,12 +58,20 @@ public abstract class AbstractStore
   protected Space space;
   private boolean started;
   
+  private HashSet<Type<?>> authoritativeTypes=new HashSet<Type<?>>();
+  
   
   public void register(RegistryNode node)
   { 
     this.space=node.findInstance(Space.class);
     registryNode=node.createChild(getClass(),this);
   }
+  
+  public boolean isAuthoritative(Type<?> type)
+  { return authoritativeTypes.contains(type);
+  }
+  
+  
   
   @Override
   public Space getSpace()
@@ -81,6 +86,7 @@ public abstract class AbstractStore
     return getQueryable(type)!=null;
   }
   
+    
   public void setDebugLevel(Level debugLevel)
   { this.debugLevel=debugLevel;
   }
@@ -92,22 +98,8 @@ public abstract class AbstractStore
    */
   protected abstract Queryable<Tuple> getQueryable(Type<?> type);
   
-  protected void getScanTypes(Query q,Set<Type<?>> result)
-  { 
-   
-    
-    if (q instanceof Scan)
-    { result.add(q.getType());
-    }
-    
-    List<Query> sources=q.getSources();
-    if (sources!=null)
-    { 
-      for (Query sq : sources)
-      { getScanTypes(sq,result);
-      }
-    }
-    
+  protected void addAuthoritativeType(Type<?> type)
+  { authoritativeTypes.add(type);
   }
   
   @Override
@@ -116,9 +108,14 @@ public abstract class AbstractStore
     Focus<?> context)
     throws DataException
   { 
+    Queryable<Tuple> container=Space.find(context);
+    if (container==null)
+    { container=this;
+    }
+    
     assertStarted();
     HashSet<Type<?>> typeSet=new HashSet<Type<?>>();
-    getScanTypes(query,typeSet);
+    query.getScanTypes(typeSet);
     Type<?>[] types=typeSet.toArray(new Type[typeSet.size()]);
     
     if (types.length==1)
@@ -132,7 +129,7 @@ public abstract class AbstractStore
       }
     }
     
-    BoundQuery<?,Tuple> ret=query.solve(context,this);
+    BoundQuery<?,Tuple> ret=query.solve(context,container);
     ret.resolve();
     if (debugLevel.canLog(Level.DEBUG))
     { log.debug("returning "+ret+" from query("+query+")");
