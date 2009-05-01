@@ -5,14 +5,14 @@
   xmlns:service="class:/spiralcraft/service/"
   xmlns:example="class:/spiralcraft/data/test/example/"
   xmlns:dxml="class:/spiralcraft/data/xml/"
-  xmlns:spi="class:/spiralcraft/data/spi/"
+  xmlns:data="class:/spiralcraft/data/"
   xmlns:query="class:/spiralcraft/data/query/"
   xmlns:dtest="class:/spiralcraft/data/test/"
   >
   
   <service>
-    <spi:SingleSpace>
-      <store>
+    <data:Space>
+      <stores>
         <dxml:XmlStore>
           <baseResourceURI>class:/spiralcraft/data/test/example/
           </baseResourceURI>
@@ -24,8 +24,8 @@
           <debugLevel>DEBUG
           </debugLevel>
         </dxml:XmlStore>
-      </store>
-    </spi:SingleSpace>
+      </stores>
+    </data:Space>
   </service>
   
   <scenario>
