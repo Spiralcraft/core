@@ -29,7 +29,6 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 
-import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
 /**
@@ -41,8 +40,6 @@ public class CalculatedFieldImpl<T>
   extends FieldImpl<T>
 {
 
-  private static final ClassLog log
-    =ClassLog.getInstance(CalculatedFieldImpl.class);
   
   private ThreadLocalChannel<Tuple> threadLocalBinding;
   private Channel<T> expressionBinding;

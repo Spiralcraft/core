@@ -30,6 +30,7 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.log.ClassLog;
 import spiralcraft.rules.Inspector;
 import spiralcraft.rules.Rule;
 import spiralcraft.rules.RuleException;
@@ -47,6 +48,8 @@ import java.net.URI;
 public class FieldImpl<T>
   implements Field<T>
 {
+  protected final ClassLog log=ClassLog.getInstance(getClass());
+  
   private boolean locked;
   private FieldSet fieldSet;
   private int index;
