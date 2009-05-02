@@ -18,6 +18,8 @@ import spiralcraft.exec.Arguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
 
+import spiralcraft.util.Path;
+import spiralcraft.util.PathPattern;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -25,7 +27,6 @@ import spiralcraft.vfs.ResourceFilter;
 import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.vfs.filters.ContentRegexFilter;
 import spiralcraft.vfs.filters.ListFilter;
-import spiralcraft.vfs.filters.NameGlobFilter;
 
 
 
@@ -47,8 +48,9 @@ public class Search
   implements Executable,Runnable
 {
   private URI _rootUri;
+  private Resource _rootResource;
   private ResourceFilter _filter;
-  private ResourceFilter _nameFilter;
+  private PathPattern _pattern;
   private ResourceFilter _contentFilter;
   // private boolean _print;
   private Operation _operation;
@@ -83,7 +85,7 @@ public class Search
         { return true;
         }
         else if (option=="-name")
-        { setName(nextArgument());
+        { setPattern(new PathPattern(nextArgument()));
         }
         else if (option=="-contains")
         { setContains(nextArgument());
@@ -117,20 +119,35 @@ public class Search
   }
   
   /**
+   * Set the container resource to be searched
+   * 
+   * @param rootResource
+   */
+  public void setRootResource(Resource rootResource)
+  { this._rootResource=rootResource;
+  }
+  
+  /**
    * Run an already configured search
    */
   public synchronized void run()
   { 
     final Stack<Resource> stack=new Stack<Resource>();
 
-    try
-    { stack.push(Resolver.getInstance().resolve(_rootUri));
-    }
-    catch (UnresolvableURIException x)
+    if (_rootResource==null)
     { 
-      x.printStackTrace();
-      return;
+
+      try
+      { _rootResource=Resolver.getInstance().resolve(_rootUri);
+      }
+      catch (UnresolvableURIException x)
+      { 
+        x.printStackTrace();
+        return;
+      }
     }
+    
+    stack.push(_rootResource);
 
     try
     {
@@ -151,7 +168,7 @@ public class Search
               { stack.push(child);
               }
               
-              if (_nameFilter==null || _nameFilter.accept(child))
+              if (_pattern==null || _pattern.matches(relativePath(child)))
               {
                 if (_contentFilter==null || _contentFilter.accept(child))
                 {
@@ -180,6 +197,14 @@ public class Search
     }
   }
 
+  private Path relativePath(Resource resource)
+  { 
+    return new Path(_rootResource.getURI().getPath(),'/')
+      .relativize(new Path(resource.getURI().getPath(),'/'));
+  }
+  
+  
+  
   /**
    * Run a configured search and return a List of the results
    */
@@ -199,10 +224,10 @@ public class Search
   { return _rootUri;
   }
   
-  public void setName(String name)
-  { _nameFilter=new NameGlobFilter(name);
+  public void setPattern(PathPattern pattern)
+  { _pattern=pattern;
   }
-
+  
   public void setContains(String contains)
   { _contentFilter=new ContentRegexFilter(contains);
   }

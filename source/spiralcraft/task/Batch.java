@@ -189,7 +189,6 @@ public class Batch<I,R>
             }
           }
 //          setResult(results);
-          
           postResult(getResult());
         }
       };
@@ -243,8 +242,12 @@ public class Batch<I,R>
       { 
         completedTaskCommand=scenario.command();
         completedTaskCommand.setCollectResults(true);
-        completedTaskCommand.execute();
-        addResult(completedTaskCommand);
+        try
+        { completedTaskCommand.execute();
+        }
+        finally 
+        { addResult(completedTaskCommand);
+        }
       }
       finally
       { item.pop();

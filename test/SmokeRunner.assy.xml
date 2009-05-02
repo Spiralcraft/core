@@ -8,13 +8,14 @@
   xmlns:data="class:/spiralcraft/data/"
   xmlns:query="class:/spiralcraft/data/query/"
   xmlns:dtest="class:/spiralcraft/data/test/"
+  xmlns:vfs="class:/spiralcraft/vfs/task/"
   >
   
   <service>
     <data:Space>
       <stores>
         <dxml:XmlStore>
-          <baseResourceURI>class:/spiralcraft/data/test/example/
+          <baseResourceURI>out/data/store/
           </baseResourceURI>
           
           <schema 
@@ -40,6 +41,20 @@
           </fileURI>
       
         </iotest:RecordIteratorTest>
+        
+        <vfs:Copy>
+          <debug>true
+          </debug>
+          
+          <sourceResource>class:/spiralcraft/data/test/example
+          </sourceResource>
+
+          <pattern>*.data.xml
+          </pattern>
+          
+          <targetResource>out/data
+          </targetResource>
+        </vfs:Copy>
         
         <dtest:DataBatchTest/>
         

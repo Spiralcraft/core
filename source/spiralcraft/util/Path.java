@@ -204,6 +204,66 @@ public class Path
   }
   
   /**
+   * Determine whether this path starts with the specified path
+   * 
+   * @param prefix
+   * @return
+   */
+  public boolean startsWith(Path prefix)
+  {
+    if (prefix.isAbsolute() != isAbsolute())
+    { return false;
+    }
+    int i=0;
+    for (String element:prefix.elements())
+    { 
+      if (!_elements[i++].equals(element))
+      { return false;
+      }
+    }
+    return true;
+  }
+  
+  public Path relativize(Path suffixed)
+  { 
+    if (suffixed.isAbsolute() != isAbsolute())
+    { return null;
+    }
+    
+    
+    int i=0;
+    for (String element:suffixed.elements())
+    { 
+      if (i==_elements.length)
+      { return suffixed.subPath(i);
+      }
+      else if (!_elements[i++].equals(element))
+      { return null;
+      }
+    }
+    return new Path("",'/');
+  }
+  
+  /**
+   * Determine whether the specified name exactly matches a segment in the
+   *   path.  
+   * 
+   * @param element
+   * @return Whether the path contains an element matching the
+   *   specified name
+   */
+  public boolean containsElement(String name)
+  { 
+    for (String element: _elements)
+    { 
+      if (element!=null && element.equals(name))
+      { return true;
+      }
+    }
+    return false;
+  }
+  
+  /**
    * 
    * @return The element at the specified index in the path
    */

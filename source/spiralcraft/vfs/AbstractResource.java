@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import spiralcraft.util.Path;
+
 public abstract class AbstractResource
   implements Resource
 {
@@ -65,10 +67,10 @@ public abstract class AbstractResource
   }
 
   /**
-   * Doesn't know about local naming
+   * Gets local name from the last element in the URI.
    */
   public String getLocalName()
-  { return null;
+  { return new Path(_uri.getPath(),'/').lastElement();
   }
   
   /**
@@ -214,7 +216,11 @@ public abstract class AbstractResource
   { 
     Container container=target.asContainer();
     if (target.exists() && container!=null)
-    { container.getChild(getLocalName()).copyFrom(this);
+    { 
+      if (getLocalName()==null)
+      { throw new IOException("Cannot copy "+getURI()+" into a container");
+      }
+      container.getChild(getLocalName()).copyFrom(this);
     }
     else
     { target.copyFrom(this);

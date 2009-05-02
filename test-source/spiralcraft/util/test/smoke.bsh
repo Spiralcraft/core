@@ -3,19 +3,33 @@ import spiralcraft.util.PathPattern;
 import spiralcraft.util.Path;
 import spiralcraft.codec.text.Base64Codec;
 
-var assertPatternMatch(pattern,path)
+var assertPatternMatch(pattern,path,negate)
 {
-  return assert(new PathPattern(pattern).matches(new Path(path,'/'))
+  if (!negate)
+  {
+    return assert(new PathPattern(pattern).matches(new Path(path,'/'))
         ,"Pattern ["+pattern+"] matches path ["+path+"]"
         );
+  }
+  else
+  {
+    return assert(!new PathPattern(pattern).matches(new Path(path,'/'))
+        ,"Pattern ["+pattern+"] doesn't match path ["+path+"]"
+        );
+  }
 }
 
 
 
-print(assertPatternMatch("CVS","CVS"));
-print(assertPatternMatch("**/CVS","CVS"));
-print(assertPatternMatch("**/CVS/","/CVS"));
-
+print(assertPatternMatch("CVS","CVS",false));
+print(assertPatternMatch("**/CVS","CVS",false));
+print(assertPatternMatch("**/CVS/","/CVS",false));
+print(assertPatternMatch("/x/y/z/*.xml","/x/y/z/x.xml",false));
+print(assertPatternMatch("/x/y/z/**/*.xml","/x/y/z/x.xml",false));
+print(assertPatternMatch("/x/y/z/*.y.xml","/x/y/z/x.y.xml",false));
+print(assertPatternMatch("**/*.y.xml","/x/y/z/x.y.xml",false));
+print(assertPatternMatch("/x/y/z/*.xml","/x/y/z/a/x.xml",true));
+print(assertPatternMatch("/x/y/z/**/*.xml","/x/y/z/a/x.xml",false));
 
 test("new Path(\"/\",'/').firstElement()",null);
 test("new Path(\"/check\",'/').firstElement()","check");

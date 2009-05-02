@@ -62,7 +62,10 @@ public class Sequence<Tresult>
           command.execute();
           addResult(command);
           if (command.getException()!=null)
-          { addException(command.getException());
+          { 
+            addException(command.getException());
+            // XXX Add error scenario
+            break;
           }
         }
       }

@@ -57,12 +57,18 @@ public class DataBatchProcessor<I,R>
   {
     if (debug)
     {
-      for (TaskCommand<Task,R> command:completedCommands)
-      { 
-        List<R> resultItems=command.getResult();
-        for (R resultItem : resultItems)
-        { log.debug("Result posted: "+resultItem);
+      if (completedCommands!=null)
+      {
+        for (TaskCommand<Task,R> command:completedCommands)
+        { 
+          List<R> resultItems=command.getResult();
+          for (R resultItem : resultItems)
+          { log.debug("Result posted: "+resultItem);
+          }
         }
+      }
+      else
+      { log.debug("No results posted");
       }
     }
       
@@ -73,11 +79,14 @@ public class DataBatchProcessor<I,R>
         (((DataReflector<Aggregate<R>>) resultChannel.getReflector())
            .getType()
         );
-      for (TaskCommand<Task,R> command:completedCommands)
-      { 
-        List<R> resultItems=command.getResult();
-        for (R resultItem : resultItems)
-        { result.add(resultItem);
+      if (completedCommands!=null)
+      {
+        for (TaskCommand<Task,R> command:completedCommands)
+        { 
+          List<R> resultItems=command.getResult();
+          for (R resultItem : resultItems)
+          { result.add(resultItem);
+          }
         }
       }
       resultChannel.set(result);

@@ -158,7 +158,11 @@ public class FileResource
 
   public Resource getChild(String name)
     throws UnresolvableURIException
-  { return new FileResource(new File(_file,name).toURI());
+  { 
+    if (name==null)
+    { throw new NullPointerException("Child name cannot be null");
+    }
+    return new FileResource(new File(_file,name).toURI());
   }
 
   public Resource createLink(String name,Resource resource)

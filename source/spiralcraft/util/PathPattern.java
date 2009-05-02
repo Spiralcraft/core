@@ -73,6 +73,14 @@ public class PathPattern
   }
   
   private Token[] tokens;
+  private Path prefix;
+  
+  public PathPattern(Path prefix,String pattern)
+  { 
+    this(pattern);
+    this.prefix=prefix;
+    
+  }
   
   public PathPattern(String pattern)
   { this.tokens=parse(pattern);
@@ -84,6 +92,14 @@ public class PathPattern
     { log.fine("["+path.format(" : ")+"] : "+ArrayUtil.format(tokens,",","\""));
     }
     
+    if (prefix!=null)
+    { 
+      if (!path.startsWith(prefix))
+      { return false;
+      }
+      path=prefix.relativize(path);
+    }
+        
     int tokenPos=0;
     
     if (tokens[0].type==Type.ROOT)

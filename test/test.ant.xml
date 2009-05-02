@@ -6,6 +6,8 @@
     depends="clean,spiralcraft-task"
     >
     <mkdir dir="out/io"/>
+    <mkdir dir="out/data"/>
+    <mkdir dir="out/data/store"/>
  
     <devtask
       codebase=".."

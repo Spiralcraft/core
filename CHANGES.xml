@@ -16,6 +16,76 @@
         
     <detail>
       <scm:Change>
+        <date>2009-05-01
+        </date>
+
+        <notes>
+          <scm:Note>Automated regression testing facility enhancements
+            related to staging data for various stores.
+          </scm:Note>
+          
+          <scm:Note>VFS supports a copy from classpath function useful for
+            using built-in data to stage a test from scratch. This works
+            with local classloaders by interpreting the the jar or file URL,
+            in conjuction with the pattern search tool.
+          </scm:Note>
+          
+          <scm:Note>vfs now has a JarResource and FileResource
+          </scm:Note>
+          
+          <scm:Note>PathPattern now accepts a prefix, so the pattern
+            doesn't need to include it, if the usage only supplies 
+            absolute paths.
+          </scm:Note>
+          
+          <scm:Note>Added error handling to vfs and generic task components to 
+           deal with secondary cases and more error conditions. 
+          </scm:Note>
+
+          <path>/source/spiralcraft
+          </path>
+          
+          <resources>
+            <URI>vfs/task/Copy.java
+            </URI>
+            <URI>vfs/jar/JarFileResource.java
+            </URI>
+            <URI>vfs/jar/JarResourceFactory.java
+            </URI>
+            <URI>vfs/filters/PatternFilter.java
+            </URI>
+            <URI>vfs/filters/NameGlobFilter.java
+            </URI>
+            <URI>vfs/file/FileResource.java
+            </URI>
+            <URI>vfs/classpath/ClasspathResource.java
+            </URI>
+            <URI>vfs/batch/Search.java
+            </URI>
+            <URI>vfs/AbstractResource.java
+            </URI>
+            <URI>vfs/Resolver.java
+            </URI>
+            <URI>util/Path.java
+            </URI>
+            <URI>util/PathPattern.java
+            </URI>
+            <URI>task/Batch.java
+            </URI>
+            <URI>task/Scenario.java
+            </URI>
+            <URI>task/Sequence.java
+            </URI>
+            <URI>io/InputStreamWrapper.java
+            </URI>
+            <URI>data/util/DataBatchProcessor.java
+            </URI>
+          </resources>
+        </notes>
+              
+      </scm:Change>
+      
+      <scm:Change>
         <date>2009-04-30
         </date>
         
@@ -88,8 +158,11 @@
             declarations for "local" assys.
           </scm:Note>
           <scm:Note>For consistency, PropertySpecifiers will always contain
-            a "default" Assembly as contents. The distinction between 
-            getProperty() and discoverProperty() is no longer.
+            a "default" AssemblyClass, which will not be instantiated, but will
+            serve as a discovery mechanism for the part of the object subgraph
+            it manages. There is no longer a distinction between 
+            getProperty() and discoverProperty(), but leaving the method in
+            for compatibility.
           </scm:Note>
           <scm:Note>Clarified TypeMismatchException output
           </scm:Note>

@@ -171,7 +171,9 @@ public abstract class Scenario
   void pushCommand(TaskCommand<Ttask,Tresult> command)
   { 
     if (commandChannel==null)
-    { throw new IllegalStateException("Scenario.bind() never called");
+    { 
+      throw new IllegalStateException
+        ("Scenario.bind() never called in "+getClass().getName());
     }
     commandChannel.push(command);
   }

@@ -14,11 +14,20 @@
 //
 package spiralcraft.vfs.classpath;
 
+import spiralcraft.log.ClassLog;
 import spiralcraft.vfs.AbstractResource;
+import spiralcraft.vfs.Container;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.UnresolvableURIException;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -26,15 +35,43 @@ import java.io.OutputStream;
 
 public class ClasspathResource
   extends AbstractResource
+  implements Container
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(ClasspathResource.class);
+  
   private final ClassLoader _classLoader;
   private final String _path;
   private URL _url;
+  private List<String> _contents;
 
+  private static final URI stripTrailingSlash(URI uri)
+  { 
+    if (uri.getPath().endsWith("/"))
+    { 
+      try
+      {
+        return new URI
+          (uri.getScheme()
+          ,null
+          ,uri.getPath().substring(0,uri.getPath().length()-1)
+          ,null
+          ,null
+          );
+      }
+      catch (URISyntaxException x)
+      { throw new IllegalArgumentException("Failed to parse URI "+uri);
+      }
+    }
+    else
+    { return uri;
+    }
+  }
+  
   public ClasspathResource(URI uri)
   { 
-    super(uri);
-    _path=uri.getPath().substring(1);
+    super(stripTrailingSlash(uri));
+    _path=getURI().getPath().substring(1);
     _classLoader=Thread.currentThread().getContextClassLoader();
   }
 
@@ -69,6 +106,77 @@ public class ClasspathResource
   { return true;
   }
   
+  @Override
+  public Container asContainer()
+  { 
+    boolean debug=false;
+    try
+    {
+      if (_contents==null)
+      { 
+        if (debug)
+        { log.fine("Checking "+_path+" in "+_classLoader);
+        }
+        Enumeration<URL> resources=_classLoader.getResources(_path);
+        
+        List<URL> parts=new LinkedList<URL>();
+        List<String> contents=new LinkedList<String>();
+        while (resources.hasMoreElements())
+        { 
+          
+          parts.add(resources.nextElement());
+          
+          if (debug)
+          { log.fine("Got "+parts.get(parts.size()-1).toString());
+          }
+        }
+        if (parts.size()>0)
+        { 
+          for (URL url: parts)
+          { 
+            try
+            { 
+              Resource partResource
+                =Resolver.getInstance().resolve(url.toURI());
+              if (debug)
+              { log.fine("Checking part "+partResource);
+              }
+              
+              Container partContainer=partResource.asContainer();
+              if (partContainer!=null)
+              {
+                if (debug)
+                { log.fine("Listing container part "+partContainer);
+                }
+                
+                for (Resource resource:partContainer.listChildren())
+                { 
+                  
+                  if (debug)
+                  { log.fine("Adding child  "+resource);
+                  }
+                  contents.add(resource.getLocalName());
+                }
+              }
+            }
+            catch (URISyntaxException x)
+            { x.printStackTrace();
+            }
+          }
+          if (contents.size()>0)
+          { this._contents=contents;
+          }
+        }
+      }
+    }
+    catch (IOException x)
+    { x.printStackTrace();
+    }
+    
+    return _contents!=null?this:null;
+  }
+
+  
   public void renameTo(URI name)
   { 
     throw new UnsupportedOperationException
@@ -91,5 +199,50 @@ public class ClasspathResource
   public void delete()
     throws IOException
   { throw new IOException("ClasspathResource is read-only");
+  }
+
+  
+  @Override
+  public ClasspathResource getChild(String name)
+  { 
+    return new ClasspathResource
+      (URI.create(getURI().getScheme()+":/"+_path+"/"+name));
+  }
+  
+  @Override
+  public Resource asResource()
+  { return this;
+  }
+
+  @Override
+  public Resource createLink(
+    String name,
+    Resource resource)
+    throws UnresolvableURIException
+  { return null;
+  }
+
+  @Override
+  public Resource[] listChildren()
+    throws IOException
+  { 
+    Resource[] children=new Resource[_contents.size()];
+    int i=0;
+    for (String childName:_contents)
+    { children[i++]=getChild(childName);
+    }
+    return children;
+  }
+
+  @Override
+  public Resource[] listContents()
+    throws IOException
+  { return listChildren();
+  }
+
+  @Override
+  public Resource[] listLinks()
+    throws IOException
+  { return null;
   }
 }
