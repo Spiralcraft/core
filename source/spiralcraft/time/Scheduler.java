@@ -30,6 +30,7 @@ public class Scheduler
 //  private static final Logger log
 //    =ClassLogger.getInstance(Scheduler.class);
 
+  private static volatile int NEXT_ID=-0;
   private static final Scheduler _INSTANCE=new Scheduler();
   
   private static ThreadLocalStack<Scheduler> stack
@@ -55,9 +56,11 @@ public class Scheduler
     
   private ScheduledItem _nextItem;
   private final Object _sync=new Object();
-  private final Thread _thread=new Thread(new Dispatcher(),"Scheduler");
+  private final Thread _thread
+    =new Thread(new Dispatcher(),"Scheduler-"+(NEXT_ID++));
   private ThreadPool _pool=new ThreadPool();
   private boolean _started=false;
+  private volatile boolean shutdown=false;
   
 
 
@@ -66,6 +69,16 @@ public class Scheduler
   { 
     _thread.setDaemon(true);
     _thread.start();
+    
+    Runtime.getRuntime().addShutdownHook
+      (new Thread()
+      {
+        @Override
+        public void run()
+        { shutdown=true;
+        }
+      }
+      );
   }
 
   public void scheduleIn(Runnable runnable,long msFromNow)
@@ -118,6 +131,10 @@ public class Scheduler
     ScheduledItem next=null;
     synchronized (_sync)
     {
+      if (shutdown)
+      { return;
+      }
+      
       if (!_started)
       { 
         _pool.start();
@@ -164,7 +181,7 @@ public class Scheduler
     {
       try
       {
-        while (true)
+        while (!shutdown)
         { runNext();
         }
       }
