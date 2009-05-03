@@ -52,7 +52,7 @@
           <pattern>*.data.xml
           </pattern>
           
-          <targetResource>out/data
+          <targetResource>out/data/store
           </targetResource>
         </vfs:Copy>
         

@@ -20,6 +20,22 @@
         </date>
 
         <notes>
+          <scm:Note>Added shutdown hook to Scheduler to prevent running
+            tasks after shutdown is initiated
+          </scm:Note>
+        </notes>
+        
+        <resources>
+          <URI>source/spiralcraft/time/Scheduler.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-05-01
+        </date>
+
+        <notes>
           <scm:Note>Automated regression testing facility enhancements
             related to staging data for various stores.
           </scm:Note>
@@ -42,47 +58,47 @@
            deal with secondary cases and more error conditions. 
           </scm:Note>
 
-          <path>/source/spiralcraft
-          </path>
-          
-          <resources>
-            <URI>vfs/task/Copy.java
-            </URI>
-            <URI>vfs/jar/JarFileResource.java
-            </URI>
-            <URI>vfs/jar/JarResourceFactory.java
-            </URI>
-            <URI>vfs/filters/PatternFilter.java
-            </URI>
-            <URI>vfs/filters/NameGlobFilter.java
-            </URI>
-            <URI>vfs/file/FileResource.java
-            </URI>
-            <URI>vfs/classpath/ClasspathResource.java
-            </URI>
-            <URI>vfs/batch/Search.java
-            </URI>
-            <URI>vfs/AbstractResource.java
-            </URI>
-            <URI>vfs/Resolver.java
-            </URI>
-            <URI>util/Path.java
-            </URI>
-            <URI>util/PathPattern.java
-            </URI>
-            <URI>task/Batch.java
-            </URI>
-            <URI>task/Scenario.java
-            </URI>
-            <URI>task/Sequence.java
-            </URI>
-            <URI>io/InputStreamWrapper.java
-            </URI>
-            <URI>data/util/DataBatchProcessor.java
-            </URI>
-          </resources>
+
         </notes>
-              
+        <path>/source/spiralcraft
+        </path>
+          
+        <resources>
+          <URI>vfs/task/Copy.java
+          </URI>
+          <URI>vfs/jar/JarFileResource.java
+          </URI>
+          <URI>vfs/jar/JarResourceFactory.java
+          </URI>
+          <URI>vfs/filters/PatternFilter.java
+          </URI>
+          <URI>vfs/filters/NameGlobFilter.java
+          </URI>
+          <URI>vfs/file/FileResource.java
+          </URI>
+          <URI>vfs/classpath/ClasspathResource.java
+          </URI>
+          <URI>vfs/batch/Search.java
+          </URI>
+          <URI>vfs/AbstractResource.java
+          </URI>
+          <URI>vfs/Resolver.java
+          </URI>
+          <URI>util/Path.java
+          </URI>
+          <URI>util/PathPattern.java
+          </URI>
+          <URI>task/Batch.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+          <URI>task/Sequence.java
+          </URI>
+          <URI>io/InputStreamWrapper.java
+          </URI>
+          <URI>data/util/DataBatchProcessor.java
+          </URI>
+        </resources>              
       </scm:Change>
       
       <scm:Change>

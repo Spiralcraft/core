@@ -85,6 +85,12 @@ public class Copy
         }
         else
         {
+          if (targetResource.asContainer()==null)
+          { 
+            throw new IOException
+              ("Target must be a directory or other container");
+          }
+          
           // Source is a dir
           Search search=new Search();
           search.setFilter(defaultExcludes);
@@ -103,6 +109,9 @@ public class Copy
                 );
 //              log.debug(resource.toString());
             }
+            log.info
+              ("Copying "+resource.getURI()+" to "+targetResource.getURI());
+            resource.copyTo(targetResource);
           }
           
         }
