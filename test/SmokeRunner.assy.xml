@@ -43,8 +43,9 @@
         </iotest:RecordIteratorTest>
         
         <vfs:Copy>
-          <debug>true
-          </debug>
+          
+          <verbose>true
+          </verbose>
           
           <sourceResource>class:/spiralcraft/data/test/example
           </sourceResource>

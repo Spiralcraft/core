@@ -55,11 +55,20 @@
           </scm:Note>
           
           <scm:Note>Added error handling to vfs and generic task components to 
-           deal with secondary cases and more error conditions. 
+           deal with secondary cases and more error conditions, and multiple
+           Exceptions in multi-task models. 
+          </scm:Note>
+
+          <scm:Note>Added spiralcraft.data.task.Collector to manage an
+            Aggregate to collect results of batch tasks. 
           </scm:Note>
 
 
+          <scm:Note>Built ClosureFocus to provide automatic thread-inheritable
+            context for tasks which spawn threads.
+          </scm:Note>
         </notes>
+        
         <path>/source/spiralcraft
         </path>
           
@@ -88,15 +97,25 @@
           </URI>
           <URI>util/PathPattern.java
           </URI>
+          <URI>util/MultiException.java
+          </URI>
           <URI>task/Batch.java
           </URI>
           <URI>task/Scenario.java
           </URI>
           <URI>task/Sequence.java
           </URI>
+          <URI>task/Commander.java
+          </URI>
           <URI>io/InputStreamWrapper.java
           </URI>
           <URI>data/util/DataBatchProcessor.java
+          </URI>
+          <URI>data/task/Collector.java
+          </URI>
+          <URI>lang/spi/ClosureFocus.java
+          </URI>
+          <URI>lang/spi/ThreadLocalChannel.java
           </URI>
         </resources>              
       </scm:Change>

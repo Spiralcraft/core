@@ -61,6 +61,7 @@ public abstract class Scenario
   protected ThreadLocalChannel<TaskCommand<Ttask,Tresult>> commandChannel;
   
   protected boolean debug;
+  protected boolean verbose;
   protected boolean logTaskResults;
   protected boolean storeResults;
   
@@ -183,15 +184,23 @@ public abstract class Scenario
   }
   
   public void setDebug(boolean debug)
-  { this.debug=debug;
+  { 
+    this.debug=debug;
+    if (debug)
+    { this.verbose=true;
+    }
   }
 
+  public void setVerbose(boolean verbose)
+  { this.verbose=verbose;
+  }
+  
   @Override
   public void start()
     throws LifecycleException
   { 
-    if (debug)
-    { log.log(Level.INFO,"Starting");
+    if (verbose)
+    { log.log(Level.INFO,"Initializing");
     }
   }
 
@@ -199,8 +208,8 @@ public abstract class Scenario
   public void stop()
     throws LifecycleException
   { 
-    if (debug)
-    { log.log(Level.INFO,"Stopping");
+    if (verbose)
+    { log.log(Level.INFO,"Finalizing");
     }
   }
   

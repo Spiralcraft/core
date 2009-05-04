@@ -109,8 +109,11 @@ public class Copy
                 );
 //              log.debug(resource.toString());
             }
-            log.info
-              ("Copying "+resource.getURI()+" to "+targetResource.getURI());
+            if (verbose)
+            {
+              log.info
+                ("Copying "+resource.getURI()+" to "+targetResource.getURI());
+            }
             resource.copyTo(targetResource);
           }
           

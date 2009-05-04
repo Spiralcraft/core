@@ -18,6 +18,8 @@ package spiralcraft.lang.spi;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 
 /**
@@ -36,13 +38,39 @@ public class ThreadLocalChannel<T>
   extends AbstractChannel<T>
   implements Channel<T>
 {
-  private final ThreadLocal<ThreadReference<T>> threadLocal;
+  private static final ClassLog log
+    =ClassLog.getInstance(ThreadLocalChannel.class);
+  private static final Level debugLevel
+    =ClassLog.getInitialDebugLevel(ThreadLocalChannel.class,null);
   
-  public ThreadLocalChannel(Reflector<T> reflector,boolean inheritable)
+  private final ThreadLocal<ThreadReference<T>> threadLocal;
+  private final boolean inheritable;
+  
+  public ThreadLocalChannel(final Reflector<T> reflector,boolean inheritable)
   { 
     super(reflector);
+    this.inheritable=inheritable;
     if (inheritable)
-    { threadLocal=new InheritableThreadLocal<ThreadReference<T>>();
+    { 
+      threadLocal=new InheritableThreadLocal<ThreadReference<T>>()
+      {
+        @Override
+        protected ThreadReference<T> childValue(ThreadReference<T> parentValue)
+        { 
+          if (debugLevel.canLog(Level.DEBUG))
+          {
+            log.debug
+              ("Inheriting "
+              +reflector.getTypeURI()+" : "
+              +(parentValue!=null
+                ?parentValue.object.toString()
+                :"(uninitialized)"
+               )
+              );
+          }
+          return parentValue;
+        }
+      };
     }
     else
     { threadLocal=new ThreadLocal<ThreadReference<T>>();
@@ -53,6 +81,11 @@ public class ThreadLocalChannel<T>
   { 
     super(reflector);
     threadLocal=new ThreadLocal<ThreadReference<T>>();    
+    inheritable=false;
+  }
+  
+  public boolean isInheritable()
+  { return inheritable;
   }
   
   @Override

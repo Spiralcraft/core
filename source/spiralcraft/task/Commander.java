@@ -40,7 +40,7 @@ public class Commander<T,R>
   
   @Override
   public CommandTask task()
-  { return new CommandTask(commandFactory.command());
+  { return new CommandTask();
   }
   
   /**
@@ -72,8 +72,8 @@ public class Commander<T,R>
   {
     private volatile Command<T,R> command;
 
-    public CommandTask(Command <T,R> command)
-    { this.command=command;
+    public CommandTask()
+    { 
     }
 
     public Command<?,R> getCommand()
@@ -85,8 +85,12 @@ public class Commander<T,R>
     { 
       try
       {
+        command=commandFactory.command();
         command.execute();
         addResult(command);
+        if (command.getException()!=null)
+        { addException(command.getException());
+        }
       }
       catch (Exception x)
       { addException(x);

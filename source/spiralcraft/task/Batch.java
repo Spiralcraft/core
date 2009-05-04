@@ -14,6 +14,7 @@
 //
 package spiralcraft.task;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,10 +24,12 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationCursor;
 import spiralcraft.lang.IterationDecorator;
+import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.time.Scheduler;
+import spiralcraft.util.MultiException;
 
 
 /**
@@ -72,6 +75,8 @@ public class Batch<I,R>
   
   private Scenario<Task,R> scenario;
   
+  private ClosureFocus<?> closureFocus;
+  
   /**
    * @return The expression which resolves the set of items to process
    */
@@ -109,7 +114,9 @@ public class Batch<I,R>
    */
   protected void postResult(List<TaskCommand<Task,R>> completedCommands)
   {
-    log.log(Level.FINE,""+completedCommands);
+    if (debug)
+    { log.log(Level.TRACE,""+completedCommands);
+    }
   }
   
   @Override
@@ -164,10 +171,22 @@ public class Batch<I,R>
         @Override
         public void run()
         { 
-          super.run();
+          closureFocus.push();
+          try
+          { super.run();
+          }
+          finally
+          { closureFocus.pop();
+          }
+          
+
+          
           List<SubTask> subtasks=task.getSubtasks();
-//          List<Command<?,R>> results
-//            =new ArrayList<Command<?,R>>(subtasks.size());
+          if (debug)
+          { log.log(Level.TRACE,"Launching "+subtasks.size()+" subtasks");
+          }
+          
+          List<Exception> exceptionList=new ArrayList<Exception>();
           for (SubTask subtask: subtasks)
           { 
             TaskCommand<Task,R> completedCommand
@@ -176,19 +195,29 @@ public class Batch<I,R>
             if (debug)
             { log.log(Level.FINE,""+completedCommand.getResult());
             }
-//            results.add(completedCommand);
             
             if (completedCommand.getException()!=null)
-            { 
+            { exceptionList.add(completedCommand.getException());
+            }
+            
+            if (debug)
+            {
               log.log
-                (ClassLog.WARNING,"Error: "
+                (ClassLog.DEBUG,"Command resulted in Exception: "
                 +completedCommand.getException()
                 ,completedCommand.getException()
                 );
-              completedCommand.getException().printStackTrace();
             }
           }
-//          setResult(results);
+          if (exceptionList.size()>0)
+          { 
+            setException
+              (new MultiException
+                ("Multiple exceptions"
+                ,exceptionList.toArray(new Exception[exceptionList.size()])
+                )
+              );
+          }
           postResult(getResult());
         }
       };
@@ -202,7 +231,15 @@ public class Batch<I,R>
   {
     sourceChannel=focusChain.bind(source);
     decorator=sourceChannel.decorate(IterationDecorator.class);
+    if (decorator==null)
+    { throw new BindException
+        ("Not iterable: "+sourceChannel.getReflector().getTypeURI());
+    }
     
+    closureFocus=new ClosureFocus(focusChain);
+    
+    focusChain=closureFocus;
+
     item=new ThreadLocalChannel(decorator.getComponentReflector());
     focusChain=scenario.bind(focusChain.chain(item));
     
