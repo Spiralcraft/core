@@ -30,27 +30,23 @@ import spiralcraft.util.thread.DelegateException;
  * @param <T>
  * @param <R>
  */
-public class Model<R>
-  extends Scenario<Task,R>
+public class Model
+  extends Scenario
 {
-
-  private Scenario<?,R> scenario;
 
   private URI targetTypeURI;
   private URI targetURI;
   
   private AbstractXmlObject<?,?> target;
   
-  public void setScenario(Scenario<?,R> scenario)
-  { this.scenario=scenario;
-  }
+
   
   @Override
   protected Task task()
   {
     
     
-    return new AbstractTask<R>()
+    return new AbstractTask()
     {
 
       @Override
@@ -59,25 +55,38 @@ public class Model<R>
       {            
         try
         {
-          target.runInContext
-            (new Delegate<TaskCommand<?,R>>()
+          TaskCommand command
+            =target.runInContext
+            (new Delegate<TaskCommand>()
               {
                 @Override
-                public TaskCommand<?, R> run()
+                public TaskCommand run()
                   throws DelegateException
-                {
-                  TaskCommand<?,R> command=
-                    scenario.command();
-                  command.execute();
-                  return command;
+                { 
+                  if (chain!=null)
+                  { 
+                    TaskCommand command=chain.command();
+                    command.execute();
+                    return command;
+                  }
+                  else
+                  { return null;
+                  }
                 }
               }
             );
+          addResult(command);
+          if (command.getException()!=null)
+          { 
+            addException(command.getException());
+            return;
+          }
         }
         catch (DelegateException x)
-        { addException(x);
+        {
+          addException(x);
+          return;
         }
-        
         
       }      
     };
@@ -85,15 +94,14 @@ public class Model<R>
   }
 
   @Override
-  public Focus<?> bindChildren(
+  public void bindChildren(
     Focus<?> focusChain)
     throws BindException
   {
     target=AbstractXmlObject.create
       (targetTypeURI,targetURI);
     focusChain=target.bind(focusChain);
-    scenario.bind(focusChain);
-    return focusChain;
+    super.bindChildren(focusChain);
   }
 
 }

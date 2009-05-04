@@ -39,7 +39,17 @@
           <scm:Note>Automated regression testing facility enhancements
             related to staging data for various stores.
           </scm:Note>
+ 
+          <scm:Note>Scenario model now supports a chain pattern for
+            fluent setup.
+          </scm:Note>
           
+          <scm:Note>Removed excessive generics usage from Scenario model
+            and de-emphasized command result path as a data path. Command
+            result path is essentially a control path in this model, as
+            the data path should be through the FocusChain.
+          </scm:Note>
+
           <scm:Note>VFS supports a copy from classpath function useful for
             using built-in data to stage a test from scratch. This works
             with local classloaders by interpreting the the jar or file URL,
@@ -67,6 +77,7 @@
           <scm:Note>Built ClosureFocus to provide automatic thread-inheritable
             context for tasks which spawn threads.
           </scm:Note>
+          
         </notes>
         
         <path>/source/spiralcraft
@@ -99,19 +110,45 @@
           </URI>
           <URI>util/MultiException.java
           </URI>
+          <URI>task/AbstractTask.java
+          </URI>
           <URI>task/Batch.java
+          </URI>
+          <URI>task/Commander.java
+          </URI>
+          <URI>task/Model.java
+          </URI>
+          <URI>task/MultiTask.java
+          </URI>
+          <URI>task/ParallelTask.java
           </URI>
           <URI>task/Scenario.java
           </URI>
           <URI>task/Sequence.java
           </URI>
-          <URI>task/Commander.java
+          <URI>task/SerialTask.java
+          </URI>
+          <URI>task/TaskCommand.java
+          </URI>
+          <URI>task/TaskListener.java
+          </URI>
+          <URI>task/TaskRunner.java
+          </URI>
+          <URI>test/Stub.java
+          </URI>
+          <URI>test/Test.java
+          </URI>
+          <URI>test/TestGroup.java
+          </URI>
+          <URI>test/TestResult.java
           </URI>
           <URI>io/InputStreamWrapper.java
           </URI>
           <URI>data/util/DataBatchProcessor.java
           </URI>
           <URI>data/task/Collector.java
+          </URI>
+          <URI>data/query/QueryScenario.java
           </URI>
           <URI>lang/spi/ClosureFocus.java
           </URI>

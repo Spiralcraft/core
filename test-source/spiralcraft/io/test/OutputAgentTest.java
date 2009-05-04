@@ -14,7 +14,7 @@ import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 
 public class OutputAgentTest
-  extends Scenario<Task,Void>
+  extends Scenario
 {
   
   private OutputAgent agent;
@@ -47,7 +47,7 @@ public class OutputAgentTest
     for (int i=0;i<threadCount;i++)
     { 
       final int threadNum=i;
-      list.add(new AbstractTask<Void>()
+      list.add(new AbstractTask()
         {
             
           @Override
@@ -85,7 +85,18 @@ public class OutputAgentTest
           }
         });
     }
-    return new ParallelTask<Task,Void>(list);
+    return new ParallelTask<Task>(list)
+    {
+      @Override
+      public void work()
+      {
+        super.work();
+        if (chain!=null && exception!=null)
+        { addResult(executeChild(chain));
+        }
+      }
+    };
+    
   }
 
   @Override

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import spiralcraft.command.Command;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -57,9 +58,7 @@ import spiralcraft.util.MultiException;
  */
 public class Batch<I,R>
   extends Scenario
-    <MultiTask<Batch<I,R>.SubTask,TaskCommand<Task,R>>
-    ,TaskCommand<Task,R>
-    >
+    
 {
   
   private Expression<?> source;
@@ -72,8 +71,6 @@ public class Batch<I,R>
   private boolean parallel;
   
   private Scheduler scheduler;
-  
-  private Scenario<Task,R> scenario;
   
   private ClosureFocus<?> closureFocus;
   
@@ -91,9 +88,6 @@ public class Batch<I,R>
   { this.source = source;
   }
 
-  public void setScenario(Scenario<Task,R> scenario)
-  { this.scenario=scenario;
-  }
   
   /**
    * <p>Whether the items of the batch should be run asynchronously in parallel
@@ -112,7 +106,7 @@ public class Batch<I,R>
    * 
    * @param completedCommands
    */
-  protected void postResult(List<TaskCommand<Task,R>> completedCommands)
+  protected void postResult(List<TaskCommand> completedCommands)
   {
     if (debug)
     { log.log(Level.TRACE,""+completedCommands);
@@ -120,15 +114,15 @@ public class Batch<I,R>
   }
   
   @Override
-  protected MultiTask<SubTask,TaskCommand<Task,R>> task()
+  protected MultiTask<SubTask> task()
   {
    
     final List<SubTask> taskList=taskList();
     if (parallel)
-    { return new ParallelTask<SubTask,TaskCommand<Task,R>>(taskList);
+    { return new ParallelTask<SubTask>(taskList);
     }
     else
-    { return new SerialTask<SubTask,TaskCommand<Task,R>>(taskList);
+    { return new SerialTask<SubTask>(taskList);
     }
   }
   
@@ -151,16 +145,10 @@ public class Batch<I,R>
   
   @Override
   protected TaskCommand
-    <MultiTask<SubTask,TaskCommand<Task,R>>
-    ,TaskCommand<Task,R>
-    >
-    createCommand(MultiTask<SubTask,TaskCommand<Task,R>> task)
+    createCommand(Task task)
   {
     return 
       new TaskCommand
-        <MultiTask<SubTask,TaskCommand<Task,R>>
-        ,TaskCommand<Task,R>
-        >
         (Batch.this,task)
       { 
       
@@ -168,12 +156,24 @@ public class Batch<I,R>
         { collectResults=true;
         }
         
+        @SuppressWarnings("unchecked")
         @Override
         public void run()
         { 
           closureFocus.push();
           try
-          { super.run();
+          { 
+            
+            super.run();
+            if (chain!=null && getException()!=null)
+            { 
+              Command<?,?> command=chain.command();
+              command.execute();
+              ((List) getResult()).add(command);
+              if (command.getException()!=null)
+              { setException(command.getException());
+              }
+            }
           }
           finally
           { closureFocus.pop();
@@ -181,7 +181,7 @@ public class Batch<I,R>
           
 
           
-          List<SubTask> subtasks=task.getSubtasks();
+          List<SubTask> subtasks=((MultiTask) task).getSubtasks();
           if (debug)
           { log.log(Level.TRACE,"Launching "+subtasks.size()+" subtasks");
           }
@@ -189,7 +189,7 @@ public class Batch<I,R>
           List<Exception> exceptionList=new ArrayList<Exception>();
           for (SubTask subtask: subtasks)
           { 
-            TaskCommand<Task,R> completedCommand
+            TaskCommand completedCommand
               =subtask.getCompletedTaskCommand();
             
             if (debug)
@@ -218,14 +218,14 @@ public class Batch<I,R>
                 )
               );
           }
-          postResult(getResult());
+          postResult((List) getResult());
         }
       };
   }
   
   @SuppressWarnings("unchecked")
   @Override
-  public Focus<?> bindChildren(
+  public void bindChildren(
     Focus<?> focusChain)
     throws BindException
   {
@@ -241,12 +241,12 @@ public class Batch<I,R>
     focusChain=closureFocus;
 
     item=new ThreadLocalChannel(decorator.getComponentReflector());
-    focusChain=scenario.bind(focusChain.chain(item));
+    focusChain=focusChain.chain(item);
     
+    super.bindChildren(focusChain);
     if (parallel)
     { scheduler=new Scheduler();
     }
-    return focusChain;
   }
  
   /** 
@@ -258,37 +258,37 @@ public class Batch<I,R>
    *
    */
   public class SubTask
-    extends AbstractTask<TaskCommand<Task,R>>
+    extends ChainTask
   {
     private final I value;
-    private volatile TaskCommand<Task,R> completedTaskCommand;
+    private volatile TaskCommand completedTaskCommand;
 
     public SubTask(I value)
     { this.value=value;
     }
 
-    public TaskCommand<Task,R> getCompletedTaskCommand()
+    public TaskCommand getCompletedTaskCommand()
     { return completedTaskCommand;
     }
 
     @Override
     public void work()
+      throws InterruptedException
     {
       item.push(value);
       try
-      { 
-        completedTaskCommand=scenario.command();
-        completedTaskCommand.setCollectResults(true);
-        try
-        { completedTaskCommand.execute();
-        }
-        finally 
-        { addResult(completedTaskCommand);
-        }
+      { super.work();
       }
       finally
       { item.pop();
       }
+    }
+    
+    @Override
+    public void addResult(Object command)
+    { 
+      completedTaskCommand=(TaskCommand) command;
+      super.addResult(command);
     }
 
   }   

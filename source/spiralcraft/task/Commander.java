@@ -33,7 +33,7 @@ import spiralcraft.lang.Focus;
  * @param <R>
  */
 public class Commander<T,R>
-  extends Scenario<Commander<T,R>.CommandTask,Command<T,R>>
+  extends Scenario
 {
   
   private BoundCommandFactory<T,R> commandFactory;
@@ -51,9 +51,11 @@ public class Commander<T,R>
   }
   
   @Override
-  protected Focus<?> bindChildren(Focus<?> focusChain)
+  protected void bindChildren(Focus<?> focusChain)
     throws BindException
-  { return commandFactory.bind(super.bindChildren(focusChain));
+  { 
+    focusChain=commandFactory.bind(focusChain);
+    super.bindChildren(focusChain);
   }
   
   /**
@@ -68,7 +70,7 @@ public class Commander<T,R>
    * @param <R>
    */
   public class CommandTask
-    extends AbstractTask<Command<T,R>>
+    extends ChainTask
   {
     private volatile Command<T,R> command;
 
@@ -82,6 +84,7 @@ public class Commander<T,R>
 
     @Override
     public void work()
+      throws InterruptedException
     { 
       try
       {
@@ -89,12 +92,17 @@ public class Commander<T,R>
         command.execute();
         addResult(command);
         if (command.getException()!=null)
-        { addException(command.getException());
+        { 
+          addException(command.getException());
+          return;
         }
       }
       catch (Exception x)
-      { addException(x);
+      { 
+        addException(x);
+        return;
       }
+      super.work();
     }
 
   }

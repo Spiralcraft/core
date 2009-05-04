@@ -34,12 +34,13 @@ import spiralcraft.log.Level;
  * <p>A Scenario provides a UI independent context for Task based behavior.
  * </p>
  * 
- * <p>It implements a runnable operation in the form of a Task which may
+ * <p>As a Task factory, it implements a tree of runnable operations in the
+ *   form of Tasks which report progress, may generate results, and may 
  *   interact with the Scenario context via the FocusChain. 
  * </p>
  *
  * <p>Scenarios may reference and contain other Scenarios to compose 
- *   behavior.
+ *   behavior in the form of the Task tree.
  * </p>
  * 
  * <p>A Scenario is a long lived object which supports concurrency. It is
@@ -49,21 +50,21 @@ import spiralcraft.log.Level;
  * 
  * @author mike
  */
-public abstract class Scenario
-  <Ttask extends Task,Tresult>
+public class Scenario
   implements Lifecycle
     ,FocusChainObject
-    ,CommandFactory<Scenario<Ttask,Tresult>,List<Tresult>>
+    ,CommandFactory<Scenario,List<?>>
 {
 
   protected ClassLog log=ClassLog.getInstance(getClass());
   
-  protected ThreadLocalChannel<TaskCommand<Ttask,Tresult>> commandChannel;
+  protected ThreadLocalChannel<TaskCommand> commandChannel;
   
   protected boolean debug;
   protected boolean verbose;
   protected boolean logTaskResults;
   protected boolean storeResults;
+  protected Scenario chain;
   
   /**
    * 
@@ -71,21 +72,43 @@ public abstract class Scenario
    *   together behavioral elements in a set of Scenarios. The Command
    *   target is the scenario, and the result is implementation specific.
    */
-  public final TaskCommand<Ttask,Tresult> 
+  public final TaskCommand 
     command()
   { 
-    Ttask task=task();
+    Task task=task();
     if (debug)
     { task.setDebug(debug);
     }
   	return createCommand(task);
   }
+  
+  protected Task task()
+  { return new ChainTask();
+  }
+  
+  protected class ChainTask
+    extends AbstractTask
+  {
 
+    @Override
+    protected void work()
+      throws InterruptedException
+    { 
+      if (chain!=null && exception==null)
+      {
+        TaskCommand command=chain.command();
+        command.setCollectResults(true);
+        command.execute();
+        if (command.getException()!=null)
+        { addException(command.getException());
+        }
+        addResult(command);
+      }
+    }
+  }
   
-  protected abstract Ttask task();
-  
-  protected TaskCommand<Ttask,Tresult> createCommand(Ttask task)
-  { return new TaskCommand<Ttask,Tresult>(Scenario.this,task);
+  protected TaskCommand createCommand(Task task)
+  { return new TaskCommand(Scenario.this,task);
   }
 
 
@@ -118,24 +141,25 @@ public abstract class Scenario
    * <p>Publish Channels into the Focus chain for use by child Scenarios.
    * </p>
    * 
-   * <p>Default implementation does nothing. Override to implement.
+   * <p>Default implementation binds the rest of the chain. When overriding,
+   *   call this method with the Focus that should be published to the rest
+   *   of the Chain.
    * </p>
    * 
    * <p>The supplied Focus chain already publishes the Scenario and the
    *   TaskCommand for structural and per-invocation context respectively.
    * </p>
    * 
-   * <p>The return value is for use by overriding methods, which should
-   *   call this method before adding to the default internal chain created by
-   *   the supertype. 
-   * </p>
    * 
    * @param focusChain
    * @throws BindException
    */
-  protected Focus<?> bindChildren(Focus<?> focusChain)
+  protected void bindChildren(Focus<?> focusChain)
     throws BindException
-  { return focusChain;
+  { 
+    if (chain!=null)
+    { chain.bind(focusChain);
+    }
   }
   
 
@@ -146,7 +170,6 @@ public abstract class Scenario
    * 
    * @return
    */
-  @SuppressWarnings("unchecked")
   protected Class<? extends TaskCommand> getCommandType()
   { return TaskCommand.class;
   }
@@ -162,14 +185,28 @@ public abstract class Scenario
     throws BindException
   { 
     focusChain=focusChain.chain
-      (new SimpleChannel<Scenario<Ttask,Tresult>>(this,true));
+      (new SimpleChannel<Scenario>(this,true));
     
     bindChildren(bindCommand(focusChain,getCommandType()));
     return focusChain;
       
   }
 
-  void pushCommand(TaskCommand<Ttask,Tresult> command)
+  public void chain(Scenario chain)
+  { this.chain=chain;
+  }
+  
+  public void setChain(Scenario[] chain)
+  {
+    Scenario last=this;
+    for (Scenario scenario:chain)
+    { 
+      last.chain(scenario);
+      last=scenario;
+    }
+  }
+    
+  void pushCommand(TaskCommand command)
   { 
     if (commandChannel==null)
     { 
@@ -202,12 +239,18 @@ public abstract class Scenario
     if (verbose)
     { log.log(Level.INFO,"Initializing");
     }
+    if (chain!=null)
+    { chain.start();
+    }
   }
 
   @Override
   public void stop()
     throws LifecycleException
   { 
+    if (chain!=null)
+    { chain.stop();
+    }
     if (verbose)
     { log.log(Level.INFO,"Finalizing");
     }
@@ -232,13 +275,12 @@ public abstract class Scenario
    * @param clazz
    * @return
    */
-  @SuppressWarnings("unchecked")
-  private Focus<TaskCommand<Ttask,Tresult>> 
+  private Focus<TaskCommand> 
     bindCommand(Focus<?> focusChain,Class<? extends TaskCommand> clazz)
   {
     commandChannel
-      =new ThreadLocalChannel<TaskCommand<Ttask,Tresult>>
-        (BeanReflector.<TaskCommand<Ttask,Tresult>>getInstance(clazz));
+      =new ThreadLocalChannel<TaskCommand>
+        (BeanReflector.<TaskCommand>getInstance(clazz));
     return focusChain.chain(commandChannel);
   }
 }

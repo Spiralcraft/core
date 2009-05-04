@@ -14,6 +14,7 @@
 //
 package spiralcraft.task;
 
+
 public interface TaskListener
 {
  
@@ -37,7 +38,7 @@ public interface TaskListener
    * @param event
    * @param result
    */
-  public <Tresult> void taskAddedResult(TaskEvent event,Tresult result);
+  public void taskAddedResult(TaskEvent event,Object result);
   
   /**
    * Called when a task threw an Exception 

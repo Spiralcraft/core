@@ -1,77 +1,70 @@
-<task:Session
+<task:Scenario
   xmlns:task="class:/spiralcraft/task/"
   xmlns:query="class:/spiralcraft/data/query/"
   xmlns:dtask="class:/spiralcraft/data/task/"
   xmlns:test="class:/spiralcraft/test/"
   xmlns:example="class:/spiralcraft/data/test/example/"
   >
-  
-  <type x="[@example:BatchSession].type"/>
-  
-  <scenario>
+  <chain>
+    <task:Session>
+      <type x="[@example:BatchSession].type"/>
+    </task:Session>
+    
+    <dtask:Collector>
+    
+      <x>[example:BatchSession].results
+      </x>
+          
+      <logTaskResults>false
+      </logTaskResults>
+
+    </dtask:Collector>
+    
+    <query:QueryScenario>
+          
+      <query>
+        <query:Scan>
+          <type x="[@example:Customer].type"/>
+        </query:Scan>
+      </query>
+    </query:QueryScenario>
+    
     <task:Sequence>
       <scenarios>
-        <dtask:Collector>
-    
-          <x>[example:BatchSession].results
-          </x>
-          
-          <logTaskResults>false
-          </logTaskResults>
-
-          <scenario>
-            <query:QueryScenario>
-          
-          
-              <query>
-                <query:Scan>
-                  <type x="[@example:Customer].type"/>
-                </query:Scan>
-              </query>
-      
-              <scenario>
-                <task:Sequence>
-                  <scenarios>
-                    <task:Batch>
-                      <source>[example:Customer.list]
-                      </source>
+        <task:Batch>
+          <source>[example:Customer.list]
+          </source>
                       
-                      <scenario>
-                        <task:Commander>
-                          <commandX>[dtask:Collector] commandAdd([example:Customer])
-                          </commandX>
-                        </task:Commander>
-                      </scenario>
-                    </task:Batch>
+          <chain>
+            <task:Commander>
+              <commandX>[dtask:Collector] commandAdd([example:Customer])
+              </commandX>
+            </task:Commander>
+          </chain>
+        </task:Batch>
         
-                    <task:Batch>
-                      <source>[example:Customer.list]
-                      </source>
+        <task:Batch>
+          <source>[example:Customer.list]
+          </source>
 
-                      <parallel>true
-                      </parallel>
+          <parallel>true
+          </parallel>
                       
-                      <scenario>
-                        <task:Commander>
-                          <commandX>[dtask:Collector] commandAdd([example:Customer])
-                          </commandX>
-                        </task:Commander>
-                      </scenario>
-                    </task:Batch>
-                  </scenarios>
-                </task:Sequence>
-              </scenario>
-      
-            </query:QueryScenario>
-          </scenario>
-        </dtask:Collector>
-        
-        <test:Stub>
-          <messageX>""+[example:BatchSession].results.@size()+" results"
-          </messageX>
-        </test:Stub>
-        
+          <chain>
+            <task:Commander>
+              <commandX>[dtask:Collector] commandAdd([example:Customer])
+              </commandX>
+            </task:Commander>
+          </chain>
+        </task:Batch>
       </scenarios>
     </task:Sequence>
-  </scenario>
-</task:Session>
+
+    <test:Stub>
+      <messageX>""+[example:BatchSession].results+" results"
+      </messageX>
+    </test:Stub>
+ 
+  </chain>
+        
+</task:Scenario>

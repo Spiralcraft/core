@@ -14,13 +14,15 @@
 //
 package spiralcraft.test;
 
-import spiralcraft.task.Scenario;
-import spiralcraft.task.Task;
 
-public abstract class Test<Ttask extends Task,Tresult extends TestResult>
-  extends Scenario<Ttask,Tresult>
+import spiralcraft.task.Scenario;
+
+public abstract class Test
+  extends Scenario
 {
 
+
+  
   { setLogTaskResults(true);
   }
   

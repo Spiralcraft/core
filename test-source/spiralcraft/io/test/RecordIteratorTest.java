@@ -18,7 +18,7 @@ import spiralcraft.test.Test;
 import spiralcraft.test.TestResult;
 
 public class RecordIteratorTest
-  extends Test<Task,TestResult>
+  extends Test
 {
  
   private URI fileURI=null;
@@ -30,7 +30,7 @@ public class RecordIteratorTest
   @Override
   protected Task task()
   {
-    return new AbstractTask<TestResult>()
+    return new AbstractTask()
     {      
       @Override
       public void work()
@@ -110,6 +110,9 @@ public class RecordIteratorTest
           catch (IOException x)
           { log.log(Level.WARNING,"Error",x);
           }
+        }
+        if (chain!=null && exception==null)
+        { addResult(executeChild(chain));
         }
       }
       

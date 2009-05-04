@@ -29,7 +29,7 @@
     </data:Space>
   </service>
   
-  <scenario>
+  <chain>
     <task:Sequence>
 
       
@@ -61,6 +61,6 @@
         
       </scenarios>
     </task:Sequence>
-  </scenario>
+  </chain>
     
 </task:TaskRunner>

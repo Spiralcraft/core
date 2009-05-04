@@ -26,7 +26,6 @@ import spiralcraft.io.record.InputStreamRecordIterator;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.Level;
-import spiralcraft.task.AbstractTask;
 import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 import spiralcraft.util.ArrayUtil;
@@ -34,7 +33,7 @@ import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
 public class FormatTest
-  extends Scenario<Task,Void>
+  extends Scenario
 {
 
   private URI inputURI;
@@ -61,13 +60,14 @@ public class FormatTest
   @Override
   protected Task task()
   {
-    return new AbstractTask<Void>()
+    return new ChainTask()
     {
       { debug=FormatTest.this.debug;
       }
       
       @Override
       public void work()
+        throws InterruptedException
       {
         InputStream in=null;
         OutputStream out=null;
@@ -153,6 +153,7 @@ public class FormatTest
             { }
           }
         }
+        super.work();
       }
       
       

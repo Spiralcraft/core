@@ -17,6 +17,7 @@ package spiralcraft.task;
 import java.util.HashSet;
 import java.util.List;
 
+
 /**
  * <p>A task made up of a number of subtasks. Typical implementations are
  *   the SerialTask or the ParallelTask
@@ -25,14 +26,14 @@ import java.util.List;
  * @author mike
  *
  */
-public abstract class MultiTask<Tsubtask,Tresult>
-  extends AbstractTask<Tresult>
+public abstract class MultiTask<Tsubtask extends Task>
+  extends AbstractTask
   implements TaskListener
 {
   
   protected final List<Tsubtask> subtasks;
-  protected final HashSet<Task> runningTasks
-    =new HashSet<Task>();
+  protected final HashSet<Tsubtask> runningTasks
+    =new HashSet<Tsubtask>();
   
   protected final Object monitor=new Object();  
   
@@ -45,14 +46,14 @@ public abstract class MultiTask<Tsubtask,Tresult>
   }
   
   
-  protected void subtaskStarting(Task task)
+  protected void subtaskStarting(Tsubtask task)
   { 
     synchronized (monitor)
     { runningTasks.add(task);
     }
   }
   
-  protected void subtaskCompleted(Task task)
+  protected void subtaskCompleted(Tsubtask task)
   { 
     if (debug)
     { log.fine("Completed subtask "+task);
@@ -67,10 +68,11 @@ public abstract class MultiTask<Tsubtask,Tresult>
     }
   }  
   
+  @SuppressWarnings("unchecked")
   @Override
   public void taskCompleted(
     TaskEvent event)
-  { subtaskCompleted(event.getSource());
+  { subtaskCompleted((Tsubtask) event.getSource());
   }
 
   @Override
@@ -80,12 +82,11 @@ public abstract class MultiTask<Tsubtask,Tresult>
     
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public <T> void taskAddedResult(
+  public void taskAddedResult(
     TaskEvent event,
-    T result)
-  { addResult((Tresult) result);
+    Object result)
+  { addResult(result);
   }
 
   @Override

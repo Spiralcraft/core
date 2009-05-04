@@ -20,8 +20,8 @@ import java.util.List;
 /**
  * Executes a number of other Tasks in parallel
  */
-public class ParallelTask<Tsubtask extends Task,Tresult>
-  extends MultiTask<Tsubtask,Tresult>
+public class ParallelTask<Tsubtask extends Task>
+  extends MultiTask<Tsubtask>
 {
   
 
@@ -68,7 +68,7 @@ public class ParallelTask<Tsubtask extends Task,Tresult>
     setOpsCompletedInUnit(0);
     setCurrentUnitTitle("Counting");
     
-    for (Task task: subtasks)
+    for (Tsubtask task: subtasks)
     { 
       task.addTaskListener(this);
       subtaskStarting(task);

@@ -14,7 +14,6 @@
 //
 package spiralcraft.task;
 
-import java.util.List;
 
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
@@ -32,29 +31,30 @@ import spiralcraft.lang.Focus;
  *
  * @param <Tresult>
  */
-public class Sequence<Tresult>
-  extends Scenario<Task,List<TaskCommand<Task,Tresult>>>
+public class Sequence
+  extends Scenario
 {
 
-  protected Scenario<Task,Tresult>[] scenarios;
+  protected Scenario[] scenarios;
   
   
-  public void setScenarios(Scenario<Task,Tresult>[] scenarios)
+  public void setScenarios(Scenario[] scenarios)
   { this.scenarios=scenarios;
   }
   
   @Override
   protected Task task()
   {
-    return new AbstractTask<TaskCommand<Task,Tresult>>()
+    return new ChainTask()
     {
         
       @Override
       public void work()
+        throws InterruptedException
       {
-        for (Scenario<Task,Tresult> scenario: scenarios)
+        for (Scenario scenario: scenarios)
         { 
-          TaskCommand<Task,Tresult> command
+          TaskCommand command
             =scenario.command();
           if (debug)
           { log.fine("Executing "+command);
@@ -65,9 +65,11 @@ public class Sequence<Tresult>
           { 
             addException(command.getException());
             // XXX Add error scenario
-            break;
+            return ;
           }
         }
+        
+        super.work();
       }
     };
   }
@@ -77,7 +79,7 @@ public class Sequence<Tresult>
     throws LifecycleException
   {
     super.start();
-    for (Scenario<Task,Tresult> scenario: scenarios)
+    for (Scenario scenario: scenarios)
     { scenario.start();
     }
   }
@@ -86,7 +88,7 @@ public class Sequence<Tresult>
   public void stop()
     throws LifecycleException
   {
-    for (Scenario<Task,Tresult> scenario: scenarios)
+    for (Scenario scenario: scenarios)
     { scenario.stop();
     }
     super.stop();
@@ -94,16 +96,16 @@ public class Sequence<Tresult>
   
   
   @Override
-  protected Focus<?> bindChildren(
+  protected void bindChildren(
     Focus<?> focusChain)
     throws BindException
   {
-    focusChain=super.bindChildren(focusChain);
     
-    for (Scenario<Task,Tresult> scenario: scenarios)
+    
+    for (Scenario scenario: scenarios)
     { scenario.bind(focusChain);
     }
-    return focusChain;
+    super.bindChildren(focusChain);
   }
 
 }

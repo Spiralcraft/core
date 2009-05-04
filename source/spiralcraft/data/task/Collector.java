@@ -27,10 +27,8 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.task.AbstractTask;
 import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
-import spiralcraft.task.TaskCommand;
 
 
 /**
@@ -54,7 +52,7 @@ import spiralcraft.task.TaskCommand;
  *
  */
 public class Collector<Titem>
-  extends Scenario<Task,Aggregate<Titem>>
+  extends Scenario
 {
 
   private Expression<Aggregate<Titem>> targetX;
@@ -62,7 +60,6 @@ public class Collector<Titem>
   private Type<EditableAggregate<Titem>> type;
   private boolean append;
   private ThreadLocalChannel<EditableAggregate<Titem>> aggregateChannel;
-  private Scenario<?,?> scenario;
   
   /**
    * The target of this Collector, which must be of type Aggregate<?>
@@ -85,10 +82,7 @@ public class Collector<Titem>
   public void setAppend(boolean append)
   { this.append=append;
   }
-  
-  public void setScenario(Scenario<?,?> scenario)
-  { this.scenario=scenario;
-  }
+
   
   /**
    * Command that is referenceable from subtasks to add an item.
@@ -117,14 +111,13 @@ public class Collector<Titem>
 
   @SuppressWarnings("unchecked") // Type query
   @Override
-  public Focus<?> bindChildren(
+  public void bindChildren(
     Focus<?> focusChain)
     throws BindException
   {
-    Focus<?> focus=super.bindChildren(focusChain);
     if (targetX!=null)
     { 
-      resultChannel=focus.bind(targetX);
+      resultChannel=focusChain.bind(targetX);
     }
     if (type==null && resultChannel!=null)
     { type=((DataReflector) resultChannel.getReflector()).getType();
@@ -135,19 +128,19 @@ public class Collector<Titem>
         (DataReflector.<EditableAggregate<Titem>>getInstance(type)
         ,true
         );
-    
-    return scenario.bind(focus.chain(aggregateChannel));
+    super.bindChildren(focusChain.chain(aggregateChannel));
   }
 
   
   @Override
   protected Task task()
   {
-    return new AbstractTask<Aggregate<Titem>>()
+    return new ChainTask()
     {
         
       @Override
       public void work()
+        throws InterruptedException
       {
         
         EditableAggregate<Titem> result=null;
@@ -165,17 +158,8 @@ public class Collector<Titem>
         aggregateChannel.push(result);
         try
         {
-        
-          TaskCommand<?,?> command
-            =scenario.command();
-          if (debug)
-          { log.fine("Executing "+command);
-          }
-          command.execute();
+          super.work();
           addResult(aggregateChannel.get());
-          if (command.getException()!=null)
-          { addException(command.getException());
-          }
         }
         finally
         { aggregateChannel.pop();

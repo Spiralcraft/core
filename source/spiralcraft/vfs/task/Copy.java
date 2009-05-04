@@ -5,7 +5,6 @@ import java.util.List;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.task.AbstractTask;
 import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 import spiralcraft.util.PathPattern;
@@ -15,7 +14,7 @@ import spiralcraft.vfs.ResourceFilter;
 import spiralcraft.vfs.batch.Search;
 
 public class Copy
-  extends Scenario<Task,Void>
+  extends Scenario
 {
 
   private Resource sourceResource;
@@ -67,10 +66,11 @@ public class Copy
   }
   
   protected class CopyTask
-    extends AbstractTask<Void>
+    extends ChainTask
   {
     @Override
     public void work()
+      throws InterruptedException
     {  
       try
       {
@@ -118,6 +118,7 @@ public class Copy
           }
           
         }
+        super.work();
       }
       catch (IOException x)
       { addException(x);

@@ -36,7 +36,7 @@ public class TaskRunner
   implements Executable,Registrant
 {
 
-  private Scenario<? extends Task,?> scenario;
+  private Scenario scenario;
   private Focus<?> rootFocus=new SimpleFocus<Void>();
   
   private final Log log=ClassLog.getInstance(TaskRunner.class);
@@ -60,8 +60,21 @@ public class TaskRunner
   { this.service=service;
   }
   
-  public void setScenario(Scenario<? extends Task,?> scenario)
-  { this.scenario=scenario;
+  public void setChain(Scenario[] chain)
+  { 
+
+    Scenario last=null;
+    for (Scenario scenario:chain)
+    { 
+      if (last==null)
+      { this.scenario=scenario;
+      }
+      else
+      { last.chain(scenario);
+      }
+      last=scenario;
+    }
+  
   }
   
   /**

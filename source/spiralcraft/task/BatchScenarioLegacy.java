@@ -60,9 +60,6 @@ import spiralcraft.util.thread.DelegateException;
  */
 public class BatchScenarioLegacy<I,R>
   extends Scenario
-    <MultiTask<BatchScenarioLegacy<I,R>.CommandSubTask,Command<?,R>>
-    ,Command<?,R>
-    >
 {
   
   private Expression<?> source;
@@ -172,15 +169,15 @@ public class BatchScenarioLegacy<I,R>
   }
   
   @Override
-  protected MultiTask<CommandSubTask,Command<?,R>> task()
+  protected MultiTask<CommandSubTask> task()
   {
    
     final List<CommandSubTask> taskList=taskList();
     if (parallel)
-    { return new ParallelTask<CommandSubTask,Command<?,R>>(taskList);
+    { return new ParallelTask<CommandSubTask>(taskList);
     }
     else
-    { return new SerialTask<CommandSubTask,Command<?,R>>(taskList);
+    { return new SerialTask<CommandSubTask>(taskList);
     }
   }
   
@@ -203,30 +200,27 @@ public class BatchScenarioLegacy<I,R>
   
   @Override
   protected TaskCommand
-    <MultiTask<CommandSubTask,Command<?,R>>
-    ,Command<?,R>
-    >
-    createCommand(MultiTask<CommandSubTask,Command<?,R>> task)
+    createCommand(Task  task)
   {
     return 
       new TaskCommand
-        <MultiTask<CommandSubTask,Command<?,R>>
-        ,Command<?,R>
-        >
         (BatchScenarioLegacy.this,task)
       { 
         
+        @SuppressWarnings("unchecked")
         @Override
         public void run()
         { 
           super.run();
-          List<CommandSubTask> subtasks=task.getSubtasks();
+          List<CommandSubTask> subtasks
+            =((MultiTask<CommandSubTask>) task).getSubtasks();
           List<Command<?,R>> results
             =new ArrayList<Command<?,R>>(subtasks.size());
           for (CommandSubTask subtask: subtasks)
           { 
             Command<?,R> completedCommand=subtask.getCompletedCommand();
             log.log(Level.FINE,""+completedCommand.getResult());
+            
             results.add(completedCommand);
             if (completedCommand.getException()!=null)
             { 
@@ -277,7 +271,7 @@ public class BatchScenarioLegacy<I,R>
    *
    */
   public class CommandSubTask
-    extends AbstractTask<Command<?,R>>
+    extends AbstractTask
   {
     private final I value;
     private volatile Command<?,R> completedCommand;

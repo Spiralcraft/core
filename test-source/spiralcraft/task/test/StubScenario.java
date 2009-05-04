@@ -10,7 +10,7 @@ import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 
 public class StubScenario
-  extends Scenario<Task,Void>
+  extends Scenario
 {
 
   protected Expression<Object> resultX;
@@ -27,7 +27,7 @@ public class StubScenario
   protected Task task()
   {
     // TODO Auto-generated method stub
-    return new AbstractTask<Object>()
+    return new AbstractTask()
     {
 
       @Override
@@ -42,12 +42,12 @@ public class StubScenario
   }
 
   @Override
-  protected Focus<?> bindChildren(Focus<?> focusChain)
+  protected void bindChildren(Focus<?> focusChain)
     throws BindException
   {  
     if (resultX!=null)
     { resultChannel=focusChain.bind(resultX);
     }
-    return focusChain;
+    super.bindChildren(focusChain);
   }
 }

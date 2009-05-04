@@ -19,8 +19,8 @@ import java.util.List;
 /**
  * Executes a number of other Tasks in series
  */
-public class SerialTask<Tsubtask extends Task,Tresult>
-  extends MultiTask<Tsubtask,Tresult>
+public class SerialTask<Tsubtask extends Task>
+  extends MultiTask<Tsubtask>
 {
   
   public SerialTask(List<Tsubtask> tasks)
@@ -38,7 +38,7 @@ public class SerialTask<Tsubtask extends Task,Tresult>
     setOpsCompletedInUnit(0);
     setCurrentUnitTitle("Counting");
     
-    for (Task task: subtasks)
+    for (Tsubtask task: subtasks)
     { 
       task.addTaskListener(this);
       subtaskStarting(task);

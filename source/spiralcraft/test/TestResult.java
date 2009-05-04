@@ -27,7 +27,7 @@ public class TestResult
   private final String message;
   private final Exception exception;
   
-  public TestResult(Test<?,?> test,boolean passed)
+  public TestResult(Test test,boolean passed)
   { 
     this.name=test.getFullyQualifiedName();
     this.passed=passed;
@@ -35,7 +35,7 @@ public class TestResult
     this.exception=null;
   }
   
-  public TestResult(Test<?,?> test,boolean passed,String message)
+  public TestResult(Test test,boolean passed,String message)
   { 
     this.name=test.getFullyQualifiedName();
     this.passed=passed;
@@ -43,7 +43,7 @@ public class TestResult
     this.exception=null;
   }
   
-  public TestResult(Test<?,?> test,boolean passed,String message,Exception exception)
+  public TestResult(Test test,boolean passed,String message,Exception exception)
   { 
     this.name=test.getFullyQualifiedName();
     this.passed=passed;

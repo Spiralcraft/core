@@ -46,7 +46,7 @@ import spiralcraft.time.Scheduler;
  *   is running, the subclass should call assertStoppedState(), which throws an IllegalStateException
  *   if the task is running.
  */
-public abstract class AbstractTask<Tresult>
+public abstract class AbstractTask
   implements Task
 {
   private int _opsInUnit;
@@ -356,12 +356,11 @@ public abstract class AbstractTask<Tresult>
   }
   
   /**
-   * Generate one or more results, to be handled in an application specific
-   *   manner.
+   * One or more subcommands completed.
    * 
    * @param result
    */
-  protected void addResult(Tresult result)
+  protected void addResult(Object result)
   {
     for (int i=0;i<_taskListeners.length;i++)
     { 
@@ -391,9 +390,9 @@ public abstract class AbstractTask<Tresult>
       =(TaskListener[]) ArrayUtil.remove(_taskListeners,listener);
   }
 
-  protected TaskCommand<?,?> executeChild(Scenario<?,?> scenario)
+  protected TaskCommand executeChild(Scenario scenario)
   { 
-    TaskCommand<?,?> command=scenario.command();
+    TaskCommand command=scenario.command();
     command.execute();
     if (command.getException()!=null)
     { addException(command.getException());

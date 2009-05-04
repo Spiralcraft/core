@@ -14,6 +14,8 @@
 //
 package spiralcraft.test;
 
+import java.net.URI;
+
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -29,14 +31,26 @@ import spiralcraft.task.Task;
  * @author mike
  *
  */
-public class Stub
+public class TestGroup
   extends Test
 {
 
+  public static TestGroup find(Focus<?> focus)
+    throws BindException
+  { 
+  
+    Focus<TestGroup> testFocus
+      =focus.<TestGroup>findFocus(URI.create("class:/spiralcraft/test/TestGroup"));
+    if (testFocus==null)
+    { 
+      throw new BindException
+        ("Not in focus chain: class:/spiralcraft/test/TestGroup");
+    }
+    return testFocus.getSubject().get();
+  }
+  
   protected Expression<Object> messageX;
   protected Channel<Object> messageChannel;
-  protected Expression<Boolean> conditionX;
-  protected Channel<Boolean> conditionChannel;
   
   { setLogTaskResults(true);
   }
@@ -45,9 +59,6 @@ public class Stub
   { this.messageX=messageX;
   }
   
-  public void setConditionX(Expression<Boolean> conditionX)
-  { this.conditionX=conditionX;
-  }
   
   @Override
   protected Task task()
@@ -61,13 +72,11 @@ public class Stub
         if (debug)
         { log.log(Level.FINE,this+": executing");
         }
-        Boolean condition=conditionChannel!=null?conditionChannel.get():true;
         Object message=messageChannel!=null?messageChannel.get():null;
-        
         addResult
           (new TestResult
-             (Stub.this
-             ,Boolean.TRUE.equals(condition)
+             (TestGroup.this
+             ,Boolean.TRUE
              ,message!=null?message.toString():null
              )
           );
@@ -82,9 +91,6 @@ public class Stub
   {  
     if (messageX!=null)
     { messageChannel=focusChain.bind(messageX);
-    }
-    if (conditionX!=null)
-    { conditionChannel=focusChain.bind(conditionX);
     }
     super.bindChildren(focusChain);
   }

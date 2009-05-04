@@ -15,8 +15,6 @@
 package spiralcraft.task;
 
 
-import spiralcraft.common.LifecycleException;
-
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.Type;
 import spiralcraft.data.session.DataSessionFocus;
@@ -35,11 +33,10 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
  *
  * @param <Tresult>
  */
-public class Session<Tresult>
-  extends Scenario<Task,Tresult>
+public class Session
+  extends Scenario
 {
 
-  protected Scenario<Task,Tresult> scenario;
   
   protected ThreadLocalChannel<DataSession> sessionChannel
     =new ThreadLocalChannel<DataSession>
@@ -48,10 +45,6 @@ public class Session<Tresult>
   protected DataSessionFocus dataSessionFocus;
   protected Type<? extends DataComposite> type;
   
-  public void setScenario(Scenario<Task,Tresult> scenario)
-  { this.scenario=scenario;
-  }
-  
   public void setType(Type<? extends DataComposite> type)
   { this.type=type;
   }
@@ -59,62 +52,31 @@ public class Session<Tresult>
   @Override
   protected Task task()
   {
-    return new AbstractTask<Tresult>()
+    return new ChainTask()
     {
         
       @Override
       public void work()
+        throws InterruptedException
       {
         sessionChannel.push(null);
         dataSessionFocus.reset();
         
-        TaskCommand<Task,Tresult> command
-          =scenario.command();
-        if (debug)
-        { log.fine("Executing "+command);
-        }
-        command.execute();
-        if (command.getResult()!=null)
-        {
-          for (Tresult result : command.getResult())
-          { addResult(result);
-          }
-        }
-        if (command.getException()!=null)
-        { addException(command.getException());
-        }
+        super.work();
         sessionChannel.pop();
       }
     };
   }
-
-  @Override
-  public void start()
-    throws LifecycleException
-  {
-    super.start();
-    scenario.start();
-  }
-
-  @Override
-  public void stop()
-    throws LifecycleException
-  {
-    scenario.stop();
-    super.stop();
-  }
   
   
   @Override
-  protected Focus<?> bindChildren(
+  protected void bindChildren(
     Focus<?> focusChain)
     throws BindException
   {
-    focusChain=super.bindChildren(focusChain);
     dataSessionFocus
       =new DataSessionFocus(focusChain,sessionChannel,type);
-    scenario.bind(dataSessionFocus);
-    return scenario.bind(dataSessionFocus);
+    super.bindChildren(dataSessionFocus);
   }
 
 }

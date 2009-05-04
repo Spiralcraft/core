@@ -17,6 +17,7 @@ package spiralcraft.task;
 import java.util.ArrayList;
 import java.util.List;
 
+import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
 
 
@@ -30,22 +31,22 @@ import spiralcraft.command.CommandAdapter;
  * @author mike
  *
  */
-public class TaskCommand<Ttask extends Task,Tresult>
-  extends CommandAdapter<Scenario<Ttask,Tresult>,List<Tresult>>
+public class TaskCommand
+  extends CommandAdapter<Scenario,List<?>>
   implements TaskListener
 {
   
-  protected final Ttask task;
+  protected final Task task;
   protected boolean collectResults=false;
   
-  public TaskCommand(Scenario<Ttask,Tresult> scenario,Ttask task)
+  public TaskCommand(Scenario scenario,Task task)
   { 
     this.task=task;
     this.task.addTaskListener(this);
     setTarget(scenario);
   }
   
-  public Ttask getTask()
+  public Task getTask()
   { return task;
   }
   
@@ -88,9 +89,9 @@ public class TaskCommand<Ttask extends Task,Tresult>
   
   @SuppressWarnings("unchecked")
   @Override
-  public <T> void taskAddedResult(
+  public void taskAddedResult(
     TaskEvent event,
-    T result)
+    Object result)
   { 
     if (getTarget().getLogTaskResults())
     { getTarget().logTaskResult(event,result);
@@ -99,9 +100,9 @@ public class TaskCommand<Ttask extends Task,Tresult>
     if (collectResults)
     {
       if (getResult()==null)
-      { setResult(new ArrayList<Tresult>());
+      { setResult(new ArrayList<Command<?,?>>());
       }
-      getResult().add((Tresult) result);
+      ((List) getResult()).add(result);
     }
   }
 

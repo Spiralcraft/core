@@ -12,7 +12,6 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.task.Batch;
-import spiralcraft.task.Task;
 import spiralcraft.task.TaskCommand;
 
 
@@ -52,16 +51,17 @@ public class DataBatchProcessor<I,R>
     return focus;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public void postResult(List<TaskCommand<Task,R>> completedCommands)
+  public void postResult(List<TaskCommand> completedCommands)
   {
     if (debug)
     {
       if (completedCommands!=null)
       {
-        for (TaskCommand<Task,R> command:completedCommands)
+        for (TaskCommand command:completedCommands)
         { 
-          List<R> resultItems=command.getResult();
+          List<R> resultItems=(List<R>) command.getResult();
           for (R resultItem : resultItems)
           { log.debug("Result posted: "+resultItem);
           }
@@ -81,9 +81,9 @@ public class DataBatchProcessor<I,R>
         );
       if (completedCommands!=null)
       {
-        for (TaskCommand<Task,R> command:completedCommands)
+        for (TaskCommand command:completedCommands)
         { 
-          List<R> resultItems=command.getResult();
+          List<R> resultItems=(List<R>) command.getResult();
           for (R resultItem : resultItems)
           { result.add(resultItem);
           }

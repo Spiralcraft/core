@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.query;
 
-import spiralcraft.common.LifecycleException;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Space;
@@ -27,7 +26,6 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.Level;
-import spiralcraft.task.AbstractTask;
 import spiralcraft.task.Scenario;
 
 /**
@@ -37,17 +35,16 @@ import spiralcraft.task.Scenario;
  *
  */
 public class QueryScenario
-  extends Scenario<QueryScenario.QueryTask,Aggregate<Tuple>>
+  extends Scenario
 {
   
   protected Query query;
   protected BoundQuery<?,Tuple> boundQuery;
-  protected Scenario<?,?> scenario;
   protected ThreadLocalChannel<Aggregate<Tuple>> resultChannel;
   
 
   public class QueryTask
-    extends AbstractTask<Aggregate<Tuple>>
+    extends ChainTask
   {
 
     @Override
@@ -64,16 +61,13 @@ public class QueryScenario
           }
         
           CursorAggregate<Tuple> result=new CursorAggregate<Tuple>(cursor);
-          if (scenario!=null)
-          {
-            resultChannel.push(result);
+          resultChannel.push(result);
         
-            try
-            { executeChild(scenario);
-            }
-            finally
-            { resultChannel.pop();
-            }
+          try
+          { super.work();
+          }
+          finally
+          { resultChannel.pop();
           }
           addResult(result);
         }
@@ -96,9 +90,6 @@ public class QueryScenario
   { return new QueryTask();
   }
 
-  public void setScenario(Scenario<?,?> scenario)
-  { this.scenario=scenario;
-  }
   
   /**
    * The Query to run
@@ -110,7 +101,7 @@ public class QueryScenario
   }
   
   @Override
-  public Focus<?> bindChildren(
+  public void bindChildren(
     Focus<?> focusChain)
     throws BindException
   {
@@ -123,38 +114,16 @@ public class QueryScenario
     catch (DataException x)
     { throw new BindException("Error binding query",x);
     }
-    if (scenario!=null)
-    { 
-      resultChannel
-        =new ThreadLocalChannel<Aggregate<Tuple>>
-          (DataReflector.<Aggregate<Tuple>>getInstance
-            (Type.getAggregateType(boundQuery.getType()))
-          );
-      focusChain=focusChain.chain(resultChannel);
-      scenario.bind(focusChain);
-    }
-    
-    return focusChain;
+
+    resultChannel
+      =new ThreadLocalChannel<Aggregate<Tuple>>
+        (DataReflector.<Aggregate<Tuple>>getInstance
+          (Type.getAggregateType(boundQuery.getType()))
+        );
+    focusChain=focusChain.chain(resultChannel);
+    super.bindChildren(focusChain);
   }
 
-  @Override
-  public void start()
-    throws LifecycleException
-  { 
-    super.start();
-    if (scenario!=null)
-    { scenario.start();
-    }
-  }
-  
-  @Override
-  public void stop()
-    throws LifecycleException
-  {
-    if (scenario!=null)
-    { scenario.stop();
-    }
-    super.stop();
-  }
+
   
 }
