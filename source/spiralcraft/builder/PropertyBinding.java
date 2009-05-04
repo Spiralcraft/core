@@ -537,8 +537,6 @@ public class PropertyBinding
   { 
     try
     {
-      log.debug("PropertyBinding.applyData() is experimental.");
-
       apply
         (AbstractXmlObject.create
             (null
