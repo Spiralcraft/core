@@ -15,6 +15,7 @@
 package spiralcraft.util.string;
 
 import java.util.HashMap;
+import java.util.regex.Pattern;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -70,6 +71,7 @@ public abstract class StringConverter<T>
     _MAP.put(BigDecimal.class,new BigDecimalToString());
     _MAP.put(Class.class,new ClassToString());
     _MAP.put(URI.class,new URIToString());
+    _MAP.put(Pattern.class,new PatternToString());
     
   }
 
@@ -458,5 +460,19 @@ final class URIToString
   @Override
   public URI fromString(String val)
   { return URI.create(val);
+  }
+}
+
+final class PatternToString
+  extends StringConverter<Pattern>
+{
+  @Override
+  public String toString(Pattern val)
+  { return val!=null?(val).toString():null;
+  }
+
+  @Override
+  public Pattern fromString(String val)
+  { return Pattern.compile(val);
   }
 }

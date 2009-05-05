@@ -47,4 +47,9 @@ public class Violation<S>
   public String getMessage()
   { return message;
   }
+  
+  @Override
+  public String toString()
+  { return super.toString()+": "+message+" ("+rule+")";
+  }
 }

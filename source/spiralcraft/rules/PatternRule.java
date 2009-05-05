@@ -22,6 +22,7 @@ public class PatternRule<C,T>
 
   private Pattern pattern;
   private boolean ignoreNull;
+  private boolean reject;
   
   public PatternRule()
   { }
@@ -35,6 +36,10 @@ public class PatternRule<C,T>
   }
  
 
+  public void setPattern(Pattern pattern)
+  { this.pattern=pattern;
+  }
+  
   @Override
   public Channel<Violation<T>> bindChannel(
     Focus<T> focus)
@@ -50,6 +55,16 @@ public class PatternRule<C,T>
    */
   public void setIgnoreNull(boolean ignoreNull)
   { this.ignoreNull=ignoreNull;
+  }
+  
+  /**
+   * <p>Indicate that a matching value should be rejected.
+   * </p>
+   * 
+   * @param reject
+   */
+  public void setRejectMatch(boolean reject)
+  { this.reject=reject;
   }
   
   class PatternRuleChannel
@@ -69,8 +84,17 @@ public class PatternRule<C,T>
       if (value==null && ignoreNull)
       { return null;
       }
-      if (value==null || !pattern.matcher(value.toString()).matches())
-      { return new Violation<T>(PatternRule.this,getMessage());
+      if (!reject)
+      {
+        if (value==null || !pattern.matcher(value.toString()).matches())
+        { return new Violation<T>(PatternRule.this,getMessage());
+        }
+      }
+      else
+      {
+        if (value!=null && pattern.matcher(value.toString()).matches())
+        { return new Violation<T>(PatternRule.this,getMessage());
+        }
       }
       return null;
     }

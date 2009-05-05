@@ -32,6 +32,7 @@ import spiralcraft.data.core.TypeImpl;
 import spiralcraft.util.CycleDetector;
 
 import spiralcraft.util.lang.ClassUtil;
+import spiralcraft.util.string.StringConverter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -41,6 +42,7 @@ import java.util.Date;
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import java.net.URI;
 
@@ -85,6 +87,7 @@ public class ReflectionType<T>
       ,URI.class
       ,spiralcraft.lang.Expression.class
       ,Date.class
+      ,Pattern.class
       );
     
     mapSystemClass
@@ -107,6 +110,8 @@ public class ReflectionType<T>
   private String[] depersistMethodFieldNames;
   private String depersistMethodName;
   private MethodBinding depersistMethodBinding;
+  
+  private StringConverter<T> stringConverter;
 
   private ThreadLocal<CycleDetector<Object>> cycleDetectorLocal
     =new ThreadLocal<CycleDetector<Object>>()
@@ -272,6 +277,7 @@ public class ReflectionType<T>
     catch (NoSuchMethodException x)
     { }
     
+    stringConverter=StringConverter.getInstance(clazz);
   }
 
 
@@ -431,7 +437,7 @@ public class ReflectionType<T>
     
   @Override
   public boolean isStringEncodable()
-  { return stringConstructor!=null;
+  { return stringConstructor!=null || stringConverter!=null;
   }
   
   @Override
@@ -459,6 +465,9 @@ public class ReflectionType<T>
       { throw new DataException("Error decoding String '"+val+"'",x);
       }
     }
+    else if (stringConverter!=null)
+    { return stringConverter.fromString(val);
+    }
     else
     { 
       log.info
@@ -485,7 +494,12 @@ public class ReflectionType<T>
     { throw new IllegalArgumentException("Not type compatible");
     }
     
-    return val.toString();
+    if (stringConverter!=null)
+    { return stringConverter.toString(val);
+    }
+    else
+    { return val.toString();
+    }
   }
 
   /**

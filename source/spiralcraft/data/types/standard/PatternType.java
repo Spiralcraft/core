@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2008 Michael Toth
+// Copyright (c) 2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,29 +12,24 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.rules;
+package spiralcraft.data.types.standard;
 
-import spiralcraft.util.ArrayUtil;
+import spiralcraft.data.TypeResolver;
 
-public class RuleException
-  extends Exception
+import spiralcraft.data.core.PrimitiveTypeImpl;
+
+import java.net.URI;
+import java.util.regex.Pattern;
+
+public class PatternType
+  extends PrimitiveTypeImpl<Pattern>
 {
-
-  private static final long serialVersionUID = 1L;
-  
-  private Violation<?>[] violations;
-  
-  public RuleException(Violation<?> ... violations)
-  { this.violations=violations;
-  }
-
-  public Violation<?>[] getViolations()
-  { return violations;
+  public PatternType(TypeResolver resolver,URI uri)
+  { super(resolver,uri,Pattern.class);
   }
   
   @Override
-  public String toString()
-  { return super.toString()+": "+ArrayUtil.format(violations,",","");
+  public Pattern fromString(String str)
+  { return Pattern.compile(str);
   }
-
 }

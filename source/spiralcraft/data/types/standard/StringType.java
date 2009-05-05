@@ -22,15 +22,21 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.rules.AbstractRule;
+import spiralcraft.rules.PatternRule;
 import spiralcraft.rules.RuleChannel;
 import spiralcraft.rules.Violation;
 
 import java.net.URI;
+import java.util.regex.Pattern;
 
 public class StringType
   extends PrimitiveTypeImpl<String>
 {
   private int maxLength=-1;
+  private Pattern acceptPattern;
+  private String acceptPatternMessage;
+  private Pattern rejectPattern;
+  private String rejectPatternMessage;
   
   public StringType(TypeResolver resolver,URI uri)
   { 
@@ -49,6 +55,42 @@ public class StringType
         );
           
     }
+    if (acceptPattern!=null)
+    {
+      addRules
+        (new PatternRule()
+        { 
+          { 
+            this.setPattern(acceptPattern);
+            setRejectMatch(false);
+            setIgnoreNull(true);
+            setMessage
+              (acceptPatternMessage==null
+              ?"Input must conform to pattern '"+acceptPattern+"'"
+              :acceptPatternMessage
+              );
+          }
+        }
+        );
+    }
+    if (rejectPattern!=null)
+    {
+      addRules
+        (new PatternRule()
+        { 
+          { 
+            this.setPattern(rejectPattern);
+            setRejectMatch(true);
+            setIgnoreNull(true);
+            setMessage
+            (rejectPatternMessage==null
+            ?"Input contains illegal pattern '"+rejectPattern+"'"
+            :rejectPatternMessage
+            );
+          }
+        }
+        );
+    }
   }
   
   @Override
@@ -63,7 +105,42 @@ public class StringType
   public int getMaxLength()
   { return maxLength;
   }
+  
+  /**
+   * A pattern which must be matched in order for the data to be accepted
+   * 
+   * @param pattern
+   */
+  public void setAcceptPattern(Pattern pattern)
+  { this.acceptPattern=pattern;
+  }
+  
+  /**
+   * The message associated with the accept pattern
+   * 
+   * @param message
+   */
+  public void setAcceptPatternMessage(String message)
+  { this.acceptPatternMessage=message;
+  }
 
+  /**
+   * A pattern which, if matched, will cause the data to be rejected
+   * 
+   * @param pattern
+   */
+  public void setRejectPattern(Pattern pattern)
+  { this.rejectPattern=pattern;
+  }
+
+  /**
+   * The message associated with the reject pattern
+   * 
+   * @param message
+   */
+  public void setRejectPatternMessage(String message)
+  { this.rejectPatternMessage=message;
+  }
     
   class StringLengthRule
     extends AbstractRule<Type<String>,String>
