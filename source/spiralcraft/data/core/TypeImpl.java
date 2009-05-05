@@ -54,6 +54,7 @@ public class TypeImpl<T>
   protected boolean extendable;
   protected boolean abztract;
   protected Comparator<T> comparator;
+  protected FieldSet unifiedFieldSet;
 
   
   private boolean linked;
@@ -377,8 +378,15 @@ public class TypeImpl<T>
    *   base Types
    */
   @Override
-  public FieldSet getFieldSet()
-  { return new UnifiedFieldSet(this);
+  public synchronized FieldSet getFieldSet()
+  { 
+    if (baseType==null && scheme!=null)
+    { return scheme;
+    }
+    if (unifiedFieldSet==null)
+    { unifiedFieldSet=new UnifiedFieldSet(this);
+    }
+    return unifiedFieldSet;
   }
   
   public void setKeys(KeyImpl<Tuple>[] keyArray)
