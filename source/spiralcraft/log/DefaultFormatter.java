@@ -64,10 +64,16 @@ public class DefaultFormatter
     }
     if (event.getThrown()!=null)
     { 
-      out.append(_cr);
-      StringWriter writer=new StringWriter();
-      event.getThrown().printStackTrace(new PrintWriter(writer,true));
-      out.append(writer.toString());
+      if (event.getLevel().equals(Level.INFO))
+      { out.append(" THREW "+event.getThrown());
+      }
+      else
+      {
+        out.append(_cr);
+        StringWriter writer=new StringWriter();
+        event.getThrown().printStackTrace(new PrintWriter(writer,true));
+        out.append(writer.toString());
+      }
     }
     return out.toString();
   }
