@@ -69,6 +69,16 @@ public abstract class Arguments
   { return _args[_pos++];
   }
 
+  public String[] remainingArguments()
+  {
+    String[] ret=new String[_args.length-_pos];
+    int i=0;
+    while (hasMoreArguments())
+    { ret[i++]=nextArgument();
+    }
+    return ret;
+  }
+  
   /**
    * Subclass should process an option, and return true
    *   if the option was recognized. String will be 'interned'
