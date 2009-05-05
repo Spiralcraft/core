@@ -29,11 +29,12 @@ public class CursorAggregate<Tt extends Tuple>
   extends ListAggregate<Tt>
 {
 
-  @SuppressWarnings("unchecked")
   
   /**
    * Construct the CursorAggregate by reading the specified cursor
+   *   in its entirety
    */
+  @SuppressWarnings("unchecked")
   public CursorAggregate(SerialCursor<Tt> cursor)
     throws DataException
   { 
@@ -51,6 +52,28 @@ public class CursorAggregate<Tt extends Tuple>
     
   }
   
+  /**
+   * Construct the CursorAggregate by reading a limited part of
+   *   the specified cursor.
+   */
+  @SuppressWarnings("unchecked")
+  public CursorAggregate(SerialCursor<Tt> cursor,int limit)
+    throws DataException
+  { 
+    super( Type.getAggregateType(cursor.getResultType()));
+
+    int count=0;
+    while (cursor.next() && count++<limit)
+    { 
+      Tt tuple=cursor.getTuple();
+      if (tuple.isVolatile())
+      { tuple=(Tt) tuple.snapshot();
+      }
+      
+      list.add(tuple);
+    }
+    
+  }
   
   
 }
