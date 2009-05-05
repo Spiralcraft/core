@@ -23,14 +23,14 @@ import spiralcraft.util.thread.Delegate;
 import spiralcraft.util.thread.DelegateException;
 
 /**
- * Runs another scenario in the context of an arbitrary component.
+ * Integrates an arbitrary component into the Scenario chain
  * 
  * @author mike
  *
  * @param <T>
  * @param <R>
  */
-public class Model
+public class Reference
   extends Scenario
 {
 

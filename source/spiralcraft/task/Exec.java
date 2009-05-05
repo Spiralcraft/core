@@ -32,7 +32,7 @@ import spiralcraft.lang.Focus;
  * @param <T>
  * @param <R>
  */
-public class Commander<T,R>
+public class Exec<T,R>
   extends Scenario
 {
   

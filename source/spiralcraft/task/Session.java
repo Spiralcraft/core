@@ -26,7 +26,8 @@ import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
 /**
- * <p>Provides a stateful typed Context that can be shared between scenarios
+ * <p>Provides a stateful typed DataSession Context that can be shared between 
+ *   scenarios and that manages buffers for chained scenarios.
  * </p>
  *
  * @author mike
