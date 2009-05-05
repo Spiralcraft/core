@@ -51,7 +51,7 @@ import spiralcraft.task.Task;
  * @author mike
  *
  */
-public class Collector<Titem>
+public class Collect<Titem>
   extends Scenario
 {
 
@@ -90,13 +90,13 @@ public class Collector<Titem>
    * @param item
    * @return
    */
-  public Command<Collector<Titem>,Void> commandAdd(final Titem item)
+  public Command<Collect<Titem>,Void> commandAdd(final Titem item)
   { 
     if (debug)
     { log.debug("Returning command "+item);
     }
     
-    return new CommandAdapter<Collector<Titem>,Void>()
+    return new CommandAdapter<Collect<Titem>,Void>()
     {
       @Override
       protected void run()

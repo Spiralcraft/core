@@ -12,16 +12,18 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.query;
+package spiralcraft.data.task;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
-import spiralcraft.data.Space;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
+import spiralcraft.data.query.Query;
+import spiralcraft.data.query.Queryable;
 import spiralcraft.data.access.CursorAggregate;
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.query.BoundQuery;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
@@ -34,16 +36,17 @@ import spiralcraft.task.Scenario;
  * @author mike
  *
  */
-public class QueryScenario
+public class Fetch
   extends Scenario
 {
   
   protected Query query;
   protected BoundQuery<?,Tuple> boundQuery;
   protected ThreadLocalChannel<Aggregate<Tuple>> resultChannel;
+  protected int batchSize;
   
 
-  public class QueryTask
+  public class FetchTask
     extends ChainTask
   {
 
@@ -59,17 +62,28 @@ public class QueryScenario
           if (debug)
           { log.fine("Got "+cursor);
           }
+          boolean done=false;
+          while (!done)
+          {
+            CursorAggregate<Tuple> result=new CursorAggregate<Tuple>(cursor);
+            resultChannel.push(result);
         
-          CursorAggregate<Tuple> result=new CursorAggregate<Tuple>(cursor);
-          resultChannel.push(result);
-        
-          try
-          { super.work();
+            try
+            { super.work();
+            }
+            finally
+            { resultChannel.pop();
+            }
+            addResult(result);
+
+            if (batchSize==0)
+            { done=true;
+            }
+            else
+            { done=result.size()==0;
+            }
+
           }
-          finally
-          { resultChannel.pop();
-          }
-          addResult(result);
         }
         finally
         { cursor.close();
@@ -85,9 +99,19 @@ public class QueryScenario
     }
   }
   
+  /**
+   * Specify the number of results to send down the chain for each
+   *   iteration. The default value of 0 sends the entire result.
+   * 
+   * @param batchSize
+   */
+  public void setBatchSize(int batchSize)
+  { this.batchSize=batchSize;
+  }
+  
   @Override
-  protected QueryTask task()
-  { return new QueryTask();
+  protected FetchTask task()
+  { return new FetchTask();
   }
 
   
@@ -106,10 +130,11 @@ public class QueryScenario
     throws BindException
   {
     
-    Space space
-      =focusChain.<Space>findFocus(Space.SPACE_URI).getSubject().get();
+    Queryable<Tuple> queryable
+      =focusChain.<Queryable<Tuple>>findFocus
+        (Queryable.QUERYABLE_URI).getSubject().get();
     try
-    { boundQuery=space.query(query,focusChain);
+    { boundQuery=queryable.query(query,focusChain);
     }
     catch (DataException x)
     { throw new BindException("Error binding query",x);
