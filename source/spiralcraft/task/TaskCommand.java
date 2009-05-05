@@ -125,10 +125,9 @@ public class TaskCommand
     TaskEvent event,
     Exception exception)
   { 
-//    if (getTarget().getLogTaskResults())
-//    {
-      getTarget().logTaskException(event,exception);
-//    }
+    if (getTarget().getLogTaskResults())
+    { getTarget().logTaskException(event,exception);
+    }
     
   }
   

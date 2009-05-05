@@ -14,9 +14,13 @@
 //
 package spiralcraft.task;
 
+import java.net.URI;
+
 import spiralcraft.command.Command;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.data.persist.AbstractXmlObject;
 
+import spiralcraft.exec.BeanArguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionException;
 
@@ -37,6 +41,8 @@ public class TaskRunner
 {
 
   private Scenario scenario;
+  private Scenario chainLink;
+  
   private Focus<?> rootFocus=new SimpleFocus<Void>();
   
   private final Log log=ClassLog.getInstance(TaskRunner.class);
@@ -74,6 +80,7 @@ public class TaskRunner
       }
       last=scenario;
     }
+    chainLink=last;
   
   }
   
@@ -95,9 +102,81 @@ public class TaskRunner
     
   }
   
+  
+  public void loadScenario(URI uri)
+    throws BindException
+  { 
+    Scenario scenario=AbstractXmlObject.<Scenario>create(uri,null).get();
+    if (chainLink!=null)
+    { chainLink.chain(scenario);
+    }
+    chainLink=scenario;
+    if (this.scenario==null)
+    { this.scenario=chainLink;
+    }
+  }
+    
   @Override
   public void execute(
     String... args)
+    throws ExecutionException
+  { 
+    processArguments(args);
+    execute();
+  }
+
+  protected void processArguments(String[] args)
+  {
+    if (chainLink!=null)
+    { configureScenario(args);
+    }
+    else
+    { 
+      new BeanArguments(this)
+      {
+        @Override
+        public boolean processArgument(String arg)
+        {
+          URI scenarioURI=URI.create(arg);
+          try
+          { 
+            loadScenario(scenarioURI);
+            configureScenario(remainingArguments());
+          }
+          catch (BindException x)
+          { throw new RuntimeException("Error loading scenario "+scenarioURI,x);
+          }
+          return true;          
+        }
+        
+      }.process(args);
+    }
+  }
+  
+  protected void configureScenario(String[] args)
+  { 
+    new BeanArguments(chainLink)
+    {
+      @Override
+      public boolean processArgument(String arg)
+      {
+        URI scenarioURI=URI.create(arg);
+        try
+        { 
+          loadScenario(scenarioURI);
+          configureScenario(remainingArguments());
+        }
+        catch (BindException x)
+        { throw new RuntimeException("Error loading scenario "+scenarioURI,x);
+        }
+        return true;
+      }
+      
+    }.process(args);
+    
+  }
+  
+  protected void execute()
     throws ExecutionException
   {
     executeThread=Thread.currentThread();
