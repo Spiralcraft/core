@@ -10,7 +10,7 @@
       <type x="[@example:BatchSession].type"/>
     </task:Session>
     
-    <dtask:Collector>
+    <dtask:Collect>
     
       <x>[example:BatchSession].results
       </x>
@@ -18,16 +18,16 @@
       <logTaskResults>false
       </logTaskResults>
 
-    </dtask:Collector>
+    </dtask:Collect>
     
-    <query:QueryScenario>
+    <dtask:Fetch>
           
       <query>
         <query:Scan>
           <type x="[@example:Customer].type"/>
         </query:Scan>
       </query>
-    </query:QueryScenario>
+    </dtask:Fetch>
     
     <task:Sequence>
       <scenarios>
@@ -36,10 +36,10 @@
           </source>
                       
           <chain>
-            <task:Commander>
-              <commandX>[dtask:Collector] commandAdd([example:Customer])
+            <task:Exec>
+              <commandX>[dtask:Collect] commandAdd([example:Customer])
               </commandX>
-            </task:Commander>
+            </task:Exec>
           </chain>
         </task:Batch>
         
@@ -51,10 +51,10 @@
           </parallel>
                       
           <chain>
-            <task:Commander>
-              <commandX>[dtask:Collector] commandAdd([example:Customer])
+            <task:Exec>
+              <commandX>[dtask:Collect] commandAdd([example:Customer])
               </commandX>
-            </task:Commander>
+            </task:Exec>
           </chain>
         </task:Batch>
       </scenarios>

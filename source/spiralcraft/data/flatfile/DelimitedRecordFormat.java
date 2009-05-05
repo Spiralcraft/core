@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
@@ -25,6 +26,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.lang.TupleReflector;
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -41,7 +43,15 @@ public class DelimitedRecordFormat
   private Channel<Tuple> channel;
   private Type<?> type;
   private FieldSet fieldSet;
+  private String charset;
+  private boolean trim;
   
+  public void setCharset(String charsetName)
+  { 
+    this.charset=charsetName;
+    Charset.forName(charsetName);
+  }
+    
   public void setFields(FieldMapping<?>[] fields)
   { this.fields=fields;
   }
@@ -67,6 +77,15 @@ public class DelimitedRecordFormat
   { return type!=null?type.getFieldSet():fieldSet;
   }
   
+  /** 
+   * Trim leading and trailing whitespace from the record
+   * 
+   * @return
+   */
+  public void setTrim(boolean trim)
+  { this.trim=trim;
+  }
+  
   @Override
   public byte[] format(Tuple data)
     throws IOException
@@ -84,7 +103,11 @@ public class DelimitedRecordFormat
       }
       mapping.format(writer);
     }
-    return writer.toString().getBytes();
+    String out=writer.toString();
+    if (trim)
+    { out=out.trim();
+    }
+    return out.getBytes(charset);
     
   }
 
@@ -95,9 +118,18 @@ public class DelimitedRecordFormat
     throws ParseException,IOException
   {
     channel.set(target);
-    StringReader reader=new StringReader(new String(record));
+    StringReader reader=new StringReader(new String(record,charset));
     for (FieldMapping<?> mapping : fields)
-    { mapping.parse(reader);
+    { 
+      try
+      { mapping.parse(reader);
+      }
+      catch (AccessException x)
+      { 
+        throw new ParseException
+          ("Error reading field "+mapping.getX().getText(),x);
+      }
+      
     }
     String rest=readRest(reader);
     if (rest!=null)

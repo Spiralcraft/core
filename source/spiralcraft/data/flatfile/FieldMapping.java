@@ -60,6 +60,10 @@ public class FieldMapping<T>
   { channel.setTarget(expression);
   }
   
+  public Expression<T> getX()
+  { return channel.getTarget();
+  }
+  
   public void setConverter(StringConverter<T> converter)
   { channel.setConverter(converter);
   }

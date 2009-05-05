@@ -33,4 +33,26 @@ public class DataException
   public DataException(String message,Throwable cause)
   { super(message,cause);
   }
+  
+  public Throwable getRootCause()
+  {
+    Throwable cause=this;
+    while (cause.getCause()!=null)
+    { cause=cause.getCause();
+    }
+    return cause!=this?cause:null;
+  }
+  
+  @Override
+  public String toString()
+  { 
+    Throwable rootCause=getRootCause();
+    if (rootCause!=null)
+    { return super.toString()+" (cause: "+getRootCause()+")";
+    }
+    else
+    { return super.toString();
+    }
+      
+  }
 }

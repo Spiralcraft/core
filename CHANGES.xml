@@ -16,6 +16,120 @@
         
     <detail>
       <scm:Change>
+        <date>2009-05-04
+        </date>
+
+        <notes>
+          <scm:Note>Enhancements to flat file data handling and integration
+            into task/scenario architecture.
+          </scm:Note>
+          
+          <scm:Note>More informative DataException reporting, as well as
+            better reporting for bad record reading.
+          </scm:Note>
+          
+          <scm:Note>Default formatter does not dump stack trace for
+            INFO level exceptions.
+          </scm:Note>
+          
+          <scm:Note>CursorAggregate support for reading subset of records
+            in cursor.
+          </scm:Note>
+          
+          <scm:Note>TypeImpl now re-uses its integral FieldSet to preserve
+            identity relationship that components depend on.
+          </scm:Note>
+          
+        </notes>
+        
+        <resources>
+          <URI>source/spiralcraft/log/DefaultFormatter.java
+          </URI>
+          <URI>source/spiralcraft/data/flatfile/DelimitedRecordFormat.java
+          </URI>
+          <URI>source/spiralcraft/data/flatfile/FieldMapping.java
+          </URI>
+          <URI>source/spiralcraft/data/flatfile/Output.java
+          </URI>
+          <URI>source/spiralcraft/data/flatfile/RecordCursor.java
+          </URI>
+          <URI>source/spiralcraft/data/flatfile/Scan.java
+          </URI>
+          <URI>source/spiralcraft/data/core/TypeImpl.java
+          </URI>
+          <URI>source/spiralcraft/data/access/CursorAggregate.java
+          </URI>
+          <URI>source/spiralcraft/data/DataException.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-05-04
+        </date>
+
+        <notes>
+          <scm:Note>Support Pattern matching rules for data StringType, and
+            better exception handling for Rules.
+          </scm:Note>
+          
+          <scm:Note>Added core support for java.util.regex.Pattern as
+            a primitive data type.
+          </scm:Note>
+
+        </notes>
+        
+        <resources>
+          <URI>source/spiralcraft/util/string/StringConverter.java
+          </URI>
+          <URI>source/spiralcraft/rules/PatternRule.java
+          </URI>
+          <URI>source/spiralcraft/rules/RuleException.java
+          </URI>
+          <URI>source/spiralcraft/rules/Violation.java
+          </URI>
+          <URI>source/spiralcraft/data/types/standard/PatternType.java
+          </URI>
+          <URI>source/spiralcraft/data/types/standard/StringType.java
+          </URI>
+          <URI>source/spiralcraft/data/reflect/ReflectionType.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-05-04
+        </date>
+
+        <notes>
+          <scm:Note>Enhancements to TaskRunner to support command line
+            utility development
+          </scm:Note>
+          
+          <scm:Note>Added method to retrieve remaining command arguments
+            when delegating execute(String ...)
+          </scm:Note>
+
+          <scm:Note>Option to dynamically load and chain Scenarios in TaskRunner
+            via command line arguments, to allow for Scenario assemblies to
+            be re-used in either a command line or embedded context.
+          </scm:Note>
+
+          <scm:Note>Suppress redundant exception reporting in TaskCommand
+          </scm:Note>
+        </notes>
+        
+        <resources>
+          <URI>source/spiralcraft/exec/Arguments.java
+          </URI>
+          <URI>source/spiralcraft/task/TaskRunner.java
+          </URI>
+          <URI>source/spiralcraft/task/TaskCommand.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <date>2009-05-01
         </date>
 
@@ -32,7 +146,7 @@
       </scm:Change>
 
       <scm:Change>
-        <date>2009-05-01
+        <date>2009-05-04
         </date>
 
         <notes>
@@ -69,7 +183,7 @@
            Exceptions in multi-task models. 
           </scm:Note>
 
-          <scm:Note>Added spiralcraft.data.task.Collector to manage an
+          <scm:Note>Added spiralcraft.data.task.Collect to manage an
             Aggregate to collect results of batch tasks. 
           </scm:Note>
 
@@ -114,9 +228,9 @@
           </URI>
           <URI>task/Batch.java
           </URI>
-          <URI>task/Commander.java
+          <URI>task/Exec.java
           </URI>
-          <URI>task/Model.java
+          <URI>task/Reference.java
           </URI>
           <URI>task/MultiTask.java
           </URI>
@@ -148,7 +262,7 @@
           </URI>
           <URI>data/task/Collector.java
           </URI>
-          <URI>data/query/QueryScenario.java
+          <URI>data/task/Fetch.java
           </URI>
           <URI>lang/spi/ClosureFocus.java
           </URI>
@@ -358,7 +472,7 @@
           <URI>data/query/Distinct.java</URI>
           <URI>data/query/UnionBinding.java</URI>
           <URI>data/query/QueryChannel.java</URI>
-          <URI>data/query/QueryScenario.java</URI>
+          <URI>data/task/Fetch.java</URI>
           <URI>data/spi/AbstractAggregateQueryable.java</URI>
           <URI>data/spi/CursorIterator.java</URI>
           <URI>data/spi/ListCursor.java</URI>
@@ -483,9 +597,9 @@
         <resources>
           <URI>task/*
           </URI>
-          <URI>data/query/QueryScenario
+          <URI>data/task/Fetch.java
           </URI>
-          <URI>data/util/DataBatchProcessor
+          <URI>data/util/DataBatchProcessor.java
           </URI>
         </resources>
         
@@ -494,7 +608,7 @@
           <scm:Note>Scenario is now a CommandFactory, and always creates 
             TaskCommands to allow for interaction between tasks.
           </scm:Note>
-          <scm:Note>Created a QueryScenario to run data queries from a Task
+          <scm:Note>Created Fetch to run data queries from a Task
           </scm:Note>
           <scm:Note>Added stateless result processing chain to Task
              infrastructure
@@ -505,7 +619,7 @@
           <scm:Note>Clarified Scenario hierarchical compositional model.
           </scm:Note>
           <scm:Note>Refactored the BatchScenario into multiple components-
-            Batch, Model and Commander.
+            Batch, Reference and Exec.
           </scm:Note>
         </notes>
       </scm:Change>

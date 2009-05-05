@@ -103,7 +103,15 @@ public class RecordCursor
             }
           };
         }
-        format.parse(record,tuple);
+        try
+        { format.parse(record,tuple);
+        }
+        catch (Exception x)
+        { 
+          throw new ParseException
+            ("Error reading record #"+recordIterator.getRecordPointer(),x);
+        }
+      
       }
       else
       { tuple=null;
