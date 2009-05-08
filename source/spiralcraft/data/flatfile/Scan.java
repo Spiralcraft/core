@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.flatfile;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URI;
 
@@ -41,6 +42,7 @@ public class Scan
   protected ThreadLocalChannel<Tuple> resultChannel;
   protected int batchSize;
   private boolean skipBadRecords;
+  private int bufferSize=4096;
   
 
   public class ScanTask
@@ -57,7 +59,7 @@ public class Scan
         
         RecordIterator iterator
           =new InputStreamRecordIterator
-            (resource.getInputStream()
+            (new BufferedInputStream(resource.getInputStream(),bufferSize)
             ,recordSeparator.getBytes()
             );
             
@@ -139,6 +141,10 @@ public class Scan
    */
   public void setBatchSize(int batchSize)
   { this.batchSize=batchSize;
+  }
+  
+  public void setReadBufferSize(int readBufferSize)
+  { this.bufferSize=readBufferSize;
   }
   
   @Override

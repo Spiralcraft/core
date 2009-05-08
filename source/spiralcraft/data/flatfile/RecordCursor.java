@@ -27,6 +27,8 @@ import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.io.record.RecordIterator;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 /**
  * Turns flatfile records in arbitrary formats into data
@@ -38,10 +40,13 @@ import spiralcraft.lang.Channel;
 public class RecordCursor
   implements SerialCursor<Tuple>
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(RecordCursor.class);
 
   private final RecordIterator recordIterator;
   private final RecordFormat format;
   private Tuple tuple;
+  protected boolean errorTolerant=false;
   
   public RecordCursor
     (RecordIterator recordIterator
@@ -50,6 +55,16 @@ public class RecordCursor
   { 
     this.recordIterator=recordIterator;
     this.format=format;
+  }
+  
+  /**
+   * Transparently skip unparseable records, instead of throwing an
+   *   exception in methods that move the cursor.
+   * 
+   * @param errorTolerant
+   */
+  public void setErrorTolerant(boolean errorTolerant)
+  { this.errorTolerant=errorTolerant;
   }
   
   @Override
@@ -69,15 +84,32 @@ public class RecordCursor
   {
     try
     {
-      if (recordIterator.next())
+      while (true)
       {
-        update();
-        return true;
-      }
-      else
-      { 
-        tuple=null;
-        return false;
+        try
+        {
+          if (recordIterator.next())
+          {
+            update();
+            return true;
+          }
+          else
+          { 
+            tuple=null;
+            return false;
+          }
+        }
+        catch (ParseException x)
+        {
+          if (errorTolerant)
+          { 
+            log.log(Level.INFO,"Skipping unreadable record #"
+              +recordIterator.getRecordPointer(),x);
+          }
+          else
+          { throw x;
+          }
+        }
       }
     }
     catch (IOException x)

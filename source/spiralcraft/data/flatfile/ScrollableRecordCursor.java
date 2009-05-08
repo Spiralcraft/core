@@ -20,14 +20,18 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.io.record.ScrollableRecordIterator;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 public class ScrollableRecordCursor
   extends RecordCursor
   implements ScrollableCursor<Tuple>
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(ScrollableRecordCursor.class);  
   
   private ScrollableRecordIterator iterator;
-  
+
   public ScrollableRecordCursor
     (ScrollableRecordIterator iterator
     ,RecordFormat format
@@ -104,14 +108,36 @@ public class ScrollableRecordCursor
     throws DataException
   {
     try
-    { return iterator.previous();
+    {
+      while (true)
+      {
+        boolean ret=false;
+        try
+        {
+          ret=iterator.previous();
+          update();
+          return ret;
+        }
+        catch (ParseException x)
+        {
+          if (errorTolerant)
+          { 
+            log.log(Level.INFO,"Skipping unreadable record #"
+              +iterator.getRecordPointer(),x);
+            if (!ret)
+            { return false;
+            }
+          }
+          else
+          { throw x;
+          }
+        }
+      }
     }
     catch (IOException x)
     { throw new DataException("Error moving cursor",x);
     }
-    finally
-    { update();
-    }
+      
   }
 
 }
