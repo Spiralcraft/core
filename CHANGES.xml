@@ -16,6 +16,52 @@
         
     <detail>
       <scm:Change>
+        <date>2009-05-08
+        </date>
+        
+        <notes>
+          <scm:Note>Fixed issue where Tuple.set("field",value) syntax
+            did not recognize fields in base-type.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/spi/EditableArrayTuple.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-05-06
+        </date>
+        
+        <notes>
+          <scm:Note>Enhanced builder exceptions to show list of available
+            properties when a property is not found.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>beans/MappedBeanInfo.java
+          </URI>
+          <URI>builder/PropertyBinding.java
+          </URI>
+          <URI>builder/PropertySpecifier.java
+          </URI>
+          <URI>data/builder/BuilderField.java
+          </URI>
+          <URI>data/builder/BuilderType.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
         <date>2009-05-04
         </date>
 
@@ -28,6 +74,15 @@
             better reporting for bad record reading.
           </scm:Note>
           
+          <scm:Note>FlatFile cursors have an error tolerant mode which skips
+            bad records.
+          </scm:Note>
+
+          <scm:Note>New IO classes ConsumableFileInputStream and
+            FileBufferedInputStream for efficiency when reading huge or
+            very granular network input streams.
+          </scm:Note>
+
           <scm:Note>Default formatter does not dump stack trace for
             INFO level exceptions.
           </scm:Note>
@@ -40,6 +95,9 @@
             identity relationship that components depend on.
           </scm:Note>
           
+          <scm:Note>TypeImpl now re-uses its integral FieldSet to preserve
+            identity relationship that components depend on.
+          </scm:Note>
         </notes>
         
         <resources>
@@ -53,6 +111,8 @@
           </URI>
           <URI>source/spiralcraft/data/flatfile/RecordCursor.java
           </URI>
+          <URI>source/spiralcraft/data/flatfile/ScrollableRecordCursor.java
+          </URI>
           <URI>source/spiralcraft/data/flatfile/Scan.java
           </URI>
           <URI>source/spiralcraft/data/core/TypeImpl.java
@@ -60,6 +120,10 @@
           <URI>source/spiralcraft/data/access/CursorAggregate.java
           </URI>
           <URI>source/spiralcraft/data/DataException.java
+          </URI>
+          <URI>source/spiralcraft/io/ConsumableFileInputStream.java
+          </URI>
+          <URI>source/spiralcraft/io/FileBufferedInputStream.java
           </URI>
         </resources>
       </scm:Change>
