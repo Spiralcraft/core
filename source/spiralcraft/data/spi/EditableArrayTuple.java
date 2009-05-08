@@ -71,6 +71,11 @@ public class EditableArrayTuple
   public void set(String fieldName,Object data)
     throws DataException
   {
+    FieldSet fieldSet=this.fieldSet;
+    if (fieldSet.getType()!=null)
+    { fieldSet=fieldSet.getType().getFieldSet();
+    }
+
     Field<Object> field=fieldSet.getFieldByName(fieldName);
     if (field==null)
     { throw new FieldNotFoundException(fieldSet,fieldName);
