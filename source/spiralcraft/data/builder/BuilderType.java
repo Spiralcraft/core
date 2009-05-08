@@ -202,26 +202,34 @@ public class BuilderType
   public static Type<?> canonicalType(PropertySpecifier specifier)
     throws DataException
   { 
-    Class javaClass=specifier.getPropertyType();
-
+    Class javaClass=null;
     
-    if (!AssemblyClass.isManaged(javaClass)
-        || ReflectionType.isManaged(javaClass)
-        )
-    { 
-      
-      return ReflectionType.canonicalType(javaClass);
+    try
+    { javaClass=specifier.getPropertyType();
+    }
+    catch (BuildException x)
+    { throw new DataException("Error resolving property",x);
     }
     
-    boolean array=false;
-    if (javaClass.isArray())
-    { 
-      array=true;
-      javaClass=javaClass.getComponentType();
-    }
-
     try
     {
+
+    
+      if (!AssemblyClass.isManaged(javaClass)
+          || ReflectionType.isManaged(javaClass)
+          )
+      { 
+      
+        return ReflectionType.canonicalType(javaClass);
+      }
+    
+      boolean array=false;
+      if (javaClass.isArray())
+      { 
+        array=true;
+        javaClass=javaClass.getComponentType();
+      }
+
       AssemblyClass assemblyClass
         =AssemblyLoader.getInstance().findAssemblyClass(javaClass);
       if (assemblyClass==null)
@@ -234,7 +242,7 @@ public class BuilderType
       { 
         return Type.getArrayType
           (canonicalType(assemblyClass));
-      }
+      } 
     }
     catch (BuildException x)
     { throw new DataException("Error finding AssemblyClass for "+javaClass,x);

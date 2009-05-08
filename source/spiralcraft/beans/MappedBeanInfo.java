@@ -14,7 +14,10 @@
 //
 package spiralcraft.beans;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import java.beans.PropertyDescriptor;
 import java.beans.EventSetDescriptor;
@@ -49,7 +52,7 @@ public class MappedBeanInfo
     =ClassLog.getInstance(MappedBeanInfo.class);
   private static final boolean debug=false;
   
-  private HashMap<String,PropertyDescriptor> _propertyMap;
+  private LinkedHashMap<String,PropertyDescriptor> _propertyMap;
   private HashMap<String,Field> _fieldMap;
   private Field[] _fields;
   private EventSetDescriptor _propertyChangeEventSetDescriptor=null;
@@ -107,7 +110,7 @@ public class MappedBeanInfo
   {
     PropertyDescriptor[] props
       =beanInfo.getPropertyDescriptors();
-    _propertyMap=new HashMap<String,PropertyDescriptor>(props.length);
+    _propertyMap=new LinkedHashMap<String,PropertyDescriptor>(props.length);
 
     for (int i=0;i<props.length;i++)
     { _propertyMap.put(props[i].getName(),props[i]);
@@ -286,6 +289,36 @@ public class MappedBeanInfo
     }
     return clazz;
     
+  }
+  
+  public String[] getAllPropertyNames()
+  {
+    PropertyDescriptor[] properties=getAllProperties();
+    
+    String[] names=new String[properties.length];
+    
+    int i=0;
+    for (PropertyDescriptor prop:properties)
+    { names[i++]=prop.getName();
+    }
+    return names;
+  }
+  
+  public PropertyDescriptor[] getAllProperties()
+  { 
+    List<PropertyDescriptor> descriptors
+      =new ArrayList<PropertyDescriptor>();
+    
+    MappedBeanInfo info=this;
+    while (info!=null)
+    { 
+      PropertyDescriptor[] localProps=info.getPropertyDescriptors();
+      for (PropertyDescriptor prop: localProps)
+      { descriptors.add(prop);
+      }
+      info=info.superBeanInfo;
+    }
+    return descriptors.toArray(new PropertyDescriptor[descriptors.size()]);
   }
   
   /**

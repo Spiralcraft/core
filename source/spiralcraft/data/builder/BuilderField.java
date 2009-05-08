@@ -76,6 +76,9 @@ public class BuilderField
       { setType(type);
       }
     }
+    catch (BuildException x)
+    { throw new DataException("Error resolving property",x);
+    }
     catch (DataException x)
     { 
       log.fine(""+specifier+"  "+reflectionField);

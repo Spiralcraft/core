@@ -144,11 +144,31 @@ public class PropertySpecifier
   }
   
   public Class<?> getPropertyType()
+    throws BuildException
   { 
     if (propertyType==null)
     { resolveType();
     }
+    if (propertyType==null)
+    { throwUnresolvable();
+    }
     return propertyType;
+  }
+  
+  private void throwUnresolvable()
+    throws BuildException
+  { 
+    
+    throw new BuildException
+      ("Error resolving property "
+      +_specifier+" in "+getSourceCodeLocation()+": No property '"+_targetName
+      +" in "+_targetAssemblyClass.getJavaClass().getName()+"- available "
+      +" properties are ["
+      +ArrayUtil.format
+        (_targetAssemblyClass.getBeanInfo().getAllPropertyNames(),",","")
+      +"]"
+          
+      );
   }
   
   /**
@@ -405,6 +425,19 @@ public class PropertySpecifier
     { propertyType=beanInfo.getCovariantPropertyType(getPropertyDescriptor());
     }
     
+  }
+  
+  /**
+   * The AssemblyClass that this PropertySpecifier ultimately refers (which is
+   *   different than the AssemblyClass which defined this PropertySpecifier
+   *   if the dotted-name notation is used).
+   *   
+   *   
+   * 
+   * @return
+   */
+  public AssemblyClass getTargetAssemblyClass()
+  { return _targetAssemblyClass;
   }
   
   /**

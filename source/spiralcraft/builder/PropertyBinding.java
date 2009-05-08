@@ -15,6 +15,7 @@
 package spiralcraft.builder;
 
 import spiralcraft.text.ParseException;
+import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.string.StringConverter;
 
@@ -331,7 +332,15 @@ public class PropertyBinding
     {
       throwBuildException
         ("Property '"+_specifier.getTargetName()+"' not found"
-        +" ("+_specifier.getSourceCodeLocation()+")"
+        +" ("+_specifier.getSourceCodeLocation()+"): available properties are "
+        +"["
+        +ArrayUtil.format
+          (_specifier.getTargetAssemblyClass().getBeanInfo()
+            .getAllPropertyNames()
+          ,","
+          ,""
+          )
+        +"]"
         ,x
         );
     }
