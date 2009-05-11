@@ -14,6 +14,7 @@
 //
 package spiralcraft.task;
 
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -68,13 +69,16 @@ public class ParallelTask<Tsubtask extends Task>
     setOpsCompletedInUnit(0);
     setCurrentUnitTitle("Counting");
     
+    List<Tsubtask> startList
+      =new LinkedList<Tsubtask>();
+    
     for (Tsubtask task: subtasks)
     { 
       task.addTaskListener(this);
       subtaskStarting(task);
-      
+      startList.add(task);
     }
-    for (Task task: runningTasks)
+    for (Task task: startList)
     { 
       if (useScheduler)
       { 
