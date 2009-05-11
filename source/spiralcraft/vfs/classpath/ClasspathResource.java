@@ -47,6 +47,12 @@ public class ClasspathResource
 
   private static final URI stripTrailingSlash(URI uri)
   { 
+    if (uri.getPath()==null)
+    { 
+      throw new IllegalArgumentException
+        ("URI "+uri+" has a null path component");
+    }
+    
     if (uri.getPath().endsWith("/"))
     { 
       try
