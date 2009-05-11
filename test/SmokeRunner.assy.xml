@@ -59,6 +59,8 @@
         
         <dtest:DataBatchTest/>
         
+        <dtest:QueryTest/>
+        
       </scenarios>
     </task:Sequence>
   </chain>

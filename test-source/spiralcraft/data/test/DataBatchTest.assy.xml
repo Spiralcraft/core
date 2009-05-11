@@ -39,6 +39,7 @@
             <task:Exec>
               <commandX>[dtask:Collect] commandAdd([example:Customer])
               </commandX>
+              
             </task:Exec>
           </chain>
         </task:Batch>
@@ -61,8 +62,12 @@
     </task:Sequence>
 
     <test:Stub>
-      <messageX>""+[example:BatchSession].results+" results"
+      <messageX>""+[example:BatchSession].results.@size()+" results"
       </messageX>
+      <conditionX>[example:BatchSession].results.@size()==6
+      </conditionX>
+      <name>SerialParallelScanBatch
+      </name>
     </test:Stub>
  
   </chain>

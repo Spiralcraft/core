@@ -1,0 +1,68 @@
+<task:Scenario
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:query="class:/spiralcraft/data/query/"
+  xmlns:dtask="class:/spiralcraft/data/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  >
+  <chain>
+ 
+    <task:Sequence>
+      <scenarios>
+    
+        <dtask:Fetch>
+          
+          <query>
+            <query:Scan>
+              <type x="[@example:Customer].type"/>
+            </query:Scan>
+          </query>
+          
+          <chain>
+            <test:Stub>
+              <name>Scan
+              </name>
+              <messageX>""+[example:Customer.list].@size()+" results"
+              </messageX>
+              <conditionX>[example:Customer.list].@size()==3
+              </conditionX>
+            </test:Stub>
+          </chain>
+        </dtask:Fetch>
+
+        <dtask:Fetch>
+          
+          <query>
+            <query:Scan>
+              <type x="[@example:Customer].type"/>
+            </query:Scan>
+          </query>
+          
+          <chain>
+            <dtask:Fetch>
+              <query>
+                <query:ReferenceQuery>
+                  <reference>[example:Customer.list]
+                  </reference>
+                </query:ReferenceQuery>
+              </query>
+            </dtask:Fetch>
+            
+            <test:Stub>
+              <name>ReferenceQuery
+              </name>
+              <messageX>""+[example:Customer.list].@size()+" results"
+              </messageX>
+              <conditionX>[example:Customer.list].@size()==3
+              </conditionX>
+            </test:Stub>
+            
+          </chain>
+        </dtask:Fetch>
+        
+      </scenarios>
+      
+    </task:Sequence>
+  </chain>
+        
+</task:Scenario>

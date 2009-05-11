@@ -2,11 +2,51 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
+    <revision>0.3.5
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <notes>
+      <scm:Note>Regression fixes
+      </scm:Note>
+    </notes>
+    
+    <detail>
+      <scm:Change>
+        <date>2009-05-11
+        </date>
+        
+        <notes>
+          <scm:Note>Make sure queries with no Scans are solved by the Space
+            itself, since no Stores will be consulted. Added unit tests
+            for use with ReferenceQuery to verify.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/Space.java
+          </URI>
+        </resources>
+      </scm:Change>
+    </detail>
+    
+  </scm:Change>
+
+        
+  <scm:Change>
     <revision>0.3.4
     </revision>
     
     <authorId>miketoth
     </authorId>
+    
+    <date>2009-05-11
+    </date>
     
     <notes>
       <scm:Note>Ongoing spiralcraft-sql module support and integration
