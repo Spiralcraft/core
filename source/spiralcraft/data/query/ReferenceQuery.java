@@ -96,7 +96,7 @@ public class ReferenceQuery
     { return new BoundReferenceQuery(this,focus);
     }
     catch (BindException x)
-    { throw new DataException("Error binding Shuffle",x);
+    { throw new DataException("Error binding ReferenceQuery",x);
     }
   }
   
