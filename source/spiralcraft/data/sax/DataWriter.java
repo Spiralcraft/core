@@ -29,6 +29,8 @@ import spiralcraft.util.string.StringUtil;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.sax.XmlWriter;
 
 import org.xml.sax.SAXException;
@@ -46,7 +48,11 @@ import java.util.HashMap;
 public class DataWriter
 { 
     
-   
+  protected static final ClassLog log
+    =ClassLog.getInstance(DataWriter.class);
+  protected static final Level debugLevel
+    =ClassLog.getInitialDebugLevel(DataWriter.class, null);
+  
   public void writeToURI
     (URI resourceUri
     ,DataComposite data
@@ -345,7 +351,14 @@ class Context
       { startType();
       }
       
-      writeString(((Type <? super Object>)type).toString(value));
+      try
+      {  writeString(((Type <? super Object>)type).toString(value));
+      }
+      catch (IllegalArgumentException x)
+      { 
+        throw new DataSAXException
+          ("Error writing value ["+value+"] for "+type.getURI(),x);
+      }
       
       if (!singleContext)
       { endType(false);
@@ -377,6 +390,9 @@ class Context
         startType();
         if (tuple instanceof DeltaTuple)
         { 
+          if (DataWriter.debugLevel.canLog(Level.FINE))
+          { DataWriter.log.fine("Writing DeltaTuple "+tuple.getType().getURI());
+          }
           Field[] dirtyFields=((DeltaTuple) tuple).getDirtyFields();
           if (dirtyFields!=null)
           {
@@ -391,18 +407,29 @@ class Context
         { 
           if (tuple.getType()!=null)
           { 
+            if (DataWriter.debugLevel.canLog(Level.FINE))
+            { DataWriter.log.fine("Writing Tuple "+tuple.getType().getURI());
+            }
             // Make sure we include base type Fields
             fieldIterator
               =tuple.getType().getFieldSet().fieldIterable().iterator();
           }
           else
-          { fieldIterator=tuple.getFieldSet().fieldIterable().iterator();
+          { 
+            if (DataWriter.debugLevel.canLog(Level.FINE))
+            { DataWriter.log.fine("Writing untyped Tuple "+tuple.getFieldSet());
+            }
+            DataWriter.log.fine("Writing untyped tuple "+tuple.getFieldSet());
+            fieldIterator=tuple.getFieldSet().fieldIterable().iterator();
           }
         }
       }
       else if (fieldIterator.hasNext())
       {
         Field field=fieldIterator.next();
+        if (DataWriter.debugLevel.canLog(Level.FINE))
+        { DataWriter.log.fine("Starting field "+field.getURI());
+        }
         if (field.getType().isAggregate())
         { currentFrame=new AggregateFieldFrame(tuple,field);
         }
