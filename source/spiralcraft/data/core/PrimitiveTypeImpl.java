@@ -86,7 +86,8 @@ public abstract class PrimitiveTypeImpl<T>
       { return StringConverter.encodeToXml(val);
       }
     }
-    throw new IllegalArgumentException(val.getClass()+" is not an String");
+    throw new IllegalArgumentException
+      (val.getClass()+" is not a "+nativeClass.getName());
 
   }
   
