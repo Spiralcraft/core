@@ -72,7 +72,8 @@ public interface Tuple
 //    throws DataException;
   
   /**
-   *@return the FieldSet for this Tuple.
+   *@return the FieldSet for this Tuple. If this Tuple has a base extent, 
+   *  only the local Fields will be returned
    */
   FieldSet getFieldSet();
   
