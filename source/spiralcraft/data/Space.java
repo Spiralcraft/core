@@ -34,6 +34,10 @@ import spiralcraft.data.query.Concatenation;
 import spiralcraft.data.query.ConcatenationBinding;
 
 import spiralcraft.lang.Focus;
+
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
+
 import spiralcraft.registry.RegistryNode;
 import spiralcraft.service.Service;
 import spiralcraft.util.ListMap;
@@ -51,6 +55,10 @@ public class Space
 {
   public static final URI SPACE_URI 
     = URI.create("class:/spiralcraft/data/Space");
+  public static final ClassLog log
+    =ClassLog.getInstance(Space.class);
+  public static final Level debugLevel
+    =ClassLog.getInitialDebugLevel(Space.class, null);
   
   public static final Space find(Focus<?> focus)
   {
@@ -70,6 +78,7 @@ public class Space
   
   private ListMap<Type<?>,Store> typeStores
     =new ListMap<Type<?>,Store>();
+  
   
   public void setStores(Store[] stores)
   { 
@@ -170,6 +179,17 @@ public class Space
       =new LinkedList<BoundQuery<?,Tuple>>();
     
     Set<Type<?>> scanTypes=query.getScanTypes(null);
+
+    if (scanTypes.size()==0)
+    {
+      BoundQuery<?,Tuple> ret=query.solve(focus,this);
+      ret.resolve();
+      if (debugLevel.canLog(Level.DEBUG))
+      { log.debug("returning "+ret+" from query("+query+")");
+      }
+      return ret;
+    }
+    
     
     Set<Store> stores=new HashSet<Store>();
     for (Type<?> type: scanTypes)
