@@ -16,6 +16,57 @@
         
     <detail>
       <scm:Change>
+        <date>2009-05-09
+        </date>
+        
+        <notes>
+          <scm:Note>Fix regression issues and issues exposed with new
+            functionality.
+          </scm:Note>
+          <scm:Note>Correct exception in PrimitiveTypeImpl.toString() to
+            show the correct target type instead of "String"
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/core/PrimitiveTypeImpl.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-05-09
+        </date>
+        
+        <notes>
+          <scm:Note>Fix regression issues and issues exposed with new
+            functionality.
+          </scm:Note>
+          <scm:Note>Prevent a BufferTuple from being created with a non-buffer
+            Type.
+          </scm:Note>
+          <scm:Note>Fetch updater using archetype of BufferType, which is
+            original type, because Space doesn't know about the buffer type.
+          </scm:Note>
+          <scm:Note>External logging added to DataWriter.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>sax/DataWriter.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <date>2009-05-08
         </date>
         
@@ -70,6 +121,7 @@
             into task/scenario architecture.
           </scm:Note>
           
+
           <scm:Note>More informative DataException reporting, as well as
             better reporting for bad record reading.
           </scm:Note>
@@ -96,7 +148,10 @@
           </scm:Note>
           
           <scm:Note>TypeImpl now re-uses its integral FieldSet to preserve
-            identity relationship that components depend on.
+            identity relationship that components depend on, and disallows
+            call to getFieldSet() before type is linked in order to enforce
+            consistency. TupleReflector changed to avoid unnecessary call
+            to getFieldSet() before Type is linked.
           </scm:Note>
         </notes>
         
@@ -116,6 +171,10 @@
           <URI>source/spiralcraft/data/flatfile/Scan.java
           </URI>
           <URI>source/spiralcraft/data/core/TypeImpl.java
+          </URI>
+          <URI>source/spiralcraft/data/core/UnifiedFieldSet.java
+          </URI>
+          <URI>source/spiralcraft/data/lang/TupleReflector.java
           </URI>
           <URI>source/spiralcraft/data/access/CursorAggregate.java
           </URI>
@@ -357,7 +416,7 @@
             support a Type.
           </scm:Note>
           <scm:Note>XmlStore defines authoritative types from the 
-            XmlQueryable tables.
+            XmlQueryable tables and from base types that have Sequence fields.
           </scm:Note>
         </notes>
         
