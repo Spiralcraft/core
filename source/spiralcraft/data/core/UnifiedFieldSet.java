@@ -5,11 +5,19 @@ import java.util.Iterator;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.util.IteratorChain;
 
 public class UnifiedFieldSet
   implements FieldSet
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(UnifiedFieldSet.class);
+  
+  private static final Level debugLevel
+    =ClassLog.getInitialDebugLevel(UnifiedFieldSet.class,null);
+  
   private final Type<?> type;
   private final FieldSet base;
   private final int fieldCount;
@@ -35,6 +43,14 @@ public class UnifiedFieldSet
       fieldCount=(base!=null?base.getFieldCount():0);
     }
     
+    if (debugLevel.canLog(Level.DEBUG))
+    { 
+      log.fine
+        ("Created UnifiedFieldSet for "+type.getURI()
+        +" base="+(base!=null?base.getType().getURI():"NULL")
+        );
+    }
+        
   }
   
   

@@ -51,7 +51,7 @@ public class TupleReflector<T extends Tuple>
   
   private static final Expression<?>[] NULL_PARAMS = new Expression[0];
   
-  private final FieldSet fieldSet;
+  private final FieldSet untypedFieldSet;
   
   private final Class<T> contentType;
 
@@ -72,7 +72,7 @@ public class TupleReflector<T extends Tuple>
   TupleReflector(Type<?> type,Class<T> contentType)
   { 
     super(type);
-    this.fieldSet=type.getFieldSet();
+    untypedFieldSet=null;
     this.contentType=contentType;
 //    for (Field field : fieldSet.fieldIterable())
 //    { fieldTranslators.put(field.getName(),new FieldTranslator(field));
@@ -82,7 +82,12 @@ public class TupleReflector<T extends Tuple>
   public TupleReflector(FieldSet fieldSet,Class<T> contentType)
   { 
     super(fieldSet.getType());
-    this.fieldSet=fieldSet;
+    if (fieldSet.getType()==null)
+    { this.untypedFieldSet=fieldSet;
+    }
+    else
+    { this.untypedFieldSet=null;
+    }
     this.contentType=contentType;
 //    for (Field field : fieldSet.fieldIterable())
 //    { fieldTranslators.put(field.getName(),new FieldTranslator(field));
@@ -90,7 +95,7 @@ public class TupleReflector<T extends Tuple>
   }
 
   public FieldSet getFieldSet()
-  { return fieldSet;
+  { return untypedFieldSet!=null?untypedFieldSet:type.getFieldSet();
   }
   
   /**
@@ -167,10 +172,8 @@ public class TupleReflector<T extends Tuple>
     if (type!=null)
     { field=type.getField(name);
     }
-    
-    
-    if (field==null)
-    { field=fieldSet.getFieldByName(name);
+    else
+    { field=untypedFieldSet.getFieldByName(name);
     }
     
     if (field!=null)
@@ -336,7 +339,7 @@ public class TupleReflector<T extends Tuple>
     return super.toString()
       +(type!=null
           ?type.toString()
-          :"(untyped)["+fieldSet.toString()+"]"
+          :"(untyped)["+untypedFieldSet.toString()+"]"
        );
   }
   

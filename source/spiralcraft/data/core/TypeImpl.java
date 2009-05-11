@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.rules.Rule;
 import spiralcraft.rules.RuleSet;
 
@@ -41,6 +42,11 @@ public class TypeImpl<T>
   extends Type<T>
 {  
   protected final ClassLog log=ClassLog.getInstance(getClass());
+  protected final Level debugLevel
+    =ClassLog.getInitialDebugLevel
+      (getClass()
+      ,ClassLog.getInitialDebugLevel(TypeImpl.class,null)
+      );
   
   protected Class<T> nativeClass;
   protected SchemeImpl scheme;
@@ -64,6 +70,7 @@ public class TypeImpl<T>
     this.resolver=resolver;
     this.uri=uri;
     this.packageURI=resolver.getPackageURI(uri);
+    this.debug=debugLevel.canLog(Level.DEBUG);
   }
   
   protected void addRules(Rule<Type<T>,T> ... rules)
@@ -380,6 +387,18 @@ public class TypeImpl<T>
   @Override
   public synchronized FieldSet getFieldSet()
   { 
+    if (!linked)
+    { 
+      throw new IllegalStateException
+        ("Call to getFieldSet() before type linked "+getURI());
+    }
+//    if (!linked && debug)
+//    { 
+//      log.log(Level.DEBUG,"Call to getFieldSet() before type linked "+getURI()
+//        ,new Exception("trace")
+//      );
+//    }
+    
     if (baseType==null && scheme!=null)
     { return scheme;
     }
