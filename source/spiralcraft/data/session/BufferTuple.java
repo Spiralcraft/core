@@ -80,6 +80,12 @@ public class BufferTuple
   public BufferTuple(DataSession session,Type<?> type)
   { 
     this.session=session;
+    if (! (type instanceof BufferType))
+    { 
+      log.debug("Buffer tuple created with non-buffer type "+type.getURI());
+      throw new IllegalArgumentException
+        ("BufferTuple type must be a BufferType");
+    }
     this.type=type;
     if (type.getBaseType()!=null)
     { baseExtent=new BufferTuple(session,type.getBaseType());
@@ -652,7 +658,7 @@ public class BufferTuple
       
       
       DataConsumer<DeltaTuple> updater
-        =branch.getUpdater(getType());
+        =branch.getUpdater(getType().getArchetype());
       if (updater!=null)
       { 
         boolean ok=false;
