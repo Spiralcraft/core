@@ -161,6 +161,7 @@ public class XmlStore
           (field.getURI()
           ,new XmlSequence(field.getURI())
           );
+          addAuthoritativeType(subtype);
         }
       }
     }
@@ -507,7 +508,7 @@ public class XmlStore
       throws DataException
     { 
       if (debug)
-      { log.fine("Finalizing "+queryable.getResultType());
+      { log.fine("Finalizing updater for "+queryable.getResultType());
       }
       synchronized (queryable)
       {
