@@ -277,8 +277,15 @@ public class Space
   {
     try
     { 
+      // Strip fragment, which is field name
+      URI typeURI
+        =new URI
+          (uri.getScheme()
+          ,uri.getAuthority()
+          ,uri.getPath()
+          ,uri.getQuery()
+          ,null);
       
-      URI typeURI=new URI(uri.getScheme(),uri.getFragment(),null);
       Store store=getAuthoritativeStore(Type.resolve(typeURI));
       
       if (store!=null)
