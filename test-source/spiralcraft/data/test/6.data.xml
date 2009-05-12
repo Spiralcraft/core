@@ -1,0 +1,29 @@
+<example:Customer.list
+  xmlns:example="class:/spiralcraft/data/test/example"
+  xmlns:test="class:/spiralcraft/data/test/"
+  >
+
+  <example:Customer
+    ref="class:/spiralcraft/data/test/5.data.xml"
+    >
+    <id>1001</id>
+  </example:Customer>
+  
+  <example:Customer
+    ref="5.data.xml"
+    >
+    <id>1002</id>
+  </example:Customer>
+  
+  <example:Customer
+    ref=":class:/spiralcraft/data/test/5.data.xml"
+    >
+    <id>1003</id>
+  </example:Customer>
+
+  <example:Customer
+    ref="test:5.data.xml"
+    >
+    <id>1004</id>
+  </example:Customer>
+</example:Customer.list>

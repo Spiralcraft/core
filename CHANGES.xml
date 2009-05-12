@@ -9,11 +9,40 @@
     </authorId>
     
     <notes>
-      <scm:Note>Regression fixes
+      <scm:Note>Regression fixes, minor syntax enhancements
       </scm:Note>
     </notes>
     
     <detail>
+      <scm:Change>
+        <date>2009-05-12
+        </date>
+        
+        <notes>
+          <scm:Note>Provide the ability to include namespace prefixes in
+            spiralcraft.data XML file "ref" attributes, by requiring that
+            absolute URIs in the ref attribute value be prefixed by a ":"
+          </scm:Note>
+          <scm:Note>These attributes are almost always coded by hand, 
+            especially when they reference absolute URIs, so they should
+            use the existing namespace prefixes.
+          </scm:Note>
+          <scm:Note>Provided a deprecation warning when using an absolute URI
+            with no ":" prefix to maintain backward compatibility.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/sax/DataHandler.java
+          </URI>
+          <URI>data/sax/DataHandlerBase.java
+          </URI>
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <date>2009-05-11
         </date>

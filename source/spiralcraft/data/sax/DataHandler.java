@@ -353,7 +353,7 @@ public class DataHandler
       for (int i=0;i<attributes.getLength();i++)
       {
         if (attributes.getLocalName(i).equals("ref"))
-        { ref=URI.create(attributes.getValue(i));
+        { ref=resolveRef(attributes.getValue(i));
         }
         else
         { 
@@ -492,7 +492,7 @@ public class DataHandler
       for (int i=0;i<attributes.getLength();i++)
       {
         if (attributes.getLocalName(i).equals("ref"))
-        { ref=URI.create(attributes.getValue(i));
+        { ref=resolveRef(attributes.getValue(i));
         }
         else
         { 
@@ -678,7 +678,7 @@ public class DataHandler
       for (int i=0;i<attributes.getLength();i++)
       {
         if (attributes.getLocalName(i).equals("ref"))
-        { ref=URI.create(attributes.getValue(i));
+        { ref=resolveRef(attributes.getValue(i));
         }
         else
         { 
@@ -728,7 +728,7 @@ public class DataHandler
       for (int i=0;i<attributes.getLength();i++)
       {
         if (attributes.getLocalName(i).equals("ref"))
-        { ref=URI.create(attributes.getValue(i));
+        { ref=resolveRef(attributes.getValue(i));
         }
         else
         { 

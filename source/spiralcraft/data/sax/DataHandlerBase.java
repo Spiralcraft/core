@@ -487,6 +487,46 @@ public abstract class DataHandlerBase
       return ret!=null?URI.create(ret):null;
     }
     
+    /**
+     * Resolve a URI reference that may include an optional namespace
+     *   prefix.
+     * 
+     * @param ref
+     * @return
+     */
+    public URI resolveRef(String ref)
+    {
+      if (ref.startsWith(":"))
+      { return URI.create(ref.substring(1));
+      }
+      else
+      {
+        int colonPos=ref.indexOf(':');
+        if (colonPos>0)
+        { 
+          URI base=resolvePrefix(ref.substring(0,colonPos));
+          if (base==null)
+          {
+            log.warning
+              ("Namespace prefix '"+ref.substring(0,colonPos)+"' not found "
+              +"at "+formatPosition()+". Falling back to resolving absolute "
+              +" URI "+ref+". If an absolute URI is what you mean, please"
+              +" use the ':' prefix- ie. ref=\":"+ref+"\""
+              );
+              	
+            return URI.create(ref);
+          }
+          else
+          { return base.resolve(URI.create(ref.substring(colonPos+1)));
+          }
+        }
+        else
+        { return URI.create(ref);
+        }
+      }
+    }
+    
+    
     public Object fromString(Type<?> type,String text)
       throws DataException
     {

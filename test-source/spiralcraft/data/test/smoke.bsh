@@ -246,10 +246,24 @@ result.toText("|  ");
 "";
 "/////////////////////////////////////////";
 "//";
+"// Test 'ref' attribute";
+"//";
+"";
+
+customerListType=typeResolver.resolve(URI.create("class:/spiralcraft/data/test/example/Customer.list"));
+result=new spiralcraft.data.sax.DataReader().readFromURI
+  (URI.create("class:/spiralcraft/data/test/6.data.xml")
+  ,customerListType
+  );
+result.toText("|  ");
+
+
+"";
+"/////////////////////////////////////////";
+"//";
 "// Test custom Scheme- 'Customer' list";
 "//";
 "";
-customerListType=typeResolver.resolve(URI.create("class:/spiralcraft/data/test/example/Customer.list"));
 dataReader=new spiralcraft.data.sax.DataReader();
 result=dataReader.readFromURI
   (URI.create("class:/spiralcraft/data/test/example/Customer.data.xml")
