@@ -8,12 +8,116 @@
     <authorId>miketoth
     </authorId>
     
+    <date>2009-05-21
+    </date>
+    
     <notes>
+      <scm:Note>New SetFilter query for testing inclusion in a set
+      </scm:Note>
+      <scm:Note>Array literals in lang  [ type expression ][{x0, x1, ...}]
+      </scm:Note>
+      <scm:Note>"contains" operator [ set ?= value ] for lang
+      </scm:Note>
+      <scm:Note>Unit test system enhancements for managing and reporting test
+        results. 
+      </scm:Note>
       <scm:Note>Regression fixes, minor syntax enhancements
       </scm:Note>
     </notes>
     
     <detail>
+      <scm:Change>
+        <date>2009-05-21
+        </date>
+        
+        <notes>
+          <scm:Note>Improved management and reporting of test results via 
+            TestGroup.
+          </scm:Note>
+          <scm:Note>Added standard assertion mechanism
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/test/
+        </path>
+        
+        <resources>
+          <URI>Assertion.java
+          </URI>
+          <URI>Stub.java
+          </URI>
+          <URI>Test.java
+          </URI>
+          <URI>TestFailedException.java
+          </URI>
+          <URI>TestGroup.java
+          </URI>
+          <URI>TestResult.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-05-13
+        </date>
+        
+        <notes>
+          <scm:Note>New SetFilter query for testing source data for inclusion 
+            in a set.
+          </scm:Note>
+          <scm:Note>Split up huge "factorNode" method in Select query in
+            preparation for future additional optimizable nodes.
+          </scm:Note>
+          <scm:Note>Provide integral support for an aggregate "contains"
+            operation.  
+          </scm:Note>
+          <scm:Note>Added support for array creation to assist with literal
+            sets.
+          </scm:Note>
+          <scm:Note>Completed implementation of ClosureFocus to transfer
+            bound Channel data to another thread via a Closure object.
+          </scm:Note>
+          <scm:Note>CurrentFocus node accepts scanner token so it can
+            reconstruct itself properly
+          </scm:Note>          
+
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/query/SetFilter.java
+          </URI>
+          <URI>data/query/Selection.java
+          </URI>
+          <URI>lang/spi/ClosureFocus.java
+          </URI>
+          <URI>lang/spi/ArrayConstructorChannel.java
+          </URI>
+          <URI>lang/spi/ArrayContainsChannel.java
+          </URI>
+          <URI>lang/spi/IterableContainsChannel.java
+          </URI>
+          <URI>lang/parser/ContainsNode.java
+          </URI>
+          <URI>lang/parser/CurrentFocusNode.java
+          </URI>
+          <URI>lang/parser/ExpressionParser.java
+          </URI>
+          <URI>lang/parser/Node.java
+          </URI>
+          <URI>lang/parser/SubscriptNode.java
+          </URI>
+          <URI>lang/reflect/ArrayReflector.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <date>2009-05-12
         </date>
