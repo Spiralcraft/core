@@ -8,6 +8,7 @@
   xmlns:data="class:/spiralcraft/data/"
   xmlns:query="class:/spiralcraft/data/query/"
   xmlns:dtest="class:/spiralcraft/data/test/"
+  xmlns:test="class:/spiralcraft/test/"
   xmlns:vfs="class:/spiralcraft/vfs/task/"
   >
   
@@ -30,11 +31,21 @@
   </service>
   
   <chain>
+    <test:TestGroup>
+      <name>spiralcraft-core:smoke
+      </name>
+      
+      <throwFailure>true
+      </throwFailure>
+    </test:TestGroup>
     <task:Sequence>
 
       
       <scenarios>
-
+        <langtest:LangTest
+          xmlns:langtest="class:/spiralcraft/lang/test/"
+        />
+        
         <iotest:RecordIteratorTest>
 
           <fileURI>in/io/RecordFile.small.log
@@ -57,9 +68,7 @@
           </targetResource>
         </vfs:Copy>
         
-        <dtest:DataBatchTest/>
-        
-        <dtest:QueryTest/>
+        <dtest:DataTest/>
         
       </scenarios>
     </task:Sequence>

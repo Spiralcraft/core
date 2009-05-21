@@ -1,0 +1,19 @@
+<test:TestGroup
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  >
+  <name>spiralcraft.data.test
+  </name>
+  
+  <chain>
+ 
+    <task:Sequence>
+      <scenarios>
+        <DataBatchTest/>
+        <QueryTest/>
+      </scenarios>
+      
+    </task:Sequence>
+  </chain>
+        
+</test:TestGroup>

@@ -59,6 +59,74 @@
             
           </chain>
         </dtask:Fetch>
+
+        <dtask:Fetch>
+          
+          <query>
+            <query:SetFilter>
+              <filterSetX>{"Nomatch One","Mary Second","Nomatch Two"}
+              </filterSetX>
+              
+              <searchX>.displayName
+              </searchX>
+              
+              <excludeMatch>false
+              </excludeMatch>
+              
+              <source>
+                <query:Scan>
+                  <type x="[@example:Customer].type"/>
+                </query:Scan>
+              </source>
+              
+            </query:SetFilter>
+          </query>
+          
+          <chain>
+            <test:Stub>
+              <name>SetFilter
+              </name>
+              <messageX>""+[example:Customer.list].@size()+" results"
+              </messageX>
+              <conditionX>[example:Customer.list].@size()==1
+              </conditionX>
+            </test:Stub>
+          </chain>
+        </dtask:Fetch>
+
+        <dtask:Fetch>
+          
+          <query>
+            <query:SetFilter>
+              <filterSetX>{"Nomatch One","Mary Second","Nomatch Two"}
+              </filterSetX>
+              
+              <searchX>.displayName
+              </searchX>
+              
+              <excludeMatch>true
+              </excludeMatch>
+              
+              <source>
+                <query:Scan>
+                  <type x="[@example:Customer].type"/>
+                </query:Scan>
+              </source>
+              
+            </query:SetFilter>
+          </query>
+          
+          <chain>
+            <test:Stub>
+              <name>SetFilter (neg)
+              </name>
+              <messageX>""+[example:Customer.list].@size()+" results"
+              </messageX>
+              <conditionX>[example:Customer.list].@size()==2
+              </conditionX>
+            </test:Stub>
+          </chain>
+        </dtask:Fetch>
         
       </scenarios>
       

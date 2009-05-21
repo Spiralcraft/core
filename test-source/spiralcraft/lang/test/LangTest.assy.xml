@@ -1,0 +1,98 @@
+<test:TestGroup
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  >
+  <name>spiralcraft.lang.test
+  </name>
+  
+  <chain>
+ 
+    <task:Sequence>
+      <scenarios>
+    
+        <test:Assertion>
+        
+          <name>add
+          </name>
+          
+          <subjectX>1+1
+          </subjectX>
+          
+          <testX>.==2
+          </testX>
+          
+        </test:Assertion>
+          
+        <test:Assertion>
+        
+          <name>contains
+          </name>
+          
+          <subjectX>{1,2,3} ?= 2
+          </subjectX>
+          
+          <testX>.
+          </testX>
+          
+        </test:Assertion>
+          
+        <test:Assertion>
+        
+          <name>contains (neg)
+          </name>
+          
+          <subjectX>{1,2,3} ?= 4
+          </subjectX>
+          
+          <testX>!.
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>array construct- Integer
+          </name>
+          
+          <subjectX>[@:class:/java/lang/Integer][{1,2,3}]
+          </subjectX>
+          
+          <testX>.length==3 &amp;&amp; 
+                .[0]==1 &amp;&amp; 
+                .[1]==2 &amp;&amp; 
+                .[2]==3
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>array construct contains
+          </name>
+          
+          <subjectX>[@:class:/java/lang/Integer][{1,2,3}] ?= 2
+          </subjectX>
+          
+          <testX>.
+          </testX>
+          
+        </test:Assertion>
+          
+        <test:Assertion>
+        
+          <name>array construct contains (neg)
+          </name>
+          
+          <subjectX>[@:class:/java/lang/Integer][{1,2,3}] ?= 4
+          </subjectX>
+          
+          <testX>!.
+          </testX>
+          
+        </test:Assertion>
+      </scenarios>
+      
+    </task:Sequence>
+  </chain>
+        
+</test:TestGroup>
