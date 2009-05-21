@@ -70,10 +70,7 @@ public class ListNode<T>
     return builder.toString();
   }
   
-  /**
-   * MethodCallNode operates on a source. If there is no direct source,
-   *   the subject of the supplied focus will be used.
-   */
+
   @Override
   @SuppressWarnings("unchecked")
   public Channel<?> bind(final Focus<?> focus)
