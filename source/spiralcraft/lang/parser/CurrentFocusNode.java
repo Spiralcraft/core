@@ -24,6 +24,15 @@ public class CurrentFocusNode
   extends FocusNode
 {
   
+  private String invoker;
+  
+  public CurrentFocusNode()
+  { }
+  
+  public CurrentFocusNode(String invoker)
+  { this.invoker=invoker;
+  }
+  
   @Override
   public Node[] getSources()
   { return null;
@@ -50,6 +59,6 @@ public class CurrentFocusNode
   
   @Override
   public String reconstruct()
-  { return " ";
+  { return invoker!=null?invoker:" ";
   }
 }

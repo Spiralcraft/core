@@ -24,6 +24,7 @@ import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.TypeModel;
+import spiralcraft.lang.spi.ArrayContainsChannel;
 import spiralcraft.lang.spi.ArrayIndexChannel;
 import spiralcraft.lang.spi.ArrayIterationDecorator;
 import spiralcraft.lang.spi.ArraySelectChannel;
@@ -153,6 +154,11 @@ public class ArrayReflector<I>
     if (name.equals("[]"))
     { binding=(Channel<X>) this.subscript(source,focus,params[0]);
     }
+    else if (name.equals("?="))
+    { 
+      return (Channel<X>) new ArrayContainsChannel<I>
+        (source,focus.bind((Expression<I>) params[0]));
+    }    
     else if (params==null)
     { binding=this.<X>getArrayProperty(source,name);
     }

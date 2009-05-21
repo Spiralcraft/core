@@ -23,8 +23,10 @@ import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.TypeModel;
+
 import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;
+import spiralcraft.lang.spi.ArrayContainsChannel;
 import spiralcraft.lang.spi.ArrayIterationDecorator;
 import spiralcraft.lang.spi.ArraySelectChannel;
 import spiralcraft.lang.spi.CollectionSelectChannel;
@@ -44,6 +46,7 @@ import spiralcraft.beans.MappedBeanInfo;
 
 import spiralcraft.util.ArrayUtil;
 
+import spiralcraft.util.lang.ClassUtil;
 import spiralcraft.util.lang.MethodResolver;
 
 import java.beans.Introspector;
@@ -89,6 +92,7 @@ public class BeanReflector<T>
     ,MAP
     ,LIST
     ,COLLECTION
+    ,LITERAL_ELEMENT_TYPE
   }
 
   @SuppressWarnings("unused")
@@ -371,6 +375,9 @@ public class BeanReflector<T>
     if (name.equals("[]"))
     { binding=(Channel<X>) this.subscript(source,focus,params[0]);
     }
+    else if (name.equals("?="))
+    { binding=(Channel<X>) this.contains(source,focus,params[0]);
+    }
     else if (params==null)
     { 
       binding=this.<X>getProperty(source,name);
@@ -447,30 +454,36 @@ public class BeanReflector<T>
         {
           // Make an effort to find a hint of a component type
           Method method=targetClass.getMethod("iterator",new Class[0]);
-          Type type=method.getGenericReturnType();
-          if (type instanceof ParameterizedType)
-          {
-            Type[] parameterTypes
-              =((ParameterizedType) type).getActualTypeArguments();
-            if (parameterTypes.length>0)
-            { 
-              Type parameterType=parameterTypes[0];
-              Reflector reflector=BeanReflector.getInstance(parameterType);
-              return (D) new IterableDecorator(source,reflector);
-            }
-            else
-            {
-              // log.fine("IterationDecorator- no parameters for iterator");
-              Reflector reflector=BeanReflector.getInstance(Object.class);
-              return (D) new IterableDecorator(source,reflector);
-            }
-          }
-          else
-          {
-            // log.fine("IterationDecorator- iterator not parameterized");
-            Reflector reflector=BeanReflector.getInstance(Object.class);
-            return (D) new IterableDecorator(source,reflector);
-          }
+          Class type=ClassUtil.getClass(method.getGenericReturnType());
+          Reflector reflector=BeanReflector.getInstance(type);
+          return (D) new IterableDecorator(source,reflector);
+          
+//  Factored out generics reconciliation logic into ClassUtil
+//          
+//          Type type=method.getGenericReturnType();
+//          if (type instanceof ParameterizedType)
+//          {
+//            Type[] parameterTypes
+//              =((ParameterizedType) type).getActualTypeArguments();
+//            if (parameterTypes.length>0)
+//            { 
+//              Type parameterType=parameterTypes[0];
+//              Reflector reflector=BeanReflector.getInstance(parameterType);
+//              return (D) new IterableDecorator(source,reflector);
+//            }
+//            else
+//            {
+//              // log.fine("IterationDecorator- no parameters for iterator");
+//              Reflector reflector=BeanReflector.getInstance(Object.class);
+//              return (D) new IterableDecorator(source,reflector);
+//            }
+//          }
+//          else
+//          {
+//            // log.fine("IterationDecorator- iterator not parameterized");
+//            Reflector reflector=BeanReflector.getInstance(Object.class);
+//            return (D) new IterableDecorator(source,reflector);
+//          }
         
         }
         catch (NoSuchMethodException x)
@@ -736,6 +749,30 @@ public class BeanReflector<T>
 
   }
 
+  private Channel<Boolean> contains
+    (Channel<T> source
+    ,Focus<?> focus
+    ,Expression<?> compareItem
+    )
+    throws BindException
+  {
+    Channel<?> compareItemChannel
+      =focus.bind(compareItem);
+    
+    if (targetClass.isArray())
+    { return new ArrayContainsChannel(source,compareItemChannel);
+    }
+    else if (Collection.class.isAssignableFrom(targetClass))
+    { return this.getMethod(source, "contains", compareItemChannel);
+    }
+    else
+    {
+      throw new BindException
+        ("Don't know how to search a "+targetClass.getName()+" (not an" 
+        +" array or Collection)"
+        );
+    }
+  }
   
   private Channel<?> subscript
     (Channel<T> source

@@ -14,12 +14,16 @@
 //
 package spiralcraft.lang.parser;
 
+import java.util.List;
+
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Reflector;
 
 import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.ArrayConstructorChannel;
 import spiralcraft.lang.spi.ArrayIndexTranslator;
 import spiralcraft.lang.spi.TranslatorChannel;
 
@@ -63,26 +67,39 @@ public class SubscriptNode<T,C,I>
   { return _source.reconstruct()+"["+_selector.reconstruct()+"]";
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   public Channel<?> bind(Focus<?> focus)
     throws BindException
   {
-   
-    Channel<C> collection=focus.<C>bind(new Expression<C>(_source,null));
-    Channel<?> result=
-      collection.resolve
-        (focus
-        , "[]"
-        , new Expression[] {new Expression<I>(_selector,null)}
-        );
-    if (result==null)
+    if (_source instanceof TypeFocusNode)
     { 
-      throw new BindException
-        ("Channel could not intepret the [] operator: "
-        +collection+"["+_selector+"]"
+      
+      // Array construction from something that can be iterated
+      return new ArrayConstructorChannel
+        ((Reflector<T>) _source.bind(focus).get()
+        ,focus.bind(new Expression<List<T>>(_selector))
         );
     }
-    return result;
+    else
+    {
+    
+      Channel<C> collection=focus.<C>bind(new Expression<C>(_source,null));
+      Channel<?> result=
+        collection.resolve
+          (focus
+          , "[]"
+          , new Expression[] {new Expression<I>(_selector,null)}
+          );
+      if (result==null)
+      { 
+        throw new BindException
+          ("Channel could not intepret the [] operator: "
+          +collection+"["+_selector+"]"
+          );
+      }
+      return result;
+    }
   }
   
 //  private Channel<?> bindDefault(Focus<?> focus)

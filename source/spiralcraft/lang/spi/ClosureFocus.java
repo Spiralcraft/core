@@ -29,7 +29,7 @@ import spiralcraft.log.ClassLog;
  * </p>
  * 
  * <p>Captures and caches the current content of all Channels referenced from 
- *   down-chain components for a period of time demarcated by the push() and
+ *   down-chain components for an operation demarcated by the push() and
  *   pop() methods.
  * </p>
  * 
@@ -53,8 +53,9 @@ public class ClosureFocus<T>
   private static final ClassLog log
     =ClassLog.getInstance(ClosureFocus.class);
   
-  private LinkedHashMap<URI,EnclosedFocus<?>> foci
-    =new LinkedHashMap<URI,EnclosedFocus<?>>();
+  @SuppressWarnings("unchecked")
+  private LinkedHashMap<URI,EnclosedFocus> foci
+    =new LinkedHashMap<URI,EnclosedFocus>();
   
   public ClosureFocus(Focus<?> focusChain)
   { parent=focusChain;
@@ -64,7 +65,7 @@ public class ClosureFocus<T>
   @Override
   public <X> Focus<X> findFocus(URI focusURI)
   {
-    EnclosedFocus<X> focus=(EnclosedFocus<X>) foci.get(focusURI);
+    EnclosedFocus<X> focus=foci.get(focusURI);
     if (focus==null)
     {
       Focus<X> openFocus=parent.<X>findFocus(focusURI);
@@ -74,11 +75,15 @@ public class ClosureFocus<T>
         if (subject.isConstant())
         { return openFocus;
         }
-        if (subject instanceof ThreadLocalChannel
-             && ((ThreadLocalChannel) subject).isInheritable()
-           )
-        { return openFocus;
-        }
+
+// Use the enclose() method and the Closure object for inter-Thread
+//   closure, so we don't have to create all our threads just-in-time.
+//        
+//        if (subject instanceof ThreadLocalChannel
+//             && ((ThreadLocalChannel) subject).isInheritable()
+//           )
+//        { return openFocus;
+//        }
         focus=new EnclosedFocus(subject);
         foci.put(focusURI,focus);
       }
@@ -91,27 +96,85 @@ public class ClosureFocus<T>
   }
 
 
+  @SuppressWarnings("unchecked")
+  /**
+   * Caches the current data value of all the Channels obtained from
+   *   ancestors for access by the current Thread.
+   */
   public void push()
   {
-    for (Entry<URI, EnclosedFocus<?>> entry : foci.entrySet())
+    for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
     { entry.getValue().push();
     }
   }
   
+  /**
+   * Releases the data values previously cached by push()
+   *   for the current Thread.
+   */
+  @SuppressWarnings("unchecked")
   public void pop()
   {
-    for (Entry<URI, EnclosedFocus<?>> entry : foci.entrySet())
+    for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
     { entry.getValue().pop();
     }
   }
 
+  /**
+   * Obtains a snapshot of the current data values of all the Channels
+   *   obtained from ancestors.
+   * 
+   * @return
+   */
+  public Closure enclose()
+  { return new Closure();
+  } 
+  
+  class Closure
+  {
+    private final Object[] values;
+    
+    @SuppressWarnings("unchecked")
+    Closure()
+    {
+      values=new Object[foci.size()];
+      int i=0;
+      for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
+      { values[i++]=entry.getValue().pull();
+      }       
+    }
+    
+    /**
+     * Provides access to the snapshot of data values for the current
+     *   Thread. 
+     */
+    @SuppressWarnings("unchecked")
+    public void push()
+    {
+      int i=0;
+      for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
+      { entry.getValue().push(values[i]);
+      }  
+    }
+    
+    /**
+     * Releases the snapshot of data values for the current Thread.
+     */
+    @SuppressWarnings("unchecked")
+    public void pop()
+    {
+      for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
+      { entry.getValue().pop();
+      }  
+    }
+  }
   
   class EnclosedFocus<Y>
     extends SimpleFocus<Y>
   { 
     private final Channel<Y> sourceChannel;
     
-    public EnclosedFocus(Channel<Y> channel)
+    EnclosedFocus(Channel<Y> channel)
     { 
       super(new ThreadLocalChannel<Y>(channel.getReflector(),true));
       sourceChannel=channel;
@@ -119,11 +182,19 @@ public class ClosureFocus<T>
       log.debug("Enclosing "+channel.getReflector().getTypeURI());
     }
     
-    public void push()
+    Y pull()
+    { return sourceChannel.get();
+    }
+    
+    void push()
     { ((ThreadLocalChannel<Y>) getSubject()).push(sourceChannel.get());
     }
     
-    public void pop()
+    void push(Y val)
+    { ((ThreadLocalChannel<Y>) getSubject()).push(val);
+    }
+    
+    void pop()
     { ((ThreadLocalChannel<Y>) getSubject()).pop();
     }
     

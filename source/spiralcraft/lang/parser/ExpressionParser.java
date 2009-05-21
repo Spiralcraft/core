@@ -231,7 +231,7 @@ public class ExpressionParser
     throws ParseException
   {
     Node node=this.parseLogicalOrExpression();
-    if (_tokenizer.ttype=='?')
+    if (_tokenizer.ttype=='?' && _tokenizer.lookahead.ttype!='=')
     { 
       consumeToken();
       Node trueResult=this.parseConditionalExpression();
@@ -343,22 +343,22 @@ public class ExpressionParser
       Node equalityNode = firstOperand.isNotEqual(secondOperand);
       return parseEqualityExpressionRest(equalityNode);
     }
-    else if (_tokenizer.ttype=='=')
+    else if (_tokenizer.ttype=='=' && _tokenizer.lookahead.ttype=='=')
     {
-      if (_tokenizer.lookahead.ttype=='=')
-      {
-        consumeToken();
-        consumeToken();
-        Node secondOperand=parseRelationalExpression();
-        Node equalityNode = firstOperand.isEqual(secondOperand);
-        return parseEqualityExpressionRest(equalityNode);
-      }
-      else
-      {
-        // This is an assignment operator, not a comparison operator
-        // System.err.println("ttype=[ "+(char) _tokenizer.ttype+" ]");
-        return firstOperand;
-      }
+      consumeToken();
+      consumeToken();
+      Node secondOperand=parseRelationalExpression();
+      Node equalityNode = firstOperand.isEqual(secondOperand);
+      return parseEqualityExpressionRest(equalityNode);
+    }
+    else if (_tokenizer.ttype=='?' && _tokenizer.lookahead.ttype=='=')
+    {
+      consumeToken();
+      consumeToken();
+      Node secondOperand=parseRelationalExpression();
+      Node equalityNode = firstOperand.contains(secondOperand);
+      return parseEqualityExpressionRest(equalityNode);
+      
     }
     else
     { return firstOperand;
@@ -519,9 +519,7 @@ public class ExpressionParser
         consumeToken();
         return parseUnaryExpression().not();
       case '{':
-        // TODO: Dynamic lists are kludgy- this should be the Tuple operator
-        // Specifically, a heterogeneous list of composed of arbitrary data
-        ///  sources breaks type safety. Good news it isn't really used.
+        // Dynamic list- used primarily to create fixed length typed Arrays
         consumeToken();
         Node ret=parseListExpression();
         expect('}');
@@ -612,7 +610,7 @@ public class ExpressionParser
       case '.':
         consumeToken();
         if (focusNode==null)
-        { focusNode=new CurrentFocusNode();
+        { focusNode=new CurrentFocusNode(".");
         }
         Node ret=parseFocusRelativeExpression(focusNode);
         if (debug)
@@ -629,6 +627,8 @@ public class ExpressionParser
         //   catch this as a case not to use a resolve()
         return parsePrimaryExpression(focusNode);
       default:
+        // Figure out when this happens- probably only for a lone explicit
+        //   focus node, or an empty expression
         Node result = parsePrimaryExpression(new CurrentFocusNode());
         // focusNode will only be present if it was explicit
         return result!=null?result:focusNode;

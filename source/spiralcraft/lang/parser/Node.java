@@ -172,6 +172,11 @@ public abstract class Node
   { return new AssignmentNode(this,source);
   }
 
+  @SuppressWarnings("unchecked")
+  public Node contains(Node source)
+  { return new ContainsNode(this,source);
+  }
+  
   protected void unsupported(String msg)
   { throw new UnsupportedOperationException(getClass().getName()+"."+msg+"(...)");
   }
