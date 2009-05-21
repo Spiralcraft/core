@@ -15,13 +15,16 @@
 package spiralcraft.test;
 
 import java.net.URI;
+import java.util.LinkedList;
+import java.util.List;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.Level;
-import spiralcraft.task.AbstractTask;
 import spiralcraft.task.Task;
 
 /**
@@ -42,18 +45,14 @@ public class TestGroup
     Focus<TestGroup> testFocus
       =focus.<TestGroup>findFocus(URI.create("class:/spiralcraft/test/TestGroup"));
     if (testFocus==null)
-    { 
-      throw new BindException
-        ("Not in focus chain: class:/spiralcraft/test/TestGroup");
+    { return null;
     }
     return testFocus.getSubject().get();
   }
   
   protected Expression<Object> messageX;
   protected Channel<Object> messageChannel;
-  
-  { setLogTaskResults(true);
-  }
+  protected ThreadLocalChannel<List<TestResult>> resultChannel;
   
   public void setMessageX(Expression<Object> messageX)
   { this.messageX=messageX;
@@ -63,35 +62,83 @@ public class TestGroup
   @Override
   protected Task task()
   {
-    return new AbstractTask()
+    return new ChainTask()
     {
 
       @Override
       protected void work()
+        throws InterruptedException
       { 
         if (debug)
         { log.log(Level.FINE,this+": executing");
         }
-        Object message=messageChannel!=null?messageChannel.get():null;
-        addResult
-          (new TestResult
-             (TestGroup.this
-             ,Boolean.TRUE
-             ,message!=null?message.toString():null
-             )
-          );
+        
+        List<TestResult> results=new LinkedList<TestResult>();
+        resultChannel.push(results);
+        try
+        {
+          super.work();
+          boolean passed=true;
+          int count=0;
+          int failCount=0;
+          for (TestResult result:results)
+          {
+            count++;
+            if (!result.getPassed())
+            { 
+              passed=false;
+              failCount++;
+            }
+          }
+          Object message=messageChannel!=null?messageChannel.get():null;
+          TestResult result
+            =new TestResult
+               (TestGroup.this
+               , passed
+               ,(message!=null?message.toString()+": ":"")
+               +count+" results, "+failCount+" failures"
+               ,results
+               );
+          if (testGroup!=null)
+          { testGroup.addTestResult(result);
+          }
+          if (throwFailure && !passed)
+          { addException(new TestFailedException(result));
+          }          
+          addResult(result);
+          
+        }
+        finally
+        { resultChannel.pop();
+        }
 
       }
     };    
   }
 
+  public void addTestResult(TestResult result)
+  { 
+    final List<TestResult> results=resultChannel.get();
+    synchronized (results)
+    { results.add(result);
+    }
+  }
+  
   @Override
   protected void bindChildren(Focus<?> focusChain)
     throws BindException
   {  
+    resultChannel
+      =new ThreadLocalChannel<List<TestResult>>
+        (BeanReflector.<List<TestResult>>getInstance(List.class),true);
+    
+    focusChain=focusChain.chain(resultChannel);
     if (messageX!=null)
     { messageChannel=focusChain.bind(messageX);
     }
     super.bindChildren(focusChain);
   }
 }
+
+
+

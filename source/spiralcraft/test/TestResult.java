@@ -14,6 +14,11 @@
 //
 package spiralcraft.test;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.List;
+
 /**
  * Indicates the result of a test.
  * 
@@ -26,29 +31,43 @@ public class TestResult
   private final boolean passed;
   private final String message;
   private final Exception exception;
+  private final List<TestResult> results;
   
   public TestResult(Test test,boolean passed)
   { 
-    this.name=test.getFullyQualifiedName();
+    this.name=test.getName();
     this.passed=passed;
     this.message=null;
     this.exception=null;
+    this.results=null;
   }
   
   public TestResult(Test test,boolean passed,String message)
   { 
-    this.name=test.getFullyQualifiedName();
+    this.name=test.getName();
     this.passed=passed;
     this.message=message;
     this.exception=null;
+    this.results=null;
   }
   
   public TestResult(Test test,boolean passed,String message,Exception exception)
   { 
-    this.name=test.getFullyQualifiedName();
+    this.name=test.getName();
     this.passed=passed;
     this.message=message;
     this.exception=exception;
+    this.results=null;
+  }
+
+  public TestResult
+    (Test test,boolean passed,String message,List<TestResult> results)
+  { 
+    this.name=test.getName();
+    this.passed=passed;
+    this.message=message;
+    this.exception=null;
+    this.results=results;
   }
 
   public boolean getPassed()
@@ -70,8 +89,33 @@ public class TestResult
   @Override
   public String toString()
   { 
-    return (passed?"PASS":"FAIL!!!")
-      +": "+name+": "+(message!=null?message+": ":"")
-      +(exception!=null?exception:"");
+    StringWriter writer=new StringWriter();
+    try
+    { format(writer,"");
+    }
+    catch (IOException x)
+    { x.printStackTrace();
+    }
+    return writer.toString();
+  }
+  
+  public void format(Writer writer,String prefix)
+    throws IOException
+  {
+    writer.write(
+      (passed?"PASS":"FAIL!!!")
+      +(name!=null?": "+name:"")+": "+(message!=null?message+": ":"")
+      +(exception!=null?exception:"")
+      );
+    
+    if (results!=null)
+    {
+      String subPrefix=prefix+"  ";
+      for (TestResult result:results)
+      { 
+        writer.write("\r\n"+subPrefix);
+        result.format(writer, subPrefix);
+      }
+    }
   }
 }

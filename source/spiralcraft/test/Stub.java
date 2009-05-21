@@ -38,8 +38,7 @@ public class Stub
   protected Expression<Boolean> conditionX;
   protected Channel<Boolean> conditionChannel;
   
-  { setLogTaskResults(true);
-  }
+
   
   public void setMessageX(Expression<Object> messageX)
   { this.messageX=messageX;
@@ -64,12 +63,21 @@ public class Stub
         Boolean condition=conditionChannel!=null?conditionChannel.get():true;
         Object message=messageChannel!=null?messageChannel.get():null;
         
-        addResult
-          (new TestResult
+        TestResult result
+          =new TestResult
              (Stub.this
              ,Boolean.TRUE.equals(condition)
              ,message!=null?message.toString():null
-             )
+             );
+        
+        if (testGroup!=null)
+        { testGroup.addTestResult(result);
+        }
+        if (throwFailure && !result.getPassed())
+        { addException(new TestFailedException(result));
+        }
+        addResult
+          (result
           );
 
       }

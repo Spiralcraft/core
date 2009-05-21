@@ -15,18 +15,19 @@
 package spiralcraft.test;
 
 
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
 import spiralcraft.task.Scenario;
 
 public abstract class Test
   extends Scenario
 {
 
-
+  protected TestGroup testGroup;
   
-  { setLogTaskResults(true);
-  }
   
   private String name;
+  protected boolean throwFailure;
   
   /**
    * The fully qualified name of the test, in order to identify results
@@ -37,8 +38,24 @@ public abstract class Test
   { this.name=name;
   }
   
-  public String getFullyQualifiedName()
-  { return getClass().getName()+(name!=null?"-"+name:"");
+  public String getName()
+  { return this.name;
+  }
+
+  
+  public void setThrowFailure(boolean throwFailure)
+  { this.throwFailure=throwFailure;
+  }
+  
+  @Override
+  public Focus<?> bind(Focus<?> focusChain)
+    throws BindException
+  {
+    testGroup=TestGroup.find(focusChain);
+    if (testGroup==null)
+    { setLogTaskResults(true);
+    }
+    return super.bind(focusChain);
   }
 
 }
