@@ -176,107 +176,117 @@ public class Selection
             )
     {
       // Terminal case- EqualityNode (==)
+      return 
+        factorPositiveEqualityNode((EqualityNode<?>) original,lhsList,rhsList);
       
-      EqualityNode<?> equalityNode=(EqualityNode<?>) original;
-      Node lhs=equalityNode.getLeftOperand();
-      boolean factored=false;
-      if (lhs instanceof ResolveNode)
-      {
-        ResolveNode<?> lhsResolve=(ResolveNode<?>) lhs;
-        if (lhsResolve.getSource() instanceof CurrentFocusNode)
-        { 
-          // Test right hand side for legal expressions
+    }
+    // Add more cases here
+    else
+    { return original;
+    }
+        
+  }
+  
+  public Node factorPositiveEqualityNode
+    (EqualityNode<?> equalityNode
+    ,List<Expression<?>> lhsList
+    ,List<Expression<?>> rhsList)
+  {
+    Node lhs=equalityNode.getLeftOperand();
+    boolean factored=false;
+    if (lhs instanceof ResolveNode)
+    {
+      ResolveNode<?> lhsResolve=(ResolveNode<?>) lhs;
+      if (lhsResolve.getSource() instanceof CurrentFocusNode)
+      { 
+        // Test right hand side for legal expressions
           
-          // We're doing this by inclusion right now to be safe
+        // We're doing this by inclusion right now to be safe
+        
+        // What cannot be allowed is a CurrentFocusNode on the RHS, because
+        //  that is the variant node. 
           
-          // What cannot be allowed is a CurrentFocusNode on the RHS, because
-          //  that is the variant node. 
-          
-          Node rhs=equalityNode.getRightOperand();
-          Node validRhs=null;
-          if (rhs instanceof PrimaryIdentifierNode)
-          {
-            PrimaryIdentifierNode rhsIdent=(PrimaryIdentifierNode) rhs;
-            if (rhsIdent.getSource()==null
-                || rhsIdent.getSource() instanceof CurrentFocusNode
-                )
-            { validRhs=rhsIdent;
-            }
-            else
-            { 
-              if (debug)
-              { 
-                log.fine
-                  ("Ident node source is not current focus "
-                  +rhsIdent.getSource()+" "+rhsIdent.getSource().reconstruct()
-                  );
-              }
-            }
-          }
-          else if (rhs instanceof LiteralNode)
-          { validRhs=rhs;
-          }
-          else if (!referencesCurrentFocus(rhs))
-          { validRhs=rhs;
+        Node rhs=equalityNode.getRightOperand();
+        Node validRhs=null;
+        if (rhs instanceof PrimaryIdentifierNode)
+        {
+          PrimaryIdentifierNode rhsIdent=(PrimaryIdentifierNode) rhs;
+          if (rhsIdent.getSource()==null
+              || rhsIdent.getSource() instanceof CurrentFocusNode
+              )
+          { validRhs=rhsIdent;
           }
           else
           { 
             if (debug)
             { 
               log.fine
-                ("Not a valid RHS for refactoring "
-                +rhs.reconstruct()
-                + " ("+rhs.toString()+")"
+                ("Ident node source is not current focus "
+                +rhsIdent.getSource()+" "+rhsIdent.getSource().reconstruct()
                 );
             }
-          }
-  
-          // XXX Some logic in Expressions to determine grounding is in
-          //   order.
-              
-          if (validRhs!=null)
-          {
-            lhsList.add(new Expression<Object>(lhsResolve));
-            rhsList.add(new Expression<Object>(validRhs));
-            if (debug)
-            { 
-              log.fine
-                ("Factored "
-                +lhsResolve.reconstruct()+" = "+validRhs.reconstruct()
-                );
-            }
-            factored=true;
           }
         }
+        else if (rhs instanceof LiteralNode)
+        { validRhs=rhs;
+        }
+        else if (!referencesCurrentFocus(rhs))
+        { validRhs=rhs;
+        }
         else
-        {
+        { 
           if (debug)
           { 
             log.fine
-              ("Resolve node source is not current focus "
-              +lhsResolve.getSource()+" "+lhsResolve.getSource().reconstruct()
+              ("Not a valid RHS for refactoring "
+              +rhs.reconstruct()
+              + " ("+rhs.toString()+")"
               );
           }
+        }
+
+        // XXX Some logic in Expressions to determine grounding is in
+        //   order.
+            
+        if (validRhs!=null)
+        {
+          lhsList.add(new Expression<Object>(lhsResolve));
+          rhsList.add(new Expression<Object>(validRhs));
+          if (debug)
+          { 
+            log.fine
+              ("Factored "
+              +lhsResolve.reconstruct()+" = "+validRhs.reconstruct()
+              );
+          }
+          factored=true;
         }
       }
       else
       {
         if (debug)
-        { log.fine("lhs is not a resolve node "+lhs.reconstruct());
+        { 
+          log.fine
+            ("Resolve node source is not current focus "
+            +lhsResolve.getSource()+" "+lhsResolve.getSource().reconstruct()
+            );
         }
-      }
-      if (factored)
-      { return null;
-      }
-      else
-      { return original;
       }
     }
     else
-    { return original;
+    {
+      if (debug)
+      { log.fine("lhs is not a resolve node "+lhs.reconstruct());
+      }
     }
-        
+    if (factored)
+    { return null;
+    }
+    else
+    { return equalityNode;
+    }
   }
+  
   
   /**
    * <p>Factor a base Query into a downstream Query (returned) and 
