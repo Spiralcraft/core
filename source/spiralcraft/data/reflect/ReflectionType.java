@@ -245,7 +245,8 @@ public class ReflectionType<T>
     }
     catch (NoSuchMethodException x)
     { }
-    
+
+    stringConverter=StringConverter.getInstance(clazz);    
   }
   
   
@@ -280,6 +281,14 @@ public class ReflectionType<T>
     stringConverter=StringConverter.getInstance(clazz);
   }
 
+  @Override
+  public boolean isPrimitive()
+  { 
+    if (reflectedClass.isEnum())
+    { return true;
+    }
+    return super.isPrimitive();
+  }
 
   /**
    * <P>Provide the Field names that should be used for the parameters of
