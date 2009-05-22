@@ -34,12 +34,18 @@ public class ContextNode
   
   @Override
   public Node copy(Object visitor)
-  { return new ContextNode((FocusNode) _source.copy(visitor));
+  { 
+    if (_source!=null)
+    { return new ContextNode((FocusNode) _source.copy(visitor));
+    }
+    else
+    { return this;
+    }
   }
 
   @Override
   public String reconstruct()
-  { return _source.reconstruct()+" ";
+  { return _source!=null?_source.reconstruct()+" ":"";
   }
   
   public FocusNode getSource()
