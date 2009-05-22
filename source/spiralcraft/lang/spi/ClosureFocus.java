@@ -38,9 +38,8 @@ import spiralcraft.log.ClassLog;
  *   expensive Channel access operations are not repeated excessively.
  * </p>
  * 
- * <p>When constructing the closure, a subject channel that is already
- *   an inheritable ThreadLocalChannel, or where isConstant()=true is
- *   considered already "closed" and will not be explicitly managed.
+ * <p>When constructing the closure, a subject channel where isConstant()=true
+ *   is considered already "closed" and will not be explicitly managed.
  * </p>
  * 
  * @author mike
