@@ -66,7 +66,7 @@ public class Collect<Titem>
    * 
    * @param resultAssignment
    */
-  public void setX
+  public void setAggregateX
     (Expression<Aggregate<Titem>> targetX)
   { this.targetX=targetX;
   }
