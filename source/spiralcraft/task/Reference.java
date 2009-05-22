@@ -40,6 +40,13 @@ public class Reference
   private AbstractXmlObject<?,?> target;
   
 
+  public void setTargetTypeURI(URI targetTypeURI)
+  { this.targetTypeURI=targetTypeURI;
+  }
+  
+  public void setTargetURI(URI targetURI)
+  { this.targetURI=targetURI;
+  }
   
   @Override
   protected Task task()
