@@ -42,6 +42,7 @@ import java.lang.reflect.InvocationTargetException;
 public abstract class StringConverter<T>
 {
 
+  // TODO: Make weak so classes can be collected
   private static final HashMap<Class<?>,StringConverter<?>> _MAP
     =new HashMap<Class<?>,StringConverter<?>>();
     
