@@ -21,11 +21,75 @@
       <scm:Note>Unit test system enhancements for managing and reporting test
         results. 
       </scm:Note>
+      <scm:Note>Added "enum" handling to ReflectionType datatypes 
+      </scm:Note>
       <scm:Note>Regression fixes, minor syntax enhancements
       </scm:Note>
     </notes>
     
     <detail>
+      <scm:Change>
+        <date>2009-05-21
+        </date>
+        
+        <notes>
+          <scm:Note>"Collect" scenario- made property aggregateX instead of X
+            for more descriptive name
+          </scm:Note>
+          <scm:Note>Fixed ContextNode NPE when no Focus node is provided as a
+            source
+          </scm:Note>
+          <scm:Note>"Reference" scenario now has setter methods
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <URI>data/task/Collect.java
+        </URI>
+        <URI>lang/parser/ContextNode.java
+        </URI>
+        <URI>task/Reference.java
+        </URI>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-05-21
+        </date>
+        
+        <notes>
+          <scm:Note>Handle Enums properly in ReflectionType by looking up
+            a StringConverter, and ensuring that Enums are primitive.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <URI>data/reflect/ReflectionType.java
+        </URI>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-05-21
+        </date>
+        
+        <notes>
+          <scm:Note>Completed "Reference" scenario
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/task/
+        </path>
+        
+        <URI>Reference.java
+        </URI>
+      </scm:Change>
+      
       <scm:Change>
         <date>2009-05-21
         </date>

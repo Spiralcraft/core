@@ -12,8 +12,8 @@
     
     <dtask:Collect>
     
-      <x>[example:BatchSession].results
-      </x>
+      <aggregateX>[example:BatchSession].results
+      </aggregateX>
           
       <logTaskResults>false
       </logTaskResults>
