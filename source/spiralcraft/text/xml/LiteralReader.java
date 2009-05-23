@@ -31,6 +31,7 @@ public class LiteralReader
     throws ParseException
   { 
     _buffer=new StringBuffer();
+    boolean inWhitespace=false;
     _delimiter=context.getCurrentChar();
     if (_delimiter!='"' && _delimiter!='\'')
     { 
@@ -61,11 +62,16 @@ public class LiteralReader
       {
       case '\n':
       case '\r':
-        throw new ParseException
-          ("Found line break in literal"
-          ,context.getPosition()
-          );
+      case '\t':
+      case ' ':
+        inWhitespace=true;
+        break;
       default:
+        if (inWhitespace)
+        { 
+          _buffer.append(' ');
+          inWhitespace=false;
+        }
         _buffer.append(chr);
       }
       context.advance();

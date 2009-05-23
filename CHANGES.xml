@@ -2,6 +2,27 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
+    <revision>0.3.6
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-05-22
+    </date>
+    
+    <notes>
+      <scm:Note>Fixed whitespace handling for attributes in XML fragment
+        parser
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft/text/xml/LiteralReader.java
+    </path>
+  </scm:Change>
+
+
+  <scm:Change>
     <revision>0.3.5
     </revision>
     
