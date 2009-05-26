@@ -573,7 +573,7 @@ public class AssemblyClass
   public String[] getInnerPath()
   { 
     if (_outerClass!=null)
-    { return (String[]) ArrayUtil.append(_outerClass.getInnerPath(),_declarationName);
+    { return ArrayUtil.append(_outerClass.getInnerPath(),_declarationName);
     }
     else
     { return new String[] {_declarationName};

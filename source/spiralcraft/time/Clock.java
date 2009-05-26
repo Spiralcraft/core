@@ -61,12 +61,12 @@ public final class Clock
     { _clockListeners=new ClockListener[] {listener};
     }
     else
-    { _clockListeners=(ClockListener[]) ArrayUtil.append(_clockListeners,listener);
+    { _clockListeners=ArrayUtil.append(_clockListeners,listener);
     }
   }
 
   public synchronized void removeClockListener(ClockListener listener)
-  { _clockListeners=(ClockListener[]) ArrayUtil.remove(_clockListeners,listener);
+  { _clockListeners=ArrayUtil.remove(_clockListeners,listener);
   }
 
   public final void run()

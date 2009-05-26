@@ -89,7 +89,7 @@ public class ArgumentSet
         { setValuesRaw(name,new Object[] {value});
         }
         else
-        { setValuesRaw(name,(Object[]) ArrayUtil.append(values,value));
+        { setValuesRaw(name,ArrayUtil.append(values,value));
         }
       }
     }

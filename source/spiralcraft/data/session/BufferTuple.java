@@ -560,7 +560,7 @@ public class BufferTuple
     { return baseDirty;
     }
     else
-    { return (Field[]) ArrayUtil.concat(baseDirty,dirty);
+    { return  ArrayUtil.concat(baseDirty,dirty);
     }
   }
 

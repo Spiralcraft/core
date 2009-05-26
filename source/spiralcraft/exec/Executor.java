@@ -296,7 +296,7 @@ public class Executor
         }
         else
         { 
-          arguments=(String[]) ArrayUtil.append(arguments,argument);
+          arguments=ArrayUtil.append(arguments,argument);
           argCounter++;
         }
         return true;
@@ -352,7 +352,7 @@ public class Executor
               .println("Executor parameter '-' is deprecated");
           }
           else
-          { arguments=(String[]) ArrayUtil.append(arguments,"-"+option);
+          { arguments=ArrayUtil.append(arguments,"-"+option);
           }
           argCounter++;
         }

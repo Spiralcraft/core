@@ -100,7 +100,7 @@ public class Path
   public Path append(String[] elements)
   { 
     return new Path
-      ( (String[]) ArrayUtil.concat(_elements,elements)
+      (ArrayUtil.concat(_elements,elements)
       ,_delimiter
       ,_absolute
       ,false
@@ -113,7 +113,7 @@ public class Path
   public Path append(String[] elements,boolean container)
   { 
     return new Path
-      ( (String[]) ArrayUtil.concat(_elements,elements)
+      (ArrayUtil.concat(_elements,elements)
       ,_delimiter
       ,_absolute
       ,container
@@ -126,7 +126,7 @@ public class Path
   public Path append(String element)
   { 
     return new Path
-      ( (String[]) ArrayUtil.append(_elements,element)
+      (ArrayUtil.append(_elements,element)
       ,_delimiter
       ,_absolute
       ,false
@@ -139,7 +139,7 @@ public class Path
   public Path append(String element,boolean container)
   { 
     return new Path
-      ( (String[]) ArrayUtil.append(_elements,element)
+      (ArrayUtil.append(_elements,element)
       ,_delimiter
       ,_absolute
       ,container

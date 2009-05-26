@@ -30,7 +30,7 @@ public class ArrayUtil
   /**
    * Append a value to an array
    */
-  public static Object append(Object array,Object value)
+  public static <T> T[] append(T[] array,T value)
   { 
     array=expandBy(array,1);
     Array.set(array,Array.getLength(array)-1,value);
@@ -40,7 +40,7 @@ public class ArrayUtil
   /**
    * Prepend a value to an array
    */
-  public static Object prepend(Object array,Object value)
+  public static <T> T[] prepend(T[] array,T value)
   { 
     array=expandBy(array,1);
     Array.set(array,0,value);
@@ -64,7 +64,7 @@ public class ArrayUtil
   /**
    * Append an array to an array
    */
-  public static Object concat(Object array1,Object array2)
+  public static <T> T[] concat(T[] array1,T[] array2)
   { 
     int appendPoint=Array.getLength(array1);
     int appendElements=Array.getLength(array2);
@@ -77,21 +77,23 @@ public class ArrayUtil
    * Append an array to an array
    */
   @Deprecated
-  public static Object appendArrays(Object array1,Object array2)
+  public static <T> T[] appendArrays(T[] array1,T[] array2)
   { return concat(array1,array2);
   }
 
   /**
    * Merge the contents of two arrays, discarding duplicate entries
    */
-  public static Object mergeArrays(Object array1,Object array2)
+  @SuppressWarnings("unchecked")
+  public static <T> T[] mergeArrays(T[] array1,T[] array2)
   { 
-    TreeSet<Object> treeSet=new TreeSet<Object>();
+    TreeSet<T> treeSet=new TreeSet<T>();
     addToCollection(treeSet,array1);
     addToCollection(treeSet,array2);
-    Object array3=Array.newInstance(array1.getClass().getComponentType(),treeSet.size());
-    Object[] result=treeSet.toArray();
-    System.arraycopy(result, 0, array3, 0, result.length);
+    T[] array3
+      =(T[]) Array.newInstance
+        (array1.getClass().getComponentType(),treeSet.size());
+    treeSet.toArray(array3);
     return array3;
   }
 
@@ -99,10 +101,12 @@ public class ArrayUtil
    * Create single element array of the specified class which contains the
    *   specified value
    */
-  public static Object newInstance(Class<?> arrayComponentClass,Object value)
+  @SuppressWarnings("unchecked")
+  public static <T> T[] newInstance(Class<T> arrayComponentClass,T value)
   { 
-    Object array=Array.newInstance(arrayComponentClass,1);
-    Array.set(array,0,value);
+    T[] array=(T[]) Array.newInstance(arrayComponentClass,1);
+    array[0]=value;
+//    Array.set(array,0,value);
     return array;
   }
 
@@ -111,7 +115,7 @@ public class ArrayUtil
    *@return The number of elements successfully added
    */
   @SuppressWarnings("unchecked")
-  public static int addToCollection(Collection c,Object array)
+  public static <T> int addToCollection(Collection<T> c,T[] array)
   {
     // Unchecked generics b/c in meta-land here
 
@@ -119,7 +123,7 @@ public class ArrayUtil
     int count=0;
     for (int i=0;i<length;i++)
     { 
-      if (c.add(Array.get(array,i)))
+      if (c.add((T) Array.get(array,i)))
       { count++;
       }
     }
@@ -130,11 +134,11 @@ public class ArrayUtil
    * Find an object in a target array using the equals() method and
    *   return the found objects.
    */
-  public static Object find(Object array,Object target)
+  public static <T> T find(T[] array,T target)
   {
     int index=indexOf(array,target);
     if (index>-1)
-    { return Array.get(array,index);
+    { return array[index];
     }
     return null;
   }
@@ -143,12 +147,12 @@ public class ArrayUtil
    * Find an object in a target array using the equals() method and
    *   return the array index where it was found
    */
-  public static int indexOf(Object array,final Object target)
+  public static <T> int indexOf(T[] array,final T target)
   { 
     int length=Array.getLength(array);
     for (int i=0;i<length;i++)
     { 
-      Object val=Array.get(array,i);
+      T val=array[i];
       if (val==target)
       { return i;
       }
@@ -159,29 +163,37 @@ public class ArrayUtil
     return -1;
   }
 
-  public static boolean contains(Object array,final Object target)
+  public static <T> boolean contains(T[] array,final T target)
   { return indexOf(array,target)>=0;
   }
 
   /**
    * Expand an array by adding the specified number of elements
    */
-  public static Object expandBy(Object array,int expandBy)
+  @SuppressWarnings("unchecked")
+  public static <T> T[] expandBy(T[] array,int expandBy)
   {
-    Object newArray = Array.newInstance(array.getClass().getComponentType(), Array.getLength(array)+expandBy);
+    T[] newArray = 
+       (T[]) Array.newInstance
+         (array.getClass().getComponentType()
+         , Array.getLength(array)+expandBy
+         );
     System.arraycopy(array, 0, newArray, 0, Array.getLength(array));
     return newArray;
   }
 
-  public static Object remove(Object array,Object val)
+  @SuppressWarnings("unchecked")
+  public static <T> T[] remove(T[] array,T val)
   {
     int index=indexOf(array,val);
     if (index==-1)
     { return array;
     }
-    Object newArray = Array.newInstance(array.getClass().getComponentType(), Array.getLength(array)-1);
+    T[] newArray 
+      = (T[]) Array.newInstance
+        (array.getClass().getComponentType(), array.length-1);
     System.arraycopy(array,0,newArray,0,index);
-    System.arraycopy(array,index+1,newArray,index,Array.getLength(newArray)-index);
+    System.arraycopy(array,index+1,newArray,index,newArray.length-index);
     return newArray;
   }
 
@@ -189,19 +201,27 @@ public class ArrayUtil
    * Truncate an array by removing the specified number of elements from
    *   the head of the array.
    */
-  public static Object truncateBefore(Object array,int numElements)
+  @SuppressWarnings("unchecked")
+  public static <T> T[] truncateBefore(T[] array,int numElements)
   {
-    Object newArray = Array.newInstance(array.getClass().getComponentType(), Array.getLength(array)-numElements);
-    System.arraycopy(array, numElements, newArray, 0, Array.getLength(newArray));
+    T[] newArray 
+      = (T[]) Array.newInstance
+        (array.getClass().getComponentType()
+        , array.length-numElements
+        );
+    System.arraycopy(array, numElements, newArray, 0, newArray.length);
     return newArray;
   }
   
   /**
    * Truncate an array to the specified number of elements.
    */
-  public static Object truncate(Object array,int numElements)
+  @SuppressWarnings("unchecked")
+  public static <T> T[] truncate(T[] array,int numElements)
   {
-    Object newArray = Array.newInstance(array.getClass().getComponentType(), numElements);
+    T[] newArray 
+      = (T[]) Array.newInstance
+        (array.getClass().getComponentType(), numElements);
     System.arraycopy(array, 0, newArray, 0, numElements);
     return newArray;
   }

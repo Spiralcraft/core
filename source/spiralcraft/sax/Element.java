@@ -238,11 +238,11 @@ public class Element
   }
   
   public void removeAttribute(Attribute attribute)
-  { _attributes=(Attribute[]) ArrayUtil.remove(_attributes,attribute);
+  { _attributes=ArrayUtil.remove(_attributes,attribute);
   }
 
   public void addAttribute(Attribute attribute)
-  { _attributes=(Attribute[]) ArrayUtil.append(_attributes,attribute);
+  { _attributes=ArrayUtil.append(_attributes,attribute);
   }
 
   public Attribute[] getAttributes()

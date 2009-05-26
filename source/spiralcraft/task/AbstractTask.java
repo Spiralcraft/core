@@ -381,13 +381,13 @@ public abstract class AbstractTask
   public void addTaskListener(TaskListener listener)
   { 
     _taskListeners
-      =(TaskListener[]) ArrayUtil.append(_taskListeners,listener);
+      =ArrayUtil.append(_taskListeners,listener);
   }
   
   public void removeTaskListener(TaskListener listener)
   { 
     _taskListeners
-      =(TaskListener[]) ArrayUtil.remove(_taskListeners,listener);
+      =ArrayUtil.remove(_taskListeners,listener);
   }
 
   protected TaskCommand executeChild(Scenario scenario)
