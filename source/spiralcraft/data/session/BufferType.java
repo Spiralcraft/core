@@ -16,6 +16,7 @@ package spiralcraft.data.session;
 
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.Key;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Field;
@@ -99,13 +100,15 @@ public class BufferType
           continue;
         }
 
+        Key<?> primaryKey=this.archetype.getPrimaryKey();
+        
         // Primitives are immutable
-        if (!field.getType().isPrimitive())
+        if (primaryKey!=null && !field.getType().isPrimitive())
         {
           if (field instanceof KeyField
               && isChildKey
                 (((KeyField<?>) field).getKey().fieldIterable()
-                ,((KeyField<?>) field).getScheme().getPrimaryKey().fieldIterable()
+                ,primaryKey.fieldIterable()
                 )
               )
           {
@@ -142,6 +145,14 @@ public class BufferType
 
   
 
+  /**
+   * Indicate whether the given relation includes the primary key of this
+   *   Type's Scheme.
+   * 
+   * @param relation
+   * @param primary
+   * @return
+   */
   private boolean isChildKey
     (Iterable<? extends Field<?>> relation,Iterable<? extends Field<?>> primary)
   {
