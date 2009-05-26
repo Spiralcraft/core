@@ -1,6 +1,141 @@
 <scm:Change.list
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
+  
+  <scm:Change>
+    <revision>0.3.7
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-05-26
+    </date>
+    
+    <notes>
+      <scm:Note>Enhancements to Pool and to abstract data components to
+        support additional implementations (ie. completion of SQL Store).
+      </scm:Note>
+      <scm:Note>Made spiralcraft.util.ArrayUtil generic, eliminating lots of
+        casting in client code
+      </scm:Note>
+    </notes>
+    
+    <detail>
+      <scm:Change>
+    
+        <date>2009-05-26
+        </date>
+    
+        <notes>
+          <scm:Note>Fixed NPE in BufferType during link() when buffered type
+            has key fields but no primary key
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/session/BufferType.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+    
+        <date>2009-05-25
+        </date>
+    
+        <notes>
+          <scm:Note>Made spiralcraft.util.ArrayUtil generic, eliminating lots of
+        casting in client code
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/
+        </path>
+    
+        <resources>
+          <URI>builder/AssemblyClass.java
+          </URI>
+          <URI>data/session/BufferTuple.java
+          </URI>
+          <URI>data/spi/ArrayDeltaTuple.java
+          </URI>
+          <URI>exec/Executor.java
+          </URI>
+          <URI>sax/Element.java
+          </URI>
+          <URI>shell/ArgumentSet.java
+          </URI>
+          <URI>task/AbstractTask.java
+          </URI>
+          <URI>time/Clock.java
+          </URI>
+          <URI>util/Path.java
+          </URI>
+          <URI>util/ArrayUtil.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+    
+        <date>2009-05-24
+        </date>
+    
+        <notes>
+          <scm:Note>Refactor XmlStore generic code into AbstractStore, so
+            SqlStore can share 
+          </scm:Note>
+          <scm:Note>Eliminated Registrant interface as a means of configuration
+            for Store,Sequence, and Space and moved to internal resolve() 
+            method triggered by Lifecycle.
+          </scm:Note>
+          <scm:Note>Made ArrayDeltaTuple more typesafe by making Tuple
+            constructor a DeltaTuple constructor
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/
+        </path>
+    
+        <resources>
+          <URI>xml/XmlStore.java
+          </URI>
+          <URI>spi/AbstractStore.java
+          </URI>
+          <URI>Sequence.java
+          </URI>
+          <URI>spi/ArrayDeltaTuple.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+    
+        <date>2009-05-23
+        </date>
+    
+        <notes>
+          <scm:Note>Pool enhancements for use by SQL package- genericized,
+            updated logging code, and removed Registrant interface (until
+            useful again for monitoring).
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/pool/
+        </path>
+    
+        <resources>
+          <URI>Pool.java
+          </URI>
+          <URI>ResourceFactory.java
+          </URI>
+          <URI>ThreadPool.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+    </detail>
+  </scm:Change>
+  
   <scm:Change>
     <revision>0.3.6
     </revision>
