@@ -14,14 +14,18 @@
 //
 package spiralcraft.data;
 
+import spiralcraft.common.Lifecycle;
+
 /**
- * <p>Issues a sequence of Integers, primarily for the generation of keys.
+ * <p>Issues a sequence of Integers from a longer scoped source, primarily for 
+ *   the generation of keys.
  * </p>
  * 
  * @author mike
  *
  */
 public interface Sequence
+  extends Lifecycle
 {
   public Integer next()
     throws DataException;

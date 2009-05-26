@@ -16,17 +16,16 @@ package spiralcraft.data.access;
 
 import java.net.URI;
 
+import spiralcraft.common.Lifecycle;
 import spiralcraft.data.query.Queryable;
 
 import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Sequence;
-import spiralcraft.data.Space;
 import spiralcraft.data.Type;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Tuple;
 import spiralcraft.lang.Focus;
-import spiralcraft.service.Service;
 
 
 /**
@@ -39,14 +38,8 @@ import spiralcraft.service.Service;
  * </p>
  */
 public interface Store
-  extends Queryable<Tuple>,Service
+  extends Queryable<Tuple>,Lifecycle
 {
-  /**
-   * @return The Space to which this store belongs
-   */
-  Space getSpace();
-  
-  
   
   /**
    * Retrieve an update 'channel'. The DataConsumer can be used once to update

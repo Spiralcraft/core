@@ -93,13 +93,7 @@ public class Space
   
   @Override
   public void register(RegistryNode node)
-  { 
-
-    registryNode=node;
-    node=node.createChild(Space.class,this);
-    for (Store store: stores)
-    { store.register(node);
-    }
+  { registryNode=node;
   }
   
   public BoundQuery<?,Tuple> getAll(Type<?> type)
