@@ -23,21 +23,23 @@ import java.util.List;
 import java.util.Collection;
 
 import spiralcraft.common.Lifecycle;
-import spiralcraft.registry.RegistryNode;
-import spiralcraft.registry.Registrant;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 import spiralcraft.time.Clock;
 import spiralcraft.time.Scheduler;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
 
-public class Pool
-  implements Registrant,Lifecycle
+public class Pool<T>
+  implements Lifecycle
 {
 
+  protected final ClassLog log=ClassLog.getInstance(getClass());
+  protected Level debugLevel
+    =ClassLog.getInitialDebugLevel(getClass(),null);
+  
   private int _overdueSeconds=600;
-  private ResourceFactory _factory;
+  private ResourceFactory<T> _factory;
   private int _idleSeconds=3600;
   private int _maxCapacity=Integer.MAX_VALUE;
   private int _initialSize=1;
@@ -45,12 +47,11 @@ public class Pool
   private long _lastUse=0;
   private long _maintenanceInterval=500;
   private Keeper _keeper=new Keeper();
-  private Stack<Reference> _available
-    =new Stack<Reference>();
-  private HashMap<Object,Reference> _out
-    =new HashMap<Object,Reference>();
+  private Stack<Reference<T>> _available
+    =new Stack<Reference<T>>();
+  private HashMap<Object,Reference<T>> _out
+    =new HashMap<Object,Reference<T>>();
   private Object _monitor=new Object();
-  private Logger _log;
   private boolean _started=false;
   // private Object _startLock=new Object();
   private boolean _conserve=false;
@@ -66,9 +67,6 @@ public class Pool
   private int _addsCount;
   private int _removesCount;
 
-  public void register(RegistryNode node)
-  { _log=node.findInstance(Logger.class);
-  }
 
   /**
    * Conserve resources by not discarding them when demand drops,
@@ -88,10 +86,6 @@ public class Pool
     { throw new IllegalArgumentException("Initial size of pool must be at least 1");
     }
     _initialSize=size;
-  }
-
-  public void setLogger(Logger logger)
-  { _log=logger;
   }
 
   /**
@@ -129,7 +123,7 @@ public class Pool
    * Specify the component that creates and discards 
    *   pooled objects.
    */
-  public void setResourceFactory(ResourceFactory factory)
+  public void setResourceFactory(ResourceFactory<T> factory)
   { _factory=factory;
   }
   
@@ -187,7 +181,7 @@ public class Pool
    * Checkout an object from the pool of
    *   available object.
    */
-  public Object checkout()
+  public T checkout()
   {
     long lastUse=Clock.instance().approxTimeMillis();
     synchronized (_monitor)
@@ -195,15 +189,19 @@ public class Pool
       _lastUse=lastUse;
       if (!_started)
       { 
-        logFine("Waiting for pool to start");
+        if (debugLevel.canLog(Level.DEBUG))
+        { log.debug("Waiting for pool to start");
+        }
         try
         { 
           _monitor.wait();
-          logFine("Notified that pool started");
+          if (debugLevel.canLog(Level.DEBUG))
+          { log.debug("Notified that pool started");
+          }
         }
         catch (InterruptedException x)
         {  
-          logWarning("Checkout on startup interrupted");
+          log.info("Checkout on startup interrupted");
           return null;
         }
       }
@@ -217,11 +215,11 @@ public class Pool
           { 
             _waitsCount++;
             _waitingCount++;
-            logInfo("Waiting for pool");
+            log.info("Waiting for pool");
             long time=System.currentTimeMillis();
             _monitor.wait();
             _waitingCount--;
-            logInfo("Waited "+(System.currentTimeMillis()-time)+" for pool");
+            log.info("Waited "+(System.currentTimeMillis()-time)+" for pool");
           }
           catch (InterruptedException x)
           { 
@@ -230,7 +228,7 @@ public class Pool
           }
         }
       }
-      Reference ref=popAvailable();
+      Reference<T> ref=popAvailable();
       ref.checkOutTime=Clock.instance().approxTimeMillis();
       putOut(ref);
       _checkOutsCount++;
@@ -244,13 +242,13 @@ public class Pool
    * Return a checked out object to the pool
    *   of available objects.
    */
-  public void checkin(Object resource)
+  public void checkin(T resource)
   {
     _lastUse=Clock.instance().approxTimeMillis();
     _checkInsCount++;
     synchronized (_monitor)
     {
-      Reference ref=removeOut(resource);
+      Reference<T> ref=removeOut(resource);
       if (ref!=null)
       {
         if (_started)
@@ -262,7 +260,7 @@ public class Pool
         _monitor.notify();
       }
       else
-      { logWarning("Unbalanced checkin: "+resource.toString()); 
+      { log.log(Level.WARNING,"Unbalanced checkin: "+resource.toString()); 
       }
     }
 
@@ -274,7 +272,7 @@ public class Pool
    *   fill the void if required. Used when it is known that an
    *   object is corrupt or has expired for some reason.
    */
-  public void discard(Object resource)
+  public void discard(T resource)
   {
     _lastUse=Clock.instance().approxTimeMillis();
     synchronized (_monitor)
@@ -338,14 +336,11 @@ public class Pool
           }
         }
         catch (Exception x)
-        { 
-          if (_log!=null)
-          { _log.warning("PoolKeeper: "+x.toString());
-          }
+        { log.warning("PoolKeeper: "+x.toString());
         }
       }
       else
-      { logSevere("No factory installed");
+      { log.log(Level.SEVERE,"No factory installed");
       }
       
       synchronized (_keeperMonitor)
@@ -381,22 +376,17 @@ public class Pool
     }
   }
 
-  class Reference
-  {
-    public Object resource;
-    public long checkOutTime;
-  }
 
 
-  private void putOut(Reference ref)
+  private void putOut(Reference<T> ref)
   { 
     _out.put(ref.resource,ref);
     _checkedOutCount++;
   }
 
-  private Reference removeOut(Object res)
+  private Reference<T> removeOut(Object res)
   { 
-    Reference ref=_out.remove(res);
+    Reference<T> ref=_out.remove(res);
     if (ref!=null)
     { _checkedOutCount--;
     }
@@ -423,33 +413,34 @@ public class Pool
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void discardOverdue()
   {
 
     
-    Reference[] snapshot;
+    Reference<T>[] snapshot;
     synchronized (_monitor)
     { 
-      Collection<Reference> collection=_out.values();
+      Collection<Reference<T>> collection=_out.values();
       snapshot=new Reference[collection.size()];
       collection.toArray(snapshot);
     }
 
-    List<Object> discardList=null;
+    List<T> discardList=null;
     long time=Clock.instance().approxTimeMillis();
 
     for (int i=0;i<snapshot.length;i++)
     {
       if (snapshot[i].checkOutTime-time>_overdueSeconds*1000)
       {
-        Reference ref=null;
+        Reference<T> ref=null;
         synchronized (_monitor)
         { ref=removeOut(snapshot[i].resource);
         }
         if (ref!=null)
         { 
           if (discardList==null)
-          { discardList=new LinkedList<Object>();
+          { discardList=new LinkedList<T>();
           }
           discardList.add(ref.resource);
         }
@@ -458,7 +449,7 @@ public class Pool
 
     if (discardList!=null)
     {
-      Iterator<?> it=discardList.iterator();
+      Iterator<T> it=discardList.iterator();
       while (it.hasNext())
       { 
         _overdueDiscardsCount++;
@@ -470,12 +461,12 @@ public class Pool
 
   private void add()
   {
-    Reference ref=new Reference();
+    Reference<T> ref=new Reference<T>();
     try
     { ref.resource=_factory.createResource();
     }
     catch (Throwable x)
-    { logSevere("Exception creating pooled resource. ",x);
+    { log.log(Level.SEVERE,"Exception creating pooled resource. ",x);
     }
 
     if (ref.resource!=null)
@@ -487,20 +478,20 @@ public class Pool
       }
       _addsCount++;
 
-      if (_log!=null && _log.isLoggable(Level.FINE))
-      { _log.fine("Added resource "+ref.resource.getClass().getName());
+      if (debugLevel.canLog(Level.DEBUG))
+      { log.fine("Added resource "+ref.resource.getClass().getName());
       }
     }
   }
 
-  private Reference popAvailable()
+  private Reference<T> popAvailable()
   {
-    Reference ret=_available.pop();
+    Reference<T> ret=_available.pop();
     _checkedInCount--;
     return ret;
   }
 
-  private void pushAvailable(Reference ref)
+  private void pushAvailable(Reference<T> ref)
   {
     _available.push(ref);
     _checkedInCount++;
@@ -508,7 +499,7 @@ public class Pool
 
   private void remove()
   {
-    Object resource=null;
+    T resource=null;
 
     synchronized (_monitor)
     {
@@ -523,61 +514,17 @@ public class Pool
       { _factory.discardResource(resource);
       }
       catch (Exception x)
-      { logWarning("Exception discarding pooled resource. ",x);
+      { log.log(Level.WARNING,"Exception discarding pooled resource. ",x);
       }
       _removesCount++;
     }
   }
-
-  private void logWarning(String message)
-  { 
-    if (_log!=null)
-    { _log.warning(message);
-    }
-  }
-
-  private void logWarning(String message,Exception x)
-  { 
-    if (_log!=null)
-    { _log.warning(message+": "+x.toString());
-    }
-  }
-
-
-  private void logSevere(String message)
-  { 
-    if (_log!=null)
-    { _log.severe(message);
-    }
-  }
-
-  private void logSevere(String message,Throwable x)
-  { 
-    if (_log!=null)
-    { _log.severe(message+": "+x.toString());
-    }
-  }
-
-  private void logInfo(String message)
-  { 
-    if (_log!=null)
-    { _log.info(message);
-    }
-  }
-
-  private void logFine(String message)
-  { 
-    if (_log!=null)
-    { _log.fine(message);
-    }
-  }
-
-//  private void logFinest(String message)
-//  { 
-//    if (_log!=null)
-//    { _log.finest(message);
-//    }
-//  }
 }
 
 
+
+class Reference<X>
+{
+  public X resource;
+  public long checkOutTime;
+}

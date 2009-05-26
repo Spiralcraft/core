@@ -18,16 +18,17 @@ package spiralcraft.pool;
  * Provides the application specific resources to be managed
  *   by the Pool.
  */
-public interface ResourceFactory
+public interface ResourceFactory<T>
 {
   /**
    * Create a new instance of a resource to be added to the Pool.
    */
-  public Object createResource();
+  public T createResource()
+    throws Exception;
 
   /**
    * Discard a resource when no longer needed by the Pool.
    */
-  public void discardResource(Object resource);
+  public void discardResource(T resource);
 
 }

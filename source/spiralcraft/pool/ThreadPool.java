@@ -21,8 +21,8 @@ package spiralcraft.pool;
  *   conserve resources.
  */
 public class ThreadPool
-  extends Pool
-  implements ResourceFactory
+  extends Pool<ThreadPool.PooledThread>
+  implements ResourceFactory<ThreadPool.PooledThread>
 {
 
   private static volatile int _THREAD_COUNT=0;
@@ -35,19 +35,19 @@ public class ThreadPool
    */  
   public void run(Runnable runnable)
   {
-    PooledThread thread=(PooledThread) checkout();
+    PooledThread thread=checkout();
     thread.start(runnable);
   }
 
-  public Object createResource()
+  public PooledThread createResource()
   { 
     PooledThread thread=new PooledThread();
     thread.start();
     return thread;
   }
 
-  public void discardResource(Object resource)
-  { ((PooledThread) resource).finish();
+  public void discardResource(PooledThread resource)
+  { resource.finish();
   }
 
   class PooledThread
