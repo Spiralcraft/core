@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 1998,2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.net.URI;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 import spiralcraft.common.LifecycleException;
 import spiralcraft.data.DataConsumer;
@@ -30,26 +28,20 @@ import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Key;
-import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Sequence;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.UniqueKeyViolationException;
-import spiralcraft.data.access.Schema;
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.access.Updater;
 import spiralcraft.data.access.Entity;
 
-import spiralcraft.data.core.SequenceField;
 import spiralcraft.data.query.BoundQuery;
-import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Queryable;
-import spiralcraft.data.query.Scan;
 import spiralcraft.data.sax.DataWriter;
 import spiralcraft.data.session.BufferTuple;
 import spiralcraft.data.session.BufferType;
 import spiralcraft.data.spi.AbstractStore;
-import spiralcraft.data.spi.BaseExtentQueryable;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
@@ -67,77 +59,28 @@ public class XmlStore
   extends AbstractStore
 {
 
-  
-  private LinkedHashMap<Type<?>,Queryable<Tuple>> queryables
-    =new LinkedHashMap<Type<?>,Queryable<Tuple>>();
-    
   private ArrayList<XmlQueryable> xmlQueryables
     =new ArrayList<XmlQueryable>();
   
-  
   private URI baseResourceURI;
   
-  private Type<?> sequenceType;
-  private HashMap<URI,XmlSequence> sequences;
-  private EquiJoin sequenceQuery;
   private XmlQueryable sequenceQueryable
     =new XmlQueryable();
 
-  private Schema schema;
   
   public XmlStore()
+    throws DataException
   {
-    try
-    {
-      sequenceType=Type.resolve("class:/spiralcraft/data/spi/Sequence");
-      
-      sequenceQueryable.setResultType(sequenceType);
-      sequenceQueryable.setResourceURI(URI.create("Sequence.xml"));
-      sequenceQueryable.setAutoCreate(true);
-      
-      sequenceQuery=new EquiJoin();
-      sequenceQuery.setSource(new Scan(sequenceType));
-      sequenceQuery.setAssignments(".uri=..");
-//      sequenceQuery.setDebug(true);
-      sequenceQuery.resolve();
-      
-    }
-    catch (DataException x)
-    { throw new RuntimeDataException("Error resolving Sequence type",x);
-    }
+    sequenceQueryable.setResultType(sequenceType);
+    sequenceQueryable.setResourceURI(URI.create("Sequence.xml"));
+    sequenceQueryable.setAutoCreate(true);
+
   }
   
   public void setBaseResourceURI(URI uri)
   { baseResourceURI=uri;
   }
-  
-  public void setSchema(Schema schema)
-  { this.schema=schema;
-  }
-  
-//  public XmlQueryable[] getQueryables()
-//  { 
-//    XmlQueryable[] list=new XmlQueryable[queryables.size()];
-//    queryables.values().toArray(list);
-//    return list;
-//    
-//  }
-  
-  
 
-  
-  private void addQueryable(XmlQueryable queryable)
-  {
-    xmlQueryables.add(queryable);
-    
-    Type<?> subtype=queryable.getResultType();
-    queryables.put(subtype,queryable);
-    
-    addAuthoritativeType(subtype);
-    
-    addBaseTypes(queryable);    
-  }
-    
   public void setQueryables(XmlQueryable[] list)
   { 
     
@@ -145,76 +88,7 @@ public class XmlStore
     { addQueryable(queryable);
     }
   }
-  
-  private void addSequences(Type<?> subtype)
-  {
-    if (subtype.getScheme()!=null)
-    {
-      if (sequences==null)
-      { sequences=new HashMap<URI,XmlSequence>();
-      }
-      for (Field<?> field : subtype.getScheme().fieldIterable())
-      { 
-        if (field instanceof SequenceField)
-        { 
-          sequences.put
-          (field.getURI()
-          ,new XmlSequence(field.getURI())
-          );
-          addAuthoritativeType(subtype);
-        }
-      }
-    }
-    
-  }
- 
-  /**
-   * <p>Make sure any base-type "union proxies" are set up, to translate a 
-   *   Query for the base-type into a union of subtypes.
-   * </p>
-   * 
-   * @param queryable
-   */
-  @SuppressWarnings("unchecked")
-  private void addBaseTypes(XmlQueryable queryable)
-  {
-    Type<?> subtype=queryable.getResultType();
-    Type<?> type=subtype.getBaseType();
-    while (type!=null)
-    { 
-      // Set up a queryable for each of the XmlQueryable's base types
-      
-      Queryable<?> candidateQueryable=queryables.get(type);
-      BaseExtentQueryable baseQueryable;
-        
-      if (candidateQueryable==null)
-      { 
-        baseQueryable=new BaseExtentQueryable(type);
-        queryables.put(type, baseQueryable);
-        baseQueryable.addExtent(subtype,queryable);
-      }
-      else if (!(candidateQueryable instanceof BaseExtentQueryable))
-      {
-        // The base extent queryable is already "concrete"
-        // This is ambiguous, though. The base extent queryable only
-        //   contains the non-subtyped concrete instances of the
-        //   base type.
-          
-        baseQueryable=new BaseExtentQueryable(type);
-        queryables.put(type, baseQueryable);
-        baseQueryable.addExtent(type,candidateQueryable);
-        baseQueryable.addExtent(subtype,queryable);
-      }
-      else
-      {
-        ((BaseExtentQueryable) candidateQueryable)
-          .addExtent(subtype, queryable);
-      }
-      type=type.getBaseType();
-      
-    }
-    
-  }
+
   
   @SuppressWarnings("unchecked")
   @Override
@@ -225,10 +99,10 @@ public class XmlStore
     Queryable queryable;
     
     if (type instanceof BufferType)
-    { queryable=queryables.get(type.getArchetype());
+    { queryable=getQueryable(type.getArchetype());
     }
     else
-    { queryable=queryables.get(type);
+    { queryable=getQueryable(type);
     }
     
     if (queryable==null)
@@ -241,29 +115,6 @@ public class XmlStore
     return new XmlUpdater(focus,(XmlQueryable) queryable);
 
   }
-
-  @Override
-  protected Queryable<Tuple> getQueryable(Type<?> type)
-  { return queryables.get(type);
-  }
-  
-
-  
-  
-
-
-  @Override
-  public Type<?>[] getTypes()
-  {
-    Type<?>[] types=new Type[queryables.size()];
-    int i=0;
-    for (Queryable<Tuple> queryable: queryables.values())
-    { types[i++]=queryable.getTypes()[0];
-    }
-    return types;
-  }
-
-
 
   @Override
   public void start()
@@ -311,20 +162,6 @@ public class XmlStore
     { x.printStackTrace();
     }
 
-    for (Queryable<?> queryable:queryables.values())
-    { addSequences(queryable.getTypes()[0]);
-    }
-    
-    for (XmlSequence sequence : sequences.values())
-    { 
-      try
-      { sequence.init();
-      }
-      catch (DataException x)
-      { throw new LifecycleException("Error initializing sequence "+sequence,x);
-      }
-      
-    }
     super.start();
   }
 
@@ -333,13 +170,27 @@ public class XmlStore
     throws LifecycleException
   { super.stop();
   }
-
-
-  public Sequence getSequence(URI uri)
-  {
-    Sequence sequence=sequences.get(uri);
-    return sequence;
+  
+  
+  @Override
+  protected Sequence createSequence(Field<?> field)
+  { return new XmlSequence(field.getURI());
   }
+
+  
+ 
+  private void addQueryable(XmlQueryable queryable)
+  {
+    xmlQueryables.add(queryable);
+    Type<?> subtype=queryable.getResultType();
+    addPrimaryQueryable(subtype,queryable);
+  }
+    
+  
+
+
+
+
   
   class XmlUpdater
     extends Updater<DeltaTuple>
@@ -641,11 +492,23 @@ public class XmlStore
       uriFocus=new SimpleFocus<URI>(new SimpleChannel<URI>(uri,true));
     }
 
-    public void init()
-      throws DataException
+    public void start()
+      throws LifecycleException
     {
-      boundQuery
-        =sequenceQueryable.query(sequenceQuery,uriFocus);
+      try
+      {
+        boundQuery
+          =sequenceQueryable.query(sequenceQuery,uriFocus);
+      }
+      catch (DataException x)
+      { 
+        throw new LifecycleException
+          ("Error binding sequence query for "+uri,x);
+      }
+    }
+    
+    public void stop()
+    {
     }
     
     public void allocate()
@@ -659,9 +522,10 @@ public class XmlStore
           if (!result.next())
           {
             EditableTuple row=new EditableArrayTuple(sequenceType.getScheme());
-            sequenceType.<URI>getField("uri").setValue(row,uri);
-            sequenceType.getField("nextValue").setValue(row,200);
-            sequenceType.getField("increment").setValue(row,100);
+            row.set("uri",uri);
+            row.set("nextValue",200);
+            row.set("increment",100);
+
             next=100;
             stop=200;
             increment=100;
@@ -670,12 +534,11 @@ public class XmlStore
           else
           {
             EditableTuple row=(EditableTuple) result.getTuple();
-            next=(Integer) sequenceType.getField("nextValue").getValue(row);
-            increment
-              =(Integer) sequenceType.getField("increment").getValue(row);
+            next=(Integer) row.get("nextValue");
+            increment=(Integer) row.get("increment");
           
             stop=next+increment;
-            sequenceType.getField("nextValue").setValue(row,next+increment);
+            row.set("nextValue",next+increment);
           
           }
           if (result.next())
