@@ -16,12 +16,54 @@
       <scm:Note>Enhancements to Pool and to abstract data components to
         support additional implementations (ie. completion of SQL Store).
       </scm:Note>
+      <scm:Note>Logging enhancements in query subsystem
+      </scm:Note>
       <scm:Note>Made spiralcraft.util.ArrayUtil generic, eliminating lots of
         casting in client code
       </scm:Note>
+      <scm:Note>NPE fix in BufferType.link()
+      </scm:Note>      
     </notes>
     
     <detail>
+      <scm:Change>
+    
+        <date>2009-05-26
+        </date>
+    
+        <notes>
+          <scm:Note>Initial round of logging enhancements to Query 
+            subsystem. Queries and BoundQueries accept a debugLevel.
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>query/BoundQuery.java
+          </URI>
+          <URI>query/Distinct.java
+          </URI>
+          <URI>query/Equijoin.java
+          </URI>
+          <URI>query/Query.java
+          </URI>
+          <URI>query/Scan.java
+          </URI>
+          <URI>query/Selection.java
+          </URI>
+          <URI>query/SetFilter.java
+          </URI>
+          <URI>query/Sort.java
+          </URI>
+          <URI>query/UnaryBoundQuery.java
+          </URI>
+          <URI>spi/AbstractAggregateQueryable.java
+          </URI>
+        </resources>
+      </scm:Change>
+
       <scm:Change>
     
         <date>2009-05-26
