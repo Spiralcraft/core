@@ -97,11 +97,10 @@ public class ArrayDeltaTuple
    * @param updated
    * @throws DataException
    */  
-  public ArrayDeltaTuple(Tuple tuple)
+  public ArrayDeltaTuple(DeltaTuple updated)
     throws DataException
   { 
-    super(((DeltaTuple) tuple).getFieldSet());
-    DeltaTuple updated=(DeltaTuple) tuple;
+    super(updated.getFieldSet());
     dirtyFlags=new BitSet(fieldSet.getFieldCount());
     copyFrom(updated);
     this.original=updated.getOriginal();
@@ -226,7 +225,7 @@ public class ArrayDeltaTuple
     { return dirty;
     }
     else
-    { return (Field[]) ArrayUtil.concat(baseDirty,dirty);
+    { return ArrayUtil.concat(baseDirty,dirty);
     }
   }  
   
@@ -280,6 +279,6 @@ public class ArrayDeltaTuple
   protected AbstractTuple createBaseExtent(
     Tuple tuple)
     throws DataException
-  { return new ArrayDeltaTuple(tuple);
+  { return new ArrayDeltaTuple((DeltaTuple) tuple);
   }
 }
