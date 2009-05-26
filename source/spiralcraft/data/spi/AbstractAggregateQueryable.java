@@ -39,6 +39,8 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.TeleFocus;
+import spiralcraft.log.Level;
+import spiralcraft.util.ArrayUtil;
 
 /**
  * <p>Adapts the Queryable interface to an Aggregate, to provide the
@@ -90,8 +92,12 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
     extends BoundQuery<Scan,T>
   {
     
+    private final boolean debugTrace;
+    
     public BoundScan(Scan query)
-    { setQuery(query);
+    { 
+      setQuery(query);
+      debugTrace=debugLevel.canLog(Level.TRACE);
     }
     
     @Override
@@ -102,6 +108,9 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       { throw new DataException("Aggregate is null- cannot perform query");
       }
       // return new BoundScanScrollableCursor(aggregate); 
+      if (debugTrace)
+      { log.trace(toString()+": Executing BoundScan of "+getType().getURI());
+      }
       return new ListCursor<T>(aggregate);
     } 
     
@@ -201,6 +210,7 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
   {
     private final Projection<T> projection;
     private final Channel<?>[] parameters;
+    private final boolean debugTrace;
     
     @SuppressWarnings("unchecked") // Projection<Tuple> to Projection<T>
     public BoundIndexScan(EquiJoin ej,Focus<?> context)
@@ -231,6 +241,7 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       }
       
       setQuery(ej);
+      debugTrace=debugLevel.canLog(Level.TRACE);
     }
     
     
@@ -249,6 +260,15 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       }
       KeyTuple key=new KeyTuple(projection,parameterData,true);
       Aggregate<T> result=index.get(key);
+      
+      if (debugTrace)
+      { 
+        log.trace
+          (toString()+": Executing BoundIndexScan of "+getType().getURI()+"#"
+            +projection.toString()
+            +" with ["+ArrayUtil.format(parameterData,",","")+"]"
+          );
+      }      
       if (result==null)
       { 
         return new ListCursor<T>

@@ -28,6 +28,7 @@ import spiralcraft.lang.parser.CurrentFocusNode;
 import spiralcraft.lang.parser.Node;
 import spiralcraft.lang.parser.ParentFocusNode;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 
 import spiralcraft.data.DataException;
@@ -223,7 +224,7 @@ class SetFilterBinding<Ti,Tt extends Tuple>
       {
         Channel<?> setChannel=paramFocus.bind(getQuery().getFilterSetX());    
         decorator=setChannel.decorate(IterationDecorator.class);
-        if (debug)
+        if (debugLevel.canLog(Level.FINE))
         { setChannel.setDebug(true);
         }
       }
@@ -233,14 +234,14 @@ class SetFilterBinding<Ti,Tt extends Tuple>
         
       focus= new TeleFocus<Tt>(paramFocus,sourceChannel);
       
-      if (debug)
+      if (debugLevel.canLog(Level.DEBUG))
       { log.fine("Binding searchX "+getQuery().getSearchX());
       }
       
       try
       { 
         searchChannel=focus.bind(getQuery().getSearchX());
-        if (debug)
+        if (debugLevel.canLog(Level.FINE))
         { searchChannel.setDebug(true);
         }
       }
@@ -290,7 +291,7 @@ class SetFilterBinding<Ti,Tt extends Tuple>
       Tt t=sourceChannel.get();
       if (t==null)
       { 
-        if (debug)
+        if (debugFine)
         { log.fine(toString()+"BoundSetFilter: eod ");
         }
         return false;
@@ -298,7 +299,7 @@ class SetFilterBinding<Ti,Tt extends Tuple>
     
       if (set.contains(searchChannel.get()) ^ excludeMatch)
       {  
-        if (debug)
+        if (debugFine)
         { log.fine(toString()+"BoundSetFilter: passed "+t);
         }
         dataAvailable(t);
@@ -306,7 +307,7 @@ class SetFilterBinding<Ti,Tt extends Tuple>
       }
       else
       { 
-        if (debug)
+        if (debugFine)
         { log.fine(toString()+"BoundSetFilter: filtered "+t);
         }
         return false;
@@ -355,7 +356,7 @@ class SetFilterBinding<Ti,Tt extends Tuple>
       Tt t=sourceChannel.get();
       if (t==null)
       { 
-        if (debug)
+        if (debugFine)
         { log.fine("BoundSetFilter: eod ");
         }
         return false;
@@ -363,7 +364,7 @@ class SetFilterBinding<Ti,Tt extends Tuple>
 
       if (set.contains(searchChannel.get()) ^ excludeMatch)
       {  
-        if (debug)
+        if (debugFine)
         { log.fine("BoundSetFilter: passed "+t);
         }
         dataAvailable(t);
@@ -371,7 +372,7 @@ class SetFilterBinding<Ti,Tt extends Tuple>
       }
       else
       { 
-        if (debug)
+        if (debugFine)
         { log.fine("BoundSetFilter: filtered "+t);
         }
         return false;

@@ -22,6 +22,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.util.ArrayUtil;
 
 import spiralcraft.data.Projection;
@@ -89,7 +90,7 @@ public class Distinct
         +(sources!=null?sources.size():"0")
         );
     }
-    if (debug)
+    if (debugLevel.canLog(Level.DEBUG))
     { log.fine("Creating projection for "+ArrayUtil.format(names,",",""));
     }
     ProjectionImpl<Tuple> projectionImpl
@@ -176,7 +177,7 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
     
 
       focus=new TeleFocus<Ts>(paramFocus,sourceChannel);
-      if (debug)
+      if (debugLevel.canLog(Level.DEBUG))
       { log.fine("Binding projection "+getQuery().getProjection());
       }
       try
@@ -184,7 +185,7 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
         projectionChannel
           =(Channel<T>) getQuery().getProjection()
             .bindChannel( (Focus<Tuple>) focus);
-        if (debug)
+        if (debugLevel.canLog(Level.DEBUG))
         { projectionChannel.setDebug(true);
         }
       }
@@ -227,7 +228,7 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
       Ts t=sourceChannel.get();
       if (t==null)
       { 
-        if (debug)
+        if (debugFine)
         { log.fine(toString()+"BoundDistinct: eod ");
         }
         return false;
@@ -236,7 +237,7 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
       Tuple projection=projectionChannel.get();
       if (distinctMap.contains(projection))
       { 
-        if (debug)
+        if (debugFine)
         { log.fine(toString()+"BoundDistinct: duplicate "+t);
         }
         return false;

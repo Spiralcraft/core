@@ -21,6 +21,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
@@ -195,8 +196,8 @@ public class EquiJoin
     this.lhsExpressions=new ArrayList<Expression<?>>(lhsExpressions.length);
     for (Expression<?> expr :lhsExpressions)
     { 
-      if (debug)
-      { log.fine("Equijoin: lhs+="+expr.toString());
+      if (debugLevel.canLog(Level.DEBUG))
+      { log.debug("Equijoin: lhs+="+expr.toString());
       }
       
       this.lhsExpressions.add(expr);
@@ -220,8 +221,8 @@ public class EquiJoin
     this.rhsExpressions=new ArrayList<Expression<?>>(rhsExpressions.length);
     for (Expression<?> expr :rhsExpressions)
     { 
-      if (debug)
-      { log.fine("Equijoin: rhs+="+expr.toString());
+      if (debugLevel.canLog(Level.DEBUG))
+      { log.debug("Equijoin: rhs+="+expr.toString());
       }
       this.rhsExpressions.add(expr);
     }
@@ -286,9 +287,9 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
               );
         
           filter[i++]=focus.<Boolean>bind(comparison);
-          if (debug)
+          if (debugLevel.canLog(Level.DEBUG))
           { 
-            log.fine("Added filter "+comparison);
+            log.debug("Added filter "+comparison);
             filter[i-1].setDebug(true);
           }
         }
@@ -327,7 +328,7 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
       Tt t=sourceChannel.get();
       if (t==null)
       { 
-        if (debug)
+        if (debugFine)
         { log.fine("BoundEquiJoin: eod ");
         }
         return false;
@@ -339,7 +340,7 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
         Boolean val=element.get();
         if (val==null || !val)
         { 
-          if (debug)
+          if (debugFine)
           { log.fine("BoundEquiJoin: failed "+element+" "+t);
           }
           
@@ -350,7 +351,7 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
        
       if (result)
       { 
-        if (debug)
+        if (debugFine)
         { log.fine("BoundEquiJoin: passed "+t);
         }
         dataAvailable(t);

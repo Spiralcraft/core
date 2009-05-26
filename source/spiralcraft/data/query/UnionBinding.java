@@ -30,6 +30,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 //import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.log.Level;
 
 class UnionBinding<Tq extends Union,Tt extends Tuple>
   extends BoundQuery<Tq,Tt>
@@ -39,6 +40,9 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
   private List<BoundQuery<?,Tt>> sources
     =new ArrayList<BoundQuery<?,Tt>>();
   private boolean resolved;
+  private final boolean debugTrace;
+  
+  private final boolean debugFine;
   
 //  private Queryable<Tt> store;
   
@@ -56,7 +60,9 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
 //    this.paramFocus=paramFocus;
 //    this.store=store;
     setQuery(query);
+    debugTrace=debugLevel.canLog(Level.TRACE);
     
+    debugFine=debugLevel.canLog(Level.FINE);
     
   }
 
@@ -79,6 +85,9 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
   {
     if (!resolved)
     { resolve();
+    }
+    if (debugTrace)
+    { log.trace(toString()+": Executing Union ");
     }
     return new UnionSerialCursor();
   }
@@ -122,7 +131,11 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
             if (currentSource!=null)
             { currentSource.close();
             }
+            if (debugFine)
+            { log.fine(toString()+" moving to next source"); 
+            }            
             currentSource=sourceIterator.next().execute();
+
           }
           else
           { done=true;

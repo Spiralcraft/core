@@ -22,6 +22,7 @@ import java.util.List;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.util.ArrayUtil;
 
 import spiralcraft.data.Order;
@@ -100,8 +101,8 @@ public class Sort
         );
     }
     
-    if (debug)
-    { log.fine("Creating projection for "+ArrayUtil.format(names,",",""));
+    if (debugLevel.canLog(Level.DEBUG))
+    { log.debug("Creating projection for "+ArrayUtil.format(names,",",""));
     }
     this.type=sources.get(0).getType();
     

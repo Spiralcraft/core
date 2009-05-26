@@ -21,6 +21,8 @@ import java.util.Set;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.DataException;
@@ -59,7 +61,8 @@ public abstract class Query
   protected final Query baseQuery;
   protected final List<Query> sources=new ArrayList<Query>(1);
   protected Type<?> type;
-  protected boolean debug;
+  protected Level debugLevel
+    =ClassLog.getInitialDebugLevel(getClass(),Level.INFO);
   protected boolean logStatistics;
   
   /**
@@ -166,8 +169,8 @@ public abstract class Query
     {
       for (Query source:sources)
       { 
-        if (debug)
-        { source.setDebug(true);
+        if (debugLevel.canLog(source.getDebugLevel()))
+        { source.setDebugLevel(debugLevel);
         }
         source.resolve();
       }
@@ -261,12 +264,16 @@ public abstract class Query
   }
 
   
-  public void setDebug(boolean val)
-  { this.debug=val;
+  public void setDebugLevel(Level debugLevel)
+  { this.debugLevel=debugLevel;
   }
   
-  public boolean getDebug()
-  { return debug;
+  public void setDebug(boolean val)
+  { this.debugLevel=Level.DEBUG;
+  }
+  
+  public Level getDebugLevel()
+  { return this.debugLevel;
   }
   
   /**

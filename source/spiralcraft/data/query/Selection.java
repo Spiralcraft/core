@@ -31,6 +31,7 @@ import spiralcraft.lang.parser.ParentFocusNode;
 import spiralcraft.lang.parser.PrimaryIdentifierNode;
 import spiralcraft.lang.parser.ResolveNode;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 
 import spiralcraft.data.DataException;
@@ -218,9 +219,9 @@ public class Selection
           }
           else
           { 
-            if (debug)
+            if (debugLevel.canLog(Level.DEBUG))
             { 
-              log.fine
+              log.debug
                 ("Ident node source is not current focus "
                 +rhsIdent.getSource()+" "+rhsIdent.getSource().reconstruct()
                 );
@@ -235,9 +236,9 @@ public class Selection
         }
         else
         { 
-          if (debug)
+          if (debugLevel.canLog(Level.DEBUG))
           { 
-            log.fine
+            log.debug
               ("Not a valid RHS for refactoring "
               +rhs.reconstruct()
               + " ("+rhs.toString()+")"
@@ -252,9 +253,9 @@ public class Selection
         {
           lhsList.add(new Expression<Object>(lhsResolve));
           rhsList.add(new Expression<Object>(validRhs));
-          if (debug)
+          if (debugLevel.canLog(Level.DEBUG))
           { 
-            log.fine
+            log.debug
               ("Factored "
               +lhsResolve.reconstruct()+" = "+validRhs.reconstruct()
               );
@@ -264,9 +265,9 @@ public class Selection
       }
       else
       {
-        if (debug)
+        if (debugLevel.canLog(Level.DEBUG))
         { 
-          log.fine
+          log.debug
             ("Resolve node source is not current focus "
             +lhsResolve.getSource()+" "+lhsResolve.getSource().reconstruct()
             );
@@ -275,8 +276,8 @@ public class Selection
     }
     else
     {
-      if (debug)
-      { log.fine("lhs is not a resolve node "+lhs.reconstruct());
+      if (debugLevel.canLog(Level.DEBUG))
+      { log.debug("lhs is not a resolve node "+lhs.reconstruct());
       }
     }
     if (factored)
@@ -308,8 +309,8 @@ public class Selection
   @Override
   protected Query factor()
   { 
-    if (debug)
-    { log.fine("factor()");
+    if (debugLevel.canLog(Level.DEBUG))
+    { log.debug("factor()");
     }
     if (constraints!=null)
     {
@@ -341,7 +342,7 @@ public class Selection
         { result=new Selection(ej,new Expression<Boolean>(remainder));
         }
         
-        result.setDebug(debug);
+        result.setDebugLevel(debugLevel);
         result.setLogStatistics(logStatistics);
         return result;
         
@@ -395,14 +396,14 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
 
       focus= new TeleFocus<Tt>(paramFocus,sourceChannel);
       
-      if (debug)
-      { log.fine("Binding constraints "+getQuery().getConstraints());
+      if (debugLevel.canLog(Level.DEBUG))
+      { log.debug("Binding constraints "+getQuery().getConstraints());
       }
       
       try
       { 
         filter=focus.<Boolean>bind(getQuery().getConstraints());
-        if (debug)
+        if (debugLevel.canLog(Level.FINE))
         { filter.setDebug(true);
         }
       }
@@ -441,7 +442,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
       Tt t=sourceChannel.get();
       if (t==null)
       { 
-        if (debug)
+        if (debugFine)
         { log.fine(toString()+"BoundSelection: eod ");
         }
         return false;
@@ -449,7 +450,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     
       if (filter.get())
       {  
-        if (debug)
+        if (debugFine)
         { log.fine(toString()+"BoundSelection: passed "+t);
         }
         dataAvailable(t);
@@ -457,7 +458,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
       }
       else
       { 
-        if (debug)
+        if (debugFine)
         { log.fine(toString()+"BoundSelection: filtered "+t);
         }
         return false;
@@ -494,7 +495,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
       Tt t=sourceChannel.get();
       if (t==null)
       { 
-        if (debug)
+        if (debugFine)
         { log.fine("BoundSelection: eod ");
         }
         return false;
@@ -502,7 +503,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
 
       if (filter.get())
       {  
-        if (debug)
+        if (debugFine)
         { log.fine("BoundSelection: passed "+t);
         }
         dataAvailable(t);
@@ -510,7 +511,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
       }
       else
       { 
-        if (debug)
+        if (debugFine)
         { log.fine("BoundSelection: filtered "+t);
         }
         return false;

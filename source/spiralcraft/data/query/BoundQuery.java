@@ -26,6 +26,7 @@ import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.lang.CursorBinding;
 import spiralcraft.lang.BindException;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 /**
  * <p>A BoundQuery is a data path that resolves sets of Tuples from a 
@@ -45,11 +46,11 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
 {
   protected final ClassLog log
     =ClassLog.getInstance(getClass());
+  protected Level debugLevel
+    =ClassLog.getInitialDebugLevel(getClass(), Level.INFO);
   
   private Tq query;
-  // private BoundQueryBinding resultBinding;
   private boolean resolved;
-  protected boolean debug;
   protected Type<?> boundType;
   
   /**
@@ -75,18 +76,10 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
   { 
     assertUnresolved();
     this.query=query;
-    if (query.getDebug())
-    { debug=true;
+    if (query.getDebugLevel().canLog(debugLevel))
+    { debugLevel=query.getDebugLevel();
     }
-  }
-  
-  /**
-   * @return The binding available for downstream components.
-   */
-  // public final TupleBinding<Tuple> getResultBinding()
-  // { return resultBinding;
-  // }
-  
+  }  
   
   /**
    * <p>A BoundQuery is often composed of nested BoundQueries, which form a 
@@ -106,13 +99,7 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
     { return;
     }
     resolved=true;
-    
-//    try
-//    { resultBinding=new BoundQueryBinding(query.getFieldSet());
-//    }
-//    catch (BindException x)
-//    { throw new DataException("Error creating BoundQuery result binding: "+x,x);
-//    }
+
   }
   
   /**

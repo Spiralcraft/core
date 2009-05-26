@@ -18,6 +18,7 @@ import java.util.List;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.log.Level;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
@@ -92,8 +93,8 @@ public abstract class UnaryBoundQuery
     if (ret==null)
     { ret=newSerialCursor(cursor);
     }
-    if (debug)
-    { log.fine(toString()+" execute returning "+ret);
+    if (debugLevel.canLog(Level.TRACE))
+    { log.trace(toString()+" execute returning "+ret);
     }
     return ret;
   }
@@ -125,6 +126,7 @@ public abstract class UnaryBoundQuery
     
     protected int direction;
     protected int lookahead;
+    protected boolean debugFine;
     
     public UnaryBoundQuerySerialCursor(SerialCursor<Ts> sourceCursor)
       throws DataException
@@ -138,6 +140,7 @@ public abstract class UnaryBoundQuery
       lookahead=0;
 
       this.sourceCursor=sourceCursor;
+      this.debugFine=debugLevel.canLog(Level.FINE);
     }
 
     /**
