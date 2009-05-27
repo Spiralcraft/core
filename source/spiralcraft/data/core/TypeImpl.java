@@ -608,6 +608,7 @@ public class TypeImpl<T>
   { this.comparator=comparator;
   }
   
+  @SuppressWarnings("unused")
   private void assertLinked()
   {
     if (!linked)
