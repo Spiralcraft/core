@@ -64,10 +64,22 @@ public class ArrayUtil
   /**
    * Append an array to an array
    */
-  public static <T> T[] concat(T[] array1,T[] array2)
+  public static Object concat(Object array1,Object array2)
   { 
     int appendPoint=Array.getLength(array1);
     int appendElements=Array.getLength(array2);
+    array1=expandBy(array1,appendElements);
+    System.arraycopy(array2, 0, array1, appendPoint, appendElements);
+    return array1;
+  }  
+  
+  /**
+   * Append an array to an array
+   */
+  public static <T> T[] concat(T[] array1,T[] array2)
+  { 
+    int appendPoint=array1.length;
+    int appendElements=array2.length;
     array1=expandBy(array1,appendElements);
     System.arraycopy(array2, 0, array1, appendPoint, appendElements);
     return array1;
@@ -170,13 +182,23 @@ public class ArrayUtil
   /**
    * Expand an array by adding the specified number of elements
    */
+  public static Object expandBy(Object array,int expandBy)
+  {
+    Object newArray = Array.newInstance(array.getClass().getComponentType(), Array.getLength(array)+expandBy);
+    System.arraycopy(array, 0, newArray, 0, Array.getLength(array));
+    return newArray;
+  }
+  
+  /**
+   * Expand an array by adding the specified number of elements
+   */
   @SuppressWarnings("unchecked")
   public static <T> T[] expandBy(T[] array,int expandBy)
   {
     T[] newArray = 
        (T[]) Array.newInstance
          (array.getClass().getComponentType()
-         , Array.getLength(array)+expandBy
+         , array.length+expandBy
          );
     System.arraycopy(array, 0, newArray, 0, Array.getLength(array));
     return newArray;

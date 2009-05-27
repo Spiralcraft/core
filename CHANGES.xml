@@ -3,6 +3,26 @@
   >
   
   <scm:Change>
+    <revision>0.3.8
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-05-27
+    </date>
+    
+    <notes>
+      <scm:Note>Added back to ArrayUtil some methods to deal with primitive
+        arrays.
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft/util/ArrayUtil.java
+    </path>
+  </scm:Change>
+    
+  <scm:Change>
     <revision>0.3.7
     </revision>
     
