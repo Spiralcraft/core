@@ -12,14 +12,60 @@
     <date>2009-05-27
     </date>
     
-    <notes>
-      <scm:Note>Added back to ArrayUtil some methods to deal with primitive
-        arrays.
-      </scm:Note>
-    </notes>
+    <detail>
     
-    <path>source/spiralcraft/util/ArrayUtil.java
-    </path>
+      <scm:Change>
+        <date>2009-05-27
+        </date>
+        
+        <notes>
+          <scm:Note>Provide a general means to set arbitrary Rules for any Type
+          </scm:Note>
+          <scm:Note>Moved Rule management from abstract Type to implementations
+            due to dependency on linking behavior.
+          </scm:Note>
+          <scm:Note>RuleSet allows chaining other RuleSets, primarily 
+            to accomodate archetype rules. 
+          </scm:Note>
+          <scm:Note>Provide link tracing functionality in the abstract Type
+            as a way to debug linking issues.
+          </scm:Note>
+          <scm:Note>ThreadLocalStack can now provide an array of its contents
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/Type.java
+        </path>
+        <path>source/spiralcraft/data/core/AbstractAggregateType.java
+        </path>
+        <path>source/spiralcraft/data/core/TypeImpl.java
+        </path>
+        <path>source/spiralcraft/data/reflect/ReflectionType.java
+        </path>
+        <path>source/spiralcraft/rules/RuleSet.java
+        </path>
+        <path>source/spiralcraft/rules/Inspector.java
+        </path>
+        <path>source/spiralcraft/rules/Inspector.java
+        </path>
+        <path>source/spiralcraft/util/thread/ThreadLocalStack.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-05-27
+        </date>
+        
+        <notes>
+          <scm:Note>Added back to ArrayUtil some methods to deal with primitive
+            arrays.
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/util/ArrayUtil.java
+        </path>
+      </scm:Change>
+    </detail>
   </scm:Change>
     
   <scm:Change>

@@ -11,12 +11,12 @@
           </name>
           
           <type>
-          	<String.type>
+            <String.type>
 
-		          <maxLength>128
-		          </maxLength>
-          	
-          	</String.type>
+              <maxLength>128
+              </maxLength>
+            
+            </String.type>
           </type>
 
         </meta:Field>
@@ -27,9 +27,18 @@
           </name>
 
           <type>
-          	<example:Address.type/>
+            <example:Address.type/>
           </type>
 
+        </meta:Field>
+        
+        <meta:Field>
+          <name>phone
+          </name>
+          
+          <type>
+            <example:Phone.type/>
+          </type>
         </meta:Field>
       </fields>
     </meta:Scheme>

@@ -3,6 +3,7 @@
   xmlns:test="class:/spiralcraft/data/test/"
   >
 
+  <!-- Supposed to generate a warning until removed -->
   <example:Customer
     ref="class:/spiralcraft/data/test/5.data.xml"
     >
