@@ -14,6 +14,8 @@
 //
 package spiralcraft.util.thread;
 
+import java.util.ArrayList;
+
 
 /**
  * <p>A tool to manage contextual data for thread operations, for components
@@ -129,6 +131,18 @@ public class ThreadLocalStack<T>
     else
     { threadLocal.set(oldref);
     }
+  }
+  
+  public T[] contents(T[] array)
+  { 
+    ArrayList<T> list=new ArrayList<T>();
+    ThreadReference<T> current=threadLocal.get();
+    while (current!=null)
+    { 
+      list.add(current.object);
+      current=current.prior;
+    }
+    return list.toArray(array);
   }
   
   class ThreadReference<X>
