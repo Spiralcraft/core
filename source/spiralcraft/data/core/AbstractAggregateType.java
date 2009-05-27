@@ -22,6 +22,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
 
 import spiralcraft.data.reflect.ReflectionType;
+import spiralcraft.rules.RuleSet;
 
 import java.net.URI;
 import java.util.Comparator;
@@ -39,7 +40,7 @@ public abstract class AbstractAggregateType<T,Tcontent>
   protected Type<?> archetype;
   protected Type<T> baseType;
   protected boolean linked;
-  
+  protected RuleSet<Type<T>,T> ruleSet;  
   
   protected AbstractAggregateType(URI uri)
   { this.uri=uri;
@@ -162,6 +163,22 @@ public abstract class AbstractAggregateType<T,Tcontent>
   public <X> Field<X> getField(String name)
   { return null;
   }
+  
+  /**
+   * 
+   * @return The RuleSet associated with this type.
+   */
+  @Override
+  public RuleSet<Type<T>,T> getRuleSet()
+  { 
+    if (ruleSet!=null)
+    { return ruleSet;
+    }
+    else if (getBaseType()!=null)
+    { return getBaseType().getRuleSet();
+    }
+    return null;
+  }  
   
   @Override
   public boolean isAggregate()

@@ -25,6 +25,7 @@ import spiralcraft.data.session.Buffer;
 import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.rules.RuleSet;
 import spiralcraft.util.string.StringConverter;
+import spiralcraft.util.thread.ThreadLocalStack;
 
 
 /**
@@ -85,6 +86,21 @@ public abstract class Type<T>
     }
   }
   
+  private static ThreadLocalStack<URI> linkStack
+    =new ThreadLocalStack<URI>();
+  
+  protected final void pushLink(URI uri)
+  { linkStack.push(uri);
+  }
+  
+  protected final void popLink()
+  { linkStack.pop();
+  }
+  
+  protected final URI[] linkStack()
+  { return linkStack.contents(new URI[0]);
+  }
+  
   static
   {
     StringConverter.registerInstance
@@ -115,7 +131,7 @@ public abstract class Type<T>
     =new ArrayList<Method>();
   protected final HashMap<String,Method[]> methodMap
     =new HashMap<String,Method[]>();
-  protected RuleSet<Type<T>,T> ruleSet;
+//  protected RuleSet<Type<T>,T> ruleSet;
   protected boolean debug;
   
   /**
@@ -429,16 +445,17 @@ public abstract class Type<T>
    * 
    * @return The RuleSet associated with this type.
    */
-  public RuleSet<Type<T>,T> getRuleSet()
-  { 
-    if (ruleSet!=null)
-    { return ruleSet;
-    }
-    else if (getBaseType()!=null)
-    { return getBaseType().getRuleSet();
-    }
-    return null;
-  }
+  public abstract RuleSet<Type<T>,T> getRuleSet();
+  
+//  { 
+//    if (ruleSet!=null)
+//    { return ruleSet;
+//    }
+//    else if (getBaseType()!=null)
+//    { return getBaseType().getRuleSet();
+//    }
+//    return null;
+//  }
   
   /**
    * Called by the TypeResolver to allow the type to recursively resolve any

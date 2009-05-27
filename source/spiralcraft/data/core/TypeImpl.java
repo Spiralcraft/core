@@ -34,6 +34,7 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.rules.Rule;
 import spiralcraft.rules.RuleSet;
+import spiralcraft.util.ArrayUtil;
 
 /**
  * Core implementation of a Type
@@ -61,7 +62,10 @@ public class TypeImpl<T>
   protected boolean abztract;
   protected Comparator<T> comparator;
   protected FieldSet unifiedFieldSet;
-
+  protected RuleSet<Type<T>,T> ruleSet;
+  protected Rule<Type<T>,T>[] explicitRules;
+  
+  protected boolean rulesResolved;
   
   private boolean linked;
   
@@ -81,13 +85,39 @@ public class TypeImpl<T>
     ruleSet.addRules(rules);
   }
   
-  @SuppressWarnings("unchecked") // Vararg array and Rule cast from archetyp
+  public void setRules(Rule<Type<T>,T> ... rules)
+  { 
+    if (linked)
+    { throw new IllegalStateException("Type already linked: "+getURI());
+    }
+    explicitRules=rules;
+  }
+  
   private void createRuleSet()
   {
     RuleSet<Type<T>,T> baseRules
       =(baseType!=null)?(baseType.getRuleSet()):null;
         
     ruleSet=new RuleSet<Type<T>,T>(this,baseRules);
+
+    if (explicitRules!=null)
+    { ruleSet.addRules(explicitRules);
+    }
+  }
+  
+  @SuppressWarnings("unchecked")
+  private void resolveRules()
+  {
+    if (ruleSet==null 
+        && (explicitRules!=null
+            || (baseType!=null 
+                && baseType.getRuleSet()!=null
+               )
+            )
+       )
+    { createRuleSet();
+    }
+    
     if (archetype!=null && archetype.getRuleSet()!=null)
     {
       if (debug)
@@ -99,10 +129,12 @@ public class TypeImpl<T>
           +archetype.getURI()
           );
       }      
-      for (Rule<?,?> rule : archetype.getRuleSet())
-      { ruleSet.addRules((Rule<Type<T>,T>) rule);
+      if (ruleSet==null)
+      { createRuleSet();
       }
+      ruleSet.addRuleSet((RuleSet) archetype.getRuleSet());
     }
+    rulesResolved=true;
   }
   
   @Override
@@ -147,11 +179,34 @@ public class TypeImpl<T>
     { return false;
     }
   }
+
+  /**
+   * 
+   * @return The RuleSet associated with this type.
+   */
+  @Override
+  public RuleSet<Type<T>,T> getRuleSet()
+  { 
+    if (!rulesResolved && ruleSet==null)
+    { 
+      // Need to create one to return if we haven't resolved our own rules yet
+      log.debug("Creating placeholder RuleSet on demand for Type "+getURI());
+      createRuleSet();
+    }
+    if (ruleSet!=null)
+    { return ruleSet;
+    }
+    else if (getBaseType()!=null)
+    { return getBaseType().getRuleSet();
+    }
+    return null;
+  }  
   
   @Override
   public Type<T> getBaseType()
   { return baseType;
   }
+  
   
   
   public void setBaseType(Type<T> baseType)
@@ -268,63 +323,63 @@ public class TypeImpl<T>
     if (linked)
     { return;
     }
-    
-    if (debug)
-    { log.fine("Linking Type "+getURI());
-    }
-    linked=true;
-    
-    if (baseType!=null && scheme==null)
-    { 
-      // Null subtype scheme causes problems
-      scheme=new SchemeImpl();
-    }
-    
-    if (scheme!=null)
+    pushLink(getURI());
+    try
     {
-      scheme.setType(this);
-      if (archetype!=null && archetype.getScheme()!=null)
-      { scheme.setArchetypeScheme(archetype.getScheme());
+      if (debug)
+      { log.fine("Linking Type "+getURI());
       }
-      scheme.resolve();
-      
-      // Add contextual field based rules
-      for (FieldImpl<?> field:scheme.getFields())
+      linked=true;
+    
+      if (baseType!=null && scheme==null)
+      { 
+        // Null subtype scheme causes problems
+        scheme=new SchemeImpl();
+      }
+    
+      if (scheme!=null)
       {
-        if (field.isUniqueValue())
-        { 
-          if (debug)
-          { log.fine("Adding field unique rule for "+field.getURI());
-          }
-          addRules((Rule<Type<T>,T>) new UniqueRule(this,field));
+        scheme.setType(this);
+        if (archetype!=null && archetype.getScheme()!=null)
+        { scheme.setArchetypeScheme(archetype.getScheme());
         }
-        
-        if (field.isRequired())
+        scheme.resolve();
+      
+        // Add contextual field based rules
+        for (FieldImpl<?> field:scheme.getFields())
         {
-          if (debug)
-          { log.fine("Adding field required rule for "+field.getURI());
+          if (field.isUniqueValue())
+          { 
+            if (debug)
+            { log.fine("Adding field unique rule for "+field.getURI());
+            }
+            addRules((Rule<Type<T>,T>) new UniqueRule(this,field));
           }
-          addRules((Rule<Type<T>,T>) new RequiredRule(this,field));
-        }
         
+          if (field.isRequired())
+          {
+            if (debug)
+            { log.fine("Adding field required rule for "+field.getURI());
+            }
+            addRules((Rule<Type<T>,T>) new RequiredRule(this,field));
+          }
+        
+        }
       }
-    }
-    if (methods!=null)
-    {
-      for (Method method:methods)
-      { ((MethodImpl) method).resolve();
-      }
-    }
     
-    if (ruleSet==null)
-    { 
-      if (archetype!=null
-          && archetype.getRuleSet()!=null
-         )
-      { createRuleSet();
+      resolveRules();
+      
+      if (methods!=null)
+      {
+        for (Method method:methods)
+        { ((MethodImpl) method).resolve();
+        }
       }
+
     }
-    
+    finally
+    { popLink();
+    }
         
     if (debug)
     { log.fine("Done Linking Type "+getURI());
@@ -553,4 +608,14 @@ public class TypeImpl<T>
   { this.comparator=comparator;
   }
   
+  private void assertLinked()
+  {
+    if (!linked)
+    { 
+      throw new IllegalStateException
+        ("Type not linked: "+getURI()+" Link stack:"
+          +"\r\n  "+ArrayUtil.format(linkStack(),"\r\n  ","")
+        );
+    }
+  }
 }

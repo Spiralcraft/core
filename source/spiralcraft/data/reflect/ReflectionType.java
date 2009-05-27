@@ -324,42 +324,49 @@ public class ReflectionType<T>
     { return;
     }
     linked=true;
-
-    if (aggregate)
-    { 
-      Class<?> contentClass;
-      if (reflectedClass.isArray())
-      { contentClass=reflectedClass.getComponentType();
-      }
-      else
+    pushLink(getURI());
+    try
+    {
+      
+      if (aggregate)
       { 
-        contentClass=
-          (Class<?>) reflectedClass.getTypeParameters()[0].getBounds()[0];
-      }
-      try
-      { contentType=resolver.resolve(canonicalURI(contentClass));
-      }
-      catch (TypeNotFoundException x)
-      { x.printStackTrace();
-      }
+        Class<?> contentClass;
+        if (reflectedClass.isArray())
+        { contentClass=reflectedClass.getComponentType();
+        }
+        else
+        { 
+          contentClass=
+            (Class<?>) reflectedClass.getTypeParameters()[0].getBounds()[0];
+        }
+        try
+        { contentType=resolver.resolve(canonicalURI(contentClass));
+        }
+        catch (TypeNotFoundException x)
+        { x.printStackTrace();
+        }
         
-    }
+      }
 
-    if (reflectedClass.getSuperclass()!=null)
-    { archetype=resolver.resolve(canonicalURI(reflectedClass.getSuperclass()));
+      if (reflectedClass.getSuperclass()!=null)
+      { archetype=resolver.resolve(canonicalURI(reflectedClass.getSuperclass()));
+      }
+    
+      ReflectionScheme scheme=new ReflectionScheme(resolver,this,reflectedClass);
+      scheme.addFields();
+      this.scheme=scheme;
+    
+      addMethods();
+    
+      super.link();
+      classField=scheme.<Class<?>>getFieldByName("class");
+    
+      resolvePreferredConstructor();
+      resolveDepersistMethod();
     }
-    
-    ReflectionScheme scheme=new ReflectionScheme(resolver,this,reflectedClass);
-    scheme.addFields();
-    this.scheme=scheme;
-    
-    addMethods();
-    
-    super.link();
-    classField=scheme.<Class<?>>getFieldByName("class");
-    
-    resolvePreferredConstructor();
-    resolveDepersistMethod();
+    finally
+    { popLink();
+    }
   }
   
   private void addMethods()
