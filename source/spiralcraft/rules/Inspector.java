@@ -35,7 +35,7 @@ public class Inspector<Tcontext,Tsubject>
   private RuleSet<Tcontext,Tsubject> ruleSet;
   private ThreadLocalChannel<Tsubject> subjectChannel;
   private Focus<Tsubject> localFocus;
-  private Channel<Violation<Tsubject>>[] ruleChannels;
+  private final Channel<Violation<Tsubject>>[] ruleChannels;
   
   @SuppressWarnings("unchecked") // Generic array creation
   Inspector
@@ -49,11 +49,15 @@ public class Inspector<Tcontext,Tsubject>
     subjectChannel=new ThreadLocalChannel<Tsubject>(subjectReflector);
     localFocus=contextFocus.telescope(subjectChannel);
     
-    ruleChannels=new Channel[this.ruleSet.getRuleCount()];
-    int i=0;
+    ArrayList<Channel<Violation<Tsubject>>> ruleChannels
+      =new ArrayList<Channel<Violation<Tsubject>>>();
+
     for (Rule rule: this.ruleSet)
-    { ruleChannels[i++]=rule.bindChannel(localFocus);
+    { ruleChannels.add(rule.bindChannel(localFocus));
     }
+    this.ruleChannels
+      =ruleChannels.toArray
+        (new Channel[ruleChannels.size()]);
   }
   
   @SuppressWarnings("unchecked") // Generic array creation

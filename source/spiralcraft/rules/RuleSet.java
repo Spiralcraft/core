@@ -16,6 +16,7 @@ package spiralcraft.rules;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
@@ -35,6 +36,7 @@ public class RuleSet<Tcontext,Tvalue>
   
   private final Tcontext context;
   private final RuleSet<Tcontext,Tvalue> baseSet;
+  private List<RuleSet<Tcontext,Tvalue>> additionalSets;
   
   /**
    * <p>Create a new RuleSet for the specified Context
@@ -73,14 +75,38 @@ public class RuleSet<Tcontext,Tvalue>
   @Override
   public Iterator<Rule<Tcontext,Tvalue>> iterator()
   { 
-    if (baseSet!=null)
+    Iterator<Rule<Tcontext,Tvalue>> it=null;
+    
+    if (additionalSets!=null)
+    {
+      // Typically archetype RuleSets, these get evaluated in order of
+      //   their appearance
+      for (RuleSet<Tcontext,Tvalue> set:additionalSets)
+      { 
+        if (it!=null)
+        { it=new IteratorChain<Rule<Tcontext,Tvalue>>(it,set.iterator());
+        }
+        else
+        { it=set.iterator();
+        }
+      }
+    }    
+    
+    if (it!=null)
     { 
-      return new IteratorChain<Rule<Tcontext,Tvalue>>
-        (baseSet.iterator(),rules.iterator());
+      // Run local rules -after- archetype tules
+      it=new IteratorChain(it,rules.iterator());
     }
     else
-    { return rules.iterator();
+    { it=rules.iterator();
     }
+    
+    // Insert base rules -before- all other rules
+    if (baseSet!=null)
+    { it=new IteratorChain<Rule<Tcontext,Tvalue>>(baseSet.iterator(),it);
+    }
+
+    return it;
   }
 
   public Inspector<Tcontext,Tvalue> 
@@ -99,8 +125,12 @@ public class RuleSet<Tcontext,Tvalue>
   }
   
 
-  public int getRuleCount()
-  { return rules.size()+(baseSet!=null?baseSet.getRuleCount():0);
+  public void addRuleSet(RuleSet<Tcontext,Tvalue> additionalSet)
+  {
+    if (additionalSets==null)
+    { additionalSets=new ArrayList<RuleSet<Tcontext,Tvalue>>();
+    }
+    additionalSets.add(additionalSet);
   }
   
 }
