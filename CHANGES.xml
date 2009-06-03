@@ -1,6 +1,39 @@
 <scm:Change.list
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
+
+  <scm:Change>
+    <revision>0.3.8.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-06-03
+    </date>
+    
+    <notes>
+      <scm:Note>Test library updates- example Customer now has an id sequence
+      </scm:Note>
+      <scm:Note>Fix issue where buffer Type is requested for a buffer Type,
+        although in out-of-bounds situation of duplicate ids
+      </scm:Note>
+      <scm:Note>Remove warning when Rule resolution re-entrance is encountered.
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft/data/
+    </path>
+    
+    <resources>
+      <URI>Type.java
+      </URI>
+      
+      <URI>core/TypeImpl.java
+      </URI>
+    </resources>
+    
+  </scm:Change>
   
   <scm:Change>
     <revision>0.3.8
