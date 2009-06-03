@@ -189,8 +189,12 @@ public class TypeImpl<T>
   { 
     if (!rulesResolved && ruleSet==null)
     { 
-      // Need to create one to return if we haven't resolved our own rules yet
-      log.debug("Creating placeholder RuleSet on demand for Type "+getURI());
+      if (debug)
+      {
+        
+        // Need to create one to return if we haven't resolved our own rules yet
+        log.debug("Creating placeholder RuleSet on demand for Type "+getURI());
+      }
       createRuleSet();
     }
     if (ruleSet!=null)
