@@ -11,7 +11,7 @@
     <meta:Scheme>
 
       <fields>
-        <meta:Field>
+        <meta:SequenceField>
 
           <name>id
           </name>
@@ -19,7 +19,7 @@
           <type><Integer.type/>
           </type>
           
-        </meta:Field>
+        </meta:SequenceField>
         
         <meta:Field>
         
