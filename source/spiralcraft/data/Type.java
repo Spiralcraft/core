@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import spiralcraft.data.session.Buffer;
+import spiralcraft.data.session.BufferType;
 // import spiralcraft.log.ClassLogger;
 import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.rules.RuleSet;
@@ -73,6 +74,11 @@ public abstract class Type<T>
   { 
     try
     { 
+      if (type instanceof BufferType)
+      { 
+        throw new IllegalArgumentException
+          ("Already a buffer type "+type.getURI());
+      }
 //      log.fine
 //        ("Buffer Type for "+type+" is "
 //        +resolve(type.getURI().toString()+".buffer")
