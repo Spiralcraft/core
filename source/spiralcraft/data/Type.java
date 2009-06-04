@@ -70,14 +70,18 @@ public abstract class Type<T>
     }
   }
 
+  @SuppressWarnings("unchecked")
+  
+  /**
+   * Return the corresponding BufferType for specified type. If the type
+   *   is already a BufferType, it will be returned.
+   */
   public static <X> Type<Buffer> getBufferType(Type<X> type)
   { 
     try
     { 
       if (type instanceof BufferType)
-      { 
-        throw new IllegalArgumentException
-          ("Already a buffer type "+type.getURI());
+      { return (Type<Buffer>) type;
       }
 //      log.fine
 //        ("Buffer Type for "+type+" is "

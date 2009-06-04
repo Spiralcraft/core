@@ -2,6 +2,33 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
 
+
+  <scm:Change>
+    <revision>0.3.8.2
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-06-04
+    </date>
+    
+    <notes>
+      <scm:Note>When a BufferType is requested for a BufferType, simply return
+        the specified BufferType instead of throwing an exception
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft/data/
+    </path>
+    
+    <resources>
+      <URI>Type.java
+      </URI>
+    </resources>
+    
+  </scm:Change>
+
   <scm:Change>
     <revision>0.3.8.1
     </revision>
