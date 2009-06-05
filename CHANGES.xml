@@ -2,6 +2,32 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
 
+  <scm:Change>
+    <revision>0.3.9
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-06-05
+    </date>
+    
+    <notes>
+      <scm:Note>TupleReflector provides methods to create Assignment sets
+        for new, default and fixed expressions associated with a FieldSet's
+        fields.
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft/data/lang/TupleReflector.java
+    </path>
+    
+    <resources>
+      <URI>Type.java
+      </URI>
+    </resources>
+    
+  </scm:Change>
 
   <scm:Change>
     <revision>0.3.8.2

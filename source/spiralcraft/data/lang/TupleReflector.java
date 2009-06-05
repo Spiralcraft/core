@@ -15,6 +15,8 @@
 package spiralcraft.data.lang;
 
 
+import java.util.ArrayList;
+
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
@@ -24,6 +26,8 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AspectChannel;
+import spiralcraft.lang.Assignment;
+
 import spiralcraft.log.ClassLog;
 
 import spiralcraft.data.DataException;
@@ -98,6 +102,67 @@ public class TupleReflector<T extends Tuple>
   { return untypedFieldSet!=null?untypedFieldSet:type.getFieldSet();
   }
   
+  
+  @SuppressWarnings("unchecked")
+  public Assignment<?>[] getNewAssignments()
+  {
+    ArrayList<Assignment<?>> assignments=new ArrayList<Assignment<?>>();
+    
+    for (Field<?> field: getFieldSet().fieldIterable())
+    {
+      if (field.getNewExpression()!=null)
+      { 
+        assignments.add
+          (new Assignment
+            (Expression.create(field.getName())
+            ,field.getNewExpression()
+            )
+          );
+      }
+    }
+    return assignments.toArray(new Assignment[assignments.size()]);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public Assignment<?>[] getDefaultAssignments()
+  {
+    ArrayList<Assignment<?>> assignments=new ArrayList<Assignment<?>>();
+    
+    for (Field<?> field: getFieldSet().fieldIterable())
+    {
+      if (field.getDefaultExpression()!=null)
+      { 
+        assignments.add
+          (new Assignment
+            (Expression.create(field.getName())
+            ,field.getDefaultExpression()
+            )
+          );
+      }
+    }
+    return assignments.toArray(new Assignment[assignments.size()]);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public Assignment<?>[] getFixedAssignments()
+  {
+    ArrayList<Assignment<?>> assignments=new ArrayList<Assignment<?>>();
+    
+    for (Field<?> field: getFieldSet().fieldIterable())
+    {
+      if (field.getFixedExpression()!=null)
+      { 
+        assignments.add
+          (new Assignment
+            (Expression.create(field.getName())
+            ,field.getFixedExpression()
+            )
+          );
+      }
+    }
+    return assignments.toArray(new Assignment[assignments.size()]);    
+  }
+
   /**
    * Resolve a meta name
    */
