@@ -12,21 +12,47 @@
     <date>2009-06-10
     </date>
     
-    <notes>
-      <scm:Note>Data XML now provides mechanism to translate ContextDictionary
-        properties when contextAware attribute is set.
-      </scm:Note>
-    </notes>
+    <detail>
     
-    <path>source/spiralcraft/data/sax/
-    </path>
+      <scm:Change>
+
+        <date>2009-06-10
+        </date>
+        
+        <notes>
+          <scm:Note>Fix problem turning Query debugging off
+          </scm:Note>
+        </notes>
     
-    <resources>
-      <URI>DataReader.java
-      </URI>
-      <URI>DataHandlerBase.java
-      </URI>
-    </resources>
+        <path>source/spiralcraft/data/query/Query.java
+        </path>
+    
+      </scm:Change>
+
+      <scm:Change>
+
+        <date>2009-06-10
+        </date>
+        
+        <notes>
+          <scm:Note>Data XML now provides mechanism to translate ContextDictionary
+            properties when contextAware attribute is set.
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/sax/
+        </path>
+    
+        <resources>
+          <URI>DataReader.java
+          </URI>
+          <URI>DataHandlerBase.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+    </detail>
 
     
   </scm:Change>
