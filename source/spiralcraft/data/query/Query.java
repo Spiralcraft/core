@@ -269,7 +269,7 @@ public abstract class Query
   }
   
   public void setDebug(boolean val)
-  { this.debugLevel=Level.DEBUG;
+  { this.debugLevel=val?Level.DEBUG:Level.INFO;
   }
   
   public Level getDebugLevel()
