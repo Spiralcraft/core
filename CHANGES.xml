@@ -20,6 +20,22 @@
         </date>
         
         <notes>
+          <scm:Note>ContextDictionary throws an Exception if property is not
+            found
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/util/ContextDictionary.java
+        </path>
+    
+      </scm:Change>
+          
+      <scm:Change>
+
+        <date>2009-06-10
+        </date>
+        
+        <notes>
           <scm:Note>Fix problem turning Query debugging off
           </scm:Note>
         </notes>
@@ -35,8 +51,8 @@
         </date>
         
         <notes>
-          <scm:Note>Data XML now provides mechanism to translate ContextDictionary
-            properties when contextAware attribute is set.
+          <scm:Note>Data XML now provides mechanism to translate 
+            ContextDictionary properties when contextAware attribute is set.
           </scm:Note>
         </notes>
     
