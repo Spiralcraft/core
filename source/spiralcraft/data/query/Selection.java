@@ -501,7 +501,7 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
         return false;
       }
 
-      if (filter.get())
+      if (Boolean.TRUE.equals(filter.get()))
       {  
         if (debugFine)
         { log.fine("BoundSelection: passed "+t);

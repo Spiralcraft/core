@@ -3,6 +3,27 @@
   >
 
   <scm:Change>
+    <revision>0.3.9.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-06-10
+    </date>
+    
+    <notes>
+      <scm:Note>NPE Fix for Selection filter when filter returns null
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft/data/query/Selection.java
+    </path>
+
+    
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.3.9
     </revision>
     
@@ -21,11 +42,6 @@
     
     <path>source/spiralcraft/data/lang/TupleReflector.java
     </path>
-    
-    <resources>
-      <URI>Type.java
-      </URI>
-    </resources>
     
   </scm:Change>
 
