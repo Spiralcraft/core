@@ -73,7 +73,8 @@ public class ContextDictionary
         (raw
         ,new MarkupHandler()
         {
-
+          private ParsePosition position;
+          
           @Override
           public void handleContent(
             CharSequence text)
@@ -88,9 +89,13 @@ public class ContextDictionary
           { 
             String substitution
               =ContextDictionary.getInstance().find
-                (code.toString(),"${"+code.toString()+"}");
+                (code.toString(),null);
             if (substitution!=null)
             { ret.append(substitution);
+            }
+            else
+            { throw new ParseException
+                ("Context property '"+code.toString()+"' not found",position);
             }
             
 //            if (substitution!=code.toString())
@@ -102,7 +107,9 @@ public class ContextDictionary
           @Override
           public void setPosition(
             ParsePosition position)
-          { } 
+          { this.position=position;
+            
+          } 
         }
         ,null
         );
