@@ -265,6 +265,8 @@ public abstract class DataHandlerBase
     private boolean hasElements;
     private boolean preserveWhitespace=false;
     private HashMap<String,String> prefixMappings;
+    protected boolean contextAwareFrame
+      =currentFrame!=null?currentFrame.contextAwareFrame:contextAware;
 
     public final void startPrefixMapping(String prefix,String uri)
     {
@@ -378,6 +380,16 @@ public abstract class DataHandlerBase
       )
       throws SAXException,DataException;
 
+    protected boolean handleStandardAttribute(Attributes attributes,int index)
+    {
+      if (attributes.getQName(index).equals("contextAware"))
+      { 
+        contextAwareFrame=Boolean.parseBoolean(attributes.getValue(index));
+        return true;
+      }
+      return false;
+    }
+    
     /**
      * <p>Most be overridden to handle data when a child is done
      *   processing.
@@ -447,7 +459,7 @@ public abstract class DataHandlerBase
       else
       { ret=chars.toString().trim();
       }
-      if (contextAware)
+      if (contextAwareFrame)
       { 
         try
         { ret=ContextDictionary.substitute(ret);

@@ -3,6 +3,35 @@
   >
 
   <scm:Change>
+    <revision>0.3.10
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-06-10
+    </date>
+    
+    <notes>
+      <scm:Note>Data XML now provides mechanism to translate ContextDictionary
+        properties when contextAware attribute is set.
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft/data/sax/
+    </path>
+    
+    <resources>
+      <URI>DataReader.java
+      </URI>
+      <URI>DataHandlerBase.java
+      </URI>
+    </resources>
+
+    
+  </scm:Change>
+  
+  <scm:Change>
     <revision>0.3.9.1
     </revision>
     

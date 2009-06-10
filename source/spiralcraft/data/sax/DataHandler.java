@@ -262,7 +262,7 @@ public class DataHandler
     /**
      * Construct a detail frame to read a specific Type of data
      */
-    public DetailFrame(Type type,Tuple initialValue)
+    protected DetailFrame(Type type,Tuple initialValue)
       throws DataException
     { 
       if (initialValue!=null)
@@ -352,7 +352,10 @@ public class DataHandler
       
       for (int i=0;i<attributes.getLength();i++)
       {
-        if (attributes.getLocalName(i).equals("ref"))
+        if (handleStandardAttribute(attributes,i))
+        {
+        }
+        else if (attributes.getLocalName(i).equals("ref"))
         { ref=resolveRef(attributes.getValue(i));
         }
         else
@@ -473,7 +476,7 @@ public class DataHandler
     
     // We've encountered an Object
     @Override
-    public Frame newChild
+    protected Frame newChild
       (String uri
       ,String localName
       ,String qName
@@ -491,7 +494,10 @@ public class DataHandler
       
       for (int i=0;i<attributes.getLength();i++)
       {
-        if (attributes.getLocalName(i).equals("ref"))
+        if (handleStandardAttribute(attributes,i))
+        {
+        }
+        else if (attributes.getLocalName(i).equals("ref"))
         { ref=resolveRef(attributes.getValue(i));
         }
         else
@@ -511,7 +517,7 @@ public class DataHandler
     }
     
     @Override
-    public void endChild(Frame child)
+    protected void endChild(Frame child)
       throws SAXException
     { addObject(child.getObject());
     }
@@ -575,7 +581,7 @@ public class DataHandler
     
     // We've encountered an Object
     @Override
-    public Frame newChild
+    protected Frame newChild
       (String uri
       ,String localName
       ,String qName
@@ -589,7 +595,7 @@ public class DataHandler
     }    
     
     @Override
-    public void endChild(Frame child)
+    protected void endChild(Frame child)
       throws SAXException
     { addObject(child.getObject());
     }    
@@ -665,7 +671,7 @@ public class DataHandler
     
     // We've encountered an Object
     @Override
-    public Frame newChild
+    protected Frame newChild
       (String uri
       ,String localName
       ,String qName
@@ -677,7 +683,10 @@ public class DataHandler
       
       for (int i=0;i<attributes.getLength();i++)
       {
-        if (attributes.getLocalName(i).equals("ref"))
+        if (handleStandardAttribute(attributes,i))
+        {
+        }
+        else if (attributes.getLocalName(i).equals("ref"))
         { ref=resolveRef(attributes.getValue(i));
         }
         else
@@ -695,7 +704,7 @@ public class DataHandler
     }
     
     @Override
-    public void endChild(Frame child)
+    protected void endChild(Frame child)
       throws SAXException
     { addObject(child.getObject());
     }
@@ -715,7 +724,7 @@ public class DataHandler
     
     // We've encountered an Object
     @Override
-    public Frame newChild
+    protected Frame newChild
       (String uri
       ,String localName
       ,String qName
@@ -727,7 +736,10 @@ public class DataHandler
       
       for (int i=0;i<attributes.getLength();i++)
       {
-        if (attributes.getLocalName(i).equals("ref"))
+        if (handleStandardAttribute(attributes,i))
+        {
+        }
+        else if (attributes.getLocalName(i).equals("ref"))
         { ref=resolveRef(attributes.getValue(i));
         }
         else
