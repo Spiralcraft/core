@@ -3,6 +3,73 @@
   >
 
   <scm:Change>
+    <revision>0.3.11
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-06-19
+    </date>
+    
+    <detail>
+    
+      <scm:Change>
+
+        <date>2009-06-19
+        </date>
+        
+        <notes>
+          <scm:Note>Added ability to associate arbitrary application state
+            with an authentication session through 
+            setAttribute(String name,Object value)
+            and getAttribute(String name) methods.
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/security/auth/AuthSession.java
+        </path>
+    
+      </scm:Change>
+
+      <scm:Change>
+
+        <date>2009-06-18
+        </date>
+        
+        <notes>
+          <scm:Note>New data task "Edit" to perform non-interactive buffered
+            data manipulation
+          </scm:Note>
+          <scm:Note>Generics update in BufferChannel to support more type
+            aware scenarios.
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>task/Edit.java
+          </URI>
+          <URI>editor/EditorBase.java
+          </URI>
+          <URI>editor/TupleEditor.java
+          </URI>
+          <URI>session/BufferChannel.java
+          </URI>
+          <URI>session/BufferField.java
+          </URI>
+          <URI>lang/CursorBinding.java
+          </URI>
+        </resources>
+        
+    
+      </scm:Change>
+    </detail>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.3.10
     </revision>
     
