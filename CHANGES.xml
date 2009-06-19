@@ -66,6 +66,22 @@
         
     
       </scm:Change>
+      
+      <scm:Change>
+
+        <date>2009-06-19
+        </date>
+        
+        <notes>
+          <scm:Note>Fix NPE reporting InvocationTargetException
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/lang/reflect/MethodTranslator.java
+        </path>
+    
+      </scm:Change>
+
     </detail>
   </scm:Change>
 

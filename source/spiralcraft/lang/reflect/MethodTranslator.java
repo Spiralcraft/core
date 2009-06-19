@@ -113,7 +113,7 @@ class MethodTranslator<Tprop,Tbean>
     { 
       throw new RuntimeException
         ("Error invoking method "+_method.toString()
-        +" on "+value.toString()+" with "
+        +" on ["+value+"] with "
         +"["+ArrayUtil.format(paramValues,",","\"")+"]"
         ,x.getTargetException()
         );
