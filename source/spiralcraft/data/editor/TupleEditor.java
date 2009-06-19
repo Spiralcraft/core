@@ -19,7 +19,6 @@ package spiralcraft.data.editor;
 
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
-import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
@@ -384,8 +383,8 @@ public class TupleEditor
         
         Channel x=source;
         bufferChannel=new BufferChannel
-          ((Focus<DataComposite>) parentFocus
-          ,(Channel<DataComposite>) x
+          (parentFocus
+          ,x
           );
       }
       

@@ -95,7 +95,7 @@ public class BufferField
         log.fine("Creating BufferChannel of type "+getType());
       }
       this.bufferSource
-        =new BufferChannel(getType(),originalChannel,parentFocus);
+        =BufferChannel.create(getType(),originalChannel,parentFocus);
       
     }
 

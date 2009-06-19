@@ -23,6 +23,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.Cursor;
 import spiralcraft.data.session.BufferChannel;
+import spiralcraft.data.session.BufferTuple;
 
 /**
  * A spiralcraft.lang binding for Tuples, which uses the Tuple's Scheme
@@ -82,10 +83,10 @@ public class CursorBinding<T extends Tuple,C extends Cursor<T>>
    * @throws BindException
    * @throws DataException
    */
-  public BufferChannel buffer(Focus<?> focus)
+  public BufferChannel<BufferTuple> buffer(Focus<?> focus)
     throws BindException,DataException
   { 
-    return new BufferChannel
+    return new BufferChannel<BufferTuple>
       (Type.getBufferType(cursor.getResultType()),this,focus);
   }
 }

@@ -43,7 +43,7 @@ public abstract class EditorBase<Tbuffer extends Buffer>
 
   
   protected Channel<Buffer> bufferChannel;
-  protected Channel<Tuple> source;
+  protected Channel<? extends Tuple> source;
   
   private Type<?> type;
   private Channel<DataSession> sessionChannel;
@@ -66,7 +66,7 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   protected abstract void save(boolean force)
     throws DataException;
   
-  public void setSource(Channel<Tuple> source)
+  public void setSource(Channel<? extends Tuple> source)
   { this.source=source;
   }
   

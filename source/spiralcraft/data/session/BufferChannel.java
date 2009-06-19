@@ -34,8 +34,8 @@ import spiralcraft.log.ClassLog;
  * @author mike
  *
  */
-public class BufferChannel
-  extends AbstractChannel<Buffer>
+public class BufferChannel<Tbuffer extends Buffer>
+  extends AbstractChannel<Tbuffer>
 {
   private static final ClassLog log=ClassLog.getInstance(BufferChannel.class);
   
@@ -46,6 +46,19 @@ public class BufferChannel
   private Channel<Buffer> parentChannel;
 */
 
+  @SuppressWarnings("unchecked")
+  public static final BufferChannel<? extends Buffer>
+    create(Type<Buffer> bufferType
+    ,Channel<? extends DataComposite> originalChannel
+    ,Focus<?> focus
+    )
+    throws BindException
+  {
+    return new BufferChannel
+      (bufferType,originalChannel,focus);
+  }
+  
+      
   /**
    * Construct a BufferChannel
    * 
@@ -57,7 +70,7 @@ public class BufferChannel
     throws BindException
   { 
     super
-      (DataReflector.<Buffer>getInstance
+      (DataReflector.<Tbuffer>getInstance
         (Type.<DataComposite>getBufferType
          ( ((DataReflector) focus.getSubject().getReflector())
              .getType()
@@ -79,13 +92,13 @@ public class BufferChannel
    */
   @SuppressWarnings("unchecked")
   public BufferChannel
-    (Focus<? extends DataComposite> focus
-    ,Channel<DataComposite> original
+    (Focus<?> focus
+    ,Channel<? extends DataComposite> original
     )
     throws BindException
   { 
     super
-      (DataReflector.<Buffer>getInstance
+      (DataReflector.<Tbuffer>getInstance
         (Type.<DataComposite>getBufferType
          ( ((DataReflector) original.getReflector())
              .getType()
@@ -117,7 +130,7 @@ public class BufferChannel
     // Our Focus provides access to our containing scope,
     //   not the originalChannel
 
-    super(DataReflector.<Buffer>getInstance(bufferType));
+    super(DataReflector.<Tbuffer>getInstance(bufferType));
     if (debug)
     { log.fine("BufferChannel "+getReflector());
     }
@@ -170,8 +183,9 @@ public class BufferChannel
     return false;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public Buffer retrieve()
+  public Tbuffer retrieve()
   { 
 
     DataComposite original=originalChannel.get();
@@ -181,12 +195,12 @@ public class BufferChannel
     }
     
     if (original instanceof Buffer)
-    { return (Buffer) original;
+    { return (Tbuffer) original;
     }
     
     try
     { 
-      Buffer buffer=sessionChannel.get().buffer(original);
+      Tbuffer buffer=(Tbuffer) sessionChannel.get().buffer(original);
       return buffer;
     }
     catch (DataException x)
