@@ -55,6 +55,9 @@ public abstract class AuthSession
   protected volatile Principal principal;
   protected volatile boolean authenticated;
   
+  protected final HashMap<String,Object> attributes
+    =new HashMap<String,Object>();
+  
   /**
    * @return The Principal currently authenticated in this session.
    * 
@@ -148,13 +151,36 @@ public abstract class AuthSession
   public abstract byte[] opaqueDigest(String input);
     
   /**
-   * Logs out the user by clearing all credentials and principal data and
-   *   setting authenticated to false.
+   * <p>Associate arbitrary application state with this LoginSession
+   * </p>
+   * 
+   * @param name
+   * @param value
+   */
+  public <T> void setAttribute(String name,T value)
+  { attributes.put(name,value);
+  }
+  
+  /**
+   * <p>Obtain arbitrary application state associated with this LoginSession
+   * </p>
+   * 
+   * @param name
+   */  
+  @SuppressWarnings("unchecked")
+  public <T> T getAttribute(String name)
+  { return (T) attributes.get(name);
+  }
+  
+  /**
+   * Logs out the user by clearing all credentials, attributes and principal 
+   *   data and setting authenticated to false.
    */
   public synchronized void logout()
   {
     credentialList.clear();
     credentialMap.clear();
+    attributes.clear();
     principal=null;
     authenticated=false;
     
