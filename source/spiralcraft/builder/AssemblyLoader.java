@@ -424,7 +424,35 @@ public class AssemblyLoader
         { prop.setExport(readBoolean(attribs[i]));
         }
         else if (name=="dataURI")
-        { prop.setDataURI(URI.create(attribs[i].getValue()));
+        { 
+          // Resolve namespace prefix for data URI
+          String uriStr=attribs[i].getValue();
+          
+          int colonPos=uriStr.indexOf(':');
+          if (colonPos==0)
+          { uriStr=uriStr.substring(1);
+          }
+          else if (colonPos>0)
+          { 
+            String nsPrefix=uriStr.substring(0,colonPos);
+            URI nsURI=node.getPrefixResolver().resolvePrefix(nsPrefix);
+            if (nsURI==null)
+            { 
+              throw new BuildException
+                ("Namespace prefix '"+nsURI+"' not found in "+sourceUri);
+            }
+            String nsURIstr=nsURI.toString();
+            uriStr=uriStr.substring(colonPos+1);
+            if (!nsURIstr.endsWith("/"))
+            { uriStr=nsURIstr+"/"+uriStr;
+            }
+            else
+            { uriStr=nsURIstr+uriStr;
+            }
+            
+          }
+          
+          prop.setDataURI(URI.create(uriStr));
         }
         else
         { 
