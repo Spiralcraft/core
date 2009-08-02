@@ -107,7 +107,7 @@ public abstract class PrimitiveTypeImpl<T>
   public DataComposite toData(T val)
   { 
     throw new UnsupportedOperationException
-      ("Type "+uri+" is primitive");
+      ("Type "+uri+" is primitive- cannot convert "+val+" to data");
   }
   
   @Override
