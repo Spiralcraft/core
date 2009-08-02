@@ -44,4 +44,9 @@ public class ExpressionType
     { throw new DataException("Error constructing expression from ["+str+"]: "+x,x);
     }
   }
+  
+  @Override
+  public String toString(Expression expr)
+  { return expr!=null?expr.getText():null;
+  }
 }
