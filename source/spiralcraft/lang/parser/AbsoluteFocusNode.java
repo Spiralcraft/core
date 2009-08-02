@@ -86,7 +86,14 @@ public class AbsoluteFocusNode
       { uri=nsr.getDefaultURI();
       }
       if (uri!=null)
-      { uri=uri.resolve(suffix);
+      { 
+        String uriStr=uri.toString();
+        if (!uriStr.endsWith("/"))
+        { 
+          uriStr=uriStr+"/";
+          uri=URI.create(uriStr);
+        }
+        uri=uri.resolve(suffix);
       }
     }
     
