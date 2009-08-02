@@ -328,6 +328,9 @@ public class FieldImpl<T>
   public void setType(Type<T> type)
     throws DataException
   { 
+    if (type==null)
+    { throw new IllegalArgumentException("Field type cannot be null");
+    }
     assertUnlocked();
     this.type=type;
     try
