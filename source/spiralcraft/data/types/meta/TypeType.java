@@ -14,12 +14,19 @@
 //
 package spiralcraft.data.types.meta;
 
+import spiralcraft.data.DataException;
+import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 
+import spiralcraft.data.core.FieldImpl;
+import spiralcraft.data.core.MetaType;
+import spiralcraft.data.core.SchemeImpl;
 import spiralcraft.data.core.TypeImpl;
 
 
 import spiralcraft.data.reflect.ReflectionType;
+import spiralcraft.data.spi.EditableArrayTuple;
 
 import java.net.URI;
 
@@ -32,6 +39,16 @@ import java.net.URI;
 public class TypeType
   extends ReflectionType<TypeImpl>
 {
+  
+  { 
+    ReflectionType.registerCanonicalType
+      (TypeImpl.class,URI.create("class:/spiralcraft/data/types/meta/Type"));
+    ReflectionType.registerCanonicalType
+      (FieldImpl.class,URI.create("class:/spiralcraft/data/types/meta/Field"));
+    ReflectionType.registerCanonicalType
+      (SchemeImpl.class,URI.create("class:/spiralcraft/data/types/meta/Scheme"));
+    
+  }
   
   /**
    * Construct a TypeType which creates Types with the specified URI based
@@ -46,6 +63,29 @@ public class TypeType
   { super(resolver,uri,TypeImpl.class,TypeImpl.class);
   }
 
+  @Override
+  public Tuple toData(Object obj)
+    throws DataException
+  { 
+    log.fine("Generating typeRef for "+obj);
+    
+    MetaType metaType
+      =new MetaType((Type) obj);
+    return new EditableArrayTuple(metaType);
+  }
+  
+//  /**
+//   * Generate the data structure for a Type definition
+//   * 
+//   * @param type
+//   * @return
+//   */
+//  public Tuple toTypeData(TypeImpl type)
+//    throws DataException
+//  { return (Tuple) super.toData(type);
+//  }
+//  
+  
 //  /**
 //   * Types are always singletons- just resolve the URI.
 //   */
