@@ -21,6 +21,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.Signature;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.TypeModel;
 
@@ -56,6 +57,7 @@ import java.beans.PropertyDescriptor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -285,6 +287,26 @@ public class BeanReflector<T>
 
   }
 
+  @Override
+  public LinkedList<Signature> getSignatures(Channel source)
+    throws BindException
+  { 
+    LinkedList signatures=super.getSignatures(source);
+    signatures.addFirst(new Signature("@static",source.getReflector()));
+    PropertyDescriptor[] props=beanInfo.getAllProperties();
+    for (PropertyDescriptor prop:props)
+    { 
+      Channel out=getProperty(source,prop.getName());
+      if (out==null)
+      { out=getField(source,prop.getName());
+      }
+      if (out!=null)
+      { signatures.addFirst(new Signature(prop.getName(),out.getReflector()));
+      }
+    }
+    return signatures;
+  }
+  
   @Override
   public boolean isAssignableFrom(Reflector<?> other)
   { return getContentType().isAssignableFrom(other.getContentType());

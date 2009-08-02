@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -15,11 +15,13 @@
 package spiralcraft.lang;
 
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.util.ArrayUtil;
 
 import java.net.URI;
+import java.util.LinkedList;
 
 /**
  * <p>A Reflector is a "type broker" which exposes parts of an object model 
@@ -192,6 +194,31 @@ public abstract class Reflector<T>
   protected <X> Channel<X> newConversionChannel
     (Channel<T> source,Reflector<X> targetType)
   { return null;
+  }
+  
+  /**
+   * 
+   * @return The set of member Signatures published by this reflector. If
+   *   null, the set of Signatures is not obtainable.
+   */
+  public LinkedList<Signature> getSignatures(Channel<?> source)
+    throws BindException
+  { 
+    LinkedList<Signature> ret=new LinkedList<Signature>();
+    ret.addFirst
+      (new Signature("@type",BeanReflector.getInstance(getClass())));
+    ret.addFirst
+      (new Signature("@subtype",BeanReflector.getInstance(source.getReflector().getClass())));
+    ret.addFirst
+      (new Signature("@channel",BeanReflector.getInstance(source.getClass())));
+    ret.addFirst
+      (new Signature("@focus",BeanReflector.getInstance(Focus.class)));
+    ret.addFirst
+      (new Signature("@cast",source.getReflector(),BeanReflector.getInstance(Reflector.class)));
+    ret.addFirst
+      (new Signature("@nil",this));
+    
+    return ret;
   }
   
   /**

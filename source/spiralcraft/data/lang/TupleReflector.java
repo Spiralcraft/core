@@ -14,13 +14,14 @@
 //
 package spiralcraft.data.lang;
 
-
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
+import spiralcraft.lang.Signature;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
@@ -284,6 +285,26 @@ public class TupleReflector<T extends Tuple>
     return null;
   }
 
+  @Override
+  public LinkedList<Signature> getSignatures(Channel<?> source)
+    throws BindException
+  { 
+    LinkedList<Signature> signatures=super.getSignatures(source);
+    signatures.addFirst
+      (new Signature("@tuple",BeanReflector.getInstance(contentType)));
+    
+    
+    for (Field<?> field : getFieldSet().fieldIterable())
+    { 
+      signatures.addFirst
+        (new Signature
+          (field.getName(),DataReflector.getInstance(field.getType())
+          )
+        );
+    }
+    return signatures;
+  }
+  
   @SuppressWarnings("unchecked")
   private Channel bindMethods
     (Type type,Channel source,Focus focus,String name,Expression[] params)

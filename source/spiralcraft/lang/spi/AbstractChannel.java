@@ -21,6 +21,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.AccessException;
+import spiralcraft.lang.Signature;
 
 import java.beans.PropertyChangeSupport;
 
@@ -102,8 +103,19 @@ public abstract class AbstractChannel<T>
     Channel<X> binding=_reflector.<X>resolve(this,focus,name,params);    
     if (binding==null)
     { 
+     
+      StringBuffer sigs=new StringBuffer();
+      sigs.append("\r\n  {[");
+      for (Signature sig : _reflector.getSignatures(this))
+      { 
+        sigs.append(sig.toString());
+        sigs.append("\r\n    ");
+        
+      }
+      sigs.append("]\r\n  }");
+
       throw new 
-        BindException("'"+name+"' not found. ("+toString()+")");
+        BindException("'"+name+"' not found. ("+toString()+") "+sigs);
     }
     return binding;
   }
