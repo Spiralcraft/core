@@ -7,6 +7,7 @@ import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.EmptyIterator;
 import spiralcraft.util.IteratorChain;
 
 public class UnifiedFieldSet
@@ -73,7 +74,13 @@ public class UnifiedFieldSet
               );
         }
         else
-        { return (Iterator<Field<?>>) type.getScheme().fieldIterable().iterator();
+        { 
+          if (type.getScheme()!=null)
+          { return (Iterator<Field<?>>) type.getScheme().fieldIterable().iterator();
+          }
+          else 
+          { return new EmptyIterator<Field<?>>();
+          }
         }
       }
     };
