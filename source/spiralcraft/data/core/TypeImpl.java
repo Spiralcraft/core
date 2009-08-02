@@ -554,7 +554,8 @@ public class TypeImpl<T>
   @Override
   public T fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
-  { throw new UnsupportedOperationException("Not depersistable");
+  { throw new UnsupportedOperationException
+      ("Not depersistable: "+data);
   }
   
   @Override
