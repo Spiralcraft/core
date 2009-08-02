@@ -40,15 +40,20 @@ public class MetaType
   
   private Type<?> referencedType;
   private int anonRefId=1;
+
   
   /**
-   * <P>Construct a TypeType that reflects the implementation of the referenced Type.
+   * <p>Construct a TypeType that reflects the implementation of the referenced
+   *  Type.
+   * </p>
    * 
-   * <P>Only used by the TypeResolver when resolver uses the ".type" URI operator,
+   * <p>Only used by the TypeResolver when resolver uses the ".type" URI operator,
    *  which implies a reference to a Canonical type.
+   * </p>
    *
-   * <P>The fromData() method will return the canonical instance of the referenced type.
+   * <p>The fromData() method will return the canonical instance of the referenced type.
    * If any data is contained in the tuple, an error in fromData() will result.
+   * </p>
    */
   public MetaType
     (TypeResolver resolver,URI uri,URI referencedTypeURI,Class referencedTypeImplClass)
@@ -65,6 +70,24 @@ public class MetaType
     referencedType=resolver.resolve(referencedTypeURI);
   }
   
+  /**
+   * <p>Construct a temporary type reference used to generate Type definition data
+   *   via the toData() method.
+   * </p>
+   * @param referencedType
+   */
+  public MetaType(Type referencedType)
+    throws DataException
+  { 
+    super
+      (referencedType.getTypeResolver()
+      ,URI.create(referencedType.getURI().toString()+".type")
+      ,(Class) referencedType.getClass()
+      ,(Class) referencedType.getClass()
+      );
+    this.referencedType=referencedType;
+    link();
+  }  
   
   @Override
   public Type<?> fromString(String val)
