@@ -20,6 +20,8 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
+import spiralcraft.lang.parser.AssignmentNode;
+
 import spiralcraft.util.string.StringConverter;
 
 /**
@@ -39,6 +41,8 @@ public class DictionaryBinding<T>
   private StringConverter<T> converter;
   
   private String name;
+  
+  private boolean assignment;
     
   /**
    * Create an AttributeBinding
@@ -78,7 +82,11 @@ public class DictionaryBinding<T>
   }
   
   public void setTarget(Expression<T> expression)
-  { this.target=expression;
+  { 
+    this.target=expression;
+    if (this.target.getRootNode() instanceof AssignmentNode)
+    { assignment=true;
+    }
   }
 
   public void setName(String name)
@@ -116,13 +124,42 @@ public class DictionaryBinding<T>
     { throw new BindException("Target expression is null");
     }
     
-    targetChannel=focus.bind(target);
-    
-    if (converter==null)
+    if (assignment)
     { 
+      if (converter!=null)
+      { 
+        throw new BindException
+          ("In binding for "+name+": Cannot set "
+          +" both a target assignment and a converter"
+          );
+      }
+      
+      targetChannel
+        =focus.bind
+          (new Expression
+            ( ((AssignmentNode<T,T>)target.getRootNode()).getTarget())
+          );
+
+      
       converter
-        =(StringConverter<T>) StringConverter.getInstance
-          (targetChannel.getContentType());
+        =new ExpressionStringConverter
+          (focus
+          ,new Expression
+            ( ((AssignmentNode<T,T>) target.getRootNode()).getSource()
+            )
+          ,targetChannel.getReflector()
+          );
+    }
+    else
+    {
+      targetChannel=focus.bind(target);
+    
+      if (converter==null)
+      { 
+        converter
+          =(StringConverter<T>) StringConverter.getInstance
+            (targetChannel.getContentType());
+      }
     }
   }
   
