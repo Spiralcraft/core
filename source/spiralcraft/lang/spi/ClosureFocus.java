@@ -95,6 +95,7 @@ public class ClosureFocus<T>
   }
 
 
+  
   @SuppressWarnings("unchecked")
   /**
    * Caches the current data value of all the Channels obtained from
@@ -129,6 +130,59 @@ public class ClosureFocus<T>
   { return new Closure();
   } 
   
+  /**
+   * Obtains a snapshot of the current data values of all the Channels
+   *   obtained from ancestors.
+   * 
+   * @return
+   */
+  public RecursionContext getRecursionContext(Focus<?> focusChain)
+  { return new RecursionContext(focusChain);
+  } 
+  
+  /**
+   * Implements recursion in the FocusChain by re-binding URIs to the
+   *   end of a recursive section of the chain and pushing the 
+   *   
+   * @author mike
+   *
+   */
+  public class RecursionContext
+  {
+    
+    private final Channel<?>[] downChannels;
+                             
+    @SuppressWarnings("unchecked")
+    public RecursionContext(Focus<?> focusChain)
+    {
+      int i=0;
+      downChannels=new Channel<?>[foci.size()];
+      for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
+      { downChannels[i++]=focusChain.findFocus(entry.getKey()).getSubject();
+      }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void push()
+    {
+      int i=0;
+      for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
+      { entry.getValue().push(downChannels[i++].get());
+      }       
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void pop()
+    {
+      for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
+      { entry.getValue().pop();
+      }       
+    }
+
+  }
+  
+  
+  
   class Closure
   {
     private final Object[] values;
@@ -152,7 +206,7 @@ public class ClosureFocus<T>
     {
       int i=0;
       for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
-      { entry.getValue().push(values[i]);
+      { entry.getValue().push(values[i++]);
       }  
     }
     
