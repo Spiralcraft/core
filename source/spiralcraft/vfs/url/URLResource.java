@@ -89,6 +89,9 @@ public class URLResource
       connection.setConnectTimeout(timeoutMS);
       connection.setReadTimeout(timeoutMS);
     }
+    connection.setUseCaches(false);
+    connection.setAllowUserInteraction(false);
+    connection.addRequestProperty("Connection","close");
   }
   
   @Override
@@ -101,6 +104,7 @@ public class URLResource
     throws IOException
   { 
     URLConnection connection=_url.openConnection();
+    setupConnection(connection);
     connection.setDoOutput(true);
     return connection.getOutputStream();
   }
@@ -115,7 +119,7 @@ public class URLResource
     throws IOException
   {
     URLConnection connection=_url.openConnection();
-
+    setupConnection(connection);
     connection.setDoInput(true);
     connection.setDoOutput(false);
     connection.connect();
@@ -130,6 +134,7 @@ public class URLResource
     throws IOException
   {
     URLConnection connection=_url.openConnection();
+    setupConnection(connection);
     connection.setDoInput(true);
     connection.setDoOutput(false);
     connection.connect();
