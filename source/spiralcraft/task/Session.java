@@ -20,8 +20,12 @@ import spiralcraft.data.Type;
 import spiralcraft.data.session.DataSessionFocus;
 import spiralcraft.data.session.DataSession;
 
+import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Setter;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
@@ -45,9 +49,20 @@ public class Session
   
   protected DataSessionFocus dataSessionFocus;
   protected Type<? extends DataComposite> type;
+  protected Expression<Type<? extends DataComposite>> typeX;
+  protected Assignment<?>[] initialAssignments;
+  protected Setter<?>[] initialSetters;
   
   public void setType(Type<? extends DataComposite> type)
   { this.type=type;
+  }
+  
+  public void setTypeX(Expression<Type<? extends DataComposite>> typeX)
+  { this.typeX=typeX;
+  }
+
+  public void setInitialAssignments(Assignment<?>[] initialAssignments)
+  { this.initialAssignments=initialAssignments;
   }
   
   @Override
@@ -62,6 +77,7 @@ public class Session
       {
         sessionChannel.push(null);
         dataSessionFocus.reset();
+        Setter.applyArray(initialSetters);
         
         super.work();
         sessionChannel.pop();
@@ -75,8 +91,17 @@ public class Session
     Focus<?> focusChain)
     throws BindException
   {
+    if (typeX!=null)
+    { 
+      Channel<Type<? extends DataComposite>> channel
+        =focusChain.bind(typeX);
+      if (channel!=null)
+      { type=channel.get();
+      }
+    }
     dataSessionFocus
       =new DataSessionFocus(focusChain,sessionChannel,type);
+    initialSetters=Assignment.bindArray(initialAssignments, dataSessionFocus);
     super.bindChildren(dataSessionFocus);
   }
 
