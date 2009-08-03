@@ -14,14 +14,9 @@
 //
 package spiralcraft.data.sax;
 
-import spiralcraft.lang.AccessException;
-import spiralcraft.lang.BindException;
-import spiralcraft.lang.Channel;
-import spiralcraft.lang.Expression;
-import spiralcraft.lang.Focus;
-import spiralcraft.lang.ParseException;
 
-import spiralcraft.util.string.StringConverter;
+import spiralcraft.lang.ParseException;
+import spiralcraft.lang.util.DictionaryBinding;
 
 /**
  * <p>Associates a loosely bound name, such as an XML attribute name or 
@@ -34,18 +29,30 @@ import spiralcraft.util.string.StringConverter;
  * @param <T>
  */
 public class AttributeBinding<T>
+  extends DictionaryBinding<T>
 {
-  private Expression<T> target;
-  private Channel<T> targetChannel;
-  private StringConverter<T> converter;
   
-  private String attribute;
+  private boolean transformNamespace;
     
   /**
    * Create an AttributeBinding
    */
   public AttributeBinding()
   {
+  }
+  
+  /**
+   * Whether the attribute value is prefixed with a namespace declaration
+   *   that should be resolved.
+   * 
+   * @param transformNamespace
+   */
+  public void setTransformNamespace(boolean transformNamespace)
+  { this.transformNamespace=transformNamespace;
+  }
+  
+  public boolean getTransformNamespace()
+  { return transformNamespace;
   }
   
   /**
@@ -64,37 +71,11 @@ public class AttributeBinding<T>
    */
   public AttributeBinding(String shortHand)
     throws ParseException
-  {
-    int eqPos=shortHand.indexOf("=");
-    if (eqPos<0)
-    { 
-      setAttribute(shortHand.trim());
-      setTarget(Expression.<T>parse(shortHand));
-    }
-    else
-    {
-      setAttribute(shortHand.substring(0,eqPos).trim());
-      setTarget(Expression.<T>parse(shortHand.substring(eqPos+1)));
-    }
-  }
-  
-  public void setTarget(Expression<T> expression)
-  { this.target=expression;
+  { super(shortHand);
   }
 
   public void setAttribute(String attribute)
-  { this.attribute=attribute;
-  }
-  
-  
-  /**
-   * <p>The expression referencing the Channel to be updated or read
-   * </p>
-   * 
-   * @return The target expression
-   */
-  public Expression<?> getTarget()
-  { return target;
+  { setName(attribute);
   }
   
   /**
@@ -104,53 +85,7 @@ public class AttributeBinding<T>
    * @return The attribute name
    */
   public String getAttribute()
-  { return attribute;
-  }
-  
-  /**
-   * 
-   * <p>Specify the StringConverter that manages this attribute's value
-   * </p>
-   * 
-   * @param converter The StringConverter that will be used to convert
-   *   the attribute value text to the target's type, if the default
-   *   converter should be overridden. 
-   */
-  public void setConverter(StringConverter<T> converter)
-  { this.converter=converter;
-  }
-  
-  
-  @SuppressWarnings("unchecked")
-  public void bind(Focus<?> focus)
-    throws BindException
-  {
-    if (target==null)
-    { throw new BindException("Target expression is null");
-    }
-    
-    targetChannel=focus.bind(target);
-    
-    if (converter==null)
-    { 
-      converter
-        =(StringConverter<T>) StringConverter.getInstance
-          (targetChannel.getContentType());
-    }
-  }
-  
-  public void set(String value)
-  { 
-    try
-    { targetChannel.set(converter.fromString(value));
-    }
-    catch (IllegalArgumentException x)
-    { throw new AccessException("Error reading '"+value+"'",x);
-    }
-  }
-  
-  public String get()
-  { return converter.toString(targetChannel.get());
+  { return getName();
   }
   
 }
