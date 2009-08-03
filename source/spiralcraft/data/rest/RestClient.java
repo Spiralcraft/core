@@ -29,7 +29,7 @@ import spiralcraft.data.lang.DataReflector;
 
 import spiralcraft.data.sax.AttributeBinding;
 import spiralcraft.data.sax.DataReader;
-import spiralcraft.data.sax.RootFrameHandler;
+import spiralcraft.data.sax.RootFrame;
 
 import spiralcraft.data.spi.EditableArrayTuple;
 
@@ -74,7 +74,7 @@ public class RestClient
   private URI baseURI;
   private AttributeBinding<?>[] urlQueryBindings;
   private ThreadLocalChannel<Tuple> localQueryChannel;
-  private RootFrameHandler<?> handler;
+  private RootFrame<?> handler;
   private Assignment<?>[] preAssignments;
   private Assignment<?>[] postAssignments;
   private Setter<?>[] preSetters;
@@ -95,7 +95,7 @@ public class RestClient
    * 
    * @param handler
    */
-  public void setRootFrameHandler(RootFrameHandler<?> handler)
+  public void setRootFrameHandler(RootFrame<?> handler)
   { this.handler=handler;
   }
   
