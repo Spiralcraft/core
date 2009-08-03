@@ -39,9 +39,9 @@ import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.reflect.BeanPropertyTranslator;
 import spiralcraft.log.Level;
 
-@SuppressWarnings("unchecked") // Not genericized yet
-public class ReflectionField
-  extends FieldImpl
+@SuppressWarnings("unchecked") // Not fully genericized yet
+public class ReflectionField<T>
+  extends FieldImpl<T>
 {
   private final BeanPropertyTranslator translator;
   protected final TypeResolver resolver;
@@ -77,6 +77,7 @@ public class ReflectionField
     
     
     writeMethod=descriptor.getWriteMethod();
+    
     setName(descriptor.getName());
 
     if ("class".equals(getName()))
@@ -126,7 +127,7 @@ public class ReflectionField
   {
     try
     { 
-      setType(findType(translator.getReflector().getContentType()));
+      setType(this.<T>findType(translator.getReflector().getContentType()));
     }
     catch (TypeNotFoundException x)
     { 
@@ -134,6 +135,8 @@ public class ReflectionField
       //   every java class
       x.printStackTrace();
     }
+
+   
   }
   
   @Override
@@ -355,26 +358,33 @@ public class ReflectionField
     throws DataException
   {
 //    System.err.println("ReflectionField "+getURI()+" persistBeanProperty");
-    Type<? super Object> type=getType();
+    Type<T> type=getType();
     
     if ( (readMethod!=null && writeMethod!=null)
           || forcePersist
         )
     {
+      if (debug)
+      {
+        log.fine
+          ("Persisting "+getURI()+": "
+          +(forcePersist?"FORCED":readMethod+","+writeMethod)
+          );
+      }
       try
       {
-        Object value=readMethod.invoke(bean);
+        T value=(T) readMethod.invoke(bean);
         if (value!=null)
         {
-          type=TypeResolver.getTypeResolver().resolve
+          type=TypeResolver.getTypeResolver().<T>resolve
             (ReflectionType.canonicalURI(value.getClass()));
           if (!type.isPrimitive())
           { 
             if (type.getNativeClass()!=null)
-            { setValue(tuple,type.toData(value));
+            { setValue(tuple,(T) type.toData(value));
             }
             else
-            { setValue(tuple, ((Type<? super Object>) getType()).toData(value));
+            { setValue(tuple,(T) ((Type<? super Object>) getType()).toData(value));
             }
           }
           else
@@ -391,26 +401,18 @@ public class ReflectionField
         }
       }
       catch (IllegalAccessException x)
-      { throw new DataException("Error depersisting field '"+getURI()+"'",x);
+      { throw new DataException("Error persisting field '"+getURI()+"'",x);
       }
       catch (InvocationTargetException x)
       { 
         log.log
-          (Level.WARNING,"Error depersisting field '"+getURI()+"'"
+          (Level.WARNING,"Error persisting field '"+getURI()+"'"
           ,x);
       }
     }
-    
-//    if (readMethod!=null && writeMethod==null)
-//    { System.err.println("ReflectionField: Read only property: field "+getURI());
-//    }
-    
-//    if (readMethod==null && writeMethod!=null)
-//    { System.err.println("ReflectionField: Write only property: field "+getURI());
-//    }
   }
   
-  protected Type<?> findType(Class<?> iface)
+  protected <X> Type<X> findType(Class<?> iface)
     throws DataException
   { 
     URI uri=ReflectionType.canonicalURI(iface);

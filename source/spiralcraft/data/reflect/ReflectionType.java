@@ -101,7 +101,7 @@ public class ReflectionType<T>
   private final Class<?> reflectedClass;
   private Constructor<T> stringConstructor;
   private Constructor<T> tupleConstructor;
-  private Field<Class<?>> classField;
+  private ReflectionField<Class<?>> classField;
   private boolean linked;
   
   private String[] preferredConstructorFieldNames;
@@ -146,6 +146,11 @@ public class ReflectionType<T>
                    )
         );
     }
+  }
+  
+  
+  public static void registerCanonicalType(Class<?> clazz,URI typeURI)
+  { CANONICAL_MAP.put(clazz,typeURI);
   }
 
   private static boolean checkAggregate(Class<?> clazz)
@@ -315,7 +320,7 @@ public class ReflectionType<T>
     depersistMethodName=methodName;
     depersistMethodFieldNames=fieldNames;
   }
-   
+  
   @Override
   public void link()
     throws DataException
@@ -327,7 +332,7 @@ public class ReflectionType<T>
     pushLink(getURI());
     try
     {
-      
+            
       if (aggregate)
       { 
         Class<?> contentClass;
@@ -359,7 +364,8 @@ public class ReflectionType<T>
       addMethods();
     
       super.link();
-      classField=scheme.<Class<?>>getFieldByName("class");
+      classField
+        =(ReflectionField<Class<?>>) scheme.<Class<?>>getFieldByName("class");
     
       resolvePreferredConstructor();
       resolveDepersistMethod();
@@ -412,7 +418,7 @@ public class ReflectionType<T>
           );
       for (Field<?> field: preferredConstructorBinding.getFields())
       { 
-        ReflectionField rfield=(ReflectionField) field;
+        ReflectionField<?> rfield=(ReflectionField<?>) field;
         rfield.setForcePersist(true);
         rfield.setDepersist(false);
       }
@@ -433,7 +439,7 @@ public class ReflectionType<T>
           );
       for (Field<?> field: depersistMethodBinding.getFields())
       { 
-        ReflectionField rfield=(ReflectionField) field;
+        ReflectionField<?> rfield=(ReflectionField<?>) field;
         rfield.setForcePersist(true);
         rfield.setDepersist(false);
       }

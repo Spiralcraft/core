@@ -78,10 +78,10 @@ public class ReflectionScheme
     { return;
     }
     
-    List<? extends ReflectionField> fieldList
+    List<? extends ReflectionField<?>> fieldList
       =generateFields(beanInfo);
 
-    for (ReflectionField field: fieldList)
+    for (ReflectionField<?> field: fieldList)
     { 
       addField(field);
 
@@ -100,27 +100,28 @@ public class ReflectionScheme
     
   }
   
-  protected ReflectionField generateField
+  @SuppressWarnings("unchecked")
+  protected ReflectionField<?> generateField
     (MappedBeanInfo beanInfo,PropertyDescriptor prop)
     throws DataException
   { 
-    ReflectionField field=new ReflectionField(resolver,beanInfo,prop);
+    ReflectionField<?> field=new ReflectionField(resolver,beanInfo,prop);
     field.resolveType();
     return field;
   }
   
-  protected List<? extends ReflectionField>
+  protected List<? extends ReflectionField<?>>
     generateFields(MappedBeanInfo beanInfo)
       throws DataException
   {
-    List<ReflectionField> fieldList=new ArrayList<ReflectionField>();
+    List<ReflectionField<?>> fieldList=new ArrayList<ReflectionField<?>>();
     
     
     for (PropertyDescriptor prop : beanInfo.getPropertyDescriptors())
     { 
       if (prop.getPropertyType()!=null)
       {
-        ReflectionField field=generateField(beanInfo,prop);
+        ReflectionField<?> field=generateField(beanInfo,prop);
         fieldList.add(field);
         
       }
@@ -152,7 +153,7 @@ public class ReflectionScheme
     for (Field<?> field: fields)
     { 
       if (field instanceof ReflectionField)
-      { ((ReflectionField) field).persistBeanProperty(bean,tuple);
+      { ((ReflectionField<?>) field).persistBeanProperty(bean,tuple);
       }
     }
   }
@@ -167,7 +168,7 @@ public class ReflectionScheme
     for (Field<?> field: fields)
     { 
       if (field instanceof ReflectionField)
-      { ((ReflectionField) field).depersistBeanProperty(tuple,bean);
+      { ((ReflectionField<?>) field).depersistBeanProperty(tuple,bean);
       }
     }
   }
