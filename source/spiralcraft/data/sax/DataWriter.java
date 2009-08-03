@@ -373,6 +373,7 @@ class Context
   {
     private final Tuple tuple;
     private Iterator<? extends Field> fieldIterator;
+    private boolean empty=true;
     
     public TupleFrame(Tuple tuple)
     { 
@@ -383,7 +384,7 @@ class Context
     
     @Override
     public void next()
-      throws SAXException
+      throws SAXException,DataException
     {
       if (fieldIterator==null)
       { 
@@ -426,20 +427,25 @@ class Context
       }
       else if (fieldIterator.hasNext())
       {
+        
         Field field=fieldIterator.next();
         if (DataWriter.debugLevel.canLog(Level.FINE))
         { DataWriter.log.fine("Starting field "+field.getURI());
         }
-        if (field.getType().isAggregate())
-        { currentFrame=new AggregateFieldFrame(tuple,field);
-        }
-        else
-        { currentFrame=new SimpleFieldFrame(tuple,field);
+        if (field.getValue(tuple)!=null)
+        {
+          empty=false;
+          if (field.getType().isAggregate())
+          { currentFrame=new AggregateFieldFrame(tuple,field);
+          }
+          else
+          { currentFrame=new SimpleFieldFrame(tuple,field);
+          }
         }
       }
       else
       {
-        endType(true);
+        endType(!empty);
         finish();
         return;
       }
