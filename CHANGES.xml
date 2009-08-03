@@ -3,6 +3,461 @@
   >
 
   <scm:Change>
+    <revision>0.3.12
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-08-03
+    </date>
+    
+    <notes>
+      <scm:Note>Enhanced generic XML processing capabilities to meet
+        requirements of XML Data schema interpretation and data processing
+      </scm:Note>
+    </notes>
+    
+    <detail>
+      <scm:Change>
+
+        <date>2009-07-28
+        </date>
+        
+        <notes>
+          <scm:Note>Refactored SAX API for developer ease of use in
+            describing XML Frames- converted
+            and deprecated XyzFrameHandler in favor of XyzFrame
+          </scm:Note>
+          <scm:Note>Added support for recursive xml via RecursiveFrame
+            and use of a ClosureFocus at the cyclical boundary
+          </scm:Note>
+
+          <scm:Notes>More complete namespace management- expanded namespaces
+            are used internally for all references and lookups.
+          </scm:Notes> 
+          <scm:Notes>Nodes with both elements and character data will be
+            processed if allowMixedContent property is set
+          </scm:Notes> 
+          <scm:Note>Factored out redundancy between AttributeBinding and
+            lang.DictionaryBinding by moving useful assignment code into
+            DictionaryBinding and making AttributeBinding a subclass.
+          </scm:Note>          
+          <scm:Notes>ElementAssignments allow a Frame to post a value
+            created by a child context into the Focus chain via Expressions
+          </scm:Notes>
+          <scm:Notes>Support proper generation of closed elements for empty 
+            Tuples (eg. Type references) in the native XML format
+          </scm:Notes>
+          <scm:Note>DataHandler now appends aggregate field values to
+            any pre-existing aggregate to ensure that deep prototype
+            references work as expected.
+          </scm:Note>
+          <scm:Note>In DataHandlerBase, resolution of ref uris is now tolerant 
+            to missing trailing slashes, and frames can be configured to allow 
+            mixed content (elements and text) without throwing an exception.
+          </scm:Note>
+          <scm:Notes>ParseXml is a Scenario that retrieves and processes 
+            XML content from a resolved URI.
+          </scm:Notes>
+          <scm:Notes>QueryXml is a Scenario based on ParseXml that constructs
+            a Resource from the FocusChain context and extracts data objects
+            from the returned XML.
+          </scm:Notes>
+        </notes>
+    
+        <path>source/spiralcraft/data/sax/
+        </path>
+        
+        <resources>
+          <URI>AbstractFrameHandler.java
+          </URI>
+          <URI>AggregateFrame.java
+          </URI>
+          <URI>AggregateFrameHandler.java
+          </URI>
+          <URI>AttributeBinding.java
+          </URI>
+          <URI>ContainerFrame.java
+          </URI>
+          <URI>ContainerFrameHandler.java
+          </URI>
+          <URI>DataHandler.java
+          </URI>
+          <URI>DataHandlerBase.java
+          </URI>
+          <URI>DataWriter.java
+          </URI>
+          <URI>ElementAssignment.java
+          </URI>
+          <URI>ForeignDataHandler.java
+          </URI>
+          <URI>ParseXml.java
+          </URI>
+          <URI>QueryXml.java
+          </URI>
+          <URI>PrefixMapping.java
+          </URI>
+          <URI>RecursiveFrame.java
+          </URI>
+          <URI>RootFrame.java
+          </URI>
+          <URI>RootFrameHander.java
+          </URI>
+          <URI>TupleFrame.java
+          </URI>
+          <URI>TupleFrameHander.java
+          </URI>
+        </resources>
+    
+      </scm:Change>  
+
+      <scm:Change>
+
+        <date>2009-08-02
+        </date>
+        
+        <notes>
+          <scm:Note>Fix issue where XmlAssembly wasn't automatically
+            bound due to Assembly not being a FocusChainObject anymore
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/persist/
+        </path>
+        
+        <resources>
+          <URI>AbstractXMLObject.java
+          </URI>
+          
+          <URI>XmlAssembly.java
+          </URI>
+        </resources>
+    
+      </scm:Change>  
+
+      <scm:Change>
+
+        <date>2009-08-02
+        </date>
+        
+        <notes>
+          <scm:Note>Fix issue where property descriptors in subclasses were
+            duplicated in getAllProperties() 
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/beans/MappedBeanInfo.java
+        </path>
+    
+      </scm:Change>  
+
+
+      <scm:Change>
+
+        <date>2009-07-28
+        </date>
+        
+        <notes>
+          <scm:Note>Make sure Aggregates are immutably copied when 
+            constructing immutable Tuples (in addition to immutably 
+            copying Tuples).
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/spi/
+        </path>
+        
+        <resources>
+          <URI>ArrayTuple.java
+          </URI>
+          <URI>EditableArrayListAggregate.java
+          </URI>
+        </resources>
+    
+      </scm:Change>  
+
+      <scm:Change>
+
+        <date>2009-07-28
+        </date>
+        
+        <notes>
+          <scm:Note>Genericized ReflectionField
+          </scm:Note>
+          <scm:Note>Allow external Types to register canonical class 
+            mappings.
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/reflect/
+        </path>
+        
+        <resources>
+          <URI>ReflectionField.java
+          </URI>
+          <URI>ReflectionType.java
+          </URI>
+          <URI>ReflectionScheme.java
+          </URI>
+        </resources>
+    
+      </scm:Change>  
+          
+      <scm:Change>
+
+        <date>2009-07-28
+        </date>
+        
+        <notes>
+          <scm:Note>Misc small fixes, debugging and exception data enhancements
+          </scm:Note>
+          <scm:Note>TypeImpl shows data in exception when fromData erroneously 
+            called
+          </scm:Note>
+          <scm:Note>UnifiedFieldSet fixed NPE when type has no scheme
+          </scm:Note>
+          <scm:Note>PrimitiveTypeImpl reports value when toData() erroneously
+            called. 
+          </scm:Note>
+          <scm:Note>FieldImpl throws exception when type set to null
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>core/TypeImpl.java
+          </URI>
+          <URI>core/UnifiedFieldSet.java
+          </URI>
+          <URI>core/PrimitiveTypeImpl.java
+          </URI>
+          <URI>core/FieldImpl.java
+          </URI>
+        </resources>
+    
+      </scm:Change>    
+
+      <scm:Change>
+
+        <date>2009-07-28
+        </date>
+        
+        <notes>
+          <scm:Note>TypeType.toData(Type type) generates a Type reference
+            via the use of new MetaType constructor specifically for
+            generating Type definitions
+          </scm:Note>
+          <scm:Note>AbstractCollectionType.toData() now correctly uses
+            canonical subtype of list object to perform the toData()
+            conversion if the list object is a subtype of the native type
+          </scm:Note>
+          <scm:Note>AbstractAggregateType finds its MetaType by URI
+            resolution with the ".type" suffix of local URI and not by 
+            using ReflectionType.getCanonicalURI(getClass())
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>types/meta/TypeType.java
+          </URI>
+          <URI>core/MetaType.java
+          </URI>
+          <URI>core/AbstractCollectionType.java
+          </URI>
+          <URI>core/AbstractAggregateType.java
+          </URI>
+        </resources>
+    
+      </scm:Change>    
+
+      <scm:Change>
+
+        <date>2009-07-28
+        </date>
+        
+        <notes>
+          <scm:Note>ExpressionType provides a toString() method for
+            bidirectional persistence
+          </scm:Note>
+          <scm:Note>AnyType allows for heterogeneously typed values and list
+            elements
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/types/standard/
+        </path>
+        
+        <resources>
+          <URI>ExpressionType.java
+          </URI>
+          <URI>AnyType.java
+          </URI>
+        </resources>
+    
+      </scm:Change>    
+
+      <scm:Change>
+
+        <date>2009-07-28
+        </date>
+        
+        <notes>
+          <scm:Note>Reflectors can now provide a list of available binding
+            signatures for a given Source channel. The signatures are
+            included in the Exception when a name reference failure occurs to
+            assist a developer in finding the correct name.
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/Signature.java
+          </URI>
+          <URI>lang/Reflector.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>lang/spi/AbstractChannel.java
+          </URI>
+          <URI>data/lang/TupleReflector.java
+          </URI>
+        </resources>
+    
+      </scm:Change>    
+
+      <scm:Change>
+
+        <date>2009-07-23
+        </date>
+        
+        <notes>
+          <scm:Note>Namespace resolution mechanism tolerates missing trailing 
+            slashes in resolved URIs.
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/lang/parser/AbsoluteFocusNode.java
+        </path>
+    
+      </scm:Change>    
+
+      <scm:Change>
+
+        <date>2009-07-24
+        </date>
+        
+        <notes>
+          <scm:Note>ClosureFocus supports a RecursionContext, which re-binds
+            escaped Channels at a deeper point in the Focus chain and
+            on a recursion event, snapshots the deeper values, and pushes them
+            into the shallower context before a recursive call, and pops them
+            when the recursive call is complete.
+          </scm:Note>
+          <scm:Note>Fixed bug where the enclosedFocus would not work with
+            more than 1 escaped Channel.
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/lang/spi/
+        </path>
+        
+        <resources>
+          <URI>ClosureFocus.java
+          </URI>
+        </resources>
+    
+      </scm:Change>    
+          
+      <scm:Change>
+
+        <date>2009-07-22
+        </date>
+        
+        <notes>
+          <scm:Note>DictionaryBinding now supports using an assignment
+            as the target, which allows an Expression to perform the
+            String conversion as a function of the input.
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/lang/
+        </path>
+        
+        <resources>
+          <URI>util/DictionaryBinding.java
+          </URI>
+        </resources>
+    
+      </scm:Change>    
+    
+      <scm:Change>
+
+        <date>2009-07-29
+        </date>
+        
+        <notes>
+          <scm:Note>Added initialAssignments and typeX properties to Session
+             for better usability
+          </scm:Note>
+          <scm:Note>Added Debug task to conditionally log messages
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/task/
+        </path>
+        
+        <resources>
+          <URI>Session.java
+          </URI>
+          <URI>Debug.java
+          </URI>
+        </resources>
+    
+      </scm:Change>
+    
+      <scm:Change>
+
+        <date>2009-07-29
+        </date>
+        
+        <notes>
+          <scm:Note>Ensure that VFS Resources use URLConnections in
+            a ThreadSafe manner and do not leave open backing sockets.
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/vfs/url/URLResource.java
+        </path>
+    
+      </scm:Change>
+
+      <scm:Change>
+
+        <date>2009-07-27
+        </date>
+        
+        <notes>
+          <scm:Note>Property specifier attribute "dataURI" is now 
+            namespace aware
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/builder/AssemblyLoader.java
+        </path>
+    
+      </scm:Change>
+    </detail>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.3.11
     </revision>
     
