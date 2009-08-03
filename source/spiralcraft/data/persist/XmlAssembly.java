@@ -21,6 +21,9 @@ import spiralcraft.data.DataException;
 
 import spiralcraft.data.builder.BuilderType;
 import spiralcraft.lang.AccessException;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.FocusChainObject;
 
 import spiralcraft.builder.Assembly;
 import spiralcraft.builder.BuildException;
@@ -39,7 +42,7 @@ import spiralcraft.builder.BuildException;
  */
 @SuppressWarnings("unchecked") // BuilderType is not genericized
 public class XmlAssembly<Treferent>
-  extends AbstractXmlObject<Treferent,Assembly>
+  extends AbstractXmlObject<Treferent,Assembly<Treferent>>
 {
   
   /**
@@ -105,7 +108,7 @@ public class XmlAssembly<Treferent>
    */
   @Override
   public Treferent get()
-  { return (Treferent) instance.get();
+  { return instance.get();
   }
 
   @Override
@@ -116,7 +119,20 @@ public class XmlAssembly<Treferent>
   }
 
 
+  @Override
+  protected Focus<?> bindInstance(Focus<?> focus)
+    throws BindException
+  { 
+    Treferent value=instance.get();
+    if (value instanceof FocusChainObject)
+    { return ((FocusChainObject) value).bind(focus);
+    }
+    else
+    { return focus;
+    }
 
+    
+  }
 
 
 

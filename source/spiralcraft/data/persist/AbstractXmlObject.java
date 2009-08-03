@@ -460,17 +460,23 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     
     SimpleFocus<Treferent> intermediateFocus
       =new SimpleFocus<Treferent>(parentFocus,channel);
-    
-    if (instance instanceof FocusChainObject)
-    {
-      this.focus=((FocusChainObject) instance).bind(intermediateFocus);
-    }
-    else
-    { this.focus=intermediateFocus;
-    }
+
+    this.focus=bindInstance(intermediateFocus);    
     return getFocus();
   }
   
+  protected Focus<?> bindInstance(Focus<?> focus)
+    throws BindException
+  { 
+    if (instance instanceof FocusChainObject)
+    { return ((FocusChainObject) instance).bind(focus);
+    }
+    else
+    { return focus;
+    }
+
+    
+  }
 
 
   @Override
