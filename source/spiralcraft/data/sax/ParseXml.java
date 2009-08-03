@@ -31,6 +31,7 @@ import spiralcraft.sax.XmlWriter;
 import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
 
 
@@ -86,8 +87,15 @@ public class ParseXml<Tresult>
   protected void read(URI uri)
     throws IOException,UnresolvableURIException,DataException,SAXException
   { 
+    Resource resource=Resolver.getInstance().resolve(uri);
+    read(uri,resource);
+  }
+  
+  protected void read(URI uri,Resource resource)
+    throws IOException,SAXException,DataException
+  {
     log.fine("Opening "+uri);
-    InputStream in=Resolver.getInstance().resolve(uri).getInputStream();
+    InputStream in=resource.getInputStream();
     try
     { 
       parse(in,newDataReader(),uri);
