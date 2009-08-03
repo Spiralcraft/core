@@ -130,7 +130,7 @@ Evaluator.parseAndEvaluateObject("@cast([@:class:/java/lang/Number]).@cast([@:cl
 Evaluator.parseAndEvaluateObject("@cast([@:class:/java/lang/Number]).@subtype",new Integer(3));
 Evaluator.parseAndEvaluateObject("@cast([@:class:/java/lang/Number]).@subtype == [@:class:/java/lang/Integer]",new Integer(3));
 
-
+/*
 "// ExpressionResolverTest";
 import spiralcraft.lang.test.ExpressionResolverTest;
 "//// Perf 1: retrieval";
@@ -165,7 +165,7 @@ new ExpressionResolverTest().execute
 		,"--getRepeats","1000000"
 		}
   );
-
+*/
 
 "//// Covariant bindings";
 
