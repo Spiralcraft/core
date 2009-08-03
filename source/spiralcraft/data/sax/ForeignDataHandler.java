@@ -65,6 +65,8 @@ public class ForeignDataHandler
     { 
       this.frameHandler=frameHandler;
       this.attributes=attributes;
+      this.allowMixedContent
+        =this.allowMixedContent || frameHandler.getAllowMixedContent();
     }
     
     public Attributes getAttributes()
@@ -104,7 +106,7 @@ public class ForeignDataHandler
       throws SAXException,
       DataException
     {
-      String fullName=(uri!=null?uri:"")+localName;
+      String fullName=AbstractFrameHandler.combineName(uri,localName);
       
       FrameHandler childFrame
         =frameHandler.getChildMap().get(fullName);
@@ -170,6 +172,9 @@ public class ForeignDataHandler
     extends Frame
   {
 
+    { allowMixedContent=true;
+    }
+    
     @Override
     protected void endChild(
       Frame child)
