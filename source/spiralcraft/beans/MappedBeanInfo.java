@@ -306,19 +306,20 @@ public class MappedBeanInfo
   
   public PropertyDescriptor[] getAllProperties()
   { 
-    List<PropertyDescriptor> descriptors
-      =new ArrayList<PropertyDescriptor>();
-    
-    MappedBeanInfo info=this;
-    while (info!=null)
-    { 
-      PropertyDescriptor[] localProps=info.getPropertyDescriptors();
-      for (PropertyDescriptor prop: localProps)
-      { descriptors.add(prop);
-      }
-      info=info.superBeanInfo;
-    }
-    return descriptors.toArray(new PropertyDescriptor[descriptors.size()]);
+    return getPropertyDescriptors();
+//    List<PropertyDescriptor> descriptors
+//      =new ArrayList<PropertyDescriptor>();
+//    
+//    MappedBeanInfo info=this;
+//    while (info!=null)
+//    { 
+//      PropertyDescriptor[] localProps=info.getPropertyDescriptors();
+//      for (PropertyDescriptor prop: localProps)
+//      { descriptors.add(prop);
+//      }
+//      info=info.superBeanInfo;
+//    }
+//    return descriptors.toArray(new PropertyDescriptor[descriptors.size()]);
   }
   
   /**
