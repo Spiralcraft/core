@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.sax;
 
-import java.util.HashMap;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
@@ -26,7 +25,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
-import spiralcraft.lang.util.DictionaryBinding;
 
 /**
  * <p>Corresponds to the outermost FrameHandler of the set used to
