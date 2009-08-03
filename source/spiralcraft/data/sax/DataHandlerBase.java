@@ -62,6 +62,7 @@ public abstract class DataHandlerBase
 
   private ContentHandler traceHandler;
   private boolean contextAware;
+  private boolean allowMixedContentDefault;
   protected boolean debug;
   
   @Override
@@ -167,7 +168,7 @@ public abstract class DataHandlerBase
     { currentFrame.startElement(uri,localName,qName,attributes);
     }
     catch (DataException x)
-    { throw new DataSAXException(x.getMessage()+formatPosition(),x);
+    { throw new DataSAXException(x.toString()+formatPosition(),x);
     }
     
   }
@@ -265,8 +266,12 @@ public abstract class DataHandlerBase
     private boolean hasElements;
     private boolean preserveWhitespace=false;
     private HashMap<String,String> prefixMappings;
+    
     protected boolean contextAwareFrame
       =currentFrame!=null?currentFrame.contextAwareFrame:contextAware;
+    
+    protected boolean allowMixedContent
+      =currentFrame!=null?currentFrame.allowMixedContent:allowMixedContentDefault;
 
     public final void startPrefixMapping(String prefix,String uri)
     {
@@ -286,12 +291,12 @@ public abstract class DataHandlerBase
       )
       throws SAXException,DataException
     { 
-      if (getCharacters().length()==0)
+      if (allowMixedContent || getCharacters().length()==0)
       { 
         hasElements=true;
         newChild(uri,localName,qName,attributes).start(qName);
       }
-      else
+      else 
       { 
         throw new DataSAXException
           ("Element already contains text '"+getCharacters()+"', it cannot "
@@ -333,7 +338,7 @@ public abstract class DataHandlerBase
       }
       else
       { 
-        if (preserveWhitespace)
+        if (!allowMixedContent && preserveWhitespace)
         {
           throw new DataSAXException
           ("Element already contains other elements."
@@ -342,7 +347,7 @@ public abstract class DataHandlerBase
           );
         }
         
-        if (new String(ch,start,length).trim().length()>0)
+        if (!allowMixedContent && new String(ch,start,length).trim().length()>0)
         {
           throw new DataSAXException
             ("Element '"+qName+"' already contains other elements."
@@ -529,7 +534,14 @@ public abstract class DataHandlerBase
             return URI.create(ref);
           }
           else
-          { return base.resolve(URI.create(ref.substring(colonPos+1)));
+          { 
+            String baseStr=base.toString();
+            if (!baseStr.endsWith("/"))
+            { 
+              baseStr=baseStr+"/";
+              base=URI.create(baseStr);
+            }
+            return base.resolve(URI.create(ref.substring(colonPos+1)));
           }
         }
         else
