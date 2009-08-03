@@ -20,7 +20,7 @@
           </baseResourceURI>
           
           <schema 
-            dataURI="class:/spiralcraft/data/test/example/Example.schema.xml"
+            dataURI="example:Example.schema.xml"
           />
           
           <debugLevel>DEBUG
