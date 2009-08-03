@@ -30,6 +30,11 @@ public class EditableArrayListAggregate<T>
   { super(type);
   }
   
+  public EditableArrayListAggregate(Aggregate<T> original)
+  { super(original);
+  }
+      
+  
   public void add(T val)
   { list.add(val);
   }

@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.spi;
 
+import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
@@ -54,7 +55,17 @@ public class ArrayTuple
   
   
   /**
-   * Construct an ArrayTuple that is a copy of another Tuple
+   * <p>Construct an ArrayTuple that is a copy of another Tuple
+   * </p>
+   * 
+   * <p>If DataComposites are directly referenced and this Tuple is immutable,
+   *   immutable copies will be made if they are not already immutable.
+   * </p>
+   * 
+   * <p>In all other cases, a shallow copy will be made of the raw field
+   *   data.
+   * </p>
+   *   
    */
   public ArrayTuple(Tuple original)
     throws DataException
@@ -68,12 +79,23 @@ public class ArrayTuple
       if (originalValue instanceof Tuple)
       { 
         Tuple originalTuple=(Tuple) originalValue;
-        if (originalTuple.isMutable())
+        if (originalTuple.isMutable() && !isMutable())
         { data[field.getIndex()]=new ArrayTuple(originalTuple);
         }
         else
         { data[field.getIndex()]=originalValue;
         }
+      }
+      else if (originalValue instanceof Aggregate)
+      {
+        Aggregate<?> originalAggregate=(Aggregate<?>) originalValue;
+        if (originalAggregate.isMutable() &&!isMutable())
+        { data[field.getIndex()]=originalAggregate.snapshot();
+        }
+        else
+        { data[field.getIndex()]=originalValue;
+        }
+        
       }
       else
       { data[field.getIndex()]=originalValue;
