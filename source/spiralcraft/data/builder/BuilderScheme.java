@@ -133,7 +133,7 @@ public class BuilderScheme
     BuilderField field = new BuilderField
       (prop
       ,reflectionType!=null
-        ?(ReflectionField) reflectionType.getField(prop.getTargetName())
+        ?(ReflectionField<?>) reflectionType.getField(prop.getTargetName())
         :null
       );
     field.resolveType();
