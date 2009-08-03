@@ -21,7 +21,6 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
 
-import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.rules.RuleSet;
 
 import java.net.URI;
@@ -101,17 +100,27 @@ public abstract class AbstractAggregateType<T,Tcontent>
     return getContentType().isAssignableFrom(type.getContentType());
   }
   
-  
   @Override
   public Type<?> getMetaType()
-  {
+  { 
     try
-    { return getTypeResolver().resolve(ReflectionType.canonicalURI(getClass()));
+    { return getTypeResolver().resolve(URI.create(uri.toString().concat(".type")));
     }
     catch (DataException x)
     { throw new RuntimeException(x);
     }
   }
+  
+//  @Override
+//  public Type<?> getMetaType()
+//  {
+//    try
+//    { return getTypeResolver().resolve(ReflectionType.canonicalURI(getClass()));
+//    }
+//    catch (DataException x)
+//    { throw new RuntimeException(x);
+//    }
+//  }
 
   /**
    * The public Java class or interface used to programatically access or
