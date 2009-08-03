@@ -407,9 +407,11 @@ public class DataHandler
         return new EmptyFrame(); //XXX Until merge works
       }
 
-      
+      // 2009-07-29 mike Pass in current field value instead of null, so
+      //   data is additive to an aggregate
       if (fieldType.isAggregate())
-      { return new AggregateFrame(fieldType,null);
+      { return new AggregateFrame
+          (fieldType,(Aggregate) currentField.getValue(tuple));
       }
       else
       { return new ObjectFrame(fieldType);
