@@ -150,7 +150,18 @@ public class AbstractCollectionType<T extends Collection,Tcontent>
       EditableAggregate<DataComposite> aggregate
       	=new EditableArrayListAggregate<DataComposite>(this);
       for (Tcontent o: (Collection<Tcontent>) collection)
-      { aggregate.add(contentType.toData(o));
+      { 
+        DataComposite item;
+        
+        if (o==null || o.getClass().equals(contentType.getNativeClass()))
+        { item=contentType.toData(o);
+        }
+        else
+        { 
+          item=ReflectionType.<Tcontent>canonicalType
+            ((Class<Tcontent>) o.getClass()).toData(o);
+        }
+        aggregate.add(item);
       }
       return aggregate;
     }
