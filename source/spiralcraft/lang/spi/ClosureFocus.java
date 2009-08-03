@@ -23,6 +23,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 /**
  * <p>Provides a consistent snapshot of contextual data for an operation.
@@ -51,6 +52,8 @@ public class ClosureFocus<T>
 {
   private static final ClassLog log
     =ClassLog.getInstance(ClosureFocus.class);
+  private static final Level debugLevel
+    =ClassLog.getInitialDebugLevel(ClosureFocus.class,null);
   
   @SuppressWarnings("unchecked")
   private LinkedHashMap<URI,EnclosedFocus> foci
@@ -232,7 +235,10 @@ public class ClosureFocus<T>
       super(new ThreadLocalChannel<Y>(channel.getReflector(),true));
       sourceChannel=channel;
       parent=ClosureFocus.this;
-      log.debug("Enclosing "+channel.getReflector().getTypeURI());
+      if (debugLevel.canLog(Level.DEBUG))
+      { log.debug("Enclosing "+channel.getReflector().getTypeURI());
+      }
+      
     }
     
     Y pull()
