@@ -28,7 +28,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.task.Scenario;
+import spiralcraft.task.Chain;
 import spiralcraft.task.Task;
 
 
@@ -36,23 +36,15 @@ import spiralcraft.task.Task;
  * <p>Edits a Tuple
  * </p>
  * 
- * <p>Publishes an Aggregate of the specified type in the FocusChain, where
+ * <p>Publishes an TupleEditor of the specified type in the FocusChain, where
  *   it can be retrieved and populated and/or accessed by subtasks.
- * </p>
- * 
- * <p>Creates an instance of the Aggregate per-execution, unless append=true
- *   which specifies that the Aggregate should be re-used.
- * </p>
- *   
- * <p>If append=true, the target will be read to obtain an existing Aggregate.
- *   If no existing Aggregate is found, one will be created.
  * </p>
  * 
  * @author mike
  *
  */
 public class Edit<Titem extends Tuple>
-  extends Scenario
+  extends Chain
 {
 
   private Expression<Titem> targetX;

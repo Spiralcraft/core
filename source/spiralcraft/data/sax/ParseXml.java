@@ -28,6 +28,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.sax.XmlWriter;
+import spiralcraft.task.AbstractTask;
 import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 import spiralcraft.vfs.Resolver;
@@ -138,7 +139,7 @@ public class ParseXml<Tresult>
    * @param <R>
    */
   public class ParseTask
-    extends ChainTask
+    extends AbstractTask
   {
 
     public ParseTask()
@@ -157,7 +158,6 @@ public class ParseXml<Tresult>
         addException(x);
         return;
       }
-      super.work();
     }
 
   }

@@ -1,4 +1,4 @@
-<task:Scenario
+<task:Chain
   xmlns:task="class:/spiralcraft/task/"
   xmlns:query="class:/spiralcraft/data/query/"
   xmlns:dtask="class:/spiralcraft/data/task/"
@@ -72,4 +72,4 @@
  
   </chain>
         
-</task:Scenario>
+</task:Chain>

@@ -23,7 +23,7 @@ import spiralcraft.lang.Focus;
 
 
 /**
- * <p>A leaf Scenario which runs an arbitrary Command, and provides access 
+ * <p>A Scenario which runs an arbitrary Command, and provides access 
  *   to the completed Command as the result.
  * </p>
  * 
@@ -33,7 +33,7 @@ import spiralcraft.lang.Focus;
  * @param <R>
  */
 public class Exec<T,R>
-  extends Scenario
+  extends Chain
 {
   
   private BoundCommandFactory<T,R> commandFactory;

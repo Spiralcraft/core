@@ -28,7 +28,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.task.Scenario;
+import spiralcraft.task.Chain;
 import spiralcraft.task.Task;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -48,7 +48,7 @@ import spiralcraft.vfs.Resource;
  *
  */
 public class Output<Titem extends Tuple>
-  extends Scenario
+  extends Chain
 {
 
   private ThreadLocalChannel<Writer> consumerChannel;

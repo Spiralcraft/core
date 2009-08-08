@@ -28,7 +28,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.Level;
-import spiralcraft.task.Scenario;
+import spiralcraft.task.Chain;
 
 /**
  * Performs a query within the context of the Task framework.
@@ -37,7 +37,7 @@ import spiralcraft.task.Scenario;
  *
  */
 public class Fetch
-  extends Scenario
+  extends Chain
 {
   
   protected Query query;

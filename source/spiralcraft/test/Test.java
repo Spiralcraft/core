@@ -17,10 +17,10 @@ package spiralcraft.test;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.task.Scenario;
+import spiralcraft.task.Chain;
 
 public abstract class Test
-  extends Scenario
+  extends Chain
 {
 
   protected TestGroup testGroup;

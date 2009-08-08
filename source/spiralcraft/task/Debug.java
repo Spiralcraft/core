@@ -49,7 +49,7 @@ public class Debug
   @Override
   protected Task task()
   {
-    return new ChainTask()
+    return new AbstractTask()
     {
 
       @Override
@@ -65,7 +65,6 @@ public class Debug
           Object message=messageChannel.get();
           log.debug(messageX.getText()+" := ["+message+"]");
         }
-        super.work();
       }
     };    
   }

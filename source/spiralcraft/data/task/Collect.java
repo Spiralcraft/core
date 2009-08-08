@@ -27,7 +27,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.task.Scenario;
+import spiralcraft.task.Chain;
 import spiralcraft.task.Task;
 
 
@@ -52,7 +52,7 @@ import spiralcraft.task.Task;
  *
  */
 public class Collect<Titem>
-  extends Scenario
+  extends Chain
 {
 
   private Expression<Aggregate<Titem>> targetX;

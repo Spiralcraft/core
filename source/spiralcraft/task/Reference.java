@@ -31,7 +31,7 @@ import spiralcraft.util.thread.DelegateException;
  * @param <R>
  */
 public class Reference
-  extends Scenario
+  extends Chain
 {
 
   private URI targetTypeURI;

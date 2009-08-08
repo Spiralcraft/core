@@ -18,6 +18,7 @@ package spiralcraft.task;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.util.ArrayUtil;
 
 /**
  * <p>Run a set of Scenarios in order of their declaration
@@ -42,10 +43,19 @@ public class Sequence
   { this.scenarios=scenarios;
   }
   
+  public void addScenario(Scenario scenario)
+  { 
+    scenarios
+      =scenarios!=null
+        ?ArrayUtil.append(scenarios, scenario)
+        :new Scenario[] {scenario}
+        ;
+  }
+  
   @Override
   protected Task task()
   {
-    return new ChainTask()
+    return new AbstractTask()
     {
         
       @Override
@@ -68,8 +78,6 @@ public class Sequence
             return ;
           }
         }
-        
-        super.work();
       }
     };
   }

@@ -57,7 +57,7 @@ import spiralcraft.util.MultiException;
  * @param <R> The result item type
  */
 public class Batch<I,R>
-  extends Scenario
+  extends Chain
     
 {
   
@@ -230,7 +230,7 @@ public class Batch<I,R>
     throws BindException
   {
     sourceChannel=focusChain.bind(source);
-    decorator=sourceChannel.decorate(IterationDecorator.class);
+    decorator=sourceChannel.<IterationDecorator>decorate(IterationDecorator.class);
     if (decorator==null)
     { throw new BindException
         ("Not iterable: "+sourceChannel.getReflector().getTypeURI());

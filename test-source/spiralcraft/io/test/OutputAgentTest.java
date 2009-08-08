@@ -91,9 +91,9 @@ public class OutputAgentTest
       public void work()
       {
         super.work();
-        if (chain!=null && exception!=null)
-        { addResult(executeChild(chain));
-        }
+//        if (chain!=null && exception!=null)
+//        { addResult(executeChild(chain));
+//        }
       }
     };
     

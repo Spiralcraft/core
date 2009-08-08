@@ -5,6 +5,7 @@ import java.util.List;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.task.AbstractTask;
 import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 import spiralcraft.util.PathPattern;
@@ -66,7 +67,7 @@ public class Copy
   }
   
   protected class CopyTask
-    extends ChainTask
+    extends AbstractTask
   {
     @Override
     public void work()
@@ -118,7 +119,6 @@ public class Copy
           }
           
         }
-        super.work();
       }
       catch (IOException x)
       { addException(x);

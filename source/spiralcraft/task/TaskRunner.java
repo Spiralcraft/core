@@ -69,18 +69,10 @@ public class TaskRunner
   public void setChain(Scenario[] chain)
   { 
 
-    Scenario last=null;
-    for (Scenario scenario:chain)
-    { 
-      if (last==null)
-      { this.scenario=scenario;
-      }
-      else
-      { last.chain(scenario);
-      }
-      last=scenario;
-    }
-    chainLink=last;
+    Chain chainScenario=new Chain();
+    chainScenario.setChain(chain);
+    scenario=chainScenario;
+    chainLink=chain[chain.length-1];
   
   }
   
@@ -108,7 +100,13 @@ public class TaskRunner
   { 
     Scenario scenario=AbstractXmlObject.<Scenario>create(uri,null).get();
     if (chainLink!=null)
-    { chainLink.chain(scenario);
+    { 
+      if (chainLink instanceof Chain)
+      { ((Chain) chainLink).chain(scenario);
+      }
+      else
+      { throw new BindException(chainLink+" cannot chain another scenario");
+      }
     }
     chainLink=scenario;
     if (this.scenario==null)

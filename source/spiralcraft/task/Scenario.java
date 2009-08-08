@@ -50,7 +50,7 @@ import spiralcraft.log.Level;
  * 
  * @author mike
  */
-public class Scenario
+public abstract class Scenario
   implements Lifecycle
     ,FocusChainObject
     ,CommandFactory<Scenario,List<?>>
@@ -64,7 +64,6 @@ public class Scenario
   protected boolean verbose;
   protected boolean logTaskResults;
   protected boolean storeResults;
-  protected Scenario chain;
   
   /**
    * 
@@ -82,30 +81,9 @@ public class Scenario
   	return createCommand(task);
   }
   
-  protected Task task()
-  { return new ChainTask();
-  }
+  protected abstract Task task();
   
-  protected class ChainTask
-    extends AbstractTask
-  {
 
-    @Override
-    protected void work()
-      throws InterruptedException
-    { 
-      if (chain!=null && exception==null)
-      {
-        TaskCommand command=chain.command();
-        command.setCollectResults(true);
-        command.execute();
-        if (command.getException()!=null)
-        { addException(command.getException());
-        }
-        addResult(command);
-      }
-    }
-  }
   
   protected TaskCommand createCommand(Task task)
   { return new TaskCommand(Scenario.this,task);
@@ -141,9 +119,7 @@ public class Scenario
    * <p>Publish Channels into the Focus chain for use by child Scenarios.
    * </p>
    * 
-   * <p>Default implementation binds the rest of the chain. When overriding,
-   *   call this method with the Focus that should be published to the rest
-   *   of the Chain.
+   * <p>Default implementation does nothing
    * </p>
    * 
    * <p>The supplied Focus chain already publishes the Scenario and the
@@ -157,9 +133,7 @@ public class Scenario
   protected void bindChildren(Focus<?> focusChain)
     throws BindException
   { 
-    if (chain!=null)
-    { chain.bind(focusChain);
-    }
+
   }
   
 
@@ -192,19 +166,8 @@ public class Scenario
       
   }
 
-  public void chain(Scenario chain)
-  { this.chain=chain;
-  }
   
-  public void setChain(Scenario[] chain)
-  {
-    Scenario last=this;
-    for (Scenario scenario:chain)
-    { 
-      last.chain(scenario);
-      last=scenario;
-    }
-  }
+
     
   void pushCommand(TaskCommand command)
   { 
@@ -239,18 +202,12 @@ public class Scenario
     if (verbose)
     { log.log(Level.INFO,"Initializing");
     }
-    if (chain!=null)
-    { chain.start();
-    }
   }
 
   @Override
   public void stop()
     throws LifecycleException
   { 
-    if (chain!=null)
-    { chain.stop();
-    }
     if (verbose)
     { log.log(Level.INFO,"Finalizing");
     }
