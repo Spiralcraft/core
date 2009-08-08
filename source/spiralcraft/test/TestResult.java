@@ -91,12 +91,12 @@ public class TestResult
   { 
     StringWriter writer=new StringWriter();
     try
-    { format(writer,"");
+    { format(writer,"  ");
     }
     catch (IOException x)
     { x.printStackTrace();
     }
-    return writer.toString();
+    return "\r\n  "+writer.toString();
   }
   
   public void format(Writer writer,String prefix)
