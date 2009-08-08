@@ -60,9 +60,12 @@ public class BeanArguments
           throw new IllegalArgumentException
             ("Unrecognized option -"+option.charAt(i));
         }
-        return processLongOption(longOption);
+        if (!processLongOption(longOption))
+        { return false;
+        }
+        
       }
-      return false;
+      return true;
     }
     else
     { return false;
