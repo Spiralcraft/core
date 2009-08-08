@@ -3,6 +3,121 @@
   >
 
   <scm:Change>
+    <revision>0.3.13
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-08-07
+    </date>
+    
+    <notes>
+      <scm:Note>"Assign" Scenario runs Assignments within a Scenario
+      </scm:Note>
+      <scm:Note>Generics warnings cleanup required due to upgrade of Eclipse 
+        compiler with more thorough LINT.
+      </scm:Note>
+    </notes>
+    
+    <detail>
+      <scm:Change>
+
+        <date>2009-08-07
+        </date>
+        
+        <notes>
+          <scm:Note>Task system refactor- not all Scenarios are chainable.
+            Factored chain machinery into Chain subclass of Scenario, and
+            handle automatic creation of a Sequence to group non-chainable
+            elements together.
+          </scm:Note>
+          <scm:Note>"Assign" scenario runs assignments and defaults
+          </scm:Note>
+          <scm:Note>"When" scenario performs another scenario conditionally
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>task/Assign.java</URI>
+          <URI>task/When.java</URI>
+          <URI>task/Exec.java</URI>
+          <URI>task/Sequence.java</URI>
+          <URI>task/Session.java</URI>
+          <URI>task/TaskRunner.java</URI>
+          <URI>task/Debug.java</URI>
+          <URI>task/Chain.java</URI>
+          <URI>task/Scenario.java</URI>
+          <URI>task/Reference.java</URI>
+          <URI>task/Batch.java</URI>
+          <URI>data/task/Collect.java</URI>
+          <URI>data/task/Fetch.java</URI>
+          <URI>data/task/Edit.java</URI>
+          <URI>data/sax/ParseXml.java</URI>
+          <URI>vfs/task/Copy.java</URI>
+          <URI>test/Test.java</URI>
+          <URI>data/flatfile/Output.java</URI>
+          <URI>data/flatfile/Scan.java</URI>
+        </resources>
+
+      </scm:Change>
+      
+      <scm:Change>
+
+        <date>2009-08-07
+        </date>
+        
+        <notes>
+          <scm:Note>Fix: BeanArguments only processed the first short argument 
+            in a clump of short arguments
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/exec/BeanArguments.java
+        </path>
+
+      </scm:Change>
+      <scm:Change>
+
+        <date>2009-08-07
+        </date>
+        
+        <notes>Generics warnings cleanup triggered by Eclipse upgrade
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/spi/ArrayTuple.java</URI>
+          <URI>data/spi/KeyedListAggregate.java</URI>
+          <URI>data/spi/ArrayDeltaTuple.java</URI>
+          <URI>data/spi/AbstractStore.java</URI>
+          <URI>data/sax/AbstractFrameHandler.java</URI>
+          <URI>data/reflect/ReflectionType.java</URI>
+          <URI>data/reflect/ReflectionScheme.java</URI>
+          <URI>data/session/BufferAggregate.java</URI>
+          <URI>data/session/BufferType.java</URI>
+          <URI>data/query/SetFilter.java</URI>
+          <URI>data/query/Selection.java</URI>
+          <URI>lang/spi/IterableContainsChannel.java</URI>
+          <URI>lang/spi/ArrayConstructorChannel.java</URI>
+          <URI>data/lang/DataReflector.java</URI>
+          <URI>data/rest/RestService.java</URI>
+          <URI>lang/util/DictionaryBinding.java</URI>
+          <URI>data/builder/BuilderScheme.java</URI>
+          <URI>data/builder/BuilderField.java</URI>
+          <URI>task/BatchScenarioLegacy.java</URI>
+        </resources>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.3.12
     </revision>
     
