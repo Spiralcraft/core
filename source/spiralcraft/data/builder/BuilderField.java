@@ -289,7 +289,7 @@ public class BuilderField
       } // if (specifier.isPersistent() && assembly!=null);
       else
       {
-        if (false && !specifier.isPersistent())
+        if (debug && !specifier.isPersistent())
         { 
           log.fine
             (specifier.getTargetName()+" ("+getURI()+") is not persistent");

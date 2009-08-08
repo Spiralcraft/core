@@ -172,7 +172,7 @@ public class ArrayDeltaTuple
         System.err.println("ArrayDeltaTuple: "+originalValue+" -> "+updatedValue);
         return new ArrayDeltaTuple((Tuple) originalValue, (Tuple) updatedValue);
       }
-      else if (updatedValue instanceof Aggregate)
+      else if (updatedValue instanceof Aggregate<?>)
       { return updatedValue;
       }
       else

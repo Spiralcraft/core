@@ -299,7 +299,7 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   
   @Override
   public boolean isEditable()
-  { return (original instanceof EditableAggregate && editable);
+  { return (original instanceof EditableAggregate<?> && editable);
   }
   
   @Override

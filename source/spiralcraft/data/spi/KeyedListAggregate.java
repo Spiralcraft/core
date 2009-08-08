@@ -193,7 +193,7 @@ public class KeyedListAggregate<T>
     
     
     Index<T> index=null;
-    if (projection instanceof Key)
+    if (projection instanceof Key<?>)
     { 
       // Find it in the key list.
       

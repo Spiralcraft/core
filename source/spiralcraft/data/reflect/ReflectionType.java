@@ -449,7 +449,7 @@ public class ReflectionType<T>
   @Override
   public boolean isAssignableFrom(Type<?> type)
   {
-    if (!(type instanceof ReflectionType))
+    if (!(type instanceof ReflectionType<?>))
     { return super.isAssignableFrom(type);
     }
     else

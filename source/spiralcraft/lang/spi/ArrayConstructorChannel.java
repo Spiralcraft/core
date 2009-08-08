@@ -29,7 +29,7 @@ public class ArrayConstructorChannel<C,T>
     this.componentReflector=componentReflector;
     this.source=source;
     this.decorator
-      =source.decorate(IterationDecorator.class);
+      =source.<IterationDecorator>decorate(IterationDecorator.class);
   }
 
   @SuppressWarnings("unchecked")

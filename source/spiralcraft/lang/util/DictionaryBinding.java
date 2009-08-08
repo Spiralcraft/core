@@ -84,7 +84,7 @@ public class DictionaryBinding<T>
   public void setTarget(Expression<T> expression)
   { 
     this.target=expression;
-    if (this.target.getRootNode() instanceof AssignmentNode)
+    if (this.target.getRootNode() instanceof AssignmentNode<?,?>)
     { assignment=true;
     }
   }

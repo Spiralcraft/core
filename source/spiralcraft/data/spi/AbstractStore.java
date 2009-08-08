@@ -257,7 +257,7 @@ public abstract class AbstractStore
         addBaseExtentQueryable(type, baseQueryable);
         baseQueryable.addExtent(subtype,queryable);
       }
-      else if (!(candidateQueryable instanceof BaseExtentQueryable))
+      else if (!(candidateQueryable instanceof BaseExtentQueryable<?>))
       {
         // The base extent queryable is already "concrete"
         // This is ambiguous, though. The base extent queryable only
@@ -327,7 +327,7 @@ public abstract class AbstractStore
       }
       for (Field<?> field : subtype.getScheme().fieldIterable())
       { 
-        if (field instanceof SequenceField)
+        if (field instanceof SequenceField<?>)
         { 
           sequences.put
           (field.getURI()

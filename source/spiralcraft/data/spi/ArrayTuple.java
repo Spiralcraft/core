@@ -86,7 +86,7 @@ public class ArrayTuple
         { data[field.getIndex()]=originalValue;
         }
       }
-      else if (originalValue instanceof Aggregate)
+      else if (originalValue instanceof Aggregate<?>)
       {
         Aggregate<?> originalAggregate=(Aggregate<?>) originalValue;
         if (originalAggregate.isMutable() &&!isMutable())

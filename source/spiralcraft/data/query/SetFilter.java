@@ -223,7 +223,7 @@ class SetFilterBinding<Ti,Tt extends Tuple>
       try
       {
         Channel<?> setChannel=paramFocus.bind(getQuery().getFilterSetX());    
-        decorator=setChannel.decorate(IterationDecorator.class);
+        decorator=setChannel.<IterationDecorator>decorate(IterationDecorator.class);
         if (debugLevel.canLog(Level.FINE))
         { setChannel.setDebug(true);
         }

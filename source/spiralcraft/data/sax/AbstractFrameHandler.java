@@ -389,7 +389,7 @@ public abstract class AbstractFrameHandler
     }
     if (textBinding!=null)
     { 
-      if (textBinding.getRootNode() instanceof AssignmentNode)
+      if (textBinding.getRootNode() instanceof AssignmentNode<?,?>)
       { 
         textAssignment=true;
         

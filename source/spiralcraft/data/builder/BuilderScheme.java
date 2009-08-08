@@ -61,7 +61,7 @@ public class BuilderScheme
     this.assemblyClass=assemblyClass;
     Type<?> nativeTypeWrapper
       =ReflectionType.canonicalType(assemblyClass.getJavaClass());
-    if (nativeTypeWrapper!=null && nativeTypeWrapper instanceof ReflectionType)
+    if (nativeTypeWrapper!=null && nativeTypeWrapper instanceof ReflectionType<?>)
     { reflectionType=(ReflectionType<?>) nativeTypeWrapper;
     }
     else
@@ -138,7 +138,7 @@ public class BuilderScheme
       );
     field.resolveType();
 
-    if (false)
+    if (type.getDebug())
     { log.fine
         ("Generated "+prop+" "+prop.getTargetName()+" = "
           +field.getType().getURI()

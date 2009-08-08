@@ -152,7 +152,7 @@ public class ReflectionScheme
   {
     for (Field<?> field: fields)
     { 
-      if (field instanceof ReflectionField)
+      if (field instanceof ReflectionField<?>)
       { ((ReflectionField<?>) field).persistBeanProperty(bean,tuple);
       }
     }
@@ -167,7 +167,7 @@ public class ReflectionScheme
   {
     for (Field<?> field: fields)
     { 
-      if (field instanceof ReflectionField)
+      if (field instanceof ReflectionField<?>)
       { ((ReflectionField<?>) field).depersistBeanProperty(tuple,bean);
       }
     }

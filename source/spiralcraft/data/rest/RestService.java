@@ -175,7 +175,7 @@ public class RestService
     { 
       useDataSession=true;
       modelSourceChannel=parentFocus.bind(modelExpression);
-      if (!(modelSourceChannel.getReflector() instanceof DataReflector))
+      if (!(modelSourceChannel.getReflector() instanceof DataReflector<?>))
       { 
         throw new BindException
           ("Property 'modelExpression' can only refer to "

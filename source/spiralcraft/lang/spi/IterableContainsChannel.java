@@ -46,7 +46,7 @@ public class IterableContainsChannel<C,T>
     super(BeanReflector.<Boolean>getInstance(Boolean.class));
     this.compareItemChannel=compareItemChannel;
     this.decorator
-      = iterableChannel.decorate(IterationDecorator.class);
+      = iterableChannel.<IterationDecorator>decorate(IterationDecorator.class);
     
   }
 

@@ -105,7 +105,7 @@ public class BufferType
         // Primitives are immutable
         if (primaryKey!=null && !field.getType().isPrimitive())
         {
-          if (field instanceof KeyField
+          if (field instanceof KeyField<?>
               && isChildKey
                 (((KeyField<?>) field).getKey().fieldIterable()
                 ,primaryKey.fieldIterable()

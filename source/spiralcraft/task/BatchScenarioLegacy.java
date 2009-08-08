@@ -245,7 +245,7 @@ public class BatchScenarioLegacy<I,R>
     throws BindException
   {
     sourceChannel=focusChain.bind(source);
-    decorator=sourceChannel.decorate(IterationDecorator.class);
+    decorator=sourceChannel.<IterationDecorator>decorate(IterationDecorator.class);
     
     item=new ThreadLocalChannel(decorator.getComponentReflector());
     target=AbstractXmlObject.activate

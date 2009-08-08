@@ -172,7 +172,7 @@ public class Selection
       }
       
     }
-    else if (original instanceof EqualityNode
+    else if (original instanceof EqualityNode<?>
              && !((EqualityNode<?>) original).isNegated()
             )
     {
@@ -195,7 +195,7 @@ public class Selection
   {
     Node lhs=equalityNode.getLeftOperand();
     boolean factored=false;
-    if (lhs instanceof ResolveNode)
+    if (lhs instanceof ResolveNode<?>)
     {
       ResolveNode<?> lhsResolve=(ResolveNode<?>) lhs;
       if (lhsResolve.getSource() instanceof CurrentFocusNode)
@@ -228,7 +228,7 @@ public class Selection
             }
           }
         }
-        else if (rhs instanceof LiteralNode)
+        else if (rhs instanceof LiteralNode<?>)
         { validRhs=rhs;
         }
         else if (!referencesCurrentFocus(rhs))

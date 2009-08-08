@@ -196,7 +196,7 @@ public abstract class DataReflector<T extends DataComposite>
   @Override
   public boolean isAssignableFrom(Reflector<?> other)
   { 
-    if (other instanceof DataReflector)
+    if (other instanceof DataReflector<?>)
     { return getType().isAssignableFrom(((DataReflector<?>) other).getType());
     }
     else
@@ -262,7 +262,7 @@ public abstract class DataReflector<T extends DataComposite>
   public Reflector<?> disambiguate(Reflector<?> alternate)
   {
     // Don't hide BeanReflectors
-    if (alternate instanceof BeanReflector)
+    if (alternate instanceof BeanReflector<?>)
     { return alternate;
     }
     else if (getTypeModel()==alternate.getTypeModel())
