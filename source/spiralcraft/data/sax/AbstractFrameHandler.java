@@ -344,6 +344,14 @@ public abstract class AbstractFrameHandler
         {
           String elementName=transformNamespace(assignment.getName(),this);
           FrameHandler child=childMap.get(elementName);
+          if (child==null)
+          { 
+            throw new BindException
+              ("Child element "+elementName
+              +" not found binding assignment with target "
+              +assignment.getTarget().getText()
+              );
+          }
           elementSetterMap.put
             (elementName
             ,assignment.bind 
