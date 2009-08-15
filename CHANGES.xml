@@ -1,6 +1,94 @@
 <scm:Change.list
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
+  <scm:Change>
+    <revision>0.3.14
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-08-14
+    </date>
+    
+    <notes>
+      <scm:Note>Fixes for blind type resolution through lang package
+      </scm:Note>
+      <scm:Note>Data SAX package enhancements for automated construction of
+        frame handler sets.
+      </scm:Note>      
+    </notes>
+    
+    <detail>
+      <scm:Change>
+
+        <date>2009-08-14
+        </date>
+        
+        <notes>
+          <scm:Note>Added a frame type designed specifically for reading
+            field or list values in character form.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/sax/
+        </path>
+        
+        <resources>
+          <URI>ValueFrame.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
+
+        <date>2009-08-11
+        </date>
+        
+        <notes>
+          <scm:Note>Fix NPE by throwing exception when an elementAssignment
+            does not match any child element.
+          </scm:Note>
+          <scm:Note>Perform destination specific String type conversions for
+            incoming character data when the textBinding is not expressed in
+            the form of an assignment.
+          </scm:Note>          
+        </notes>
+        
+        <path>source/spiralcraft/data/sax/
+        </path>
+        
+        <resources>
+          <URI>AbstractFrameHandler.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+    </detail>
+
+    <detail>
+      <scm:Change>
+
+        <date>2009-08-10
+        </date>
+        
+        <notes>
+          <scm:Note>Differentiate TypeNotFoundException from errors loading
+            a defined type.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/lang/
+        </path>
+        
+        <resources>
+          <URI>DataTypeModel.java</URI>
+        </resources>
+
+      </scm:Change>
+    </detail>
+  </scm:Change>
 
   <scm:Change>
     <revision>0.3.13
