@@ -40,6 +40,7 @@ import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.string.StringConverter;
 
 /**
  * <p>Implements a mapping from a foreign XML data element to part of a
@@ -162,10 +163,11 @@ public abstract class AbstractFrameHandler
   private Assignment<?>[] defaultAssignments;
   protected Setter<?>[] defaultSetters;
   
-  private Expression<String> textBinding;
-  private Channel<String> textChannel;
+  private Expression<Object> textBinding;
+  private Channel<Object> textChannel;
   private boolean textAssignment;
   private ThreadLocalChannel<String> text;
+  private StringConverter<Object> textConverter;
   
   private String id;
   private boolean recursive;
@@ -275,10 +277,19 @@ public abstract class AbstractFrameHandler
    * 
    * @param textBinding
    */
-  public void setTextBinding(Expression<String> textBinding)
+  public void setTextBinding(Expression<Object> textBinding)
   { this.textBinding=textBinding;
   }
   
+  /**
+   * <p>Specify the StringConverter that will convert character data
+   *   to the destination type
+   * </p>
+   * @param stringConverter
+   */
+  public void setTextConverter(StringConverter<Object> stringConverter)
+  { this.textConverter=stringConverter;
+  }
   
   public void setAttributeBindings(AttributeBinding<?>[] attributeBindings)
   { this.attributeBindings=attributeBindings;
@@ -395,6 +406,7 @@ public abstract class AbstractFrameHandler
       }
       
     }
+    
     if (textBinding!=null)
     { 
       if (textBinding.getRootNode() instanceof AssignmentNode<?,?>)
@@ -406,7 +418,16 @@ public abstract class AbstractFrameHandler
         textChannel=getFocus().telescope(text).bind(textBinding);
       }
       else
-      { textChannel=getFocus().bind(textBinding);
+      { 
+        textChannel=getFocus().bind(textBinding);
+        if (!String.class.isAssignableFrom
+              (textChannel.getReflector().getContentType())
+            )
+        {
+          textConverter
+            =StringConverter.getInstance
+              (textChannel.getReflector().getContentType());
+        }
       }
     }
   }
@@ -608,9 +629,13 @@ public abstract class AbstractFrameHandler
         { text.pop();
         }
       }
+      else if (textConverter!=null)
+      { textChannel.set(textConverter.fromString(chars));
+      }
       else
       {
-        String orig=textChannel.get();
+        
+        String orig=(String) textChannel.get();
         if (orig==null)
         { textChannel.set(chars);
         }
