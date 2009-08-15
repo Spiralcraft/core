@@ -18,11 +18,13 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
 
@@ -81,18 +83,11 @@ public class ValueFrame<T>
   { this.assignment=assignment;
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   public void bind()
     throws BindException
   {
-    if (type==null)
-    { 
-      throw new BindException
-        ("TupleFrameHandler for elementURI="
-        +getElementURI()+" requires a type"
-        );
-    }
-    channel=new FrameChannel<T>(DataReflector.<T>getInstance(type));
     
     // These must bind to the parent focus, which is our own focus
     //   before we bind and extend the Focus chain.
@@ -103,8 +98,43 @@ public class ValueFrame<T>
     if (assignment!=null)
     { assignmentChannel=parentFocus.bind(assignment);
     }
+
+    if (type==null)
+    {
+      Reflector<T> reflector=null;
+      if (assignment!=null)
+      { 
+        reflector=assignmentChannel.getReflector();
+        if (reflector instanceof DataReflector)
+        { type=((DataReflector) reflector).getType();
+        }
+        else
+        { 
+          try
+          { type=ReflectionType.canonicalType(reflector.getContentType());
+          } 
+          catch (DataException x)
+          { throw new BindException("ValueFrame for elementURI="
+              +getElementURI()+": Error determining value type",x);
+          }
+        }
+      }
+    }
+    
+    if (type==null)
+    { 
+      throw new BindException
+        ("ValueFrame for elementURI="
+          +getElementURI()
+          +": A ValueFrame without an assignment must be provided with a Type"
+        );
+    }
+    
+    channel=new FrameChannel<T>(DataReflector.<T>getInstance(type));
     setFocus(new SimpleFocus<T>(parentFocus,channel));
     setTextBinding(Expression.create("."));
+    
+    
     super.bind();
   }
   
