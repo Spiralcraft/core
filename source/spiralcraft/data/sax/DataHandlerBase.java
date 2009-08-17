@@ -246,7 +246,7 @@ public abstract class DataHandlerBase
   { throw new DataSAXException(message+": "+formatPosition());
   }
   
-  protected void throwSAXException(String message,Throwable cause)
+  protected void throwSAXException(String message,Exception cause)
     throws SAXException
   { throw new DataSAXException(message+": "+formatPosition(),cause);
   }
@@ -406,7 +406,7 @@ public abstract class DataHandlerBase
      * </p>
      */
     protected abstract void endChild(Frame child)
-      throws SAXException,DataException;
+      throws SAXException;
     
     /**
      * <p>Can be overridden to do something after the frame is associated with
@@ -581,7 +581,7 @@ public abstract class DataHandlerBase
 
     @Override
     protected void endChild(Frame child)
-      throws SAXException, DataException
+      throws SAXException
     { }
 
     @Override

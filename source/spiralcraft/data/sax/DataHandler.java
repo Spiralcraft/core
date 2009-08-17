@@ -423,7 +423,7 @@ public class DataHandler
      */
     @Override
     protected void endChild(Frame frame)
-      throws DataException
+      throws SAXException
     { 
       if (!(frame instanceof EmptyFrame))
       { 
@@ -432,7 +432,12 @@ public class DataHandler
         {
           // Figure out how to merge the two
         }
-        currentField.setValue(tuple,childObject);
+        try
+        { currentField.setValue(tuple,childObject);
+        }
+        catch (DataException x)
+        { throw new DataSAXException(x.toString()+formatPosition(),x);
+        }
       }
     }
   }

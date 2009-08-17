@@ -33,9 +33,9 @@ public class DataSAXException
   { super(message);
   }
 
-  public DataSAXException(String message,Throwable cause)
-  { 
-    super(message);
+  public DataSAXException(String message,Exception cause)
+  {
+    super(message,cause);
     initCause(cause);
   }
 

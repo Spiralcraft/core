@@ -80,8 +80,7 @@ public class ForeignDataHandler
     @Override
     protected void endChild(
       Frame child)
-      throws SAXException,
-      DataException
+      throws SAXException
     {
       
     }
@@ -158,12 +157,20 @@ public class ForeignDataHandler
      */
     @Override
     protected void closeFrame()
-      throws SAXException,DataException
+      throws SAXException
     {
-      if (frameHandler!=null)
-      { frameHandler.closeFrame(this);
+      try
+      {
+        if (frameHandler!=null)
+        { frameHandler.closeFrame(this);
+        }
       }
-      
+      catch (DataException x)
+      { throwSAXException(x.toString(),x);
+      }      
+      catch (RuntimeException x)
+      { throwSAXException(x.toString(),x);
+      }
     }
         
   }
@@ -178,8 +185,7 @@ public class ForeignDataHandler
     @Override
     protected void endChild(
       Frame child)
-      throws SAXException,
-      DataException
+      throws SAXException
     {
       
     }
