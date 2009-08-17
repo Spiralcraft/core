@@ -2,6 +2,68 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
+    <revision>0.3.15
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-08-17
+    </date>
+    
+    <notes>
+      <scm:Note>Exception handling improvements in data SAX translator
+      </scm:Note>
+    </notes>
+    
+    <detail>
+      <scm:Change>
+
+        <date>2009-08-17
+        </date>
+        
+        <notes>
+          <scm:Note>Handle empty strings as null for StringConverter
+            numeric types, instead of throwing a FormatException
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/string/StringConverter.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+
+        <date>2009-08-17
+        </date>
+        
+        <notes>
+          <scm:Note>Report document position for DataExceptions and
+            RuntimeExceptions that occur when translating XML to Channel
+            values.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/sax/
+        </path>
+        
+        <resources>
+          <URI>DataHandler.java
+          </URI>
+          <URI>DataHandlerBase.java
+          </URI>
+          <URI>ForeignDataHandler.java
+          </URI>
+          <URI>DataSAXException.java
+          </URI>          
+        </resources>
+
+      </scm:Change>
+    </detail>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.3.14
     </revision>
     
