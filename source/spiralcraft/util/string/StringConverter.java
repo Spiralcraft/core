@@ -275,7 +275,7 @@ final class FloatToString
 {
   @Override
   public Float fromString(String val)
-  { return val!=null?Float.parseFloat(val):null;
+  { return (val!=null && !val.isEmpty())?Float.parseFloat(val):null;
   }
 }
 
@@ -284,7 +284,7 @@ final class LongToString
 {
   @Override
   public Long fromString(String val)
-  { return val!=null?Long.parseLong(val):null;
+  { return (val!=null && !val.isEmpty())?Long.parseLong(val):null;
   }
 }
 
@@ -293,7 +293,7 @@ final class DoubleToString
 {
   @Override
   public Double fromString(String val)
-  { return val!=null?Double.parseDouble(val):null;
+  { return (val!=null && !val.isEmpty())?Double.parseDouble(val):null;
   }
 }
 
@@ -302,7 +302,7 @@ final class ShortToString
 {
   @Override
   public Short fromString(String val)
-  { return val!=null?Short.parseShort(val):null;
+  { return (val!=null && !val.isEmpty())?Short.parseShort(val):null;
   }
 }
 
@@ -320,7 +320,7 @@ final class ByteToString
 {
   @Override
   public Byte fromString(String val)
-  { return val!=null?Byte.parseByte(val):null;
+  { return (val!=null && !val.isEmpty())?Byte.parseByte(val):null;
   }
 }
 
@@ -329,7 +329,7 @@ final class BigDecimalToString
 {
   @Override
   public BigDecimal fromString(String val)
-  { return val!=null?new BigDecimal(val):null;
+  { return (val!=null && !val.isEmpty())?new BigDecimal(val):null;
   }
 }
 
@@ -338,7 +338,7 @@ final class BigIntegerToString
 {
   @Override
   public BigInteger fromString(String val)
-  { return val!=null?new BigInteger(val):null;
+  { return (val!=null && !val.isEmpty())?new BigInteger(val):null;
   }
 }
 
