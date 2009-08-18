@@ -117,7 +117,10 @@
           </URI>
           <URI>data/sax/AbstractFrameHandler.java
           </URI>
-          
+          <URI>builder/PropertyBinding.java
+          </URI>
+          <URI>ui/Binding.java
+          </URI>
         </resources>
       </scm:Change>
     </detail>
