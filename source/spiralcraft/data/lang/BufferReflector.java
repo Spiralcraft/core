@@ -25,7 +25,7 @@ public class BufferReflector<T extends Tuple>
   extends TupleReflector<T>
 {
 
-  BufferReflector(Type<?> type,Class<T> contentType)
+  BufferReflector(Type<T> type,Class<T> contentType)
   { super(type,contentType);
   }
   

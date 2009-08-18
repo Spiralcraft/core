@@ -30,6 +30,7 @@ import spiralcraft.data.Type;
  */
 public class PrimitiveReflector<T>
   extends BeanReflector<T>
+  implements TypeReflector<T>
 {
 
   private final Type<T> type;

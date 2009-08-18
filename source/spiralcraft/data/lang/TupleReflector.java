@@ -74,7 +74,7 @@ public class TupleReflector<T extends Tuple>
   }
   
 
-  TupleReflector(Type<?> type,Class<T> contentType)
+  TupleReflector(Type<T> type,Class<T> contentType)
   { 
     super(type);
     untypedFieldSet=null;
@@ -84,9 +84,10 @@ public class TupleReflector<T extends Tuple>
 //    }
   }
   
+  @SuppressWarnings("unchecked")
   public TupleReflector(FieldSet fieldSet,Class<T> contentType)
   { 
-    super(fieldSet.getType());
+    super((Type<T>) fieldSet.getType());
     if (fieldSet.getType()==null)
     { this.untypedFieldSet=fieldSet;
     }
@@ -355,8 +356,8 @@ public class TupleReflector<T extends Tuple>
             
           Reflector paramReflector=paramChannel.getReflector();
           Type paramType;
-          if (paramReflector instanceof DataReflector)
-          { paramType=((DataReflector) paramReflector).getType();
+          if (paramReflector instanceof TypeReflector)
+          { paramType=((TypeReflector) paramReflector).getType();
           }
           else
           { 

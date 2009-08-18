@@ -18,7 +18,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
-import spiralcraft.data.lang.PrimitiveReflector;
+import spiralcraft.data.lang.TypeReflector;
 import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.lang.BindException;
@@ -106,12 +106,9 @@ public class ValueFrame<T>
       if (assignment!=null)
       { 
         reflector=assignmentChannel.getReflector();
-        if (reflector instanceof DataReflector)
-        { type=((DataReflector) reflector).getType();
+        if (reflector instanceof TypeReflector)
+        { type=((TypeReflector) reflector).getType();
         }
-        else if (reflector instanceof PrimitiveReflector)
-        { type=((PrimitiveReflector) reflector).getType();
-        } 
         else
         { 
           try

@@ -16,7 +16,7 @@ package spiralcraft.data;
 
 import java.util.Comparator;
 
-import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.lang.TypeReflector;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -160,9 +160,9 @@ public class OrderElement<T>
       this.chB=chB;
       if (comparator==null)
       {
-        if (chA.getReflector() instanceof DataReflector)
+        if (chA.getReflector() instanceof TypeReflector)
         {
-          Type type=((DataReflector) chA.getReflector()).getType();
+          Type type=((TypeReflector) chA.getReflector()).getType();
           if (type!=null)
           { comparator=type.getComparator();
           }

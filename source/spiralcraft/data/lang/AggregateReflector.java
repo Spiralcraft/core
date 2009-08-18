@@ -67,7 +67,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   }
   
 
-  AggregateReflector(Type<?> type,Class<T> contentType)
+  AggregateReflector(Type<T> type,Class<T> contentType)
   { 
     super(type);
     this.contentType=contentType;

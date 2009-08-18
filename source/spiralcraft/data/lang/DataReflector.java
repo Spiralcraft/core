@@ -50,6 +50,7 @@ import spiralcraft.data.session.BufferType;
  */
 public abstract class DataReflector<T extends DataComposite>
   extends Reflector<T>
+  implements TypeReflector<T>
 {
   private static final TypeModel TYPE_MODEL
     =DataTypeModel.getInstance();
@@ -59,7 +60,7 @@ public abstract class DataReflector<T extends DataComposite>
   private static final WeakHashMap<Type<?>,WeakReference<Reflector<?>>>
     SINGLETONS=new WeakHashMap<Type<?>,WeakReference<Reflector<?>>>();
   
-  protected final Type<?> type;
+  protected final Type<T> type;
   
   @SuppressWarnings("unchecked") // We only create Reflector with erased type
   public synchronized static final 
@@ -105,7 +106,7 @@ public abstract class DataReflector<T extends DataComposite>
     return broker;
   }
   
-  public DataReflector(Type<?> type)
+  public DataReflector(Type<T> type)
   { this.type=type;
   }
   
@@ -157,7 +158,7 @@ public abstract class DataReflector<T extends DataComposite>
     return false;
   }
   
-  public Type<?> getType()
+  public Type<T> getType()
   { return type;
   }
   
@@ -237,8 +238,8 @@ public abstract class DataReflector<T extends DataComposite>
     try
     {
       Reflector reflector=teleFocus.bind(expr).getReflector();
-      if (reflector instanceof DataReflector)
-      { return ((DataReflector) reflector).getType();
+      if (reflector instanceof TypeReflector)
+      { return ((TypeReflector) reflector).getType();
       }
       else
       { 
