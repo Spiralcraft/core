@@ -18,19 +18,20 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.TypeResolver;
 
 import spiralcraft.data.core.PrimitiveTypeImpl;
+import spiralcraft.util.string.DateToString;
+import spiralcraft.util.string.StringConverter;
 
 import java.net.URI;
 
 import java.util.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 public class DateType
   extends PrimitiveTypeImpl<Date>
 {
-  private SimpleDateFormat format;
   
   private String dateFormat="yyyy-MM-dd HH:mm:ss.SSS Z";
+  
+  private StringConverter<Date> converter;
   
   public DateType(TypeResolver resolver,URI uri)
   { super(resolver,uri,Date.class);
@@ -45,17 +46,8 @@ public class DateType
     }
     
     if (str!=null)
-    { 
-      try
-      { return format.parse(str);
-      }
-      catch (ParseException x)
-      { 
-        throw new DataException
-          ("Date formatting error. Format is "+dateFormat
-          ,x
-          );
-      }
+    { return converter.fromString(str);
+
     }
     else
     { return null;
@@ -66,7 +58,7 @@ public class DateType
   public synchronized String toString(Date date)
   { 
     if (date!=null)
-    { return format.format(date);
+    { return converter.toString(date);
     }
     else
     { return null;
@@ -75,7 +67,8 @@ public class DateType
 
   @Override
   protected void linkPrimitive()
-  { format=new SimpleDateFormat(dateFormat);
+  { 
+    converter=new DateToString(dateFormat);
   }
   
   public String getDateFormat()
@@ -86,7 +79,6 @@ public class DateType
   public void setDateFormat(
     String dateFormat)
   {
-    
     if (linked)
     { throw new IllegalStateException("Type "+getURI()+" is already linked");
     }
