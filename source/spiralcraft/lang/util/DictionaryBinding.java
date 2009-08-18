@@ -155,12 +155,16 @@ public class DictionaryBinding<T>
       targetChannel=focus.bind(target);
     
       if (converter==null)
-      { 
-        converter
-          =(StringConverter<T>) StringConverter.getInstance
-            (targetChannel.getContentType());
+      { converter=createConverter();
       }
     }
+  }
+  
+  @SuppressWarnings("unchecked")
+  protected StringConverter<T> createConverter()
+  {
+    return (StringConverter<T>) StringConverter.getInstance
+      (targetChannel.getContentType());    
   }
   
   public void set(String value)
