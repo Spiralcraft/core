@@ -72,40 +72,36 @@ public abstract class DataReflector<T extends DataComposite>
     }
     Reflector broker=null;
     
-    if (type.isPrimitive())
-    { 
-      broker
-        =BeanReflector.getInstance(type.getNativeClass());
+    WeakReference<Reflector<?>> ref=SINGLETONS.get(type);
+    if (ref!=null)
+    { broker=ref.get();
     }
-    else
+    if (broker==null)
     {
-      WeakReference<Reflector<?>> ref=SINGLETONS.get(type);
-      if (ref!=null)
-      { broker=ref.get();
+      if (type.isPrimitive())
+      { broker=new PrimitiveReflector(type);
       }
-      if (broker==null)
-      {
-        if (type.isAggregate())
-        { 
-          if (type instanceof BufferType)
-          { broker=new AggregateReflector(type,BufferAggregate.class);
-          }
-          else
-          { broker=new AggregateReflector(type,Aggregate.class);
-          }
+      else if (type.isAggregate())
+      { 
+        if (type instanceof BufferType)
+        { broker=new AggregateReflector(type,BufferAggregate.class);
         }
         else
-        { 
-          if (type instanceof BufferType)
-          { broker=new BufferReflector(type,BufferTuple.class);
-          }
-          else
-          { broker=new TupleReflector(type,Tuple.class);
-          }
+        { broker=new AggregateReflector(type,Aggregate.class);
         }
-        SINGLETONS.put(type,new WeakReference(broker));
       }
+      else
+      { 
+        if (type instanceof BufferType)
+        { broker=new BufferReflector(type,BufferTuple.class);
+        }
+        else
+        { broker=new TupleReflector(type,Tuple.class);
+        }
+      }
+      SINGLETONS.put(type,new WeakReference(broker));
     }
+      
     return broker;
   }
   
