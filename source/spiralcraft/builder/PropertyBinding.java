@@ -486,7 +486,7 @@ public class PropertyBinding
         ("Error parsing properties in "+_specifier.getTextData(),x);
     }
       
-    _converter=StringConverter.getInstance(_target.getContentType());
+    _converter=_target.getReflector().getStringConverter();
     if (_converter==null)
     { 
       throwBuildException

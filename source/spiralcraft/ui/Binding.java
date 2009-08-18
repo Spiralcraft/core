@@ -124,8 +124,7 @@ public class Binding
     }
     else if (_uiChannel.getContentType()==String.class)
     { 
-      _modelStringConverter
-        =StringConverter.getInstance(_modelChannel.getContentType());
+      _modelStringConverter=_modelChannel.getReflector().getStringConverter();
       if (_modelStringConverter!=null)
       { _updateToModel=true;
       }
@@ -138,7 +137,7 @@ public class Binding
     }
     else if (_modelChannel.getContentType()==String.class)
     { 
-      _uiStringConverter=StringConverter.getInstance(_uiChannel.getContentType());
+      _uiStringConverter=_uiChannel.getReflector().getStringConverter();
       if (_uiStringConverter==null)
       { throw new BindException("Cannot convert a String to a "+_uiChannel.getContentType());
       }
