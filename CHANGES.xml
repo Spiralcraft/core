@@ -8,28 +8,117 @@
     <authorId>miketoth
     </authorId>
     
-    <date>?????
+    <date>2009-08-18
     </date>
     
     <notes>
       <scm:Note>
+      Provide additional spiralcraft.lang reachable metadata to foreign XML
+      parser and other data-driven subsystems for custom primitive Types 
+      (eg. string formatted data, dates, etc) published from spiralcraft.data      
       </scm:Note>
     </notes>
     
     <detail>
       <scm:Change>
 
+        <date>2009-08-18
+        </date>
+        
+        <notes>
+          <scm:Note>Move to using StringConverter instead of Format 
+            for thread safety
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/types/standard/
+        </path>
+        
+        <resources>
+          <URI>DateType.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+
+        <date>2009-08-18
+        </date>
+        
+        <notes>
+          <scm:Note>Exception handling and reporting enhancements
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/sax/DataSAXException.java
+          </URI>
+          <URI>spiralcraft/lang/reflect/MethodTranslator.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+
+      <scm:Change>
+
         <date>2009-08-17
         </date>
         
         <notes>
-          <scm:Note>Provide hook to create a StringConverter contextually
+          <scm:Note>Data reflection of primitive types
           </scm:Note>
         </notes>
         
-        <path>source/spiralcraft/lang/util/DictionaryBinding.java
+        <path>source/spiralcraft/
         </path>
+        
+        <resources>
+          <URI>data/lang/PrimitiveReflector.java
+          </URI>
+          <URI>data/lang/DataReflector.java
+          </URI>
+          <URI>data/lang/TupleReflector.java
+          </URI>
+          <URI>data/lang/BufferReflector.java
+          </URI>
+          <URI>data/lang/AggregateReflector.java
+          </URI>
+          <URI>data/lang/TypeReflector.java
+          </URI>
+          <URI>data/sax/ValueFrame.java
+          </URI>
+          <URI>data/sax/RootFrame.java
+          </URI>
+          <URI>data/OrderElement.java
+          </URI>
+        </resources>
+      </scm:Change>
 
+      <scm:Change>
+
+        <date>2009-08-17
+        </date>
+        
+        <notes>
+          <scm:Note>Obtain StringConverter from Channel Reflector
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/util/DictionaryBinding.java
+          </URI>
+          <URI>lang/Reflector.java
+          </URI>
+          <URI>data/sax/AbstractFrameHandler.java
+          </URI>
+          
+        </resources>
       </scm:Change>
     </detail>
   </scm:Change>
