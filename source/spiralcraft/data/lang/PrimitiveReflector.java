@@ -14,15 +14,22 @@
 //
 package spiralcraft.data.lang;
 
-import spiralcraft.lang.Extender;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.util.string.StringConverter;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 
+/**
+ * <p>Provides access to spiralcraft.data metadata for primitive types.
+ * </p>
+ * 
+ * @author mike
+ *
+ * @param <T>
+ */
 public class PrimitiveReflector<T>
-  extends Extender<T>
+  extends BeanReflector<T>
 {
 
   private final Type<T> type;
@@ -52,7 +59,7 @@ public class PrimitiveReflector<T>
   
   public PrimitiveReflector(Type<T> type)
   { 
-    super(BeanReflector.<T>getInstance(type.getNativeClass()));
+    super(type.getNativeClass());
     this.type=type;
   }
   
@@ -60,6 +67,7 @@ public class PrimitiveReflector<T>
   { return type;
   }
   
+  @Override
   public StringConverter<T> getStringConverter()
   { 
     if (type.isStringEncodable())
