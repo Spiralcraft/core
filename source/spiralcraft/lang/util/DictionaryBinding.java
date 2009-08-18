@@ -160,11 +160,8 @@ public class DictionaryBinding<T>
     }
   }
   
-  @SuppressWarnings("unchecked")
   protected StringConverter<T> createConverter()
-  {
-    return (StringConverter<T>) StringConverter.getInstance
-      (targetChannel.getContentType());    
+  { return targetChannel.getReflector().getStringConverter();    
   }
   
   public void set(String value)
