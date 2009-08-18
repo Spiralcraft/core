@@ -38,5 +38,10 @@ public class DataSAXException
     super(message,cause);
     initCause(cause);
   }
+  
+  @Override
+  public String toString()
+  { return getMessage()+" "+super.toString();
+  }
 
 }
