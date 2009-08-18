@@ -19,12 +19,14 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.lang.ClassUtil;
 
 // import spiralcraft.util.ArrayUtil;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 
 
 class MethodTranslator<Tprop,Tbean>
@@ -39,8 +41,15 @@ class MethodTranslator<Tprop,Tbean>
   { 
     _method=method;
     _staticMethod=Modifier.isStatic(method.getModifiers());
-    _reflector=BeanReflector.<Tprop>getInstance
-      (method.getGenericReturnType());
+    Type returnType=method.getGenericReturnType();
+    Class<?> clazz=ClassUtil.getClass(returnType);
+    if (clazz!=null)
+    { _reflector=BeanReflector.<Tprop>getInstance(clazz);
+    }
+    else
+    { throw new IllegalArgumentException
+        ("Unknown return type for method '"+method+"': "+returnType);
+    }
   }
 
   public Method getMethod()
