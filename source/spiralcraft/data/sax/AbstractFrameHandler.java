@@ -424,14 +424,16 @@ public abstract class AbstractFrameHandler
               (textChannel.getReflector().getContentType())
             )
         {
-          textConverter
-            =StringConverter.getInstance
-              (textChannel.getReflector().getContentType());
+          textConverter=createTextConverter();
         }
       }
     }
   }
 
+  protected StringConverter<Object> createTextConverter()
+  { return textChannel.getReflector().getStringConverter();
+  }
+  
   protected void bindChildren()
     throws BindException
   {
