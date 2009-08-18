@@ -1,0 +1,31 @@
+<task:Chain
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:query="class:/spiralcraft/data/query/"
+  xmlns:dtask="class:/spiralcraft/data/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:std="class:/spiralcraft/data/types/standard/"
+  >
+  <chain>
+ 
+    <task:Sequence>
+      <scenarios>
+    
+        <test:Stub>
+          <name>shortDate
+          </name>
+          <messageX>[@example:USDate].type.@cast([@std:DateType]).fromString("12/28/2010")
+          </messageX>
+          <conditionX>[@example:USDate].type.@cast([@std:DateType])
+                        .fromString("12/28/2010").toString()
+                      =="Tue Dec 28 00:00:00 PST 2010"
+          </conditionX>
+        </test:Stub>
+
+        
+      </scenarios>
+      
+    </task:Sequence>
+  </chain>
+        
+</task:Chain>

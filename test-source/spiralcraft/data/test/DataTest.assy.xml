@@ -11,6 +11,7 @@
       <scenarios>
         <DataBatchTest/>
         <QueryTest/>
+        <TypeTest/>
       </scenarios>
       
     </task:Sequence>
