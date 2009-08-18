@@ -16,7 +16,9 @@ package spiralcraft.data.lang;
 
 import spiralcraft.lang.Extender;
 import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.util.string.StringConverter;
 
+import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 
 public class PrimitiveReflector<T>
@@ -24,6 +26,29 @@ public class PrimitiveReflector<T>
 {
 
   private final Type<T> type;
+  
+  private final StringConverter<T> converter
+    =new StringConverter<T>()
+  {
+
+    @Override
+    public T fromString(String val)
+    { 
+      try
+      { return type.fromString(val);
+      }
+      catch (DataException x)
+      { throw new IllegalArgumentException(val,x);
+      }
+    }
+    
+    @Override
+    public String toString(T val)
+    {
+      return type.toString(val);
+    }
+     
+  };
   
   public PrimitiveReflector(Type<T> type)
   { 
@@ -33,6 +58,16 @@ public class PrimitiveReflector<T>
   
   public Type<T> getType()
   { return type;
+  }
+  
+  public StringConverter<T> getStringConverter()
+  { 
+    if (type.isStringEncodable())
+    { return converter;
+    }
+    else
+    { return null;
+    }
   }
 
 }
