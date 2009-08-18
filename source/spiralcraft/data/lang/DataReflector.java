@@ -257,9 +257,14 @@ public abstract class DataReflector<T extends DataComposite>
   @Override
   public Reflector<?> disambiguate(Reflector<?> alternate)
   {
-    // Don't hide BeanReflectors
+//    if (alternate instanceof PrimitiveReflector<?>)
+//    { return this;
+//    }
+//    else 
     if (alternate instanceof BeanReflector<?>)
-    { return alternate;
+    { 
+      // Don't hide BeanReflectors with tuples
+      return alternate;
     }
     else if (getTypeModel()==alternate.getTypeModel())
     { return this;
