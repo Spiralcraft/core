@@ -19,6 +19,7 @@ import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.string.StringConverter;
 
 import java.net.URI;
 import java.util.LinkedList;
@@ -366,6 +367,17 @@ public abstract class Reflector<T>
    */
   public Reflector<?> disambiguate(Reflector<?> alternate)
   { return this;
+  }
+  
+  /**
+   * <p>Return the StringConverter most applicable to the type being exposed
+   *   by this Reflector, which implements the canonical String encoding
+   *   for values of this type.
+   * </p>
+   * @return
+   */
+  public StringConverter<T> getStringConverter()
+  { return StringConverter.getInstance(getContentType());
   }
   
   public Reflector<?> getCommonType(Reflector<T> other)
