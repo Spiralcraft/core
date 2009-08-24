@@ -102,14 +102,18 @@ public class QueryXml<Tresult>
     {
       for (AttributeBinding<?> binding:uriQueryBindings)
       {
-        String value=binding.get();
-        if (value!=null)
+        String[] values=binding.getValues();
+        
+        if (values!=null)
         {
-          if (queryString.length()>0)
-          { queryString.append("&");
+          for (String value : values)
+          {
+            if (queryString.length()>0)
+            { queryString.append("&");
+            }
+            queryString.append(binding.getAttribute()).append("=");
+            queryString.append(URLDataEncoder.encode(value));
           }
-          queryString.append(binding.getAttribute()).append("=");
-          queryString.append(URLDataEncoder.encode(value));
         }
       }
       

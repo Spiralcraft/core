@@ -14,11 +14,14 @@
 //
 package spiralcraft.lang.util;
 
+import java.util.ArrayList;
+
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.parser.AssignmentNode;
 
@@ -43,6 +46,8 @@ public class DictionaryBinding<T>
   private String name;
   
   private boolean assignment;
+  
+  private IterationDecorator<T,Object> decorator;
     
   /**
    * Create an AttributeBinding
@@ -157,6 +162,28 @@ public class DictionaryBinding<T>
       if (converter==null)
       { converter=createConverter();
       }
+      if (converter==null)
+      { converter=StringConverter.getInstance(targetChannel.getContentType());
+      }
+      if (converter==null)
+      { 
+        decorator
+          =targetChannel.<IterationDecorator>decorate(IterationDecorator.class);
+        if (decorator!=null)
+        {
+        }
+        converter=(StringConverter<T>) 
+          decorator.getComponentReflector().getStringConverter();
+        
+      }
+      if (converter==null)
+      {
+        throw new BindException
+          ("Could not obtain a StringConverter for "
+            +targetChannel.getContentType()+": Reflector is "
+            +targetChannel.getReflector()
+          );
+      }
     }
   }
   
@@ -175,7 +202,46 @@ public class DictionaryBinding<T>
   }
   
   public String get()
-  { return converter.toString(targetChannel.get());
+  { 
+    if (decorator==null)
+    { return converter.toString(targetChannel.get());
+    }
+    else
+    { 
+      String[] values=getValues();
+      if (values!=null && values.length>0)
+      { return values[0];
+      }
+      else
+      { return null;
+      }
+    }
+  }
+  
+  @SuppressWarnings("unchecked")
+  public String[] getValues()
+  {
+    if (decorator==null)
+    { 
+      final String str=get();
+      if (str!=null)
+      { return new String[] {str};
+      }
+      else
+      { return null;
+      }
+    }
+    else
+    {
+      ArrayList<String> values=new ArrayList<String>();
+      for (Object val : decorator)
+      { 
+        if (val!=null)
+        { values.add(converter.toString((T) val));
+        }
+      }
+      return values.toArray(new String[values.size()]);
+    }
   }
   
 }
