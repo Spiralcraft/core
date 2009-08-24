@@ -389,6 +389,8 @@ public class AssemblyLoader
   {
     PropertySpecifier prop=new PropertySpecifier(containerClass,node.getLocalName());
     prop.setPrefixResolver(node.getPrefixResolver());
+    prop.setParsePosition(node.getPosition());
+    
     Attribute[] attribs = node.getAttributes();
     if (attribs!=null)
     {

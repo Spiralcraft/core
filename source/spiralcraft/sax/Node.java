@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
+import spiralcraft.text.ParsePosition;
+
 /**
  * Represents a portion of an XML document
  */
@@ -30,6 +32,7 @@ public abstract class Node
   private Node _parent;
   private Object _peer;
   private PrefixResolver prefixResolver;
+  private ParsePosition position;
 
 
   /**
@@ -127,6 +130,14 @@ public abstract class Node
    */
   public void setPrefixResolver(PrefixResolver resolver)
   { this.prefixResolver=resolver;
+  }
+  
+  public void setPosition(ParsePosition position)
+  { this.position=position;
+  }
+  
+  public ParsePosition getPosition()
+  { return position;
   }
   
   protected void playChildEvents(ContentHandler handler)

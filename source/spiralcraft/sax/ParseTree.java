@@ -17,9 +17,12 @@ package spiralcraft.sax;
 import java.net.URI;
 
 import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+
+import spiralcraft.text.ParsePosition;
 
 
 /**
@@ -37,6 +40,8 @@ public class ParseTree
   private Document _document;
   private Node _currentElement;
   private PrefixResolver newPrefixResolver;
+  private final ParsePosition position=new ParsePosition();
+  private Locator locator;
   
   public static ParseTree createTree(Element root)
   { return new ParseTree(new Document(root));
@@ -94,6 +99,20 @@ public class ParseTree
   public void endPrefixMapping(String prefix)
   {
   }
+ 
+  @Override
+  public void setDocumentLocator(Locator locator)
+  { 
+    this.locator=locator;
+    position.setLine(locator.getLineNumber());
+    position.setColumn(locator.getColumnNumber());
+  }
+  
+  private void updatePosition()
+  {
+    position.setLine(locator.getLineNumber());
+    position.setColumn(locator.getColumnNumber());
+  }
   
   @Override
   public void startElement
@@ -104,6 +123,7 @@ public class ParseTree
     )
     throws SAXException
   {
+    updatePosition();
     Element element=new Element(uri,localName,qName,attributes);
     _currentElement.addChild(element);
     _currentElement=element;
@@ -112,6 +132,7 @@ public class ParseTree
       element.setPrefixResolver(newPrefixResolver);
       newPrefixResolver=null;
     }
+    element.setPosition(position.clone());
   }
 
   @Override
@@ -121,7 +142,9 @@ public class ParseTree
     ,String qName
     )
     throws SAXException
-  { _currentElement=_currentElement.getParent();
+  { 
+    updatePosition();
+    _currentElement=_currentElement.getParent();
   }
   
   @Override
@@ -131,7 +154,11 @@ public class ParseTree
     ,int length
     )
     throws SAXException
-  { _currentElement.addChild(new Characters(ch,start,length));
+  { 
+    updatePosition();
+    Characters node=new Characters(ch,start,length);
+    node.setPosition(position.clone());
+    _currentElement.addChild(node);
   }
 
   @Override
@@ -141,6 +168,10 @@ public class ParseTree
     ,int length
     )
     throws SAXException
-  { _currentElement.addChild(new IgnorableWhitespace(ch,start,length));
+  { 
+    updatePosition();
+    IgnorableWhitespace node=new IgnorableWhitespace(ch,start,length);
+    node.setPosition(position.clone());
+    _currentElement.addChild(node);
   }
 }

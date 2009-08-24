@@ -568,17 +568,31 @@ public class PropertyBinding
   private void applySource()
     throws BuildException
   {
-    if (_contents!=null && _contents.length>0)
-    { applyContents();
+    try
+    {
+      if (_contents!=null && _contents.length>0)
+      { applyContents();
+      }
+      else if (_specifier.getTextData()!=null)
+      { applyText();
+      }
+      else if (_specifier.getSourceExpression()!=null)
+      { applyExpression();
+      }
+      else if (_specifier.getDataURI()!=null)
+      { applyData();
+      }
     }
-    else if (_specifier.getTextData()!=null)
-    { applyText();
+    catch (BuildException x)
+    { throw x;
     }
-    else if (_specifier.getSourceExpression()!=null)
-    { applyExpression();
-    }
-    else if (_specifier.getDataURI()!=null)
-    { applyData();
+    catch (RuntimeException x)
+    { 
+      throw new BuildException
+        ("Error applying value to property '"
+        +_specifier.getTargetName()+"': "
+        +_specifier.getSourceCodeLocation()
+        ,x);
     }
   }
   

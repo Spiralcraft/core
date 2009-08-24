@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.ArrayList;
 
+import spiralcraft.text.ParsePosition;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringUtil;
 
@@ -67,6 +68,8 @@ public class PropertySpecifier
   private boolean defaultMember;
   
   private Class<?> propertyType;
+  
+  private ParsePosition position;
 
   public PropertySpecifier
     (AssemblyClass container
@@ -120,6 +123,10 @@ public class PropertySpecifier
     addAssemblyClass(content);
   }
   
+  
+  public void setParsePosition(ParsePosition position)
+  { this.position=position;
+  }
   
   public PropertyDescriptor getPropertyDescriptor()
   { 
@@ -196,6 +203,7 @@ public class PropertySpecifier
       ArrayUtil.format(_container.getInnerPath(),"/",null)
       +"."
       +ArrayUtil.format(_specifier,".",null)
+      +(position!=null?" ("+position.toString()+") ":"")
       +" in "
       +(_container.getSourceURI()!=null?
          _container.getSourceURI().toString():"(unknown source)");
