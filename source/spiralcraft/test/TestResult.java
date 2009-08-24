@@ -102,15 +102,16 @@ public class TestResult
   public void format(Writer writer,String prefix)
     throws IOException
   {
+    String subPrefix=prefix+"  ";
     writer.write(
       (passed?"PASS":"FAIL!!!")
-      +(name!=null?": "+name:"")+": "+(message!=null?message+": ":"")
-      +(exception!=null?exception:"")
+      +(name!=null?": "+name:"")+": "
+      +(message!=null?"\r\n"+prefix+"- "+message+": ":"")
+      +(exception!=null?"\r\n"+prefix+"- "+exception:"")
       );
     
     if (results!=null)
     {
-      String subPrefix=prefix+"  ";
       for (TestResult result:results)
       { 
         writer.write("\r\n"+subPrefix);
