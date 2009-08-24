@@ -1,6 +1,198 @@
 <scm:Change.list
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
+
+  <scm:Change>
+    <revision>0.3.17
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-08-23
+    </date>
+    
+    <notes>
+      <scm:Note>spiralcraft.lang enhancements to provide functionality for
+        projection and in-line tuple definition
+      </scm:Note>
+      <scm:Note>Exception handling enhancements to report document location
+        in builder and in XML parse tree system. 
+      </scm:Note>
+      <scm:Note>Support for multi-valued attributes in DictionaryBinding
+      </scm:Note>
+      <scm:Note>Minor unit test facility enhancements.
+      </scm:Note>
+    </notes>
+    
+    <detail>
+      
+      <scm:Change>
+        <date>2009-08-23
+        </date>
+        
+        <notes>
+          <scm:Note>Add better support for multi-valued attributes in
+            DictionaryBinding.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/sax/QueryXml.java
+          </URI>
+          <URI>lang/util/DictionaryBinding.java
+          </URI>
+        </resources>
+        
+      
+      </scm:Change>
+            
+      <scm:Change>
+        <date>2009-08-23
+        </date>
+        
+        <notes>
+          <scm:Note>Expand arrays for assertion output
+          </scm:Note>
+          <scm:Note>Tweaked TestResult default toString() formatting
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/test
+        </path>
+        
+        <resources>
+          <URI>Assertion.java
+          </URI>
+          <URI>TestResult.java
+          </URI>
+        </resources>
+        
+      
+      </scm:Change>
+          
+      <scm:Change>
+        <date>2009-08-21
+        </date>
+        
+        <notes>
+          <scm:Note>Keep track of source code parse position for builder
+            exceptions and incorporate into debugging output.
+          </scm:Note>
+          <scm:Note>Trap runtime exceptions when applying properties and
+            wrap with source code location.
+          </scm:Note>          
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>builder/AssemblyLoader.java
+          </URI>
+          <URI>builder/PropertyBinding.java
+          </URI>
+          <URI>builder/PropertySpecifier.java
+          </URI>
+          <URI>sax/Node.java
+          </URI>
+          <URI>sax/ParseTree.java
+          </URI>
+        </resources>
+        
+      
+      </scm:Change>
+      
+      <scm:Change>
+
+        <date>2009-08-21
+        </date>
+        
+        <notes>
+          <scm:Note>Added general exception facility to ExpressionParser
+          </scm:Note>
+          <scm:Note>Isolated assignmentExpression function to maintain
+            recursive descent pattern that mirrors grammar structure.
+          </scm:Note>
+          <scm:Note>Added AggregateProjection operator "#" and subtree to
+            grammar.
+          </scm:Note>
+          <scm:Note>Added TupleProjection and subtree to grammar to support
+             in-line type composition
+          </scm:Note>
+          <scm:Note>Fix problem where an extra '.' is added on Expression
+            reconstruction: 
+            Shortcut the '.'+identifier pattern to a dereference in
+            parseFocusExpression to maintain expression reconstruction
+            capability. Also, ParentFocusNode no longer returns ".." because
+            one of them is taken care of by the CurrentFocusNode.
+          </scm:Note>
+          <scm:Note>Added @log and @tune meta-operations to support debugging
+            and optimization tasks.
+          </scm:Note>
+          <scm:Note>Fix problem where String literals did not reconstruct
+            quotes. LiteralNode now detects Strings.
+          </scm:Note>
+          <scm:Note>Degrade to reflective array access when dealing with
+            primitive array objects in ArrayIndexChannel.
+          </scm:Note>
+          <scm:Note>Added signature hiding computation to Signature
+          </scm:Note>
+          <scm:Note>Added @top, @log and @tune ops to abstract Reflector
+          </scm:Note>
+
+          <scm:Note>Added "?=" containership and "#" projection operators to
+            AggregateReflector for spiralcraft.data
+          </scm:Note>          
+          <scm:Note>Fix ArrayUtil iterator: Now throws NoSuchElementException
+            instead of ArrayIndexOutOfBoundsException
+          </scm:Note>          
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/parser/ExpressionParser.java
+          </URI>
+          <URI>lang/parser/Tuple.java
+          </URI>
+          <URI>lang/parser/TupleField.java
+          </URI>
+          <URI>lang/parser/TupleNode.java
+          </URI>
+          <URI>lang/parser/Tuple.java
+          </URI>
+          <URI>lang/parser/TupleProjectNode.java
+          </URI>
+          <URI>lang/parser/AggregateProjectNode.java
+          </URI>
+          <URI>lang/parser/LiteralNode.java
+          </URI>
+          <URI>lang/reflect/ArrayReflector.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>lang/spi/LogChannel.java
+          </URI>
+          <URI>lang/spi/TuneChannel.java
+          </URI>
+          <URI>lang/spi/IterationProjector.java
+          </URI>
+          <URI>data/lang/AggregateReflector.java
+          </URI>
+          <URI>util/ArrayUtil.java
+          </URI>
+        </resources>
+      </scm:Change>
+    </detail>
+    
+    
+  </scm:Change>
+      
   <scm:Change>
     <revision>0.3.16
     </revision>
