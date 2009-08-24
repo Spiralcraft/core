@@ -22,6 +22,7 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.Level;
 import spiralcraft.task.AbstractTask;
 import spiralcraft.task.Task;
+import spiralcraft.util.ArrayUtil;
 
 
 /**
@@ -69,7 +70,8 @@ public class Assertion
         
           Boolean condition=testChannel.get();
           String message
-            ="Result of ["+subjectX.getText()+"] is ["+compareChannel.get()+"] "
+            ="Result of ["+subjectX.getText()+"] is ["
+              +Assertion.this.toString(compareChannel.get())+"] "
               +", testing ["+testX.getText()+"]";
           
           TestResult result
@@ -97,6 +99,16 @@ public class Assertion
 
       }
     };    
+  }
+  
+  public String toString(Object o)
+  {
+    if (o!=null && o.getClass().isArray())
+    { return o.toString()+":["+ArrayUtil.format(o, ",", "'")+"]";
+    }
+    else
+    { return o==null?null:o.toString();
+    }
   }
 
   @Override
