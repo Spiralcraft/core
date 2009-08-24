@@ -17,6 +17,7 @@ package spiralcraft.util;
 import java.lang.reflect.Array;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.TreeSet;
 import java.util.Collection;
 import java.util.Iterator;
@@ -447,15 +448,7 @@ public class ArrayUtil
    *   referenced arrays.
    */
   public static final int arrayHashCode(final Object[] a)
-  {
-    return Arrays.deepHashCode(a);
-    
-//    int multiplier=31+(a.length*2);
-//    int hashCode=7*multiplier+(a.length*2);
-//    for (int i=0;i<a.length;i++)
-//      hashCode=multiplier*hashCode + (a[i]==null ? 0: a[i].hashCode());
-//    
-//    return hashCode;
+  { return Arrays.deepHashCode(a);
   }
   
   public static final <X> Iterator<X> iterator(final X[] array)
@@ -463,14 +456,18 @@ public class ArrayUtil
     return new Iterator<X>()
     {
       private int index=0;
-      private int length=array.length;
+      private final int length=array.length;
 
       public boolean hasNext()
       { return index<length;
       }
       
       public X next()
-      { return array[index++];
+      { 
+        if (index>=length)
+        { throw new NoSuchElementException();
+        }
+        return array[index++];
       }
       
       public void remove()
