@@ -30,12 +30,12 @@ import spiralcraft.lang.Signature;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.util.ArrayUtil;
 
 public class TupleNode
   extends Node
 {
 
+  
   private final LinkedHashMap<String,TupleField> fields
     =new LinkedHashMap<String,TupleField>();
   
@@ -343,8 +343,7 @@ public class TupleNode
       finally
       { thisChannel.pop();
       }
-      
-      log.fine("Created tuple with data "+ArrayUtil.format(data,",","|"));
+      // log.fine("Created tuple with data "+ArrayUtil.format(data,",","|"));
       return tuple;
     }
     
@@ -527,7 +526,7 @@ public class TupleNode
     {
       private final Channel<Tuple> source;
       private final Channel<Object> target;
-      private final TupleField field;
+      // private final TupleField field;
       private final int index;
       
       public FieldChannel
@@ -537,7 +536,7 @@ public class TupleNode
         )
       { 
         super(target.getReflector());
-        this.field=field;
+        // this.field=field;
         this.source=source;
         this.target=target;
         this.index=field.index;
@@ -553,13 +552,13 @@ public class TupleNode
         Object val)
         throws AccessException
       { 
-        log.fine("Store "+val+" to tuple field "+field.name);
+        // log.fine("Store "+val+" to tuple field "+field.name);
         if (target.isWritable())
         { 
           source.get().data[index]=val;
           return true;
         }
-        log.fine(field.name+" is not writable");
+        // log.fine(field.name+" is not writable");
         return false;
       }
             
@@ -576,7 +575,7 @@ public class TupleNode
     {
       private final Channel<Tuple> source;
       private final Channel<Object> target;
-      private final TupleField field;
+      // private final TupleField field;
       
       public PassThroughChannel
         (final TupleField field
@@ -585,7 +584,7 @@ public class TupleNode
         )
       { 
         super(target.getReflector());
-        this.field=field;
+        // this.field=field;
         this.source=source;
         this.target=target;
       }
@@ -607,7 +606,7 @@ public class TupleNode
         Object val)
           throws AccessException
       { 
-        log.fine("Store "+val+" to tuple field "+field.name);              
+        // log.fine("Store "+val+" to tuple field "+field.name);              
         thisChannel.push(source.get());
         try
         { 
