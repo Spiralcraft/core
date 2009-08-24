@@ -26,6 +26,8 @@ import spiralcraft.lang.TeleFocus;
 
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AspectChannel;
+import spiralcraft.lang.spi.IterableContainsChannel;
+import spiralcraft.lang.spi.IterationProjector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
@@ -35,7 +37,9 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Aggregate;
+import spiralcraft.data.spi.ListAggregate;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -147,7 +151,18 @@ public class AggregateReflector<T extends Aggregate<I>,I>
     }
     else if (name.equals("[]"))
     { return (Channel<X>) subscript(source,focus,params[0]);
+    }    
+    else if (name.equals("?="))
+    { 
+      return new IterableContainsChannel
+        (source,focus.bind((Expression<I>) params[0]));
     }
+    else if (name.equals("#"))
+    { 
+      return 
+        new IterationProjector
+          (source,focus,params[0]).result;
+    }    
     else
     {
     
@@ -166,6 +181,15 @@ public class AggregateReflector<T extends Aggregate<I>,I>
     
       return null;
     }
+  }
+  
+  @SuppressWarnings("unchecked")
+  public Aggregate<T> fromArray(Object[] array)
+  { 
+    if (array==null)
+    { return null;
+    }
+    return new ListAggregate(this.getType(),Arrays.asList(array));
   }
 
   
