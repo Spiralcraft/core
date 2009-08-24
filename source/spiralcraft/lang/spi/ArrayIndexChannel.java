@@ -14,6 +14,8 @@
 //
 package spiralcraft.lang.spi;
 
+import java.lang.reflect.Array;
+
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
@@ -24,6 +26,7 @@ public class ArrayIndexChannel<T>
   
   private final Channel<T[]> arrayChannel;
   private final Channel<Number> subscriptChannel;
+  private final boolean primitive;
   
   public ArrayIndexChannel
     (Reflector<T> componentReflector
@@ -34,21 +37,39 @@ public class ArrayIndexChannel<T>
     super(componentReflector);
     this.arrayChannel=arrayChannel;
     this.subscriptChannel=subscriptChannel;
-    
+    this.primitive
+      =arrayChannel.getReflector().getContentType().getComponentType()
+        .isPrimitive();
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   protected T retrieve()
   {
-    T[] array=arrayChannel.get();
-    if (array==null)
-    { return null;
+    if (!primitive)
+    {
+      T[] array=arrayChannel.get();
+      if (array==null)
+      { return null;
+      }
+      Number subscript=subscriptChannel.get();
+      if (subscript==null)
+      { return null;
+      }
+      return array[subscript.intValue()];
     }
-    Number subscript=subscriptChannel.get();
-    if (subscript==null)
-    { return null;
+    else
+    { 
+      Object array=arrayChannel.get();
+      if (array==null)
+      { return null;
+      }
+      Number subscript=subscriptChannel.get();
+      if (subscript==null)
+      { return null;
+      }
+      return (T) Array.get(array,subscript.intValue());
     }
-    return array[subscript.intValue()];
   }
 
   @Override

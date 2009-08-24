@@ -50,7 +50,17 @@ public class ArrayConstructorChannel<C,T>
     T[] array=(T[]) Array.newInstance
       (componentReflector.getContentType(), list.size());
     
-    return list.toArray(array);
+    try
+    { return list.toArray(array);
+    }
+    catch (ArrayStoreException x)
+    { 
+      throw new IllegalArgumentException
+        ("Array "+array
+        +" could not store values returned from "+componentReflector
+        ,x
+        );
+    }
 
   }
 

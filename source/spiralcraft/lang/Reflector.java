@@ -17,11 +17,14 @@ package spiralcraft.lang;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.LogChannel;
 import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.spi.TuneChannel;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringConverter;
 
 import java.net.URI;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -138,6 +141,28 @@ public abstract class Reflector<T>
     else if (name.equals("@nil"))
     { channel=((Channel<Reflector<?>>) source).get().getNilChannel();
     }
+    else if (name.equals("@top") && params==null)
+    { 
+      channel=source.getCached("@top");
+      if (channel==null)
+      { 
+        if (source.<IterationDecorator>decorate(IterationDecorator.class)!=null)
+        { 
+          channel=new TopChannel(source);
+          source.cache("@top",channel);
+        }
+      }
+    }
+    else if (name.equals("@log") && params.length==1)
+    { 
+      channel=new LogChannel
+        (source,focus,params[0]);
+    }
+    else if (name.equals("@tune") && params.length==1)
+    { 
+      channel=new TuneChannel
+        (source,focus,params[0]);
+    }
     return (Channel<X>) channel;
   }
   
@@ -184,6 +209,7 @@ public abstract class Reflector<T>
   }
   
   
+  
   /**
    * Override this method to return a custom cast
    * 
@@ -202,6 +228,7 @@ public abstract class Reflector<T>
    * @return The set of member Signatures published by this reflector. If
    *   null, the set of Signatures is not obtainable.
    */
+  @SuppressWarnings("unchecked")
   public LinkedList<Signature> getSignatures(Channel<?> source)
     throws BindException
   { 
@@ -219,6 +246,16 @@ public abstract class Reflector<T>
     ret.addFirst
       (new Signature("@nil",this));
     
+    IterationDecorator iter
+      =source.<IterationDecorator>decorate(IterationDecorator.class);
+    if (iter!=null)
+    { ret.addFirst(new Signature("@top",iter.getComponentReflector()));
+    }
+    
+    ret.addFirst
+      (new Signature("@log",BeanReflector.getInstance(Object.class)));
+    ret.addFirst
+      (new Signature("@tune",BeanReflector.getInstance(Object.class)));
     return ret;
   }
   
@@ -442,6 +479,41 @@ public abstract class Reflector<T>
     }
   }
   
+}
+
+class TopChannel<T,I>
+  extends AbstractChannel<I>
+{
+  private final IterationDecorator<T,I> decorator;
+  
+  @SuppressWarnings("unchecked")
+  public TopChannel(Channel<T> source)
+    throws BindException
+  { 
+    super
+      (source.<IterationDecorator>decorate(IterationDecorator.class)
+      .getComponentReflector()
+      );
+    decorator=source.<IterationDecorator>decorate(IterationDecorator.class);
+    
+  }
+  
+  @Override
+  public I retrieve()
+  { 
+    Iterator<I> it=decorator.iterator();
+    if (it.hasNext())
+    { return it.next();
+    }
+    else
+    { return null;
+    }
+  }
+  
+  @Override
+  public boolean store(I val)
+  { return false;
+  }
 }
 
 class CastChannel<S,T extends S>

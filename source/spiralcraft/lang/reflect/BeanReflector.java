@@ -33,6 +33,7 @@ import spiralcraft.lang.spi.ArraySelectChannel;
 import spiralcraft.lang.spi.CollectionSelectChannel;
 import spiralcraft.lang.spi.EnumerationIterationDecorator;
 import spiralcraft.lang.spi.IterableDecorator;
+import spiralcraft.lang.spi.IterationProjector;
 import spiralcraft.lang.spi.MapIndexTranslator;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
@@ -399,6 +400,9 @@ public class BeanReflector<T>
     }
     else if (name.equals("?="))
     { binding=(Channel<X>) this.contains(source,focus,params[0]);
+    }
+    else if (name.equals("#"))
+    { binding=(Channel<X>) this.project(source,focus,params[0]);
     }
     else if (params==null)
     { 
@@ -954,6 +958,20 @@ public class BeanReflector<T>
       }
     }
   }
+
+  public Channel<?> project
+    (Channel<T> source
+    ,Focus<?> focus
+    ,Expression<?> projection
+    )
+    throws BindException
+  {
+    return 
+      new IterationProjector
+          (source,focus,projection).result;
+    
+  }
+  
   
   @Override
   public String toString()

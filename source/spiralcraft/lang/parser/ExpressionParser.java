@@ -100,12 +100,30 @@ public class ExpressionParser
     _progressBuffer=new StringBuffer();
     _pos=0;
   }
-
+  
+   
   private void throwUnexpected()
+    throws ParseException
+  { throwUnexpected(null);
+  }
+
+  private void throwUnexpected(String msg)
     throws ParseException
   { 
     throw new ParseException
-      ("Not expecting '"+tokenString()+"' @line "+_tokenizer.lineno()
+      ("Not expecting '"+tokenString()+"'"
+      +(msg!=null?": "+msg+":":"")
+      +" @line "+_tokenizer.lineno()
+      ,_pos
+      ,_progressBuffer.toString()
+      );
+  }
+  
+  private void throwException(String message)
+    throws ParseException
+  {
+    throw new ParseException
+      (message+": In '"+tokenString()+"' @line "+_tokenizer.lineno()
       ,_pos
       ,_progressBuffer.toString()
       );
@@ -137,6 +155,12 @@ public class ExpressionParser
   {
     if (_tokenizer.ttype==StreamTokenizer.TT_WORD)
     { return _tokenizer.sval;
+    }
+    else if (_tokenizer.ttype==StreamTokenizer.TT_EOF)
+    { return "EOF";
+    }
+    else if (Character.isISOControl(_tokenizer.ttype))
+    { return Integer.toHexString(_tokenizer.ttype);
     }
     else
     { return Character.toString((char) _tokenizer.ttype);
@@ -206,11 +230,21 @@ public class ExpressionParser
     return _tokenizer.ttype!=StreamTokenizer.TT_EOF;
   }
 
-  
   /**
-   * Expression -> ConditionalExpression
+   * Expression -> AssignmentExpression
+   * 
+   * @return
+   * @throws ParseException
    */
   private Node parseExpression()
+    throws ParseException
+  { return parseAssignmentExpression();
+  }
+  
+  /**
+   * AssignmentExpression -> ConditionalExpression
+   */
+  private Node parseAssignmentExpression()
     throws ParseException
   { 
     Node node=this.parseConditionalExpression();
@@ -546,6 +580,8 @@ public class ExpressionParser
    * PostfixExpression -> FocusExpression
    *                     ( "[" Expression "]"
    *                     | "." DereferenceExpression
+   *                     | "#" AggregateProjectionExpression
+   *                     } "{" TupleProjectionExpression
    *                     ) *
    */
   private Node parsePostfixExpression()
@@ -572,6 +608,12 @@ public class ExpressionParser
       case '.':
         consumeToken();
         return parseDereferenceExpression(primary);
+      case '#':
+        consumeToken();
+        return parseAggregateProjectionExpression(primary);
+      case '{':
+        consumeToken();
+        return parseTupleProjectionExpression(primary);
       default:
         return primary;
     }
@@ -609,14 +651,26 @@ public class ExpressionParser
         return null;
       case '.':
         consumeToken();
-        if (focusNode==null)
-        { focusNode=new CurrentFocusNode(".");
+
+        if (_tokenizer.ttype!=StreamTokenizer.TT_WORD)
+        {
+          if (focusNode==null)
+          { focusNode=new CurrentFocusNode(".");
+          }          
+          Node ret=parseFocusRelativeExpression(focusNode);
+          if (debug)
+          { alert("parseFocusExpression():'..'");
+          }
+          return ret;
         }
-        Node ret=parseFocusRelativeExpression(focusNode);
-        if (debug)
-        { alert("parseFocusExpression():'.'");
+        else
+        {
+          if (focusNode==null)
+          { focusNode=new CurrentFocusNode();
+          }
+          Node ret=parseDereferenceExpression(focusNode);
+          return ret;
         }
-        return ret;
       case StreamTokenizer.TT_WORD:
         // Either a literal, or 
         if (debug)
@@ -661,6 +715,10 @@ public class ExpressionParser
         // an array subscript against the subject of the focus
       case '!': 
         // a meta-reference against the subject of the focus
+      case '#': 
+        // an aggregate projection against the subject of the focus
+      case '{': 
+        // an tuple projection against the subject of the focus
         return parsePostfixExpressionRest(focusNode);
       case '.':
         // The parent focus
@@ -772,6 +830,176 @@ public class ExpressionParser
     return node;
   }
 
+  /**
+   * AggregateProjectionExpression ->   "[" Expression "]"
+   *                        | { TupleDefinition }
+   *                        | ${ SummaryTupleDefinition }
+   */
+  private Node parseAggregateProjectionExpression(Node subject)
+    throws ParseException
+  {
+    
+    Node aggregate=null;
+    switch (_tokenizer.ttype)
+    {
+      
+      case '[':
+        // a single element projection
+        consumeToken();
+        try
+        { aggregate=subject.projectAggregate(parseExpression());
+        }
+        finally
+        { expect(']');
+        }
+        return parsePostfixExpressionRest(aggregate);
+      case '{':
+        // shortcut for a tuple projection
+        consumeToken();
+        try
+        { aggregate=subject.projectAggregate(parseTuple());
+        }
+        finally
+        { expect('}');
+        }
+        return parsePostfixExpressionRest(aggregate);
+        
+        
+      default:
+        // implicit 'this', refers to subject of focus
+        throwException("Expected #[expression] or #{tupleDefinition} here");
+        return null;
+    }    
+  }
+  
+  /**
+   * TupleProjectionExpression ->  { TupleDefinition }
+   */
+  private Node parseTupleProjectionExpression(Node subject)
+    throws ParseException
+  {
+    
+    Node aggregate=subject.projectTuple(parseTuple());
+    expect('}');
+    return parsePostfixExpressionRest(aggregate);
+  }
+  
+  /**
+   * Tuple -> (":" ( TypeSpecifier | [ "=" Expression ":" ] ) )
+   * 
+   *             ( TupleField ( "," TupleField ...)* )
+   */
+  private TupleNode parseTuple()
+    throws ParseException
+  {
+    TupleNode tuple=new TupleNode();
+    if (_tokenizer.ttype==':')
+    {
+      consumeToken();
+      switch (_tokenizer.ttype)
+      {
+        case '[':
+          // 'implements' declaration- can only implement data-only types.
+          
+          consumeToken();
+          Node typeNode=parseFocusSpecifier();
+          if (!(typeNode instanceof TypeFocusNode))
+          { 
+            throwException
+              ("Expected a type literal here (eg. '[@mylib:mytype]' )");
+          }
+          expect(']');
+          tuple.setType((TypeFocusNode) typeNode);
+          break;
+          
+        case '=':
+          // Delegates an existing object
+          
+          consumeToken();
+          Node extentNode=parseExpression();
+          expect(':');
+          tuple.setBaseExtentNode(extentNode);
+          break; 
+          
+        default:
+          throwUnexpected
+            ("Expected '[@typeURI]' or '=expression'");
+          
+      }      
+      
+    }
+    
+    if (_tokenizer.ttype!='}')
+    {
+      parseTupleField(tuple);
+      while (_tokenizer.ttype==',')
+      { 
+        consumeToken();
+        parseTupleField(tuple);
+      }
+    }
+    return tuple;
+  }
+  
+  /**
+   * FieldDefinition -> 
+   *   ( FieldName ":") ( TypeSpecifier | "=" Expression | "~" Expression ] )*1 
+   * 
+   * @param tuple
+   * @return
+   * @throws ParseException
+   */
+  private void parseTupleField(TupleNode tuple)
+    throws ParseException
+  {
+    
+    
+    TupleField field=new TupleField();
+    
+    if (_tokenizer.ttype==StreamTokenizer.TT_WORD)
+    {
+      // Named definition
+      field.name=_tokenizer.sval;
+      consumeToken();
+      expect(':');
+    }
+        
+    
+    switch (_tokenizer.ttype)
+    {
+      case '[':
+        consumeToken();
+        Node typeNode=parseFocusSpecifier();
+        if (!(typeNode instanceof TypeFocusNode))
+        { 
+          throwException
+            ("Expected a type literal here (eg. '[@mylib:mytype]' )");
+        }
+        expect(']');
+        field.type=(TypeFocusNode) typeNode;
+        break;
+        
+      case '=':
+        consumeToken();
+        field.source=parseExpression();
+        break;
+        
+      case '~':
+      
+        consumeToken();
+        field.source=parseExpression();
+        field.passThrough=true;
+        break;
+        
+      default:
+        throwUnexpected
+          ("Expected '[@typeURI]', '=expression' or '~expression'");
+    }
+    
+    tuple.addField(field);
+  }
+  
+  
   /**
    * DereferenceExpression -> Name ( "(" expressionList ")" )
    */

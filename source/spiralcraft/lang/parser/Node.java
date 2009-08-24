@@ -176,8 +176,19 @@ public abstract class Node
   public Node contains(Node source)
   { return new ContainsNode(this,source);
   }
+
+  @SuppressWarnings("unchecked")
+  protected Node projectAggregate(Node projection)
+  { return new AggregateProjectNode(this,projection);
+  }
+  
+  @SuppressWarnings("unchecked")
+  protected Node projectTuple(Node projection)
+  { return new TupleProjectNode(this,projection);
+  }
   
   protected void unsupported(String msg)
   { throw new UnsupportedOperationException(getClass().getName()+"."+msg+"(...)");
   }
+  
 }

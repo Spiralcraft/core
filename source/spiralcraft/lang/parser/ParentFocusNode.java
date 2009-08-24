@@ -43,7 +43,7 @@ public class ParentFocusNode
   
   @Override
   public String reconstruct()
-  { return "..";
+  { return ".";
   }
   
   @Override

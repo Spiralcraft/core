@@ -51,6 +51,30 @@ public class Signature
   { return type;
   }
   
+  public boolean hides(Signature base)
+  {
+    if (!name.equals(base.getName()))
+    { return false;
+    }
+    Reflector<?>[] baseParams=base.getParameters();
+    if (parameters==null)
+    { return baseParams==null;
+    }
+    else if (baseParams==null || baseParams.length!=parameters.length)
+    { return false;
+    }
+    else
+    {
+      for (int i=0;i<parameters.length;i++)
+      { 
+        if (!baseParams[i].isAssignableFrom(parameters[i]))
+        { return false;
+        }
+      }
+    }
+    return true;
+  }
+  
   @Override
   public String toString()
   {

@@ -53,7 +53,18 @@ public class LiteralNode<X>
   public String reconstruct()
   { 
     X val=_optic.get();
-    return val!=null?val.toString():"null";
+    if (val!=null)
+    { 
+      if (val instanceof String)
+      { return "\""+val.toString()+"\"";
+      }
+      else
+      { return val.toString();
+      }
+    }
+    else
+    { return "null";
+    }
   }
   
   @Override
@@ -62,7 +73,9 @@ public class LiteralNode<X>
     out.append(prefix)
       .append("Literal: ").append(_optic.getContentType().getName())
       .append(":[")
+      .append(_optic.getContentType()==String.class?"\"":"")
       .append(_optic.get().toString())
+      .append(_optic.getContentType()==String.class?"\"":"")
       .append("]")
       ;
   }

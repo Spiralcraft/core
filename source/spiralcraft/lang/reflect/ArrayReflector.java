@@ -25,14 +25,17 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.TypeModel;
 import spiralcraft.lang.spi.ArrayContainsChannel;
+import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;
 import spiralcraft.lang.spi.ArrayIterationDecorator;
 import spiralcraft.lang.spi.ArraySelectChannel;
+import spiralcraft.lang.spi.IterationProjector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
 
 
+import java.util.Arrays;
 import java.util.WeakHashMap;
 
 import java.lang.ref.WeakReference;
@@ -63,6 +66,15 @@ public class ArrayReflector<I>
 
   private static final ArrayLengthTranslator arrayLengthTranslator
     =new ArrayLengthTranslator();
+
+  private static final Translator objectArrayEqualityTranslator
+    =new ArrayEqualityTranslator<Object[]>()
+  {
+    @Override
+    public boolean compare(Object[] source,Object[] target)
+    { return Arrays.deepEquals(source,target);
+    }
+  };
   
   /**
    * Find an ArrayReflector for the specified Component reflector
@@ -159,8 +171,22 @@ public class ArrayReflector<I>
       return (Channel<X>) new ArrayContainsChannel<I>
         (source,focus.bind((Expression<I>) params[0]));
     }    
+    else if (name.equals("#"))
+    { 
+      binding
+        =new IterationProjector
+          (source,focus,params[0]).result;
+    }
     else if (params==null)
     { binding=this.<X>getArrayProperty(source,name);
+    }
+    else
+    { 
+      Channel[] channels=new Channel[params.length];
+      for (int i=0;i<channels.length;i++)
+      { channels[i]=focus.bind(params[i]);
+      }      
+      binding=this.<X>getArrayMethod(source,name,channels);
     }
     return binding;
   }
@@ -179,7 +205,31 @@ public class ArrayReflector<I>
     return null;
   }
   
-
+  private synchronized <X> Channel<X> getArrayMethod
+    (Channel<I[]> source,String name,Channel ... params)
+    throws BindException
+  {
+    Translator<X,I[]> translator=null;
+    if (name.equals("equals"))
+    { translator=objectArrayEqualityTranslator;
+    }
+    
+    if (translator!=null)
+    { 
+      Channel<X> binding=source.<X>getCached(translator);
+      if (binding==null)
+      { 
+        binding=new TranslatorChannel<X,I[]>
+          (source
+          ,translator
+          ,params
+          );
+        source.cache(translator,binding);
+      }
+      return binding;
+    }
+    return null;
+  }
   private synchronized <X> Channel<X> getArrayProperty(Channel<I[]> source,String name)
   {
     Translator<X,I[]> translator=null;
