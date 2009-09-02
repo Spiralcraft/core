@@ -39,8 +39,13 @@ import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.data.access.SerialCursor;
 
 /**
- * A Query operation which constrains the result of another Query by
- *   testing an function of the result for inclusion in a set.
+ * <p>A Query operation which constrains the result of a source Query by
+ *   testing a function of the result for inclusion in a set that is
+ *   constant over the source result.
+ * </p>
+ * 
+ * <p>The set is hash-indexed for a constant-time filter comparison
+ * </p>
  */
 public class SetFilter<T>
   extends Query
