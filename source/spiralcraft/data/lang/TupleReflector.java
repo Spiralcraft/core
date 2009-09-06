@@ -233,53 +233,61 @@ public class TupleReflector<T extends Tuple>
     }
     
     
-    Field field=null;
     
     Type type=getType();
-    if (type!=null)
-    { field=type.getField(name);
-    }
-    else
-    { field=untypedFieldSet.getFieldByName(name);
-    }
+    Field field=null;
     
-    if (field!=null)
+    
+
+    if (params==null)
     {
-      Focus tupleFocus;
-      
-      // Make sure the Focus for evaluating expressions in the Scheme is 
-      //   consistent with the source
-      if (focus.getContext()!=source
-          || focus.getSubject()!=source
-          )
-      { tupleFocus=new SimpleFocus(focus,source);
+      if (type!=null)
+      { field=type.getField(name);
       }
       else
-      { tupleFocus=focus;
+      { field=untypedFieldSet.getFieldByName(name);
       }
+    
+      if (field!=null)
+      {
+        Focus tupleFocus;
+      
+        // Make sure the Focus for evaluating expressions in the Scheme is 
+        //   consistent with the source
+        if (focus.getContext()!=source
+            || focus.getSubject()!=source
+            )
+        { tupleFocus=new SimpleFocus(focus,source);
+        }
+        else
+        { tupleFocus=focus;
+        }
               
-      Channel binding=field.bindChannel(tupleFocus);
+        Channel binding=field.bindChannel(tupleFocus);
       
       
-      if (binding!=null)
-      { return binding;      
+        if (binding!=null)
+        { return binding;      
+        }
       }
     }
-    
-    if (type!=null)
-    { 
-      Type archetype=type;
-      Channel binding=null;
-      while (archetype!=null && binding==null)
-      {
-        if (debug)
-        { log.fine("Checking methods for name '"+name+"' in "+archetype);
+    else
+    {
+      if (type!=null)
+      { 
+        Type archetype=type;
+        Channel binding=null;
+        while (archetype!=null && binding==null)
+        {
+          if (debug)
+          { log.fine("Checking methods for name '"+name+"' in "+archetype);
+          }
+          binding=bindMethods(archetype,source,focus,name,params);
+          archetype=archetype.getArchetype();
         }
-        binding=bindMethods(archetype,source,focus,name,params);
-        archetype=archetype.getArchetype();
-      }
-      if (binding!=null)
-      { return binding;
+        if (binding!=null)
+        { return binding;
+        }
       }
     }
         
