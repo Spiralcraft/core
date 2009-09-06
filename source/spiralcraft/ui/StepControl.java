@@ -32,13 +32,13 @@ public abstract class StepControl
   private int _currentStep;
   private boolean _skip;
 
-  private final CommandFactory<StepControl,Void> _nextStepCommand
-    =new CommandFactory<StepControl,Void>()
+  public final CommandFactory<Void,Void> nextStep
+    =new CommandFactory<Void,Void>()
     {
       @Override
-      public Command<StepControl,Void> command()
+      public Command<Void,Void> command()
       { 
-        return new CommandAdapter<StepControl,Void>()
+        return new CommandAdapter<Void,Void>()
         {
           @Override
           public void run()
@@ -53,13 +53,13 @@ public abstract class StepControl
       }
     };
 
-  private final CommandFactory<StepControl,Void> _previousStepCommand
-    =new CommandFactory<StepControl,Void>()
+  public final CommandFactory<Void,Void> previousStep
+    =new CommandFactory<Void,Void>()
     {
       @Override
-      public Command<StepControl,Void> command()
+      public Command<Void,Void> command()
       { 
-        return new CommandAdapter<StepControl,Void>()
+        return new CommandAdapter<Void,Void>()
         {
           @Override
           public void run()
@@ -113,14 +113,6 @@ public abstract class StepControl
 
   public void setSteps(Step[] val)
   { _steps=val;
-  }
-
-  public CommandFactory<StepControl,Void> getNextStepCommand()
-  { return _nextStepCommand;
-  }
-
-  public CommandFactory<StepControl,Void> getPreviousStepCommand()
-  { return _previousStepCommand;
   }
   
   public final void nextStep()

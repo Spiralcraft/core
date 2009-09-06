@@ -49,17 +49,17 @@ public class Daemon
   
   private ShutdownHook _shutdownHook=new ShutdownHook();
   
-  private CommandFactory<Daemon,Void> _terminateCommandFactory
-    =new CommandFactory<Daemon,Void>()
+  public final CommandFactory<Void,Void> terminate
+    =new CommandFactory<Void,Void>()
   {    
     public boolean isCommandEnabled()
     { return _running;
     }
     
-    public Command<Daemon,Void> command()
+    public Command<Void,Void> command()
     {
     
-      return new CommandAdapter<Daemon,Void>()
+      return new CommandAdapter<Void,Void>()
       {
         @Override
         public void run()
@@ -94,10 +94,6 @@ public class Daemon
     { x.printStackTrace(ExecutionContext.getInstance().out());
     }
     
-  }
-
-  public CommandFactory<Daemon,Void> getTerminateCommand()
-  { return _terminateCommandFactory;
   }
 
   public void terminate()
