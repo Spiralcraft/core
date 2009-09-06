@@ -15,8 +15,9 @@
 package spiralcraft.task;
 
 import spiralcraft.command.Command;
-import spiralcraft.command.BoundCommandFactory;
+
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 
@@ -36,7 +37,8 @@ public class Exec<T,R>
   extends Chain
 {
   
-  private BoundCommandFactory<T,R> commandFactory;
+  private Channel<Command<T,R>> commandChannel;
+  private Expression<Command<T,R>> commandX;
   
   @Override
   public CommandTask task()
@@ -44,17 +46,17 @@ public class Exec<T,R>
   }
   
   /**
-   * Provide an expression to resolve the Command
+   * Provide an expression to resolve the Command object
    */
   public void setCommandX(Expression<Command<T,R>> commandX)
-  { this.commandFactory=new BoundCommandFactory<T,R>(commandX);
+  { this.commandX=commandX;
   }
   
   @Override
   protected void bindChildren(Focus<?> focusChain)
     throws BindException
   { 
-    focusChain=commandFactory.bind(focusChain);
+    commandChannel=focusChain.bind(commandX);
     super.bindChildren(focusChain);
   }
   
@@ -88,7 +90,7 @@ public class Exec<T,R>
     { 
       try
       {
-        command=commandFactory.command();
+        command=commandChannel.get();
         command.execute();
         addResult(command);
         if (command.getException()!=null)
