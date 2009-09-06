@@ -284,5 +284,17 @@ public abstract class ClassUtil
       return null;
     }
   }   
+  
+  public static Class<?> getTypeArgumentAsClass(Type type)
+  {
+    if (type instanceof ParameterizedType)
+    {
+      Type[] args=((ParameterizedType) type).getActualTypeArguments();
+      if (args.length>=1)
+      { return getClass(args[0]);
+      }
+    }
+    return null;
+  }
 
 }
