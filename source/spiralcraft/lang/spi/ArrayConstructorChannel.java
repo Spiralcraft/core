@@ -1,3 +1,6 @@
+/**
+ * Construct an Array from a source that is Iterable
+ */
 package spiralcraft.lang.spi;
 
 import java.lang.reflect.Array;
@@ -30,6 +33,22 @@ public class ArrayConstructorChannel<C,T>
     this.source=source;
     this.decorator
       =source.<IterationDecorator>decorate(IterationDecorator.class);
+    if (decorator==null)
+    { throw new IllegalArgumentException("Iteration not supported for "+source);
+    }
+    
+    if (decorator.getComponentReflector()!=null)
+    {
+      if (!componentReflector.isAssignableFrom
+          (decorator.getComponentReflector())
+         )
+      { 
+        throw new BindException
+          ("Incompatible types: "+decorator.getComponentReflector().getTypeURI()
+            +" cannot be stored in an array of type "+componentReflector.getTypeURI()
+          );
+      }
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -57,7 +76,7 @@ public class ArrayConstructorChannel<C,T>
     { 
       throw new IllegalArgumentException
         ("Array "+array
-        +" could not store values returned from "+componentReflector
+        +" could not store values "+list+" returned from "+componentReflector
         ,x
         );
     }
