@@ -15,6 +15,7 @@
 package spiralcraft.data.lang;
 
 
+import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
@@ -37,7 +38,9 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Aggregate;
+import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.spi.ListAggregate;
+import spiralcraft.data.EditableAggregate;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -199,10 +202,12 @@ public class AggregateReflector<T extends Aggregate<I>,I>
     decorate(Channel<T> binding,Class<D> decoratorInterface)
     throws BindException
   { 
-    if (decoratorInterface.equals(IterationDecorator.class))
+    if (decoratorInterface.equals(IterationDecorator.class)
+       || decoratorInterface.equals(CollectionDecorator.class) 
+       )
     { 
       Reflector reflector=DataReflector.getInstance(type.getContentType());
-      return (D) new AggregateIterationDecorator<T,I>(binding,reflector);
+      return (D) new AggregateCollectionDecorator<T,I>(binding,reflector);
     }
     return null;
   }
@@ -280,11 +285,11 @@ public class AggregateReflector<T extends Aggregate<I>,I>
 
 }
 
-class AggregateIterationDecorator<T extends Aggregate<I>,I>
-  extends IterationDecorator<T,I>
+class AggregateCollectionDecorator<T extends Aggregate<I>,I>
+  extends CollectionDecorator<T,I>
 {
 
-  public AggregateIterationDecorator
+  public AggregateCollectionDecorator
     (Channel<T> source,Reflector<I> reflector)
   { super(source,reflector);
   }
@@ -300,6 +305,23 @@ class AggregateIterationDecorator<T extends Aggregate<I>,I>
     { return null;
     }
   }
+
+  @Override
+  public void add(
+    T collection,
+    I item)
+  { ((EditableAggregate<I>) collection).add(item);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public T newCollection()
+  { 
+    return (T) new EditableArrayListAggregate<I>
+      ( ((AggregateReflector<T,I>) source.getReflector()).getType());
+
+  }
   
 }
+
 

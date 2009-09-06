@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.reflect;
 
+import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationDecorator;
@@ -28,10 +29,11 @@ import spiralcraft.lang.TypeModel;
 import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;
 import spiralcraft.lang.spi.ArrayContainsChannel;
-import spiralcraft.lang.spi.ArrayIterationDecorator;
+import spiralcraft.lang.spi.ArrayCollectionDecorator;
 import spiralcraft.lang.spi.ArraySelectChannel;
 import spiralcraft.lang.spi.CollectionSelectChannel;
 import spiralcraft.lang.spi.EnumerationIterationDecorator;
+import spiralcraft.lang.spi.GenericCollectionDecorator;
 import spiralcraft.lang.spi.IterableDecorator;
 import spiralcraft.lang.spi.IterationProjector;
 import spiralcraft.lang.spi.MapIndexTranslator;
@@ -438,16 +440,36 @@ public class BeanReflector<T>
     (Channel<T> source,Class<D> decoratorInterface)
     throws BindException
   { 
-    if (decoratorInterface==(Class) IterationDecorator.class)
+    if (decoratorInterface==(Class) IterationDecorator.class
+        || decoratorInterface==(Class) CollectionDecorator.class
+        )
     { 
       
       if (targetClass.isArray())
       { 
         Reflector reflector=BeanReflector.getInstance
           (targetClass.getComponentType());
-        return (D) new ArrayIterationDecorator(source,reflector);
+        return (D) new ArrayCollectionDecorator(source,reflector);
       }
-      else if (Enumeration.class.isAssignableFrom(targetClass))
+      else if (Collection.class.isAssignableFrom(targetClass))
+      {
+
+        Class type
+          =ClassUtil.getTypeArgumentAsClass(targetType);
+        if (type!=null)
+        { 
+          Reflector reflector=BeanReflector.getInstance(type);
+          return (D) new GenericCollectionDecorator(source,reflector);
+        }
+        else
+        { return (D) new GenericCollectionDecorator(source,null);
+        }
+
+        
+      }
+      else if (Enumeration.class.isAssignableFrom(targetClass)
+               && decoratorInterface==(Class) IterationDecorator.class
+               )
       {
         if (targetType instanceof ParameterizedType)
         {
@@ -474,43 +496,21 @@ public class BeanReflector<T>
         }
         
       }
-      else if (Iterable.class.isAssignableFrom(targetClass))
+      else if (Iterable.class.isAssignableFrom(targetClass)
+               && decoratorInterface==(Class) IterationDecorator.class
+               )
       { 
         try
         {
           // Make an effort to find a hint of a component type
           Method method=targetClass.getMethod("iterator",new Class[0]);
-          Class type=ClassUtil.getClass(method.getGenericReturnType());
+          Class type
+            =ClassUtil.getTypeArgumentAsClass(method.getGenericReturnType());
+          if (type==null)
+          { type=Object.class;
+          }
           Reflector reflector=BeanReflector.getInstance(type);
           return (D) new IterableDecorator(source,reflector);
-          
-//  Factored out generics reconciliation logic into ClassUtil
-//          
-//          Type type=method.getGenericReturnType();
-//          if (type instanceof ParameterizedType)
-//          {
-//            Type[] parameterTypes
-//              =((ParameterizedType) type).getActualTypeArguments();
-//            if (parameterTypes.length>0)
-//            { 
-//              Type parameterType=parameterTypes[0];
-//              Reflector reflector=BeanReflector.getInstance(parameterType);
-//              return (D) new IterableDecorator(source,reflector);
-//            }
-//            else
-//            {
-//              // log.fine("IterationDecorator- no parameters for iterator");
-//              Reflector reflector=BeanReflector.getInstance(Object.class);
-//              return (D) new IterableDecorator(source,reflector);
-//            }
-//          }
-//          else
-//          {
-//            // log.fine("IterationDecorator- iterator not parameterized");
-//            Reflector reflector=BeanReflector.getInstance(Object.class);
-//            return (D) new IterableDecorator(source,reflector);
-//          }
-        
         }
         catch (NoSuchMethodException x)
         { x.printStackTrace();

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -15,6 +15,7 @@
 package spiralcraft.lang.reflect;
 
 import spiralcraft.lang.AccessException;
+import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationDecorator;
@@ -27,7 +28,7 @@ import spiralcraft.lang.TypeModel;
 import spiralcraft.lang.spi.ArrayContainsChannel;
 import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;
-import spiralcraft.lang.spi.ArrayIterationDecorator;
+import spiralcraft.lang.spi.ArrayCollectionDecorator;
 import spiralcraft.lang.spi.ArraySelectChannel;
 import spiralcraft.lang.spi.IterationProjector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
@@ -196,8 +197,10 @@ public class ArrayReflector<I>
     (Channel<I[]> source,Class<D> decoratorInterface)
     throws BindException
   { 
-    if (decoratorInterface==(Class) IterationDecorator.class)
-    { return (D) new ArrayIterationDecorator(source,componentReflector);
+    if (decoratorInterface==(Class) IterationDecorator.class
+        || decoratorInterface==(Class) CollectionDecorator.class
+        )
+    { return (D) new ArrayCollectionDecorator(source,componentReflector);
     }
     
     // Look up the target class in the map of decorators for 
