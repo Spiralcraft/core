@@ -1,0 +1,7 @@
+<task:Debug
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  >
+  <messageX>[example:Customer].score=[example:Customer].score+1
+  </messageX>
+</task:Debug>

@@ -26,6 +26,19 @@
           
         <test:Assertion>
         
+          <name>Number method
+          </name>
+          
+          <subjectX>(1+1).floatValue()
+          </subjectX>
+          
+          <testX>.==2.0.floatValue()
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
           <name>contains
           </name>
           

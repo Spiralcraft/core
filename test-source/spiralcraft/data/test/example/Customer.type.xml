@@ -7,71 +7,72 @@
   <archetype><example:Contact.type/>
   </archetype>
   
-  <scheme>
-    <meta:Scheme>
 
-      <fields>
-        <meta:SequenceField>
+  <fields>
+    <meta:SequenceField>
 
-          <name>id
-          </name>
+      <name>id
+      </name>
 
-          <type><Integer.type/>
-          </type>
+      <type><Integer.type/>
+      </type>
           
-        </meta:SequenceField>
+    </meta:SequenceField>
         
-        <meta:Field>
+    <meta:Field>
         
-          <name>active
-          </name>
+      <name>active
+      </name>
         	
-          <type><Boolean.type/>
-          </type>
+      <type><Boolean.type/>
+      </type>
         	
-        </meta:Field>
+    </meta:Field>
         
-        <meta:Field>
+    <meta:Field>
 
-          <name>paymentTerms
-          </name>
+      <name>paymentTerms
+      </name>
 
-          <type>
-            <String.type>
+      <type>
+        <String.type>
           	
-              <maxLength>32
-              </maxLength>
+          <maxLength>32
+          </maxLength>
               
-            </String.type>
-          </type>
+        </String.type>
+      </type>
 
-        </meta:Field>
+    </meta:Field>
         
-        <meta:Field>
-          
-          <name>score
-          </name>
+    <meta:Field>
         
-          <type>
-            <Float.type/>
-          </type>
-        </meta:Field>
-      </fields>
+      <name>score
+      </name>
+        
+      <type>
+        <Float.type/>
+      </type>
+    </meta:Field>
+  </fields>
       
-      <keys>
-      	<meta:Key>
+  <keys>
+    <meta:Key>
 
-      	  <fieldList>id
-      	  </fieldList>
+      <fieldList>id
+      </fieldList>
       		
-      	  <primary>true
-      	  </primary>
+      <primary>true
+      </primary>
       		
-      	</meta:Key>
-      </keys>
+    </meta:Key>
+  </keys>
       
-    </meta:Scheme>
-  </scheme>
-  
+  <methods>
+    <meta:TaskMethod>
+      <name>score
+      </name>
+    </meta:TaskMethod>
+  </methods>
 
 </meta:Type>

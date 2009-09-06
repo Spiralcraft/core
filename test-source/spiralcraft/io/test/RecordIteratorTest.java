@@ -10,15 +10,13 @@ import spiralcraft.io.record.FileRecordIterator;
 
 import spiralcraft.io.record.InputStreamRecordIterator;
 import spiralcraft.log.Level;
-import spiralcraft.task.AbstractTask;
-
 import spiralcraft.task.Task;
 
-import spiralcraft.test.Test;
+import spiralcraft.test.TestGroup;
 import spiralcraft.test.TestResult;
 
 public class RecordIteratorTest
-  extends Test
+  extends TestGroup
 {
  
   private URI fileURI=null;
@@ -30,10 +28,11 @@ public class RecordIteratorTest
   @Override
   protected Task task()
   {
-    return new AbstractTask()
+    return new ChainTask()
     {      
       @Override
       public void work()
+        throws InterruptedException
       { 
         RandomAccessFile file=null;
         try
@@ -90,13 +89,13 @@ public class RecordIteratorTest
             }
             counter++;
           }
-          addResult(new TestResult(RecordIteratorTest.this,true));
+          addResult(new TestResult(name,true));
         }
         catch (Exception x)
         { 
           addResult
             (new TestResult
-                (RecordIteratorTest.this,false,"Caught exception",x)
+                (name,false,"Caught exception",x)
             );
           
           addException(x);
@@ -111,9 +110,7 @@ public class RecordIteratorTest
           { log.log(Level.WARNING,"Error",x);
           }
         }
-        if (chain!=null && exception==null)
-        { addResult(executeChild(chain));
-        }
+        super.work();
       }
       
           
