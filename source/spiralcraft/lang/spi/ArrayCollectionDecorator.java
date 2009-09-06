@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2009 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -15,21 +15,22 @@
 package spiralcraft.lang.spi;
 
 
-import spiralcraft.lang.IterationDecorator;
+import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
 import spiralcraft.util.ArrayUtil;
 
+import java.lang.reflect.Array;
 import java.util.Iterator;
 
 /**
  * Implements an IterationDecorator for a source that returns an Array
  */
-public class ArrayIterationDecorator<I>
-  extends IterationDecorator<I[],I>
+public class ArrayCollectionDecorator<I>
+  extends CollectionDecorator<I[],I>
 {
-  public ArrayIterationDecorator(Channel<I[]> source,Reflector<I> componentReflector)
+  public ArrayCollectionDecorator(Channel<I[]> source,Reflector<I> componentReflector)
   { super(source,componentReflector);
   }
   
@@ -43,6 +44,21 @@ public class ArrayIterationDecorator<I>
     else
     { return null;
     }
+  }
+
+  @Override
+  public void add(
+    I[] collection,
+    I item)
+  { ArrayUtil.append(collection,item);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public I[] newCollection()
+  { 
+    return (I[]) Array.newInstance
+      (getComponentReflector().getContentType(),0);
   }
 
 }
