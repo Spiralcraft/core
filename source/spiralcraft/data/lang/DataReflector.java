@@ -28,6 +28,7 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.TypeModel;
 
+import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 
@@ -36,6 +37,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Type;
+import spiralcraft.data.core.ArrayType;
 import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.session.BufferAggregate;
 import spiralcraft.data.session.BufferTuple;
@@ -84,8 +86,14 @@ public abstract class DataReflector<T extends DataComposite>
       }
       else if (type.isAggregate())
       { 
+        
         if (type instanceof BufferType)
         { broker=new AggregateReflector(type,BufferAggregate.class);
+        }
+        else if (type instanceof ArrayType)
+        { 
+          broker=new ArrayReflector
+            (DataReflector.getInstance(type.getContentType()));
         }
         else
         { broker=new AggregateReflector(type,Aggregate.class);
@@ -95,6 +103,11 @@ public abstract class DataReflector<T extends DataComposite>
       { 
         if (type instanceof BufferType)
         { broker=new BufferReflector(type,BufferTuple.class);
+        }
+        else if (type instanceof ArrayType)
+        { 
+          broker=new ArrayReflector
+            (DataReflector.getInstance(type.getContentType()));
         }
         else
         { broker=new TupleReflector(type,Tuple.class);
