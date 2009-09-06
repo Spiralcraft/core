@@ -186,7 +186,7 @@ public class ClosureFocus<T>
   
   
   
-  class Closure
+  public class Closure
   {
     private final Object[] values;
     
@@ -232,7 +232,7 @@ public class ClosureFocus<T>
     
     EnclosedFocus(Channel<Y> channel)
     { 
-      super(new ThreadLocalChannel<Y>(channel.getReflector(),true));
+      super(new ThreadLocalChannel<Y>(channel,true));
       sourceChannel=channel;
       parent=ClosureFocus.this;
       if (debugLevel.canLog(Level.DEBUG))

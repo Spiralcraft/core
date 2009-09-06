@@ -45,36 +45,54 @@ public class ThreadLocalChannel<T>
   
   private final ThreadLocal<ThreadReference<T>> threadLocal;
   private final boolean inheritable;
+  private final Channel<T> sourceChannel;
+
+  class InheritableThreadLocalImpl
+    extends InheritableThreadLocal<ThreadReference<T>>
+  {
+    @Override
+    protected ThreadReference<T> childValue(ThreadReference<T> parentValue)
+    { 
+      if (debugLevel.canLog(Level.DEBUG))
+      {
+        log.debug
+          ("Inheriting "
+          +getReflector().getTypeURI()+" : "
+          +(parentValue!=null
+            ?parentValue.object.toString()
+            :"(uninitialized)"
+           )
+          );
+      }
+      return parentValue;
+    }
+    
+  }
   
   public ThreadLocalChannel(final Reflector<T> reflector,boolean inheritable)
   { 
     super(reflector);
     this.inheritable=inheritable;
     if (inheritable)
-    { 
-      threadLocal=new InheritableThreadLocal<ThreadReference<T>>()
-      {
-        @Override
-        protected ThreadReference<T> childValue(ThreadReference<T> parentValue)
-        { 
-          if (debugLevel.canLog(Level.DEBUG))
-          {
-            log.debug
-              ("Inheriting "
-              +reflector.getTypeURI()+" : "
-              +(parentValue!=null
-                ?parentValue.object.toString()
-                :"(uninitialized)"
-               )
-              );
-          }
-          return parentValue;
-        }
-      };
+    { threadLocal=new InheritableThreadLocalImpl();
     }
     else
     { threadLocal=new ThreadLocal<ThreadReference<T>>();
     }
+    sourceChannel=null;
+  }
+
+  public ThreadLocalChannel(final Channel<T> sourceChannel,boolean inheritable)
+  { 
+    super(sourceChannel.getReflector());
+    this.inheritable=inheritable;
+    if (inheritable)
+    { threadLocal=new InheritableThreadLocalImpl();
+    }
+    else
+    { threadLocal=new ThreadLocal<ThreadReference<T>>();
+    }
+    this.sourceChannel=sourceChannel;
   }
 
   public ThreadLocalChannel(Reflector<T> reflector)
@@ -82,6 +100,7 @@ public class ThreadLocalChannel<T>
     super(reflector);
     threadLocal=new ThreadLocal<ThreadReference<T>>();    
     inheritable=false;
+    this.sourceChannel=null;
   }
   
   public boolean isInheritable()
@@ -100,8 +119,11 @@ public class ThreadLocalChannel<T>
     if (r!=null)
     { return r.object;
     }
+    else if (sourceChannel!=null)
+    { return sourceChannel.get();
+    }
     else
-    { 
+    {
       throw new AccessException
         ("ThreadLocal not initialized for "+getReflector().getTypeURI());
     }
@@ -115,6 +137,9 @@ public class ThreadLocalChannel<T>
     { 
       r.object=val;
       return true;
+    }
+    else if (sourceChannel!=null)
+    { return sourceChannel.set(val);
     }
     else
     { 
