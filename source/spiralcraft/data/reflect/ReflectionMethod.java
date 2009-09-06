@@ -19,6 +19,7 @@ import java.net.URI;
 
 
 import spiralcraft.data.core.MethodImpl;
+import spiralcraft.data.lang.DataReflector;
 
 
 import spiralcraft.data.DataException;
@@ -26,6 +27,11 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataComposite;
+import spiralcraft.lang.AccessException;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.util.ArrayUtil;
 
 
@@ -36,6 +42,7 @@ public class ReflectionMethod
   protected final TypeResolver resolver;
   private java.lang.reflect.Method method;
   private boolean debug;
+  
   
   public ReflectionMethod(TypeResolver resolver,java.lang.reflect.Method method)
   {
@@ -145,4 +152,75 @@ public class ReflectionMethod
     URI uri=ReflectionType.canonicalURI(iface);
     return resolver.resolve(uri);
   }
+  
+  @Override
+  public Channel<?> bind(
+    Focus<?> focus,
+    Channel<?> source,
+    Channel<?>[] params)
+    throws BindException
+  { 
+    Channel<?> binding=source.getCached(this);
+    if (binding==null)
+    { 
+      binding=new ReflectionMethodChannel(source,params);
+      source.cache(this,binding);
+    }
+    return binding;
+  }
+
+
+  @SuppressWarnings("unchecked")
+  class ReflectionMethodChannel
+    extends AbstractChannel
+  {
+    protected final Channel<?> source;
+    protected final Channel<?>[] params;
+    
+    public ReflectionMethodChannel
+      (Channel<?> source,Channel<?>[] params)
+      throws BindException
+    { 
+      super(DataReflector.getInstance(returnType));
+      this.source=source;
+      this.params=params;
+    }
+
+    @Override
+    public boolean isWritable()
+    { return false;
+    }
+    
+    @Override
+    protected Object retrieve()
+    {
+      Object o=source.get();
+      if (o==null)
+      { 
+        // Defines x.f() to be null if x is null
+        return null;
+      }
+
+      Object[] oParams=new Object[params.length];
+      for (int i=0;i<params.length;i++)
+      { oParams[i]=params[i].get();
+      }
+      
+      try
+      { return invoke(o,oParams);
+      }
+      catch (DataException x)
+      { throw new AccessException(x.toString(),x);
+      }
+      
+    }
+    
+    
+
+    @Override
+    protected boolean store(Object val)
+    { return false;
+    }
+
+  }  
 }
