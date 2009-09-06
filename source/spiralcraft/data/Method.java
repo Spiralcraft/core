@@ -55,15 +55,15 @@ public interface Method
   Type<?>[] getParameterTypes();
   
   /**
-   * Invoke the Method on the specified target, with the specified parameters.
+   * Bind the method to a channel, which will invoke the operation and
+   *   return the result when Channel.get() is called.
    * 
+   * @param focus
+   * @param source
    * @param params
    * @return
-   * @throws DataException
+   * @throws BindException
    */
-  Object invoke(Object target,Object[] params)
-    throws DataException;
-  
   Channel<?> bind(Focus<?> focus,Channel<?> source,Channel<?>[] params)
     throws BindException;
 }

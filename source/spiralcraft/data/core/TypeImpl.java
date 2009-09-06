@@ -417,6 +417,25 @@ public class TypeImpl<T>
     }
     scheme.setFields(fields);
   }
+  
+  /**
+   * 
+   * Define Methods for this type
+   * 
+   * @param fields
+   */
+  public void setMethods(Method[] methods)
+  {
+    if (linked)
+    { throw new IllegalStateException("Type already linked: "+toString());
+    }
+    for (Method method:methods)
+    {
+      ((MethodImpl) method).setDataType(this);
+      this.methods.add(method);
+    }
+
+  }
 
   /**
    * Returns the Field with the specified name in this type or a base Type

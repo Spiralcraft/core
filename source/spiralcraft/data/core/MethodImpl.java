@@ -4,12 +4,6 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Method;
 import spiralcraft.data.Type;
 
-import spiralcraft.lang.AccessException;
-import spiralcraft.lang.BindException;
-import spiralcraft.lang.Channel;
-import spiralcraft.lang.Focus;
-import spiralcraft.lang.Reflector;
-import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.log.ClassLog;
 
 public abstract class MethodImpl
@@ -21,8 +15,7 @@ public abstract class MethodImpl
   private static final Type<?>[] NULL_TYPES=new Type<?>[0];
   
   private Type<?> dataType;
-  private Type<?> returnType;
-  private Reflector<?> returnReflector;
+  protected Type<?> returnType;
   private String name;
   private Type<?>[] parameterTypes;
   private String qualifiedName;
@@ -92,74 +85,10 @@ public abstract class MethodImpl
   }
   
   protected void subclassResolve()
+    throws DataException
   { }
   
-  @Override
-  public Channel<?> bind(
-    Focus<?> focus,
-    Channel<?> source,
-    Channel<?>[] params)
-    throws BindException
-  { 
-    Channel<?> binding=source.getCached(this);
-    if (binding==null)
-    { 
-      binding=new SimpleChannel(source,params);
-      source.cache(this,binding);
-    }
-    return binding;
-  }
 
-
-  @SuppressWarnings("unchecked")
-  class SimpleChannel
-    extends AbstractChannel
-  {
-    protected final Channel<?> source;
-    protected final Channel<?>[] params;
-
-    public SimpleChannel(Channel<?> source,Channel<?>[] params)
-    { 
-      super(returnReflector);
-      this.source=source;
-      this.params=params;
-    }
-
-    @Override
-    public boolean isWritable()
-    { return false;
-    }
-    
-    @Override
-    protected Object retrieve()
-    {
-      Object o=source.get();
-      if (o==null)
-      { 
-        // Defines x.f() to be null if x is null
-        return null;
-      }
-
-      Object[] oParams=new Object[params.length];
-      for (int i=0;i<params.length;i++)
-      { oParams[i]=params[i].get();
-      }
-      
-      try
-      { return invoke(o,oParams);
-      }
-      catch (DataException x)
-      { throw new AccessException(x.toString(),x);
-      }
-      
-    }
-
-    @Override
-    protected boolean store(Object val)
-    { return false;
-    }
-
-  }
 }
 
 
