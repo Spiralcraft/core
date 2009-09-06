@@ -25,6 +25,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.Level;
+import spiralcraft.task.Chain;
 import spiralcraft.task.Task;
 
 /**
@@ -35,7 +36,7 @@ import spiralcraft.task.Task;
  *
  */
 public class TestGroup
-  extends Test
+  extends Chain
 {
 
   public static TestGroup find(Focus<?> focus)
@@ -50,14 +51,35 @@ public class TestGroup
     return testFocus.getSubject().get();
   }
   
+  protected String name;
   protected Expression<Object> messageX;
   protected Channel<Object> messageChannel;
   protected ThreadLocalChannel<List<TestResult>> resultChannel;
+  protected boolean throwFailure;
+  protected TestGroup testGroup;
   
   public void setMessageX(Expression<Object> messageX)
   { this.messageX=messageX;
   }
   
+  public void setName(String name)
+  { this.name=name;
+  }
+  
+  public void setThrowFailure(boolean throwFailure)
+  { this.throwFailure=throwFailure;
+  }  
+  
+  @Override
+  public Focus<?> bind(Focus<?> focusChain)
+    throws BindException
+  {
+    testGroup=TestGroup.find(focusChain);
+    if (testGroup==null)
+    { setLogTaskResults(true);
+    }
+    return super.bind(focusChain);
+  }
   
   @Override
   protected Task task()
@@ -93,7 +115,7 @@ public class TestGroup
           Object message=messageChannel!=null?messageChannel.get():null;
           TestResult result
             =new TestResult
-               (TestGroup.this
+               (name
                , passed
                ,(message!=null?message.toString()+": ":"")
                +count+" results, "+failCount+" failures"

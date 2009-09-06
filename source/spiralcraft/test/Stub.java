@@ -56,6 +56,7 @@ public class Stub
 
       @Override
       protected void work()
+        throws InterruptedException
       { 
         if (debug)
         { log.log(Level.FINE,this+": executing");
@@ -65,7 +66,7 @@ public class Stub
         
         TestResult result
           =new TestResult
-             (Stub.this
+             (name
              ,Boolean.TRUE.equals(condition)
              ,message!=null?message.toString():null
              );
@@ -79,7 +80,6 @@ public class Stub
         addResult
           (result
           );
-
       }
     };    
   }

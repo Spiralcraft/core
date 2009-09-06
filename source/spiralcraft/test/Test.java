@@ -17,16 +17,16 @@ package spiralcraft.test;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.task.Chain;
+import spiralcraft.task.Scenario;
 
 public abstract class Test
-  extends Chain
+  extends Scenario
 {
 
   protected TestGroup testGroup;
   
   
-  private String name;
+  protected String name;
   protected boolean throwFailure;
   
   /**

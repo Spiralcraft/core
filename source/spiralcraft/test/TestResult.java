@@ -33,27 +33,27 @@ public class TestResult
   private final Exception exception;
   private final List<TestResult> results;
   
-  public TestResult(Test test,boolean passed)
+  public TestResult(String name,boolean passed)
   { 
-    this.name=test.getName();
+    this.name=name;
     this.passed=passed;
     this.message=null;
     this.exception=null;
     this.results=null;
   }
   
-  public TestResult(Test test,boolean passed,String message)
+  public TestResult(String name,boolean passed,String message)
   { 
-    this.name=test.getName();
+    this.name=name;
     this.passed=passed;
     this.message=message;
     this.exception=null;
     this.results=null;
   }
   
-  public TestResult(Test test,boolean passed,String message,Exception exception)
+  public TestResult(String name,boolean passed,String message,Exception exception)
   { 
-    this.name=test.getName();
+    this.name=name;
     this.passed=passed;
     this.message=message;
     this.exception=exception;
@@ -61,9 +61,9 @@ public class TestResult
   }
 
   public TestResult
-    (Test test,boolean passed,String message,List<TestResult> results)
+    (String name,boolean passed,String message,List<TestResult> results)
   { 
-    this.name=test.getName();
+    this.name=name;
     this.passed=passed;
     this.message=message;
     this.exception=null;

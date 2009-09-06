@@ -60,6 +60,7 @@ public class Assertion
 
       @Override
       protected void work()
+        throws InterruptedException
       { 
         if (debug)
         { log.log(Level.FINE,this+": executing");
@@ -76,7 +77,7 @@ public class Assertion
           
           TestResult result
             =new TestResult
-               (Assertion.this
+               (name
                ,Boolean.TRUE.equals(condition)
                ,message
                );
@@ -95,8 +96,6 @@ public class Assertion
         { compareChannel.pop();
         }
         
-        
-
       }
     };    
   }
