@@ -32,7 +32,10 @@ public class DataBatchProcessor<I,R>
   private Expression<Aggregate<R>> resultAssignment;
   private Channel<Aggregate<R>> resultChannel;
   
-  
+  {
+    log.warning
+      (getClass()+" is deprecated, and may not be available");
+  }
   public void setResultAssignment
     (Expression<Aggregate<R>> resultAssignment)
   { this.resultAssignment=resultAssignment;
