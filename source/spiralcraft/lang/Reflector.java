@@ -417,7 +417,7 @@ public abstract class Reflector<T>
   { return StringConverter.getInstance(getContentType());
   }
   
-  public Reflector<?> getCommonType(Reflector<T> other)
+  public Reflector<?> getCommonType(Reflector<?> other)
     throws BindException
   {
     Reflector<?> reflector;
