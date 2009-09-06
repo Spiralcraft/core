@@ -22,6 +22,8 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Reflector;
+import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 
 import spiralcraft.lang.reflect.BeanReflector;
@@ -53,17 +55,20 @@ import spiralcraft.log.Level;
 public abstract class Scenario
   implements Lifecycle
     ,FocusChainObject
-    ,CommandFactory<Scenario,List<?>>
+    ,CommandFactory<Task,List<?>>
 {
 
   protected ClassLog log=ClassLog.getInstance(getClass());
   
   protected ThreadLocalChannel<TaskCommand> commandChannel;
   
+  protected ClosureFocus<Scenario> closureFocus;
+  
   protected boolean debug;
   protected boolean verbose;
   protected boolean logTaskResults;
   protected boolean storeResults;
+  
   
   /**
    * 
@@ -80,6 +85,7 @@ public abstract class Scenario
     }
   	return createCommand(task);
   }
+  
   
   protected abstract Task task();
   
@@ -144,8 +150,8 @@ public abstract class Scenario
    * 
    * @return
    */
-  protected Class<? extends TaskCommand> getCommandType()
-  { return TaskCommand.class;
+  public Reflector<TaskCommand> getCommandReflector()
+  { return BeanReflector.<TaskCommand>getInstance(TaskCommand.class);
   }
   
   /**
@@ -160,8 +166,13 @@ public abstract class Scenario
   { 
     focusChain=focusChain.chain
       (new SimpleChannel<Scenario>(this,true));
+
+    closureFocus=new ClosureFocus<Scenario>(focusChain);
+    focusChain=closureFocus;
     
-    bindChildren(bindCommand(focusChain,getCommandType()));
+    bindChildren(bindCommand(focusChain,getCommandReflector()));
+    
+    
     return focusChain;
       
   }
@@ -181,6 +192,11 @@ public abstract class Scenario
   
   void popCommand()
   { commandChannel.pop();
+  }
+  
+  
+  ClosureFocus<Scenario>.Closure enclose()
+  { return closureFocus.enclose();
   }
   
   public void setDebug(boolean debug)
@@ -233,11 +249,13 @@ public abstract class Scenario
    * @return
    */
   private Focus<TaskCommand> 
-    bindCommand(Focus<?> focusChain,Class<? extends TaskCommand> clazz)
+    bindCommand(Focus<?> focusChain,Reflector<TaskCommand> reflector)
   {
     commandChannel
       =new ThreadLocalChannel<TaskCommand>
-        (BeanReflector.<TaskCommand>getInstance(clazz));
+        (reflector);
+    
     return focusChain.chain(commandChannel);
   }
+  
 }
