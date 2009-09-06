@@ -233,7 +233,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   protected Type<Tcontainer> type;
   protected Tcontainer instance;
   protected RegistryNode registryNode;
-  protected Channel<Treferent> channel;
+  private Channel<Treferent> channel;
   protected Focus<?> focus;
   protected ContextFrame next;
   
@@ -430,53 +430,62 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   public Focus<?> bind(Focus<?> parentFocus)
     throws BindException
   { 
-    if (channel==null)
-    { 
-      channel=new AbstractChannel<Treferent>
-        (BeanReflector.<Treferent>getInstance(get().getClass()))
-      {
-
-        @Override
-        protected Treferent retrieve()
-        { return AbstractXmlObject.this.get();
-        }
-
-        @Override
-        protected boolean store(
-          Treferent val)
-          throws AccessException
-        { 
-          AbstractXmlObject.this.set(val);
-          return true;
-
-        }
-        
-        @Override
-        public boolean isWritable()
-        { return true;
-        }
-      };
-    }
+    // XXX Here, we insert the contained object as a bean into the Focus
+    //   chain using this container as a writable store. This allows
+    //   the client object to weave the contained object into the
+    //   Focus chain regardless of whether it is a FocusChainObject or not.
+    //
+    //   On the other hand, if the instance -is- a FocusChainObject, this
+    //   is probably redundant and we lose the ability to control the
+    //   immediate parent context of the FocusChainObject.
     
-    SimpleFocus<Treferent> intermediateFocus
-      =new SimpleFocus<Treferent>(parentFocus,channel);
-
-    this.focus=bindInstance(intermediateFocus);    
-    return getFocus();
-  }
-  
-  protected Focus<?> bindInstance(Focus<?> focus)
-    throws BindException
-  { 
-    if (instance instanceof FocusChainObject)
-    { return ((FocusChainObject) instance).bind(focus);
+    Treferent endInstance=get();
+    if (endInstance instanceof FocusChainObject)
+    { 
+      // The FocusChainObject controls what goes into the chain
+      this.focus=((FocusChainObject) endInstance).bind(parentFocus);
     }
     else
-    { return focus;
-    }
+    {
+      // Weave the dumb object into the chain
+      if (channel==null)
+      { 
+        channel=new AbstractChannel<Treferent>
+          (BeanReflector.<Treferent>getInstance(get().getClass()))
+        {
 
+          @Override
+          protected Treferent retrieve()
+          { return AbstractXmlObject.this.get();
+          }
+
+          @Override
+          protected boolean store(
+            Treferent val)
+            throws AccessException
+          { 
+            AbstractXmlObject.this.set(val);
+            return true;
+
+          }
+        
+          @Override
+          public boolean isWritable()
+          { return true;
+          }
+        };
+      }
     
+      SimpleFocus<Treferent> intermediateFocus
+        =new SimpleFocus<Treferent>(parentFocus,channel);
+
+      this.focus=intermediateFocus;    
+    }
+    
+    return getFocus();
+      
   }
+  
 
 
   @Override
