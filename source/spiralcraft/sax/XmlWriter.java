@@ -125,11 +125,13 @@ public class XmlWriter
   }
   
   public void startPrefixMapping(String prefix,String uri)
-  { System.err.println("XmlWriter.startPrefixMapping("+prefix+","+uri+")");
+  { 
+//    System.err.println("XmlWriter.startPrefixMapping("+prefix+","+uri+")");
   }
 
   public void endPrefixMapping(String prefix)
-  { System.err.println("XmlWriter.endPrefixMapping("+prefix+")");
+  { 
+//    System.err.println("XmlWriter.endPrefixMapping("+prefix+")");
   }
 
   public void endElement(String namespaceURI,String localName,String qName)
