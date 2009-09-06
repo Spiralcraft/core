@@ -21,7 +21,9 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.reflect.CollectionReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 
 public class ListNode<T>
@@ -78,13 +80,45 @@ public class ListNode<T>
   { 
     final Channel<T>[] channels=new Channel[sources.size()];
     
+    Reflector<T> componentReflector=null;
     int i=0;
+    // Negotiate what "T" is 
     for (Node node:sources)
-    { channels[i++]=(Channel<T>) node.bind(focus);
+    { 
+      Channel<T> channel=(Channel<T>) node.bind(focus);
+      if (componentReflector==null)
+      { componentReflector=channel.getReflector();
+      }
+      else
+      { 
+        Reflector<?> commonReflector
+          =componentReflector.getCommonType(channel.getReflector());
+        if (commonReflector==null)
+        { 
+          throw new BindException
+            (componentReflector.getTypeURI()
+            +" has nothing in common with "
+            +channel.getReflector().getTypeURI()
+            );
+        }
+        componentReflector=(Reflector<T>) commonReflector;
+        		
+          
+      }
+      channels[i++]=channel;
+    }
+    
+    Reflector<List<T>> reflector
+      =componentReflector!=null
+      ?CollectionReflector.<List<T>,T>getInstance(List.class,componentReflector)
+      :BeanReflector.<List<T>>getInstance(List.class)
+      ;
+    if (componentReflector==null)
+    { componentReflector=BeanReflector.getInstance(List.class);
     }
     
     return new AbstractChannel<List<T>>
-      (BeanReflector.<List<T>>getInstance(List.class))
+      (reflector)
     {
 
       @Override

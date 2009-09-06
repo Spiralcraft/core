@@ -14,7 +14,6 @@
 //
 package spiralcraft.lang.parser;
 
-import java.util.List;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Channel;
@@ -74,11 +73,16 @@ public class SubscriptNode<T,C,I>
   {
     if (_source instanceof TypeFocusNode)
     { 
+      Reflector<T> type=(Reflector<T>) _source.bind(focus).get();
+      
+      Channel<?> iterChannel=focus.bind(new Expression(_selector));
+      
+      
       
       // Array construction from something that can be iterated
       return new ArrayConstructorChannel
-        ((Reflector<T>) _source.bind(focus).get()
-        ,focus.bind(new Expression<List<T>>(_selector))
+        (type
+        ,iterChannel
         );
     }
     else
