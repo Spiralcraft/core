@@ -3,6 +3,325 @@
   >
 
   <scm:Change>
+    <revision>0.3.18
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-09-06
+    </date>
+    
+    <notes>
+    </notes>
+    
+    <detail>
+      <scm:Change>
+        <date>2009-09-06
+        </date>
+        
+        <notes>
+          <scm:Note>Incomplete work on stateful constructs to create cursors
+            that can be published by various operations.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/core/CursorField.java
+          </URI>
+          <URI>data/lang/CursorChannel.java
+          </URI>
+          <URI>data/spi/ListAggregate.java
+          </URI>
+          <URI>data/task/Collect.java
+          </URI>
+          <URI>data/task/Fetch.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      
+      <scm:Change>
+        <date>2009-09-06
+        </date>
+        
+        <notes>
+          <scm:Note>Deprecated DataBatchProcessor
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/util/DataBatchProcessor.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-09-06
+        </date>
+        
+        <notes>
+          <scm:Note>Refactoring of spiralcraft.test package to separate
+            Tests, which represent non-chainable concrete classes like Stub and
+            Assertion, from TestGroup, which is chainable.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/test
+        </path>
+        
+        <resources>
+          <URI>Assertion.java
+          </URI>
+          <URI>Stub.java
+          </URI>
+          <URI>Test.java
+          </URI>
+          <URI>TestGroup.java
+          </URI>
+          <URI>TestResult.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-09-06
+        </date>
+        
+        <notes>
+          <scm:Note>Format arrays on output
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/Debug.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <date>2009-09-06
+        </date>
+        
+        <notes>
+          <scm:Note>Enhancements related to usage of Command in Scenarios and
+            other components, in
+            preparation for implementation of spiralcraft.lang based 
+            parameterization of Commands and binding to Command target and
+            results.
+          </scm:Note>
+          <scm:Note>Convention for exporting a CommandFactory from a Java
+            component is to use a public final field to hold the
+            CommandFactory. 
+          </scm:Note>
+          <scm:Note>Command targets should be Void when not used.
+          </scm:Note>
+          <scm:Note>The target of a TaskCommand is the associated Task.
+          </scm:Note>
+          <scm:Note>Obsoleted BatchScenarioLegacy
+          </scm:Note>
+          <scm:Note>Reverted task.Exec to use a simple command channel
+            pending further development of CommandFactory pattern, which
+            obsoletes BoundCommandFactory.
+          </scm:Note>
+          <scm:Note>Scenario provides facility to create a closure when
+            command is created to support cross-thread usage.
+          </scm:Note>
+          <scm:Note>ClosureFocus and ThreadLocalChannel now support pass-through
+            when Closure/ThreadLocalChannel have not been "scoped". 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>command/BoundCommandFactory.java
+          </URI>
+          <URI>ui/StepControl.java
+          </URI>
+          <URI>service/Daemon.java
+          </URI>
+          <URI>task/Exec.java
+          </URI>
+          <URI>task/BatchScenarioLegacy.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+          <URI>task/TaskCommand.java
+          </URI>
+          <URI>lang/spi/ClosureFocus.java
+          </URI>
+          <URI>lang/spi/ThreadLocalChannel.java
+          </URI>
+        </resources>
+        
+      
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-09-06
+        </date>
+        
+        <notes>
+          <scm:Note>Simplify the focus chain for components read from XML 
+            data or builder definitions- do not insert a BeanReflector 
+            for the component into the chain if the component implements
+            FocusChainObject, allowing the immediate parent context to
+            be visible to the FocusChainObject and usable as a primary
+            binding target. This allows Scenarios used as methods to bind
+            to their parent context, which should be the "object" that 
+            represents the method invocation context.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/persist/AbstractXmlObject.java
+          </URI>
+          <URI>data/persist/XmlAssembly.java
+          </URI>
+        </resources>
+        
+      
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-09-06
+        </date>
+        
+        <notes>
+          <scm:Note>Support the incorporation of Scenarios as method 
+            implementations.
+          </scm:Note>
+          <scm:Note>Refined "method" implementation remove "invoke" call and 
+            require that all methods be bound.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/Method.java
+          </URI>
+          <URI>data/core/MethodImpl.java
+          </URI>
+          <URI>data/core/TaskMethod.java
+          </URI>
+          <URI>data/core/TypeImpl.java
+          </URI>
+          <URI>data/types/meta/TaskMethodType.java
+          </URI>
+          <URI>data/reflect/ReflectionMethod.java
+          </URI>
+          <URI>data/lang/TupleReflector.java
+          </URI>
+        </resources>
+        
+      
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-09-06
+        </date>
+        
+        <notes>
+          <scm:Note>Enhancement to spiralcraft.lang to support collection
+            creation and element addition via a CollectionDecorator 
+            interface.
+          </scm:Note>
+          <scm:Note>Provide more ways and more intelligence for constructing
+            arrays from literals and other sources.
+          </scm:Note>
+          <scm:Note>Added better support for java.util.Collections to
+            spiralcraft.lang package.
+          </scm:Note>
+          <scm:Note>Added utility to determine the Class referred to by the
+            first parameter in a Java generics parameterized type
+          </scm:Note>
+          <scm:Note>Added better spiralcraft.data support for array types.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/Reflector.java
+          </URI>
+          <URI>lang/CollectionDecorator.java
+          </URI>
+          <URI>lang/reflect/CollectionReflector.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>lang/reflect/ArrayReflector.java
+          </URI>
+          <URI>lang/spi/ArrayCollectionDecorator.java
+          </URI>
+          <URI>lang/spi/ArrayConstructorChannel.java
+          </URI>
+          <URI>lang/spi/ArrayIterationDecorator.java
+          </URI>
+          <URI>lang/spi/GenericCollectionDecorator.java
+          </URI>
+          <URI>util/lang/ClassUtil.java
+          </URI>
+          <URI>data/lang/DataReflector.java
+          </URI>
+        </resources>
+        
+      
+      </scm:Change>
+
+
+      <scm:Change>
+        <date>2009-09-06
+        </date>
+        
+        <notes>
+          <scm:Note>Remove extraneous console output
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>sax/XmlWriter.java
+          </URI>
+        </resources>
+        
+      
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-09-06
+        </date>
+        
+        <notes>
+          <scm:Note>Fix potential NPE in DictionaryBinding resolving
+            StringConverter
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/util/DictionaryBinding.java
+          </URI>
+        </resources>
+        
+      
+      </scm:Change>
+    </detail>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.3.17
     </revision>
     
