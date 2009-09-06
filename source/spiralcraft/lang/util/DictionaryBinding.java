@@ -171,9 +171,9 @@ public class DictionaryBinding<T>
           =targetChannel.<IterationDecorator>decorate(IterationDecorator.class);
         if (decorator!=null)
         {
+          converter=(StringConverter<T>) 
+            decorator.getComponentReflector().getStringConverter();
         }
-        converter=(StringConverter<T>) 
-          decorator.getComponentReflector().getStringConverter();
         
       }
       if (converter==null)
