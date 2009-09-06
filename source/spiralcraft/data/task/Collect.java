@@ -14,20 +14,29 @@
 //
 package spiralcraft.data.task;
 
+
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
 import spiralcraft.data.Aggregate;
+import spiralcraft.data.DataException;
 import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.Type;
+import spiralcraft.data.lang.CursorChannel;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.spi.EditableArrayListAggregate;
+import spiralcraft.data.spi.ListCursor;
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.task.Chain;
+import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 
 
@@ -60,9 +69,16 @@ public class Collect<Titem>
   private Type<EditableAggregate<Titem>> type;
   private boolean append;
   private ThreadLocalChannel<EditableAggregate<Titem>> aggregateChannel;
+
+  private Scenario fillScenario;
+  private ClosureFocus<?> closureFocus;
+  private Expression<Titem> cursorX;
+  @SuppressWarnings("unchecked")
+  private CursorChannel cursorChannel;
   
   /**
    * The target of this Collector, which must be of type Aggregate<?>
+   *   
    * 
    * @param resultAssignment
    */
@@ -71,6 +87,11 @@ public class Collect<Titem>
   { this.targetX=targetX;
   }
 
+  public void setCursorX
+    (Expression<Titem> cursorX)
+  { this.cursorX=cursorX;
+  }
+  
   /**
    * Indicate that existing data from the target channel should be preserved.
    *
@@ -123,11 +144,21 @@ public class Collect<Titem>
     { type=((DataReflector) resultChannel.getReflector()).getType();
     }
     
+    if (cursorX!=null)
+    { cursorChannel=(CursorChannel) focusChain.bind(cursorX);
+    }
     aggregateChannel
       =new ThreadLocalChannel<EditableAggregate<Titem>>
         (DataReflector.<EditableAggregate<Titem>>getInstance(type)
         ,true
         );
+    focusChain=focusChain.chain(aggregateChannel);
+    if (fillScenario!=null)
+    { 
+      closureFocus=new ClosureFocus(focusChain);
+      focusChain=closureFocus;
+      fillScenario.bind(focusChain);
+    }
     super.bindChildren(focusChain.chain(aggregateChannel));
   }
 
@@ -138,6 +169,7 @@ public class Collect<Titem>
     return new ChainTask()
     {
         
+      @SuppressWarnings("unchecked")
       @Override
       public void work()
         throws InterruptedException
@@ -151,21 +183,103 @@ public class Collect<Titem>
         
         if (result==null)
         { 
-          result=new EditableArrayListAggregate<Titem>(type);
+          EditableArrayListAggregate<Titem> newResult
+            =new EditableArrayListAggregate<Titem>(type);
+          
+          if (fillScenario!=null)
+          { newResult.setFillCommand(new FillCommandChannel(newResult));
+          }
+          
+          result=newResult;
+          
           resultChannel.set(result);
+
         }
         
         aggregateChannel.push(result);
         try
         {
           super.work();
+          if (cursorChannel!=null)
+          { cursorChannel.setCursor(new ListCursor(result));
+          }
+          
           addResult(aggregateChannel.get());
+        }
+        catch (DataException x)
+        { addException(x);
         }
         finally
         { aggregateChannel.pop();
         }
       }
     };
+  }
+  
+  /**
+   * Encloses the context at the time of creation. Allocated to a single
+   *   Aggregate object as the callback.
+   *   
+   * @author mike
+   *
+   */
+  public class FillCommandChannel
+    extends AbstractChannel<Command<?,?>>
+  {
+
+    private final ClosureFocus<?>.Closure closure;
+    private final EditableArrayListAggregate<Titem> aggregate;
+    
+    public FillCommandChannel(EditableArrayListAggregate<Titem> aggregate)
+    { 
+
+      super(BeanReflector.<Command<?,?>>getInstance(Command.class));      
+      closure=closureFocus.enclose();
+      this.aggregate=aggregate;
+    
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Command<?, ?> retrieve()
+    { 
+      return new CommandAdapter()
+      {
+
+        @Override
+        protected void run()
+        { 
+          closure.push();
+          aggregateChannel.push(aggregate);
+          try
+          { 
+            
+            Command<?,?> command=fillScenario.command();
+            command.execute();
+            if (command.getException()!=null)
+            { setException(command.getException());
+            }
+          }
+          finally
+          { 
+            aggregateChannel.pop();
+            closure.pop();
+          }
+          
+          
+        }
+      };
+
+    }
+
+    @Override
+    protected boolean store(
+      Command<?, ?> val)
+      throws AccessException
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
   }
   
 }

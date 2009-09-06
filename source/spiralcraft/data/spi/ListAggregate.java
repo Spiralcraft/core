@@ -14,10 +14,13 @@
 //
 package spiralcraft.data.spi;
 
+import spiralcraft.command.Command;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Projection;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
+import spiralcraft.lang.Channel;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,6 +33,8 @@ public class ListAggregate<T>
   extends AbstractAggregate<T>
 {
   protected final List<T> list;
+  protected int expectedSize;
+  protected Channel<Command<?,?>> fillCommand;
     
   /**
    * <p>Create a new ListAggregate backed by the specified List
@@ -84,28 +89,77 @@ public class ListAggregate<T>
     }
   }
     
+  
+  /**
+   * <p>A command to run when the backing list runs out of entries
+   * </p>
+   */
+  public void setFillCommand(Channel<Command<?,?>> fillCommand)
+  { this.fillCommand=fillCommand;
+  }
+  
   @Override
   public Iterator<T> iterator()
   { 
-    // XXX Block remove() if not mutable- create a ReadOnlyIterator wrapper
-    return list.iterator();
+    if (fillCommand==null)
+    {
+      // XXX Block remove() if not mutable- create a ReadOnlyIterator wrapper
+      return list.iterator();
+    }
+    else
+    { return new RefillIterator();
+    }
   }
   
   @Override
   public int size()
-  { return list.size();
+  { 
+    if (fillCommand!=null)
+    { 
+      if (expectedSize>0)
+      { return Math.max(list.size(),expectedSize);
+      }
+      else
+      { 
+        // Force full fetch
+        fillRest();
+        return list.size();
+      }
+    }
+    else
+    { return list.size();
+    }
   }
     
 
+  protected void fillRest()
+  {
+    while (expectedSize==0 || list.size()<expectedSize)
+    { fill();
+    }
+  }
+  
+  public void setExpectedSize(int expectedSize)
+  { this.expectedSize=expectedSize;
+  }
+  
   @Override
   public T get(int index)
-  { return list.get(index);
+  { 
+    if (fillCommand!=null)
+    { fillTo(index);
+    }
+    return list.get(index);
   }
 
   @Override
   @SuppressWarnings("unchecked")
   public Aggregate<T> snapshot() throws DataException
   { 
+    if (fillCommand!=null)
+    { fillRest();
+    }
+    
     if (isMutable())
     { 
       if (list instanceof ArrayList)
@@ -138,6 +192,83 @@ public class ListAggregate<T>
   public Index<T> getIndex(Projection<T> projection,boolean create)
     throws DataException
   { return null;
+  }
+
+  protected void fillTo(int index)
+  {
+    while (index>=list.size() 
+           && (expectedSize==0 || index<expectedSize
+              )
+          )
+    { fill(); 
+    }
+  }
+  
+  protected int fill()
+  {
+    int size=list.size();
+    Command<?,?> command=fillCommand.get();
+    command.execute();
+    if (command.getException()!=null)
+    { 
+      // Abort further fetching (make optional?)
+      expectedSize=list.size();
+      
+      throw new RuntimeDataException
+        ("Error filling lazy ListAggregate"
+        ,command.getException()
+        );
+    }
+    if (list.size()==size)
+    { 
+      expectedSize=size;
+      return 0;
+    }
+    else
+    { return list.size()-size;
+    }
+  }
+  
+  class RefillIterator
+    implements Iterator<T>
+  {
+    private int pos=0;
+    
+    public RefillIterator()
+    { 
+    }
+
+    @Override
+    public boolean hasNext()
+    { 
+      if (pos>=list.size())
+      { 
+        if (pos<expectedSize && fill()>0)
+        { return true;
+        }
+        return false;
+        
+      }
+      return true;
+    }
+
+    @Override
+    public T next()
+    {
+
+      try
+      { return list.get(pos);
+      }
+      finally
+      { pos++;
+      }
+    }
+
+    @Override
+    public void remove()
+    { throw new UnsupportedOperationException("remove() is not supported");
+      
+    }
   }
 
 }

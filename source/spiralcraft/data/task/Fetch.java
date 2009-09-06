@@ -22,9 +22,11 @@ import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.access.CursorAggregate;
 import spiralcraft.data.access.SerialCursor;
+import spiralcraft.data.lang.CursorChannel;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.Level;
@@ -43,6 +45,9 @@ public class Fetch
   protected Query query;
   protected BoundQuery<?,Tuple> boundQuery;
   protected ThreadLocalChannel<Aggregate<Tuple>> resultChannel;
+  protected Expression<Tuple> cursorX;
+  @SuppressWarnings("unchecked")
+  protected CursorChannel cursorChannel;
   protected int batchSize;
   
 
@@ -57,32 +62,45 @@ public class Fetch
       try
       {
         SerialCursor<Tuple> cursor=boundQuery.execute();
+          
         try
         {
           if (debug)
           { log.fine("Got "+cursor);
           }
-          boolean done=false;
-          while (!done)
+
+          if (cursorChannel!=null)
+          { 
+            
+            cursorChannel.setCursor(cursor);
+            super.work();
+          }
+          else
           {
-            CursorAggregate<Tuple> result=new CursorAggregate<Tuple>(cursor);
-            resultChannel.push(result);
+          
+            boolean done=false;
+            while (!done)
+            {
+              CursorAggregate<Tuple> result=new CursorAggregate<Tuple>(cursor);
+              resultChannel.push(result);
         
-            try
-            { super.work();
-            }
-            finally
-            { resultChannel.pop();
-            }
-            addResult(result);
+              try
+              { super.work();
+              }
+              finally
+              { resultChannel.pop();
+              }
+              addResult(result);
 
-            if (batchSize==0)
-            { done=true;
+              if (batchSize==0)
+              { done=true;
+              }
+              else
+              { done=result.size()==0;
+              }
+ 
             }
-            else
-            { done=result.size()==0;
-            }
-
+          
           }
         }
         finally
@@ -124,6 +142,11 @@ public class Fetch
   { this.query=query;
   }
   
+  public void setCursorX(Expression<Tuple> cursorX)
+  { this.cursorX=cursorX;
+  }
+  
+  @SuppressWarnings("unchecked")
   @Override
   public void bindChildren(
     Focus<?> focusChain)
@@ -140,6 +163,12 @@ public class Fetch
     { throw new BindException("Error binding query",x);
     }
 
+    if (cursorChannel!=null)
+    {
+      cursorChannel
+        =(CursorChannel) focusChain.bind(cursorX);
+    }
+    
     resultChannel
       =new ThreadLocalChannel<Aggregate<Tuple>>
         (DataReflector.<Aggregate<Tuple>>getInstance
