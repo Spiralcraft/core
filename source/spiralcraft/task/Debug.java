@@ -20,6 +20,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.Level;
 import spiralcraft.task.Task;
+import spiralcraft.util.ArrayUtil;
 
 /**
  * Conditionally evaluates an Expression and logs the result
@@ -63,7 +64,15 @@ public class Debug
         if (messageChannel!=null && Boolean.TRUE.equals(condition))
         {
           Object message=messageChannel.get();
-          log.debug(messageX.getText()+" := ["+message+"]");
+          if (message!=null && message.getClass().isArray())
+          { 
+            log.debug(messageX.getText()
+              +" := ["+ArrayUtil.format(message,",","")+"]"
+              );
+          }
+          else
+          { log.debug(messageX.getText()+" := ["+message+"]");
+          }
         }
       }
     };    
