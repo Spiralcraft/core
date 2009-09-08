@@ -117,17 +117,35 @@ public class Assertion
     
     if (subjectX!=null)
     { 
-      subjectChannel=focusChain.bind(subjectX);
+      try
+      { subjectChannel=focusChain.bind(subjectX);
+      }        
+      catch (BindException x)
+      { throw new BindException
+          ("Error binding subject expression ["+subjectX.getText()
+            +"] in assertion '"+name+"'"
+          ,x);
+      }
       
       compareChannel
         =new ThreadLocalChannel<Object>(subjectChannel.getReflector());
       focusChain=focusChain.<Object>chain(compareChannel);
       
       if (testX!=null)
-      { testChannel=focusChain.bind(testX);
+      { 
+        try
+        { testChannel=focusChain.bind(testX);
+        }
+        catch (BindException x)
+        { throw new BindException
+            ("Error binding test expression ["+testX.getText()
+              +"] in assertion '"+name+"'"
+            ,x);
+        }
       }
       else
-      { throw new BindException("Test expression cannot be null");
+      { throw new BindException
+          ("Test expression cannot be null in assertion '"+name+"'");
       }
     }
     else
