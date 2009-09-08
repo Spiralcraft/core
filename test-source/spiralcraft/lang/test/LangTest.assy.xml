@@ -172,7 +172,7 @@
           </name>
           
           <subjectX>
-            "one"{:=.:}
+            "one"{{=.}}
           </subjectX>
           
           <testX>.=="one"
@@ -186,7 +186,7 @@
           </name>
           
           <subjectX>
-            "one"{:=.: y:=.length()}
+            "one"{{=.} y:=.length()}
           </subjectX>
           
           <testX>.@super=="one" &amp;&amp; .y==3
@@ -196,11 +196,14 @@
 
         <test:Assertion>
         
-          <name>Simple tuple
+          <name>Tuple and assignments
           </name>
           
           <subjectX>
-            { :={ x:[@j:String], y:[@j:Integer] }: = .x="hello", =.y=.x.length() }
+            { {={ x:[@j:String], y:[@j:Integer] } }
+                 = .x="hello"
+                ,= .y=.x.length() 
+            }
           </subjectX>
           
           <testX>x=="hello" &amp;&amp; y==5
