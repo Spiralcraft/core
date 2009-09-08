@@ -215,8 +215,8 @@ public class TupleNode
       }
        
       
-      // Create a fresh context for self resolution
-      focus=focus.chain(thisChannel);
+      // Telescope context for self resolution
+      focus=focus.telescope(thisChannel);
         
       // log.fine(" "+sourceChannel.getReflector());
       
@@ -224,7 +224,9 @@ public class TupleNode
       for (TupleField field: fieldArray)
       { 
         if (field.source!=null)
-        { channels[i]= field.source.bind(focus);
+        { 
+//          log.fine("Binding "+field.name+" to "+field.source.reconstruct());
+          channels[i]= field.source.bind(focus);
         }
         else if (field.type!=null)
         { 
