@@ -164,10 +164,10 @@ public abstract class Scenario
     Focus<?> focusChain)
     throws BindException
   { 
-    focusChain=focusChain.chain
-      (new SimpleChannel<Scenario>(this,true));
 
-    closureFocus=new ClosureFocus<Scenario>(focusChain);
+    closureFocus
+      =new ClosureFocus<Scenario>
+        (focusChain.chain(new SimpleChannel<Scenario>(this,true)));
     focusChain=closureFocus;
     
     bindChildren(bindCommand(focusChain,getCommandReflector()));
