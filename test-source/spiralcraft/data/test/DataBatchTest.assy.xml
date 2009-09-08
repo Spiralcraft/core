@@ -69,6 +69,13 @@
       <name>spiralcraft.data.test.DataBatchTest:SerialParallelScanBatch
       </name>
     </test:Stub>
+    
+    <test:Assertion>
+      <subjectX>[example:BatchSession].results#[.id]
+      </subjectX>
+      <testX>.[0]+.[1]+.[2]+.[3]+.[4]+.[5] == 12
+      </testX>
+    </test:Assertion>
  
   </chain>
         
