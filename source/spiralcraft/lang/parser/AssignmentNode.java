@@ -66,7 +66,7 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
   
   @Override
   public String reconstruct()
-  { return source.reconstruct()+" = "+target.reconstruct();
+  { return target.reconstruct()+" = "+source.reconstruct();
   }
   
   public Node getSource()
@@ -92,9 +92,9 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
   { 
     out.append(prefix).append("Assignment =");
     prefix=prefix+"  ";
-    source.dumpTree(out,prefix);
-    out.append(prefix).append("=");
     target.dumpTree(out,prefix);
+    out.append(prefix).append("=");
+    source.dumpTree(out,prefix);
   }
 
   @SuppressWarnings("unchecked")
