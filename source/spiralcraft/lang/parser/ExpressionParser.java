@@ -927,7 +927,7 @@ public class ExpressionParser
   }
   
   /**
-   * Tuple -> (":" ( TypeSpecifier | [ "=" Expression ":" ] ) )
+   * Tuple -> ( "{" [ TypeSpecifier | [ "=" Expression  ] ] "}" )
    * 
    *             ( TupleField ( "," TupleField ...)* )
    */
@@ -935,7 +935,7 @@ public class ExpressionParser
     throws ParseException
   {
     TupleNode tuple=new TupleNode();
-    if (_tokenizer.ttype==':')
+    if (_tokenizer.ttype=='{')
     {
       consumeToken();
       switch (_tokenizer.ttype)
@@ -959,7 +959,6 @@ public class ExpressionParser
           
           consumeToken();
           Node extentNode=parseExpression();
-          expect(':');
           tuple.setBaseExtentNode(extentNode);
           break; 
           
@@ -968,6 +967,7 @@ public class ExpressionParser
             ("Expected '[@typeURI]' or '=expression'");
           
       }      
+      expect('}');
       
     }
     

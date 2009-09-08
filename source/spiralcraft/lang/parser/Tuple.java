@@ -37,17 +37,21 @@ public class Tuple
   public String toString()
   { 
     StringBuffer buf=new StringBuffer();
-    buf.append(super.toString()+":[");
+    buf.append(super.toString()+":{ ");
+    if (baseExtent!=null)
+    { buf.append(" {= "+baseExtent.toString()+" } ");
+    }
+    
     int i=0;
     for (TupleField field : reflector.getFields())
     { 
       if (i>0)
-      { buf.append(",");
+      { buf.append(" , ");
       }
       buf.append(field.name+"=["+data[i]+"]");
       i++;
     }
-    buf.append("]");
+    buf.append(" }");
     return buf.toString();
   }
 }

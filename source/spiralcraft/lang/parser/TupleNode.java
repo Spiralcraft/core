@@ -93,11 +93,11 @@ public class TupleNode
     builder.append(" { ");
     
     if (typeNode!=null)
-    { builder.append(" : "+typeNode.reconstruct());
+    { builder.append(" { "+typeNode.reconstruct()+" } ");
     }
     
     if (baseExtentNode!=null)
-    { builder.append(" := "+baseExtentNode.reconstruct()+" : ");
+    { builder.append(" {= "+baseExtentNode.reconstruct()+" } ");
     }
 
     boolean first=true;
@@ -678,14 +678,16 @@ public class TupleNode
       
       if (typeNode!=null)
       { 
-        out.append(prefix).append(":");
+        out.append(prefix).append("{");
         typeNode.dumpTree(out,prefix);
+        out.append(prefix).append("}");
       }
       
       if (baseExtentNode!=null)
       { 
-        out.append(prefix).append(":=");
+        out.append(prefix).append("{=");
         typeNode.dumpTree(out,prefix);
+        out.append(prefix).append("}");
       }
 
       boolean first=true;
