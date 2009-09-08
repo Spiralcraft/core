@@ -78,6 +78,9 @@
           </scm:Note>
           <scm:Note>Fixed argument reversal on reconstruct in AssignmentNode
           </scm:Note>
+          <scm:Note>Properly handle non '/' terminated namespace definition in 
+            TypeFocusNode
+          </scm:Note>
 
         </notes>
         
@@ -92,6 +95,8 @@
           <URI>lang/parser/Tuple.java
           </URI>
           <URI>lang/parser/AssignmentNode.java
+          </URI>
+          <URI>lang/parser/TypeFocusNode.java
           </URI>
           <URI>lang/ParseException.java
           </URI>
