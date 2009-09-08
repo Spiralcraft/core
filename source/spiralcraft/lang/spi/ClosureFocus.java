@@ -58,15 +58,36 @@ public class ClosureFocus<T>
   @SuppressWarnings("unchecked")
   private LinkedHashMap<URI,EnclosedFocus> foci
     =new LinkedHashMap<URI,EnclosedFocus>();
+  private EnclosedFocus<T> subjectFocus;
   
-  public ClosureFocus(Focus<?> focusChain)
-  { parent=focusChain;
+  public ClosureFocus(Focus<T> focusChain)
+  { 
+    parent=focusChain;
+    Channel<T> subject=focusChain.getSubject();
+    
+    if (subject!=null)
+    {
+      if (!subject.isConstant())
+      {
+        // Create an entry for the subject so we can enclose it as well
+        subjectFocus=new EnclosedFocus<T>(subject);
+        setSubject(subjectFocus.getSubject());
+        foci.put(URI.create("."),subjectFocus);
+      }
+      else
+      { setSubject(subject);
+      }
+    }
   }
   
   @SuppressWarnings("unchecked")
   @Override
   public <X> Focus<X> findFocus(URI focusURI)
   {
+    if (isFocus(focusURI))
+    { return (Focus<X>) this;
+    }
+    
     EnclosedFocus<X> focus=foci.get(focusURI);
     if (focus==null)
     {
@@ -94,7 +115,14 @@ public class ClosureFocus<T>
   }
 
   public boolean isFocus(URI focusURI)
-  { return false;
+  { 
+
+    if (getSubject()!=null 
+        && getSubject().getReflector().isAssignableTo(focusURI)
+        )
+    { return true;
+    }
+    return false;
   }
 
 

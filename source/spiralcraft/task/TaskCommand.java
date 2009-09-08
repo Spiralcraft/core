@@ -70,6 +70,7 @@ public class TaskCommand
       { 
         task.run();
         setException(task.getException());
+        onTaskCompletion();
       }
     }
     catch (RuntimeException x)
@@ -86,6 +87,14 @@ public class TaskCommand
     }
   }
 
+  /** 
+   * Override to run something when the task associated with this
+   *   command is completed (ie. to publish results, etc).
+   */
+  protected void onTaskCompletion()
+  {
+  }
+  
   /**
    * 
    */

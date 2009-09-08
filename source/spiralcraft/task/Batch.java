@@ -25,7 +25,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationCursor;
 import spiralcraft.lang.IterationDecorator;
-import spiralcraft.lang.spi.ClosureFocus;
+//import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -72,7 +72,7 @@ public class Batch<I,R>
   
   private Scheduler scheduler;
   
-  private ClosureFocus<?> closureFocus;
+//  private ClosureFocus<?> itemClosureFocus;
   
   /**
    * @return The expression which resolves the set of items to process
@@ -156,28 +156,36 @@ public class Batch<I,R>
         { collectResults=true;
         }
         
+        @Override
+        @SuppressWarnings("unchecked")
+        protected void onTaskCompletion()
+        {
+          if (chain!=null && getException()!=null)
+          { 
+            Command<?,?> command=chain.command();
+            command.execute();
+            ((List) getResult()).add(command);
+            if (command.getException()!=null)
+            { setException(command.getException());
+            }
+          }          
+        }
+        
         @SuppressWarnings("unchecked")
         @Override
         public void run()
         { 
-          closureFocus.push();
-          try
-          { 
+          super.run();
+//          itemClosureFocus.push();
+//          try
+//          { 
             
-            super.run();
-            if (chain!=null && getException()!=null)
-            { 
-              Command<?,?> command=chain.command();
-              command.execute();
-              ((List) getResult()).add(command);
-              if (command.getException()!=null)
-              { setException(command.getException());
-              }
-            }
-          }
-          finally
-          { closureFocus.pop();
-          }
+//            super.run();
+
+//          }
+//          finally
+//          { // itemClosureFocus.pop();
+//          }
           
 
           
@@ -236,9 +244,9 @@ public class Batch<I,R>
         ("Not iterable: "+sourceChannel.getReflector().getTypeURI());
     }
     
-    closureFocus=new ClosureFocus(focusChain);
+//    itemClosureFocus=new ClosureFocus(focusChain);
     
-    focusChain=closureFocus;
+//    focusChain=itemClosureFocus;
 
     item=new ThreadLocalChannel(decorator.getComponentReflector());
     focusChain=focusChain.chain(item);
