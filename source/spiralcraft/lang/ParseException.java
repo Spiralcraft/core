@@ -21,17 +21,20 @@ public class ParseException
   
   private final String _progress;
   private final int _pos;
+  private final String _text;
 
-  public ParseException(String message,int pos,String progress)
+  public ParseException(String message,int pos,String progress,String text)
   {
     super(message);
     _pos=pos;
     _progress=progress;
+    _text=text;
   }
 
   @Override
   public String toString()
   {
-    return super.toString()+" position "+_pos+" after "+_progress;
+    return super.toString()
+      +" position "+_pos+" after | "+_progress+" | in | "+_text+" |";
   }
 }
