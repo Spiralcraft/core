@@ -4,6 +4,7 @@
   xmlns:dtask="class:/spiralcraft/data/task/"
   xmlns:test="class:/spiralcraft/test/"
   xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:j="class:/java/lang/"
   >
   <chain>
  
@@ -64,7 +65,7 @@
           
           <query>
             <query:SetFilter>
-              <filterSetX>{"Nomatch One","Mary Second","Nomatch Two"}
+              <filterSetX>[@j:String][{"Nomatch One","Mary Second","Nomatch Two"}]
               </filterSetX>
               
               <searchX>.displayName
@@ -98,7 +99,7 @@
           
           <query>
             <query:SetFilter>
-              <filterSetX>{"Nomatch One","Mary Second","Nomatch Two"}
+              <filterSetX>[@j:String][{"Nomatch One","Mary Second","Nomatch Two"}]
               </filterSetX>
               
               <searchX>.displayName

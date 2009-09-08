@@ -42,7 +42,7 @@
           <name>contains
           </name>
           
-          <subjectX>{1,2,3} ?= 2
+          <subjectX>[@j:Integer][{1,2,3}] ?= 2
           </subjectX>
           
           <testX>.
@@ -55,7 +55,7 @@
           <name>contains (neg)
           </name>
           
-          <subjectX>{1,2,3} ?= 4
+          <subjectX>[@j:Integer][{1,2,3}] ?= 4
           </subjectX>
           
           <testX>!.
@@ -68,7 +68,7 @@
           <name>array construct- Integer
           </name>
           
-          <subjectX>[@:class:/java/lang/Integer][{1,2,3}]
+          <subjectX>[@j:Integer][{1,2,3}]
           </subjectX>
           
           <testX>.length==3 &amp;&amp; 
@@ -84,7 +84,7 @@
           <name>array @top
           </name>
           
-          <subjectX>[@:class:/java/lang/Integer][{1,2,3}].@top
+          <subjectX>[@j:Integer][{1,2,3}].@top
           </subjectX>
           
           <testX>.==1
@@ -97,36 +97,10 @@
           <name>array @top null
           </name>
           
-          <subjectX>[@:class:/java/lang/Integer][{}].@top
+          <subjectX>[@j:Integer][{}].@top
           </subjectX>
           
           <testX>.==null
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>array construct contains
-          </name>
-          
-          <subjectX>[@:class:/java/lang/Integer][{1,2,3}] ?= 2
-          </subjectX>
-          
-          <testX>.
-          </testX>
-          
-        </test:Assertion>
-          
-        <test:Assertion>
-        
-          <name>array construct contains (neg)
-          </name>
-          
-          <subjectX>[@:class:/java/lang/Integer][{1,2,3}] ?= 4
-          </subjectX>
-          
-          <testX>!.
           </testX>
           
         </test:Assertion>
@@ -137,7 +111,7 @@
           </name>
           
           <subjectX>
-               [@:class:/java/lang/String][{"one","two","three"}]#[.length()]
+               [@j:String][{"one","two","three"}]#[.length()]
                   .equals( [@:class:/java/lang/Integer][{3,3,5}] )
           </subjectX>
           
@@ -152,7 +126,7 @@
           </name>
           
           <subjectX>
-            [@:class:/java/lang/String][{"one","two","three"}]
+            [@j:String][{"one","two","three"}]
                 #{x:=..length(),y:=..hashCode()}.@top.x
           </subjectX>
           
@@ -167,7 +141,7 @@
           </name>
           
           <subjectX>
-            [@:class:/java/lang/String][{"one","two","three"}]
+            [@j:String][{"one","two","three"}]
                 #{x:=..length(),y:=..hashCode()}[2].x
           </subjectX>
           
@@ -183,7 +157,7 @@
           </name>
           
           <subjectX>
-            "one"{x:=..length(),y:=..hashCode(),z:[@j:Integer],r:=z=x*3}{m:=..r,n:=..z}{x:=..m*..n}.x
+            "one"{x:=..length(),y:=..hashCode(),z:[@j:Integer],r:=.z=.x*3}{m:=..r,n:=..z}{x:=..m*..n}.x
           </subjectX>
           
           <testX>.==81
@@ -212,13 +186,27 @@
           </name>
           
           <subjectX>
-            "one"{:=.: y:=length()}
+            "one"{:=.: y:=.length()}
           </subjectX>
           
           <testX>.@super=="one" &amp;&amp; .y==3
           </testX>
           
         </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>Simple tuple
+          </name>
+          
+          <subjectX>
+            { :={ x:[@j:String], y:[@j:Integer] }: = .x="hello", =.y=.x.length() }
+          </subjectX>
+          
+          <testX>x=="hello" &amp;&amp; y==5
+          </testX>
+          
+        </test:Assertion>                
         
         <test:Assertion>
         
