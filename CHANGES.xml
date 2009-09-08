@@ -1,6 +1,74 @@
 <scm:Change.list
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
+  
+  <scm:Change>
+    <revision>0.3.19
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-09-08
+    </date>
+    
+    <notes>
+      <scm:Note>Formalized array literal syntax in spiralcraft.lang to free up 
+        syntax for inline tuples. Adjusted tuple syntax for more intuitive
+        and consistent use of subject and context.
+      </scm:Note>
+    </notes>
+    
+    <detail>
+      <scm:Change>
+        <date>2009-09-08
+        </date>
+        
+        <notes>
+          <scm:Note>Array literals can only be created using the syntax
+            [@typeName][{ ... }]
+          </scm:Note>
+          <scm:Note>Inline tuples are now valid expressions in themselves.
+          </scm:Note>
+          <scm:Note>Inline tuples telescope instead of chaining-
+            ie. {:=myStr: l:=.length() } instead of { :=mystr:  l:=length() }
+          </scm:Note>
+          <scm:Note>Tuple wrapping or inheritance now uses brackets instead
+            of ':'- ie. { {=.} ... } or { {[@myType]} ... } instead of
+            { :=.: ... } or { :[@mytype] .... }
+          </scm:Note>
+          <scm:Note>Enhanced debugging information for bind exceptions in
+            test framework
+          </scm:Note>
+          <scm:Note>Enhanced debugging information for Expression parse
+            exceptions
+          </scm:Note>
+          <scm:Note>Fixed argument reversal on reconstruct in AssignmentNode
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/parser/ExpressionParser.java
+          </URI>
+          <URI>lang/parser/TupleNode.java
+          </URI>
+          <URI>lang/parser/Tuple.java
+          </URI>
+          <URI>lang/parser/AssignmentNode.java
+          </URI>
+          <URI>lang/ParseException.java
+          </URI>
+          <URI>test/Assertion.java
+          </URI>
+        </resources>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+  
 
   <scm:Change>
     <revision>0.3.18
