@@ -33,16 +33,18 @@ import java.util.List;
 
 public class ExpressionParser
 {
-  private static boolean debug;
+  private static boolean debug=false;
 
   private StringBuffer _progressBuffer;
   private LookaheadStreamTokenizer _tokenizer;
   private int _pos;
+  private String _text;
 
   public <X> Expression<X> parse(String text)
     throws ParseException
   { 
     createTokenizer(text);
+    _text=text;
     consumeToken();
     Node ret=parseExpression();
     if (ret==null)
@@ -116,6 +118,7 @@ public class ExpressionParser
       +" @line "+_tokenizer.lineno()
       ,_pos
       ,_progressBuffer.toString()
+      ,_text
       );
   }
   
@@ -126,6 +129,7 @@ public class ExpressionParser
       (message+": In '"+tokenString()+"' @line "+_tokenizer.lineno()
       ,_pos
       ,_progressBuffer.toString()
+      ,_text
       );
   }
 
@@ -145,6 +149,7 @@ public class ExpressionParser
         ("Expected '"+chr+"', not '"+tokenString()+"'"
         ,_pos
         ,_progressBuffer.toString()
+        ,_text
         );
     		
     }
@@ -552,12 +557,6 @@ public class ExpressionParser
       case '!':
         consumeToken();
         return parseUnaryExpression().not();
-      case '{':
-        // Dynamic list- used primarily to create fixed length typed Arrays
-        consumeToken();
-        Node ret=parseListExpression();
-        expect('}');
-        return parsePostfixExpressionRest(ret);
       default:
         return parsePostfixExpression();
     }
@@ -569,7 +568,9 @@ public class ExpressionParser
   @SuppressWarnings("unchecked") // Unknown type
   private Node parseListExpression()
     throws ParseException
-  { return new ListNode(parseExpressionList());
+  { 
+    // Only used from ArraySelectorExpression
+    return new ListNode(parseExpressionList());
   }
   
   // 
@@ -578,19 +579,25 @@ public class ExpressionParser
 
   /**
    * PostfixExpression -> FocusExpression
-   *                     ( "[" Expression "]"
+   *                     ( "[" ArraySelectorExpression "]"
    *                     | "." DereferenceExpression
    *                     | "#" AggregateProjectionExpression
-   *                     } "{" TupleProjectionExpression
+   *                     | "{" TupleProjectionExpression "}"
    *                     ) *
    */
   private Node parsePostfixExpression()
     throws ParseException
   {
-    // The focus expression -always- returns a node which provides the 
-    //   target of further dereference.
+    // The focus expression returns a node which provides the 
+    //   target of further dereference, or null to indicate no
+    //   expression is present.
     Node node = parseFocusExpression();
-    return parsePostfixExpressionRest(node);
+    if (node!=null)
+    { return parsePostfixExpressionRest(node);
+    }
+    else
+    { return null;
+    }
   }
   
   @SuppressWarnings("unchecked") // Parser methods are polymorphic
@@ -602,7 +609,8 @@ public class ExpressionParser
     {
       case '[':
         consumeToken();
-        Node subscriptNode=new SubscriptNode(primary,parseExpression());
+        Node subscriptNode
+          =new SubscriptNode(primary,parseArraySelectorExpression());
         expect(']');
         return parsePostfixExpressionRest(subscriptNode);
       case '.':
@@ -620,7 +628,31 @@ public class ExpressionParser
     
     
   }
-
+  
+  /**
+   * ArraySelectorExpression -> "{" ExpressionList "}"
+   *                            | Expression
+   * 
+   * @return
+   */
+  private Node parseArraySelectorExpression()
+    throws ParseException
+  {
+    switch (_tokenizer.ttype)
+    {
+      case '{':
+        // Dynamic list- used primarily to create fixed length typed Arrays
+        consumeToken();
+        Node ret=parseListExpression();
+        expect('}');
+        return ret;
+      default:
+        return parseExpression();
+      
+    }
+  }
+  
+  
   /**
    * FocusExpression -> ( "[" FocusSpecifier "]" ) 
    *                    ( "." FocusRelativeExpression 
@@ -659,7 +691,7 @@ public class ExpressionParser
           }          
           Node ret=parseFocusRelativeExpression(focusNode);
           if (debug)
-          { alert("parseFocusExpression():'..'");
+          { alert("parseFocusExpression():'..' "+ret.reconstruct());
           }
           return ret;
         }
@@ -669,23 +701,28 @@ public class ExpressionParser
           { focusNode=new CurrentFocusNode();
           }
           Node ret=parseDereferenceExpression(focusNode);
+          if (debug)
+          { alert("parseFocusExpression():'.' "+ret.reconstruct());
+          }
           return ret;
         }
       case StreamTokenizer.TT_WORD:
         // Either a literal, or 
-        if (debug)
-        { alert("parseFocusExpression.TT_WORD");
-        }
         
+        Node ret=parsePrimaryExpression(focusNode);
+        if (debug)
+        { alert("parseFocusExpression.TT_WORD "+ret.reconstruct());
+        }
+        return ret;
         // If this is an identifier, parseIdentifierExpression() will
         //   catch this as a case not to use a resolve()
-        return parsePrimaryExpression(focusNode);
       default:
-        // Figure out when this happens- probably only for a lone explicit
-        //   focus node, or an empty expression
+        
+        
         Node result = parsePrimaryExpression(new CurrentFocusNode());
-        // focusNode will only be present if it was explicit
+        // No result and no focus node indicates end of expression
         return result!=null?result:focusNode;
+        
     }
   }
 
@@ -773,6 +810,7 @@ public class ExpressionParser
    *                    | "null"
    *                    | IdentifierExpression
    *                    | "(" Expression ")"
+   *                    | "{" TupleProjectionExpression "}"
    */
   private Node parsePrimaryExpression(FocusNode focus)
     throws ParseException
@@ -826,6 +864,10 @@ public class ExpressionParser
         node=parseExpression();
         expect(')');
         break;
+      case '{':
+        consumeToken();
+        node=parseTupleProjectionExpression(focus);
+        break;        
     }
     return node;
   }
