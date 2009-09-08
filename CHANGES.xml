@@ -17,9 +17,42 @@
         syntax for inline tuples. Adjusted tuple syntax for more intuitive
         and consistent use of subject and context.
       </scm:Note>
+      <scm:Note>Fix for issue where the Focus chain exported by the Scenario
+        doesn't have a subject. Made the Scenario the 
+        subject of its own ClosureFocus. 
+      </scm:Note>
     </notes>
     
     <detail>
+      <scm:Change>
+        <date>2009-09-08
+        </date>
+        
+        <notes>
+          <scm:Note>Fix for issue where the Focus chain exported by the Scenario
+            doesn't have a subject. Made the Scenario the 
+            subject of its own ClosureFocus. 
+          </scm:Note>
+          <scm:Note>Use of ClosureFocus in Batch is obsolete now that
+            Scenario handles general case.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/spi/ClosureFocus.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+          <URI>task/Batch.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
       <scm:Change>
         <date>2009-09-08
         </date>
