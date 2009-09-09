@@ -29,6 +29,35 @@
         </date>
         
         <notes>
+          <scm:Note>Fix for issue where a set of namespaces added by
+            a  NamespaceFocus
+            replaced a previous set of namespaces added by a NamespaceFocus if
+            the previous NamespaceFocus was the parent of the new 
+            NamespaceFocus.
+          </scm:Note>
+          <scm:Note>Added debugging information for namespaces to FocusChain.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/
+        </path>
+        
+        <resources>
+          <URI>FocusWrapper.java
+          </URI>
+          <URI>NamespaceFocus.java
+          </URI>
+          <URI>TeleFocus.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-09-08
+        </date>
+        
+        <notes>
           <scm:Note>Fix for issue where the Focus chain exported by the Scenario
             doesn't have a subject. Made the Scenario the 
             subject of its own ClosureFocus. 
