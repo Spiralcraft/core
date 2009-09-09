@@ -41,4 +41,8 @@ public class NamespaceFocus<T>
   { return resolver;
   }
 
+  @Override
+  public String toString()
+  { return super.toString()+"\r\n  ns="+resolver;
+  }
 }

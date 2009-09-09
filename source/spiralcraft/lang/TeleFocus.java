@@ -88,7 +88,11 @@ public class TeleFocus<T>
       +(getContext()!=null
         ?"\r\n context:"+getContext().toString()
         :"null context"
-       );
+       )
+      +(namespaceResolver!=null
+        ?"\r\n ns:"+namespaceResolver.toString()
+        :""
+        );
   }
 
 

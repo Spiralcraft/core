@@ -115,7 +115,7 @@ public abstract class FocusWrapper<Tfocus>
 
   @Override
   public String toString()
-  { return focus.toString();
+  { return super.toString()+":"+focus.toString();
   }
   
   public LinkedList<Focus<?>> getFocusChain() 
@@ -144,7 +144,7 @@ public abstract class FocusWrapper<Tfocus>
   @Override
   public <Tchannel> TeleFocus<Tchannel> telescope(
     Channel<Tchannel> subject)
-  { return focus.<Tchannel>telescope(subject);
+  { return new TeleFocus<Tchannel>(this,subject);
   }
   
   
