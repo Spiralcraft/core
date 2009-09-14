@@ -139,7 +139,7 @@ public class QueryXml<Tresult>
     }    
     Resource resource=Resolver.getInstance().resolve(queryURI);
     if (timeoutSeconds>0 && resource instanceof URLResource)
-    { ((URLResource) resource).setTimeout(timeoutSeconds);
+    { ((URLResource) resource).setTimeout(timeoutSeconds*1000);
     }
     read(queryURI,resource);    
   }
