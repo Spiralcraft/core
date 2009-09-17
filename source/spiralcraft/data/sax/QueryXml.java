@@ -42,6 +42,7 @@ public class QueryXml<Tresult>
 
   private AttributeBinding<?>[] uriQueryBindings;
   private int timeoutSeconds;  
+  private int inputBufferLength;
 
   /**
    * Number of seconds to wait for a response before throwing an
@@ -51,6 +52,13 @@ public class QueryXml<Tresult>
    */
   public void setTimeoutSeconds(int timeoutSeconds)
   { this.timeoutSeconds=timeoutSeconds;
+  }
+  
+  /**
+   * The size of the input buffer, when using URLResources
+   */
+  public void setInputBufferLength(int inputBufferLength)
+  { this.inputBufferLength=inputBufferLength;
   }
   
   /**
@@ -138,9 +146,19 @@ public class QueryXml<Tresult>
       }
     }    
     Resource resource=Resolver.getInstance().resolve(queryURI);
-    if (timeoutSeconds>0 && resource instanceof URLResource)
-    { ((URLResource) resource).setTimeout(timeoutSeconds*1000);
+    if (resource instanceof URLResource)
+    { 
+      
+      URLResource urlResource=((URLResource) resource);
+      if (timeoutSeconds>0)
+      { urlResource.setTimeout(timeoutSeconds*1000);
+      }
+      if (inputBufferLength>0)
+      { urlResource.setInputBufferLength(inputBufferLength);
+      }
+      
     }
+
     read(queryURI,resource);    
   }
   
