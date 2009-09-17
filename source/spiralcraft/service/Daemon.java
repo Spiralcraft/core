@@ -19,13 +19,18 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.exec.BeanArguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
+import spiralcraft.exec.ExecutionException;
 
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
 import spiralcraft.command.CommandFactory;
 
 
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.log.ClassLog;
+import spiralcraft.task.Scenario;
 
 
 /**
@@ -46,6 +51,7 @@ public class Daemon
   private boolean _running=true;
   private boolean _stopRequested=false;
   private String[] _args;
+  private Scenario afterStart;
   
   private ShutdownHook _shutdownHook=new ShutdownHook();
   
@@ -73,17 +79,50 @@ public class Daemon
 
 
 
+  public void setAfterStart(Scenario afterStart)
+  { this.afterStart=afterStart;
+  }
+  
   public String[] getArguments()
   { return _args;
   }  
 
+  private void bind()
+    throws BindException
+  { 
+    Focus<Daemon> focus=new BeanFocus<Daemon>(this);
+    if (afterStart!=null)
+    { afterStart.bind(focus);
+    }
+  }
+  
   public final void execute(String ... args)
+    throws ExecutionException
   {
     try
     { 
       new BeanArguments(this).process(args);
       
+      try
+      { bind();
+      }
+      catch (BindException x)
+      { throw new ExecutionException("Error binding",x);
+      }
+      
       start();
+      
+      if (afterStart!=null)
+      { 
+        Command<?,?> command=afterStart.command();
+        command.execute();
+        if (command.getException()!=null)
+        { 
+          throw new ExecutionException
+            ("Error running afterStart command",command.getException());
+        }
+      }
+      
       handleEvents();
       stop();
       synchronized(_shutdownHook)
