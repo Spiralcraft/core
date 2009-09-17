@@ -21,6 +21,21 @@
     
     <detail>
       <scm:Change>
+        <date>2009-09-17
+        </date>
+
+        <notes>
+          <scm:Note>Make the Scheduler ensure a minAvailable of 2 threads so
+            the PoolKeeper for the ThreadPool can schedule itself efficiently.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/time/Scheduler.java
+        </path>
+        
+      </scm:Change>
+      
+      <scm:Change>
         <date>2009-09-14
         </date>
 

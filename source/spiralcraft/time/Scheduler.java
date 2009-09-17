@@ -58,7 +58,12 @@ public class Scheduler
   private final Object _sync=new Object();
   private final Thread _thread
     =new Thread(new Dispatcher(),"Scheduler-"+(NEXT_ID++));
-  private ThreadPool _pool=new ThreadPool();
+  
+  private ThreadPool _pool
+    =new ThreadPool()
+  {{ setMinAvailable(2);
+  }};
+  
   private boolean _started=false;
   private volatile boolean shutdown=false;
   
