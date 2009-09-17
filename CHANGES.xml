@@ -13,13 +13,63 @@
     </date>
     
     <notes>
+      <scm:Note>Hooks for post-startup tasks to be run for Daemons
+      </scm:Note>
       <scm:Note>Misc fixes
       </scm:Note>
     </notes>
     
     <detail>
       <scm:Change>
-        <date>2009-09-08
+        <date>2009-09-14
+        </date>
+
+        <notes>
+          <scm:Note>Make URLResource overwrite the "Connection" property
+            to avoid keepalive connections by default.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/url/URLResource.java
+        </path>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <date>2009-09-14
+        </date>
+
+        <notes>
+          <scm:Note>Added buffering and debugging enhancements to QueryXml
+            and underlying URLResource where applicable.
+          </scm:Note>
+          <scm:Note>Added inputBufferLength property to URLResource
+          </scm:Note>
+          <scm:Note>Added inputBufferLength property to QueryXml, which is
+            passed through to URLResource where applicable.
+          </scm:Note>
+          <scm:Note>When URLResource system-wide debugging is set to FINE, 
+            a DebugInputStream wraps the URLConnection inputStream and times
+            calls to the read() methods.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/sax/QueryXml.java
+          </URI>
+          <URI>io/DebugInputStream.java
+          </URI>
+          <URI>vfs/url/URLResource.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+            
+      <scm:Change>
+        <date>2009-09-14
         </date>
 
         <notes>
@@ -29,6 +79,21 @@
         </notes>
         
         <path>source/spiralcraft/data/sax/QueryXml.java
+        </path>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <date>2009-09-14
+        </date>
+
+        <notes>
+          <scm:Note>Added afterStart property to Daemon which accepts a
+            scenario to be run immediately after startup.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/service/Daemon.java
         </path>
         
       </scm:Change>
