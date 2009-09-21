@@ -75,6 +75,8 @@ public class Collect<Titem>
   private Expression<Titem> cursorX;
   @SuppressWarnings("unchecked")
   private CursorChannel cursorChannel;
+  private Channel<Integer> expectedSizeChannel;
+  private Expression<Integer> expectedSizeX;
   
   /**
    * The target of this Collector, which must be of type Aggregate<?>
@@ -90,6 +92,26 @@ public class Collect<Titem>
   public void setCursorX
     (Expression<Titem> cursorX)
   { this.cursorX=cursorX;
+  }
+
+  /**
+   * Create a Lazy List and run the specified scenario to fetch
+   *   the next set of elements. 
+   * 
+   * @param fillScenario
+   */
+  public void setFillScenario(Scenario fillScenario)
+  { this.fillScenario=fillScenario;
+  }
+  
+  /**
+   * An Expression which provides the expected size of the Lazy List. The
+   *   Expression will be evaluated after nested scenarios are completed.
+   * 
+   * @param expectedSizeX
+   */
+  public void setExpectedSizeX(Expression<Integer> expectedSizeX)
+  { this.expectedSizeX=expectedSizeX;
   }
   
   /**
@@ -159,6 +181,9 @@ public class Collect<Titem>
       focusChain=closureFocus;
       fillScenario.bind(focusChain);
     }
+    if (expectedSizeX!=null)
+    { expectedSizeChannel=focusChain.bind(expectedSizeX);
+    }
     super.bindChildren(focusChain.chain(aggregateChannel));
   }
 
@@ -186,8 +211,19 @@ public class Collect<Titem>
           EditableArrayListAggregate<Titem> newResult
             =new EditableArrayListAggregate<Titem>(type);
           
+          if (debug)
+          { newResult.setDebug(debug);
+          }
+          
           if (fillScenario!=null)
-          { newResult.setFillCommand(new FillCommandChannel(newResult));
+          { 
+            aggregateChannel.push(newResult);
+            try
+            { newResult.setFillCommand(new FillCommandChannel(newResult));
+            }
+            finally
+            { aggregateChannel.pop();
+            }
           }
           
           result=newResult;
@@ -204,6 +240,18 @@ public class Collect<Titem>
           { cursorChannel.setCursor(new ListCursor(result));
           }
           
+          if (expectedSizeChannel!=null)
+          { 
+            if (result instanceof EditableArrayListAggregate)
+            { 
+              Integer expectedSize=expectedSizeChannel.get();
+              if (expectedSize!=null)
+              { 
+                ((EditableArrayListAggregate) result)
+                  .setExpectedSize(expectedSize);
+              }
+            }
+          }
           addResult(aggregateChannel.get());
         }
         catch (DataException x)

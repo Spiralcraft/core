@@ -21,6 +21,7 @@ import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.lang.Channel;
+import spiralcraft.log.ClassLog;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,9 +33,12 @@ import java.util.List;
 public class ListAggregate<T>
   extends AbstractAggregate<T>
 {
+  private static final ClassLog log=ClassLog.getInstance(ListAggregate.class);
+  
   protected final List<T> list;
   protected int expectedSize;
   protected Channel<Command<?,?>> fillCommand;
+  private boolean debug=false;
     
   /**
    * <p>Create a new ListAggregate backed by the specified List
@@ -89,6 +93,9 @@ public class ListAggregate<T>
     }
   }
     
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
   
   /**
    * <p>A command to run when the backing list runs out of entries
@@ -206,7 +213,11 @@ public class ListAggregate<T>
   
   protected int fill()
   {
+    
     int size=list.size();
+    if (debug)
+    { log.fine("Filling list: expectedSize="+expectedSize+"  size="+size);
+    }
     Command<?,?> command=fillCommand.get();
     command.execute();
     if (command.getException()!=null)
@@ -221,11 +232,18 @@ public class ListAggregate<T>
     }
     if (list.size()==size)
     { 
+      if (debug)
+      { log.fine("No more data added.");
+      }      
       expectedSize=size;
       return 0;
     }
     else
-    { return list.size()-size;
+    { 
+      if (debug)
+      { log.fine("Added "+(list.size()-size)+" items");
+      }      
+      return list.size()-size;
     }
   }
   
@@ -243,7 +261,7 @@ public class ListAggregate<T>
     { 
       if (pos>=list.size())
       { 
-        if (pos<expectedSize && fill()>0)
+        if ( (expectedSize==0 || pos<expectedSize) && fill()>0)
         { return true;
         }
         return false;
