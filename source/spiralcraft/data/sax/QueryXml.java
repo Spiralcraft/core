@@ -76,7 +76,9 @@ public class QueryXml<Tresult>
   public Focus<?> bind(Focus<?> focusChain)
     throws BindException
   {
-    log.fine("Binding "+getClass());
+    if (debug)
+    { log.fine("Binding "+getClass());
+    }
     bindAttributes(focusChain);
     return super.bind(focusChain);
   }

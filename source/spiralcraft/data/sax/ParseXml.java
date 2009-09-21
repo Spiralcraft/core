@@ -95,7 +95,9 @@ public class ParseXml<Tresult>
   protected void read(URI uri,Resource resource)
     throws IOException,SAXException,DataException
   {
-    log.fine("Opening "+uri);
+    if (debug)
+    { log.fine("Opening "+uri);
+    }
     InputStream in=resource.getInputStream();
     try
     { 
@@ -103,8 +105,10 @@ public class ParseXml<Tresult>
     }
     finally
     { 
-      log.fine("Closing "+uri);
       in.close();
+      if (debug)
+      { log.fine("Closing "+uri);
+      }
     }
   }
   
