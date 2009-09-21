@@ -15,11 +15,113 @@
     <notes>
       <scm:Note>Hooks for post-startup tasks to be run for Daemons
       </scm:Note>
+      <scm:Note>spiralcraft.lang enhancements to provide access to  
+        abstracted Collection and List semantics of Channel objects.
+      </scm:Note>
+      <scm:Note>Completed support in data task package for publishing 
+        lazy-loading aggregates
+      </scm:Note>
       <scm:Note>Misc fixes
       </scm:Note>
     </notes>
     
     <detail>
+      <scm:Change>
+        <date>2009-09-17
+        </date>
+
+        <notes>
+          <scm:Note>Simple chainable "If" scenario for task framework.
+          </scm:Note>
+          
+        </notes>    
+        
+        <path>source/spiralcraft/task/If.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-09-17
+        </date>
+
+        <notes>
+          <scm:Note>Usability enhancements to data query framework
+          </scm:Note>
+          <scm:Note>It is no longer required that a Store be present in
+            the Focus chain for queries to work, if all queries can
+            resolve their default binding. This permits non-optimized queries
+            to be created against opaque data sources (ie. ReferenceQuery). It
+            is still preferable for Query clients to resolve the query against
+            a specific Queryable.
+          </scm:Note>          
+          <scm:Note>ReferenceQuery can obtain data from any Channel that
+            supports an IterationDecorator, by using an IteratorCursor to
+            publish the result.
+          </scm:Note>          
+          <scm:Note>Sort allows the result type (and resulting Comparator set)
+            to be determined from the upstream bound query.
+          </scm:Note>          
+          
+        </notes>    
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>query/Query.java</URI>
+          <URI>query/ReferenceQuery.java</URI>
+          <URI>query/Sort.java</URI>
+          <URI>spi/IteratorCursor.java</URI>
+          <URI>task/Fetch.java</URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-09-17
+        </date>
+
+        <notes>
+          <scm:Note>Completed support in data task package for publishing 
+            lazy-loading aggregates
+          </scm:Note>
+        </notes>    
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>task/Collect.java</URI>
+          <URI>spi/ListAggregate.java</URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <date>2009-09-17
+        </date>
+
+        <notes>
+          <scm:Note>spiralcraft.lang enhancements to provide access to  
+            abstracted Collection and List semantics of Channel objects.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/CollectionDecorator.java</URI>
+          <URI>lang/ListDecorator.java</URI>
+          <URI>lang/reflect/ArrayReflector.java</URI>
+          <URI>lang/reflect/BeanReflector.java</URI>
+          <URI>lang/reflect/CollectionReflector.java</URI>
+          <URI>lang/spi/ArrayCollectionDecorator.java</URI>
+          <URI>lang/spi/ArrayListDecorator.java</URI>
+          <URI>lang/spi/GenericCollectionDecorator.java</URI>
+          <URI>lang/spi/GenericListDecorator.java</URI>
+          <URI>data/lang/AggregateReflector.java</URI>
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <date>2009-09-17
         </date>
@@ -91,10 +193,17 @@
           <scm:Note>Fixed issue where QueryXML.timeoutSeconds was applied as
             as milliseconds, prematurely aborting back-end response.
           </scm:Note>
+          <scm:Note>Removed extraneous debug messages
+          </scm:Note>
         </notes>
         
-        <path>source/spiralcraft/data/sax/QueryXml.java
+        <path>source/spiralcraft/data/sax/
         </path>
+        
+        <resources>
+           <URI>QueryXml.java</URI>
+           <URI>ParseXml.java</URI>
+        </resources>
         
       </scm:Change>
       
