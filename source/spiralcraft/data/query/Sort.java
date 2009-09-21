@@ -159,7 +159,14 @@ class SortBinding<Tq extends Sort,T extends Tuple>
     setQuery(query);
     this.paramFocus=paramFocus;
     
-    source=(BoundQuery<?,T>) store.query(getQuery().getSources().get(0),paramFocus);
+    if (store!=null)
+    { 
+      source=(BoundQuery<?,T>) store.query
+        (getQuery().getSources().get(0),paramFocus);
+    }
+    else
+    { source=(BoundQuery<?,T>) getQuery().getSources().get(0).bind(paramFocus);
+    }
 
     if (source==null)
     { 
@@ -182,12 +189,24 @@ class SortBinding<Tq extends Sort,T extends Tuple>
         if (getQuery().getOrder()==null)
         { throw new DataException("No ordering supplied");
         }
+
+        FieldSet fieldSet=getQuery().getFieldSet();
+        if (fieldSet==null)
+        { fieldSet=source.getType().getFieldSet();
+        }
+        if (fieldSet==null)
+        { 
+          throw new DataException
+            ("Unable to resolve fieldSet for Sort query based on "+source);
+        }
+        
         comparator
           =new OrderComparator
             (getQuery().getOrder()
-            ,getQuery().getFieldSet()
+            ,fieldSet
             ,paramFocus
             );
+        
       }
       catch (BindException x)
       { 
@@ -233,6 +252,9 @@ class SortBinding<Tq extends Sort,T extends Tuple>
         { tuple=(T) tuple.snapshot();
         }
         data.add(tuple);
+        if (debugLevel.canLog(Level.FINE))
+        { log.fine("Adding to collection: "+tuple);
+        }
       }
       Collections.sort(data,comparator);
     }

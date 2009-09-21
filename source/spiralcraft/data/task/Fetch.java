@@ -153,14 +153,31 @@ public class Fetch
     throws BindException
   {
     
-    Queryable<Tuple> queryable
+    Focus<Queryable<Tuple>> queryableFocus
       =focusChain.<Queryable<Tuple>>findFocus
-        (Queryable.QUERYABLE_URI).getSubject().get();
-    try
-    { boundQuery=queryable.query(query,focusChain);
+        (Queryable.QUERYABLE_URI);
+    
+    if (queryableFocus!=null)
+    {
+      try
+      { boundQuery=queryableFocus.getSubject().get().query(query,focusChain);
+      }
+      catch (DataException x)
+      { throw new BindException("Error binding query",x);
+      }
     }
-    catch (DataException x)
-    { throw new BindException("Error binding query",x);
+    else
+    { 
+      try
+      { boundQuery=(BoundQuery<?,Tuple>) query.bind(focusChain);
+      }
+      catch (DataException x)
+      { 
+        throw new BindException
+          ("Error obtaining default binding for query "+query
+          ,x
+          ); 
+      }
     }
 
     if (cursorChannel!=null)

@@ -126,7 +126,8 @@ public abstract class Query
   
   /**
    * <p>Bind the Query to the nearest available Space in the contextual
-   *   Focus chain.
+   *   Focus chain. If no space is available, return the default binding for
+   *   this query.
    * </p>
    * 
    * @param context The Focus chain
@@ -138,10 +139,15 @@ public abstract class Query
     throws DataException
   {
     Space space=Space.find(context);
-    if (space==null)
-    { throw new DataException("No Space resolvable from Focus to run Query");
+    if (space!=null)
+    { return space.query(this, context);
     }
-    return space.query(this, context);
+    else
+    { 
+      BoundQuery<?,?> ret = getDefaultBinding(context,null);
+      ret.resolve();
+      return ret;
+    }
   }
 
   /**
