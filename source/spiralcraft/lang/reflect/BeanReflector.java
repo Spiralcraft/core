@@ -21,6 +21,7 @@ import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
+import spiralcraft.lang.ListDecorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
 import spiralcraft.lang.TeleFocus;
@@ -29,7 +30,7 @@ import spiralcraft.lang.TypeModel;
 import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;
 import spiralcraft.lang.spi.ArrayContainsChannel;
-import spiralcraft.lang.spi.ArrayCollectionDecorator;
+import spiralcraft.lang.spi.ArrayListDecorator;
 import spiralcraft.lang.spi.ArraySelectChannel;
 import spiralcraft.lang.spi.CollectionSelectChannel;
 import spiralcraft.lang.spi.EnumerationIterationDecorator;
@@ -442,6 +443,7 @@ public class BeanReflector<T>
   { 
     if (decoratorInterface==(Class) IterationDecorator.class
         || decoratorInterface==(Class) CollectionDecorator.class
+        || decoratorInterface==(Class) ListDecorator.class
         )
     { 
       
@@ -449,7 +451,7 @@ public class BeanReflector<T>
       { 
         Reflector reflector=BeanReflector.getInstance
           (targetClass.getComponentType());
-        return (D) new ArrayCollectionDecorator(source,reflector);
+        return (D) new ArrayListDecorator(source,reflector);
       }
       else if (Collection.class.isAssignableFrom(targetClass))
       {

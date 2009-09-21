@@ -15,6 +15,7 @@
 package spiralcraft.data.lang;
 
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
@@ -22,6 +23,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.ListDecorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
 
@@ -33,6 +35,7 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
 
+import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
@@ -204,10 +207,11 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   { 
     if (decoratorInterface.equals(IterationDecorator.class)
        || decoratorInterface.equals(CollectionDecorator.class) 
+       || decoratorInterface.equals(ListDecorator.class) 
        )
     { 
       Reflector reflector=DataReflector.getInstance(type.getContentType());
-      return (D) new AggregateCollectionDecorator<T,I>(binding,reflector);
+      return (D) new AggregateListDecorator<T,I>(binding,reflector);
     }
     return null;
   }
@@ -285,11 +289,11 @@ public class AggregateReflector<T extends Aggregate<I>,I>
 
 }
 
-class AggregateCollectionDecorator<T extends Aggregate<I>,I>
-  extends CollectionDecorator<T,I>
+class AggregateListDecorator<T extends Aggregate<I>,I>
+  extends ListDecorator<T,I>
 {
 
-  public AggregateCollectionDecorator
+  public AggregateListDecorator
     (Channel<T> source,Reflector<I> reflector)
   { super(source,reflector);
   }
@@ -322,6 +326,21 @@ class AggregateCollectionDecorator<T extends Aggregate<I>,I>
 
   }
   
+  @Override
+  public int size(T collection)
+  { return collection.size();
+  }
+  
+  @Override
+  public I get(T collection,int index)
+  { 
+    try
+    { return collection.get(index);
+    }
+    catch (DataException x)
+    { throw new AccessException("Error retrieving data from Aggregate",x);
+    }
+  }
 }
 
 

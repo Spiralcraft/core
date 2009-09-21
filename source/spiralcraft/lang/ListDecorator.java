@@ -15,35 +15,20 @@
 package spiralcraft.lang;
 
 
-public abstract class CollectionDecorator<T,I>
-  extends IterationDecorator<T,I>
+public abstract class ListDecorator<T,I>
+  extends CollectionDecorator<T,I>
 {
 
-  public CollectionDecorator(Channel<T> source,Reflector<I> componentReflector)
+  public ListDecorator(Channel<T> source,Reflector<I> componentReflector)
   { super(source,componentReflector);
   }
   
   /**
-   * Create a new Collection of the appropriate type and content type
-   * 
-   * @return A new collection
-   */
-  public abstract T newCollection();
-  
-  /**
-   * Add an item to the collection created by newCollection
+   * Obtain the item at the specified index of the collection
    * 
    * @param collection
-   * @param item
-   */
-  public abstract void add(T collection,I item);
-  
-  
-  /**
-   * Obtain the size of the collection
-   * 
-   * @param collection
+   * @param index
    * @return
    */
-  public abstract int size(T collection);
+  public abstract I get(T collection,int index);
 }

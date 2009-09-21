@@ -15,8 +15,8 @@
 package spiralcraft.lang.spi;
 
 
-import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.ListDecorator;
 import spiralcraft.lang.Reflector;
 
 import spiralcraft.util.ArrayUtil;
@@ -27,10 +27,10 @@ import java.util.Iterator;
 /**
  * Implements an IterationDecorator for a source that returns an Array
  */
-public class ArrayCollectionDecorator<I>
-  extends CollectionDecorator<I[],I>
+public class ArrayListDecorator<I>
+  extends ListDecorator<I[],I>
 {
-  public ArrayCollectionDecorator(Channel<I[]> source,Reflector<I> componentReflector)
+  public ArrayListDecorator(Channel<I[]> source,Reflector<I> componentReflector)
   { super(source,componentReflector);
   }
   
@@ -59,6 +59,16 @@ public class ArrayCollectionDecorator<I>
   { 
     return (I[]) Array.newInstance
       (getComponentReflector().getContentType(),0);
+  }
+  
+  @Override
+  public int size(I[] collection)
+  { return collection.length;
+  }
+  
+  @Override
+  public I get(I[] collection,int index)
+  { return collection[index];
   }
 
 }

@@ -22,13 +22,14 @@ import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
+import spiralcraft.lang.ListDecorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.TypeModel;
 import spiralcraft.lang.spi.ArrayContainsChannel;
 import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;
-import spiralcraft.lang.spi.ArrayCollectionDecorator;
+import spiralcraft.lang.spi.ArrayListDecorator;
 import spiralcraft.lang.spi.ArraySelectChannel;
 import spiralcraft.lang.spi.IterationProjector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
@@ -199,8 +200,9 @@ public class ArrayReflector<I>
   { 
     if (decoratorInterface==(Class) IterationDecorator.class
         || decoratorInterface==(Class) CollectionDecorator.class
+        || decoratorInterface==(Class) ListDecorator.class
         )
-    { return (D) new ArrayCollectionDecorator(source,componentReflector);
+    { return (D) new ArrayListDecorator(source,componentReflector);
     }
     
     // Look up the target class in the map of decorators for 

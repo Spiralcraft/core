@@ -17,6 +17,7 @@ package spiralcraft.lang.reflect;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.List;
 import java.util.WeakHashMap;
 
 import spiralcraft.lang.BindException;
@@ -24,8 +25,10 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.IterationDecorator;
+import spiralcraft.lang.ListDecorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.GenericCollectionDecorator;
+import spiralcraft.lang.spi.GenericListDecorator;
 import spiralcraft.log.ClassLog;
 
 /**
@@ -113,7 +116,16 @@ public class CollectionReflector<C extends Collection<T>,T>
     (Channel<C> source,Class<D> decoratorInterface)
     throws BindException
   { 
-    if (decoratorInterface==(Class) IterationDecorator.class
+    if (List.class.isAssignableFrom(source.getReflector().getContentType()))
+    {
+      if (decoratorInterface==(Class) IterationDecorator.class
+          || decoratorInterface==(Class) CollectionDecorator.class
+          || decoratorInterface==(Class) ListDecorator.class
+          )
+      { return (D) new GenericListDecorator(source,componentReflector);
+      }
+    }
+    else if (decoratorInterface==(Class) IterationDecorator.class
         || decoratorInterface==(Class) CollectionDecorator.class
         )
     { return (D) new GenericCollectionDecorator<C,T>(source,componentReflector);

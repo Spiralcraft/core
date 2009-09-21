@@ -16,21 +16,22 @@ package spiralcraft.lang.spi;
 
 
 import spiralcraft.lang.AccessException;
-import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.ListDecorator;
 import spiralcraft.lang.Reflector;
 
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Implements an CollectionDecorator for a source that returns a
  *   Collection type
  */
-public class GenericCollectionDecorator<C extends Collection<I>,I>
-  extends CollectionDecorator<C,I>
+public class GenericListDecorator<C extends List<I>,I>
+  extends ListDecorator<C,I>
+  
 {
-  public GenericCollectionDecorator
+  public GenericListDecorator
     (Channel<C> source
     ,Reflector<I> componentReflector
     )
@@ -73,5 +74,9 @@ public class GenericCollectionDecorator<C extends Collection<I>,I>
   { return collection.size();
   }
 
+  @Override
+  public I get(C collection,int index)
+  { return collection.get(index);
+  }
   
 }
