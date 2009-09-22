@@ -28,6 +28,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
@@ -110,15 +111,21 @@ public class TupleNode
       else
       { builder.append(" , ");
       }
-      builder.append(field.name)
-        .append(" : ");
-      if (field.type!=null)
-      { builder.append(field.type.reconstruct());
+      if (!field.anonymous)
+      {
+        builder.append(field.name)
+          .append(" : ");
+        if (field.type!=null)
+        { builder.append(field.type.reconstruct());
+        }
+        if (field.source!=null)
+        { 
+          builder.append(field.passThrough?"~":"=")
+            .append(field.source.reconstruct());
+        }
       }
       else if (field.source!=null)
-      { 
-        builder.append(field.passThrough?"~":"=")
-          .append(field.source.reconstruct());
+      { builder.append(field.source.reconstruct());
       }
     }
     builder.append(" } ");
@@ -137,7 +144,9 @@ public class TupleNode
   { 
     field.index=fields.size();
     if (field.name==null)
-    { field.name="_"+field.index;
+    { 
+      field.name="_"+field.index;
+      field.anonymous=true;
     }
     fields.put(field.name,field);
   }
@@ -227,6 +236,24 @@ public class TupleNode
         { 
 //          log.fine("Binding "+field.name+" to "+field.source.reconstruct());
           channels[i]= field.source.bind(focus);
+          if (field.type!=null)
+          { 
+            // Set up field with a different declared type
+            Reflector type=(Reflector) field.type.bind(focus).get();
+            if (!type.isAssignableFrom(channels[i].getReflector()))
+            { 
+              throw new BindException
+                ("Type "+type.getTypeURI()
+                +" cannot be assigned from expression of type "
+                +channels[i].getReflector().getTypeURI()
+                );
+            }
+            channels[i]
+              = new AspectChannel
+                (type
+                ,channels[i]
+                );
+          }
         }
         else if (field.type!=null)
         { 

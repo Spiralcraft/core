@@ -24,11 +24,39 @@
       <scm:Note>Simplification of Pool implementation to use dedicated thread
         for Keeper.
       </scm:Note>
+      <scm:Note>Further refinements to spiralcraft.lang tuple syntax
+      </scm:Note>
       <scm:Note>Misc fixes
       </scm:Note>
     </notes>
     
     <detail>
+      <scm:Change>
+        <date>2009-09-22
+        </date>
+
+        <notes>
+          <scm:Note>Further refinements to spiralcraft.lang tuple syntax
+          </scm:Note>
+          <scm:Note>Permit standalone expressions as implicit, anonymous fields
+          </scm:Note>
+          <scm:Note>Type decls must be associated with an explicit field decl
+          </scm:Note>
+          <scm:Note>Allow Type decl to be included along with source
+            expression to allow for wider field type than source type.
+          </scm:Note>
+        </notes>    
+        
+        <path>source/spiralcraft/lang/parser/
+        </path>
+        
+        <resources>
+          <URI>ExpressionParser.java</URI>
+          <URI>TupleField.java</URI>
+          <URI>TupleNode.java</URI>
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <date>2009-09-21
         </date>

@@ -27,6 +27,7 @@ public class TupleField
   TypeFocusNode type;
   Node source;
   boolean passThrough;
+  boolean anonymous;
   
   public TupleField copy(Object visitor)
   {
@@ -40,12 +41,16 @@ public class TupleField
     { copy.source=source.copy(visitor);
     }
     copy.passThrough=passThrough;
+    copy.anonymous=anonymous;
     return copy;
   }
   
   public void dumpTree(StringBuffer out,String prefix)
   {
     out.append("TupleField  ");
+    if (anonymous)
+    { out.append("(anon)");
+    }
     out.append(name)
       .append(" : ");
     prefix=prefix+"  ";

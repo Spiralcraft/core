@@ -255,6 +255,9 @@ public class ExpressionParser
     Node node=this.parseConditionalExpression();
     if (_tokenizer.ttype=='=')
     {
+      if (node==null)
+      { this.throwException("Missing left hand side of assignment");
+      }
       consumeToken();
       node=node.assign(this.parseExpression());
     }
@@ -927,7 +930,7 @@ public class ExpressionParser
   }
   
   /**
-   * Tuple -> ( "{" [ TypeSpecifier | [ "=" Expression  ] ] "}" )
+   * TupleDefinition -> ( "{" [ TypeSpecifier | [ "=" Expression  ] ] "}" )
    * 
    *             ( TupleField ( "," TupleField ...)* )
    */
@@ -985,7 +988,8 @@ public class ExpressionParser
   
   /**
    * FieldDefinition -> 
-   *   ( FieldName ":") ( TypeSpecifier | "=" Expression | "~" Expression ] )*1 
+   *     [ FieldName ":" (TypeSpecifier) ( [ '=' | '~' ] FieldExpression ) ]
+   *   | FieldExpression
    * 
    * @param tuple
    * @return
@@ -998,18 +1002,18 @@ public class ExpressionParser
     
     TupleField field=new TupleField();
     
-    if (_tokenizer.ttype==StreamTokenizer.TT_WORD)
+    if (_tokenizer.ttype==StreamTokenizer.TT_WORD
+         && _tokenizer.lookahead.ttype==':'
+       )
     {
       // Named definition
       field.name=_tokenizer.sval;
       consumeToken();
       expect(':');
-    }
-        
-    
-    switch (_tokenizer.ttype)
-    {
-      case '[':
+      
+      
+      if (_tokenizer.ttype=='[')
+      {
         consumeToken();
         Node typeNode=parseFocusSpecifier();
         if (!(typeNode instanceof TypeFocusNode))
@@ -1017,25 +1021,27 @@ public class ExpressionParser
           throwException
             ("Expected a type literal here (eg. '[@mylib:mytype]' )");
         }
-        expect(']');
         field.type=(TypeFocusNode) typeNode;
-        break;
-        
-      case '=':
-        consumeToken();
-        field.source=parseExpression();
-        break;
-        
-      case '~':
+        expect(']');
+      }
       
-        consumeToken();
-        field.source=parseExpression();
-        field.passThrough=true;
-        break;
-        
-      default:
-        throwUnexpected
-          ("Expected '[@typeURI]', '=expression' or '~expression'");
+      switch (_tokenizer.ttype)
+      { 
+        case '~':
+          consumeToken();
+          field.source=parseExpression();
+          field.passThrough=true;
+          break;
+        case '=':
+          consumeToken();
+          field.source=parseExpression();
+          break;
+      }
+    }
+    else
+    {
+      // Plain expression case
+      field.source=parseExpression();
     }
     
     tuple.addField(field);
@@ -1184,7 +1190,7 @@ public class ExpressionParser
 
 
   /**
-   * FocusExpression -> FocusName 
+   * FocusSpecifier -> ('@') URI
    */
   @SuppressWarnings("fallthrough")
   private FocusNode parseFocusSpecifier()

@@ -200,10 +200,11 @@
           </name>
           
           <subjectX>
-            { {={ x:[@j:String], y:[@j:Integer] } }
-                 = .x="hello"
-                ,= .y=.x.length() 
-            }
+            "hello"
+              { {={ x:[@j:String], y:[@j:Integer] } }
+                   .x=..
+                  ,.y=.x.length() 
+              }
           </subjectX>
           
           <testX>x=="hello" &amp;&amp; y==5
