@@ -21,11 +21,48 @@
       <scm:Note>Completed support in data task package for publishing 
         lazy-loading aggregates
       </scm:Note>
+      <scm:Note>Simplification of Pool implementation to use dedicated thread
+        for Keeper.
+      </scm:Note>
       <scm:Note>Misc fixes
       </scm:Note>
     </notes>
     
     <detail>
+      <scm:Change>
+        <date>2009-09-21
+        </date>
+
+        <notes>
+          <scm:Note>Simplified Pool to use dedicated thread for Keeper and 
+            eliminate circular dependency on Scheduler. 
+          </scm:Note>
+          
+        </notes>    
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>pool/Pool.java</URI>
+          <URI>time/Scheduler.java</URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-09-21
+        </date>
+
+        <notes>
+          <scm:Note>Remove extraneous debug messages
+          </scm:Note>
+          
+        </notes>    
+        
+        <path>source/spiralcraft/data/builder/BuilderField.java
+        </path>
+      </scm:Change>
+
       <scm:Change>
         <date>2009-09-17
         </date>
