@@ -37,7 +37,7 @@ public class Exec<T,R>
   extends Chain
 {
   
-  private Channel<Command<T,R>> commandChannel;
+  private Channel<Command<T,R>> targetCommandChannel;
   private Expression<Command<T,R>> commandX;
   
   @Override
@@ -56,7 +56,7 @@ public class Exec<T,R>
   protected void bindChildren(Focus<?> focusChain)
     throws BindException
   { 
-    commandChannel=focusChain.bind(commandX);
+    targetCommandChannel=focusChain.bind(commandX);
     super.bindChildren(focusChain);
   }
   
@@ -90,7 +90,7 @@ public class Exec<T,R>
     { 
       try
       {
-        command=commandChannel.get();
+        command=targetCommandChannel.get();
         command.execute();
         addResult(command);
         if (command.getException()!=null)

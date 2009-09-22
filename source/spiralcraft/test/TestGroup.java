@@ -40,7 +40,6 @@ public class TestGroup
 {
 
   public static TestGroup find(Focus<?> focus)
-    throws BindException
   { 
   
     Focus<TestGroup> testFocus

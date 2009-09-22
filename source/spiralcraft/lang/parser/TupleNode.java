@@ -479,8 +479,8 @@ public class TupleNode
         
         final TupleField field=fields.get(name);
        
-       if (field!=null)
-       {
+        if (field!=null)
+        {
           final Channel target=channels[field.index];
         
           if (!field.passThrough)
@@ -580,7 +580,8 @@ public class TupleNode
       // private final TupleField field;
       
       public PassThroughChannel
-        (final TupleField field
+        (@SuppressWarnings("unused") 
+        final TupleField field
         ,final Channel<Tuple> source
         ,final Channel<Object> target
         )

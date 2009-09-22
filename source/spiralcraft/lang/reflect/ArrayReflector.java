@@ -210,6 +210,7 @@ public class ArrayReflector<I>
     return null;
   }
   
+  @SuppressWarnings("unused")
   private synchronized <X> Channel<X> getArrayMethod
     (Channel<I[]> source,String name,Channel ... params)
     throws BindException

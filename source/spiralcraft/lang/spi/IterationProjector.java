@@ -114,12 +114,12 @@ public class IterationProjector<I,P,R>
       output.toArray((Object[]) Array.newInstance(pclass,output.size()));
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "unused"})
   public Reflector<R> containerReflector(Channel<P> projection)
     throws BindException
   { 
     return (Reflector<R>) 
-      ArrayReflector.getInstance(projectionChannel.getReflector());
+      ArrayReflector.getInstance(projection.getReflector());
   }
   
 }
