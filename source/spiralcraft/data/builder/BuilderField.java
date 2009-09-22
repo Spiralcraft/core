@@ -61,7 +61,7 @@ public class BuilderField
     try
     {
       
-      if (specifier.getPropertyType()==Object.class)
+      if (debug && specifier.getPropertyType()==Object.class)
       { 
         log.debug("Property "
                   +reflectionField.getScheme().getType().getNativeClass()
