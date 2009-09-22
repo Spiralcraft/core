@@ -27,13 +27,13 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
 import spiralcraft.time.Clock;
-import spiralcraft.time.Scheduler;
 
 
 public class Pool<T>
   implements Lifecycle
 {
 
+  private static int NEXT_ID=0;
   protected final ClassLog log=ClassLog.getInstance(getClass());
   protected Level debugLevel
     =ClassLog.getInitialDebugLevel(getClass(),null);
@@ -218,13 +218,13 @@ public class Pool<T>
             log.info("Waiting for pool");
             long time=System.currentTimeMillis();
             _monitor.wait();
-            _waitingCount--;
             log.info("Waited "+(System.currentTimeMillis()-time)+" for pool");
           }
           catch (InterruptedException x)
-          { 
-            _waitingCount--;
-            return null; 
+          { throw new RuntimeException("Interrupted while waiting for pool");
+          }
+          finally
+          { _waitingCount--;
           }
         }
       }
@@ -292,29 +292,19 @@ public class Pool<T>
     implements Runnable
   {
     private boolean _done=false;
-    private boolean _running=false;
     private int _numTimes=0;
     private Object _keeperMonitor=new Object();
-    private int _scheduledCount=0;
+    private String name="PoolKeeper-"+NEXT_ID++;
+    private volatile boolean _requested=false;
 
     public void stop()
-    { _done=true;
+    { 
+      _done=true;
+      _keeperMonitor.notify();
     }
 
-    public void run()
+    public void work()
     {
-      if (_done)
-      { return;
-      }
-
-      synchronized (_keeperMonitor)
-      { 
-        _scheduledCount--;
-        if (_running)
-        { return;
-        }
-        _running=true;
-      }
 
       if (_factory!=null)
       {
@@ -336,42 +326,64 @@ public class Pool<T>
           }
         }
         catch (Exception x)
-        { log.warning("PoolKeeper: "+x.toString());
+        { log.warning(name+": "+x.toString());
         }
       }
       else
       { log.log(Level.SEVERE,"No factory installed");
       }
       
-      synchronized (_keeperMonitor)
-      {
-        _running=false;
-        if (_scheduledCount==0)
-        {
-          _scheduledCount++;
-          Scheduler.instance().scheduleIn(this,_maintenanceInterval);
-        }
-      }
     }
 
+    @Override
+    public void run()
+    {
+      
+      while (!_done)
+      {
+        
+        // Keep work outside the scope of the lock
+        work();
+        while (_requested)
+        { 
+          // A request went unsatisfied while we were doing work
+          //   make sure we stay ahead of the queue
+          synchronized(_keeperMonitor)
+          { _requested=false;
+          }
+          work();
+        }
+        
+        synchronized(_keeperMonitor)
+        {
+          try
+          { 
+            _keeperMonitor.wait(_maintenanceInterval);
+          }
+          catch (InterruptedException x)
+          { 
+            log.log(Level.WARNING,"Pool keeper interrupted",x);
+            
+          }
+          _requested=false;
+        }        
+        
+      }
+    }
+    
     public void start()
     { 
       synchronized (_keeperMonitor)
-      {
-        _scheduledCount++;
-        Scheduler.instance().scheduleNow(this);
+      { new Thread(this,name).start();
       }
     }
     
     public void wake()
     { 
       synchronized (_keeperMonitor)
-      {
-        if (!_running && _scheduledCount<2)
-        { 
-          _scheduledCount++;
-          Scheduler.instance().scheduleNow(this);
-        }
+      { 
+        _requested=true;
+        _keeperMonitor.notify();
       }
     }
   }
@@ -408,7 +420,11 @@ public class Pool<T>
 
   private void grow()
   {
-    while (getNumAvailable()<_minAvailable && getTotalSize()<_maxCapacity && _started==true)
+    // Include _waitingCount in computation to stay ahead of rush
+    while ( ( getNumAvailable() - _waitingCount) <_minAvailable
+            && getTotalSize()<_maxCapacity 
+            && _started
+          )
     { add();
     }
   }

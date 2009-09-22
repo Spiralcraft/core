@@ -60,9 +60,7 @@ public class Scheduler
     =new Thread(new Dispatcher(),"Scheduler-"+(NEXT_ID++));
   
   private ThreadPool _pool
-    =new ThreadPool()
-  {{ setMinAvailable(2);
-  }};
+    =new ThreadPool();
   
   private boolean _started=false;
   private volatile boolean shutdown=false;
