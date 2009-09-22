@@ -580,8 +580,7 @@ public class TupleNode
       // private final TupleField field;
       
       public PassThroughChannel
-        (@SuppressWarnings("unused") 
-        final TupleField field
+        (final TupleField field
         ,final Channel<Tuple> source
         ,final Channel<Object> target
         )
