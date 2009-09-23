@@ -84,7 +84,6 @@ public abstract class MethodImpl
     qualifiedName=getDataType().getURI()+"!"+name;
   }
   
-  @SuppressWarnings("unused")
   protected void subclassResolve()
     throws DataException
   { }
