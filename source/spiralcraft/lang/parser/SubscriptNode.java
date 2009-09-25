@@ -21,10 +21,10 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 
-import spiralcraft.lang.reflect.BeanReflector;
+//import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ArrayConstructorChannel;
-import spiralcraft.lang.spi.ArrayIndexTranslator;
-import spiralcraft.lang.spi.TranslatorChannel;
+//import spiralcraft.lang.spi.ArrayIndexTranslator;
+//import spiralcraft.lang.spi.TranslatorChannel;
 
 
 /**
@@ -95,6 +95,7 @@ public class SubscriptNode<T,C,I>
           , "[]"
           , new Expression[] {new Expression<I>(_selector,null)}
           );
+      
       if (result==null)
       { 
         throw new BindException
@@ -155,24 +156,24 @@ public class SubscriptNode<T,C,I>
   
 }
 
-class ArrayIndexHelper
-{
-  
-  @SuppressWarnings("unchecked") // Upcasts bc/we narrowed operation type
-  public static final <T,C> Channel<T> bind
-    (Channel<C> collection
-     ,Channel selector
-     )
-  {
-    return new TranslatorChannel<T,T[]>
-      ((Channel<T[]>) collection
-      ,new ArrayIndexTranslator<T>
-        (BeanReflector.<T>getInstance
-            ((Class<T>) collection.getContentType().getComponentType())
-        )
-      ,new Channel[] {selector}
-      );
-    
-  }
-
-}
+//class ArrayIndexHelper
+//{
+//  
+//  @SuppressWarnings("unchecked") // Upcasts bc/we narrowed operation type
+//  public static final <T,C> Channel<T> bind
+//    (Channel<C> collection
+//     ,Channel selector
+//     )
+//  {
+//    return new TranslatorChannel<T,T[]>
+//      ((Channel<T[]>) collection
+//      ,new ArrayIndexTranslator<T>
+//        (BeanReflector.<T>getInstance
+//            ((Class<T>) collection.getContentType().getComponentType())
+//        )
+//      ,new Channel[] {selector}
+//      );
+//    
+//  }
+//
+//}
