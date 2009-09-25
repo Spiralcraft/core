@@ -29,7 +29,9 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.UncheckedCastChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.rules.Inspector;
 import spiralcraft.rules.Rule;
@@ -40,6 +42,7 @@ import spiralcraft.rules.Violation;
 import spiralcraft.data.lang.DataReflector;
 
 import java.net.URI;
+import java.util.WeakHashMap;
 
 @SuppressWarnings("unchecked")
 /**
@@ -575,11 +578,16 @@ public class FieldImpl<T>
     protected final Channel<? extends Tuple> source;
     protected final Inspector<FieldImpl<T>,T> inspector;
     protected final Inspector<Type<T>,T> typeInspector;
+    protected final Focus<? extends Tuple> focus;
+    
+    protected WeakHashMap<Type,Channel<T>> polyBindings;
+    
     
     public FieldChannel(Focus<? extends Tuple> focus)
       throws BindException
     { 
       super(contentReflector);
+      this.focus=focus;
       this.source=focus.getSubject();
       
       if (ruleSet!=null)
@@ -618,6 +626,7 @@ public class FieldImpl<T>
       }
       else
       {
+        
         try
         { 
           // This was is a hot spot block, this the short circuit above
@@ -628,10 +637,24 @@ public class FieldImpl<T>
         }
       }
       
+      
       if (t!=null)
-      { 
+      {         
         try
-        { return (T) t.get(index);
+        { 
+          // If we've widened, check for polymorphic field override
+          Channel<T> polyChannel
+            =(t!=subtypeTuple)
+            ?polyChannel(subtypeTuple.getType())
+            :null;
+          if (polyChannel!=null)
+          { 
+            // Field is polymorphic for actual subtype
+            return polyChannel.get();
+          }
+          else
+          { return (T) t.get(index);
+          }
         }
         catch (DataException x)
         { throw new AccessException(x.toString(),x);
@@ -654,6 +677,80 @@ public class FieldImpl<T>
 
     }
 
+    /**
+     * Returns a delegated binding for this Field when overridden by
+     *   a subtype field.
+     * 
+     * @param subtype
+     * @return
+     */
+    protected Channel<T> polyChannel(Type<?> subtype)
+    {
+      
+      // This field may be overridden in the subtype
+      if (polyBindings==null)
+      {
+        synchronized(this)
+        { 
+          if (polyBindings==null)
+          { polyBindings=new WeakHashMap<Type,Channel<T>>();
+          }
+        }
+      }
+      
+      Channel<T> channel=polyBindings.get(subtype);
+      if (channel==null)
+      { 
+        synchronized(polyBindings)
+        {
+          channel=polyBindings.get(subtype);
+          if (channel==null)
+          { 
+            Field field=subtype.getField(getName());
+            if (field!=FieldImpl.this)
+            { 
+              try
+              { 
+                Channel<? extends Tuple> subSource
+                  =focus.getSubject().getCached("_"+subtype.getURI());
+                if (subSource==null)
+                { 
+                  Reflector subtypeReflector=DataReflector.getInstance(subtype);
+                  subSource
+                    =new UncheckedCastChannel
+                      (subtypeReflector,focus.getSubject());
+                  focus.getSubject().cache("_"+subtype.getURI(),subSource);
+                }
+                  		
+                
+                
+                channel=field.bindChannel
+                  (new SimpleFocus(focus.getParentFocus(),subSource));
+              }
+              catch (BindException x)
+              { 
+                throw new AccessException
+                  ("Dynamic polymorphic binding failure for field "
+                  +field.getURI()
+                  ,x);
+              }
+            }
+            else
+            { channel=this;
+            }
+            polyBindings.put(subtype,channel);
+          }
+        }
+      }
+      
+      if (channel!=this)
+      { return channel;
+      }
+      else
+      { return null;
+      }
+    }
+    
     @Override
     public boolean isWritable()
     { return source.get() instanceof EditableTuple;
