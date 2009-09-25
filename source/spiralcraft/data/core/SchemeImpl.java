@@ -367,13 +367,14 @@ public class SchemeImpl
   { return keys.size();
   }
 
+  @SuppressWarnings("unchecked")
   public Key<Tuple> getPrimaryKey()
   { 
     if (primaryKey==null 
         && type!=null
         && type.getBaseType()!=null
         )
-    { return type.getBaseType().getScheme().getPrimaryKey();
+    { return (Key<Tuple>) type.getBaseType().getPrimaryKey();
     }
     return primaryKey;
   }
