@@ -11,6 +11,14 @@ import spiralcraft.data.Aggregate;
 import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 
+/**
+ * A selector (boolean filter) for Aggregates
+ * 
+ * @author mike
+ *
+ * @param <T>
+ * @param <X>
+ */
 public class AggregateSelectChannel<T extends Aggregate<X>,X>
   extends AbstractChannel<Aggregate<X>>
 {
