@@ -106,7 +106,7 @@ public class KeyField<T extends DataComposite>
         {  
           BoundQuery boundQuery
             = queryable.query(query,keyFocus);
-          if (query==null)
+          if (boundQuery==null)
           {
             throw new BindException
               ("Got null query from "+queryable+" for query "+query);
@@ -126,7 +126,17 @@ public class KeyField<T extends DataComposite>
       }
     }
     else
-    { throw new BindException("No Queryable reachable from Focus "+focus);
+    { 
+      try
+      {
+        BoundQuery boundQuery=query.bind(keyFocus);
+        boundQuery.resolve();
+        return new KeyFieldChannel(getType(),boundQuery,keyFocus.getSubject());
+      }
+      catch (DataException x)
+      { throw new BindException("Error binding query for KeyField "+getURI(),x);
+      }
+        
     }
   }
   
