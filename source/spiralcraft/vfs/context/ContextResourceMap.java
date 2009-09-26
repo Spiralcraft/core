@@ -50,6 +50,10 @@ public class ContextResourceMap
   private static final InheritableThreadLocal<ContextResourceMap> threadMap
     =new InheritableThreadLocal<ContextResourceMap>();
 
+  static 
+  { new ContextResourceMap().push();
+  }
+  
   public static final URI lookup(String name)
   { return threadMap.get().get(name);
   }
