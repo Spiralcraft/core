@@ -79,6 +79,10 @@ public class Scan
     getDefaultBinding(Focus<?> focus,Queryable<?> queryable)
     throws DataException
   { 
+    if (queryable==null)
+    { throw new DataException
+        ("No Queryable available for scan of type "+type.getURI()); 
+    }
     return (BoundQuery<?,T>) queryable.getAll(type);
   }
   

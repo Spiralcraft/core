@@ -57,8 +57,10 @@ public abstract class UnaryBoundQuery
     { throw new DataException(getClass().getName()+": Can't bind to more than one source");
     }
     
-
-    BoundQuery<?,?> source=store.query(sources.get(0),focus);
+    BoundQuery<?,?> source
+      =store!=null
+      ?store.query(sources.get(0),focus)
+      :sources.get(0).bind(focus);
 
     this.source=source;
     if (source==null)

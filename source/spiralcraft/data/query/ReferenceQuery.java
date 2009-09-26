@@ -165,6 +165,20 @@ class BoundReferenceQuery<T extends Tuple>
           );
       }
     }
+    if (query.getType()!=null)
+    {
+      if (query.getType().isAssignableFrom(type))
+      { type=(Type<T>) query.getType();
+      }
+      else
+      { 
+        throw new BindException
+          ("Declared query type "+query.getType().getURI()
+           +" cannot be assigned from "+type.getURI()+" as resolved by "
+           +" reference to expression "+query.getReference().getText()
+          );
+      }
+    }
   }
   
   @Override
