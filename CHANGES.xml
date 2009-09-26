@@ -3,6 +3,25 @@
   >
   
   <scm:Change>
+    <revision>0.3.21
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-09-25
+    </date>
+    
+    <notes>
+      <scm:Note>Fixed incomplete implementation of modulo operator
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft/lang/NumericOpNode.java
+    </path>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.3.20
     </revision>
     
