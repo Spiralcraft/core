@@ -164,6 +164,9 @@ class NumberBindingHelper
   private static HashMap<Class<?>,NumericTranslator<?,?,?>> _translatorMapDivide
     =new HashMap<Class<?>,NumericTranslator<?,?,?>>();
   
+  private static HashMap<Class<?>,NumericTranslator<?,?,?>> _translatorMapModulus
+    =new HashMap<Class<?>,NumericTranslator<?,?,?>>();
+
   @SuppressWarnings("unchecked")
   public static final <Tret extends Number,T1 extends Tret,T2 extends Tret> Channel<Tret> 
     bindNumber(Channel<T1> op1,Channel<T2> op2,char operator)
@@ -189,6 +192,9 @@ class NumberBindingHelper
         break;
       case '/':
         translatorMap=_translatorMapDivide;
+        break;
+      case '%':
+        translatorMap=_translatorMapModulus;
         break;
     }
     
@@ -228,6 +234,8 @@ class NumberBindingHelper
                 return (Tret) Integer.valueOf(n1.intValue()*n2.intValue());
               case '/':
                 return (Tret) Integer.valueOf(n1.intValue()/n2.intValue());
+              case '%':
+                return (Tret) Integer.valueOf(n1.intValue()%n2.intValue());
               default:
                 return null;                
             }
@@ -262,6 +270,8 @@ class NumberBindingHelper
                 return (Tret) Float.valueOf(n1.floatValue()*n2.floatValue());
               case '/':
                 return (Tret) Float.valueOf(n1.floatValue()/n2.floatValue());
+              case '%':
+                return (Tret) Float.valueOf(n1.floatValue()%n2.floatValue());
               default:
                 return null;                
             }
@@ -296,6 +306,8 @@ class NumberBindingHelper
                 return (Tret) Long.valueOf(n1.longValue()*n2.longValue());
               case '/':
                 return (Tret) Long.valueOf(n1.longValue()/n2.longValue());
+              case '%':
+                return (Tret) Long.valueOf(n1.longValue()%n2.longValue());
               default:
                 return null;                
             }
@@ -330,6 +342,8 @@ class NumberBindingHelper
                 return (Tret) Double.valueOf(n1.doubleValue()*n2.doubleValue());
               case '/':
                 return (Tret) Double.valueOf(n1.doubleValue()/n2.doubleValue());
+              case '%':
+                return (Tret) Double.valueOf(n1.doubleValue()%n2.doubleValue());
               default:
                 return null;                
             }
@@ -378,6 +392,8 @@ class NumberBindingHelper
                 return (Tret) num1.multiply(num2);
               case '/':
                 return (Tret) num1.divide(num2);
+              case '%':
+                return (Tret) num1.remainder(num2);
               default:
                 return null;                
             }
