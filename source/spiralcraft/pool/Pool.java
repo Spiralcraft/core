@@ -344,7 +344,8 @@ public class Pool<T>
         
         // Keep work outside the scope of the lock
         work();
-        while (_requested)
+        
+        while (_requested && !_done)
         { 
           // A request went unsatisfied while we were doing work
           //   make sure we stay ahead of the queue
@@ -352,6 +353,10 @@ public class Pool<T>
           { _requested=false;
           }
           work();
+        }
+        
+        if (_done)
+        { break;
         }
         
         synchronized(_keeperMonitor)
@@ -374,7 +379,10 @@ public class Pool<T>
     public void start()
     { 
       synchronized (_keeperMonitor)
-      { new Thread(this,name).start();
+      { 
+        Thread keeperThread=new Thread(this,name);
+        keeperThread.setDaemon(true);
+        keeperThread.start();
       }
     }
     
