@@ -19,6 +19,7 @@ import spiralcraft.text.Filter;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import java.util.StringTokenizer;
 import java.util.ArrayList;
@@ -211,4 +212,31 @@ public class StringUtil
     }
     return ret;
   }
+  
+  public static String escapeISOControl(String string)
+  {
+    StringBuilder ret=new StringBuilder();
+    for (char c:string.toCharArray())
+    {
+      if (Character.isISOControl(c))
+      { ret.append("\\u"+Integer.toString(c,16));
+      }
+      else
+      { ret.append(c);
+      }
+    }
+    return ret.toString();
+  }
+  
+  public static String escapeToASCII(String string)
+  { 
+    try
+    { return new String(string.getBytes("ASCII"));
+    }
+    catch (UnsupportedEncodingException x)
+    { throw new IllegalArgumentException(x);
+    }
+
+  }
+  
 }

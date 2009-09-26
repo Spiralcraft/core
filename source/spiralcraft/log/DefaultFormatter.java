@@ -21,6 +21,8 @@ import java.text.SimpleDateFormat;
 
 import java.util.Date;
 
+import spiralcraft.util.string.StringUtil;
+
 public class DefaultFormatter
   implements Formatter
 {
@@ -42,7 +44,10 @@ public class DefaultFormatter
     out.append(":");
     out.append(event.getThreadName());
     out.append(" ");
-    out.append(event.getMessage());
+    out.append(event.getMessage()!=null
+      ?StringUtil.escapeToASCII(event.getMessage())
+      :""
+      );
     
     if (event.getContext()!=null)
     {
