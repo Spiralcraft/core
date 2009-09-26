@@ -84,12 +84,25 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
     }
     else if (ClassUtil.isNumber(op1.getContentType()))
     { 
-      return (Channel<T1>) (Object)
+      Channel<T1> channel=(Channel<T1>) (Object)
         NumberBindingHelper.bindNumber
         ((Channel<? extends Number>) op1
         ,(Channel<? extends Number>) op2
         ,_op
         );
+      if (channel==null)
+      { 
+        throw new BindException
+          ("Incompatible types "
+          +op1.getContentType().getName()
+          +" and "
+          +op2.getContentType().getName()
+          +": "+reconstruct()
+          );
+      
+      }
+      
+      return channel;
     }
     else
     { 
@@ -175,8 +188,12 @@ class NumberBindingHelper
     
     // Promoted type might not be T1, but not a runtime problem.
     
-    Reflector<Tret> reflector=BeanReflector.<Tret>getInstance
-      (promotedType(op1.getContentType(),op2.getContentType()));
+    Class promotedType=promotedType(op1.getContentType(),op2.getContentType());
+    if (promotedType==null)
+    { return null;
+    }
+
+    Reflector<Tret> reflector=BeanReflector.<Tret>getInstance(promotedType);
     
     HashMap<Class<?>,NumericTranslator<?,?,?>> translatorMap=null;
     switch (operator)
@@ -417,7 +434,6 @@ class NumberBindingHelper
   
 
   private static Class<?> promotedType(Class<?> cl1,Class<?> cl2)
-    throws BindException
   {
     cl1=ClassUtil.boxedEquivalent(cl1);
     cl2=ClassUtil.boxedEquivalent(cl2);
@@ -542,12 +558,7 @@ class NumberBindingHelper
     else if (cl1==BigDecimal.class)
     { return BigDecimal.class;
     }
-    throw new BindException
-      ("Incompatible types "
-      +cl1.getName()
-      +" and "
-      +cl2.getName()
-      );
+    return null;
   }
 }
 
