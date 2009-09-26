@@ -409,13 +409,13 @@ public class ExpressionParser
 
 
   /**
-   * RelationalExpression -> AdditiveExpression
-   *                         ( "<" | ">" | "<=" | ">=" ) AdditiveExpression)*
+   * RelationalExpression -> RangeExpression
+   *                         ( "<" | ">" | "<=" | ">=" ) RangeExpression)*
    */
   private Node parseRelationalExpression()
     throws ParseException
   { 
-    Node node=parseAdditiveExpression();
+    Node node=parseRangeExpression();
     return parseRelationalExpressionRest(node);
   }
   
@@ -431,7 +431,7 @@ public class ExpressionParser
           consumeToken();
           return parseRelationalExpressionRest
             (firstOperand.greaterThanOrEquals
-              (parseAdditiveExpression()
+              (parseRangeExpression()
               )
             );
         }
@@ -439,7 +439,7 @@ public class ExpressionParser
         {
           return parseRelationalExpressionRest
             (firstOperand.greaterThan
-              (parseAdditiveExpression()
+              (parseRangeExpression()
               )
             );
         }
@@ -450,7 +450,7 @@ public class ExpressionParser
           consumeToken();
           return parseRelationalExpressionRest
             (firstOperand.lessThanOrEquals
-              (parseAdditiveExpression()
+              (parseRangeExpression()
               )
             );
         }
@@ -458,7 +458,7 @@ public class ExpressionParser
         {
           return parseRelationalExpressionRest
             (firstOperand.lessThan
-              (parseAdditiveExpression()
+              (parseRangeExpression()
               )
             );
         }
@@ -468,8 +468,58 @@ public class ExpressionParser
   }
 
   /**
+   * RangeExpression 
+   *   -> AdditiveExpression 
+   *          ( [ '..' | '.!'] AdditiveExpression 
+   *          ) 
+   */
+  private Node parseRangeExpression()
+    throws ParseException
+  {
+    Node node=parseAdditiveExpression();
+    return parseRangeExpressionRest(node);
+  }
+
+  @SuppressWarnings("unchecked")
+  private Node parseRangeExpressionRest(Node firstOperand)
+    throws ParseException
+  {
+    Node rangeStart=firstOperand;
+    if (_tokenizer.ttype=='.')
+    {
+      consumeToken();
+      boolean inclusive=false;
+      Node rangeEnd;
+      
+      switch(_tokenizer.ttype)
+      { 
+        case '.':
+          consumeToken();
+          inclusive=true;
+          break;
+        case '!':
+          consumeToken();
+          inclusive=false;
+          break;
+          
+        default:
+          throwException("Expected '..' or '.!' and rest of Range expression");
+      }
+      
+      
+      rangeEnd=parseAdditiveExpression();
+      
+      
+      return new RangeNode(rangeStart,rangeEnd,inclusive);
+    }
+    else
+    { return firstOperand;
+    }
+  }
+  
+  /**
    * AdditiveExpression -> MultiplicativeExpression
-   *                      ( ("+" | "-") MultiplicativeExpression )
+   *                      ( ['+' | '-'] MultiplicativeExpression )
    */
   private Node parseAdditiveExpression()
     throws ParseException
@@ -617,8 +667,16 @@ public class ExpressionParser
         expect(']');
         return parsePostfixExpressionRest(subscriptNode);
       case '.':
-        consumeToken();
-        return parseDereferenceExpression(primary);
+        if (_tokenizer.lookahead.ttype==StreamTokenizer.TT_WORD)
+        {
+          consumeToken();
+          return parseDereferenceExpression(primary);
+        }
+        else
+        { 
+          // .. and .! are RangeExpression tokens
+          return primary;
+        }
       case '#':
         consumeToken();
         return parseAggregateProjectionExpression(primary);
@@ -1158,7 +1216,10 @@ public class ExpressionParser
     throws ParseException
   {
     parseInteger(buff);
-    if (_tokenizer.ttype=='.')
+    if (_tokenizer.ttype=='.' 
+        && _tokenizer.lookahead.ttype==StreamTokenizer.TT_WORD
+        && isNumber(_tokenizer.lookahead.sval)
+       )
     { 
       buff.append(".");
       consumeToken();
@@ -1173,7 +1234,7 @@ public class ExpressionParser
     throws ParseException
   {
     if (_tokenizer.ttype==StreamTokenizer.TT_WORD
-        && Character.isDigit(_tokenizer.sval.charAt(0))
+        && isNumber(_tokenizer.sval)
         )
     {
 //      System.out.println(_tokenizer.sval);
@@ -1187,6 +1248,13 @@ public class ExpressionParser
     }
   }
   
+  private boolean isNumber(String str)
+  { 
+    return str!=null 
+      && str.length()>0 
+      && Character.isDigit(str.charAt(0))
+      ;
+  }
 
 
   /**
