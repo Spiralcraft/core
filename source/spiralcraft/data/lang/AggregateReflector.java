@@ -24,6 +24,7 @@ import spiralcraft.lang.Decorator;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.ListDecorator;
+import spiralcraft.lang.Range;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
 
@@ -31,6 +32,7 @@ import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.lang.spi.IterableContainsChannel;
 import spiralcraft.lang.spi.IterationProjector;
+import spiralcraft.lang.spi.ListRangeChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
@@ -264,6 +266,13 @@ public class AggregateReflector<T extends Aggregate<I>,I>
          ,componentChannel
          ,(Channel<Boolean>) subscriptChannel
          );
+    }
+    else if (Range.class.isAssignableFrom(subscriptClass))
+    {
+      return new ListRangeChannel<T,I>
+        (source
+        ,(Channel<Range>) subscriptChannel
+        );
     }
     else
     {
