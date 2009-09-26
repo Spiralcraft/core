@@ -25,6 +25,7 @@ import spiralcraft.time.Scheduler;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.Path;
+import spiralcraft.vfs.context.ContextResourceMap;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.log.ConsoleHandler;
@@ -141,6 +142,15 @@ public class Executor
 
     ExecutionContext.pushInstance(context);
     ContextDictionary.pushInstance(properties);
+    
+    ContextResourceMap contextResourceMap
+      =new ContextResourceMap()
+      {{
+        put("_DEFAULT",context.focusURI());
+      }};
+      
+      
+    contextResourceMap.push();
 
     
     for (Initializer loader: ServiceLoader.load(Initializer.class))
@@ -237,6 +247,7 @@ public class Executor
       if (schedulerCreated)
       { Scheduler.pop();
       }
+      contextResourceMap.pop();
       ContextDictionary.popInstance();
       ExecutionContext.popInstance();
     }
