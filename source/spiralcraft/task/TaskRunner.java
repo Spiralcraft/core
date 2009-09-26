@@ -51,6 +51,8 @@ public class TaskRunner
 
   private Thread shutdownThread=new ShutdownHook();
   private Service service;
+  private URI serviceURI;
+  private RegistryNode registryNode;
   
   
   {
@@ -64,6 +66,16 @@ public class TaskRunner
    */
   public void setService(Service service)
   { this.service=service;
+  }
+  
+  /**
+   * Specific the URI of the resource that defines the Service or ServiceGroup
+   *   that provides a context for Scenario execution.
+   * 
+   * @param serviceURI
+   */
+  public void setServiceURI(URI serviceURI)
+  { this.serviceURI=serviceURI;
   }
   
   public void setChain(Scenario[] chain)
@@ -88,6 +100,7 @@ public class TaskRunner
   @Override
   public void register(RegistryNode registryNode)
   { 
+    this.registryNode=registryNode;
     if (service!=null)
     { service.register(registryNode);
     }
@@ -119,7 +132,7 @@ public class TaskRunner
     String... args)
     throws ExecutionException
   { 
-    processArguments(args);
+    processArguments(args);    
     execute();
   }
 
@@ -181,6 +194,18 @@ public class TaskRunner
       
     if (scenario==null)
     { throw new ExecutionException("No scenario provided");
+    }
+
+    if (serviceURI!=null)
+    { 
+      try
+      { 
+        service=AbstractXmlObject.<Service>create(null,serviceURI).get();
+        service.register(registryNode);
+      }
+      catch (BindException x)
+      { throw new ExecutionException("Error binding service "+serviceURI,x);
+      }
     }
     
     Focus<?> focus=rootFocus;
