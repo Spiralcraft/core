@@ -9,20 +9,33 @@
     <authorId>miketoth
     </authorId>
     
-    <date>????
+    <date>2009-09-25
     </date>
     
     <notes>
+      <scm:Note>Fixed various corner case issues in spiralcraft.data
+        inheritance
+      </scm:Note>
+      <scm:Note>Provide access to the run directory through the vfs "context"
+        uri scheme. 
+      </scm:Note>
+      <scm:Note>TaskRunner accepts a --serviceURI argument.
+      </scm:Note>
       <scm:Note>Hooks for post-startup tasks to be run for Daemons
       </scm:Note>
+      
       <scm:Note>spiralcraft.lang enhancements to provide access to  
         abstracted Collection and List semantics of Channel objects.
+      </scm:Note>
+      <scm:Note>Implemented Range Expressions int spiralcraft.lang
       </scm:Note>
       <scm:Note>Completed support in data task package for publishing 
         lazy-loading aggregates
       </scm:Note>
       <scm:Note>Simplification of Pool implementation to use dedicated thread
         for Keeper.
+      </scm:Note>
+      <scm:Note>Sanitized system log by converting message to ASCII
       </scm:Note>
       <scm:Note>Further refinements to spiralcraft.lang tuple syntax
       </scm:Note>
@@ -31,6 +44,112 @@
     </notes>
     
     <detail>
+      <scm:Change>
+        <date>2009-09-25
+        </date>
+
+        <notes>
+          <scm:Note>Sanitized system log by converting message to ASCII
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>log/DefaultFormatter.java</URI>
+          <URI>util/string/StringUtil.java</URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-09-25
+        </date>
+
+        <notes>
+          <scm:Note>TaskRunner accepts a --serviceURI argument
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/task/TaskRunner.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-09-25
+        </date>
+
+        <notes>
+          <scm:Note>Provide access to the run directory through the vfs "context"
+        uri scheme. Set the "context" URI scheme default mapping to the 
+        ExecutionContext focusURI (usually the process working directory)
+        at the main Executor entry point.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>exec/Executor.java</URI>
+          <URI>vfs/ContextResourceMap.java</URI>
+        </resources>
+      </scm:Change>
+
+        
+        
+      <scm:Change>
+        <date>2009-09-25
+        </date>
+
+        <notes>
+          <scm:Note>Implemented Range Expressions in spiralcraft.lang
+          </scm:Note>
+        </notes>    
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/Range.java</URI>
+          <URI>lang/parser/ExpressionParser.java</URI>
+          <URI>lang/parser/RangeNode.java</URI>
+          <URI>lang/reflect/ArrayReflector.java</URI>
+          <URI>lang/reflect/BeanReflector.java</URI>
+          <URI>lang/spi/ArrayRangeChannel.java</URI>
+          <URI>lang/spi/ListRangeChannel.java</URI>
+          <URI>data/lang/AggregateReflector.java</URI>
+          <URI></URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-09-25
+        </date>
+
+        <notes>
+          <scm:Note>Fixed various corner case issues in spiralcraft.data
+            inheritance
+          </scm:Note>
+          <scm:Note>Implemented Field level polymorphism for baseType extension
+            in spiralcraft.data. 
+          </scm:Note>
+          <scm:Note>Scheme defers to Type when determining primary key through
+            inheritance hierarchy.
+          </scm:Note>
+        </notes>    
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/core/FieldImpl.java</URI>
+          <URI>data/core/SchemeImpl.java</URI>
+          <URI>lang/spi/UncheckedCastChannel.java</URI>
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <date>2009-09-22
         </date>
@@ -62,8 +181,7 @@
         </date>
 
         <notes>
-          <scm:Note>Simplified Pool to use dedicated thread for Keeper and 
-            eliminate circular dependency on Scheduler. 
+          <scm:Note>Simplified Pool to use dedicated thread for Keeper
           </scm:Note>
           
         </notes>    
@@ -126,6 +244,8 @@
           <scm:Note>Sort allows the result type (and resulting Comparator set)
             to be determined from the upstream bound query.
           </scm:Note>          
+          <scm:Note>KeyField uses Query.bind() when no Queryable is available
+          </scm:Note>
           
         </notes>    
         
@@ -136,8 +256,11 @@
           <URI>query/Query.java</URI>
           <URI>query/ReferenceQuery.java</URI>
           <URI>query/Sort.java</URI>
+          <URI>query/Scan.java</URI>
+          <URI>query/UnaryBoundQuery.java</URI>
           <URI>spi/IteratorCursor.java</URI>
           <URI>task/Fetch.java</URI>
+          <URI>core/KeyField.java</URI>
         </resources>
       </scm:Change>
 
