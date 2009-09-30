@@ -208,6 +208,12 @@ public class BeanReflector<T>
   public static final synchronized <T> Reflector<T> 
     getInstance(Type clazz)
   { 
+    if (clazz==null)
+    { 
+      throw new IllegalArgumentException
+        ("BeanReflector cannot reflect a null java.lang.reflect.Type");
+    }
+    
     Reflector<T> result=null;
     WeakReference<Reflector> ref=reflectorMap.get(clazz);
     
@@ -241,6 +247,10 @@ public class BeanReflector<T>
   
   public BeanReflector(Type type)
   { 
+    if (type==null)
+    { throw new IllegalArgumentException
+        ("BeanReflector cannot reflect a null java.lang.reflect.Type");
+    }
     // log.fine(type);
     Class<T> clazz=null;
     targetType=type;

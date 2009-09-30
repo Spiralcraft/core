@@ -74,11 +74,12 @@ public class TupleReflector<T extends Tuple>
   }
   
 
+  @SuppressWarnings("unchecked")
   TupleReflector(Type<T> type,Class<T> contentType)
   { 
     super(type);
     untypedFieldSet=null;
-    this.contentType=contentType;
+    this.contentType=contentType!=null?contentType:(Class<T>) Tuple.class;
 //    for (Field field : fieldSet.fieldIterable())
 //    { fieldTranslators.put(field.getName(),new FieldTranslator(field));
 //    }
@@ -94,7 +95,7 @@ public class TupleReflector<T extends Tuple>
     else
     { this.untypedFieldSet=null;
     }
-    this.contentType=contentType;
+    this.contentType=contentType!=null?contentType:(Class<T>) Tuple.class;
 //    for (Field field : fieldSet.fieldIterable())
 //    { fieldTranslators.put(field.getName(),new FieldTranslator(field));
 //    }
