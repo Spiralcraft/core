@@ -3,6 +3,35 @@
   >
   
   <scm:Change>
+    <revision>0.3.21.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-09-30
+    </date>
+    
+    <notes>
+      <scm:Note>Fix NPE: Default the contentType (Tuple implementation type)
+        of TupleReflector to be Tuple.class if no specific subtype is supplied.
+        Also check for nulls in BeanReflector methods to better indicate
+        when a null is being past to static and instance contructors.
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft/
+    </path>
+    
+    <resources>
+      <URI>data/lang/TupleReflector.java
+      </URI>
+      <URI>lang/reflect/BeanReflector.java
+      </URI>
+    </resources>
+  </scm:Change>
+  
+  <scm:Change>
     <revision>0.3.21
     </revision>
     
