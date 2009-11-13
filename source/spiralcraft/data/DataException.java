@@ -48,7 +48,7 @@ public class DataException
   { 
     Throwable rootCause=getRootCause();
     if (rootCause!=null)
-    { return super.toString()+" (cause: "+getRootCause()+")";
+    { return super.toString()+" (root cause: "+getRootCause()+")";
     }
     else
     { return super.toString();
