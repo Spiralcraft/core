@@ -1,7 +1,8 @@
 package spiralcraft.lang;
 
 import java.net.URI;
-import java.net.URISyntaxException;
+
+import spiralcraft.util.URIUtil;
 
 /**
  * <p>A Telescoped Focus, referencing a context internal to a single expression
@@ -46,16 +47,9 @@ public class TeleFocus<T>
   
   public boolean isFocus(URI uri)
   {     
-    try
-    {
-      URI shortURI
-        =new URI(uri.getScheme(),uri.getAuthority(),uri.getPath(),null,null);
-      if  (subject!=null && subject.getReflector().isAssignableTo(shortURI))
-      { return true;
-      }
-    }
-    catch (URISyntaxException x)
-    { x.printStackTrace();
+    URI shortURI=URIUtil.trimToPath(uri);
+    if  (subject!=null && subject.getReflector().isAssignableTo(shortURI))
+    { return true;
     }
     return false;
   }

@@ -16,9 +16,9 @@ package spiralcraft.lang;
 
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import spiralcraft.common.NamespaceResolver;
+import spiralcraft.util.URIUtil;
 
 /**
  * Simple implementation of a Focus
@@ -114,16 +114,9 @@ public class SimpleFocus<T>
     { return false;
     }
     
-    try
-    {
-      URI shortURI
-        =new URI(uri.getScheme(),uri.getAuthority(),uri.getPath(),null,null);
-      if  (subject.getReflector().isAssignableTo(shortURI))
-      { return true;
-      }
-    }
-    catch (URISyntaxException x)
-    { x.printStackTrace();
+    URI shortURI=URIUtil.trimToPath(uri);
+    if  (subject.getReflector().isAssignableTo(shortURI))
+    { return true;
     }
     return false;
   }
