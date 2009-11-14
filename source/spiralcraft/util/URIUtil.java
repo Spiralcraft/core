@@ -41,23 +41,35 @@ public class URIUtil
       }
       else if (input.getPath()!=null)
       {  
-        return 
-          new URI
-            (input.getScheme()
-            ,input.getAuthority()
-            ,input.getPath()
-            ,null
-            ,null
-            );
+        if (input.getQuery()!=null || input.getFragment()!=null)
+        {
+          return 
+            new URI
+              (input.getScheme()
+              ,input.getAuthority()
+              ,input.getPath()
+              ,null
+              ,null
+              );
+        }
+        else
+        { return input;
+        }
       }
       else
       {
-        return
-          new URI
-            (input.getScheme()
-            ,input.getSchemeSpecificPart()
-            ,null
-            );
+        if (input.getFragment()!=null)
+        {
+          return
+            new URI
+              (input.getScheme()
+              ,input.getSchemeSpecificPart()
+              ,null
+              );
+        }
+        else
+        { return input;
+        }
       }
     }
     catch (URISyntaxException x)
