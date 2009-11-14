@@ -144,8 +144,39 @@ public class MetaType
     } 
     if (instanceResolver instanceof StaticInstanceResolver)
     { 
-      // We already have an instance
-      referenced=false;
+      // XXX A StaticInstanceResolver is provided by ReflectionField when
+      //  reading the existing value of a bean property. This may have
+      //  nothing to do with whether we're creating a referenced type or not,
+      //  as the referenced value may be the pre-existing value assigned
+      //  to the bean property.
+      //
+      //  A StaticInstanceResolver is also provided by the XmlTypeFactory
+      //    to indicate that a type is being created. These two cases
+      //    potentially cause some conflict.
+      
+      
+      // We have either already instantiated a new instance that is to be
+      //   configured, or the StaticInstanceResolver refers to some default
+      //   value. 
+      
+      // Best way to differentiate for now is to avoid modifying a linked
+      //   type.
+      
+      Type<?> defaultInstance
+        =(Type<?>) instanceResolver.resolve(getNativeClass());
+      if (defaultInstance!=null && !defaultInstance.isLinked())
+      { 
+        // We're in the process of creating a unique Type
+        referenced=false;
+        
+      }
+      else
+      { 
+        // A linked type indicates some pre-existing default value
+        // A null defaultInstance doesn't provide us with anything useful
+        instanceResolver=null;
+      }
+      
     }
     
       
@@ -179,7 +210,9 @@ public class MetaType
         return type;
       }
       else
-      { return super.fromData(composite,instanceResolver);
+      { 
+        // Create an instance of the ReflectionType we're extending
+        return super.fromData(composite,instanceResolver);
       }
     }
     
