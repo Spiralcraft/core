@@ -629,11 +629,22 @@ public class ReflectionType<T>
 
     T bean=obtainInstance(tuple,context);
     
-    if (bean!=null && depersistMethodBinding!=null)
-    { depersistMethodBinding.invoke(bean,tuple);
+    try
+    {
+      if (bean!=null && depersistMethodBinding!=null)
+      { depersistMethodBinding.invoke(bean,tuple);
+      }
+      else
+      { ((ReflectionScheme) scheme).depersistBeanProperties(tuple,bean);
+      }
     }
-    else
-    { ((ReflectionScheme) scheme).depersistBeanProperties(tuple,bean);
+    catch (DataException x)
+    { 
+      throw new DataException
+        ("Error creating instance of "
+        +getNativeClass()+" from data with datatype "+val.getType().getURI()
+        ,x
+        );
     }
     return bean;
   }

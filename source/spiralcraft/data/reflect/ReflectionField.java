@@ -297,11 +297,23 @@ public class ReflectionField<T>
               catch (IllegalArgumentException x)
               {
                 throw new DataException
-                ("Error depersisting field '"+getName()+"': Does not accept"
-                    +" argument type "+convertedValue.getClass().getName()
-                    ,x
-                );
+                  ("Error depersisting field '"+getURI()+"': Does not accept"
+                      +" argument type "+convertedValue.getClass().getName()
+                      ,x
+                  );
               }
+              catch (InvocationTargetException x)
+              {
+                throw new DataException
+                  ("Error depersisting field '"+getURI()+"': Did not accept"
+                      +" value '"+convertedValue+"' depersisted from data "
+                      +" composite "+compositeValue+" using type class "
+                      +dataType.getClass()
+                      +(existingValue!=null?" (existing value was "+existingValue+")":"")
+                      ,x
+                  );
+              }
+              
             }
             else if (convertedValue!=existingValue)
             { 
@@ -326,15 +338,12 @@ public class ReflectionField<T>
         catch (IllegalAccessException x)
         { 
           throw new DataException
-            ("Error depersisting field '"+getName()+"':"+x,x);
+            ("Error depersisting field '"+getURI()+"'",x);
         }
         catch (InvocationTargetException x)
         { 
           throw new DataException
-            ("Error depersisting field '"+getName()
-            +"': "+x.getTargetException()
-            ,x
-            );
+            ("Error depersisting field '"+getURI()+"'",x);
         }
       }
     }
