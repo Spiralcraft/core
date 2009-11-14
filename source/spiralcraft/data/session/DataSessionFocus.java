@@ -26,7 +26,6 @@ import spiralcraft.data.lang.DataChannel;
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.CompoundFocus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Setter;
@@ -50,7 +49,7 @@ import spiralcraft.log.ClassLog;
  *
  */
 public class DataSessionFocus
-  extends CompoundFocus<DataSession>
+  extends SimpleFocus<DataSession>
 {
   private static final ClassLog log
     =ClassLog.getInstance(DataSessionFocus.class);
@@ -141,7 +140,7 @@ public class DataSessionFocus
             )
           );
     
-      bindFocus("spiralcraft.data",dataFocus);
+      addFacet(dataFocus);
 
       // Take care of initial field value
       for (Field field: dataType.getFieldSet().fieldIterable())
