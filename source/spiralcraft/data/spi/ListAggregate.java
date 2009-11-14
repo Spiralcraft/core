@@ -39,6 +39,7 @@ public class ListAggregate<T>
   protected int expectedSize;
   protected Channel<Command<?,?>> fillCommand;
   private boolean debug=false;
+  private boolean fetchable;
     
   /**
    * <p>Create a new ListAggregate backed by the specified List
@@ -102,13 +103,15 @@ public class ListAggregate<T>
    * </p>
    */
   public void setFillCommand(Channel<Command<?,?>> fillCommand)
-  { this.fillCommand=fillCommand;
+  { 
+    this.fillCommand=fillCommand;
+    this.fetchable=true;
   }
   
   @Override
   public Iterator<T> iterator()
   { 
-    if (fillCommand==null)
+    if (!fetchable)
     {
       // XXX Block remove() if not mutable- create a ReadOnlyIterator wrapper
       return list.iterator();
@@ -123,7 +126,7 @@ public class ListAggregate<T>
   { 
     if (fillCommand!=null)
     { 
-      if (expectedSize>0)
+      if (expectedSize>0 || !fetchable)
       { return Math.max(list.size(),expectedSize);
       }
       else
@@ -141,7 +144,7 @@ public class ListAggregate<T>
 
   protected void fillRest()
   {
-    while (expectedSize==0 || list.size()<expectedSize)
+    while (fetchable && (expectedSize==0 || list.size()<expectedSize))
     { fill();
     }
   }
@@ -203,7 +206,8 @@ public class ListAggregate<T>
 
   protected void fillTo(int index)
   {
-    while (index>=list.size() 
+    while (fetchable
+           && index>=list.size() 
            && (expectedSize==0 || index<expectedSize
               )
           )
@@ -211,6 +215,12 @@ public class ListAggregate<T>
     }
   }
   
+  /**
+   * <p>Invokes the fillCommand command to populate the list
+   * </p>
+   *  
+   * @return
+   */
   protected int fill()
   {
     
@@ -224,7 +234,8 @@ public class ListAggregate<T>
     { 
       // Abort further fetching (make optional?)
       expectedSize=list.size();
-      
+      fetchable=false;
+   
       throw new RuntimeDataException
         ("Error filling lazy ListAggregate"
         ,command.getException()
@@ -236,6 +247,7 @@ public class ListAggregate<T>
       { log.fine("No more data added.");
       }      
       expectedSize=size;
+      fetchable=false;
       return 0;
     }
     else
@@ -261,7 +273,7 @@ public class ListAggregate<T>
     { 
       if (pos>=list.size())
       { 
-        if ( (expectedSize==0 || pos<expectedSize) && fill()>0)
+        if ( fetchable && (expectedSize==0 || pos<expectedSize) && fill()>0)
         { return true;
         }
         return false;
