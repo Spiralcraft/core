@@ -42,7 +42,6 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.log.ClassLog;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * An Assembly is an 'instance' of an AssemblyClass. It is a scaffold which
@@ -470,52 +469,14 @@ public class Assembly<T>
     extends BaseFocus<tFocus>
     implements Focus<tFocus>
   {
+    @Override
     public boolean isFocus(URI uri)
     { 
       if (_assemblyClass.isFocus(uri))
       { return true;
       }
-      
-      
-      if (subject==null)
-      { return false;
-      }
-      
-      try
-      {
-        URI shortURI
-          =new URI(uri.getScheme(),uri.getAuthority(),uri.getPath(),null,null);
-        if  (subject.getReflector().isAssignableTo(shortURI))
-        { return true;
-        }
-      }
-      catch (URISyntaxException x)
-      { x.printStackTrace();
-      }
-      return false;
-    }
-    
-    public Focus<?> findFocus(URI uri)
-    {       
-      if (isFocus(uri))
-      {
-        String query=uri.getQuery();
-        String fragment=uri.getFragment();
-
-        if (query==null)
-        {
-          if (fragment==null || fragment=="spiralcraft.builder")
-          { return this;
-          }
-        }
-
-      }
-      
-      if (parent!=null)
-      { return parent.findFocus(uri);
-      }
       else
-      { return null;
+      {  return super.isFocus(uri);
       }
     }
     
