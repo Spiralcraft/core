@@ -33,7 +33,6 @@ import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.CompoundFocus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 
@@ -204,18 +203,16 @@ public class RestService
 
     // Set up the Focus that provides the input source and output target for
     //   the REST operation.
-    CompoundFocus<Tuple> restFocus
-      =new CompoundFocus<Tuple>(parentFocus,localQueryChannel);
+    SimpleFocus<Tuple> restFocus
+      =new SimpleFocus<Tuple>(parentFocus,localQueryChannel);
     if (localModelChannel!=null)
     { 
-      restFocus.bindFocus
-        ("buffer"
-        ,new SimpleFocus<Buffer>(restFocus,localModelChannel)
+      restFocus.addFacet
+        (new SimpleFocus<Buffer>(restFocus,localModelChannel)
         );
     }
-    restFocus.bindFocus
-      (getClass().getName()
-      ,new BeanFocus<RestService>(this)
+    restFocus.addFacet
+      (new BeanFocus<RestService>(this)
       );
 
     Focus<?> focus=restFocus;
