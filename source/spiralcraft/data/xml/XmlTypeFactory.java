@@ -160,8 +160,11 @@ public class XmlTypeFactory
                   //   that empty data is simply a type reference, and at
                   //   this point we don't know if data is empty
                   instance=((MetaType) type).newSubtype(composite,uri);
-                  log.fine("Preinstantiating MetaType subtype "+instance
+                  if (debug)
+                  { 
+                    log.fine("Preinstantiating MetaType subtype "+instance
                             +" of type "+type.getURI());
+                  }
                 }
                 else
                 {
@@ -205,7 +208,23 @@ public class XmlTypeFactory
           
 //      System.err.println("XmlTypeFactory: data is "+tuple.toText("  "));
       
-      Type<?> type=(Type<?>) tuple.getType().fromData(tuple,instanceResolver);
+      Type<?> type=null;
+      try
+      {
+        // XXX This is a MetaType, being called with an instanceResolver
+        //   to indicate that we are constructing, not referring to a type
+        //   here.
+        type=(Type<?>) tuple.getType().fromData(tuple,instanceResolver);
+      }
+      catch (DataException x)
+      { 
+        throw new DataException
+          ("Error loading XML type definition '"
+            +uri.toString()+".type.xml' which contains an instance of a '"
+            +tuple.getType().getURI()+"'"
+          ,x);
+      }
+      
 //      System.err.println("XmlTypeFactory: Loaded "+uri+" = "+type.getURI());
 
       if (type!=instanceResolver.getInstance())
@@ -229,12 +248,12 @@ public class XmlTypeFactory
     catch (SAXException x)
     { 
       error=true;
-      throw new DataException("Error loading XML Type "+uri,x);
+      throw new DataException("Error loading XML type for uri '"+uri+"'",x);
     }
     catch (IOException x)
     { 
       error=true;
-      throw new DataException(x.toString(),x);
+      throw new DataException("Error loading XML type for '"+uri+"'",x);
     }
     finally
     {
