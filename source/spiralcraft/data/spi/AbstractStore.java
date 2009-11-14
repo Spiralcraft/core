@@ -118,8 +118,10 @@ public abstract class AbstractStore
   @Override
   public Sequence getSequence(URI uri)
   {
-    Sequence sequence=sequences.get(uri);
-    return sequence;
+    return sequences!=null
+      ?sequences.get(uri)
+      :null
+      ;
   }  
 
   @Override
@@ -193,8 +195,11 @@ public abstract class AbstractStore
     { addSequences(queryable.getTypes()[0]);
     }
     
-    for (Sequence sequence : sequences.values())
-    { sequence.start();
+    if (sequences!=null)
+    {
+      for (Sequence sequence : sequences.values())
+      { sequence.start();
+      }
     }
     
     started=true;
@@ -204,8 +209,11 @@ public abstract class AbstractStore
   public void stop()
     throws LifecycleException
   { 
-    for (Sequence sequence : sequences.values())
-    { sequence.stop();
+    if (sequences!=null)
+    {
+      for (Sequence sequence : sequences.values())
+      { sequence.stop();
+      }
     }
     started=false;
   }  
