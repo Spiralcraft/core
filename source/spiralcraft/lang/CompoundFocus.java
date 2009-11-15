@@ -14,9 +14,6 @@
 //
 package spiralcraft.lang;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 
 /**
@@ -27,11 +24,11 @@ import java.util.LinkedList;
  *
  * @param <T>
  */
+@Deprecated
 public class CompoundFocus<T>
   extends SimpleFocus<T>
 {
 
-  private HashMap<String,Focus<?>> layers;
 
   
   public CompoundFocus
@@ -58,145 +55,19 @@ public class CompoundFocus<T>
    * </p>
    *  
    * <p>The Focus is normally referenced using the following construct
-   *   <CODE>[<I>namespace</I>:<I>name</I>]</CODE> or 
-   *   <CODE>[<I>namespace</I>:<I>name</I>#<I>differentiator</I>]</CODE>
+   *   <code>[<I>namespace</I>:<I>name</I>]</code> or 
+   *   <code>[<I>namespace</I>:<I>name</I>#<I>differentiator</I>]</code>
    *   in the expression language.
    * </p>
+   * 
+   * @deprecated All Focus implementations can add facets now. Use 
+   *   addFacet(Focus<?> focus) in BaseFocus.
    */
+  @Deprecated
   public synchronized void bindFocus(String differentiator,Focus<?> focus)
     throws BindException
-  { 
-    
-    if (layers==null)
-    { layers=new HashMap<String,Focus<?>>();
-    }
-    if (layers.get(differentiator)==null)
-    { layers.put(differentiator,focus);
-    }
-    else
-    { throw new BindException
-        ("Differentiator '"+differentiator+"' already bound");
-    }
-  }
-
-  @SuppressWarnings("unchecked") // Cast for requested interface
-  @Override
-  public <X> Focus<X> findFocus(URI uri)
-  { 
-    if (isFocus(uri))
-    {
-      String query=uri.getQuery();
-      String fragment=uri.getFragment();
-
-      if (query==null)
-      {
-        if (fragment==null || fragment.equals(getLayerName()))
-        { return (Focus<X>) this;
-        }
-        
-        Focus<?> altLayer=layers.get(fragment);
-        if (altLayer!=null)
-        { return (Focus<X>) altLayer;
-        }
-      }
-      else
-      { // XXX Figure out how to deal with query
-      }
-
-    }
-    
-    if (layers!=null)
-    {
-    
-      for (Focus<?> focus:layers.values())
-      {
-        if (focus.isFocus(uri))
-        { 
-          String query=uri.getQuery();
-          String fragment=uri.getFragment();
-          if (query==null)
-          {
-            if (fragment==null)
-            {
-              return (Focus<X>) focus;
-            }
-            else
-            {
-              // TODO: Investigate utility of allowing a deeper layer to
-              //   access a shallower layer. We might need to delegate fragment
-              //   resolution to the "sub" Focus.
-
-              Focus<?> altLayer=layers.get(fragment);
-              if (altLayer!=null)
-              { return (Focus<X>) altLayer;
-              }
-            }
-
-          }
-        }
-      }
-    
-    }
-      
-    if (parent!=null)
-    { return parent.findFocus(uri);
-    }
-    else
-    { return null;
-    }
-  }
-  
-  @Override
-  public LinkedList<Focus<?>> getFocusChain()
-  {
-    LinkedList<Focus<?>> list;
-    if (parent==null)
-    { 
-      
-      list=new LinkedList<Focus<?>>()
-      {
-
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public String toString()
-        {
-          StringBuilder buf=new StringBuilder();
-          int i=0;
-          for (Focus<?> focus : this)
-          { buf.append("\r\n    focusChain #"+(i++)+": "+focus);
-          }
-          return buf.toString();
-        }
-      };
-    }
-    else
-    { list=parent.getFocusChain();
-    }
-    if (layers!=null)
-    {
-      for (Focus<?> focus: layers.values())
-      { list.push(focus);
-      }
-    }
-    list.push(this);
-    return list;
-    
+  { addFacet(focus);
   }  
-  @Override
-  public String toString()
-  { 
-    StringBuffer buf=new StringBuffer();
-    if (layers!=null)
-    {
-      for (String name:layers.keySet())
-      { 
-        buf.append("\r\n         #"+name+"=")
-          .append(layers.get(name));
-      }
-    }
-    
-    return super.toString()+buf.toString()+"\r\n";
-  }
+
 
 }
