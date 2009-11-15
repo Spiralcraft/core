@@ -15,10 +15,7 @@
 package spiralcraft.lang;
 
 
-import java.net.URI;
-
 import spiralcraft.common.NamespaceResolver;
-import spiralcraft.util.URIUtil;
 
 /**
  * Simple implementation of a Focus
@@ -28,8 +25,6 @@ public class SimpleFocus<T>
   implements Focus<T>
 {
 
-  private URI containerURI;
-  private String layerName;
   private boolean namespaceRoot;
   
   public SimpleFocus()
@@ -55,14 +50,7 @@ public class SimpleFocus<T>
   public void setNamespaceRoot(boolean val)
   { this.namespaceRoot=val;
   }
-  
-  public void setLayerName(String layerName)
-  { this.layerName=layerName;
-  }
-  
-  public void setContainerURI(URI containerURI)
-  { this.containerURI=containerURI;
-  }
+
   
 //  public synchronized void mapNamespace(String name,URI namespace)
 //  {
@@ -73,78 +61,6 @@ public class SimpleFocus<T>
 //  }
   
   
-  /**
-   * A Focus accessible from expressions embedded in a container should have
-   *   a URI that is discoverable to the expression writer using that 
-   *   container. This is called the container URI.
-   * 
-   * @return The container URI of this Focus.
-   */
-  public URI getContainerURI()
-  { return containerURI;
-  }
-  
-  /**
-   *<p>Identifies the application layer represented by the subject of the Focus
-   * </p>
-   * 
-   * <p>XXX This needs to turn into an id, because "layer names" are too hidden
-   *   to be more useful than confusing. Primary purpose is to differentiate
-   *   when more than one of a given type is in the Focus chain.
-   * </p>
-   * 
-   * @return A String conforming to the syntax of Java package names, 
-   *   representing the package which "implements" the layer. The layer name
-   *   is provided by the container.
-   */  
-  public String getLayerName()
-  { return layerName;
-  }
-  
-  
-  public boolean isFocus(URI uri)
-  { 
-    if (containerURI!=null 
-        && containerURI.relativize(uri)!=uri
-       )
-    { return true;
-    }
-    
-    if (subject==null)
-    { return false;
-    }
-    
-    URI shortURI=URIUtil.trimToPath(uri);
-    if  (subject.getReflector().isAssignableTo(shortURI))
-    { return true;
-    }
-    return false;
-  }
-
-  @SuppressWarnings("unchecked") // Cast for requested interface
-  public <X> Focus<X> findFocus(URI uri)
-  {       
-    if (isFocus(uri))
-    {
-      String query=uri.getQuery();
-      String fragment=uri.getFragment();
-
-      if (query==null)
-      {
-        if (fragment==null || fragment.equals(layerName))
-        { return (Focus<X>) this;
-        }
-      }
-
-    }
-    
-    if (parent!=null)
-    { return parent.<X>findFocus(uri);
-    }
-    else
-    { return null;
-    }
-  }
 
 
   @Override
@@ -159,11 +75,4 @@ public class SimpleFocus<T>
     return null;
   }
   
-  @Override
-  public String toString()
-  { 
-    return super.toString()
-      +(containerURI!=null?containerURI.toString():"")
-      +"(#"+(layerName!=null?layerName:"")+")";
-  }
 }

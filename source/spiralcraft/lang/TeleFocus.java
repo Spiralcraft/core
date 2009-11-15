@@ -1,8 +1,5 @@
 package spiralcraft.lang;
 
-import java.net.URI;
-
-import spiralcraft.util.URIUtil;
 
 /**
  * <p>A Telescoped Focus, referencing a context internal to a single expression
@@ -45,46 +42,17 @@ public class TeleFocus<T>
     return null;
   }
   
-  public boolean isFocus(URI uri)
-  {     
-    URI shortURI=URIUtil.trimToPath(uri);
-    if  (subject!=null && subject.getReflector().isAssignableTo(shortURI))
-    { return true;
-    }
-    return false;
-  }
 
-  @SuppressWarnings("unchecked") // Cast for requested interface
-  public <X> Focus<X> findFocus(URI uri)
-  {       
-    if (isFocus(uri))
-    {
-      String query=uri.getQuery();
-      String fragment=uri.getFragment();
-      
-      if (query==null && fragment==null)
-      { return (Focus<X>) this;
-      }
-    }
-    
-    if (parent!=null)
-    { return parent.<X>findFocus(uri);
-    }
-    else
-    { return null;
-    }
-  }
-  
   @Override
   public String toString()
   {
     return super.toString()
       +(getContext()!=null
-        ?"\r\n context:"+getContext().toString()
+        ?"{ context: "+getContext().getReflector().getTypeURI()+" }"
         :"null context"
        )
       +(namespaceResolver!=null
-        ?"\r\n ns:"+namespaceResolver.toString()
+        ?"{ ns:"+namespaceResolver.toString()+" }"
         :""
         );
   }
