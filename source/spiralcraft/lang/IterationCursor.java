@@ -14,7 +14,10 @@
 //
 package spiralcraft.lang;
 
+import java.net.URI;
 import java.util.Iterator;
+
+import spiralcraft.lang.reflect.BeanReflector;
 
 /**
  * Contains the state of an Iteration, which consists of the Iterator and
@@ -27,11 +30,21 @@ import java.util.Iterator;
 public class IterationCursor<I>
   implements Iterator<I>
 {
+  @SuppressWarnings("unchecked")
+  public static final URI FOCUS_URI
+    =BeanReflector.<IterationCursor>getInstance(IterationCursor.class)
+      .getTypeURI();
+    
+  private int index=-1;
   private I value;
   private final Iterator<I> iterator;
   
   public IterationCursor(Iterator<I> iterator)
   { this.iterator=iterator;
+  }
+  
+  public int getIndex()
+  { return index;
   }
   
   public I getValue()
@@ -51,7 +64,9 @@ public class IterationCursor<I>
   public I next()
   {
     if (iterator!=null)
-    { value=iterator.next();
+    { 
+      value=iterator.next();
+      index++;
     }
     return value;
   }

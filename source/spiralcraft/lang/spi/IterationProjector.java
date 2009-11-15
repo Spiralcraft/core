@@ -22,9 +22,12 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.IterationCursor;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.reflect.ArrayReflector;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.util.lang.ClassUtil;
 
 /**
@@ -43,6 +46,9 @@ public class IterationProjector<I,P,R>
   protected final IterationDecorator<I[],I> iterable;
     
   protected final ThreadLocalChannel<I> channel;
+  
+  @SuppressWarnings("unchecked")
+  protected final ThreadLocalChannel<IterationCursor> cursorChannel;
         
   protected final Focus<I> telefocus;
     
@@ -62,10 +68,19 @@ public class IterationProjector<I,P,R>
     if (iterable==null)
     { throw new BindException("Source is not iterable: "+source);
     }
+    
+    
+    
     channel
       =new ThreadLocalChannel<I>(iterable.getComponentReflector());
         
     telefocus=focus.telescope(channel);
+    
+    cursorChannel
+      =new ThreadLocalChannel<IterationCursor>
+        (BeanReflector.<IterationCursor>getInstance(IterationCursor.class));
+    
+    telefocus.addFacet(new SimpleFocus(cursorChannel));
     
     projectionChannel=telefocus.bind(projection);
     
@@ -77,18 +92,24 @@ public class IterationProjector<I,P,R>
       protected R retrieve()
       {
         ArrayList<P> output=new ArrayList<P>();
+      
+        IterationCursor<I> it=iterable.iterator();
+        cursorChannel.push(it);
         channel.push(null);
         try
         {
-          for (I item : iterable)
-          { 
+          while (it.hasNext())
+          {
+            I item=it.next();
             channel.set(item);
             output.add(projectionChannel.get());
           }
           return createResult(output); 
         }
         finally
-        { channel.pop();
+        { 
+          channel.pop();
+          cursorChannel.pop();
         }
         
       }
