@@ -3,6 +3,355 @@
   >
   
   <scm:Change>
+    <revision>0.3.22
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2009-11-15
+    </date>
+    
+    <notes>
+      <scm:Note>Modification to Focus mechanism to provide better naming
+        and association flexibility.
+      </scm:Note>
+      <scm:Note>Revision of spiralcraft.lang tuple/inline-context syntax.
+      </scm:Note>
+      <scm:Note>Changed "cause" to "root cause" in DataException text
+      </scm:Note>
+      <scm:Note>Fix NPE in spiralcraft.lang when handling non-hierarchical URIs
+      </scm:Note>
+      <scm:Note>Fix: Applying a new Type to a SequenceField did not work.
+      </scm:Note>
+      <scm:Note>Fix NPE: When no Sequences are defined in an AbstractStore
+      </scm:Note>    
+      <scm:Note>Provide a more detailed Exception when loading a type from XML
+        fails. 
+      </scm:Note>    
+    </notes>
+    
+    <detail>
+
+      <scm:Change>
+        <date>2009-11-13
+        </date>
+        
+        <notes>
+          <scm:Note>Provide access to the index counter in inline
+            iterations using [lang:IterationCursor].index
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/
+        </path>
+        
+        <resources>
+          <URI>IterationCursor.java
+          </URI>
+          <URI>spi/IterationProjector.java
+          </URI>
+        </resources>
+      </scm:Change>
+    
+      <scm:Change>
+        <date>2009-11-13
+        </date>
+        
+        <notes>
+          <scm:Note>Provide access to the index counter in inline
+            iterations using [lang:IterationCursor].index
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/
+        </path>
+        
+        <resources>
+          <URI>IterationCursor.java
+          </URI>
+          <URI>spi/IterationProjector.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-11-13
+        </date>
+        
+        <notes>
+          <scm:Note>Provide a more detailed Exception when loading a data 
+            Type from XML fails.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/xml/XmTypeFactory.java
+        </path>
+      </scm:Change>
+
+    
+      <scm:Change>
+        <date>2009-11-13
+        </date>
+        
+        <notes>
+          <scm:Note>Provide a more detailed Exception when loading a type
+            from XML fails.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/xml/XmTypeFactory.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-11-13
+        </date>
+        
+        <notes>
+          <scm:Note>Fix: Spin condition in lazy fetch functionality when 
+            initial fetch contains no elements and expected size is not set.
+          </scm:Note>
+          <scm:Note>Added "fetchable" flag, which is set on the installation
+            of the fetchCommand and turned off when the fetchCommand throws
+            an exception or adds no results.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/spi/ListAggregate.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-11-13
+        </date>
+        
+        <notes>
+          <scm:Note>Fix NPE: When no Sequences are defined in an AbstractStore
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/spi/AbstractStore.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-11-13
+        </date>
+        
+        <notes>
+          <scm:Note>Fix: Applying a new Type to a SequenceField did not work.
+          </scm:Note>
+          <scm:Note>The case where overriding an existing type using 
+            a TypeReference vs. extension of an existing type using
+            its TypeReference were insufficiently differentiated.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>MetaType.java
+          </URI>
+          <URI>reflect/ReflectionField.java
+          </URI>
+          <URI>reflect/ReflectionType.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-11-13
+        </date>
+        
+        <notes>
+          <scm:Note>Changed "cause" to "root cause" in DataException text
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/DataException.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-11-13
+        </date>
+        
+        <notes>
+          <scm:Note>Modification to Focus mechanism to provide better naming
+            and association flexibility.
+          </scm:Note>
+          <scm:Note>In-line iterations '#{ }' provide iteration metadata into
+            Focus chain via [lang:IterationCursor]
+          </scm:Note>
+          <scm:Note>Added addAlias,addFacet,toFormattedString methods to Focus.
+          </scm:Note>
+          <scm:Note>CompoundFocus is now deprecated. All Foci
+            now support facets.
+          </scm:Note>
+          <scm:Note>StaticFocus is now deprecated. Use static method
+            syntax [@myns:MyClass].@myStaticMethod(foo)
+          </scm:Note>
+          <scm:Note>BaseFocus assumes findFocus() and isFocus() default
+            implementation, and manages aliases and facets (other Foci 
+            addressable from below this Focus chain link).
+          </scm:Note>
+          <scm:Note>BaseFocus implements getFocusChain().toFormattedString()
+             and makes output more readable.
+          </scm:Note>
+          <scm:Note>Fix NPE when handling non-hierarchical URIs
+          </scm:Note>
+          <scm:Note>AssemblyFocus trimmed down by refactor
+          </scm:Note>
+          <scm:Note>RestService, DataSessionFocus moved off CompoundFocus to 
+                SimpleFocus
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/SimpleFocus.java
+          </URI>
+          <URI>lang/BaseFocus.java
+          </URI>
+          <URI>lang/CompoundFocus.java
+          </URI>
+          <URI>lang/StaticFocus.java
+          </URI>
+          <URI>lang/TeleFocus.java
+          </URI>
+          <URI>lang/FocusWrapper.java
+          </URI>         
+          <URI>lang/spi/ClosureFocus.java
+          </URI>
+          <URI>util/URIUtil.java
+          </URI>
+          <URI>builder/Assembly.java
+          </URI>
+          <URI>data/rest/RestService.java
+          </URI>
+          <URI>data/session/DataSessionFocus.java
+          </URI>
+          <URI>security/auth/Authenticator.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <date>2009-11-13
+        </date>
+
+        <notes>
+           <scm:Note>Array equality computation in lang/reflect defers to single
+             deep implementation.
+           </scm:Note>
+           <scm:Note>ArrayEqualityTranslator passes null for "not equal" 
+             condition for use in implementing != operator.
+           </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/
+        </path>
+        
+        <resources>
+          <URI>parser/ArrayEqualityTranslator.java
+          </URI>
+          <URI>reflect/ArrayReflector.java
+          </URI>
+          <URI>reflect/BeanReflector.java
+          </URI>
+        </resources>      
+      </scm:Change>
+            
+      <scm:Change>
+        <date>2009-11-13
+        </date>
+
+        <notes>
+           <scm:Note>Logical and Aggregate nodes query the Reflector to bind
+             an operation as part of the bind attempt
+           </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/parser/
+        </path>
+        
+        <resources>
+          <URI>AggregateProjectNode.java
+          </URI>         
+          <URI>LogicalNode.java
+          </URI>
+        </resources>      
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-11-13
+        </date>
+
+        <notes>
+           <scm:Note>Pulled namespace translation logic into Node class.
+           </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/parser/
+        </path>
+        
+        <resources>
+          <URI>AbsoluteFocusNode.java
+          </URI>         
+          <URI>TypeFocusNode.java
+          </URI>
+          <URI>Node.java
+          </URI>
+        </resources>      
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-11-13
+        </date>
+
+        <notes>
+          <scm:Note>Simplified spiralcraft.lang tuple/inline-context
+            syntax.
+          </scm:Note>
+          <scm:Note>A TupleExpression is now a stand-alone expression that
+            contains an expression list, that starts and ends with { }- ie
+            { x:=6, y:=.x }. It contains its own telescoped focus so that
+            fields can be bound to the previously defined  fields. 
+          </scm:Note>
+          <scm:Note>An in-line context is contained within a postfix expression
+            and creates a telescoped focus on the part of the postfix expression
+            that preceeds it. ie. customer.name{ .substring(1,.length()) }. The
+            in-line context provides the result of the contained expression.
+          </scm:Note>
+          <scm:Note>Simplified parser handling of postfix expressions
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/parser/
+        </path>
+        
+        <resources>
+          <URI>ExpressionParser.java
+          </URI>         
+          <URI>TupleNode.java
+          </URI>
+          <URI>SyntaxNode.java
+          </URI>
+          <URI>SubcontextNode.java
+          </URI>
+          <URI>TupleProjectNode.java
+          </URI>
+        </resources>      
+      </scm:Change>
+    </detail>
+    
+  </scm:Change>
+    
+  <scm:Change>
     <revision>0.3.21.1
     </revision>
     
