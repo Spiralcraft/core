@@ -15,11 +15,13 @@
 package spiralcraft.lang.parser;
 
 
+import spiralcraft.common.NamespaceResolver;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.log.ClassLog;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -72,6 +74,30 @@ public abstract class Node
     err.println(out.toString());
     
   }
+  
+  protected URI resolveQName
+    (String prefix,String suffix,NamespaceResolver nsr)
+  {
+    URI uri=null;
+    if (prefix!=null)
+    { uri=nsr.resolvePrefix(prefix);
+    }
+    else
+    { uri=nsr.getDefaultURI();
+    }
+    if (uri!=null)
+    { 
+      String uriStr=uri.toString();
+      if (!uriStr.endsWith("/"))
+      { 
+        uriStr=uriStr+"/";
+        uri=URI.create(uriStr);
+      }
+      uri=uri.resolve(suffix);
+    }
+    return uri;
+  }   
+  
   
   @SuppressWarnings("unchecked") // Genericized for internal purposes only
   public final Node isEqual(Node source)
@@ -183,12 +209,13 @@ public abstract class Node
   }
   
   @SuppressWarnings("unchecked")
-  protected Node projectTuple(Node projection)
-  { return new TupleProjectNode(this,projection);
+  protected Node subcontext(Node subcontext)
+  { return new SubcontextNode(this,subcontext);
   }
   
   protected void unsupported(String msg)
   { throw new UnsupportedOperationException(getClass().getName()+"."+msg+"(...)");
   }
+  
   
 }

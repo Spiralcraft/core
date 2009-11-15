@@ -81,24 +81,7 @@ public class TypeFocusNode
   { 
     URI uri=null;
     if (visitor instanceof NamespaceResolver && suffix!=null)
-    {
-      NamespaceResolver nsr=(NamespaceResolver) visitor;
-      if (namespace!=null)
-      { uri=nsr.resolvePrefix(namespace);
-      }
-      else
-      { uri=nsr.getDefaultURI();
-      }
-      if (uri!=null)
-      { 
-        String uriStr=uri.toString();
-        if (!uriStr.endsWith("/"))
-        { 
-          uriStr=uriStr+"/";
-          uri=URI.create(uriStr);
-        }
-        uri=uri.resolve(suffix);
-      }
+    { uri=resolveQName(namespace,suffix,(NamespaceResolver) visitor);
     }
     
     if (uri!=null)
