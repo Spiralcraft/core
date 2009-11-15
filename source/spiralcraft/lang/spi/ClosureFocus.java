@@ -91,7 +91,7 @@ public class ClosureFocus<T>
     EnclosedFocus<X> focus=foci.get(focusURI);
     if (focus==null)
     {
-      Focus<X> openFocus=parent.<X>findFocus(focusURI);
+      Focus<X> openFocus=super.<X>findFocus(focusURI);
       if (openFocus!=null)
       {
         Channel<X> subject=openFocus.getSubject();
@@ -113,19 +113,6 @@ public class ClosureFocus<T>
     }
     return focus;
   }
-
-  public boolean isFocus(URI focusURI)
-  { 
-
-    if (getSubject()!=null 
-        && getSubject().getReflector().isAssignableTo(focusURI)
-        )
-    { return true;
-    }
-    return false;
-  }
-
-
   
   @SuppressWarnings("unchecked")
   /**
