@@ -37,7 +37,9 @@ public class Tuple
   public String toString()
   { 
     StringBuffer buf=new StringBuffer();
-    buf.append(super.toString()+":{ ");
+    buf.append(super.toString()+":("+reflector.getTypeURI()+"):{ ");
+    
+    
     if (baseExtent!=null)
     { buf.append(" {= "+baseExtent.toString()+" } ");
     }

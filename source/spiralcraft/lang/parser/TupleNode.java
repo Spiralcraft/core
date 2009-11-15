@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
+import spiralcraft.common.NamespaceResolver;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
@@ -40,8 +41,11 @@ public class TupleNode
   private final LinkedHashMap<String,TupleField> fields
     =new LinkedHashMap<String,TupleField>();
   
-  private TypeFocusNode typeNode;
   private Node baseExtentNode;
+  
+  private URI typeURI;
+  private String typeNamespace;
+  private String typeName;
   
   public TupleNode()
   { 
@@ -60,9 +64,7 @@ public class TupleNode
       { ret.add(field.source);
       }
     }
-    if (typeNode!=null)
-    { ret.add(typeNode);
-    }
+
     if (baseExtentNode!=null)
     { ret.add(baseExtentNode);
     }
@@ -74,13 +76,29 @@ public class TupleNode
   {
     TupleNode copy=new TupleNode();
     
+    if (visitor instanceof NamespaceResolver && typeName!=null)
+    {
+      URI uri=resolveQName(typeNamespace,typeName,(NamespaceResolver) visitor);
+      if (uri!=null)
+      { copy.setTypeURI(uri);
+      }
+      else
+      {
+        copy.setTypeNamespace(typeNamespace);
+        copy.setTypeName(typeName);        
+      }
+    }
+    else
+    { 
+      copy.setTypeNamespace(typeNamespace);
+      copy.setTypeName(typeName);
+    }
+    
     for (TupleField field: fields.values())
     {
       copy.addField(field.copy(visitor));
     }
-    if (typeNode!=null)
-    { copy.setType((TypeFocusNode) typeNode.copy(visitor));
-    }
+
     if (baseExtentNode!=null)
     { copy.setBaseExtentNode(baseExtentNode.copy(visitor));
     }
@@ -93,8 +111,14 @@ public class TupleNode
     StringBuilder builder=new StringBuilder();
     builder.append(" { ");
     
-    if (typeNode!=null)
-    { builder.append(" { "+typeNode.reconstruct()+" } ");
+    if (typeName!=null)
+    { 
+      builder.append
+        (" [*"+(typeNamespace!=null?typeNamespace+":":"")+typeName+"]");
+    }
+    else if (typeURI!=null)
+    { 
+      builder.append(" [*:"+typeURI+"]");
     }
     
     if (baseExtentNode!=null)
@@ -132,8 +156,38 @@ public class TupleNode
     return builder.toString();
   }
   
-  public void setType(TypeFocusNode typeNode)
-  { this.typeNode=typeNode;
+  
+  public void setTypeNamespace(String typeNamespace)
+  { this.typeNamespace=typeNamespace;
+  }
+  
+  public void setTypeName(String typeName)
+  { this.typeName=typeName;
+  }
+  
+  public void setTypeQName(String qname)
+  {     
+    int colonPos=qname.indexOf(':');
+    if (colonPos==0)
+    { 
+      this.typeURI=URI.create(qname.substring(1));
+      this.typeNamespace=null;
+      this.typeName=null;
+    }
+    else if (colonPos>0)
+    {
+      this.typeNamespace=qname.substring(0,colonPos);
+      this.typeName=qname.substring(colonPos+1);
+    }
+    else
+    { 
+      this.typeNamespace=null;
+      this.typeName=qname;
+    }
+  }
+  
+  public void setTypeURI(URI typeURI)
+  { this.typeURI=typeURI;
   }
   
   public void setBaseExtentNode(Node baseExtentNode)
@@ -187,7 +241,6 @@ public class TupleNode
       =new ThreadLocalChannel<Tuple>(this);
     
     final URI typeURI;
-    final Reflector<?> type;
     
     final Channel<Object> baseChannel;
     
@@ -197,22 +250,42 @@ public class TupleNode
     {
     
       sourceChannel=focus.getSubject();
-
-      if (typeNode==null)
-      { 
-        typeURI
-          =URI.create
-            (sourceChannel.getReflector().getTypeURI()
-            +";tuple"+hashCode()
+      
+      if (TupleNode.this.typeURI==null)
+      {
+        if (typeName!=null)
+        { 
+          typeURI
+            =resolveQName(typeNamespace,typeName,focus.getNamespaceResolver());
+          if (typeURI==null)
+          { throw new BindException
+              ("Unable to resolve URI from qualified name '"
+              +(typeNamespace!=null?typeNamespace+":":"")
+              +typeName
+              );
+          }
+        
+        }
+        else
+        { 
+          typeURI=URI.create
+            ("temp:spiralcraft.lang.parser.TupleNode-"
+            +Integer.toHexString(System.identityHashCode(this))
             );
-        type=null;
+        }
       }
       else
+      { typeURI=TupleNode.this.typeURI;
+      }
+      
+    
+      
+      if (typeURI!=null && focus.findFocus(typeURI)!=null)
       { 
-        type=focus.<Reflector>bind(new Expression<Reflector>(typeNode)).get();
-        
-        
-        typeURI=type.getTypeURI();
+        throw new BindException
+          ("Type URI "+typeURI
+          +" has already been defined and cannot be duplicated"
+          );
       }
       
       
@@ -263,13 +336,10 @@ public class TupleNode
         i++;
       }
       
-      if (type!=null)
-      { checkType();
-        
-      }
     }
 
-    private void checkType()
+    @SuppressWarnings("unused")
+    private void checkTypeCompatibility(Reflector<?> type)
       throws BindException
     {
       LinkedList<Signature> signatures=type.getSignatures(thisChannel);
@@ -702,18 +772,14 @@ public class TupleNode
     {
       out.append(prefix).append(" { ");
       
-      
-      if (typeNode!=null)
-      { 
-        out.append(prefix).append("{");
-        typeNode.dumpTree(out,prefix);
-        out.append(prefix).append("}");
+      if (typeURI!=null)
+      { out.append("[*:"+typeURI+"] ");
       }
       
       if (baseExtentNode!=null)
       { 
         out.append(prefix).append("{=");
-        typeNode.dumpTree(out,prefix);
+        baseExtentNode.dumpTree(out,prefix);
         out.append(prefix).append("}");
       }
 
