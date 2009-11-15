@@ -48,6 +48,7 @@ import java.lang.reflect.Array;
 import java.net.URI;
 
 import spiralcraft.log.ClassLog;
+//import spiralcraft.util.ArrayUtil;
 
 /**
  * A Reflector which exposes an Array of an extended type.
@@ -62,6 +63,7 @@ public class ArrayReflector<I>
   private static final ClassLog log
     =ClassLog.getInstance(ArrayReflector.class);
   
+  
  
   private static final WeakHashMap<Reflector,WeakReference<ArrayReflector>> 
     reflectorMap
@@ -71,12 +73,17 @@ public class ArrayReflector<I>
   private static final ArrayLengthTranslator arrayLengthTranslator
     =new ArrayLengthTranslator();
 
-  private static final Translator objectArrayEqualityTranslator
+  private static final ArrayEqualityTranslator objectArrayEqualityTranslator
     =new ArrayEqualityTranslator<Object[]>()
   {
     @Override
     public boolean compare(Object[] source,Object[] target)
-    { return Arrays.deepEquals(source,target);
+    { 
+//      log.fine("Comparing "+ArrayUtil.format(source,",",null)
+//        +" to "+ArrayUtil.format(target,",",null)
+//        +" is "+Arrays.deepEquals(source,target)
+//        );
+      return Arrays.deepEquals(source,target);
     }
   };
   
@@ -217,8 +224,13 @@ public class ArrayReflector<I>
     throws BindException
   {
     Translator<X,I[]> translator=null;
-    if (name.equals("equals"))
-    { translator=objectArrayEqualityTranslator;
+    if (name.equals("equals") || name.equals("==") || name.equals("!="))
+    { 
+      translator
+        =(name.equals("!=")
+         ?objectArrayEqualityTranslator.negate
+         :objectArrayEqualityTranslator
+         );
     }
     
     if (translator!=null)

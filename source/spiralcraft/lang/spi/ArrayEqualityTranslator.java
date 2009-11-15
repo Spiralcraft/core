@@ -33,6 +33,8 @@ public abstract class ArrayEqualityTranslator<T>
   private final Reflector<Boolean> _reflector
     =BeanReflector.getInstance(Boolean.class);
   
+  public final Negate negate=new Negate();
+  
   public Reflector<Boolean> getReflector()
   { return _reflector;
   }
@@ -52,5 +54,42 @@ public abstract class ArrayEqualityTranslator<T>
   }
 
   public abstract boolean compare(T source,T target);
+  
+  public class Negate implements Translator<Boolean,T>
+  {
+
+    @Override
+    public Reflector<Boolean> getReflector()
+    { return _reflector;
+    }
+
+    @Override
+    public Boolean translateForGet(
+      T source,
+      Channel<?>[] modifiers)
+    {
+      Boolean result
+        =ArrayEqualityTranslator.this.translateForGet(source,modifiers);
+      if (result==null)
+      { return null;
+      }
+      else if (Boolean.FALSE.equals(result))
+      { return Boolean.TRUE;
+      }
+      else
+      { return Boolean.FALSE;
+      }
+    }
+
+    @Override
+    public T translateForSet(
+      Boolean source,
+      Channel<?>[] modifiers)
+    { return ArrayEqualityTranslator.this.translateForSet(source,modifiers);
+    }
+    
+  }
+  
+  
 
 }

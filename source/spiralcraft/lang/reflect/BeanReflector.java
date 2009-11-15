@@ -120,7 +120,7 @@ public class BeanReflector<T>
     =new ArrayLengthTranslator();
 
 
-  private static final Translator booleanArrayEqualityTranslator
+  private static final ArrayEqualityTranslator booleanArrayEqualityTranslator
     =new ArrayEqualityTranslator<boolean[]>()
   {
     @Override
@@ -129,7 +129,7 @@ public class BeanReflector<T>
     }
   };
 
-  private static final Translator byteArrayEqualityTranslator
+  private static final ArrayEqualityTranslator byteArrayEqualityTranslator
     =new ArrayEqualityTranslator<byte[]>()
   {
     @Override
@@ -138,7 +138,7 @@ public class BeanReflector<T>
     }
   };
 
-  private static final Translator charArrayEqualityTranslator
+  private static final ArrayEqualityTranslator charArrayEqualityTranslator
     =new ArrayEqualityTranslator<char[]>()
   {
     @Override
@@ -147,7 +147,7 @@ public class BeanReflector<T>
     }
   };
 
-  private static final Translator shortArrayEqualityTranslator
+  private static final ArrayEqualityTranslator shortArrayEqualityTranslator
     =new ArrayEqualityTranslator<short[]>()
   {
     @Override
@@ -156,7 +156,7 @@ public class BeanReflector<T>
     }
   };
 
-  private static final Translator intArrayEqualityTranslator
+  private static final ArrayEqualityTranslator intArrayEqualityTranslator
     =new ArrayEqualityTranslator<int[]>()
   {
     @Override
@@ -165,7 +165,7 @@ public class BeanReflector<T>
     }
   };
 
-  private static final Translator longArrayEqualityTranslator
+  private static final ArrayEqualityTranslator longArrayEqualityTranslator
     =new ArrayEqualityTranslator<long[]>()
   {
     @Override
@@ -174,7 +174,7 @@ public class BeanReflector<T>
     }
   };
   
-  private static final Translator floatArrayEqualityTranslator
+  private static final ArrayEqualityTranslator floatArrayEqualityTranslator
     =new ArrayEqualityTranslator<float[]>()
   {
     @Override
@@ -183,7 +183,7 @@ public class BeanReflector<T>
     }
   };
 
-  private static final Translator doubleArrayEqualityTranslator
+  private static final ArrayEqualityTranslator doubleArrayEqualityTranslator
     =new ArrayEqualityTranslator<double[]>()
   {
     @Override
@@ -192,12 +192,17 @@ public class BeanReflector<T>
     }
   };
 
-  private static final Translator objectArrayEqualityTranslator
+  private static final ArrayEqualityTranslator objectArrayEqualityTranslator
     =new ArrayEqualityTranslator<Object[]>()
   {
     @Override
     public boolean compare(Object[] source,Object[] target)
-    { return Arrays.deepEquals(source,target);
+    { 
+//      log.fine("Comparing "+ArrayUtil.format(source,",",null)
+//        +" to "+ArrayUtil.format(target,",",null)
+//        +" is "+Arrays.deepEquals(source,target)
+//        );      
+      return Arrays.deepEquals(source,target);
     }
   };
   
@@ -662,40 +667,44 @@ public class BeanReflector<T>
     throws BindException
   {
     Translator<X,T> translator=null;
-    if (name.equals("equals"))
+    if (name.equals("equals") || name.equals("==") || name.equals("!="))
     { 
       Class atype=source.getContentType();
-
+      
+      ArrayEqualityTranslator<T> atranslator=null;
+      
       if (atype==boolean[].class)
-      { translator=booleanArrayEqualityTranslator;
+      { atranslator=booleanArrayEqualityTranslator;
       }
       else if (atype==byte[].class)
-      { translator=byteArrayEqualityTranslator;
+      { atranslator=byteArrayEqualityTranslator;
       }
       else if (atype==short[].class)
-      { translator=shortArrayEqualityTranslator;
+      { atranslator=shortArrayEqualityTranslator;
       }
       else if (atype==int[].class)
-      { translator=intArrayEqualityTranslator;
+      { atranslator=intArrayEqualityTranslator;
       }
       else if (atype==long[].class)
-      { translator=longArrayEqualityTranslator;
+      { atranslator=longArrayEqualityTranslator;
       }
       else if (atype==double[].class)
-      { translator=doubleArrayEqualityTranslator;
+      { atranslator=doubleArrayEqualityTranslator;
       }
       else if (atype==float[].class)
-      { translator=floatArrayEqualityTranslator;
+      { atranslator=floatArrayEqualityTranslator;
       }
       else if (atype==char[].class)
-      { translator=charArrayEqualityTranslator;
+      { atranslator=charArrayEqualityTranslator;
       }
       else if (Object[].class.isAssignableFrom(atype))
-      { translator=objectArrayEqualityTranslator;
+      { atranslator=objectArrayEqualityTranslator;
       }
       else
       { throw new BindException("Can't compare array type "+atype);
       }
+      translator
+        =(Translator<X,T>) (name.equals("!=")?atranslator.negate:atranslator);
     }
     
     if (translator!=null)
@@ -705,9 +714,9 @@ public class BeanReflector<T>
       { 
         binding=new TranslatorChannel<X,T>
           (source
-          ,translator
-          ,params
-          );
+            ,translator
+            ,params
+            );
         source.cache(translator,binding);
       }
       return binding;
@@ -760,13 +769,14 @@ public class BeanReflector<T>
       }
       catch (NoSuchMethodException x)
       { 
-        throw new BindException
-          ("Method "
-          +name
-          +"("+ArrayUtil.format(classSig,",","")
-          +") not found in "+targetClass
-          ,x
-          );
+        return null;
+//        throw new BindException
+//          ("Method "
+//          +name
+//          +"("+ArrayUtil.format(classSig,",","")
+//          +") not found in "+targetClass
+//          ,x
+//          );
       }
     }
     if (translator!=null)
