@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.CompoundFocus;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.reflect.BeanFocus;
@@ -42,7 +41,7 @@ public abstract class Authenticator
     =new HashMap<String,Credential<?>>();
   protected Class<? extends Credential<?>>[] acceptedCredentials;
   
-  protected CompoundFocus<Map<String,Credential<?>>> credentialFocus;
+  protected SimpleFocus<Map<String,Credential<?>>> credentialFocus;
   
   protected void setAcceptedCredentials
     (Class<? extends Credential<?>>[] acceptedCredentials)
@@ -130,11 +129,11 @@ public abstract class Authenticator
     }
         
     credentialFocus
-      =new CompoundFocus<Map<String,Credential<?>>>
+      =new SimpleFocus<Map<String,Credential<?>>>
       (sessionFocus,new CredentialSetChannel(protoMap,sessionChannel)
       );
-    credentialFocus.bindFocus
-      ("",new BeanFocus<Authenticator>(this));
+    credentialFocus.addFacet
+      (new BeanFocus<Authenticator>(this));
   }
   
 }
