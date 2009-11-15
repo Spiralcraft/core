@@ -28,12 +28,14 @@ import spiralcraft.lang.spi.AbstractChannel;
  *   (eg. <code>[static:foo.bar.myclass] </code>)
  * </p>
  */
+@Deprecated
 public class StaticFocus<T>
   extends BaseFocus<T>
 {
   
   private final StaticChannel<T> binding;
   
+  @SuppressWarnings("deprecation")
   public StaticFocus(Focus<?> parentFocus,Class<T> clazz)
   { 
     setParentFocus(parentFocus);
@@ -41,22 +43,8 @@ public class StaticFocus<T>
     setSubject(binding);
   }
 
-  @SuppressWarnings("unchecked") // Cast for requested interface
-  @Override
-  public <X> Focus<X> findFocus(URI specifier)
-  {
-    
-    if (isFocus(specifier))
-    { return (Focus<X>) this;
-    }
-    
-    if (parent!=null)
-    { return parent.<X>findFocus(specifier);
-    }
-    
-    return null;
-  }
 
+  @SuppressWarnings("deprecation")
   @Override
   public boolean isFocus(
     URI specifier)
