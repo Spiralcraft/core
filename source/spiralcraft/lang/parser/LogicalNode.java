@@ -47,19 +47,38 @@ public abstract class LogicalNode<T1,T2>
   { 
 //    System.out.println("LogicalNode bind "+_op1.toString()+" "+_op2.toString());
 
-    Channel<?>[] params;
-    if (_op2!=null)
-    { params=new Channel[] {focus.bind(new Expression<T2>(_op2,null))};
-    }
-    else
-    { params=new Channel[] {};
-    }
+
     
-    return new TranslatorChannel<Boolean,T1>
-      (focus.bind(new Expression<T1>(_op1,null))
-      ,this
-      ,params
-      );
+    Channel<T1> op1Channel=focus.bind(new Expression<T1>(_op1,null));
+    Expression<T2> op2Expr=_op2!=null?new Expression<T2>(_op2,null):null;
+      
+    // Give first operand a chance to implement the operator
+    Channel<Boolean> resultChannel
+      =op1Channel.getReflector().resolve
+        (op1Channel
+        ,focus
+        ,getSymbol()
+        , op2Expr!=null?new Expression[] {op2Expr}:null
+        );
+    
+    if (resultChannel==null)
+    {
+      Channel<?>[] params;
+      if (op2Expr!=null)
+      { params=new Channel[] {focus.bind(op2Expr)};
+      }
+      else
+      { params=new Channel[] {};
+      }
+      
+      resultChannel
+        =new TranslatorChannel<Boolean,T1>
+          (op1Channel
+          ,this
+          ,params
+          );
+    }
+    return resultChannel;
       
   }
   

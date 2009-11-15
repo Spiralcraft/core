@@ -18,6 +18,8 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.IterationDecorator;
+import spiralcraft.lang.spi.IterationProjector;
 
 
 /**
@@ -35,10 +37,10 @@ public class AggregateProjectNode<T,C>
   private final Node _source;
   private final Node _projection;
 
-  public AggregateProjectNode(Node source,Node selector)
+  public AggregateProjectNode(Node source,Node projection)
   { 
     _source=source;
-    _projection=selector;
+    _projection=projection;
   }
 
   @Override
@@ -55,9 +57,10 @@ public class AggregateProjectNode<T,C>
   
   @Override
   public String reconstruct()
-  { return _source.reconstruct()+" # [ "+_projection.reconstruct()+" ] ";
+  { return _source.reconstruct()+" # { "+_projection.reconstruct()+" } ";
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   public Channel<?> bind(Focus<?> focus)
     throws BindException
@@ -70,11 +73,23 @@ public class AggregateProjectNode<T,C>
         , "#"
         , new Expression[] {new Expression<T>(_projection,null)}
         );
-    if (result==null)
+    
+    // Default behavior
+    if (result==null 
+        && collection
+            .<IterationDecorator>decorate(IterationDecorator.class)!=null
+       )
     { 
+      return new IterationProjector
+        (collection,focus,new Expression<T>(_projection,null)).result;
+    }
+    
+    if (result==null)
+    {
       throw new BindException
-        ("Channel could not intepret the # (projection) operator: "
-        +collection+" # "+_projection
+        ("Channel could not intepret the # (projection) operator, and does not"
+          +"support iteration "
+          +collection+" # "+_projection
         );
     }
     return result;
@@ -86,9 +101,9 @@ public class AggregateProjectNode<T,C>
     out.append(prefix).append("Subscript");
     prefix=prefix+"  ";
     _source.dumpTree(out,prefix);
-    out.append(prefix).append("[");
+    out.append(prefix).append("{");
     _projection.dumpTree(out,prefix);
-    out.append(prefix).append("]");
+    out.append(prefix).append("}");
   }
   
 
