@@ -321,4 +321,33 @@ public interface Focus<T>
    */
   public Channel<Focus<T>> getSelfChannel();
   
+  /**
+   * <p>Makes the provided Focus visible from anything scoped beneath this
+   *   Focus in the chain. Allows a Focus to expose multiple subjects.
+   * </p>
+   * 
+   * <p>When resolving a Focus URI, the immediate facets of this Focus will
+   *   be checked and returned.
+   * </p>
+   * 
+   * @param focus
+   */
+  public void addFacet(Focus<?> focus);
+  
+  /**
+   * Add an alias to this Focus which will make it responsive to the provided
+   *   URI 
+   * 
+   * @param uri
+   */
+  public void addAlias(URI uri);
+  
+  /**
+   * Development aid to represent the Focus and contents as an indented block
+   * 
+   * @param prefix
+   * @return
+   */
+  public String toFormattedString(String prefix);
+  
 }

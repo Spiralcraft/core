@@ -147,5 +147,16 @@ public abstract class FocusWrapper<Tfocus>
   { return new TeleFocus<Tchannel>(this,subject);
   }
   
+  public void addFacet(Focus<?> facet)
+  { focus.addFacet(facet);
+  }
+  
+  public void addAlias(URI alias)
+  { focus.addAlias(alias);
+  }
+  
+  public String toFormattedString(String prefix)
+  { return focus.toFormattedString(prefix)+"{wrapped by "+super.toString()+"}";
+  }
   
 }
