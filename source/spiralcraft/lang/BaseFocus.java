@@ -14,12 +14,14 @@
 //
 package spiralcraft.lang;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import spiralcraft.common.NamespaceResolver;
 
 import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.util.URIUtil;
 
 
 public abstract class BaseFocus<T>
@@ -31,6 +33,9 @@ public abstract class BaseFocus<T>
   protected Channel<T> subject;
   protected Focus<?> parent;
   protected NamespaceResolver namespaceResolver;
+  protected LinkedList<Focus<?>> facets;
+  protected LinkedList<URI> aliases;
+
   private HashMap<Expression<?>,Channel<?>> channels; 
 
 
@@ -117,6 +122,61 @@ public abstract class BaseFocus<T>
   { this.namespaceResolver=resolver;
   }
   
+  
+  public boolean isFocus(URI uri)
+  { 
+    URI baseURI=uri.isAbsolute()?URIUtil.trimToPath(uri):null;
+        
+    if (subject==null)
+    { return false;
+    }
+    
+    if (aliases!=null)
+    { 
+      for (URI alias:aliases)
+      {
+        if (alias.equals(uri))
+        { return true;
+        }
+      }
+    } 
+
+    if (baseURI!=null && subject.getReflector().isAssignableTo(baseURI))
+    { return true;
+    }
+    
+    return false;
+  }  
+  
+  @SuppressWarnings("unchecked") // Cast for requested interface
+  @Override
+  public <X> Focus<X> findFocus(URI uri)
+  { 
+    if (isFocus(uri))
+    { return (Focus<X>) this;
+    }
+    
+    if (facets!=null)
+    {
+    
+      for (Focus<?> focus:facets)
+      {
+        if (focus.isFocus(uri))
+        { return (Focus<X>) focus;
+        }
+      }
+    
+    }
+      
+    if (parent!=null)
+    { return parent.findFocus(uri);
+    }
+    else
+    { return null;
+    }
+  }  
+
+  
   @Override
   public LinkedList<Focus<?>> getFocusChain()
   {
@@ -135,7 +195,10 @@ public abstract class BaseFocus<T>
           StringBuilder buf=new StringBuilder();
           int i=0;
           for (Focus<?> focus : this)
-          { buf.append("\r\n    focusChain #"+(i++)+": "+focus);
+          { 
+            buf.append("\r\n    focusChain #"+(i++)+": ");
+            buf.append(focus.toFormattedString("\r\n    --"));  
+            
           }
           return buf.toString();
         }
@@ -147,8 +210,26 @@ public abstract class BaseFocus<T>
     list.push(this);
     return list;
     
+  }    
+  
+  
+  public synchronized void addFacet(Focus<?> facet)
+  { 
+    if (facets==null)
+    { facets=new LinkedList<Focus<?>>();
+    }
+    facets.add(facet);
   }
   
+  public synchronized void addAlias(URI alias)
+  {
+    if (aliases==null)
+    { aliases=new LinkedList<URI>();
+    }
+    aliases.add(alias);
+  }
+  
+ 
   public Channel<Focus<T>> getSelfChannel()
   { 
     if (selfChannel==null)
@@ -165,21 +246,21 @@ public abstract class BaseFocus<T>
     buf.append("[");
     if (subject!=null)
     {
+      if (subject.getReflector()!=null)
+      { buf.append("[@"+subject.getReflector().getTypeURI()+"]");
+      }
       if (subject.getContentType()!=null)
-      { buf.append(subject.getContentType().getName());
+      { buf.append(":"+subject.getContentType().getName());
       }
       else
       { buf.append("(no content type!)");
       }
-      if (subject.getReflector()!=null)
-      { buf.append("-[@"+subject.getReflector().getTypeURI()+"]");
-      }
-      buf.append("("+subject.getClass().getName()+")");
+      buf.append(":("+subject.getClass().getName()+")");
     }
     else
     { buf.append("(no subject)");
     }
-    buf.append("[");
+    buf.append("]");
     return buf.toString();
 //    return super.toString()
 //      +"["+(subject!=null
@@ -191,5 +272,23 @@ public abstract class BaseFocus<T>
 //      +"]";
   }
 
+  public String toFormattedString(String prefix)
+  { 
+    StringBuffer buf=new StringBuffer();
+    buf.append(prefix+toString());
+    if (aliases!=null)
+    { 
+      for (URI uri:aliases)
+      { buf.append(prefix).append("-- alias: "+uri);
+      }
+    }
+    if (facets!=null)
+    {
+      for (Focus<?> focus:facets)
+      { buf.append(focus.toFormattedString(prefix+"--"));
+      }
+    }
+    return buf.toString();
+  }
 
 }
