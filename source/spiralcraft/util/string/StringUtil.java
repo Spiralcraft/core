@@ -239,4 +239,47 @@ public class StringUtil
 
   }
   
+  /**
+   * Returns a char[] initialized to the specified character
+   * 
+   * @param c
+   * @param count
+   * @return
+   */
+  public static char[] repeat(char c,int count)
+  {
+    char[] ret=new char[count];
+    for (int i=0;i<ret.length;i++)
+    { ret[i]=c;
+    }
+    return ret;
+  }
+
+  /**
+   * Pads input by inserting c at the beginning to ensure minimum length.
+   * 
+   * @param input
+   * @param c
+   * @param length
+   * @return
+   */
+  public static String prepad(String input,char c,int length)
+  {
+    int diff=length-input.length();
+    switch (diff)
+    {
+      case 0:
+        return input;
+      case 1:
+        return c+input;
+      case 2:
+        return c+c+input;
+      default:
+        StringBuilder b=new StringBuilder();
+        b.append(repeat(c,diff));
+        b.append(input);
+        return b.toString();
+    }
+  }
+  
 }
