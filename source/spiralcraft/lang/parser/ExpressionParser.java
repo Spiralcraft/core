@@ -98,6 +98,7 @@ public class ExpressionParser
 
     syntax.quoteChar('"');
 
+    syntax.quoteChar('\'');
     
     _progressBuffer=new StringBuffer();
     _pos=0;
@@ -927,7 +928,17 @@ public class ExpressionParser
         node=new LiteralNode<String>(_tokenizer.sval,String.class);
         consumeToken();
         break;
-
+      case '\'':
+        String str=_tokenizer.sval;
+        if (str.length()!=1)
+        { throwException("Single quotes must contain a Character literal");
+        }
+        node=new LiteralNode<Character>
+          (Character.valueOf(str.charAt(0))
+          ,Character.class
+          );
+        consumeToken();
+        break;
       case '(': //        "(" expression ")" - recursive reference
         consumeToken();
         node=new SyntaxNode("(",parseExpression(),")");
