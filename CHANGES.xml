@@ -3,6 +3,67 @@
   >
   
   <scm:Change>
+    <revision>0.3.23
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>?????
+    </date>
+    
+    <notes>
+    </notes>
+    
+    <detail>
+
+      <scm:Change>
+        <date>2009-11-23
+        </date>
+        
+        <notes>
+          <scm:Note>Implemented MessageDigest utility to convert from 
+            different content representations to different digest
+            representations.
+          </scm:Note>
+          <scm:Note>Added prepad function to StringUtil to pad number
+            representations with leading chars.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/
+        </path>
+        
+        <resources>
+          <URI>crypt/Digester.java
+          </URI>
+          <URI>string/StringUtil.java
+          </URI>
+        </resources>
+        
+
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-11-23
+        </date>
+        
+        <notes>
+          <scm:Note>Implemented Character literals delimited by single quote
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/ExpressionParser.java
+        </path>
+        
+
+      </scm:Change>
+    </detail>
+  
+  </scm:Change>
+  
+  
+  <scm:Change>
     <revision>0.3.22
     </revision>
     

@@ -45,6 +45,9 @@
         <langtest:LangTest
           xmlns:langtest="class:/spiralcraft/lang/test/"
         />
+        <utiltest:UtilTest
+          xmlns:utiltest="class:/spiralcraft/util/test/"
+        />
         
         <iotest:RecordIteratorTest>
 

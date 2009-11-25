@@ -1,0 +1,35 @@
+<test:TestGroup
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:j="class:/java/lang/"
+  xmlns:lang="class:/spiralcraft/lang"
+  xmlns:util="class:/spiralcraft/util/string/"
+  >
+  <name>spiralcraft.util.test
+  </name>
+  
+  <chain>
+ 
+    <task:Sequence>
+      <scenarios>
+    
+        <test:Assertion>
+        
+          <name>prepad
+          </name>
+          
+          <subjectX>[@util:StringUtil].@prepad("12345",'0',6)
+          </subjectX>
+          
+          <testX>.=="012345"
+          </testX>
+          
+        </test:Assertion>
+
+
+      </scenarios>
+      
+    </task:Sequence>
+  </chain>
+        
+</test:TestGroup>
