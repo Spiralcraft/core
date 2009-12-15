@@ -59,30 +59,30 @@ public class BufferChannel<Tbuffer extends Buffer>
   }
   
       
-  /**
-   * Construct a BufferChannel
-   * 
-   * @param focus A Focus on the DataComposite being buffered
-   * 
-   */
-  @SuppressWarnings("unchecked")
-  public BufferChannel(Focus<? extends DataComposite> focus)
-    throws BindException
-  { 
-    super
-      (DataReflector.<Tbuffer>getInstance
-        (Type.<DataComposite>getBufferType
-         ( ((DataReflector) focus.getSubject().getReflector())
-             .getType()
-         )
-        )
-      );
-    
-    log.fine("BufferChannel "+getReflector());
-    setupSession(focus);
-    this.originalChannel=focus.getSubject();
-    
-  }
+//  /**
+//   * Construct a BufferChannel
+//   * 
+//   * @param focus A Focus on the DataComposite being buffered
+//   * 
+//   */
+//  @SuppressWarnings("unchecked")
+//  public BufferChannel(Focus<? extends DataComposite> focus)
+//    throws BindException
+//  { 
+//    super
+//      (DataReflector.<Tbuffer>getInstance
+//        (Type.<DataComposite>getBufferType
+//         ( ((DataReflector) focus.getSubject().getReflector())
+//             .getType()
+//         )
+//        )
+//      );
+//    
+//    log.fine("BufferChannel "+getReflector());
+//    setupSession(focus);
+//    this.originalChannel=focus.getSubject();
+//    
+//  }
 
   /**
    * Construct a BufferChannel
@@ -154,15 +154,6 @@ public class BufferChannel<Tbuffer extends Buffer>
     else
     { throw new BindException("Can't find a DataSession in Focus chain");
     }
-    
-    
-//    Focus<Buffer> bufferFocus=(Focus<Buffer>) focus.findFocus(Buffer.FOCUS_URI);
-//    if (bufferFocus!=null)
-//    { 
-//      parentChannel
-//        =bufferFocus.getSubject();
-//    }
-        
     
     
   }
