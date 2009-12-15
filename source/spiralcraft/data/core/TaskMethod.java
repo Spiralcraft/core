@@ -29,7 +29,7 @@ import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.task.Scenario;
 import spiralcraft.task.TaskCommand;
 
-public class TaskMethod<T,R>
+public class TaskMethod<T,C,R>
   extends MethodImpl
 {
 
@@ -67,14 +67,14 @@ public class TaskMethod<T,R>
           (getDataType().getURI().toString()+"_"+getName()+".scenario.xml");
     }
     
-    AbstractXmlObject<Scenario,?> scenarioContainer
+    AbstractXmlObject<Scenario<C,R>,?> scenarioContainer
       =AbstractXmlObject
-        .<Scenario>activate(null,scenarioURI, null, focus);
+        .<Scenario<C,R>>activate(null,scenarioURI, null, focus);
 
     focus=scenarioContainer.getFocus();
     
     
-    Scenario scenario=scenarioContainer.get();
+    Scenario<C,R> scenario=scenarioContainer.get();
     
     return new TaskMethodChannel(scenario);
     
@@ -83,28 +83,28 @@ public class TaskMethod<T,R>
   }
   
   public class TaskMethodChannel
-    extends AbstractChannel<TaskCommand>
+    extends AbstractChannel<TaskCommand<C,R>>
   {
-    private final Scenario scenario;
+    private final Scenario<C,R> scenario;
     
-    public TaskMethodChannel(Scenario scenario)
+    public TaskMethodChannel(Scenario<C,R> scenario)
     { 
       super(scenario.getCommandReflector());
       this.scenario=scenario;
     }
     
     @Override
-    protected TaskCommand retrieve()
+    protected TaskCommand<C,R> retrieve()
     { 
       
-      TaskCommand command=scenario.command();
+      TaskCommand<C,R> command=scenario.command();
       command.encloseContext();
       return command;
     }
 
     @Override
     protected boolean store(
-      TaskCommand val)
+      TaskCommand<C,R> val)
       throws AccessException
     { return false;
     }

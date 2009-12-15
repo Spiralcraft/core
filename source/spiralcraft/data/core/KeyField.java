@@ -16,6 +16,7 @@ package spiralcraft.data.core;
 
 
 import spiralcraft.lang.AccessException;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
@@ -84,11 +85,19 @@ public class KeyField<T extends DataComposite>
   
   @Override
   @SuppressWarnings("unchecked")
-  public Channel<T> bindChannel(Focus<Tuple> focus)
+  public Channel<T> bindChannel
+    (Channel<Tuple> source
+    ,Focus<?> focus
+    ,Expression<?>[] args
+    )
     throws BindException
   { 
     
-    Focus<Tuple> keyFocus=new SimpleFocus(focus,key.bindChannel(focus));
+    if (focus.getSubject()!=source)
+    { focus=focus.chain(source);
+    }
+    Focus<Tuple> keyFocus
+      =new SimpleFocus(focus,key.bindChannel(source,focus,args));
 
     Query query=key.getForeignQuery();
     if (debug)

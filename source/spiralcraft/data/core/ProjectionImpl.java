@@ -224,9 +224,19 @@ public class ProjectionImpl<T>
   }
   
   @Override
-  public Channel<Tuple> bindChannel(Focus<T> focus)
+  public Channel<Tuple> bindChannel
+    (Channel<T> source
+    ,Focus<?> focus
+    ,Expression<?>[] args
+    )
     throws BindException
-  { return new ProjectionChannel(focus);
+  { 
+    
+    if (focus.getSubject()!=source)
+    { focus=focus.chain(source);
+    } 
+    
+    return new ProjectionChannel(focus);
   }
   
   public class ProjectionChannel

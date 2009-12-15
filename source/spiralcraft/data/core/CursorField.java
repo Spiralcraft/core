@@ -15,6 +15,7 @@
 package spiralcraft.data.core;
 
 
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
@@ -44,12 +45,16 @@ public class CursorField<T>
   
   @Override
   @SuppressWarnings("unchecked")
-  public Channel<T> bindChannel(Focus<Tuple> focus)
+  public Channel<T> bindChannel
+    (Channel<Tuple> source
+    ,Focus<?> focus
+    ,Expression<?>[] params
+    )
     throws BindException
   { 
     return new CursorChannel
       (getType()
-      ,super.bindChannel(focus)
+      ,super.bindChannel(source,focus,params)
       );
   }
   

@@ -79,7 +79,7 @@ public class CalculatedFieldImpl<T>
       threadLocalBinding
         =new ThreadLocalChannel<Tuple>(TupleReflector.getInstance(getFieldSet()));
       SimpleFocus<Tuple> focus=new SimpleFocus<Tuple>(threadLocalBinding);
-      expressionBinding=bindChannel(focus);
+      expressionBinding=bindChannel(threadLocalBinding,focus,null);
     }
     catch (BindException x)
     { 
@@ -107,7 +107,7 @@ public class CalculatedFieldImpl<T>
           (Level.FINE
           ,"CalculatedField "
             +getURI()
-            +" has unresolved dependencies and must be bound"
+            +" has unresolved dependencies and must bound into a context"
           );
       }
       return null;
@@ -155,13 +155,19 @@ public class CalculatedFieldImpl<T>
   
   @Override
   public Channel<T> bindChannel
-    (Focus<Tuple> focus)
+    (Channel<Tuple> source
+    ,Focus<?> focus
+    ,Expression<?>[] args
+    )
     throws BindException
   { 
     if (expression==null)
     { 
       throw new BindException
         ("CalculatedField "+getURI()+" must have an expression");
+    }
+    if (focus.getSubject()!=source)
+    { focus=focus.chain(source);
     }
     return focus.<T>bind(expression);
   }

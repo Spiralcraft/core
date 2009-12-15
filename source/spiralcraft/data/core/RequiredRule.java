@@ -7,6 +7,7 @@ import spiralcraft.data.Type;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.rules.AbstractRule;
@@ -31,9 +32,10 @@ public class RequiredRule<T extends Tuple>
   
   
   @Override
-  public Channel<Violation<T>> bindChannel(Focus<T> focus)
+  public Channel<Violation<T>> bindChannel
+    (Channel<T> source,Focus<?> focus,Expression<?>[] args)
     throws BindException
-  { return new RequiredRuleChannel(focus);
+  { return new RequiredRuleChannel(source,focus);
   }
     
   class RequiredRuleChannel
@@ -45,12 +47,11 @@ public class RequiredRule<T extends Tuple>
 
     
     @SuppressWarnings("unchecked") // Cast to tuple for field binding
-    public RequiredRuleChannel(Focus<T> focus)
+    public RequiredRuleChannel(Channel<T> source,Focus<?> focus)
       throws BindException
     { 
-      source=focus.getSubject();
-      fieldChannel=field.bindChannel((Focus<Tuple>) focus);
-
+      this.source=source;
+      fieldChannel=field.bindChannel((Channel<Tuple>) source,focus,null);
     }      
           
     @Override

@@ -15,10 +15,10 @@
 package spiralcraft.data;
 
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Functor;
 
 /**
  * <p>A horizontal transformation of data in an arbitrary form into 
@@ -34,7 +34,7 @@ import spiralcraft.lang.BindException;
  * @author mike
  */
 public interface Projection<T>
-  extends FieldSet,ChannelFactory<Tuple,T>
+  extends FieldSet,Functor<Tuple,T>
 {
   
   /**
@@ -42,14 +42,18 @@ public interface Projection<T>
    * </p>
    * 
    * <p>The Tuple provided by the Channel is a view into the current
-   *   values(s) provided by the Focus, and is mutable- ie. will change
+   *   values(s) provided by the source object, and is mutable- ie. will change
    *   along with the backing values. Therefore, the user should call snapshot() 
    *   if the value is to be used beyond the immediate context.
    * </p>
    */
   @Override
-  public Channel<Tuple> bindChannel(Focus<T> focus)
-    throws BindException;
+  public Channel<Tuple> bindChannel
+    (Channel<T> source
+    ,Focus<?> focus
+    ,Expression<?>[] params
+    )
+  throws BindException;
 
   /**
    * 

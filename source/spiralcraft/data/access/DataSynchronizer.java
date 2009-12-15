@@ -72,7 +72,11 @@ public class DataSynchronizer
     primaryKeyFocus=new TupleFocus<Tuple>(primaryKey);
     try
     {
-      keyBinding=primaryKey.bindChannel(tupleFocus);
+      keyBinding=primaryKey.bindChannel
+        (tupleFocus.getSubject()
+        ,tupleFocus
+        ,null
+        );
     }
     catch (BindException x)
     { throw new DataException("Error Binding key:",x);

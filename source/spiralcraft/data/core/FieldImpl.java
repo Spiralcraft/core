@@ -29,7 +29,6 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.UncheckedCastChannel;
 import spiralcraft.log.ClassLog;
@@ -559,14 +558,13 @@ public class FieldImpl<T>
 
   @Override
   public Channel<T> bindChannel
-    (Focus<Tuple> focus)
+    (Channel<Tuple> source,Focus<?> focus,Expression<?>[] params)
     throws BindException
   { 
-    Channel source=focus.getSubject();
     Channel binding=source.getCached(this);
     if (binding==null)
     { 
-      binding=new FieldChannel(focus);
+      binding=new FieldChannel(source,focus);
       source.cache(this,binding);
     }
     return binding;
@@ -578,17 +576,20 @@ public class FieldImpl<T>
     protected final Channel<? extends Tuple> source;
     protected final Inspector<FieldImpl<T>,T> inspector;
     protected final Inspector<Type<T>,T> typeInspector;
-    protected final Focus<? extends Tuple> focus;
+    protected final Focus<?> focus;
     
     protected WeakHashMap<Type,Channel<T>> polyBindings;
     
     
-    public FieldChannel(Focus<? extends Tuple> focus)
+    public FieldChannel
+      (Channel<? extends Tuple> source
+      ,Focus<?> focus
+      )
       throws BindException
     { 
       super(contentReflector);
       this.focus=focus;
-      this.source=focus.getSubject();
+      this.source=source;
       
       if (ruleSet!=null)
       { inspector=ruleSet.bind(contentReflector,focus);
@@ -725,7 +726,7 @@ public class FieldImpl<T>
                 
                 
                 channel=field.bindChannel
-                  (new SimpleFocus(focus.getParentFocus(),subSource));
+                  (subSource,focus.getParentFocus(),null);
               }
               catch (BindException x)
               { 

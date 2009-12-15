@@ -16,6 +16,7 @@ package spiralcraft.data.core;
 
 
 import spiralcraft.lang.AccessException;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
@@ -95,11 +96,20 @@ public class QueryField
   
   
   
+
   @Override
   @SuppressWarnings("unchecked")
-  public Channel<DataComposite> bindChannel(Focus<Tuple> focus)
+  public Channel<DataComposite> bindChannel
+    (Channel<Tuple> source
+    ,Focus<?> focus
+    ,Expression<?>[] args
+    )
     throws BindException
   { 
+    
+    if (focus.getSubject()!=source)
+    { focus=focus.chain(source);
+    }
     
     Focus queryableFocus=focus.findFocus(Queryable.QUERYABLE_URI);
     if (queryableFocus!=null)

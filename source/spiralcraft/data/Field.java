@@ -17,10 +17,10 @@ package spiralcraft.data;
 import java.net.URI;
 
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Functor;
 import spiralcraft.lang.Reflector;
 import spiralcraft.rules.RuleSet;
 
@@ -33,7 +33,7 @@ import spiralcraft.rules.RuleSet;
  * </p>
  */
 public interface Field<T>
-  extends ChannelFactory<T,Tuple>
+  extends Functor<T,Tuple>
 {
   /**
    * The FieldSet to which this Field belongs. All Fields belong to a FieldSet.
@@ -92,7 +92,7 @@ public interface Field<T>
   
   /**
    * <p>Create a Channel that accesses the value of this Field in the Tuple
-   *   provided by the source Focus. The results of this operation may 
+   *   provided by the source. The results of this operation may 
    *   depend on the availability of other resources mapped through the Focus.
    * </p>
    * 
@@ -100,7 +100,11 @@ public interface Field<T>
    * @return A Binding bound to the focus
    */
    @Override
-  Channel<T> bindChannel(Focus<Tuple> focus)
+  Channel<T> bindChannel
+    (Channel<Tuple> source
+    ,Focus<?> focus
+    ,Expression<?>[] params
+    )
     throws BindException;
   
   /**

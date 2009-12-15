@@ -59,9 +59,10 @@ public class UniqueRule<T extends Tuple>
   
   
   @Override
-  public Channel<Violation<T>> bindChannel(Focus<T> focus)
+  public Channel<Violation<T>> bindChannel
+    (Channel<T> source,Focus<?> focus,Expression<?>[] args)
     throws BindException
-  { return new UniqueRuleChannel(focus);
+  { return new UniqueRuleChannel(source,focus);
   }
     
   class UniqueRuleChannel
@@ -74,11 +75,11 @@ public class UniqueRule<T extends Tuple>
     private BoundQuery<?,T> boundQuery;
     
     @SuppressWarnings("unchecked")
-    public UniqueRuleChannel(Focus<T> focus)
+    public UniqueRuleChannel(Channel<T> source,Focus<?> focus)
       throws BindException
     { 
-      source=focus.getSubject();
-      fieldChannel=field.bindChannel((Focus<Tuple>) focus);
+      this.source=source;
+      fieldChannel=field.bindChannel((Channel<Tuple>) source,focus,null);
       
       try
       { 
