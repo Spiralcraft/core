@@ -184,7 +184,7 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
       { 
         projectionChannel
           =(Channel<T>) getQuery().getProjection()
-            .bindChannel( (Focus<Tuple>) focus);
+            .bindChannel((Channel<Tuple>) sourceChannel,focus,null);
         if (debugLevel.canLog(Level.DEBUG))
         { projectionChannel.setDebug(true);
         }

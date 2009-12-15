@@ -185,7 +185,7 @@ public class TupleFrame
     
     Key<Tuple> key=(Key<Tuple>) type.getPrimaryKey();
     if (key!=null)
-    { primaryKeyChannel=key.bindChannel(this.<Tuple>getFocus());
+    { primaryKeyChannel=key.bindChannel(channel,this.<Tuple>getFocus(),null);
     }
     else
     {
