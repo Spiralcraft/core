@@ -37,7 +37,7 @@ public class ListAggregate<T>
   
   protected final List<T> list;
   protected int expectedSize;
-  protected Channel<Command<?,?>> fillCommand;
+  protected Channel<Command<?,?,?>> fillCommand;
   private boolean debug=false;
   private boolean fetchable;
     
@@ -102,7 +102,7 @@ public class ListAggregate<T>
    * <p>A command to run when the backing list runs out of entries
    * </p>
    */
-  public void setFillCommand(Channel<Command<?,?>> fillCommand)
+  public void setFillCommand(Channel<Command<?,?,?>> fillCommand)
   { 
     this.fillCommand=fillCommand;
     this.fetchable=true;
@@ -228,7 +228,7 @@ public class ListAggregate<T>
     if (debug)
     { log.fine("Filling list: expectedSize="+expectedSize+"  size="+size);
     }
-    Command<?,?> command=fillCommand.get();
+    Command<?,?,?> command=fillCommand.get();
     command.execute();
     if (command.getException()!=null)
     { 

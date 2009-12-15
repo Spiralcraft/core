@@ -24,8 +24,8 @@ import spiralcraft.command.CommandFactory;
 public abstract class Step
   implements Control
 {
-  private CommandFactory<?,?> _onEnter;
-  private CommandFactory<?,?> _onExit;
+  private CommandFactory<?,?,?> _onEnter;
+  private CommandFactory<?,?,?> _onExit;
   private boolean _skipNext;
   private boolean _skipBack;
   private boolean _backEnabled=true;
@@ -63,11 +63,11 @@ public abstract class Step
   { _nextEnabled=val;
   }
 
-  public void setOnEnter(CommandFactory<?,?> commandFactory)
+  public void setOnEnter(CommandFactory<?,?,?> commandFactory)
   { _onEnter=commandFactory;
   }
 
-  public void setOnExit(CommandFactory<?,?> commandFactory)
+  public void setOnExit(CommandFactory<?,?,?> commandFactory)
   { _onExit=commandFactory;
   }
 
