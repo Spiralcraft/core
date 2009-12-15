@@ -35,7 +35,6 @@ public class StaticFocus<T>
   
   private final StaticChannel<T> binding;
   
-  @SuppressWarnings("deprecation")
   public StaticFocus(Focus<?> parentFocus,Class<T> clazz)
   { 
     setParentFocus(parentFocus);
@@ -44,7 +43,6 @@ public class StaticFocus<T>
   }
 
 
-  @SuppressWarnings("deprecation")
   @Override
   public boolean isFocus(
     URI specifier)
