@@ -810,6 +810,11 @@ public class BufferTuple
     
     return newBehavior;
     
+  }
+
+  @Override
+  public void touch()
+  { dirty=true;
   }  
 
 }

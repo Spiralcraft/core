@@ -70,6 +70,11 @@ public abstract class Buffer
   public abstract void revert();
 
   /**
+   * Makes the buffer dirty even if nothing changed
+   */
+  public abstract void touch();
+ 
+  /**
    * Commit the edits to the data store
    */
   public abstract void save()

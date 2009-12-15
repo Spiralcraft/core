@@ -43,6 +43,7 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   private Type<?> type;
   private Identifier id;
   private boolean editable=true;
+  private boolean touched=false;
     
   public BufferAggregate(DataSession session,Aggregate<Torig> original)
     throws DataException
@@ -65,6 +66,10 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   @Override
   public boolean isDirty()
   { 
+    if (touched)
+    { return true;
+    }
+    
     if (buffers==null)
     { return false;
     }
@@ -81,7 +86,9 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   
   @Override
   public synchronized void revert()
-  { buffers=null;
+  { 
+    buffers=null;
+    touched=false;
   }
   
   /**
@@ -90,6 +97,7 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   public synchronized void reset()
   { 
     buffers=null;
+    touched=false;
   }
   
   public Identifier getId()
@@ -355,6 +363,11 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   public Index<T> getIndex(Projection<T> projection,boolean create)
   {
     return null;
+  }
+
+  @Override
+  public void touch()
+  { touched=true;
   }
   
 }
