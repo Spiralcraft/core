@@ -13,13 +13,36 @@
     </date>
     
     <notes>
-      <scm:Note>Many enhancements related to incorporating granular RPC 
+      <scm:Note>Many enhancements related to integrating granular RPC 
         based APIs- eg. Facebook, cloud APIs. Interim release contains
         partial implementation of new features.
       </scm:Note>
     </notes>
     
     <detail>
+
+      <scm:Change>
+        <date>2009-12-15
+        </date>
+        
+        <notes>
+          <scm:Note>Buffer provides a touch() method to make it dirty.
+          </scm:Note>
+          
+          <path>source/spiralcraft/data/session</path>
+          
+          <resource>
+            <URI>Buffer.java
+            </URI>
+            <URI>BufferAggregater.java
+            </URI>
+            <URI>BufferTuple.java
+            </URI>
+          </resource>
+          
+        </notes>
+
+      </scm:Change>
 
       <scm:Change>
         <date>2009-12-14
