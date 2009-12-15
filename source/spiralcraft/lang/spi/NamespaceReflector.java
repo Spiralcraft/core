@@ -40,7 +40,7 @@ import java.util.Map;
  * 
  */
 public class NamespaceReflector
-  extends Reflector<Namespace>
+  extends AbstractReflector<Namespace>
 {
   
   private int index=0;

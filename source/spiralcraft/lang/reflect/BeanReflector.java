@@ -28,6 +28,7 @@ import spiralcraft.lang.Signature;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.TypeModel;
 
+import spiralcraft.lang.spi.AbstractReflector;
 import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;
 import spiralcraft.lang.spi.ArrayContainsChannel;
@@ -88,7 +89,8 @@ import spiralcraft.log.ClassLog;
  */
 @SuppressWarnings("unchecked") // Various levels of heterogeneous runtime ops
 public class BeanReflector<T>
-  extends Reflector<T>
+  extends AbstractReflector<T>
+  implements Reflector<T>
 {
   { 
     // Tickle the TypeModel so we can dynamically resolve these types

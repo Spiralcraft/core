@@ -31,6 +31,7 @@ import spiralcraft.lang.TypeModel;
 import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.AbstractReflector;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
@@ -51,7 +52,7 @@ import spiralcraft.data.session.BufferType;
  * @param <T> The type of DataComposite we are mapping
  */
 public abstract class DataReflector<T extends DataComposite>
-  extends Reflector<T>
+  extends AbstractReflector<T>
   implements TypeReflector<T>
 {
   private static final TypeModel TYPE_MODEL

@@ -23,6 +23,7 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Channel;
 
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.AbstractReflector;
 
 import java.net.URI;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class CredentialSetChannel
 
 @SuppressWarnings("unchecked") // Complex to genericize
 class CredentialMapReflector
-  extends Reflector<Map<String,Credential<?>>>
+  extends AbstractReflector<Map<String,Credential<?>>>
 {
   // XXX Consider the use of namespaces, now that they are implemented
   

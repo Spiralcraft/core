@@ -29,6 +29,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.AbstractReflector;
 import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
@@ -224,7 +225,7 @@ public class TupleNode
   
   
   public class TupleReflector
-    extends Reflector<Tuple>
+    extends AbstractReflector<Tuple>
   {
     
 

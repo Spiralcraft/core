@@ -22,7 +22,6 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Signature;
-import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
@@ -251,20 +250,8 @@ public class TupleReflector<T extends Tuple>
     
       if (field!=null)
       {
-        Focus tupleFocus;
-      
-        // Make sure the Focus for evaluating expressions in the Scheme is 
-        //   consistent with the source
-        if (focus.getContext()!=source
-            || focus.getSubject()!=source
-            )
-        { tupleFocus=new SimpleFocus(focus,source);
-        }
-        else
-        { tupleFocus=focus;
-        }
               
-        Channel binding=field.bindChannel(tupleFocus);
+        Channel binding=field.bindChannel(source,focus,null);
       
       
         if (binding!=null)

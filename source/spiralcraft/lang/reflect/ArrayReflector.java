@@ -27,6 +27,7 @@ import spiralcraft.lang.Range;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.TypeModel;
+import spiralcraft.lang.spi.AbstractReflector;
 import spiralcraft.lang.spi.ArrayContainsChannel;
 import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;
@@ -55,7 +56,7 @@ import spiralcraft.log.ClassLog;
  */
 @SuppressWarnings("unchecked") // Various levels of heterogeneous runtime ops
 public class ArrayReflector<I>
-  extends Reflector<I[]>
+  extends AbstractReflector<I[]>
 {
 
 

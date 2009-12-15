@@ -20,7 +20,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
-import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Channel;
 
 
@@ -28,7 +27,7 @@ import spiralcraft.lang.Channel;
  * Type that is undefined (ie. null)
  */
 public class VoidReflector
-  extends Reflector<Void>
+  extends AbstractReflector<Void>
 {
 
   URI uri=URI.create("class:/java/lang/Void");
