@@ -10,7 +10,7 @@ import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 
 public class StubScenario
-  extends Scenario
+  extends Scenario<Void,Void>
 {
 
   protected Expression<Object> resultX;

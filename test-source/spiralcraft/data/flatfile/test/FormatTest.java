@@ -34,7 +34,7 @@ import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
 public class FormatTest
-  extends Scenario
+  extends Scenario<Void,Void>
 {
 
   private URI inputURI;

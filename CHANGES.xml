@@ -3,7 +3,7 @@
   >
   
   <scm:Change>
-    <revision>0.3.23
+    <revision>0.4.0
     </revision>
     
     <authorId>miketoth
@@ -13,10 +13,182 @@
     </date>
     
     <notes>
+      <scm:Note>Many enhancements related to incorporating granular RPC 
+        based APIs- eg. Facebook, cloud APIs. Interim release contains
+        partial implementation of new features.
+      </scm:Note>
     </notes>
     
     <detail>
 
+      <scm:Change>
+        <date>2009-12-14
+        </date>
+        
+        <notes>
+          <scm:Note>Default namespaces are mapped to the empty string instead
+            of "default" to match the SAX API spec.
+          </scm:Note>
+          <scm:Note>AbstractFrameHandler.transformNamespace is no longer static
+            and can generate debug messages.
+          </scm:Note>
+          
+          <path>source/spiralcraft</path>
+          
+          <resource>
+            <URI>data/sax/DataHandlerBase.java</URI>
+          </resource>
+          
+        </notes>
+
+      </scm:Change>
+      
+      <scm:Change>
+        <date>2009-12-14
+        </date>
+        
+        <notes>
+          <scm:Note>Functor replaces ChannelFactory as general purpose 
+            mechanism to extend Channel graphs. ChannelFactory is now
+            deprecated, and all implementers now implement Functor instead.
+          </scm:Note>
+          
+          <scm:Note>Reflector is now an interface to facilitate wrapping and
+            proxying. Implementation classes now extend AbstractReflector.
+          </scm:Note>
+          
+          
+        </notes>
+      
+        <resource>
+          <URI>lang/Functor.java</URI>
+          <URI>lang/ChannelFactory.java</URI>
+          <URI>lang/Reflector.java</URI>
+          <URI>lang/StaticFocus.java</URI>
+          <URI>lang/parser/TupleNode.java</URI>
+          <URI>lang/reflect/ArrayReflector.java</URI>
+          <URI>lang/reflect/BeanReflector.java</URI>
+          <URI>lang/spi/AbstractReflector.java</URI>
+          <URI>lang/spi/ExtendedReflector.java</URI>
+          <URI>lang/spi/NamespaceReflector.java</URI>
+          <URI>lang/spi/VoidReflector.java</URI>
+          <URI>security/auth/CredentialSetChannel.java</URI>
+          <URI>data/Constraint.java</URI>
+          <URI>data/Field.java</URI>
+          <URI>data/Projection.java</URI>
+          <URI>data/access/DataSynchronizer.java</URI>
+          <URI>data/core/CalculatedFieldImpl.java</URI>
+          <URI>data/core/CursorField.java</URI>
+          <URI>data/core/FieldImpl.java</URI>
+          <URI>data/core/KeyField.java</URI>
+          <URI>data/core/ProjectionImpl.java</URI>
+          <URI>data/core/QueryField.java</URI>
+          <URI>data/core/RequiredRule.java</URI>
+          <URI>data/core/TaskMethod.java</URI>
+          <URI>data/core/UniqueRule.java</URI>
+          <URI>data/lang/DataReflector.java</URI>
+          <URI>data/lang/TupleReflector.java</URI>
+          <URI>data/query/Distinct.java</URI>
+          <URI>data/sax/TupleFrame.java</URI>
+          <URI>data/session/BufferField.java</URI>
+          <URI>data/spi/DataKeyFunction.java</URI>
+          <URI>data/types/standard/StringType.java</URI>
+          <URI>text/translator/Clip.java</URI>
+          <URI>text/translator/Translator.java</URI>
+          <URI>rules/Rule.java</URI>
+          <URI>rules/ExpressionRule.java</URI>
+          <URI>rules/PatternRule.java</URI>
+          <URI>rules/Inspector.java</URI>
+          
+           
+        </resource>
+      </scm:Change>
+      
+      
+      <scm:Change>
+        <date>2009-12-14
+        </date>
+        
+        <notes>
+          <scm:Note>Scenario and TaskCommand now have type parameters
+            reflecting command API changes. All Scenario
+            implementations are updated.
+          </scm:Note>        
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>task/AbstractTask.java</URI>
+          <URI>task/Assign.java</URI>
+          <URI>task/Batch.java</URI>
+          <URI>task/Chain.java</URI>
+          <URI>task/Debug.java</URI>
+          <URI>task/Exec.java</URI>
+          <URI>task/If.java</URI>
+          <URI>task/Reference.java</URI>
+          <URI>task/Scenario.java</URI>
+          <URI>task/Sequence.java</URI>
+          <URI>task/Session.java</URI>
+          <URI>task/TaskCommand.java</URI>
+          <URI>task/TaskRunner.java</URI>
+          <URI>task/When.java</URI>
+          <URI>test/Test.java</URI>
+          <URI>test/TestGroup.java</URI>
+          <URI>data/sax/ParseXml.java</URI>
+          <URI>data/task/Collect.java</URI>
+          <URI>data/task/Edit.java</URI>
+          <URI>data/task/Fetch.java</URI>
+          <URI>data/util/DataBatchProcessor.java</URI>
+          <URI>vfs/task/Copy.java</URI>
+        </resources>
+      </scm:Change>
+
+      
+      <scm:Change>
+        <date>2009-12-14
+        </date>
+        
+        <notes>
+          <scm:Note>Command pattern now incorporates a generic input context
+            to support the notion of parameter-driven Commands. This allows
+            the Command pattern to support "method" semantics and to act
+            as an intermediate representation of method calls and RPC 
+            invocations.
+          </scm:Note>
+          <scm:Note>This is a broad interface change which affects most
+            code which uses the spiralcraft.command package.
+          </scm:Note>
+        
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>command/Command.java</URI>
+          <URI>command/Commandable.java</URI>
+          <URI>command/CommandAdapter.java</URI>
+          <URI>command/CommandFactory.java</URI>
+          <URI>command/CommandProcessor.java</URI>
+          <URI>data/editor/EditorBase.java</URI>
+          <URI>data/editor/TupleEditor.java</URI>
+          <URI>data/flatfile/Output.java</URI>
+          <URI>data/flatfile/Parser.java</URI>
+          <URI>data/flatfile/Scan.java</URI>
+          <URI>data/rest/RestService.java</URI>
+          <URI>data/spi/ListAggregate.java</URI>
+          <URI>ui/Step.java</URI>
+          <URI>ui/StepControl.java</URI>
+          <URI>service/Daemon.java</URI>
+          <URI>shell/CommandConsole.java</URI>
+          <URI>shell/FocusCommand.java</URI>
+          <URI>shell/HelpCommand.java</URI>
+          <URI>shell/LookCommand.java</URI>
+        </resources>
+      </scm:Change>
+      
       <scm:Change>
         <date>2009-11-23
         </date>
@@ -27,7 +199,7 @@
             representations.
           </scm:Note>
           <scm:Note>Added prepad function to StringUtil to pad number
-            representations with leading chars.
+            representations with leading digits/chars.
           </scm:Note>
         </notes>
         

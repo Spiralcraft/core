@@ -14,7 +14,7 @@ import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 
 public class OutputAgentTest
-  extends Scenario
+  extends Scenario<Void,Void>
 {
   
   private OutputAgent agent;
