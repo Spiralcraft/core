@@ -245,9 +245,9 @@ public class RestService
    * 
    * @return The Command object
    */
-  public Command<?,?> queryCommand()
+  public Command<?,?,?> queryCommand()
   {
-    return new CommandAdapter<RestService,Tuple>()
+    return new CommandAdapter<RestService,Void,Tuple>()
     {
 
       { setTarget(RestService.this);

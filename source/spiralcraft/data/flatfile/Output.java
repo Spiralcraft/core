@@ -48,7 +48,7 @@ import spiralcraft.vfs.Resource;
  *
  */
 public class Output<Titem extends Tuple>
-  extends Chain
+  extends Chain<Void,Void>
 {
 
   private ThreadLocalChannel<Writer> consumerChannel;
@@ -62,13 +62,13 @@ public class Output<Titem extends Tuple>
    * @param item
    * @return
    */
-  public Command<Collect<Titem>,Void> commandOutput(final Titem item)
+  public Command<Collect<Titem>,Void,Void> commandOutput(final Titem item)
   { 
     if (debug)
     { log.debug("Returning command "+item);
     }
     
-    return new CommandAdapter<Collect<Titem>,Void>()
+    return new CommandAdapter<Collect<Titem>,Void,Void>()
     {
       @Override
       protected void run()

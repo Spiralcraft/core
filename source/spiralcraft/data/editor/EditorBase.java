@@ -196,9 +196,9 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   }
                      
 
-  public Command<Tbuffer,Void> revertCommand()
+  public Command<Tbuffer,Void,Void> revertCommand()
   { 
-    return new CommandAdapter<Tbuffer,Void>()
+    return new CommandAdapter<Tbuffer,Void,Void>()
     {
       @Override
       public void run()
@@ -211,9 +211,10 @@ public abstract class EditorBase<Tbuffer extends Buffer>
     };
   }
 
-  public Command<Tbuffer,Void> revertCommand(final Command<?,?> chainedCommand)
+  public Command<Tbuffer,Void,Void> revertCommand
+    (final Command<?,?,?> chainedCommand)
   { 
-    return new CommandAdapter<Tbuffer,Void>()
+    return new CommandAdapter<Tbuffer,Void,Void>()
     {
       @Override
       public void run()
@@ -233,9 +234,9 @@ public abstract class EditorBase<Tbuffer extends Buffer>
    * 
    * @return the Save command
    */
-  public Command<Tbuffer,Void> saveCommand()
+  public Command<Tbuffer,Void,Void> saveCommand()
   {     
-    return new CommandAdapter<Tbuffer,Void>()
+    return new CommandAdapter<Tbuffer,Void,Void>()
     {
       @Override
       public void run()
@@ -252,16 +253,16 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   }
   
   @SuppressWarnings("unchecked") // Command block doesn't care about types
-  public Command<Tbuffer,Void> saveCommand
+  public Command<Tbuffer,Void,Void> saveCommand
     (final List<Command> postSaveCommandList)
   {
     
     return saveCommand(new CommandBlock(postSaveCommandList));
   }
       
-  public Command<Tbuffer,Void> saveCommand(final Command<?,?> postSaveCommand)
+  public Command<Tbuffer,Void,Void> saveCommand(final Command<?,?,?> postSaveCommand)
   { 
-    return new CommandAdapter<Tbuffer,Void>()
+    return new CommandAdapter<Tbuffer,Void,Void>()
     { 
       @Override
       public void run()
@@ -285,9 +286,9 @@ public abstract class EditorBase<Tbuffer extends Buffer>
    * 
    * @return A new Command
    */
-  public Command<Tbuffer,Void> clearCommand()
+  public Command<Tbuffer,Void,Void> clearCommand()
   {
-    return new CommandAdapter<Tbuffer,Void>()
+    return new CommandAdapter<Tbuffer,Void,Void>()
     { 
       @Override
       public void run()
@@ -298,9 +299,9 @@ public abstract class EditorBase<Tbuffer extends Buffer>
 
 
 
-  public Command<Tbuffer,Void> newCommand()
+  public Command<Tbuffer,Void,Void> newCommand()
   {
-    return new CommandAdapter<Tbuffer,Void>()
+    return new CommandAdapter<Tbuffer,Void,Void>()
     { 
       @Override
       public void run()

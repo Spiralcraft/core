@@ -307,7 +307,8 @@ public class Parser
           =new SimpleChannel<Tuple>
             (TupleReflector.getInstance(_targetFieldSet));
         _projectionBinding
-          =_projection.bindChannel(new SimpleFocus<Tuple>(tupleChannel));
+          =_projection.bindChannel
+            (tupleChannel,new SimpleFocus<Tuple>(tupleChannel),null);
       }
       catch (BindException x)
       { throw new DataException("Error mapping fields",x);

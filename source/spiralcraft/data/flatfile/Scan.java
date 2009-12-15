@@ -32,7 +32,7 @@ import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
 public class Scan
-  extends Chain
+  extends Chain<Void,Void>
 {
 
   protected URI resourceURI;
