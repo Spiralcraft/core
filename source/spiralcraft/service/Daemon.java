@@ -51,21 +51,21 @@ public class Daemon
   private boolean _running=true;
   private boolean _stopRequested=false;
   private String[] _args;
-  private Scenario afterStart;
+  private Scenario<?,?> afterStart;
   
   private ShutdownHook _shutdownHook=new ShutdownHook();
   
-  public final CommandFactory<Void,Void> terminate
-    =new CommandFactory<Void,Void>()
+  public final CommandFactory<Void,Void,Void> terminate
+    =new CommandFactory<Void,Void,Void>()
   {    
     public boolean isCommandEnabled()
     { return _running;
     }
     
-    public Command<Void,Void> command()
+    public Command<Void,Void,Void> command()
     {
     
-      return new CommandAdapter<Void,Void>()
+      return new CommandAdapter<Void,Void,Void>()
       {
         @Override
         public void run()
@@ -79,7 +79,7 @@ public class Daemon
 
 
 
-  public void setAfterStart(Scenario afterStart)
+  public void setAfterStart(Scenario<?,?> afterStart)
   { this.afterStart=afterStart;
   }
   
@@ -114,7 +114,7 @@ public class Daemon
       
       if (afterStart!=null)
       { 
-        Command<?,?> command=afterStart.command();
+        Command<?,?,?> command=afterStart.command();
         command.execute();
         if (command.getException()!=null)
         { 

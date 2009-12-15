@@ -22,7 +22,7 @@ import spiralcraft.command.CommandMenu;
  * Provides information about the current Commandable
  */
 public class LookCommand
-  extends CommandAdapter<CommandMenu,String>
+  extends CommandAdapter<CommandMenu,Void,String>
 {
   private static final ArgumentDefinition _DEFINITION
     =new ArgumentDefinition()

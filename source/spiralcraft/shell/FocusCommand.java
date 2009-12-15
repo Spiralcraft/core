@@ -24,7 +24,7 @@ import spiralcraft.command.CommandMenu;
  * XXX stub
  */
 public class FocusCommand
-  extends CommandAdapter<CommandMenu,String>
+  extends CommandAdapter<CommandMenu,Void,String>
 {
   private String targetName;
   

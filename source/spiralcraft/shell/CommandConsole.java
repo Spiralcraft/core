@@ -83,7 +83,7 @@ public abstract class CommandConsole
     {
       try
       {
-        Command<?,?> command
+        Command<?,?,?> command
           =newCommand(tokens);
         
         command.execute();
@@ -134,12 +134,16 @@ public abstract class CommandConsole
    * 
    * @throws UnrecognizedCommandException
    */
-  private Command<?,?> newCommand(String[] tokens)
+  private Command<?,?,?> newCommand(String[] tokens)
     throws UnrecognizedCommandException
   {
     String commandName=tokens[0];
     if (commandName!=null) {}
-    Command<?,?> command=null; // XXX Resolve command here
+    
+    // XXX The following is stubbed. Now that we have better CommandFactories
+    //  and the notion of command context, we can resolve argument definitions
+    //  via the command context
+    Command<?,?,?> command=null; // XXX Resolve command here
     ArgumentSet parameterSet
       =new ArgumentSet(new ArgumentDefinition()); // XXX Resolve command argument set
     
