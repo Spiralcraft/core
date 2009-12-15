@@ -77,7 +77,7 @@ public abstract class AbstractFrameHandler
    * @return The URI qualified name, with the name as the URI fragment
    * @throws SAXException
    */
-  public static final String transformNamespace
+  public final String transformNamespace
     (String value,NamespaceResolver resolver)
     throws DataException
   {
@@ -95,6 +95,12 @@ public abstract class AbstractFrameHandler
     }
     else if (resolver.getDefaultURI()!=null)
     { value=combineName(resolver.getDefaultURI().toString(),value);
+    }
+    else
+    { 
+      if (debug)
+      { log.fine("Default namespace is not defined for value '"+value+"'");
+      }
     }
     return value;
   }
