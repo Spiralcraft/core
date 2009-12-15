@@ -25,6 +25,6 @@ public interface Commandable
 {
   public CommandMenu getCommandMenu();
   
-  public Command<?,?> getCommand(String alias);
+  public Command<?,?,?> getCommand(String alias);
   
 }

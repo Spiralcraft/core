@@ -102,7 +102,7 @@ package spiralcraft.command;
  * </p>
  *
  */
-public interface Command<Ttarget,Tresult>
+public interface Command<Ttarget,Tcontext,Tresult>
 {  
   
   /**
@@ -133,7 +133,7 @@ public interface Command<Ttarget,Tresult>
    * @return A copy of this Command which references the same target(s) and
    *   parameters as this Command but is in a pre-execution state.
    */
-  Command<Ttarget,Tresult> clone()
+  Command<Ttarget,Tcontext,Tresult> clone()
     throws CloneNotSupportedException;
   
   /**
@@ -159,6 +159,12 @@ public interface Command<Ttarget,Tresult>
    * @return The result of this command execution, if any 
    */
   Tresult getResult();
+  
+  /**
+   * 
+   * @return The context (parameters) for this command, if any
+   */
+  Tcontext getContext();
   
   /**
    * 

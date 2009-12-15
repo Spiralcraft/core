@@ -41,6 +41,6 @@ public interface CommandProcessor
    * 
    * @param command
    */
-  void executeCommand(Command<?,?> command);
+  void executeCommand(Command<?,?,?> command);
  
 }

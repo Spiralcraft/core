@@ -30,8 +30,8 @@ package spiralcraft.command;
  * @author mike
  *
  */
-public abstract class CommandAdapter<Ttarget,Tresult>
-  implements Command<Ttarget,Tresult>
+public abstract class CommandAdapter<Ttarget,Tcontext,Tresult>
+  implements Command<Ttarget,Tcontext,Tresult>
 {
   private boolean started;
   private boolean completed;
@@ -39,6 +39,7 @@ public abstract class CommandAdapter<Ttarget,Tresult>
   private Exception exception;
   private Tresult result;
   private Ttarget target;
+  private Tcontext context;
   protected String name;
   
   public boolean isStarted()
@@ -53,6 +54,10 @@ public abstract class CommandAdapter<Ttarget,Tresult>
   { return exception;
   }
   
+  public void setContext(Tcontext context)
+  { this.context=context;
+  }
+
   public void setTarget(Ttarget target)
   { this.target=target; 
   }
@@ -60,6 +65,11 @@ public abstract class CommandAdapter<Ttarget,Tresult>
   public Ttarget getTarget()
   { return target;
   }
+  
+  public Tcontext getContext()
+  { return context;
+  }
+  
   
   public Tresult getResult()
   { return result;
@@ -117,7 +127,7 @@ public abstract class CommandAdapter<Ttarget,Tresult>
   
   @Override
   @SuppressWarnings("unchecked") // Cast Object.clone() result
-  public synchronized Command<Ttarget,Tresult> clone()
+  public synchronized Command<Ttarget,Tcontext,Tresult> clone()
   {
     if (started)
     {
@@ -125,7 +135,7 @@ public abstract class CommandAdapter<Ttarget,Tresult>
         ("Cannot clone a Command that has been executed already");
     }
     try
-    { return (Command<Ttarget,Tresult>) super.clone();
+    { return (Command<Ttarget,Tcontext,Tresult>) super.clone();
     }
     catch (CloneNotSupportedException x)
     { throw new RuntimeException("Unexpected exception during clone",x);

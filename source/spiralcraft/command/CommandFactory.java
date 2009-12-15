@@ -31,12 +31,12 @@ package spiralcraft.command;
  * </p>
  *
  */
-public interface CommandFactory<Ttarget,Tresult>
+public interface CommandFactory<Ttarget,Tcontext,Tresult>
 {
   /**
    * @return A new Command object
    */
-  Command<Ttarget,Tresult> command();
+  Command<Ttarget,Tcontext,Tresult> command();
   
   /**
    * 
@@ -44,5 +44,6 @@ public interface CommandFactory<Ttarget,Tresult>
    *   executed in the supplied context.
    */
   boolean isCommandEnabled();
+  
   
 }
