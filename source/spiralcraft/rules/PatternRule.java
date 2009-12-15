@@ -2,6 +2,7 @@ package spiralcraft.rules;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 
 import java.util.regex.Pattern;
@@ -41,10 +42,13 @@ public class PatternRule<C,T>
   }
   
   @Override
-  public Channel<Violation<T>> bindChannel(
-    Focus<T> focus)
+  public Channel<Violation<T>> bindChannel
+    (Channel<T> source
+    ,Focus<?> focus
+    ,Expression<?>[] args
+    )
     throws BindException
-  { return new PatternRuleChannel(focus);
+  { return new PatternRuleChannel(source);
   }
 
   /**
@@ -73,8 +77,8 @@ public class PatternRule<C,T>
     
     private final Channel<T> source;
     
-    public PatternRuleChannel(Focus<T> focus)
-    { source=focus.getSubject();
+    public PatternRuleChannel(Channel<T> source)
+    { this.source=source;
     }
     
     @Override

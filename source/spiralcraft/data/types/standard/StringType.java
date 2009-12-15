@@ -20,6 +20,7 @@ import spiralcraft.data.TypeResolver;
 import spiralcraft.data.core.PrimitiveTypeImpl;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.rules.AbstractRule;
 import spiralcraft.rules.PatternRule;
@@ -147,10 +148,13 @@ public class StringType
   {
 
     @Override
-    public Channel<Violation<String>> bindChannel(
-      Focus<String> focus)
+    public Channel<Violation<String>> bindChannel
+      (Channel<String> source
+      ,Focus<?> focus
+      ,Expression<?>[] args
+      )
       throws BindException
-    { return new StringLengthRuleChannel(focus);
+    { return new StringLengthRuleChannel(source);
     }   
     
     class StringLengthRuleChannel
@@ -159,8 +163,8 @@ public class StringType
 
       private final Channel<String> source;
     
-      public StringLengthRuleChannel(Focus<String> focus)
-      { source=focus.getSubject();
+      public StringLengthRuleChannel(Channel<String> source)
+      { this.source=source;
       }      
           
       @Override

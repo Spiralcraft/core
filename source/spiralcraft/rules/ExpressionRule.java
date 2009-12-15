@@ -43,11 +43,20 @@ public class ExpressionRule<C,T>
   { this.ignoreNull=ignoreNull;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public Channel<Violation<T>> bindChannel(
-    Focus<T> focus)
+  public Channel<Violation<T>> bindChannel
+    (Channel<T> source
+    ,Focus<?> focus
+    ,Expression<?>[] args
+    )
+    
     throws BindException
-  { return new ExpressionRuleChannel(focus);
+  { 
+    if (focus.getSubject()!=source)
+    { focus=focus.chain(source);
+    }
+    return new ExpressionRuleChannel((Focus<T>) focus);
   }
 
   class ExpressionRuleChannel

@@ -53,7 +53,7 @@ public class Inspector<Tcontext,Tsubject>
       =new ArrayList<Channel<Violation<Tsubject>>>();
 
     for (Rule rule: this.ruleSet)
-    { ruleChannels.add(rule.bindChannel(localFocus));
+    { ruleChannels.add(rule.bindChannel(subjectChannel,localFocus,null));
     }
     this.ruleChannels
       =ruleChannels.toArray
