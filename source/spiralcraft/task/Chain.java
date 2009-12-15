@@ -39,24 +39,25 @@ import spiralcraft.lang.Focus;
  * 
  * @author mike
  */
-public class Chain
-  extends Scenario
+public class Chain<Tcontext,Tresult>
+  extends Scenario<Tcontext,Tresult>
 {
 
   
-  protected Scenario chain;
+  protected Scenario<?,?> chain;
   
   protected class ChainTask
     extends AbstractTask
   {
-
+    
     @Override
     protected void work()
       throws InterruptedException
     { 
       if (chain!=null && exception==null)
       {
-        TaskCommand command=chain.command();
+        TaskCommand<?,?> command=chain.command();
+        
         command.setCollectResults(true);
         command.execute();
         if (command.getException()!=null)
@@ -100,20 +101,20 @@ public class Chain
   }
   
   
-  public void chain(Scenario chain)
+  public void chain(Scenario<?,?> chain)
   { this.chain=chain;
   }
   
-  public void setChain(Scenario[] chain)
+  public void setChain(Scenario<?,?>[] chain)
   {
-    Scenario last=this;
-    for (Scenario scenario:chain)
+    Scenario<?,?> last=this;
+    for (Scenario<?,?> scenario:chain)
     { 
-      if (scenario instanceof Chain)
+      if (scenario instanceof Chain<?,?>)
       {
-        if (last instanceof Chain)
+        if (last instanceof Chain<?,?>)
         {
-          ((Chain) last).chain(scenario);
+          ((Chain<?,?>) last).chain(scenario);
         }
         else
         {
@@ -123,10 +124,10 @@ public class Chain
       }
       else
       {
-        if (last instanceof Chain)
+        if (last instanceof Chain<?,?>)
         {
           Sequence sequence=new Sequence();
-          ((Chain) last).chain(sequence);
+          ((Chain<?,?>) last).chain(sequence);
           last=sequence;
         }
         ((Sequence) last).addScenario(scenario);

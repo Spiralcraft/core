@@ -30,8 +30,8 @@ import spiralcraft.util.thread.DelegateException;
  * @param <T>
  * @param <R>
  */
-public class Reference
-  extends Chain
+public class Reference<Tresult>
+  extends Chain<Void,Tresult>
 {
 
   private URI targetTypeURI;
@@ -62,17 +62,19 @@ public class Reference
       {            
         try
         {
-          TaskCommand command
+          TaskCommand<Void,Tresult> command
             =target.runInContext
-            (new Delegate<TaskCommand>()
+            (new Delegate<TaskCommand<Void,Tresult>>()
               {
+                @SuppressWarnings("unchecked")
                 @Override
-                public TaskCommand run()
+                public TaskCommand<Void,Tresult> run()
                   throws DelegateException
                 { 
                   if (chain!=null)
                   { 
-                    TaskCommand command=chain.command();
+                    TaskCommand<Void,Tresult> command
+                      =((Chain<Void,Tresult>) chain).command();
                     command.execute();
                     return command;
                   }

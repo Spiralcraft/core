@@ -29,7 +29,7 @@ import spiralcraft.lang.Focus;
 
  */
 public class If
-  extends Chain
+  extends Chain<Void,Void>
 {
   
   private Channel<Boolean> channel;

@@ -14,8 +14,6 @@
 //
 package spiralcraft.task;
 
-import java.util.List;
-
 import spiralcraft.command.CommandFactory;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
@@ -52,17 +50,17 @@ import spiralcraft.log.Level;
  * 
  * @author mike
  */
-public abstract class Scenario
+public abstract class Scenario<Tcontext,Tresult>
   implements Lifecycle
     ,FocusChainObject
-    ,CommandFactory<Task,List<?>>
+    ,CommandFactory<Task,Tcontext,Tresult>
 {
 
   protected ClassLog log=ClassLog.getInstance(getClass());
   
-  protected ThreadLocalChannel<TaskCommand> commandChannel;
+  protected ThreadLocalChannel<TaskCommand<Tcontext,Tresult>> commandChannel;
   
-  protected ClosureFocus<Scenario> closureFocus;
+  protected ClosureFocus<Scenario<Tcontext,Tresult>> closureFocus;
   
   protected boolean debug;
   protected boolean verbose;
@@ -76,14 +74,15 @@ public abstract class Scenario
    *   together behavioral elements in a set of Scenarios. The Command
    *   target is the scenario, and the result is implementation specific.
    */
-  public final TaskCommand 
+  public final TaskCommand <Tcontext,Tresult>
     command()
   { 
     Task task=task();
     if (debug)
     { task.setDebug(debug);
     }
-  	return createCommand(task);
+  	TaskCommand<Tcontext,Tresult> command = createCommand(task);
+  	return command;
   }
   
   
@@ -91,8 +90,8 @@ public abstract class Scenario
   
 
   
-  protected TaskCommand createCommand(Task task)
-  { return new TaskCommand(Scenario.this,task);
+  protected TaskCommand<Tcontext,Tresult> createCommand(Task task)
+  { return new TaskCommand<Tcontext,Tresult>(Scenario.this,task);
   }
 
 
@@ -150,8 +149,10 @@ public abstract class Scenario
    * 
    * @return
    */
-  public Reflector<TaskCommand> getCommandReflector()
-  { return BeanReflector.<TaskCommand>getInstance(TaskCommand.class);
+  public Reflector<TaskCommand<Tcontext,Tresult>> getCommandReflector()
+  { 
+    return BeanReflector.<TaskCommand<Tcontext,Tresult>>getInstance
+      (TaskCommand.class);
   }
   
   /**
@@ -166,8 +167,8 @@ public abstract class Scenario
   { 
 
     closureFocus
-      =new ClosureFocus<Scenario>
-        (focusChain.chain(new SimpleChannel<Scenario>(this,true)));
+      =new ClosureFocus<Scenario<Tcontext,Tresult>>
+        (focusChain.chain(new SimpleChannel<Scenario<Tcontext,Tresult>>(this,true)));
     focusChain=closureFocus;
     
     bindChildren(bindCommand(focusChain,getCommandReflector()));
@@ -180,7 +181,7 @@ public abstract class Scenario
   
 
     
-  void pushCommand(TaskCommand command)
+  void pushCommand(TaskCommand<Tcontext,Tresult> command)
   { 
     if (commandChannel==null)
     { 
@@ -195,7 +196,7 @@ public abstract class Scenario
   }
   
   
-  ClosureFocus<Scenario>.Closure enclose()
+  ClosureFocus<Scenario<Tcontext,Tresult>>.Closure enclose()
   { return closureFocus.enclose();
   }
   
@@ -248,11 +249,14 @@ public abstract class Scenario
    * @param clazz
    * @return
    */
-  private Focus<TaskCommand> 
-    bindCommand(Focus<?> focusChain,Reflector<TaskCommand> reflector)
+  private Focus<TaskCommand<Tcontext,Tresult>> 
+    bindCommand
+      (Focus<?> focusChain
+      ,Reflector<TaskCommand<Tcontext,Tresult>> reflector
+      )
   {
     commandChannel
-      =new ThreadLocalChannel<TaskCommand>
+      =new ThreadLocalChannel<TaskCommand<Tcontext,Tresult>>
         (reflector);
     
     return focusChain.chain(commandChannel);

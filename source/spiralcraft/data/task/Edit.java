@@ -44,7 +44,7 @@ import spiralcraft.task.Task;
  *
  */
 public class Edit<Titem extends Tuple>
-  extends Chain
+  extends Chain<Void,Void>
 {
 
   private Expression<Titem> targetX;
@@ -129,7 +129,7 @@ public class Edit<Titem extends Tuple>
         {
           if (autoCreate && result==null)
           { 
-            Command<?,?> newCommand=editor.newCommand();
+            Command<?,?,?> newCommand=editor.newCommand();
             newCommand.execute();
             if (newCommand.getException()!=null)
             { addException(newCommand.getException());
@@ -138,7 +138,7 @@ public class Edit<Titem extends Tuple>
           super.work();
           if (autoSave)
           { 
-            Command<?,?> saveCommand=editor.saveCommand();
+            Command<?,?,?> saveCommand=editor.saveCommand();
             saveCommand.execute();
             if (saveCommand.getException()!=null)
             { addException(saveCommand.getException());

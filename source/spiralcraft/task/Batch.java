@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import spiralcraft.command.Command;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -57,7 +56,7 @@ import spiralcraft.util.MultiException;
  * @param <R> The result item type
  */
 public class Batch<I,R>
-  extends Chain
+  extends Chain<Void,List<TaskCommand<I,R>>>
     
 {
   
@@ -106,7 +105,7 @@ public class Batch<I,R>
    * 
    * @param completedCommands
    */
-  protected void postResult(List<TaskCommand> completedCommands)
+  protected void postResult(List<TaskCommand<I,R>> completedCommands)
   {
     if (debug)
     { log.log(Level.TRACE,""+completedCommands);
@@ -144,11 +143,11 @@ public class Batch<I,R>
   
   
   @Override
-  protected TaskCommand
+  protected TaskCommand<Void,List<TaskCommand<I,R>>>
     createCommand(Task task)
   {
     return 
-      new TaskCommand
+      new TaskCommand<Void,List<TaskCommand<I,R>>>
         (Batch.this,task)
       { 
       
@@ -162,9 +161,9 @@ public class Batch<I,R>
         {
           if (chain!=null && getException()!=null)
           { 
-            Command<?,?> command=chain.command();
+            TaskCommand<I,R> command=((Chain<I,R>) chain).command();
             command.execute();
-            ((List) getResult()).add(command);
+            (getResult()).add(command);
             if (command.getException()!=null)
             { setException(command.getException());
             }
@@ -269,13 +268,13 @@ public class Batch<I,R>
     extends ChainTask
   {
     private final I value;
-    private volatile TaskCommand completedTaskCommand;
+    private volatile TaskCommand<I,R> completedTaskCommand;
 
     public SubTask(I value)
     { this.value=value;
     }
 
-    public TaskCommand getCompletedTaskCommand()
+    public TaskCommand<I,R> getCompletedTaskCommand()
     { return completedTaskCommand;
     }
 
@@ -292,10 +291,11 @@ public class Batch<I,R>
       }
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public void addResult(Object command)
     { 
-      completedTaskCommand=(TaskCommand) command;
+      completedTaskCommand=(TaskCommand<I,R>) command;
       super.addResult(command);
     }
 

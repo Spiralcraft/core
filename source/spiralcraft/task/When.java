@@ -29,16 +29,16 @@ import spiralcraft.task.Task;
  *
  */
 public class When
-  extends Scenario
+  extends Scenario<Void,Void>
 {
 
-  protected Scenario scenario;
+  protected Scenario<?,?> scenario;
   protected Expression<Boolean> conditionX;
   protected Channel<Boolean> conditionChannel;
   
 
   
-  public void setScenario(Scenario scenario)
+  public void setScenario(Scenario<?,?> scenario)
   { this.scenario=scenario;
   }
   
@@ -70,7 +70,7 @@ public class When
           }
           try
           {
-            Command<?,?> command=scenario.command();
+            Command<?,?,?> command=scenario.command();
             command.execute();
             addResult(command);
             if (command.getException()!=null)

@@ -33,12 +33,12 @@ import spiralcraft.lang.Focus;
  * @param <T>
  * @param <R>
  */
-public class Exec<T,R>
-  extends Chain
+public class Exec<T,C,R>
+  extends Chain<C,Command<T,C,R>>
 {
   
-  private Channel<Command<T,R>> targetCommandChannel;
-  private Expression<Command<T,R>> commandX;
+  private Channel<Command<T,C,R>> targetCommandChannel;
+  private Expression<Command<T,C,R>> commandX;
   
   @Override
   public CommandTask task()
@@ -48,7 +48,7 @@ public class Exec<T,R>
   /**
    * Provide an expression to resolve the Command object
    */
-  public void setCommandX(Expression<Command<T,R>> commandX)
+  public void setCommandX(Expression<Command<T,C,R>> commandX)
   { this.commandX=commandX;
   }
   
@@ -74,13 +74,13 @@ public class Exec<T,R>
   public class CommandTask
     extends ChainTask
   {
-    private volatile Command<T,R> command;
+    private volatile Command<T,C,R> command;
 
     public CommandTask()
     { 
     }
 
-    public Command<?,R> getCommand()
+    public Command<?,C,R> getCommand()
     { return command;
     }
 

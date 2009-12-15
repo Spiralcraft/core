@@ -47,7 +47,7 @@ import spiralcraft.vfs.UnresolvableURIException;
  * @param <R>
  */
 public class ParseXml<Tresult>
-  extends Scenario
+  extends Scenario<Void,Tresult>
 {
   
 

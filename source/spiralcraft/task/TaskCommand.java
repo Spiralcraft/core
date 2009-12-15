@@ -17,7 +17,6 @@ package spiralcraft.task;
 import java.util.ArrayList;
 import java.util.List;
 
-import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
 import spiralcraft.lang.spi.ClosureFocus;
 
@@ -32,17 +31,17 @@ import spiralcraft.lang.spi.ClosureFocus;
  * @author mike
  *
  */
-public class TaskCommand
-  extends CommandAdapter<Task,List<?>>
+public class TaskCommand<Tcontext,Tresult>
+  extends CommandAdapter<Task,Tcontext,Tresult>
   implements TaskListener
 {
   
   protected final Task task;
   protected boolean collectResults=false;
-  protected final Scenario scenario;
+  protected final Scenario<Tcontext,Tresult> scenario;
   protected ClosureFocus<?>.Closure closure;
   
-  public TaskCommand(Scenario scenario,Task task)
+  public TaskCommand(Scenario<Tcontext,Tresult> scenario,Task task)
   { 
     this.task=task;
     setTarget(task);
@@ -131,7 +130,7 @@ public class TaskCommand
     if (collectResults)
     {
       if (getResult()==null)
-      { setResult(new ArrayList<Command<?,?>>());
+      { setResult((Tresult) new ArrayList());
       }
       ((List) getResult()).add(result);
     }

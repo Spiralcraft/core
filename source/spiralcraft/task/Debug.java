@@ -29,7 +29,7 @@ import spiralcraft.util.ArrayUtil;
  *
  */
 public class Debug
-  extends Scenario
+  extends Scenario<Void,Void>
 {
 
   protected Expression<Object> messageX;

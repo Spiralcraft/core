@@ -36,7 +36,7 @@ import spiralcraft.task.Task;
  *
  */
 public class TestGroup
-  extends Chain
+  extends Chain<Void,TestResult>
 {
 
   public static TestGroup find(Focus<?> focus)

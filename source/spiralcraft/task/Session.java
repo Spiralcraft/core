@@ -39,7 +39,7 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
  * @param <Tresult>
  */
 public class Session
-  extends Chain
+  extends Chain<Void,Void>
 {
 
   

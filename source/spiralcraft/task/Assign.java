@@ -28,7 +28,7 @@ import spiralcraft.task.Task;
  *
  */
 public class Assign
-  extends Scenario
+  extends Scenario<Void,Void>
 {
 
   protected Assignment<?>[] assignments;

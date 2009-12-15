@@ -20,7 +20,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.task.Scenario;
 
 public abstract class Test
-  extends Scenario
+  extends Scenario<Void,TestResult>
 {
 
   protected TestGroup testGroup;

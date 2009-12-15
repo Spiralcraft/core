@@ -40,8 +40,8 @@ public class TaskRunner
   implements Executable,Registrant
 {
 
-  private Scenario scenario;
-  private Scenario chainLink;
+  private Scenario<?,?> scenario;
+  private Scenario<?,?> chainLink;
   
   private Focus<?> rootFocus=new SimpleFocus<Void>();
   
@@ -78,10 +78,11 @@ public class TaskRunner
   { this.serviceURI=serviceURI;
   }
   
-  public void setChain(Scenario[] chain)
+  @SuppressWarnings("unchecked")
+  public void setChain(Scenario<?,?>[] chain)
   { 
 
-    Chain chainScenario=new Chain();
+    Chain<?,?> chainScenario=new Chain();
     chainScenario.setChain(chain);
     scenario=chainScenario;
     chainLink=chain[chain.length-1];
@@ -111,11 +112,11 @@ public class TaskRunner
   public void loadScenario(URI uri)
     throws BindException
   { 
-    Scenario scenario=AbstractXmlObject.<Scenario>create(uri,null).get();
+    Scenario<?,?> scenario=AbstractXmlObject.<Scenario<?,?>>create(uri,null).get();
     if (chainLink!=null)
     { 
-      if (chainLink instanceof Chain)
-      { ((Chain) chainLink).chain(scenario);
+      if (chainLink instanceof Chain<?,?>)
+      { ((Chain<?,?>) chainLink).chain(scenario);
       }
       else
       { throw new BindException(chainLink+" cannot chain another scenario");
@@ -250,7 +251,7 @@ public class TaskRunner
       scenario.start();
       try
       { 
-        Command<?,?> command=scenario.command();
+        Command<?,?,?> command=scenario.command();
         command.execute();
         if (command.getResult()!=null)
         { 

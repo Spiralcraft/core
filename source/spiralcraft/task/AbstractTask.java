@@ -390,9 +390,9 @@ public abstract class AbstractTask
       =ArrayUtil.remove(_taskListeners,listener);
   }
 
-  protected TaskCommand executeChild(Scenario scenario)
+  protected TaskCommand<?,?> executeChild(Scenario<?,?> scenario)
   { 
-    TaskCommand command=scenario.command();
+    TaskCommand<?,?> command=scenario.command();
     command.execute();
     if (command.getException()!=null)
     { addException(command.getException());

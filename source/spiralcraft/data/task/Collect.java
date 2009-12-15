@@ -61,7 +61,7 @@ import spiralcraft.task.Task;
  *
  */
 public class Collect<Titem>
-  extends Chain
+  extends Chain<Void,Aggregate<Titem>>
 {
 
   private Expression<Aggregate<Titem>> targetX;
@@ -70,7 +70,7 @@ public class Collect<Titem>
   private boolean append;
   private ThreadLocalChannel<EditableAggregate<Titem>> aggregateChannel;
 
-  private Scenario fillScenario;
+  private Scenario<?,?> fillScenario;
   private ClosureFocus<?> closureFocus;
   private Expression<Titem> cursorX;
   @SuppressWarnings("unchecked")
@@ -100,7 +100,7 @@ public class Collect<Titem>
    * 
    * @param fillScenario
    */
-  public void setFillScenario(Scenario fillScenario)
+  public void setFillScenario(Scenario<?,?> fillScenario)
   { this.fillScenario=fillScenario;
   }
   
@@ -133,13 +133,13 @@ public class Collect<Titem>
    * @param item
    * @return
    */
-  public Command<Collect<Titem>,Void> commandAdd(final Titem item)
+  public Command<Void,Collect<Titem>,Void> commandAdd(final Titem item)
   { 
     if (debug)
     { log.debug("Returning command "+item);
     }
     
-    return new CommandAdapter<Collect<Titem>,Void>()
+    return new CommandAdapter<Void,Collect<Titem>,Void>()
     {
       @Override
       protected void run()
@@ -272,7 +272,7 @@ public class Collect<Titem>
    *
    */
   public class FillCommandChannel
-    extends AbstractChannel<Command<?,?>>
+    extends AbstractChannel<Command<?,?,?>>
   {
 
     private final ClosureFocus<?>.Closure closure;
@@ -281,7 +281,7 @@ public class Collect<Titem>
     public FillCommandChannel(EditableArrayListAggregate<Titem> aggregate)
     { 
 
-      super(BeanReflector.<Command<?,?>>getInstance(Command.class));      
+      super(BeanReflector.<Command<?,?,?>>getInstance(Command.class));      
       closure=closureFocus.enclose();
       this.aggregate=aggregate;
     
@@ -289,7 +289,7 @@ public class Collect<Titem>
     
     @SuppressWarnings("unchecked")
     @Override
-    protected Command<?, ?> retrieve()
+    protected Command<?,?,?> retrieve()
     { 
       return new CommandAdapter()
       {
@@ -302,7 +302,7 @@ public class Collect<Titem>
           try
           { 
             
-            Command<?,?> command=fillScenario.command();
+            Command<?,?,?> command=fillScenario.command();
             command.execute();
             if (command.getException()!=null)
             { setException(command.getException());
@@ -322,7 +322,7 @@ public class Collect<Titem>
 
     @Override
     protected boolean store(
-      Command<?, ?> val)
+      Command<?,?,?> val)
       throws AccessException
     {
       // TODO Auto-generated method stub

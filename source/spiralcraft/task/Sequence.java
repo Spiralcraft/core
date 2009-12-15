@@ -15,6 +15,8 @@
 package spiralcraft.task;
 
 
+import java.util.List;
+
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
@@ -33,17 +35,17 @@ import spiralcraft.util.ArrayUtil;
  * @param <Tresult>
  */
 public class Sequence
-  extends Scenario
+  extends Scenario<Void,List<?>>
 {
 
-  protected Scenario[] scenarios;
+  protected Scenario<?,?>[] scenarios;
   
   
-  public void setScenarios(Scenario[] scenarios)
+  public void setScenarios(Scenario<?,?>[] scenarios)
   { this.scenarios=scenarios;
   }
   
-  public void addScenario(Scenario scenario)
+  public void addScenario(Scenario<?,?> scenario)
   { 
     scenarios
       =scenarios!=null
@@ -62,9 +64,9 @@ public class Sequence
       public void work()
         throws InterruptedException
       {
-        for (Scenario scenario: scenarios)
+        for (Scenario<?,?> scenario: scenarios)
         { 
-          TaskCommand command
+          TaskCommand<?,?> command
             =scenario.command();
           if (debug)
           { log.fine("Executing "+command);
@@ -87,7 +89,7 @@ public class Sequence
     throws LifecycleException
   {
     super.start();
-    for (Scenario scenario: scenarios)
+    for (Scenario<?,?> scenario: scenarios)
     { scenario.start();
     }
   }
@@ -96,7 +98,7 @@ public class Sequence
   public void stop()
     throws LifecycleException
   {
-    for (Scenario scenario: scenarios)
+    for (Scenario<?,?> scenario: scenarios)
     { scenario.stop();
     }
     super.stop();
@@ -110,7 +112,7 @@ public class Sequence
   {
     
     
-    for (Scenario scenario: scenarios)
+    for (Scenario<?,?> scenario: scenarios)
     { scenario.bind(focusChain);
     }
     super.bindChildren(focusChain);

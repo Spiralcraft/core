@@ -39,7 +39,7 @@ import spiralcraft.task.Chain;
  *
  */
 public class Fetch
-  extends Chain
+  extends Chain<Void,Aggregate<Tuple>>
 {
   
   protected Query query;
@@ -81,7 +81,11 @@ public class Fetch
             boolean done=false;
             while (!done)
             {
-              CursorAggregate<Tuple> result=new CursorAggregate<Tuple>(cursor);
+              CursorAggregate<Tuple> result
+                =batchSize>0
+                ?new CursorAggregate<Tuple>(cursor,batchSize)
+                :new CursorAggregate<Tuple>(cursor)
+                ;
               resultChannel.push(result);
         
               try
