@@ -16,6 +16,7 @@ package spiralcraft.data.session;
 
 
 import spiralcraft.lang.AccessException;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
@@ -38,7 +39,8 @@ public class BufferField
   
   @Override
   @SuppressWarnings("unchecked")
-  public Channel<Buffer> bindChannel(Focus<Tuple> focus)
+  public Channel<Buffer> bindChannel
+    (Channel<Tuple> source,Focus<?> focus,Expression<?>[] args)
     throws BindException
   {
     // The Channel that provides the original field value
@@ -47,12 +49,12 @@ public class BufferField
     if (getArchetypeField()!=null)
     { 
       // Get the correct field behavior from the archetype
-      originalChannel=getArchetypeField().bindChannel(focus);
+      originalChannel=getArchetypeField().bindChannel(source,focus,args);
       if (debug)
       { log.fine("Creating BufferFieldChannel for field " +getURI());
       }
       		
-      return new BufferFieldChannel(originalChannel,focus);
+      return new BufferFieldChannel(originalChannel,source,focus);
       
     }
     else
@@ -76,7 +78,8 @@ public class BufferField
     
     public BufferFieldChannel
       (Channel<? extends DataComposite> originalChannel
-      ,Focus<Tuple> parentFocus
+      ,Channel<Tuple> source
+      ,Focus<?> parentFocus
       )
       throws BindException
     { 
@@ -87,7 +90,7 @@ public class BufferField
       metaChannel=this;
       
       parentChannel
-        =parentFocus.getSubject();
+        =source;
           
       if (debug)
       {

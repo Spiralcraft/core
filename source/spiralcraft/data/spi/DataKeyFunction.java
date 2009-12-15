@@ -39,7 +39,7 @@ public class DataKeyFunction<T>
   { 
     valueChannel=new ThreadLocalChannel<T>(valueReflector);
     Focus<T> focus=new SimpleFocus<T>(valueChannel);
-    projectionChannel=projection.bindChannel(focus);
+    projectionChannel=projection.bindChannel(valueChannel,focus,null);
   }
   
   @Override

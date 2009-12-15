@@ -16,6 +16,7 @@ package spiralcraft.text.translator;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.text.ParseException;
 import spiralcraft.text.ParsePosition;
@@ -114,10 +115,13 @@ public class Clip
   }
 
   @Override
-  public Channel<String> bindChannel(
-    Focus<String> focus)
+  public Channel<String> bindChannel
+    (Channel<String> source
+    ,Focus<?> focus
+    ,Expression<?>[] args
+    )
     throws BindException
-  { return new TranslatorChannel(this,focus.getSubject());
+  { return new TranslatorChannel(this,source);
   }
 
 }
