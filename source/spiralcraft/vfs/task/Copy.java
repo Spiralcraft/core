@@ -15,7 +15,7 @@ import spiralcraft.vfs.ResourceFilter;
 import spiralcraft.vfs.batch.Search;
 
 public class Copy
-  extends Scenario
+  extends Scenario<Void,Void>
 {
 
   private Resource sourceResource;
