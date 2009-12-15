@@ -56,7 +56,7 @@ public class DataBatchProcessor<I,R>
 
   @SuppressWarnings("unchecked")
   @Override
-  public void postResult(List<TaskCommand> completedCommands)
+  public void postResult(List<TaskCommand<I,R>> completedCommands)
   {
     if (debug)
     {
