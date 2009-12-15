@@ -482,7 +482,7 @@ public abstract class DataHandlerBase
     { 
       String ret=null;
       if (prefixMappings!=null)
-      { ret=prefixMappings.get("default");
+      { ret=prefixMappings.get("");
       }
       if (ret==null && parentFrame!=null)
       { return parentFrame.getDefaultURI();
