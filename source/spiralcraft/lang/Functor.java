@@ -15,20 +15,21 @@
 package spiralcraft.lang;
 
 /**
- * <p>Implemented by objects that create Channels from a specifically typed
- *   Focus.
+ * <p>Implemented by components that integrate parameterized behavior into a 
+ *   data stream, as a means to integrate and extend functionality.
+ *   
  * </p>
  * 
- * <p>A single ChannelFactory instance may create many Channel instances from
- *   different Focus instances. It does not maintain a reference to anything
- *   retrieved from the Focus chain.
+ * <p>A single Functor will create Channel instances from
+ *   the bindChannel method, It does not maintain a reference to anything
+ *   retrieved from the Focus chain besides what is referenced by the
+ *   returned channel.
  * </p>
  * 
  * @author mike
  *
  */
-@Deprecated
-public interface ChannelFactory<Tchannel,Tfocus>
+public interface Functor<Tchannel,Tsource>
 {
   /**
    * <p>Creates a new Channel given a Focus
@@ -38,6 +39,10 @@ public interface ChannelFactory<Tchannel,Tfocus>
    * @return
    * @throws BindException
    */
-  Channel<Tchannel> bindChannel(Focus<Tfocus> focus)
+  Channel<Tchannel> bindChannel
+    (Channel<Tsource> source
+    ,Focus<?> focus
+    ,Expression<?>[] arguments
+    )
     throws BindException;
 }
