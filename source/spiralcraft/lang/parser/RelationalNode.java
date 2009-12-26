@@ -33,8 +33,15 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
   @Override
   public Node copy(Object visitor)
   { 
-    return new RelationalNode<T1,T2>
+    RelationalNode<T1,T2> copy
+      =new RelationalNode<T1,T2>
       (_greaterThan,_equals,_op1.copy(visitor),_op2.copy(visitor));
+    if (sameOperandNodes(copy))
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
   
   @Override

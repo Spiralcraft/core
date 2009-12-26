@@ -17,7 +17,7 @@ package spiralcraft.lang;
 import java.net.URI;
 import java.util.LinkedList;
 
-import spiralcraft.common.NamespaceResolver;
+import spiralcraft.common.namespace.PrefixResolver;
 
 /**
  * <p>A starting point for the evaluation of an Expression, which provides
@@ -245,10 +245,10 @@ public interface Focus<T>
   boolean isFocus(URI specifier);
 
   /**
-   * @return the NamespaceResolver that associates namespace prefixes with
+   * @return the PrefixResolver that associates namespace prefixes with
    *   URIs
    */
-  NamespaceResolver getNamespaceResolver();
+  PrefixResolver getNamespaceResolver();
   
   /**
    * Return this Focus's parent Focus.
@@ -309,7 +309,7 @@ public interface Focus<T>
    * @param channel
    * @return The new Focus
    */
-  public Focus<T> chain(NamespaceResolver resolver);
+  public Focus<T> chain(PrefixResolver resolver);
   
   
   /**

@@ -15,7 +15,7 @@
 package spiralcraft.lang;
 
 
-import spiralcraft.common.NamespaceResolver;
+import spiralcraft.common.namespace.PrefixResolver;
 
 /**
  * Simple implementation of a Focus
@@ -64,7 +64,7 @@ public class SimpleFocus<T>
 
 
   @Override
-  public NamespaceResolver getNamespaceResolver()
+  public PrefixResolver getNamespaceResolver()
   { 
     if (namespaceResolver!=null)
     { return namespaceResolver;

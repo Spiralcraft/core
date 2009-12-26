@@ -70,11 +70,24 @@ public class MethodCallNode
   @Override
   public Node copy(Object visitor)
   {
+    boolean dirty=false;
     List<Node> params=new ArrayList<Node>();
     for (Node node:_parameterNodes)
-    { params.add(node.copy(visitor));
+    { 
+      Node paramCopy=node.copy(visitor);
+      params.add(paramCopy);
+      if (node!=paramCopy)
+      { dirty=true;
+      }
     }
-    return new MethodCallNode(_source.copy(visitor),_identifierName,params);
+    MethodCallNode copy
+      =new MethodCallNode(_source.copy(visitor),_identifierName,params);
+    if (!dirty && copy._source==_source )
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
   
   @Override

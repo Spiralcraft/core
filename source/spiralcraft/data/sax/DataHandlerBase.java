@@ -23,14 +23,14 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import spiralcraft.common.NamespaceResolver;
+import spiralcraft.common.namespace.NamespaceContext;
+import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.DataFactory;
-import spiralcraft.lang.Expression;
 import spiralcraft.log.ClassLog;
 import spiralcraft.text.ParseException;
 import spiralcraft.text.ParsePosition;
@@ -256,7 +256,7 @@ public abstract class DataHandlerBase
    *   frames.
    */
   abstract class Frame
-    implements NamespaceResolver
+    implements PrefixResolver
   { 
     protected String qName;
     protected final StringBuilder chars
@@ -476,19 +476,6 @@ public abstract class DataHandlerBase
       return ret;
     
     }
-    
-    @Override
-    public URI getDefaultURI()
-    { 
-      String ret=null;
-      if (prefixMappings!=null)
-      { ret=prefixMappings.get("");
-      }
-      if (ret==null && parentFrame!=null)
-      { return parentFrame.getDefaultURI();
-      }
-      return ret!=null?URI.create(ret):null;
-    }
 
     @Override
     public URI resolvePrefix(
@@ -554,21 +541,13 @@ public abstract class DataHandlerBase
     public Object fromString(Type<?> type,String text)
       throws DataException
     {
-      Object nativeObject=type.fromString(text);
-    
-      if (nativeObject.getClass()==Expression.class)
-      { 
-        if (debug)
-        { log.fine("Resolving "+nativeObject.toString());
-        }
-
-        nativeObject=((Expression<?>) nativeObject).resolveNamespaces(this);
-        
-        if (debug)
-        { log.fine("Resolved "+nativeObject.toString());
-        }
+      NamespaceContext.push(this);
+      try
+      { return type.fromString(text);
       }
-      return nativeObject;
+      finally
+      { NamespaceContext.pop();
+      }
     }        
   }
   

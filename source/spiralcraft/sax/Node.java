@@ -31,7 +31,7 @@ public abstract class Node
   private LinkedList<Node> _children;
   private Node _parent;
   private Object _peer;
-  private PrefixResolver prefixResolver;
+  private SaxPrefixResolver prefixResolver;
   private ParsePosition position;
 
 
@@ -113,7 +113,7 @@ public abstract class Node
    * 
    * @return The namespace PrefixResolver in effect for this Element
    */
-  public PrefixResolver getPrefixResolver()
+  public SaxPrefixResolver getPrefixResolver()
   { 
     if (this.prefixResolver!=null)
     { return this.prefixResolver;
@@ -128,7 +128,7 @@ public abstract class Node
    * The namespace PrefixResolver applicable to this Element
    * @param resolver
    */
-  public void setPrefixResolver(PrefixResolver resolver)
+  public void setPrefixResolver(SaxPrefixResolver resolver)
   { this.prefixResolver=resolver;
   }
   

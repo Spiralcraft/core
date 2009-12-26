@@ -23,7 +23,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 
-import spiralcraft.common.NamespaceResolver;
+import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.data.DataException;
 
 import spiralcraft.lang.AccessException;
@@ -78,7 +78,7 @@ public abstract class AbstractFrameHandler
    * @throws SAXException
    */
   public final String transformNamespace
-    (String value,NamespaceResolver resolver)
+    (String value,PrefixResolver resolver)
     throws DataException
   {
     int colonPos=value.indexOf(':');
@@ -93,8 +93,8 @@ public abstract class AbstractFrameHandler
       }
       value=combineName(nsURI.toString(),value.substring(colonPos+1));
     }
-    else if (resolver.getDefaultURI()!=null)
-    { value=combineName(resolver.getDefaultURI().toString(),value);
+    else if (resolver.resolvePrefix("")!=null)
+    { value=combineName(resolver.resolvePrefix("").toString(),value);
     }
     else
     { 
@@ -181,7 +181,7 @@ public abstract class AbstractFrameHandler
   private boolean allowMixedContent;
 
   private HashMap<String,URI> prefixMappings;
-  private URI defaultURI;
+
   private ElementAssignment<?>[] elementAssignments;
   @SuppressWarnings("unchecked")
   private HashMap<String,Setter> elementSetterMap;
@@ -215,18 +215,6 @@ public abstract class AbstractFrameHandler
     for (PrefixMapping mapping:mappings)
     { prefixMappings.put(mapping.getPrefix(),mapping.getURI());
     }
-  }
-  
-  public void setDefaultURI(URI namespace)
-  { this.defaultURI=namespace;
-  }
-  
-  public URI getDefaultURI()
-  { 
-    if (defaultURI==null && parent!=null)
-    { return parent.getDefaultURI();
-    }
-    return defaultURI;
   }
   
   public URI resolvePrefix(String prefix)

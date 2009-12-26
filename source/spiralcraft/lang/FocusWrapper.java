@@ -18,7 +18,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import spiralcraft.common.NamespaceResolver;
+import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.spi.SimpleChannel;
 
 
@@ -93,7 +93,7 @@ public abstract class FocusWrapper<Tfocus>
   }
 
   @Override
-  public NamespaceResolver getNamespaceResolver()
+  public PrefixResolver getNamespaceResolver()
   { return focus.getNamespaceResolver();
   }
 
@@ -137,7 +137,7 @@ public abstract class FocusWrapper<Tfocus>
   }
 
   @Override
-  public Focus<Tfocus> chain(NamespaceResolver resolver)
+  public Focus<Tfocus> chain(PrefixResolver resolver)
   { return new NamespaceFocus<Tfocus>(this,resolver);
   }
 

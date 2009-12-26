@@ -57,8 +57,15 @@ public class SubscriptNode<T,C,I>
   @Override
   public Node copy(Object visitor)
   { 
-    return new SubscriptNode<T,C,I>
+    SubscriptNode<T,C,I> copy
+      =new SubscriptNode<T,C,I>
       (_source.copy(visitor),_selector.copy(visitor));
+    if (copy._source==_source && copy._selector==_selector)
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
   
   @Override

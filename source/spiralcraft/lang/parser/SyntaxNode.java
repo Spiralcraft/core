@@ -40,7 +40,14 @@ public class SyntaxNode<T>
     
   @Override
   public Node copy(Object visitor)
-  { return new SyntaxNode<T>(_prefix,_delegate.copy(visitor),_suffix);
+  { 
+    SyntaxNode<T> copy=new SyntaxNode<T>(_prefix,_delegate.copy(visitor),_suffix);
+    if (_delegate==copy._delegate)
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
 
   @Override

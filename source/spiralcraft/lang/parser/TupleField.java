@@ -42,6 +42,9 @@ public class TupleField
     }
     copy.passThrough=passThrough;
     copy.anonymous=anonymous;
+    if (copy.type==type && copy.source==source)
+    { return this;
+    }
     return copy;
   }
   

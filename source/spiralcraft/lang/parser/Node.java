@@ -15,7 +15,8 @@
 package spiralcraft.lang.parser;
 
 
-import spiralcraft.common.NamespaceResolver;
+import spiralcraft.common.namespace.NamespaceContext;
+import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -75,15 +76,30 @@ public abstract class Node
     
   }
   
+  /**
+   * <p>Resolves a qName against a prefix resolver and returns the mapped
+   *   URI, which resolves the local name against the returned URI
+   *   as [mappedUri] / [localName]
+   * </p>
+   * 
+   * <p>A null prefix will resolve the namespace mapped to the
+   *   "" empty string
+   * </p>
+   * 
+   * @param prefix
+   * @param suffix
+   * @param nsr
+   * @return
+   */
   protected URI resolveQName
-    (String prefix,String suffix,NamespaceResolver nsr)
+    (String prefix,String suffix,PrefixResolver nsr)
   {
     URI uri=null;
     if (prefix!=null)
     { uri=nsr.resolvePrefix(prefix);
     }
     else
-    { uri=nsr.getDefaultURI();
+    { uri=nsr.resolvePrefix("");
     }
     if (uri!=null)
     { 
@@ -97,6 +113,36 @@ public abstract class Node
     }
     return uri;
   }   
+  
+  /**
+   * <p>Resolves a qName against the contextual prefix resolver and returns the
+   *   mapped
+   *   URI, which resolves the local name against the returned URI
+   *   as [mappedUri] / [localName]
+   * </p>
+   *
+   * <p>A null prefix will resolve the namespace mapped to the
+   *   "" empty string
+   * </p>
+   * 
+   * <p>Returns null if no contextual prefix resolver is defined
+   * </p>
+   * 
+   * @param prefix
+   * @param suffix
+   * @return
+   */
+  protected URI resolveQName
+    (String prefix,String suffix)
+  {
+    PrefixResolver resolver=NamespaceContext.getPrefixResolver();
+    if (resolver!=null)
+    { return resolveQName(prefix,suffix,resolver);
+    }
+    else
+    { return null;
+    }
+  }
   
   
   @SuppressWarnings("unchecked") // Genericized for internal purposes only

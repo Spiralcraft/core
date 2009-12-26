@@ -18,7 +18,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import spiralcraft.common.NamespaceResolver;
+import spiralcraft.common.namespace.PrefixResolver;
 
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.util.URIUtil;
@@ -32,7 +32,7 @@ public abstract class BaseFocus<T>
   
   protected Channel<T> subject;
   protected Focus<?> parent;
-  protected NamespaceResolver namespaceResolver;
+  protected PrefixResolver namespaceResolver;
   protected LinkedList<Focus<?>> facets;
   protected LinkedList<URI> aliases;
 
@@ -78,7 +78,7 @@ public abstract class BaseFocus<T>
   { return new SimpleFocus<Tchannel>(this,channel);
   }
 
-  public Focus<T> chain(NamespaceResolver resolver)
+  public Focus<T> chain(PrefixResolver resolver)
   { return new NamespaceFocus<T>(this,resolver);
   }
   
@@ -105,7 +105,7 @@ public abstract class BaseFocus<T>
     return channel;
   }
 
-  public NamespaceResolver getNamespaceResolver()
+  public PrefixResolver getNamespaceResolver()
   { 
     if (namespaceResolver!=null)
     { return namespaceResolver;
@@ -118,7 +118,7 @@ public abstract class BaseFocus<T>
     }
   }
   
-  public void setNamespaceResolver(NamespaceResolver resolver)
+  public void setNamespaceResolver(PrefixResolver resolver)
   { this.namespaceResolver=resolver;
   }
   

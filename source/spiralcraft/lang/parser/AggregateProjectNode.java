@@ -51,8 +51,15 @@ public class AggregateProjectNode<T,C>
   @Override
   public Node copy(Object visitor)
   { 
-    return new AggregateProjectNode<T,C>
-      (_source.copy(visitor),_projection.copy(visitor));
+    AggregateProjectNode<T,C> copy
+      =new AggregateProjectNode<T,C>
+        (_source.copy(visitor),_projection.copy(visitor));
+    if (copy._source==_source && copy._projection==_projection)
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
   
   @Override

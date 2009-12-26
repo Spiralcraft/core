@@ -29,7 +29,7 @@ import spiralcraft.lang.Expression;
 
 import java.util.List;
 
-import spiralcraft.sax.PrefixResolver;
+import spiralcraft.sax.SaxPrefixResolver;
 
 /**
  * Specifies a property to be defined in the context of an AssemblyClass
@@ -63,7 +63,7 @@ public class PropertySpecifier
   private boolean _export;
   private URI _dataURI;
   
-  private PrefixResolver prefixResolver;
+  private SaxPrefixResolver prefixResolver;
   private PropertyDescriptor descriptor;
   private boolean defaultMember;
   
@@ -188,11 +188,11 @@ public class PropertySpecifier
   { this.defaultMember=defaultMember;
   }
   
-  public void setPrefixResolver(PrefixResolver resolver)
+  public void setPrefixResolver(SaxPrefixResolver resolver)
   { this.prefixResolver=resolver;
   }
   
-  public PrefixResolver getPrefixResolver() 
+  public SaxPrefixResolver getPrefixResolver() 
   { return this.prefixResolver;
   }
   

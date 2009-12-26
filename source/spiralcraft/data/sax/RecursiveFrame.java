@@ -132,10 +132,6 @@ public class RecursiveFrame
       ("RecursiveFrame can't provide a RecursionContext");
   }
   
-  public URI getDefaultURI()
-  { return frameRef.getDefaultURI();
-  }
-  
   public URI resolvePrefix(String name)
   { return frameRef.resolvePrefix(name);
   }

@@ -39,7 +39,7 @@ public class ParseTree
   
   private Document _document;
   private Node _currentElement;
-  private PrefixResolver newPrefixResolver;
+  private SaxPrefixResolver newPrefixResolver;
   private final ParsePosition position=new ParsePosition();
   private Locator locator;
   
@@ -86,7 +86,7 @@ public class ParseTree
     if (newPrefixResolver==null)
     { 
       newPrefixResolver
-        =new PrefixResolver
+        =new SaxPrefixResolver
           (_currentElement!=null
           ?_currentElement.getPrefixResolver()
           :null

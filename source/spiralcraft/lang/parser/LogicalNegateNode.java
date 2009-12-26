@@ -26,7 +26,15 @@ public class LogicalNegateNode
 
   @Override
   public Node copy(Object visitor)
-  { return new LogicalNegateNode(_op1.copy(visitor));
+  { 
+    LogicalNegateNode copy
+      =new LogicalNegateNode(_op1.copy(visitor));
+    if (sameOperandNodes(copy))
+    { return this;
+    }
+    else
+    { return copy;
+    }  
   }
   
   @Override

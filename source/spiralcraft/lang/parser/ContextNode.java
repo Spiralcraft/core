@@ -36,7 +36,14 @@ public class ContextNode
   public Node copy(Object visitor)
   { 
     if (_source!=null)
-    { return new ContextNode((FocusNode) _source.copy(visitor));
+    { 
+      FocusNode copy=(FocusNode) _source.copy(visitor);
+      if (copy==_source)
+      { return this;
+      }
+      else
+      { return new ContextNode(copy);
+      }
     }
     else
     { return this;

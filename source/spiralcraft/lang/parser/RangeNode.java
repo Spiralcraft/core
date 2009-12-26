@@ -58,11 +58,18 @@ public class RangeNode<T>
   @Override
   public Node copy(Object visitor)
   { 
-    return new RangeNode<T>
+    RangeNode<T> copy
+      =new RangeNode<T>
       (start!=null?start.copy(visitor):null
       ,end!=null?end.copy(visitor):null
       ,inclusive
       );
+    if (copy.start==start && copy.end==end)
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
   
   @Override

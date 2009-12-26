@@ -27,7 +27,15 @@ public class LogicalAndNode
 
   @Override
   public Node copy(Object visitor)
-  { return new LogicalAndNode(_op1.copy(visitor),_op2.copy(visitor));
+  { 
+    LogicalAndNode copy
+      =new LogicalAndNode(_op1.copy(visitor),_op2.copy(visitor));
+    if (sameOperandNodes(copy))
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
   
   @Override

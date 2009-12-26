@@ -44,12 +44,22 @@ public class ListNode<T>
   @Override
   public Node copy(Object visitor)
   {
+    boolean dirty=false;
     ArrayList<Node> copy=new ArrayList<Node>(sources.size());
     for (Node node:sources)
     {
-      copy.add(node.copy(visitor));
+      Node itemCopy=node.copy(visitor);
+      copy.add(itemCopy);
+      if (itemCopy!=node)
+      { dirty=true;
+      }
     }
-    return new ListNode<T>(copy);
+    if (dirty)
+    { return new ListNode<T>(copy);
+    }
+    else
+    { return this;
+    }
   }
   
   @Override

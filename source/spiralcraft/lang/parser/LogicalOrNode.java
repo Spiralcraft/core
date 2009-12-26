@@ -26,7 +26,15 @@ public class LogicalOrNode
   
   @Override
   public Node copy(Object visitor)
-  { return new LogicalOrNode(_op1.copy(visitor),_op2.copy(visitor));
+  { 
+    LogicalOrNode copy
+      =new LogicalOrNode(_op1.copy(visitor),_op2.copy(visitor));
+    if (sameOperandNodes(copy))
+    { return this;
+    }
+    else
+    { return copy;
+    }    
   }
   
   @Override

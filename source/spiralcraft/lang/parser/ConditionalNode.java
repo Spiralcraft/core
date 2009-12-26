@@ -49,11 +49,21 @@ public class ConditionalNode
   @Override
   public Node copy(Object visitor)
   { 
-    return new ConditionalNode
+    ConditionalNode copy
+      =new ConditionalNode
       (_condition.copy(visitor)
       ,_trueResult.copy(visitor)
       ,_falseResult.copy(visitor)
       );
+    if (copy._condition==_condition
+        && copy._trueResult==_trueResult
+        && copy._falseResult==_falseResult
+       )
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
   
   @Override

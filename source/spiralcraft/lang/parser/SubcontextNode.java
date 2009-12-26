@@ -56,8 +56,16 @@ public class SubcontextNode<T,S>
   @Override
   public Node copy(Object visitor)
   { 
-    return new SubcontextNode<T,S>
+    SubcontextNode<T,S> copy
+      =new SubcontextNode<T,S>
       (_source.copy(visitor),_subcontext.copy(visitor));
+    
+    if (copy._source==_source && copy._subcontext==_subcontext)
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
   
   @Override

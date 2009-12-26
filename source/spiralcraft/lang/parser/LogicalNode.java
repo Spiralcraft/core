@@ -97,6 +97,10 @@ public abstract class LogicalNode<T1,T2>
   { return _op2;
   }
   
+  protected boolean sameOperandNodes(LogicalNode<T1,T2> copy)
+  { return copy._op1==_op1 && copy._op2==_op2;
+  }
+
   @Override
   public void dumpTree(StringBuffer out,String prefix)
   {

@@ -38,7 +38,14 @@ public class ResolveNode<T>
     
   @Override
   public Node copy(Object visitor)
-  { return new ResolveNode<T>(_source.copy(visitor),identifier);
+  { 
+    ResolveNode<T> copy=new ResolveNode<T>(_source.copy(visitor),identifier);
+    if (copy._source==_source)
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
 
   @Override

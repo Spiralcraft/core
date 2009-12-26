@@ -16,7 +16,7 @@ package spiralcraft.data.sax;
 
 import java.util.LinkedHashMap;
 
-import spiralcraft.common.NamespaceResolver;
+import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.data.DataException;
 
 import spiralcraft.lang.BindException;
@@ -33,7 +33,7 @@ import spiralcraft.lang.spi.ClosureFocus;
  *
  */
 public interface FrameHandler
-  extends NamespaceResolver
+  extends PrefixResolver
 {
   
   

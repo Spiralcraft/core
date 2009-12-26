@@ -60,7 +60,15 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
   
   @Override
   public Node copy(Object visitor)
-  { return new NumericOpNode<T1,T2>(_op1.copy(visitor),_op2.copy(visitor),_op);
+  { 
+    NumericOpNode<T1,T2> copy
+      =new NumericOpNode<T1,T2>(_op1.copy(visitor),_op2.copy(visitor),_op);
+    if (copy._op1==_op1 && copy._op2==_op2)
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
   
   @Override

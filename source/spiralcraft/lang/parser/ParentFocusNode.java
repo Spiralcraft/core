@@ -38,7 +38,14 @@ public class ParentFocusNode
   
   @Override
   public Node copy(Object visitor)
-  { return new ParentFocusNode((FocusNode) _child.copy(visitor));
+  { 
+    FocusNode copy=(FocusNode) _child.copy(visitor);
+    if (_child==copy)
+    { return this;
+    }
+    else
+    { return new ParentFocusNode(copy);
+    }
   }
   
   @Override

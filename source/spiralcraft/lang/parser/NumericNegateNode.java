@@ -50,7 +50,15 @@ public class NumericNegateNode<T extends Number>
 
   @Override
   public Node copy(Object visitor)
-  { return new NumericNegateNode<T>(_node.copy(visitor));
+  { 
+    NumericNegateNode<T> copy
+      =new NumericNegateNode<T>(_node.copy(visitor));
+    if (copy._node==_node)
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
 
   @Override

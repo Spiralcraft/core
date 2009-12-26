@@ -50,8 +50,15 @@ public class ContainsNode<T,C,I>
   @Override
   public Node copy(Object visitor)
   { 
-    return new ContainsNode<T,C,I>
+    ContainsNode<T,C,I> copy
+      =new ContainsNode<T,C,I>
       (_source.copy(visitor),_compareItem.copy(visitor));
+    if (copy._source==_source && copy._compareItem==_compareItem)
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
   
   @Override

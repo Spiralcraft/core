@@ -36,7 +36,15 @@ public class EqualityNode<X>
   
   @Override
   public Node copy(Object visitor)
-  { return new EqualityNode<X>(_negate,_op1.copy(visitor),_op2.copy(visitor));
+  { 
+    EqualityNode<X> copy
+      =new EqualityNode<X>(_negate,_op1.copy(visitor),_op2.copy(visitor));
+    if (sameOperandNodes(copy))
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
   
   @Override

@@ -14,11 +14,12 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.common.NamespaceResolver;
+import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.parser.LiteralNode;
 import spiralcraft.lang.parser.Node;
 
 import spiralcraft.lang.parser.ExpressionParser;
+import spiralcraft.log.ClassLog;
 
 import java.util.HashMap;
 
@@ -44,6 +45,8 @@ import java.util.HashMap;
  */
 public class Expression<T>
 {
+  private static final ClassLog log=ClassLog.getInstance(Expression.class);
+  
   // XXX Make this weak- remove Expressions not referenced
   private static final HashMap<String,Expression<?>> _CACHE
     =new HashMap<String,Expression<?>>();
@@ -137,8 +140,17 @@ public class Expression<T>
     _text=root.reconstruct();
   }
   
-  public Expression<T> resolveNamespaces(NamespaceResolver resolver)
-  { return new Expression<T>(_root.copy(resolver));
+  public Expression<T> resolveNamespaces(PrefixResolver resolver)
+  { 
+    Node copy=_root.copy(resolver);
+    if (copy!=_root)
+    { 
+      log.fine("Copied "+_root.reconstruct()+" to "+copy.reconstruct());
+      return new Expression<T>(copy);
+    }
+    else
+    { return this;
+    }
   }
 
   public String getText()

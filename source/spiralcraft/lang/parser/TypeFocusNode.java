@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.common.NamespaceResolver;
+import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 
@@ -34,8 +34,6 @@ import spiralcraft.lang.TypeModel;
 public class TypeFocusNode
   extends FocusNode
 {
- 
-  private static final URI NULL_URI=URI.create("");
   
   private final String suffix;
   private final String namespace;
@@ -54,11 +52,13 @@ public class TypeFocusNode
     {
       this.namespace=qname.substring(0,colonPos);
       this.suffix=qname.substring(colonPos+1);
+      this.uri=resolveQName(namespace,suffix);
     }
     else
     { 
       this.namespace=null;
       this.suffix=qname;
+      this.uri=resolveQName(namespace,suffix);
     }
 
   }
@@ -80,8 +80,8 @@ public class TypeFocusNode
   public Node copy(Object visitor)
   { 
     URI uri=null;
-    if (visitor instanceof NamespaceResolver && suffix!=null)
-    { uri=resolveQName(namespace,suffix,(NamespaceResolver) visitor);
+    if (visitor instanceof PrefixResolver && suffix!=null)
+    { uri=resolveQName(namespace,suffix,(PrefixResolver) visitor);
     }
     
     if (uri!=null)
@@ -109,20 +109,14 @@ public class TypeFocusNode
   @Override
   public Focus<?> findFocus(final Focus<?> focus)
     throws BindException
-  { 
-    URI namespaceURI=NULL_URI;
-    
+  {     
     if (uri==null)
     {
-      NamespaceResolver resolver=focus.getNamespaceResolver();
+      PrefixResolver resolver=focus.getNamespaceResolver();
       if (resolver!=null)
       {
-        if (namespace==null || namespace.equals(""))
-        { namespaceURI=resolver.getDefaultURI();
-        }
-        else
-        { namespaceURI=resolver.resolvePrefix(namespace);
-        }
+        uri=resolveQName(namespace,suffix,resolver);
+        
       }
       else if (namespace!=null)
       { 
@@ -139,7 +133,7 @@ public class TypeFocusNode
 
       }
 
-      if (namespaceURI==null)
+      if (uri==null)
       { 
         if (namespace!=null)
         {
@@ -157,8 +151,7 @@ public class TypeFocusNode
         }
       }
 
-      // log.fine(namespaceURI.toString()+"  :  "+suffix);
-      uri=namespaceURI.resolve(suffix);
+      // log.fine(uri.toString()+"  :  "+namespace+":"+suffix);
     }
     
     HashSet<TypeModel> systems=new HashSet<TypeModel>();

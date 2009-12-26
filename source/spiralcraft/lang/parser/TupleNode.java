@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
-import spiralcraft.common.NamespaceResolver;
+import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
@@ -76,15 +76,25 @@ public class TupleNode
   public Node copy(Object visitor)
   {
     TupleNode copy=new TupleNode();
+    boolean dirty=false;
     
-    if (visitor instanceof NamespaceResolver && typeName!=null)
+    if (this.typeURI!=null)
+    { 
+      copy.setTypeURI(typeURI);
+      copy.setTypeNamespace(typeNamespace);
+      copy.setTypeName(typeName);
+    }
+    else if (visitor instanceof PrefixResolver && typeName!=null)
     {
-      URI uri=resolveQName(typeNamespace,typeName,(NamespaceResolver) visitor);
+      URI uri=resolveQName(typeNamespace,typeName,(PrefixResolver) visitor);
       if (uri!=null)
-      { copy.setTypeURI(uri);
+      { 
+        copy.setTypeURI(uri);
+        dirty=true;
       }
       else
       {
+        
         copy.setTypeNamespace(typeNamespace);
         copy.setTypeName(typeName);        
       }
@@ -97,11 +107,23 @@ public class TupleNode
     
     for (TupleField field: fields.values())
     {
-      copy.addField(field.copy(visitor));
+      TupleField fieldCopy=field.copy(visitor);
+      copy.addField(fieldCopy);
+      if (fieldCopy!=field)
+      { dirty=true;
+      }
     }
 
     if (baseExtentNode!=null)
-    { copy.setBaseExtentNode(baseExtentNode.copy(visitor));
+    { 
+      copy.setBaseExtentNode(baseExtentNode.copy(visitor));
+      if (copy.baseExtentNode!=baseExtentNode)
+      { dirty=true; 
+      }
+    }
+    
+    if (!dirty)
+    { return this;
     }
     return copy;
   }
@@ -158,11 +180,11 @@ public class TupleNode
   }
   
   
-  public void setTypeNamespace(String typeNamespace)
+  private void setTypeNamespace(String typeNamespace)
   { this.typeNamespace=typeNamespace;
   }
   
-  public void setTypeName(String typeName)
+  private void setTypeName(String typeName)
   { this.typeName=typeName;
   }
   
@@ -179,12 +201,15 @@ public class TupleNode
     {
       this.typeNamespace=qname.substring(0,colonPos);
       this.typeName=qname.substring(colonPos+1);
+      this.typeURI=resolveQName(typeNamespace,typeName);
     }
     else
     { 
       this.typeNamespace=null;
       this.typeName=qname;
+      this.typeURI=resolveQName(typeNamespace,typeName);
     }
+    
   }
   
   public void setTypeURI(URI typeURI)

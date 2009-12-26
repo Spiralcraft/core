@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.common.NamespaceResolver;
+import spiralcraft.common.namespace.PrefixResolver;
 
 
 /**
@@ -28,16 +28,16 @@ import spiralcraft.common.NamespaceResolver;
 public class NamespaceFocus<T>
   extends FocusWrapper<T>
 { 
-  private NamespaceResolver resolver;
+  private PrefixResolver resolver;
   
-  public NamespaceFocus(Focus<T> delegate,final NamespaceResolver resolver)
+  public NamespaceFocus(Focus<T> delegate,final PrefixResolver resolver)
   { 
     super(delegate);
     this.resolver=resolver;
   }
   
   @Override
-  public NamespaceResolver getNamespaceResolver()
+  public PrefixResolver getNamespaceResolver()
   { return resolver;
   }
 

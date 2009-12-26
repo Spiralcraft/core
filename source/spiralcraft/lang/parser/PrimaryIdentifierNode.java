@@ -58,8 +58,15 @@ public class PrimaryIdentifierNode
   @Override
   public Node copy(Object visitor)
   { 
-    return new PrimaryIdentifierNode
+    PrimaryIdentifierNode copy
+      =new PrimaryIdentifierNode 
       (_source!=null?(FocusNode) _source.copy(visitor):null,_identifier);
+    if (copy._source==_source)
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
   
   @Override

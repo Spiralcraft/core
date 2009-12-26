@@ -17,7 +17,7 @@ package spiralcraft.data.access;
 import java.net.URI;
 import java.util.ArrayList;
 
-import spiralcraft.common.NamespaceResolver;
+import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.EditableTuple;
@@ -252,15 +252,18 @@ public class Updater<T extends Tuple>
     localFocus=new SimpleFocus<T>(context,localChannel);
 
     localFocus.setNamespaceResolver
-      (new NamespaceResolver()
+      (new PrefixResolver()
         {
-          private NamespaceResolver parent
+          private PrefixResolver parent
             =localFocus.getNamespaceResolver();
           
           
           public URI resolvePrefix(String namespace)
           {
             if (namespace.equals("data"))
+            { return dataURI;
+            }
+            else if (namespace.equals(""))
             { return dataURI;
             }
             else if (parent!=null)
@@ -271,9 +274,6 @@ public class Updater<T extends Tuple>
             }
           }
           
-          public URI getDefaultURI()
-          { return dataURI;
-          }
         }
       );
     if (space==null)

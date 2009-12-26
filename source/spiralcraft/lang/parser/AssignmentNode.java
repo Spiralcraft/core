@@ -60,8 +60,15 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
   @Override
   public Node copy(Object visitor)
   { 
-    return new AssignmentNode<Ttarget,Tsource>
-      (target.copy(visitor),source.copy(visitor));
+    AssignmentNode<Ttarget,Tsource> copy
+      =new AssignmentNode<Ttarget,Tsource>
+        (target.copy(visitor),source.copy(visitor));
+    if (copy.target==target && copy.source==source)
+    { return this;
+    }
+    else
+    { return copy;
+    }
   }
   
   @Override
