@@ -225,7 +225,7 @@ public class Batch<I,R>
                 )
               );
           }
-          postResult((List) getResult());
+          postResult(getResult());
         }
       };
   }
