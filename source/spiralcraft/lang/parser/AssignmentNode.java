@@ -14,11 +14,11 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.AccessException;
+
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.AssignmentChannel;
 
 
 /**
@@ -88,10 +88,7 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
   @SuppressWarnings("unchecked") // Heterogeneous operation
   public Channel bind(final Focus focus)
     throws BindException
-  { 
-    
-    return new AssignmentChannel(source.bind(focus),target.bind(focus));
-    
+  { return new AssignmentChannel(source.bind(focus),target.bind(focus));
   }
 
   @Override
@@ -104,48 +101,5 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
     source.dumpTree(out,prefix);
   }
 
-  @SuppressWarnings("unchecked")
-  public class AssignmentChannel
-    extends AbstractChannel
-  {
-    public final Channel sourceChannel;
-    public final Channel targetChannel;
 
-    public AssignmentChannel
-      (Channel sourceChannel,Channel targetChannel)
-    {
-      super(sourceChannel.getReflector());
-      this.sourceChannel=sourceChannel;
-      this.targetChannel=targetChannel;
-      
-    }
-    
-    @Override
-    protected Object retrieve()
-    {
-      Object val=sourceChannel.get();
-      if (!targetChannel.set(val))
-      { log.warning("Assignment failed");
-      }
-      return val;
-    }
-
-    @Override
-    protected boolean store(
-      Object val)
-      throws AccessException
-    {
-      if (sourceChannel.set(val))
-      { 
-        targetChannel.set(val);
-        return true;
-      }
-      return false;
-    }
-      
-    @Override
-    public boolean isWritable()
-    { return sourceChannel.isWritable() && targetChannel.isWritable();
-    }
-  }
 }

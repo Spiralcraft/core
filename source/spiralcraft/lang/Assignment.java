@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.lang.parser.AssignmentNode;
+import spiralcraft.lang.spi.AssignmentChannel;
 
 /**
  * <p>Represents the assignment of the value obtained from the source Expression
@@ -91,12 +91,12 @@ public class Assignment<T>
     if (target!=null)
     { targetChannel=focus.bind(target);
     }
-    else if (sourceChannel instanceof AssignmentNode.AssignmentChannel)
+    else if (sourceChannel instanceof AssignmentChannel)
     { 
       targetChannel
-        =((AssignmentNode.AssignmentChannel) sourceChannel).targetChannel;
+        =((AssignmentChannel) sourceChannel).targetChannel;
       sourceChannel
-        =((AssignmentNode.AssignmentChannel) sourceChannel).sourceChannel;
+        =((AssignmentChannel) sourceChannel).sourceChannel;
     }
     Setter setter=new Setter<T>(sourceChannel,targetChannel);
     if (debug)
