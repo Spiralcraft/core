@@ -23,8 +23,13 @@ import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.AssignmentChannel;
+import spiralcraft.lang.spi.BindingChannel;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 
 import spiralcraft.task.Scenario;
 import spiralcraft.task.TaskCommand;
@@ -48,6 +53,7 @@ public class TaskMethod<T,C,R>
     }
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   public Channel<?> bind(
     Focus<?> focus,
@@ -73,11 +79,23 @@ public class TaskMethod<T,C,R>
 
     focus=scenarioContainer.getFocus();
     
+    Channel<Scenario<C,R>> scenarioChannel
+      =(Channel<Scenario<C,R>>) focus.getSubject();
     
-    Scenario<C,R> scenario=scenarioContainer.get();
-    
-    return new TaskMethodChannel(scenario);
-    
+    Channel<TaskCommand<C,R>> commandChannel
+      =new TaskMethodChannel
+        (scenarioChannel.<TaskCommand<C,R>>resolve
+          (focus
+          ,"command"
+          ,new Expression<?>[0]
+          )
+        ,params
+        ,focus
+        );
+
+
+      
+    return commandChannel;
     
 
   }
@@ -85,20 +103,77 @@ public class TaskMethod<T,C,R>
   public class TaskMethodChannel
     extends AbstractChannel<TaskCommand<C,R>>
   {
-    private final Scenario<C,R> scenario;
+    private final Channel<TaskCommand<C,R>> commandChannel;
+    private final ThreadLocalChannel<C> contextChannel;
+    private final Channel<?>[] params;
     
-    public TaskMethodChannel(Scenario<C,R> scenario)
+    @SuppressWarnings("unchecked")
+    public TaskMethodChannel
+      (Channel<TaskCommand<C,R>> commandChannel
+      ,Channel<?>[] params
+      ,Focus<?> focus
+      )
+      throws BindException
     { 
-      super(scenario.getCommandReflector());
-      this.scenario=scenario;
+      super(commandChannel.getReflector());
+      this.commandChannel=commandChannel;
+      this.params=params;
+      
+      // CommandChannel always creates a new command
+      // Therefore we can't bind the contextFocus directly
+      contextChannel
+        =new ThreadLocalChannel<C>
+          (commandChannel.<C>resolve(focus,"context",null).getReflector());
+      Focus<C> contextFocus
+        =new SimpleFocus<C>(contextChannel);
+    
+      if (params!=null)
+      { 
+        int i=0;
+        for (Channel<?> param: params)
+        {
+          if (contextChannel.getContentType()==Void.class)
+          {
+            throw new BindException
+              ("Method does not accept any arguments");
+          }
+          
+          if (param instanceof BindingChannel)
+          { ((BindingChannel) param).bindTarget(contextFocus);
+          }
+          else
+          { 
+            try
+            {
+              Channel paramTarget=contextFocus.bind(Expression.create("_"+i));
+              this.params[i]=new AssignmentChannel(param,paramTarget);
+            }
+            catch (BindException x)
+            { throw new BindException("Error binding argument #"+i,x);
+            }
+          
+          }
+          i++;
+        }
+      }      
     }
     
     @Override
     protected TaskCommand<C,R> retrieve()
     { 
-      
-      TaskCommand<C,R> command=scenario.command();
-      command.encloseContext();
+      TaskCommand<C,R> command=commandChannel.get();
+      contextChannel.push(command.getContext());
+      try
+      {
+        for (Channel<?> param: params)
+        { param.get();
+        }
+        command.setContext(contextChannel.get());
+        command.encloseContext();
+      }
+      finally
+      { contextChannel.pop();
+      }
       return command;
     }
 

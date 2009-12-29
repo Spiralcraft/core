@@ -26,6 +26,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AspectChannel;
+import spiralcraft.lang.spi.BindingChannel;
 import spiralcraft.lang.Assignment;
 
 import spiralcraft.log.ClassLog;
@@ -51,7 +52,7 @@ public class TupleReflector<T extends Tuple>
   private static final ClassLog log
     =ClassLog.getInstance(TupleReflector.class);
   
-  private static boolean debug;
+  private static boolean debug=false;
   
   private static final Expression<?>[] NULL_PARAMS = new Expression[0];
   
@@ -311,13 +312,35 @@ public class TupleReflector<T extends Tuple>
     { params=NULL_PARAMS;
     }
     Channel[] paramChannels=new Channel[params.length];
+    
+    ArrayList<Channel> sigChannels=new ArrayList<Channel>();
+
     for (int i=0;i<params.length;i++)
-    { paramChannels[i]=focus.bind(params[i]);
+    { 
+      boolean endOfSig=false;
+      paramChannels[i]=focus.bind(params[i]);
+      if (paramChannels[i] instanceof BindingChannel)
+      { endOfSig=true;
+      }
+      else
+      { 
+        if (!endOfSig)
+        { sigChannels.add(paramChannels[i]);
+        }
+        else
+        { 
+          throw new BindException
+            ("Positional arguments parameters must preceed named parameters in: "
+            +params[i].getText()
+            );
+        }
+      }
     }
+    
     if (debug)
     { 
       log.fine("Looking for "+name
-        +"("+params.length+") in type "+type.getURI());
+        +"("+sigChannels.size()+") in type "+type.getURI());
     }
     
     for (Method method : type.getMethods())
@@ -348,7 +371,7 @@ public class TupleReflector<T extends Tuple>
               +" in type "+type.getURI()
               );
           }
-          Channel paramChannel=paramChannels[i++];
+          Channel paramChannel=sigChannels.get(i++);
             
           Reflector paramReflector=paramChannel.getReflector();
           Type paramType;

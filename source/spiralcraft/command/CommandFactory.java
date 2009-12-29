@@ -14,6 +14,8 @@
 //
 package spiralcraft.command;
 
+import spiralcraft.lang.Reflectable;
+
 /**
  * <p>Creates a new instance of a Command, resolving contextual information
  *   at the time of command creation. 
@@ -32,6 +34,7 @@ package spiralcraft.command;
  *
  */
 public interface CommandFactory<Ttarget,Tcontext,Tresult>
+  extends Reflectable<CommandFactory<Ttarget,Tcontext,Tresult>>
 {
   /**
    * @return A new Command object
