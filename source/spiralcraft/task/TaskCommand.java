@@ -41,12 +41,17 @@ public class TaskCommand<Tcontext,Tresult>
   protected final Scenario<Tcontext,Tresult> scenario;
   protected ClosureFocus<?>.Closure closure;
   
-  public TaskCommand(Scenario<Tcontext,Tresult> scenario,Task task)
+  public TaskCommand
+    (Scenario<Tcontext,Tresult> scenario,Task task,Tcontext initContext)
   { 
     this.task=task;
     setTarget(task);
     this.task.addTaskListener(this);
     this.scenario=scenario;
+    if (initContext!=null)
+    { setContext(initContext);
+    }
+    
   }
   
   public Task getTask()

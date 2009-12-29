@@ -14,6 +14,8 @@
 //
 package spiralcraft.lang;
 
+import java.util.Arrays;
+
 /**
  * Provides metadata about a bindable member exported by a Reflector.
  * 
@@ -24,12 +26,15 @@ public class Signature
   private final String name;
   private final Reflector<?>[] parameters;
   private final Reflector<?> type;
+  private final int hashCode;
+  
   
   public Signature(String name,Reflector<?> type)
   { 
     this.name=name;
     this.parameters=null;
     this.type=type;
+    hashCode=calcHash();
   }
   
   public Signature(String name,Reflector<?> type,Reflector<?> ... parameters)
@@ -37,6 +42,20 @@ public class Signature
     this.name=name;
     this.parameters=parameters;
     this.type=type;
+    hashCode=calcHash();
+  }
+  
+  private int calcHash()
+  {
+    int hash=17;
+    hash= 37*hash + name.hashCode();
+    if (type!=null)
+    { hash= 37*hash + type.hashCode();
+    }
+    if (parameters!=null)
+    { hash=37*hash + Arrays.hashCode(parameters);
+    }
+    return hash;
   }
   
   public String getName()
@@ -49,6 +68,29 @@ public class Signature
   
   public Reflector<?> getType()
   { return type;
+  }
+  
+  @Override
+  public int hashCode()
+  { return hashCode;
+  }
+  
+  @Override
+  public boolean equals(Object o)
+  { 
+    if (Signature.class!=o.getClass())
+    { return false;
+    }
+    if (hashCode!=o.hashCode())
+    { return false;
+    }
+    Signature sig=(Signature) o;
+    return name.equals(sig.name) 
+            && (type==null) == (sig.type==null)
+            && (type==null || type.equals(sig.type))
+            && (parameters==null) == (sig.parameters==null)
+            && (parameters==null || Arrays.equals(parameters,sig.parameters))
+            ;
   }
   
   public boolean hides(Signature base)

@@ -21,6 +21,7 @@ import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
 import spiralcraft.exec.ExecutionException;
 
+import spiralcraft.command.AbstractCommandFactory;
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
 import spiralcraft.command.CommandFactory;
@@ -56,12 +57,14 @@ public class Daemon
   private ShutdownHook _shutdownHook=new ShutdownHook();
   
   public final CommandFactory<Void,Void,Void> terminate
-    =new CommandFactory<Void,Void,Void>()
+    =new AbstractCommandFactory<Void,Void,Void>()
   {    
+    @Override
     public boolean isCommandEnabled()
     { return _running;
     }
     
+    @Override
     public Command<Void,Void,Void> command()
     {
     

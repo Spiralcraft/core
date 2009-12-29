@@ -173,37 +173,6 @@ public class ExpressionParser
     }
   }
   
-  /**
-   * Verifies and consumeTokens specified input, if not expected, throws exception
-   */
-//  private void throwGeneral(String message)
-//    throws ParseException
-//  { throw new ParseException(message,_pos,_progressBuffer.toString());
-//  }
-  
-
-//  private void pushbackToken()
-//  { 
-//    
-//    if (_tokenizer.sval!=null)
-//    {
-//      if (_tokenizer.ttype=='"')
-//      { 
-//        int len=_tokenizer.sval.length()+2;
-//        _progressBuffer.setLength(_progressBuffer.length()-len);
-//      }
-//      else
-//      { 
-//        _progressBuffer.setLength
-//          (_progressBuffer.length()-_tokenizer.sval.length());
-//      }
-//      _pos-=_tokenizer.sval.length();
-//    }
-//    
-//    _tokenizer.pushBack();
-//  
-//  }
-  
   private boolean consumeToken()
   { 
 
@@ -247,8 +216,11 @@ public class ExpressionParser
   { return parseAssignmentExpression();
   }
   
+
+
+  
   /**
-   * AssignmentExpression -> ConditionalExpression
+   * AssignmentExpression -> ConditionalExpression ( "=" Expression )
    */
   private Node parseAssignmentExpression()
     throws ParseException
@@ -859,7 +831,7 @@ public class ExpressionParser
     throws ParseException
   {
     List<Node> list=new LinkedList<Node>();
-    Node node=parseExpression();
+    Node node=parseBindingExpression();
     if (node!=null)
     { 
       list.add(node);
@@ -868,13 +840,14 @@ public class ExpressionParser
     return list;
   }
 
+  
   private void parseExpressionListRest(List<Node> list)
     throws ParseException
   {
     if (_tokenizer.ttype==',')
     {
       consumeToken();
-      Node node=parseExpression();
+      Node node=parseBindingExpression();
       if (node==null)
       { throwUnexpected();
       }
@@ -884,6 +857,27 @@ public class ExpressionParser
     return;
   }
 
+  /**
+   * BindingExpression -> Expression ( ":=" Expression)
+   * 
+   * @return
+   */
+  private Node parseBindingExpression()
+    throws ParseException
+  {
+    Node node=this.parseExpression();
+    if (_tokenizer.ttype==':' && _tokenizer.lookahead.ttype=='=')
+    { 
+      if (node==null)
+      { this.throwException("Missing left hand side of binding expression");
+      }
+      consumeToken();
+      consumeToken();
+      node=node.bindFrom(this.parseExpression());
+    }
+    return node;
+  }
+  
   /**
    * PrimaryExpression -> Number
    *                    | String Literal

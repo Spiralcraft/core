@@ -16,6 +16,7 @@ package spiralcraft.ui;
 
 import spiralcraft.common.LifecycleException;
 
+import spiralcraft.command.AbstractCommandFactory;
 import spiralcraft.command.CommandFactory;
 import spiralcraft.command.CommandAdapter;
 import spiralcraft.command.Command;
@@ -33,7 +34,7 @@ public abstract class StepControl
   private boolean _skip;
 
   public final CommandFactory<Void,Void,Void> nextStep
-    =new CommandFactory<Void,Void,Void>()
+    =new AbstractCommandFactory<Void,Void,Void>()
     {
       @Override
       public Command<Void,Void,Void> command()
@@ -54,7 +55,7 @@ public abstract class StepControl
     };
 
   public final CommandFactory<Void,Void,Void> previousStep
-    =new CommandFactory<Void,Void,Void>()
+    =new AbstractCommandFactory<Void,Void,Void>()
     {
       @Override
       public Command<Void,Void,Void> command()

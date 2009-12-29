@@ -95,11 +95,14 @@ public abstract class Node
     (String prefix,String suffix,PrefixResolver nsr)
   {
     URI uri=null;
-    if (prefix!=null)
-    { uri=nsr.resolvePrefix(prefix);
-    }
-    else
-    { uri=nsr.resolvePrefix("");
+    if (nsr!=null)
+    {
+      if (prefix!=null)
+      { uri=nsr.resolvePrefix(prefix);
+      }
+      else
+      { uri=nsr.resolvePrefix("");
+      }
     }
     if (uri!=null)
     { 
@@ -257,6 +260,11 @@ public abstract class Node
   @SuppressWarnings("unchecked")
   protected Node subcontext(Node subcontext)
   { return new SubcontextNode(this,subcontext);
+  }
+  
+  @SuppressWarnings("unchecked")
+  protected Node bindFrom(Node source)
+  { return new BindingNode(this,source);
   }
   
   protected void unsupported(String msg)

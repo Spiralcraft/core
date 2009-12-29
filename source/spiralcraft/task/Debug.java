@@ -28,8 +28,8 @@ import spiralcraft.util.ArrayUtil;
  * @author mike
  *
  */
-public class Debug
-  extends Scenario<Void,Void>
+public class Debug<Tcontext>
+  extends Scenario<Tcontext,Void>
 {
 
   protected Expression<Object> messageX;
@@ -45,6 +45,10 @@ public class Debug
   
   public void setConditionX(Expression<Boolean> conditionX)
   { this.conditionX=conditionX;
+  }
+  
+  public void setContextX(Expression<Tcontext> contextX)
+  { this.contextX=contextX;
   }
   
   @Override

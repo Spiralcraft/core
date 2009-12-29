@@ -85,8 +85,16 @@ public abstract class AbstractReflector<T>
 
   
   private volatile Channel<Reflector<T>> selfChannel;
+  protected final Reflector<T> base;
 
+  protected AbstractReflector()
+  { base=null;
+  }
 
+  protected AbstractReflector(Reflector<T> base)
+  { this.base=base;
+  }
+  
   /**
    * <p>Generate a new Channel which resolves the meta name (@ prefixed name)
    *  and the given parameter expressions against the source Channel and the
@@ -318,7 +326,11 @@ public abstract class AbstractReflector<T>
    * @return
    */
   public boolean canCastFrom(Reflector<?> source)
-  { return true;
+  { 
+    if (base!=null)
+    { return base.canCastFrom(source);
+    }    
+    return true;
   }
   
   public Channel<Reflector<T>> getSelfChannel()
@@ -432,6 +444,13 @@ public abstract class AbstractReflector<T>
   public Reflector<?> getCommonType(Reflector<?> other)
     throws BindException
   {
+    if (other==this)
+    { return this;
+    }
+    if (base!=null)
+    { return base.getCommonType(other);
+    }
+    
     Reflector<?> reflector;
     if (getContentType()==Void.class)
     { reflector=other;
@@ -464,6 +483,9 @@ public abstract class AbstractReflector<T>
    */
   public boolean accepts(Object val)
   { 
+    if (base!=null)
+    { return base.accepts(val);
+    }    
     return true;
   }
   

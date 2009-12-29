@@ -144,11 +144,11 @@ public class Batch<I,R>
   
   @Override
   protected TaskCommand<Void,List<TaskCommand<I,R>>>
-    createCommand(Task task)
+    createCommand(Task task,Void initContext)
   {
     return 
       new TaskCommand<Void,List<TaskCommand<I,R>>>
-        (Batch.this,task)
+        (Batch.this,task,null)
       { 
       
       

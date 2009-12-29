@@ -66,4 +66,12 @@ public class TupleField
       source.dumpTree(out,prefix);
     }  
   }
+  
+  @Override
+  public String toString()
+  { 
+    StringBuffer out=new StringBuffer();
+    dumpTree(out,"  ");
+    return out.toString();
+  }
 }

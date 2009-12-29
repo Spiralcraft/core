@@ -14,14 +14,19 @@
 //
 package spiralcraft.task;
 
+import spiralcraft.command.AbstractCommandFactory;
+import spiralcraft.command.Command;
 import spiralcraft.command.CommandFactory;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.FocusChainObject;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.ClosureFocus;
+import spiralcraft.lang.spi.GenericReflector;
 import spiralcraft.lang.spi.SimpleChannel;
 
 import spiralcraft.lang.reflect.BeanReflector;
@@ -51,6 +56,7 @@ import spiralcraft.log.Level;
  * @author mike
  */
 public abstract class Scenario<Tcontext,Tresult>
+  extends AbstractCommandFactory<Task,Tcontext,Tresult>
   implements Lifecycle
     ,FocusChainObject
     ,CommandFactory<Task,Tcontext,Tresult>
@@ -67,6 +73,10 @@ public abstract class Scenario<Tcontext,Tresult>
   protected boolean logTaskResults;
   protected boolean storeResults;
   
+  protected Reflector<Tcontext> contextReflector;
+  protected Reflector<Tresult> resultReflector;
+  protected Expression<Tcontext> contextX;
+  protected Channel<Tcontext> contextInitChannel;
   
   /**
    * 
@@ -74,6 +84,7 @@ public abstract class Scenario<Tcontext,Tresult>
    *   together behavioral elements in a set of Scenarios. The Command
    *   target is the scenario, and the result is implementation specific.
    */
+  @Override
   public final TaskCommand <Tcontext,Tresult>
     command()
   { 
@@ -81,7 +92,13 @@ public abstract class Scenario<Tcontext,Tresult>
     if (debug)
     { task.setDebug(debug);
     }
-  	TaskCommand<Tcontext,Tresult> command = createCommand(task);
+  	TaskCommand<Tcontext,Tresult> command 
+  	  =createCommand
+  	    (task
+  	    ,contextInitChannel!=null
+  	      ?contextInitChannel.get()
+  	      :null
+  	    );
   	return command;
   }
   
@@ -90,8 +107,11 @@ public abstract class Scenario<Tcontext,Tresult>
   
 
   
-  protected TaskCommand<Tcontext,Tresult> createCommand(Task task)
-  { return new TaskCommand<Tcontext,Tresult>(Scenario.this,task);
+  protected TaskCommand<Tcontext,Tresult> createCommand
+    (Task task,Tcontext initContext)
+  { 
+    return new TaskCommand<Tcontext,Tresult>
+      (Scenario.this,task,initContext);
   }
 
 
@@ -102,7 +122,6 @@ public abstract class Scenario<Tcontext,Tresult>
   public void setStoreResults(boolean storeResults)
   { this.storeResults=storeResults;
   }
-  
   
   public boolean getLogTaskResults()
   { return logTaskResults;
@@ -142,6 +161,10 @@ public abstract class Scenario<Tcontext,Tresult>
   }
   
 
+  @SuppressWarnings("unchecked")
+  protected Class<TaskCommand> getCommandClass()
+  { return TaskCommand.class;
+  }
   
   /**
    * Override to indicate the extended type for the TaskCommand to expose
@@ -149,10 +172,28 @@ public abstract class Scenario<Tcontext,Tresult>
    * 
    * @return
    */
-  public Reflector<TaskCommand<Tcontext,Tresult>> getCommandReflector()
+  @Override
+  protected final Reflector<? extends Command<Task,Tcontext,Tresult>> 
+    getCommandReflector()
   { 
-    return BeanReflector.<TaskCommand<Tcontext,Tresult>>getInstance
-      (TaskCommand.class);
+    Reflector<TaskCommand<Tcontext,Tresult>> commandReflector
+      =BeanReflector.<TaskCommand<Tcontext,Tresult>>getInstance
+        (getCommandClass());
+    
+    if (contextReflector!=null || resultReflector!=null)
+    {
+      GenericReflector<TaskCommand<Tcontext,Tresult>> gr
+        =new GenericReflector<TaskCommand<Tcontext,Tresult>>
+          (commandReflector.getTypeURI(),commandReflector);
+      if (contextReflector!=null)
+      { gr.enhance("context",null,contextReflector);
+      }
+      if (resultReflector!=null)
+      { gr.enhance("result",null,resultReflector);
+      }
+      commandReflector=gr;
+    }
+    return commandReflector;
   }
   
   /**
@@ -160,18 +201,39 @@ public abstract class Scenario<Tcontext,Tresult>
    *   chain and calling bindChildren() to set up FocusChain for any contained
    *   scenarios.
    */
+  @SuppressWarnings("unchecked")
   @Override
   public Focus<?> bind(
     Focus<?> focusChain)
     throws BindException
   { 
-
+    
+    if (contextX!=null)
+    { 
+      contextInitChannel=focusChain.bind(contextX);
+      if (contextReflector==null)
+      { contextReflector=contextInitChannel.getReflector();
+      }
+      log.fine("ContextReflector is "+contextReflector);
+    }
+    
+    Channel selfChannel
+      =new SimpleChannel<Scenario<Tcontext,Tresult>>
+        ((Reflector) reflect(),this,true);
+    
     closureFocus
       =new ClosureFocus<Scenario<Tcontext,Tresult>>
-        (focusChain.chain(new SimpleChannel<Scenario<Tcontext,Tresult>>(this,true)));
+        (focusChain.chain(selfChannel));
     focusChain=closureFocus;
     
-    bindChildren(bindCommand(focusChain,getCommandReflector()));
+
+    
+    bindChildren
+      (bindCommand
+        (focusChain
+        ,(Reflector<TaskCommand<Tcontext,Tresult>>) getCommandReflector()
+        )
+      );
     
     
     return focusChain;
@@ -180,7 +242,11 @@ public abstract class Scenario<Tcontext,Tresult>
 
   
 
-    
+  /**
+   * Called from TaskCommand to start an execution instance
+   *   
+   * @param command
+   */
   void pushCommand(TaskCommand<Tcontext,Tresult> command)
   { 
     if (commandChannel==null)
@@ -191,6 +257,9 @@ public abstract class Scenario<Tcontext,Tresult>
     commandChannel.push(command);
   }
   
+  /**
+   * Called from TaskCommand to deallocate an execution instance
+   */
   void popCommand()
   { commandChannel.pop();
   }
