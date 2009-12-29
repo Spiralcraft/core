@@ -30,7 +30,7 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.lang.spi.UncheckedCastChannel;
+import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.rules.Inspector;
 import spiralcraft.rules.Rule;
@@ -718,7 +718,7 @@ public class FieldImpl<T>
                 { 
                   Reflector subtypeReflector=DataReflector.getInstance(subtype);
                   subSource
-                    =new UncheckedCastChannel
+                    =new AspectChannel
                       (subtypeReflector,focus.getSubject());
                   focus.getSubject().cache("_"+subtype.getURI(),subSource);
                 }
