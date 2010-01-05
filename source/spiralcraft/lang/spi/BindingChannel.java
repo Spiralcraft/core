@@ -41,16 +41,20 @@ public class BindingChannel
 
   @Override
   public Reflector getReflector()
-  {
-    if (targetChannel==null)
-    { throw new IllegalStateException("Target '"+targetX+"' not bound");
-    }
-    return super.getReflector();
+  { return super.getReflector();
   }
 
   public void bindTarget(Focus targetFocus)
   throws BindException
-  { targetChannel=targetFocus.bind(targetX);
+  { 
+    targetChannel=targetFocus.bind(targetX);
+    if (!targetChannel.isWritable())
+    { 
+      throw new BindException
+        ("Target '"+targetX+"' is not writable: "
+        +targetChannel.toString()
+        );
+    }  
   }
 
   @Override
