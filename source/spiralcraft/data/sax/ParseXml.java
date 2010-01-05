@@ -166,7 +166,10 @@ public class ParseXml<Tresult>
     { 
       try
       { 
-        URI uri=uriX.get();
+        URI uri=null;
+        if (uriX!=null)
+        { uri=uriX.get();
+        }
         if (uri==null)
         { uri=getDefaultURI();
         }
