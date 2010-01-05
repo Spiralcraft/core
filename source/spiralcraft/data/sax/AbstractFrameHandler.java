@@ -186,6 +186,18 @@ public abstract class AbstractFrameHandler
   @SuppressWarnings("unchecked")
   private HashMap<String,Setter> elementSetterMap;
   
+  private URI defaultURI;
+
+  public void setDefaultURI(URI defaultURI)
+  { 
+    this.defaultURI=defaultURI;
+    if (prefixMappings==null)
+    { prefixMappings=new HashMap<String,URI>();
+    }
+    prefixMappings.put("",this.defaultURI);
+  }
+    
+  
   public String getElementURI()
   { return elementURI;
   }
@@ -214,6 +226,10 @@ public abstract class AbstractFrameHandler
     prefixMappings=new HashMap<String,URI>();
     for (PrefixMapping mapping:mappings)
     { prefixMappings.put(mapping.getPrefix(),mapping.getURI());
+    }
+    
+    if (defaultURI!=null && prefixMappings.get("")==null)
+    { prefixMappings.put("",defaultURI);
     }
   }
   
@@ -442,6 +458,9 @@ public abstract class AbstractFrameHandler
         {
           String elementURI=transformNamespace(child.getElementURI(),child);
           childMap.put(elementURI, child);
+          if (debug)
+          { log.fine("Mapped child name "+elementURI+" to "+child);
+          }
         }
         catch (DataException x)
         { throw new BindException
@@ -592,6 +611,10 @@ public abstract class AbstractFrameHandler
     {
       String childName=transformNamespace(child.getElementURI(),this);
       Setter setter=elementSetterMap.get(childName);
+      
+      if (debug)
+      { log.fine("Child "+childName+" assignment: "+setter);
+      }
       
       if (setter!=null)
       { setter.set();
