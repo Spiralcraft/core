@@ -15,14 +15,17 @@
 package spiralcraft.lang.util;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.ParseException;
+import spiralcraft.lang.Reflector;
 import spiralcraft.lang.parser.AssignmentNode;
 
 import spiralcraft.util.string.StringConverter;
@@ -42,12 +45,19 @@ public class DictionaryBinding<T>
   private Expression<T> target;
   private Channel<T> targetChannel;
   private StringConverter<T> converter;
+  private StringConverter<Object> unitConverter;
+  private Reflector<Object> unitReflector;
   
   private String name;
   
   private boolean assignment;
   
   private IterationDecorator<T,Object> decorator;
+  private CollectionDecorator<T,Object> collectionDecorator;
+  
+  @SuppressWarnings("unchecked")
+  private Map<Class,StringConverter> converterMap;
+  
     
   /**
    * Create an AttributeBinding
@@ -99,8 +109,19 @@ public class DictionaryBinding<T>
   }
 
   /**
+   * Specify a Map to use during the binding process to resolve the
+   *   appropriate non-default converter for the target data type.
+   * 
+   * @param converterMap
+   */
+  @SuppressWarnings("unchecked")
+  public void setConverterMap(Map<Class,StringConverter> converterMap)
+  { this.converterMap=converterMap;
+  }
+  
+  /**
    * <p>Provide a StringConverter to translate the bound type to and from
-   *   a String
+   *   a String.
    * </p>
    *    
    * @param converter
@@ -109,12 +130,27 @@ public class DictionaryBinding<T>
   { this.converter=converter;
   }
   
+  /**
+   * <p>Provide a StringConverter to translate individual units of 
+   *   multi-valued elements to and from Strings
+   * </p>
+   * 
+   * @param unitConverter
+   */
+  public void setUnitConverter(StringConverter<Object> unitConverter)
+  { this.unitConverter=unitConverter;
+  }
+  
   public Expression<T> getTarget()
   { return target;
   }
 
   public Channel<T> getTargetChannel()
   { return targetChannel;
+  }
+  
+  public Reflector<Object> getUnitReflector()
+  { return unitReflector;
   }
   
   public String getName()
@@ -131,7 +167,7 @@ public class DictionaryBinding<T>
     
     if (assignment)
     { 
-      if (converter!=null)
+      if (converter!=null || unitConverter!=null)
       { 
         throw new BindException
           ("In binding for "+name+": Cannot set "
@@ -165,18 +201,40 @@ public class DictionaryBinding<T>
       if (converter==null)
       { converter=StringConverter.getInstance(targetChannel.getContentType());
       }
-      if (converter==null)
-      { 
-        decorator
-          =targetChannel.<IterationDecorator>decorate(IterationDecorator.class);
-        if (decorator!=null)
+      
+      
+      decorator
+        =targetChannel.<IterationDecorator>decorate(IterationDecorator.class);
+      
+      collectionDecorator
+        =targetChannel.<CollectionDecorator>decorate(CollectionDecorator.class);
+      
+      if (decorator!=null)
+      {
+        if (unitConverter==null)
+        { unitConverter=createUnitConverter();
+        }
+        if (unitConverter==null)
         {
-          converter=(StringConverter<T>) 
+          unitConverter=
             decorator.getComponentReflector().getStringConverter();
         }
-        
+        if (unitConverter==null)
+        { 
+          unitConverter
+            =StringConverter.getInstance
+              (decorator.getComponentReflector().getContentType());
+        }
+        if (unitConverter==null)
+        { decorator=null;
+        }
+        else
+        { unitReflector=decorator.getComponentReflector();
+        }
       }
-      if (converter==null)
+        
+      
+      if (converter==null && unitConverter==null)
       {
         throw new BindException
           ("Could not obtain a StringConverter for "
@@ -187,28 +245,75 @@ public class DictionaryBinding<T>
     }
   }
   
-  protected StringConverter<T> createConverter()
-  { return targetChannel.getReflector().getStringConverter();    
+  @SuppressWarnings("unchecked")
+  private StringConverter<T> createConverter()
+  { 
+    StringConverter<T> converter=null;
+    if (converterMap!=null)
+    { 
+      converter
+        =converterMap.get(targetChannel.getReflector().getContentType());
+    }
+    if (converter==null)
+    { converter=targetChannel.getReflector().getStringConverter();    
+    }
+    return converter;
   }
+  
+  @SuppressWarnings("unchecked")
+  private StringConverter<Object> createUnitConverter()
+  { 
+    StringConverter<Object> converter=null;
+    if (converterMap!=null)
+    {
+      converter
+        =converterMap.get(decorator.getComponentReflector().getContentType());
+    }
+    if (converter==null)
+    { converter=decorator.getComponentReflector().getStringConverter();
+    }
+    return converter;
+  }
+  
+  public boolean isList()
+  { return decorator!=null;
+  }
+  
+  public boolean isWritableList()
+  { return collectionDecorator!=null;
+  }
+  
+  
   
   public void set(String value)
   { 
+   
     try
-    { targetChannel.set(converter.fromString(value));
+    { 
+      if (converter!=null)
+      { targetChannel.set(converter.fromString(value));
+      }
+      else
+      { arraySet(new String[] {value});
+      }
     }
     catch (IllegalArgumentException x)
-    { throw new AccessException("Error reading '"+value+"'",x);
+    { throw new AccessException("Error writing '"+value+"'",x);
     }
   }
   
   public String get()
   { 
-    if (decorator==null)
+    if (targetChannel==null)
+    { throw new IllegalStateException("Not bound");
+    }
+    
+    if (converter!=null)
     { return converter.toString(targetChannel.get());
     }
-    else
+    else 
     { 
-      String[] values=getValues();
+      String[] values=arrayGet();
       if (values!=null && values.length>0)
       { return values[0];
       }
@@ -218,8 +323,46 @@ public class DictionaryBinding<T>
     }
   }
   
-  @SuppressWarnings("unchecked")
-  public String[] getValues()
+  /**
+   * Store a set of values for a multi-valued entry
+   * 
+   * @param values
+   */
+  public void arraySet(String[] values)
+  { 
+    if (collectionDecorator==null)
+    { 
+      if (values==null)
+      { set(null);
+      }
+      else if (values.length>1)
+      {
+        throw new IllegalArgumentException
+          ("Target does not accept multiple values");
+      }
+      else if (values.length==1)
+      { set(values[0]);
+      }
+      else
+      { set(null);
+      }
+    }
+    else
+    { 
+      T collection=collectionDecorator.newCollection();
+      for (String value:values)
+      { collectionDecorator.add(collection, unitConverter.fromString(value));
+      }
+      targetChannel.set(collection);
+    }
+  }
+  
+  /**
+   * Retrieve values, accounting for multi-valued entries
+   * 
+   * @return
+   */
+  public String[] arrayGet()
   {
     if (decorator==null)
     { 
@@ -237,7 +380,7 @@ public class DictionaryBinding<T>
       for (Object val : decorator)
       { 
         if (val!=null)
-        { values.add(converter.toString((T) val));
+        { values.add(unitConverter.toString(val));
         }
       }
       return values.toArray(new String[values.size()]);
