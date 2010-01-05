@@ -61,6 +61,11 @@ public class TaskCommand<Tcontext,Tresult>
   @Override
   public void run()
   { 
+    if (isCompleted())
+    { 
+      throw new IllegalStateException
+        ("Cannot invoke a Command instance more than once");
+    }
     scenario.pushCommand(this);
     if (closure!=null)
     { closure.push();
@@ -88,6 +93,7 @@ public class TaskCommand<Tcontext,Tresult>
       { closure.pop();
       }
       scenario.popCommand();
+      notifyCompleted();
     }
   }
 
@@ -99,11 +105,27 @@ public class TaskCommand<Tcontext,Tresult>
   {
   }
   
+  @Override
+  public void setResult(Tresult result)
+  { 
+    if (isCompleted())
+    { 
+      throw new IllegalStateException
+        ("Cannot change the result of a completed command");
+    }
+    super.setResult(result);
+  }
+  
   /**
    * 
    */
   public void encloseContext()
   { 
+    if (isCompleted())
+    { 
+      throw new IllegalStateException
+        ("Cannot change the closure state of a completed command");
+    }
     if (closure!=null)
     { throw new IllegalStateException("Context already enclosed");
     }
@@ -137,7 +159,19 @@ public class TaskCommand<Tcontext,Tresult>
       if (getResult()==null)
       { setResult((Tresult) new ArrayList());
       }
-      ((List) getResult()).add(result);
+      
+      if (getResult() instanceof List)
+      {
+        // XXX Use Decorator on result channel
+        ((List) getResult()).add(result);
+      }
+      else
+      { 
+        throw new IllegalArgumentException
+          ("Cannot collect results- existing result has unexpected type "
+          +getResult()+". Scenario: "+getTarget()
+          );
+      }
     }
   }
 
