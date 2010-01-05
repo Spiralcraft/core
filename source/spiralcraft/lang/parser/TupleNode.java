@@ -549,7 +549,10 @@ public class TupleNode
     public boolean isAssignableTo(
       URI typeURI)
     { 
-      if (baseChannel!=null)
+      if (typeURI.equals(this.typeURI))
+      { return true;
+      }
+      else if (baseChannel!=null)
       { 
 
         // Allow this Reflector to be returned when a Focus for the base
