@@ -40,6 +40,9 @@ public class ArraySelectChannel<X>
   protected X[] retrieve()
   {
     X[] array=source.get();
+    if (array==null)
+    { return null;
+    }
     LinkedList<X> list=new LinkedList<X>();
     componentChannel.push(null);
     try
