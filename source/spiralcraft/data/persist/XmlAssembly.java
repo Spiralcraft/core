@@ -21,6 +21,7 @@ import spiralcraft.data.DataException;
 
 import spiralcraft.data.builder.BuilderType;
 import spiralcraft.lang.AccessException;
+import spiralcraft.log.ClassLog;
 
 import spiralcraft.builder.Assembly;
 import spiralcraft.builder.BuildException;
@@ -41,6 +42,8 @@ import spiralcraft.builder.BuildException;
 public class XmlAssembly<Treferent>
   extends AbstractXmlObject<Treferent,Assembly<Treferent>>
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(XmlAssembly.class);
   
   /**
    * Construct an XmlObject from the given Type resource and instance
@@ -105,7 +108,13 @@ public class XmlAssembly<Treferent>
    */
   @Override
   public Treferent get()
-  { return instance.get();
+  { 
+    Treferent val=instance.get();
+    if (val==null)
+    { 
+      log.warning("Null referent from: "+instance);
+    }
+    return val;
   }
 
   @Override
