@@ -333,7 +333,18 @@ public class BeanReflector<T>
   
   @Override
   public boolean isAssignableFrom(Reflector<?> other)
-  { return getContentType().isAssignableFrom(other.getContentType());
+  { 
+    final Class otherClass=other.getContentType();
+    if (otherClass.isPrimitive())
+    { 
+      // If we can assign the boxed equivalent of a primitive, we can
+      //   assign the primitive type
+      return getContentType()
+        .isAssignableFrom(ClassUtil.boxedEquivalent(otherClass));
+    }
+    else
+    { return getContentType().isAssignableFrom(other.getContentType());
+    }
   }
   
   @Override
