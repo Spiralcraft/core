@@ -32,7 +32,10 @@ import spiralcraft.lang.spi.GenericListDecorator;
 import spiralcraft.log.ClassLog;
 
 /**
- * Reflects a Collection which provides an extended component type
+ * <p>Reflects a Collection which provides an extended component type
+ * </p>
+ * 
+ * 
  * 
  * @author mike
  *
@@ -42,7 +45,8 @@ import spiralcraft.log.ClassLog;
 public class CollectionReflector<C extends Collection<T>,T>
   extends BeanReflector<C>
 {
-
+  // XXX Make this a GenericReflector that wraps the base BeanReflector
+  
   private static final ClassLog log
     =ClassLog.getInstance(CollectionReflector.class);
   
