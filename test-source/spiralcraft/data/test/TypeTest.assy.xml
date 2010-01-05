@@ -41,7 +41,7 @@
             </test:Assertion>
 
             <task:Exec>
-              <commandX>[example:Customer.list][0].score().@tune("TaskMethod 1")
+              <commandX>[example:Customer.list][0].score1().@tune("TaskMethod 1")
               </commandX>
             </task:Exec>
 
@@ -55,7 +55,7 @@
             </test:Assertion>
             
             <task:Exec>
-              <commandX>[example:Customer.list][0].score().@tune("TaskMethod 2")
+              <commandX>[example:Customer.list][0].score1().@tune("TaskMethod 2")
               </commandX>
             </task:Exec>
 
@@ -67,6 +67,21 @@
               <testX>.==22.216F
               </testX>
             </test:Assertion>
+            
+            <task:Exec>
+              <commandX>[example:Customer.list][0].score(10).@tune("TaskMethod 3")
+              </commandX>
+            </task:Exec>
+                        
+            <test:Assertion>
+              <name>parameterized scenario method post-test
+              </name>
+              <subjectX>[example:Customer.list][0].score
+              </subjectX>
+              <testX>.==32.216F
+              </testX>
+            </test:Assertion>
+            
           </chain>
         </dtask:Fetch>
                 

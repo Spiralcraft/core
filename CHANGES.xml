@@ -3,6 +3,349 @@
   >
   
   <scm:Change>
+    <revision>0.4.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-01-05
+    </date>
+    
+    <notes>
+      <scm:Note>Many enhancements related to integrating granular RPC 
+        based APIs- eg. Facebook, cloud APIs. 
+      </scm:Note>
+    </notes>
+    
+    <detail>
+      <scm:Change>
+        <date>2009-12-31
+        </date>
+        
+        <notes>
+          <scm:Note>New Binding class unifies Expression and Channel to
+            make it easier to accept Expression based properties. 
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/lang/</path>
+        
+        <resources>
+          <URI>Binding.java
+          </URI>
+          <URI>ParseXml.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <date>2009-12-31
+        </date>
+        
+        <notes>
+          <scm:Note>XML "rest" pipeline enhancements  
+          </scm:Note>
+          <scm:Note>Granularize XML data processing component binding to
+            allow subclasses to export the command context to internals
+            and children and provide an application specific query string
+          </scm:Note>
+          <scm:Note>Enhance DictionaryBinding so that the get() and multiGet()
+            methods will both return a meaningful value as long as the
+            appropriate converters are set. Provide information re. 
+            binding cardinality.
+          </scm:Note>
+
+          
+        </notes>
+        
+        <path>source/spiralcraft/</path>
+        <resources>
+          <URI>data/sax/ParseXml.java
+          </URI>
+          <URI>data/sax/QueryXml.java
+          </URI>
+          <URI>lang/util/DictionaryBinding.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <date>2009-12-27
+        </date>
+        
+        <notes>
+          <scm:Note>Remove duplicate code between UncheckedCastChannel
+            and AspectChannel by converting all uses to AspectChannel.
+          </scm:Note>
+          <scm:Note>Move AssignmentChannel to lang.spi for easier use by
+            client code.
+          </scm:Note>
+          
+          <path>source/spiralcraft/</path>
+          
+          <resources>
+            <URI>data/core/FieldImpl.java
+            </URI>
+            <URI>lang/spi/UncheckedCastChannel.java
+            </URI>
+            <URI>lang/Assignment.java
+            </URI>
+            <URI>lang/parser/AssignmentNode.java
+            </URI>
+            <URI>lang/parser/AssignmentChannel.java
+            </URI>
+          </resources>
+          
+        </notes>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-12-27
+        </date>
+        
+        <notes>
+          <scm:Note>Made command input context accessible
+          </scm:Note>
+          <scm:Note>Provide a means for enhancing Reflectors with additional
+            type information
+          </scm:Note>
+          <scm:Note>Enabled parameterization of TaskMethods in spiralcraft.data
+          </scm:Note>
+          <scm:Note>Implemented named parameters for TaskMethods.
+          </scm:Note>
+          <scm:Note>Data methods expose Signatures for parameter matching and
+            debugging
+          </scm:Note>
+          <scm:Note>Task infrastructure enhanced to manage Command context and
+            result.
+          </scm:Note>
+          <scm:Note>BeanReflector now allows primitives to be
+            assigned to their boxed equivalents.
+          </scm:Note>
+          <scm:Note>Signature added to AbstractChannel.resolve() exception 
+          </scm:Note>
+          
+          
+          <path>source/spiralcraft/</path>
+          
+          <resources>
+            <URI>command/AbstractCommandFactory.java
+            </URI>
+            <URI>command/CommandFactory.java
+            </URI>
+            <URI>lang/Reflectable.java
+            </URI>
+            <URI>lang/Signature.java
+            </URI>
+            <URI>lang/parser/BindingNode.java
+            </URI>
+            <URI>lang/parser/ExpressionParser.java
+            </URI>
+            <URI>lang/parser/Node.java
+            </URI>
+            <URI>lang/parser/TupleField.java
+            </URI>
+            <URI>lang/parser/TupleNode.java
+            </URI>
+            <URI>lang/spi/AbstractChannel.java
+            </URI>
+            <URI>lang/spi/AbstractReflector.java
+            </URI>
+            <URI>lang/spi/BindingChannel.java
+            </URI>
+            <URI>lang/spi/ProxyReflector.java
+            </URI>
+            <URI>lang/spi/GenericReflector.java
+            </URI>
+            <URI>lang/reflect/BeanReflector.java
+            </URI>
+            <URI>service/Daemon.java
+            </URI>
+            <URI>task/Batch.java
+            </URI>
+            <URI>task/Chain.java
+            </URI>
+            <URI>task/Debug.java
+            </URI>
+            <URI>task/Exec.java
+            </URI>
+            <URI>task/Scenario.java
+            </URI>
+            <URI>task/TaskCommand.java
+            </URI>
+            <URI>ui/StepControl.java
+            </URI>
+            <URI>data/Method.java
+            </URI>
+            <URI>data/core/MethodImpl.java
+            </URI>
+            <URI>data/lang/TupleReflector.java
+            </URI>
+          </resources>
+          
+        </notes>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-12-26
+        </date>
+        
+        <notes>
+          <scm:Note>Warnings cleanup
+          </scm:Note>
+          
+          
+          <path>source/spiralcraft/task/Batch.java</path>
+          
+        </notes>
+      </scm:Change>
+
+      <scm:Change>
+        <date>2009-12-26
+        </date>
+        
+        <notes>
+          <scm:Note>Make it easier for components to use namespace mappings
+            from XML, Builder, WebUI and other DI/IOC containers.
+          </scm:Note>
+          
+          <scm:Note>Refactored the Namespace resolution mechanism to add
+            thread-context based prefix mappings checked at object
+            construction time. This applies to Namespace-aware objects 
+            constructed directly or indirectly within the context of a 
+            Namespace-aware container, and accounts for the major use case.
+          </scm:Note>
+          
+          <scm:Note>The Expression AST traversal "copy" mechanism, which
+            resolves unresolved namespace prefixes at a post-construction
+            point in time, has been made more efficient to ensure that a 
+            copy of an Expression is only used when the copy is not
+            identical to the original instance.
+          </scm:Note>
+
+          <scm:Note>The Namespace mechanism has been moved to its own 
+            common package spiralcraft.common.Namespace. An empty string
+            is used to represent the "default" prefix mapping, instead of
+            requiring an extra method.
+          </scm:Note>
+          
+          <path>source/spiralcraft/</path>
+          
+          <resource>
+            <URI>builder/PropertyBinding.java
+            </URI>
+            <URI>builder/PropertySpecifier.java
+            </URI>
+            <URI>common/NamespaceResolver.java
+            </URI>
+            <URI>common/namespace/NamespaceContext.java
+            </URI>
+            <URI>common/namespace/PrefixResolver.java
+            </URI>
+            <URI>data/access/Updater.java
+            </URI>
+            <URI>data/sax/AbstractFrameHandler.java
+            </URI>
+            <URI>data/sax/DataHandlerBase.java
+            </URI>
+            <URI>data/sax/FrameHandler.java
+            </URI>
+            <URI>data/sax/RecursiveFrame.java
+            </URI>
+            <URI>lang/BaseFocus.java
+            </URI>
+            <URI>lang/Expression.java
+            </URI>
+            <URI>lang/Focus.java
+            </URI>
+            <URI>lang/FocusWrapper.java
+            </URI>
+            <URI>lang/NamespaceFocus.java
+            </URI>
+            <URI>lang/SimpleFocus.java
+            </URI>
+            <URI>lang/parser/AbsoluteFocusNode.java
+            </URI>
+            <URI>lang/parser/AggregateProjectNode.java
+            </URI>
+            <URI>lang/parser/AssignmentNode.java
+            </URI>
+            <URI>lang/parser/ConditionalNode.java
+            </URI>
+            <URI>lang/parser/ContainsNode.java
+            </URI>
+            <URI>lang/parser/ContextNode.java
+            </URI>
+            <URI>lang/parser/EqualityNode.java
+            </URI>
+            <URI>lang/parser/ExclusiveOrNode.java
+            </URI>
+            <URI>lang/parser/ListNode.java
+            </URI>
+            <URI>lang/parser/LiteralNode.java
+            </URI>
+            <URI>lang/parser/LogicalAndNode.java
+            </URI>
+            <URI>lang/parser/LogicalNegateNode.java
+            </URI>
+            <URI>lang/parser/LogicalNode.java
+            </URI>
+            <URI>lang/parser/LogicalOrNode.java
+            </URI>
+            <URI>lang/parser/MethodCallNode.java
+            </URI>
+            <URI>lang/parser/Node.java
+            </URI>
+            <URI>lang/parser/NumericNegateNode.java
+            </URI>
+            <URI>lang/parser/NumericOpNode.java
+            </URI>
+            <URI>lang/parser/OpNode.java
+            </URI>
+            <URI>lang/parser/ParentFocusNode.java
+            </URI>
+            <URI>lang/parser/PrimaryIdentifierNode.java
+            </URI>
+            <URI>lang/parser/RangeNode.java
+            </URI>
+            <URI>lang/parser/RelationalNode.java
+            </URI>
+            <URI>lang/parser/ResolveNode.java
+            </URI>
+            <URI>lang/parser/SubcontextNode.java
+            </URI>
+            <URI>lang/parser/SubscriptNode.java
+            </URI>
+            <URI>lang/parser/SyntaxNode.java
+            </URI>
+            <URI>lang/parser/TupleField.java
+            </URI>
+            <URI>lang/parser/TupleNode.java
+            </URI>
+            <URI>lang/parser/TypeFocusNode.java
+            </URI>
+            <URI>sax/Node.java
+            </URI>
+            <URI>sax/ParseTree.java
+            </URI>
+            <URI>sax/PrefixResolver.java
+            </URI>
+            <URI>sax/SaxPrefixResolver.java
+            </URI>
+          </resource>
+          
+        </notes>
+
+      </scm:Change>
+    </detail>
+  </scm:Change>
+        
+
+  <scm:Change>
     <revision>0.4.0
     </revision>
     

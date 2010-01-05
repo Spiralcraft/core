@@ -70,8 +70,16 @@
       
   <methods>
     <meta:TaskMethod>
+      <name>score1
+      </name>
+    </meta:TaskMethod>
+    
+    <meta:TaskMethod>
       <name>score
       </name>
+      <parameterTypes>
+        <Integer.type/>
+      </parameterTypes>
     </meta:TaskMethod>
   </methods>
 

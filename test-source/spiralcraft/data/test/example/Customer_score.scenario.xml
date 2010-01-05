@@ -1,7 +1,11 @@
 <task:Debug
   xmlns:task="class:/spiralcraft/task/"
   xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:j="class:/java/lang/"
   >
-  <messageX>[example:Customer].score=[example:Customer].score+1
+  <contextX>{ _0:[@j:Integer] }
+  </contextX>
+  
+  <messageX>[example:Customer].score=[example:Customer].score+[task:TaskCommand].context._0
   </messageX>
 </task:Debug>
