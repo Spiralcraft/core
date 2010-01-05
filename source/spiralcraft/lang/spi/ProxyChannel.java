@@ -32,8 +32,9 @@ public class ProxyChannel<T>
   implements Channel<T>
 {
 
-  private final Channel<T> channel;
+  protected Channel<T> channel;
   private WeakChannelCache cache;
+  protected boolean delegateCache;
   //private boolean debug;
 
   public ProxyChannel(Channel<T> delegate)
@@ -43,6 +44,14 @@ public class ProxyChannel<T>
     }
     channel=delegate;
   }
+  
+  public ProxyChannel()
+  {
+    
+    
+  }
+  
+
 
   public void setDebug(boolean val)
   { //debug=val;
@@ -94,16 +103,27 @@ public class ProxyChannel<T>
   
   public synchronized void cache(Object key,Channel<?> channel)
   { 
-    if (cache==null)
-    { cache=new WeakChannelCache();
+    if (delegateCache)
+    { channel.cache(key,channel);
     }
-    cache.put(key,channel);
+    else
+    {
+      if (cache==null)
+      { cache=new WeakChannelCache();
+      }
+      cache.put(key,channel);
+    }
   }
   
   @SuppressWarnings("unchecked")
   public synchronized <X> Channel<X> getCached(Object key)
   { 
-    return cache!=null?(Channel<X>) cache.get(key):null;
+    if (delegateCache)
+    { return channel.getCached(key);
+    }
+    else
+    { return cache!=null?(Channel<X>) cache.get(key):null;
+    }
   }
   
 }
