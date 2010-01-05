@@ -58,7 +58,7 @@ public class Chain<Tcontext,Tresult>
       {
         TaskCommand<?,?> command=chain.command();
         
-        command.setCollectResults(true);
+//        command.setCollectResults(true);
         command.execute();
         if (command.getException()!=null)
         { addException(command.getException());
