@@ -178,7 +178,12 @@ public class Expression<T>
     if (_root==null)
     { throw new BindException("No way to bind expression '"+_text+"'");
     }
-    return (Channel<T>) _root.bind(focus); 
+    try
+    { return (Channel<T>) _root.bind(focus); 
+    }
+    catch (BindException x)
+    { throw new BindException("Error parsing expression '"+_text+"'",x);
+    }
   }
 
   
