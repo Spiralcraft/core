@@ -281,15 +281,15 @@ public class BuilderType
   {
     super(resolver,uri);
     
+    URI assemblyURI=TypeResolver.desuffix(uri,".assy");
     try
     {
-      URI assemblyURI=TypeResolver.desuffix(uri,".assy");
       targetAssemblyClass
         =AssemblyLoader.getInstance()
           .findAssemblyClass(assemblyURI);
     }
     catch (BuildException x)
-    { throw new DataException(x.toString(),x);
+    { throw new DataException("Error loading AssemblyClass from "+assemblyURI,x);
     }
     
   }
