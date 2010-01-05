@@ -282,4 +282,45 @@ public class StringUtil
     }
   }
   
+  /**
+   * Escapes charsToEscape by preceeding them with the escape char. The
+   *   escapeChar is automatically escaped.
+   * 
+   * @param input
+   * @param escapeChar
+   * @param charsToEscape
+   * @return
+   */
+  public static String escape(String input,char escapeChar,String charsToEscape)
+  {
+    final StringBuilder out=new StringBuilder();
+    for (char c:input.toCharArray())
+    {
+      if (charsToEscape.indexOf(c)>-1 || c==escapeChar)
+      { out.append(escapeChar);
+      }
+      out.append(c);
+    }
+    return out.toString();
+  }
+  
+  public static String unescape(String input,char escapeChar)
+  {
+    final StringBuilder out=new StringBuilder();
+    boolean escapeNext=false;
+    for (char c:input.toCharArray())
+    {
+      if (c==escapeChar && !escapeNext)
+      { escapeNext=true;
+      }
+      else
+      {
+        out.append(c);
+        escapeNext=false;
+      }
+    }
+    return out.toString();
+   
+  }
+  
 }
