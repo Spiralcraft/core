@@ -43,6 +43,7 @@ public class GenericReflector<T>
   protected final Class<T> contentType;
   protected final URI typeURI;
   protected HashMap<Signature,Functor<?,?>> functorMap;
+  private boolean debug;
 
   public GenericReflector(URI typeURI,Class<T> contentType)
   {
@@ -57,6 +58,9 @@ public class GenericReflector<T>
     this.typeURI=base.getTypeURI();
   }
   
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
 
   @Override
   public <D extends Decorator<T>> D decorate(
@@ -118,6 +122,9 @@ public class GenericReflector<T>
   public boolean isAssignableTo(
     URI typeURI)
   {
+    if (debug)
+    { log.fine(""+typeURI+"  this:"+this.typeURI);
+    }
     if (base!=null)
     { return base.isAssignableTo(typeURI);
     }
