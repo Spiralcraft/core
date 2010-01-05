@@ -17,9 +17,11 @@ package spiralcraft.task;
 import spiralcraft.command.Command;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 
 
 
@@ -39,6 +41,8 @@ public class Exec<T,C,R>
   
   private Channel<Command<T,C,R>> targetCommandChannel;
   private Expression<Command<T,C,R>> commandX;
+  private ThreadLocalChannel<Command<T,C,R>> chainCommand;
+  private Binding<R> onComplete;
   
   @Override
   public CommandTask task()
@@ -52,11 +56,22 @@ public class Exec<T,C,R>
   { this.commandX=commandX;
   }
   
+  public void setOnComplete(Binding<R> onComplete)
+  { this.onComplete=onComplete;
+  }
+    
   @Override
   protected void bindChildren(Focus<?> focusChain)
     throws BindException
   { 
+
     targetCommandChannel=focusChain.bind(commandX);
+    chainCommand=new ThreadLocalChannel<Command<T,C,R>>
+      (targetCommandChannel.getReflector());
+    focusChain=focusChain.chain(chainCommand);
+    if (onComplete!=null)
+    { onComplete.bind(focusChain);
+    }
     super.bindChildren(focusChain);
   }
   
@@ -88,23 +103,39 @@ public class Exec<T,C,R>
     public void work()
       throws InterruptedException
     { 
+      chainCommand.push(null);
       try
       {
-        command=targetCommandChannel.get();
-        command.execute();
-        addResult(command);
-        if (command.getException()!=null)
+        try
+        {
+          command=targetCommandChannel.get();
+          chainCommand.set(command);
+
+          
+          command.execute();
+          addResult(command);
+          if (command.getException()!=null)
+          { 
+            addException(command.getException());
+            return;
+          }
+
+        }
+        catch (Exception x)
         { 
-          addException(command.getException());
+          addException(x);
           return;
         }
+      
+        super.work();
+        
+        if (onComplete!=null)
+        { onComplete.get();
+        }
       }
-      catch (Exception x)
-      { 
-        addException(x);
-        return;
+      finally
+      { chainCommand.pop();
       }
-      super.work();
     }
 
   }
