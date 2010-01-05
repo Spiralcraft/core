@@ -18,6 +18,7 @@ package spiralcraft.data;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Signature;
 
 /**
  * An action that can be taken on an data object
@@ -65,5 +66,14 @@ public interface Method
    * @throws BindException
    */
   Channel<?> bind(Focus<?> focus,Channel<?> source,Channel<?>[] params)
+    throws BindException;
+  
+  /**
+   * 
+   * @return The name, return type, and parameter types of this method
+   * 
+   * @throws BindException
+   */
+  Signature getSignature()
     throws BindException;
 }
