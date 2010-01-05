@@ -24,8 +24,7 @@ import org.xml.sax.SAXException;
 
 import spiralcraft.data.DataException;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Channel;
-import spiralcraft.lang.Expression;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 import spiralcraft.sax.XmlWriter;
 import spiralcraft.task.AbstractTask;
@@ -52,29 +51,36 @@ public class ParseXml<Tresult>
   
 
   private RootFrame<Tresult> handler;
-  private Expression<URI> uriX;
-  private Channel<URI> uriChannel;
+  private Binding<URI> uriX;
     
   @Override
   public Task task()
   { return new ParseTask();
   }
   
-  public void setUriX(Expression<URI> uriX)
+  public void setUriX(Binding<URI> uriX)
   { this.uriX=uriX;
   }
   
   @Override
-  public Focus<?> bind(Focus<?> focus)
+  protected Focus<?> bindExports(Focus<?> focus)
     throws BindException
   {
+    focus=super.bindExports(focus);
+    
     if (uriX!=null)
-    { uriChannel=focus.<URI>bind(uriX);
+    { uriX.bind(focus);
+    }
+    if (handler==null)
+    { throw new BindException("No handler for result");
     }
     handler.setFocus(focus);
     handler.bind();
-    return super.bind(focus);
+    return focus;
   }
+  
+  
+ 
   
   /**
    * The FrameHandler that handles the root or document level XML content 
@@ -155,7 +161,7 @@ public class ParseXml<Tresult>
       throws InterruptedException
     { 
       try
-      { read(uriChannel.get());
+      { read(uriX.get());
       }
       catch (Exception x)
       { 

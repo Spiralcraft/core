@@ -16,7 +16,6 @@ package spiralcraft.data.sax;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.xml.sax.SAXException;
 
@@ -24,6 +23,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.text.html.URLDataEncoder;
+import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -40,13 +40,15 @@ public class QueryXml<Tresult>
   extends ParseXml<Tresult>
 {
 
-  private AttributeBinding<?>[] uriQueryBindings;
+  private static final int DEFAULT_TIMEOUT_SECONDS=10;
+  protected AttributeBinding<?>[] uriQueryBindings;
   private int timeoutSeconds;  
   private int inputBufferLength;
 
   /**
    * Number of seconds to wait for a response before throwing an
-   *   exception
+   *   exception. Defaults to 10 seconds. For no timeout, specify a value
+   *   of -1.
    * 
    * @param timeoutMs
    */
@@ -79,40 +81,57 @@ public class QueryXml<Tresult>
     if (debug)
     { log.fine("Binding "+getClass());
     }
-    bindAttributes(focusChain);
-    return super.bind(focusChain);
+    if (timeoutSeconds==0)
+    { timeoutSeconds=DEFAULT_TIMEOUT_SECONDS;
+    }
+    bindImports(focusChain);
+    focusChain=super.bind(focusChain);
+    
+    return focusChain;
   }
   
-  protected void bindAttributes(Focus<?> focus)
+  protected void bindImports(Focus<?> focus)
     throws BindException
   {
-    if (uriQueryBindings!=null)
-    {      
-      for (AttributeBinding<?> binding: uriQueryBindings)
-      { binding.bind(focus);
-      }
-      
-    }
+
   } 
   
   @Override
-  protected void read(URI baseURI)
-    throws DataException,SAXException,IOException,UnresolvableURIException
-  {
-    URI queryURI=baseURI;
-    if (baseURI==null)
-    { throw new DataException("URI is null- nowhere to query");
+  protected Focus<?> bindExports(Focus<?> exportChain)
+    throws BindException
+  { 
+    exportChain=super.bindExports(exportChain);
+    // Query bindings need access to the command context
+    if (uriQueryBindings!=null)
+    {      
+      for (AttributeBinding<?> binding: uriQueryBindings)
+      { binding.bind(exportChain);
+      }
+      
     }
+    return exportChain;
+  }
+  
+  /**
+   * Override to generate the query string portion of the request URI. The
+   *   default behavior iterates through the UriQueryBindings, encoding
+   *   each name + "=" +encodedValue.
+   * 
+   * @param baseQueryString
+   * @return
+   */
+  protected String completeQueryString(String baseQueryString)
+    throws DataException
+  {
     StringBuilder queryString=new StringBuilder();
-    String original=baseURI.getQuery();
-    if (original!=null)
-    { queryString.append(original);
+    if (baseQueryString!=null)
+    { queryString.append(baseQueryString);
     }
     if (uriQueryBindings!=null)
     {
       for (AttributeBinding<?> binding:uriQueryBindings)
       {
-        String[] values=binding.getValues();
+        String[] values=binding.arrayGet();
         
         if (values!=null)
         {
@@ -126,27 +145,26 @@ public class QueryXml<Tresult>
           }
         }
       }
-      
-      if (queryString.length()>0)
-      {
-        try
-        {
-          queryURI
-            =new URI
-            (baseURI.getScheme()
-            ,baseURI.getUserInfo()
-            ,baseURI.getHost()
-            ,baseURI.getPort()
-            ,baseURI.getPath()
-            ,queryString.toString()
-            ,baseURI.getFragment()
-            );
-        }
-        catch (URISyntaxException x)
-        { throw new DataException("Invalid query "+queryString.toString(),x);
-        }
-      }
-    }    
+    }
+    return queryString.toString();
+    
+  }
+  
+  @Override
+  protected void read(URI baseURI)
+    throws DataException,SAXException,IOException,UnresolvableURIException
+  {
+    URI queryURI=baseURI;
+    if (baseURI==null)
+    { throw new DataException("URI is null- nowhere to query");
+    }
+    String original=baseURI.getRawQuery();
+    String query=completeQueryString(original);
+    
+    if (query.length()>0)
+    { queryURI=URIUtil.replaceRawQuery(baseURI,query);
+    }
+    
     Resource resource=Resolver.getInstance().resolve(queryURI);
     if (resource instanceof URLResource)
     { 
