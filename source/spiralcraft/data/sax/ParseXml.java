@@ -51,7 +51,7 @@ public class ParseXml<Tresult>
   
 
   private RootFrame<Tresult> handler;
-  private Binding<URI> uriX;
+  protected Binding<URI> uriX;
     
   @Override
   public Task task()
