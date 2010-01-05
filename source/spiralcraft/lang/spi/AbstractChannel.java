@@ -114,8 +114,24 @@ public abstract class AbstractChannel<T>
       }
       sigs.append("]\r\n  }");
 
+      Reflector<?>[] pc=null;
+      if (params!=null)
+      {
+        pc=new Reflector<?>[params.length];
+        for (int i=0;i<params.length;i++)
+        { 
+          try
+          { pc[i]=focus.bind(params[i]).getReflector();
+          }
+          catch (BindException x)
+          {
+          }
+        }
+      }
+      Signature sig=new Signature(name,null,pc);
+      
       throw new 
-        BindException("'"+name+"' not found. ("+toString()+") "+sigs);
+        BindException("'"+sig+"' not found. ("+toString()+") "+sigs);
     }
     return binding;
   }
