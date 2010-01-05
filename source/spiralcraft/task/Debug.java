@@ -47,10 +47,6 @@ public class Debug<Tcontext>
   { this.conditionX=conditionX;
   }
   
-  public void setContextX(Expression<Tcontext> contextX)
-  { this.contextX=contextX;
-  }
-  
   @Override
   protected Task task()
   {
