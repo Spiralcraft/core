@@ -122,8 +122,11 @@ public class Signature
   {
     StringBuffer ret=new StringBuffer();
     ret.append(name);
-    ret.append(" : ");
-    ret.append(type.getTypeURI());
+    if (type!=null)
+    {
+      ret.append(" : ");
+      ret.append(type.getTypeURI());
+    }
     if (parameters!=null)
     { 
       ret.append(" (");
