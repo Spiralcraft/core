@@ -27,6 +27,28 @@ public class URIUtil
 {
 
   /**
+   * Replace the query part of the specified URI with the 
+   *   specified pre-encoded query string
+   * 
+   * @return
+   */
+  public static final URI replaceRawQuery
+    (URI source
+    ,String rawQuery
+    )
+  {
+    return URI.create
+      (trimToPath(source).toString()
+        +"?"
+        +rawQuery
+        +(source.getRawFragment()!=null
+          ?source.getRawFragment()
+          :""
+        )
+      );
+  }
+  
+  /**
    * Trim the query and fragment from the specified URI.  
    * 
    * @param input
