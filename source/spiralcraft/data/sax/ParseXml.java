@@ -139,6 +139,10 @@ public class ParseXml<Tresult>
     return dataReader;
   }
     
+  protected URI getDefaultURI()
+  { return null;
+  }
+  
   /**
    * <p>A Task adapter to parse an XML document
    * </p>
@@ -161,7 +165,12 @@ public class ParseXml<Tresult>
       throws InterruptedException
     { 
       try
-      { read(uriX.get());
+      { 
+        URI uri=uriX.get();
+        if (uri==null)
+        { uri=getDefaultURI();
+        }
+        read(uri);
       }
       catch (Exception x)
       { 
