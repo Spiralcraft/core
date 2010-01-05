@@ -18,7 +18,6 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.BindingChannel;
 
 
@@ -98,22 +97,7 @@ public class BindingNode<Ttarget,Tsource extends Ttarget>
   @SuppressWarnings("unchecked") // Heterogeneous operation
   public Channel bind(final Focus focus)
     throws BindException
-  { 
-    
-    Focus localFocus=new SimpleFocus(focus.getSubject());
-    
-    
-    Channel targetChannel=target.bind(localFocus);
-    
-    if (!targetChannel.isWritable())
-    { 
-      throw new BindException
-        ("Target '"+target.reconstruct()+"' is not writable: "
-        +targetChannel.toString()
-        );
-    }
-    return new BindingChannel(source.bind(focus),new Expression(target));
-    
+  { return new BindingChannel(source.bind(focus),new Expression(target));
   }
 
   @Override
