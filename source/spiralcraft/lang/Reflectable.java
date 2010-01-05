@@ -28,5 +28,6 @@ package spiralcraft.lang;
 public interface Reflectable<T>
 {
 
-  Reflector<T> reflect();
+  Reflector<T> reflect()
+    throws BindException;
 }
