@@ -14,6 +14,7 @@
 //
 package spiralcraft.command;
 
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.GenericReflector;
@@ -54,11 +55,13 @@ public abstract class AbstractCommandFactory<Ttarget,Tcontext,Tresult>
 
   protected Reflector<? extends Command<Ttarget,Tcontext,Tresult>> 
     getCommandReflector()
+      throws BindException
   { return null;
   }
   
   @Override
   public Reflector<CommandFactory<Ttarget, Tcontext, Tresult>> reflect()
+    throws BindException
   {
     
     if (reflector==null)
@@ -89,4 +92,5 @@ public abstract class AbstractCommandFactory<Ttarget,Tcontext,Tresult>
     return reflector;
   }
 
+  
 }
