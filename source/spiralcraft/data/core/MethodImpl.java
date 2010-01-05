@@ -3,7 +3,11 @@ package spiralcraft.data.core;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Method;
 import spiralcraft.data.Type;
+import spiralcraft.data.lang.DataReflector;
 
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Reflector;
+import spiralcraft.lang.Signature;
 import spiralcraft.log.ClassLog;
 
 public abstract class MethodImpl
@@ -22,6 +26,7 @@ public abstract class MethodImpl
   private boolean locked;
   
   protected boolean debug;
+  
   
   
   @Override
@@ -88,7 +93,28 @@ public abstract class MethodImpl
     throws DataException
   { }
   
+  public Signature getSignature()
+    throws BindException
+  { 
+    
+    Reflector<?>[] paramR;
+    if (parameterTypes!=null)
+    {
+      paramR=new Reflector<?> [parameterTypes.length];
+      for (int i=0;i<parameterTypes.length;i++)
+      { paramR[i]=DataReflector.getInstance(parameterTypes[i]);
+      }
+    }
+    else
+    { paramR=new Reflector<?>[0];
+    }
+    return new Signature
+             (getName()
+             ,DataReflector.getInstance(getReturnType())
+             ,paramR
+             );
 
+  }
 }
 
 

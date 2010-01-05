@@ -300,6 +300,18 @@ public class TupleReflector<T extends Tuple>
           )
         );
     }
+    if (type!=null)
+    {
+      Method[] methods=type.getMethods();
+      if (methods!=null)
+      { 
+        for (Method method: methods)
+        {
+          signatures.addFirst(method.getSignature());
+          
+        }
+      }
+    }
     return signatures;
   }
   
@@ -351,7 +363,7 @@ public class TupleReflector<T extends Tuple>
           +"("+method.getParameterTypes().length+") in type "+type.getURI());
       }
       if (method.getName().equals(name) 
-            && method.getParameterTypes().length==params.length
+            && method.getParameterTypes().length==sigChannels.size()
             )
       {
         
@@ -365,12 +377,14 @@ public class TupleReflector<T extends Tuple>
         boolean match=true;
         for (Type<?> formalType : method.getParameterTypes())
         {
+          
           if (debug)
           {
             log.fine("Checking param  "+i+" in "+method.getName()
               +" in type "+type.getURI()
               );
           }
+          
           Channel paramChannel=sigChannels.get(i++);
             
           Reflector paramReflector=paramChannel.getReflector();
