@@ -14,7 +14,10 @@
 //
 package spiralcraft.command;
 
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Functor;
 import spiralcraft.lang.Reflectable;
+import spiralcraft.lang.Reflector;
 
 /**
  * <p>Creates a new instance of a Command, resolving contextual information
@@ -35,6 +38,7 @@ import spiralcraft.lang.Reflectable;
  */
 public interface CommandFactory<Ttarget,Tcontext,Tresult>
   extends Reflectable<CommandFactory<Ttarget,Tcontext,Tresult>>
+  ,Functor<Tresult>
 {
   /**
    * @return A new Command object
@@ -48,5 +52,13 @@ public interface CommandFactory<Ttarget,Tcontext,Tresult>
    */
   boolean isCommandEnabled();
   
+  /**
+   * Provide contextual metadata for the Command created by this factory
+   * 
+   * @return
+   * @throws BindException
+   */
+  Reflector<? extends Command<Ttarget,Tcontext,Tresult>> getCommandReflector()
+    throws BindException;
   
 }

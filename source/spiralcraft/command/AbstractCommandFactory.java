@@ -15,6 +15,8 @@
 package spiralcraft.command;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.GenericReflector;
@@ -53,10 +55,10 @@ public abstract class AbstractCommandFactory<Ttarget,Tcontext,Tresult>
     return true;
   }
 
-  protected Reflector<? extends Command<Ttarget,Tcontext,Tresult>> 
+  public Reflector<? extends Command<Ttarget,Tcontext,Tresult>> 
     getCommandReflector()
       throws BindException
-  { return null;
+  { return BeanReflector.getInstance(Command.class);
   }
   
   @Override
@@ -74,7 +76,12 @@ public abstract class AbstractCommandFactory<Ttarget,Tcontext,Tresult>
       Reflector<? extends Command<Ttarget,Tcontext,Tresult>> commandReflector
         =getCommandReflector();
       
-      if (commandReflector==null || ((Reflector<?>) commandReflector)==base)
+      if (commandReflector==null
+          || commandReflector
+               ==BeanReflector
+                .<Command<Ttarget,Tcontext,Tresult>>
+                  getInstance(Command.class)
+         )
       { reflector=base;
       }
       else
@@ -92,5 +99,14 @@ public abstract class AbstractCommandFactory<Ttarget,Tcontext,Tresult>
     return reflector;
   }
 
+  public Channel<Tresult> bindChannel(Focus<?> focus,Channel<?>[] arguments)
+    throws BindException
+  {
+    CommandFunctorChannel<Ttarget,Tcontext,Tresult> channel
+      =new CommandFunctorChannel<Ttarget,Tcontext,Tresult>(this);
+    channel.bind(focus,arguments);
+    return channel;
+
+  }
   
 }
