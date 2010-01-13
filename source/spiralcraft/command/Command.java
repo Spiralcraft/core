@@ -162,9 +162,17 @@ public interface Command<Ttarget,Tcontext,Tresult>
   
   /**
    * 
-   * @return The context (parameters) for this command, if any
+   * @return The context (input) for this command, if any
    */
   Tcontext getContext();
+  
+  /**
+   * Specify the context (input) for this command, if any
+   * 
+   * @param context
+   */
+  void setContext(Tcontext context);
+  
   
   /**
    * 
