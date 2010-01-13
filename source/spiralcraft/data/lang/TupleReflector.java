@@ -21,12 +21,14 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
+import spiralcraft.lang.Functor;
 import spiralcraft.lang.Signature;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.lang.spi.BindingChannel;
+import spiralcraft.lang.spi.GatherChannel;
 import spiralcraft.lang.Assignment;
 
 import spiralcraft.log.ClassLog;
@@ -48,6 +50,7 @@ import spiralcraft.data.reflect.ReflectionType;
  */
 public class TupleReflector<T extends Tuple>
   extends DataReflector<T>
+  implements Functor<T>
 {
   private static final ClassLog log
     =ClassLog.getInstance(TupleReflector.class);
@@ -462,8 +465,70 @@ public class TupleReflector<T extends Tuple>
           :"(untyped)["+untypedFieldSet.toString()+"]"
        );
   }
+
   
 
+  @Override
+  /**
+   * Create a constuctor channel
+   */
+  public Channel<T> bindChannel(
+    Focus<?> focus,
+    Channel<?>[] arguments)
+    throws BindException
+  {
+    
+
+    
+    ArrayList<Channel<?>> indexedParamList=new ArrayList<Channel<?>>();
+    ArrayList<Channel<?>> namedParamList=new ArrayList<Channel<?>>();
+    
+    boolean endOfParams=false;
+    for (Channel<?> chan : arguments)
+    { 
+      if (chan instanceof BindingChannel<?>)
+      { 
+        endOfParams=true;
+        namedParamList.add(chan);
+      }
+      else
+      {
+        if (endOfParams)
+        { 
+          throw new BindException
+            ("Positional parameters must preceed named parameters");
+        }
+        indexedParamList.add(chan);
+        
+      }
+      
+    }      
+        
+    Channel<?>[] indexedParams
+      =indexedParamList.toArray(new Channel[indexedParamList.size()]);      
+
+    if (indexedParams.length>0)
+    { 
+      throw new BindException
+        ("Tuple constructor does not accept indexed parameters");
+    }
+    
+    Channel<T> constructorChannel
+      =new TupleConstructorChannel<T>(this,focus);
+    
+    if (namedParamList.size()>0)
+    { 
+      constructorChannel
+        =new GatherChannel<T>
+          (constructorChannel
+          ,namedParamList.toArray
+            (new BindingChannel[namedParamList.size()])
+          );
+    }
+      
+    return constructorChannel;
+
+  }
 
   
 }
