@@ -20,7 +20,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Functor;
+import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Reflector;
 import spiralcraft.rules.RuleSet;
 
@@ -33,7 +33,7 @@ import spiralcraft.rules.RuleSet;
  * </p>
  */
 public interface Field<T>
-  extends Functor<T,Tuple>
+  extends ChannelFactory<T,Tuple>
 {
   /**
    * The FieldSet to which this Field belongs. All Fields belong to a FieldSet.

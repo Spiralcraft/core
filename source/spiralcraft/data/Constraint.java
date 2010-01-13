@@ -20,7 +20,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Functor;
+import spiralcraft.lang.ChannelFactory;
 
 
 /**
@@ -31,7 +31,7 @@ import spiralcraft.lang.Functor;
  * </p>
  */
 public interface Constraint<T>
-  extends Functor<T,Tuple>
+  extends ChannelFactory<T,Tuple>
 {
   /**
    * <p>The FieldSet to which this Constraint belongs. All Constraints

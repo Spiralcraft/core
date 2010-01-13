@@ -18,7 +18,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Functor;
+import spiralcraft.lang.ChannelFactory;
 
 /**
  * <p>A horizontal transformation of data in an arbitrary form into 
@@ -34,7 +34,7 @@ import spiralcraft.lang.Functor;
  * @author mike
  */
 public interface Projection<T>
-  extends FieldSet,Functor<Tuple,T>
+  extends FieldSet,ChannelFactory<Tuple,T>
 {
   
   /**
