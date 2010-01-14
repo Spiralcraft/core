@@ -86,6 +86,7 @@ public abstract class AbstractReflector<T>
   
   private volatile Channel<Reflector<T>> selfChannel;
   protected final Reflector<T> base;
+  protected boolean functor;
 
   protected AbstractReflector()
   { base=null;
@@ -488,6 +489,10 @@ public abstract class AbstractReflector<T>
     }    
     return true;
   }
+
+  public boolean isFunctor()
+  { return functor || (base!=null && base.isFunctor());
+  }
   
   class SubtypeChannel
     extends AbstractChannel<Reflector<T>>
@@ -512,6 +517,7 @@ public abstract class AbstractReflector<T>
     { return false;
     }
   }
+  
   
 }
 
@@ -580,4 +586,6 @@ class CastChannel<S,T extends S>
     throws AccessException
   { return source.set(val);
   }
+  
+
 }
