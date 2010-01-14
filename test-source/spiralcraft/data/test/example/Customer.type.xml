@@ -54,6 +54,20 @@
         <Float.type/>
       </type>
     </meta:Field>
+    
+    <meta:CalculatedField>
+        
+      <name>computedScore
+      </name>
+        
+      <type>
+        <Float.type/>
+      </type>
+      
+      <expression>score*10.0F
+      </expression>
+    </meta:CalculatedField>
+    
   </fields>
       
   <keys>

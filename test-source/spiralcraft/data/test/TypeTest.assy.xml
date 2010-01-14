@@ -83,6 +83,15 @@
             </test:Assertion>
             
             <test:Assertion>
+              <name>calculated field
+              </name>
+              <subjectX>[example:Customer.list][0].computedScore
+              </subjectX>
+              <testX>.==322.16F
+              </testX>
+            </test:Assertion>
+
+            <test:Assertion>
               <name>Tuple instantiation
               </name>
               

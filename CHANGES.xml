@@ -24,6 +24,44 @@
         </date>
         
         <notes>
+          <scm:Note>Provided isContext(Channel) method in Focus to help
+            ChannelFactories determine whether to chain the supplied Focus or
+            use the existing Focus.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/core/CalculatedFieldImpl.java
+          </URI>
+          <URI>data/core/KeyField.java
+          </URI>
+          <URI>data/core/ProjectionImpl.java
+          </URI>
+          <URI>data/core/QueryField.java
+          </URI>
+          <URI>data/core/TaskMethod.java
+          </URI>
+          <URI>lang/BaseFocus.java
+          </URI>
+          <URI>lang/Focus.java
+          </URI>
+          <URI>lang/FocusWrapper.java
+          </URI>
+          <URI>rules/ExpressionRule.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+      
+        <date>2010-01-13
+        </date>
+        
+        <notes>
           <scm:Note>Further clarification of ChannelFactory and Functor
             interfaces. 
           </scm:Note>
