@@ -82,6 +82,17 @@
               </testX>
             </test:Assertion>
             
+            <test:Assertion>
+              <name>Tuple instantiation
+              </name>
+              
+              <subjectX>
+                [@example:Customer].(id:=12345){{cust:=.., .cust.score(10).execute() }}.cust
+              </subjectX>
+            
+              <testX>.score==10
+              </testX>
+            </test:Assertion>
           </chain>
         </dtask:Fetch>
                 

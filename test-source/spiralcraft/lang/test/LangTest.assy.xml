@@ -2,6 +2,7 @@
   xmlns:task="class:/spiralcraft/task/"
   xmlns:test="class:/spiralcraft/test/"
   xmlns:j="class:/java/lang/"
+  xmlns:ju="class:/java/util/"
   xmlns:lang="class:/spiralcraft/lang"
   >
   <name>spiralcraft.lang.test
@@ -344,7 +345,7 @@
           
           <subjectX>
             "hello"
-              {{[*test:MyTuple]
+              {{[#test:MyTuple]
                   x:[@j:String]
                   , y:[@j:Integer]
                   ,.x=..
@@ -385,6 +386,68 @@
           
         </test:Assertion>        
 
+        <test:Assertion>
+        
+          <name>New date
+          </name>
+          
+          <subjectX>
+            [@ju:Date].()
+          </subjectX>
+          
+          <testX>.!=null
+          </testX>
+          
+        </test:Assertion>        
+
+        <test:Assertion>
+        
+          <name>New dates
+          </name>
+          
+          <subjectX>
+            [@ju:Date]{ [@ju:Date][{.(10000000000L),.(10000000001L)}] }
+          </subjectX>
+          
+          <testX>.[0].getTime() &lt; .[1].getTime()
+          </testX>
+          
+        </test:Assertion>        
+
+        <test:Assertion>
+        
+          <name>Same dates
+          </name>
+          
+          <subjectX>
+            [*ju:Date]{ [@ju:Date][{.,.}] }
+          </subjectX>
+          
+          <testX>.[0].getTime() == .[1].getTime() &amp;&amp; .[0].getTime() > 0L
+          </testX>
+          
+        </test:Assertion>        
+
+        <test:Assertion>
+        
+          <name>Debug task in expression
+          </name>
+          
+          <subjectX>
+            [*ju:Date]
+            { 
+              [*task:Debug
+                {messageX:=[ju:Date].class.name
+                ,debug:=true
+                }
+              ].()
+            }
+          </subjectX>
+          
+          <testX>.=="java.util.Date"
+          </testX>
+          
+        </test:Assertion>        
 
       </scenarios>
       

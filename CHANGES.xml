@@ -1,6 +1,346 @@
 <scm:Change.list
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
+  <scm:Change>
+    <revision>0.4.2
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-01-13
+    </date>
+    
+    <notes>
+      <scm:Note>Completed bulk of enhancements related to integrating granular
+      RPC based APIs- eg. Facebook, cloud APIs. 
+      </scm:Note>
+    </notes>
+    
+    <detail>
+      <scm:Change>
+      
+        <date>2010-01-13
+        </date>
+        
+        <notes>
+          <scm:Note>Further clarification of ChannelFactory and Functor
+            interfaces. 
+          </scm:Note>
+          <scm:Note>ChannelFactory interface re-established as a simple
+            interface to extend Channel graphs. Most code that used the new
+            Functor interface has been reverted back to using the no-longer
+            deprecated ChannelFactory. The new ChannelFactory accepts a source
+            channel and parameter expressions for maximum utility.
+            
+          </scm:Note>
+          <scm:Note>Functor interface redefined to not accept a "source" 
+            Channel, and to accept a set of bound channels as parameters.
+            A Functor is expected to have a reference to its context (if any)
+            at the time the Functor.bindChannel() is called (possibly
+            repeatedly). By definition, the "source" of a Functor from
+            the perspective of the channel graph would always be itself anyway.  
+          </scm:Note>
+          <scm:Note>GenericReflector simplified by use of ChannelFactory
+            instead of Functor to enhance return types of base members.
+          </scm:Note>          
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/ChannelFactory.java
+          </URI>
+          <URI>lang/Functor.java
+          </URI>
+          <URI>lang/spi/GenericReflector.java
+          </URI>
+          <URI>data/Constraint.java
+          </URI>
+          <URI>data/Field.java
+          </URI>
+          <URI>data/Projection.java
+          </URI>
+          <URI>text/Translator.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+    
+      <scm:Change>
+      
+        <date>2010-01-13
+        </date>
+        
+        <notes>
+          <scm:Note>New language constructs
+          </scm:Note>
+          <scm:Note>Object literals: "[*myns:MyObj]",
+            [*myns:MyObj{param1 , param2 , ... }] instantiate a constant
+            reference to an object or to a channel provided by a 
+            ChannelFactory. 
+            If the object is a FocusChainObject it will be bound
+            into the chain.
+          </scm:Note>
+          <scm:Note>Functors (callable objects): "myFunctorExpr.()",
+            "myFunctorExpr.(param1, param2, ...)" provides a way to pass
+            contextually defined functions around where they may be invoked
+            against parameters that come from a different context via
+            anonymous methods.
+          </scm:Note>
+          <scm:Note>"publish-as-URI" construct is now [#qname], changed from
+            [*qname] because natural semantics match up better- ie. Names can be
+            "hashed" into directories, and the "star" symbol is typically
+            associated with "newing" things.
+          </scm:Note>
+          <scm:Note>Permit named parameters for all method calls.
+          </scm:Note>
+          <scm:Note>TypeModel consolidates cross-model search functionality
+            into static method. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/TypeModel.java
+          </URI>
+          <URI>lang/parser/ExpressionParser.java
+          </URI>
+          <URI>lang/parser/TypeFocusNode.java
+          </URI>
+          <URI>lang/parser/TupleNode.java
+          </URI>
+          <URI>lang/parser/MethodCallNode.java
+          </URI>
+          <URI>lang/parser/ObjectLiteralNode.java
+          </URI>
+          <URI>lang/spi/AbstractFunctorChannel.java
+          </URI>
+          
+        
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+      
+        <date>2010-01-13
+        </date>
+        
+        <notes>
+          <scm:Note>CommandFactory now extends Functor. All CommandFactory
+            instances can now be referenced from spiralcraft.lang as Functors,
+            permitting the direct referencing of Task Scenarios from 
+            expressions.
+          </scm:Note>
+          <scm:Note>Commands must now implement the setContext() method, even 
+            if they choose to disallow this operation, as it is required for
+            compilation of client code.
+          </scm:Note>
+          <scm:Note>CommandFactory.getCommandReflector() is now public
+          </scm:Note>
+          <scm:Note>Scenario now defines a bindImports method to allow 
+            subclasses to operate on incoming data and augment both the
+            internal and external Focus chain.
+          </scm:Note>
+          <scm:Note>TaskCommand now exposes an "error" property to allow 
+            Scenario task implementations to register an expected error state,
+            ie. not an exception. Also, result passing is now enabled through
+            Scenario.storeResults. TaskCommand.collectResults now indicates
+            that the command should accumulate task results in a collection.
+          </scm:Note>
+          <scm:Note>Chain scenario now requires addChainResult=true to 
+            call ChainTask.addResult() with the completed chain command 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>command/AbstractCommandFactory.java
+          </URI>
+          <URI>command/Command.java
+          </URI>
+          <URI>command/CommandFactory.java
+          </URI>
+          <URI>command/CommandFunctorChannel.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+          <URI>task/TaskCommand.java
+          </URI>
+          <URI>task/Batch.java
+          </URI>
+          <URI>task/Chain.java
+          </URI>
+          <URI>data/sax/QueryXml.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+      
+        <date>2010-01-13
+        </date>
+        
+        <notes>
+          <scm:Note>Reflectors are Functor aware via the isFunctor() method,
+            which is used by client components to ensure that anonymous
+            methods can be invoked.
+          </scm:Note>
+          <scm:Note>Reflectors which are themselves Functors provide 
+            constructor access via the Functor mechanism.
+          </scm:Note>
+          <scm:Note>Various support components provide object construction
+            and property binding services referenced by Functor method
+            code.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/Reflector.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>lang/reflect/ConstructorChannel.java
+          </URI>
+          <URI>lang/reflect/MethodTranslator.java
+          </URI>
+          <URI>lang/spi/AbstractReflector.java
+          </URI>
+          <URI>lang/spi/GatherChannel.java
+          </URI>
+          <URI>data/lang/TupleConstructorChannel.java
+          </URI>
+          <URI>data/lang/TupleReflector.java
+          </URI>
+          
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+      
+        <date>2010-01-13
+        </date>
+        
+        <notes>
+          <scm:Note>Renamed PrimaryIdentifierNode to ContextIdentifierNode to
+            provide better clarity as to purpose.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/query/Selection.java
+          </URI>
+          <URI>lang/parser/ContextIdentifierNode.java
+          </URI>
+          <URI>lang/parser/PrimaryIdentifierNode.java
+          </URI>
+          <URI>lang/parser/ExpressionParser.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+      
+        <date>2010-01-13
+        </date>
+        
+        <notes>
+          <scm:Note>More infrastructure support for the use of Binding objects
+            in lieu of expressions to simplify spiralcraft.lang client code.
+          </scm:Note>
+          <scm:Note>Use of Binding objects allow spiralcraft.lang clients to
+            accept dynamic arguments via a pre-bound Binding object supplied
+            to a bean setter. 
+          </scm:Note>
+          <scm:Note>Binding is now mapped from a data Type to support 
+            externalization of Bindings in the same manner of Expressions 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/spi/BindingChannel.java
+          </URI>
+          <URI>data/reflect/ReflectionType.java
+          </URI>
+          <URI>data/types/standard/BindingType.java
+          </URI>
+          <URI>task/Debug.java
+          </URI>
+          <URI>task/Debug.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+      
+        <date>2010-01-13
+        </date>
+        
+        <notes>
+          <scm:Note>Make sure Expression text is reconstructed if no text is
+            provided on construction.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/Expression.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+      
+        <date>2010-01-13
+        </date>
+        
+        <notes>
+          <scm:Note>New "debugFormat(char)" method prints the text and numeric
+            value of a character to assist in debugging character related
+            issues.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/string/StringUtil.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+      
+        <date>2010-01-13
+        </date>
+        
+        <notes>
+          <scm:Note>Made ParsePosition object in LookaheadParseContext and
+            PushbackParserContext final to ensure that references will be
+            valid for the lifetime of the parse operation.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/text/
+        </path>
+        
+        <resources>
+          <URI>LookaheadParserContext.java
+          </URI>
+          <URI>PushbackParserContext.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+    </detail>
+  </scm:Change>
   
   <scm:Change>
     <revision>0.4.1
