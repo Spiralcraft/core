@@ -2,36 +2,40 @@ package spiralcraft.lang.spi;
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.log.ClassLog;
 
-@SuppressWarnings("unchecked")
-public class BindingChannel
-  extends AbstractChannel
+public class BindingChannel<T>
+  extends AbstractChannel<T>
 {
   private static final ClassLog log
     =ClassLog.getInstance(BindingChannel.class);
   
-  public final Channel sourceChannel;
-  public final Expression targetX;
-  public Channel targetChannel;
+  private final Channel<T> sourceChannel;
+
+  private final Expression<T> targetX;
+  private Channel<T> targetChannel;
+  private Binding<T> sourceBinding;
 
 
   public BindingChannel
-  (Channel sourceChannel,Expression targetX)
+    (Channel<T> sourceChannel,Expression<T> targetX)
   {
     super(sourceChannel.getReflector());
     this.sourceChannel=sourceChannel;
+
     this.targetX=targetX;
   }
 
 
   @Override
-  public Channel<?> resolve(Focus focus,String name,Expression[] params)
-  throws BindException
+  public <X> Channel<X> 
+    resolve(Focus<?> focus,String name,Expression<?>[] params)
+    throws BindException
   { 
     if (targetChannel==null)
     { throw new BindException("Target '"+targetX+"' not bound");
@@ -40,31 +44,59 @@ public class BindingChannel
   }
 
   @Override
-  public Reflector getReflector()
+  public Reflector<T> getReflector()
   { return super.getReflector();
   }
 
-  public void bindTarget(Focus targetFocus)
+  public void bindTarget(Focus<?> targetFocus)
   throws BindException
   { 
     targetChannel=targetFocus.bind(targetX);
-    if (!targetChannel.isWritable())
+
+// 
+//  writable is not a bind-time property
+//     
+//    if (!targetChannel.isWritable())
+//    { 
+//      throw new BindException
+//        ("Target '"+targetX+"' is not writable: "
+//        +targetChannel.toString()
+//        );
+//    }
+    
+    if (!targetChannel.getReflector()
+          .isAssignableFrom(sourceChannel.getReflector())
+       )
     { 
-      throw new BindException
-        ("Target '"+targetX+"' is not writable: "
-        +targetChannel.toString()
-        );
-    }  
+
+      if (targetChannel.getContentType().isAssignableFrom(Binding.class))
+      { 
+        // Provide a dynamic reference to the specified source data.
+        sourceBinding=new Binding<T>(sourceChannel);
+      }
+      else
+      {
+      
+        throw new BindException
+          ("Argument type mismatch: "
+            +targetChannel.getReflector().getTypeURI()
+            +" ("+targetChannel.getContentType().getName()+")"
+            +" is not assignable from "+sourceChannel.getReflector().getTypeURI()
+            +" ("+sourceChannel.getContentType().getName()+")"
+          );
+      }
+    }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  protected Object retrieve()
+  protected T retrieve()
   {
     if (targetChannel==null)
     { throw new IllegalStateException("Target '"+targetX+"' not bound");
     }
 
-    Object val=sourceChannel.get();
+    T val=sourceBinding!=null?(T) sourceBinding:sourceChannel.get();
     if (!targetChannel.set(val))
     { log.warning("Bound assignment failed");
     }
@@ -73,7 +105,7 @@ public class BindingChannel
 
   @Override
   protected boolean store(
-    Object val)
+    T val)
   throws AccessException
   { 
     boolean set=targetChannel.set(val);
