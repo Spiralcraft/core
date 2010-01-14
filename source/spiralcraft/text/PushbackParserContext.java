@@ -31,7 +31,7 @@ public class PushbackParserContext
 {
   private boolean eof;
   private PushbackReader _reader;
-  private ParsePosition position=new ParsePosition();
+  private final ParsePosition position=new ParsePosition();
 
   public PushbackParserContext(PushbackReader reader)
   { this._reader=reader;

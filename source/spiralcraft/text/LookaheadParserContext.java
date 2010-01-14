@@ -30,7 +30,7 @@ public class LookaheadParserContext
   private char _currentChar;
   private boolean _eof=false;
   private Reader _reader;
-  private ParsePosition position=new ParsePosition();
+  private final ParsePosition position=new ParsePosition();
 
   public LookaheadParserContext(Reader reader)
     throws ParseException
