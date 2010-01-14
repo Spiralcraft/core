@@ -15,9 +15,9 @@
 package spiralcraft.task;
 
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Channel;
-import spiralcraft.lang.Expression;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.log.Level;
 import spiralcraft.task.Task;
 import spiralcraft.util.ArrayUtil;
@@ -29,21 +29,22 @@ import spiralcraft.util.ArrayUtil;
  *
  */
 public class Debug<Tcontext>
-  extends Scenario<Tcontext,Void>
+  extends Scenario<Tcontext,String>
 {
 
-  protected Expression<Object> messageX;
-  protected Channel<Object> messageChannel;
-  protected Expression<Boolean> conditionX;
-  protected Channel<Boolean> conditionChannel;
+  protected Binding<Object> messageX;
+  protected Binding<Boolean> conditionX;
   
-
+  {
+    storeResults=true;
+    resultReflector=BeanReflector.<String>getInstance(String.class);
+  }
   
-  public void setMessageX(Expression<Object> messageX)
+  public void setMessageX(Binding<Object> messageX)
   { this.messageX=messageX;
   }
   
-  public void setConditionX(Expression<Boolean> conditionX)
+  public void setConditionX(Binding<Boolean> conditionX)
   { this.conditionX=conditionX;
   }
   
@@ -60,20 +61,23 @@ public class Debug<Tcontext>
         if (debug)
         { log.log(Level.FINE,this+": executing");
         }
-        Boolean condition=conditionChannel!=null?conditionChannel.get():true;
-        if (messageChannel!=null && Boolean.TRUE.equals(condition))
+        Boolean condition=conditionX!=null?conditionX.get():true;
+        if (messageX!=null && Boolean.TRUE.equals(condition))
         {
-          Object message=messageChannel.get();
+          Object message=messageX.get();
+          String messageString;
           if (message!=null && message.getClass().isArray())
           { 
-            log.debug(messageX.getText()
-              +" := ["+ArrayUtil.format(message,",","")+"]"
-              );
+            messageString=""+ArrayUtil.format(message,",","");
           }
           else
-          { log.debug(messageX.getText()+" := ["+message+"]");
+          { 
+            messageString=""+message;
           }
+          log.debug(messageX.getText()+" := ["+messageString+"]");
+          addResult(messageString);
         }
+
       }
     };    
   }
@@ -83,10 +87,10 @@ public class Debug<Tcontext>
     throws BindException
   {  
     if (messageX!=null)
-    { messageChannel=focusChain.bind(messageX);
+    { messageX.bind(focusChain);
     }
     if (conditionX!=null)
-    { conditionChannel=focusChain.bind(conditionX);
+    { conditionX.bind(focusChain);
     }
     super.bindChildren(focusChain);
   }
