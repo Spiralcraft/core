@@ -19,12 +19,12 @@ import java.util.HashMap;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
-import spiralcraft.lang.Functor;
 import spiralcraft.log.ClassLog;
 
 /**
@@ -42,7 +42,7 @@ public class GenericReflector<T>
   
   protected final Class<T> contentType;
   protected final URI typeURI;
-  protected HashMap<Signature,Functor<?,?>> functorMap;
+  protected HashMap<Signature,ChannelFactory<?,?>> enhancerMap;
   private boolean debug;
 
   public GenericReflector(URI typeURI,Class<T> contentType)
@@ -136,54 +136,71 @@ public class GenericReflector<T>
     }
   }
 
-  private void ensureFunctorMap()
+  private void ensureEnhancerMap()
   { 
-    if (functorMap==null)
-    { functorMap=new HashMap<Signature,Functor<?,?>>();
+    if (enhancerMap==null)
+    { enhancerMap=new HashMap<Signature,ChannelFactory<?,?>>();
     }
   }
   
+  private class AspectFactory<X>
+    implements ChannelFactory<X,X>
+  {
+    private final Reflector<X> enhancer;
+    
+    public AspectFactory(Reflector<X> enhancer)
+    { this.enhancer=enhancer;
+    }
+    
+    @Override
+    public Channel<X> bindChannel(
+      Channel<X> source,
+      Focus<?> focus,
+      Expression<?>[] arguments)
+      throws BindException
+    { return new AspectChannel<X>(enhancer,source);
+    }
+  }
+  
+  /**
+   * <p>Provide an enhanced reflector for the return value of the specified
+   *   signature
+   * </p>
+   * 
+   * @param <X>
+   * @param name
+   * @param params
+   * @param enhancer
+   */
   public <X> void enhance(String name,final Reflector<X> enhancer)
   { 
-    ensureFunctorMap();
-    functorMap.put
+    ensureEnhancerMap();
+    enhancerMap.put
       (new Signature(name,null)
-      ,new Functor<X,X>()
-      {
-
-        @Override
-        public Channel<X> bindChannel(
-          Channel<X> source,
-          Focus<?> focus,
-          Expression<?>[] arguments)
-          throws BindException
-        { return new AspectChannel<X>(enhancer,source);
-        }
-      }
+      ,new AspectFactory<X>(enhancer)
       );
   }
   
+  /**
+   * <p>Provide an enhanced reflector for the return value of the specified
+   *   signature
+   * </p>
+   * 
+   * @param <X>
+   * @param name
+   * @param params
+   * @param enhancer
+   */
   public <X> void enhance
     (String name
     ,Reflector<?>[] params
     ,final Reflector<X> enhancer
     )
   {
-    ensureFunctorMap();
-    functorMap.put
+    ensureEnhancerMap();
+    enhancerMap.put
       (new Signature(name,null,params)
-      ,new Functor<X,X>()
-      {
-
-        @Override
-        public Channel<X> bindChannel(
-          Channel<X> source,
-          Focus<?> focus,
-          Expression<?>[] arguments)
-          throws BindException
-        { return new AspectChannel<X>(enhancer,source);
-        }
-      }
+      ,new AspectFactory<X>(enhancer)
       );
   }
   
@@ -204,27 +221,53 @@ public class GenericReflector<T>
     { result= base.resolve(source,focus,name,params);
     }
     
-    if (functorMap!=null)
+    if (result!=null && enhancerMap!=null)
     { 
+
+      
       if (params==null)
       { 
-        Functor<X,X> functor
-          =(Functor<X,X>) functorMap.get(new Signature(name,null));
+        ChannelFactory<X,X> functor
+          =(ChannelFactory<X,X>) enhancerMap.get(new Signature(name,null));
         if (functor!=null)
-        { result=functor.bindChannel(result, focus, params);
+        { 
+          result=functor.bindChannel
+            ( result,focus, null);
         }
       }
       else if (params.length==0)
       {
-        Functor<X,X> functor
-          =(Functor<X,X>) functorMap.get
+        ChannelFactory<X,X> functor
+          =(ChannelFactory<X,X>) enhancerMap.get
             (new Signature(name,null,new Reflector[0]));
         if (functor!=null)
         { 
-          result=functor.bindChannel(result, focus, params);
+          result=functor.bindChannel( result, focus, new Expression<?>[0]);
           
         }
       }
+      else
+      {
+        Channel[] chans=new Channel[params.length];
+        Reflector[] sig=new Reflector[chans.length];
+        int i=0;
+        for (Expression e : params)
+        { 
+          chans[i]=focus.bind(e);
+          sig[i]=chans[i].getReflector();
+          i++;
+        }
+        
+        ChannelFactory<X,X> functor
+          =(ChannelFactory<X,X>) enhancerMap.get
+            (new Signature(name,null,sig));
+        if (functor!=null)
+        { 
+          result=functor.bindChannel( result,focus, params);
+          
+        }
+        
+      }      
     }
     // log.fine("GenericReflector resolved "+name+" to "+result);
     return result;
