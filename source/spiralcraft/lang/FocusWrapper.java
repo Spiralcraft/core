@@ -159,4 +159,8 @@ public abstract class FocusWrapper<Tfocus>
   { return focus.toFormattedString(prefix)+"{wrapped by "+super.toString()+"}";
   }
   
+  public boolean isContext(Channel<?> channel)
+  { return focus.isContext(channel);
+  }
+  
 }

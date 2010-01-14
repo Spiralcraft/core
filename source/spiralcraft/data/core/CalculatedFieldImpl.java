@@ -166,7 +166,7 @@ public class CalculatedFieldImpl<T>
       throw new BindException
         ("CalculatedField "+getURI()+" must have an expression");
     }
-    if (focus.getSubject()!=source)
+    if (!focus.isContext(source))
     { focus=focus.chain(source);
     }
     return focus.<T>bind(expression);

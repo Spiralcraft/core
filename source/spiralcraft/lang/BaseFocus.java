@@ -82,6 +82,9 @@ public abstract class BaseFocus<T>
   { return new NamespaceFocus<T>(this,resolver);
   }
   
+  public boolean isContext(Channel<?> channel)
+  { return getSubject()==channel && getContext()==channel;
+  }
 
   @SuppressWarnings("unchecked") // Heterogeneous hash map
   public synchronized <X> Channel<X> bind(Expression<X> expression)

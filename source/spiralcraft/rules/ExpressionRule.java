@@ -53,7 +53,7 @@ public class ExpressionRule<C,T>
     
     throws BindException
   { 
-    if (focus.getSubject()!=source)
+    if (!focus.isContext(source))
     { focus=focus.chain(source);
     }
     return new ExpressionRuleChannel((Focus<T>) focus);

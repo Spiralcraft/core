@@ -299,6 +299,7 @@ public interface Focus<T>
    */
   public <Tchannel> Focus<Tchannel> chain(Channel<Tchannel> channel);
 
+  
   /**
    * <p>Return a new Focus for the end of the Focus chain that adds a set
    *   of namespace prefix definitions.
@@ -311,6 +312,16 @@ public interface Focus<T>
    */
   public Focus<T> chain(PrefixResolver resolver);
   
+  /**
+   * <p>Indicate whether this Focus is a contextual Focus for the specified
+   *   channel- ie. the context and subject are the same instance as the
+   *   specified channel.
+   * </p>
+   * 
+   * @param channel
+   * @return
+   */
+  public boolean isContext(Channel<?> channel);
   
   /**
    * <p>A Channel that references the Focus object itself (primarily for

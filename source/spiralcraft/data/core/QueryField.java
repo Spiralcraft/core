@@ -107,7 +107,7 @@ public class QueryField
     throws BindException
   { 
     
-    if (focus.getSubject()!=source)
+    if (!focus.isContext(source))
     { focus=focus.chain(source);
     }
     

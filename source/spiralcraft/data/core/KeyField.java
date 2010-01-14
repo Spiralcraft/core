@@ -93,7 +93,7 @@ public class KeyField<T extends DataComposite>
     throws BindException
   { 
     
-    if (focus.getSubject()!=source)
+    if (!focus.isContext(source))
     { focus=focus.chain(source);
     }
     Focus<Tuple> keyFocus
