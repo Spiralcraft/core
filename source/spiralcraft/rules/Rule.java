@@ -14,7 +14,7 @@
 //
 package spiralcraft.rules;
 
-import spiralcraft.lang.Functor;
+import spiralcraft.lang.ChannelFactory;
 
 
 /**
@@ -30,7 +30,7 @@ import spiralcraft.lang.Functor;
  *
  */
 public interface Rule<C,T>
-  extends Functor<Violation<T>,T>
+  extends ChannelFactory<Violation<T>,T>
 {
 
   /**
