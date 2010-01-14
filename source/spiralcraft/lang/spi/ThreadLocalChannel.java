@@ -124,8 +124,10 @@ public class ThreadLocalChannel<T>
     }
     else
     {
-      throw new AccessException
+      AccessException x=new AccessException
         ("ThreadLocal not initialized for "+getReflector().getTypeURI());
+      log.log(Level.WARNING,x.getMessage(),x);
+      throw x;
     }
   }
 
@@ -143,8 +145,10 @@ public class ThreadLocalChannel<T>
     }
     else
     { 
-      throw new AccessException
+      AccessException x=new AccessException
         ("ThreadLocal not initialized for "+getReflector().getTypeURI());
+      log.log(Level.WARNING,x.getMessage(),x);
+      throw x;
     }
 
   }
