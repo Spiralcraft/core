@@ -17,6 +17,7 @@ package spiralcraft.lang.reflect;
 import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Functor;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
@@ -35,8 +36,10 @@ import spiralcraft.lang.spi.ArrayContainsChannel;
 import spiralcraft.lang.spi.ArrayListDecorator;
 import spiralcraft.lang.spi.ArrayRangeChannel;
 import spiralcraft.lang.spi.ArraySelectChannel;
+import spiralcraft.lang.spi.BindingChannel;
 import spiralcraft.lang.spi.CollectionSelectChannel;
 import spiralcraft.lang.spi.EnumerationIterationDecorator;
+import spiralcraft.lang.spi.GatherChannel;
 import spiralcraft.lang.spi.GenericCollectionDecorator;
 import spiralcraft.lang.spi.IterableDecorator;
 import spiralcraft.lang.spi.IterationProjector;
@@ -62,6 +65,7 @@ import java.beans.Introspector;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -74,6 +78,7 @@ import java.util.Enumeration;
 import java.lang.ref.WeakReference;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -90,7 +95,7 @@ import spiralcraft.log.ClassLog;
 @SuppressWarnings("unchecked") // Various levels of heterogeneous runtime ops
 public class BeanReflector<T>
   extends AbstractReflector<T>
-  implements Reflector<T>
+  implements Reflector<T>,Functor<T>
 {
   { 
     // Tickle the TypeModel so we can dynamically resolve these types
@@ -246,6 +251,7 @@ public class BeanReflector<T>
   private HashMap<String,BeanPropertyTranslator<?,T>> properties;
   private HashMap<String,BeanFieldTranslator<?,T>> fields;
   private HashMap<String,MethodTranslator<?,T>> methods;
+  private HashMap<String,ConstructorTranslator<T>> constructors;
   private Class<T> targetClass;
   private Type targetType;
   private URI uri;
@@ -308,6 +314,10 @@ public class BeanReflector<T>
       x.printStackTrace();
       throw new IllegalArgumentException("Error introspecting "+clazz);
     }
+    
+    if (Functor.class.isAssignableFrom(clazz))
+    { functor=true;
+    }
 
   }
 
@@ -341,6 +351,11 @@ public class BeanReflector<T>
       //   assign the primitive type
       return getContentType()
         .isAssignableFrom(ClassUtil.boxedEquivalent(otherClass));
+    }
+    else if (getContentType().isPrimitive())
+    { 
+      return ClassUtil.boxedEquivalent(getContentType())
+        .isAssignableFrom(otherClass);
     }
     else
     { return getContentType().isAssignableFrom(other.getContentType());
@@ -423,7 +438,8 @@ public class BeanReflector<T>
         ,Expression<?>[] params
         )
     throws BindException
-  { 
+  {    
+    
     if (name.startsWith("@"))
     { return this.<X>resolveMeta(source,focus,name,params);
     }
@@ -454,7 +470,18 @@ public class BeanReflector<T>
       for (int i=0;i<optics.length;i++)
       { optics[i]=focus.bind(params[i]);
       }
-      if (targetClass.isArray())
+      
+      if (name=="" && functor)
+      { 
+        Functor<?> functor=(Functor) source.get();
+        if (functor!=null)
+        { binding=(Channel<X>) functor.bindChannel(focus, optics);
+        }
+        else
+        { throw new BindException("Could not bind functor");
+        }
+      }
+      else if (targetClass.isArray())
       { binding=this.<X>getArrayMethod(source,name,optics);
       }
       else
@@ -800,13 +827,13 @@ public class BeanReflector<T>
         Channel<X> binding=source.<X>getCached(cacheKey);
         if (binding==null)
         { 
-          binding=new MethodChannel<X,T>(source,translator,params);
+          binding=new TranslatorChannel<X,T>(source,translator,params);
           source.cache(cacheKey,binding);
         }
         return binding;
       }
       else
-      { return new MethodChannel<X,T>(source,translator,params);
+      { return new TranslatorChannel<X,T>(source,translator,params);
       }
     }
     return null;
@@ -1056,6 +1083,141 @@ public class BeanReflector<T>
     return BeanReflector.getInstance(val.getClass());
   }
 
+  @Override
+  /**
+   * Create a constuctor channel
+   */
+  public Channel<T> bindChannel(
+    Focus<?> focus,
+    Channel<?>[] arguments)
+    throws BindException
+  {
+    
+    if (methodResolver==null)
+    { methodResolver=new MethodResolver(targetClass);
+    }
+    
+    ArrayList<Channel<?>> indexedParamList=new ArrayList<Channel<?>>();
+    ArrayList<Channel<?>> namedParamList=new ArrayList<Channel<?>>();
+    
+    boolean endOfParams=false;
+    for (Channel<?> chan : arguments)
+    { 
+      if (chan instanceof BindingChannel)
+      { 
+        endOfParams=true;
+        namedParamList.add(chan);
+      }
+      else
+      {
+        if (endOfParams)
+        { 
+          throw new BindException
+            ("Positional parameters must preceed named parameters");
+        }
+        indexedParamList.add(chan);
+        
+      }
+      
+    }
+    
+    StringBuffer sigbuf=new StringBuffer();
+    Class[] classSig=new Class[indexedParamList.size()];
+    sigbuf.append("");
+    for (int i=0;i<indexedParamList.size();i++)
+    {   
+      sigbuf.append(":");
+      classSig[i]=indexedParamList.get(i).getContentType();
+      if (classSig[i]==Void.class)
+      { classSig[i]=Object.class;
+      }
+      sigbuf.append(classSig[i].getName());
+    }
+    String sig=sigbuf.toString();
+
+    ConstructorTranslator<T> translator=null;
+    if (constructors==null)
+    { constructors=new HashMap<String,ConstructorTranslator<T>>();
+    }
+    else
+    { translator= constructors.get(sig);
+    }
+
+    if (translator==null)
+    {
+      try
+      {
+        Constructor<T> method
+          =(Constructor<T>) methodResolver.findConstructor(classSig);
+        
+        if (method!=null)
+        { 
+          translator=new ConstructorTranslator<T>(this,method);
+          constructors.put(sig,translator);
+        }
+      }
+      catch (NoSuchMethodException x)
+      { 
+        return null;
+//        throw new BindException
+//          ("Method "
+//          +name
+//          +"("+ArrayUtil.format(classSig,",","")
+//          +") not found in "+targetClass
+//          ,x
+//          );
+      }
+    }
+    
+    
+    // Create the channel to call the constructor
+    if (translator!=null)
+    { 
+      Channel<T> constructorChannel;
+      
+      Channel<Void> nullSource
+        =new SimpleChannel<Void>
+          (BeanReflector.<Void>getInstance(Void.class),null,true);
+        
+      Channel[] indexedParams
+        =indexedParamList.toArray(new Channel[indexedParamList.size()]);      
+      if (ENABLE_METHOD_BINDING_CACHE)
+      { 
+        MethodKey cacheKey=new MethodKey(translator,indexedParams);
+        constructorChannel=getSelfChannel().<T>getCached(cacheKey);
+        if (constructorChannel==null)
+        { 
+          constructorChannel
+            =new TranslatorChannel<T,Void>(nullSource,translator,indexedParams);
+          getSelfChannel().cache(cacheKey,constructorChannel);
+        }
+      }
+      else
+      { 
+        constructorChannel
+          =new TranslatorChannel<T,Void>(nullSource,translator,indexedParams);
+      }
+      
+      if (namedParamList.size()>0)
+      { 
+        constructorChannel
+          =new GatherChannel<T>
+            (constructorChannel
+            ,namedParamList.toArray
+              (new BindingChannel[namedParamList.size()])
+            );
+      }
+      
+      return constructorChannel;
+    }
+    
+    
+    
+    return null;
+
+
+  }
+
 }
 
 class MethodKey
@@ -1066,7 +1228,9 @@ class MethodKey
   {
     instanceSig=new Object[params.length+1];
     instanceSig[0]=translator;
-    System.arraycopy(params,0,instanceSig,1,params.length);
+    for (int i=1;i<instanceSig.length;i++)
+    { instanceSig[i]=params[i-1].getReflector();
+    }
   }
   
   @Override
