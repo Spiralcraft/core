@@ -100,8 +100,11 @@ class CredentialMapReflector
     
     if (protoMap.get(name)==null)
     { 
+      
       throw new BindException
-        ("Credential map does not contain credential '"+name+"'");
+        ("Credential map does not contain credential '"
+        +name+"' ("+protoMap.keySet()+")"
+        );
     }
     return new CredentialChannel
       (source,protoMap.get(name).getTokenType(),name);
