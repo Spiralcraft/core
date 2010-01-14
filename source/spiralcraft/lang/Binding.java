@@ -36,25 +36,59 @@ public class Binding<T>
 
   private final Expression<T> expression;
   
+  public Binding(Expression<T> expression)
+  { this.expression=expression;
+  }
+  
   public Binding(String expression)
     throws ParseException
   { this.expression=Expression.parse(expression);
   }
   
+  /**
+   * Create a pre-bound binding to
+   * 
+   * @param channel
+   */
+  public Binding(Channel<T> channel)
+  { 
+    this.channel=channel;
+    this.expression=null;
+  }
+    
+  public Expression<T> getExpression()
+  { return expression;
+  }
+  
+  public String getText()
+  { return expression!=null?expression.getText():null;
+  }
+  
   public void bind(Focus<?> focus)
     throws BindException
   { 
+    if (expression==null && channel!=null)
+    { 
+      // Pre-bound
+      return;
+    }
+    
     if (channel==null)
     { channel=focus.bind(expression);
     }
   }
   
   public void reset()
-  { channel=null;
+  { 
+    if (expression!=null)
+    { 
+      // Only non pre-bound expression can be reset
+      channel=null;
+    }
   }
   
   @Override
   public String toString()
-  { return super.toString()+": "+expression.toString()+" => "+channel.toString();
+  { return super.toString()+": "+expression+" => "+channel;
   }
 }
