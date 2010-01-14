@@ -16,7 +16,7 @@ package spiralcraft.text.translator;
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.Functor;
+import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.text.ParseException;
@@ -52,7 +52,7 @@ import spiralcraft.text.ParseException;
  *
  */
 public interface Translator
-  extends Functor<String,String>
+  extends ChannelFactory<String,String>
 {
 
   String translateOut(CharSequence local)
