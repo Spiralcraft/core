@@ -323,4 +323,22 @@ public class StringUtil
    
   }
   
+  /**
+   * Prints a string representation of a character's textual and integer
+   *   value
+   *   
+   * @param chr
+   * @return
+   */
+  public static String debugFormat(char chr)
+  {
+    String hex=Integer.toHexString(chr);
+    if (!Character.isISOControl(chr))
+    { return "'"+chr+"' ("+hex+")";
+    }
+    else
+    { return "("+hex+")";
+    }
+  }
+  
 }
