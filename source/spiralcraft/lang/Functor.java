@@ -29,10 +29,15 @@ package spiralcraft.lang;
  * @author mike
  *
  */
-public interface Functor<Tchannel,Tsource>
+public interface Functor<Tchannel>
 {
   /**
-   * <p>Creates a new Channel given a Focus
+   * <p>Creates a new Channel given a Focus and a set of arguments
+   * </p>
+   * 
+   * <p>The Functor implementation is responsible for calling
+   *   BindChannel.bindTarget(Focus<?>) on any BindingChannels with
+   *   a Focus that contains the binding target destinations
    * </p>
    * 
    * @param focus
@@ -40,9 +45,8 @@ public interface Functor<Tchannel,Tsource>
    * @throws BindException
    */
   Channel<Tchannel> bindChannel
-    (Channel<Tsource> source
-    ,Focus<?> focus
-    ,Expression<?>[] arguments
+    (Focus<?> focus
+    ,Channel<?>[] arguments
     )
     throws BindException;
 }
