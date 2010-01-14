@@ -137,11 +137,11 @@ public class TupleNode
     if (typeName!=null)
     { 
       builder.append
-        (" [*"+(typeNamespace!=null?typeNamespace+":":"")+typeName+"]");
+        (" [#"+(typeNamespace!=null?typeNamespace+":":"")+typeName+"]");
     }
     else if (typeURI!=null)
     { 
-      builder.append(" [*:"+typeURI+"]");
+      builder.append(" [#:"+typeURI+"]");
     }
     
     if (baseExtentNode!=null)
@@ -802,7 +802,7 @@ public class TupleNode
       out.append(prefix).append(" { ");
       
       if (typeURI!=null)
-      { out.append("[*:"+typeURI+"] ");
+      { out.append("[#:"+typeURI+"] ");
       }
       
       if (baseExtentNode!=null)
