@@ -70,6 +70,10 @@ public class Batch<I,R>
   private boolean parallel;
   
   private Scheduler scheduler;
+
+  { this.addChainResult=true;
+  }
+
   
 //  private ClosureFocus<?> itemClosureFocus;
   

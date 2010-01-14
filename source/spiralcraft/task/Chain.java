@@ -45,7 +45,8 @@ public class Chain<Tcontext,Tresult>
 
   
   protected Scenario<?,?> chain;
-  
+  protected boolean addChainResult=false;
+    
   protected class ChainTask
     extends AbstractTask
   {
@@ -63,7 +64,9 @@ public class Chain<Tcontext,Tresult>
         if (command.getException()!=null)
         { addException(command.getException());
         }
-        addResult(command);
+        if (addChainResult)
+        { addResult(command);
+        }
       }
     }
   }
