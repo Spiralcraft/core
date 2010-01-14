@@ -195,7 +195,7 @@ public abstract class Scenario<Tcontext,Tresult>
    * @return
    */
   @Override
-  protected final Reflector<? extends Command<Task,Tcontext,Tresult>> 
+  public final Reflector<? extends Command<Task,Tcontext,Tresult>> 
     getCommandReflector()
       throws BindException
   { 
@@ -257,6 +257,8 @@ public abstract class Scenario<Tcontext,Tresult>
       }
     }
     
+    focusChain=bindImports(focusChain);
+    
     Channel selfChannel
       =new SimpleChannel<Scenario<Tcontext,Tresult>>
         ((Reflector) reflect(),this,true);
@@ -284,7 +286,36 @@ public abstract class Scenario<Tcontext,Tresult>
       
   }
 
+  /**
+   * <p>Override to bind to the contextual Focus passed to this scenario and
+   *   to publish any references to be used further down the chain. This is
+   *   used for expressions that access the contextual Focus in a relative
+   *   manner to establish input data paths.
+   * </p>
+   * 
+   * <p>This is called after any context initializer is bound and before
+   *   the Scenario itself or any call specific expressions are bound.
+   * </p>
+   * 
+   * @param importChain
+   * @return
+   */
+  protected Focus<?> bindImports(Focus<?> importChain)
+    throws BindException
+  { return importChain;
+  }
   
+  /**
+   * <p>Override to bind to the Focus chain at the point where all call 
+   *   specific contextual data is available and to publish any references
+   *   to or establish the context for chained Scenarios. This is used to
+   *   bind internal Scenario-specific functionality
+   * </p>
+   * 
+   * 
+   * @param exportChain
+   * @return
+   */
   protected Focus<?> bindExports(Focus<?> exportChain)
     throws BindException
   { return exportChain;
