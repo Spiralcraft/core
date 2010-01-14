@@ -84,17 +84,11 @@ public class QueryXml<Tresult>
     if (timeoutSeconds==0)
     { timeoutSeconds=DEFAULT_TIMEOUT_SECONDS;
     }
-    bindImports(focusChain);
     focusChain=super.bind(focusChain);
     
     return focusChain;
   }
   
-  protected void bindImports(Focus<?> focus)
-    throws BindException
-  {
-
-  } 
   
   @Override
   protected Focus<?> bindExports(Focus<?> exportChain)
@@ -141,7 +135,12 @@ public class QueryXml<Tresult>
             { queryString.append("&");
             }
             queryString.append(binding.getAttribute()).append("=");
-            queryString.append(URLDataEncoder.encode(value));
+            String encodedValue=URLDataEncoder.encode(value);
+            queryString.append(encodedValue);
+            if (debug)
+            { log.fine("Encoded ["+value+"] to ["+encodedValue+"]");
+            }
+            
           }
         }
       }
