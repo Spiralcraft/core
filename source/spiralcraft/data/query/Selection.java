@@ -28,7 +28,7 @@ import spiralcraft.lang.parser.LiteralNode;
 import spiralcraft.lang.parser.LogicalAndNode;
 import spiralcraft.lang.parser.Node;
 import spiralcraft.lang.parser.ParentFocusNode;
-import spiralcraft.lang.parser.PrimaryIdentifierNode;
+import spiralcraft.lang.parser.ContextIdentifierNode;
 import spiralcraft.lang.parser.ResolveNode;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -209,9 +209,9 @@ public class Selection
           
         Node rhs=equalityNode.getRightOperand();
         Node validRhs=null;
-        if (rhs instanceof PrimaryIdentifierNode)
+        if (rhs instanceof ContextIdentifierNode)
         {
-          PrimaryIdentifierNode rhsIdent=(PrimaryIdentifierNode) rhs;
+          ContextIdentifierNode rhsIdent=(ContextIdentifierNode) rhs;
           if (rhsIdent.getSource()==null
               || rhsIdent.getSource() instanceof CurrentFocusNode
               )

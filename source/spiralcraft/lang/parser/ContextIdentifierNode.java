@@ -25,7 +25,7 @@ import spiralcraft.lang.BindException;
  * <p>A primary identifier is resolved
  *   against either the "default" Focus, if the identifier is "standalone", or 
  *   by a Focus specified using the <code>[ Focus-name ] identifier</code> syntax,
- *   which is reachable throug the "default" Focus.
+ *   which is reachable through the "default" Focus.
  * </p>
  *   
  * <p>A primary identifier will try to bind to an attribute in the Context of the
@@ -37,14 +37,14 @@ import spiralcraft.lang.BindException;
  *   form. The dot prefix always refers to the subject of the Focus.
  * </p>
  */
-public class PrimaryIdentifierNode
+public class ContextIdentifierNode
   extends Node
 {
 
   private final FocusNode _source;
   private final String _identifier;
 
-  public PrimaryIdentifierNode(FocusNode source,String identifier)
+  public ContextIdentifierNode(FocusNode source,String identifier)
   { 
     _source=source;
     _identifier=identifier;
@@ -58,8 +58,8 @@ public class PrimaryIdentifierNode
   @Override
   public Node copy(Object visitor)
   { 
-    PrimaryIdentifierNode copy
-      =new PrimaryIdentifierNode 
+    ContextIdentifierNode copy
+      =new ContextIdentifierNode 
       (_source!=null?(FocusNode) _source.copy(visitor):null,_identifier);
     if (copy._source==_source)
     { return this;
