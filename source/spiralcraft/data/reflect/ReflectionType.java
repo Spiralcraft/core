@@ -86,6 +86,7 @@ public class ReflectionType<T>
       ,Collection.class
       ,URI.class
       ,spiralcraft.lang.Expression.class
+      ,spiralcraft.lang.Binding.class
       ,Date.class
       ,Pattern.class
       );
