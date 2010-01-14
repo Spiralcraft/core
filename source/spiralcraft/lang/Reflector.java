@@ -221,4 +221,12 @@ public interface Reflector<T>
    */
   public boolean accepts(Object val);
   
+  /**
+   * <p>Indicate whether the referenced object is a callable Functor.
+   * </p>
+   * 
+   * @return
+   */
+  public boolean isFunctor();
+  
 }
