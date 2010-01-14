@@ -20,9 +20,9 @@ import spiralcraft.lang.Reflector;
 
 import spiralcraft.lang.BindException;
 import java.net.URI;
-import java.util.HashSet;
 
 import spiralcraft.lang.TypeModel;
+import spiralcraft.util.ArrayUtil;
 
 /**
  * An expression node which resolves a Focus from somewhere in the hierarchy
@@ -154,7 +154,7 @@ public class TypeFocusNode
       // log.fine(uri.toString()+"  :  "+namespace+":"+suffix);
     }
     
-    HashSet<TypeModel> systems=new HashSet<TypeModel>();
+//    HashSet<TypeModel> systems=new HashSet<TypeModel>();
     
 // Not used anymore because we now have TypeModel registration
 //
@@ -170,30 +170,32 @@ public class TypeFocusNode
 //      }
 //    }
 
-    for (TypeModel model : TypeModel.getRegisteredModels())
-    { 
-      if (!systems.contains(model))
-      { systems.add(model);
-      }
-    }
+//    for (TypeModel model : TypeModel.getRegisteredModels())
+//    { 
+//      if (!systems.contains(model))
+//      { systems.add(model);
+//      }
+//    }
       
-    // Search the type models for the type
-    Reflector<?> reflector=null;
-    for (TypeModel model : systems)
-    { 
-      if (reflector==null)
-      { reflector=model.findType(uri);
-      }
-      else
-      {
-        Reflector<?> altReflector=model.findType(uri);
-        if (altReflector!=null && altReflector!=reflector)
-        { 
-          reflector
-            =reflector.disambiguate(altReflector);    
-        }
-      }
-    }
+//    // Search the type models for the type
+//    Reflector<?> reflector=null;
+//    for (TypeModel model : systems)
+//    { 
+//      if (reflector==null)
+//      { reflector=model.findType(uri);
+//      }
+//      else
+//      {
+//        Reflector<?> altReflector=model.findType(uri);
+//        if (altReflector!=null && altReflector!=reflector)
+//        { 
+//          reflector
+//            =reflector.disambiguate(altReflector);    
+//        }
+//      }
+//    }
+    
+    Reflector<?> reflector=TypeModel.searchType(uri);
     
     Focus<?> newFocus=null;
     if (reflector!=null)
@@ -204,7 +206,10 @@ public class TypeFocusNode
     { return newFocus;
     }
     else
-    { throw new BindException("Type '"+uri+"' not found. "+systems);
+    { throw new BindException
+        ("Type '"+uri+"' not found. "
+          +ArrayUtil.format(TypeModel.getRegisteredModels(),",","")
+        );
     }
   }
 

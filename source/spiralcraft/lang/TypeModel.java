@@ -35,6 +35,32 @@ public abstract class TypeModel
   private static final ClassLoaderLocal<List<TypeModel>> registeredModels
     =new ClassLoaderLocal<List<TypeModel>>();
   
+  @SuppressWarnings("unchecked")
+  public static <T> Reflector<T> searchType(URI uri)
+    throws BindException
+  {
+    Reflector<T> reflector=null;
+    
+    // Search the type models for the type
+    for (TypeModel model : TypeModel.getRegisteredModels())
+    { 
+      if (reflector==null)
+      { reflector=model.findType(uri);
+      }
+      else
+      {
+        Reflector<T> altReflector=model.findType(uri);
+        if (altReflector!=null && altReflector!=reflector)
+        { 
+          reflector
+            =(Reflector<T>) reflector.disambiguate(altReflector);    
+        }
+      }
+    }
+    return reflector;
+  }
+  
+  
   /** 
    * Register the Type model in the ClassLoader that loaded it
    * 
