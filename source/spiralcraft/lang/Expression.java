@@ -125,13 +125,18 @@ public class Expression<T>
   {
     Expression<X> canonical=parse(text);
     _root=canonical.getRootNode();
-    _text=text;
+    this._text=text;
   }
 
   public Expression(Node root,String text)
   { 
     _root=root;
-    _text=text;
+    if (text==null)
+    { this._text=root.reconstruct();
+    }
+    else
+    { this._text=text;
+    }
   }
   
   public Expression(Node root)
