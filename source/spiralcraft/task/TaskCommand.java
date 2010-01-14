@@ -40,6 +40,7 @@ public class TaskCommand<Tcontext,Tresult>
   protected boolean collectResults=false;
   protected final Scenario<Tcontext,Tresult> scenario;
   protected ClosureFocus<?>.Closure closure;
+  protected Object error;
   
   public TaskCommand
     (Scenario<Tcontext,Tresult> scenario,Task task,Tcontext initContext)
@@ -51,11 +52,20 @@ public class TaskCommand<Tcontext,Tresult>
     if (initContext!=null)
     { setContext(initContext);
     }
+
     
   }
   
   public Task getTask()
   { return task;
+  }
+  
+  public void setError(Object error)
+  { this.error=error;
+  }
+  
+  public Object getError(Object error)
+  { return error;
   }
   
   @Override
@@ -80,6 +90,12 @@ public class TaskCommand<Tcontext,Tresult>
         task.run();
         setException(task.getException());
         onTaskCompletion();
+      }
+      if (error!=null)
+      { 
+        setException
+          (new Exception
+            ("Task completed in error state: error="+error.toString()));
       }
     }
     catch (RuntimeException x)
@@ -171,6 +187,17 @@ public class TaskCommand<Tcontext,Tresult>
           ("Cannot collect results- existing result has unexpected type "
           +getResult()+". Scenario: "+getTarget()
           );
+      }
+    }
+    else if (scenario.getStoreResults())
+    { 
+      if (getResult()==null)
+      { setResult((Tresult) result);
+      }
+      else
+      { 
+        scenario.log.warning
+          ("Replacing previous task result "+getResult()+" with "+result);
       }
     }
   }
