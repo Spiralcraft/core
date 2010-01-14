@@ -16,6 +16,7 @@ package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
+import spiralcraft.log.ClassLog;
 
 import spiralcraft.io.LookaheadStreamTokenizer;
 
@@ -34,6 +35,8 @@ import java.util.List;
 public class ExpressionParser
 {
   private static boolean debug=false;
+  private static final ClassLog log
+    =ClassLog.getInstance(ExpressionParser.class);
 
   private StringBuffer _progressBuffer;
   private LookaheadStreamTokenizer _tokenizer;
@@ -604,12 +607,13 @@ public class ExpressionParser
   //
 
   /**
-   * PostfixExpression -> FocusExpression
-   *                     ( ArraySelectorExpression 
-   *                     | "." DereferenceExpression
-   *                     | "#" AggregateProjectionExpression
-   *                     | "{" SubcontextExpression "}"
-   *                     ) *
+   * PostfixExpression -> 
+   *   FocusExpression
+   *   ( ArraySelectorExpression 
+   *   | "." ( DereferenceExpression | ObjectLiteralExpression)
+   *   | "#" AggregateProjectionExpression
+   *   | "{" SubcontextExpression "}"
+   *   ) *
    */
   private Node parsePostfixExpression()
     throws ParseException
@@ -626,6 +630,7 @@ public class ExpressionParser
     }
   }
   
+  // Called from parsePostfixExpression() and internally
   private Node parsePostfixExpressionRest(Node primary)
     throws ParseException
   {
@@ -637,16 +642,13 @@ public class ExpressionParser
           (parseArraySelectorExpression(primary)
           );
       case '.':
-        if (_tokenizer.lookahead.ttype==StreamTokenizer.TT_WORD)
-        {
-          consumeToken();
-          return parsePostfixExpressionRest
-            (parseDereferenceExpression(primary)
-            );
+        Node ret=parsePostfixDotExpression(primary);
+        if (ret!=null)
+        { return parsePostfixExpressionRest(ret);
         }
         else
         { 
-          // .. and .! are RangeExpression tokens
+          // Fall back up- end of postfix expression- not a postfix "."
           return primary;
         }
       case '#':
@@ -664,6 +666,24 @@ public class ExpressionParser
     
   }
   
+  private Node parsePostfixDotExpression(Node primary)
+    throws ParseException
+  {
+    switch (_tokenizer.lookahead.ttype)
+    {
+      case StreamTokenizer.TT_WORD:
+      case '(':
+        consumeToken();
+        return parseDereferenceExpression(primary);
+      case '[':
+        consumeToken();
+        return parseObjectLiteralExpression(primary);
+      default:
+        // .. and .! are RangeExpression tokens, so just ignore
+        return null;
+    }
+  }
+  
   /**
    * SubcontextExpression ->    "{" Expression "}"
    * 
@@ -674,7 +694,11 @@ public class ExpressionParser
     throws ParseException
   {
     expect('{');
-    Node ret=primary.subcontext(parseExpression());
+    Node subexpression=parseExpression();
+    if (subexpression==null)
+    { throwUnexpected("Subcontext expression cannot be empty");
+    }
+    Node ret=primary.subcontext(subexpression);
     expect('}');
     return ret;
   }
@@ -711,59 +735,90 @@ public class ExpressionParser
   
   
   /**
-   * FocusExpression -> (  FocusSpecifier  ) 
-   *                    ( "." FocusRelativeExpression 
-   *                      | IdentifierExpression
-   *                      | PrimaryExpression
-   *                    )
+   * FocusExpression -> 
+   *   (  FocusSpecifier  ) 
+   *     |
+   *   ( "." FocusRelativeExpression 
+   *     | IdentifierExpression
+   *     | PrimaryExpression
+   *   )
    */
   private Node parseFocusExpression()
     throws ParseException
   { 
-    FocusNode focusNode=null;
     if (_tokenizer.ttype=='[')
-    { focusNode=parseFocusSpecifier();
+    { 
+      if (_tokenizer.lookahead.ttype=='*')
+      { 
+        return parseObjectLiteralExpression(new CurrentFocusNode());
+
+      }
+      else
+      { 
+        FocusNode focusSpec=parseFocusSpecifier();
+        
+        if (_tokenizer.ttype==StreamTokenizer.TT_WORD)
+        { 
+          log.warning
+            ("Deprecated expression syntax '"
+            +focusSpec.reconstruct()+" "+_tokenizer.sval
+            +"'. Use '"
+            +focusSpec.reconstruct()+"."+_tokenizer.sval
+            +"' instead."
+            );
+          return parseDereferenceExpression(focusSpec);
+        }
+        else
+        { return focusSpec;
+        }
+      }
     }
 
     switch (_tokenizer.ttype)
     {
       case StreamTokenizer.TT_EOF:
-        if (focusNode!=null)
-        { return focusNode;
-        }
-        else
-        { throwUnexpected();
-        }
+        // null/empty expression
+        throwUnexpected();
         return null;
       case '.':
-        consumeToken();
-
-        if (_tokenizer.ttype!=StreamTokenizer.TT_WORD)
+        
+        FocusNode focusNode=new CurrentFocusNode(".");
+        switch (_tokenizer.lookahead.ttype)
         {
-          if (focusNode==null)
-          { focusNode=new CurrentFocusNode(".");
-          }          
-          Node ret=parseFocusRelativeExpression(focusNode);
-          if (debug)
-          { alert("parseFocusExpression():'..' "+ret.reconstruct());
-          }
-          return ret;
-        }
-        else
-        {
-          if (focusNode==null)
-          { focusNode=new CurrentFocusNode();
-          }
-          Node ret=parseDereferenceExpression(focusNode);
-          if (debug)
-          { alert("parseFocusExpression():'.' "+ret.reconstruct());
-          }
-          return ret;
+          case '.':
+            // String of '.' characters means traverse up Focus chain
+            consumeToken();      
+            Node fre=parseFocusRelativeExpression(focusNode);
+            if (debug)
+            { alert("parseFocusExpression():'..' "+fre.reconstruct());
+            }
+            return fre;
+          case '[':
+            // This would normally be a ObjectLiteral, but we need a way
+            //   to subscript the subject if it is an array, and we can already 
+            //  run an ObjectLiteral against the subject without the '.'.
+            consumeToken();      
+            Node asub=parseArraySelectorExpression(focusNode);
+            if (debug)
+            { alert("parseFocusExpression():'..' "+asub.reconstruct());
+            }
+            return asub;
+          default:
+            Node dotExpr=parsePostfixDotExpression(focusNode);
+            if (dotExpr!=null)
+            { return dotExpr;
+            }
+            else
+            { 
+              // Reference is to subject of current focus with no postfix
+              consumeToken();
+              return focusNode;
+            }
         }
       case StreamTokenizer.TT_WORD:
         // Either a literal, or 
         
-        Node ret=parsePrimaryExpression(focusNode);
+        Node ret=parsePrimaryExpression(new CurrentFocusNode());
         if (debug)
         { alert("parseFocusExpression.TT_WORD "+ret.reconstruct());
         }
@@ -775,14 +830,13 @@ public class ExpressionParser
         
         Node result = parsePrimaryExpression(new CurrentFocusNode());
         // No result and no focus node indicates end of expression
-        return result!=null?result:focusNode;
+        return result;
         
     }
   }
 
   /**
-   * FocusRelativeExpression -> "." FocusRelativeExpression 
-   *                            | PostfixExpressionRest
+   * FocusRelativeExpression -> "." ( FocusRelativeExpression )
    */
   private Node parseFocusRelativeExpression(FocusNode focusNode)
     throws ParseException
@@ -796,33 +850,68 @@ public class ExpressionParser
     
     switch (_tokenizer.ttype)
     {
-      //case StreamTokenizer.TT_EOF:
-        // implicit 'this', refers to subject of focus
-        //return focusNode;
-      case StreamTokenizer.TT_WORD:
-        // a name resolve or method call against the subject of the focus
-        return parseDereferenceExpression(focusNode);
-      case '[':
-        // an array subscript against the subject of the focus
-      case '!': 
-        // a meta-reference against the subject of the focus
-      case '#': 
-        // an aggregate projection against the subject of the focus
-      case '{': 
-        // an tuple projection against the subject of the focus
-        return focusNode;
       case '.':
         // The parent focus
-        consumeToken();
         FocusNode parentFocusNode=new ParentFocusNode(focusNode);
-        return parseFocusRelativeExpression(parentFocusNode);
+        switch (_tokenizer.lookahead.ttype)
+        {
+          case '.':
+            // String of '.' characters means traverse up Focus chain
+            consumeToken();      
+            Node fre=parseFocusRelativeExpression(parentFocusNode);
+            if (debug)
+            { alert("parseFocusExpression():'..' "+fre.reconstruct());
+            }
+            return fre;
+          case '[':
+            // This would normally be a ObjectLiteral, but we need a way
+            //   to subscript the subject if it is an array, and we can already 
+            //  run an ObjectLiteral against the subject without the '.'.
+            consumeToken();      
+            Node asub=parseArraySelectorExpression(parentFocusNode);
+            if (debug)
+            { alert("parseFocusExpression():'..' "+asub.reconstruct());
+            }
+            return asub;
+          default:
+            Node dotExpr=parsePostfixDotExpression(parentFocusNode);
+            if (dotExpr!=null)
+            { return dotExpr;
+            }
+            else
+            { 
+              // Reference is to subject of current focus with no postfix
+              consumeToken();
+              return parentFocusNode;
+            }
+        }
+        
       default:
-        // implicit 'this', refers to subject of focus
         return focusNode;
-        // throwUnexpected();
-        // return null;
     }
   }
+  
+  @SuppressWarnings("unchecked")
+  private Node parseObjectLiteralExpression(Node source)
+    throws ParseException
+  {
+    expect('[');
+    expect('*');
+
+    String typeString=parseURIName("]{");
+
+    List<Node> params=null;
+    if (_tokenizer.ttype=='{')
+    { 
+      consumeToken();
+      params=parseExpressionList();
+      expect('}');
+    }
+    expect(']');
+
+    return new ObjectLiteralNode(source,typeString,params);
+  }
+  
   
   /**
    * ExpressionList -> Expression ("," Expression)*
@@ -888,6 +977,7 @@ public class ExpressionParser
    *                    | "(" Expression ")"
    *                    | Tuple
    */
+  // Called only from parseFocusExpression
   @SuppressWarnings("unchecked")
   private Node parsePrimaryExpression(FocusNode focus)
     throws ParseException
@@ -915,7 +1005,7 @@ public class ExpressionParser
         { node=parseNumber();
         }
         else
-        { node=parseIdentifierExpression(focus);
+        { node=parseContextExpression(focus);
         }
         break;
       case '"':
@@ -972,12 +1062,13 @@ public class ExpressionParser
     expect('{');
     
     if (_tokenizer.ttype=='['
-        && _tokenizer.lookahead.ttype=='*'
+        && _tokenizer.lookahead.ttype=='#'
        )
     {
+      // Publish as specified URI 
       expect('[');
-      expect('*');
-      tuple.setTypeQName(parseURIName(']'));
+      expect('#');
+      tuple.setTypeQName(parseURIName("]"));
       expect(']');
     }
     
@@ -1056,20 +1147,27 @@ public class ExpressionParser
   
   
   /**
-   * DereferenceExpression -> Name ( "(" expressionList ")" )
+   * DereferenceExpressionPart ->  Name ( "(" expressionList ")" )
+   *                           | "(" expressionList ")"
    */
   private Node parseDereferenceExpression(Node primary)
     throws ParseException
   { 
-    if (_tokenizer.ttype!=StreamTokenizer.TT_WORD)
+    if (_tokenizer.ttype!=StreamTokenizer.TT_WORD
+        && _tokenizer.ttype!='('
+       )
     { 
       throwUnexpected();
       return null;
     }
     else
     { 
-      String name=_tokenizer.sval;
-      consumeToken();
+      String name="";
+      if (_tokenizer.ttype==StreamTokenizer.TT_WORD)
+      { 
+        name=_tokenizer.sval;
+        consumeToken();
+      }
       if (_tokenizer.ttype=='(')
       { 
         // Method call
@@ -1089,9 +1187,10 @@ public class ExpressionParser
   }
 
   /**
-   * IdentifierExpression -> Name ( "(" expressionList ")" )
+   * ContextExpression -> Name ( "(" expressionList ")" )
    */
-  private Node parseIdentifierExpression(FocusNode focus)
+  // Called only from parsePrimaryExpression
+  private Node parseContextExpression(FocusNode focus)
     throws ParseException
   { 
     if (_tokenizer.ttype!=StreamTokenizer.TT_WORD)
@@ -1111,13 +1210,13 @@ public class ExpressionParser
         Node node=new ContextNode(focus)
           .call(name,parseExpressionList());
         expect(')');
-        return parsePostfixExpressionRest(node);
+        return node;
       }
       else
       {
         // The PrimaryIdentifierNode is the node that will resolve
         //   the identifier. Pass it through.
-        return new PrimaryIdentifierNode(focus,name);
+        return new ContextIdentifierNode(focus,name);
       }
     }
   }
@@ -1209,14 +1308,13 @@ public class ExpressionParser
   /**
    * FocusSpecifier -> '[' ('@') URI ']'
    */
-  @SuppressWarnings("fallthrough")
   private FocusNode parseFocusSpecifier()
     throws ParseException
   {
     
     expect('[');
 
-    String focusString=parseURIName(']');
+    String focusString=parseURIName("]");
 
     expect(']');
 
@@ -1235,23 +1333,23 @@ public class ExpressionParser
   }
   
 
-  private String parseURIName(int endToken)
+  private String parseURIName(String endTokens)
   { 
     StringBuffer uriName=new StringBuffer();
     
     String uriPart;
-    while ( (uriPart=parseURIPart(endToken))!=null)
+    while ( (uriPart=parseURIPart(endTokens))!=null)
     { uriName.append(uriPart);
     }
       
     return uriName.toString();
   }
 
-  private String parseURIPart(int endToken)
+  private String parseURIPart(String endTokens)
   {
     String ret;
     
-    if (_tokenizer.ttype==endToken)
+    if (endTokens.indexOf(_tokenizer.ttype)>=0)
     { return null;
     }
     
