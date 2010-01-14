@@ -131,7 +131,8 @@ class MethodTranslator<Tprop,Tbean>
     {
       throw new RuntimeException
         ("Error invoking method "+_method
-        +" on "+value+" with "
+        +" on "+value+(value!=null?" ("+value.getClass()+")":"")
+        +" with "
         +"["+ArrayUtil.format(paramValues,",","\"")+"]"
         ,x
         );
