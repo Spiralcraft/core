@@ -95,7 +95,7 @@ public class MethodCallNode
   { 
     StringBuilder builder=new StringBuilder();
     builder.append(_source.reconstruct());
-    builder.append("."+_identifierName);
+    builder.append("."+(_identifierName!=null?_identifierName:""));
     builder.append(" ( ");
     boolean first=true;
     for (Node node:_parameterNodes)
@@ -134,6 +134,9 @@ public class MethodCallNode
 //    { System.out.println("MethodCallNode "+toString()+" param:"+param.toString());
 //    }
     
+    if (_identifierName=="" && !source.getReflector().isFunctor())
+    { throw new BindException("Not a functor: "+source.getReflector());
+    }
     Channel<?> ret=source
       .resolve(focus
               ,_identifierName
@@ -143,8 +146,19 @@ public class MethodCallNode
 //    System.out.println("MethodCallNode "+toString()+" bound to "+ret);
     
     if (ret==null)
-    { throw new BindException("Could not bind method '"+_identifierName+"' operator in "+_source.toString());
+    { 
+      throw new BindException
+        ("Could not bind method '"
+        +(_identifierName!=null
+          ?_identifierName
+          :"(functor)"
+          )
+        +"' in "
+        +_source.toString()
+        );
     }
+    
+    
     return ret;
   }
   
