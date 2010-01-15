@@ -249,7 +249,7 @@ public class ObjectLiteralNode<Tobject,Treturn>
         Channel<Treturn> returnChannel;
         if (object instanceof ChannelFactory)
         {
-          log.fine("Binding ChannelFactory "+object);
+          //log.fine("Binding ChannelFactory "+object);
           // The object itself creates its own channel from the source
           // By not using sourceFocus here, we give the ChannelFactory
           //   an opportunity to reference objects with the same URI
@@ -261,7 +261,7 @@ public class ObjectLiteralNode<Tobject,Treturn>
         }
         else
         { 
-          log.fine("Exposing "+object);
+          //log.fine("Exposing "+object);
           // Make the object itself available
           Reflector<Tobject> targetReflector=constructorChannel.getReflector();
           if (object instanceof Reflectable<?>)
