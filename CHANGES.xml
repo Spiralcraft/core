@@ -2,6 +2,54 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
+    <revision>0.4.2.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-01-17
+    </date>
+    
+    <notes>
+      <scm:Note>Minor fixes and enhancements
+      </scm:Note>
+    </notes>
+    
+    <detail>
+
+      <scm:Change>
+        <scm:Note>Removed debugging messages
+        </scm:Note>
+        
+        <path>/source/spiralcraft/lang/parser/ObjectLiteralNode.java
+        </path>
+      
+      </scm:Change>
+      
+      <scm:Change>
+        <scm:Note>Use context substitution for value of "ref" attribute
+          to enable customization of resource location.
+        </scm:Note>
+        
+        <path>/source/spiralcraft/data/sax/DataHandler.java
+        </path>
+      
+      </scm:Change>
+      
+      <scm:Change>
+        <scm:Note>Assert parameters for @tune and @log to fix NPE
+        </scm:Note>
+        
+        <path>/source/spiralcraft/lang/spi/AbstractReflector.java
+        </path>
+      
+      </scm:Change>
+
+    </detail>
+  </scm:Change>    
+
+  <scm:Change>
     <revision>0.4.2
     </revision>
     
