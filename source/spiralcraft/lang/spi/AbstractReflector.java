@@ -174,15 +174,25 @@ public abstract class AbstractReflector<T>
     }
     else if (name.equals("@log") && params.length==1)
     { 
+      assertSingleParameter(params,name,"String");
       channel=new LogChannel
         (source,focus,params[0]);
     }
     else if (name.equals("@tune") && params.length==1)
     { 
+      assertSingleParameter(params,name,"String");
       channel=new TuneChannel
         (source,focus,params[0]);
     }
     return (Channel<X>) channel;
+  }
+  
+  protected void assertSingleParameter(Expression<?>[] params,String name,String type)
+    throws BindException
+  { 
+    if (params==null || params.length!=1)
+    { throw new BindException(name+" accepts a single parameter of type "+type);
+    }
   }
   
   private <X extends T> Channel<X> castChannel
