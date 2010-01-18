@@ -30,6 +30,8 @@ import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.log.ClassLog;
+import spiralcraft.text.ParseException;
+import spiralcraft.util.ContextDictionary;
 
 
 import org.xml.sax.SAXException;
@@ -356,7 +358,7 @@ public class DataHandler
         {
         }
         else if (attributes.getLocalName(i).equals("ref"))
-        { ref=resolveRef(attributes.getValue(i));
+        { ref=resolveRef(contextualize(attributes,i));
         }
         else
         { 
@@ -505,7 +507,7 @@ public class DataHandler
         {
         }
         else if (attributes.getLocalName(i).equals("ref"))
-        { ref=resolveRef(attributes.getValue(i));
+        { ref=resolveRef(contextualize(attributes,i));
         }
         else
         { 
@@ -694,7 +696,7 @@ public class DataHandler
         {
         }
         else if (attributes.getLocalName(i).equals("ref"))
-        { ref=resolveRef(attributes.getValue(i));
+        { ref=resolveRef(contextualize(attributes,i));
         }
         else
         { 
@@ -716,6 +718,19 @@ public class DataHandler
     { addObject(child.getObject());
     }
     
+  }
+  
+  protected String contextualize(Attributes attributes,int pos)
+    throws DataException
+  { 
+    try
+    { return ContextDictionary.substitute(attributes.getValue(pos));
+    }
+    catch (ParseException x)
+    { throw new DataException
+        ("Error contextualizing '"
+        +attributes.getQName(pos)+"'=["+attributes.getValue(pos)+"]",x);
+    }
   }
   
   /**
@@ -747,7 +762,7 @@ public class DataHandler
         {
         }
         else if (attributes.getLocalName(i).equals("ref"))
-        { ref=resolveRef(attributes.getValue(i));
+        { ref=resolveRef(contextualize(attributes,i));
         }
         else
         { 
