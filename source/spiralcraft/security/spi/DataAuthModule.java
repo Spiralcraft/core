@@ -214,6 +214,13 @@ public class DataAuthModule
         ("No data source for DataAuthenticator");
     }
     
+    if (accountQuery==null)
+    { 
+      throw new BindException
+        ("DataAuthModule.accountQuery must be provided to resolve user " 
+        +"account from context" 
+        );
+    }
     
     // Bind the user lookup query to the credential Focus, which serves as
     //   the parameter Focus.
