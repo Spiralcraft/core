@@ -1,0 +1,16 @@
+<secauth:Authenticator
+  xmlns:secauth="class:/spiralcraft/security/auth/"
+  xmlns:secspi="class:/spiralcraft/security/spi/"
+  >
+  <debug>true
+  </debug>
+  <authModules>
+    <secspi:PasswordDataAuthModule>
+      <debug>true
+      </debug>
+    
+    
+    </secspi:PasswordDataAuthModule>
+  </authModules>
+
+</secauth:Authenticator>

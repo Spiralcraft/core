@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<security:Login.list xmlns:security="class:/spiralcraft/security/">
+  <security:Login>
+    <principalId>1</principalId>
+    <username>UserOne</username>
+    <searchname>userone</searchname>
+    <clearpass>testOne</clearpass>
+  </security:Login>
+  <security:Login>
+    <principalId>2</principalId>
+    <username>UserTwo</username>
+    <searchname>usertwo</searchname>
+    <clearpass>testTwo</clearpass>
+  </security:Login>
+</security:Login.list>

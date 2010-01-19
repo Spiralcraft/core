@@ -72,6 +72,10 @@
         </vfs:Copy>
         
         <dtest:DataTest/>
+
+        <sectest:AuthTest
+          xmlns:sectest="class:/spiralcraft/security/test/"
+        />
         
       </scenarios>
     </task:Sequence>

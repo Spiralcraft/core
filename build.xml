@@ -2,7 +2,7 @@
 
   <property name="classpath" value=""/>
   <property name="module" value="core"/>
-  <property name="buildVersion" value="0.4.2.1"/>
+  <property name="buildVersion" value="0.4.2.2"/>
     
   <import file="../../build/build-spiralcraft-common.xml"/>
   

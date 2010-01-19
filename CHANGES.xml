@@ -2,6 +2,107 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
+    <revision>0.4.2.2
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-01-18
+    </date>
+    
+    <notes>
+      <scm:Note>Refactored spiralcraft.security.auth package to support
+        multiple authentication modules.
+      </scm:Note>
+      <scm:Note>Added a Join query and backing functionality
+      </scm:Note>
+      <scm:Note>Misc fixes
+      </scm:Note>
+    </notes>
+    
+    <detail>
+
+      <scm:Change>
+        <scm:Note>Refactored spiralcraft.security.auth package to support
+        multiple authentication modules.
+        </scm:Note>
+        
+        <scm:Note>Authenticator and AuthSession are now concrete classes that
+          are fully functional on their own. 
+        </scm:Note>
+        <scm:Note>The functionality previously in DataAuthenticator has been
+          abstracted into a a DataAuthModule and a PasswordDataAuthModule.
+          DataAuthenticator is now deprecated, and will probably disappear
+          in the 0.5 series. 
+        </scm:Note>
+        
+        <path>source/spiralcraft/security/
+        </path>
+        
+        <resources>
+          <URI>auth/Authenticator.java
+          </URI>
+          <URI>auth/AuthModule.java
+          </URI>
+          <URI>auth/AuthSession.java
+          </URI>
+          <URI>auth/TestAuthenticator.java
+          </URI>
+          <URI>spi/AbstractAuthModule.java
+          </URI>
+          <URI>spi/DataAuthenticator.java
+          </URI>
+          <URI>spi/DataAuthModule.java
+          </URI>
+          <URI>spi/PasswordDataAuthModule.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      
+      <scm:Change>
+        <scm:Note>Added a Join query
+        </scm:Note>
+        
+        <path>/source/spiralcraft/data/query/Join.java
+        </path>
+      
+      </scm:Change>
+      
+      <scm:Change>
+        <scm:Note>Allow setting of debugLevel on BoundQuery
+        </scm:Note>
+        
+        <path>/source/spiralcraft/data/query/BoundQuery.java
+        </path>
+      
+      </scm:Change>
+      
+      <scm:Change>
+        <scm:Note>Remove named parameters (BindingChannel instances) from 
+          member signature debug message.
+        </scm:Note>
+        
+        <path>/source/spiralcraft/lang/spi/AbstractChannel.java
+        </path>
+      
+      </scm:Change>
+
+      <scm:Change>
+        <scm:Note>Fixed cast exception- chain property can be any Scenario, not
+          just a Chain.
+        </scm:Note>
+        
+        <path>/source/spiralcraft/task/Reference.java
+        </path>
+      
+      </scm:Change>
+
+    </detail>
+  </scm:Change>    
+
+  <scm:Change>
     <revision>0.4.2.1
     </revision>
     

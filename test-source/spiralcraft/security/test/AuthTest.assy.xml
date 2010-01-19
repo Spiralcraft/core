@@ -1,0 +1,77 @@
+<task:Reference
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:query="class:/spiralcraft/data/query/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:secauth="class:/spiralcraft/security/auth/"
+  >
+  <targetURI>class:/spiralcraft/security/test/Authenticator.xml
+  </targetURI>
+  
+  
+  <chain>
+ 
+    <task:Sequence>
+      <scenarios>
+    
+        <test:Stub>
+          <name>running
+          </name>
+          <messageX>[secauth:Authenticator]
+          </messageX>
+          <conditionX>true
+          </conditionX>
+        </test:Stub>
+        
+        <task:Chain>
+          <contextX>[secauth:Authenticator].createSession()
+          </contextX>
+        
+        
+          <chain>
+
+            <test:Stub>
+              <name>session
+              </name>
+              <messageX>[secauth:AuthSession]
+              </messageX>
+              <conditionX>true
+              </conditionX>
+            </test:Stub>
+
+            <test:Assertion>
+              <name>authenticated
+              </name>
+              <subjectX>[secauth:AuthSession].isAuthenticated()
+              </subjectX>
+              <testX>.==false
+              </testX>
+            </test:Assertion>
+
+            <test:Assertion>
+              <name>params
+              </name>
+              <subjectX>
+                [@secauth:LoginEntry]
+                  .([secauth:AuthSession].@channel
+                   ,username:="userOne"
+                   ,passwordCleartext:="testOne"
+                   )
+              </subjectX>
+              <testX>[secauth:AuthSession].authenticate()
+              </testX>
+            </test:Assertion>
+
+          </chain>  
+            
+            
+            
+          
+        </task:Chain>
+                
+      </scenarios>
+      
+    </task:Sequence>
+  </chain>
+        
+</task:Reference>

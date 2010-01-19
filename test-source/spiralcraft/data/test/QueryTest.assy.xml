@@ -5,6 +5,7 @@
   xmlns:test="class:/spiralcraft/test/"
   xmlns:example="class:/spiralcraft/data/test/example/"
   xmlns:j="class:/java/lang/"
+  xmlns:sec="class:/spiralcraft/security/"
   >
   <chain>
  
@@ -124,6 +125,48 @@
               <messageX>""+[example:Customer.list].@size()+" results"
               </messageX>
               <conditionX>[example:Customer.list].@size()==2
+              </conditionX>
+            </test:Stub>
+          </chain>
+        </dtask:Fetch>
+        
+        <dtask:Fetch>
+          
+          <query>
+            <query:Join>
+              
+              <parentQuery>
+                <query:Scan>
+                  <type x="[@example:Customer].type"/>
+                </query:Scan>
+              </parentQuery>
+              
+              <childQuery>
+              
+                <query:Selection>
+                  <constraints>.principalId==id.toString()
+                  </constraints>
+                  
+                  <source>
+                    <query:Scan>
+                      <type x="[@sec:Login].type"/>
+                    </query:Scan>
+                  </source>
+                  
+                </query:Selection>
+                
+              </childQuery>
+
+            </query:Join>
+          </query>
+          
+          <chain>
+            <test:Stub>
+              <name>Join
+              </name>
+              <messageX>""+[sec:Login.list].@size()+" results"
+              </messageX>
+              <conditionX>[sec:Login.list].@log(.).@size()==2
               </conditionX>
             </test:Stub>
           </chain>
