@@ -74,7 +74,7 @@ public class Reference<Tresult>
                   if (chain!=null)
                   { 
                     TaskCommand<Void,Tresult> command
-                      =((Chain<Void,Tresult>) chain).command();
+                      =((Scenario<Void,Tresult>) chain).command();
                     command.execute();
                     return command;
                   }
