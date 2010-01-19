@@ -69,6 +69,9 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
   { return query;
   }
   
+  public void setDebugLevel(Level debugLevel)
+  { this.debugLevel=debugLevel;
+  }
   /**
    * Set/reset the Query this binding will implement.
    */
