@@ -15,6 +15,8 @@
 package spiralcraft.security.auth;
 
 import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ import spiralcraft.log.ClassLog;
  * 
  * @author mike
  */
-public abstract class AuthSession
+public class AuthSession
 {
   private static final ClassLog log
     =ClassLog.getInstance(AuthSession.class);
@@ -58,6 +60,14 @@ public abstract class AuthSession
   protected final HashMap<String,Object> attributes
     =new HashMap<String,Object>();
   
+  protected final Authenticator authenticator;
+  protected AuthModule.Session[] sessions;
+  protected AuthModule.Session primarySession;
+  
+  public AuthSession(Authenticator authenticator)
+  { this.authenticator=authenticator;
+  }
+  
   /**
    * @return The Principal currently authenticated in this session.
    * 
@@ -65,11 +75,21 @@ public abstract class AuthSession
    *   will be returned.
    */
   public synchronized Principal getPrincipal()
-  { return principal;
+  { 
+    if (primarySession!=null)
+    { return primarySession.getPrincipal();
+    }
+    return principal;
   }
   
   public synchronized final boolean isAuthenticated()
-  { return authenticated;
+  { 
+    if (primarySession!=null)
+    { return primarySession.isAuthenticated();
+    }
+    else
+    { return authenticated;
+    }
   }
   
   public void setDebug(boolean debug)
@@ -130,25 +150,93 @@ public abstract class AuthSession
    * 
    * @return Whether a successful authentication has been performed 
    */
-  public abstract boolean authenticate();
+  public boolean authenticate()
+  {
+    authenticator.pushSession(this);
+    try
+    { return authenticateModules();
+    }
+    finally
+    { authenticator.popSession();
+    }
+  }
+  
+  private boolean authenticateModules()
+  {
+    
+    AuthModule[] modules=authenticator.getAuthModules();
+
+    sessions=new AuthModule.Session[modules.length];
+
+    int i=0;
+
+    for (AuthModule module: modules)
+    {
+      AuthModule.Session session=module.createSession();
+      sessions[i++]=session;
+      if (session!=null)
+      {
+        // First authenticated Session becomes the primary Session
+        //   which determines the result of 
+        //   isAuthenticated() and getPrincipal()
+        if (session.isAuthenticated() && primarySession==null)
+        { primarySession=session;
+        }
+      }
+    }
+    return primarySession!=null;
+    
+  }
+  
+  private void logoutModules()
+  {
+    
+
+    for (int i=0;i<sessions.length;i++)
+    {
+      AuthModule.Session session=sessions[i];
+      if (session!=null)
+      { session.logout();
+      }
+      sessions[i]=null;
+    }
+    primarySession=null;
+  }
+  
   
   /**
    * <p>Compute a message digest which includes the specified input token
    *   (eg. a password in some form) for later comparison as an authentication
-   *   step.
+   *   step. 
    * </p>
    * 
-   * <p>The digest may be computed by including other data such as the
-   *  realm name or another configured token.
-   * </p> 
+   * <p>The realm name is used as a salt at the current time.
+   * </p>
    * 
+   * <p>Future behavior will permit incorporating
+   *   a one time random secret and a random secret associated with the user
+   *   account via the AuthModule interface.
+   * </p>
+   *    
    * <p>The digest may be used as part of an authentication "ticket"
    * </p>
    * 
    * @param clearPass
    * @return
    */
-  public abstract byte[] opaqueDigest(String input);
+  public byte[] opaqueDigest(String input)
+  {
+    try
+    { 
+      // authModule.getAccountSecret()
+      // randomSalt(randomSaltLength)
+      return MessageDigest.getInstance("SHA-256").digest
+        ((authenticator.getRealmName()+input).getBytes());
+    }
+    catch (NoSuchAlgorithmException x)
+    { throw new RuntimeException("SHA-256 not supported",x);
+    }
+  }    
     
   /**
    * <p>Associate arbitrary application state with this LoginSession
@@ -183,6 +271,7 @@ public abstract class AuthSession
     attributes.clear();
     principal=null;
     authenticated=false;
+    logoutModules();
     
   }
   

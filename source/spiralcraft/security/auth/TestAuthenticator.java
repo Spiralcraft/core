@@ -36,10 +36,9 @@ class TestSession
   extends AuthSession
 {
 
-  private final TestAuthenticator authenticator;
   
   public TestSession(TestAuthenticator authenticator)
-  { this.authenticator=authenticator;
+  { super(authenticator);
   }
   
   @Override

@@ -14,26 +14,38 @@
 //
 package spiralcraft.security.auth;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.FocusChainObject;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+//import spiralcraft.log.ClassLog;
 
 
 /**
- * <P>Authenticates a client using one or more sets of credentials. 
+ * <p>Authenticates a client using one or more sets of credentials. 
+ * </p>
  *   
- * <P>An Authenticator provides an AuthSession to handle the exchange
+ * <p>An Authenticator provides an AuthSession to handle the exchange
  *   of credentials and to communicate the status of the authentication process
  *   to the client.
+ * </p>
  */
-public abstract class Authenticator
+public class Authenticator
+  implements FocusChainObject
 {
+  public static final URI FOCUS_URI
+    =BeanReflector.getInstance(Authenticator.class).getTypeURI();
+
+//  private static final ClassLog log
+//    =ClassLog.getInstance(Authenticator.class);
+  
   protected String realmName;
   protected ThreadLocalChannel<AuthSession> sessionChannel;
   protected Focus<AuthSession> sessionFocus;
@@ -41,13 +53,112 @@ public abstract class Authenticator
     =new HashMap<String,Credential<?>>();
   protected Class<? extends Credential<?>>[] acceptedCredentials;
   
-  protected SimpleFocus<Map<String,Credential<?>>> credentialFocus;
+  protected Focus<Map<String,Credential<?>>> credentialFocus;
+  protected AuthModule[] authModules;
+  protected boolean debug;
+
+  
+      
+//  public Class<? extends Credential<?>>[] getRequiredCredentials()
+//  { return acceptedCredentials;
+//  }
+//  
+  /**
+   * @return The name of the realm this Authenticator will be serving.
+   * 
+   * <P>The realm name should be as unique and as stable as possible. 
+   * Application names that may change (eg. paths in a web tree) should be 
+   * avoided, as the realm name is a factor in
+   * authentication cryptography, and may require that all passwords be reset
+   * or cause other data loss if it is changed.
+   * 
+   * <P>ie. MyRealmName@MyDomain.com
+   * 
+   */
+  public String getRealmName()
+  { return realmName;
+  }
+  
+  /**
+   * <P>Create a new AuthSession, which represents a login session in the
+   *   realm of the Authenticator.
+   */
+  public AuthSession createSession()
+  { 
+    
+    AuthSession session=new AuthSession(this);
+    session.setDebug(debug);
+    return session;
+  }
+  
+  AuthModule[] getAuthModules()
+  { return authModules;
+  }
+  
+  public void setAuthModules(AuthModule[] authModules)
+  { this.authModules=authModules;
+  }
+  
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
+  /**
+   * <p>Provide the Authenticator with a Focus for it to resolve data sources
+   *   and other resources from the context. The context can be null, as long
+   *   as no contextual resources are required by the specific Authenticator.
+   * </p>
+   *   
+   * @param context
+   * @throws BindException
+   */
+  public Focus<?> bind(Focus<?> context)
+    throws BindException
+  { 
+    this.sessionChannel
+      =new ThreadLocalChannel<AuthSession>
+        (BeanReflector.<AuthSession>getInstance(AuthSession.class));
+    
+    if (context!=null)
+    { this.sessionFocus=new SimpleFocus<AuthSession>(context,sessionChannel);
+    }
+    else
+    { this.sessionFocus=new SimpleFocus<AuthSession>(sessionChannel);
+    }
+    sessionFocus.addFacet(new BeanFocus<Authenticator>(this));
+    
+    credentialFocus
+      =sessionFocus.chain(new CredentialSetChannel(protoMap,sessionChannel));
+
+    if (authModules!=null)
+    {
+      for (AuthModule authModule:authModules)
+      { authModule.bind(credentialFocus);
+      }
+    }
+    return sessionFocus;
+  }
+  
+  public void pushSession(AuthSession session)
+  { sessionChannel.push(session);
+  }
+  
+  public void popSession()
+  { sessionChannel.pop();
+  }
+  
   
   protected void setAcceptedCredentials
     (Class<? extends Credential<?>>[] acceptedCredentials)
   { 
     this.acceptedCredentials=acceptedCredentials;
-    for (Class<? extends Credential<?>> credClass: acceptedCredentials)
+    registerCredentials(acceptedCredentials);
+  }
+  
+  public void registerCredentials(Class<? extends Credential<?>>[] classes)
+  {
+    for (Class<? extends Credential<?>> credClass: classes)
     { 
       if (protoMap.get(credClass.getSimpleName())==null)
       { 
@@ -76,65 +187,7 @@ public abstract class Authenticator
         }
       }
     }
-  }  
-  
-      
-  public Class<? extends Credential<?>>[] getRequiredCredentials()
-  { return acceptedCredentials;
-  }
-  
-  /**
-   * @return The name of the realm this Authenticator will be serving.
-   * 
-   * <P>The realm name should be as unique and as stable as possible. 
-   * Application names that may change (eg. paths in a web tree) should be 
-   * avoided, as the realm name is a factor in
-   * authentication cryptography, and may require that all passwords are reset
-   * if it is changed.
-   * 
-   * <P>ie. MyRealmName@MyDomain.com
-   * 
-   */
-  public String getRealmName()
-  { return realmName;
-  }
-  
-  /**
-   * <P>Create a new AuthSession, which represents a login session in the
-   *   realm of the Authenticator.
-   */
-  public abstract AuthSession createSession();
-  
-  /**
-   * <p>Provide the Authenticator with a Focus for it to resolve data sources
-   *   and other resources from the context. The context can be null, as long
-   *   as no contextual resources are required by the specific Authenticator.
-   * </p>
-   *   
-   * @param context
-   * @throws BindException
-   */
-  public void bind(Focus<?> context)
-    throws BindException
-  { 
-    this.sessionChannel
-      =new ThreadLocalChannel<AuthSession>
-        (BeanReflector.<AuthSession>getInstance(AuthSession.class));
-    
-    if (context!=null)
-    { this.sessionFocus=new SimpleFocus<AuthSession>(context,sessionChannel);
-    }
-    else
-    { this.sessionFocus=new SimpleFocus<AuthSession>(sessionChannel);
-    }
-        
-    credentialFocus
-      =new SimpleFocus<Map<String,Credential<?>>>
-      (sessionFocus,new CredentialSetChannel(protoMap,sessionChannel)
-      );
-    credentialFocus.addFacet
-      (new BeanFocus<Authenticator>(this));
-  }
+  }    
   
 }
 

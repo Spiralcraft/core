@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -14,19 +14,12 @@
 //
 package spiralcraft.security.spi;
 
-import spiralcraft.security.auth.Authenticator;
-import spiralcraft.security.auth.AuthSession;
-import spiralcraft.security.auth.DigestCredential;
-import spiralcraft.security.auth.UsernameCredential;
-import spiralcraft.security.auth.PasswordCleartextCredential;
 
 import spiralcraft.data.access.SerialCursor;
 
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Query;
-import spiralcraft.data.query.Selection;
-import spiralcraft.data.query.Scan;
 import spiralcraft.data.query.BoundQuery;
 
 
@@ -36,6 +29,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -58,73 +52,115 @@ import java.security.Principal;
  *   
  * @author mike
  *
- * @deprecated Use DataAuthModule instead via Authenticator.setAuthModules()
  */
-@Deprecated
-public class DataAuthenticator
-  extends Authenticator
+public class DataAuthModule
+  extends AbstractAuthModule
 {
   
+  @SuppressWarnings("deprecation")
   private static final ClassLog log
     =ClassLog.getInstance(DataAuthenticator.class);
   
   private Queryable<?> providedSource;
   
-  // XXX Make these both configurable
-  private Type<?> loginDataType;
+  // XXX Make these  configurable
+  protected Query accountQuery;
+  private BoundQuery<?,?> boundAccountQuery;
 
-  private Query loginQuery;
-  private BoundQuery<?,?> boundQuery;
+  private Binding<Boolean> credentialComparisonX;
+ 
+  private Binding<String> principalIdX;
+  
+
+  private Type<?> accountDataType;
+
   private Channel<String> usernameCredentialChannel;
-  private Channel<String> usernameChannel;
+  
   
   private TeleFocus<Tuple> comparisonFocus;
   private ThreadLocalChannel<Tuple> loginChannel;
-  private Expression<Boolean> credentialComparison;
-  private Channel<Boolean> comparisonChannel;
+  private boolean debug;
   
   @SuppressWarnings("unchecked")
-  public DataAuthenticator()
+  public DataAuthModule()
     throws DataException
   {
+    // Default values for basic username/password authentication
+    accountDataType
+      =Type.resolve(URI.create("class:/spiralcraft/security/Login"));
 
-      setAcceptedCredentials
-        (new Class[] 
-          {UsernameCredential.class
-          ,PasswordCleartextCredential.class
-          ,DigestCredential.class
-          }
-        );
       
-      // Default values for basic username/password authentication
-      loginDataType
-        =Type.resolve(URI.create("class:/spiralcraft/security/Login"));
-
-      loginQuery=new Selection
-        (new Scan(loginDataType)
-        ,Expression.<Boolean>create
-          (".searchname==UsernameCredential.toLowerCase() ")
-        );
-      
-      credentialComparison
-        =Expression.create
-          ("(PasswordCleartextCredential!=null "
-          +"&& .clearpass==PasswordCleartextCredential)"
-          +"|| (DigestCredential!=null " 
-          +"    && DigestCredential" 
-          +"	  .equals([:class:/spiralcraft/security/auth/AuthSession] " 
-          +"     opaqueDigest(.username+.clearpass)"
-          +"     )"
-          +"   )"
-          );
+    credentialComparisonX
+      =new Binding(Expression.create("true"));
   
+    principalIdX=new Binding(Expression.create(".username"));
+
   }
   
-  public void setRealmName(String realmName)
-  { this.realmName=realmName;
+  /** 
+   * <p>The Expression which provides the "user id" from the successfully
+   *   authenticated account entry. This "user id" is  provided to the
+   *   application via Principal.getName().
+   * </p>
+   * 
+   * <p>The Expression is bound against
+   *   a Focus which exposes the successfully authenticated account of 
+   *   accountDataType as the subject, and the active credential set as the
+   *   context.  
+   * </p>
+   * 
+   * <p>This defaults to the expression ".username"
+   * </p>
+   */
+  public void setPrincipalIdX(Binding<String> principalIdX)
+  { this.principalIdX=principalIdX;
   }
   
-
+  /**
+   * <p>The Expression which determines whether the provided credentials
+   *   match the account entry that has been mapped to the context.
+   * </p>
+   * 
+   * <p>The Expression is bound against
+   *   a Focus which exposes the successfully authenticated object of 
+   *   accountDataType as the subject, and the active credential set as the
+   *   context.  
+   * </p>
+   * 
+   * <p>This defaults to a globally permissive "true" (implying a trusted
+   *   context) due to the abstract role of this class. This can be set to
+   *   something like "DigestCredential.equals(.cryptpass)"
+   * </p>
+   * 
+   * @param credentialComparisonX
+   */
+  public void setCredentialComparisonX(Binding<Boolean> credentialComparisonX)
+  { this.credentialComparisonX=credentialComparisonX;
+  }
+  
+  /**
+   * <p>Specify the data type of the account records used to identify the
+   *   user and validate authentication tokens.
+   * </p>
+   * 
+   * <p>Defaults to 
+   *   class:/spiralcraft/security/Login, which contains username and
+   *   password fields.
+   * </p>
+   * 
+   * @param accountDataType
+   */
+  public void setAccountDataType(Type<?> accountDataType)
+  { this.accountDataType=accountDataType;
+  }
+  
+  public Type<?> getAccountDataType()
+  { return accountDataType;
+  }
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
   
   /**
    * @param source The Queryable which provides access to the login database
@@ -133,12 +169,18 @@ public class DataAuthenticator
   { this.providedSource=source;
   }
   
+  /**
+   * @param accountQuery Returns the account entry that is relevant to
+   *   the "current user" as determined from the context, which includes the
+   *   provided set of Credentials as well as any data in the Focus chain.  
+   */
+  public void setAccountQuery(Query accountQuery)
+  { this.accountQuery=accountQuery;
+  }
+  
   @Override
-  public AuthSession createSession()
-  { 
-    DataAuthSession session=new DataAuthSession(this);
-    session.setDebug(debug);
-    return session;
+  public Session createSession()
+  { return new DataSession();
   }
   
   @Override
@@ -149,11 +191,11 @@ public class DataAuthenticator
     // superclass provides a credentialFocus member field which 
     //   provides values for the various accepted credentials,
     //   named according to the credential class simple name.
-    
-    context=super.bind(context);
+    super.bind(context);
 
-
+      
     Space space=null;
+    
     // Resolve the source for the master credentials list
     if (providedSource==null && context!=null)
     { 
@@ -176,10 +218,11 @@ public class DataAuthenticator
     // Bind the user lookup query to the credential Focus, which serves as
     //   the parameter Focus.
     try
-    { boundQuery=source.query(loginQuery,credentialFocus);
+    { boundAccountQuery=source.query(accountQuery,credentialFocus);
     }
     catch (DataException x)
-    { throw new BindException("Error binding Authenticator query "+loginQuery,x);
+    { throw new BindException
+        ("Error binding Authenticator lookup query "+accountQuery,x);
     }
     
     usernameCredentialChannel
@@ -188,33 +231,30 @@ public class DataAuthenticator
     // Set up a comparison to check password/etc
     loginChannel
       =new ThreadLocalChannel<Tuple>
-        (DataReflector.<Tuple>getInstance(loginDataType));
+        (DataReflector.<Tuple>getInstance(accountDataType));
     
     comparisonFocus=new TeleFocus<Tuple>(credentialFocus,loginChannel);
     
-    comparisonChannel=comparisonFocus.bind(credentialComparison);
-    usernameChannel
-      =comparisonFocus.bind(Expression.<String>create(".username"));
+    credentialComparisonX.bind(comparisonFocus);
+    principalIdX.bind(comparisonFocus);
     
     return context;
   }
   
+  
+  
 
-  public class DataAuthSession
-    extends AuthSession
+  public class DataSession
+    extends AbstractSession
   {
-    
-    
-    public DataAuthSession(Authenticator authenticator)
-    { 
-      super(authenticator);
-      authenticate();
+
+    public DataSession()
+    { authenticate();
     }
-        
-    @Override
+    
     public synchronized boolean authenticate()
     {
-      if (boundQuery==null)
+      if (boundAccountQuery==null)
       { 
         System.err.println
           ("DataAuthenticator.DataAuthSession.isAuthenticated: "
@@ -227,8 +267,6 @@ public class DataAuthenticator
       { return true;
       }
       
-      // Make sure the query is accessing this AuthSession
-      pushSession(this);
       if (debug)
       { log.fine("Attempting authentication");
       }
@@ -236,7 +274,7 @@ public class DataAuthenticator
       try
       {
         
-        String username=null;
+        String principalId=null;
         Tuple loginEntry=queryLoginEntry();
 
         if (loginEntry!=null)
@@ -249,13 +287,13 @@ public class DataAuthenticator
           loginChannel.push(loginEntry);
           try
           { 
-            Boolean result=comparisonChannel.get();
+            Boolean result=credentialComparisonX.get();
             valid=(result!=null && result);
             if (debug)
             { log.fine("Token comparison returned "+result);
             }
             if (valid)
-            { username=usernameChannel.get();
+            { principalId=principalIdX.get();
             }
           }
           finally
@@ -273,10 +311,10 @@ public class DataAuthenticator
           
           
             if (principal==null
-                || !principal.getName().equals(username)
+                || !principal.getName().equals(principalId)
                )
             {
-              final String name=username;
+              final String name=principalId;
               principal
                 =new Principal()
               {
@@ -329,7 +367,8 @@ public class DataAuthenticator
         return false;
       }
       finally
-      { popSession();
+      { 
+
       }
     }
 
@@ -338,25 +377,25 @@ public class DataAuthenticator
     private Tuple queryLoginEntry()
       throws DataException,SecurityException
     {
-      SerialCursor<?> cursor=boundQuery.execute();
+      SerialCursor<?> cursor=boundAccountQuery.execute();
         
       try
       {
         if (cursor.next())
         { 
-          Tuple loginEntry=cursor.getTuple();
+          Tuple accountEntry=cursor.getTuple();
           if (debug)
-          { log.fine("Found user "+loginEntry.get("username"));
+          { log.fine("Found user "+accountEntry.get("username"));
           }
           
           if (cursor.next())
           { 
             throw new SecurityException
               ("Cardinality Violation: Multiple Login records for user "
-                +loginEntry.get("searchname")
+                +accountEntry.get("searchname")
               );
           }
-          return loginEntry.snapshot();
+          return accountEntry.snapshot();
         }
       }
       finally
