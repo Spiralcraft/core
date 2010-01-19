@@ -24,6 +24,7 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Signature;
 
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 
 /**
  * <P>A starting point for building a Channel.</P>
@@ -117,21 +118,30 @@ public abstract class AbstractChannel<T>
       Reflector<?>[] pc=null;
       if (params!=null)
       {
-        pc=new Reflector<?>[params.length];
+        ArrayList<Reflector<?>> pcList=new ArrayList<Reflector<?>>();
         for (int i=0;i<params.length;i++)
         { 
           try
-          { pc[i]=focus.bind(params[i]).getReflector();
+          { 
+            Channel<?> channel=focus.bind(params[i]);
+            if (!(channel instanceof BindingChannel<?>))
+            { pcList.add(channel.getReflector());
+            }
           }
           catch (BindException x)
           {
           }
         }
+        pc=pcList.toArray(new Reflector<?>[pcList.size()]);
       }
-      Signature sig=new Signature(name,null,pc);
+      Signature sig=new Signature
+        (name
+        ,null
+        ,pc
+        );
       
       throw new 
-        BindException("'"+sig+"' not found. ("+toString()+") "+sigs);
+        BindException("Member signature '"+sig+"' not found. ("+toString()+") "+sigs);
     }
     return binding;
   }
