@@ -271,6 +271,10 @@ public class DataAuthModule
     {
       if (refreshTriggerX!=null)
       { 
+        if (debug)
+        { log.fine("Refresh trigger value is "+refreshTriggerValue);
+        }
+        
         Object newValue=refreshTriggerX.get();
         if (newValue!=refreshTriggerValue)
         {
