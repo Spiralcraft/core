@@ -158,6 +158,9 @@ public class Authenticator
   
   public void registerCredentials(Class<? extends Credential<?>>[] classes)
   {
+    if (classes==null)
+    { return;
+    }
     for (Class<? extends Credential<?>> credClass: classes)
     { 
       if (protoMap.get(credClass.getSimpleName())==null)
