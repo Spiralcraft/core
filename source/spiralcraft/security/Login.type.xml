@@ -9,7 +9,7 @@
   <fields>
   
     <!--  Login.principalId -->
-    <meta:Field>
+    <meta:SequenceField>
       
       <name>principalId
       </name>
@@ -23,7 +23,7 @@
         </String.type>
       </type>
 
-    </meta:Field>
+    </meta:SequenceField>
 
     <!--  Login.username -->
     <meta:Field>
