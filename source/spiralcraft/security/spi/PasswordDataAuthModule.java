@@ -73,7 +73,7 @@ public class PasswordDataAuthModule
           +"|| (DigestCredential!=null " 
           +"    && DigestCredential" 
           +"    .equals([:class:/spiralcraft/security/auth/AuthSession] " 
-          +"     opaqueDigest(.username+.clearpass)"
+          +"      .opaqueDigest(.username+.clearpass)"
           +"     )"
           +"   )"
           )
