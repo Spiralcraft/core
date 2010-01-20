@@ -122,10 +122,7 @@ public class DataAuthenticator
           );
   
   }
-  
-  public void setRealmName(String realmName)
-  { this.realmName=realmName;
-  }
+
   
 
   

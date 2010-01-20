@@ -79,6 +79,14 @@ public class Authenticator
   { return realmName;
   }
   
+  public void setRealmName(String realmName)
+  { 
+    if (sessionChannel!=null)
+    { throw new IllegalStateException("Cannot change realm name after binding");
+    }
+    this.realmName=realmName;
+  }
+  
   /**
    * <P>Create a new AuthSession, which represents a login session in the
    *   realm of the Authenticator.
