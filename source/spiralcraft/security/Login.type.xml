@@ -106,10 +106,20 @@
     <meta:Key>
       <primary>true
       </primary>
+      
+      <fieldList>principalId
+      </fieldList>
+    
+    </meta:Key>
+
+    <meta:Key>
+      <unique>true
+      </unique>
 
       <fieldList>searchname
       </fieldList>
     </meta:Key>
+    
       
   </keys>
 
