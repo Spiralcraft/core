@@ -181,11 +181,13 @@ public class AuthSession
       for (AuthModule.Session session:sessions)
       {
         if (session!=null)
-        { session.refresh();
+        { 
+          session.refresh();
+          if (newPrimary==null && session.isAuthenticated())
+          { newPrimary=session;
+          }
         }
-        if (newPrimary==null && session.isAuthenticated())
-        { newPrimary=session;
-        }
+        
         if (newPrimary!=null && primarySession!=newPrimary)
         { primarySession=newPrimary;
         }
