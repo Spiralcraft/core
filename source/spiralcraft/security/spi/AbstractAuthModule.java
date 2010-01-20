@@ -60,7 +60,7 @@ public abstract class AbstractAuthModule
         && acceptedCredentials.length>0;
   }
   
-  public class AbstractSession
+  public abstract class AbstractSession
     implements Session
   {
     protected Principal principal;
@@ -68,6 +68,8 @@ public abstract class AbstractAuthModule
     protected AuthSession authSession
       =sessionFocus.getSubject().get();
   
+    public abstract boolean authenticate();
+    
     public boolean isAuthenticated()
     { return authenticated;
     }

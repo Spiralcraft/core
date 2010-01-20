@@ -225,23 +225,39 @@ public class AuthSession
     
     AuthModule[] modules=authenticator.getAuthModules();
 
-    sessions=new AuthModule.Session[modules.length];
+    if (sessions==null)
+    {  sessions=new AuthModule.Session[modules.length];
+    }
 
     int i=0;
-
+    
     for (AuthModule module: modules)
     {
-      AuthModule.Session session=module.createSession();
-      sessions[i++]=session;
+      AuthModule.Session session=sessions[i];
+      if (session==null)
+      {
+        session=module.createSession();
+        sessions[i]=session;
+        
+      }
+      
       if (session!=null)
       {
+        session.authenticate();
+        
         // First authenticated Session becomes the primary Session
         //   which determines the result of 
         //   isAuthenticated() and getPrincipal()
-        if (session.isAuthenticated() && primarySession==null)
+        if (session.isAuthenticated() 
+            && (primarySession==null
+               || !primarySession.isAuthenticated()
+               )
+           )
         { primarySession=session;
         }
+        
       }
+      i++;
     }
     return primarySession!=null;
     

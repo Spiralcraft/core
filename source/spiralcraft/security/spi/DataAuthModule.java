@@ -263,7 +263,7 @@ public class DataAuthModule
     protected Object refreshTriggerValue;
     
     public DataSession()
-    { authenticate();
+    { 
     }
     
     @Override
@@ -298,6 +298,7 @@ public class DataAuthModule
       } 
     }
     
+    @Override
     public synchronized boolean authenticate()
     {
       if (boundAccountQuery==null)

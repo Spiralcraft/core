@@ -39,6 +39,8 @@ public interface AuthModule
   
   public interface Session
   {
+    public boolean authenticate();
+    
     public void logout();
     
     public boolean isAuthenticated();
