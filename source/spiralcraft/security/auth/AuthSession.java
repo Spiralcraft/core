@@ -255,14 +255,13 @@ public class AuthSession
       if (session==null)
       {
         session=module.createSession();
-        sessions[i]=session;
+        sessions[i++]=session;
         
       }
       
       if (session!=null)
       { session.authenticate();
       }
-      i++;
     }
     recomputePrimarySession();
     return primarySession!=null && primarySession.isAuthenticated();
