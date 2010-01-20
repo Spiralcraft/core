@@ -368,6 +368,7 @@ public class AuthSession
   {
     credentialList.clear();
     credentialMap.clear();
+    attributes.clear();
     credentialsChanged();
     
   }
