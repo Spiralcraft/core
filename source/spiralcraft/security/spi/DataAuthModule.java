@@ -30,7 +30,6 @@ import spiralcraft.data.Type;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
-import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.TeleFocus;
@@ -59,7 +58,7 @@ public class DataAuthModule
   
   @SuppressWarnings("deprecation")
   private static final ClassLog log
-    =ClassLog.getInstance(DataAuthenticator.class);
+    =ClassLog.getInstance(DataAuthModule.class);
   
   private Queryable<?> providedSource;
   
@@ -74,12 +73,11 @@ public class DataAuthModule
 
   private Type<?> accountDataType;
 
-  private Channel<String> usernameCredentialChannel;
-  
-  
   private TeleFocus<Tuple> comparisonFocus;
   private ThreadLocalChannel<Tuple> loginChannel;
   private boolean debug;
+  
+  private Binding<?> refreshTriggerX;
   
   @SuppressWarnings("unchecked")
   public DataAuthModule()
@@ -178,6 +176,11 @@ public class DataAuthModule
   { this.accountQuery=accountQuery;
   }
   
+  
+  public void setRefreshTriggerX(Binding<?> refreshTriggerX)
+  { this.refreshTriggerX=refreshTriggerX;
+  }
+  
   @Override
   public Session createSession()
   { return new DataSession();
@@ -193,7 +196,7 @@ public class DataAuthModule
     //   named according to the credential class simple name.
     super.bind(context);
 
-      
+    
     Space space=null;
     
     // Resolve the source for the master credentials list
@@ -212,6 +215,10 @@ public class DataAuthModule
     { 
       throw new BindException
         ("No data source for DataAuthenticator");
+    }
+
+    if (refreshTriggerX!=null)
+    { refreshTriggerX.bind(credentialFocus);
     }
     
     if (accountQuery==null)
@@ -232,8 +239,6 @@ public class DataAuthModule
         ("Error binding Authenticator lookup query "+accountQuery,x);
     }
     
-    usernameCredentialChannel
-      =credentialFocus.bind(Expression.<String>create("UsernameCredential"));
     
     // Set up a comparison to check password/etc
     loginChannel
@@ -255,17 +260,52 @@ public class DataAuthModule
     extends AbstractSession
   {
 
+    protected Object refreshTriggerValue;
+    
     public DataSession()
     { authenticate();
+    }
+    
+    @Override
+    public void refresh()
+    {
+      if (refreshTriggerX!=null)
+      { 
+        Object newValue=refreshTriggerX.get();
+        if (newValue!=refreshTriggerValue)
+        {
+          if (newValue==null 
+              || refreshTriggerValue==null
+              || !newValue.equals(refreshTriggerValue)
+              )
+          { 
+            if (debug)
+            { 
+              log.debug
+                ("Re-authenticating: trigger value changed "
+                +" from "+refreshTriggerValue+" to "+newValue
+                );
+            }
+            
+            refreshTriggerValue=null;
+            
+            principal=null;
+            authenticated=false;
+            
+            authenticate();
+          }
+        }
+      } 
     }
     
     public synchronized boolean authenticate()
     {
       if (boundAccountQuery==null)
       { 
-        System.err.println
+        log.warning
           ("DataAuthenticator.DataAuthSession.isAuthenticated: "
-          +" Authentication failed- configuration error"
+          +" Authentication failed- configuration error- account "
+          +" query ["+accountQuery+"] not bound"
           );
         return false;
       }
@@ -338,6 +378,7 @@ public class DataAuthModule
               };
             }
             authenticated=true;
+            resetRefreshTrigger();
             return true;
           }
           else
@@ -345,8 +386,7 @@ public class DataAuthModule
             if (debug)
             { 
               log.fine
-                ("failed login: no token match for "
-                +usernameCredentialChannel.get()
+                ("failed login: credentials don't match for login "+loginEntry
                 );
             }
             authenticated=false;
@@ -356,7 +396,7 @@ public class DataAuthModule
         else
         { 
           if (debug)
-          { log.fine("failed login: no username match for "+usernameCredentialChannel.get());
+          { log.fine("failed login: no account match");
           }
           authenticated=false;
           return false;
@@ -411,7 +451,15 @@ public class DataAuthModule
       return null;
 
     }
+
+    private void resetRefreshTrigger()
+    { 
+      if (refreshTriggerX!=null)
+      { refreshTriggerValue=refreshTriggerX.get();
+      }
+    }
   }
+  
 }
   
   
