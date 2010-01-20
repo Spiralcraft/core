@@ -184,12 +184,17 @@ public class AuthSession
         { 
           session.refresh();
           if (newPrimary==null && session.isAuthenticated())
-          { newPrimary=session;
+          { 
+            newPrimary=session;
           }
         }
         
         if (newPrimary!=null && primarySession!=newPrimary)
-        { primarySession=newPrimary;
+        { 
+          if (debug)
+          { log.fine("New primary session is "+session);
+          }
+          primarySession=newPrimary;
         }
       }
       
@@ -255,7 +260,11 @@ public class AuthSession
                || !primarySession.isAuthenticated()
                )
            )
-        { primarySession=session;
+        { 
+          if (debug)
+          { log.fine("New primary session is "+session);
+          }
+          primarySession=session;
         }
         
       }
