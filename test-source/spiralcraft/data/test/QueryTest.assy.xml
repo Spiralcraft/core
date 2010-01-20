@@ -172,6 +172,51 @@
           </chain>
         </dtask:Fetch>
         
+        <dtask:Fetch>
+          
+          <query>
+            <query:Projection>
+              
+              <source>
+                <query:Scan>
+                  <type x="[@example:Customer].type"/>
+                </query:Scan>
+              </source>
+              
+              <x>.address
+              </x>
+
+            </query:Projection>
+          </query>
+          
+          <chain>
+            <test:Stub>
+              <name>Project
+              </name>
+              <messageX>""+[example:Address.list].@size()+" results"
+              </messageX>
+              <conditionX>[example:Address.list].@log(.).@size().@log(.)==3
+              </conditionX>
+            </test:Stub>
+          </chain>
+        </dtask:Fetch>
+
+        <test:Stub>
+          <name>Expression Fetch
+          </name>
+          <messageX>[*dtask:Fetch
+                      {query:=
+                        [*query:Scan
+                          {[@example:Customer].type
+                          }
+                        ]
+                      }
+                    ].().@log("Expression fetch: "+.)
+          </messageX>
+          <conditionX>true
+          </conditionX>
+        </test:Stub>
+
       </scenarios>
       
     </task:Sequence>

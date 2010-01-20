@@ -17,6 +17,12 @@
       </scm:Note>
       <scm:Note>Added a Join query and backing functionality
       </scm:Note>
+      <scm:Note>Added a Projection query and backing functionality
+      </scm:Note>
+      <scm:Note>The spiralcraft.data.task.Fetch task now returns a result,
+        making it useful as a Functor in an expression and permitting
+        in-line queries in Expressions.
+      </scm:Note>
       <scm:Note>Misc fixes
       </scm:Note>
     </notes>
@@ -59,11 +65,32 @@
           </URI>
         </resources>
       </scm:Change>
+
+      <scm:Change>
+        <scm:Note>The spiralcraft.data.task.Fetch task now returns a 
+          result.
+        </scm:Note>
+
+        
+        <path>/source/spiralcraft/data/task/Fetch.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <scm:Note>Added a Projection query
+        </scm:Note>
+
+        
+        <path>/source/spiralcraft/data/query/Projection.java
+        </path>
+      
+      </scm:Change>
       
       
       <scm:Change>
         <scm:Note>Added a Join query
         </scm:Note>
+
         
         <path>/source/spiralcraft/data/query/Join.java
         </path>
