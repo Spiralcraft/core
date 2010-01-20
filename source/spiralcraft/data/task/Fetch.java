@@ -50,6 +50,8 @@ public class Fetch
   protected CursorChannel cursorChannel;
   protected int batchSize;
   
+  { storeResults=true;
+  }
 
   public class FetchTask
     extends ChainTask
@@ -150,9 +152,23 @@ public class Fetch
   { this.cursorX=cursorX;
   }
   
+  @Override
+  public Focus<?> bindImports(Focus<?> focusChain)
+    throws BindException
+  {
+    if (query==null)
+    { throw new BindException("Query cannot be null");
+    }
+    Type<?> type=query.getType();
+    if (type!=null)
+    { resultReflector=DataReflector.getInstance(Type.getAggregateType(type));
+    }
+    return focusChain;
+  }
+  
   @SuppressWarnings("unchecked")
   @Override
-  public void bindChildren(
+  public Focus<?> bindExports(
     Focus<?> focusChain)
     throws BindException
   {
@@ -195,8 +211,12 @@ public class Fetch
         (DataReflector.<Aggregate<Tuple>>getInstance
           (Type.getAggregateType(boundQuery.getType()))
         );
+        
+// Too late for this here
+//    resultReflector=resultChannel.getReflector();
+
     focusChain=focusChain.chain(resultChannel);
-    super.bindChildren(focusChain);
+    return focusChain;
   }
 
 
