@@ -177,27 +177,13 @@ public class AuthSession
     authenticator.pushSession(this);
     try
     {
-      AuthModule.Session newPrimary=null;
       for (AuthModule.Session session:sessions)
       {
         if (session!=null)
-        { 
-          session.refresh();
-          if (newPrimary==null && session.isAuthenticated())
-          { 
-            newPrimary=session;
-          }
-        }
-        
-        if (newPrimary!=null && primarySession!=newPrimary)
-        { 
-          if (debug)
-          { log.fine("New primary session is "+session);
-          }
-          primarySession=newPrimary;
+        { session.refresh();
         }
       }
-      
+      recomputePrimarySession();
     }
     finally
     { authenticator.popSession();
@@ -220,12 +206,37 @@ public class AuthSession
         { session.credentialsChanged();
         }
       }
+      recomputePrimarySession();
     }
     finally
     { authenticator.popSession();
     }
     
   }  
+  
+  private void recomputePrimarySession()
+  {
+    if (sessions!=null)
+    {
+      AuthModule.Session newPrimary=null;
+      for (AuthModule.Session session : sessions)
+      { 
+        if (session!=null && session.isAuthenticated())
+        { 
+          if (newPrimary==null)
+          { newPrimary=session;
+          }
+        }
+      }
+      if (newPrimary!=null && primarySession!=newPrimary)
+      { 
+        if (debug)
+        { log.fine("New primary session is "+newPrimary);
+        }        
+        primarySession=newPrimary;
+      }
+    }
+  }
   
   private boolean authenticateModules()
   {
@@ -249,28 +260,12 @@ public class AuthSession
       }
       
       if (session!=null)
-      {
-        session.authenticate();
-        
-        // First authenticated Session becomes the primary Session
-        //   which determines the result of 
-        //   isAuthenticated() and getPrincipal()
-        if (session.isAuthenticated() 
-            && (primarySession==null
-               || !primarySession.isAuthenticated()
-               )
-           )
-        { 
-          if (debug)
-          { log.fine("New primary session is "+session);
-          }
-          primarySession=session;
-        }
-        
+      { session.authenticate();
       }
       i++;
     }
-    return primarySession!=null;
+    recomputePrimarySession();
+    return primarySession!=null && primarySession.isAuthenticated();
     
   }
   
@@ -288,6 +283,7 @@ public class AuthSession
         sessions[i]=null;
       }
       primarySession=null;
+      recomputePrimarySession();
     }
     finally
     { authenticator.popSession();
