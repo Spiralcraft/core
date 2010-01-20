@@ -83,6 +83,9 @@ public class DataAuthenticator
   private Expression<Boolean> credentialComparison;
   private Channel<Boolean> comparisonChannel;
   
+  protected volatile Principal principal;
+  protected volatile boolean authenticated;
+  
   @SuppressWarnings("unchecked")
   public DataAuthenticator()
     throws DataException
@@ -364,6 +367,31 @@ public class DataAuthenticator
       }
       return null;
 
+    }
+    
+    /**
+     * @return The Principal currently authenticated in this session.
+     * 
+     * <P>In the case of Principal escalation, the most privileged Principal
+     *   will be returned.
+     */
+    @Override
+    public synchronized Principal getPrincipal()
+    { return principal;
+    }
+  
+    @Override
+    public synchronized  boolean isAuthenticated()
+    { 
+      return authenticated;
+    }    
+    
+    @Override
+    public synchronized void logout()
+    { 
+      principal=null;
+      authenticated=false;
+      super.logout();
     }
   }
 }

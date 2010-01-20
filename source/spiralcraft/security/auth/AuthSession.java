@@ -54,8 +54,7 @@ public class AuthSession
   
   protected boolean debug;
 
-  protected volatile Principal principal;
-  protected volatile boolean authenticated;
+
   
   protected final HashMap<String,Object> attributes
     =new HashMap<String,Object>();
@@ -79,16 +78,17 @@ public class AuthSession
     if (primarySession!=null)
     { return primarySession.getPrincipal();
     }
-    return principal;
+    return null;
+
   }
   
-  public synchronized final boolean isAuthenticated()
+  public synchronized boolean isAuthenticated()
   { 
     if (primarySession!=null)
     { return primarySession.isAuthenticated();
     }
     else
-    { return authenticated;
+    { return false;
     }
   }
   
@@ -123,14 +123,11 @@ public class AuthSession
     if (debug)
     { 
       log.fine("Adding credentials "+Arrays.deepToString(credentials));
-      if (authenticated)
-      { 
-        log.fine("De-authenticating "+principal.toString());
-        new Exception().printStackTrace();
-      }
+      
+
     }
-    principal=null;
-    authenticated=false;
+    
+
     for (Credential<?> cred: credentials)
     { 
       Iterator<Credential<?>> it=credentialList.iterator();
@@ -143,6 +140,7 @@ public class AuthSession
       credentialList.add(cred);
       credentialMap.put(cred.getClass().getSimpleName(),cred);
     }
+    credentialsChanged();
   }
 
   /**
@@ -160,6 +158,67 @@ public class AuthSession
     { authenticator.popSession();
     }
   }
+  
+  /**
+   * <p>Provide an opportunity for modules to update the authentication state
+   *   based on the application context.
+   * </p>
+   * 
+   * <p>The resulting change in authentication state may result in a new
+   *   primary session, possibly originating from a different module.
+   * </p>
+   */
+  public void refresh()
+  {
+    if (sessions==null)
+    { return;
+    }
+    
+    authenticator.pushSession(this);
+    try
+    {
+      AuthModule.Session newPrimary=null;
+      for (AuthModule.Session session:sessions)
+      {
+        if (session!=null)
+        { session.refresh();
+        }
+        if (newPrimary==null && session.isAuthenticated())
+        { newPrimary=session;
+        }
+        if (newPrimary!=null && primarySession!=newPrimary)
+        { primarySession=newPrimary;
+        }
+      }
+      
+    }
+    finally
+    { authenticator.popSession();
+    }
+    
+  }
+  
+  private void credentialsChanged()
+  {
+    if (sessions==null)
+    { return;
+    }
+    
+    authenticator.pushSession(this);
+    try
+    {
+      for (AuthModule.Session session:sessions)
+      {
+        if (session!=null)
+        { session.credentialsChanged();
+        }
+      }
+    }
+    finally
+    { authenticator.popSession();
+    }
+    
+  }  
   
   private boolean authenticateModules()
   {
@@ -190,17 +249,22 @@ public class AuthSession
   
   private void logoutModules()
   {
-    
-
-    for (int i=0;i<sessions.length;i++)
+    authenticator.pushSession(this);
+    try
     {
-      AuthModule.Session session=sessions[i];
-      if (session!=null)
-      { session.logout();
+      for (int i=0;i<sessions.length;i++)
+      {
+        AuthModule.Session session=sessions[i];
+        if (session!=null)
+        { session.logout();
+        }
+        sessions[i]=null;
       }
-      sessions[i]=null;
+      primarySession=null;
     }
-    primarySession=null;
+    finally
+    { authenticator.popSession();
+    }
   }
   
   
@@ -269,8 +333,6 @@ public class AuthSession
     credentialList.clear();
     credentialMap.clear();
     attributes.clear();
-    principal=null;
-    authenticated=false;
     logoutModules();
     
   }

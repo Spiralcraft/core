@@ -16,6 +16,7 @@ package spiralcraft.security.auth;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
 
 public class TestAuthenticator
   extends Authenticator
@@ -36,6 +37,8 @@ class TestSession
   extends AuthSession
 {
 
+  protected volatile Principal principal;
+  protected volatile boolean authenticated;
   
   public TestSession(TestAuthenticator authenticator)
   { super(authenticator);
@@ -80,4 +83,20 @@ class TestSession
 
   }
   
+  /**
+   * @return The Principal currently authenticated in this session.
+   * 
+   * <P>In the case of Principal escalation, the most privileged Principal
+   *   will be returned.
+   */
+  @Override
+  public synchronized Principal getPrincipal()
+  { return principal;
+  }
+  
+  @Override
+  public synchronized  boolean isAuthenticated()
+  { 
+    return authenticated;
+  }    
 }
