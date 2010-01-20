@@ -19,11 +19,21 @@ public abstract class AbstractAuthModule
   protected Class<? extends Credential<?>>[] acceptedCredentials;
   protected Authenticator authenticator;
   protected boolean usesActiveCredentials;
+  protected String name;
   
 
   @Override
   public abstract Session createSession();
 
+  public void setName(String name)
+  { this.name=name;
+  }
+
+  @Override
+  public String getName()
+  { return name;
+  }
+  
   @SuppressWarnings("unchecked")
   @Override
   public Focus<?> bind(

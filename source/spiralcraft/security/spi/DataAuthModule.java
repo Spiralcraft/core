@@ -314,7 +314,11 @@ public class DataAuthModule
       }
       
       if (principal!=null && authenticated)
-      { return true;
+      { 
+        if (debug)
+        { log.fine("Already authenticated");
+        }
+        return true;
       }
       
       if (debug)
@@ -400,7 +404,8 @@ public class DataAuthModule
         else
         { 
           if (debug)
-          { log.fine("failed login: no account match");
+          { 
+            log.fine("failed login: no account match");
           }
           authenticated=false;
           resetRefreshTrigger();
@@ -464,6 +469,9 @@ public class DataAuthModule
       }
     }
   }
+
+
+
   
 }
   

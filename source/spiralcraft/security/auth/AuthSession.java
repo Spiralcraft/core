@@ -82,6 +82,17 @@ public class AuthSession
 
   }
   
+  public synchronized boolean isAuthenticated(String name)
+  { 
+    Integer sessionIndex=authenticator.getModuleMap().get(name);
+    if (sessionIndex!=null && sessions[sessionIndex]!=null)
+    { return sessions[sessionIndex].isAuthenticated();
+    }
+    else
+    { return false;
+    }
+  }
+
   public synchronized boolean isAuthenticated()
   { 
     if (primarySession!=null)
@@ -148,7 +159,7 @@ public class AuthSession
    * 
    * @return Whether a successful authentication has been performed 
    */
-  public boolean authenticate()
+  public synchronized boolean authenticate()
   {
     authenticator.pushSession(this);
     try
@@ -168,7 +179,7 @@ public class AuthSession
    *   primary session, possibly originating from a different module.
    * </p>
    */
-  public void refresh()
+  public synchronized void refresh()
   {
     if (sessions==null)
     { return;
@@ -214,6 +225,9 @@ public class AuthSession
     
   }  
   
+  /**
+   * Called with this session in the thread context
+   */
   private void recomputePrimarySession()
   {
     if (sessions!=null)
@@ -255,13 +269,14 @@ public class AuthSession
       if (session==null)
       {
         session=module.createSession();
-        sessions[i++]=session;
+        sessions[i]=session;
         
       }
       
       if (session!=null)
       { session.authenticate();
       }
+      i++;
     }
     recomputePrimarySession();
     return primarySession!=null && primarySession.isAuthenticated();
@@ -279,7 +294,6 @@ public class AuthSession
         if (session!=null)
         { session.logout();
         }
-        sessions[i]=null;
       }
       primarySession=null;
       recomputePrimarySession();
@@ -331,7 +345,7 @@ public class AuthSession
    * @param name
    * @param value
    */
-  public <T> void setAttribute(String name,T value)
+  public synchronized<T> void setAttribute(String name,T value)
   { attributes.put(name,value);
   }
   
@@ -342,7 +356,7 @@ public class AuthSession
    * @param name
    */  
   @SuppressWarnings("unchecked")
-  public <T> T getAttribute(String name)
+  public synchronized <T> T getAttribute(String name)
   { return (T) attributes.get(name);
   }
   

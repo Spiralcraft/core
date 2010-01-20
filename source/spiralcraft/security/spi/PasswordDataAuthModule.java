@@ -82,8 +82,8 @@ public class PasswordDataAuthModule
   
   }
   
-  public void bind()
-  {
-  }
+//  public void bind()
+//  {
+//  }
   
 }

@@ -57,6 +57,7 @@ public class Authenticator
   protected AuthModule[] authModules;
   protected boolean debug;
 
+  protected HashMap<String,Integer> moduleMap;
   
       
 //  public Class<? extends Credential<?>>[] getRequiredCredentials()
@@ -141,8 +142,15 @@ public class Authenticator
 
     if (authModules!=null)
     {
+      moduleMap=new HashMap<String,Integer>();
+      int i=0;
       for (AuthModule authModule:authModules)
-      { authModule.bind(credentialFocus);
+      { 
+        authModule.bind(credentialFocus);
+        if (authModule.getName()!=null)
+        { moduleMap.put(authModule.getName(),i);
+        }
+        i++;
       }
     }
     return sessionFocus;
@@ -156,6 +164,9 @@ public class Authenticator
   { sessionChannel.pop();
   }
   
+  public HashMap<String,Integer> getModuleMap()
+  { return moduleMap;
+  }
   
   protected void setAcceptedCredentials
     (Class<? extends Credential<?>>[] acceptedCredentials)

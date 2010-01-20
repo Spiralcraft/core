@@ -27,7 +27,13 @@ import spiralcraft.lang.FocusChainObject;
 public interface AuthModule
   extends FocusChainObject
 {
-  
+  /**
+   * The name by which clients will reference the state
+   *   of a specific AuthModule.Session
+   * 
+   * @return
+   */
+  public String getName();
   
   /**
    * Authenticate the credentials provided to the AuthSession
