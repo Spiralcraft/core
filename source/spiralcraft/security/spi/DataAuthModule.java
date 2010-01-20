@@ -287,8 +287,6 @@ public class DataAuthModule
                 );
             }
             
-            refreshTriggerValue=null;
-            
             principal=null;
             authenticated=false;
             
@@ -391,6 +389,7 @@ public class DataAuthModule
                 );
             }
             authenticated=false;
+            resetRefreshTrigger();
             return false;
           }
         }
@@ -400,6 +399,7 @@ public class DataAuthModule
           { log.fine("failed login: no account match");
           }
           authenticated=false;
+          resetRefreshTrigger();
           return false;
         }
 
