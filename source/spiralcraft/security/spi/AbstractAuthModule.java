@@ -18,6 +18,7 @@ public abstract class AbstractAuthModule
   protected Focus<Map<String,Credential<?>>> credentialFocus;
   protected Class<? extends Credential<?>>[] acceptedCredentials;
   protected Authenticator authenticator;
+  protected boolean usesActiveCredentials;
   
 
   @Override
@@ -52,7 +53,11 @@ public abstract class AbstractAuthModule
 
   protected void setAcceptedCredentials
     (Class<? extends Credential<?>>[] acceptedCredentials)
-  { this.acceptedCredentials=acceptedCredentials;
+  { 
+    this.acceptedCredentials=acceptedCredentials;
+    usesActiveCredentials
+      =acceptedCredentials!=null
+        && acceptedCredentials.length>0;
   }
   
   public class AbstractSession
@@ -60,6 +65,8 @@ public abstract class AbstractAuthModule
   {
     protected Principal principal;
     protected boolean authenticated;
+    protected AuthSession authSession
+      =sessionFocus.getSubject().get();
   
     public boolean isAuthenticated()
     { return authenticated;
@@ -67,6 +74,19 @@ public abstract class AbstractAuthModule
     
     public Principal getPrincipal()
     { return principal;
+    }
+    
+    public void refresh()
+    {
+    }
+    
+    public void credentialsChanged()
+    {
+      if (usesActiveCredentials)
+      {
+        principal=null;
+        authenticated=false;
+      }
     }
     
     /**

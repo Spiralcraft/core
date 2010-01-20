@@ -43,6 +43,10 @@ public interface AuthModule
     
     public boolean isAuthenticated();
     
+    public void refresh();
+    
+    public void credentialsChanged();
+    
     public Principal getPrincipal();
   }
 }
