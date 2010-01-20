@@ -353,7 +353,7 @@ public class AuthSession
   
   /**
    * Logs out the user by clearing all credentials, attributes and principal 
-   *   data and setting authenticated to false.
+   *   data and destroying all AuthModule sessions
    */
   public synchronized void logout()
   {
@@ -361,6 +361,18 @@ public class AuthSession
     credentialMap.clear();
     attributes.clear();
     logoutModules();
+    
+  }
+  
+  /**
+   * Clears any active credentials and allows any modules which depend on them
+   *   to re-evaluate their authentication state.
+   */
+  public synchronized void clearCredentials()
+  {
+    credentialList.clear();
+    credentialMap.clear();
+    credentialsChanged();
     
   }
   
