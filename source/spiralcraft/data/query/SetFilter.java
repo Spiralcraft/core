@@ -52,7 +52,7 @@ public class SetFilter<T>
 {
  
   private static final ClassLog log
-    =ClassLog.getInstance(Selection.class);
+    =ClassLog.getInstance(SetFilter.class);
   
   private Expression<?> filterSetX;
   private Expression<T> searchX;
