@@ -57,8 +57,13 @@ public class ReflectionTypeFactory
       // Determine if this is a situation where we augment a reflection type
       //   with an AssemblyType chain 
       
-      AssemblyClass assemblyClass
-        =AssemblyLoader.getInstance().findAssemblyClass(uri);
+      AssemblyClass assemblyClass=null;
+      try
+      { assemblyClass=AssemblyLoader.getInstance().findAssemblyClass(uri);
+      }
+      catch (BuildException x)
+      {
+      }
       
       if (assemblyClass!=null)
       { 
@@ -88,12 +93,11 @@ public class ReflectionTypeFactory
         }
       }
       else
-      { log.log(Level.WARNING,"Got null resolving AssemblyClass "+uri);
+      { 
+        if (debugLevel.canLog(Level.DEBUG))
+        { log.log(Level.DEBUG,"Got null resolving AssemblyClass "+uri);
+        }
       }
-    }
-    catch (BuildException x)
-    { 
-      log.log(Level.WARNING,"Error resolving AssemblyClass "+uri,x);
     }
     finally
     { Thread.currentThread().setContextClassLoader(oldClassLoader);
