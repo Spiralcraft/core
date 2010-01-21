@@ -26,6 +26,22 @@ import java.net.URISyntaxException;
 public class URIUtil
 {
 
+  public static final URI addPathSuffix(URI source,String rawSuffix)
+  { 
+    return URI.create
+      (trimToPath(source).toString()
+        +rawSuffix
+        +(source.getRawQuery()!=null
+          ?"?"+source.getRawQuery()
+          :""
+          )
+        +(source.getRawFragment()!=null
+          ?"#"+source.getRawFragment()
+          :""
+         )
+      );
+  }
+  
   /**
    * Replace the query part of the specified URI with the 
    *   specified pre-encoded query string
@@ -41,7 +57,7 @@ public class URIUtil
       (trimToPath(source).toString()
         +"?"
         +rawQuery
-        +(source.getRawFragment()!=null
+        +("#"+source.getRawFragment()!=null
           ?source.getRawFragment()
           :""
         )
