@@ -256,6 +256,9 @@ public class AuthSession
   {
     
     AuthModule[] modules=authenticator.getAuthModules();
+    if (modules==null)
+    { return false;
+    }
 
     if (sessions==null)
     {  sessions=new AuthModule.Session[modules.length];
