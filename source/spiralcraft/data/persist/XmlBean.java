@@ -19,6 +19,7 @@ import java.net.URI;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.reflect.ReflectionType;
+import spiralcraft.data.spi.EditableArrayTuple;
 
 
 /**
@@ -98,14 +99,21 @@ public class XmlBean<T>
   protected T newInstance()
     throws DataException
   { 
-    try
-    { return type.getNativeClass().newInstance();
+    
+    if (type.isDataEncodable())
+    { return type.fromData(new EditableArrayTuple(type),null);
     }
-    catch (InstantiationException x)
-    { throw new DataException("Error instantiating "+type.getNativeClass()+": "+x,x);
-    }
-    catch (IllegalAccessException x)
-    { throw new DataException("Error instantiating "+type.getNativeClass()+": "+x,x);
+    else
+    {
+      try
+      { return type.getNativeClass().newInstance();
+      }
+      catch (InstantiationException x)
+      { throw new DataException("Error instantiating "+type.getNativeClass()+": "+x,x);
+      }
+      catch (IllegalAccessException x)
+      { throw new DataException("Error instantiating "+type.getNativeClass()+": "+x,x);
+      }
     }
     
   }
