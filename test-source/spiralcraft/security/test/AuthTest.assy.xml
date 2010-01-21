@@ -4,9 +4,10 @@
   xmlns:test="class:/spiralcraft/test/"
   xmlns:example="class:/spiralcraft/data/test/example/"
   xmlns:secauth="class:/spiralcraft/security/auth/"
+  xmlns:sectest="class:/spiralcraft/security/test/"
   >
-  <targetURI>class:/spiralcraft/security/test/Authenticator.xml
-  </targetURI>
+  <targetTypeURI>class:/spiralcraft/security/test/Authenticator
+  </targetTypeURI>
   
   
   <chain>

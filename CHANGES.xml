@@ -2,6 +2,77 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
+    <revision>0.4.2.3
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>?????
+    </date>
+    
+    <notes>
+      <scm:Note>spiralcraft.data.reflect Types (ie. Java class bridge)
+        now resolve AssemblyClass instances.
+      </scm:Note>
+      <scm:Note>Misc fixes
+      </scm:Note>
+    </notes>
+    
+    <detail>
+
+      <scm:Change>
+
+        <scm:Note>spiralcraft.data.reflect Types (ie. Java class bridge)
+          now resolve AssemblyClass instances via the AssemblyType class.
+        </scm:Note>
+        <scm:Note>ReflectionTypeFactory now tries to load a builder assembly
+          for the specified type URI and creates an AssemblyType in
+          appropriate situations.
+        </scm:Note>
+        <scm:Note>XmlBean now uses Type.fromData() to construct object, if
+          applicable.
+        </scm:Note>
+        <scm:Note>spiralcraft.builder.Managable tags POJOs for inclusion in
+          this mechanism if no [classname].assy.xml exists for the type.
+        </scm:Note>
+        <scm:Note>BuilderScheme fixed to recognize AssemblyType as a
+          ReflectionType equivalent.
+        </scm:Note>
+        <scm:Note>URIUtil now has addSuffixToPath(URI uri,String rawSuffix)
+        </scm:Note>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>builder/Managable.java
+          </URI>
+          <URI>data/builder/BuilderScheme.java
+          </URI>
+          <URI>data/persist/XmlBean.java
+          </URI>
+          <URI>data/reflect/AssemblyType.java
+          </URI>
+          <URI>data/reflect/ReflectionTypeFactory.java
+          </URI>
+          <URI>util/URIUtil.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <scm:Note>Fixed NPE when no modules configured
+        </scm:Note>
+        
+        <path>/source/spiralcraft/security/auth/AuthSession.java
+        </path>
+      </scm:Change>
+
+    </detail>
+  </scm:Change>    
+
+  <scm:Change>
     <revision>0.4.2.2
     </revision>
     
