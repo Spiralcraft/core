@@ -20,6 +20,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 
+import spiralcraft.data.reflect.AssemblyType;
 import spiralcraft.data.reflect.ReflectionField;
 import spiralcraft.data.reflect.ReflectionType;
 
@@ -49,7 +50,7 @@ public class BuilderScheme
     =new HashMap<String,PropertySpecifier>();
   
   private final AssemblyClass assemblyClass;
-  private final ReflectionType<?> reflectionType;
+  private final Type<?> targetType;
   
   public BuilderScheme
     (Type<?> type
@@ -61,11 +62,21 @@ public class BuilderScheme
     this.assemblyClass=assemblyClass;
     Type<?> nativeTypeWrapper
       =ReflectionType.canonicalType(assemblyClass.getJavaClass());
-    if (nativeTypeWrapper!=null && nativeTypeWrapper instanceof ReflectionType<?>)
-    { reflectionType=(ReflectionType<?>) nativeTypeWrapper;
+    if (nativeTypeWrapper!=null
+         && 
+         (nativeTypeWrapper instanceof ReflectionType<?>
+          || nativeTypeWrapper instanceof AssemblyType<?>
+          )
+       )
+    { targetType=nativeTypeWrapper;
+    }
+    else if (nativeTypeWrapper!=null && nativeTypeWrapper instanceof AssemblyType<?>)
+    { 
+      // This is now the most common case
+      targetType=nativeTypeWrapper;
     }
     else
-    { reflectionType=null;
+    { targetType=null;
     }
 
     if (assemblyClass.localMemberIterable()!=null)
@@ -98,9 +109,9 @@ public class BuilderScheme
   {
     List<BuilderField> fieldList=new ArrayList<BuilderField>();
     
-    if (reflectionType!=null)
+    if (targetType!=null)
     {
-      for (Field<?> field:reflectionType.getFieldSet().fieldIterable())
+      for (Field<?> field:targetType.getFieldSet().fieldIterable())
       { 
         try
         { 
@@ -132,8 +143,8 @@ public class BuilderScheme
     
     BuilderField field = new BuilderField
       (prop
-      ,reflectionType!=null
-        ?(ReflectionField<?>) reflectionType.getField(prop.getTargetName())
+      ,targetType!=null
+        ?(ReflectionField<?>) targetType.getField(prop.getTargetName())
         :null
       );
     field.resolveType();
