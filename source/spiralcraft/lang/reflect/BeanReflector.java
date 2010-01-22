@@ -473,6 +473,9 @@ public class BeanReflector<T>
       
       if (name=="" && functor)
       { 
+        if (!source.isConstant())
+        { throw new BindException("Functor source must be constant");
+        }
         Functor<?> functor=(Functor) source.get();
         if (functor!=null)
         { binding=(Channel<X>) functor.bindChannel(focus, optics);
