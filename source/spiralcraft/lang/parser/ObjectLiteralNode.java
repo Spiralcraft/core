@@ -243,6 +243,11 @@ public class ObjectLiteralNode<Tobject,Treturn>
         Focus<?> sourceFocus=focus.chain(sourceChannel);
         if (object instanceof FocusChainObject)
         {
+          // Construct expr.[*ns:Type] expects that output of expr be  
+          //  available to the object literal, making it roughly equivalent
+          //  to expr{[*ns:Type]}, but with any constant parameters
+          //  contextualized by the outer focus.
+          
           ((FocusChainObject) object).bind(sourceFocus);
         }
         
