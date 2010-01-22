@@ -258,8 +258,8 @@ public abstract class Node
   }
   
   @SuppressWarnings("unchecked")
-  protected Node subcontext(Node subcontext)
-  { return new SubcontextNode(this,subcontext);
+  protected Node subcontext(List<Node> subcontextList)
+  { return new SubcontextNode(this,subcontextList);
   }
   
   @SuppressWarnings("unchecked")

@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
@@ -74,7 +75,11 @@ public class LiteralNode<X>
       .append("Literal: ").append(_optic.getContentType().getName())
       .append(":[")
       .append(_optic.getContentType()==String.class?"\"":"")
+      .append(_optic.getContentType()==Expression.class?"`":"")
+      .append(_optic.getContentType()==Character.class?"'":"")
       .append(_optic.get().toString())
+      .append(_optic.getContentType()==Character.class?"'":"")
+      .append(_optic.getContentType()==Expression.class?"`":"")
       .append(_optic.getContentType()==String.class?"\"":"")
       .append("]")
       ;

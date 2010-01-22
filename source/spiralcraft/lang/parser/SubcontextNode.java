@@ -14,10 +14,16 @@
 //
 package spiralcraft.lang.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 
 
 /**
@@ -40,48 +46,99 @@ public class SubcontextNode<T,S>
 {
 
   private final Node _source;
-  private final Node _subcontext;
+  private final List<Node> _subcontextList;
 
-  public SubcontextNode(Node source,Node subcontext)
+  public SubcontextNode(Node source,List<Node> subcontextList)
   { 
     _source=source;
-    _subcontext=subcontext;
+    _subcontextList=subcontextList;
   }
 
   @Override
   public Node[] getSources()
-  { return new Node[] {_source,_subcontext};
-  }
-    
+  { 
+    ArrayList<Node> ret=new ArrayList<Node>();
+    ret.add(_source);
+    ret.addAll(_subcontextList);
+    return ret.toArray(new Node[ret.size()]);
+  }  
+
   @Override
   public Node copy(Object visitor)
-  { 
+  {
+    boolean dirty=false;
+    List<Node> nodes=new ArrayList<Node>();
+    for (Node node:_subcontextList)
+    { 
+      Node nodeCopy=node.copy(visitor);
+      nodes.add(nodeCopy);
+      if (node!=nodeCopy)
+      { dirty=true;
+      }
+    }
     SubcontextNode<T,S> copy
-      =new SubcontextNode<T,S>
-      (_source.copy(visitor),_subcontext.copy(visitor));
-    
-    if (copy._source==_source && copy._subcontext==_subcontext)
+      =new SubcontextNode<T,S>(_source.copy(visitor),nodes);
+    if (!dirty && copy._source==_source )
     { return this;
     }
     else
     { return copy;
     }
-  }
+  }  
+
   
   @Override
   public String reconstruct()
-  { return _source.reconstruct()+" { "+_subcontext.reconstruct()+" } ";
+  { 
+    StringBuilder ret=new StringBuilder();
+    ret.append(_source.reconstruct()+" { ");
+    boolean first=true;
+    for (Node node : _subcontextList)
+    {
+      if (first)
+      { first=false;
+      }
+      else
+      { ret.append(" , ");
+      }
+      ret.append(node.reconstruct());
+    }
+    ret.append(" } ");
+    return ret.toString();
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   public Channel<?> bind(Focus<?> focus)
     throws BindException
   {
    
     Channel<S> sourceChannel=focus.<S>bind(new Expression<S>(_source,null));
-    Channel<?> result
-      =focus.telescope(sourceChannel).bind(new Expression<T>(_subcontext,null));
-    return result;
+    Channel<?>[] channels=new Channel<?>[_subcontextList.size()];
+    
+    if (sourceChannel.isConstant() || channels.length==1)
+    {
+      Focus<S> subFocus=focus.telescope(sourceChannel);
+      int i=0;
+      for (Node node:_subcontextList)
+      { channels[i++]=subFocus.bind(new Expression(node));
+      }
+      return new SubcontextChannel(sourceChannel,null,channels);
+      
+    }
+    else
+    {
+    
+      ThreadLocalChannel<S> sourceLocal
+        =new ThreadLocalChannel<S>(sourceChannel.getReflector());
+    
+      Focus<S> subFocus=focus.telescope(sourceLocal);
+      int i=0;
+      for (Node node:_subcontextList)
+      { channels[i++]=subFocus.bind(new Expression(node));
+      }
+      return new SubcontextChannel(sourceChannel,sourceLocal,channels);
+    }
   }
   
   @Override
@@ -91,9 +148,89 @@ public class SubcontextNode<T,S>
     prefix=prefix+"  ";
     _source.dumpTree(out,prefix);
     out.append(prefix+"{");
-    _subcontext.dumpTree(out,prefix+"  ");
+    boolean first=true;
+    for (Node node : _subcontextList)
+    {
+      if (first)
+      { first=false;
+      }
+      else
+      { out.append(" , ");
+      }
+      node.dumpTree(out,prefix+"  ");
+    }
     out.append(prefix+"}");
   }
   
 
 }
+
+class SubcontextChannel<T,S>
+  extends AbstractChannel<T>
+{
+  private final  Channel<?>[] channels;
+  private final ThreadLocalChannel<S> sourceLocal;
+  private final Channel<S> source;
+  
+  
+  @SuppressWarnings("unchecked")
+  SubcontextChannel
+    (Channel<S> source
+    ,ThreadLocalChannel<S> sourceLocal
+    ,Channel[] subcontext
+    )
+    throws BindException
+  {
+    super(subcontext[subcontext.length-1].getReflector());
+    
+    this.channels=subcontext;
+    this.sourceLocal=sourceLocal;
+    this.source=source;
+
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  protected T retrieve()
+  {
+    if (sourceLocal!=null)
+    { sourceLocal.push(source.get());
+    }
+    try
+    {
+      Object ret=null;
+    
+      for (Channel<?> channel : channels)
+      { ret=channel.get();
+      }
+      return (T) ret;
+    }
+    finally
+    { 
+      if (sourceLocal!=null)
+      { sourceLocal.pop();
+      }
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  protected boolean store(
+    T val)
+    throws AccessException
+  { 
+    if (sourceLocal!=null)
+    { sourceLocal.push(source.get());
+    }
+    try
+    { return ((Channel<T>) channels[channels.length-1]).set(val);
+    }
+    finally
+    {
+      if (sourceLocal!=null)
+      { sourceLocal.pop();
+      }
+    }
+  }
+}
+

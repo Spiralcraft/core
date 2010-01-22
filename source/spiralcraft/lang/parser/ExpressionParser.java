@@ -96,6 +96,7 @@ public class ExpressionParser
     syntax.ordinaryChar('/');
     syntax.ordinaryChar('[');
     syntax.ordinaryChar(']');
+    syntax.ordinaryChar('`');
     
     syntax.wordChars('0','9');
 
@@ -694,11 +695,11 @@ public class ExpressionParser
     throws ParseException
   {
     expect('{');
-    Node subexpression=parseExpression();
-    if (subexpression==null)
-    { throwUnexpected("Subcontext expression cannot be empty");
+    List<Node> subexpressionList=parseExpressionList();
+    if (subexpressionList==null)
+    { throwUnexpected("Subcontext expression list cannot be empty");
     }
-    Node ret=primary.subcontext(subexpression);
+    Node ret=primary.subcontext(subexpressionList);
     expect('}');
     return ret;
   }
@@ -962,20 +963,21 @@ public class ExpressionParser
       }
       consumeToken();
       consumeToken();
-      node=node.bindFrom(this.parseExpression());
+      node=node.bindFrom(parseExpression());
     }
     return node;
   }
   
   /**
    * PrimaryExpression -> Number
-   *                    | String Literal
+   *                    | StringLiteral
    *                    | "true" 
    *                    | "false" 
    *                    | "null"
    *                    | IdentifierExpression
    *                    | "(" Expression ")"
    *                    | Tuple
+   *                    | ExpressionLiteral
    */
   // Called only from parseFocusExpression
   @SuppressWarnings("unchecked")
@@ -1031,10 +1033,25 @@ public class ExpressionParser
       case '{':
         node=parseTuple();
         break;
+      case '`':
+        node=parseExpressionLiteral();
+        break;
     }
     return node;
   }
 
+  
+  @SuppressWarnings("unchecked")
+  private Node parseExpressionLiteral()
+    throws ParseException
+  {
+    expect('`');
+    Node node=new LiteralNode<Expression>(new Expression(parseBindingExpression()));
+    expect('`');
+    return node;
+  }
+  
+  
   /**
    * AggregateProjectionExpression ->  "#{" Expression "}" postFixExpression
    */
