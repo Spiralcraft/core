@@ -57,10 +57,10 @@ public class URIUtil
       (trimToPath(source).toString()
         +"?"
         +rawQuery
-        +("#"+source.getRawFragment()!=null
-          ?source.getRawFragment()
-          :""
-        )
+        +(source.getRawFragment()!=null
+         ?"#"+source.getRawFragment()
+         :""
+         )
       );
   }
   
