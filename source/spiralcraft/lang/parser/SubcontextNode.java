@@ -116,7 +116,7 @@ public class SubcontextNode<T,S>
     Channel<S> sourceChannel=focus.<S>bind(new Expression<S>(_source,null));
     Channel<?>[] channels=new Channel<?>[_subcontextList.size()];
     
-    if (sourceChannel.isConstant() || channels.length==1)
+    if (sourceChannel.isConstant())
     {
       Focus<S> subFocus=focus.telescope(sourceChannel);
       int i=0;
