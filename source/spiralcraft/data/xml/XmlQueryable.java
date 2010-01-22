@@ -320,13 +320,21 @@ public class XmlQueryable
         (URI.create(this.resource.getURI().toString()+tempSuffix));
 
     URI backupURI=null;
+    int seq=0;
     if (resource.exists())
     {
-      backupURI=URI.create
-          (resource.getURI().toString()
-          +"."+dateFormat.format
-            (new Date())
-          );
+      while (backupURI==null 
+              || Resolver.getInstance().resolve(backupURI).exists()
+            )
+      {
+        backupURI=URI.create
+            (resource.getURI().toString()
+            +"."+dateFormat.format
+              (new Date())
+            +"-"+seq
+            );
+        seq++;
+      }
       resource.renameTo
         (backupURI
         );
