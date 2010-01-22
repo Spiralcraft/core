@@ -46,6 +46,8 @@ public class ThreadLocalChannel<T>
   private final ThreadLocal<ThreadReference<T>> threadLocal;
   private final boolean inheritable;
   private final Channel<T> sourceChannel;
+  private final Exception initTrace
+    =new Exception("ThreadLocal allocation stack:");
 
   class InheritableThreadLocalImpl
     extends InheritableThreadLocal<ThreadReference<T>>
@@ -127,6 +129,7 @@ public class ThreadLocalChannel<T>
       AccessException x=new AccessException
         ("ThreadLocal not initialized for "+getReflector().getTypeURI());
       log.log(Level.WARNING,x.getMessage(),x);
+      log.log(Level.WARNING,"ThreadLocal initializer trace: ",initTrace);
       throw x;
     }
   }
@@ -147,6 +150,7 @@ public class ThreadLocalChannel<T>
     { 
       AccessException x=new AccessException
         ("ThreadLocal not initialized for "+getReflector().getTypeURI());
+      log.log(Level.WARNING,"ThreadLocal initializer trace: ",initTrace);
       log.log(Level.WARNING,x.getMessage(),x);
       throw x;
     }
