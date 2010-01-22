@@ -199,7 +199,7 @@ public class FileResource
     throws IOException
   { 
     if (!_file.renameTo(new File(uri)))
-    { throw new IOException("Rename failed "+uri);
+    { throw new IOException("Rename failed: '"+_file.toURI()+"' to '"+uri+"'");
     }
   }
   
