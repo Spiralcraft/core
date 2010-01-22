@@ -45,6 +45,10 @@ public interface AuthModule
   
   public interface Session
   {
+    public String getAccountId();
+
+    public boolean associateLogin();
+
     public boolean authenticate();
     
     public void logout();

@@ -24,6 +24,7 @@ import spiralcraft.data.query.BoundQuery;
 
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Space;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
@@ -69,6 +70,7 @@ public class DataAuthModule
   private Binding<Boolean> credentialComparisonX;
  
   private Binding<String> principalIdX;
+  private Binding<String> accountIdX;
   
 
   private Type<?> accountDataType;
@@ -78,6 +80,9 @@ public class DataAuthModule
   private boolean debug;
   
   private Binding<?> refreshTriggerX;
+  
+  private Binding<?> onAssociate;
+  
   
   @SuppressWarnings("unchecked")
   public DataAuthModule()
@@ -92,6 +97,7 @@ public class DataAuthModule
       =new Binding(Expression.create("true"));
   
     principalIdX=new Binding(Expression.create(".username"));
+    accountIdX=new Binding(Expression.create(".principalId"));
 
   }
   
@@ -176,6 +182,9 @@ public class DataAuthModule
   { this.accountQuery=accountQuery;
   }
   
+  public void setOnAssociate(Binding<?> onAssociate)
+  { this.onAssociate=onAssociate;
+  }
   
   public void setRefreshTriggerX(Binding<?> refreshTriggerX)
   { this.refreshTriggerX=refreshTriggerX;
@@ -250,6 +259,9 @@ public class DataAuthModule
     credentialComparisonX.bind(comparisonFocus);
     principalIdX.bind(comparisonFocus);
     
+    if (onAssociate!=null)
+    { onAssociate.bind(credentialFocus);
+    }
     return context;
   }
   
@@ -429,7 +441,44 @@ public class DataAuthModule
       }
     }
 
+    public String getAccountId()
+    { 
+      try
+      {
+        Tuple loginEntry=queryLoginEntry();
 
+        if (loginEntry!=null)
+        {
+
+          // We have valid username in loginEntry
+
+          loginChannel.push(loginEntry);
+          try
+          { return accountIdX.get();
+          }
+          finally
+          { loginChannel.pop();
+          }
+        }
+        return null;
+      }
+      catch (DataException x)
+      { throw new RuntimeDataException("Error getting login entry",x);
+      }
+      
+    }
+    
+    public synchronized boolean associateLogin()
+    { 
+      if (onAssociate!=null)
+      {      
+        onAssociate.get();
+        return true;
+      }
+      else
+      { return false;
+      }
+    }
     
     private Tuple queryLoginEntry()
       throws DataException,SecurityException
@@ -468,6 +517,8 @@ public class DataAuthModule
       { refreshTriggerValue=refreshTriggerX.get();
       }
     }
+
+
   }
 
 
@@ -476,3 +527,29 @@ public class DataAuthModule
 }
   
   
+class DataPrincipal
+  implements Principal
+{
+  private final String name;
+  private final Tuple data;
+  
+  public DataPrincipal(String name,Tuple data)
+  {
+    this.name=name;
+    this.data=data;
+  }
+  
+  @Override
+  public String getName()
+  { return name;
+  }
+          
+  public Tuple getData()
+  { return data;
+  }
+  
+  @Override
+  public String toString()
+  { return super.toString()+":"+name;
+  }
+}

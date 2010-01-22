@@ -82,21 +82,82 @@ public class AuthSession
 
   }
   
-  public synchronized boolean isAuthenticated(String name)
-  { 
-    Integer sessionIndex=authenticator.getModuleMap().get(name);
-    if (sessionIndex!=null && sessions[sessionIndex]!=null)
-    { return sessions[sessionIndex].isAuthenticated();
+  /**
+   * Returns the local identifier for the account as shared between
+   *   authentication providers.
+   * 
+   * @return
+   */
+  public synchronized String getAccountId()
+  {
+    push();
+    try
+    {
+      if (primarySession!=null && primarySession.isAuthenticated())
+      { return primarySession.getAccountId();
+      } 
+      else
+      {
+        for (AuthModule.Session session:sessions)
+        { 
+          if (session.getAccountId()!=null)
+          { return session.getAccountId();
+          }
+        }
+        return null;
+      }
     }
-    else
-    { return false;
+    finally
+    { pop();
+    }
+  }
+
+  /**
+   * Associate the contextual authentication tokens with the currently
+   *   active Login
+   * 
+   * @param moduleName
+   */
+  public synchronized boolean associateLogin
+    (String moduleName)
+  { 
+    push();
+    try
+    {
+      AuthModule.Session session=getModuleSession(moduleName);
+      return session==null?false:session.associateLogin();
+    }
+    finally
+    { pop();
+    }
+  }
+ 
+  public synchronized boolean isAuthenticated(String moduleName)
+  { 
+    push();
+    try
+    {
+      AuthModule.Session session=getModuleSession(moduleName);
+      return session==null?false:session.isAuthenticated();
+    }
+    finally
+    { pop();
     }
   }
 
   public synchronized boolean isAuthenticated()
   { 
+    
+      
     if (primarySession!=null)
-    { return primarySession.isAuthenticated();
+    { 
+      push();
+      try
+      { return primarySession.isAuthenticated();
+      }
+      finally
+      { pop();
+      }
     }
     else
     { return false;
@@ -105,6 +166,14 @@ public class AuthSession
   
   public void setDebug(boolean debug)
   { this.debug=debug;
+  }
+  
+  private void push()
+  { authenticator.pushSession(this);
+  }
+  
+  private void pop()
+  { authenticator.popSession();
   }
   
   @SuppressWarnings("unchecked") // Required downcast
@@ -161,12 +230,12 @@ public class AuthSession
    */
   public synchronized boolean authenticate()
   {
-    authenticator.pushSession(this);
+    push();
     try
     { return authenticateModules();
     }
     finally
-    { authenticator.popSession();
+    { pop();
     }
   }
   
@@ -185,7 +254,7 @@ public class AuthSession
     { return;
     }
     
-    authenticator.pushSession(this);
+    push();
     try
     {
       for (AuthModule.Session session:sessions)
@@ -197,7 +266,19 @@ public class AuthSession
       recomputePrimarySession();
     }
     finally
-    { authenticator.popSession();
+    { pop();
+    }
+    
+  }
+  
+  private AuthModule.Session getModuleSession(String moduleName)
+  { 
+    Integer sessionIndex=authenticator.getModuleMap().get(moduleName);
+    if (sessionIndex!=null && sessions[sessionIndex]!=null)
+    { return sessions[sessionIndex];
+    }
+    else
+    { return null;
     }
     
   }
@@ -208,7 +289,7 @@ public class AuthSession
     { return;
     }
     
-    authenticator.pushSession(this);
+    push();
     try
     {
       for (AuthModule.Session session:sessions)
@@ -220,7 +301,7 @@ public class AuthSession
       recomputePrimarySession();
     }
     finally
-    { authenticator.popSession();
+    { pop();
     }
     
   }  
@@ -288,7 +369,7 @@ public class AuthSession
   
   private void logoutModules()
   {
-    authenticator.pushSession(this);
+    push();
     try
     {
       for (int i=0;i<sessions.length;i++)
@@ -302,7 +383,7 @@ public class AuthSession
       recomputePrimarySession();
     }
     finally
-    { authenticator.popSession();
+    { pop();
     }
   }
   
