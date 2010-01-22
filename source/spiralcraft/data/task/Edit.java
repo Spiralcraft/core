@@ -44,7 +44,7 @@ import spiralcraft.task.Task;
  *
  */
 public class Edit<Titem extends Tuple>
-  extends Chain<Void,Void>
+  extends Chain<Titem,BufferTuple>
 {
 
   private Expression<Titem> targetX;
@@ -55,6 +55,9 @@ public class Edit<Titem extends Tuple>
     =new TupleEditor();
   private boolean autoSave;
   private boolean autoCreate;
+  
+  { storeResults=true;
+  }
   
   
   public void setAutoSave(boolean autoSave)
@@ -74,7 +77,7 @@ public class Edit<Titem extends Tuple>
   }
   
   /**
-   * The target of this Collector, which must be of type Aggregate<?>
+   * The target of this Editor which must be a Tuple
    * 
    * @param resultAssignment
    */
@@ -84,18 +87,40 @@ public class Edit<Titem extends Tuple>
   }
 
 
-
-//  @SuppressWarnings("unchecked") // Type query
+  @SuppressWarnings("unchecked")
   @Override
-  public void bindChildren(
-    Focus<?> focusChain)
+  public Focus<?> bindImports(Focus<?> focusChain)
     throws BindException
   {
     if (targetX!=null)
     { 
       resultChannel
         =new BufferChannel<BufferTuple>(focusChain,focusChain.bind(targetX));
+      resultReflector
+        =resultChannel.getReflector();
+
     }
+    else
+    {
+      resultChannel
+        =new BufferChannel<BufferTuple>
+          (focusChain,(Channel<Tuple>) focusChain.getSubject());
+      
+      resultReflector
+        =resultChannel.getReflector();
+    }
+    return focusChain;
+    
+  }
+  
+
+//  @SuppressWarnings("unchecked") // Type query
+  @Override
+  public Focus<?> bindExports(
+    Focus<?> focusChain)
+    throws BindException
+  {
+    
 //    if (type==null && resultChannel!=null)
 //    { type=((DataReflector) resultChannel.getReflector()).getType();
 //    }
@@ -107,7 +132,7 @@ public class Edit<Titem extends Tuple>
         );
     editor.setSource(localChannel);
     editor.bind(focusChain);
-    super.bindChildren(focusChain.chain(localChannel));
+    return focusChain.chain(localChannel);
   }
 
   
@@ -144,6 +169,7 @@ public class Edit<Titem extends Tuple>
             { addException(saveCommand.getException());
             }
           }
+          addResult(localChannel.get());
         }
         finally
         { localChannel.pop();

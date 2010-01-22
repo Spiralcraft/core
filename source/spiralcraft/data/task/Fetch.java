@@ -53,6 +53,14 @@ public class Fetch
   { storeResults=true;
   }
 
+  public Fetch()
+  {
+  }
+  
+  public Fetch(Query query)
+  { this.query=query;
+  }
+  
   public class FetchTask
     extends ChainTask
   {
