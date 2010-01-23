@@ -695,7 +695,7 @@ public class BufferTuple
         boolean ok=false;
         try
         {
-          DataConsumer<DeltaTuple> updater=branch.getUpdater(getType());
+          DataConsumer<DeltaTuple> updater=branch.getUpdater(getType().getArchetype());
           if (updater!=null)
           { 
             updater.dataAvailable(this);
