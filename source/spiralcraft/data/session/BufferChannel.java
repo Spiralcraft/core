@@ -143,15 +143,8 @@ public class BufferChannel<Tbuffer extends Buffer>
     throws BindException
   {
     metaChannel=this;
-    
-    Focus<DataSession> sessionFocus
-      =focus.<DataSession>findFocus(DataSession.FOCUS_URI);
-    if (sessionFocus!=null)
-    {
-      sessionChannel
-        =sessionFocus.getSubject();
-    }
-    else
+    sessionChannel=DataSession.findChannel(focus);
+    if (sessionChannel==null)
     { throw new BindException("Can't find a DataSession in Focus chain");
     }
     

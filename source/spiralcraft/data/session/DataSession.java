@@ -30,6 +30,7 @@ import spiralcraft.data.transaction.Branch;
 import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.data.transaction.Transaction.State;
 import spiralcraft.data.util.DebugDataConsumer;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 
 
@@ -49,6 +50,23 @@ public class DataSession
 {
   public static final URI FOCUS_URI
     =URI.create("class:/spiralcraft/data/session/DataSession");
+  
+  /**
+   * Find the nearest DataSession in context
+   * 
+   * @param focus
+   * @return
+   */
+  public static final Channel<DataSession> findChannel(Focus<?> focus)
+  {
+    Focus<DataSession> dsf=focus.findFocus(FOCUS_URI);
+    if (dsf!=null)
+    { return dsf.getSubject();
+    }
+    else
+    { return null;
+    }
+  }
   
   private HashMap<Identifier,Buffer> buffers;  
   private DataComposite data;

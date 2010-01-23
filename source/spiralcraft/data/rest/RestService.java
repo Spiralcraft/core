@@ -166,9 +166,7 @@ public class RestService
     //   are only populated under this objects stack, and the data won't be
     //   available  to outside users.
     
-    sessionChannel
-      =parentFocus.<DataSession>bind
-        (Expression.<DataSession>create("[:"+DataSession.FOCUS_URI+"]"));
+    sessionChannel=DataSession.findChannel(parentFocus);
     
     if (modelExpression!=null)
     { 
