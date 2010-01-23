@@ -2,7 +2,7 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
-    <revision>0.4.2.3
+    <revision>0.4.3
     </revision>
     
     <authorId>miketoth
@@ -12,35 +12,218 @@
     </date>
     
     <notes>
+      <scm:Note>spiralcraft.security.auth Authentication system now provides
+        generic mechanisms for communicating associations between 
+        local accounts and contextual credentials managed by secondary
+        providers.
+      </scm:Note>
       <scm:Note>spiralcraft.data.reflect Types (ie. Java class bridge)
         now resolve AssemblyClass instances.
+      </scm:Note>
+      <scm:Note>spiralcraft.lang enhancements- multi-Expression subcontexts:
+        expr{ expr1, expr2, exprReturn } and Expression literals: `expr`
+      </scm:Note>
+      <scm:Note>Enhance data tasks Edit and Fetch for use as Object Literal
+        Functors.
+      </scm:Note>
+      <scm:Note>Simplify resolution of DataSession channels 
       </scm:Note>
       <scm:Note>Misc fixes
       </scm:Note>
     </notes>
     
     <detail>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Fix bug when saving outside of a transaction context
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/session/BufferTuple.java
+        </path>
+      </scm:Change>
 
       <scm:Change>
+        <notes>
+          <scm:Note>Simplify resolution of DataSession channels
+          </scm:Note>
+          <scm:Note>Static method DataSession.findChannel to look in Focus 
+            chain and extract the channel that provides the DataSession.
+          </scm:Note>
+          <scm:Note>TupleConstructorChannel.java now creates buffers as long
+            as there is a DataSession in context.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>session/BufferChannel.java
+          </URI>
+          <URI>session/DataSession.java
+          </URI>
+          <URI>rest/RestService.java
+          </URI>
+          <URI>lang/TupleConstructorChannel.java
+          </URI>
+          <URI>editor/EditorBase.java
+          </URI>
+          
+        </resources>
+      </scm:Change>
 
-        <scm:Note>spiralcraft.data.reflect Types (ie. Java class bridge)
-          now resolve AssemblyClass instances via the AssemblyType class.
-        </scm:Note>
-        <scm:Note>ReflectionTypeFactory now tries to load a builder assembly
-          for the specified type URI and creates an AssemblyType in
-          appropriate situations.
-        </scm:Note>
-        <scm:Note>XmlBean now uses Type.fromData() to construct object, if
-          applicable.
-        </scm:Note>
-        <scm:Note>spiralcraft.builder.Managable tags POJOs for inclusion in
-          this mechanism if no [classname].assy.xml exists for the type.
-        </scm:Note>
-        <scm:Note>BuilderScheme fixed to recognize AssemblyType as a
-          ReflectionType equivalent.
-        </scm:Note>
-        <scm:Note>URIUtil now has addSuffixToPath(URI uri,String rawSuffix)
-        </scm:Note>
+      <scm:Change>
+        <notes>
+          <scm:Note>Enhance data tasks Edit and Fetch and Selection query for
+            use as Object Literal Functors.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>task/Edit.java
+          </URI>
+          <URI>task/Fetch.java
+          </URI>
+          <URI>query/Selection.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>spiralcraft.security.auth Authentication system now provides
+            generic mechanisms for communicating associations between 
+            local accounts and contextual credentials managed by secondary
+            providers.
+          </scm:Note>
+          <scm:Note>Added methods AuthSession.associateLogin(String moduleName)
+            and AuthSession.getAccountId() and AuthModule.Session
+            counterparts and implementations.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/security/
+        </path>
+        
+        <resources>
+          <URI>auth/AuthModule.java
+          </URI>
+          <URI>auth/AuthSession.java
+          </URI>
+          <URI>spi/DataAuthModule.java
+          </URI>
+        </resources>
+      
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Fix bug reconstructing URI in URIUtil.replaceRawQuery()
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/URIUtil.java
+        </path>
+      </scm:Change>
+    
+      <scm:Change>
+        <notes>
+          <scm:Note>Enforce requirement that Functors be referenced from constant
+            Channels to preserve the integrity of the Channel graph.
+          </scm:Note>
+          <scm:Note>ThreadLocalChannel keeps stack trace of initializer chain to
+            assist in resolving context when encountering 
+            "ThreadLocal not initialized".
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/
+        </path>
+        
+        <resources>
+          <URI>reflect/BeanReflector.java
+          </URI>
+          <URI>spi/ThreadLocalChannel.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Fixed error where two XmlStore transactions
+           occurring in the same millisecond would try to use the same
+             temporary filename, resulting in a failure. Added a sequential
+            differentiator to the filename. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/xml/XmlQueryable.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>spiralcraft.lang enhancements- multi-Expression subcontexts:
+            expr{ expr1, expr2, exprReturn } and Expression literals: `expr`
+          </scm:Note>
+          <scm:Note>multi-Expression subcontexts allow multiple expressions in
+            a subcontext block and evaluate to the value of the last expression
+            in the block.
+          </scm:Note>
+          <scm:Note>Expression literals allow for the creation of in-line
+             Expressions which can be passed as objects to components which
+             accept Expressions for internal binding. For example
+             [*query:Selection{[@myns:MyType].type,`.fooValue>=25`}] will pass the
+             unbound Expression `.fooValue>=25` to the second argument of
+             the constructor spiralcraft.data.query.Selection(Type,Expression),
+             where Selection can bind it into the query context or convert it
+             to an optimized representation.
+          </scm:Note>
+        </notes>
+                
+        <path>source/spiralcraft/lang/parser/
+        </path>
+        
+        <resources>
+          <URI>ExpressionParser.java
+          </URI>
+          <URI>Node.java
+          </URI>
+          <URI>LiteralNode.java
+          </URI>
+          <URI>SubcontextNode.java
+          </URI>
+        </resources>
+      
+      
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>spiralcraft.data.reflect Types (ie. Java class bridge)
+            now resolve AssemblyClass instances via the AssemblyType class.
+          </scm:Note>
+          <scm:Note>ReflectionTypeFactory now tries to load a builder assembly
+            for the specified type URI and creates an AssemblyType in
+            appropriate situations.
+          </scm:Note>
+          <scm:Note>XmlBean now uses Type.fromData() to construct object, if
+            applicable.
+          </scm:Note>
+          <scm:Note>spiralcraft.builder.Managable tags POJOs for inclusion in
+            this mechanism if no [classname].assy.xml exists for the type.
+          </scm:Note>
+          <scm:Note>BuilderScheme fixed to recognize AssemblyType as a
+            ReflectionType equivalent.
+          </scm:Note>
+          <scm:Note>URIUtil now has addSuffixToPath(URI uri,String rawSuffix)
+          </scm:Note>
+        </notes>
         
         <path>source/spiralcraft/
         </path>
@@ -62,8 +245,10 @@
       </scm:Change>
 
       <scm:Change>
-        <scm:Note>Fixed NPE when no modules configured
-        </scm:Note>
+        <notes>
+          <scm:Note>Fixed NPE when no modules configured
+          </scm:Note>
+        </notes>
         
         <path>/source/spiralcraft/security/auth/AuthSession.java
         </path>
@@ -101,18 +286,20 @@
     <detail>
 
       <scm:Change>
-        <scm:Note>Refactored spiralcraft.security.auth package to support
-        multiple authentication modules.
-        </scm:Note>
+        <notes>
+          <scm:Note>Refactored spiralcraft.security.auth package to support
+          multiple authentication modules.
+          </scm:Note>
         
-        <scm:Note>Authenticator and AuthSession are now concrete classes that
-          are fully functional on their own. 
-        </scm:Note>
-        <scm:Note>The functionality previously in DataAuthenticator has been
-          abstracted into a a DataAuthModule and a PasswordDataAuthModule.
-          DataAuthenticator is now deprecated, and will probably disappear
-          in the 0.5 series. 
-        </scm:Note>
+          <scm:Note>Authenticator and AuthSession are now concrete classes that
+            are fully functional on their own. 
+          </scm:Note>
+          <scm:Note>The functionality previously in DataAuthenticator has been
+            abstracted into a a DataAuthModule and a PasswordDataAuthModule.
+            DataAuthenticator is now deprecated, and will probably disappear
+            in the 0.5 series. 
+          </scm:Note>
+        </notes>
         
         <path>source/spiralcraft/security/
         </path>
@@ -138,9 +325,11 @@
       </scm:Change>
 
       <scm:Change>
-        <scm:Note>The spiralcraft.data.task.Fetch task now returns a 
-          result.
-        </scm:Note>
+        <notes>
+          <scm:Note>The spiralcraft.data.task.Fetch task now returns a 
+           result.
+          </scm:Note>
+        </notes>
 
         
         <path>/source/spiralcraft/data/task/Fetch.java
@@ -148,8 +337,10 @@
       </scm:Change>
 
       <scm:Change>
-        <scm:Note>Added a Projection query
-        </scm:Note>
+        <notes>
+          <scm:Note>Added a Projection query
+          </scm:Note>
+        </notes>
 
         
         <path>/source/spiralcraft/data/query/Projection.java
@@ -159,9 +350,10 @@
       
       
       <scm:Change>
-        <scm:Note>Added a Join query
-        </scm:Note>
-
+        <notes>
+          <scm:Note>Added a Join query
+          </scm:Note>
+        </notes>
         
         <path>/source/spiralcraft/data/query/Join.java
         </path>
@@ -169,8 +361,10 @@
       </scm:Change>
       
       <scm:Change>
-        <scm:Note>Allow setting of debugLevel on BoundQuery
-        </scm:Note>
+        <notes>
+          <scm:Note>Allow setting of debugLevel on BoundQuery
+          </scm:Note>
+        </notes>
         
         <path>/source/spiralcraft/data/query/BoundQuery.java
         </path>
@@ -178,19 +372,23 @@
       </scm:Change>
       
       <scm:Change>
-        <scm:Note>Remove named parameters (BindingChannel instances) from 
-          member signature debug message.
-        </scm:Note>
-        
+        <notes>
+          <scm:Note>Remove named parameters (BindingChannel instances) from 
+            member signature debug message.
+          </scm:Note>
+        </notes>
+
         <path>/source/spiralcraft/lang/spi/AbstractChannel.java
         </path>
       
       </scm:Change>
 
       <scm:Change>
-        <scm:Note>Fixed cast exception- chain property can be any Scenario, not
-          just a Chain.
-        </scm:Note>
+        <notes>
+          <scm:Note>Fixed cast exception- chain property can be any Scenario, not
+            just a Chain.
+          </scm:Note>
+        </notes>
         
         <path>/source/spiralcraft/task/Reference.java
         </path>
@@ -218,8 +416,10 @@
     <detail>
 
       <scm:Change>
-        <scm:Note>Removed debugging messages
-        </scm:Note>
+        <notes>
+          <scm:Note>Removed debugging messages
+          </scm:Note>
+        </notes>
         
         <path>/source/spiralcraft/lang/parser/ObjectLiteralNode.java
         </path>
@@ -227,9 +427,11 @@
       </scm:Change>
       
       <scm:Change>
-        <scm:Note>Use context substitution for value of "ref" attribute
-          to enable customization of resource location.
-        </scm:Note>
+        <notes>
+          <scm:Note>Use context substitution for value of "ref" attribute
+            to enable customization of resource location.
+          </scm:Note>
+        </notes>
         
         <path>/source/spiralcraft/data/sax/DataHandler.java
         </path>
@@ -237,8 +439,10 @@
       </scm:Change>
       
       <scm:Change>
-        <scm:Note>Assert parameters for @tune and @log to fix NPE
-        </scm:Note>
+        <notes>
+          <scm:Note>Assert parameters for @tune and @log to fix NPE
+          </scm:Note>
+        </notes>
         
         <path>/source/spiralcraft/lang/spi/AbstractReflector.java
         </path>
