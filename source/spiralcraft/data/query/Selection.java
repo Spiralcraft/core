@@ -57,6 +57,13 @@ public class Selection
   {
   }
   
+  public Selection(Type<?> type,Expression<Boolean> constraints)
+  { 
+    this.constraints=constraints;
+    setSource(new Scan(type));
+  
+  }
+  
   /**
    * Construct a Selection which reads data from the specified source Query and filters
    *   data according to the specified constraints expression.
