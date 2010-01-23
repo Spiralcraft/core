@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
+import spiralcraft.data.session.BufferTuple;
+import spiralcraft.data.session.BufferType;
+import spiralcraft.data.session.DataSession;
 import spiralcraft.data.spi.EditableArrayTuple;
 
 import spiralcraft.lang.AccessException;
@@ -31,6 +34,8 @@ public class TupleConstructorChannel<T extends Tuple>
   private final ThreadLocalChannel<T> local;
   private final Setter<?>[] setters;
   private final Type<T> type;
+  private final boolean buffer;
+  private final Channel<DataSession> dataSessionChannel;
   
   @SuppressWarnings("unchecked")
   public TupleConstructorChannel(TupleReflector<T> reflector,Focus<?> context)
@@ -39,7 +44,6 @@ public class TupleConstructorChannel<T extends Tuple>
     super(reflector);
     local=new ThreadLocalChannel<T>(reflector);
     Focus<T> focus=context.chain(local);
-    this.type=reflector.getType();
       
     ArrayList<Setter<?>> setterList=new ArrayList<Setter<?>>();
     for (Field<?> field: reflector.getFieldSet().fieldIterable())
@@ -64,13 +68,31 @@ public class TupleConstructorChannel<T extends Tuple>
     { setters=null;
     }
     
+    buffer=((Type) reflector.getType()) instanceof BufferType;
+    if (buffer)
+    { 
+      this.type=reflector.getType();
+      dataSessionChannel=DataSession.findChannel(context);
+      if (dataSessionChannel==null)
+      { throw new BindException("Buffer requires a DataSession in context");
+      }
+    }
+    else
+    { 
+      this.type=reflector.getType();
+      dataSessionChannel=null;
+    }
+    
   }
   
   @SuppressWarnings("unchecked")
   @Override
   protected T retrieve()
   { 
-    T tuple = (T) new EditableArrayTuple(type);
+    T tuple =
+      buffer
+        ?(T) new BufferTuple(dataSessionChannel.get(),type)
+        :(T) new EditableArrayTuple(type);
     if (setters!=null)
     { 
       local.push(tuple);
