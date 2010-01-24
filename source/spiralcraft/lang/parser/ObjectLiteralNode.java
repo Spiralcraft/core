@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spiralcraft.lang.TypeModel;
+import spiralcraft.lang.spi.FocusChannel;
 import spiralcraft.lang.spi.SimpleChannel;
 
 /**
@@ -241,6 +242,9 @@ public class ObjectLiteralNode<Tobject,Treturn>
         
         Channel sourceChannel=focus.bind(new Expression(source));
         Focus<?> sourceFocus=focus.chain(sourceChannel);
+        
+        Focus<?> innerFocus=focus;
+        
         if (object instanceof FocusChainObject)
         {
           // Construct expr.[*ns:Type] expects that output of expr be  
@@ -248,7 +252,10 @@ public class ObjectLiteralNode<Tobject,Treturn>
           //  to expr{[*ns:Type]}, but with any constant parameters
           //  contextualized by the outer focus.
           
-          ((FocusChainObject) object).bind(sourceFocus);
+          
+          // Expose the Focus chained by the FocusChainObject
+          //   to a subcontext immediately downstream
+          innerFocus=((FocusChainObject) object).bind(sourceFocus);
         }
         
         Channel<Treturn> returnChannel;
@@ -284,7 +291,7 @@ public class ObjectLiteralNode<Tobject,Treturn>
         }
             
         
-        return returnChannel;
+        return new FocusChannel(returnChannel,innerFocus);
       }
       else
       { 
