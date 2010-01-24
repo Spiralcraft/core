@@ -6,9 +6,9 @@
   xmlns:example="class:/spiralcraft/data/test/example/"
   >
   <chain>
-    <task:Session>
+    <dtask:Session>
       <type x="[@example:BatchSession].type"/>
-    </task:Session>
+    </dtask:Session>
     
     <dtask:Collect>
     

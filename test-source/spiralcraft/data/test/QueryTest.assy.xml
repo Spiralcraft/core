@@ -235,7 +235,7 @@
           </testX>
         </test:Assertion>
 
-        <task:Session>
+        <dtask:Session>
           <chain>
             <test:Stub>
               <name>Expression Insert
@@ -262,9 +262,9 @@
             </test:Assertion>
           
           </chain>
-        </task:Session>
+        </dtask:Session>
 
-        <task:Session>
+        <dtask:Session>
           <chain>
             <test:Stub>
               <name>Expression Update
@@ -303,7 +303,7 @@
             </test:Assertion>
           
           </chain>
-        </task:Session>
+        </dtask:Session>
 
       </scenarios>
       

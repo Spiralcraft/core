@@ -28,11 +28,51 @@
       </scm:Note>
       <scm:Note>Simplify resolution of DataSession channels 
       </scm:Note>
+      <scm:Note>Moved spiralcraft.task.Session to spiralcraft.data.task.Session
+        because that's where all the other spiralcraft.data specific tasks are.
+      </scm:Note>
       <scm:Note>Misc fixes
       </scm:Note>
     </notes>
     
     <detail>
+      <scm:Change>
+        <notes>
+          <scm:Note>Add methods to bean signature list
+          </scm:Note>
+          <scm:Note>Signature now prints method parameters cleanly
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/
+        </path>
+        
+        <resource>
+          <URI>Signature.java
+          </URI>
+          <URI>reflect/BeanReflector.java
+          </URI>
+        </resource>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Moved spiralcraft.task.Session to
+            spiralcraft.data.task.Session because that's where all the other
+            spiralcraft.data specific tasks are.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>task/Session.java
+          </URI>
+          <URI>data/task/Session.java
+          </URI>
+        </resources>
+      </scm:Change>
       
       <scm:Change>
         <notes>
@@ -105,17 +145,24 @@
             and AuthSession.getAccountId() and AuthModule.Session
             counterparts and implementations.
           </scm:Note>
+          <scm:Note>DataAuthModule now creates a DataSession for use by
+            data manipulation objects during credential management
+            transactions (ie. associateLogin()). This required making
+            DataSession.setFocus() public.
+          </scm:Note>
         </notes>
         
-        <path>source/spiralcraft/security/
+        <path>source/spiralcraft/
         </path>
         
         <resources>
-          <URI>auth/AuthModule.java
+          <URI>security/auth/AuthModule.java
           </URI>
-          <URI>auth/AuthSession.java
+          <URI>security/auth/AuthSession.java
           </URI>
-          <URI>spi/DataAuthModule.java
+          <URI>security/spi/DataAuthModule.java
+          </URI>
+          <URI>data/session/DataSession.java
           </URI>
         </resources>
       
@@ -174,6 +221,11 @@
           <scm:Note>multi-Expression subcontexts allow multiple expressions in
             a subcontext block and evaluate to the value of the last expression
             in the block.
+          </scm:Note
+          <scm:Note>If the source of a subcontext block is a FocusChannel, as 
+            is the case
+            when an ObjectLiteralNode is a FocusChainObject, the subcontext
+            will bind to the Focus from the FocusChannel. 
           </scm:Note>
           <scm:Note>Expression literals allow for the creation of in-line
              Expressions which can be passed as objects to components which
@@ -184,19 +236,30 @@
              where Selection can bind it into the query context or convert it
              to an optimized representation.
           </scm:Note>
+          <scm:Note>ObjectLiteralNode now publishes a FocusChannel to provide
+            context to to downstream expressions capable of processing this
+            construct.  
+          </scm:Note>
+          
         </notes>
                 
-        <path>source/spiralcraft/lang/parser/
+        <path>source/spiralcraft/lang/
         </path>
         
         <resources>
-          <URI>ExpressionParser.java
+          <URI>parser/ExpressionParser.java
           </URI>
-          <URI>Node.java
+          <URI>parser/Node.java
           </URI>
-          <URI>LiteralNode.java
+          <URI>parser/LiteralNode.java
           </URI>
-          <URI>SubcontextNode.java
+          <URI>parser/SubcontextNode.java
+          </URI>
+          <URI>parser/ExpressionLiteralNode.java
+          </URI>
+          <URI>parser/ObjectLiteralNode.java
+          </URI>
+          <URI>spi/FocusChannel.java
           </URI>
         </resources>
       
@@ -212,11 +275,19 @@
             for the specified type URI and creates an AssemblyType in
             appropriate situations.
           </scm:Note>
+          <scm:Note>ReflectionType.isAssignableFrom() now accepts AssemblyTypes
+          </scm:Note>
           <scm:Note>XmlBean now uses Type.fromData() to construct object, if
             applicable.
           </scm:Note>
           <scm:Note>spiralcraft.builder.Managable tags POJOs for inclusion in
             this mechanism if no [classname].assy.xml exists for the type.
+          </scm:Note>
+          <scm:Note>New method AssemblyLoader.isAssemblyClass(URI) to
+            query whether given URI represents an AssemblyClass
+          </scm:Note>
+          <scm:Note>PropertySpecifier now applies contextual namespace 
+            PrefixResolver to injector expressions
           </scm:Note>
           <scm:Note>BuilderScheme fixed to recognize AssemblyType as a
             ReflectionType equivalent.
@@ -231,6 +302,10 @@
         <resources>
           <URI>builder/Managable.java
           </URI>
+          <URI>builder/AssemblyLoader.java
+          </URI>
+          <URI>builder/PropertySpecifier.java
+          </URI>
           <URI>data/builder/BuilderScheme.java
           </URI>
           <URI>data/persist/XmlBean.java
@@ -238,6 +313,8 @@
           <URI>data/reflect/AssemblyType.java
           </URI>
           <URI>data/reflect/ReflectionTypeFactory.java
+          </URI>
+          <URI>data/reflect/ReflectionType.java
           </URI>
           <URI>util/URIUtil.java
           </URI>
