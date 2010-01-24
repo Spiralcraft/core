@@ -123,9 +123,7 @@ public class AuthSession
   { 
     push();
     try
-    {
-      AuthModule.Session session=getModuleSession(moduleName);
-      return session==null?false:session.associateLogin();
+    { return getModuleSession(moduleName).associateLogin();
     }
     finally
     { pop();
@@ -136,9 +134,7 @@ public class AuthSession
   { 
     push();
     try
-    {
-      AuthModule.Session session=getModuleSession(moduleName);
-      return session==null?false:session.isAuthenticated();
+    { return getModuleSession(moduleName).isAuthenticated();
     }
     finally
     { pop();
@@ -278,7 +274,7 @@ public class AuthSession
     { return sessions[sessionIndex];
     }
     else
-    { return null;
+    { throw new IllegalArgumentException("AuthModule '"+moduleName+"' not found");
     }
     
   }
