@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.task;
+package spiralcraft.data.task;
 
 
 import spiralcraft.data.DataComposite;
@@ -28,6 +28,9 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.task.Chain;
+import spiralcraft.task.Scenario;
+import spiralcraft.task.Task;
 
 /**
  * <p>Provides a stateful typed DataSession Context that can be shared between 
@@ -52,6 +55,10 @@ public class Session
   protected Expression<Type<? extends DataComposite>> typeX;
   protected Assignment<?>[] initialAssignments;
   protected Setter<?>[] initialSetters;
+  
+  public Session()
+  {
+  }
   
   public void setType(Type<? extends DataComposite> type)
   { this.type=type;
