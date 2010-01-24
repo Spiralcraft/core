@@ -23,6 +23,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.FocusChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
 
@@ -114,6 +115,11 @@ public class SubcontextNode<T,S>
   {
    
     Channel<S> sourceChannel=focus.<S>bind(new Expression<S>(_source,null));
+    
+    if (sourceChannel instanceof FocusChannel)
+    { focus=((FocusChannel) sourceChannel).getFocus();
+    }
+    
     Channel<?>[] channels=new Channel<?>[_subcontextList.size()];
     
     if (sourceChannel.isConstant())
