@@ -25,6 +25,7 @@ import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringUtil;
 
 import spiralcraft.beans.MappedBeanInfo;
+import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.lang.Expression;
 
 import java.util.List;
@@ -403,11 +404,16 @@ public class PropertySpecifier
       { throw new BuildException("Properties cannot have both expressions and text data");
       }
 
+      NamespaceContext.push(prefixResolver);
       try
-      { _sourceExpression=Expression.parse(_expression);
+      { 
+        _sourceExpression=Expression.parse(_expression);
       }
       catch (Exception x)
       { throw new BuildException("Error parsing expression: "+_expression,x);
+      }
+      finally
+      { NamespaceContext.pop();
       }
     }
     
