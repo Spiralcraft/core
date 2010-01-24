@@ -295,6 +295,9 @@ public class BeanReflector<T>
         
       }
     }
+    else if ((clazz=(Class<T>) ClassUtil.getTypeArgumentAsClass(type))!=null)
+    { 
+    }
     else
     { 
         throw new IllegalArgumentException
@@ -338,6 +341,27 @@ public class BeanReflector<T>
       { signatures.addFirst(new Signature(prop.getName(),out.getReflector()));
       }
     }
+    
+    Method[] methods=targetClass.getMethods();
+    for (Method method:methods)
+    {
+      Reflector[] paramTypes
+        =new Reflector[method.getParameterTypes().length];
+      int i=0;
+      for (Type clazz:method.getParameterTypes())
+      { 
+        paramTypes[i++]=BeanReflector.getInstance(clazz);
+      }
+
+      signatures.add
+        (new Signature
+          (method.getName()
+          ,BeanReflector.getInstance(method.getReturnType())
+          ,paramTypes
+          )
+        );
+    }
+    
     return signatures;
   }
   
