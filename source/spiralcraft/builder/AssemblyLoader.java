@@ -18,6 +18,7 @@ import java.net.URI;
 
 
 import spiralcraft.util.Path;
+import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
@@ -102,6 +103,55 @@ public class AssemblyLoader
           .replace('$','-')
         )
       );
+  }
+  
+  /**
+   * Indicate whether the abstract resource identified by the URI exists
+   *   and can be resolved as an AssemblyClass. The URI
+   *   identifies an abstract resource- ie. if <uri>.assy.xml does
+   *   not exist, a default assembly for the Java class associated with
+   *   the URI will be inferred.
+   */
+  public synchronized boolean isAssemblyClass(URI classUri)
+  {
+    if (_classCache.get(classUri)!=null)
+    { return true;
+    }
+    
+    
+    try
+    {
+      URI resourceURI=URIUtil.addPathSuffix(classUri,".assy.xml");
+      Resource resource=Resolver.getInstance().resolve(resourceURI);
+    
+      if (resource!=null && resource.exists())
+      { return true;
+      }
+    }
+    catch (IOException x)
+    { return false;
+    }    
+    
+    if (classUri.getScheme()!=null && classUri.getScheme().equals("class"))
+    {
+    
+      try
+      {
+        Path path=new Path(classUri.getPath().substring(1),'/');
+        String className=path.format(".");
+        if (Thread.currentThread().getContextClassLoader().loadClass(className)
+              !=null
+            )
+        { return true;
+        }
+      }
+      catch (ClassNotFoundException x)  
+      {
+      }
+    }
+      
+    return false;
+   
   }
   
   /**

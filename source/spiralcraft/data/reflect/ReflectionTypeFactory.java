@@ -58,11 +58,14 @@ public class ReflectionTypeFactory
       //   with an AssemblyType chain 
       
       AssemblyClass assemblyClass=null;
-      try
-      { assemblyClass=AssemblyLoader.getInstance().findAssemblyClass(uri);
-      }
-      catch (BuildException x)
+      if (AssemblyLoader.getInstance().isAssemblyClass(uri))
       {
+        try
+        { assemblyClass=AssemblyLoader.getInstance().findAssemblyClass(uri);
+        }
+        catch (BuildException x)
+        { throw new DataException("Error loading AssemblyClass '"+uri+"'",x);
+        }
       }
       
       if (assemblyClass!=null)
