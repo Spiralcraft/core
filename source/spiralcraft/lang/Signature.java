@@ -134,9 +134,9 @@ public class Signature
       for (Reflector<?> ptype:parameters)
       { 
         if (i++>0)
-        { ret.append(",");
+        { ret.append(" , ");
         }
-        ret.append(ptype);
+        ret.append(ptype.getTypeURI());
       }
       ret.append(")");
     }
