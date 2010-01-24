@@ -29,7 +29,6 @@ import spiralcraft.lang.Setter;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.task.Chain;
-import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 
 /**
