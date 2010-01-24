@@ -21,6 +21,7 @@ import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.BoundQuery;
+import spiralcraft.data.session.DataSession;
 
 
 import spiralcraft.data.DataException;
@@ -34,6 +35,7 @@ import spiralcraft.lang.Binding;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.TeleFocus;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 
@@ -61,6 +63,7 @@ public class DataAuthModule
   private static final ClassLog log
     =ClassLog.getInstance(DataAuthModule.class);
   
+  private Space space;
   private Queryable<?> providedSource;
   
   // XXX Make these  configurable
@@ -82,6 +85,9 @@ public class DataAuthModule
   private Binding<?> refreshTriggerX;
   
   private Binding<?> onAssociate;
+  
+  private ThreadLocalChannel<DataSession> dataSessionChannel;
+    
   
   
   @SuppressWarnings("unchecked")
@@ -192,7 +198,7 @@ public class DataAuthModule
   
   @Override
   public Session createSession()
-  { return new DataSession();
+  { return new DataAuthSession();
   }
   
   @Override
@@ -200,13 +206,17 @@ public class DataAuthModule
   public Focus<?> bind(Focus<?> context)
     throws BindException
   { 
+    dataSessionChannel
+     =new ThreadLocalChannel<DataSession>
+       (BeanReflector.<DataSession>getInstance(DataSession.class));
+    
     // superclass provides a credentialFocus member field which 
     //   provides values for the various accepted credentials,
     //   named according to the credential class simple name.
     super.bind(context);
 
+    credentialFocus.addFacet(credentialFocus.chain(dataSessionChannel));
     
-    Space space=null;
     
     // Resolve the source for the master credentials list
     if (providedSource==null && context!=null)
@@ -214,6 +224,7 @@ public class DataAuthModule
       // Look up the local Space to use as a source if no source was provided
       space=Space.find(context);
     }
+
 
     Queryable source=providedSource;
         
@@ -226,6 +237,7 @@ public class DataAuthModule
         ("No data source for DataAuthenticator");
     }
 
+      
     if (refreshTriggerX!=null)
     { refreshTriggerX.bind(credentialFocus);
     }
@@ -258,6 +270,7 @@ public class DataAuthModule
     
     credentialComparisonX.bind(comparisonFocus);
     principalIdX.bind(comparisonFocus);
+    accountIdX.bind(comparisonFocus);
     
     if (onAssociate!=null)
     { onAssociate.bind(credentialFocus);
@@ -268,48 +281,59 @@ public class DataAuthModule
   
   
 
-  public class DataSession
+  public class DataAuthSession
     extends AbstractSession
   {
 
     protected Object refreshTriggerValue;
+    protected DataSession dataSession;
     
-    public DataSession()
+    public DataAuthSession()
     { 
+      dataSession=new DataSession();
+      dataSession.setSpace(space);
+      dataSession.setFocus(credentialFocus);
     }
     
     @Override
     public void refresh()
     {
-      if (refreshTriggerX!=null)
-      { 
-        if (debug)
-        { log.fine("Refresh trigger value is "+refreshTriggerValue);
-        }
-        
-        Object newValue=refreshTriggerX.get();
-        if (newValue!=refreshTriggerValue)
-        {
-          if (newValue==null 
-              || refreshTriggerValue==null
-              || !newValue.equals(refreshTriggerValue)
-              )
-          { 
-            if (debug)
-            { 
-              log.debug
-                ("Re-authenticating: trigger value changed "
-                +" from "+refreshTriggerValue+" to "+newValue
-                );
-            }
-            
-            principal=null;
-            authenticated=false;
-            
-            authenticate();
+      push();
+      try
+      {
+        if (refreshTriggerX!=null)
+        { 
+          if (debug)
+          { log.fine("Refresh trigger value is "+refreshTriggerValue);
           }
-        }
-      } 
+
+          Object newValue=refreshTriggerX.get();
+          if (newValue!=refreshTriggerValue)
+          {
+            if (newValue==null 
+                || refreshTriggerValue==null
+                || !newValue.equals(refreshTriggerValue)
+            )
+            { 
+              if (debug)
+              { 
+                log.debug
+                ("Re-authenticating: trigger value changed "
+                  +" from "+refreshTriggerValue+" to "+newValue
+                );
+              }
+
+              principal=null;
+              authenticated=false;
+
+              authenticate();
+            }
+          }
+        } 
+      }
+      finally
+      { pop();
+      }
     }
     
     @Override
@@ -337,6 +361,7 @@ public class DataAuthModule
       { log.fine("Attempting authentication");
       }
       
+      push();
       try
       {
         
@@ -436,13 +461,14 @@ public class DataAuthModule
         return false;
       }
       finally
-      { 
+      { pop();
 
       }
     }
 
     public String getAccountId()
     { 
+      push();
       try
       {
         Tuple loginEntry=queryLoginEntry();
@@ -465,18 +491,28 @@ public class DataAuthModule
       catch (DataException x)
       { throw new RuntimeDataException("Error getting login entry",x);
       }
+      finally
+      { pop();
+      }
       
     }
     
     public synchronized boolean associateLogin()
     { 
-      if (onAssociate!=null)
-      {      
-        onAssociate.get();
-        return true;
+      push();
+      try
+      {
+        if (onAssociate!=null)
+        {      
+          onAssociate.get();
+          return true;
+        }
+        else
+        { return false;
+        }
       }
-      else
-      { return false;
+      finally
+      { pop();
       }
     }
     
@@ -518,8 +554,15 @@ public class DataAuthModule
       }
     }
 
-
+    private void push()
+    { dataSessionChannel.push(dataSession);
+    }
+  
+    private void pop()
+    { dataSessionChannel.pop();
+    } 
   }
+
 
 
 

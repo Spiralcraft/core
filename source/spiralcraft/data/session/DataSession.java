@@ -87,7 +87,7 @@ public class DataSession
    * 
    * @param focus
    */
-  void setFocus(Focus<?> focus)
+  public void setFocus(Focus<?> focus)
   { this.focus=focus;
   }
   
