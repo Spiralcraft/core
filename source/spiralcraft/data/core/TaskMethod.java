@@ -30,15 +30,27 @@ import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.AssignmentChannel;
 import spiralcraft.lang.spi.BindingChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.log.Level;
 
 import spiralcraft.task.Scenario;
 import spiralcraft.task.TaskCommand;
 
+/**
+ * Allows Task scenarios to implement data methods
+ * 
+ * @author mike
+ *
+ * @param <T>
+ * @param <C>
+ * @param <R>
+ */
 public class TaskMethod<T,C,R>
   extends MethodImpl
 {
 
   private URI scenarioURI;
+  private boolean returnCommand;
+  private boolean throwException;
   
   public void setScenarioURI(URI scenarioURI)
   { this.scenarioURI=scenarioURI;
@@ -49,8 +61,25 @@ public class TaskMethod<T,C,R>
     throws DataException
   { 
     if (this.returnType==null)
-    { this.returnType=ReflectionType.canonicalType(TaskCommand.class);
+    { 
+      this.returnType=ReflectionType.canonicalType(TaskCommand.class);
+      this.returnCommand=true;
     }
+  }
+  
+  /**
+   * <p>Indicate that an exception should be thrown if the Command results in
+   *   an exception.
+   * </p>
+   * 
+   * <p>A value of false will cause any exception to be logged and the method
+   *   will return null
+   * </p>
+   * 
+   * @param throwException
+   */
+  public void setThrowException(boolean throwException)
+  { this.throwException=throwException;
   }
   
   @SuppressWarnings("unchecked")
@@ -82,7 +111,7 @@ public class TaskMethod<T,C,R>
     Channel<Scenario<C,R>> scenarioChannel
       =(Channel<Scenario<C,R>>) focus.getSubject();
     
-    Channel<TaskCommand<C,R>> commandChannel
+    final Channel<TaskCommand<C,R>> commandChannel
       =new TaskMethodChannel
         (scenarioChannel.<TaskCommand<C,R>>resolve
           (focus
@@ -94,11 +123,15 @@ public class TaskMethod<T,C,R>
         );
 
 
-      
-    return commandChannel;
-    
+    if (returnCommand)
+    { return commandChannel;
+    }
+    else
+    { return new ExecChannel(commandChannel);
+    }
 
   }
+  
   
   public class TaskMethodChannel
     extends AbstractChannel<TaskCommand<C,R>>
@@ -185,4 +218,48 @@ public class TaskMethod<T,C,R>
     }
   }
 
+  @SuppressWarnings("unchecked")
+  class ExecChannel
+    extends AbstractChannel
+  {
+    private final Channel<TaskCommand<?,?>> commandChannel;
+  
+    public ExecChannel(Channel commandChannel)
+    { 
+      super(commandChannel.getReflector());
+      this.commandChannel=commandChannel;
+    }
+   
+    @Override
+    protected Object retrieve()
+    { 
+      TaskCommand command=commandChannel.get();
+      command.execute();
+      if (command.getException()!=null)
+      { 
+        log.log
+          (Level.WARNING
+          ,"Scenario threw exception: "+scenarioURI,command.getException()
+          );
+        if (throwException)
+        {
+          throw new AccessException
+            ("Caught exception executing command",command.getException()
+            );
+        }
+      }
+      return command.getResult();
+    }
+
+    @Override
+    protected boolean store(
+      Object val)
+      throws AccessException
+    { return false;
+    }
+  }
+       
 }
+  
+
+
