@@ -28,6 +28,10 @@
       </scm:Note>
       <scm:Note>Simplify resolution of DataSession channels 
       </scm:Note>
+      <scm:Note>TaskMethod implementation of data Method provides the option to
+        execute the command and return the result, which will be the
+        default case whenever returnType is specified.
+      </scm:Note>
       <scm:Note>Moved spiralcraft.task.Session to spiralcraft.data.task.Session
         because that's where all the other spiralcraft.data specific tasks are.
       </scm:Note>
@@ -220,8 +224,8 @@
           </scm:Note>
           <scm:Note>multi-Expression subcontexts allow multiple expressions in
             a subcontext block and evaluate to the value of the last expression
-            in the block.
-          </scm:Note
+            in the block. 
+          </scm:Note>
           <scm:Note>If the source of a subcontext block is a FocusChannel, as 
             is the case
             when an ObjectLiteralNode is a FocusChainObject, the subcontext
