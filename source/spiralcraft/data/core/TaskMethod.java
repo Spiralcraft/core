@@ -127,7 +127,7 @@ public class TaskMethod<T,C,R>
     { return commandChannel;
     }
     else
-    { return new ExecChannel(commandChannel);
+    { return new ExecChannel(focus,commandChannel);
     }
 
   }
@@ -224,9 +224,10 @@ public class TaskMethod<T,C,R>
   {
     private final Channel<TaskCommand<?,?>> commandChannel;
   
-    public ExecChannel(Channel commandChannel)
+    public ExecChannel(Focus focus,Channel commandChannel)
+      throws BindException
     { 
-      super(commandChannel.getReflector());
+      super(commandChannel.resolve(focus,"result",null).getReflector());
       this.commandChannel=commandChannel;
     }
    
