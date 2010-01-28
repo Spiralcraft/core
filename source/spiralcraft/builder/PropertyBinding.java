@@ -22,6 +22,7 @@ import spiralcraft.util.string.StringConverter;
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.lang.BindException;
@@ -476,35 +477,79 @@ public class PropertyBinding
   private void applyText()
     throws BuildException
   {
-    String text=null;
-    try
-    { text=ContextDictionary.substitute(_specifier.getTextData());
-    }
-    catch (ParseException x)
-    { 
-      throwBuildException
-        ("Error parsing properties in "+_specifier.getTextData(),x);
-    }
-      
-    _converter=_target.getReflector().getStringConverter();
-    if (_converter==null)
-    { 
-      throwBuildException
-        ("No StringConverter registered for "
-        +_target.getContentType().getName()
-        );
-    }
-    
-    NamespaceContext.push(_specifier.getPrefixResolver());
-    try
+    if (!isAggregate())
     {
-      Object value=_converter.fromString(text);
-      apply(value);
-    }
-    finally
-    { NamespaceContext.pop();
-    }
+      String text=null;
+      try
+      { text=ContextDictionary.substitute(_specifier.getTextData());
+      }
+      catch (ParseException x)
+      { 
+        throwBuildException
+          ("Error parsing properties in "+_specifier.getTextData(),x);
+      }
+      
+      _converter=_target.getReflector().getStringConverter();
+      if (_converter==null)
+      { 
+        throwBuildException
+          ("No StringConverter registered for "
+          +_target.getContentType().getName()
+          );
+      }
     
+      NamespaceContext.push(_specifier.getPrefixResolver());
+      try
+      {
+        Object value=_converter.fromString(text);
+        apply(value);
+      }
+      finally
+      { NamespaceContext.pop();
+      }
+    }
+    else
+    {
+      try
+      {
+        CollectionDecorator cd
+          =(CollectionDecorator) _target.decorate(CollectionDecorator.class);
+      
+        _converter=cd.getComponentReflector().getStringConverter();
+        Object value=cd.newCollection();
+        for (String textData:_specifier.getTextDataList())
+        { 
+          
+          log.fine("String value "+textData);
+          try
+          { textData=ContextDictionary.substitute(textData);
+          }
+          catch (ParseException x)
+          { 
+            throwBuildException
+              ("Error parsing properties in "+textData,x);
+          }
+          Object elementValue=_converter.fromString(textData);
+          log.fine("Collection value "+elementValue);
+          NamespaceContext.push(_specifier.getPrefixResolver());
+          try
+          { value=cd.add(value,elementValue);
+          }
+          finally
+          { NamespaceContext.pop();
+          }
+        }
+        log.fine("Result is "+value+" from "+cd);
+        apply(value);
+      }
+      catch (BindException x)
+      { 
+        throw new BuildException
+          ("Error resolving Collection conversion for "
+          +_target.getContentType().getName()
+          );
+      }
+    }
   }
   
   /**

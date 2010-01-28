@@ -325,6 +325,7 @@ public class AssemblyClass
       // Property has been set multiple times in the same definition
       _memberMap.put(name,prop);
       _localMembers.set(_localMembers.indexOf(oldProp),prop);
+      prop.setLastLocalInstance(oldProp);
     }
     else
     {

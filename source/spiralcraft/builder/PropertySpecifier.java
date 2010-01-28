@@ -19,6 +19,7 @@ import java.beans.PropertyDescriptor;
 import java.net.URI;
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import spiralcraft.text.ParsePosition;
 import spiralcraft.util.ArrayUtil;
@@ -59,6 +60,7 @@ public class PropertySpecifier
   private boolean _persistent;
   private boolean _dynamic;
   private PropertySpecifier _baseMember;
+  private PropertySpecifier lastLocalInstance;
   private String _collectionClassName;
   private Class<? extends Collection<?>> _collectionClass;
   private boolean _export;
@@ -658,6 +660,16 @@ public class PropertySpecifier
   }
   
   /**
+   * A member defined in the same AssemblyClass- indicates a collection of
+   *   values
+   * 
+   * @param prop
+   */
+  void setLastLocalInstance(PropertySpecifier prop)
+  { this.lastLocalInstance=prop;
+  }
+  
+  /**
    * The member which this member overrides
    */
   public PropertySpecifier getBaseMember()
@@ -698,7 +710,7 @@ public class PropertySpecifier
   { return _contents;
   }
 
-  
+
   /**
    * Retrieve the combined Contents of this PropertySpecifier and any
    *   base PropertySpecifiers.
@@ -744,7 +756,19 @@ public class PropertySpecifier
     }
     return ret;
   }
-
+  
+  public List<String> getTextDataList()
+  { 
+    LinkedList<String> list=new LinkedList<String>();
+    if (lastLocalInstance!=null)
+    { list.addAll(lastLocalInstance.getTextDataList());
+    }
+    if (_textData!=null)
+    { list.add(_textData);
+    }
+    return list;
+  }
+  
  
   public String getTextData()
   { return _textData;
