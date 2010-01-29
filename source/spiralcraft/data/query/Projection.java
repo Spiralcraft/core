@@ -174,7 +174,6 @@ class ProjectionBinding<Tt extends Tuple>
     
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public void resolve() throws DataException
   { 
@@ -251,7 +250,6 @@ class ProjectionBinding<Tt extends Tuple>
       
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public Type<?> getResultType()
     { return ((DataReflector<Tt>) projectionChannel.getReflector()).getType();
