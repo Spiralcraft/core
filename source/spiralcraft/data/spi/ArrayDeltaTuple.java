@@ -269,6 +269,7 @@ public class ArrayDeltaTuple
     }
   }
 
+  @Override
   public DeltaTuple getBaseExtent()
   { return (DeltaTuple) super.getBaseExtent();
   }
