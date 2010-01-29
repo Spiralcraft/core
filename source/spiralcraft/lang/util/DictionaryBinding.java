@@ -351,7 +351,9 @@ public class DictionaryBinding<T>
     { 
       T collection=collectionDecorator.newCollection();
       for (String value:values)
-      { collectionDecorator.add(collection, unitConverter.fromString(value));
+      { 
+        collection
+          =collectionDecorator.add(collection, unitConverter.fromString(value));
       }
       targetChannel.set(collection);
     }

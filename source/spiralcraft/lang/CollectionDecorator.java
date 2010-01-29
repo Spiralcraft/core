@@ -31,12 +31,19 @@ public abstract class CollectionDecorator<T,I>
   public abstract T newCollection();
   
   /**
-   * Add an item to the collection created by newCollection
+   * <p>Add an item to the collection created by newCollection and return
+   *   the collection containing the added element.
+   * </p>
+   * 
+   * <p>The returned collection may be the same collection that was passed
+   *   in, or a new collection if the specified collection does not allow
+   *   dynamic resizing (eg. arrays).
+   * </p>
    * 
    * @param collection
    * @param item
    */
-  public abstract void add(T collection,I item);
+  public abstract T add(T collection,I item);
   
   
   /**

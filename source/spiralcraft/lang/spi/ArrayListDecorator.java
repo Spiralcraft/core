@@ -47,10 +47,10 @@ public class ArrayListDecorator<I>
   }
 
   @Override
-  public void add(
+  public I[] add(
     I[] collection,
     I item)
-  { ArrayUtil.append(collection,item);
+  { return ArrayUtil.append(collection,item);
   }
 
   @SuppressWarnings("unchecked")

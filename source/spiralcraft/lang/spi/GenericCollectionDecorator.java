@@ -43,10 +43,12 @@ public class GenericCollectionDecorator<C extends Collection<I>,I>
   }
 
   @Override
-  public void add(
+  public C add(
     C collection,
     I item)
-  { collection.add(item);
+  { 
+    collection.add(item);
+    return collection;
   }
 
   @Override

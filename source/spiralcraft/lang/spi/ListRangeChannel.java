@@ -63,7 +63,9 @@ public class ListRangeChannel<C,X>
     end=Math.min(end,sourceDecorator.size(sourceList));
     
     for (int i=start;i<end;i++)
-    { sourceDecorator.add(targetList,sourceDecorator.get(sourceList,i));
+    { 
+      targetList
+        =sourceDecorator.add(targetList,sourceDecorator.get(sourceList,i));
     }
     
     return targetList;

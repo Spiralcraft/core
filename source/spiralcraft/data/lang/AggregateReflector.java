@@ -320,10 +320,12 @@ class AggregateListDecorator<T extends Aggregate<I>,I>
   }
 
   @Override
-  public void add(
+  public T add(
     T collection,
     I item)
-  { ((EditableAggregate<I>) collection).add(item);
+  { 
+    ((EditableAggregate<I>) collection).add(item);
+    return collection;
   }
 
   @SuppressWarnings("unchecked")
