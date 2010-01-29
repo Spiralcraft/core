@@ -58,6 +58,10 @@ public class GenericReflector<T>
     this.typeURI=base.getTypeURI();
   }
   
+  public GenericReflector(Reflector<T> base)
+  { this(base.getTypeURI(),base);
+  }
+
   public void setDebug(boolean debug)
   { this.debug=debug;
   }
