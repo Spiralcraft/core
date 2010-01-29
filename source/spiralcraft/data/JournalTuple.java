@@ -31,6 +31,20 @@ public interface JournalTuple
 {
   
   /**
+   * The sequential transaction number associated with this version
+   * 
+   * @return
+   */
+  public long getTransactionId();
+  
+  /**
+   * The sequential version number of this Tuple
+   * 
+   * @return
+   */
+  public long getVersion();
+  
+  /**
    * Return the most current version of this Tuple. If the problem domain
    *   object represented by this Tuple no longer exists (ie. was deleted)
    *   this method will return null. If this Tuple is the most current version,
