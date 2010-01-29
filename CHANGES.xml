@@ -2,6 +2,178 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
+    <revision>0.4.3.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>?????
+    </date>
+    
+    <notes>
+      <scm:Note>Redefine CollectionDecorator.add() to return the modified
+        collection, allowing support for immutable collection implementations
+        such as arrays.
+      </scm:Note>
+      <scm:Note>In spiralcraft.builder assembly definitions (.assy.xml files),
+        provide better support for creating collections of primitives and
+        other string-encodable objects by
+        treating the text values of multiple property elements with the same 
+        name into a collection of text values for the field.
+      </scm:Note>
+      <scm:Note>Initial implementation of JournalTuple, for  
+        multiversion concurrency control.
+      </scm:Note>
+      <scm:Note>Initial implementation of StateScope, to manage transaction
+        boundaries to track the running state of stateful functions.
+      </scm:Note>
+
+    </notes>
+    
+    <detail>
+    
+      <scm:Change>
+        <notes>
+          <scm:Note>In spiralcraft.builder assembly definitions (.assy.xml files),
+            provide better support for creating collections of primitives and
+            other string-encodable objects by
+            treating the text values of multiple property elements with the same 
+            name into a collection of text values for the field.
+          </scm:Note>
+          <scm:Note>This currently only works for properties defined in the
+            same file. We still need to implement append/insert
+            behavior for overridden properties.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder/
+        </path>
+        
+        <resource>
+          <URI>AssemblyClass.java
+          </URI>
+          <URI>PropertyBinding.java
+          </URI>
+          <URI>PropertySpecifier.java
+          </URI>
+        </resource>
+      </scm:Change>
+      
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Initial implementation of JournalTuple, for  
+            multiversion concurrency control (incomplete).
+          </scm:Note>
+          <scm:Note>AbstractTuple and ArrayTuple provide
+             for DeltaTuple construction chain
+          </scm:Note>
+          <scm:Note>Added getTransactionId() and getVersion() to JournalTuple
+          </scm:Note>
+          <scm:Note>DeltaTuple.getBaseExtent() returns covariant DeltaTuple.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resource>
+          <URI>DeltaTuple.java
+          </URI>
+          <URI>JournalTuple.java
+          </URI>
+          <URI>spi/AbstractTuple.java
+          </URI>
+          <URI>spi/ArrayTuple.java
+          </URI>
+          <URI>spi/ArrayDeltaTuple.java
+          </URI>
+          <URI>spi/ArrayJournalTuple.java
+          </URI>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>lang/BoundTuple.java
+          </URI>
+        </resource>
+      </scm:Change>
+      
+      
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Redefine CollectionDecorator.add() to return the modified
+            collection, allowing support for immutable collection implementations
+            such as arrays.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resource>
+          <URI>lang/CollectionDecorator.java
+          </URI>
+          <URI>lang/spi/ArrayListDecorator.java
+          </URI>
+          <URI>lang/spi/GenericCollectionDecorator.java
+          </URI>
+          <URI>lang/spi/GenericListDecorator.java
+          </URI>
+          <URI>lang/spi/ListRangeChannel.java
+          </URI>
+          <URI>lang/util/DictionaryBinding.java
+          </URI>
+          <URI>data/lang/AggregateReflector.java
+          </URI>
+        </resource>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Initial implementation of StateScope, to manage transaction
+            boundaries to track the running state of stateful functions
+            (incomplete)
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/StateScope.java
+        </path>
+
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Misc lang/spi enhancements
+          </scm:Note>
+          <scm:Note>ThreadLocalChannel can incorporate its source with
+            new no-arg push() method allowing generic Channel type to stay
+            encapsulated. ClosureFocus now uses this method instead of
+            rolling its own. 
+          </scm:Note>
+          <scm:Note>GenericReflector now has a single-arg constructor which
+            allows the GenericReflector to adopt the same typeURI as its
+            delegate, for the common cases where the GenericReflector instance 
+            is not public.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi
+        </path>
+        
+        <resource>
+          <URI>ClosureFocus.java
+          </URI>
+          <URI>ThreadLocalChannel.java
+          </URI>
+          <URI>GenericReflector.java
+          </URI>
+        </resource>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.4.3
     </revision>
     
