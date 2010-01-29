@@ -15,6 +15,7 @@
 package spiralcraft.data.lang;
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldNotFoundException;
@@ -65,6 +66,12 @@ public class BoundTuple
   { throw new RuntimeException("Bound Tuple cannot have a base extent");
   }
 
+  @Override
+  protected AbstractTuple createDeltaBaseExtent(
+    DeltaTuple tuple)
+    throws DataException
+  { throw new RuntimeException("Bound Tuple cannot have a base extent");
+  }
   
   public Object get(int index)
   { return bindings[index].get();
