@@ -59,14 +59,12 @@ public class DataAuthModule
   extends AbstractAuthModule
 {
   
-  @SuppressWarnings("deprecation")
   private static final ClassLog log
     =ClassLog.getInstance(DataAuthModule.class);
   
   private Space space;
   private Queryable<?> providedSource;
   
-  // XXX Make these  configurable
   protected Query accountQuery;
   private BoundQuery<?,?> boundAccountQuery;
 
