@@ -16,6 +16,7 @@ package spiralcraft.data.spi;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
+import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Field;
@@ -32,7 +33,7 @@ public class ArrayTuple
 {
   protected final Object[] data;
   
-  
+
   /**
    * Construct an ArrayTuple with an empty set of data
    */
@@ -71,8 +72,17 @@ public class ArrayTuple
     throws DataException
   { 
     super(original.getFieldSet());
-    this.data=new Object[fieldSet.getFieldCount()];
-    
+    this.data=copyData(original);
+    if (original.getBaseExtent()!=null)
+    { baseExtent=createBaseExtent(original.getBaseExtent());
+    }
+  }
+
+  private Object[] copyData(Tuple original)
+    throws DataException
+  {
+    Object[] data=new Object[fieldSet.getFieldCount()];
+  
     for (Field<?> field : fieldSet.fieldIterable())
     { 
       Object originalValue=original.get(field.getIndex());
@@ -95,18 +105,31 @@ public class ArrayTuple
         else
         { data[field.getIndex()]=originalValue;
         }
-        
+
       }
       else
       { data[field.getIndex()]=originalValue;
       }
     }
-    if (original.getBaseExtent()!=null)
-    { baseExtent=createBaseExtent(original.getBaseExtent());
+    return data;
+    
+  }
+  
+  /**
+   * Construct an ArrayTuple that contains a copy of the
+   *   data in the specified DeltaTuple
+   */
+  public ArrayTuple
+    (DeltaTuple delta)
+    throws DataException
+  { 
+    super(delta.getType().getArchetype().getFieldSet());
+    this.data=copyData(delta);
+    if (delta.getBaseExtent()!=null)
+    { baseExtent=createDeltaBaseExtent(delta.getBaseExtent());
     }
   }
 
-  
   public Object get(int index)
     throws DataException
   { return data[index];
@@ -134,4 +157,10 @@ public class ArrayTuple
   { return new ArrayTuple(tuple);
   }
   
+  @Override
+  protected AbstractTuple createDeltaBaseExtent(
+    DeltaTuple tuple)
+    throws DataException
+  { return new ArrayTuple(tuple);
+  }  
 }

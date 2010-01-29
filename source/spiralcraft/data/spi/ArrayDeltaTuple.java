@@ -126,7 +126,7 @@ public class ArrayDeltaTuple
     if (baseExtent!=null)
     { 
       ((ArrayDeltaTuple) baseExtent)
-        .copyFrom((DeltaTuple) updated.getBaseExtent());
+        .copyFrom(updated.getBaseExtent());
     }
   }
   
@@ -269,7 +269,11 @@ public class ArrayDeltaTuple
     }
   }
 
-    @Override
+  public DeltaTuple getBaseExtent()
+  { return (DeltaTuple) super.getBaseExtent();
+  }
+
+  @Override
   protected AbstractTuple createBaseExtent(
     FieldSet fieldSet)
   { return new ArrayDeltaTuple(fieldSet);
