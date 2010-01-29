@@ -18,6 +18,7 @@ import java.lang.ref.WeakReference;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
+import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.Identifier;
@@ -60,6 +61,9 @@ public abstract class AbstractTuple
   protected abstract AbstractTuple createBaseExtent(Tuple tuple)
     throws DataException;
 
+  protected abstract AbstractTuple createDeltaBaseExtent(DeltaTuple tuple)
+    throws DataException;
+  
 //  /**
 //   * Construct an ArrayTuple with an empty set of data
 //   */
