@@ -166,6 +166,20 @@ public class ThreadLocalChannel<T>
 
   
   /**
+   * Use the current value of the source channel (or null) as the local value
+   *    for use by all outgoing method calls.
+   */
+  public void push()
+  {
+    if (sourceChannel!=null)
+    { push(sourceChannel.get());
+    }
+    else
+    { push(null);
+    }
+  }
+  
+  /**
    * Provide a new local value for use by all outgoing method calls.
    */
   public void push(T val)

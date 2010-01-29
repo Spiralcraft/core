@@ -261,7 +261,7 @@ public class ClosureFocus<T>
     }
     
     void push()
-    { ((ThreadLocalChannel<Y>) getSubject()).push(sourceChannel.get());
+    { ((ThreadLocalChannel<Y>) getSubject()).push();
     }
     
     void push(Y val)
