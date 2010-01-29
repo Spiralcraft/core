@@ -602,7 +602,7 @@ public class BufferTuple
   }
 
   @Override
-  public Tuple getBaseExtent()
+  public DeltaTuple getBaseExtent()
   { return baseExtent;
   }
   
