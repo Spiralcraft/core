@@ -11,7 +11,8 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 
 /**
- * Runs the command identified by the source channel and returns the result
+ * Obtains a Command from a CommandFactory, applies a set of parameters to
+ *   the Command.context, executes the command and returns the result. 
  * 
  * @author mike
  *
@@ -20,7 +21,7 @@ import spiralcraft.log.ClassLog;
  * @param <Tresult>
  */
 public class CommandFunctorChannel<Ttarget,Tcontext,Tresult>
-  extends AbstractFunctorChannel<Tresult,Command<Ttarget,Tcontext,Tresult>>
+  extends AbstractFunctorChannel<Tresult>
 {
   
   private static final ClassLog log
@@ -29,6 +30,7 @@ public class CommandFunctorChannel<Ttarget,Tcontext,Tresult>
   private ThreadLocalChannel<Tcontext> context;
   private final CommandFactory<Ttarget,Tcontext,Tresult> factory;
   
+  // XXX Move to new CommandReflector class as generic subtype
   @SuppressWarnings("unchecked")
   protected static <X> Reflector<X> 
     getResultReflector(CommandFactory<?,?,?> factory)
@@ -38,6 +40,7 @@ public class CommandFunctorChannel<Ttarget,Tcontext,Tresult>
     return cc.resolve(null, "result", null).getReflector();
   }
 
+  // XXX Move to new CommandReflector class as generic subtype
   @SuppressWarnings("unchecked")
   protected static <X> Reflector<X> 
     getContextReflector(CommandFactory<?,?,?> factory)

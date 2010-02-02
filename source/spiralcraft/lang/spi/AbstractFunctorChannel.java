@@ -21,7 +21,16 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.log.ClassLog;
 
-public abstract class AbstractFunctorChannel<Tresult,Tsource>
+/**
+ * A Channel that binds a set of named and positional arguments to
+ *   some context
+ * 
+ * @author mike
+ *
+ * @param <Tresult>
+ * @param <Tsource>
+ */
+public abstract class AbstractFunctorChannel<Tresult>
   extends AbstractChannel<Tresult>
 {
   private static final ClassLog log
@@ -53,6 +62,13 @@ public abstract class AbstractFunctorChannel<Tresult,Tsource>
   { return focus;
   }  
   
+  /**
+   * Override and call with the parameter context that parameter refs
+   *   will be resolved against
+   * 
+   * @param contextFocus
+   * @throws BindException
+   */
   protected void bindTarget(Focus<?> contextFocus)
     throws BindException
   {
