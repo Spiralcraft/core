@@ -32,9 +32,12 @@ public class TypeMismatchException
   public TypeMismatchException(String message,Type<?> formalType,Type<?> actualType)
   { super(message
           +": type "
-          +(formalType!=null?formalType.getURI():"(null)")
+          +(formalType!=null?formalType.getURI()
+              +" ("+formalType.getClass().getName()+")":"(null)"
+           )
           +" cannot be assigned a value of type "
-          +(actualType!=null?actualType.getURI():"(null)")
+          +(actualType!=null?actualType.getURI()
+              +" ("+actualType.getClass().getName()+")":"(null)")
           );
   }
 
