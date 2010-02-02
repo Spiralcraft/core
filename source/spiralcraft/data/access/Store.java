@@ -40,6 +40,14 @@ import spiralcraft.lang.Focus;
 public interface Store
   extends Queryable<Tuple>,Lifecycle
 {
+  /**
+   * A name for the store within the containing Space (or containing store,
+   *   in some circumstances). Used by applications to distinguish between
+   *   multiple data sources.
+   * 
+   * @return
+   */
+  String getName();
   
   /**
    * Retrieve an update 'channel'. The DataConsumer can be used once to update
@@ -75,5 +83,25 @@ public interface Store
    * @return
    */
   boolean isAuthoritative(Type<?> type);
+  
+  /**
+   * Take a snapshot of the changes to the datastore since transactionId
+   * 
+   * @param transactionId
+   * @return ASsnapshot newer than the transactionId, or null
+   */
+  Snapshot snapshot(long transactionId)
+    throws DataException;
+  
+  /**
+   * Update the dataStore with the changes in the snapshot
+   * 
+   * @param snapshot
+   * @throws DataException
+   */
+  void update(Snapshot snapshot)
+    throws DataException;
 
+  long getLastTransactionId();
+  
 }

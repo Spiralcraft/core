@@ -17,6 +17,7 @@ package spiralcraft.data;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -33,7 +34,10 @@ import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Concatenation;
 import spiralcraft.data.query.ConcatenationBinding;
 
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.spi.SimpleChannel;
 
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -51,7 +55,7 @@ import spiralcraft.util.ListMap;
  *   
  */
 public class Space
-  implements Queryable<Tuple>,Service
+  implements Queryable<Tuple>,Service,FocusChainObject
 {
   public static final URI SPACE_URI 
     = URI.create("class:/spiralcraft/data/Space");
@@ -78,6 +82,9 @@ public class Space
   
   private ListMap<Type<?>,Store> typeStores
     =new ListMap<Type<?>,Store>();
+
+  private HashMap<String,Store> storeMap
+    =new HashMap<String,Store>();
   
   
   public void setStores(Store[] stores)
@@ -85,11 +92,17 @@ public class Space
     this.stores=stores;
   }
 
+  public Store getStore(String storeName)
+  { return storeMap.get(storeName);
+  }
+  
   public Type<?>[] getTypes()
   { 
 
     return types;
   }
+  
+  
   
   @Override
   public void register(RegistryNode node)
@@ -122,6 +135,19 @@ public class Space
   }
 
 
+  @Override
+  public Focus<?> bind(Focus<?> focusChain)
+    throws BindException
+  { 
+    focusChain=focusChain.chain(new SimpleChannel<Space>(this,true));
+    for (Store store: stores)
+    {
+      if (store instanceof FocusChainObject)
+      { ((FocusChainObject) store).bind(focusChain);
+      }
+    }
+    return focusChain;
+  }
   
   @Override
   public void start()
@@ -134,7 +160,9 @@ public class Space
     }
     
     for (Store store: stores)
-    { store.start();
+    { 
+      storeMap.put(store.getName(),store);
+      store.start();
     }
     
     computeTypes();
