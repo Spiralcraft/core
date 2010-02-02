@@ -26,10 +26,19 @@ public class ThreadPool
 {
 
   private static volatile int _THREAD_COUNT=0;
+  private static int _POOL_ID;
+  
+  private int poolId=_POOL_ID++;
+  
+  private String threadNamePrefix="pool-"+poolId;
 
   { setResourceFactory(this);
   }
 
+  public void setThreadNamePrefix(String prefix)
+  { this.threadNamePrefix=prefix;
+  }
+  
   /**
    * Run the supplied Runnable in its own thread
    */  
@@ -60,7 +69,7 @@ public class ThreadPool
 
     public PooledThread()
     { 
-      super("PooledThread"+_THREAD_COUNT++);
+      super(threadNamePrefix+"-"+_THREAD_COUNT++);
       setDaemon(true);
     }
     

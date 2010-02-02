@@ -56,11 +56,14 @@ public class Scheduler
     
   private ScheduledItem _nextItem;
   private final Object _sync=new Object();
+  private int id=NEXT_ID++;
   private final Thread _thread
-    =new Thread(new Dispatcher(),"Scheduler-"+(NEXT_ID++));
+    =new Thread(new Dispatcher(),"scheduler-"+id);
   
   private ThreadPool _pool
     =new ThreadPool();
+  { _pool.setThreadNamePrefix("scheduler-"+id);
+  }
   
   private boolean _started=false;
   private volatile boolean shutdown=false;
@@ -127,6 +130,33 @@ public class Scheduler
     }
   }
 
+  public boolean cancel(Runnable runnable)
+  {
+    synchronized (_sync)
+    {
+      ScheduledItem last=null;
+      ScheduledItem next=_nextItem;
+      while (next!=null)
+      { 
+        if (next.runnable==runnable)
+        { 
+          if (last!=null)
+          { last.nextItem=next.nextItem;
+          }
+          else
+          { _nextItem=next.nextItem;
+          }
+          return true;
+        }
+        else
+        { 
+          last=next;
+          next=next.nextItem;
+        }
+      }
+      return false;
+    }
+  }
 
   protected void runNext()
     throws InterruptedException
@@ -177,6 +207,7 @@ public class Scheduler
     _pool.run(runnable);
   }
 
+  
   class Dispatcher
     implements Runnable
   {
