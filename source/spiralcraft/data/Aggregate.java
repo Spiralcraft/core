@@ -14,19 +14,20 @@
 //
 package spiralcraft.data;
 
+import spiralcraft.common.Indexable;
+
 
 /**
  * <P>Holds a random-access collection of objects of a common type.
  */
 public interface Aggregate<T>
-  extends DataComposite,Iterable<T>
+  extends DataComposite,Indexable<T>
 {
   
   /**
    * Obtain the value at the specified index of this aggregate
    */
-  T get(int index)
-    throws DataException;
+  T get(int index);
   
   /**
    * Indicate whether the value returned by the get(int index) method may
