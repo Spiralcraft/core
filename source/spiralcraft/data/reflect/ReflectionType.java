@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.reflect;
 
+import spiralcraft.data.Aggregate;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.TypeResolver;
@@ -24,10 +25,13 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.Method;
 
+import spiralcraft.data.lang.TupleDelegate;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.util.InstanceResolver;
 
 import spiralcraft.data.core.TypeImpl;
+import spiralcraft.lang.BindException;
+import spiralcraft.log.ClassLog;
 
 import spiralcraft.util.CycleDetector;
 
@@ -35,7 +39,9 @@ import spiralcraft.util.lang.ClassUtil;
 import spiralcraft.util.string.StringConverter;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 
 import java.util.HashMap;
 import java.util.Date;
@@ -182,6 +188,14 @@ public class ReflectionType<T>
     { throw new RuntimeException("Error getting boxed type for "+oiface);
     }
     
+    if (Proxy.class.isAssignableFrom(iface))
+    {
+      iface=iface.getInterfaces()[0];
+      
+      ClassLog.getInstance(ReflectionType.class)
+        .info("Using interface "+iface+" from proxy class ");
+    }
+    
     StringBuilder arraySuffix=new StringBuilder();
     while (checkAggregate(iface))
     { 
@@ -271,6 +285,10 @@ public class ReflectionType<T>
     reflectedClass=clazz;
     this.nativeClass=nativeClass;
     aggregate=checkAggregate(clazz);
+    
+    if (clazz.isInterface())
+    { 
+    }
     
     try
     { stringConstructor=clazz.getConstructor(String.class);
@@ -450,7 +468,14 @@ public class ReflectionType<T>
   @Override
   public boolean isAssignableFrom(Type<?> type)
   {
-    if (!(type instanceof ReflectionType<?>)
+    if (getNativeClass()==Aggregate.class 
+        && type.isAggregate()
+      )
+    { 
+      // Raw Aggregate accepts any pure data aggregate
+      return true;
+    }
+    else if (!(type instanceof ReflectionType<?>)
         && !(type instanceof AssemblyType<?>)
        )
     { return super.isAssignableFrom(type);
@@ -543,7 +568,9 @@ public class ReflectionType<T>
       
       if (classField==null)
       { 
-        log.trace("No classField in "+getURI());
+        if (!nativeClass.isInterface())
+        { log.info("No classField in "+getURI());
+        }
         referencedClass=nativeClass;
       }
       else if (classField.getValue(tuple)!=null)
@@ -561,24 +588,27 @@ public class ReflectionType<T>
 //        System.err.println("ReflectionType: resolved from context: "+bean);
       }
       
-      if (bean==null && preferredConstructorBinding!=null)
-      { bean=(T) preferredConstructorBinding.newInstance(tuple);
-      }
-      
-      if (bean==null)
+      if (!referencedClass.isInterface())
       { 
-        try
-        {
-          if (referencedClass.getConstructor()!=null)
-          { bean=(T) referencedClass.newInstance();
-          }
+        if (bean==null && preferredConstructorBinding!=null)
+        { bean=(T) preferredConstructorBinding.newInstance(tuple);
         }
-        catch (NoSuchMethodException x)
+      
+        if (bean==null)
         { 
-          log.trace
-            ("ReflectionType: "+referencedClass.getName()
-            +" has no default constructor"
-            );
+          try
+          {
+            if (referencedClass.getConstructor()!=null)
+            { bean=(T) referencedClass.newInstance();
+            }
+          }
+          catch (NoSuchMethodException x)
+          { 
+            log.trace
+              ("ReflectionType: "+referencedClass.getName()
+              +" has no default constructor"
+              );
+          }
         }
       }
       return bean;
@@ -598,6 +628,7 @@ public class ReflectionType<T>
   /**
    * Construct an Object using reflection to inject Bean properties.
    */
+  @SuppressWarnings("unchecked")
   @Override
   public T fromData(DataComposite val,InstanceResolver context)
     throws DataException
@@ -631,28 +662,47 @@ public class ReflectionType<T>
     }
 
     T bean=obtainInstance(tuple,context);
-    
-    try
+    if (reflectedClass.isInterface())
     {
-      if (bean!=null && depersistMethodBinding!=null)
-      { depersistMethodBinding.invoke(bean,tuple);
-      }
-      else
-      { ((ReflectionScheme) scheme).depersistBeanProperties(tuple,bean);
+      if (bean==null)
+      {
+        try
+        { bean=new TupleDelegate<T>((Class<T>) reflectedClass,(Tuple) val).get();
+        }
+        catch (BindException x)
+        { 
+          throw new DataException
+            ("Error creating TupleDelegate for "+reflectedClass.getName()
+            );
+        }
       }
     }
-    catch (DataException x)
-    { 
-      throw new DataException
-        ("Error creating instance of "
-        +getNativeClass()+" from data with datatype "+val.getType().getURI()
-        ,x
-        );
+    else
+    {
+    
+      try
+      {
+        if (bean!=null && depersistMethodBinding!=null)
+        { depersistMethodBinding.invoke(bean,tuple);
+        }
+        else
+        { ((ReflectionScheme) scheme).depersistBeanProperties(tuple,bean);
+        }
+      }
+      catch (DataException x)
+      { 
+        throw new DataException
+          ("Error creating instance of "
+          +getNativeClass()+" from data with datatype "+val.getType().getURI()
+          ,x
+          );
+      } 
     }
     return bean;
   }
 
   
+  @SuppressWarnings("unchecked")
   @Override
   public DataComposite toData(Object val)
     throws DataException
@@ -682,7 +732,22 @@ public class ReflectionType<T>
           );
       }
       
-      if (val.getClass()!=nativeClass)
+      if (Proxy.class.isAssignableFrom(val.getClass()))
+      {
+        InvocationHandler handler=Proxy.getInvocationHandler(val);
+        if (handler instanceof TupleDelegate<?>)
+        { return ((TupleDelegate) handler).getTuple().snapshot();
+        }
+        else
+        {
+          // System.out.println("Not narrowing "+val.getClass()+":"+ val.toString());
+          EditableTuple tuple=new EditableArrayTuple(scheme);
+          ((ReflectionScheme) scheme).persistBeanProperties(val,tuple);
+          return tuple;
+        }
+        
+      }
+      else if (val.getClass()!=nativeClass)          
       {
         // System.out.println("Narrowing "+val.getClass());
         Type<? super Object> type

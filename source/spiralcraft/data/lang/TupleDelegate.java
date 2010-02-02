@@ -66,6 +66,19 @@ public class TupleDelegate<T>
    */
   public TupleDelegate(Class<T> iface)
     throws BindException,DataException
+  { this(iface,null);
+  }
+  
+  /**
+   * Create a new TupleDelegate which implements the specified interface.
+   *
+   * The Scheme for the Tuple is determined by reflection the interface.
+   *
+   * If provided, the provided Tuple is used, otherwise a default Tuple 
+   *   will be created.
+   */
+  public TupleDelegate(Class<T> iface,Tuple backing)
+    throws BindException,DataException
   { 
     super(new TupleDelegateReflector<T>(iface),true);
     
@@ -76,7 +89,7 @@ public class TupleDelegate<T>
           
     binding=new StaticTupleBinding
       (scheme
-      ,new EditableArrayTuple(scheme)
+      ,backing!=null?backing:new EditableArrayTuple(scheme)
       );
       
     proxy=(T) Proxy.newProxyInstance
@@ -87,6 +100,10 @@ public class TupleDelegate<T>
   }
 
 
+  public Tuple getTuple()
+  { return (Tuple) binding.get();
+  }
+  
   /**
    * Return the Binding for the raw Tuple, so we can manipulate the
    *   'backing-data' object.
