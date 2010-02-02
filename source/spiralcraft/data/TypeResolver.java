@@ -164,6 +164,19 @@ public class TypeResolver
     
   }
 
+  @SuppressWarnings("unchecked")
+  public final <X> Type<X> resolveSafeFromClass(Class<?> clazz)
+  {
+    try
+    { return (Type<X>) resolveFromClass(clazz);
+    }
+    catch (DataException x)
+    { 
+      throw new RuntimeDataException
+        ("Error resolving Type for "+clazz.getName(),x);
+    }
+  }
+  
   public final URI getPackageURI(URI typeURI)
   {
     String uriStr=typeURI.toString();
