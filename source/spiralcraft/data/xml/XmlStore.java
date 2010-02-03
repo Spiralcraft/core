@@ -20,7 +20,12 @@ import java.net.URI;
 
 import java.util.ArrayList;
 
+import spiralcraft.command.AbstractCommandFactory;
+import spiralcraft.command.Command;
+import spiralcraft.command.CommandAdapter;
+import spiralcraft.command.CommandScheduler;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
@@ -33,6 +38,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.UniqueKeyViolationException;
 import spiralcraft.data.access.SerialCursor;
+import spiralcraft.data.access.Snapshot;
 import spiralcraft.data.access.Updater;
 import spiralcraft.data.access.Entity;
 
@@ -42,11 +48,17 @@ import spiralcraft.data.sax.DataWriter;
 import spiralcraft.data.session.BufferTuple;
 import spiralcraft.data.session.BufferType;
 import spiralcraft.data.spi.AbstractStore;
+import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.spi.EditableArrayTuple;
+import spiralcraft.data.transaction.Transaction;
+import spiralcraft.data.transaction.Transaction.Nesting;
+import spiralcraft.data.types.standard.AnyType;
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.Level;
+import spiralcraft.task.Scenario;
 
 
 /**
@@ -66,7 +78,34 @@ public class XmlStore
   
   private XmlQueryable sequenceQueryable
     =new XmlQueryable();
+  
+  private URI masterURI;
+  private Scenario<?,Tuple> subscriber;
+  
+  private final CommandScheduler updater
+    =new CommandScheduler()
+  {
+    { 
+      setPeriod(2000);
+      setCommandFactory(new AbstractCommandFactory<Void,Void,Void>()
+      {
 
+        @Override
+        public Command<Void, Void, Void> command()
+        { 
+          return new CommandAdapter<Void,Void,Void>()
+          {
+            @Override
+            protected void run()
+            { XmlStore.this.triggerSubscriber();
+            }
+          };
+        }
+      }
+      );
+    
+    }
+  };
   
   public XmlStore()
     throws DataException
@@ -77,10 +116,37 @@ public class XmlStore
 
   }
   
+  @Override
+  public Focus<?> bind(Focus<?> focus)
+    throws BindException
+  { 
+    focus=super.bind(focus);
+    if (subscriber!=null)
+    { subscriber.bind(focus);
+    }
+    return focus;
+  }
+  
+  public void setSubscriber(Scenario<?,Tuple> subscriber)
+  { this.subscriber=subscriber;
+  }
+  
+  public void setMasterRefreshSeconds(int seconds)
+  { updater.setPeriod(seconds*1000);
+  }
+  
   public void setBaseResourceURI(URI uri)
   { baseResourceURI=uri;
   }
 
+  public void setMasterURI(URI masterURI)
+  { this.masterURI=masterURI;
+  }
+  
+  public URI getMasterURI()
+  { return masterURI;
+  }
+  
   public void setQueryables(XmlQueryable[] list)
   { 
     
@@ -163,12 +229,21 @@ public class XmlStore
     }
 
     super.start();
+    
+    if (subscriber!=null)
+    { 
+      updater.start();
+    }
   }
 
   @Override
   public void stop()
     throws LifecycleException
-  { super.stop();
+  { 
+    if (subscriber!=null)
+    { updater.stop();
+    }
+    super.stop();
   }
   
   
@@ -187,10 +262,113 @@ public class XmlStore
   }
     
   
+  private void triggerSubscriber()
+  { 
+    if (subscriber!=null)
+    {
+      log.fine("Checking subscription...");
+      Command<?,?,Tuple> command
+        =subscriber.command();
+      command.execute();
+      Tuple tuple=command.getResult();
+      if (tuple!=null)
+      { 
+        log.fine("Got result "+tuple);
+        try
+        { update( (Snapshot) tuple.getType().fromData(tuple,null));
+        }
+        catch (DataException x)
+        { 
+          log.log
+            (Level.WARNING,"XmlStore '"+getName()+"' snapshot update threw"
+            +" exception"
+            ,x);
+        }
+      }
+      else
+      { log.fine("Subscriber returned null");
+      }
+      if (command.getException()!=null)
+      { 
+        log.log
+          (Level.WARNING,"Subscriber for store '"+getName()+"' threw exception"
+          ,command.getException()
+          );
+      }
+    }
+  }
+  
 
+  public void update(Snapshot snapshot)
+  {
+    for (Aggregate<Tuple> aggregate : snapshot.getData())
+    { 
+      Type<?> type=aggregate.getType().getContentType();
+      Queryable<?> queryable=getQueryable(type);
+      if (queryable==null || !(queryable instanceof XmlQueryable))
+      { log.warning("Ignoring snapshot of "+type.getURI());
+      }
+      else
+      { 
+        try
+        { ((XmlQueryable) queryable).update(aggregate);
+        }
+        catch (DataException x)
+        { 
+          log.log
+            (Level.WARNING,"Failed to deliver subscription to "+type.getURI()
+            ,x);
+        }
+        catch (IOException x)
+        { 
+          log.log
+          (Level.WARNING,"Failed to deliver subscription to "+type.getURI()
+          ,x);
+        }
+      }
+      
+    }
+    lastTransactionId=snapshot.getTransactionId();
+  }
 
+  public Snapshot snapshot(long transactionId)
+    throws DataException
+  {
+    if (transactionId==0 || lastTransactionId>transactionId)
+    {
+      EditableArrayTuple snapshot=new EditableArrayTuple(Snapshot.TYPE);
+      snapshot.set("transactionId",lastTransactionId);
+      
+      EditableArrayListAggregate<Aggregate<Tuple>> data
+        =new EditableArrayListAggregate<Aggregate<Tuple>>
+          (Type.resolve(AnyType.TYPE_URI+".list.list")
+          );
+      for (XmlQueryable queryable:xmlQueryables)
+      {
+        if (transactionId==0
+            || queryable.getLastTransactionId()>transactionId
+            )
+        { data.add(queryable.snapshot());
+        }
+      }
+      snapshot.set("data",data);
+      return Snapshot.TYPE.fromData(snapshot,null);
+    }
+    else
+    { return null;
+    }
+  }
 
-
+  private void transactionCommitted(XmlQueryable queryable,long transactionId)
+  { 
+    lastTransactionId=transactionId;
+    if (debugLevel.canLog(Level.TRACE))
+    { 
+      log.fine
+        ("TX "+transactionId
+        +" committed in "+queryable.getResultType().getURI());
+    }
+  }
   
   class XmlUpdater
     extends Updater<DeltaTuple>
@@ -352,6 +530,12 @@ public class XmlStore
         // Delete case
         deleteList.add(tuple.getOriginal());
       }
+      if (!addList.isEmpty()
+          ||!updateList.isEmpty()
+          ||!deleteList.isEmpty()
+          )
+      { queryable.joinTransaction();
+      }
     }
     
     @Override
@@ -453,14 +637,30 @@ public class XmlStore
 
           try
           {
-            queryable.flush(".new");
-
-            // XXX Needs to be in transactional resource as LLR
-            queryable.commit(".new");
+            Transaction transaction=Transaction.getContextTransaction();
+            String suffix
+              =transaction!=null
+              ?(".tx"+transaction.getId())
+              :".new"
+              ;
             
-            // Make -sure- we re-read to verify data and fail for transaction
-            //   user
-            queryable.refresh();
+            queryable.flush(suffix);
+
+            if (transaction==null)
+            { 
+              // No transaction, commit manually
+              queryable.commit(suffix);
+              
+              // Make -sure- we re-read to verify data and fail for transaction
+              //   user
+              queryable.refresh();              
+            }
+            
+            
+            if (transaction!=null)
+            { transactionCommitted(queryable,transaction.getId());
+            }
+
           }
           catch (IOException x)
           { throw new DataException("IOException persisting data",x);
@@ -468,7 +668,12 @@ public class XmlStore
      
         }
         finally
-        { queryable.unfreeze();
+        {
+          if (Transaction.getContextTransaction()==null)
+          { 
+            // Unfreeze here if no transaction, otherwise complete() will do it
+            queryable.unfreeze();
+          }
         }
       
       }
@@ -553,8 +758,15 @@ public class XmlStore
         
         try
         {
-          sequenceQueryable.flush(".new");
-          sequenceQueryable.commit(".new");
+          Transaction.startContextTransaction(Nesting.ISOLATE);
+          try
+          {
+            sequenceQueryable.flush(".new");
+            Transaction.getContextTransaction().commit();
+          }
+          finally
+          { Transaction.getContextTransaction().complete();
+          }
         }
         catch (IOException x)
         { throw new DataException
