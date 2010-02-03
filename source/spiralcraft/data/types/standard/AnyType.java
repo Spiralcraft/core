@@ -31,6 +31,9 @@ public class AnyType
   extends TypeImpl<Void>
 {
 
+  public static final URI TYPE_URI
+    =URI.create("class:/spiralcraft/data/types/standard/Any");
+  
   public AnyType(TypeResolver resolver,URI uri)
   { super(resolver,uri);
   }
