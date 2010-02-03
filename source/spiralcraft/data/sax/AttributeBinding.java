@@ -15,6 +15,7 @@
 package spiralcraft.data.sax;
 
 
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.util.DictionaryBinding;
 
@@ -41,18 +42,8 @@ public class AttributeBinding<T>
   {
   }
   
-  /**
-   * Whether the attribute value is prefixed with a namespace declaration
-   *   that should be resolved.
-   * 
-   * @param transformNamespace
-   */
-  public void setTransformNamespace(boolean transformNamespace)
-  { this.transformNamespace=transformNamespace;
-  }
-  
-  public boolean getTransformNamespace()
-  { return transformNamespace;
+  public AttributeBinding(String name,Expression<T> expression)
+  { super(name,expression);
   }
   
   /**
@@ -77,6 +68,22 @@ public class AttributeBinding<T>
   public void setAttribute(String attribute)
   { setName(attribute);
   }
+  
+  /**
+   * Whether the attribute value is prefixed with a namespace declaration
+   *   that should be resolved.
+   * 
+   * @param transformNamespace
+   */
+  public void setTransformNamespace(boolean transformNamespace)
+  { this.transformNamespace=transformNamespace;
+  }
+  
+  public boolean getTransformNamespace()
+  { return transformNamespace;
+  }
+  
+
   
   /**
    * <p>The name of the attribute

@@ -60,7 +60,7 @@ public class DictionaryBinding<T>
   
     
   /**
-   * Create an AttributeBinding
+   * Create a DictionaryBinding
    */
   public DictionaryBinding()
   {
@@ -94,6 +94,19 @@ public class DictionaryBinding<T>
       setName(shortHand.substring(0,eqPos).trim());
       setTarget(Expression.<T>parse(shortHand.substring(eqPos+1)));
     }
+  }
+  
+  /**
+   * <p>Create a DictionaryBinding with the specified name and target
+   * </p>
+   * 
+   * @param name
+   * @param target
+   */
+  public DictionaryBinding(String name,Expression<T> target)
+  { 
+    this.setName(name);
+    this.setTarget(target);
   }
   
   public void setTarget(Expression<T> expression)
