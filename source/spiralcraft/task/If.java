@@ -15,8 +15,7 @@
 package spiralcraft.task;
 
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Channel;
-import spiralcraft.lang.Expression;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 
 
@@ -32,9 +31,22 @@ public class If
   extends Chain<Void,Void>
 {
   
-  private Channel<Boolean> channel;
-  private Expression<Boolean> x;
+  private Binding<Boolean> x;
   
+  public If()
+  {
+  }
+  
+  public If(Binding<Boolean> x)
+  { this.x=x;
+  }
+
+  public If(Binding<Boolean> x,Scenario<?,?> chain)
+  { 
+    this.x=x;
+    setChain(new Scenario[] {chain});
+  }
+    
   @Override
   public IfTask task()
   { return new IfTask();
@@ -43,16 +55,16 @@ public class If
   /**
    * Provide an expression to resolve the Command object
    */
-  public void setX(Expression<Boolean> x)
+  public void setX(Binding<Boolean> x)
   { this.x=x;
   }
   
   @Override
-  protected void bindChildren(Focus<?> focusChain)
+  protected Focus<?> bindExports(Focus<?> focusChain)
     throws BindException
   { 
-    channel=focusChain.bind(x);
-    super.bindChildren(focusChain);
+    x.bind(focusChain);
+    return focusChain;
   }
   
 
@@ -65,8 +77,18 @@ public class If
     { 
       try
       {
-        if (Boolean.TRUE.equals(channel.get()))
-        { super.work();
+        if (Boolean.TRUE.equals(x.get()))
+        { 
+          if (debug)
+          { log.fine("Expression returned TRUE: "+x.getText());
+          }
+          super.work();
+        }
+        else
+        {
+          if (debug)
+          { log.fine("Expression did not return TRUE: "+x.getText());
+          }
         }
       }
       catch (Exception x)
