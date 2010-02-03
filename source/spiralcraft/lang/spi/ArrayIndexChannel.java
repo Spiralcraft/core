@@ -46,29 +46,35 @@ public class ArrayIndexChannel<T>
   @Override
   protected T retrieve()
   {
-    if (!primitive)
+    try
     {
-      T[] array=arrayChannel.get();
-      if (array==null)
-      { return null;
+      if (!primitive)
+      {
+        T[] array=arrayChannel.get();
+        if (array==null)
+        { return null;
+        }
+        Number subscript=subscriptChannel.get();
+        if (subscript==null)
+        { return null;
+        }
+        return array[subscript.intValue()];
       }
-      Number subscript=subscriptChannel.get();
-      if (subscript==null)
-      { return null;
+      else
+      { 
+        Object array=arrayChannel.get();
+        if (array==null)
+        { return null;
+        }
+        Number subscript=subscriptChannel.get();
+        if (subscript==null)
+        { return null;
+        }
+        return (T) Array.get(array,subscript.intValue());
       }
-      return array[subscript.intValue()];
     }
-    else
-    { 
-      Object array=arrayChannel.get();
-      if (array==null)
-      { return null;
-      }
-      Number subscript=subscriptChannel.get();
-      if (subscript==null)
-      { return null;
-      }
-      return (T) Array.get(array,subscript.intValue());
+    catch (ArrayIndexOutOfBoundsException x)
+    { return null;
     }
   }
 
