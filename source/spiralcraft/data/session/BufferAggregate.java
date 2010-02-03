@@ -170,13 +170,18 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   }
 
   @Override
-  public T get(
-    int index)
-    throws DataException
+  public T get(int index)
   { 
     if (index < size())
     { 
-      return buffer(index);
+      try
+      { return buffer(index);
+      }
+      catch (DataException x)
+      { 
+        throw new RuntimeDataException
+          ("Error buffering data of type "+getType().getURI(),x);
+      }
     }
     else throw new IndexOutOfBoundsException
         ("Index "+index+" exceeds size "+size());
