@@ -32,6 +32,13 @@ public class DataTypeModel
     URI typeURI)
     throws BindException
   { 
+    String scheme=typeURI.getScheme();
+    
+    if (scheme!=null && scheme.equals("data"))
+    { 
+      typeURI=URI.create(typeURI.getRawSchemeSpecificPart());
+    }
+    
     Type<?> type=null;
     try
     { type=TypeResolver.getTypeResolver().resolve(typeURI);
