@@ -165,24 +165,36 @@ final class ClassUtilities {
    * Object or array class in lhs, but not a primitive.
    * @return  true if compatible, false otherwise
    */
-  static boolean compatibleClasses(Class<?>[] lhs, Class<?>[] rhs) {
+  static boolean compatibleClasses(Class<?>[] lhs, Class<?>[] rhs) 
+  {
     if (lhs.length != rhs.length)
-      return false;
+    { return false;
+    }
 
-    for (int i = 0; i < lhs.length; ++i) {
-      if (rhs[i] == null || rhs[i].equals(Void.TYPE)) {
+    for (int i = 0; i < lhs.length; ++i) 
+    {
+      if (rhs[i] == null 
+          || rhs[i].equals(Void.TYPE)
+          || rhs[i].equals(Void.class)
+         )
+      {
         if (lhs[i].isPrimitive())
-          return false;
+        { return false;
+        }
         else
-          continue;
+        { continue;
+        }
       }
 
-      if (! lhs[i].isAssignableFrom(rhs[i])) {
+      if (! lhs[i].isAssignableFrom(rhs[i]))
+      {
+        // System.err.println(lhs[i]+" is not assignable from "+rhs[i]);
         Class<?> lhsPrimEquiv = primitiveEquivalentOf(lhs[i]);
         Class<?> rhsPrimEquiv = primitiveEquivalentOf(rhs[i]);
 
         if (! primitiveIsAssignableFrom(lhsPrimEquiv, rhsPrimEquiv))
-          return false;
+        { return false;
+        }
       }
     }
 

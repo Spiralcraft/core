@@ -23,6 +23,8 @@ package spiralcraft.util.lang;
 import java.lang.reflect.*;
 import java.util.*;
 
+import spiralcraft.util.ArrayUtil;
+
 
 
 /**
@@ -137,15 +139,22 @@ public final class MethodResolver
       Class<?>[] methodParamTypes =  parameterMap.get(member);
 
       if (Arrays.equals(methodParamTypes, parameterTypes))
-        return member;
+      { return member;
+      }
 
       if (ClassUtilities.compatibleClasses(methodParamTypes, parameterTypes))
-        matchingMembers.add(member);
+      { matchingMembers.add(member);
+      }
     }
 
     if (matchingMembers.isEmpty())
-      throw new NoSuchMethodException(
-        "no member in " + clazz.getName() + " matching given args");
+    {
+      throw new NoSuchMethodException
+        ("no member in " + clazz.getName() + " matching given args: "
+        +ArrayUtil.format(parameterTypes,",",null)
+        +" tried "+memberList.toString()
+        );
+    }
 
     if (matchingMembers.size() == 1)
       return matchingMembers.get(0);
