@@ -1,0 +1,28 @@
+<sax:QueryXml
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:sax="class:/spiralcraft/data/sax/"
+  xmlns:da="class:/spiralcraft/data/access/"
+  xmlns:dda="data:class:/spiralcraft/data/access/"
+  xmlns:data="class:/spiralcraft/data/"
+  >
+  <whenX>[da:Store].masterURI.@log("Master URI is "+.)!=null
+  </whenX>
+  
+  <type x="[@dda:Snapshot].type"/>
+  
+  <uriX>[da:Store].masterURI
+  </uriX>
+
+  <uriQueryBindings>
+    <sax:AttributeBinding>
+      <name>transactionId
+      </name>
+      <target>[da:Store].lastTransactionId
+      </target>
+    </sax:AttributeBinding>
+  </uriQueryBindings>
+  
+  <debug>true
+  </debug>
+  
+</sax:QueryXml>
