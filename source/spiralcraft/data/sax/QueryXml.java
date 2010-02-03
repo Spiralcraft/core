@@ -150,7 +150,7 @@ public class QueryXml<Tresult>
   }
   
   @Override
-  protected void read(URI baseURI)
+  protected Tresult read(URI baseURI)
     throws DataException,SAXException,IOException,UnresolvableURIException
   {
     URI queryURI=baseURI;
@@ -178,7 +178,7 @@ public class QueryXml<Tresult>
       
     }
 
-    read(queryURI,resource);    
+    return read(queryURI,resource);    
   }
   
   

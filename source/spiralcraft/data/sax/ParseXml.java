@@ -23,6 +23,9 @@ import java.nio.charset.Charset;
 import org.xml.sax.SAXException;
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.Type;
+import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.types.standard.AnyType;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
@@ -52,6 +55,9 @@ public class ParseXml<Tresult>
 
   private RootFrame<Tresult> handler;
   protected Binding<URI> uriX;
+  protected Type<Tresult> type;
+  { storeResults=true;
+  }
     
   @Override
   public Task task()
@@ -60,6 +66,31 @@ public class ParseXml<Tresult>
   
   public void setUriX(Binding<URI> uriX)
   { this.uriX=uriX;
+  }
+  
+  public void setType(Type<Tresult> type)
+    throws BindException
+  { 
+    this.type=type;
+    this.resultReflector=DataReflector.getInstance(type);
+  }
+  
+  @Override
+  protected Focus<?> bindImports(Focus<?> focus)
+    throws BindException
+  {
+    if (resultReflector==null)
+    { 
+      try
+      {
+        resultReflector
+          =DataReflector.getInstance(Type.resolve(AnyType.TYPE_URI));
+      }
+      catch (DataException x)
+      { throw new BindException("Error binding type "+AnyType.TYPE_URI);
+      }
+    }
+    return focus;
   }
   
   @Override
@@ -71,11 +102,17 @@ public class ParseXml<Tresult>
     if (uriX!=null)
     { uriX.bind(focus);
     }
-    if (handler==null)
-    { throw new BindException("No handler for result");
+
+    if (handler!=null)
+    {
+      handler.setFocus(focus);
+      handler.bind();
+      if (handler.getType()!=null)
+      { 
+        this.type=handler.getType();
+        resultReflector=DataReflector.getInstance(handler.getType());
+      }
     }
-    handler.setFocus(focus);
-    handler.bind();
     return focus;
   }
   
@@ -91,14 +128,14 @@ public class ParseXml<Tresult>
   { this.handler=handler;
   }
   
-  protected void read(URI uri)
+  protected Tresult read(URI uri)
     throws IOException,UnresolvableURIException,DataException,SAXException
   { 
     Resource resource=Resolver.getInstance().resolve(uri);
-    read(uri,resource);
+    return read(uri,resource);
   }
   
-  protected void read(URI uri,Resource resource)
+  protected Tresult read(URI uri,Resource resource)
     throws IOException,SAXException,DataException
   {
     if (debug)
@@ -107,7 +144,7 @@ public class ParseXml<Tresult>
     InputStream in=resource.getInputStream();
     try
     { 
-      parse(in,newDataReader(),uri);
+      return parse(in,newDataReader(),uri);
     }
     finally
     { 
@@ -122,7 +159,12 @@ public class ParseXml<Tresult>
   protected Tresult parse(InputStream in,DataReader reader,URI uri)
     throws IOException,DataException,SAXException
   {
-    return (Tresult) reader.readFromInputStream(in,handler.getType(),uri);
+    if (handler!=null)
+    { return (Tresult) reader.readFromInputStream(in,handler.getType(),uri);
+    }
+    else
+    { return (Tresult) reader.readFromInputStream(in,type,uri);
+    }
   }
   
   protected DataReader newDataReader()
@@ -173,7 +215,10 @@ public class ParseXml<Tresult>
         if (uri==null)
         { uri=getDefaultURI();
         }
-        read(uri);
+        Tresult result=read(uri);
+        if (type!=null)
+        { addResult(result);
+        }
       }
       catch (Exception x)
       { 
