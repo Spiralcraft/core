@@ -38,7 +38,10 @@ import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Scan;
 
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
@@ -54,7 +57,7 @@ import spiralcraft.log.Level;
  *
  */
 public abstract class AbstractStore
-  implements Store
+  implements Store,FocusChainObject
 {
   protected final ClassLog log=ClassLog.getInstance(getClass());
   protected Level debugLevel=ClassLog.getInitialDebugLevel(getClass(),null);
@@ -66,12 +69,16 @@ public abstract class AbstractStore
   
   protected Schema schema;
   
+  protected long lastTransactionId;
+  
   private HashSet<Type<?>> authoritativeTypes=new HashSet<Type<?>>();
   
   private LinkedHashMap<Type<?>,Queryable<Tuple>> queryables
     =new LinkedHashMap<Type<?>,Queryable<Tuple>>();
 
   private HashMap<URI,Sequence> sequences;  
+  private String name;
+  private Focus<Store> focus;
   
   public AbstractStore()
     throws DataException
@@ -86,6 +93,21 @@ public abstract class AbstractStore
   }
   
 
+  public void setName(String name)
+  { this.name=name;
+  }
+  
+  public String getName()
+  { return name;
+  }
+  
+  /**
+   * The id of the last transaction processed by this store. 
+   */
+  public long getLastTransactionId()
+  { return lastTransactionId;
+  }
+  
   @Override
   public boolean isAuthoritative(Type<?> type)
   { return authoritativeTypes.contains(type);
@@ -185,6 +207,13 @@ public abstract class AbstractStore
     return null;
   }  
   
+  
+  public Focus<?> bind(Focus<?> focusChain)
+    throws BindException
+  { 
+    focus=focusChain.chain(new SimpleChannel<Store>(this,true));
+    return focus;
+  }
   
   
   @Override
