@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.sax;
 
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataConsumer;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
@@ -181,6 +182,11 @@ public class DataHandler
         }
       }
 
+      // Maintain type info from the ref 
+      if (value!=null && value instanceof DataComposite)
+      { type=((DataComposite) value).getType();
+      }
+      
       if (type.isAggregate())
       { return new AggregateFrame(type,(Aggregate) value);
       }
