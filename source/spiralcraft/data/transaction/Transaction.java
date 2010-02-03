@@ -16,7 +16,7 @@ package spiralcraft.data.transaction;
 
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import spiralcraft.log.ClassLog;
 
@@ -40,7 +40,8 @@ public class Transaction
   private static ThreadLocal<Transaction> TRANSACTION_LOCAL
     =new ThreadLocal<Transaction>();
   
-  private static final AtomicInteger nextId=new AtomicInteger();
+  private static final AtomicLong nextId
+    =new AtomicLong(System.currentTimeMillis());
   
   public enum Nesting
   { PROPOGATE,ISOLATE;
@@ -73,7 +74,7 @@ public class Transaction
       }
     }
     else
-    { return new Transaction(null,nesting);
+    { return new Transaction(transaction,nesting);
     }
   }
   
@@ -90,11 +91,10 @@ public class Transaction
   private ArrayList<Branch> branches=new ArrayList<Branch>();
   private Branch llrBranch;
   
-  private final int id=nextId.getAndIncrement();
+  private final long id=nextId.getAndIncrement();
   
   private final Transaction parent;
-  // private Transaction sub;
-//  private Nesting nesting;
+  private Nesting nesting;
   private State state;
   private boolean rollbackOnly;
   private ArrayList<Transaction> subtransactions
@@ -112,7 +112,7 @@ public class Transaction
   Transaction(Transaction parent,Nesting nesting)
   { 
     this.parent=parent;
-//    this.nesting=nesting;
+    this.nesting=nesting;
     TRANSACTION_LOCAL.set(this);
     this.state=State.STARTED;
     if (debug)
@@ -124,7 +124,7 @@ public class Transaction
   //{ 
   //}
   
-  public int getId()
+  public long getId()
   { return id;
   }
   
@@ -146,7 +146,7 @@ public class Transaction
     { 
       log.fine
         ("Starting debug of transaction #"+getId()
-         +", child of #"+(parent!=null?parent.getId():"none")
+         +", "+nesting+" child of #"+(parent!=null?parent.getId():"none")
          +" in state "+getState()
         );
     }
@@ -163,7 +163,7 @@ public class Transaction
         ("rollbackOnly for Transaction #"+getId());
     }
     rollbackOnly=true;
-    if (parent!=null)
+    if (nesting==Nesting.PROPOGATE && parent!=null)
     { parent.rollbackOnComplete();
     }
   }
@@ -174,7 +174,7 @@ public class Transaction
     Branch branch=branchMap.get(manager);
     if (branch==null)
     { 
-      if (parent!=null)
+      if (parent!=null && nesting==Nesting.PROPOGATE)
       {
         // Propogated transaction uses same branches. Resources use different
         //   ResourceManagers, so they can still manage their own commits.
@@ -214,6 +214,10 @@ public class Transaction
   }
   
 
+  @Override
+  public String toString()
+  { return super.toString()+" txid="+id+" "+branches.toString();
+  }
   
   public synchronized void commit()
     throws TransactionException
@@ -223,13 +227,13 @@ public class Transaction
     
     // XXX Exception handling logic is critical here
     
-    if (parent!=null)
+    if (parent!=null && nesting==Nesting.PROPOGATE)
     { 
       if (debug)
       {
         log.fine
           ("Commit Transaction #"+getId()
-          +" child of #"+parent.getId()
+          +" propogated child of #"+parent.getId()
           +" has no effect"
           );
       }
@@ -268,7 +272,7 @@ public class Transaction
       if (debug)
       {
         log.fine
-          ("Transaction #"+getId()+", child of "
+          ("Transaction #"+getId()+", "+nesting+" child of "
           +(parent!=null?parent.getId():"none")
           +" committing"
           );
@@ -463,19 +467,28 @@ public class Transaction
   
   public synchronized void complete()
   {
-    // Complete sub-transactions
-    // if (sub!=null)
-    //{ sub.complete();
-    //}
-
+    for (Transaction transaction:subtransactions)
+    { 
+      if (transaction.getState()!=State.COMPLETED)
+      { 
+        TRANSACTION_LOCAL.set(parent);
+        throw new IllegalStateException
+          ("Transaction "+transaction+" must complete before this"
+          +" transaction "+this+" can complete"
+           );
+      }
+    }
+ 
     
     if (TRANSACTION_LOCAL.get()!=this)
     { 
       throw new IllegalStateException
-        ("Transaction.complete() must be called from creating thread");
+        ("Transaction "+TRANSACTION_LOCAL.get()+" must complete before this"
+         +" transaction "+this+" can complete"
+        );
     }
     
-    if (parent!=null)
+    if (parent!=null && nesting==Nesting.PROPOGATE)
     {
       if (debug)
       {
@@ -486,99 +499,89 @@ public class Transaction
       }
 
       TRANSACTION_LOCAL.set(parent);
+      this.state=State.COMPLETED;
       return;
     }
     
-    if (state==State.COMMITTED
-        || state==State.ABORTED
-        )
-    { 
-      if (debug)
-      {
-        log.fine
-          ("Transaction #"+getId()
-          +" in state "+getState()
-          +"- returning control to parent transaction #"
-          +(parent!=null?parent.getId():"none")
-          );
-      }
-      TRANSACTION_LOCAL.set(parent);
-    }
-    else
+    try
     {
+      if (state!=State.COMMITTED 
+          && state!=State.ABORTED
+          )
+      { 
+        // Commit or rollback here
+        if (!rollbackOnly)
+        { 
+          if (debug)
+          {
+            log.fine
+              ("Transaction #"+getId()
+              +" in state "+getState()
+              +"- committing on complete"
+              );
+          }
+        
+          try
+          { commit();
+          }
+          catch (TransactionException x)
+          { 
+            // XXX Temporary
+            x.printStackTrace();
+          }
+        }
+        else
+        { 
+          if (debug)
+          {
+            log.fine
+              ("Transaction #"+getId()
+              +" in state "+getState()
+              +"- rolling back on complete"
+              );
+          }
+        
+          try
+          { rollback();
+          }
+          catch (TransactionException x)
+          { 
+            // XXX Temporary
+            x.printStackTrace();
+          }
+        }
     
+      }
     
-      // Commit or rollback here
-      if (!rollbackOnly)
+      for (Branch branch:branches)
       { 
         if (debug)
         {
           log.fine
             ("Transaction #"+getId()
             +" in state "+getState()
-            +"- committing on complete"
+            +"- completing branch "+branch
             );
         }
-        
-        try
-        { commit();
-        }
-        catch (TransactionException x)
-        { 
-          // XXX Temporary
-          x.printStackTrace();
-        }
+        branch.complete();
       }
-      else
+    
+      if (llrBranch!=null)
       { 
         if (debug)
         {
           log.fine
             ("Transaction #"+getId()
             +" in state "+getState()
-            +"- rolling back on complete"
+            +"- completing LLR branch "+llrBranch
             );
         }
-        
-        try
-        { rollback();
-        }
-        catch (TransactionException x)
-        { 
-          // XXX Temporary
-          x.printStackTrace();
-        }
+        llrBranch.complete();
       }
-    
-    
-      // Pop the stack
+    }
+    finally
+    {
       TRANSACTION_LOCAL.set(parent);
-    }
-    
-    for (Branch branch:branches)
-    { 
-      if (debug)
-      {
-        log.fine
-          ("Transaction #"+getId()
-          +" in state "+getState()
-          +"- completing branch "+branch
-          );
-      }
-      branch.complete();
-    }
-    
-    if (llrBranch!=null)
-    { 
-      if (debug)
-      {
-        log.fine
-          ("Transaction #"+getId()
-          +" in state "+getState()
-          +"- completing LLR branch "+llrBranch
-          );
-      }
-      llrBranch.complete();
     }
     state=State.COMPLETED;
     
