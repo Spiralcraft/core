@@ -39,7 +39,7 @@ public abstract class FocusNode
   { 
     Channel<?> ret=findFocus(focus).getSubject();
     if (ret==null)
-    { throw new BindException("Focus "+findFocus(focus)+" has no subject");
+    { throw new BindException("Focus "+findFocus(focus)+" has no subject {"+getClass().getName()+"}");
     }
     return ret;
   }
