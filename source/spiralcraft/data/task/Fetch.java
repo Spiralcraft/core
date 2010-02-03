@@ -49,6 +49,7 @@ public class Fetch
   @SuppressWarnings("unchecked")
   protected CursorChannel cursorChannel;
   protected int batchSize;
+  protected Queryable<?> queryable;
   
   { storeResults=true;
   }
@@ -59,6 +60,12 @@ public class Fetch
   
   public Fetch(Query query)
   { this.query=query;
+  }
+  
+  public Fetch(Queryable<?> queryable,Query query)
+  { 
+    this.query=query;
+    this.queryable=queryable;
   }
   
   public class FetchTask
@@ -185,10 +192,15 @@ public class Fetch
       =focusChain.<Queryable<Tuple>>findFocus
         (Queryable.QUERYABLE_URI);
     
-    if (queryableFocus!=null)
+    Queryable queryable=this.queryable;
+    if (queryable==null && queryableFocus!=null)
+    { queryable=queryableFocus.getSubject().get();
+    }
+   
+    if (queryable!=null)
     {
       try
-      { boundQuery=queryableFocus.getSubject().get().query(query,focusChain);
+      { boundQuery=queryable.query(query,focusChain);
       }
       catch (DataException x)
       { throw new BindException("Error binding query",x);
