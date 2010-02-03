@@ -39,6 +39,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Writer;
 
 import java.net.URI;
 
@@ -80,6 +81,21 @@ public class DataWriter
     }
   }
   
+  public void writeToWriter
+    (Writer out
+    ,DataComposite data
+    )
+    throws DataException
+  {
+    try
+    { new Context(new XmlWriter(out,null)).write(data);
+    }
+    catch (SAXException x)
+    { throw new DataException("Error writing data "+x,x);
+    }
+  
+  }
+
   public void writeToOutputStream
     (OutputStream out
     ,DataComposite data
@@ -87,7 +103,7 @@ public class DataWriter
     throws DataException
   {
     try
-    { new Context(out).write(data);
+    { new Context(new XmlWriter(out,null)).write(data);
     }
     catch (SAXException x)
     { throw new DataException("Error writing data "+x,x);
@@ -111,8 +127,8 @@ class Context
   private final XmlWriter writer;
   private Frame currentFrame; 
   
-  public Context(OutputStream out)
-  { writer=new XmlWriter(out,null);
+  public Context(XmlWriter writer)
+  { this.writer=writer;
   }
   
   public void write(DataComposite data)
@@ -432,7 +448,9 @@ class Context
         if (DataWriter.debugLevel.canLog(Level.FINE))
         { DataWriter.log.fine("Starting field "+field.getURI());
         }
-        if (field.getValue(tuple)!=null)
+        
+        Object value=field.getValue(tuple);
+        if (value!=null)
         {
           empty=false;
           if (field.getType().isAggregate())
@@ -634,7 +652,13 @@ class Context
 
         
         if (value instanceof DataComposite)
-        { currentFrame=new TupleFrame((Tuple) value);
+        { 
+          if (((DataComposite) value).isTuple())
+          { currentFrame=new TupleFrame((Tuple) value);
+          }
+          else 
+          { currentFrame=new AggregateFrame((Aggregate) value);
+          }
         }
         else
         { 
