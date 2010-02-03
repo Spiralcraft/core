@@ -372,6 +372,9 @@ public abstract class AbstractTask
   protected void addException(Exception exception)
   { 
     this.exception=exception;
+    if (debug)
+    { log.log(Level.DEBUG,"Task added exception",exception);
+    }
     for (int i=0;i<_taskListeners.length;i++)
     { _taskListeners[i].taskThrewException(_taskEvent,exception);
     }    
