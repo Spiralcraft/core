@@ -154,46 +154,6 @@ public class TypeFocusNode
       // log.fine(uri.toString()+"  :  "+namespace+":"+suffix);
     }
     
-//    HashSet<TypeModel> systems=new HashSet<TypeModel>();
-    
-// Not used anymore because we now have TypeModel registration
-//
-//    // Get the set of distinct type models in the chain
-//    for (Focus<?> chainFocus: focus.getFocusChain())
-//    {
-//      if (chainFocus.getSubject()!=null)
-//      { 
-//        TypeModel model=chainFocus.getSubject().getReflector().getTypeModel();
-//        if (model!=null && !systems.contains(model))
-//        { systems.add(model);
-//        }
-//      }
-//    }
-
-//    for (TypeModel model : TypeModel.getRegisteredModels())
-//    { 
-//      if (!systems.contains(model))
-//      { systems.add(model);
-//      }
-//    }
-      
-//    // Search the type models for the type
-//    Reflector<?> reflector=null;
-//    for (TypeModel model : systems)
-//    { 
-//      if (reflector==null)
-//      { reflector=model.findType(uri);
-//      }
-//      else
-//      {
-//        Reflector<?> altReflector=model.findType(uri);
-//        if (altReflector!=null && altReflector!=reflector)
-//        { 
-//          reflector
-//            =reflector.disambiguate(altReflector);    
-//        }
-//      }
-//    }
     
     Reflector<?> reflector=TypeModel.searchType(uri);
     
