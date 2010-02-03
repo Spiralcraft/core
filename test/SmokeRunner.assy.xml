@@ -6,6 +6,7 @@
   xmlns:example="class:/spiralcraft/data/test/example/"
   xmlns:dxml="class:/spiralcraft/data/xml/"
   xmlns:data="class:/spiralcraft/data/"
+  xmlns:da="class:/spiralcraft/data/access/"
   xmlns:query="class:/spiralcraft/data/query/"
   xmlns:dtest="class:/spiralcraft/data/test/"
   xmlns:test="class:/spiralcraft/test/"
@@ -16,6 +17,19 @@
     <data:Space>
       <stores>
         <dxml:XmlStore>
+          <name>local
+          </name>
+          
+          <subscriber>
+            <dxml:Subscriber>
+              <debug>true
+              </debug>
+            </dxml:Subscriber>
+          </subscriber>
+          
+          <masterURI>class:/spiralcraft/data/test/example/Snapshot.xml
+          </masterURI>
+          
           <baseResourceURI>out/data/store/
           </baseResourceURI>
           
@@ -42,9 +56,11 @@
 
       
       <scenarios>
+        
         <langtest:LangTest
           xmlns:langtest="class:/spiralcraft/lang/test/"
         />
+        
         <utiltest:UtilTest
           xmlns:utiltest="class:/spiralcraft/util/test/"
         />
@@ -55,7 +71,7 @@
           </fileURI>
       
         </iotest:RecordIteratorTest>
-        
+<!--         
         <vfs:Copy>
           
           <verbose>true
@@ -70,13 +86,16 @@
           <targetResource>out/data/store
           </targetResource>
         </vfs:Copy>
-        
+-->        
         <dtest:DataTest/>
 
         <sectest:AuthTest
           xmlns:sectest="class:/spiralcraft/security/test/"
         />
         
+        <tasktest:Test
+          xmlns:tasktest="class:/spiralcraft/task/test/"
+        />
       </scenarios>
     </task:Sequence>
   </chain>

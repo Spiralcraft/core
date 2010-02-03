@@ -1,8 +1,15 @@
-<task:TaskRunner
+<task:Chain
   xmlns:task="class:/spiralcraft/task/"
-  xmlns:test="class:/spiralcraft/task/test/"
+  xmlns:test="class:/spiralcraft/test/"
   >
-  <scenario>
-    <test:StubScenario/>
-  </scenario>
-</task:TaskRunner>
+  <chain>
+    <test:Assertion>
+      <name>Eval
+      </name>
+      <subjectX>[*task:Eval{ `{x:=2,y:=5}` , `x*y` }].()
+      </subjectX>
+      <testX>.==10
+      </testX>
+    </test:Assertion>
+  </chain>
+</task:Chain>

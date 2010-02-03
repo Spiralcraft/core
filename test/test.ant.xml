@@ -1,7 +1,11 @@
 <project name="spiralcraft-core-shell" basedir="." default="smoke-tests">
 
 	<import file="../build.xml"/>
-  
+<!--
+    vmargs="-agentlib:/apps/eclipse/plugins/org.eclipse.tptp.platform.jvmti.runtime_4.5.1.v200909141324/agent_files/win_ia32/JPIBootLoader=JPIAgent:server=controlled;CGProf:execdetails=true"
+
+        vmargs="-Dspiralcraft.data.TypeResolver.debugLevel=FINE"
+-->  
   <target name="smoke-tests"
     depends="clean,spiralcraft-task"
     >
@@ -11,8 +15,7 @@
  
     <devtask
       codebase=".."
-      exec
-        ="--log log/spiralcraft --consoleLog
+        exec="--log log/spiralcraft --consoleLog
          SmokeRunner.assy
          "
     />

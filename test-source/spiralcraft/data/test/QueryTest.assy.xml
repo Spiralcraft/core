@@ -1,10 +1,13 @@
 <task:Chain
   xmlns:task="class:/spiralcraft/task/"
   xmlns:query="class:/spiralcraft/data/query/"
+  xmlns:data="class:/spiralcraft/data/"
+  xmlns:sax="class:/spiralcraft/data/sax"
   xmlns:dtask="class:/spiralcraft/data/task/"
   xmlns:test="class:/spiralcraft/test/"
   xmlns:example="class:/spiralcraft/data/test/example/"
   xmlns:j="class:/java/lang/"
+  xmlns:jnet="class:/java/net/"
   xmlns:sec="class:/spiralcraft/security/"
   >
   <chain>
@@ -304,6 +307,51 @@
           
           </chain>
         </dtask:Session>
+
+        <test:Assertion>
+          <name>Snapshot
+          </name>
+          <subjectX>
+            [data:Space].getStore("local").snapshot(0L)
+          </subjectX>
+          <testX>
+            .data[0].@cast([@data:Aggregate]).size()==4 
+            &amp;&amp; 
+            .data[1].@cast([@data:Aggregate]).size()==2
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>ParseXML
+          </name>
+          <subjectX>
+            [*sax:ParseXml
+              { uriX:=[@jnet:URI].@create
+                  ("class:/spiralcraft/data/test/example/Customer.data.xml")
+              , type:=[@example:Customer.list].type
+              }
+            ].()
+          </subjectX>
+          <testX>
+            .@size()==3
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>Store update self
+          </name>
+          <subjectX>
+            [data:Space].getStore("local"){.update(.snapshot(0L))}
+          </subjectX>
+          <testX>
+            [data:Space].getStore("local").snapshot(0L)
+            {
+              .data[0].@cast([@data:Aggregate]).size()==4 
+              &amp;&amp; 
+              .data[1].@cast([@data:Aggregate]).size()==2
+            }
+          </testX>
+        </test:Assertion>
 
       </scenarios>
       

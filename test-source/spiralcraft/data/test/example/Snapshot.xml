@@ -1,0 +1,14 @@
+<da:Snapshot
+  xmlns:da="class:/spiralcraft/data/access/"
+  >
+  <transactionId>100
+  </transactionId>
+
+  <data>
+    <Any.list.list>
+      <Any.list ref="Customer.data.xml"/>
+      <Any.list ref="Login.data.xml"/>
+    
+    </Any.list.list>
+  </data>
+</da:Snapshot>

@@ -2,7 +2,7 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
-    <revision>0.4.3.1
+    <revision>0.4.4
     </revision>
     
     <authorId>miketoth
@@ -12,6 +12,15 @@
     </date>
     
     <notes>
+    
+      <scm:Note>New XmlStore slave mode subscribes to a master
+      </scm:Note>
+      <scm:Note>Support for Java interface fascades backed by Tuples to
+        facilitate Java programming against data Types.
+      </scm:Note>
+      <scm:Note>Achieved generalized XML object transport for both
+        Java and data types.
+      </scm:Note>
       <scm:Note>Redefine CollectionDecorator.add() to return the modified
         collection, allowing support for immutable collection implementations
         such as arrays.
@@ -32,6 +41,249 @@
     </notes>
     
     <detail>
+    
+      <scm:Change>
+        <notes>
+          <scm:Note>New XmlStore master/slave capability provides remote
+            replication
+          </scm:Note>
+          <scm:Note>XmlStore and XmlQueryable integrate with local 2PC
+            transaction mechanism.
+          </scm:Note>
+          <scm:Note>XmlStore transactionalizes sequence allocation
+          </scm:Note>
+          <scm:Note>Transactions now properly support nesting levels PROPOGATE
+            and ISOLATE, and provide sensible transaction id sequences 
+            seeded with the system time. Transaction context is now maintained
+            until all branches have completed, ensuring that completing 
+            branches have access to the contextual Transaction id.
+          </scm:Note>
+          <scm:Note>Fetch task accepts an explicit queryable object in
+            a new constructor (Queryable,Query)
+          </scm:Note>
+          <scm:Note>Achieved generalized XML object transport for both
+            Java and data types.
+          </scm:Note>
+          <scm:Note>New XmlDataRenderer wraps DataWriter in a general
+            purpose Renderer interface
+          </scm:Note>
+          <scm:Note>DataWriter can now write to a Writer and not just an
+            OutputStream.
+          </scm:Note>
+          <scm:Note>ParseXml and QueryXml tasks now generate a Command
+            result if the type property is defined.
+          </scm:Note>
+          <scm:Note>When using the "ref" attribute for aggregates, DataHandler
+            upgrades the frame type to the actual type of the value read
+            from the referenced resource. 
+          </scm:Note>
+          <scm:Note>AttributeBinding and underlying DictionaryBinding provide
+             (name,Expression) constructor
+          </scm:Note>
+          <scm:Note>Space provides access to Stores by name
+          </scm:Note>        
+          <scm:Note>New CommandScheduler class to run Commands periodically.
+            Required new Scheduler.cancel(Runnable) method for Lifecycle.
+            contract.
+          </scm:Note>
+          <scm:Note>Better thread identification for Scheduler and Pool.
+          </scm:Note>
+          <scm:Note>A Scenario late-binds the command result reflector as it may
+            be derived from something in the context. This is facilitated
+            by GenericReflector providing ability to enhance using a 
+            client-supplied ChannelFactory.
+          </scm:Note>
+          <scm:Note>Scenarios now all provide conditional execution using
+            whenX.
+          </scm:Note>
+          <scm:Note>Scenarios bind the local context channel before bindImports
+            to allow bindImports to be aware of the context Reflector. 
+          </scm:Note>
+          <scm:Note>New Eval Scenario allows for arbitrary Expression
+            evaluation, puts result in chain context as well as returning.
+          </scm:Note>          
+          <scm:Note>"If" Scenario gets constructors, uses Binding instead of
+            Expression.
+          </scm:Note>
+          <scm:Note>KeyedList provides a default constructor.
+          </scm:Note>
+          
+        </notes>
+      
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/Space.java
+          </URI>
+          <URI>data/access/Store.java
+          </URI>
+          <URI>data/access/Snapshot.java
+          </URI>
+          <URI>data/spi/AbstractStore.java
+          </URI>
+          <URI>data/xml/XmlStore.java
+          </URI>
+          <URI>data/xml/XmlQueryable.java
+          </URI>
+          <URI>data/xml/Subscriber.assy.xml
+          </URI>
+          <URI>data/sax/AttributeBinding.java
+          </URI>
+          <URI>data/sax/DataHandler.java
+          </URI>
+          <URI>data/sax/DataWriter.java
+          </URI>
+          <URI>data/sax/ParseXml.java
+          </URI>
+          <URI>data/sax/QueryXml.java
+          </URI>
+          <URI>data/sax/XmlDataRenderer.java
+          </URI>
+          <URI>data/task/Fetch.java
+          </URI>
+          <URI>data/transaction/Transaction.java
+          </URI>
+          <URI>command/CommandScheduler.java
+          </URI>
+          <URI>lang/spi/GenericReflector.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+          <URI>task/TaskCommand.java
+          </URI>
+          <URI>task/If.java
+          </URI>
+          <URI>task/Eval.java
+          </URI>
+          <URI>time/Scheduler.java
+          </URI>
+          <URI>pool/ThreadPool.java
+          </URI>
+          <URI>util/KeyedList.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Removed unnecessary generic type parameter
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/spi/AbstractFunctorChannel.java
+          </URI>
+          <URI>command/CommandFunctorChannel.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Support for Java interface fascades backed by Tuples to
+            facilitate Java programming against data Types.
+          </scm:Note>
+          <scm:Note>Requires additional support for handling situations where
+            "raw" DataComposite types are exposed by Java classes.
+          </scm:Note>          
+          <scm:Note>DataTypeModel allows for "data" scheme to disambiguate
+            between Java class reflectors and the reflectors for their derived
+            data Types- eg. "data:class:/mypkg/MyType"
+          </scm:Note>
+          <scm:Note>spiralcraft.lang name resolution no longer relies on
+            URI.resolve(), because it doesn't work for "wrapper" schemes.
+          </scm:Note>
+          <scm:Note>TypeImpl.fromData() now passes through DataComposites if
+            there is no associated native class. 
+          </scm:Note>
+          <scm:Note>TypeResolver.resolveSafeFromClass(Class) convenience method
+            to provide a Type object from a fascade interface
+          </scm:Note>
+          <scm:Note>Indexable interface helps subscript and size Aggregates
+            returned by Java code.
+          </scm:Note>
+          <scm:Note>BeanReflector supports new Indexable interface and "long"
+            values as indexes.
+          </scm:Note>
+          <scm:Note>BeanReflector and MethodTranslator use java.lang.Object
+            as collection component type when type parameter cannot be 
+            interpreted.
+          </scm:Note>
+          <scm:Note>BufferAggregate.get() no longer throws DataException (to
+            conform to Indexable interface)
+          </scm:Note>
+          <scm:Note>ArrayIndexChannel returns null instead of throwing an
+            ArrayIndexOutOfBounds exception
+          </scm:Note>
+          <scm:Note>TranslatorChannel dumps signatures when resolve fails
+          </scm:Note>
+          <scm:Note>AggregateIndexTranslator and AggregateListDecorator 
+            converts DataException to RuntimeException
+          </scm:Note>
+          <scm:Note>ReflectionType will create a TupleDelegate when asked
+            to create a Java interface via the fromData() method.
+          </scm:Note>
+          <scm:Note>Proxy method mapping is incomplete.
+          </scm:Note>
+          <scm:Note>TupleDelegate is now more useful for constructing Java
+            interface fascades backed by Tuples. TupleDelegate can now be 
+            constructed with a client-supplied backing Tuple, and now has a getter
+            to provide access to the backing Tuple. 
+          </scm:Note>
+          <scm:Note>More informative TypeMismatchException
+          </scm:Note>
+          <scm:Note>More informative exception when Focus subject is null
+          </scm:Note>
+          <scm:Note>AnyType.TYPE_URI
+          </scm:Note>
+          <scm:Note>Void.class is now treated as a wildcard parameter 
+            like Void.TYPE when resolving methods in ClassUtilities. 
+            MethodResolver exception enhanced.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/Aggregate.java
+          </URI>
+          <URI>data/TypeMismatchException.java
+          </URI>
+          <URI>data/TypeResolver.java
+          </URI>
+          <URI>data/core/TypeImpl.java
+          </URI>
+          <URI>data/lang/TupleDelegate.java
+          </URI>
+          <URI>data/lang/AggregateReflector.java
+          </URI>
+          <URI>data/session/BufferAggregate.java
+          </URI>
+          <URI>data/reflect/ReflectionType.java
+          </URI>
+          <URI>data/types/standard/AnyType.java
+          </URI>
+          <URI>common/Indexable.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>lang/reflect/MethodTranslator.java
+          </URI>
+          <URI>lang/spi/ArrayIndexChannel.java
+          </URI>
+          <URI>lang/parser/Node.java
+          </URI>
+          <URI>util/lang/ClassUtilities.java
+          </URI>
+          <URI>util/lang/MethodResolver.java
+          </URI>
+        </resources>
+      </scm:Change>
     
       <scm:Change>
         <notes>
