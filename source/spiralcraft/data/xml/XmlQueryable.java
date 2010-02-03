@@ -14,7 +14,6 @@
 //
 package spiralcraft.data.xml;
 
-
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
@@ -25,6 +24,12 @@ import spiralcraft.data.spi.KeyedListAggregate;
 
 import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.sax.DataWriter;
+import spiralcraft.data.transaction.Branch;
+import spiralcraft.data.transaction.ResourceManager;
+import spiralcraft.data.transaction.Transaction;
+import spiralcraft.data.transaction.TransactionException;
+import spiralcraft.data.transaction.Transaction.Nesting;
+import spiralcraft.data.transaction.Transaction.State;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Tuple;
@@ -42,11 +47,13 @@ import spiralcraft.vfs.watcher.WatcherHandler;
 
 import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.io.IOException;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 /**
  * <p>Provides basic query functionality for an XML document which contains 
@@ -83,6 +90,16 @@ public class XmlQueryable
   
   private boolean debug;
   private boolean frozen;
+  private long lastTransactionId;
+  
+  private XmlResourceManager resourceManager
+    =new XmlResourceManager();
+  
+  private volatile Transaction transaction;
+  
+  public long getLastTransactionId()
+  { return lastTransactionId;
+  }
   
   private WatcherHandler handler
     =new WatcherHandler()
@@ -294,15 +311,59 @@ public class XmlQueryable
     this.resource=resource;
   }
   
+  public Aggregate<Tuple> snapshot()
+    throws DataException
+  { return getAggregate().snapshot();
+  }
+  
+  
+  public synchronized void update(Aggregate<Tuple> snapshot)
+    throws DataException,IOException
+  { 
+    checkInit();
+    transaction=Transaction.startContextTransaction(Nesting.PROPOGATE);
+    try
+    { 
+      freeze();
+      flush("."+transaction.getId(),snapshot);
+      transaction.commit();
+    }
+    finally
+    { transaction.complete();
+    }
+  }
 
+
+  synchronized void joinTransaction()
+    throws TransactionException
+  { 
+    Transaction transaction=Transaction.getContextTransaction();
+    if (transaction!=null)
+    { resourceManager.branch(transaction);
+    }
+  }
+  
   synchronized void flush(String tempSuffix)
     throws DataException,IOException
+  { flush(tempSuffix,aggregate);
+  }
+
+  synchronized void flush(String tempSuffix,Aggregate<Tuple> aggregate)
+    throws DataException,IOException
   {
+
+    if (resource==null)
+    { log.fine("Resource is null for "+type);
+    }
     Resource tempResource;
     if (tempSuffix!=null)
     {
       tempResource=Resolver.getInstance().resolve
-        (URI.create(this.resource.getURI().toString()+tempSuffix));
+        (URI.create
+          (this.resource.getURI().toString()
+            +(tempSuffix!=null?tempSuffix:"")
+          )
+        );
     }
     else
     { tempResource=resource;
@@ -310,6 +371,17 @@ public class XmlQueryable
     
     DataWriter writer=new DataWriter();
     writer.writeToResource(tempResource, aggregate);
+    
+    if (tempSuffix!=null)
+    {
+      Transaction transaction=Transaction.getContextTransaction();
+      if (transaction!=null)
+      { 
+        XmlBranch branch=resourceManager.branch(transaction);
+        branch.addResource(tempSuffix);
+      
+      }
+    }
   }
   
   synchronized void commit(String tempSuffix)
@@ -358,8 +430,22 @@ public class XmlQueryable
       
     }
     
+    Transaction transaction=Transaction.getContextTransaction();
+    if (transaction!=null)
+    { this.lastTransactionId=transaction.getId();
+    }
     watcher.reset();
   }
+  
+  synchronized void rollback(String tempSuffix)
+    throws IOException
+  {
+    Resource tempResource
+      =Resolver.getInstance().resolve
+        (URI.create(this.resource.getURI().toString()+tempSuffix));
+    tempResource.delete();
+  }
+  
 
   synchronized void refresh()
     throws IOException
@@ -377,12 +463,153 @@ public class XmlQueryable
   
   
   
-  public void freeze()
-  { frozen=true;
+  public synchronized void freeze()
+  { 
+    if (frozen)
+    { 
+      if (Transaction.getContextTransaction()!=transaction)
+      { 
+        try
+        { this.wait();
+        }
+        catch (InterruptedException x)
+        { 
+          throw new RuntimeException
+            ("Wait for lock on "+type.getURI()+" interrupted");
+        }
+      }
+    }
+    transaction=Transaction.getContextTransaction();
+    frozen=true;
   }
   
-  public void unfreeze()
-  { frozen=false;
+  public synchronized void unfreeze()
+  { 
+    if (Transaction.getContextTransaction()!=transaction)
+    { 
+      throw new RuntimeException
+        ("Lock not owned by transaction "+Transaction.getContextTransaction()
+       +", owner is "+transaction
+        );
+    }
+    frozen=false;
+    transaction=null;
+    this.notify();
+  }
+
+
+  class XmlResourceManager
+    extends ResourceManager<XmlBranch>
+  {
+
+    @Override
+    public XmlBranch createBranch(Transaction transaction)
+      throws TransactionException
+    { return new XmlBranch();
+    }
+    
+  }
+  
+  class XmlBranch
+  implements Branch
+  {
+    
+    private ArrayList<String> resources=new ArrayList<String>();
+    
+    private State state=State.STARTED;
+    
+    public void addResource(String suffix)
+    { resources.add(suffix);
+    }
+
+    @Override
+    public void commit()
+    throws TransactionException
+    {
+      for (String suffix:resources)
+      { 
+        try
+        { 
+          synchronized (XmlQueryable.this)
+          {
+            XmlQueryable.this.freeze();
+
+            XmlQueryable.this.commit(suffix);
+        
+            // Make -sure- we re-read to verify data and fail for transaction
+            //   user
+            XmlQueryable.this.refresh();
+          }
+        }
+        catch (IOException x)
+        { throw new TransactionException("Error committing '"+suffix+"'",x);
+        }
+      }
+      state=State.COMMITTED;
+      // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void complete()
+    {
+      try
+      {
+        if (state!=State.COMMITTED)
+        { rollback();
+        }
+      }
+      catch (TransactionException x)
+      { log.log(Level.WARNING,"Error rolling back incomplete transaction",x);
+      }
+      finally
+      { XmlQueryable.this.unfreeze();
+      }
+      state=State.COMPLETED;
+
+    }
+
+    @Override
+    public State getState()
+    { return state;
+    }
+
+    @Override
+    public boolean is2PC()
+    { return true;
+    }
+
+    @Override
+    public void prepare()
+    throws TransactionException
+    { this.state=State.PREPARED;
+    }
+
+    @Override
+    public void rollback()
+    throws TransactionException
+    { 
+
+      if (state!=State.COMMITTED)
+      { 
+        for (String suffix:resources)
+        { 
+          try
+          { XmlQueryable.this.rollback(suffix);
+          }
+          catch (IOException x)
+          { log.log(Level.WARNING,"IOException rolling back '"+suffix+"'",x);
+          }
+        }
+      }
+
+
+    }
+    
+    @Override
+    public String toString()
+    { return super.toString()+": "+XmlQueryable.this.type.getURI();
+    }
   }
 
 }
