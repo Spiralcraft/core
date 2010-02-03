@@ -32,6 +32,10 @@ public class KeyedList<T>
   private ArrayList<Index<?,T>> _keys;
   private int _numKeys;
   
+  public KeyedList()
+  { super(new ArrayList<T>());
+  }
+  
   public KeyedList(List<T> impl)
   { super(impl);
   }
