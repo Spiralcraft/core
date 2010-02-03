@@ -20,7 +20,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
 import spiralcraft.data.Aggregate;
-import spiralcraft.data.DataException;
+import spiralcraft.data.RuntimeDataException;
 
 import spiralcraft.lang.spi.Translator;
 
@@ -62,7 +62,7 @@ public class AggregateIndexTranslator<T>
     try
     { return source.get(index.intValue());
     }
-    catch (DataException x)
+    catch (RuntimeDataException x)
     { 
       throw new AccessException
         ("Error retrieving index "+index.intValue()+" in "+source.getType());
