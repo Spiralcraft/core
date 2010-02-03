@@ -21,11 +21,13 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Decorator;
+import spiralcraft.lang.Signature;
 import spiralcraft.log.ClassLog;
 
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 
 /**
  * An Binding which translates get() and source property changes
@@ -49,7 +51,6 @@ public  class TranslatorChannel<T,S>
   private PropertyChangeSupport _propertyChangeSupport;
   private PropertyChangeListener _modifierListener;
   private WeakChannelCache _cache;
-  private Channel<?> metaBinding;
   protected boolean debug;
 
   /**
@@ -155,26 +156,51 @@ public  class TranslatorChannel<T,S>
   { return translator.getReflector();
   }
 
-  @SuppressWarnings("unchecked") // Heterogeneous metadata
   public <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
   {     
     Channel<X> binding=translator.getReflector().resolve(this,focus,name,params);
+
     if (binding==null)
-    {
-      if (name.equals("!"))
+    { 
+       
+      StringBuffer sigs=new StringBuffer();
+      sigs.append("\r\n  {[");
+      for (Signature sig : translator.getReflector().getSignatures(this))
       { 
-        synchronized (this)
-        {
-          if (metaBinding==null)
-          { metaBinding=new SimpleChannel<TranslatorChannel>(this,true);
+        sigs.append(sig.toString());
+        sigs.append("\r\n    ");
+          
+      }
+      sigs.append("]\r\n  }");
+
+      Reflector<?>[] pc=null;
+      if (params!=null)
+      {
+        ArrayList<Reflector<?>> pcList=new ArrayList<Reflector<?>>();
+        for (int i=0;i<params.length;i++)
+        { 
+          try
+          { 
+            Channel<?> channel=focus.bind(params[i]);
+            if (!(channel instanceof BindingChannel<?>))
+            { pcList.add(channel.getReflector());
+            }
+          }
+          catch (BindException x)
+          {
           }
         }
-        binding=(Channel<X>) metaBinding;
+        pc=pcList.toArray(new Reflector<?>[pcList.size()]);
       }
-    }
-    if (binding==null)
-    { throw new BindException("'"+name+"' not found in "+translator.getReflector().toString());
+      Signature sig=new Signature
+        (name
+        ,null
+        ,pc
+        );
+        
+      throw new 
+        BindException("Member signature '"+sig+"' not found. ("+translator.getReflector()+") "+sigs);      
     }
     return binding;
   }
