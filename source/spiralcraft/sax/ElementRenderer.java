@@ -80,6 +80,7 @@ public abstract class ElementRenderer
       { 
         // Not SAX, but we need to tell writer to not wait for content
         //   before writing the '>' in the open tag.
+        // XXX The writer should be more intelligent and keep some state.
         xmlWriter.startElementContent();
         
         nestedContent.render(writer);
