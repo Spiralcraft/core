@@ -200,11 +200,19 @@ public class GenericReflector<T>
     ,Reflector<?>[] params
     ,final Reflector<X> enhancer
     )
+  { enhance(name,params,new AspectFactory<X>(enhancer));
+  }
+  
+  public <X> void enhance
+    (String name
+    ,Reflector<?>[] params
+    ,ChannelFactory<X,X> aspect
+    )
   {
     ensureEnhancerMap();
     enhancerMap.put
       (new Signature(name,null,params)
-      ,new AspectFactory<X>(enhancer)
+      ,aspect
       );
   }
   
