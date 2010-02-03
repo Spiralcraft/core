@@ -570,11 +570,16 @@ public class TypeImpl<T>
   { throw new UnsupportedOperationException("Not string encodable");
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public T fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
-  { throw new UnsupportedOperationException
-      ("Not depersistable: "+data);
+  { 
+    if (nativeClass==null || nativeClass.isAssignableFrom(data.getClass()))
+    { return (T) data;
+    }
+    throw new UnsupportedOperationException
+      ("Not depersistable: type="+toString()+"  data="+data);
   }
   
   @Override
