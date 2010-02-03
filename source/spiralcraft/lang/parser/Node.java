@@ -110,9 +110,10 @@ public abstract class Node
       if (!uriStr.endsWith("/"))
       { 
         uriStr=uriStr+"/";
-        uri=URI.create(uriStr);
       }
-      uri=uri.resolve(suffix);
+      // Don't use URI.resolve() here because scheme-nested URIs get mangled
+      uriStr=uriStr+suffix;
+      uri=URI.create(uriStr);
     }
     return uri;
   }   
