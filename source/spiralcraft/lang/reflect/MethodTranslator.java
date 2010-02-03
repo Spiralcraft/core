@@ -47,8 +47,7 @@ class MethodTranslator<Tprop,Tbean>
     { _reflector=BeanReflector.<Tprop>getInstance(clazz);
     }
     else
-    { throw new IllegalArgumentException
-        ("Unknown return type for method '"+method+"': "+returnType);
+    { _reflector=BeanReflector.getInstance(Object.class);
     }
   }
 
