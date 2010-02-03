@@ -87,9 +87,24 @@ public class TaskCommand<Tcontext,Tresult>
       }
       else
       { 
-        task.run();
-        setException(task.getException());
-        onTaskCompletion();
+        if (scenario.getWhenX()==null 
+            || Boolean.TRUE.equals(scenario.getWhenX().get())
+           )
+        {
+          task.run();
+          setException(task.getException());
+          onTaskCompletion();
+        }
+        else
+        { 
+          if (scenario.debug)
+          { 
+            scenario.log.fine
+              ("Scenario skipped b/c whenX returned non-TRUE: "
+              +scenario.getWhenX().getText()
+              );
+          }
+        }
       }
       if (error!=null)
       { 

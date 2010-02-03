@@ -20,7 +20,9 @@ import spiralcraft.command.CommandFactory;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.FocusChainObject;
@@ -29,6 +31,7 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.GenericReflector;
 import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.spi.AspectChannel;
 
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
@@ -82,6 +85,8 @@ public abstract class Scenario<Tcontext,Tresult>
   protected Expression<Tcontext> contextX;
   protected Channel<Tcontext> contextInitChannel;
   
+  protected Binding<Boolean> whenX;
+  
   /**
    * 
    * @return A command which runs this Scenario when invoked. Used to wire 
@@ -107,8 +112,6 @@ public abstract class Scenario<Tcontext,Tresult>
   }
   
   
-  protected abstract Task task();
-  
   /**
    * Provide a Context expression which will be enclosed in the Focus chain
    *   for the duration of a Task and will be published for use by
@@ -120,6 +123,7 @@ public abstract class Scenario<Tcontext,Tresult>
   { this.contextX=contextX;
   }
   
+  
   /**
    * Define the result type of the TaskCommand that runs this Scenario
    * 
@@ -127,6 +131,21 @@ public abstract class Scenario<Tcontext,Tresult>
    */
   public void setResultReflectorX(Expression<Reflector<Tresult>> resultReflectorX)
   { this.resultReflectorX=resultReflectorX;
+  }
+
+  /**
+   * <p>A Boolean Expression bound into the command context which determines 
+   *   whether or not the scenario should run.
+   * </p>
+   * 
+   * @param whenX
+   */
+  public void setWhenX(Binding<Boolean> whenX)
+  { this.whenX=whenX;
+  }
+
+  public Binding<Boolean> getWhenX()
+  { return this.whenX;
   }
   
   protected TaskCommand<Tcontext,Tresult> createCommand
@@ -152,7 +171,10 @@ public abstract class Scenario<Tcontext,Tresult>
   public boolean getStoreResults()
   { return storeResults;
   }
+ 
+  protected abstract Task task();
   
+    
   <T> void logTaskResult(TaskEvent event,T result)
   { log.info("Task result: "+event.getSource()+" "+result.toString());
   }
@@ -188,6 +210,14 @@ public abstract class Scenario<Tcontext,Tresult>
   { return TaskCommand.class;
   }
   
+  protected Reflector<Tcontext> getContextReflector()
+  { return contextReflector;
+  }
+  
+  protected Reflector<Tresult> getResultReflector()
+  { return resultReflector;
+  }
+
   /**
    * Override to indicate the extended type for the TaskCommand to expose
    *   custom attributes into the FocusChain expected by tasks.
@@ -226,7 +256,28 @@ public abstract class Scenario<Tcontext,Tresult>
       { gr.enhance("context",null,contextReflector);
       }
       if (resultReflector!=null)
-      { gr.enhance("result",null,resultReflector);
+      { 
+        gr.enhance
+          ("result"
+          ,null
+          ,new ChannelFactory<Tresult,Tresult>()
+          {
+
+            @Override
+            public Channel<Tresult> bindChannel(
+              Channel<Tresult> source,
+              Focus<?> focus,
+              Expression<?>[] arguments)
+              throws BindException
+            {
+              return new AspectChannel<Tresult>
+                (Scenario.this.getResultReflector()
+                ,source
+                );
+            }
+           
+           }
+         );
       }
       // gr.setDebug(true);
       commandReflector=gr;
@@ -255,6 +306,11 @@ public abstract class Scenario<Tcontext,Tresult>
       if (debug)
       { log.fine("ContextReflector is "+contextReflector);
       }
+
+      // Allow imports to bind against context channel
+      contextChannel
+        =new ThreadLocalChannel<Tcontext>(contextReflector);
+
     }
     
     focusChain=bindImports(focusChain);
@@ -409,6 +465,7 @@ public abstract class Scenario<Tcontext,Tresult>
       (Focus<?> focusChain
       ,Reflector<TaskCommand<Tcontext,Tresult>> reflector
       )
+    throws BindException
   {
     commandChannel
       =new ThreadLocalChannel<TaskCommand<Tcontext,Tresult>>
@@ -418,9 +475,15 @@ public abstract class Scenario<Tcontext,Tresult>
     if (contextReflector!=null)
     { 
       // Make it easy for the bindings to get at the context
-      contextChannel
-        =new ThreadLocalChannel<Tcontext>(contextReflector);
+      if (contextChannel==null)
+      {
+        contextChannel
+          =new ThreadLocalChannel<Tcontext>(contextReflector);
+      }
       focusChain=focusChain.chain(contextChannel);
+    }
+    if (whenX!=null)
+    { whenX.bind(focusChain);
     }
     return focusChain;
   }
