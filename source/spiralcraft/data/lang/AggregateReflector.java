@@ -37,8 +37,8 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
 
-import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.Scheme;
@@ -348,7 +348,7 @@ class AggregateListDecorator<T extends Aggregate<I>,I>
     try
     { return collection.get(index);
     }
-    catch (DataException x)
+    catch (RuntimeDataException x)
     { throw new AccessException("Error retrieving data from Aggregate",x);
     }
   }
