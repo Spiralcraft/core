@@ -54,6 +54,7 @@ import spiralcraft.lang.spi.VoidReflector;
 
 import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
+import spiralcraft.common.Indexable;
 
 
 import spiralcraft.util.ArrayUtil;
@@ -87,6 +88,7 @@ import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 
 import spiralcraft.log.ClassLog;
+// import spiralcraft.log.Level;
 
 /**
  * A Reflector which uses Java Beans introspection and reflection
@@ -108,10 +110,10 @@ public class BeanReflector<T>
     ,MAP
     ,LIST
     ,COLLECTION
+    ,INDEXABLE
     ,LITERAL_ELEMENT_TYPE
   }
 
-  @SuppressWarnings("unused")
   private static final ClassLog log=ClassLog.getInstance(BeanReflector.class);
   
   private static final boolean ENABLE_METHOD_BINDING_CACHE=true;
@@ -806,9 +808,11 @@ public class BeanReflector<T>
     {   
       sigbuf.append(":");
       classSig[i]=params[i].getContentType();
-      if (classSig[i]==Void.class)
-      { classSig[i]=Object.class;
-      }
+
+// Void means wildcard here, and is understood bu MethodResolver.
+//      if (classSig[i]==Void.class)
+//      { classSig[i]=Void.TYPE;
+//      }
       sigbuf.append(classSig[i].getName());
     }
     String sig=sigbuf.toString();
@@ -836,14 +840,9 @@ public class BeanReflector<T>
       }
       catch (NoSuchMethodException x)
       { 
+//        log.log(Level.DEBUG,"Error finding method",x);
         return null;
-//        throw new BindException
-//          ("Method "
-//          +name
-//          +"("+ArrayUtil.format(classSig,",","")
-//          +") not found in "+targetClass
-//          ,x
-//          );
+
       }
     }
     if (translator!=null)
@@ -926,7 +925,9 @@ public class BeanReflector<T>
             );
       }
       else
-      { throw new BindException
+      { 
+        componentReflector=BeanReflector.getInstance(Object.class);
+        log.info
           ("Map of type '"+targetType+"' is not parameterized");
       }
     }
@@ -943,8 +944,28 @@ public class BeanReflector<T>
             );
       }
       else
-      { throw new BindException
-          ("Collection of type '"+targetType+"' is not parameterized");
+      { 
+        componentReflector=BeanReflector.getInstance(Object.class);
+        log.info
+          ("List of type '"+targetType+"' is not parameterized");
+      }
+    }
+    else if (Indexable.class.isAssignableFrom(targetClass))
+    {
+      collectionType=CollectionType.INDEXABLE;
+      if (targetType instanceof ParameterizedType)
+      {
+        componentReflector
+          =BeanReflector.getInstance
+            (
+              ((ParameterizedType) targetType)
+                .getActualTypeArguments()[0]
+            );
+      }
+      else
+      { 
+        componentReflector=BeanReflector.getInstance(Object.class);
+        log.info("Indexable of type '"+targetType+"' is not parameterized");
       }
     }
     else if (Collection.class.isAssignableFrom(targetClass))
@@ -960,7 +981,9 @@ public class BeanReflector<T>
             );
       }
       else
-      { throw new BindException
+      { 
+        componentReflector=BeanReflector.getInstance(Object.class);
+        log.info
           ("Collection of type '"+targetType+"' is not parameterized");
       }
     }
@@ -981,6 +1004,7 @@ public class BeanReflector<T>
     
     if (Integer.class.isAssignableFrom(subscriptClass)
         || Short.class.isAssignableFrom(subscriptClass)
+        || Long.class.isAssignableFrom(subscriptClass)
         || Byte.class.isAssignableFrom(subscriptClass)
         )
     {
@@ -992,14 +1016,9 @@ public class BeanReflector<T>
             ,source
             ,subscriptChannel
             );
-//          return new TranslatorChannel
-//            (source
-//            ,new ArrayIndexTranslator(componentReflector)
-//            ,new Channel[] {subscriptChannel}
-//            );
         case LIST:
-          return this.getMethod(source,"get",subscriptChannel);
         case MAP:
+        case INDEXABLE:
           return this.getMethod(source,"get",subscriptChannel);
         default:
           throw new BindException
