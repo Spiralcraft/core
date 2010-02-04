@@ -2,6 +2,30 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
+    <revision>0.4.4.2
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-02-03
+    </date>
+    
+    <notes>
+      <scm:Note>Enhance debugging for ContextResourceMap
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft
+    </path>
+    
+    <resources>
+      <URI>vfs/context/ContextResource.java</URI>
+      <URI>vfs/context/ContextResourceMap.java</URI>
+    </resources>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.4.4.1
     </revision>
     
