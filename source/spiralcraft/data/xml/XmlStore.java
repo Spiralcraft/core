@@ -266,14 +266,18 @@ public class XmlStore
   { 
     if (subscriber!=null)
     {
-      log.fine("Checking subscription...");
+      if (debugLevel.canLog(Level.FINE))
+      { log.fine("Checking subscription...");
+      }
       Command<?,?,Tuple> command
         =subscriber.command();
       command.execute();
       Tuple tuple=command.getResult();
       if (tuple!=null)
       { 
-        log.fine("Got result "+tuple);
+        if (debugLevel.canLog(Level.FINE))
+        { log.fine("Got result "+tuple);
+        }
         try
         { update( (Snapshot) tuple.getType().fromData(tuple,null));
         }
@@ -286,7 +290,10 @@ public class XmlStore
         }
       }
       else
-      { log.fine("Subscriber returned null");
+      { 
+        if (debugLevel.canLog(Level.FINE))
+        { log.fine("Subscriber returned null");
+        }
       }
       if (command.getException()!=null)
       { 

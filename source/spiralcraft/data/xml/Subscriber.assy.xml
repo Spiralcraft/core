@@ -5,14 +5,17 @@
   xmlns:dda="data:class:/spiralcraft/data/access/"
   xmlns:data="class:/spiralcraft/data/"
   >
-  <whenX>[da:Store].masterURI.@log("Master URI is "+.)!=null
+  <whenX>[da:Store].masterURI.absolute
   </whenX>
   
   <type x="[@dda:Snapshot].type"/>
   
   <uriX>[da:Store].masterURI
   </uriX>
-
+  
+  <ignoreEmpty>true
+  </ignoreEmpty>
+  
   <uriQueryBindings>
     <sax:AttributeBinding>
       <name>transactionId
@@ -22,7 +25,7 @@
     </sax:AttributeBinding>
   </uriQueryBindings>
   
-  <debug>true
+  <debug>false
   </debug>
   
 </sax:QueryXml>
