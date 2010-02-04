@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.sax;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +36,7 @@ import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.StreamUtil;
 import spiralcraft.vfs.UnresolvableURIException;
 
 
@@ -55,6 +57,9 @@ public class ParseXml<Tresult>
 
   private RootFrame<Tresult> handler;
   protected Binding<URI> uriX;
+  protected boolean preBuffer;
+  protected boolean ignoreEmpty;
+  
   protected Type<Tresult> type;
   { storeResults=true;
   }
@@ -75,10 +80,38 @@ public class ParseXml<Tresult>
     this.resultReflector=DataReflector.getInstance(type);
   }
   
+  /**
+   * <p>Buffer the entire document.
+   * </p>
+   * 
+   * @param preBuffer
+   */
+  public void setPreBuffer(boolean preBuffer)
+  { this.preBuffer=preBuffer;
+  }
+  
+  /**
+   * <p>Ignores an empty input document
+   * </p>
+   * 
+   * <p>When set to true, will pre-buffer the document
+   * </p>
+   * 
+   * @param ignoreEmpty
+   */
+  public void setIgnoreEmpty(boolean ignoreEmpty)
+  { this.ignoreEmpty=ignoreEmpty;
+  }
+  
+  
   @Override
   protected Focus<?> bindImports(Focus<?> focus)
     throws BindException
   {
+    if (ignoreEmpty)
+    { preBuffer=true;
+    }
+    
     if (resultReflector==null)
     { 
       try
@@ -142,6 +175,19 @@ public class ParseXml<Tresult>
     { log.fine("Opening "+uri);
     }
     InputStream in=resource.getInputStream();
+    if (preBuffer)
+    { 
+      ByteArrayOutputStream buffer=new ByteArrayOutputStream();
+      StreamUtil.copyRaw(in,buffer,64*1024);
+      buffer.flush();
+      in.close();
+      
+      byte[] bytes=buffer.toByteArray();
+      if (bytes.length==0 && ignoreEmpty)
+      { return null;
+      }
+      in=new ByteArrayInputStream(buffer.toByteArray());
+    }
     try
     { 
       return parse(in,newDataReader(),uri);
