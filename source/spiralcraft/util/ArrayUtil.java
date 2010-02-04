@@ -192,6 +192,9 @@ public class ArrayUtil
   
   /**
    * Expand an array by adding the specified number of elements
+   * 
+   * @throws NullPointerException if the array is null due to missing
+   *   type information
    */
   @SuppressWarnings("unchecked")
   public static <T> T[] expandBy(T[] array,int expandBy)
