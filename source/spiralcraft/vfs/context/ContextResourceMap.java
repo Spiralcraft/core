@@ -16,6 +16,7 @@ package spiralcraft.vfs.context;
 
 
 import java.util.HashMap;
+import java.util.Map;
 import java.net.URI;
 
 /**
@@ -61,7 +62,11 @@ public class ContextResourceMap
   public static final URI getDefault()
   { return threadMap.get().get("_DEFAULT");
   }
-
+  
+  public static final Map<String,URI> getMap()
+  { return threadMap.get().map;
+  }
+  
   private final HashMap<String,URI> map
     =new HashMap<String,URI>();
   
@@ -75,6 +80,7 @@ public class ContextResourceMap
   public void put(String name,URI uri)
   { map.put(name,uri);
   }
+
   
   public URI get(String name)
   { 

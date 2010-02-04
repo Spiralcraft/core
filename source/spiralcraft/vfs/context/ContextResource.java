@@ -69,7 +69,10 @@ public class ContextResource
       if (root==null)
       { 
         throw new UnresolvableURIException
-          (uri,"Unknown resource context '"+authority+"' for "+uri);
+          (uri
+          ,"Unknown resource context '"+authority+"' for "+uri
+          +": mappings="+ContextResourceMap.getMap()
+          );
       }
     }
     else
