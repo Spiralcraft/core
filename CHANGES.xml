@@ -2,6 +2,40 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
+    <revision>0.4.4.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-02-03
+    </date>
+    
+    <notes>
+    
+      <scm:Note>Change XmlStore Subscriber whenX to only use absolute
+        uris
+      </scm:Note>
+      <scm:Note>Suppress debug messages from XmlStore
+      </scm:Note>
+      <scm:Note>Default subscriber debug to false
+      </scm:Note>
+      <scm:Note>ParseXML has ignoreNull option to buffer input and return
+        null if empty
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft
+    </path>
+    
+    <resources>
+      <URI>data/sax/ParseXml.java</URI>
+      <URI>data/xml/XmlStore.java</URI>
+      <URI>data/xml/Subscriber.java</URI>
+    </resources>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.4.4
     </revision>
     
