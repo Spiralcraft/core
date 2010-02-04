@@ -50,6 +50,7 @@ public class ContextResourceMap
   
   private static final InheritableThreadLocal<ContextResourceMap> threadMap
     =new InheritableThreadLocal<ContextResourceMap>();
+  private static volatile int ID;
 
   static 
   { new ContextResourceMap().push();
@@ -67,10 +68,22 @@ public class ContextResourceMap
   { return threadMap.get().map;
   }
   
+  
+  public static final String getMapId()
+  {
+    StringBuffer out=new StringBuffer();
+    ContextResourceMap map=threadMap.get();
+    while (map!=null)
+    { out.append("/"+map.id);
+    }
+    return out.toString();
+  }
+  
   private final HashMap<String,URI> map
     =new HashMap<String,URI>();
   
   private ContextResourceMap parent;
+  private final int id=ID++;
 
 
   public void putDefault(URI uri)

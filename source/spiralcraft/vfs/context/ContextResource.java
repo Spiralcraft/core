@@ -15,6 +15,8 @@
 package spiralcraft.vfs.context;
 
 
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -51,11 +53,13 @@ public class ContextResource
   extends ResourceWrapper
 { 
 
+  private static final ClassLog log
+    =ClassLog.getInstance(ContextResource.class);
+  private static final Level debugLevel
+    =ClassLog.getInitialDebugLevel(ContextResource.class,null);
+  
   private String path;
   private Resource delegate;
-    
-
-
   
   public ContextResource(URI uri)
     throws UnresolvableURIException
@@ -71,7 +75,7 @@ public class ContextResource
         throw new UnresolvableURIException
           (uri
           ,"Unknown resource context '"+authority+"' for "+uri
-          +": mappings="+ContextResourceMap.getMap()
+          +": "+ContextResourceMap.getMapId()+" mappings="+ContextResourceMap.getMap()
           );
       }
     }
@@ -81,10 +85,19 @@ public class ContextResource
       if (root==null)
       { 
         throw new UnresolvableURIException
-          (uri,"No default resource context for "+uri);
+          (uri,"No default resource context for "+uri
+          +": "+ContextResourceMap.getMapId()+" mappings="+ContextResourceMap.getMap()
+          );
       }
     }
     
+    if (debugLevel.canLog(Level.TRACE))
+    { 
+      log.trace
+        (ContextResourceMap.getMapId()
+        +": Resolved "+root+" from "+authority+" for "+path
+        );
+    }
     URI target=root.resolve(path);
     delegate=Resolver.getInstance().resolve(target);
     
