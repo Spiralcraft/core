@@ -12,6 +12,9 @@
     </date>
     
     <notes>
+      <scm:Note>Avoid setting Snapshot transactionId to 0, because 0
+        is defined to always generate a snapshot.
+      </scm:Note>
       <scm:Note>Enhance debugging for ContextResourceMap
       </scm:Note>
     </notes>
@@ -20,6 +23,7 @@
     </path>
     
     <resources>
+      <URI>data/xml/XmlStore.java</URI>
       <URI>vfs/context/ContextResource.java</URI>
       <URI>vfs/context/ContextResourceMap.java</URI>
     </resources>
