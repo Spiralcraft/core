@@ -184,7 +184,11 @@ public class ParseXml<Tresult>
       
       byte[] bytes=buffer.toByteArray();
       if (bytes.length==0 && ignoreEmpty)
-      { return null;
+      { 
+        if (debug)
+        { log.fine("Closing (empty) "+uri);
+        }
+        return null;
       }
       in=new ByteArrayInputStream(buffer.toByteArray());
     }
