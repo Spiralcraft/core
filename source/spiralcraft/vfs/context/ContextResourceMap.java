@@ -74,7 +74,9 @@ public class ContextResourceMap
     StringBuffer out=new StringBuffer();
     ContextResourceMap map=threadMap.get();
     while (map!=null)
-    { out.append("/"+map.id);
+    { 
+      out.append("/"+map.id);
+      map=map.parent;
     }
     return out.toString();
   }
