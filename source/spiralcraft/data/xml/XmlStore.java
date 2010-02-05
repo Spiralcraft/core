@@ -344,7 +344,9 @@ public class XmlStore
     if (transactionId==0 || lastTransactionId>transactionId)
     {
       EditableArrayTuple snapshot=new EditableArrayTuple(Snapshot.TYPE);
-      snapshot.set("transactionId",lastTransactionId);
+      
+      // Note- do not set to 0 here or entire dataset will be sent repeatedly
+      snapshot.set("transactionId",(lastTransactionId!=0)?lastTransactionId:1);
       
       EditableArrayListAggregate<Aggregate<Tuple>> data
         =new EditableArrayListAggregate<Aggregate<Tuple>>
