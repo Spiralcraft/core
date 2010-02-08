@@ -2,6 +2,32 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
+    <revision>0.4.4.3
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>??????
+    </date>
+    
+    <notes>
+      <scm:Note>Added "description" property to Field
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft
+    </path>
+    
+    <resources>
+      <URI>data/Field.java
+      </URI>
+      <URI>data/core/FieldImpl.java
+      </URI>
+    </resources>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.4.4.2
     </revision>
     

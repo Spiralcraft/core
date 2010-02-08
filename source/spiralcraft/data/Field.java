@@ -57,8 +57,15 @@ public interface Field<T>
    * A short descriptive name for the field, for user consumption. Does not
    *   have syntax constraints.
    */
-  // XXX Consider a FieldUI component which provides descriptive information
   String getTitle();
+
+  /**
+   * XHTML which describes the purpose of this field, for display to the
+   *   user in the absence of an i18n 
+   * 
+   * @return
+   */
+  String getDescription();
   
   /**
    * The Type of the Field

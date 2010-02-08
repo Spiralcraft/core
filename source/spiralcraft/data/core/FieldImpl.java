@@ -57,6 +57,7 @@ public class FieldImpl<T>
   private int index;
   private String name;
   private String title;
+  private String description;
   private Type<T> type;
   private Field archetypeField;
   private URI uri;
@@ -321,7 +322,24 @@ public class FieldImpl<T>
     assertUnlocked();
     this.title=title;
   }
+
+  public String getDescription()
+  { 
+    if (description==null)
+    { return archetypeField!=null?archetypeField.getDescription():null;
+    }
+    else
+    { return description;
+    }
+  }
   
+  public void setDescription(String description)
+  { 
+    assertUnlocked();
+    this.description=description;
+  }
+  
+
   /**
    * Set the data Type
    * 
