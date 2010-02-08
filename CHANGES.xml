@@ -12,7 +12,7 @@
     </date>
     
     <notes>
-      <scm:Note>Added "description" property to Field
+      <scm:Note>Added "description" property to Field and Type
       </scm:Note>
     </notes>
     
@@ -22,7 +22,13 @@
     <resources>
       <URI>data/Field.java
       </URI>
+      <URI>data/Type.java
+      </URI>
       <URI>data/core/FieldImpl.java
+      </URI>
+      <URI>data/core/TypeImpl.java
+      </URI>
+      <URI>data/core/AbstractAggregateType.java
       </URI>
     </resources>
   </scm:Change>

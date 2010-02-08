@@ -54,6 +54,7 @@ public class TypeImpl<T>
   protected final TypeResolver resolver;
   protected final URI uri;
   protected final URI packageURI;
+  protected String description;
   protected Type<?> archetype;
   protected Type<T> baseType;
   protected boolean aggregate=false;
@@ -76,6 +77,15 @@ public class TypeImpl<T>
     this.packageURI=resolver.getPackageURI(uri);
     this.debug=debugLevel.canLog(Level.DEBUG);
   }
+  
+  @Override
+  public String getDescription()
+  { return description;
+  }
+  
+  public void setDescription(String description)
+  { this.description=description;
+  } 
   
   protected void addRules(Rule<Type<T>,T> ... rules)
   {    

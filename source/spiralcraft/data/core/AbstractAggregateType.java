@@ -40,6 +40,7 @@ public abstract class AbstractAggregateType<T,Tcontent>
   protected Type<T> baseType;
   protected boolean linked;
   protected RuleSet<Type<T>,T> ruleSet;  
+  protected String description;
   
   protected AbstractAggregateType(URI uri)
   { this.uri=uri;
@@ -68,6 +69,15 @@ public abstract class AbstractAggregateType<T,Tcontent>
   public URI getPackageURI()
   { return baseType.getPackageURI();
   }
+  
+  @Override
+  public String getDescription()
+  { return description;
+  }
+  
+  public void setDescription(String description)
+  { this.description=description;
+  } 
   
   @Override
   public Type<T> getBaseType()

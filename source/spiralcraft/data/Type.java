@@ -154,7 +154,20 @@ public abstract class Type<T>
    */
   public abstract URI getURI();
   
+  /**
+   * The URI of the package or container in which this type is defined
+   * 
+   * @return
+   */
   public abstract URI getPackageURI();
+  
+  /**
+   * A brief textual description of this type suitable for the context(s) in
+   *   which it will be encountered by a user, administrator or developer.
+   * 
+   * @return
+   */
+  public abstract String getDescription();
   
   /**
    * The Type used to describe Type objects of this Type, to support the
