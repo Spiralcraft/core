@@ -15,9 +15,11 @@
 package spiralcraft.data.spi;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import spiralcraft.common.LifecycleException;
 
@@ -268,6 +270,14 @@ public abstract class AbstractStore
   { authoritativeTypes.add(type);
   }
   
+  protected List<Queryable<Tuple>> getPrimaryQueryables()
+  {
+    ArrayList<Queryable<Tuple>> queryables=new ArrayList<Queryable<Tuple>>();
+    for (Type<?> type:getTypes())
+    { queryables.add(getQueryable(type));
+    }
+    return queryables;
+  }
   
   
   /**
