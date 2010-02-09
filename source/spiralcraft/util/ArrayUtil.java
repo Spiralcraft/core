@@ -293,7 +293,8 @@ public class ArrayUtil
    * <p>No escape processing is performed by this method.
    * </p>
    */
-  public static String format(Object array,String separator,String delimiter)
+  public static String format
+    (Object array,String separator,String beginDelimiter,String endDelimiter)
   {
     StringBuilder buf=new StringBuilder();
     int len=Array.getLength(array);
@@ -305,8 +306,11 @@ public class ArrayUtil
       }
       if (val!=null)
       { 
-        if (delimiter!=null)
-        { buf.append(delimiter).append(val).append(delimiter);
+        if (beginDelimiter!=null || endDelimiter!=null)
+        { 
+          buf.append(beginDelimiter!=null?beginDelimiter:"")
+            .append(val)
+            .append(endDelimiter!=null?endDelimiter:"");
         }
         else
         { buf.append(val);
@@ -314,6 +318,18 @@ public class ArrayUtil
       }
     }
     return buf.toString();
+  }  
+
+  /**
+   * <p>Format an Array, using reflection, into a String using the 
+   *  specified separator and delimiter.
+   * </p>
+   * 
+   * <p>No escape processing is performed by this method.
+   * </p>
+   */
+  public static String format(Object array,String separator,String delimiter)
+  { return format(array,separator,delimiter,delimiter);
   }  
   
   /**

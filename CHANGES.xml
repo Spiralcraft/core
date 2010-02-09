@@ -14,6 +14,9 @@
     <notes>
       <scm:Note>Added "description" property to Field and Type
       </scm:Note>
+      <scm:Note>
+        Added ArrayUtil.format(array,separator,beginDelimiter,endDelimiter)
+      </scm:Note>
     </notes>
     
     <path>source/spiralcraft
@@ -29,6 +32,8 @@
       <URI>data/core/TypeImpl.java
       </URI>
       <URI>data/core/AbstractAggregateType.java
+      </URI>
+      <URI>util/ArrayUtil.java
       </URI>
     </resources>
   </scm:Change>
