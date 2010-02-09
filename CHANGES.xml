@@ -12,30 +12,130 @@
     </date>
     
     <notes>
-      <scm:Note>Added "description" property to Field and Type
+      <scm:Note>Minor updates and bug fixes to support spiralcraft-launcher
+        enhancements and spiralcraft-sql refresh.
       </scm:Note>
-      <scm:Note>
-        Added ArrayUtil.format(array,separator,beginDelimiter,endDelimiter)
-      </scm:Note>
+    
     </notes>
     
-    <path>source/spiralcraft
-    </path>
+    <detail>
     
-    <resources>
-      <URI>data/Field.java
-      </URI>
-      <URI>data/Type.java
-      </URI>
-      <URI>data/core/FieldImpl.java
-      </URI>
-      <URI>data/core/TypeImpl.java
-      </URI>
-      <URI>data/core/AbstractAggregateType.java
-      </URI>
-      <URI>util/ArrayUtil.java
-      </URI>
-    </resources>
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Provide "task" built-in to run TaskRunner
+          </scm:Note>
+        </notes>
+    
+        <path>source/META-INF/spiralcraft.env/task.env.xml
+        </path>
+        
+      </scm:Change>     
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Provide timeout options and timeout exception for
+            Pool: Pool.maxStartupMs, Pool.maxCheckoutMs
+          </scm:Note>
+          <scm:Note>checkout() now throws InterruptedException if 
+            checkout timeout is exceeded
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>pool/Pool.java
+          </URI>
+          <URI>pool/ThreadPool.java
+          </URI>
+          <URI>time/Scheduler.java
+          </URI>
+        
+        </resources>
+    
+      </scm:Change>     
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Provide a list of primary queryables (queryables for
+            explicitly managed types)
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/spi/AbstractStore.java
+        </path>
+    
+      </scm:Change>     
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Throw meaningful exception when attempt to instantiate
+            an abstract class fails.
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data/reflect/ReflectionType.java
+        </path>
+    
+      </scm:Change>     
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Fix bug in exception text when reporting unmapped
+            namespace.
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/builder/AssemblyLoader.java
+        </path>
+    
+      </scm:Change>     
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Added "description" property to Field and Type
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/data
+        </path>
+    
+        <resources>
+          <URI>Field.java
+          </URI>
+          <URI>Type.java
+          </URI>
+          <URI>core/FieldImpl.java
+          </URI>
+          <URI>core/TypeImpl.java
+          </URI>
+          <URI>core/AbstractAggregateType.java
+          </URI>
+        </resources>
+    
+      </scm:Change>     
+       
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>
+            Added ArrayUtil.format(array,separator,beginDelimiter,endDelimiter)
+          </scm:Note>
+        </notes>
+    
+        <path>source/spiralcraft/util/ArrayUtil.java
+        </path>
+        
+      </scm:Change>      
+
+    </detail>
   </scm:Change>
 
   <scm:Change>
