@@ -41,6 +41,7 @@ import spiralcraft.util.string.StringConverter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 
 import java.util.HashMap;
@@ -596,18 +597,30 @@ public class ReflectionType<T>
       
         if (bean==null)
         { 
-          try
+          if (!Modifier.isAbstract(referencedClass.getModifiers()))
           {
-            if (referencedClass.getConstructor()!=null)
-            { bean=(T) referencedClass.newInstance();
+              
+            try
+            {
+            
+              if (referencedClass.getConstructor()!=null)
+              { bean=(T) referencedClass.newInstance();
+              }
+            }
+            catch (NoSuchMethodException x)
+            { 
+              log.trace
+                ("ReflectionType: "+referencedClass.getName()
+                +" has no default constructor"
+                );
             }
           }
-          catch (NoSuchMethodException x)
+          else
           { 
-            log.trace
-              ("ReflectionType: "+referencedClass.getName()
-              +" has no default constructor"
-              );
+            throw new DataException
+              ("Class not instanitable. "+referencedClass.getName()
+              +" is an abstract class"
+              ); 
           }
         }
       }
