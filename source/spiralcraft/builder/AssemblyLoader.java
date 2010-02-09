@@ -491,7 +491,7 @@ public class AssemblyLoader
             if (nsURI==null)
             { 
               throw new BuildException
-                ("Namespace prefix '"+nsURI+"' not found in "+sourceUri);
+                ("Namespace prefix '"+nsPrefix+"' not found in "+sourceUri);
             }
             String nsURIstr=nsURI.toString();
             uriStr=uriStr.substring(colonPos+1);
