@@ -204,7 +204,12 @@ public class Scheduler
   protected void dispatch(Runnable runnable)
   { 
     
-    _pool.run(runnable);
+    try
+    { _pool.run(runnable);
+    }
+    catch (InterruptedException x)
+    { throw new RuntimeException("Timed out waiting for thread pool",x);
+    }
   }
 
   

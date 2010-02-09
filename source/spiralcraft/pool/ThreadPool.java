@@ -43,6 +43,7 @@ public class ThreadPool
    * Run the supplied Runnable in its own thread
    */  
   public void run(Runnable runnable)
+    throws InterruptedException
   {
     PooledThread thread=checkout();
     thread.start(runnable);

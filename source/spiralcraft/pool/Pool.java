@@ -44,7 +44,7 @@ public class Pool<T>
   private int _maxCapacity=Integer.MAX_VALUE;
   private int _initialSize=1;
   private int _minAvailable=1;
-  private long _lastUse=0;
+  private volatile long _lastUse=0;
   private long _maintenanceInterval=500;
   private Keeper _keeper=new Keeper();
   private Stack<Reference<T>> _available
@@ -52,17 +52,19 @@ public class Pool<T>
   private HashMap<Object,Reference<T>> _out
     =new HashMap<Object,Reference<T>>();
   private Object _monitor=new Object();
-  private boolean _started=false;
+  private volatile boolean _started=false;
   // private Object _startLock=new Object();
   private boolean _conserve=false;
-
+  private long _maxStartupMs;
+  private long _maxCheckoutMs;
+  
   private int _checkedInCount;
   private int _checkedOutCount;
   private int _checkInsCount;
   private int _checkOutsCount;
   private int _clientDiscardsCount;
   private int _waitsCount;
-  private int _waitingCount;
+  private volatile int _waitingCount;
   private int _overdueDiscardsCount;
   private int _addsCount;
   private int _removesCount;
@@ -76,6 +78,24 @@ public class Pool<T>
   { _conserve=val;
   }
 
+  /**
+   * 
+   * @param ms The amount of time to wait when on checkout when
+   *   no resources are available
+   */
+  public void setMaxCheckoutMs(long ms)
+  { this._maxCheckoutMs=ms;
+  }
+  
+  /**
+   * 
+   * @param ms The amount of time to allow the pool to restore
+   *   to the initial state before returning from start
+   */
+  public void setMaxStartupMs(long ms)
+  { this._maxStartupMs=ms;
+  }
+  
   /**
    * Specify the initial number of objects that
    *   will be created.
@@ -144,7 +164,7 @@ public class Pool<T>
   {
     synchronized (_monitor)
     {
-      restoreInitial();
+      restoreInitial(_maxStartupMs);
       _started=true;
       _keeper.start();
       _monitor.notifyAll();
@@ -182,6 +202,7 @@ public class Pool<T>
    *   available object.
    */
   public T checkout()
+    throws InterruptedException
   {
     long lastUse=Clock.instance().approxTimeMillis();
     synchronized (_monitor)
@@ -192,21 +213,13 @@ public class Pool<T>
         if (debugLevel.canLog(Level.DEBUG))
         { log.debug("Waiting for pool to start");
         }
-        try
-        { 
-          _monitor.wait();
-          if (debugLevel.canLog(Level.DEBUG))
-          { log.debug("Notified that pool started");
-          }
-        }
-        catch (InterruptedException x)
-        {  
-          log.info("Checkout on startup interrupted");
-          return null;
+        waitOnMonitor();
+        if (debugLevel.canLog(Level.DEBUG))
+        { log.debug("Notified that pool started");
         }
       }
 
-      while (_available.isEmpty())
+      while (_available.isEmpty() && _started)
       { 
         _keeper.wake();
         if (_available.isEmpty())
@@ -217,11 +230,8 @@ public class Pool<T>
             _waitingCount++;
             log.info("Waiting for pool");
             long time=System.currentTimeMillis();
-            _monitor.wait();
+            waitOnMonitor();
             log.info("Waited "+(System.currentTimeMillis()-time)+" for pool");
-          }
-          catch (InterruptedException x)
-          { throw new RuntimeException("Interrupted while waiting for pool");
           }
           finally
           { _waitingCount--;
@@ -237,7 +247,24 @@ public class Pool<T>
     }
   }
 
-
+  private void waitOnMonitor()
+    throws InterruptedException
+  {
+    if (_maxCheckoutMs>0)
+    {
+      long start=System.currentTimeMillis();
+      _monitor.wait(_maxCheckoutMs);
+      if (System.currentTimeMillis()-start>=_maxCheckoutMs)
+      { 
+        throw new InterruptedException
+          ("Checkout timed out after "+_maxCheckoutMs+"ms");
+      }
+    }
+    else
+    { _monitor.wait();
+    }
+    
+  }
   /**
    * Return a checked out object to the pool
    *   of available objects.
@@ -300,7 +327,9 @@ public class Pool<T>
     public void stop()
     { 
       _done=true;
-      _keeperMonitor.notify();
+      synchronized (_keeperMonitor)
+      { _keeperMonitor.notify();
+      }
     }
 
     public void work()
@@ -318,7 +347,7 @@ public class Pool<T>
           if ( System.currentTimeMillis()-_lastUse>(_idleSeconds*1000) )
           {
             if ( getTotalSize()>_initialSize)
-            { restoreInitial();
+            { restoreInitial(0);
             }
           }
           else
@@ -413,11 +442,19 @@ public class Pool<T>
     return ref;
   }
 
-  private void restoreInitial()
+  private void restoreInitial(long maxWait)
   {
-    while (getTotalSize()<_initialSize)
+    long start=System.currentTimeMillis();
+    
+    while (getTotalSize()<_initialSize
+           && _started
+           && (maxWait==0
+               || System.currentTimeMillis()-start<maxWait
+               )
+          )
     { add();
     }
+    
     if (!_conserve)
     {
       while (getTotalSize()>_initialSize && getNumAvailable()>0)
