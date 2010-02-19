@@ -453,7 +453,6 @@ public abstract class AbstractReflector<T>
   }
   
   public Reflector<?> getCommonType(Reflector<?> other)
-    throws BindException
   {
     if (other==this)
     { return this;
@@ -462,7 +461,7 @@ public abstract class AbstractReflector<T>
     { return base.getCommonType(other);
     }
     
-    Reflector<?> reflector;
+    Reflector<?> reflector=null;
     if (getContentType()==Void.class)
     { reflector=other;
     }
@@ -474,11 +473,6 @@ public abstract class AbstractReflector<T>
     }
     else if (other.isAssignableFrom(this))
     { reflector=other;
-    }
-    else
-    { 
-      throw new BindException
-        (getTypeURI()+" has no common type with "+other.getTypeURI());
     }
     return reflector;
   }

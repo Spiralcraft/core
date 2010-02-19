@@ -200,15 +200,18 @@ public interface Reflector<T>
   public StringConverter<T> getStringConverter();
   
   /**
-   * Return the common supertype that this Reflector shares with another
-   *   reflector 
+   * <p>Return the common supertype that this Reflector shares with another
+   *   reflector.
+   * </p>
+   * 
+   * <p>If one of the reflectors represents Void.class, the type of the other
+   *   reflector will be returned.
+   * </p>
    * 
    * @param other
    * @return
-   * @throws BindException
    */
-  public Reflector<?> getCommonType(Reflector<?> other)
-    throws BindException;
+  public Reflector<?> getCommonType(Reflector<?> other);
   
   /**
    * <p>Perform a runtime check to see if this value is compatible with this
