@@ -15,6 +15,7 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Reflector;
 
 
 public class ExclusiveOrNode
@@ -46,27 +47,36 @@ public class ExclusiveOrNode
   public String reconstruct()
   { return reconstruct("^^");
   }
-
-  @SuppressWarnings("unchecked") // Heterogeneous Array
-  public Boolean translateForGet(Boolean val,Channel<?>[] mods)
+  
+  @Override
+  protected LogicalTranslator 
+    newTranslator(Reflector<Boolean> r1,Reflector<Boolean> r2)
   { 
-    if (val==null)
-    { return null;
-    }
-    boolean val1=val.booleanValue();
-//    System.out.println("val1="+val1);
+    return new LogicalTranslator()
+    {
+      @SuppressWarnings("unchecked") // Heterogeneous Array
+      public Boolean translateForGet(Boolean val,Channel<?>[] mods)
+      { 
+        if (val==null)
+        { return null;
+        }
+        boolean val1=val.booleanValue();
+        //    System.out.println("val1="+val1);
 
-    Boolean mod=((Channel<Boolean>) mods[0]).get();
-    if (mod==null)
-    { return null;
-    }
-    boolean val2=mod.booleanValue();
-//    System.out.println("val2="+val2);
-    
-    return (val1 || val2) && !(val1 && val2);
-    
-    
+        Boolean mod=((Channel<Boolean>) mods[0]).get();
+        if (mod==null)
+        { return null;
+        }
+        boolean val2=mod.booleanValue();
+        //    System.out.println("val2="+val2);
+
+        return (val1 || val2) && !(val1 && val2);
+
+
+      }
+    };
   }
+    
   
   public Boolean translateForSet(Boolean val,Channel<?>[] mods)
   { 

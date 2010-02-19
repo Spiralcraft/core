@@ -17,6 +17,7 @@ package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Channel;
 //import spiralcraft.log.ClassLogger;
+import spiralcraft.lang.Reflector;
 
 
 public class EqualityNode<X>
@@ -52,23 +53,27 @@ public class EqualityNode<X>
   { return reconstruct(_negate?"!=":"==");
   }
 
-  public Boolean translateForGet(X val,Channel<?>[] mods)
+  @Override
+  protected LogicalTranslator 
+    newTranslator(Reflector<X> r1,Reflector<X> r2)
   { 
-    Object mod=mods[0].get();
-//    log.fine("EqualityNode: "+val+" == "+mod);
-    if (val==mod)
-    { return _negate?Boolean.FALSE:Boolean.TRUE;
-    }
-    else if (val!=null && val.equals(mod))
-    { return _negate?Boolean.FALSE:Boolean.TRUE;
-    }
-    return _negate?Boolean.TRUE:Boolean.FALSE;
-  }
+    return new LogicalTranslator()
+    {  
+      
+      public Boolean translateForGet(X val,Channel<?>[] mods)
+      { 
+        Object mod=mods[0].get();
+        //    log.fine("EqualityNode: "+val+" == "+mod);
+        if (val==mod)
+        { return _negate?Boolean.FALSE:Boolean.TRUE;
+        }
+        else if (val!=null && val.equals(mod))
+        { return _negate?Boolean.FALSE:Boolean.TRUE;
+        }
+        return _negate?Boolean.TRUE:Boolean.FALSE;
+      }
   
-  public X translateForSet(Boolean val,Channel<?>[] mods)
-  { 
-    // Not reversible
-    throw new UnsupportedOperationException();
+    };
   }
   
   public boolean isNegated()
