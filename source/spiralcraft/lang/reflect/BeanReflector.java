@@ -37,12 +37,13 @@ import spiralcraft.lang.spi.ArrayListDecorator;
 import spiralcraft.lang.spi.ArrayRangeChannel;
 import spiralcraft.lang.spi.ArraySelectChannel;
 import spiralcraft.lang.spi.BindingChannel;
-import spiralcraft.lang.spi.CollectionSelectChannel;
 import spiralcraft.lang.spi.EnumerationIterationDecorator;
 import spiralcraft.lang.spi.GatherChannel;
 import spiralcraft.lang.spi.GenericCollectionDecorator;
 import spiralcraft.lang.spi.IterableDecorator;
-import spiralcraft.lang.spi.IterationProjector;
+import spiralcraft.lang.spi.IterableIndexTranslator;
+import spiralcraft.lang.spi.IterableRangeChannel;
+import spiralcraft.lang.spi.IterableSelectChannel;
 import spiralcraft.lang.spi.ListRangeChannel;
 import spiralcraft.lang.spi.MapIndexTranslator;
 import spiralcraft.lang.spi.SimpleChannel;
@@ -111,6 +112,7 @@ public class BeanReflector<T>
     ,LIST
     ,COLLECTION
     ,INDEXABLE
+    ,ITERABLE
     ,LITERAL_ELEMENT_TYPE
   }
 
@@ -380,8 +382,15 @@ public class BeanReflector<T>
     }
     else if (getContentType().isPrimitive())
     { 
-      return ClassUtil.boxedEquivalent(getContentType())
-        .isAssignableFrom(otherClass);
+      Class boxedType=ClassUtil.boxedEquivalent(getContentType());
+      if (boxedType!=null)
+      { return boxedType.isAssignableFrom(otherClass);
+      }
+      else
+      { 
+        throw new IllegalArgumentException
+          ("Primitive type "+getContentType()+" cannot be unboxed");
+      }
     }
     else
     { return getContentType().isAssignableFrom(other.getContentType());
@@ -477,9 +486,6 @@ public class BeanReflector<T>
     else if (name.equals("?="))
     { binding=(Channel<X>) this.contains(source,focus,params[0]);
     }
-    else if (name.equals("#"))
-    { binding=(Channel<X>) this.project(source,focus,params[0]);
-    }
     else if (params==null)
     { 
       binding=this.<X>getProperty(source,name);
@@ -492,6 +498,7 @@ public class BeanReflector<T>
     }
     else
     { 
+      
       Channel[] optics=new Channel[params.length];
       for (int i=0;i<optics.length;i++)
       { optics[i]=focus.bind(params[i]);
@@ -987,6 +994,25 @@ public class BeanReflector<T>
           ("Collection of type '"+targetType+"' is not parameterized");
       }
     }
+    else if (Iterable.class.isAssignableFrom(targetClass))
+    {
+      collectionType=CollectionType.ITERABLE;
+      if (targetType instanceof ParameterizedType)
+      {
+        componentReflector
+          =BeanReflector.getInstance
+            (
+              ((ParameterizedType) targetType)
+                .getActualTypeArguments()[0]
+            );
+      }
+      else
+      { 
+        componentReflector=BeanReflector.getInstance(Object.class);
+        log.info
+          ("Collection of type '"+targetType+"' is not parameterized");
+      }
+    }
     else
     {
       throw new BindException
@@ -1020,6 +1046,12 @@ public class BeanReflector<T>
         case MAP:
         case INDEXABLE:
           return this.getMethod(source,"get",subscriptChannel);
+        case ITERABLE:
+          return new TranslatorChannel
+            (source
+            ,new IterableIndexTranslator(componentChannel.getReflector())
+            ,new Channel[] {subscriptChannel}
+            );
         default:
           throw new BindException
             ("Don't know how to apply the [index] operator to a '"+targetType);
@@ -1041,7 +1073,8 @@ public class BeanReflector<T>
             );
         case LIST:
         case COLLECTION:
-          return new CollectionSelectChannel
+        case ITERABLE:
+          return new IterableSelectChannel
             (source
             ,componentChannel
             ,subscriptChannel
@@ -1063,6 +1096,12 @@ public class BeanReflector<T>
             );
         case LIST:
           return new ListRangeChannel
+            (source
+            ,subscriptChannel
+            );
+        case COLLECTION:
+        case ITERABLE:
+          return new IterableRangeChannel
             (source
             ,subscriptChannel
             );
@@ -1089,20 +1128,6 @@ public class BeanReflector<T>
       }
     }
   }
-
-  public Channel<?> project
-    (Channel<T> source
-    ,Focus<?> focus
-    ,Expression<?> projection
-    )
-    throws BindException
-  {
-    return 
-      new IterationProjector
-          (source,focus,projection).result;
-    
-  }
-  
   
   @Override
   public String toString()
