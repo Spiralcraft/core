@@ -14,6 +14,8 @@
 //
 package spiralcraft.lang;
 
+import java.util.Iterator;
+
 
 public abstract class CollectionDecorator<T,I>
   extends IterationDecorator<T,I>
@@ -45,6 +47,21 @@ public abstract class CollectionDecorator<T,I>
    */
   public abstract T add(T collection,I item);
   
+  /**
+   * <p>Add a set of items to the collection created by newCollection and
+   *   return the new collection that results.
+   * </p>
+   * 
+   * <p>The returned collection may be the same collection that was passed
+   *   in, or a new collection if the specified collection does not allow
+   *   dynamic resizing (eg. arrays).
+   * </p>
+
+   * @param collection
+   * @param items
+   * @return
+   */
+  public abstract T addAll(T collection,Iterator<I> items);
   
   /**
    * Obtain the size of the collection

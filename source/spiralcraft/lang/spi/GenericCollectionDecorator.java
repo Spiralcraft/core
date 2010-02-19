@@ -52,6 +52,19 @@ public class GenericCollectionDecorator<C extends Collection<I>,I>
   }
 
   @Override
+  public C addAll(
+    C collection
+    ,Iterator<I> items
+    )
+  {
+    while (items.hasNext())
+    { collection.add(items.next());
+    }
+    return collection;
+    
+  }
+  
+  @Override
   public C newCollection()
   { 
     try
