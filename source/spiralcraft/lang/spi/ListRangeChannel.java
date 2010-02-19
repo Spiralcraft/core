@@ -55,7 +55,7 @@ public class ListRangeChannel<C,X>
     
     int end
       =range.getEnd()==null
-      ?sourceDecorator.size(targetList)
+      ?sourceDecorator.size(sourceList)
       :range.isInclusive()
         ?range.getEnd().intValue()+1
         :range.getEnd().intValue();
