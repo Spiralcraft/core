@@ -118,6 +118,14 @@ class ConditionalTranslator<T>
     throws BindException
   { 
     reflector=(Reflector<T>) trueReflector.getCommonType(falseReflector);
+    if (reflector==null)
+    { 
+      throw new BindException
+        ("Argument types "
+        +trueReflector.getTypeURI()+" and "+falseReflector.getTypeURI()
+        +" have nothing in common"
+        );
+    }
     
   }
   
