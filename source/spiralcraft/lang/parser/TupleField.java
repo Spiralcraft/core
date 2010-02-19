@@ -48,6 +48,10 @@ public class TupleField
     return copy;
   }
   
+  public Node getSource()
+  { return source;
+  }
+  
   public void dumpTree(StringBuffer out,String prefix)
   {
     out.append("TupleField  ");

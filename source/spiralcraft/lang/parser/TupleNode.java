@@ -16,6 +16,7 @@ package spiralcraft.lang.parser;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
@@ -26,13 +27,16 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.AbstractReflector;
 import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.util.ArrayUtil;
 
 public class TupleNode
   extends Node
@@ -188,6 +192,10 @@ public class TupleNode
   { this.typeName=typeName;
   }
   
+  public Iterable<TupleField> getFields()
+  { return fields.values();
+  }
+  
   public void setTypeQName(String qname)
   {     
     int colonPos=qname.indexOf(':');
@@ -255,27 +263,29 @@ public class TupleNode
     
 
     
-    final Channel<?>[] channels=new Channel[fields.size()];
+    private final Channel<?>[] channels=new Channel[fields.size()];
     
-    final TupleField[] fieldArray
+    private final TupleField[] fieldArray
       =fields.values().toArray(new TupleField[fields.size()]);
     
-    final Channel<?> sourceChannel;
+//    private final Channel<?> sourceChannel;
     
     
-    final ThreadLocalChannel<Tuple> thisChannel
+    private final ThreadLocalChannel<Tuple> thisChannel
       =new ThreadLocalChannel<Tuple>(this);
     
-    final URI typeURI;
+    private final URI typeURI;
     
-    final Channel<Object> baseChannel;
+    private final Channel<Object> baseChannel;
+    
+    private final Reflector<Object> iterableItemReflector;
     
     @SuppressWarnings("unchecked")
     public TupleReflector(Focus<?> focus)
       throws BindException
     {
     
-      sourceChannel=focus.getSubject();
+//      sourceChannel=focus.getSubject();
       
       if (TupleNode.this.typeURI==null)
       {
@@ -328,6 +338,8 @@ public class TupleNode
         
       // log.fine(" "+sourceChannel.getReflector());
       
+      Reflector iterableItemReflector=null;
+      
       int i=0;
       for (TupleField field: fieldArray)
       { 
@@ -359,48 +371,109 @@ public class TupleNode
           channels[i]= new SimpleChannel
             ((Reflector) field.type.bind(focus).get());
         }
+        
+        if (iterableItemReflector==null)
+        { iterableItemReflector=channels[i].getReflector();
+        }
+        else
+        { 
+          iterableItemReflector
+            =iterableItemReflector.getCommonType
+              (channels[i].getReflector());
+        }
+        
         i++;
       }
       
+      if (iterableItemReflector!=null)
+      { this.iterableItemReflector=iterableItemReflector;
+      }
+      else
+      { this.iterableItemReflector=BeanReflector.getInstance(Void.class);
+      }
     }
 
-    @SuppressWarnings("unused")
-    private void checkTypeCompatibility(Reflector<?> type)
-      throws BindException
+    
+    /**
+     * <p>Determine if a value described by the specified Reflector
+     *   can be assigned to a location described by this Reflector.
+     * </p>
+     * 
+     * <p>A TupleReflector can be assigned from another TupleReflector
+     *   as long as they have the same number of fields with the same
+     *   names, and the type (Reflector) of each field in this TupleReflector
+     *   is assignable from the type (Reflector) of the corresponding field
+     *   in the specified TupleReflector.
+     * </p>
+     */
+    @Override
+    public boolean isAssignableFrom(Reflector<?> reflector)
     {
-      LinkedList<Signature> signatures=type.getSignatures(thisChannel);
-      for (Signature sig: signatures)
+      if (reflector==this)
+      { return true;
+      }
+      
+      if (reflector instanceof TupleReflector)
       {
-        if (!sig.getName().startsWith("@"))
-        {
-          if (sig.getParameters()!=null)
-          { 
-            throw new BindException
-              ("Tuple is missing implementation of "+typeURI+":"+sig); 
+        TupleReflector tupleReflector=(TupleReflector) reflector;
+        if (fieldArray.length != tupleReflector.fieldArray.length)
+        { return false;
+        }
+        
+        for (int fi=0;fi<fieldArray.length;fi++)
+        { 
+          if (!fieldArray[fi].name.equals(tupleReflector.fieldArray[fi].name))
+          { return false;
           }
-          
-          TupleField field=fields.get(sig.getName());
-          if (field==null)
-          {
-            throw new BindException
-              ("Tuple is missing property "+typeURI+":"+sig); 
-          }
-          
-          Reflector<?> channelType=channels[field.index].getReflector();
-          if (!sig.getType()
-                .isAssignableFrom(channelType)
+          if (! (channels[fi].getReflector()
+                  .isAssignableFrom(tupleReflector.channels[fi].getReflector())
+                )
              )
-          { 
-            throw new BindException
-              ("Type "+channelType.getTypeURI()+" for field "+field.name
-                +" cannot substitute for "+sig.getType().getTypeURI()
-              );
-            
+          { return false;
           }
         }
+        return true;
       }
-
+      
+      return super.isAssignableFrom(reflector);
     }
+    
+//    private void checkTypeCompatibility(Reflector<?> type)
+//      throws BindException
+//    {
+//      LinkedList<Signature> signatures=type.getSignatures(thisChannel);
+//      for (Signature sig: signatures)
+//      {
+//        if (!sig.getName().startsWith("@"))
+//        {
+//          if (sig.getParameters()!=null)
+//          { 
+//            throw new BindException
+//              ("Tuple is missing implementation of "+typeURI+":"+sig); 
+//          }
+//          
+//          TupleField field=fields.get(sig.getName());
+//          if (field==null)
+//          {
+//            throw new BindException
+//              ("Tuple is missing property "+typeURI+":"+sig); 
+//          }
+//          
+//          Reflector<?> channelType=channels[field.index].getReflector();
+//          if (!sig.getType()
+//                .isAssignableFrom(channelType)
+//             )
+//          { 
+//            throw new BindException
+//              ("Type "+channelType.getTypeURI()+" for field "+field.name
+//                +" cannot substitute for "+sig.getType().getTypeURI()
+//              );
+//            
+//          }
+//        }
+//      }
+//
+//    }
     
     @Override
     public LinkedList<Signature> getSignatures(Channel<?> source)
@@ -527,12 +600,28 @@ public class TupleNode
       return false;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <D extends Decorator<Tuple>> D decorate(
       Channel<Tuple> source,
       Class<D> decoratorInterface)
       throws BindException
-    { return null;
+    { 
+      if (iterableItemReflector!=null)
+      {
+        if (decoratorInterface.isAssignableFrom(IterationDecorator.class))
+        {
+          return (D) new IterationDecorator<Tuple,Object>
+            (source,iterableItemReflector)
+          {
+            @Override
+            protected Iterator<Object> createIterator()
+            { return ArrayUtil.iterator(source.get().data);
+            }
+          }; 
+        }
+      }
+      return null;
     }
 
     @Override

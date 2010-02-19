@@ -14,6 +14,9 @@
 //
 package spiralcraft.lang.parser;
 
+//import spiralcraft.log.ClassLog;
+import spiralcraft.util.ArrayUtil;
+
 /**
  * Holds named data elements defined by a Tuple expression
  * 
@@ -22,6 +25,9 @@ package spiralcraft.lang.parser;
  */
 public class Tuple
 {
+//  private static final ClassLog log
+//    =ClassLog.getInstance(Tuple.class);
+  
   public final Object[] data;
   public final TupleNode.TupleReflector reflector;
   public final Object baseExtent;
@@ -33,6 +39,35 @@ public class Tuple
     this.baseExtent=baseExtent;
   }
       
+  @Override
+  public int hashCode()
+  { 
+    return ArrayUtil.arrayHashCode(data)
+      +(baseExtent!=null?13*baseExtent.hashCode():0);
+  }
+  
+  @Override
+  public boolean equals(Object o)
+  { 
+    if (o==this)
+    { return true;
+    }
+    
+    if (o instanceof Tuple)
+    {
+      Tuple tuple=(Tuple) o;
+      return reflector==tuple.reflector
+        && (baseExtent==null || baseExtent.equals(tuple.baseExtent))
+        && ArrayUtil.arrayEquals(data,tuple.data);
+        
+    }
+    else
+    { 
+//      log.fine(toString()+"\r\n   !=\r\n    "+o.toString());
+      return false;
+    }
+  }
+  
   @Override
   public String toString()
   { 
