@@ -82,16 +82,19 @@
 
     </meta:Field>
        
-    <!--  Login.cryptpass -->
+    <!--  Login.digestpass -->
     <meta:Field>
 
-      <name>cryptpass
+      <name>digestpass
       </name>
+
+      <description>base64 encoded password digest
+      </description>
 
       <type>
         <String.type>
 
-          <maxLength>64
+          <maxLength>512
           </maxLength>
         
         </String.type>
