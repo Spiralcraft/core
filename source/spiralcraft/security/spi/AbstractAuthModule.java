@@ -61,7 +61,7 @@ public abstract class AbstractAuthModule
     return focusChain;
   }
 
-  protected void setAcceptedCredentials
+  public void setAcceptedCredentials
     (Class<? extends Credential<?>>[] acceptedCredentials)
   { 
     this.acceptedCredentials=acceptedCredentials;
