@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -14,25 +14,41 @@
 //
 package spiralcraft.lang.parser;
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.IterationDecorator;
+
 import spiralcraft.lang.Reflector;
 
 import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.reflect.IterableReflector;
+import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
 import spiralcraft.lang.spi.StringConcatTranslator;
 
 import spiralcraft.util.lang.ClassUtil;
 
+import spiralcraft.util.IterableChain;
+
 import java.util.HashMap;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-
-public class NumericOpNode<T1 extends Comparable<T1>,T2>
+/**
+ * <p>An infix operator which has two arguments.
+ * </p>
+ * 
+ * @author mike
+ *
+ * @param <T1>
+ * @param <T2>
+ */
+public class BinaryOpNode<T1 extends Comparable<T1>,T2>
   extends Node
 {
  
@@ -44,7 +60,7 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
   
 
     
-  public NumericOpNode(Node op1,Node op2,char op)
+  public BinaryOpNode(Node op1,Node op2,char op)
   { 
 
     _op1=op1;
@@ -61,8 +77,8 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
   @Override
   public Node copy(Object visitor)
   { 
-    NumericOpNode<T1,T2> copy
-      =new NumericOpNode<T1,T2>(_op1.copy(visitor),_op2.copy(visitor),_op);
+    BinaryOpNode<T1,T2> copy
+      =new BinaryOpNode<T1,T2>(_op1.copy(visitor),_op2.copy(visitor),_op);
     if (copy._op1==_op1 && copy._op2==_op2)
     { return this;
     }
@@ -86,7 +102,8 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
     Channel<T2> op2=focus.<T2>bind(new Expression<T2>(_op2,null));
     
     if (String.class.isAssignableFrom(op1.getContentType()))
-    { return (Channel<T1>) (Object) 
+    { 
+      return (Channel<T1>) (Object) 
         StringBindingHelper.bindString
           ((Channel<String>) (Object) op1,op2,_op);
     }
@@ -112,6 +129,9 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
       
       return channel;
     }
+    else if (op1.decorate(IterationDecorator.class)!=null)
+    { return (Channel<T1>) IterationBindingHelper.bind(op1,op2,_op);
+    }
     else
     { 
       throw new BindException
@@ -134,6 +154,145 @@ public class NumericOpNode<T1 extends Comparable<T1>,T2>
   }
 
 }
+
+
+@SuppressWarnings("unchecked")
+class IterationBindingHelper
+{
+  public static final Channel bind(Channel<?> t1,Channel<?> t2,char op)
+    throws BindException
+  {
+    
+    CollectionDecorator cd
+      =t1.<CollectionDecorator>decorate(CollectionDecorator.class);
+    Reflector collectionReflector=t1.getReflector();
+
+    if (cd==null)
+    { 
+      cd=t2.<CollectionDecorator>decorate(CollectionDecorator.class);
+      collectionReflector=t2.getReflector();
+    }
+    
+    IterationDecorator d1
+      =t1.<IterationDecorator>decorate(IterationDecorator.class);
+    
+    IterationDecorator d2
+      =t2.<IterationDecorator>decorate(IterationDecorator.class);
+    
+    if (d2==null)
+    {
+      throw new BindException
+        ("Second operand of '+' (concatenation) must be iterable. "
+        +t2.getReflector()
+        );
+      
+    }
+
+    Reflector commonReflector
+      =d1.getComponentReflector().getCommonType(d2.getComponentReflector());
+        
+    if (commonReflector==null)
+    { 
+      throw new BindException
+        ("Component types of operands for '+' (concatenation) must have"
+        +" a common supertype: "+d1.getComponentReflector()+" + "
+        +d2.getComponentReflector()
+        );
+    }
+
+    if (cd!=null && commonReflector==cd.getComponentReflector())
+    { 
+      return new CollectionConcatenationChannel
+        (collectionReflector
+        ,cd
+        ,d1
+        ,d2
+        );
+      
+    }
+
+    return new IterableConcatenationChannel(commonReflector,d1,d2);
+  }
+}
+
+class CollectionConcatenationChannel<C,T>
+  extends AbstractChannel<C>
+{
+  
+  private final CollectionDecorator<C,T> cd;
+  private final IterationDecorator<?,T> decorator1;
+  private final IterationDecorator<?,T> decorator2;
+  
+  public CollectionConcatenationChannel
+    (Reflector<C> collectionReflector
+    ,CollectionDecorator<C,T> cd
+    ,IterationDecorator<?,T> d1
+    ,IterationDecorator<?,T> d2
+    )
+  { 
+    super(collectionReflector);
+    this.cd=cd;
+    this.decorator1=d1;
+    this.decorator2=d2;
+    
+    
+  }
+
+  @Override
+  protected C retrieve()
+  {
+    C collection=cd.newCollection();
+      
+    for (T val:decorator1)
+    { collection=cd.add(collection,val);
+    }
+    for (T val:decorator2)
+    { collection=cd.add(collection,val);
+    }
+    return collection;
+  }
+
+  @Override
+  protected boolean store(
+    C val)
+    throws AccessException
+  { return false;
+  }
+  
+}
+
+class IterableConcatenationChannel<T>
+  extends AbstractChannel<Iterable<T>>
+{
+
+  private final IterationDecorator<?,T> decorator1;
+  private final IterationDecorator<?,T> decorator2;
+
+  public IterableConcatenationChannel
+    (Reflector<T> commonReflector
+    ,IterationDecorator<?,T> d1
+    ,IterationDecorator<?,T> d2
+    )
+  { 
+    super(IterableReflector.getInstance(commonReflector));
+    this.decorator1=d1;
+    this.decorator2=d2;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  protected Iterable<T> retrieve()
+  { return new IterableChain<T>(decorator1,decorator2);
+  }
+
+  @Override
+  protected boolean store(
+    Iterable<T> val)
+  throws AccessException
+  { return false;
+  }
+}
+
 
 class StringBindingHelper
 {
