@@ -14,6 +14,8 @@
 //
 package spiralcraft.data.spi;
 
+import java.util.Iterator;
+
 import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.Aggregate;
 
@@ -48,6 +50,13 @@ public class EditableArrayListAggregate<T>
   {
     for (T value: values)
     { list.add(value);
+    }
+  }
+  
+  public void addAll(Iterator<T> values)
+  {
+    while (values.hasNext())
+    { list.add(values.next());
     }
   }
   

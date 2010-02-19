@@ -170,6 +170,16 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   }
 
   @Override
+  public void addAll(
+    Iterator<T> values)
+  {
+    // TODO Auto-generated method stub
+    while (values.hasNext())
+    { add(values.next());
+    }
+  }
+  
+  @Override
   public T get(int index)
   { 
     if (index < size())

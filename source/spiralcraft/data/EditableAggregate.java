@@ -14,6 +14,8 @@
 //
 package spiralcraft.data;
 
+import java.util.Iterator;
+
 /**
  * Holds a aggregation of objects of a common type.
  */
@@ -35,6 +37,12 @@ public interface EditableAggregate<T>
    */
   void addAll(Aggregate<T> values);
 
+  /**
+   * Add all the values in the specified iteration to this aggregation
+   * @param values
+   */
+  void addAll(Iterator<T> values);
+  
   /**
    * Remove the specifed value from this aggregation
    * 
