@@ -195,27 +195,27 @@ public abstract class Node
 
   @SuppressWarnings("unchecked") // Generics for internal use only
   public Node plus(Node op)
-  { return new NumericOpNode(this,op,'+');
+  { return new BinaryOpNode(this,op,'+');
   }
   
   @SuppressWarnings("unchecked") // Generics for internal use only
   public Node minus(Node op)
-  { return new NumericOpNode(this,op,'-');
+  { return new BinaryOpNode(this,op,'-');
   }
   
   @SuppressWarnings("unchecked") // Generics for internal use only
   public Node times(Node op)
-  { return new NumericOpNode(this,op,'*');
+  { return new BinaryOpNode(this,op,'*');
   }
   
   @SuppressWarnings("unchecked") // Generics for internal use only
   public Node divide(Node op)
-  { return new NumericOpNode(this,op,'/');
+  { return new BinaryOpNode(this,op,'/');
   }
   
   @SuppressWarnings("unchecked") // Generics for internal use only
   public Node modulus(Node op)
-  { return new NumericOpNode(this,op,'%');
+  { return new BinaryOpNode(this,op,'%');
   }
 
   @SuppressWarnings("unchecked") // Generics for internal use only
@@ -254,10 +254,15 @@ public abstract class Node
   }
 
   @SuppressWarnings("unchecked")
-  protected Node projectAggregate(Node projection)
-  { return new AggregateProjectNode(this,projection);
+  protected Node map(Node projection)
+  { return new MapReduceNode(this,projection,false);
   }
-  
+
+  @SuppressWarnings("unchecked")
+  protected Node reduce(Node reduction)
+  { return new MapReduceNode(this,reduction,true);
+  }
+    
   @SuppressWarnings("unchecked")
   protected Node subcontext(List<Node> subcontextList)
   { return new SubcontextNode(this,subcontextList);
