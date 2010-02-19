@@ -592,16 +592,16 @@ public class ExpressionParser
     }
   }
 
-  /**
-   * ListExpression -> ExpressionList
-   */
-  @SuppressWarnings("unchecked") // Unknown type
-  private Node parseListExpression()
-    throws ParseException
-  { 
-    // Only used from ArraySelectorExpression
-    return new ListNode(parseExpressionList());
-  }
+//  /**
+//   * ListExpression -> ExpressionList
+//   */
+//  @SuppressWarnings("unchecked") // Unknown type
+//  private Node parseListExpression()
+//    throws ParseException
+//  { 
+//    // Only used from ArraySelectorExpression
+//    return new ListNode(parseExpressionList());
+//  }
   
   // 
   // Beyond this point there is no left-hand-side recursion
@@ -612,7 +612,8 @@ public class ExpressionParser
    *   FocusExpression
    *   ( ArraySelectorExpression 
    *   | "." ( DereferenceExpression | ObjectLiteralExpression)
-   *   | "#" AggregateProjectionExpression
+   *   | "#" MapExpression
+   *   | "$" ReduceExpression
    *   | "{" SubcontextExpression "}"
    *   ) *
    */
@@ -654,7 +655,11 @@ public class ExpressionParser
         }
       case '#':
         return parsePostfixExpressionRest
-          (parseAggregateProjectionExpression(primary)
+          (parseMapExpression(primary)
+          );
+      case '$':
+        return parsePostfixExpressionRest
+          (parseReduceExpression(primary)
           );
       case '{':
         return parsePostfixExpressionRest
@@ -715,18 +720,21 @@ public class ExpressionParser
   {
     expect('[');
 
-    Node ret;
-    switch (_tokenizer.ttype)
-    {
-      case '{':
-        // Dynamic list- used primarily to create fixed length typed Arrays
-        consumeToken();
-        ret=parseListExpression();
-        expect('}');
-        break;
-      default:
-        ret=parseExpression();
-    }
+    Node ret=parseExpression();
+
+//    Node ret;    
+//    switch (_tokenizer.ttype)
+//    {
+//      case '{':
+//        // Dynamic list- used primarily to create fixed length typed Arrays
+//        consumeToken();
+//        ret=parseListExpression();
+//        expect('}');
+//        break;
+//      default:
+//        ret=parseExpression();
+//    }
+    
     
     Node subscriptNode=primary.subscript(ret);
     expect(']');
@@ -798,12 +806,19 @@ public class ExpressionParser
             // This would normally be a ObjectLiteral, but we need a way
             //   to subscript the subject if it is an array, and we can already 
             //  run an ObjectLiteral against the subject without the '.'.
+
             consumeToken();      
-            Node asub=parseArraySelectorExpression(focusNode);
-            if (debug)
-            { alert("parseFocusExpression():'..' "+asub.reconstruct());
+            if (_tokenizer.lookahead.ttype=='*')
+            { return parseObjectLiteralExpression(focusNode);
             }
-            return asub;
+            else
+            {
+              Node asub=parseArraySelectorExpression(focusNode);
+              if (debug)
+              { alert("parseFocusExpression():'..' "+asub.reconstruct());
+              }
+              return asub;
+            }
           default:
             Node dotExpr=parsePostfixDotExpression(focusNode);
             if (dotExpr!=null)
@@ -865,15 +880,24 @@ public class ExpressionParser
             }
             return fre;
           case '[':
+            
+            
             // This would normally be a ObjectLiteral, but we need a way
             //   to subscript the subject if it is an array, and we can already 
             //  run an ObjectLiteral against the subject without the '.'.
-            consumeToken();      
-            Node asub=parseArraySelectorExpression(parentFocusNode);
-            if (debug)
-            { alert("parseFocusExpression():'..' "+asub.reconstruct());
+            consumeToken();
+            
+            if (_tokenizer.lookahead.ttype=='*')
+            { return parseObjectLiteralExpression(parentFocusNode);
             }
-            return asub;
+            else
+            {
+              Node asub=parseArraySelectorExpression(parentFocusNode);
+              if (debug)
+              { alert("parseFocusExpression():'..' "+asub.reconstruct());
+              }
+              return asub;
+            }
           default:
             Node dotExpr=parsePostfixDotExpression(parentFocusNode);
             if (dotExpr!=null)
@@ -1053,16 +1077,36 @@ public class ExpressionParser
   
   
   /**
-   * AggregateProjectionExpression ->  "#{" Expression "}" postFixExpression
+   * MapExpression ->  "{" Expression "}" 
+   * 
+   * <p>Follows postfixExpression + '#'
+   * </p>
    */
-  private Node parseAggregateProjectionExpression(Node subject)
+  private Node parseMapExpression(Node subject)
     throws ParseException
   {
     expect('#');
     expect('{');
     Node inlineContextNode
-      =subject.projectAggregate(parseExpression());
+      =subject.map(parseExpression());
     expect('}');
+    return inlineContextNode;
+  }
+
+  /**
+   * ReduceExpression ->  "[" Expression "]" 
+   * 
+   * <p>Follows postfixExpression + '$'
+   * </p>
+   */
+  private Node parseReduceExpression(Node subject)
+    throws ParseException
+  {
+    expect('$');
+    expect('[');
+    Node inlineContextNode
+      =subject.reduce(parseExpression());
+    expect(']');
     return inlineContextNode;
   }
   
