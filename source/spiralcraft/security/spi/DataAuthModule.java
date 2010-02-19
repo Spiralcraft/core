@@ -69,7 +69,8 @@ public class DataAuthModule
   private BoundQuery<?,?> boundAccountQuery;
 
   private Binding<Boolean> credentialComparisonX;
- 
+  private CredentialValidator[] validators; 
+  
   private Binding<String> principalIdX;
   private Binding<String> accountIdX;
   
@@ -97,8 +98,6 @@ public class DataAuthModule
       =Type.resolve(URI.create("class:/spiralcraft/security/Login"));
 
       
-    credentialComparisonX
-      =new Binding(Expression.create("true"));
   
     principalIdX=new Binding(Expression.create(".username"));
     accountIdX=new Binding(Expression.create(".principalId"));
@@ -130,7 +129,7 @@ public class DataAuthModule
    * </p>
    * 
    * <p>The Expression is bound against
-   *   a Focus which exposes the successfully authenticated object of 
+   *   a Focus which exposes the successfully resolved object of 
    *   accountDataType as the subject, and the active credential set as the
    *   context.  
    * </p>
@@ -144,6 +143,28 @@ public class DataAuthModule
    */
   public void setCredentialComparisonX(Binding<Boolean> credentialComparisonX)
   { this.credentialComparisonX=credentialComparisonX;
+  }
+  
+  /**
+   * <p>The set of CredentialValidators which determine whether the 
+   *   provided credentials match the account entry that has been mapped to
+   *   the context.
+   * </p>
+   * 
+   * <p>The CredentialValidators are bound against a Focus which exposes
+   *   the successfully resolved object of accountDataType as the subject,
+   *   and the active credential set as the context
+   * </p>
+   * 
+   * <p>If any validators are supplied, at least one must return a value of
+   *   "true" and none may return "false" for the Credentials to be
+   *   accepted.
+   * </p>
+   * 
+   * @param validators
+   */
+  public void setCredentialValidators(CredentialValidator[] validators)
+  { this.validators=validators;
   }
   
   /**
@@ -169,6 +190,7 @@ public class DataAuthModule
   public void setDebug(boolean debug)
   { this.debug=debug;
   }
+  
   
   /**
    * @param source The Queryable which provides access to the login database
@@ -266,7 +288,25 @@ public class DataAuthModule
     
     comparisonFocus=new TeleFocus<Tuple>(credentialFocus,loginChannel);
     
-    credentialComparisonX.bind(comparisonFocus);
+    
+    if (credentialComparisonX==null
+         && validators==null
+       )
+    {
+      // Default to permissive context (trusted external account)
+      credentialComparisonX
+        =new Binding(Expression.create("true"));
+    }
+    
+    if (credentialComparisonX!=null)
+    { credentialComparisonX.bind(comparisonFocus);
+    }
+    if (validators!=null)
+    { 
+      for (CredentialValidator validator: validators)
+      { validator.bind(comparisonFocus);
+      }
+    }
     principalIdX.bind(comparisonFocus);
     accountIdX.bind(comparisonFocus);
     
@@ -372,15 +412,45 @@ public class DataAuthModule
           // We have valid username in loginEntry
           //   run the password comparison expression
 
-          boolean valid;
+          boolean valid=false;
           loginChannel.push(loginEntry);
           try
           { 
-            Boolean result=credentialComparisonX.get();
-            valid=(result!=null && result);
-            if (debug)
-            { log.fine("Token comparison returned "+result);
+            if (credentialComparisonX!=null)
+            {
+              Boolean result=credentialComparisonX.get();
+              valid=(result!=null && result);
+              if (debug)
+              { log.fine("Credential comparison expression returned "+result);
+              }
             }
+            
+            if (validators!=null)
+            {
+              for (CredentialValidator validator : validators)
+              {
+                Boolean validatorResult
+                  =validator.validate();
+                if (debug)
+                { 
+                  log.fine
+                    ("Validator "+validator+" returned "+validatorResult);
+                }
+                if (validatorResult!=null)
+                { 
+                  if (validatorResult==true)
+                  { valid=true;
+                  }
+                  else
+                  { 
+                    valid=false;
+                    break;
+                  }
+                }
+              }
+
+            }
+            
             if (valid)
             { principalId=principalIdX.get();
             }
