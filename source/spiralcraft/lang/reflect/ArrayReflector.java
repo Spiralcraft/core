@@ -34,7 +34,6 @@ import spiralcraft.lang.spi.ArrayIndexChannel;
 import spiralcraft.lang.spi.ArrayListDecorator;
 import spiralcraft.lang.spi.ArrayRangeChannel;
 import spiralcraft.lang.spi.ArraySelectChannel;
-import spiralcraft.lang.spi.IterationProjector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
@@ -173,7 +172,7 @@ public class ArrayReflector<I>
     if (name.startsWith("@"))
     { return this.<X>resolveMeta(source,focus,name,params);
     }
-    
+        
     Channel<X> binding=null;
     if (name.equals("[]"))
     { binding=(Channel<X>) this.subscript(source,focus,params[0]);
@@ -183,12 +182,6 @@ public class ArrayReflector<I>
       return (Channel<X>) new ArrayContainsChannel<I>
         (source,focus.bind((Expression<I>) params[0]));
     }    
-    else if (name.equals("#"))
-    { 
-      binding
-        =new IterationProjector
-          (source,focus,params[0]).result;
-    }
     else if (params==null)
     { binding=this.<X>getArrayProperty(source,name);
     }
