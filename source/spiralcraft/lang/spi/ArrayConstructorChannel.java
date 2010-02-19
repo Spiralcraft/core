@@ -37,7 +37,10 @@ public class ArrayConstructorChannel<C,T>
     { throw new IllegalArgumentException("Iteration not supported for "+source);
     }
     
-    if (decorator.getComponentReflector()!=null)
+    // Check type- Void.class means that the source contains nothing or a
+    //   list of nulls
+    if (decorator.getComponentReflector()!=null
+        && decorator.getComponentReflector().getContentType()!=Void.class)
     {
       if (!componentReflector.isAssignableFrom
           (decorator.getComponentReflector())
