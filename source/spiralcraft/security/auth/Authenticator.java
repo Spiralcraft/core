@@ -59,21 +59,18 @@ public class Authenticator
 
   protected HashMap<String,Integer> moduleMap;
   
-      
-//  public Class<? extends Credential<?>>[] getRequiredCredentials()
-//  { return acceptedCredentials;
-//  }
-//  
   /**
    * @return The name of the realm this Authenticator will be serving.
    * 
-   * <P>The realm name should be as unique and as stable as possible. 
+   * <p>The realm name should be as unique and as stable as possible. 
    * Application names that may change (eg. paths in a web tree) should be 
    * avoided, as the realm name is a factor in
    * authentication cryptography, and may require that all passwords be reset
    * or cause other data loss if it is changed.
+   * </p>
    * 
-   * <P>ie. MyRealmName@MyDomain.com
+   * <p>ie. MyRealmName@MyDomain.com
+   * </p>
    * 
    */
   public String getRealmName()
