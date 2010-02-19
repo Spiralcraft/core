@@ -2,7 +2,7 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
-    <revision>0.4.4.3
+    <revision>0.4.5
     </revision>
     
     <authorId>miketoth
@@ -12,6 +12,15 @@
     </date>
     
     <notes>
+      <scm:Note>Implementation of Reduce functionality (ie. reducing sets
+        using aggregate functions) and associated spiralcraft.lang 
+        enhancements.
+      </scm:Note>
+      
+      <scm:Note>Security enhancements to support token hashing schemes for
+        secure transmission and storage of passwords and password hashes.
+      </scm:Note>
+
       <scm:Note>Minor updates and bug fixes to support spiralcraft-launcher
         enhancements and spiralcraft-sql refresh.
       </scm:Note>
@@ -20,6 +29,221 @@
     
     <detail>
     
+      <scm:Change>
+        <notes>
+          <scm:Note>
+            Implementation of reduce functionality (ie. reducing sets
+            using aggregate functions) and associated spiralcraft.lang 
+            enhancements. Associated minor updates to spiralcraft.data
+            query functionality to take advantage of reduce ops.
+          </scm:Note>
+          <scm:Note>
+            ArrayUtil has new functions concat(T[],Collection) to add the 
+            contents of a collection to an Array and asKey(T[]) to use
+            the array as a "key"- an immutable object that can be
+            compared for equality to other instances returned from the same
+            function.
+          </scm:Note>
+          <scm:Note>
+            ClassUtil deals with primitive equivalence of Void.TYPE and
+            Void.class
+          </scm:Note>
+          <scm:Note>Don't make reflectors define map or reduce.
+          </scm:Note>
+          <scm:Note>Collections must now support addAll(Iterator) to
+            enable efficient adds to immutable representations (ie. arrays)
+          </scm:Note>
+          <scm:Note>Generic list operations on Iterables. Obsoletes 
+            CollectionSelectChannel.
+          </scm:Note>
+          <scm:Note> IterableChain  provides Iteration over multiple sources. 
+          </scm:Note>
+          <scm:Note>Reflector.getCommonType() no longer throws exception and
+            now returns null when no common type exists.
+          </scm:Note>
+          <scm:Note>Type coercion introduced into Logical expressions to
+            permit some number comparison operations (ie. float to Double)
+            by using Number class conversions. Factored Translator interface
+            for logical expressions (LogicalNode) into inner class so 
+            implementation can be chosen at bind-time.
+          </scm:Note>
+          <scm:Note>Changed NumericOpNode to BinaryOpNode because we deal
+            with intrinsic Strings and List ops internally.
+          </scm:Note>
+          <scm:Note>List literals are now read as Tuples, to avoid
+            redundancy
+          </scm:Note>
+          <scm:Note>Disambiguate between an array subscript and an
+            object literal in a FocusRelativeExpression
+          </scm:Note>
+          <scm:Note>Added Reduce functionality (aggregate functions) using
+            $[ expr ] operator.
+          </scm:Note>          
+          <scm:Note>AggregateProjectNode is now MapReduceNode due to
+            addition of Reduce functionality.
+          </scm:Note>
+          <scm:Note>Define Tuple equality and allow fields to be
+            examined.
+          </scm:Note>
+          <scm:Note>Projection query now integrates 1-m queries.
+          </scm:Note>
+          <scm:Note>Collect task provides results.
+          </scm:Note>
+          <scm:Note>Fetch task provides result reflector from bound query
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>util/ArrayUtil.java
+          </URI>
+          <URI>util/lang/ClassUtil.java
+          </URI>
+          <URI>util/IterableChain.java
+          </URI>
+          <URI>lang/Reflector.java
+          </URI>
+          <URI>lang/CollectionDecorator.java
+          </URI>
+          <URI>lang/spi/GenericCollectionDecorator.java
+          </URI>
+          <URI>lang/spi/GenericListDecorator.java
+          </URI>
+          <URI>lang/spi/IterableIndexTranslator.java
+          </URI>
+          <URI>lang/spi/IterableRangeChannel.java
+          </URI>
+          <URI>lang/spi/IterableSelectChannel.java
+          </URI>
+          <URI>lang/spi/AbstractReflector.java
+          </URI>
+          <URI>lang/spi/ArrayConstructorChannel.java
+          </URI>
+          <URI>lang/spi/ArrayListDecorator.java
+          </URI>
+          <URI>lang/spi/CollectionSelectChannel.java
+          </URI>
+          <URI>lang/spi/IterationProjector.java
+          </URI>
+          <URI>lang/spi/ViewCache.java
+          </URI>
+          <URI>lang/spi/ViewState.java
+          </URI>
+          <URI>lang/spi/StateScope.java
+          </URI>
+          <URI>lang/parser/AggregateProjectNode.java
+          </URI>
+          <URI>lang/parser/MapReduceNode.java
+          </URI>
+          <URI>lang/parser/LogicalNode.java
+          </URI>
+          <URI>lang/parser/LogicalNegateNode.java
+          </URI>
+          <URI>lang/parser/RelationalNode.java
+          </URI>
+          <URI>lang/parser/EqualityNode.java
+          </URI>
+          <URI>lang/parser/ExclusiveOrNode.java
+          </URI>
+          <URI>lang/parser/ConditionalNode.java
+          </URI>
+          <URI>lang/parser/LogicalAndNode.java
+          </URI>
+          <URI>lang/parser/LogicalOrNode.java
+          </URI>
+          <URI>lang/parser/NumericOpNode.java
+          </URI>
+          <URI>lang/parser/BinaryOpNode.java
+          </URI>
+          <URI>lang/parser/Node.java
+          </URI>
+          <URI>lang/parser/ExpressionParser.java
+          </URI>
+          <URI>lang/parser/Tuple.java
+          </URI>
+          <URI>lang/parser/TupleField.java
+          </URI>
+          <URI>lang/parser/TupleNode.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>lang/reflect/ArrayReflector.java
+          </URI>
+          <URI>lang/reflect/IterableLengthTranslator.java
+          </URI>
+          <URI>lang/reflect/IterableReflector.java
+          </URI>
+          <URI>data/EditableAggregate.java
+          </URI>
+          <URI>data/spi/EditableArrayListAggregate.java
+          </URI>
+          <URI>data/spi/EditableKeyedListAggregate.java
+          </URI>
+          <URI>data/session/BufferAggregate.java
+          </URI>
+          <URI>data/lang/AggregateReflector.java
+          </URI>
+          <URI>data/query/Projection.java
+          </URI>
+          <URI>data/task/Collect.java
+          </URI>
+          <URI>data/task/Fetch.java
+          </URI>
+                
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Security enhancements to support token hashing schemes for
+            secure transmission and storage of passwords and password hashes.
+          </scm:Note>
+          <scm:Note>Changed cryptpass to digestpass in Login.type.xml
+          </scm:Note>
+          <scm:Note>AuthSession: Changed opaqueDigest to saltedDigest, 
+            and added digest
+            method to provide for repeated applications on externally
+            salted digests.
+          </scm:Note>
+          <scm:Note>Added a ChallengeCredential to the LoginEntry and to
+            authentication logic. The Challenge is used by the password
+            authenticator to re-digest the password hash and may be  
+            associated with an application specific expiration mechanism.
+          </scm:Note>
+          <scm:Note>Added a CredentialValidator interface to deal with
+            various credential presentation scenarios in a more declarative 
+            fashion.
+          </scm:Note>
+          <scm:Note>Obsoleted PasswordDataAuthModule.java in favor of
+            PasswordDataAuthModule.assy.xml by making DataAuthModule
+            more fully configurable
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft</path>
+        
+        <resources>
+          <URI>security/Login.type.xml
+          </URI>
+          <URI>security/auth/AuthSession.java
+          </URI>
+          <URI>security/auth/ChallengeCredential.java
+          </URI>
+          <URI>security/auth/LoginEntry.java
+          </URI>
+          <URI>security/spi/BasicCredentialValidator.java
+          </URI>
+          <URI>security/spi/DataAuthModule.java
+          </URI>
+          <URI>security/spi/PasswordDataAuthModule.java
+          </URI>
+          <URI>security/spi/PasswordDataAuthModule.assy.xml
+          </URI>
+        </resources>
+      </scm:Change>
+      
       <scm:Change>
       
         <notes>

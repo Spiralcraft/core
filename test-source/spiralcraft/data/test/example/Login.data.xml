@@ -13,4 +13,16 @@
     <searchname>usertwo</searchname>
     <clearpass>testTwo</clearpass>
   </security:Login>
+  <security:Login>
+    <principalId>4</principalId>
+    <username>UserThree</username>
+    <searchname>userthree</searchname>
+    <digestpass>A59145584E9F5B38DD2E49E0E1227FA1C29D912138CE54A62E44C8E3B7325F04
+    </digestpass>
+  </security:Login>
+  <security:Login>
+    <principalId>5</principalId>
+    <username>UserFour</username>
+    <searchname>userfour</searchname>
+  </security:Login>
 </security:Login.list>

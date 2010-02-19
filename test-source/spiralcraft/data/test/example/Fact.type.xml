@@ -4,17 +4,14 @@
   xmlns:meta="class:/spiralcraft/data/types/meta/"
   xmlns:example="class:/spiralcraft/data/test/example"
   >
-  <archetype><example:Contact.type/>
-  </archetype>
-  
 
   <fields>
     <meta:SequenceField>
 
-      <name>id
+      <name>factId
       </name>
 
-      <type><Integer.type/>
+      <type><String.type/>
       </type>
           
     </meta:SequenceField>
@@ -31,16 +28,14 @@
         
     <meta:Field>
 
-      <name>paymentTerms
+      <name>numUnits
       </name>
+      
+      <description>An example integral quantity
+      </description>
 
       <type>
-        <String.type>
-          	
-          <maxLength>32
-          </maxLength>
-              
-        </String.type>
+        <Integer.type/>
       </type>
 
     </meta:Field>
@@ -49,72 +44,79 @@
         
       <name>score
       </name>
+
+      <description>An example float measure
+      </description>
         
       <type>
         <Float.type/>
       </type>
     </meta:Field>
     
-    <meta:CalculatedField>
+    <meta:Field>
         
-      <name>computedScore
+      <name>eyeColor
       </name>
+
+      <description>An example of a limited range property
+      </description>
         
       <type>
-        <Float.type/>
+        <String.type/>
       </type>
-      
-      <expression>score*10.0F
-      </expression>
-    </meta:CalculatedField>
+    </meta:Field>
     
+    <meta:Field>
+      <name>customerId
+      </name>
+    
+      <type><Integer.type/>
+      </type>
+    </meta:Field>
+        
+    <meta:Field>
+      <name>description
+      </name>
+    
+      <type><String.type/>
+      </type>
+    </meta:Field>
+
   </fields>
       
   <keys>
     <meta:Key>
 
-      <fieldList>id
+      <fieldList>factId
       </fieldList>
       		
       <primary>true
       </primary>
       		
     </meta:Key>
-
+    
     <meta:Key>
-      <name>facts
+      <name>customer
       </name>
-
-      <fieldList>id
+      
+      <fieldList>customerId
       </fieldList>
-
-      <foreignType><example:Fact.type/>
+      
+      <foreignType><example:Customer.type/>
       </foreignType>
       
       <importedKey>
         <meta:Key>
-          <fieldList>customerId
-          </fieldList>
+          <unique>true
+          </unique>
         
+          <fieldList>id
+          </fieldList>
         </meta:Key>
+      
       </importedKey>
-                
+      
     </meta:Key>
   </keys>
       
-  <methods>
-    <meta:TaskMethod>
-      <name>score1
-      </name>
-    </meta:TaskMethod>
-    
-    <meta:TaskMethod>
-      <name>score
-      </name>
-      <parameterTypes>
-        <Integer.type/>
-      </parameterTypes>
-    </meta:TaskMethod>
-  </methods>
-
 </meta:Type>

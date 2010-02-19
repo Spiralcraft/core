@@ -4,6 +4,8 @@
   xmlns:j="class:/java/lang/"
   xmlns:ju="class:/java/util/"
   xmlns:lang="class:/spiralcraft/lang"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  xmlns:util="class:/spiralcraft/util/"
   >
   <name>spiralcraft.lang.test
   </name>
@@ -163,7 +165,7 @@
 
         <test:Assertion>
         
-          <name>array aggregate projection
+          <name>array map
           </name>
           
           <subjectX>
@@ -178,7 +180,7 @@
    
         <test:Assertion>
         
-          <name>array aggregate tuple projection 1
+          <name>array tuple map 1
           </name>
           
           <subjectX>
@@ -191,9 +193,10 @@
           
         </test:Assertion>
 
+        
         <test:Assertion>
         
-          <name>array aggregate tuple projection 2
+          <name>array tuple map 2
           </name>
           
           <subjectX>
@@ -208,7 +211,7 @@
         
         <test:Assertion>
         
-          <name>Index in aggregate projection
+          <name>Index in map 
           </name>
           
           <subjectX>
@@ -219,8 +222,101 @@
           <testX>.==[@j:Integer][{0,1,2}]
           </testX>
           
-        </test:Assertion>           
+        </test:Assertion>      
         
+        <test:Assertion>
+          <name>array reduce 1
+          </name>
+          
+          <subjectX>
+            [@j:String][{"one","two","three"}]
+                $[.length()]
+          </subjectX>
+          
+          <testX>.[0]==3 &amp;&amp; .[1]==5
+          </testX>
+        </test:Assertion>   
+        
+        <test:Assertion>
+          <name>array reduce 2
+          </name>
+          
+          <subjectX>
+            [@j:String][{"one","two","three","two","one","four","four"}]
+                $[.]
+          </subjectX>
+          
+          <testX>.length==4
+          </testX>
+        </test:Assertion>   
+        
+        <test:Assertion>
+          <name>array tuple reduce
+          </name>
+          
+          <subjectX>
+            [@j:String][{"one","two","three","two","one","four","four"}]
+                $[{len:=..length()}]
+          </subjectX>
+          
+          <testX>
+            .length==3
+            &amp;&amp; .[0].len==3 
+            &amp;&amp; .[1].len==5
+            &amp;&amp; .[2].len==4
+          </testX>
+        </test:Assertion>   
+        
+        <test:Assertion>
+          <name>array reduce Sum
+          </name>
+          
+          <subjectX>
+            [@j:String][{"one","two","three","two","one","four","four"}]
+                $[ .length().[*fn:Sum] ]
+          </subjectX>
+          
+          <testX>.==25
+          </testX>
+        </test:Assertion>   
+
+        <test:Assertion>
+          <name>array reduce summary Tuple
+          </name>
+          
+          <subjectX>
+            [@j:String][{"one","two","three","two","one","four","four"}]
+                $[{
+                  totalLen:=..length().[*fn:Sum] 
+                  ,count:=..[*fn:Count]
+                  ,items:=..[*fn:Distinct]
+                }]
+          </subjectX>
+          
+          <testX>.totalLen==25
+            &amp;&amp; .count==7 
+            &amp;&amp; .items.@log("Distinct: "+[@util:ArrayUtil].@format(.,",",null)).length==4
+          </testX>
+        </test:Assertion>   
+
+        <test:Assertion>
+          <name>array reduce group Tuple
+          </name>
+          
+          <subjectX>
+            [@j:String][{"one","two","three","two","one","four","four"}]
+                $[{
+                  item:=..
+                  ,totalLen:=..length().[*fn:Sum] 
+                  ,count:=..[*fn:Count]
+                }]
+          </subjectX>
+          
+          <testX>.length==4
+          </testX>
+        </test:Assertion>   
+
+             
         <test:Assertion>
         
           <name>array inclusive range 1
@@ -230,7 +326,7 @@
           </subjectX>
           
           <testX>
-                         .[0]=="two" 
+                        .[0]=="two" 
              &amp;&amp; .[1]=="three"
              &amp;&amp; .[2]=="four"
              &amp;&amp; .length==3
@@ -402,11 +498,11 @@
 
         <test:Assertion>
         
-          <name>New dates
+          <name>New dates as functor calls from an array literal
           </name>
           
           <subjectX>
-            [@ju:Date]{ [@ju:Date][{.(10000000000L),.(10000000001L)}] }
+            [@ju:Date]{ [@ju:Date][{..(10000000000L),..(10000001000L)}] }
           </subjectX>
           
           <testX>.[0].getTime() &lt; .[1].getTime()
@@ -416,11 +512,11 @@
 
         <test:Assertion>
         
-          <name>Same dates
+          <name>Same dates, as an array literal reference
           </name>
           
           <subjectX>
-            [*ju:Date]{ [@ju:Date][{.,.}] }
+            [*ju:Date]{ [@ju:Date][{..,..}] }
           </subjectX>
           
           <testX>.[0].getTime() == .[1].getTime() &amp;&amp; .[0].getTime() > 0L

@@ -5,6 +5,7 @@
   xmlns:example="class:/spiralcraft/data/test/example/"
   xmlns:secauth="class:/spiralcraft/security/auth/"
   xmlns:sectest="class:/spiralcraft/security/test/"
+  xmlns:codec="class:/spiralcraft/codec/text/"
   >
   <targetTypeURI>class:/spiralcraft/security/test/Authenticator
   </targetTypeURI>
@@ -41,7 +42,7 @@
             </test:Stub>
 
             <test:Assertion>
-              <name>authenticated
+              <name>authenticated by default
               </name>
               <subjectX>[secauth:AuthSession].isAuthenticated()
               </subjectX>
@@ -50,7 +51,7 @@
             </test:Assertion>
 
             <test:Assertion>
-              <name>params
+              <name>login with clearpass
               </name>
               <subjectX>
                 [@secauth:LoginEntry]
@@ -59,7 +60,36 @@
                    ,passwordCleartext:="testOne"
                    )
               </subjectX>
-              <testX>[secauth:AuthSession].authenticate()
+              <testX>
+                [secauth:AuthSession].authenticate()
+                &amp;&amp; [secauth:AuthSession].principal.name=="UserOne"
+              </testX>
+            </test:Assertion>
+
+            <test:Assertion>
+              <name>logout
+              </name>
+              <subjectX>[secauth:AuthSession].logout()
+              </subjectX>
+              <testX>![secauth:AuthSession].authenticate()
+              </testX>
+            </test:Assertion>
+
+            <test:Assertion>
+              <name>login with digest
+              </name>
+              <subjectX>
+                [@secauth:LoginEntry]
+                  .([secauth:AuthSession].@channel
+                   ,username:="userThree"
+                   ,opaqueDigest:=[@codec:Base64Codec].@decodeBytes
+                     ("A59145584E9F5B38DD2E49E0E1227FA1C29D912138CE54A62E44C8E3B7325F04"
+                     )
+                   )
+              </subjectX>
+              <testX>
+                [secauth:AuthSession].authenticate()
+                &amp;&amp; [secauth:AuthSession].principal.name=="UserThree"
               </testX>
             </test:Assertion>
 

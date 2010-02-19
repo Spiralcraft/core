@@ -1,0 +1,200 @@
+
+<example:Fact.list
+  xmlns:example="class:/spiralcraft/data/test/example"
+  >
+  
+  <example:Fact>
+  
+    <factId>1
+    </factId>
+    
+    <active>true
+    </active>
+
+    <numUnits>1
+    </numUnits>
+    
+    <score>0.1
+    </score>
+
+    <eyeColor>brown
+    </eyeColor>
+    
+    <customerId>1
+    </customerId>
+    
+    <description>This is a description of fact number one. Do Re Mi
+    </description>
+    
+  </example:Fact>
+
+  <example:Fact>
+  
+    <factId>2
+    </factId>
+
+    <active>false
+    </active>
+
+    <numUnits>2
+    </numUnits>
+    
+    <score>0.2
+    </score>
+
+    <eyeColor>blue
+    </eyeColor>
+
+    <customerId>2
+    </customerId>
+
+    <description>This is a description of fact number two. Fa So La
+    </description>
+
+  </example:Fact>
+
+  <example:Fact>
+  
+    <factId>3
+    </factId>
+
+    <active>true
+    </active>
+
+    <numUnits>3
+    </numUnits>
+    
+    <score>0.3
+    </score>
+ 
+    <eyeColor>brown
+    </eyeColor>
+
+    <customerId>3
+    </customerId>
+
+    <description>This is a description of fact number three. Ti Do Re
+    </description>
+ 
+  </example:Fact>
+
+  <example:Fact>
+  
+    <factId>4
+    </factId>
+
+    <active>false
+    </active>
+
+    <numUnits>4
+    </numUnits>
+    
+    <score>0.4
+    </score>
+
+    <eyeColor>hazel
+    </eyeColor>
+
+    <customerId>2
+    </customerId>
+
+    <description>This is a description of fact number four. Mi Fa So
+    </description>
+
+  </example:Fact>
+
+  <example:Fact>
+  
+    <factId>5
+    </factId>
+
+    <active>true
+    </active>
+
+    <numUnits>5
+    </numUnits>
+    
+    <score>0.5
+    </score>
+    
+    <eyeColor>brown
+    </eyeColor>
+
+    <customerId>3
+    </customerId>
+
+    <description>This is a description of fact number five. La Ti Do
+    </description>
+
+  </example:Fact>
+
+  <example:Fact>
+  
+    <factId>6
+    </factId>
+
+    <active>false
+    </active>
+
+    <numUnits>6
+    </numUnits>
+    
+    <score>0.6
+    </score>
+    
+    <eyeColor>brown
+    </eyeColor>
+
+    <customerId>3
+    </customerId>
+
+    <description>This is a description of fact number six. Re Mi Fa
+    </description>
+
+  </example:Fact>
+
+  <example:Fact>
+  
+    <factId>7
+    </factId>
+
+    <active>true
+    </active>
+
+    <numUnits>7
+    </numUnits>
+    
+    <score>0.7
+    </score>
+
+    <eyeColor>blue
+    </eyeColor>
+
+    <description>This is a description of fact number seven. So La Ti
+    </description>
+
+  </example:Fact>
+
+  <example:Fact>
+  
+    <factId>8
+    </factId>
+
+    <active>false
+    </active>
+
+    <numUnits>8
+    </numUnits>
+    
+    <score>0.8
+    </score>
+
+    <eyeColor>brown
+    </eyeColor>
+
+    <description>This is a description of fact number eight. Do Re Mi
+    </description>
+
+  </example:Fact>
+
+</example:Fact.list>

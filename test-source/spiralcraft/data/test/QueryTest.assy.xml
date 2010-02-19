@@ -9,6 +9,7 @@
   xmlns:j="class:/java/lang/"
   xmlns:jnet="class:/java/net/"
   xmlns:sec="class:/spiralcraft/security/"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
   >
   <chain>
  
@@ -193,14 +194,43 @@
           </query>
           
           <chain>
-            <test:Stub>
-              <name>Project
+            <test:Assertion>
+              <name>Projection Query (1-1)
               </name>
-              <messageX>""+[example:Address.list].@size()+" results"
-              </messageX>
-              <conditionX>[example:Address.list].@log(.).@size().@log(.)==3
-              </conditionX>
-            </test:Stub>
+              <subjectX>[example:Address.list]
+              </subjectX>
+              <testX>.@size()==3
+              </testX>
+            </test:Assertion>
+          </chain>
+        </dtask:Fetch>
+
+        <dtask:Fetch>
+          
+          <query>
+            <query:Projection>
+              
+              <source>
+                <query:Scan>
+                  <type x="[@example:Customer].type"/>
+                </query:Scan>
+              </source>
+              
+              <x>.facts
+              </x>
+
+            </query:Projection>
+          </query>
+          
+          <chain>
+            <test:Assertion>
+              <name>Projection Query (1-m)
+              </name>
+              <subjectX>[example:Fact.list]
+              </subjectX>
+              <testX>.@size()==6
+              </testX>
+            </test:Assertion>
           </chain>
         </dtask:Fetch>
 
@@ -317,7 +347,7 @@
           <testX>
             .data[0].@cast([@data:Aggregate]).size()==4 
             &amp;&amp; 
-            .data[1].@cast([@data:Aggregate]).size()==2
+            .data[1].@cast([@data:Aggregate]).size()==4
           </testX>
         </test:Assertion>
 
@@ -348,9 +378,130 @@
             {
               .data[0].@cast([@data:Aggregate]).size()==4 
               &amp;&amp; 
-              .data[1].@cast([@data:Aggregate]).size()==2
+              .data[1].@cast([@data:Aggregate]).size()==4
             }
           </testX>
+          
+        </test:Assertion>
+      
+        <test:Assertion>
+          <name>Reduce facts 1
+          </name>
+          <subjectX>
+            [*dtask:Fetch
+              { [*query:Scan
+                  {[@example:Fact].type
+                  }
+                ]
+              }
+            ].()$[.eyeColor]
+          </subjectX>
+          
+          <testX>.length==3 &amp;&amp; .[1]=="blue"
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>Collect disjoint facts 1
+          </name>
+          <subjectX>
+            [*dtask:Fetch
+              {
+                [*query:Selection
+                  {[@example:Fact].type
+                  ,`.active`
+                  }
+                ]
+              }
+            ].()
+            +
+            [*dtask:Fetch
+              {
+                [*query:Selection
+                  {[@example:Fact].type
+                  ,`.numUnits &gt; 4`
+                  }
+                ]
+              }
+            ].()
+          </subjectX>
+          
+          <testX>@size()==8
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>Collect disjoint fact projections
+          </name>
+          <subjectX>
+            [*dtask:Fetch
+              {
+                [*query:Selection
+                  {[@example:Fact].type
+                  ,`.active`
+                  }
+                ]
+              }
+            ].()#{{ score:=1, fact:=.. }}
+            +
+            [*dtask:Fetch
+              {
+                [*query:Selection
+                  {[@example:Fact].type
+                  ,`.numUnits &gt; 4`
+                  }
+                ]
+              }
+            ].()#{{ score:=2, fact:=.. }}
+          </subjectX>
+          
+          <testX>.length==8
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>Reduce disjoint fact projections 
+          </name>
+          <subjectX>
+            (
+              [*dtask:Fetch
+                {
+                  [*query:Selection
+                    {[@example:Fact].type
+                    ,`.active`
+                    }
+                  ]
+                }
+              ].()#{{  fact:=.., score:=2.5F }}
+              +
+              [*dtask:Fetch
+                {
+                  [*query:Projection
+                    {
+                      [*query:Selection
+                        {[@example:Customer].type
+                        ,`.score &gt; 21`
+                        }
+                      ]
+                      ,`.facts`
+                    }
+                  ]
+                
+                }
+              ].()#{{ fact:=.., score:=20.0F }}
+              
+            )
+            $[{ fact:=..fact, score:=..score.[*fn:Sum] }]
+            #{ [@example:Fact].(factId:=.fact.factId, score:=.score) }
+            
+          </subjectX>
+          
+          <testX>.length==5
+          </testX>
+          
         </test:Assertion>
 
       </scenarios>

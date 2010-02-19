@@ -16,5 +16,10 @@
       <type><sec:Login.type/>
       </type>
     </meta:Entity>
+
+    <meta:Entity>
+      <type><example:Fact.type/>
+      </type>
+    </meta:Entity>
   </entities>
 </meta:Schema>
