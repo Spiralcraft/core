@@ -44,6 +44,7 @@ public abstract class ClassUtil
     primitiveEquivalentMap.put(Integer.class, Integer.TYPE);
     primitiveEquivalentMap.put(Long.class, Long.TYPE);
     primitiveEquivalentMap.put(Short.class, Short.TYPE);
+    primitiveEquivalentMap.put(Void.class, Void.TYPE);
   }
 
   private static final Map<Class<?>,Class<?>> boxedEquivalentMap =
@@ -58,6 +59,7 @@ public abstract class ClassUtil
     boxedEquivalentMap.put(Integer.TYPE, Integer.class);
     boxedEquivalentMap.put(Long.TYPE, Long.class);
     boxedEquivalentMap.put(Short.TYPE, Short.class);
+    boxedEquivalentMap.put(Void.TYPE, Void.class);
   }
 
   private static final Map<Class<?>,Set<?>> primitiveCompatabilityMap =
