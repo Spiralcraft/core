@@ -31,7 +31,6 @@ import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.lang.spi.IterableContainsChannel;
-import spiralcraft.lang.spi.IterationProjector;
 import spiralcraft.lang.spi.ListRangeChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.spi.Translator;
@@ -164,13 +163,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
     { 
       return new IterableContainsChannel
         (source,focus.bind((Expression<I>) params[0]));
-    }
-    else if (name.equals("#"))
-    { 
-      return 
-        new IterationProjector
-          (source,focus,params[0]).result;
-    }    
+    }  
     else
     {
     
@@ -325,6 +318,13 @@ class AggregateListDecorator<T extends Aggregate<I>,I>
     I item)
   { 
     ((EditableAggregate<I>) collection).add(item);
+    return collection;
+  }
+  
+  @Override
+  public T addAll(T collection,Iterator<I> items)
+  {
+    ((EditableAggregate<I>) collection).addAll(items);
     return collection;
   }
 
