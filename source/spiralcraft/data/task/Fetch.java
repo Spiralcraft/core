@@ -219,6 +219,12 @@ public class Fetch
           ); 
       }
     }
+    
+    if (resultReflector==null)
+    { 
+      resultReflector
+        =DataReflector.getInstance(Type.getAggregateType(boundQuery.getType()));
+    }
 
     if (cursorChannel!=null)
     {
