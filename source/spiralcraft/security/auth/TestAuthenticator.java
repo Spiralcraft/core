@@ -67,7 +67,7 @@ class TestSession
   }
 
   @Override
-  public byte[] opaqueDigest(
+  public byte[] saltedDigest(
     String input)
   {
     try

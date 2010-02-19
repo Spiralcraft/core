@@ -54,6 +54,7 @@ public class AuthSession
   
   protected boolean debug;
 
+  protected String digestAlgorithm="SHA-256";
 
   
   protected final HashMap<String,Object> attributes
@@ -80,6 +81,14 @@ public class AuthSession
     }
     return null;
 
+  }
+  
+  public void setDigestAlgorithm(String digestAlgorithm)
+    throws NoSuchAlgorithmException
+  {
+
+    MessageDigest.getInstance(digestAlgorithm);
+    this.digestAlgorithm=digestAlgorithm;
   }
   
   /**
@@ -385,17 +394,17 @@ public class AuthSession
   
   
   /**
-   * <p>Compute a message digest which includes the specified input token
-   *   (eg. a password in some form) for later comparison as an authentication
-   *   step. 
+   * <p>Compute a message digest which includes the specified input 
+   *   token (eg. a password in some form) for later comparison as an 
+   *   authentication step. 
    * </p>
    * 
-   * <p>The realm name is used as a salt at the current time.
+   * <p>The configured property digestAlgorithm is used. SHA-256 is
+   *   the default algorithm.
    * </p>
    * 
-   * <p>Future behavior will permit incorporating
-   *   a one time random secret and a random secret associated with the user
-   *   account via the AuthModule interface.
+   * <p>The realm name is used as a prepended salt at the current time to
+   *   ensure uniqueness across realms
    * </p>
    *    
    * <p>The digest may be used as part of an authentication "ticket"
@@ -404,19 +413,36 @@ public class AuthSession
    * @param clearPass
    * @return
    */
-  public byte[] opaqueDigest(String input)
+  public byte[] saltedDigest(String input)
   {
     try
     { 
-      // authModule.getAccountSecret()
-      // randomSalt(randomSaltLength)
-      return MessageDigest.getInstance("SHA-256").digest
+      return MessageDigest.getInstance(digestAlgorithm).digest
         ((authenticator.getRealmName()+input).getBytes());
     }
     catch (NoSuchAlgorithmException x)
-    { throw new RuntimeException("SHA-256 not supported",x);
+    { throw new RuntimeException(digestAlgorithm+" not supported",x);
     }
   }    
+  
+  /**
+   * <p>Creates a SHA-256 digest of the specified string.
+   * </p>
+   * 
+   * @param input
+   * @return
+   */
+  public byte[] digest(String input)
+  {
+    try
+    { 
+      return MessageDigest.getInstance(digestAlgorithm).digest
+        (input.getBytes());
+    }
+    catch (NoSuchAlgorithmException x)
+    { throw new RuntimeException(digestAlgorithm+" not supported",x);
+    }
+  }
     
   /**
    * <p>Associate arbitrary application state with this LoginSession
