@@ -19,6 +19,7 @@ import spiralcraft.security.auth.AuthSession;
 import spiralcraft.security.auth.Credential;
 import spiralcraft.security.auth.PasswordCleartextCredential;
 import spiralcraft.security.auth.UsernameCredential;
+import spiralcraft.security.auth.ChallengeCredential;
 
 /**
  * <p>Convenience class for supplying login credentials from a user interface
@@ -38,6 +39,7 @@ public class LoginEntry
   
   private volatile String name;
   private volatile String password;
+  private volatile String challenge;
   private volatile byte[] digest;
   private volatile boolean persistent;
    
@@ -76,6 +78,18 @@ public class LoginEntry
   
   public byte[] getOpaqueDigest()
   { return digest;
+  }
+  
+  public void setChallengeCredential(String challenge)
+  { 
+    sessionChannel.get().addCredentials
+    (new Credential[] {new ChallengeCredential(challenge)});
+    this.challenge=challenge;
+    
+  }
+  
+  public String getChallenge()
+  { return challenge;
   }
   
   public boolean isPersistent()
