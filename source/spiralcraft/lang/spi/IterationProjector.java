@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2008 Michael Toth
+// Copyright (c) 1998,2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -16,6 +16,8 @@ package spiralcraft.lang.spi;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
@@ -26,8 +28,12 @@ import spiralcraft.lang.IterationCursor;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.parser.TupleField;
+import spiralcraft.lang.parser.TupleNode;
 import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.log.ClassLog;
+import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.lang.ClassUtil;
 
 /**
@@ -40,6 +46,8 @@ import spiralcraft.util.lang.ClassUtil;
  */
 public class IterationProjector<I,P,R>
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(IterationProjector.class);
 
   public final Channel<R> result;
   
@@ -52,21 +60,26 @@ public class IterationProjector<I,P,R>
         
   protected final Focus<I> telefocus;
     
-  protected final Channel<P> projectionChannel;  
+  protected final Channel<P> functionChannel;  
+  protected final ViewCache viewCache=new ViewCache();
+  protected final boolean reduce;
   
   @SuppressWarnings("unchecked")
   public IterationProjector
     (Channel<I[]> source
     ,Focus<?> focus
-    ,Expression<P> projection
+    ,Expression<P> function
+    ,boolean reduce
     )
     throws BindException
   {
+    this.reduce=reduce;
+    
     iterable
       =source.getReflector()
         .<IterationDecorator>decorate(source,IterationDecorator.class);
     if (iterable==null)
-    { throw new BindException("Source is not iterable: "+source);
+    { throw new BindException("Source is not iterable: "+source.getReflector());
     }
     
     
@@ -81,53 +94,92 @@ public class IterationProjector<I,P,R>
         (BeanReflector.<IterationCursor>getInstance(IterationCursor.class));
     
     telefocus.addFacet(new SimpleFocus(cursorChannel));
+    telefocus.addFacet(viewCache.bind(telefocus));
     
-    projectionChannel=telefocus.bind(projection);
-    
-    result=new AbstractChannel<R>
-      (containerReflector(projectionChannel))
+    if (!reduce)
     {
-
-      @Override
-      protected R retrieve()
+    
+      functionChannel=telefocus.bind(function);
+    
+      result=new MapChannel
+        (aggregateReflector(functionChannel));
+    }
+    else
+    { 
+      if (function.getRootNode() instanceof TupleNode)
       {
-        ArrayList<P> output=new ArrayList<P>();
-      
-        IterationCursor<I> it=iterable.iterator();
-        cursorChannel.push(it);
-        channel.push(null);
-        try
+        ArrayList<Channel<?>> keys=new ArrayList<Channel<?>>();
+        
+        TupleNode tupleNode=(TupleNode) function.getRootNode();
+        for (TupleField field : tupleNode.getFields())
         {
-          while (it.hasNext())
-          {
-            I item=it.next();
-            channel.set(item);
-            output.add(projectionChannel.get());
+          int lastSize=viewCache.getSize();
+          if (field.getSource()==null)
+          { 
+            throw new BindException
+              ("All fields in reduction tuple must be bound");
           }
-          return createResult(output); 
-        }
-        finally
-        { 
-          channel.pop();
-          cursorChannel.pop();
+          
+          // Provide same relative position to bind keys,
+          //   while disallowing having a key depend on the result tuple
+          Focus<?> keyFocus=telefocus.telescope(new VoidChannel());
+          
+          Channel<?> fieldChan
+            =keyFocus.bind(new Expression(field.getSource()));
+          
+          if (viewCache.getSize()==lastSize)
+          { keys.add(fieldChan);
+          }
+          else
+          { viewCache.setSize(lastSize);
+          }
         }
         
+        
+        functionChannel=telefocus.bind(function);
+        
+        if (keys.size()==0)
+        { 
+          result
+            =new ReduceScalarChannel
+              ((Reflector<R>) functionChannel.getReflector());
+        }
+        else
+        { 
+          result
+            =new ReduceGroupChannel
+              (aggregateReflector(functionChannel)
+              ,new KeyChannel(keys)
+              );
+        }
       }
+      else
+      {
 
-      @Override
-      protected boolean store(
-        R val)
-        throws AccessException
-      { return false;
+        functionChannel=telefocus.bind(function);
+        if (viewCache.getSize()>0)
+        { 
+          result
+            =new ReduceScalarChannel
+              ((Reflector<R>) functionChannel.getReflector());
+        }
+        else
+        { 
+          result
+            =new ReduceDistinctChannel
+              (aggregateReflector(functionChannel));
+        }
       }
-    };
-      
+    }
   }
   
+
+  
+  
   @SuppressWarnings("unchecked")
-  public  R createResult(ArrayList<P> output)
+  protected  R createArray(ArrayList<P> output)
   {
-    Class pclass=projectionChannel.getContentType();
+    Class pclass=functionChannel.getContentType();
     if (pclass.isPrimitive())
     { pclass=ClassUtil.boxedEquivalent(pclass);
     }
@@ -136,11 +188,288 @@ public class IterationProjector<I,P,R>
   }
   
   @SuppressWarnings("unchecked")
-  public Reflector<R> containerReflector(Channel<P> projection)
+  protected Reflector<R> aggregateReflector(Channel<P> projection)
     throws BindException
   { 
     return (Reflector<R>) 
       ArrayReflector.getInstance(projection.getReflector());
   }
   
+  class KeyChannel
+    extends AbstractChannel<Object>
+  {
+    private final ArrayList<Channel<?>> sources;
+    
+    public KeyChannel(ArrayList<Channel<?>> sources)
+    { 
+      super(BeanReflector.getInstance(Object.class));
+      this.sources=sources;
+    }
+
+    @Override
+    protected Object retrieve()
+    {
+      Object[] key=new Object[sources.size()];
+      int i=0;
+      for (Channel<?> source:sources)
+      { key[i++]=source.get();
+      }
+      return ArrayUtil.asKey(key);
+    }
+
+    @Override
+    protected boolean store(
+      Object val)
+      throws AccessException
+    { throw new UnsupportedOperationException("KeyChannel is read only");
+    }
+    
+    
+  }
+    
+  class MapChannel
+    extends AbstractChannel<R>
+  {
+    public MapChannel(Reflector<R> resultReflector)
+    { super(resultReflector);
+    }
+
+    @Override
+    protected R retrieve()
+    {
+      ArrayList<P> output=new ArrayList<P>();
+
+      IterationCursor<I> it=iterable.iterator();
+      cursorChannel.push(it);
+      channel.push(null);
+      viewCache.push();
+      viewCache.init();
+      try
+      {
+        while (it.hasNext())
+        {
+          I item=it.next();
+          channel.set(item);
+          viewCache.touch();
+          output.add(functionChannel.get());
+        }
+        viewCache.checkpoint();
+        return createArray(output); 
+      }
+      finally
+      { 
+        viewCache.pop();
+        channel.pop();
+        cursorChannel.pop();
+      }
+
+    }
+
+    @Override
+    protected boolean store(
+      R val)
+    throws AccessException
+    { return false;
+    }
+
+  }  
+
+  class ReduceDistinctChannel
+    extends AbstractChannel<R>
+  {
+    public ReduceDistinctChannel(Reflector<R> resultReflector)
+    { super(resultReflector);
+    }
+
+    @Override
+    protected R retrieve()
+    {
+      LinkedHashSet<P> output=new LinkedHashSet<P>();
+
+      IterationCursor<I> it=iterable.iterator();
+      cursorChannel.push(it);
+      channel.push(null);
+      viewCache.push();
+      viewCache.init();
+      try
+      {
+        while (it.hasNext())
+        {
+          I item=it.next();
+          channel.set(item);
+          viewCache.touch();
+          output.add(functionChannel.get());
+        }
+        viewCache.checkpoint();
+        return createArray(new ArrayList<P>(output)); 
+      }
+      finally
+      { 
+        viewCache.pop();
+        channel.pop();
+        cursorChannel.pop();
+      }
+
+    }
+
+    @Override
+    protected boolean store(
+      R val)
+    throws AccessException
+    { return false;
+    }
+
+  }   
+  
+  class ReduceGroupChannel
+    extends AbstractChannel<R>
+  {
+    
+    private final KeyChannel keyChannel;
+    
+    public ReduceGroupChannel
+      (Reflector<R> resultReflector
+      ,KeyChannel keyChannel
+      )
+    { 
+      
+      super(resultReflector);
+      
+      this.keyChannel=keyChannel;
+    }
+
+    @Override
+    protected R retrieve()
+    {
+      LinkedHashMap<Object,ViewStateRef<P,I>> groups
+        =new LinkedHashMap<Object,ViewStateRef<P,I>>();
+
+      IterationCursor<I> it=iterable.iterator();
+      cursorChannel.push(it);
+      channel.push(null);
+      viewCache.push();
+      try
+      {
+        while (it.hasNext())
+        {
+          I item=it.next();
+          channel.set(item);
+          
+          Object key=keyChannel.get();
+          if (debug)
+          { log.fine("Adding key "+key);
+          }
+          
+          ViewStateRef<P,I> stateRef=groups.get(key);
+          
+          if (stateRef!=null)
+          { viewCache.set(stateRef.states);
+          }
+          else
+          { 
+            viewCache.init();
+            stateRef=new ViewStateRef<P,I>();
+            stateRef.states=viewCache.get();
+            groups.put(key,stateRef);
+          }
+          stateRef.last=item;
+          
+          viewCache.touch();
+          
+          stateRef.data=functionChannel.get();
+          if (debug)
+          { log.fine("Group: "+stateRef.data);
+          }          
+        }
+        
+        ArrayList<P> output=new ArrayList<P>();
+        for (ViewStateRef<P,I> stateRef : groups.values())
+        {
+          channel.set(stateRef.last);
+          viewCache.set(stateRef.states);
+          viewCache.checkpoint();
+          output.add(functionChannel.get());
+        }
+        return createArray(output); 
+      }
+      finally
+      { 
+        viewCache.pop();
+        channel.pop();
+        cursorChannel.pop();
+      }
+
+    }
+
+    @Override
+    protected boolean store(
+      R val)
+    throws AccessException
+    { return false;
+    }
+
+  }  
+  
+  class ReduceScalarChannel
+    extends AbstractChannel<R>
+  {
+
+    public ReduceScalarChannel
+      (Reflector<R> resultReflector
+      )
+    { 
+
+      super(resultReflector);
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected R retrieve()
+    {
+      P output=null;
+
+      IterationCursor<I> it=iterable.iterator();
+      cursorChannel.push(it);
+      channel.push(null);
+      viewCache.push();
+      viewCache.init();
+      try
+      {
+        while (it.hasNext())
+        {
+          I item=it.next();
+          channel.set(item);
+          viewCache.touch();
+          output=functionChannel.get();
+        }
+        viewCache.checkpoint();
+        return (R) output; 
+      }
+      finally
+      { 
+        viewCache.pop();
+        channel.pop();
+        cursorChannel.pop();
+      }
+
+    }
+
+    @Override
+    protected boolean store(
+      R val)
+    throws AccessException
+    { return false;
+    }
+
+  }  
+  
 }
+
+class ViewStateRef<Tstate,TinputItem>
+{
+  ViewState<?>[] states;
+  Tstate data;
+  TinputItem last;
+}
+
