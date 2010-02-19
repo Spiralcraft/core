@@ -78,6 +78,17 @@ public class Collect<Titem>
   private Channel<Integer> expectedSizeChannel;
   private Expression<Integer> expectedSizeX;
   
+  { storeResults=true;
+  }
+  
+  public Collect()
+  { 
+  }
+  
+  public Collect(Scenario<?,?>[] chain)
+  { setChain(chain);
+  }
+  
   /**
    * The target of this Collector, which must be of type Aggregate<?>
    *   
