@@ -19,13 +19,13 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.Reflector;
 
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
 
 public abstract class LogicalNode<T1,T2>
   extends BooleanNode
-  implements Translator<Boolean,T1>
 {
   protected final Node _op1;
   protected final Node _op2;
@@ -63,9 +63,13 @@ public abstract class LogicalNode<T1,T2>
     
     if (resultChannel==null)
     {
+      Channel<T2> op2Channel=null;
+      
       Channel<?>[] params;
       if (op2Expr!=null)
-      { params=new Channel[] {focus.bind(op2Expr)};
+      { 
+        op2Channel=focus.bind(op2Expr);
+        params=new Channel[] {op2Channel};
       }
       else
       { params=new Channel[] {};
@@ -74,7 +78,11 @@ public abstract class LogicalNode<T1,T2>
       resultChannel
         =new TranslatorChannel<Boolean,T1>
           (op1Channel
-          ,this
+          ,newTranslator
+            (op1Channel.getReflector(),op2Channel!=null
+                ?op2Channel.getReflector()
+                :null
+            )
           ,params
           );
     }
@@ -117,5 +125,23 @@ public abstract class LogicalNode<T1,T2>
       out.append(prefix).append(getSymbol());
       _op1.dumpTree(out,prefix);
     }
+  }
+  
+  protected abstract LogicalTranslator 
+    newTranslator(Reflector<T1> r1,Reflector<T2> r2);
+  
+  abstract class LogicalTranslator
+    implements Translator<Boolean,T1>
+  {
+    
+    public Reflector<Boolean> getReflector()
+    { return BOOLEAN_REFLECTOR;
+    }
+    
+    public T1 translateForSet(Boolean val,Channel<?>[] mods)
+    { 
+      // Not reversible
+      throw new UnsupportedOperationException();
+    }    
   }
 }

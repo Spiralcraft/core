@@ -15,6 +15,8 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Reflector;
+import spiralcraft.lang.spi.Coercion;
 
 public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
   extends LogicalNode<T1,T2>
@@ -67,49 +69,85 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
     }
   }
   
-  @SuppressWarnings("unchecked") // Array is heterogeneous
-  public Boolean translateForGet(T1 val,Channel<?>[] mods)
+  @SuppressWarnings("unchecked")
+  @Override
+  protected LogicalTranslator 
+    newTranslator(final Reflector<T1> r1,final Reflector<T2> r2)
   { 
-    Comparable<T1> val1= val;
-    T2 val2=((Channel<T2>) mods[0]).get();
+
     
-    if (val1==null)
+    return new LogicalTranslator()
     { 
-      if (val2==null && _equals)
-      { return true;
+      private final Coercion<T2,T1> coercion;
+      
+      {
+        if (r1.getContentType()!=r2.getContentType())
+        {
+          if (Number.class.isAssignableFrom(r1.getContentType())
+              && Number.class.isAssignableFrom(r2.getContentType()))
+          {
+            if (r1.getContentType().equals(Float.class))
+            {
+              coercion=(Coercion) 
+                new Coercion<Number,Float>() 
+              {
+                public Float coerce(Number val)
+                { return val.floatValue();
+                }
+              };
+            }
+            else
+            { coercion=null;
+            }
+          }
+          else
+          { coercion=null;
+          }
+        } 
+        else
+        { coercion=null;
+        }
       }
-      else
-      { return null;
+      
+      public Boolean translateForGet(T1 val,Channel<?>[] mods)
+      { 
+        Comparable<T1> val1= val;
+        T2 val2=((Channel<T2>) mods[0]).get();
+
+        if (val1==null)
+        { 
+          if (val2==null && _equals)
+          { return true;
+          }
+          else
+          { return null;
+          }
+        }
+        
+        int result=val1.compareTo(coercion!=null?coercion.coerce(val2):val2);
+
+        if (_greaterThan)
+        {
+          if (_equals)
+          { return result>=0;
+          }
+          else
+          { return result>0;
+          }
+        }
+        else
+        {
+          if (_equals)
+          { return result<=0;
+          }
+          else
+          { return result<0;
+          }
+        }
       }
-    }
-    
-    int result=val1.compareTo(val2);
-    
-    if (_greaterThan)
-    {
-      if (_equals)
-      { return result>=0;
-      }
-      else
-      { return result>0;
-      }
-    }
-    else
-    {
-      if (_equals)
-      { return result<=0;
-      }
-      else
-      { return result<0;
-      }
-    }
+    };
   }
   
-  public T1 translateForSet(Boolean val,Channel<?>[] mods)
-  { 
-    // Not reversible
-    throw new UnsupportedOperationException();
-  }
   
   public boolean isGreaterThan()
   { return _greaterThan;
@@ -118,6 +156,7 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
   public boolean isEqual()
   { return _equals;
   }
+  
   
   @Override
   public String getSymbol()
@@ -143,3 +182,5 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
   }
 
 }
+
+

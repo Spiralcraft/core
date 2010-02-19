@@ -15,6 +15,7 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Reflector;
 
 public class LogicalNegateNode
   extends LogicalNode<Boolean,Void>
@@ -42,30 +43,40 @@ public class LogicalNegateNode
   { return " ! "+getLeftOperand().reconstruct();
   }
   
-  public Boolean translateForGet(Boolean val,Channel<?>[] mods)
+  @Override
+  protected LogicalTranslator 
+    newTranslator(Reflector<Boolean> r1,Reflector<Void> r2)
   { 
-    if (val==null)
-    { return null;
-    }
-    else if (val)
-    { return Boolean.FALSE;
-    }
-    else
-    { return Boolean.TRUE;
-    }
-  }
-  
-  public Boolean translateForSet(Boolean val,Channel<?>[] mods)
-  { 
-    if (val==null)
-    { return null;
-    }
-    else if (val)
-    { return Boolean.FALSE;
-    }
-    else
-    { return Boolean.TRUE;
-    }
+    return new LogicalTranslator()
+    {  
+      public Boolean translateForGet(Boolean val,Channel<?>[] mods)
+      { 
+        if (val==null)
+        { return null;
+        }
+        else if (val)
+        { return Boolean.FALSE;
+        }
+        else
+        { return Boolean.TRUE;
+        }
+      }
+
+      @Override
+      public Boolean translateForSet(Boolean val,Channel<?>[] mods)
+      { 
+        if (val==null)
+        { return null;
+        }
+        else if (val)
+        { return Boolean.FALSE;
+        }
+        else
+        { return Boolean.TRUE;
+        }
+      }
+    };
+    
   }
   
   @Override
