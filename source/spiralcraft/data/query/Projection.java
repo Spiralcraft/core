@@ -16,6 +16,8 @@ package spiralcraft.data.query;
 
 
 
+import java.util.Iterator;
+
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
@@ -23,6 +25,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.parser.CurrentFocusNode;
 import spiralcraft.lang.parser.Node;
 import spiralcraft.lang.parser.ParentFocusNode;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
@@ -31,9 +34,9 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
-import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.lang.TupleReflector;
 
 /**
  * <p>Generates a set of data from a source Query as defined by an Expression
@@ -65,17 +68,29 @@ public class Projection<T extends Tuple>
     setSource(source);
   }
   
+  
+  public void setType(Type<?> type)
+  { this.type=type;
+  }
+  
+  public Query getSource()
+  { 
+    return getSources()!=null && getSources().size()>0
+      ?getSources().get(0) 
+      :null;
+  }
+  
   @Override
   public FieldSet getFieldSet()
   { 
-    if (sources.size()>0)
-    { return sources.get(0).getFieldSet();
+    if (type!=null)
+    { return type.getScheme();
     }
     else
     { return null;
     }
   }
-    
+  
   public Projection
       (Projection<T> baseQuery
       ,Expression<T> x
@@ -155,12 +170,16 @@ public class Projection<T extends Tuple>
 }
 
 class ProjectionBinding<Tt extends Tuple>
-  extends UnaryBoundQuery<Projection<Tt>,Tt,Tuple>
+  extends BoundQuery<Projection<Tt>,Tuple>
 {
   private final Focus<?> paramFocus;
   private boolean resolved;
   private Channel<Tt> projectionChannel;
-  
+  private BoundQuery<?,Tuple> source;
+  protected ThreadLocalChannel<Tuple> sourceChannel;  
+  protected boolean aggregate;
+
+  @SuppressWarnings("unchecked")
   public ProjectionBinding
     (Projection<Tt> query
     ,Focus<?> paramFocus
@@ -168,10 +187,23 @@ class ProjectionBinding<Tt extends Tuple>
     )
     throws DataException
   { 
-    super(query.getSources(),paramFocus,store);
     setQuery(query);
     this.paramFocus=paramFocus;
     
+    Query sourceQuery=query.getSource();
+    
+    source
+      =(BoundQuery<?,Tuple>) (store!=null
+      ?store.query(sourceQuery,paramFocus)
+      :sourceQuery.bind(paramFocus)
+      );
+
+    if (source==null)
+    {  
+      throw new DataException
+        ("Querying "+store+" returned null (unsupported Type?) for "
+        +sourceQuery.toString());
+    }    
   }
 
   @Override
@@ -182,6 +214,11 @@ class ProjectionBinding<Tt extends Tuple>
       super.resolve();
       try
       {
+        source.resolve();
+        sourceChannel
+          =new ThreadLocalChannel<Tuple>
+            (new TupleReflector<Tuple>(source.getQuery().getFieldSet(),null));
+        
         if (debugLevel.canLog(Level.DEBUG))
         { log.fine("Binding projectionX "+getQuery().getX());
         }
@@ -191,9 +228,31 @@ class ProjectionBinding<Tt extends Tuple>
         if (debugLevel.canLog(Level.DEBUG))
         { log.debug("projectionChannel: "+projectionChannel);
         }
+        
+        if (!(projectionChannel.getReflector() instanceof DataReflector<?>))
+        { 
+          throw new DataException
+            ("Projection expression must return a Tuple or an Aggregate of "
+            +" tuples: "+getQuery().getX()
+            );
+        }
         this.boundType=
           ((DataReflector<Tt>) projectionChannel.getReflector()).getType();
-          
+        
+        if (this.boundType.isAggregate())
+        { 
+          this.aggregate=true;
+          this.boundType=this.boundType.getContentType();
+        }
+        
+        if (this.boundType.isPrimitive())
+        { 
+          throw new DataException
+            ("Projection expression cannot return a primitive type: "
+               +getQuery().getX()
+            );
+        }
+        
         if (debugLevel.canLog(Level.FINE))
         { projectionChannel.setDebug(true);
         }
@@ -205,88 +264,120 @@ class ProjectionBinding<Tt extends Tuple>
     }
   }
   
-
   @Override
-  protected SerialCursor<Tt> newSerialCursor(SerialCursor<Tuple> source)
+  public SerialCursor<Tuple> execute()
     throws DataException
-  { return new ProjectionSerialCursor(source);
-  }
-  
-  @Override
-  protected ScrollableCursor<Tt> 
-    newScrollableCursor(ScrollableCursor<Tuple> source)
-    throws DataException
-  { return new ProjectionScrollableCursor(source);
+  { return new ProjectionSerialCursor();
   }
 
   protected class ProjectionSerialCursor
-    extends UnaryBoundQuerySerialCursor
+    extends BoundQuerySerialCursor
   {
     
-    public ProjectionSerialCursor(SerialCursor<Tuple> source)
+    private final SerialCursor<?> parentCursor;
+    private Iterator<Tt> childIterator;
+    
+    public ProjectionSerialCursor()
       throws DataException
     { 
-      super(source);
+      super();
+      parentCursor=source.execute();
     }
   
-    @Override
-    protected boolean integrate()
-    { 
-      if (sourceChannel.get()!=null)
-      {
-        Tt t=projectionChannel.get();
-        if (debugFine)
-        { 
-          log.fine(toString()+" Projection: projected "+t+"   from   "
-            +sourceChannel.get());
-        }
-        if (t!=null)
-        { 
-          dataAvailable(t);
-          return true;
-        }
-      }
-      return false;
-      
-    }
-    
-    @Override
-    public Type<?> getResultType()
-    { return ((DataReflector<Tt>) projectionChannel.getReflector()).getType();
-    }
 
-  }
-
-  protected class ProjectionScrollableCursor
-    extends UnaryBoundQueryScrollableCursor
-  {
-    
-    
-    public ProjectionScrollableCursor(ScrollableCursor<Tuple> source)
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean next()
       throws DataException
-    { 
-      super(source);
-    }
-
-    @Override
-    protected boolean integrate()
-    { 
-      Tt t=projectionChannel.get();
-      if (debugFine)
-      { log.fine(toString()+" Projection: projected "+t+"   from   "+sourceChannel.get());
+    {
+      sourceChannel.push(parentCursor.getTuple());
+      try
+      {
+        if (aggregate)
+        {
+          while (true)
+          { 
+            if (childIterator!=null)
+            {
+              if (childIterator.hasNext())
+              { 
+                dataAvailable(childIterator.next());
+                return true;
+              }
+              else
+              { 
+                childIterator=null;
+              }
+            }
+          
+            if (childIterator==null)
+            { 
+            
+              if (parentCursor.next())
+              {
+                sourceChannel.set(parentCursor.getTuple());
+                Iterable childVal=(Iterable<Tt>) projectionChannel.get();
+                if (childVal!=null)
+                { childIterator=childVal.iterator();
+                }
+              }
+              else
+              { return false;
+              }
+            
+            }
+          }
+        }
+        else
+        { 
+          while (true)
+          { 
+            if (parentCursor.next())
+            {
+              sourceChannel.set(parentCursor.getTuple());
+              Tt childVal=projectionChannel.get();
+              if (childVal!=null)
+              { 
+                dataAvailable(childVal);
+                return true;
+              }
+              
+            }
+            else
+            { return false;
+            }
+          }
+        }
       }
-      if (t!=null)
+      finally
+      { sourceChannel.pop();
+      }
+    }
+    
+    public void close()
+      throws DataException
+    {
+      if (childIterator!=null)
       { 
-        dataAvailable(t);
-        return true;
+        while (childIterator.hasNext())
+        { childIterator.next();
+        }
       }
-      return false;
+      if (parentCursor!=null)
+      { parentCursor.close();
+      }
     }
-
+    
+    
+    
     @Override
     public Type<?> getResultType()
-    { return ((DataReflector<Tt>) projectionChannel.getReflector()).getType();
+    {  
+      Type<?> ret
+        =((DataReflector<Tt>) projectionChannel.getReflector()).getType();
+      return ret;
     }
 
   }
+
 }
