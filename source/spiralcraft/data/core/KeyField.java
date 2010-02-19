@@ -46,6 +46,9 @@ public class KeyField<T extends DataComposite>
   
   private KeyImpl<Tuple> key;
   
+  { this.setTransient(true);
+  }
+  
   public KeyField(KeyImpl<Tuple> key)
   { 
     this.key=key;
