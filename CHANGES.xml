@@ -244,6 +244,7 @@
         </resources>
       </scm:Change>
       
+      
       <scm:Change>
       
         <notes>
@@ -326,6 +327,10 @@
         <notes>
           <scm:Note>Added "description" property to Field and Type
           </scm:Note>
+          <scm:Note>KeyField is Transient
+          </scm:Note>
+          <scm:Note>Don't persist transient fields
+          </scm:Note>
         </notes>
     
         <path>source/spiralcraft/data
@@ -333,6 +338,10 @@
     
         <resources>
           <URI>Field.java
+          </URI>
+          <URI>core/KeyField.java
+          </URI>
+          <URI>sax/DataWriter.java
           </URI>
           <URI>Type.java
           </URI>
