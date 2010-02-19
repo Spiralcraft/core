@@ -449,15 +449,18 @@ class Context
         { DataWriter.log.fine("Starting field "+field.getURI());
         }
         
-        Object value=field.getValue(tuple);
-        if (value!=null)
+        if (!field.isTransient())
         {
-          empty=false;
-          if (field.getType().isAggregate())
-          { currentFrame=new AggregateFieldFrame(tuple,field);
-          }
-          else
-          { currentFrame=new SimpleFieldFrame(tuple,field);
+          Object value=field.getValue(tuple);
+          if (value!=null)
+          {
+            empty=false;
+            if (field.getType().isAggregate())
+            { currentFrame=new AggregateFieldFrame(tuple,field);
+            }
+            else
+            { currentFrame=new SimpleFieldFrame(tuple,field);
+            }
           }
         }
       }
