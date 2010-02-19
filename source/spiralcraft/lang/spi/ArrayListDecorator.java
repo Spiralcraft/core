@@ -23,6 +23,7 @@ import spiralcraft.util.ArrayUtil;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * Implements an IterationDecorator for a source that returns an Array
@@ -51,6 +52,23 @@ public class ArrayListDecorator<I>
     I[] collection,
     I item)
   { return ArrayUtil.append(collection,item);
+  }
+  
+  @Override
+  public I[] addAll(
+    I[] collection
+    ,Iterator<I> items
+    )
+  {
+    LinkedList<I> itemList=new LinkedList<I>();
+    int i=0;
+    while (items.hasNext())
+    { 
+      itemList.add(items.next());
+      i++;
+    }
+    return ArrayUtil.concat(collection,itemList);
+    
   }
 
   @SuppressWarnings("unchecked")
