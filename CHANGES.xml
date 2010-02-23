@@ -2,6 +2,94 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
+    <revision>0.4.6
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>????
+    </date>
+    
+    <notes>
+      <scm:Note>New spiralcraft.app package (incomplete) for common
+        component model factored from the component model aspect of 
+        spiralcraft-textgen.
+      </scm:Note> 
+    
+    </notes>
+    
+    <detail>
+      <scm:Change>
+        <notes>
+          <scm:Note>
+            Added isConfig(),isDebug(),isTrace(),isFine() convenience 
+            methods to log.Level class.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/log/Level.java
+        </path>
+      
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>
+            New spiralcraft.app package (incomplete) for common
+            component model factored from the component model aspect of 
+            spiralcraft-textgen.    
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app
+        </path>
+        
+        <resources>
+          <URI>Component.java
+          </URI>
+          <URI>Container.java
+          </URI>
+          <URI>Event.java
+          </URI>
+          <URI>EventHandler.java
+          </URI>
+          <URI>InitializeMessage.java
+          </URI>
+          <URI>Message.java
+          </URI>
+          <URI>MessageContext.java
+          </URI>
+          <URI>MessageHandler.java
+          </URI>
+          <URI>MessageHandlerChain.java
+          </URI>
+          <URI>State.java
+          </URI>
+          <URI>StateFrame.java
+          </URI>
+          <URI>components/Iterate.java
+          </URI>
+          <URI>components/IterationState.java
+          </URI>
+          <URI>spi/AbstractComponent.java
+          </URI>
+          <URI>spi/AbstractContainer.java
+          </URI>
+          <URI>spi/MessageHandlerState.java
+          </URI>
+          <URI>spi/SimpleState.java
+          </URI>
+          <URI>spi/ValueState.java
+          </URI>
+        
+        </resources>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+  
+  
+  <scm:Change>
     <revision>0.4.5
     </revision>
     
