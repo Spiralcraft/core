@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<title>spiralcraft.common package</title>
+<!-- 
+
+   Copyright (c) 1998,2008 Michael Toth
+   Spiralcraft Inc., All Rights Reserved
+  
+   This package is part of the Spiralcraft project and is licensed under
+   a multiple-license framework.
+  
+   You may not use this file except in compliance with the terms found in the 
+   SPIRALCRAFT-LICENSE.txt file at the top of this distribution, or available
+   at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
+  
+   Unless otherwise agreed to in writing, this software is distributed on an
+   "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+  
+-->
+</head>
+<body>
+
+	<p>A toolkit for building active context hierarchies to implement 
+	  application structure and behavior in a UI-neutral manner.
+	</p>
+	
+	<p>An active context hierarchy is composed of Components defined
+	  relative to context (state, data, Components, resources, etc.) made
+	  visible by their ancestors in the containership hierarchy, where 
+	  Components communicate using a message and event model.
+	</p>
+	
+        <p>Supports the portability of applications to different UIs or to
+          non-interactive mode using a mix of declarative composition 
+          and customizable automatic UI component mapping.
+        </p>
+	
+        <p>Capable of a high degree of parallelism when using multiple state
+          trees, such is in a multi-user or multi-view application.
+        </p>
+        
+        <p>The separation of state and configuration results in lightweight
+          session state where necessary, and allows for robust components 
+          without incurring additional memory cost for additional parallelism,
+          as would be the case where the component tree is instantiated for
+          each session.
+        </p>
+</body>
+</html>
