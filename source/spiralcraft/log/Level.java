@@ -49,19 +49,7 @@ public enum Level
   ,OFF("OFF",Integer.MAX_VALUE)
   ;
   
-/*  
-  public static final Level ALL=new Level("ALL",0);
-  public static final Level FINE=new Level("FINE",1000);
-  public static final Level TRACE=new Level("TRACE",2000);
-  public static final Level DEBUG=new Level("DEBUG",3000);
-  public static final Level CONFIG=new Level("CONFIG",4000);
-  public static final Level INFO=new Level("INFO",5000);
-  public static final Level WARNING=new Level("WARNING",6000);
-  public static final Level SEVERE=new Level("SEVERE",7000);
-  public static final Level OFF=new Level("OFF",Integer.MAX_VALUE);
-/*
- *   
- */
+
   private final String name;
   private final int value;
   
@@ -82,6 +70,22 @@ public enum Level
   { return value<=level.value;
   }
   
+  public boolean isFine()
+  { return canLog(Level.FINE);
+  }
+  
+  public boolean isTrace()
+  { return canLog(Level.TRACE);
+  }
+
+  public boolean isDebug()
+  { return canLog(Level.DEBUG);
+  }
+
+  public boolean isConfig()
+  { return canLog(Level.CONFIG);
+  }
+
   /**
    * <p>Indicate whether messages of the specified level are finer than 
    *  (exclusively) the specified level
