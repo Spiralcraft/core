@@ -28,15 +28,12 @@ import spiralcraft.data.lang.CursorBinding;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
-//import spiralcraft.lang.Focus;
-import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.Focus;
 import spiralcraft.log.Level;
 
 class UnionBinding<Tq extends Union,Tt extends Tuple>
   extends BoundQuery<Tq,Tt>
 {
-//  private final Focus<?> paramFocus;
-  private SimpleFocus<?> focus;
   private List<BoundQuery<?,Tt>> sources
     =new ArrayList<BoundQuery<?,Tt>>();
   private boolean resolved;
@@ -44,21 +41,20 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
   
   private final boolean debugFine;
   
-//  private Queryable<Tt> store;
   
   @SuppressWarnings("unchecked")
   public UnionBinding
     (Tq query
-//    ,Focus<?> paramFocus
+    ,Focus<?> paramFocus
     ,Queryable<?> store
     )
     throws DataException
   { 
+
     for (Query sourceQuery : query.getSources())
-    { sources.add((BoundQuery<?,Tt>) store.query(sourceQuery,focus));
+    { sources.add((BoundQuery<?,Tt>) store.query(sourceQuery,paramFocus));
     }
-//    this.paramFocus=paramFocus;
-//    this.store=store;
+
     setQuery(query);
     debugTrace=debugLevel.canLog(Level.TRACE);
     

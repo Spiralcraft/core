@@ -165,6 +165,10 @@ public abstract class AbstractStore
     Focus<?> context)
     throws DataException
   { 
+    if (context==null)
+    { context=focus;
+    }
+    
     Queryable<Tuple> container=Space.find(context);
     if (container==null)
     { container=this;
