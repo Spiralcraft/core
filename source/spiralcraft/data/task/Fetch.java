@@ -174,6 +174,12 @@ public class Fetch
     if (query==null)
     { throw new BindException("Query cannot be null");
     }
+    try
+    { query.resolve();
+    }
+    catch (DataException x)
+    { throw new BindException("Error resolving query "+x);
+    }
     Type<?> type=query.getType();
     if (type!=null)
     { resultReflector=DataReflector.getInstance(Type.getAggregateType(type));
