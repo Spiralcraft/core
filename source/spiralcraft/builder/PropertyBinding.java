@@ -520,7 +520,7 @@ public class PropertyBinding
         for (String textData:_specifier.getTextDataList())
         { 
           
-          log.fine("String value "+textData);
+          // log.fine("String value "+textData);
           try
           { textData=ContextDictionary.substitute(textData);
           }
@@ -530,7 +530,7 @@ public class PropertyBinding
               ("Error parsing properties in "+textData,x);
           }
           Object elementValue=_converter.fromString(textData);
-          log.fine("Collection value "+elementValue);
+          // log.fine("Collection value "+elementValue);
           NamespaceContext.push(_specifier.getPrefixResolver());
           try
           { value=cd.add(value,elementValue);
