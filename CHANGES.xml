@@ -2,16 +2,24 @@
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
   <scm:Change>
-    <revision>0.4.6
+    <revision>0.4.5.1
     </revision>
     
     <authorId>miketoth
     </authorId>
     
-    <date>????
+    <date>2010-02-24
     </date>
     
     <notes>
+      <scm:Note>Fix for NPE in Union query when querying an abstract base
+        type.
+      </scm:Note> 
+      
+      <scm:Note>Remove extraneous logging inadvertently left in 
+        spiralcraft.builder.PropertyBinding
+      </scm:Note> 
+
       <scm:Note>New spiralcraft.app package (incomplete) for common
         component model factored from the component model aspect of 
         spiralcraft-textgen.
@@ -20,6 +28,41 @@
     </notes>
     
     <detail>
+      <scm:Change>
+        <notes>
+          <scm:Note>Fix for NPE in Union query and AbstractStore when querying 
+            an abstract base type due to issue where Focus is not passed
+            through.
+          </scm:Note> 
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>query/Union.java
+          </URI>
+          <URI>query/UnionBinding.java
+          </URI>
+          <URI>spi/AbstractStore.java
+          </URI>
+        </resources>
+      
+      </scm:Change>
+    
+    
+      <scm:Change>
+        <notes>
+          <scm:Note>Remove extraneous logging inadvertently left in 
+            spiralcraft.builder.PropertyBinding
+          </scm:Note> 
+        </notes>
+        
+        <path>source/spiralcraft/builder/PropertyBinding.java
+        </path>
+      
+      </scm:Change>
+
       <scm:Change>
         <notes>
           <scm:Note>

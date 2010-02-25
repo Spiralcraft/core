@@ -1,0 +1,35 @@
+<example:IntegerNode.list
+  xmlns:example="class:/spiralcraft/data/test/example"
+  >
+  
+  <example:IntegerNode>
+  
+    <nodeId>1
+    </nodeId>
+    
+    <value>100
+    </value>
+    
+  </example:IntegerNode>
+
+  <example:IntegerNode>
+  
+    <nodeId>2
+    </nodeId>
+    
+    <value>200
+    </value>
+    
+  </example:IntegerNode>
+
+  <example:IntegerNode>
+  
+    <nodeId>3
+    </nodeId>
+    
+    <value>300
+    </value>
+    
+  </example:IntegerNode>
+
+</example:IntegerNode.list>

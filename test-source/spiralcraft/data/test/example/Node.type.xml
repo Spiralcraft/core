@@ -2,28 +2,39 @@
   xmlns:meta="class:/spiralcraft/data/types/meta/"
   xmlns:example="class:/spiralcraft/data/test/example"
   >
-      <fields>
-        <meta:Field>
+  <fields>
+    <meta:Field>
+      
+      <name>nodeId
+      </name>
           
-          <name>parentNode
-          </name>
-          
-          <type>
-          	<example:Node.type/>
-          </type>
+      <type>
+        <String.type/>
+      </type>
 
-        </meta:Field>
+    </meta:Field>
 
-        <meta:Field>
+    <meta:Field>
+      
+      <name>parentNode
+      </name>
           
-          <name>children
-          </name>
-          
-          <type>
-          	<example:Node.list.type/>
-          </type>
+      <type>
+        <example:Node.type/>
+      </type>
 
-        </meta:Field>
-      </fields>
+    </meta:Field>
+
+    <meta:Field>
+          
+      <name>children
+      </name>
+         
+      <type>
+       	<example:Node.list.type/>
+      </type>
+
+    </meta:Field>
+  </fields>
 
 </meta:Type>

@@ -1,0 +1,22 @@
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:example="class:/spiralcraft/data/test/example"
+  >
+  <baseType><example:Node.type/>
+  </baseType>
+  
+  <fields>
+    <meta:Field>
+         
+      <name>value
+      </name>
+          
+      <type>
+        <String.type/>
+      </type>
+
+    </meta:Field>
+
+  </fields>
+
+</meta:Type>

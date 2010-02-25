@@ -21,5 +21,15 @@
       <type><example:Fact.type/>
       </type>
     </meta:Entity>
+
+    <meta:Entity>
+      <type><example:IntegerNode.type/>
+      </type>
+    </meta:Entity>
+
+    <meta:Entity>
+      <type><example:StringNode.type/>
+      </type>
+    </meta:Entity>
   </entities>
 </meta:Schema>

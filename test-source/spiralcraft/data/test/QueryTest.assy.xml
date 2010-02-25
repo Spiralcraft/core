@@ -504,6 +504,26 @@
           
         </test:Assertion>
 
+        <test:Assertion>
+          <name>Heterogeneous query of abstract base type
+          </name>
+          
+          <subjectX>
+              [*dtask:Fetch
+                {
+                  [*query:Scan
+                    {[@example:Node].type
+                    }
+                  ]
+                }
+              ].()
+          </subjectX>
+          
+          <testX>.@size()==6
+          </testX>
+          
+        </test:Assertion>
+
       </scenarios>
       
     </task:Sequence>

@@ -1,0 +1,35 @@
+<example:StringNode.list
+  xmlns:example="class:/spiralcraft/data/test/example"
+  >
+  
+  <example:StringNode>
+  
+    <nodeId>4
+    </nodeId>
+    
+    <value>one
+    </value>
+    
+  </example:StringNode>
+
+  <example:StringNode>
+  
+    <nodeId>5
+    </nodeId>
+    
+    <value>two
+    </value>
+    
+  </example:StringNode>
+
+  <example:StringNode>
+  
+    <nodeId>6
+    </nodeId>
+    
+    <value>three
+    </value>
+    
+  </example:StringNode>
+
+</example:StringNode.list>
