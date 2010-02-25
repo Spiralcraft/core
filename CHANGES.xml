@@ -1,6 +1,36 @@
 <scm:Change.list
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
+
+  <scm:Change>
+    <revision>0.4.5.2
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-02-25
+    </date>
+    
+    <notes>
+      <scm:Note>Fix NPE in Union query when using no-arg constructor due to 
+        Type not getting resolved from sources. Ensure that Fetch calls
+        query.resolve().
+      </scm:Note> 
+      
+      <path>source/spiralcraft/data/
+      </path>
+      
+      <resources>
+        <URI>query/Union.java
+        </URI>
+        <URI>task/Fetch.java
+        </URI>
+      </resources>
+    
+    </notes>
+  </scm:Change>
+
   <scm:Change>
     <revision>0.4.5.1
     </revision>
