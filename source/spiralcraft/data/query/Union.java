@@ -36,12 +36,24 @@ public class Union
   }
   
   /**
-   * Construct a Selection which reads data from the specified source Query and filters
+   * Construct a Union which reads data from the specified source Query and filters
    *   data according to the specified constraints expression.
    */
   public Union(Query ... sources)
     throws DataException
   { 
+    for (Query query:sources)
+    { addSource(query);
+    }
+    
+    
+  }
+  
+  @Override
+  public void resolve()
+    throws DataException
+  { 
+    super.resolve();
     for (Query query:sources)
     { 
       if (type==null)
@@ -75,11 +87,9 @@ public class Union
         }
       }
       
-      addSource(query);
-    }
-    
-    
+    }    
   }
+  
   
   @Override
   public FieldSet getFieldSet()
