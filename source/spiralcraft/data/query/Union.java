@@ -45,7 +45,7 @@ public class Union
     for (Query query:sources)
     { addSource(query);
     }
-    
+    resolve();
     
   }
   
