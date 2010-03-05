@@ -14,11 +14,11 @@
 //
 package spiralcraft.util.crypt;
 
-import java.math.BigInteger;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import spiralcraft.util.string.StringUtil;
+import spiralcraft.codec.text.HexCodec;
 
 public class Digester
 {
@@ -36,10 +36,14 @@ public class Digester
   
   public String digestToHex(String input)
   { 
-    byte[] digestBytes=messageDigest.digest(input.getBytes());
-    BigInteger digest=new BigInteger(1,digestBytes);
-    String ret=digest.toString(16);
-    return StringUtil.prepad(ret,'0',digestBytes.length*2);
+    try
+    {
+      byte[] digestBytes=messageDigest.digest(input.getBytes("UTF-8"));
+      return HexCodec.encodeHex(digestBytes);
+    }
+    catch (UnsupportedEncodingException x)
+    { throw new RuntimeException("UTF-8 encoding not supported");
+    }
   }
   
 

@@ -68,11 +68,13 @@ public abstract class StringConverter<T>
     _MAP.put(byte.class,new ByteToString());
     _MAP.put(Character.class,new CharacterToString());
     _MAP.put(char.class,new CharacterToString());
+    _MAP.put(char[].class,new CharacterArrayToString());
     _MAP.put(BigInteger.class,new BigIntegerToString());
     _MAP.put(BigDecimal.class,new BigDecimalToString());
     _MAP.put(Class.class,new ClassToString());
     _MAP.put(URI.class,new URIToString());
     _MAP.put(Pattern.class,new PatternToString());
+    _MAP.put(byte[].class,new ByteArrayToHex());
     
   }
 
@@ -137,7 +139,15 @@ public abstract class StringConverter<T>
     (Class<?> type,StringConverter<?> converter)
   {
     synchronized (_MAP)
-    { _MAP.put(type,converter);
+    { 
+      if (_MAP.get(type)!=null)
+      { 
+        throw new IllegalArgumentException
+          (type+" is already registered to use "+_MAP.get(type)+" as a default"
+           +" StringConverter and cannot be mapped to "+converter
+           );
+      }
+      _MAP.put(type,converter);
     }
   }
 
@@ -315,6 +325,22 @@ final class CharacterToString
   }
 }
 
+final class CharacterArrayToString
+  extends StringConverter<char[]>
+{
+  @Override
+  public char[] fromString(String val)
+  { return (val!=null?val.toCharArray():null);
+  }
+  
+  @Override
+  public String toString(char[] val)
+  { return String.copyValueOf(val);
+  }
+}
+
+
+
 final class ByteToString
   extends StringConverter<Byte>
 {
@@ -323,6 +349,7 @@ final class ByteToString
   { return (val!=null && !val.isEmpty())?Byte.parseByte(val):null;
   }
 }
+
 
 final class BigDecimalToString
   extends StringConverter<BigDecimal>
