@@ -48,6 +48,31 @@ public class BeanInfoCache
   private static final WeakHashMap<URI,WeakReference<Class<?>>> uriMap
     =new WeakHashMap<URI,WeakReference<Class<?>>>();
   
+  private static final HashMap<URI,Class<?>> primitiveMap
+    =new HashMap<URI,Class<?>>();
+  
+  static
+  {
+    addPrimitives
+      (Void.TYPE
+      ,Boolean.TYPE
+      ,Character.TYPE
+      ,Byte.TYPE
+      ,Short.TYPE
+      ,Integer.TYPE
+      ,Long.TYPE
+      ,Float.TYPE
+      ,Double.TYPE
+      );
+  }
+  
+  protected static void addPrimitives(Class<?> ... primitives)
+  {
+    for (Class<?> clazz:primitives)
+    { primitiveMap.put(getClassURI(clazz),clazz);
+    }
+  }
+  
   /**
    * Obtain or create the singleton instance of the BeanInfoCache which
    *   corresponds to the given introspector flags.
@@ -132,16 +157,21 @@ public class BeanInfoCache
       
     }
     
+    if (result==null)
+    { result=primitiveMap.get(uri);
+    }
+    
     return result;
   }
   
   public BeanInfoCache()
-  {
+  { 
   }
 
   public BeanInfoCache(int introspectorFlags)
   { _introspectorFlags=introspectorFlags;
   }
+  
 
   /**
    *@return The MappedBeanInfo object for the specified Class.
