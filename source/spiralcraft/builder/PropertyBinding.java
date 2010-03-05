@@ -539,7 +539,9 @@ public class PropertyBinding
           { NamespaceContext.pop();
           }
         }
-        log.fine("Result is "+value+" from "+cd);
+        if (_specifier.getDebugLevel().isDebug())
+        { log.fine("Result is "+value+" from "+cd);
+        }
         apply(value);
       }
       catch (BindException x)

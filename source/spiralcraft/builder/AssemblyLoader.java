@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.sax.ParseTreeFactory;
 import spiralcraft.sax.ParseTree;
 import spiralcraft.sax.Node;
@@ -505,6 +506,11 @@ public class AssemblyLoader
           }
           
           prop.setDataURI(URI.create(uriStr));
+        }
+        else if (name=="debugLevel")
+        { 
+          String debugLevel=attribs[i].getValue();
+          prop.setDebugLevel(Level.valueOf(debugLevel));
         }
         else
         { 

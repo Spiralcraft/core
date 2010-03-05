@@ -28,6 +28,7 @@ import spiralcraft.util.string.StringUtil;
 import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.lang.Expression;
+import spiralcraft.log.Level;
 
 import java.util.List;
 
@@ -73,6 +74,7 @@ public class PropertySpecifier
   private Class<?> propertyType;
   
   private ParsePosition position;
+  private Level debugLevel=Level.INFO;
 
   public PropertySpecifier
     (AssemblyClass container
@@ -126,6 +128,13 @@ public class PropertySpecifier
     addAssemblyClass(content);
   }
   
+  public void setDebugLevel(Level debugLevel)
+  { this.debugLevel=debugLevel;
+  }
+  
+  public Level getDebugLevel()
+  { return this.debugLevel;
+  }
   
   public void setParsePosition(ParsePosition position)
   { this.position=position;
