@@ -116,7 +116,7 @@ public class DataAuthenticator
           +"|| (DigestCredential!=null " 
           +"    && DigestCredential" 
           +"	  .equals([:class:/spiralcraft/security/auth/AuthSession] " 
-          +"     .opaqueDigest(.username+.clearpass)"
+          +"     .saltedDigest(.username+.clearpass)"
           +"     )"
           +"   )"
           );
