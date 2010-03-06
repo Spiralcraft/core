@@ -62,7 +62,9 @@ public class Scheduler
   
   private ThreadPool _pool
     =new ThreadPool();
-  { _pool.setThreadNamePrefix("scheduler-"+id);
+  { 
+    _pool.setThreadNamePrefix("scheduler-"+id);
+//    _pool.setInitialSize(1);
   }
   
   private boolean _started=false;
