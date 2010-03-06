@@ -164,8 +164,8 @@ public class Pool<T>
   {
     synchronized (_monitor)
     {
-      restoreInitial(_maxStartupMs);
       _started=true;
+      restoreInitial(_maxStartupMs);
       _keeper.start();
       _monitor.notifyAll();
       
@@ -210,11 +210,11 @@ public class Pool<T>
       _lastUse=lastUse;
       if (!_started)
       { 
-        if (debugLevel.canLog(Level.DEBUG))
+        if (debugLevel.isDebug())
         { log.debug("Waiting for pool to start");
         }
         waitOnMonitor();
-        if (debugLevel.canLog(Level.DEBUG))
+        if (debugLevel.isDebug())
         { log.debug("Notified that pool started");
         }
       }
@@ -238,11 +238,21 @@ public class Pool<T>
           }
         }
       }
-      Reference<T> ref=popAvailable();
-      ref.checkOutTime=Clock.instance().approxTimeMillis();
-      putOut(ref);
-      _checkOutsCount++;
-      return ref.resource;
+      
+      if (_started)
+      {
+        Reference<T> ref=popAvailable();
+        ref.checkOutTime=Clock.instance().approxTimeMillis();
+        putOut(ref);
+        _checkOutsCount++;
+        if (debugLevel.isFine())
+        { log.fine("Checkout complete");
+        }
+        return ref.resource;
+      }
+      else
+      { throw new InterruptedException("Pool is stopping");
+      }
 
     }
   }
@@ -411,6 +421,7 @@ public class Pool<T>
       { 
         Thread keeperThread=new Thread(this,name);
         keeperThread.setDaemon(true);
+        keeperThread.setPriority(keeperThread.getPriority()+1);
         keeperThread.start();
       }
     }
@@ -539,7 +550,7 @@ public class Pool<T>
       }
       _addsCount++;
 
-      if (debugLevel.canLog(Level.DEBUG))
+      if (debugLevel.isDebug())
       { log.fine("Added resource "+ref.resource.getClass().getName());
       }
     }
