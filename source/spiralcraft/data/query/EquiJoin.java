@@ -26,6 +26,7 @@ import spiralcraft.log.Level;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.Type;
 import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.data.access.SerialCursor;
 
@@ -78,10 +79,26 @@ public class EquiJoin
   { 
   }
   
+  /**
+   * <p>Construct an EquiJoin which returns entities of the specified type
+   *   where the expression "lhs == rhs" evaluates to true.
+   * </p> 
+   *   
+   * 
+   * @param type
+   * @param lhs An expression, normally in the form ".field"
+   * @param rhs An expression, normally referencing the parent context
+   */
+  public EquiJoin(Type<?> type,Expression<?> lhs,Expression<?> rhs)
+  {
+    setSource(new Scan(type));
+    setLHSExpressions(new Expression[] {lhs});
+    setRHSExpressions(new Expression[] {rhs});
+  }
 
   
 //  /**
-//   * <p>Construct an Equijoin, which queries rows by specifying the values of
+//   * <p>Construct an EquiJoin, which queries rows by specifying the values of
 //   *   a set of fields that define a relation.
 //   * </p>
 //   * 
