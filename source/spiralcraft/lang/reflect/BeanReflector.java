@@ -375,10 +375,17 @@ public class BeanReflector<T>
     final Class otherClass=other.getContentType();
     if (otherClass.isPrimitive())
     { 
-      // If we can assign the boxed equivalent of a primitive, we can
-      //   assign the primitive type
-      return getContentType()
-        .isAssignableFrom(ClassUtil.boxedEquivalent(otherClass));
+      if (getContentType().isPrimitive())
+      { return getContentType().isAssignableFrom(otherClass);
+      }
+      else
+      {
+        
+        // If we can assign the boxed equivalent of a primitive, we can
+        //   assign the primitive type
+        return getContentType()
+          .isAssignableFrom(ClassUtil.boxedEquivalent(otherClass));
+      }
     }
     else if (getContentType().isPrimitive())
     { 
