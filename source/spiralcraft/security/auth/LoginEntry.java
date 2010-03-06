@@ -69,14 +69,14 @@ public class LoginEntry
   { return password;
   }
   
-  public void setOpaqueDigest(byte[] digest)
+  public void setSaltedDigest(byte[] digest)
   {
     sessionChannel.get().addCredentials
       (new Credential[] {new DigestCredential(digest)});
     this.digest=digest;
   }
   
-  public byte[] getOpaqueDigest()
+  public byte[] getSaltedDigest()
   { return digest;
   }
   
