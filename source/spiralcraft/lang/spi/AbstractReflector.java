@@ -17,6 +17,7 @@ package spiralcraft.lang.spi;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -184,6 +185,11 @@ public abstract class AbstractReflector<T>
       channel=new TuneChannel
         (source,focus,params[0]);
     }
+    else if (name.equals("@size"))
+    {
+      assertNoParameters(params,name);
+      channel=new CollectionSizeChannel(source);
+    }
     return (Channel<X>) channel;
   }
   
@@ -192,6 +198,14 @@ public abstract class AbstractReflector<T>
   { 
     if (params==null || params.length!=1)
     { throw new BindException(name+" accepts a single parameter of type "+type);
+    }
+  }
+  
+  protected void assertNoParameters(Expression<?>[] params,String name)
+    throws BindException
+  { 
+    if (params!=null && params.length>0)
+    { throw new BindException(name+" does not accept parameters");
     }
   }
   
@@ -539,6 +553,11 @@ class TopChannel<T,I>
       .getComponentReflector()
       );
     decorator=source.<IterationDecorator>decorate(IterationDecorator.class);
+    if (decorator==null)
+    { 
+      throw new BindException
+        (source.getReflector().getTypeURI()+" is not an iterable type");
+    }
     
   }
   
@@ -558,6 +577,45 @@ class TopChannel<T,I>
   public boolean store(I val)
   { return false;
   }
+}
+
+class CollectionSizeChannel<T>
+  extends AbstractChannel<Integer>
+{
+  private final CollectionDecorator<T,?> decorator;
+  private final Channel<T> source;
+  
+  @SuppressWarnings("unchecked")
+  public CollectionSizeChannel(Channel<T> source)
+    throws BindException
+  {
+    super(BeanReflector.<Integer>getInstance(Integer.class));
+    this.decorator
+      =source.<CollectionDecorator>decorate(CollectionDecorator.class);
+    if (decorator==null)
+    { 
+      throw new BindException
+        (source.getReflector().getTypeURI()+" does not support @size()");
+    }
+    this.source=source;
+  }
+  
+  @Override
+  public Integer retrieve()
+  { 
+    T collection=source.get();
+    if (collection==null)
+    { return null;
+    }
+    else
+    { return decorator.size(collection);
+    }
+  }
+  
+  @Override
+  public boolean store(Integer val)
+  { return false;
+  }  
 }
 
 class CastChannel<S,T extends S>
