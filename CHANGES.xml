@@ -1,6 +1,210 @@
 <scm:Change.list
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
+  
+  <scm:Change>
+    <revision>0.4.6
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-03-05
+    </date>
+    
+    <notes>
+      <scm:Note>Implement bidirectional relational mapping to map between
+        candidate keys in a relation.
+      </scm:Note> 
+      <scm:Note>Complete authentication using password hash
+      </scm:Note> 
+      <scm:Note>Fix DataAuthenticator, which is broke in refactor though
+        deprecated anyway.
+      </scm:Note> 
+      <scm:Note>Enhancements and fixes to spiralcraft.lang: handling of
+        primitive Java types, implementation of @size for
+        anything that supports CollectionDecorator, fixed Tuple field
+        assignment.
+      </scm:Note> 
+      <scm:Note>Enhanced debugging of spiralcraft.builder instantiation
+        process.
+      </scm:Note> 
+      <scm:Note>Fixed spurious "waiting for pool" messages when using 
+        the Scheduler.
+      </scm:Note> 
+      <scm:Note>Changed default text log format to 2 lines to be more readable
+      </scm:Note> 
+    </notes>
+      
+    <details>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Implement bidirectional relational mapping to map between
+            candidate keys in a relation.
+          </scm:Note> 
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>query/EquiJoin.java
+          </URI>
+          <URI>util/RelationalMap.java
+          </URI>
+        </resources>
+      
+      </scm:Change>
+      <scm:Change>
+        <notes>
+          <scm:Note>Complete authentication using password hash
+          </scm:Note> 
+          <scm:Note>Provide option to validate a digest password with no
+            challenge against a cleartext database for test purposes.
+          </scm:Note>           
+          <scm:Note>Ensure that all digests are based on UTF-8 text
+            encodings. 
+          </scm:Note>           
+          <scm:Note>Allow AuthSession clients to obtain the realmName to
+            support external digest credential generation.
+          </scm:Note>           
+          <scm:Note>Standardize on "saltedDigest" term to refer to the 
+            stable password digest salted with shared tokens. This affects
+            clients of LoginEntry.
+          </scm:Note>           
+          <scm:Note>Fix DataAuthenticator, which is broke in refactor though
+            deprecated anyway.
+          </scm:Note> 
+          <scm:Note>Standardize on new HexCodec class for encoding binary
+            data to hexadecimal.
+          </scm:Note> 
+          <scm:Note>Provide String conversion ops for byte[] to base64,
+            byte[] to hex, and character[] to String
+          </scm:Note> 
+        </notes>
+
+        <path>source/spiralcraft/
+        </path>
+      
+        <resources>
+          <URI>security/auth/LoginEntry.java
+          </URI>
+          <URI>security/auth/AuthSessiony.java
+          </URI>
+          <URI>security/auth/LoginEntry.java
+          </URI>
+          <URI>security/spi/DataAuthenticator.java
+          </URI>
+          <URI>security/spi/PasswordDataAuthModule.assy.xml
+          </URI>
+          <URI>codec/text/HexCodec.java
+          </URI>
+          <URI>util/crypt/Digester.java
+          </URI>
+          <URI>util/string/ByteArrayToBase64.java
+          </URI>
+          <URI>util/string/ByteArrayToHex.java
+          </URI>
+          <URI>util/string/StringConverter.java
+          </URI>
+          
+        </resources>
+      
+      </scm:Change>
+      
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Changed default text log format to 2 lines to be more 
+            readable
+          </scm:Note> 
+        </notes>
+      
+        <path>source/spiralcraft/log/DefaultFormatter.java
+        </path>
+      
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Fixed spurious "waiting for pool" messages when using 
+            the Scheduler.
+          </scm:Note>       
+          <scm:Note>Set start flag early so pool has an opportunity
+            to fill to its minimum level before returning from start().
+          </scm:Note>       
+        
+        </notes>
+        
+        <path>source/spiralcraft/pool/Pool.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Enhancements and fixes to spiralcraft.lang
+          </scm:Note>
+          <scm:Note>Handling of primitive Java types.
+          </scm:Note>
+          <scm:Note>Fixed Tuple field assignment
+          </scm:Note>
+          <scm:Note>Implement @size for anything that supports
+            CollectionDecorator.
+          </scm:Note>
+          <scm:Note>Construction of primitive arrays supported
+          </scm:Note>
+          <scm:Note>Fixed some BeanReflector.isAssignableFrom() issues handling
+            primitives. 
+          </scm:Note>
+          <scm:Note>Primitives can now be resolved by a type URI- eg. class:/int
+          </scm:Note>
+        </notes>
+          
+        <path>source/spiralcraft/
+        </path>
+     
+        <resources>
+          <URI>beans/BeanInfoCache.java
+          </URI>
+          <URI>lang/spi/PrimitiveArrayConstructorChannel.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>lang/parser/SubscriptNode.java
+          </URI>
+          <URI>lang/spi/ArrayConstructorChannel.java
+          </URI>
+        </resources>
+      
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Enhanced debugging of spiralcraft.builder 
+            instantiation process.
+          </scm:Note>
+          <scm:Note>PropertySpecifier now has a debugLevel property.
+          </scm:Note>
+        
+        </notes>
+        
+        <path>source/spiralcraft/builder/
+        </path>
+     
+        <resources>
+          <URI>AssemblyLoader.java
+          </URI>
+          <URI>PropertyBinding.java
+          </URI>
+          <URI>PropertySpecifier.java
+          </URI>
+        </resources>
+     
+      </scm:Change>
+
+    </details>
+  </scm:Change>
 
   <scm:Change>
     <revision>0.4.5.2

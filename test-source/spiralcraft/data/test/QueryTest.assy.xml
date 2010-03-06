@@ -4,6 +4,7 @@
   xmlns:data="class:/spiralcraft/data/"
   xmlns:sax="class:/spiralcraft/data/sax"
   xmlns:dtask="class:/spiralcraft/data/task/"
+  xmlns:dutil="class:/spiralcraft/data/util/"
   xmlns:test="class:/spiralcraft/test/"
   xmlns:example="class:/spiralcraft/data/test/example/"
   xmlns:j="class:/java/lang/"
@@ -520,6 +521,51 @@
           </subjectX>
           
           <testX>.@size()==6
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>RelationalMap downstream
+          </name>
+          
+          <subjectX>
+            [@j:Integer][{1,2,3}]
+              .[*dutil:RelationalMap
+                {
+                  [@example:Customer].type
+                  ,"id"
+                  ,"displayName"
+                }
+              ]
+          </subjectX>
+          
+          <testX>.equals([@j:String][{"Johnny First","Mary Second Edited","Tommy Third"}])
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>RelationalMap upstream
+          </name>
+          
+          <subjectX>
+            { x:=[@j:Integer][{}]
+            }
+            {.x.[*dutil:RelationalMap
+                  {
+                    [@example:Customer].type
+                    ,"id"
+                    ,"displayName"
+                    ,debug:=true
+                  }
+                ]
+              =[@j:String][{"Johnny First","Mary Second Edited","Tommy Third"}]
+            ,.x
+            }
+          </subjectX>
+          
+          <testX>.equals([@j:Integer][{1,2,3}])
           </testX>
           
         </test:Assertion>

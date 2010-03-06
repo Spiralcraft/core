@@ -2,8 +2,10 @@
   xmlns:task="class:/spiralcraft/task/"
   xmlns:test="class:/spiralcraft/test/"
   xmlns:j="class:/java/lang/"
+  xmlns:jm="class:/java/math/"
   xmlns:lang="class:/spiralcraft/lang"
   xmlns:util="class:/spiralcraft/util/string/"
+  xmlns:ct="class:/spiralcraft/codec/text/"
   >
   <name>spiralcraft.util.test
   </name>
@@ -26,7 +28,213 @@
           
         </test:Assertion>
 
+        <test:Assertion>
+        
+          <name>hexEncode1
+          </name>
+          
+          <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("32767").toByteArray())
+          </subjectX>
+          
+          <testX>.=="7fff"
+          </testX>
+          
+        </test:Assertion>
 
+        <test:Assertion>
+        
+          <name>hexEncode2
+          </name>
+          
+          <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("65535").toByteArray())
+          </subjectX>
+          
+          <testX>.=="00ffff"
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>hexEncode3
+          </name>
+          
+          <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("0").toByteArray())
+          </subjectX>
+          
+          <testX>.=="00"
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>hexEncode4
+          </name>
+          
+          <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("-1").toByteArray())
+          </subjectX>
+          
+          <testX>.=="ff"
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>hexEncode5
+          </name>
+          
+          <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("-256").toByteArray())
+          </subjectX>
+          
+          <testX>.=="ff00"
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>hexEncode6
+          </name>
+          
+          <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("255").toByteArray())
+          </subjectX>
+          
+          <testX>.=="00ff"
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>hexEncode7
+          </name>
+          
+          <subjectX>
+            [@ct:HexCodec].@encodeHex
+              ([@:class:/byte]
+                [{(255).byteValue()
+                }]
+              )
+          </subjectX>
+          
+          <testX>.=="ff"
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>hexEncode8
+          </name>
+          
+          <subjectX>
+            [@ct:HexCodec].@encodeHex
+              ([@:class:/byte]
+                [{(127).byteValue()
+                }]
+              )
+          </subjectX>
+          
+          <testX>.=="7f"
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>hexEncode9
+          </name>
+          
+          <subjectX>
+            [@ct:HexCodec].@encodeHex
+              ([@:class:/byte]
+                [{(128).byteValue()
+                }]
+              )
+          </subjectX>
+          
+          <testX>.=="80"
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>hexDecode1
+          </name>
+          
+          <subjectX>
+            [@ct:HexCodec].@decodeHex("ff")
+          </subjectX>
+          
+          <testX>
+            .equals
+              ([@:class:/byte]
+                [{(255).byteValue()
+                }]
+              )
+          
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>hexDecode2
+          </name>
+          
+          <subjectX>
+            [@ct:HexCodec].@decodeHex("ff00ff")
+          </subjectX>
+          
+          <testX>
+            .equals
+              ([@:class:/byte]
+                [{(255).byteValue()
+                ,(0).byteValue()
+                ,(255).byteValue()
+                }]
+              )
+          
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>hexCodec1
+          </name>
+          
+          <subjectX>
+            [@ct:HexCodec].@encodeHex([@ct:HexCodec].@decodeHex("ff00ff"))
+          </subjectX>
+          
+          <testX>
+            .=="ff00ff"
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>hexCodec1
+          </name>
+          
+          <subjectX>
+            [@ct:HexCodec].@encodeHex
+              ([@ct:HexCodec].@decodeHex
+                ("fabcd0f0c3345df04b3206341e6f4c0b5d945abcdefbaf67849aaabbbc"
+                )
+              )
+          </subjectX>
+          
+          <testX>
+            .=="fabcd0f0c3345df04b3206341e6f4c0b5d945abcdefbaf67849aaabbbc"
+          </testX>
+          
+        </test:Assertion>
       </scenarios>
       
     </task:Sequence>
