@@ -14,6 +14,7 @@
 //
 package spiralcraft.security.auth;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -415,15 +416,30 @@ public class AuthSession
    */
   public byte[] saltedDigest(String input)
   {
-    try
-    { 
-      return MessageDigest.getInstance(digestAlgorithm).digest
-        ((authenticator.getRealmName()+input).getBytes());
+    String realmName=authenticator.getRealmName();
+    if (realmName!=null)
+    {
+      return digest(realmName+input);
     }
-    catch (NoSuchAlgorithmException x)
-    { throw new RuntimeException(digestAlgorithm+" not supported",x);
+    else
+    { 
+      log.warning
+        ("Security risk: A permanent Authenticator realmName should"
+        +" be specified BEFORE generating token digests."
+        );
+      return digest(input);
     }
   }    
+  
+  /**
+   * The RealmName used as part of the salt of a password hash to ensure 
+   *   uniqueness across domains.
+   * 
+   * @return
+   */
+  public String getRealmName()
+  { return authenticator.getRealmName();
+  }
   
   /**
    * <p>Creates a SHA-256 digest of the specified string.
@@ -437,10 +453,13 @@ public class AuthSession
     try
     { 
       return MessageDigest.getInstance(digestAlgorithm).digest
-        (input.getBytes());
+        (input.getBytes("UTF-8"));
     }
     catch (NoSuchAlgorithmException x)
     { throw new RuntimeException(digestAlgorithm+" not supported",x);
+    }
+    catch (UnsupportedEncodingException x)
+    { throw new RuntimeException("UTF-8 not supported",x);
     }
   }
     
