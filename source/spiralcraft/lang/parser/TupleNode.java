@@ -743,7 +743,7 @@ public class TupleNode
     {
       private final Channel<Tuple> source;
       private final Channel<Object> target;
-      // private final TupleField field;
+      private final TupleField field;
       private final int index;
       
       public FieldChannel
@@ -753,7 +753,7 @@ public class TupleNode
         )
       { 
         super(target.getReflector());
-        // this.field=field;
+        this.field=field;
         this.source=source;
         this.target=target;
         this.index=field.index;
@@ -770,18 +770,27 @@ public class TupleNode
         throws AccessException
       { 
         // log.fine("Store "+val+" to tuple field "+field.name);
-        if (target.isWritable())
-        { 
+        if (field.passThrough)
+        {
+          if (target.isWritable())
+          { return target.set(val);
+          }
+          else
+          {
+            // log.fine(field.name+" is not writable");
+            return false;
+          }
+        }
+        else
+        {        
           source.get().data[index]=val;
           return true;
         }
-        // log.fine(field.name+" is not writable");
-        return false;
       }
             
       @Override
       public boolean isWritable()
-      { return target.isWritable();
+      { return !field.passThrough || target.isWritable();
       }
       
     }
