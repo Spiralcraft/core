@@ -19,12 +19,14 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Reflector;
 
 //import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ArrayConstructorChannel;
 //import spiralcraft.lang.spi.ArrayIndexTranslator;
 //import spiralcraft.lang.spi.TranslatorChannel;
+import spiralcraft.lang.spi.PrimitiveArrayConstructorChannel;
 
 
 /**
@@ -86,11 +88,28 @@ public class SubscriptNode<T,C,I>
       
       
       
-      // Array construction from something that can be iterated
-      return new ArrayConstructorChannel
-        (type
-        ,iterChannel
-        );
+      IterationDecorator<?,?> decorator
+        =iterChannel.<IterationDecorator>decorate(IterationDecorator.class);
+      
+      if (decorator.getComponentReflector().getContentType().isPrimitive())
+      { 
+        return new PrimitiveArrayConstructorChannel
+          (type
+          ,iterChannel
+          ,decorator
+          );
+           
+        
+      }
+      else
+      {
+        // Array construction from something that can be iterated
+        return new ArrayConstructorChannel
+          (type
+          ,iterChannel
+          ,decorator
+          );
+      }
     }
     else
     {

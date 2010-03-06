@@ -22,17 +22,18 @@ public class ArrayConstructorChannel<C,T>
   private Channel<C> source;
   private IterationDecorator<C,T> decorator;
   
-  @SuppressWarnings("unchecked") // Decorator call
   public ArrayConstructorChannel
     (Reflector<T> componentReflector
-    ,Channel<C> source)
+    ,Channel<C> source
+    ,IterationDecorator<C,T> sourceIterable
+    )
     throws BindException
   { 
     super(ArrayReflector.getInstance(componentReflector));
     this.componentReflector=componentReflector;
     this.source=source;
     this.decorator
-      =source.<IterationDecorator>decorate(IterationDecorator.class);
+      =sourceIterable;
     if (decorator==null)
     { throw new IllegalArgumentException("Iteration not supported for "+source);
     }
