@@ -38,17 +38,10 @@ public class DefaultFormatter
     out.append(_dateFormat.format(new Date(event.getTime())));
     out.append("]");
     out.append(" ");
-    out.append(event.getLevel().getName());
-    out.append(" ");
     out.append(Long.toString(event.getThreadId()));
     out.append(":");
     out.append(event.getThreadName());
-    out.append(" ");
-    out.append(event.getMessage()!=null
-      ?StringUtil.escapeToASCII(event.getMessage())
-      :""
-      );
-    
+
     if (event.getContext()!=null)
     {
       out.append("  {");
@@ -67,6 +60,16 @@ public class DefaultFormatter
       out.append(")");
       out.append(")");
     }
+    
+    out.append(_cr);
+    out.append("  ");
+    out.append(event.getLevel().getName());
+    out.append(": ");
+    out.append(event.getMessage()!=null
+      ?StringUtil.escapeToASCII(event.getMessage())
+      :""
+      );
+    
     if (event.getThrown()!=null)
     { 
       if (event.getLevel().equals(Level.INFO))
