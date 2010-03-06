@@ -154,12 +154,16 @@ public class AssemblyType<T>
         if (oldVal!=null)
         { 
           assembly=assemblyClass.wrap(null,oldVal);
-          log.fine("Wrapping "+oldVal+" in "+assembly);
+          if (debug)
+          { log.fine("Wrapping "+oldVal+" in "+assembly);
+          }
         }
         else
         { 
           assembly=(Assembly<T>) assemblyClass.newInstance(null);
-          log.fine("Instantiated "+assembly);
+          if (debug)
+          { log.fine("Instantiated "+assembly);
+          }
         }
       }
       catch (BuildException x)
