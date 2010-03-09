@@ -18,7 +18,7 @@
       </scm:Note> 
       <scm:Note>Complete authentication using password hash
       </scm:Note> 
-      <scm:Note>Fix DataAuthenticator, which is broke in refactor though
+      <scm:Note>Fix DataAuthenticator, which broke in refactor though
         deprecated anyway.
       </scm:Note> 
       <scm:Note>Enhancements and fixes to spiralcraft.lang: handling of
