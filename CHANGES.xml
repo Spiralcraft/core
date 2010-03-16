@@ -3,6 +3,51 @@
   >
   
   <scm:Change>
+    <revision>0.4.6.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-03-16
+    </date>
+    
+    <notes>
+      <scm:Note>Allow rolling enlistment during transaction prepare stage
+        (fix ConcurrentAccessException during prepare)
+      </scm:Note> 
+    </notes>
+      
+    <details>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Allow for rolling enslistment during transaction prepare
+            stage (fix ConcurrentAccessException during prepare)
+          </scm:Note>
+          <scm:Note>New RollingIterable class allows for elements to be added
+            to an Iterable during iteration.
+          </scm:Note>
+          <scm:Note>Catch all RuntimeExceptions during transaction events
+            and convert them to TransactionExceptions
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/transaction/Transaction.java
+          </URI>
+          <URI>util/RollingIterable.java
+          </URI>
+        </resources>
+      
+      </scm:Change>
+    </details>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.4.6
     </revision>
     
