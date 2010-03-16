@@ -16,6 +16,10 @@
       <scm:Note>Allow rolling enlistment during transaction prepare stage
         (fix ConcurrentAccessException during prepare)
       </scm:Note> 
+      <scm:Note>Added LoginEntry.reset() method to clear credentials before
+        login to fix issue with extra optional credentials not getting 
+        cleared.
+      </scm:Note>
     </notes>
       
     <details>
@@ -44,6 +48,20 @@
         </resources>
       
       </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Added LoginEntry.reset() method to clear credentials before
+            login to fix issue with extra optional credentials not getting 
+            cleared.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/security/auth/LoginEntry.java
+        </path>
+      
+      </scm:Change>
+
     </details>
   </scm:Change>
 
