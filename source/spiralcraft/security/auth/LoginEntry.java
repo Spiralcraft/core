@@ -14,6 +14,8 @@
 //
 package spiralcraft.security.auth;
 
+import java.util.ArrayList;
+
 import spiralcraft.lang.Channel;
 import spiralcraft.security.auth.AuthSession;
 import spiralcraft.security.auth.Credential;
@@ -25,9 +27,10 @@ import spiralcraft.security.auth.ChallengeCredential;
  * <p>Convenience class for supplying login credentials from a user interface
  * </p>
  *
- * <p>This class provides a fascade to the credential system. Calling
- *   the bean set methods effectively adds credentials to the authentication
- *   session
+ * <p>This class provides a fascade to the credential system. Credentials
+ *   can be supplied through the bean methods, Calling update() will 
+ *   effectively replace the credentials in the authentication session with
+ *   those specified. 
  * </p>
  * 
  * @author mike
@@ -42,20 +45,50 @@ public class LoginEntry
   private volatile String challenge;
   private volatile byte[] digest;
   private volatile boolean persistent;
-   
+  
+  
   public LoginEntry(Channel<AuthSession> sessionChannel)
   { this.sessionChannel=sessionChannel;
   }
   
   public void reset()
-  { sessionChannel.get().clearCredentials();
+  { 
+    name=null;
+    password=null;
+    challenge=null;
+    digest=null;
+    persistent=false;
+  }
+  
+  public void update()
+  { 
+    AuthSession session=sessionChannel.get();
+    session.clearCredentials();
+    
+    ArrayList<Credential<?>> credentials
+      =new ArrayList<Credential<?>>();
+
+    
+    if (name!=null)
+    { credentials.add(new UsernameCredential(name));
+    }
+    if (password!=null)
+    { credentials.add(new PasswordCleartextCredential(password));
+    }
+    if (digest!=null)
+    { credentials.add(new DigestCredential(digest));
+    }
+    if (challenge!=null)
+    { credentials.add(new ChallengeCredential(challenge));
+    }
+    
+    session.addCredentials
+      (credentials.toArray(new Credential<?>[credentials.size()]));
+  
   }
   
   public void setUsername(String name)
-  { 
-    sessionChannel.get().addCredentials
-      (new Credential[] {new UsernameCredential(name)});
-    this.name=name;
+  { this.name=name;
   }
     
   public String getUsername()
@@ -63,10 +96,7 @@ public class LoginEntry
   }
     
   public void setPasswordCleartext(String pass)
-  { 
-    sessionChannel.get().addCredentials
-      (new Credential[] {new PasswordCleartextCredential(pass)});
-    this.password=pass;
+  { this.password=pass;
   }
     
   public String getPasswordCleartext()
