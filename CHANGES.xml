@@ -3,7 +3,7 @@
   >
   
   <scm:Change>
-    <revision>0.4.6.1
+    <revision>0.4.7
     </revision>
     
     <authorId>miketoth
@@ -16,9 +16,9 @@
       <scm:Note>Allow rolling enlistment during transaction prepare stage
         (fix ConcurrentAccessException during prepare)
       </scm:Note> 
-      <scm:Note>Added LoginEntry.reset() method to clear credentials before
-        login to fix issue with extra optional credentials not getting 
-        cleared.
+      <scm:Note>Added update and reset method to make LoginEntry credential 
+        update atomic and fix issue where old credentials interfered with new
+        login attempts using different credential types.
       </scm:Note>
     </notes>
       
@@ -51,9 +51,9 @@
 
       <scm:Change>
         <notes>
-          <scm:Note>Added LoginEntry.reset() method to clear credentials before
-            login to fix issue with extra optional credentials not getting 
-            cleared.
+          <scm:Note>Added update and reset method to make LoginEntry credential 
+            update atomic and fix issue where old credentials interfered with
+            new login attempts using different credential types.
           </scm:Note>
         </notes>
         
