@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2009 Michael Toth
+// Copyright (c) 1998,2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
+import spiralcraft.util.RollingIterable;
 
 /**
  * <p>Represents a Transaction- a set of data modifications that comprise 
@@ -85,10 +87,12 @@ public class Transaction
   { return TRANSACTION_LOCAL.get();
   }
   
-  private HashMap<ResourceManager<?>,Branch> branchMap
+  private final HashMap<ResourceManager<?>,Branch> branchMap
     =new HashMap<ResourceManager<?>,Branch>();
   
-  private ArrayList<Branch> branches=new ArrayList<Branch>();
+  private final RollingIterable<Branch> branches
+    =new RollingIterable<Branch>();
+  
   private Branch llrBranch;
   
   private final long id=nextId.getAndIncrement();
@@ -171,46 +175,57 @@ public class Transaction
   synchronized Branch branch(ResourceManager<?> manager)
     throws TransactionException
   { 
-    Branch branch=branchMap.get(manager);
-    if (branch==null)
-    { 
-      if (parent!=null && nesting==Nesting.PROPOGATE)
-      {
-        // Propogated transaction uses same branches. Resources use different
-        //   ResourceManagers, so they can still manage their own commits.
-        branch=parent.branch(manager);
-      }
-      else
-      {
-        if (debug)
+    try
+    {
+      Branch branch=branchMap.get(manager);
+      if (branch==null)
+      { 
+        if (parent!=null && nesting==Nesting.PROPOGATE)
         {
-          log.fine
-            ("New branch for Transaction #"+getId()+": "+manager.toString());
+          // Propogated transaction uses same branches. Resources use different
+          //   ResourceManagers, so they can still manage their own commits.
+          branch=parent.branch(manager);
         }
-
-        branch=manager.createBranch(this);
-        branchMap.put(manager,branch);
-
-        if (branch.is2PC())
-        { branches.add(branch);
-        }
-        else if (llrBranch==null)
-        { 
+        else
+        {
           if (debug)
           {
             log.fine
-              ("New branch for Transaction #"+getId()+" is LLR");
+              ("New branch for Transaction #"+getId()+": "+manager.toString());
           }
-          llrBranch=branch;
-        }
-        else
-        { throw new TransactionException
-            ("Transaction already contains an non-2PC branch");
+
+          branch=manager.createBranch(this);
+          branchMap.put(manager,branch);
+
+          if (branch.is2PC())
+          { branches.add(branch);
+          }
+          else if (llrBranch==null)
+          { 
+            if (debug)
+            {
+              log.fine
+              ("New branch for Transaction #"+getId()+" is LLR");
+            }
+            llrBranch=branch;
+          }
+          else
+          { throw new TransactionException
+              ("Transaction already contains an non-2PC branch");
+          }
         }
       }
-    }
 
-    return branch;
+      return branch;
+    }
+    catch (RuntimeException x)
+    { 
+      rollbackOnComplete();
+      throw new TransactionException
+        ("xid "+id+": Runtime exception creating branch for resource manager "
+        +manager
+        ,x);
+    }
   }
   
 
@@ -222,22 +237,24 @@ public class Transaction
   public synchronized void commit()
     throws TransactionException
   {
+
+      
     // Note that a subTransaction has no branches- the following code
     //   will have no effect?
-    
+
     // XXX Exception handling logic is critical here
-    
+
     if (parent!=null && nesting==Nesting.PROPOGATE)
     { 
       if (debug)
       {
         log.fine
-          ("Commit Transaction #"+getId()
+        ("Commit Transaction #"+getId()
           +" propogated child of #"+parent.getId()
           +" has no effect"
-          );
+        );
       }
-      
+
       // Parent will call prepare() and commitLocal()
     }
     else if (rollbackOnly)
@@ -250,12 +267,13 @@ public class Transaction
         if (debug)
         {
           log.fine
-            ("Root transaction #"+getId()+" running missed prepare");
+          ("Root transaction #"+getId()+" running missed prepare");
         }
         prepare();
       }
       commitLocal();
     }
+
     
   }
   
@@ -267,201 +285,248 @@ public class Transaction
     throws TransactionException
   {
   
-    if (state==State.PREPARED)
+    try
     {
-      if (debug)
+      if (state==State.PREPARED)
       {
-        log.fine
+        if (debug)
+        {
+          log.fine
           ("Transaction #"+getId()+", "+nesting+" child of "
-          +(parent!=null?parent.getId():"none")
-          +" committing"
+            +(parent!=null?parent.getId():"none")
+            +" committing"
           );
-      }
-
-      if (llrBranch!=null)
-      { 
-        if (debug)
-        {
-          log.fine
-            ("Transaction #"+getId()+" committing LLR branch");
         }
 
-
-        llrBranch.commit();
-   
-        if (llrBranch.getState()!=State.COMMITTED)
-        {
-          rollback();
-          throw new TransactionException
-            ("Transaction Aborted: LLR branch "+llrBranch+" failed to commit");
-        }
-      }
-
-
-    
-      for (Transaction transaction : subtransactions)
-      { 
-        if (debug)
-        {
-          log.fine
-            ("Transaction #"+getId()
-            +" committing subtransaction #"+transaction.getId()
-            );
-        }
-        transaction.commitLocal();
-        if (transaction.getState()!=State.COMMITTED)
+        if (llrBranch!=null)
         { 
-          rollback();
-          throw new TransactionException
-          ("Transaction Aborted after Partial Commit: subtransaction "
-            +transaction+" failed to commit"
-          );
-        }
-      }
+          if (debug)
+          {
+            log.fine
+            ("Transaction #"+getId()+" committing LLR branch");
+          }
 
-      for (Branch branch: branches)
-      { 
-        if (debug)
-        {
-          log.fine
-            ("Transaction #"+getId()+" committing branch "+branch);
+
+          llrBranch.commit();
+
+          if (llrBranch.getState()!=State.COMMITTED)
+          {
+            rollback();
+            throw new TransactionException
+            ("Transaction Aborted: LLR branch "+llrBranch+" failed to commit");
+          }
         }
-        branch.commit();
+
+
+
+        for (Transaction transaction : subtransactions)
+        { 
+          if (debug)
+          {
+            log.fine
+            ("Transaction #"+getId()
+              +" committing subtransaction #"+transaction.getId()
+            );
+          }
+          transaction.commitLocal();
+          if (transaction.getState()!=State.COMMITTED)
+          { 
+            rollback();
+            throw new TransactionException
+            ("Transaction Aborted after Partial Commit: subtransaction "
+              +transaction+" failed to commit"
+            );
+          }
+        }
+
+        for (Branch branch: branches)
+        { 
+          if (debug)
+          {
+            log.fine
+            ("Transaction #"+getId()+" committing branch "+branch);
+          }
+          branch.commit();
+        }
+        state=State.COMMITTED;
       }
-      state=State.COMMITTED;
+      else
+      { 
+        throw new TransactionException
+        ("Transaction not PREPARED: state="+getState());
+      }
     }
-    else
+    catch (RuntimeException x)
     { 
       throw new TransactionException
-        ("Transaction not PREPARED: state="+getState());
-    }
-    
+        ("xid "+id
+        +": Runtime exception committing transaction- POTENTIAL PARTIAL COMMIT"
+        +" - RESOURCE MANAGER PROTOCOL ERROR POSSIBLE"
+        ,x);
+    }    
   }
   
   public synchronized void prepare()
     throws TransactionException
   {
-    // new Exception().printStackTrace();
-    if (state==State.STARTED)
+    try
     {
-      if (debug)
+      // new Exception().printStackTrace();
+      if (state==State.STARTED)
       {
-        log.fine
+        if (debug)
+        {
+          log.fine
           ("Transaction #"+getId()+" preparing");
-      }
-
-      for (Transaction transaction : subtransactions)
-      { 
-        if (debug)
-        {
-          log.fine
-            ("Transaction #"+getId()
-            +" preparing subtransaction #"+transaction.getId()
-            );
         }
-        
-        transaction.prepare();
-        if (transaction.getState()!=State.PREPARED)
+
+        for (Transaction transaction : subtransactions)
         { 
-          rollback();
-          throw new TransactionException
+          if (debug)
+          {
+            log.fine
+            ("Transaction #"+getId()
+              +" preparing subtransaction #"+transaction.getId()
+            );
+          }
+
+          transaction.prepare();
+          if (transaction.getState()!=State.PREPARED)
+          { 
+            rollback();
+            throw new TransactionException
             ("Transaction Aborted: subtransaction "+transaction
-            +" failed to prepare"
+              +" failed to prepare"
             );
+          }
         }
-      }
 
-      for (Branch branch: branches)
-      { 
-        if (debug)
-        {
-          log.fine
-            ("Transaction #"+getId()
-            +" preparing branch "+branch.toString()
-            );
-        }
-        branch.prepare();
-        if (branch.getState()!=State.PREPARED)
+        for (Branch branch: branches)
         { 
-          rollback();
-          throw new TransactionException
+          if (debug)
+          {
+            log.fine
+            ("Transaction #"+getId()
+              +" preparing branch "+branch.toString()
+            );
+          }
+          branch.prepare();
+          if (branch.getState()!=State.PREPARED)
+          { 
+            rollback();
+            throw new TransactionException
             ("Transaction Aborted: branch "+branch+" failed to prepare");
+          }
         }
+        state=State.PREPARED;
       }
-      state=State.PREPARED;
-    }
-    else
-    {
-      throw new TransactionException
+      else
+      {
+        throw new TransactionException
         ("Transaction not STARTED: state="+getState());
-    }
+      }
 
-    
+    }
+    catch (RuntimeException x)
+    { 
+      rollbackOnComplete();
+      throw new TransactionException
+        ("xid "+id+": Runtime exception preparing transaction- rollback forced"
+        ,x);
+    }    
   }
   
   public synchronized void rollback()
     throws TransactionException
   {
-    
-    if (state==State.STARTED
-        || state==State.PREPARED
-        )
+    try
     {
-      
-      if (debug)
+    
+      if (state==State.STARTED
+          || state==State.PREPARED
+      )
       {
-        log.fine
-          ("Transaction #"+getId()
-          +" rolling back "
-          );
-      }
-        
-      for (Branch branch: branches)
-      { 
-        if (debug)
-        {
-          log.fine
-            ("Transaction #"+getId()
-            +" rolling back "+branch.toString()
-            );
-        }
-        
-        try
-        { branch.rollback();
-        }
-        catch (TransactionException x)
-        { 
-          // XXX Temporary
-          x.printStackTrace();
-        }
-      }
 
-      for (Transaction transaction : subtransactions)
-      { 
         if (debug)
         {
           log.fine
-            ("Transaction #"+getId()
-            +" rolling back subtransaction #"+transaction.getId()
-            );
+          ("Transaction #"+getId()
+            +" rolling back "
+          );
         }
-        transaction.rollback();
+
+        for (Branch branch: branches)
+        { 
+          if (debug)
+          {
+            log.fine
+            ("Transaction #"+getId()
+              +" rolling back "+branch.toString()
+            );
+          }
+
+          try
+          { branch.rollback();
+          }
+          catch (TransactionException x)
+          { 
+            // XXX Temporary
+            x.printStackTrace();
+          }
+        }
+
+        for (Transaction transaction : subtransactions)
+        { 
+          if (debug)
+          {
+            log.fine
+            ("Transaction #"+getId()
+              +" rolling back subtransaction #"+transaction.getId()
+            );
+          }
+          try
+          { transaction.rollback();
+          }
+          catch (Exception x)
+          { 
+            log.log
+              (Level.WARNING
+              ,"Caught exception in subtransaction "+transaction.getId()
+              +" rollback"
+              ,x);
+          }
+        }
+
+        if (llrBranch!=null)
+        { 
+          if (debug)
+          {
+            log.fine
+            ("Transaction #"+getId()
+              +" rolling back LLR branch "+llrBranch
+            );
+          }
+          try
+          { llrBranch.rollback();
+          }
+          catch (Exception x)
+          { 
+            log.log
+              (Level.WARNING
+              ,"Caught exception in llrBranch "
+              +" rollback for xid "+id
+              ,x);
+          }
+        }
       }
-      
-      if (llrBranch!=null)
-      { 
-        if (debug)
-        {
-          log.fine
-            ("Transaction #"+getId()
-            +" rolling back LLR branch "+llrBranch
-            );
-        }
-        llrBranch.rollback();
+      else
+      { throw new IllegalStateException("Cannot rollback in state "+state);
       }
     }
-    else
-    { throw new IllegalStateException("Cannot rollback in state "+state);
+    catch (RuntimeException x)
+    { 
+      throw new TransactionException
+        ("xid "+id+": Runtime exception rolling back transaction",x);
     }
   }
   
@@ -526,8 +591,21 @@ public class Transaction
           }
           catch (TransactionException x)
           { 
-            // XXX Temporary
-            x.printStackTrace();
+            try
+            { 
+              log.log
+                (Level.WARNING
+                ,"Commit failure for xid "+id+" on commit during complete"
+                ,x);
+              rollback();
+            }
+            catch (TransactionException y)
+            { 
+              log.log
+              (Level.WARNING
+              ,"Rollback failure for xid "+id+" on failed commit during complete"
+              ,y);
+            }
           }
         }
         else
@@ -546,8 +624,10 @@ public class Transaction
           }
           catch (TransactionException x)
           { 
-            // XXX Temporary
-            x.printStackTrace();
+            log.log
+            (Level.WARNING
+            ,"Rollback failure for xid "+id+" during complete"
+            ,x);
           }
         }
     
@@ -563,7 +643,16 @@ public class Transaction
             +"- completing branch "+branch
             );
         }
-        branch.complete();
+        try
+        { branch.complete();
+        }
+        catch (Exception x)
+        {
+          log.log
+            (Level.WARNING
+            ,"Branch complete for xid "+id+", branch "+branch+" threw exception"
+            ,x);
+        }
       }
     
       if (llrBranch!=null)
@@ -576,7 +665,17 @@ public class Transaction
             +"- completing LLR branch "+llrBranch
             );
         }
-        llrBranch.complete();
+        try
+        { llrBranch.complete();
+        }
+        catch (Exception x)
+        {
+          log.log
+            (Level.WARNING
+            ,"llrBranch complete for xid "+id+", branch "+llrBranch
+            +" threw exception"
+            ,x);
+        }
       }
     }
     finally
