@@ -56,9 +56,10 @@
               <subjectX>
                 [@secauth:LoginEntry]
                   .([secauth:AuthSession].@channel
-                   ,username:="userOne"
-                   ,passwordCleartext:="testOne"
-                   )
+                    ,username:="userOne"
+                    ,passwordCleartext:="testOne"
+                  )
+                  .update()
               </subjectX>
               <testX>
                 [secauth:AuthSession].authenticate()
@@ -81,11 +82,12 @@
               <subjectX>
                 [@secauth:LoginEntry]
                   .([secauth:AuthSession].@channel
-                   ,username:="userThree"
-                   ,saltedDigest:=[@codec:Base64Codec].@decodeBytes
-                     ("A59145584E9F5B38DD2E49E0E1227FA1C29D912138CE54A62E44C8E3B7325F04"
-                     )
-                   )
+                    ,username:="userThree"
+                    ,saltedDigest:=[@codec:Base64Codec].@decodeBytes
+                      ("A59145584E9F5B38DD2E49E0E1227FA1C29D912138CE54A62E44C8E3B7325F04"
+                      )
+                  )
+                  .update()
               </subjectX>
               <testX>
                 [secauth:AuthSession].authenticate()
