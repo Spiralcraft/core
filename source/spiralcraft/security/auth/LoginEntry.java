@@ -47,6 +47,10 @@ public class LoginEntry
   { this.sessionChannel=sessionChannel;
   }
   
+  public void reset()
+  { sessionChannel.get().clearCredentials();
+  }
+  
   public void setUsername(String name)
   { 
     sessionChannel.get().addCredentials
