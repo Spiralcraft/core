@@ -16,9 +16,7 @@
       <scm:Note>Allow rolling enlistment during transaction prepare stage
         (fix ConcurrentAccessException during prepare)
       </scm:Note> 
-      <scm:Note>Added update and reset method to make LoginEntry credential 
-        update atomic and fix issue where old credentials interfered with new
-        login attempts using different credential types.
+      <scm:Note>Fixes for variable-credential authentication
       </scm:Note>
     </notes>
       
@@ -51,14 +49,27 @@
 
       <scm:Change>
         <notes>
+          <scm:Note>Fixes for variable-credential authentication 
+          </scm:Note>
           <scm:Note>Added update and reset method to make LoginEntry credential 
             update atomic and fix issue where old credentials interfered with
             new login attempts using different credential types.
           </scm:Note>
+          <scm:Note>Assume that password digest is encoded as hex in the login
+            digestpass field to allow for more straightforward usage
+          </scm:Note>
         </notes>
         
-        <path>source/spiralcraft/security/auth/LoginEntry.java
+        <path>source/spiralcraft/security/
         </path>
+        
+        <resources>
+          <URI>auth/LoginEntry.java
+          </URI>
+          <URI>spi/PasswordDataAuthModule.assy.xml
+          </URI>
+        
+        </resources>
       
       </scm:Change>
 

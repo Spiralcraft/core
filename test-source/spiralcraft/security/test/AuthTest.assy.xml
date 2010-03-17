@@ -83,7 +83,7 @@
                 [@secauth:LoginEntry]
                   .([secauth:AuthSession].@channel
                     ,username:="userThree"
-                    ,saltedDigest:=[@codec:Base64Codec].@decodeBytes
+                    ,saltedDigest:=[@codec:HexCodec].@decodeHex
                       ("A59145584E9F5B38DD2E49E0E1227FA1C29D912138CE54A62E44C8E3B7325F04"
                       )
                   )
