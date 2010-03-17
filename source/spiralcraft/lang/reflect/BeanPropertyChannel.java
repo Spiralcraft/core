@@ -253,6 +253,15 @@ class BeanPropertyChannel<T,S>
         return true;
       }
     }
+    catch (IllegalArgumentException x)
+    { 
+      throw new AccessException
+        ("Error writing value ["+val+"] "
+          +(val!=null?"("+val.getClass().getName()+")":"")
+          +" to ["+(_writeMethod!=null?_writeMethod:_writeField)+"]"
+        ,x);
+
+    }
     catch (RuntimeException x)
     {
       throw new AccessException
