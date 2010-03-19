@@ -27,10 +27,20 @@
           <scm:Note>Ensure that @top meta operation uses ListDecorator when
            available
           </scm:Note>
+          <scm:Note>Don't allow AggregateReflector to throw IndexO.O.B
+            exception
+          </scm:Note>
         </notes>
         
         <path>source/spiralcraft/lang/spi/AbstractReflector.java
         </path>
+        
+        <resources>
+          <URI>lang/spi/AbstractReflector.java
+          </URI>
+          <URI>data/lang/AggregateReflector.java
+          </URI>
+        </resources>
             
       </scm:Change>
 
