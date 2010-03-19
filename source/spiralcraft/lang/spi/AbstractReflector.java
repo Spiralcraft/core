@@ -22,6 +22,7 @@ import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationDecorator;
+import spiralcraft.lang.ListDecorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
 import spiralcraft.lang.TypeModel;
@@ -166,9 +167,21 @@ public abstract class AbstractReflector<T>
       channel=source.getCached("@top");
       if (channel==null)
       { 
-        if (source.<IterationDecorator>decorate(IterationDecorator.class)!=null)
+        ListDecorator d
+          =source.<ListDecorator>decorate(ListDecorator.class);
+        if (d!=null)
         { 
-          channel=new TopChannel(source);
+          channel=new TopListChannel(source,d);
+          source.cache("@top",channel);
+        }
+      }
+      if (channel==null)
+      { 
+        IterationDecorator d
+          =source.<IterationDecorator>decorate(IterationDecorator.class);
+        if (d!=null)
+        { 
+          channel=new TopIterChannel(source,d);
           source.cache("@top",channel);
         }
       }
@@ -539,34 +552,68 @@ public abstract class AbstractReflector<T>
   
 }
 
-class TopChannel<T,I>
+class TopListChannel<T,I>
+  extends AbstractChannel<I>
+{
+  private final ListDecorator<T,I> decorator;
+  private final Channel<T> source;
+
+  @SuppressWarnings("unchecked")
+  public TopListChannel(Channel<T> source,ListDecorator decorator)
+  throws BindException
+  { 
+    super
+    (decorator.getComponentReflector()
+    );
+    this.source=source;
+    this.decorator=decorator;
+  }
+
+  @Override
+  public I retrieve()
+  { 
+    T list=source.get();
+    if (list!=null)
+    { return decorator.get(list,0);
+    }
+    else
+    { return null;
+    }
+  }
+
+  @Override
+  public boolean store(I val)
+  { return false;
+  }
+}
+
+class TopIterChannel<T,I>
   extends AbstractChannel<I>
 {
   private final IterationDecorator<T,I> decorator;
   
   @SuppressWarnings("unchecked")
-  public TopChannel(Channel<T> source)
+  public TopIterChannel(Channel<T> source,IterationDecorator decorator)
     throws BindException
   { 
     super
-      (source.<IterationDecorator>decorate(IterationDecorator.class)
-      .getComponentReflector()
+      (decorator.getComponentReflector()
       );
-    decorator=source.<IterationDecorator>decorate(IterationDecorator.class);
-    if (decorator==null)
-    { 
-      throw new BindException
-        (source.getReflector().getTypeURI()+" is not an iterable type");
-    }
-    
+    this.decorator=decorator;
   }
   
   @Override
   public I retrieve()
   { 
     Iterator<I> it=decorator.iterator();
-    if (it.hasNext())
-    { return it.next();
+    if (it!=null)
+    {
+      if (it.hasNext())
+      { return it.next();
+      }
+      else
+      { return null;
+      }
     }
     else
     { return null;
