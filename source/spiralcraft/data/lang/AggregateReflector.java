@@ -346,13 +346,7 @@ class AggregateListDecorator<T extends Aggregate<I>,I>
   public I get(T collection,int index)
   { 
     try
-    { 
-      if (index<collection.size())
-      { return collection.get(index);
-      }
-      else
-      { return null;
-      }
+    { return collection.get(index);
     }
     catch (RuntimeDataException x)
     { throw new AccessException("Error retrieving data from Aggregate",x);
