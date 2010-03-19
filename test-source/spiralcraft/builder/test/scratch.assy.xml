@@ -1,3 +1,5 @@
+
+
 <!--
   Create an assembly which exposes a JavaBean naming context for
     access to the properties of SimpleWidget
@@ -60,7 +62,7 @@
         <description binding="toDoList.description"/>
       </DateBookDisplay>
 
-    </object>
+    </objects>
 
   </Assembly>
 
