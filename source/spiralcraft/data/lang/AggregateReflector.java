@@ -348,6 +348,9 @@ class AggregateListDecorator<T extends Aggregate<I>,I>
     try
     { return collection.get(index);
     }
+    catch (IndexOutOfBoundsException x)
+    { return null;
+    }
     catch (RuntimeDataException x)
     { throw new AccessException("Error retrieving data from Aggregate",x);
     }
