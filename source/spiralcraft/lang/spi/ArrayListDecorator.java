@@ -86,7 +86,13 @@ public class ArrayListDecorator<I>
   
   @Override
   public I get(I[] collection,int index)
-  { return collection[index];
+  { 
+    if (index<collection.length)
+    { return collection[index];
+    }
+    else
+    { return null;
+    }
   }
 
 }

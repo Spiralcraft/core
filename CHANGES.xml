@@ -3,6 +3,58 @@
   >
   
   <scm:Change>
+    <revision>0.4.7.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-03-16
+    </date>
+    
+    <notes>
+      <scm:Note>Ensure that @top meta operation uses ListDecorator when
+        available
+      </scm:Note> 
+      <scm:Note>Standardize on UTF-8 XML encoding for internal type defs
+      </scm:Note>
+    </notes>
+      
+    <details>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Ensure that @top meta operation uses ListDecorator when
+           available
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi/AbstractReflector.java
+        </path>
+            
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Standardize on UTF-8 XML encoding for internal type defs
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/spi/Sequence.type.xml
+          </URI>
+          <URI>security/Login.type.xml
+          </URI>
+        </resources>
+      
+      </scm:Change>
+    </details>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.4.7
     </revision>
     
