@@ -28,13 +28,12 @@ import spiralcraft.data.lang.CursorBinding;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
-//import spiralcraft.lang.Focus;
-import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.Focus;
 
 public class ConcatenationBinding<Tq extends Concatenation,Tt extends Tuple>
   extends BoundQuery<Tq,Tt>
 {
-  private SimpleFocus<?> focus;
+  private Focus<?> focus;
   private List<BoundQuery<?,Tt>> sources
     =new ArrayList<BoundQuery<?,Tt>>();
   private boolean resolved;
@@ -43,25 +42,38 @@ public class ConcatenationBinding<Tq extends Concatenation,Tt extends Tuple>
   @SuppressWarnings("unchecked")
   public ConcatenationBinding
     (Tq query
+    ,Focus<?> paramFocus
     ,Queryable<?> store
     )
     throws DataException
   { 
+    this.focus=paramFocus;
     for (Query sourceQuery : query.getSources())
-    { sources.add((BoundQuery<?,Tt>) store.query(sourceQuery,focus));
+    { 
+      sources.add
+        ( (BoundQuery<?,Tt>) 
+            (store!=null
+                ?store.query(sourceQuery,focus)
+                :sourceQuery.bind(focus)
+            )
+        );
     }
     setQuery(query);
   }
   
   @SuppressWarnings("unchecked")
-  public ConcatenationBinding(List<BoundQuery<?,Tt>> boundQueries)
+  public ConcatenationBinding(List<BoundQuery<?,Tt>> boundQueries,Type boundType)
+    throws DataException
   {
+    this.boundType=boundType;
     Tq query=(Tq) new Concatenation();
     for (BoundQuery<?,Tt> boundQuery : boundQueries)
     { 
       query.addSource(boundQuery.getQuery());
       sources.add(boundQuery);
     }
+    query.resolve();
+
     setQuery(query);
   }
     

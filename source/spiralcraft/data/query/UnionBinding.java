@@ -52,7 +52,14 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
   { 
 
     for (Query sourceQuery : query.getSources())
-    { sources.add((BoundQuery<?,Tt>) store.query(sourceQuery,paramFocus));
+    { 
+      sources.add
+      ( (BoundQuery<?,Tt>) 
+          (store!=null
+              ?store.query(sourceQuery,paramFocus)
+              :sourceQuery.bind(paramFocus)
+          )
+      );      
     }
 
     setQuery(query);

@@ -44,7 +44,19 @@ public class Concatenation
     throws DataException
   { 
     for (Query query:sources)
+    { addSource(query);
+    }
+    resolve();
+  }
+  
+  @Override
+  public void resolve()
+    throws DataException
+  {
+    super.resolve();
+    for (Query query:sources)
     { 
+    
       if (type==null)
       { type=query.getType();
       }
@@ -76,7 +88,6 @@ public class Concatenation
         }
       }
       
-      addSource(query);
     }
     
     
@@ -94,7 +105,7 @@ public class Concatenation
   public <T extends Tuple> BoundQuery<?,T> getDefaultBinding
     (Focus<?> focus,Queryable<?> store)
     throws DataException
-  { return new ConcatenationBinding<Concatenation,T>(this,store);
+  { return new ConcatenationBinding<Concatenation,T>(this,focus,store);
    
   }
   
