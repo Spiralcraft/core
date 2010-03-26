@@ -37,6 +37,7 @@ import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.util.ConstructorInstanceResolver;
 import spiralcraft.data.util.StaticInstanceResolver;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -50,6 +51,9 @@ public class XmlTypeFactory
   
 
   private static final ClassLog log=ClassLog.getInstance(XmlTypeFactory.class);
+  private final Level debugLevel
+    =ClassLog.getInitialDebugLevel(XmlTypeFactory.class,Level.INFO);
+  
   private boolean debug;
   
   private ThreadLocal<CycleDetector<URI>> cycleDetectorRef
@@ -99,7 +103,21 @@ public class XmlTypeFactory
     } 
     
     try
-    { return resource.exists();
+    { 
+      if (resource.exists())
+      {
+        if (debug || debugLevel.isFine())
+        { log.fine(uri+" exists");
+        }
+        return true;
+      }
+      else
+      {
+        if (debug || debugLevel.isFine())
+        { log.fine(uri+" does not exist");
+        }
+        return false;
+      }
     }
     catch (IOException x)
     { 
