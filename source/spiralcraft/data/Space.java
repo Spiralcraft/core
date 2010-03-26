@@ -128,7 +128,7 @@ public class Space
         for (Store store: stores)
         { boundQueries.add(store.getAll(type));
         }
-        return new ConcatenationBinding<Concatenation,Tuple>(boundQueries);
+        return new ConcatenationBinding<Concatenation,Tuple>(boundQueries,type);
       }
     }
     return null;
@@ -244,7 +244,7 @@ public class Space
     { return queries.get(0);
     }
     else
-    { return new ConcatenationBinding<Concatenation,Tuple>(queries);
+    { return new ConcatenationBinding<Concatenation,Tuple>(queries,null);
     }
   
   
