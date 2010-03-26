@@ -95,6 +95,32 @@ public class EquiJoin
     setLHSExpressions(new Expression[] {lhs});
     setRHSExpressions(new Expression[] {rhs});
   }
+  
+  
+//  
+//  public EquiJoin subtypeCopy(Type<?> subtype)
+//  { 
+//    EquiJoin ret=new EquiJoin();
+//    ret.setSource(new Scan(subtype));
+//    
+//    if (lhsExpressions!=null)
+//    {
+//      ret.setLHSExpressions
+//        (lhsExpressions.toArray(new Expression<?>[lhsExpressions.size()])
+//        );
+//    }
+//    
+//    if (rhsExpressions!=null)
+//    {
+//      ret.setRHSExpressions
+//        (rhsExpressions.toArray(new Expression<?>[rhsExpressions.size()])
+//        );
+//    }
+//    if (assignments!=null)
+//    { ret.setAssignments(assignments);
+//    }
+//    return ret;
+//  }
 
   
 //  /**
