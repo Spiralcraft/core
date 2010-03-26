@@ -18,7 +18,7 @@ import spiralcraft.app.InitializeMessage;
 import spiralcraft.app.Message;
 import spiralcraft.app.MessageContext;
 import spiralcraft.app.State;
-import spiralcraft.app.spi.AbstractContainer;
+import spiralcraft.app.spi.AbstractComponent;
 import spiralcraft.app.spi.ValueState;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
@@ -40,7 +40,7 @@ import spiralcraft.util.LookaroundIterator;
  */
 @SuppressWarnings("unchecked") // Runtime type resolution
 public class Iterate<T>
-  extends AbstractContainer
+  extends AbstractComponent
 {
   private static final ClassLog log=ClassLog.getInstance(Iterate.class);
   
@@ -392,7 +392,7 @@ public class Iterate<T>
       currentFocus=parentFocus.chain(valueChannel);
     
       currentFocus.addFacet
-        (assembly.getFocus());
+        (selfFocus);
     }
     
     {
@@ -401,7 +401,7 @@ public class Iterate<T>
 
       lookaheadFocus=parentFocus.chain(lookaheadChannel);
       lookaheadFocus.addFacet
-        (assembly.getFocus());
+        (selfFocus);
       
     }
     
@@ -410,7 +410,7 @@ public class Iterate<T>
         =new ThreadLocalChannel(decorator.getComponentReflector());
       lookbehindFocus=parentFocus.chain(lookbehindChannel);
       
-      lookbehindFocus.addFacet(assembly.getFocus());
+      lookbehindFocus.addFacet(selfFocus);
       
     }
     
@@ -427,7 +427,7 @@ public class Iterate<T>
   
   @Override
   public IterationState createState(State parent)
-  { return new IterationState(children.length,parent);
+  { return new IterationState(container.getChildCount(),parent);
   }
   
   class Iteration

@@ -17,12 +17,16 @@ package spiralcraft.app.spi;
 
 import spiralcraft.app.Component;
 import spiralcraft.app.Container;
+import spiralcraft.app.Event;
+import spiralcraft.app.Parent;
 import spiralcraft.app.Message;
 import spiralcraft.app.MessageContext;
 import spiralcraft.app.State;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
@@ -35,7 +39,7 @@ import spiralcraft.log.Level;
  *
  */
 public class AbstractComponent
-  implements Component
+  implements Component,Parent
 {
   protected final ClassLog log=ClassLog.getInstance(getClass());
   protected Level debugLevel=ClassLog.getInitialDebugLevel(getClass(),null);
@@ -43,14 +47,17 @@ public class AbstractComponent
   protected final MessageHandlerSupport handlers
     =new MessageHandlerSupport();
   
-  protected Container parent;
+  protected Parent parent;
   protected boolean bound=false;
+  protected Container container;
   
-  public void setParent(Container parent)
+  protected Focus<?> selfFocus;
+  
+  public void setParent(Parent parent)
   { this.parent=parent;
   }
   
-  public Container getParent()
+  public Parent getParent()
   { return parent;
   }
   
@@ -66,9 +73,14 @@ public class AbstractComponent
 
   @Override
   public Container asContainer()
-  { return null;
+  { return container;
   }
 
+  @Override
+  public Parent asParent()
+  { return null;
+  }
+  
   /**
    * <p>Override to create a new State.
    */
@@ -82,21 +94,33 @@ public class AbstractComponent
     Focus<?> focusChain)
     throws BindException
   { 
+    if (selfFocus==null)
+    { 
+      selfFocus=new SimpleFocus<AbstractComponent>
+        (new SimpleChannel<AbstractComponent>(this,true));
+    }
     focusChain=bindImports(focusChain);
     focusChain=bindExports(focusChain);
+    if (container!=null)
+    { container.bind(focusChain);
+    }
     return focusChain;
   }
 
   @Override
   public void start()
     throws LifecycleException
-  { handlers.start();    
+  { 
+    handlers.start();
+    container.start();
   }
 
   @Override
   public void stop()
     throws LifecycleException
-  { handlers.stop();
+  { 
+    container.stop();
+    handlers.stop();
   }
 
   protected Focus<?> bindImports(Focus<?> focusChain)
@@ -135,6 +159,23 @@ public class AbstractComponent
     else
     { return -1;
     }
+  }
+
+  @Override
+  public Component asComponent()
+  { return this;
+  }
+
+  @Override
+  public void handleEvent(
+    MessageContext context,
+    Event event)
+  { context.handleEvent(event);    
+  }
+
+  @Override
+  public void registerChild(Component child)
+  { 
   }
 
 }

@@ -14,12 +14,28 @@
 //
 package spiralcraft.app;
 
+import spiralcraft.common.Lifecycle;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.FocusChainObject;
 
 
 
+/**
+ * A Container is an interface for managing a group of child components
+ * 
+ * @author mike
+ *
+ */
 public interface Container
-  extends Component
+  extends FocusChainObject,Lifecycle
 {
+  
+  /**
+   * FocusChainObject.bind() must bind and register children
+   */
+  Focus<?> bind(Focus<?> focus)
+    throws BindException;
   
   Component[] getChildren();
   
@@ -27,5 +43,4 @@ public interface Container
   
   int getChildCount();
 
-  void handleEvent(MessageContext context,Event event);
 }

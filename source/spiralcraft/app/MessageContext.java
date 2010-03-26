@@ -18,8 +18,16 @@ import java.util.LinkedList;
 
 
 /**
+ * <p>Provides state and message context for an execution path through
+ *   the component model
+ * <p>
+ * 
+ * 
  * <p>Routes Messages through a Component hierarchy optionally associated
- *   with a State tree.
+ *   with a State tree. 
+ * </p>
+ * 
+ * <p>Scoped to a single thread
  * </p>
  * 
  * @author mike
@@ -159,31 +167,38 @@ public class MessageContext
   public final void handleEvent(Event event)
   {
     Component lastComponent=component;
-    component=component.getParent();
+    component=component.getParent().asComponent();
 
-    State lastState=state;
+    if (component!=null)
+    {
+      Parent parent=component.asParent();
+      State lastState=state;
     
-    int depth=component.getStateDepth();
-    if (depth==1)
-    { state=state.getParent();
-    }
-    else if (depth>1)
-    { 
-      for (;depth>0;depth--)
+      int depth=parent.getStateDepth();
+      if (depth==1)
       { state=state.getParent();
       }
-    }
+      else if (depth>1)
+      { 
+        for (;depth>0;depth--)
+        { state=state.getParent();
+        }
+      }
     
-    try
-    { 
-      if (component!=null)
-      { component.asContainer().handleEvent(this,event);
+      try
+      { 
+        if (component!=null)
+        { parent.handleEvent(this,event);
+        }
+      }
+      finally
+      { 
+        component=lastComponent;
+        state=lastState;
       }
     }
-    finally
-    { 
-      component=lastComponent;
-      state=lastState;
+    else
+    { component=lastComponent;
     }
   }  
   

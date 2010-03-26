@@ -31,12 +31,12 @@ public interface EventHandler
     );
   
   /**
-   * <p>The type of message this handler supports, or null if all 
+   * <p>The type of event this handler supports, or null if all 
    *   message types will be sent through this handler.
    * </p>
    * 
    * @return
    */
-  Message.Type getType();
+  Event.Type getType();
   
 }

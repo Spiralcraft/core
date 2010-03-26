@@ -17,21 +17,16 @@ package spiralcraft.app.spi;
 
 import spiralcraft.app.Component;
 import spiralcraft.app.Container;
-import spiralcraft.app.Event;
-import spiralcraft.app.MessageContext;
-import spiralcraft.app.State;
-import spiralcraft.builder.Assembly;
+import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 
 public class AbstractContainer
-  extends AbstractComponent
   implements Container
 {
 
   protected Component[] children;
-  protected Assembly<AbstractContainer> assembly;
-
+  
   
   @Override
   public Focus<?> bind(
@@ -43,24 +38,17 @@ public class AbstractContainer
   }
   
   
-  public final void bindChildren(Focus<?> focusChain)
+  protected final void bindChildren(Focus<?> focusChain)
     throws BindException
   { 
     for (Component child:children)
-    { child.bind(focusChain);
+    { 
+      child.bind(focusChain);
+      child.getParent().registerChild(child);
     }
   }
   
-  public void handleEvent(MessageContext context,Event event)
-  { 
-    context.handleEvent(event);
-  }
-  
-  @Override
-  public final Container asContainer()
-  { return this;
-  }
-
+ 
 
   @Override
   public Component getChild(
@@ -80,11 +68,35 @@ public class AbstractContainer
   { return children;
   }
   
-  /**
-   * <p>Override to create a new State.
-   */
+
+
+
   @Override
-  public State createState(State parentState)
-  { return new SimpleState(children.length,parentState);
+  public void start()
+    throws LifecycleException
+  {
+    for (Component child:children)
+    { 
+      child.start();
+      
+    }
+    // TODO Auto-generated method stub
+    
   }
+
+
+  @Override
+  public void stop()
+    throws LifecycleException
+  {
+    for (Component child:children)
+    { 
+      child.stop();
+      
+    }
+    
+  }
+
+
+
 }
