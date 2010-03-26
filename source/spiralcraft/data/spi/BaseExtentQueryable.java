@@ -1,18 +1,23 @@
 package spiralcraft.data.spi;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.query.BoundQuery;
+import spiralcraft.data.query.Concatenation;
+import spiralcraft.data.query.ConcatenationBinding;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Scan;
-import spiralcraft.data.query.Union;
 
 import spiralcraft.lang.Focus;
+import spiralcraft.log.ClassLog;
 
 /**
  * <p>A "virtual" Queryable which delegates to multiple Queryables
@@ -27,6 +32,9 @@ import spiralcraft.lang.Focus;
 public class BaseExtentQueryable<Ttuple extends Tuple>
   implements Queryable<Ttuple>
 {
+  
+  private static final ClassLog log
+    =ClassLog.getInstance(BaseExtentQueryable.class);
 
   private Type<?> type;
   private HashMap<Type<?>,Queryable<Ttuple>> subtypeQueryables
@@ -75,7 +83,7 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
           )
       { scans[i++]=new Scan(entry.getKey());
       }
-      return new Union(scans).getDefaultBinding(null,this);
+      return new Concatenation(scans).getDefaultBinding(null,this);
     }
     else
     {
@@ -97,12 +105,63 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
   { return new Type[] {type};
   }
 
+  @SuppressWarnings("unchecked")
   public BoundQuery<?,Ttuple> query(Query q, Focus<?> context)
     throws DataException
   { 
+    BoundQuery<?,Ttuple> ret=null;
     
-    // Get the default binding for the query
-    BoundQuery<?,Ttuple> ret=q.solve(context, this);
+    if (ret==null)
+    {
+      // Queries that map to a single scan type that is wider than this
+      //   queryable's type will be mapped to a concatenation of 
+      //   the results of the query as bound to each subtype extent.
+      
+      Set<Type<?>> scanTypes=q.getScanTypes(new HashSet<Type<?>>());
+      if (scanTypes.size()==1 
+          && scanTypes.iterator().next().isAssignableFrom(this.type)
+          )
+      { 
+        ArrayList<BoundQuery> subQueries=new ArrayList<BoundQuery>();
+        
+        for (Map.Entry<Type<?>,Queryable<Ttuple>> entry 
+              : subtypeQueryables.entrySet()
+            )
+        { 
+          BoundQuery<?,Ttuple> subQuery
+            =entry.getValue().query(q,context);
+          
+          if (subQuery!=null)
+          { subQueries.add(subQuery);
+          }
+          else
+          { 
+            subQueries=null;
+            break;
+          }
+          
+        }
+        
+        if (subQueries!=null)
+        { 
+          log.debug
+            ("Optimized "+q+" for BaseExtentQueryable "+this.type.getURI());
+          ret=new ConcatenationBinding(subQueries,this.type);
+        }
+        
+      }
+    
+    }
+    
+    
+    if (ret==null)
+    {
+      log.info
+        ("Using default solution for BaseExtentQueryable "+this.type.getURI()
+        +": "+q);
+      // Get the default binding for the query
+      ret=q.solve(context, this);
+    }
     ret.resolve();
     return ret;
   }
