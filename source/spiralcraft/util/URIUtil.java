@@ -43,6 +43,34 @@ public class URIUtil
   }
   
   /**
+   * Replace the path of the specified URI with the 
+   *   specified nonencoded query string
+   * 
+   * @return
+   */
+  public static final URI replaceUnencodedPath
+    (URI source
+    ,String unencodedPath
+    )
+  {
+    try
+    {
+      return new URI
+        (source.getScheme()
+        ,source.getAuthority()
+        ,unencodedPath
+        ,source.getQuery()
+        ,source.getFragment()
+        );
+    }
+    catch (URISyntaxException x)
+    { 
+      throw new IllegalArgumentException
+        ("Synax error in path '"+unencodedPath+"'",x);
+    }
+    
+  }
+  /**
    * Replace the query part of the specified URI with the 
    *   specified pre-encoded query string
    * 

@@ -381,6 +381,29 @@ public class AssemblyLoader
         else if (name=="overlayId")
         { assemblyClass.setOverlayId(attribs[i].getValue());
         }
+        else if (name=="define" || name=="defineLocal")
+        { 
+          String assignment=attribs[i].getValue();
+          int eqpos=assignment.indexOf("=");
+          if (eqpos<1)
+          { 
+            throw new BuildException(
+              "Attribute '"+name+"' requires a value of the form "
+              +" '[substitutionVariable] = [substitutionText]', "
+              +" eg. 'com.myco.examplevar=someValue' "
+            );
+          }
+          String substName=assignment.substring(0,eqpos);
+          String substValue
+            =eqpos<assignment.length()-1?assignment.substring(eqpos+1):"";
+            
+          if (name=="define")
+          { assemblyClass.define(substName,substValue);
+          }
+          else
+          { assemblyClass.defineLocal(substName,substValue);
+          }
+        }
         else
         { 
           throw new BuildException

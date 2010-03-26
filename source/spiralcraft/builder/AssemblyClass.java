@@ -35,6 +35,8 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.text.ParseException;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ContextDictionary;
+import spiralcraft.util.Path;
+import spiralcraft.util.URIUtil;
 import spiralcraft.util.lang.ClassUtil;
 
 import spiralcraft.vfs.classpath.ClasspathResourceFactory;
@@ -165,7 +167,8 @@ public class AssemblyClass
   private String overlayId;
   
   private boolean debug;
-  
+  private HashMap<String,String> context;
+  private HashMap<String,String> localContext;
   /**
    * Construct a new AssemblyClass from a definition
    *
@@ -203,8 +206,90 @@ public class AssemblyClass
     else
     { _loader=AssemblyLoader.getInstance();
     }
+    
+    if (sourceUri!=null)
+    { 
+      String relURI
+        =sourceUri.getPath()==null
+        ?""
+        :URIUtil.replaceUnencodedPath
+          (sourceUri
+          ,new Path(sourceUri.getPath(),'/').parentPath().format('/')
+          ).toString()
+        ;
+      
+      if (relURI!=null)
+      { 
+        
+        defineLocal("spiralcraft.builder.dir.URI",relURI);
+      
+      }
+      
+      String relDir
+        =sourceUri.getPath()==null
+        ?""
+        :new Path(sourceUri.getPath(),'/').parentPath().format('/')
+        ;
+      
+      if (relDir!=null)
+      { defineLocal("spiralcraft.builder.dir",relDir);
+      }
+      
+
+      
+    }
   }
 
+  public void define(String contextName,String expansion)
+  {
+    if (context==null)
+    { context=new HashMap<String,String>();
+    }
+    context.put(contextName,expansion);
+  }
+  
+  public void defineLocal(String contextName,String expansion)
+  {
+    if (localContext==null)
+    { localContext=new HashMap<String,String>();
+    }
+    localContext.put(contextName,expansion);
+  }
+  
+  public void pushContext()
+  { 
+    if (context!=null)
+    { 
+      ContextDictionary.pushInstance
+        (new ContextDictionary
+          (ContextDictionary.getInstance()
+          ,context
+          ,false
+          )
+        );
+    }
+    if (localContext!=null)
+    { 
+      ContextDictionary.pushInstance
+        (new ContextDictionary
+          (ContextDictionary.getInstance()
+          ,localContext
+          ,true
+          )
+        );
+    }    
+  }
+  
+  public void popContext()
+  {
+    if (localContext!=null)
+    { ContextDictionary.popInstance();
+    }    
+    if (context!=null)
+    { ContextDictionary.popInstance();
+    }
+  }
+  
   @Override
   public String toString()
   { return super.toString()+":"+sourceURI+":"+_containerURI;

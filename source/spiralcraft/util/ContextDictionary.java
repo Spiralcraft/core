@@ -94,8 +94,10 @@ public class ContextDictionary
             { ret.append(substitution);
             }
             else
-            { throw new ParseException
-                ("Context property '"+code.toString()+"' not found",position);
+            { 
+              
+              throw new ParseException
+                ("Context property '"+code.toString()+"' not found: ",position);
             }
             
 //            if (substitution!=code.toString())
@@ -153,12 +155,25 @@ public class ContextDictionary
   
   
   private final ContextDictionary parent;
-  private final HashMap<String,String> map=new HashMap<String,String>();
+  private final HashMap<String,String> map;
+  private final boolean local;
+  
   
   public ContextDictionary(ContextDictionary parent)
-  { this.parent=parent;
+  { 
+    this.parent=parent;
+    map=new HashMap<String,String>();
+    local=false;
   }
   
+  public ContextDictionary
+    (ContextDictionary parent,HashMap<String,String> map,boolean local)
+  { 
+    this.parent=parent;
+    this.map=map;
+    this.local=local;
+  }
+
   public String find(String name,String defaultVal)
   { 
     String val=find(name);
@@ -168,7 +183,10 @@ public class ContextDictionary
   public String find(String name)
   {
     String val=null;
-    if (parent!=null)
+    if (local)
+    { val=get(name);
+    }
+    if (val==null && parent!=null)
     { val=parent.find(name);
     }
     if (val==null)

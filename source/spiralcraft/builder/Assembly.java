@@ -314,20 +314,29 @@ public class Assembly<T>
     if (resolved)
     { throw new IllegalStateException("Already resolved");
     }
-    if (!factoryMode)
-    { resolved=true;
-    }
     
-    if (focus.getSubject().get()==null)
-    { constructInstance();
-    }
-    
-    if (_propertyBindings!=null)
+    _assemblyClass.pushContext();
+    try
     {
-      for (PropertyBinding binding: _propertyBindings)
-      { binding.resolve();
+      if (!factoryMode)
+      { resolved=true;
+      }
+    
+      if (focus.getSubject().get()==null)
+      { constructInstance();
+      }
+    
+      if (_propertyBindings!=null)
+      {
+        for (PropertyBinding binding: _propertyBindings)
+        { binding.resolve();
+        }
       }
     }
+    finally
+    {  _assemblyClass.popContext();
+    }
+    
   }
   
   /**
@@ -346,15 +355,23 @@ public class Assembly<T>
     if (resolved)
     { throw new IllegalStateException("Already resolved");
     }
-    if (!factoryMode)
-    { resolved=true;
-    }
     
-    if (_propertyBindings!=null)
+    _assemblyClass.pushContext();
+    try
     {
-      for (PropertyBinding binding: _propertyBindings)
-      { binding.resolveDefault();
+      if (!factoryMode)
+      { resolved=true;
       }
+    
+      if (_propertyBindings!=null)
+      {
+        for (PropertyBinding binding: _propertyBindings)
+        { binding.resolveDefault();
+        }
+      }
+    }
+    finally
+    {  _assemblyClass.popContext();
     }
   }
   

@@ -480,6 +480,10 @@ public class PropertyBinding
     if (!isAggregate())
     {
       String text=null;
+      
+      // Push context to ensure that local AssemblyClass context is
+      ///  visible
+      _specifier.getContainer().pushContext();
       try
       { text=ContextDictionary.substitute(_specifier.getTextData());
       }
@@ -487,6 +491,9 @@ public class PropertyBinding
       { 
         throwBuildException
           ("Error parsing properties in "+_specifier.getTextData(),x);
+      }
+      finally
+      { _specifier.getContainer().popContext();
       }
       
       _converter=_target.getReflector().getStringConverter();
@@ -517,28 +524,41 @@ public class PropertyBinding
       
         _converter=cd.getComponentReflector().getStringConverter();
         Object value=cd.newCollection();
-        for (String textData:_specifier.getTextDataList())
-        { 
-          
-          // log.fine("String value "+textData);
-          try
-          { textData=ContextDictionary.substitute(textData);
-          }
-          catch (ParseException x)
+        
+        // Push context to ensure that local AssemblyClass context is
+        ///  visible
+        _specifier.getContainer().pushContext();
+        try
+        {
+          for (String textData:_specifier.getTextDataList())
           { 
-            throwBuildException
+
+            // log.fine("String value "+textData);
+
+            try
+            { textData=ContextDictionary.substitute(textData);
+            }
+            catch (ParseException x)
+            { 
+              throwBuildException
               ("Error parsing properties in "+textData,x);
-          }
-          Object elementValue=_converter.fromString(textData);
-          // log.fine("Collection value "+elementValue);
-          NamespaceContext.push(_specifier.getPrefixResolver());
-          try
-          { value=cd.add(value,elementValue);
-          }
-          finally
-          { NamespaceContext.pop();
+            }
+
+            NamespaceContext.push(_specifier.getPrefixResolver());
+            Object elementValue=_converter.fromString(textData);
+            // log.fine("Collection value "+elementValue);
+            try
+            { value=cd.add(value,elementValue);
+            }
+            finally
+            { NamespaceContext.pop();
+            }
           }
         }
+        finally
+        { _specifier.getContainer().popContext();
+        }
+        
         if (_specifier.getDebugLevel().isDebug())
         { log.fine("Result is "+value+" from "+cd);
         }

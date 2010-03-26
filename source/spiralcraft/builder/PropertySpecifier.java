@@ -375,6 +375,10 @@ public class PropertySpecifier
     return new PropertyBinding(this,assembly);
   }
   
+  AssemblyClass getContainer()
+  { return _container;
+  }
+  
   void setTargetSequence(int sequence)
   { _targetSequence=sequence;
   }
