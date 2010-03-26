@@ -61,9 +61,12 @@ public class ClosureFocus<T>
   private EnclosedFocus<T> subjectFocus;
   
   public ClosureFocus(Focus<T> focusChain)
+  { this(focusChain,focusChain.getSubject());
+  }
+  
+  public ClosureFocus(Focus<T> focusChain,Channel<T> subject)
   { 
     parent=focusChain;
-    Channel<T> subject=focusChain.getSubject();
     
     if (subject!=null)
     {
