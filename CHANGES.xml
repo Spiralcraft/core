@@ -3,6 +3,158 @@
   >
   
   <scm:Change>
+    <revision>0.4.7.2
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-03-26
+    </date>
+    
+    <notes>
+      <scm:Note>Performance optimizations in common spiralcraft.lang and
+        spiralcraft.data operations
+      </scm:Note> 
+      <scm:Note>spiralcraft.builder can now define variables in the 
+        common ContextDictionary string substitution mechanism.
+        "spiralcraft.builder.dir"
+        and "spiralcraft.builder.dir.URI" are automatically defined to refer to 
+        the location of the assembly definition file where the property is
+        used.
+      </scm:Note> 
+      <scm:Note>Misc debugging enhancements
+      </scm:Note> 
+    </notes>
+      
+    <details>
+      <scm:Change>
+        <notes>
+          <scm:Note>spiralcraft.builder can now define variables in the 
+            common ContextDictionary string substitution mechanism.
+            "spiralcraft.builder.dir"
+            and "spiralcraft.builder.dir.URI" are automatically defined to refer
+            to 
+            the location of the assembly definition file where the property is
+            used.
+          </scm:Note> 
+          <scm:Note>ContextDictionary can now use an external definition
+            map and supports a local override mode where locally defined
+            properties take precedence over globally defined properties.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+
+        <resources>
+          <URI>builder/Assembly.java
+          </URI>
+          <URI>builder/AssemblyClass.java
+          </URI>
+          <URI>builder/AssemblyLoader.java
+          </URI>
+          <URI>builder/PropertyBinding.java
+          </URI>
+          <URI>builder/PropertySpecifier.java
+          </URI>
+          <URI>util/ContextDictionary.java
+          </URI>
+          <URI>util/URIUtil.java
+          </URI>
+        </resources>
+            
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Misc debugging enhancements
+          </scm:Note> 
+
+          <scm:Note>Added debugLevel variables for XmlTypeFactory and Loader
+            to trace class and type loading process.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+
+        <resources>
+          <URI>data/xml/XmlTypeFactory.java
+          </URI>
+          <URI>classloader/Loader.java
+          </URI>
+        </resources>
+            
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Performance optimizations in common spiralcraft.lang and
+            spiralcraft.data operations
+          </scm:Note> 
+
+          <scm:Note>Generally optimized direct queries against base extents
+            by delegating to each subtype extent and concatenating the results.
+          </scm:Note>
+          <scm:Note>Replaced Union with Concatenation for base extent scans.
+          </scm:Note>
+
+          <scm:Note>Enclosed the upstream context of KeyField and QueryField
+            implementations to eliminate unnecessary loading of
+            iterative query execution.
+          </scm:Note> 
+          <scm:Note>Added additional constructor to ClosureFocus for 
+            subject channel to enclose.
+          </scm:Note> 
+
+          <scm:Note>Ensure that UnionBinding and ConcatenationBinding
+            respect design contract for use of Queryable and Focus params in
+            constructor. Ensure that Concatenation resolves own type
+            appropriately. 
+          </scm:Note> 
+          
+          <scm:Note>ConcatenationBinding accepts Type in utility
+            constructor.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+
+        <resources>
+          <URI>data/core/KeyField.java
+          </URI>
+          <URI>data/core/QueryField.java
+          </URI>
+          <URI>lang/spi/ClosureFocus.java
+          </URI>
+          
+          <URI>data/spi/BaseExtentQueryable.java
+          </URI>
+          
+          <URI>data/Space.java
+          </URI>
+          <URI>data/query/Concatenation.java
+          </URI>
+          <URI>data/query/ConcatenationBinding.java
+          </URI>
+          <URI>data/query/UnionBinding.java
+          </URI>
+
+
+        </resources>
+            
+      </scm:Change>
+
+     </details>
+  </scm:Change>
+  
+  
+  <scm:Change>
     <revision>0.4.7.1
     </revision>
     
