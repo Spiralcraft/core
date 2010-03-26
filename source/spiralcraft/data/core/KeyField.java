@@ -20,9 +20,9 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.SimpleFocus;
 
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.ClosureFocus;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
@@ -99,15 +99,20 @@ public class KeyField<T extends DataComposite>
     if (!focus.isContext(source))
     { focus=focus.chain(source);
     }
+    ClosureFocus<Tuple> sourceFocus
+      =new ClosureFocus(focus,source);
+    
     Focus<Tuple> keyFocus
-      =new SimpleFocus(focus,key.bindChannel(source,focus,args));
+      =sourceFocus.chain
+        (key.bindChannel(sourceFocus.getSubject(),sourceFocus,args));
 
+    
     Query query=key.getForeignQuery();
     if (debug)
     { log.fine("Foreign query is "+query);
     }
     Focus<Queryable> queryableFocus
-      =focus.<Queryable>findFocus(Queryable.QUERYABLE_URI);
+      =sourceFocus.<Queryable>findFocus(Queryable.QUERYABLE_URI);
     if (queryableFocus!=null)
     { 
       
@@ -124,7 +129,12 @@ public class KeyField<T extends DataComposite>
               ("Got null query from "+queryable+" for query "+query);
           }
           boundQuery.resolve();
-          return new KeyFieldChannel(getType(),boundQuery,keyFocus.getSubject());
+          return new KeyFieldChannel
+            (getType()
+            ,boundQuery
+            ,keyFocus.getSubject()
+            ,sourceFocus
+            );
           
         }
         else
@@ -143,7 +153,12 @@ public class KeyField<T extends DataComposite>
       {
         BoundQuery boundQuery=query.bind(keyFocus);
         boundQuery.resolve();
-        return new KeyFieldChannel(getType(),boundQuery,keyFocus.getSubject());
+        return new KeyFieldChannel
+          (getType()
+          ,boundQuery
+          ,keyFocus.getSubject()
+          ,sourceFocus
+          );
       }
       catch (DataException x)
       { throw new BindException("Error binding query for KeyField "+getURI(),x);
@@ -159,15 +174,21 @@ public class KeyField<T extends DataComposite>
   {
     private final BoundQuery query;
     
-    private final Channel<Tuple> keyChannel;
+    private final ClosureFocus<Tuple> closure;
+    private Channel<Tuple> keyChannel;
     
     public KeyFieldChannel
-      (Type<T> type,BoundQuery query,Channel<Tuple> keyChannel)
+      (Type<T> type
+      ,BoundQuery query
+      ,Channel<Tuple> keyChannel
+      ,ClosureFocus<Tuple> closure
+      )
       throws BindException
     { 
       super(DataReflector.<T>getInstance(type));
       this.query=query;
       this.keyChannel=keyChannel;
+      this.closure=closure;
     }
     
     @Override
@@ -180,103 +201,108 @@ public class KeyField<T extends DataComposite>
       throws AccessException
     {
       // Make sure parameter fields are not null
-      Tuple keyVal=keyChannel.get();
-      if (keyVal==null)
-      { 
-        
-        if (debug)
-        { log.fine("Key value is null for "+getURI());
-        }
-        return null;
-      }
-      
-      int count=keyVal.getFieldSet().getFieldCount();
-      for (int i=0;i<count;i++)
-      { 
-        try
-        {
-          if (keyVal.get(i)==null)
-          { 
-            if (debug)
-            { 
-              log.fine
-                ("Key field '"
-                 +keyVal.getFieldSet().getFieldByIndex(i).getName()
-                 +"' value is null for "+getURI()
-                );
-            }
-          
-            return null;
-          }
-        }
-        catch (DataException x)
-        { throw new AccessException("Error reading key value for "+getURI());
-        }
-      }
+      closure.push();
       
       try
       {
-        
-      try
-      { 
-//        log.fine("KeyField "+getURI()+" retrieving...");
-        if (getType().isAggregate())
+        Tuple keyVal=keyChannel.get();
+        if (keyVal==null)
         { 
-          SerialCursor cursor=query.execute();
-          try
-          {
-            if (cursor.getResultType()==null)
-            { log.fine("cursor result type is null "+cursor);
-            }
-          
-          
-            CursorAggregate aggregate
-              =new CursorAggregate(cursor);
-//            log.fine(aggregate.toString());
-            return (T) aggregate;
+
+          if (debug)
+          { log.fine("Key value is null for "+getURI());
           }
-          finally
-          { cursor.close();
-          }
-          
+          return null;
         }
-        else
+
+        int count=keyVal.getFieldSet().getFieldCount();
+        for (int i=0;i<count;i++)
         { 
-          Tuple val=null;
-          SerialCursor cursor=query.execute();
           try
           {
-            while (cursor.next())
+            if (keyVal.get(i)==null)
             { 
-              if (val!=null)
+              if (debug)
               { 
-                throw new AccessException
-                  (getURI()+": Cardinality violation: non-aggregate query returned more" +
-                  " than one result"
-                  );
+                log.fine
+                ("Key field '"
+                  +keyVal.getFieldSet().getFieldByIndex(i).getName()
+                  +"' value is null for "+getURI()
+                );
               }
-              else
-              { val=cursor.getTuple();
-              }
+
+              return null;
             }
           }
-          finally
-          { cursor.close();
+          catch (DataException x)
+          { throw new AccessException("Error reading key value for "+getURI());
           }
-//          log.fine(val!=null?val.toString():"null");
-          return (T) val;
         }
+
+
+        try
+        { 
+          //        log.fine("KeyField "+getURI()+" retrieving...");
+          if (getType().isAggregate())
+          { 
+            SerialCursor cursor=query.execute();
+            try
+            {
+              if (cursor.getResultType()==null)
+              { log.fine("cursor result type is null "+cursor);
+              }
+
+
+              CursorAggregate aggregate
+              =new CursorAggregate(cursor);
+              //            log.fine(aggregate.toString());
+              return (T) aggregate;
+            }
+            finally
+            { cursor.close();
+            }
+
+          }
+          else
+          { 
+            Tuple val=null;
+            SerialCursor cursor=query.execute();
+            try
+            {
+              while (cursor.next())
+              { 
+                if (val!=null)
+                { 
+                  throw new AccessException
+                  (getURI()+": Cardinality violation: non-aggregate query returned more" +
+                    " than one result for key "+keyVal 
+                  );
+                }
+                else
+                { val=cursor.getTuple();
+                }
+              }
+            }
+            finally
+            { cursor.close();
+            }
+            //          log.fine(val!=null?val.toString():"null");
+            return (T) val;
+          }
+        }
+        catch (RuntimeException x)
+        { 
+          x.printStackTrace();
+          throw x;
+        }
+        catch (DataException x)
+        { 
+          throw new AccessException(x.toString(),x);
+        }
+
       }
-      catch (DataException x)
-      { 
-        throw new AccessException(x.toString(),x);
-      }
-      
-      }
-      catch (RuntimeException x)
-      { 
-        x.printStackTrace();
-        throw x;
+      finally
+      { closure.pop();
       }
     }
 

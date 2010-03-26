@@ -21,6 +21,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.ClosureFocus;
 
 
 import spiralcraft.data.DataComposite;
@@ -117,12 +118,14 @@ public class QueryField
       
       try
       { 
+        ClosureFocus<?> closure
+          =new ClosureFocus(focus,source);
         BoundQuery boundQuery
           =((Queryable) queryableFocus.getSubject().get()).query
-            (query,focus);
+            (query,closure);
         
         boundQuery.resolve();
-        return new QueryFieldChannel(getType(),boundQuery);
+        return new QueryFieldChannel(getType(),boundQuery,closure);
       }
       catch (DataException x)
       { throw new BindException(x.toString(),x);
@@ -140,12 +143,14 @@ public class QueryField
     extends AbstractChannel<DataComposite>
   {
     private BoundQuery boundQuery;
+    private ClosureFocus<?> focus;
         
-    public QueryFieldChannel(Type<?> type,BoundQuery query)
+    public QueryFieldChannel(Type<?> type,BoundQuery query,ClosureFocus<?> focus)
       throws BindException
     { 
       super(DataReflector.<DataComposite>getInstance(type));
       this.boundQuery=query;
+      this.focus=focus;
     }
     
     @Override
@@ -157,9 +162,8 @@ public class QueryField
     protected DataComposite retrieve()
       throws AccessException
     {
-      try
-      {
-        
+
+      focus.push();
       try
       { 
 //        log.fine("QueryField "+getURI()+" retrieving...");
@@ -218,17 +222,20 @@ public class QueryField
           return val;
         }
       }
-      catch (DataException x)
-      { 
-        throw new AccessException(x.toString(),x);
-      }
-      
-      }
       catch (RuntimeException x)
       { 
         x.printStackTrace();
         throw x;
       }
+      catch (DataException x)
+      { 
+        throw new AccessException(x.toString(),x);
+      }
+      finally
+      { focus.pop();
+      }
+      
+
     }
 
     @Override
