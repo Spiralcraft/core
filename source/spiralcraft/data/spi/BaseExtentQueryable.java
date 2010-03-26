@@ -18,6 +18,7 @@ import spiralcraft.data.query.Scan;
 
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 /**
  * <p>A "virtual" Queryable which delegates to multiple Queryables
@@ -35,6 +36,8 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
   
   private static final ClassLog log
     =ClassLog.getInstance(BaseExtentQueryable.class);
+  private static final Level debugLevel
+    =ClassLog.getInitialDebugLevel(BaseExtentQueryable.class,null);
 
   private Type<?> type;
   private HashMap<Type<?>,Queryable<Ttuple>> subtypeQueryables
@@ -144,8 +147,11 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
         
         if (subQueries!=null)
         { 
-          log.debug
-            ("Optimized "+q+" for BaseExtentQueryable "+this.type.getURI());
+          if (debugLevel.isDebug())
+          {
+            log.debug
+              ("Optimized "+q+" for BaseExtentQueryable "+this.type.getURI());
+          }
           ret=new ConcatenationBinding(subQueries,this.type);
         }
         
@@ -156,9 +162,12 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
     
     if (ret==null)
     {
-      log.info
-        ("Using default solution for BaseExtentQueryable "+this.type.getURI()
-        +": "+q);
+      if (debugLevel.isDebug())
+      {
+        log.debug
+          ("Using default solution for BaseExtentQueryable "+this.type.getURI()
+          +": "+q);
+      }
       // Get the default binding for the query
       ret=q.solve(context, this);
     }
