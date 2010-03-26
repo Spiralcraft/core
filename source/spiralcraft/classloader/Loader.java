@@ -25,6 +25,7 @@ import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.util.IteratorEnumeration;
 
 public class Loader
@@ -33,6 +34,8 @@ public class Loader
 {
   private static final ClassLog log
     =ClassLog.getInstance(Loader.class);
+  private static final Level debugLevel
+    =ClassLog.getInitialDebugLevel(Loader.class,Level.INFO);
   
   private final ArrayList<Archive> archives=new ArrayList<Archive>();
   private final ArrayList<Archive> precedentArchives=new ArrayList<Archive>();
@@ -89,7 +92,7 @@ public class Loader
     if (clazz==null)
     { clazz=findClass(formalName);
     }
-    if (debug)
+    if (debug || debugLevel.isFine())
     { log.fine( (clazz!=null?"FOUND":"FAIL")+":"+formalName );
     }
     if (resolve && clazz!=null)
@@ -156,10 +159,18 @@ public class Loader
     {
       Archive.Entry entry=findEntry(path,archives);
       if (entry==null)
-      { return null;
+      { 
+        if (debug || debugLevel.isFine())
+        { log.fine( "FAIL:"+path );
+        }
+        return null;
       }
       else
-      { return entry.getResource();
+      { 
+        if (debug || debugLevel.isFine())
+        { log.fine( "FOUND:"+path );
+        }
+        return entry.getResource();
       }
     }
     catch (IOException x)
@@ -282,7 +293,7 @@ public class Loader
     if (in==null)
     { in=findStream(path);
     }
-    if (debug)
+    if (debug || debugLevel.isFine())
     { log.fine( (in!=null?"FOUND":"FAIL")+":"+path );
     }
     
@@ -315,24 +326,24 @@ public class Loader
   public void start()
     throws LifecycleException
   {
-    if (debug)
-    { log.fine("starting...");
+    if (debug && debugLevel.isTrace())
+    { log.trace("starting...");
     }
     
     try
     {
       for (Archive archive: archives)
       { 
-        if (debug)
-        { log.fine("Opening local archive "+archive);
+        if (debug && debugLevel.isTrace())
+        { log.trace("Opening local archive "+archive);
         }
         archive.open();
       }
     
       for (Archive archive: precedentArchives)
       { 
-        if (debug)
-        { log.fine("Opening precedent archive "+archive);
+        if (debug && debugLevel.isTrace())
+        { log.trace("Opening precedent archive "+archive);
         }
         archive.open();
       }
