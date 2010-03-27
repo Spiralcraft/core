@@ -485,16 +485,19 @@ public class XmlQueryable
   
   public synchronized void unfreeze()
   { 
-    if (Transaction.getContextTransaction()!=transaction)
-    { 
-      throw new RuntimeException
-        ("Lock not owned by transaction "+Transaction.getContextTransaction()
-       +", owner is "+transaction
-        );
+    if (frozen)
+    {
+      if (Transaction.getContextTransaction()!=transaction)
+      { 
+        throw new RuntimeException
+          ("Lock not owned by transaction "+Transaction.getContextTransaction()
+          +", owner is "+transaction
+          );
+      }
+      frozen=false;
+      transaction=null;
+      this.notify();
     }
-    frozen=false;
-    transaction=null;
-    this.notify();
   }
 
 
