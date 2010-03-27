@@ -3,6 +3,37 @@
   >
   
   <scm:Change>
+    <revision>0.4.7.3
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-03-27
+    </date>
+    
+    <notes>
+      <scm:Note>Fixed synchronization logic bug in XmlStore locking code.
+      </scm:Note> 
+    </notes>
+      
+    <details>
+      <scm:Change>
+        <notes>
+          <scm:Note>Fixed synchronization logic bug in XmlStore locking code.
+          </scm:Note> 
+
+        </notes>
+        
+        <path>source/spiralcraft/data/xml/XmlQueryable.java
+        </path>
+
+            
+      </scm:Change>
+    </details>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.4.7.2
     </revision>
     
