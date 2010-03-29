@@ -75,6 +75,9 @@ public class EquiJoin
   private ArrayList<Expression<?>> lhsExpressions;
   private String[] assignments;
   
+  { mergeable=true;
+  }
+  
   public EquiJoin()
   { 
   }

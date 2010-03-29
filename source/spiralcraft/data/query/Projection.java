@@ -53,6 +53,9 @@ public class Projection<T extends Tuple>
   
   private Expression<T> x;
   
+  { mergeable=true;
+  }
+  
   public Projection()
   {
   }

@@ -64,6 +64,7 @@ public abstract class Query
   protected Level debugLevel
     =ClassLog.getInitialDebugLevel(getClass(),Level.INFO);
   protected boolean logStatistics;
+  protected boolean mergeable=false;
   
   /**
    * Construct a new, unfactored Query
@@ -335,6 +336,54 @@ public abstract class Query
   { return null;
   }
 
+  /**
+   * <p>Indicates whether this type of Query can combine its own results from
+   *   multiple sources via the "merge(List<BoundQuery>)" method. 
+   * </p>
+   * 
+   * <p>When false (the default condition), the Query will be "solved()",
+   *   otherwise the Query will be bound to multiple sources and the
+   *   "merge()" method will be called with a set of BoundQueries, one for
+   *   each source.
+   * </p>
+   *   
+   * <p>The default merge operation is a Concatenation. Override merge() to
+   *   provide a specific implementation
+   * </p>
+   * 
+   * @return Whether this query and all its sources are mergeable.
+   */
+  public boolean isMergeable()
+  { 
+    if (!mergeable)
+    { return false;
+    }
+    
+    if (sources!=null)
+    {
+      for (Query source:sources)
+      {
+        if (!source.isMergeable())
+        { return false;
+        }
+      }
+    }
+    return true;
+  }
+  
+  /**
+   * <p>Called by the binding chain when mergeable is set to true by a subclass.
+   *   Override to provide a specific implementation
+   * </p>
+   * 
+   * @param sources
+   * @return
+   * @throws DataException
+   */
+  public <T extends Tuple> BoundQuery<?,T> merge(List<BoundQuery<?,T>> sources)
+    throws DataException
+  { return new ConcatenationBinding<Concatenation,T>(sources,null);
+  }
 
 }
 

@@ -35,8 +35,9 @@ import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Reflector;
 
 /**
- * A Query which provides access to all instances of a given Type. This is usually the 
- *   eventual upstream source for all Queries. 
+ * <p>A Query which retrieves a Aggregate of values from the result of an
+ *   expression evaluated in the associated application context. 
+ * </p>
  */
 public class ReferenceQuery<T extends Tuple>
   extends Query

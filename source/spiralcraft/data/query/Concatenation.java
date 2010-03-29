@@ -32,6 +32,9 @@ public class Concatenation
   extends Query
 {
   
+  { mergeable=true;
+  }
+  
   public Concatenation()
   {
   }

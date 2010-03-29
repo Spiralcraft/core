@@ -58,6 +58,9 @@ public class SetFilter<T>
   private Expression<T> searchX;
   private boolean excludeMatch;
   
+  { mergeable=true;
+  }
+  
   public SetFilter()
   {
   }

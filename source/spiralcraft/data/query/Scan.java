@@ -29,6 +29,9 @@ public class Scan
   extends Query
 {
   
+  { mergeable=true;
+  }
+  
   /**
    * Construct an unconfigured Scan
    */

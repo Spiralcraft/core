@@ -30,9 +30,10 @@ import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.lang.DataReflector;
 
 /**
- * A Query operation which uses each returned element of a parent query as the 
+ * <p>A Query operation which uses each returned element of a parent query as the 
  *   context for a child Query and returns the concatenated result of the child
  *   query.
+ * </p>
  */
 public class Join
   extends Query
@@ -42,6 +43,9 @@ public class Join
     =ClassLog.getInstance(Selection.class);
   private Query parentQuery;
   private Query childQuery;
+  
+  { mergeable=true;
+  }
   
   public Join()
   {

@@ -3,6 +3,7 @@ package spiralcraft.data.spi;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,7 +12,6 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Concatenation;
-import spiralcraft.data.query.ConcatenationBinding;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Scan;
@@ -127,6 +127,7 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
       { 
         ArrayList<BoundQuery> subQueries=new ArrayList<BoundQuery>();
         
+        boolean mergeable=q.isMergeable();
         for (Map.Entry<Type<?>,Queryable<Ttuple>> entry 
               : subtypeQueryables.entrySet()
             )
@@ -135,7 +136,16 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
             =entry.getValue().query(q,context);
           
           if (subQuery!=null)
-          { subQueries.add(subQuery);
+          { 
+            
+            if (subQueries.size()>0 && !mergeable)
+            { 
+              subQueries=null;
+              break;
+            }
+            else
+            { subQueries.add(subQuery);
+            }
           }
           else
           { 
@@ -152,7 +162,7 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
             log.debug
               ("Optimized "+q+" for BaseExtentQueryable "+this.type.getURI());
           }
-          ret=new ConcatenationBinding(subQueries,this.type);
+          ret=q.merge((List) subQueries);
         }
         
       }

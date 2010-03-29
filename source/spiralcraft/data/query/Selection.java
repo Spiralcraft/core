@@ -53,6 +53,9 @@ public class Selection
   
   private Expression<Boolean> constraints;
   
+  { mergeable=true;
+  }
+  
   public Selection()
   {
   }

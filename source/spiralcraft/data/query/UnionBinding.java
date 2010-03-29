@@ -69,6 +69,19 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
     
   }
 
+  public UnionBinding
+    (Tq query
+    ,List<BoundQuery<?,Tt>> sources
+    )
+    throws DataException
+  { 
+    this.sources=sources;
+    debugTrace=debugLevel.canLog(Level.TRACE);
+    
+    debugFine=debugLevel.canLog(Level.FINE);
+    
+  }
+  
   @Override
   public void resolve() throws DataException
   { 

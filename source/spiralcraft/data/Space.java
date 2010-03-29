@@ -227,13 +227,17 @@ public class Space
       }
     }
     
-    
+    boolean mergeable=query.isMergeable();
     for (Store store: stores)
     {
       // Stores that can't process the type should return null
       BoundQuery<?,Tuple> boundQuery=store.query(query,focus);
       if (boundQuery!=null)
-      { queries.add(boundQuery);
+      { 
+        if (queries.size()>0 && !mergeable)
+        { return query.solve(focus,this);
+        }
+        queries.add(boundQuery);
       }
     }
 
@@ -244,7 +248,10 @@ public class Space
     { return queries.get(0);
     }
     else
-    { return new ConcatenationBinding<Concatenation,Tuple>(queries,null);
+    { 
+      // The Query needs to solve for multiple sources.
+      return query.merge(queries);
+      
     }
   
   
