@@ -3,6 +3,71 @@
   >
   
   <scm:Change>
+    <revision>0.4.7.4
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-03-29
+    </date>
+    
+    <notes>
+      <scm:Note>Fix issue where query of heterogeneous base type would
+        incorrectly optimize, resulting in improper sort results
+      </scm:Note> 
+    </notes>
+      
+    <details>
+      <scm:Change>
+        <notes>
+          <scm:Note>Fix issue where query of heterogeneous base type would
+        incorrectly optimize, resulting in improper sort results.
+          </scm:Note> 
+          <scm:Note>Delegated merge function to the query itself by
+            adding an isMergeable() and merge() functions.
+          </scm:Note>
+          <scm:Note>UnionBinding accepts source channels for 
+            use as Distinct utility.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>Space.java
+          </URI>
+          <URI>query/Concatenation.java
+          </URI>
+          <URI>query/Join.java
+          </URI>
+          <URI>query/EquiJoin.java
+          </URI>
+          <URI>query/Projection.java
+          </URI>
+          <URI>query/Query.java
+          </URI>
+          <URI>query/ReferenceQuery.java
+          </URI>
+          <URI>query/Scan.java
+          </URI>
+          <URI>query/Selection.java
+          </URI>
+          <URI>query/SetFilter.java
+          </URI>
+          <URI>query/UnionBinding.java
+          </URI>
+          <URI>spi/BaseExtentQueryable.java
+          </URI>
+        </resources>
+
+            
+      </scm:Change>
+    </details>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.4.7.3
     </revision>
     
