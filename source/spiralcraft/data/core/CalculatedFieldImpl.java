@@ -20,7 +20,9 @@ import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 
 import spiralcraft.data.lang.TupleReflector;
+import spiralcraft.data.spi.ClosureChannel;
 
+import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
 import spiralcraft.lang.BindException;
@@ -153,6 +155,7 @@ public class CalculatedFieldImpl<T>
     
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   public Channel<T> bindChannel
     (Channel<Tuple> source
@@ -166,10 +169,15 @@ public class CalculatedFieldImpl<T>
       throw new BindException
         ("CalculatedField "+getURI()+" must have an expression");
     }
+    
     if (!focus.isContext(source))
     { focus=focus.chain(source);
     }
-    return focus.<T>bind(expression);
+    
+    ClosureFocus<?> closure
+      =new ClosureFocus(focus,source);
+    
+    return new ClosureChannel<T>(closure,closure.<T>bind(expression));
   }
   
   
