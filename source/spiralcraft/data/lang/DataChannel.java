@@ -47,18 +47,14 @@ public class DataChannel<T extends DataComposite>
 
   @Override
   protected T retrieve()
-  {
-    // TODO Auto-generated method stub
-    return source.get();
+  { return source.get();
   }
 
   @Override
   protected boolean store(
     T val)
     throws AccessException
-  {
-    // TODO Auto-generated method stub
-    return source.set(val);
+  { return source.set(val);
   }
   
   @Override
