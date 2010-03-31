@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang;
 
+import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -35,8 +36,9 @@ public abstract class BaseFocus<T>
   protected PrefixResolver namespaceResolver;
   protected LinkedList<Focus<?>> facets;
   protected LinkedList<URI> aliases;
+  protected boolean cacheChannels=false;
 
-  private HashMap<Expression<?>,Channel<?>> channels; 
+  private HashMap<Expression<?>,WeakReference<Channel<?>>> channels; 
 
 
   public Focus<?> getParentFocus()
@@ -94,16 +96,28 @@ public abstract class BaseFocus<T>
     { throw new IllegalArgumentException("Expression cannot be null");
     }
     Channel<X> channel=null;
-    if (channels==null)
-    { channels=new HashMap<Expression<?>,Channel<?>>();
+    
+    if (cacheChannels)
+    {
+      if (channels==null)
+      { channels=new HashMap<Expression<?>,WeakReference<Channel<?>>>();
+      }
+      else
+      {  
+        WeakReference<Channel<?>> ref=channels.get(expression);
+        if (ref!=null)
+        { channel=(Channel<X>) ref.get();
+        }
+      }
+    
+      if (channel==null)
+      { 
+        channel=expression.bind(this);
+        channels.put(expression,new WeakReference(channel));
+      }
     }
     else
-    { channel=(Channel<X>) channels.get(expression);
-    }
-    if (channel==null)
-    { 
-      channel=expression.bind(this);
-      channels.put(expression,channel);
+    { channel=expression.bind(this);
     }
     return channel;
   }
