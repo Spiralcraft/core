@@ -3,6 +3,89 @@
   >
   
   <scm:Change>
+    <revision>0.4.7.5
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-03-31
+    </date>
+    
+    <notes>
+      <scm:Note>Optimization release: Fix some missed optimizations.
+      </scm:Note> 
+    </notes>
+    
+    <details>
+      <scm:Change>
+        <notes>
+          <scm:Note>Enclose CalculatedField in ClosureChannel to ensure
+            that the Expression is evaluated against a cached thread local
+            context as is QueryField and KeyField.
+          </scm:Note> 
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/core/CalculatedFieldImpl.ajva
+          </URI>
+          <URI>lang/spi/ClosureChannel.java
+          </URI>
+        </resources>
+      </scm:Change>
+        
+      <scm:Change>
+        <notes>
+          <scm:Note>Ensure that field bindings are properly cached in
+            their source channels.
+          </scm:Note> 
+          <scm:Note>Don't automatically cache resolved Expressions in Focus
+            implementations, as it may be redundant, and may increase memory
+            usage for high fan-out trees at at the end of subtype expansions. 
+            BaseFocus.cacheChannels is an optimization flag  that defaults to
+            false. 
+          </scm:Note> 
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+
+        <resources>
+          <URI>lang/BaseFocus.java
+          </URI>
+          <URI>data/lang/TupleReflector.java
+          </URI>
+          <URI>query/Join.java
+          </URI>
+          <URI>query/EquiJoin.java
+          </URI>
+          <URI>query/Projection.java
+          </URI>
+          <URI>query/Query.java
+          </URI>
+          <URI>query/ReferenceQuery.java
+          </URI>
+          <URI>query/Scan.java
+          </URI>
+          <URI>query/Selection.java
+          </URI>
+          <URI>query/SetFilter.java
+          </URI>
+          <URI>query/UnionBinding.java
+          </URI>
+          <URI>spi/BaseExtentQueryable.java
+          </URI>
+        </resources>
+
+            
+      </scm:Change>
+    </details>
+  </scm:Change>
+    
+  <scm:Change>
     <revision>0.4.7.4
     </revision>
     
