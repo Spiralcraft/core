@@ -20,8 +20,8 @@ import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 
 import spiralcraft.data.lang.TupleReflector;
-import spiralcraft.data.spi.ClosureChannel;
 
+import spiralcraft.lang.spi.ClosureChannel;
 import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
