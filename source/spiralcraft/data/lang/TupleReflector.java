@@ -245,6 +245,11 @@ public class TupleReflector<T extends Tuple>
 
     if (params==null)
     {
+      Channel binding=source.getCached(name);
+      if (binding!=null)
+      { return binding;
+      }
+      
       if (type!=null)
       { field=type.getField(name);
       }
@@ -255,11 +260,12 @@ public class TupleReflector<T extends Tuple>
       if (field!=null)
       {
               
-        Channel binding=field.bindChannel(source,focus,null);
-      
+        binding=field.bindChannel(source,focus,null);
       
         if (binding!=null)
-        { return binding;      
+        { 
+          source.cache(name,binding);
+          return binding;      
         }
       }
     }
