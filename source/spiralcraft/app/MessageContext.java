@@ -16,6 +16,8 @@ package spiralcraft.app;
 
 import java.util.LinkedList;
 
+import spiralcraft.util.Path;
+
 
 /**
  * <p>Provides state and message context for an execution path through
@@ -43,6 +45,9 @@ public class MessageContext
   private StateFrame currentFrame;
   private LinkedList<Integer> path=new LinkedList<Integer>();
   private LinkedList<Integer> reversePath=new LinkedList<Integer>();
+  
+  private Path localPath;
+  
   private State state;
   private Component component;
   
@@ -219,6 +224,7 @@ public class MessageContext
     {
       if (path!=null && !path.isEmpty())
       {
+        
         try
         { messageChild(pushPath(),message);
         }
@@ -260,6 +266,20 @@ public class MessageContext
   { this.state=state;
   }
   
+  public final Path getLocalPath()
+  { return localPath;
+  }
+  
+  /**
+   * Specify an optional relative path for children to consume as
+   *   a contextual address or state designator
+   * 
+   * @param localPath
+   */
+  public final void setLocalPath(Path localPath)
+  { this.localPath=localPath;
+  }
+  
   /**
    * <p>Message a specific child of the current Container.
    * </p>
@@ -281,6 +301,7 @@ public class MessageContext
     {
       final State lastState=state;
       final Component lastComponent=component;
+      final Path lastLocalPath=localPath;
       state=ensureChildState(index);
       try
       { 
@@ -291,6 +312,8 @@ public class MessageContext
       { 
         state=lastState;
         component=lastComponent;
+        localPath=lastLocalPath;
+        
       }
     }
     else
@@ -308,4 +331,5 @@ public class MessageContext
     }
     return childState;
   }
+
 }

@@ -31,6 +31,7 @@ public interface Container
   extends FocusChainObject,Lifecycle
 {
   
+  
   /**
    * FocusChainObject.bind() must bind and register children
    */

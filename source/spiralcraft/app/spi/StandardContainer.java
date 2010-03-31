@@ -21,12 +21,12 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 
-public class AbstractContainer
+public class StandardContainer
   implements Container
 {
 
   protected Component[] children;
-  
+
   
   @Override
   public Focus<?> bind(

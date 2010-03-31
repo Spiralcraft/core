@@ -19,6 +19,7 @@ import spiralcraft.app.Message;
 import spiralcraft.app.MessageContext;
 import spiralcraft.app.State;
 import spiralcraft.app.spi.AbstractComponent;
+import spiralcraft.app.spi.StandardContainer;
 import spiralcraft.app.spi.ValueState;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
@@ -60,6 +61,9 @@ public class Iterate<T>
       (BeanReflector.<Iteration>getInstance(Iteration.class));
   
   private boolean initializeContent;
+  
+  { container=new StandardContainer();
+  }
 
   /**
    * The expression that references the Collection to iterate over
@@ -230,7 +234,7 @@ public class Iterate<T>
           context.setIntermediateState
             (childState);
         }
-        
+        // Run handlers for each element
         super.message(context,message);
       }
       finally
@@ -318,7 +322,7 @@ public class Iterate<T>
       {
         context.setIntermediateState(childState);
         
-        // XXX May want to directy call context.relayMessage?
+        // Run handlers for each element
         super.message(context,message);
       }
       finally

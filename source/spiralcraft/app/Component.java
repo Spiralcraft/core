@@ -18,7 +18,19 @@ package spiralcraft.app;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.lang.FocusChainObject;
 
-
+/**
+ * <p>Implements arbitrary functionality within the context of a containership
+ *   hierarchy of other Components. 
+ * </p>
+ * 
+ * <p>A Component functions by transforming the context defined by a Parent,
+ *   the Focus chain, any thread-context objects, and the set of incoming
+ *   Messages into a transformed context available to any child Components.
+ * </p>
+ * 
+ * @author mike
+ *
+ */
 public interface Component
   extends FocusChainObject,Lifecycle
 {
