@@ -90,6 +90,7 @@ public interface Store
    * @param transactionId
    * @return ASsnapshot newer than the transactionId, or null
    */
+  // XXX Change to export(fromId)
   Snapshot snapshot(long transactionId)
     throws DataException;
   
@@ -99,6 +100,8 @@ public interface Store
    * @param snapshot
    * @throws DataException
    */
+  
+  // XXX Change to import(snapshot)
   void update(Snapshot snapshot)
     throws DataException;
 
