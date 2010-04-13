@@ -30,16 +30,32 @@ public interface Container
     throws IOException;
 
   /**
-   * List all Resources that are immediate 'descendants' of this
-   *   Container in the canonical 'tree' mapping (acyclic directed graph)
+   * <p>List all Resources that are immediate 'descendants' of this
+   *   Container in the canonical 'tree' mapping 
    *   of the underlying structure of this Resource scheme.
+   * </p>
    *
-   * Provides a means to easily perform depth-first traversals without
+   * <p>Provides a means to easily perform depth-first traversals without
    *   encountering cycles.
+   * </p>
    */
   Resource[] listChildren()
     throws IOException;
 
+  /**
+   * <p>List all Resources that are immediate 'descendants' of this
+   *   Container in the canonical 'tree' mapping 
+   *   of the underlying structure of this Resource scheme.
+   * </p>
+   *
+   * <p>Provides a means to easily perform depth-first traversals without
+   *   encountering cycles.
+   * </p>
+   */
+  Resource[] listChildren(ResourceFilter filter)
+    throws IOException;
+
+  
   /**
    * List all 'link' (non-child) Resources contained in this Container. 
    */
