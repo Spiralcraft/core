@@ -20,6 +20,6 @@ package spiralcraft.vfs;
  */
 public interface ResourceFilter
 {
-  public boolean accept(Resource resource);
+  boolean accept(Resource resource);
 
 }
