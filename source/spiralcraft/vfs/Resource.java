@@ -67,6 +67,21 @@ public interface Resource
   public boolean supportsWrite();
 
   /**
+   * <p>Return the children of this resource, if any. A Resource may only
+   *   be a child of a single parent, thus defining a Resource tree.
+   * </p>
+   * 
+   * <p>This method must perform the equivalent of a call to
+   *   asContainer().listChildren()
+   * </p>
+   * 
+   * @return
+   */
+  public Resource[] getChildren()
+    throws IOException;
+  
+  
+  /**
    * Return the Container aspect of this Resource,
    *   if that aspect applies to the specific Resource (ie.
    *   the resource is a directory)
