@@ -14,11 +14,11 @@
 //
 package spiralcraft.vfs.file;
 
-import spiralcraft.vfs.AbstractResource;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.vfs.NotStreamableException;
+import spiralcraft.vfs.spi.AbstractResource;
 
 import java.net.URI;
 

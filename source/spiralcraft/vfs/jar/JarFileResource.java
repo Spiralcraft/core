@@ -16,10 +16,10 @@ package spiralcraft.vfs.jar;
 
 import spiralcraft.io.InputStreamWrapper;
 import spiralcraft.util.Path;
-import spiralcraft.vfs.AbstractResource;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
+import spiralcraft.vfs.spi.AbstractResource;
 
 import java.net.URI;
 

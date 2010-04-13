@@ -18,8 +18,9 @@ import spiralcraft.io.DebugInputStream;
 import spiralcraft.io.InputStreamWrapper;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
-import spiralcraft.vfs.AbstractResource;
 import spiralcraft.vfs.UnresolvableURIException;
+
+import spiralcraft.vfs.spi.AbstractResource;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
