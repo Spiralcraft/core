@@ -12,12 +12,14 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.vfs;
+package spiralcraft.vfs.util;
 
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 
 import java.net.URI;
+
+import spiralcraft.vfs.spi.AbstractResource;
 
 public class ByteArrayResource
   extends AbstractResource
