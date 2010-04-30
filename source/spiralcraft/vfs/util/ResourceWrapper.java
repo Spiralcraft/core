@@ -40,6 +40,11 @@ public abstract class ResourceWrapper
   { return getDelegate().asContainer();
   }
 
+  public Resource[] getChildren()
+    throws IOException
+  { return getDelegate().getChildren();
+  }
+
   public void copyFrom(Resource source) throws IOException
   { getDelegate().copyFrom(source);
   }
