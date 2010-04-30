@@ -20,7 +20,7 @@ import spiralcraft.app.Container;
 import spiralcraft.app.Event;
 import spiralcraft.app.Parent;
 import spiralcraft.app.Message;
-import spiralcraft.app.MessageContext;
+import spiralcraft.app.Dispatcher;
 import spiralcraft.app.State;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
@@ -61,14 +61,15 @@ public class AbstractComponent
   { return parent;
   }
   
+  
   @Override
   public void message
-    (MessageContext context
+    (Dispatcher context
     ,Message message
     )
   { 
     handlers.getChain(message.getType())
-      .handleMessage(context,message,this);
+      .handleMessage(context,message);
   }
 
   @Override
@@ -100,6 +101,7 @@ public class AbstractComponent
         (new SimpleChannel<AbstractComponent>(this,true));
     }
     focusChain=bindImports(focusChain);
+    focusChain=handlers.bind(focusChain);
     focusChain=bindExports(focusChain);
     if (container!=null)
     { container.bind(focusChain);
@@ -137,7 +139,7 @@ public class AbstractComponent
   { return 1;
   }
 
-  protected State getState(MessageContext context)
+  protected State getState(Dispatcher context)
   { return context.getState();
   }
   
@@ -168,7 +170,7 @@ public class AbstractComponent
 
   @Override
   public void handleEvent(
-    MessageContext context,
+    Dispatcher context,
     Event event)
   { context.handleEvent(event);    
   }

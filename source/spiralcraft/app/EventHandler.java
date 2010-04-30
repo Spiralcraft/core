@@ -22,11 +22,11 @@ public interface EventHandler
    * </p>
    * 
    *
-   * @param context The MessageContext
+   * @param dispatcher The dispatcher
    * @param event The event
    */
   void handleEvent
-    (MessageContext context
+    (Dispatcher dispatcher
     ,Event event
     );
   

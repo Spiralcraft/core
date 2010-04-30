@@ -22,8 +22,11 @@ import spiralcraft.app.MessageHandler;
 import spiralcraft.app.MessageHandlerChain;
 import spiralcraft.common.Lifecycle;
 
+import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Focus;
+
 public class MessageHandlerSupport
-  implements Lifecycle
+  implements Lifecycle,FocusChainObject
 {
   
   private MessageHandler[] handlers;
@@ -33,8 +36,15 @@ public class MessageHandlerSupport
   
   private MessageHandlerChain standardChain;
   private boolean started;
+ 
 
-
+  public Focus<?> bind(Focus<?> focusChain)
+  { 
+    recomputeChains();
+    
+    return focusChain;
+  }
+  
   public void start()
   { 
     started=true;
@@ -49,6 +59,7 @@ public class MessageHandlerSupport
   public void set(MessageHandler[] handlers)
   { 
     this.handlers=handlers;
+    
     if (started)
     { recomputeChains();
     }

@@ -25,7 +25,7 @@ package spiralcraft.app;
 public interface Parent
 {
 
-  void handleEvent(MessageContext context,Event event);
+  void handleEvent(Dispatcher dispatcher,Event event);
   
   /**
    * <p>Find the distance from the calling descendant Component's immediate 

@@ -47,12 +47,13 @@ public interface Component
    * </p>
    * 
    * <p>Message.isMulticast() determines whether the message is forwarded to
-   *   the entire subtree, as opposed to just the targeted element. 
+   *   the entire state subtree of the targeted component state, or just the
+   *   targeted component state itself.
    * </p>
    * 
    */
   void message
-    (MessageContext context
+    (Dispatcher context
     ,Message message
     );
   

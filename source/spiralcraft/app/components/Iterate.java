@@ -16,7 +16,7 @@ package spiralcraft.app.components;
 
 import spiralcraft.app.InitializeMessage;
 import spiralcraft.app.Message;
-import spiralcraft.app.MessageContext;
+import spiralcraft.app.Dispatcher;
 import spiralcraft.app.State;
 import spiralcraft.app.spi.AbstractComponent;
 import spiralcraft.app.spi.StandardContainer;
@@ -128,29 +128,29 @@ public class Iterate<T>
   
   @Override
   public void message
-    (final MessageContext context
+    (final Dispatcher dispatcher
     ,Message message
     )
   {
-    Integer path=context.pushPath();
+    Integer path=dispatcher.pushPath();
     try
     {
 
-      IterationState state=getState(context);
+      IterationState state=getState(dispatcher);
       if (state==null || !state.isValid())
       { 
         if (message.getType()!=InitializeMessage.TYPE
             || initializeContent
             )
-        { messageRefresh(context,message,path,state);
+        { messageRefresh(dispatcher,message,path,state);
         }
       }
       else
-      { messageRetraverse(context,message,path,state);
+      { messageRetraverse(dispatcher,message,path,state);
       }
     }
     finally
-    { context.popPath();
+    { dispatcher.popPath();
     }
    
    
@@ -161,13 +161,13 @@ public class Iterate<T>
    *   refreshing child states where necessary
    * </p>
    * 
-   * @param context
+   * @param dispatcher
    * @param message
    * @param path
    * @param state
    */
   private void messageRefresh
-    (MessageContext context
+    (Dispatcher dispatcher
    ,Message message
    ,Integer path
    ,IterationState state
@@ -186,7 +186,7 @@ public class Iterate<T>
         = new LookaroundIterator(decorator.iterator());
 
       while (cursor.hasNext())
-      { messageRefreshChild(context,message,cursor,iter,path,state);
+      { messageRefreshChild(dispatcher,message,cursor,iter,path,state);
       }
       state.trim(iter.index);
       state.setValid(true);
@@ -204,7 +204,7 @@ public class Iterate<T>
 
   
   private void messageRefreshChild
-    (MessageContext context
+    (Dispatcher dispatcher
     ,Message message
     ,LookaroundIterator<T> cursor
     ,Iteration iter
@@ -231,16 +231,16 @@ public class Iterate<T>
       
         if (state!=null)
         {
-          context.setIntermediateState
+          dispatcher.setIntermediateState
             (childState);
         }
         // Run handlers for each element
-        super.message(context,message);
+        super.message(dispatcher,message);
       }
       finally
       { 
         if (state!=null)
-        { context.setIntermediateState(state);
+        { dispatcher.setIntermediateState(state);
         }
         popElement();
       }
@@ -252,12 +252,12 @@ public class Iterate<T>
    * <p>Retraverse the last iteration as represented in the IterationState
    * </p>
    * 
-   * @param context
+   * @param dispatcher
    * @param message
    * @param path
    */
   private void messageRetraverse
-    (MessageContext context
+    (Dispatcher dispatcher
     ,Message message
     ,Integer path
     ,IterationState state
@@ -279,7 +279,7 @@ public class Iterate<T>
           = new LookaroundIterator(state.iterator());
 
         while (cursor.hasNext())
-        { messageRetraverseChild(context,message,cursor,iter,path);
+        { messageRetraverseChild(dispatcher,message,cursor,iter,path);
         }
       
         if (debugLevel.isDebug())
@@ -293,7 +293,7 @@ public class Iterate<T>
   }
   
   private void messageRetraverseChild
-    (MessageContext context
+    (Dispatcher dispatcher
     ,Message message
     ,LookaroundIterator<ValueState<T>> cursor
     ,Iteration iter
@@ -317,17 +317,17 @@ public class Iterate<T>
           :null
         );
       
-      IterationState state=getState(context);
+      IterationState state=getState(dispatcher);
       try
       {
-        context.setIntermediateState(childState);
+        dispatcher.setIntermediateState(childState);
         
         // Run handlers for each element
-        super.message(context,message);
+        super.message(dispatcher,message);
       }
       finally
       { 
-        context.setIntermediateState(state);
+        dispatcher.setIntermediateState(state);
         popElement();
       }
     }
@@ -352,8 +352,8 @@ public class Iterate<T>
     
   
   @Override
-  protected IterationState getState(MessageContext context)
-  { return (IterationState) context.getState();
+  protected IterationState getState(Dispatcher dispatcher)
+  { return (IterationState) dispatcher.getState();
   }
   
   @Override

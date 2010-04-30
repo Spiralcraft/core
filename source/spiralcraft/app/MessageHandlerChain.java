@@ -75,22 +75,19 @@ public class MessageHandlerChain
    *   messaged and once afterwards.
    * </p>
    * 
-   * @param context The EventContext that holds the Element's state
+   * @param dispatcher The Dispatcher that holds the Element's state
    * @param message The message
-   * @param postOrder Whether this call is before or after the message has
-   *                    propagated to children 
    */
   public void handleMessage
-    (MessageContext context
+    (Dispatcher dispatcher
     ,Message message
-    ,Component component
     )
   { 
     if (next!=null)
-    { next.handleMessage(context,message,nextChain);
+    { next.handleMessage(dispatcher,message,nextChain);
     }
     else
-    { context.relayMessage(message);
+    { dispatcher.relayMessage(message);
     }
   }
   

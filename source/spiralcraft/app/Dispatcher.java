@@ -34,10 +34,10 @@ import spiralcraft.util.Path;
  * 
  * @author mike
  */
-public class MessageContext
+public class Dispatcher
 {
   @SuppressWarnings("unused")
-  private final MessageContext parent;
+  private final Dispatcher parent;
 
   
   private final boolean stateful;
@@ -60,7 +60,7 @@ public class MessageContext
    * <p>If a StateFrame is not provided, a new one will be created
    * </p>
    */
-  public MessageContext(boolean stateful,StateFrame frame)
+  public Dispatcher(boolean stateful,StateFrame frame)
   { 
     this.parent=null;
     this.stateful=stateful;
@@ -78,7 +78,7 @@ public class MessageContext
    * 
    * @param parent The parent GenerationContext
    */
-  public MessageContext(MessageContext parent)
+  public Dispatcher(Dispatcher parent)
   { 
     this.parent=parent;
     this.stateful=parent.isStateful();

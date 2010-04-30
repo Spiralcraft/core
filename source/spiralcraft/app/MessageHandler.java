@@ -14,7 +14,10 @@
 //
 package spiralcraft.app;
 
+import spiralcraft.lang.FocusChainObject;
+
 public interface MessageHandler
+  extends FocusChainObject
 {
   /**
    * <p>Handle the Message. Handlers are used to bind messages to
@@ -32,7 +35,7 @@ public interface MessageHandler
    * @param chain  The MessageHandlerChain to run in context
    */
   void handleMessage
-    (MessageContext context
+    (Dispatcher context
     ,Message message
     ,MessageHandlerChain chain
     );
