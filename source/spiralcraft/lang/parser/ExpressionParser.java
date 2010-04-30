@@ -739,7 +739,6 @@ public class ExpressionParser
     Node subscriptNode=primary.subscript(ret);
     expect(']');
     return subscriptNode;
-    
   }
   
   
@@ -1385,11 +1384,20 @@ public class ExpressionParser
     char prefix=focusString.charAt(0);
     
     if (prefix=='@')
-    { focusNode=new TypeFocusNode(focusString.substring(1));
+    { 
+      TypeFocusNode typeFocusNode=new TypeFocusNode(focusString.substring(1),0);
+      while (_tokenizer.ttype=='[' && _tokenizer.lookahead.ttype==']')
+      {
+        consumeToken();
+        consumeToken();
+        typeFocusNode=typeFocusNode.arrayType();
+      }
+      focusNode=typeFocusNode;
     }
     else 
     { focusNode=new AbsoluteFocusNode(focusString);
     }
+
     return focusNode;
   }
   
