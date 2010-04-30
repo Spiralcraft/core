@@ -20,7 +20,9 @@ import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Type;
 
+import spiralcraft.data.reflect.AssemblyType;
 import spiralcraft.data.reflect.ReflectionScheme;
 import spiralcraft.data.reflect.ReflectionType;
 
@@ -31,16 +33,16 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.SimpleFocus;
 
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.SimpleChannel;
 
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.InvocationTargetException;
-
 /**
  * Implements the Java Beans 'properties' portion of a Java interface via a 
  *   Proxy, delegating to a Tuple for data storage.
@@ -129,14 +131,29 @@ public class TupleDelegate<T>
     )
     throws Throwable
   {
-    Field field=
-      ((ReflectionScheme) binding.getFieldSet()).getField(method);
+    
+    Field field=null;
+    
+    if (binding.getFieldSet() instanceof ReflectionScheme)
+    { field=((ReflectionScheme) binding.getFieldSet()).getField(method);
+    }
+    else
+    { 
+      Type archetype=binding.getFieldSet().getType();
+      while (archetype instanceof AssemblyType)
+      { archetype=archetype.getArchetype();
+      }
+      if (archetype instanceof ReflectionType)
+      { 
+        field=((ReflectionScheme) ((ReflectionType) archetype).getScheme())
+          .getField(method);
+      }
+    }
 
     if (field!=null)
     {
       if (args!=null && args.length>0)
       {
-        System.out.println(args[0]);
         // Write
         ((EditableTuple) binding.get()).set(field.getIndex(),args[0]);
         return null;
@@ -151,14 +168,85 @@ public class TupleDelegate<T>
     { 
       try
       { 
-        // We should run this on a 'peer' of the Tuple
-        //   instead of on the Tuple itself
-        //
-        // Also consider when methods/actions are implemented in Schemes/Tuples.
-        return method.invoke(binding.get(),args);
+        // Run a data method
+        
+        Channel<Object> methodChannel=binding.getCached(method);
+        if (methodChannel==null)
+        {
+        
+          
+          Type<?> type=binding.getFieldSet().getType();
+          Type<?>[] params=new Type<?>[method.getParameterTypes().length];
+          Channel<?>[] paramChannels=new Channel[params.length];
+          
+          
+          // Shortcut Object methods
+          if (params.length==0 && method.getName().equals("toString"))
+          { return this.toString();
+          }
+          else if (params.length==1 
+                   && method.getName().equals("equals")
+                   )
+          { 
+            if (args[0]==null)
+            { return false;
+            }
+            Object arg=args[0];
+            if (Proxy.class.isAssignableFrom(arg.getClass()))
+            {
+              InvocationHandler handler=Proxy.getInvocationHandler(arg);
+              if (handler instanceof TupleDelegate<?>)
+              { return getTuple().equals(((TupleDelegate) handler).getTuple());
+              }
+            }
+          }
+          else if (params.length==0
+                   && method.getName().equals("hashCode")
+                   )
+          { return getTuple().hashCode();
+          }
+          
+          int i=0;
+          for (Class<?> clazz : method.getParameterTypes())
+          { 
+            
+            params[i]=ReflectionType.canonicalType(clazz);
+            paramChannels[i]=new SimpleChannel(args[i],true);
+            i++;
+          }
+        
+          spiralcraft.data.Method dataMethod
+            =type.findMethod(method.getName(),params);
+
+          if (dataMethod!=null)
+          { 
+            methodChannel
+              =(Channel<Object>) 
+                dataMethod.bind
+                  (new SimpleFocus(null).chain(binding)
+                  ,binding
+                  ,paramChannels
+                  );
+            if (paramChannels.length==0)
+            { binding.cache(method,methodChannel);
+            }
+            
+          }
+          else
+          { 
+          
+          }
+        }
+        
+        if (methodChannel!=null)
+        { return methodChannel.get();          
+        }
+        else
+        {  throw new UnsupportedOperationException("Method "+method+" not implemented");
+        }
       }
-      catch (InvocationTargetException x)
-      { throw x.getTargetException();
+      finally
+      { 
       }
     }
   }
