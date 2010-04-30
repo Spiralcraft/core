@@ -79,7 +79,10 @@ public class BeanArguments
     if (type==Boolean.class || type==boolean.class)
     { configurator.set(option,"true");
     }
-    else 
+    else if (!hasMoreArguments())
+    { throw new IllegalArgumentException("Option --"+option+" requires an argument, which must be translatable to a "+type.getName());
+    }
+    else
     { configurator.set(option,nextArgument());
     }
     return true;
