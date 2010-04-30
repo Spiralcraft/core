@@ -27,12 +27,12 @@ import spiralcraft.util.string.StringUtil;
 
 import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.common.namespace.NamespaceContext;
+import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.lang.Expression;
 import spiralcraft.log.Level;
 
 import java.util.List;
 
-import spiralcraft.sax.SaxPrefixResolver;
 
 /**
  * Specifies a property to be defined in the context of an AssemblyClass
@@ -67,7 +67,7 @@ public class PropertySpecifier
   private boolean _export;
   private URI _dataURI;
   
-  private SaxPrefixResolver prefixResolver;
+  private StandardPrefixResolver prefixResolver;
   private PropertyDescriptor descriptor;
   private boolean defaultMember;
   
@@ -200,11 +200,11 @@ public class PropertySpecifier
   { this.defaultMember=defaultMember;
   }
   
-  public void setPrefixResolver(SaxPrefixResolver resolver)
+  public void setPrefixResolver(StandardPrefixResolver resolver)
   { this.prefixResolver=resolver;
   }
   
-  public SaxPrefixResolver getPrefixResolver() 
+  public StandardPrefixResolver getPrefixResolver() 
   { return this.prefixResolver;
   }
   
