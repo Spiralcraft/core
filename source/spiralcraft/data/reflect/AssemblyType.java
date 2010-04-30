@@ -1,10 +1,12 @@
 package spiralcraft.data.reflect;
 
 import java.net.URI;
+import java.util.ArrayList;
 
 import spiralcraft.builder.Assembly;
 import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.BuildException;
+import spiralcraft.builder.BuilderChannel;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.Type;
@@ -13,9 +15,24 @@ import spiralcraft.data.builder.BuilderType;
 import spiralcraft.data.core.SchemeImpl;
 import spiralcraft.data.core.TypeImpl;
 import spiralcraft.data.util.InstanceResolver;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.Functor;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.BindingChannel;
+import spiralcraft.lang.spi.GatherChannel;
 
+/**
+ * A Type defined by Java object managed by an AssemblyClass.
+ * 
+ * @author mike
+ *
+ * @param <T>
+ */
 public class AssemblyType<T>
   extends TypeImpl<T>
+  implements Functor<T>
 {
 
   private boolean linked;
@@ -62,12 +79,15 @@ public class AssemblyType<T>
   public T fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
   {
-    if (!(archetype instanceof AssemblyType))
-    { return (T) archetype.fromData(data,new AssemblyResolver(resolver));
+    // Ignore intermediate AssemblyType archetypes, as they represent
+    //   supertypes that are already factored into the AssemblyResolver
+    //   that will be chained to the supplied InstanceResolver
+    Type nextArchetype=archetype;
+    while (nextArchetype instanceof AssemblyType)
+    { nextArchetype=nextArchetype.getArchetype();
     }
-    else
-    { return new AssemblyResolver(resolver).resolve(this.nativeClass);
-    }
+    return (T) archetype.fromData(data,new AssemblyResolver(resolver));
+
   }
   
   @Override
@@ -173,4 +193,64 @@ public class AssemblyType<T>
     }
   }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public Channel<T> bindChannel(
+    Focus<?> focus,
+    Channel<?>[] arguments)
+    throws BindException
+  {
+    
+    ArrayList<Channel<?>> indexedParamList=new ArrayList<Channel<?>>();
+    ArrayList<Channel<?>> namedParamList=new ArrayList<Channel<?>>();
+    
+    boolean endOfParams=false;
+    for (Channel<?> chan : arguments)
+    { 
+      if (chan instanceof BindingChannel<?>)
+      { 
+        endOfParams=true;
+        namedParamList.add(chan);
+      }
+      else
+      {
+        if (endOfParams)
+        { 
+          throw new BindException
+            ("Positional parameters must preceed named parameters");
+        }
+        indexedParamList.add(chan);
+        
+      }
+      
+    }    
+    
+    BeanReflector<T> beanReflector
+      =(BeanReflector) BeanReflector.getInstance(nativeClass);
+    
+    // Call constructor via BeanReflector
+    Channel<T> constructorChannel
+      =beanReflector.bindChannel
+        (focus,indexedParamList.toArray(new Channel[indexedParamList.size()])
+        );
+    
+        
+    // Configure using builder assemblyClass
+    constructorChannel
+      =new BuilderChannel(focus,constructorChannel,assemblyClass);
+        
+    // Apply additional named parameters
+    if (namedParamList.size()>0)
+    { 
+      constructorChannel
+        =new GatherChannel<T>
+          (constructorChannel
+          ,namedParamList.toArray
+            (new BindingChannel[namedParamList.size()])
+          );      
+    }
+    return constructorChannel;
+  }
+
+  
 }
