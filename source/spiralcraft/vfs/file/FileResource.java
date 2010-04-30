@@ -138,6 +138,10 @@ public class FileResource
   { return _file.lastModified();
   }
   
+  public void setLastModified(long lastModified)
+  { _file.setLastModified(lastModified);
+  }
+  
   public Resource[] listContents()
   { 
     makeContents();
