@@ -16,6 +16,8 @@ package spiralcraft.exec;
 
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Initializer;
+import spiralcraft.common.namespace.NamespaceContext;
+import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.persist.AbstractXmlObject;
@@ -91,6 +93,11 @@ public class Executor
     
   protected String[] arguments=new String[0];
   
+  protected StandardPrefixResolver prefixResolver
+    =new StandardPrefixResolver();
+  
+  
+  
   /**
    * Entry point from launcher
    * 
@@ -146,12 +153,15 @@ public class Executor
     ContextResourceMap contextResourceMap
       =new ContextResourceMap()
       {{
-        put("_DEFAULT",context.focusURI());
+        putDefault(context.focusURI());
       }};
       
       
     contextResourceMap.push();
+    
 
+    prefixResolver.mapPrefix("",URI.create("dynamic:/"));
+    NamespaceContext.push(prefixResolver);
     
     for (Initializer loader: ServiceLoader.load(Initializer.class))
     { loader.getClass();
@@ -247,6 +257,7 @@ public class Executor
       if (schedulerCreated)
       { Scheduler.pop();
       }
+      NamespaceContext.pop();
       contextResourceMap.pop();
       ContextDictionary.popInstance();
       ExecutionContext.popInstance();
