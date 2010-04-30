@@ -45,6 +45,10 @@ public class CommandScheduler
   {
     public void run()
     {
+      if (!started)
+      { return;
+      }
+      
       try
       {
         Command command=factory.command();
