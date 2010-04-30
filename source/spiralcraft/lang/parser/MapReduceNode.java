@@ -83,35 +83,6 @@ public class MapReduceNode<T,C>
 
     return new IterationProjector(collection,focus,function,_reduce).result;
     
-//    Channel<?> result=
-//      collection.resolve
-//        (focus
-//        , !_reduce?"#":"$"
-//        , new Expression[] {function}
-//        );
-//    
-//    // Default behavior
-//    if (result==null 
-//        && collection
-//            .<IterationDecorator>decorate(IterationDecorator.class)!=null
-//       )
-//    { 
-//      return new IterationProjector
-//        (collection,focus,function,_reduce).result;
-//    }
-//    
-//    if (result==null)
-//    {
-//      throw new BindException
-//        ("Channel could not intepret the "
-//          +(!_reduce?"# (map)":"$ (reduce)")
-//          +" operator, and does not"
-//          +"support iteration: "
-//          +collection+(!_reduce?" # ":" $ ")+_function
-//        );
-//    }
-//    return result;
-    
   }
   
   @Override
