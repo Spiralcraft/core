@@ -33,8 +33,8 @@ import spiralcraft.lang.spi.FocusChannel;
 import spiralcraft.lang.spi.SimpleChannel;
 
 /**
- * An expression node which resolves a Focus from somewhere in the hierarchy
- *   using a qualified name (ie. <code>[<I>namespace</I>:<I>name</I>]</code>)
+ * Creates a single instance of the type referenced by the specified URI for
+ *   a given bound Channel.
  * 
  * @author mike
  *
