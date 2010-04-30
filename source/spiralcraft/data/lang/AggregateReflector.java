@@ -21,6 +21,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
+import spiralcraft.lang.Functor;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.ListDecorator;
@@ -30,6 +31,8 @@ import spiralcraft.lang.TeleFocus;
 
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AspectChannel;
+import spiralcraft.lang.spi.BindingChannel;
+import spiralcraft.lang.spi.GatherChannel;
 import spiralcraft.lang.spi.IterableContainsChannel;
 import spiralcraft.lang.spi.ListRangeChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
@@ -46,6 +49,7 @@ import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.spi.ListAggregate;
 import spiralcraft.data.EditableAggregate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -58,11 +62,14 @@ import java.util.Iterator;
  */
 public class AggregateReflector<T extends Aggregate<I>,I>
   extends DataReflector<T>
+  implements Functor<T>
 { 
   private final HashMap<String,Translator<?,?>> translators
     =new HashMap<String,Translator<?,?>>();
   
   private final Class<T> contentType;
+  private final Functor<T> constructor;
+  
 
   @SuppressWarnings("unchecked") // We only create Reflector with erased type
   public synchronized static final 
@@ -78,10 +85,18 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   }
   
 
+  @SuppressWarnings("unchecked")
   AggregateReflector(Type<T> type,Class<T> contentType)
   { 
     super(type);
     this.contentType=contentType;
+    if (this.type!=null && this.type instanceof Functor)
+    { this.constructor=(Functor<T>) this.type;
+    }
+    else
+    { this.constructor=null;
+    }
+    
   }
   
   /**
@@ -287,6 +302,78 @@ public class AggregateReflector<T extends Aggregate<I>,I>
        );
   }
 
+  
+  /**
+   * Constructor functor
+   */
+  @Override
+  public Channel<T> bindChannel(Focus<?> focus,Channel<?>[] arguments)
+    throws BindException
+  {    
+    if (constructor!=null)
+    { return constructor.bindChannel(focus,arguments);
+    }
+      
+    ArrayList<Channel<?>> indexedParamList=new ArrayList<Channel<?>>();
+    ArrayList<Channel<?>> namedParamList=new ArrayList<Channel<?>>();
+      
+    boolean endOfParams=false;
+    for (Channel<?> chan : arguments)
+    { 
+      if (chan instanceof BindingChannel<?>)
+      { 
+        endOfParams=true;
+        namedParamList.add(chan);
+      }
+      else
+      {
+        if (endOfParams)
+        { 
+          throw new BindException
+            ("Positional parameters must preceed named parameters");
+        }
+        indexedParamList.add(chan);
+        
+      }
+      
+    }      
+          
+        
+    Channel<?>[] indexedParams
+      =indexedParamList.toArray(new Channel[indexedParamList.size()]);      
+
+    Channel<T> constructorChannel;
+    if (indexedParams.length==0)
+    { 
+      constructorChannel  
+        =new AggregateConstructorChannel<T,I>(this,focus,null);      
+    }
+    else if (indexedParams.length==1)
+    { 
+      constructorChannel
+        =new AggregateConstructorChannel<T,I>(this,focus,indexedParams[0]);
+    }
+    else
+    {
+      throw new BindException
+        ("Wrong number of indexed parameters for Aggregate constructor");
+    }
+      
+     
+    if (namedParamList.size()>0)
+    { 
+      constructorChannel
+        =new GatherChannel<T>
+          (constructorChannel
+          ,namedParamList.toArray
+            (new BindingChannel[namedParamList.size()])
+          );
+    }
+        
+    return constructorChannel;    
+
+  }
+
 
 
 }
@@ -328,6 +415,13 @@ class AggregateListDecorator<T extends Aggregate<I>,I>
     return collection;
   }
 
+  @Override
+  public T addAll(T collection,T items)
+  {
+    ((EditableAggregate<I>) collection).addAll(items);
+    return collection;
+  }
+  
   @SuppressWarnings("unchecked")
   @Override
   public T newCollection()

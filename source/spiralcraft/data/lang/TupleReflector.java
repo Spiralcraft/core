@@ -62,6 +62,8 @@ public class TupleReflector<T extends Tuple>
   private final FieldSet untypedFieldSet;
   
   private final Class<T> contentType;
+  
+  private final Functor<T> constructor;
 
   @SuppressWarnings("unchecked") // We only create Reflector with erased type
   public synchronized static final 
@@ -83,6 +85,13 @@ public class TupleReflector<T extends Tuple>
     super(type);
     untypedFieldSet=null;
     this.contentType=contentType!=null?contentType:(Class<T>) Tuple.class;
+    if (this.type!=null && this.type instanceof Functor)
+    { this.constructor=(Functor<T>) this.type;
+    }
+    else
+    { this.constructor=null;
+    }
+    
 //    for (Field field : fieldSet.fieldIterable())
 //    { fieldTranslators.put(field.getName(),new FieldTranslator(field));
 //    }
@@ -99,6 +108,13 @@ public class TupleReflector<T extends Tuple>
     { this.untypedFieldSet=null;
     }
     this.contentType=contentType!=null?contentType:(Class<T>) Tuple.class;
+    if (this.type!=null && this.type instanceof Functor)
+    { this.constructor=(Functor<T>) this.type;
+    }
+    else
+    { this.constructor=null;
+    }
+
 //    for (Field field : fieldSet.fieldIterable())
 //    { fieldTranslators.put(field.getName(),new FieldTranslator(field));
 //    }
@@ -484,7 +500,9 @@ public class TupleReflector<T extends Tuple>
     throws BindException
   {
     
-
+    if (constructor!=null)
+    { return constructor.bindChannel(focus,arguments);
+    }
     
     ArrayList<Channel<?>> indexedParamList=new ArrayList<Channel<?>>();
     ArrayList<Channel<?>> namedParamList=new ArrayList<Channel<?>>();
@@ -510,6 +528,7 @@ public class TupleReflector<T extends Tuple>
       
     }      
         
+      
     Channel<?>[] indexedParams
       =indexedParamList.toArray(new Channel[indexedParamList.size()]);      
 
@@ -521,7 +540,7 @@ public class TupleReflector<T extends Tuple>
     
     Channel<T> constructorChannel
       =new TupleConstructorChannel<T>(this,focus);
-    
+   
     if (namedParamList.size()>0)
     { 
       constructorChannel
@@ -532,7 +551,7 @@ public class TupleReflector<T extends Tuple>
           );
     }
       
-    return constructorChannel;
+    return constructorChannel;    
 
   }
 
