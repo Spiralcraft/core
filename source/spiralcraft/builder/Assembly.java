@@ -35,6 +35,7 @@ import spiralcraft.registry.RegistryNode;
 import spiralcraft.registry.Registrant;
 
 
+//import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringConverter;
 
 import spiralcraft.lang.AccessException;
@@ -264,11 +265,8 @@ public class Assembly<T>
    *   as opposed to constructing a new instance. Must be called before
    *   resolve().
    */
-  void setDefaultInstance(T val)
+  private void setDefaultInstance(T val)
   {
-    if (resolved)
-    { throw new IllegalStateException("Cannot setDefaultInstance() when already resolved");
-    }
     if (_assemblyClass.getJavaClass().isAssignableFrom(val.getClass()))
     { 
       try
@@ -300,6 +298,8 @@ public class Assembly<T>
     }
   }
   
+  
+  
   /**
    * Recursively resolve all instances.
    * 
@@ -308,7 +308,7 @@ public class Assembly<T>
    *  2. retrieve the instance/value for the property and
    *  3. apply the value to this Assembly's bean.
    */
-  public void resolve()
+  public void resolve(T defaultInstance)
     throws BuildException
   {
     if (resolved)
@@ -321,7 +321,14 @@ public class Assembly<T>
       if (!factoryMode)
       { resolved=true;
       }
+      else
+      { push();
+      }
     
+      if (defaultInstance!=null)
+      { setDefaultInstance(defaultInstance);
+      }
+      
       if (focus.getSubject().get()==null)
       { constructInstance();
       }
@@ -333,10 +340,37 @@ public class Assembly<T>
         }
       }
     }
+    catch (BuildException x)
+    { 
+      if (factoryMode)
+      { pop();
+      }
+      throw x;
+    }
+    catch (RuntimeException x)
+    { 
+      if (factoryMode)
+      { pop();
+      }
+      throw x;
+    }
     finally
     {  _assemblyClass.popContext();
     }
     
+  }
+
+  
+  private void push()
+  {
+    // log.fine("PUSH "+_assemblyClass.getContainerURI()+":"+ArrayUtil.format(_assemblyClass.getInnerPath(),",",null));
+    ((ThreadLocalChannel) focus.getSubject()).push();
+  }
+  
+  private void pop()
+  { 
+    // log.fine("POP "+_assemblyClass.getContainerURI()+":"+ArrayUtil.format(_assemblyClass.getInnerPath(),",",null));
+    ((ThreadLocalChannel) focus.getSubject()).pop();
   }
   
   /**
@@ -362,6 +396,9 @@ public class Assembly<T>
       if (!factoryMode)
       { resolved=true;
       }
+      else
+      { push();
+      }
     
       if (_propertyBindings!=null)
       {
@@ -370,6 +407,20 @@ public class Assembly<T>
         }
       }
     }
+    catch (BuildException x)
+    { 
+      if (factoryMode)
+      { pop();
+      }
+      throw x;
+    }
+    catch (RuntimeException x)
+    { 
+      if (factoryMode)
+      { pop();
+      }
+      throw x;
+    }      
     finally
     {  _assemblyClass.popContext();
     }
@@ -388,6 +439,9 @@ public class Assembly<T>
       for (PropertyBinding binding: _propertyBindings)
       { binding.release();
       }
+    }
+    if (factoryMode)
+    { pop();
     }
     
   }

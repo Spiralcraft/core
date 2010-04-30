@@ -99,6 +99,8 @@ public class PropertyBinding
     // 
     boolean defaultMember=_specifier.isDefaultMember();
     
+    Object defaultVal=null;
+    
     if (!isAggregate() 
        && _contents!=null
        && _contents.length==1
@@ -108,12 +110,8 @@ public class PropertyBinding
       // Give the containing object an opportunity to construct a default instance
       //   to use as the source object, instead of having the sub-assembly construct
       //   one.
-      Object defaultVal=_target.get();
-      if (defaultVal!=null)
-      { 
-        _contents[0].setDefaultInstance(defaultVal);
-        existingTargetValueUsed=true;
-      }
+      defaultVal=_target.get();
+      existingTargetValueUsed=defaultVal!=null;
     }
     
     if (_contents!=null)
@@ -126,7 +124,7 @@ public class PropertyBinding
           { assembly.resolveDefault();
           }
           else
-          { assembly.resolve();
+          { assembly.resolve(defaultVal);
           }
         }
       }

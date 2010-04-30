@@ -1247,7 +1247,7 @@ public class AssemblyClass
     { assembly.bind(parentFocus);
     }
     if (!assembly.isResolved())
-    { assembly.resolve();
+    { assembly.resolve(null);
     }
     return assembly;    
   }
@@ -1264,9 +1264,8 @@ public class AssemblyClass
     if (!assembly.isBound())
     { assembly.bind(parentFocus);
     }
-    assembly.setDefaultInstance(val);
     if (!assembly.isResolved())
-    { assembly.resolve();
+    { assembly.resolve(val);
     }
     return assembly;    
   }
