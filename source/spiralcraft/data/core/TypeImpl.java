@@ -24,12 +24,15 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataComposite;
+import spiralcraft.data.lang.ToDataTranslator;
+import spiralcraft.data.lang.ToStringTranslator;
 import spiralcraft.data.util.InstanceResolver;
 
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
 
+import spiralcraft.lang.spi.Translator;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.rules.Rule;
@@ -67,8 +70,10 @@ public class TypeImpl<T>
   protected Rule<Type<T>,T>[] explicitRules;
   
   protected boolean rulesResolved;
+  protected Translator<?,T> externalizer;
   
   private boolean linked;
+  
   
   public TypeImpl(TypeResolver resolver,URI uri)
   { 
@@ -390,6 +395,7 @@ public class TypeImpl<T>
         }
       }
 
+      
     }
     finally
     { popLink();
@@ -639,6 +645,22 @@ public class TypeImpl<T>
   }
   
   @Override
+  public synchronized Translator<?,T> getExternalizer()
+    throws DataException
+  { 
+    if (externalizer==null)
+    { 
+      if (isDataEncodable())
+      { externalizer=new ToDataTranslator<T>(this);
+      }
+      else if (isStringEncodable())
+      { externalizer=new ToStringTranslator<T>(this);
+     }
+    }
+    return externalizer;
+  }
+  
+  @Override
   public Comparator<T> getComparator()
   { return comparator;
   }
@@ -658,4 +680,5 @@ public class TypeImpl<T>
         );
     }
   }
+
 }

@@ -20,7 +20,10 @@ import spiralcraft.data.Type;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
+import spiralcraft.data.lang.ToDataTranslator;
+import spiralcraft.data.lang.ToStringTranslator;
 
+import spiralcraft.lang.spi.Translator;
 import spiralcraft.rules.RuleSet;
 
 import java.net.URI;
@@ -41,7 +44,8 @@ public abstract class AbstractAggregateType<T,Tcontent>
   protected boolean linked;
   protected RuleSet<Type<T>,T> ruleSet;  
   protected String description;
-  
+  protected Translator<?,T> externalizer;
+
   protected AbstractAggregateType(URI uri)
   { this.uri=uri;
   }
@@ -121,16 +125,21 @@ public abstract class AbstractAggregateType<T,Tcontent>
     }
   }
   
-//  @Override
-//  public Type<?> getMetaType()
-//  {
-//    try
-//    { return getTypeResolver().resolve(ReflectionType.canonicalURI(getClass()));
-//    }
-//    catch (DataException x)
-//    { throw new RuntimeException(x);
-//    }
-//  }
+  @Override
+  public synchronized Translator<?,T> getExternalizer()
+    throws DataException
+  { 
+    if (externalizer==null)
+    { 
+      if (isDataEncodable())
+      { externalizer=new ToDataTranslator<T>(this);
+      }
+      else if (isStringEncodable())
+      { externalizer=new ToStringTranslator<T>(this);
+      }
+    }
+    return externalizer;
+  }
 
   /**
    * The public Java class or interface used to programatically access or

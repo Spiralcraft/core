@@ -24,6 +24,7 @@ import spiralcraft.data.session.Buffer;
 import spiralcraft.data.session.BufferType;
 // import spiralcraft.log.ClassLogger;
 import spiralcraft.data.util.InstanceResolver;
+import spiralcraft.lang.spi.Translator;
 import spiralcraft.rules.RuleSet;
 import spiralcraft.util.string.StringConverter;
 import spiralcraft.util.thread.ThreadLocalStack;
@@ -143,6 +144,7 @@ public abstract class Type<T>
     =new HashMap<String,Method[]>();
 //  protected RuleSet<Type<T>,T> ruleSet;
   protected boolean debug;
+  protected Translator<?,T> externalizer;
   
   /**
    * The TypeResolver which instantiated this particular Type.
@@ -386,6 +388,14 @@ public abstract class Type<T>
     
   }  
   
+  /**
+   * <p>Return the Translator used to externalize/internalize this Type
+   * </p> 
+   * 
+   * @return
+   */
+  public abstract Translator<?,T> getExternalizer()
+    throws DataException;
  
   /**
    * Indicate whether Objects of this type can be encoded to and decoded from
