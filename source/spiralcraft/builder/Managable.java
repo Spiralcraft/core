@@ -14,7 +14,11 @@
 //
 package spiralcraft.builder;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
+ * 
  * <p>Tags a Java class as being managable by an AssemblyClass, even if
  *   there is no [classname].assy.xml file associated with it.
  * </p>
@@ -28,6 +32,8 @@ package spiralcraft.builder;
  * @author mike
  *
  */
+
+@Retention(value=RetentionPolicy.RUNTIME)
 public @interface Managable
 {
 
