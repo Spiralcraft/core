@@ -22,6 +22,7 @@ import spiralcraft.lang.BindException;
 import java.net.URI;
 
 import spiralcraft.lang.TypeModel;
+import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.util.ArrayUtil;
 
 /**
@@ -38,8 +39,9 @@ public class TypeFocusNode
   private final String suffix;
   private final String namespace;
   private URI uri;
+  private final int arrayDepth;
 
-  public TypeFocusNode(String qname)
+  public TypeFocusNode(String qname,int arrayDepth)
   { 
     int colonPos=qname.indexOf(':');
     if (colonPos==0)
@@ -60,15 +62,16 @@ public class TypeFocusNode
       this.suffix=qname;
       this.uri=resolveQName(namespace,suffix);
     }
+    this.arrayDepth=arrayDepth;
 
   }
 
-  TypeFocusNode(String suffix,String namespace,URI uri)
+  TypeFocusNode(String suffix,String namespace,URI uri,int arrayDepth)
   { 
     this.suffix=suffix;
     this.namespace=namespace;
     this.uri=uri;
-  
+    this.arrayDepth=arrayDepth;
   }
   
   @Override
@@ -85,25 +88,30 @@ public class TypeFocusNode
     }
     
     if (uri!=null)
-    { return new TypeFocusNode(null,null,uri);
+    { return new TypeFocusNode(null,null,uri,arrayDepth);
     }
     else
-    { return new TypeFocusNode(suffix,namespace,this.uri);
+    { return new TypeFocusNode(suffix,namespace,this.uri,arrayDepth);
     }
   } 
   
   @Override
   public String reconstruct()
   { 
+    String txt;
     if (namespace!=null)
-    { return "[@"+namespace+":"+suffix+"]";
+    { txt="[@"+namespace+":"+suffix+"]";
     }
     else if (uri!=null)
-    { return "[@:"+uri+"]";
+    { txt="[@:"+uri+"]";
     }
     else
-    { return "[@"+suffix+"]";
+    { txt="[@"+suffix+"]";
     }
+    for (int i=0;i<arrayDepth;i++)
+    { txt=txt+"[]";
+    }    
+    return txt;
   }
   
   @Override
@@ -157,9 +165,16 @@ public class TypeFocusNode
     
     Reflector<?> reflector=TypeModel.searchType(uri);
     
+    
+    
     Focus<?> newFocus=null;
     if (reflector!=null)
-    { newFocus=focus.chain(reflector.getSelfChannel());
+    { 
+      for (int i=0;i<arrayDepth;i++)
+      { reflector=ArrayReflector.getInstance(reflector);
+      }
+      
+      newFocus=focus.chain(reflector.getSelfChannel());
     }
     
     if (newFocus!=null && newFocus.getSubject()!=null)
@@ -172,15 +187,22 @@ public class TypeFocusNode
         );
     }
   }
+  
+  public TypeFocusNode arrayType()
+  { return new TypeFocusNode(suffix,namespace,uri,arrayDepth+1);
+  }
 
   @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 
-    out.append(prefix).append("Focus");
-    prefix=prefix+"  ";
+    out.append(prefix).append("TypeFocus");
+    prefix=prefix+"  @";
     out.append(prefix).append("namespace="+(namespace!=null?namespace:"(default)"));
     if (suffix!=null)
     { out.append(prefix).append("name="+suffix);
+    }
+    for (int i=0;i<arrayDepth;i++)
+    { out.append("[]");
     }
   }
   
