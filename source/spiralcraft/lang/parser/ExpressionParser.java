@@ -999,7 +999,7 @@ public class ExpressionParser
    *                    | "null"
    *                    | IdentifierExpression
    *                    | "(" Expression ")"
-   *                    | Tuple
+   *                    | Struct
    *                    | ExpressionLiteral
    */
   // Called only from parseFocusExpression
@@ -1054,7 +1054,7 @@ public class ExpressionParser
         expect(')');
         break;
       case '{':
-        node=parseTuple();
+        node=parseStruct();
         break;
       case '`':
         node=parseExpressionLiteral();
@@ -1111,12 +1111,12 @@ public class ExpressionParser
   
   
   /**
-   * TupleDefinition -> "{" TupleField ( "," TupleField ...)* "}"
+   * StructDefinition -> "{" StructField ( "," StructField ...)* "}"
    */
-  private TupleNode parseTuple()
+  private StructNode parseStruct()
     throws ParseException
   {
-    TupleNode tuple=new TupleNode();
+    StructNode struct=new StructNode();
 
     
     expect('{');
@@ -1128,22 +1128,22 @@ public class ExpressionParser
       // Publish as specified URI 
       expect('[');
       expect('#');
-      tuple.setTypeQName(parseURIName("]"));
+      struct.setTypeQName(parseURIName("]"));
       expect(']');
     }
     
     if (_tokenizer.ttype!='}')
     {
-      parseTupleField(tuple);
+      parseStructField(struct);
       while (_tokenizer.ttype==',')
       { 
         consumeToken();
-        parseTupleField(tuple);
+        parseStructField(struct);
       }
     }
     
     expect('}');
-    return tuple;
+    return struct;
   }
   
   /**
@@ -1151,16 +1151,16 @@ public class ExpressionParser
    *     [ FieldName ":" (TypeSpecifier) ( [ '=' | '~' ] FieldExpression ) ]
    *   | FieldExpression
    * 
-   * @param tuple
+   * @param struct
    * @return
    * @throws ParseException
    */
-  private void parseTupleField(TupleNode tuple)
+  private void parseStructField(StructNode struct)
     throws ParseException
   {
     
     
-    TupleField field=new TupleField();
+    StructField field=new StructField();
     
     if (_tokenizer.ttype==StreamTokenizer.TT_WORD
          && _tokenizer.lookahead.ttype==':'
@@ -1202,7 +1202,7 @@ public class ExpressionParser
       field.source=parseExpression();
     }
     
-    tuple.addField(field);
+    struct.addField(field);
   }
   
   

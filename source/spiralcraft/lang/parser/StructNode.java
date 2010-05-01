@@ -32,19 +32,20 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.AbstractFunctorChannel;
 import spiralcraft.lang.spi.AbstractReflector;
 import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.util.ArrayUtil;
 
-public class TupleNode
+public class StructNode
   extends Node
 {
 
   
-  private final LinkedHashMap<String,TupleField> fields
-    =new LinkedHashMap<String,TupleField>();
+  private final LinkedHashMap<String,StructField> fields
+    =new LinkedHashMap<String,StructField>();
   
   private Node baseExtentNode;
   
@@ -52,7 +53,7 @@ public class TupleNode
   private String typeNamespace;
   private String typeName;
   
-  public TupleNode()
+  public StructNode()
   { 
   }
 
@@ -60,7 +61,7 @@ public class TupleNode
   public Node[] getSources()
   { 
     ArrayList<Node> ret=new ArrayList<Node>();
-    for (TupleField field:fields.values())
+    for (StructField field:fields.values())
     { 
       if (field.type!=null)
       { ret.add(field.type);
@@ -79,7 +80,7 @@ public class TupleNode
   @Override
   public Node copy(Object visitor)
   {
-    TupleNode copy=new TupleNode();
+    StructNode copy=new StructNode();
     boolean dirty=false;
     
     if (this.typeURI!=null)
@@ -109,9 +110,9 @@ public class TupleNode
       copy.setTypeName(typeName);
     }
     
-    for (TupleField field: fields.values())
+    for (StructField field: fields.values())
     {
-      TupleField fieldCopy=field.copy(visitor);
+      StructField fieldCopy=field.copy(visitor);
       copy.addField(fieldCopy);
       if (fieldCopy!=field)
       { dirty=true;
@@ -153,7 +154,7 @@ public class TupleNode
     }
 
     boolean first=true;
-    for (TupleField field : fields.values())
+    for (StructField field : fields.values())
     { 
       builder.append(" ");
       if (first)
@@ -192,7 +193,7 @@ public class TupleNode
   { this.typeName=typeName;
   }
   
-  public Iterable<TupleField> getFields()
+  public Iterable<StructField> getFields()
   { return fields.values();
   }
   
@@ -228,7 +229,7 @@ public class TupleNode
   { this.baseExtentNode=baseExtentNode;
   }
   
-  public void addField(TupleField field)
+  public void addField(StructField field)
   { 
     field.index=fields.size();
     if (field.name==null)
@@ -251,28 +252,28 @@ public class TupleNode
     }
     else
     { 
-      // tuple wrapper case
-      return new TupleChannel(new TupleReflector(focus));
+      // struct wrapper case
+      return new StructChannel(new StructReflector(focus));
     }
   }
   
   
-  public class TupleReflector
-    extends AbstractReflector<Tuple>
+  public class StructReflector
+    extends AbstractReflector<Struct>
   {
     
 
     
     private final Channel<?>[] channels=new Channel[fields.size()];
     
-    private final TupleField[] fieldArray
-      =fields.values().toArray(new TupleField[fields.size()]);
+    private final StructField[] fieldArray
+      =fields.values().toArray(new StructField[fields.size()]);
     
 //    private final Channel<?> sourceChannel;
     
     
-    private final ThreadLocalChannel<Tuple> thisChannel
-      =new ThreadLocalChannel<Tuple>(this);
+    private final ThreadLocalChannel<Struct> thisChannel
+      =new ThreadLocalChannel<Struct>(this);
     
     private final URI typeURI;
     
@@ -280,14 +281,16 @@ public class TupleNode
     
     private final Reflector<Object> iterableItemReflector;
     
+    
     @SuppressWarnings("unchecked")
-    public TupleReflector(Focus<?> focus)
+    public StructReflector(Focus<?> focus)
       throws BindException
     {
     
 //      sourceChannel=focus.getSubject();
+      functor=true;
       
-      if (TupleNode.this.typeURI==null)
+      if (StructNode.this.typeURI==null)
       {
         if (typeName!=null)
         { 
@@ -305,13 +308,13 @@ public class TupleNode
         else
         { 
           typeURI=URI.create
-            ("temp:spiralcraft.lang.parser.TupleNode-"
+            ("temp:spiralcraft.lang.parser.StructNode-"
             +Integer.toHexString(System.identityHashCode(this))
             );
         }
       }
       else
-      { typeURI=TupleNode.this.typeURI;
+      { typeURI=StructNode.this.typeURI;
       }
       
     
@@ -341,7 +344,7 @@ public class TupleNode
       Reflector iterableItemReflector=null;
       
       int i=0;
-      for (TupleField field: fieldArray)
+      for (StructField field: fieldArray)
       { 
         if (field.source!=null)
         { 
@@ -399,11 +402,11 @@ public class TupleNode
      *   can be assigned to a location described by this Reflector.
      * </p>
      * 
-     * <p>A TupleReflector can be assigned from another TupleReflector
+     * <p>A StructReflector can be assigned from another StructReflector
      *   as long as they have the same number of fields with the same
-     *   names, and the type (Reflector) of each field in this TupleReflector
+     *   names, and the type (Reflector) of each field in this StructReflector
      *   is assignable from the type (Reflector) of the corresponding field
-     *   in the specified TupleReflector.
+     *   in the specified StructReflector.
      * </p>
      */
     @Override
@@ -413,20 +416,20 @@ public class TupleNode
       { return true;
       }
       
-      if (reflector instanceof TupleReflector)
+      if (reflector instanceof StructReflector)
       {
-        TupleReflector tupleReflector=(TupleReflector) reflector;
-        if (fieldArray.length != tupleReflector.fieldArray.length)
+        StructReflector structReflector=(StructReflector) reflector;
+        if (fieldArray.length != structReflector.fieldArray.length)
         { return false;
         }
         
         for (int fi=0;fi<fieldArray.length;fi++)
         { 
-          if (!fieldArray[fi].name.equals(tupleReflector.fieldArray[fi].name))
+          if (!fieldArray[fi].name.equals(structReflector.fieldArray[fi].name))
           { return false;
           }
           if (! (channels[fi].getReflector()
-                  .isAssignableFrom(tupleReflector.channels[fi].getReflector())
+                  .isAssignableFrom(structReflector.channels[fi].getReflector())
                 )
              )
           { return false;
@@ -449,14 +452,14 @@ public class TupleNode
 //          if (sig.getParameters()!=null)
 //          { 
 //            throw new BindException
-//              ("Tuple is missing implementation of "+typeURI+":"+sig); 
+//              ("Struct is missing implementation of "+typeURI+":"+sig); 
 //          }
 //          
-//          TupleField field=fields.get(sig.getName());
+//          StructField field=fields.get(sig.getName());
 //          if (field==null)
 //          {
 //            throw new BindException
-//              ("Tuple is missing property "+typeURI+":"+sig); 
+//              ("Struct is missing property "+typeURI+":"+sig); 
 //          }
 //          
 //          Reflector<?> channelType=channels[field.index].getReflector();
@@ -485,7 +488,7 @@ public class TupleNode
       if (baseChannel!=null)
       { ret.addFirst(new Signature("@super",baseChannel.getReflector()));
       }
-      for (TupleField field:fieldArray)
+      for (StructField field:fieldArray)
       { 
         if (channels[field.index]!=null)
         {
@@ -518,19 +521,19 @@ public class TupleNode
       return ret;
     }
     
-    public TupleField[] getFields()
+    public StructField[] getFields()
     { return fieldArray;
     }
     
-    public Tuple newTuple()
+    public Struct newStruct()
     { 
       Object[] data=new Object[channels.length];
-      Tuple tuple=new Tuple(this,data,baseChannel!=null?baseChannel.get():null);
-      thisChannel.push(tuple);
+      Struct struct=new Struct(this,data,baseChannel!=null?baseChannel.get():null);
+      thisChannel.push(struct);
       try
       {
         int i=0;
-        for (TupleField field: fieldArray)
+        for (StructField field: fieldArray)
         { 
           if (field.source!=null && !field.passThrough)
           { data[i]=channels[i].get();
@@ -541,12 +544,12 @@ public class TupleNode
       finally
       { thisChannel.pop();
       }
-      // log.fine("Created tuple with data "+ArrayUtil.format(data,",","|"));
-      return tuple;
+      // log.fine("Created struct with data "+ArrayUtil.format(data,",","|"));
+      return struct;
     }
     
     @SuppressWarnings("unchecked")
-    public boolean update(Tuple val)
+    public boolean update(Struct val)
     {
       boolean updated=false;
       if (val==null)
@@ -565,7 +568,7 @@ public class TupleNode
         if (val.data.length>channels.length)
         { 
           throw new AccessException
-            ("Supplied Tuple is larger ("+val.data.length+")"
+            ("Supplied Struct is larger ("+val.data.length+")"
             +" than the bound field list ("+channels.length+")"
             );
         }
@@ -602,8 +605,8 @@ public class TupleNode
 
     @SuppressWarnings("unchecked")
     @Override
-    public <D extends Decorator<Tuple>> D decorate(
-      Channel<Tuple> source,
+    public <D extends Decorator<Struct>> D decorate(
+      Channel<Struct> source,
       Class<D> decoratorInterface)
       throws BindException
     { 
@@ -611,7 +614,7 @@ public class TupleNode
       {
         if (decoratorInterface.isAssignableFrom(IterationDecorator.class))
         {
-          return (D) new IterationDecorator<Tuple,Object>
+          return (D) new IterationDecorator<Struct,Object>
             (source,iterableItemReflector)
           {
             @Override
@@ -625,8 +628,8 @@ public class TupleNode
     }
 
     @Override
-    public Class<Tuple> getContentType()
-    { return Tuple.class;
+    public Class<Struct> getContentType()
+    { return Struct.class;
     }
 
     @Override
@@ -655,7 +658,7 @@ public class TupleNode
     @SuppressWarnings("unchecked")
     @Override
     public <X> Channel<X> resolveMeta(
-      final Channel<Tuple> source,
+      final Channel<Struct> source,
       Focus<?> focus,
       String name,
       Expression<?>[] params)
@@ -679,7 +682,7 @@ public class TupleNode
     @SuppressWarnings("unchecked")
     @Override
     public <X> Channel<X> resolve(
-      final Channel<Tuple> source,
+      final Channel<Struct> source,
       Focus<?> focus,
       String name,
       Expression<?>[] params)
@@ -689,10 +692,14 @@ public class TupleNode
       { return resolveMeta(source,focus,name,params);
       }
         
+      if (name=="")
+      { return (Channel<X>) new FunctorChannel(source,focus,params);
+      }
+      
       if (params==null)
       {
         
-        final TupleField field=fields.get(name);
+        final StructField field=fields.get(name);
        
         if (field!=null)
         {
@@ -707,6 +714,7 @@ public class TupleNode
         }
       }
       
+      
       if (baseChannel!=null)
       { 
         
@@ -719,9 +727,9 @@ public class TupleNode
     class BaseExtentChannel
       extends AbstractChannel<Object>
     {
-      private final Channel<Tuple> source;
+      private final Channel<Struct> source;
       
-      public BaseExtentChannel(Channel<Tuple> source)
+      public BaseExtentChannel(Channel<Struct> source)
       { 
         super(baseChannel.getReflector());
         this.source=source;
@@ -741,14 +749,14 @@ public class TupleNode
     class FieldChannel
       extends AbstractChannel<Object>
     {
-      private final Channel<Tuple> source;
+      private final Channel<Struct> source;
       private final Channel<Object> target;
-      private final TupleField field;
+      private final StructField field;
       private final int index;
       
       public FieldChannel
-        (final TupleField field
-        ,final Channel<Tuple> source
+        (final StructField field
+        ,final Channel<Struct> source
         ,final Channel<Object> target
         )
       { 
@@ -769,7 +777,7 @@ public class TupleNode
         Object val)
         throws AccessException
       { 
-        // log.fine("Store "+val+" to tuple field "+field.name);
+        // log.fine("Store "+val+" to struct field "+field.name);
         if (field.passThrough)
         {
           if (target.isWritable())
@@ -799,13 +807,13 @@ public class TupleNode
     class PassThroughChannel
       extends AbstractChannel<Object>
     {
-      private final Channel<Tuple> source;
+      private final Channel<Struct> source;
       private final Channel<Object> target;
-      // private final TupleField field;
+      // private final StructField field;
       
       public PassThroughChannel
-        (final TupleField field
-        ,final Channel<Tuple> source
+        (final StructField field
+        ,final Channel<Struct> source
         ,final Channel<Object> target
         )
       { 
@@ -832,7 +840,7 @@ public class TupleNode
         Object val)
           throws AccessException
       { 
-        // log.fine("Store "+val+" to tuple field "+field.name);              
+        // log.fine("Store "+val+" to struct field "+field.name);              
         thisChannel.push(source.get());
         try
         { 
@@ -856,13 +864,13 @@ public class TupleNode
   }
   
   
-  class TupleChannel
-    extends AbstractChannel<Tuple>
+  class StructChannel
+    extends AbstractChannel<Struct>
   {
 
-    private final TupleReflector reflector;
+    private final StructReflector reflector;
     
-    public TupleChannel(TupleReflector reflector)
+    public StructChannel(StructReflector reflector)
     { super(reflector);
       this.reflector=reflector;
     
@@ -870,12 +878,12 @@ public class TupleNode
 
 
     @Override
-    protected Tuple retrieve()
-    { return reflector.newTuple();
+    protected Struct retrieve()
+    { return reflector.newStruct();
     }
     
       @Override
-    protected boolean store(Tuple val)
+    protected boolean store(Struct val)
       throws AccessException
     { return reflector.update(val);
     }
@@ -889,10 +897,94 @@ public class TupleNode
 
   }
   
+  
+  /**
+   * Return a Functor executor that creates a new Struct and applies
+   *   contextual bindings
+   * 
+   * @author mike
+   *
+   * @param <Ttarget>
+   * @param <Tcontext>
+   * @param <Tresult>
+   */
+  public class FunctorChannel
+    extends AbstractFunctorChannel<Struct>
+  {
+    //private final ClosureFocus<?> closure;
+    private final StructReflector reflector;
+    private final ThreadLocalChannel<Struct> local;
+
+    protected FunctorChannel
+      (Channel<Struct> source
+      ,Focus<?> focus
+      ,Expression<?>[] params
+      )
+      throws BindException
+    { 
+      super(source.getReflector());
+      //this.closure=new ClosureFocus(focus);
+      this.reflector=(StructReflector) source.getReflector();
+
+      Channel<?>[] boundParams=new Channel[params.length];
+      int i=0;
+      for (Expression<?> x : params)
+      { boundParams[i++]=focus.bind(x);
+      }
+      
+      local=new ThreadLocalChannel<Struct>(reflector);
+      bind(focus,boundParams);
+    }
+    
+    /**
+     * Override and call with the parameter context that parameter refs
+     *   will be resolved against
+     * 
+     * @param contextFocus
+     * @throws BindException
+     */
+    @Override
+    protected void bindTarget(Focus<?> contextFocus)
+      throws BindException
+    { super.bindTarget(contextFocus.chain(local));
+    }
+    
+    
+    @Override
+    protected Struct retrieve()
+    {
+//      closure.push();
+      try
+      { 
+        Struct ret=reflector.newStruct();
+        local.push(ret);
+        try
+        {
+          applyContextBindings();
+          return ret;
+        }
+        finally
+        { local.pop();
+        }
+      }
+      finally
+      { // closure.pop();
+      }
+    }
+
+    @Override
+    protected boolean store(
+      Struct val)
+      throws AccessException
+    { return false;
+    }
+    
+  }
+  
   @Override
   public void dumpTree(StringBuffer out,String prefix)
   {
-    out.append(prefix).append("Tuple: ");
+    out.append(prefix).append("Struct: ");
     prefix=prefix+"  ";
 
     if (fields!=null)
@@ -911,7 +1003,7 @@ public class TupleNode
       }
 
       boolean first=true;
-      for (TupleField field : fields.values())
+      for (StructField field : fields.values())
       { 
         if (!first)
         { out.append(prefix).append(",");

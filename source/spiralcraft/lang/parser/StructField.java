@@ -15,12 +15,12 @@
 package spiralcraft.lang.parser;
 
 /**
- * Defines a field element of a Tuple
+ * Defines a field element of a Struct
  * 
  * @author mike
  *
  */
-public class TupleField
+public class StructField
 {
   int index;
   String name;
@@ -29,9 +29,9 @@ public class TupleField
   boolean passThrough;
   boolean anonymous;
   
-  public TupleField copy(Object visitor)
+  public StructField copy(Object visitor)
   {
-    TupleField copy=new TupleField();
+    StructField copy=new StructField();
     copy.index=index;
     copy.name=name;
     if (type!=null)
@@ -54,7 +54,7 @@ public class TupleField
   
   public void dumpTree(StringBuffer out,String prefix)
   {
-    out.append("TupleField  ");
+    out.append("StructField  ");
     if (anonymous)
     { out.append("(anon)");
     }

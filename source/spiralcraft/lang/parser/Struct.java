@@ -18,21 +18,21 @@ package spiralcraft.lang.parser;
 import spiralcraft.util.ArrayUtil;
 
 /**
- * Holds named data elements defined by a Tuple expression
+ * Holds named data elements defined by a Struct expression
  * 
  * @author mike
  *
  */
-public class Tuple
+public class Struct
 {
 //  private static final ClassLog log
-//    =ClassLog.getInstance(Tuple.class);
+//    =ClassLog.getInstance(Struct.class);
   
   public final Object[] data;
-  public final TupleNode.TupleReflector reflector;
+  public final StructNode.StructReflector reflector;
   public final Object baseExtent;
       
-  public Tuple(TupleNode.TupleReflector reflector,Object[] data,Object baseExtent)
+  public Struct(StructNode.StructReflector reflector,Object[] data,Object baseExtent)
   { 
     this.data=data;
     this.reflector=reflector;
@@ -53,12 +53,12 @@ public class Tuple
     { return true;
     }
     
-    if (o instanceof Tuple)
+    if (o instanceof Struct)
     {
-      Tuple tuple=(Tuple) o;
-      return reflector==tuple.reflector
-        && (baseExtent==null || baseExtent.equals(tuple.baseExtent))
-        && ArrayUtil.arrayEquals(data,tuple.data);
+      Struct struct=(Struct) o;
+      return reflector==struct.reflector
+        && (baseExtent==null || baseExtent.equals(struct.baseExtent))
+        && ArrayUtil.arrayEquals(data,struct.data);
         
     }
     else
@@ -80,7 +80,7 @@ public class Tuple
     }
     
     int i=0;
-    for (TupleField field : reflector.getFields())
+    for (StructField field : reflector.getFields())
     { 
       if (i>0)
       { buf.append(" , ");
