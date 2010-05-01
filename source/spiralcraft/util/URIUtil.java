@@ -43,8 +43,25 @@ public class URIUtil
   }
   
   /**
+   * <p>Ensures that the URI path has a trailing slash. If it does,
+   *   simply return the original URI, otherwise rewrite the URI
+   * </p>
+   * 
+   * @return
+   */
+  public static final URI ensureTrailingSlash(URI in)
+  {
+    if (in.getPath().endsWith("/"))
+    { return in;
+    }
+    else
+    { return replaceUnencodedPath(in,in.getPath()+"/");
+    }
+  }
+  
+  /**
    * Replace the path of the specified URI with the 
-   *   specified nonencoded query string
+   *   specified nonencoded path string
    * 
    * @return
    */
