@@ -22,6 +22,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 
+import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.text.ParsePosition;
 
 
@@ -39,7 +40,7 @@ public class ParseTree
   
   private Document _document;
   private Node _currentElement;
-  private SaxPrefixResolver newPrefixResolver;
+  private StandardPrefixResolver newPrefixResolver;
   private final ParsePosition position=new ParsePosition();
   private Locator locator;
   
@@ -86,7 +87,7 @@ public class ParseTree
     if (newPrefixResolver==null)
     { 
       newPrefixResolver
-        =new SaxPrefixResolver
+        =new StandardPrefixResolver
           (_currentElement!=null
           ?_currentElement.getPrefixResolver()
           :null

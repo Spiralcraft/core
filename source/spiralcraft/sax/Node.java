@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
+import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.text.ParsePosition;
 
 /**
@@ -31,7 +32,7 @@ public abstract class Node
   private LinkedList<Node> _children;
   private Node _parent;
   private Object _peer;
-  private SaxPrefixResolver prefixResolver;
+  private StandardPrefixResolver prefixResolver;
   private ParsePosition position;
 
 
@@ -113,7 +114,7 @@ public abstract class Node
    * 
    * @return The namespace PrefixResolver in effect for this Element
    */
-  public SaxPrefixResolver getPrefixResolver()
+  public StandardPrefixResolver getPrefixResolver()
   { 
     if (this.prefixResolver!=null)
     { return this.prefixResolver;
@@ -128,7 +129,7 @@ public abstract class Node
    * The namespace PrefixResolver applicable to this Element
    * @param resolver
    */
-  public void setPrefixResolver(SaxPrefixResolver resolver)
+  public void setPrefixResolver(StandardPrefixResolver resolver)
   { this.prefixResolver=resolver;
   }
   
