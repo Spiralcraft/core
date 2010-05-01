@@ -71,6 +71,16 @@ public class ArrayListDecorator<I>
     
   }
 
+  @Override
+  public I[] addAll(
+    I[] collection
+    ,I[] items
+    )
+  {
+    return ArrayUtil.concat(collection,items);
+    
+  }  
+  
   @SuppressWarnings("unchecked")
   @Override
   public I[] newCollection()

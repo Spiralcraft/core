@@ -65,6 +65,17 @@ public class GenericCollectionDecorator<C extends Collection<I>,I>
   }
   
   @Override
+  public C addAll(
+    C collection
+    ,C  items
+    )
+  {
+    collection.addAll(items);
+    return collection;
+    
+  }  
+  
+  @Override
   public C newCollection()
   { 
     try

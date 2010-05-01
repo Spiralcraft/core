@@ -64,6 +64,18 @@ public class GenericListDecorator<C extends List<I>,I>
     return collection;
     
   }
+  
+  @Override
+  public C addAll(
+    C collection
+    ,C  items
+    )
+  {
+    collection.addAll(items);
+    return collection;
+    
+  }  
+  
   @Override
   public C newCollection()
   { 
