@@ -17,11 +17,16 @@ package spiralcraft.lang;
 import java.util.Iterator;
 
 /**
- * Supports Iteration through containers and data structures with multiple
- *   elements.
+ * <p>Supports Iteration through containers and other multi-element data 
+ *   structures.
+ * </p>
+ * 
+ * <p>The IterationDecorator is bound to its source Channel
+ * </p>
  *
- * The iterator() method provides an IterationCursor which exposes the data at
+ * <p>The iterator() method provides an IterationCursor which exposes the data at
  *   the current position of the iteration.
+ * </p>
  */
 public abstract class IterationDecorator<T,I>
   implements Decorator<T>,Iterable<I>
