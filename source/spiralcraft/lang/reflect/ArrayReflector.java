@@ -116,14 +116,28 @@ public class ArrayReflector<I>
   
   public ArrayReflector(Reflector<I> componentReflector)
   { 
+    try
+    {
+      Class<I> contentType=componentReflector.getContentType();
+      if (contentType==Void.TYPE)
+      { contentType=(Class<I>) Object.class;
+      }
+      
+      targetClass
+        =(Class<I[]>) Array.newInstance(contentType,0).getClass();
     
-    targetClass
-      =(Class<I[]>) Array.newInstance
-        (componentReflector.getContentType(),0)
-          .getClass();
-    
-    uri=URI.create(componentReflector.getTypeURI().toString()+".array");
-    this.componentReflector=componentReflector;
+      uri=URI.create(componentReflector.getTypeURI().toString()+".array");
+      this.componentReflector=componentReflector;
+    }
+    catch (IllegalArgumentException x)
+    { 
+      throw new IllegalArgumentException
+        ("Failed to determine array type for "
+        +componentReflector.getContentType()
+        +" provided by "+componentReflector
+        ,x
+        );
+    }
 
   }
 
@@ -158,6 +172,15 @@ public class ArrayReflector<I>
     URI baseURI=URI.create(uriString.substring(0,uriString.length()-6));
       
     return componentReflector.isAssignableTo(baseURI);
+  }
+
+  @Override
+  public boolean isAssignableFrom(Reflector<?> reflector)
+  { 
+    if (reflector.getContentType().equals(getContentType()))
+    { return true;
+    }
+    return super.isAssignableFrom(reflector);
   }
   
   @Override
