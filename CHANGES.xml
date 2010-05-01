@@ -3,21 +3,399 @@
   >
   
   <scm:Change>
-    <revision>0.4.7.5
+    <revision>0.4.8
     </revision>
     
     <authorId>miketoth
     </authorId>
     
-    <date>2010-03-31
+    <date>2010-05-01
     </date>
     
     <notes>
-      <scm:Note>Optimization release: Fix some missed optimizations.
+      <scm:Note>VFS mirroring implementation
+      </scm:Note>
+      <scm:Note>spiralcraft.data enhancements to support VFS mirroring
+        architecture
+      </scm:Note>      
+      <scm:Note>spiralcraft.lang enhancements to support VFS mirroring
+        architecture
+      </scm:Note>      
+      <scm:Note>VFS enhancements for Volume management and 
+        Resource metadata. 
       </scm:Note> 
+      <scm:Note>VFS refactoring pass to better organize interfaces.
+      </scm:Note>
+      <scm:Note>Memory optimization pass.
+      </scm:Note> 
+      <scm:Note>Enhancements for evaluating expressions from the command line
+      </scm:Note> 
+      <scm:Note>A StandardPrefixResolver implementation has been promoted
+        from SaxPrefixResolver and moved to common/namespace. 
+      </scm:Note>
+      <scm:Note>spiralcraft.builder enhancements to facilitate the repeated
+        use of a single Assembly as a factory to apply structure to multiple 
+        pre-constructed objects.
+      </scm:Note>      
     </notes>
     
     <details>
+    
+      <scm:Change>
+        <notes>
+          <scm:Note>A StandardPrefixResolver implementation has been promoted
+            from SaxPrefixResolver and moved to common/namespace. 
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+
+        <resources>
+          <URI>builder/PropertySpecifier.java
+          </URI>
+          <URI>common/namespace/StandardPrefixResolver.java
+          </URI>
+          <URI>sax/Node.java
+          </URI>
+          <URI>sax/ParseTree.java
+          </URI>
+          <URI>sax/SaxPrefixResolver.java
+          </URI>
+        </resources>
+      
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Enhancements for evaluating expressions from the
+            command line
+          </scm:Note>
+          <scm:Note>Error message for empty non-boolean configuration option
+            in BeanArguments
+          </scm:Note>
+          <scm:Note>Executor provides Namespace resolution as part of its
+            context
+          </scm:Note>
+          <scm:Note>Added log.Level.isInfo() for convenience writing Log 
+            related code.
+          </scm:Note>
+          <scm:Note>TaskRunner outputs command results if not null.
+          </scm:Note>
+        </notes>
+      
+        <path>source
+        </path>
+
+        <resources>
+          <URI>spiralcraft/exec/BeanArguments.java
+          </URI>
+          <URI>spiralcraft/exec/Executor.java
+          </URI>
+          <URI>spiralcraft/log/Level.java
+          </URI>
+          <URI>spiralcraft/task/TaskRunner.java
+          </URI>
+          <URI>META-INF/spiralcraft.env/eval.env.xml
+          </URI>
+        </resources>
+      </scm:Change>      
+    
+      <scm:Change>
+        <notes>
+          <scm:Note>spiralcraft.builder enhancements to facilitate the repeated
+            use of a single Assembly asa factory to apply structure to multiple 
+            pre-constructed objects.
+          </scm:Note>
+          <scm:Note>Assembly.setDefaultInstance() is no longer public- a 
+            pre-existing object is specified via a new required single parameter
+            for the "resolve" method.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        <resources>
+          <URI>builder/Assembly.java
+          </URI>
+          <URI>builder/AssemblyClass.java
+          </URI>
+          <URI>builder/PropertyBinding.java
+          </URI>
+          <URI>builder/BuilderChannel.java
+          </URI>
+        </resources>
+      
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>spiralcraft.lang enhancements to support VFS mirroring
+            architecture
+          </scm:Note>
+          <scm:Note>Syntax to express array types of arbitrary nesting levels
+            using "[@ns:type]" + "[]"*
+          </scm:Note>
+          <scm:Note>RelationalNode- ( &lt;,&gt;,etc,.. ) will return null
+            when either operator is null, due to Comparable.compareTo() being
+            undefined (and unreliable) against a null argument.
+          </scm:Note>
+          <scm:Note>spiralcraft.lang "Tuple" has now been more appropriately 
+            named "Struct" to differentiate them from the spiralcraft.data Tuple.
+          </scm:Note>
+          <scm:Note>New functions Concatenate, Max, Min, and Tree
+          </scm:Note>          
+          <scm:Note>CollectionDecorator implementations must support
+            addAll(dest,source) where source is type compatible with dest, in
+            order to avoid excessive Iteration as a least-common-denominator
+            approach.
+          </scm:Note>
+          <scm:Note>New Operation class permits use of a 
+            spiralcraft.builder .assy as a type in an object-literal
+            language construct by extending Operation and specifying an
+            arbitrary Expression to satisfy the ChannelFactory contract.
+          </scm:Note>      
+          <scm:Note>ArrayReflector determines that 2 array reflectors are
+            compatible if they have the same content type. Corner case 
+            re. array with "void" content better defined.
+          </scm:Note>  
+          <scm:Note>BeanReflector constructs interface Proxies via the use of a
+            spiralcraft.builder Assembly
+          </scm:Note>       
+          <scm:Note>ClosureFocus 2-arg constructor does not require
+            Focus chain to match primary input type.
+          </scm:Note>       
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/parser/Struct.java
+          </URI>
+          <URI>lang/parser/StructField.java
+          </URI>
+          <URI>lang/parser/StructNode.java
+          </URI>
+          <URI>lang/parser/Tuple.java
+          </URI>
+          <URI>lang/parser/TupleField.java
+          </URI>
+          <URI>lang/parser/TupleNode.java
+          </URI>
+          <URI>lang/parser/ExpressionParser.java
+          </URI>
+          <URI>lang/parser/TypeFocusNode.java
+          </URI>
+          <URI>lang/parser/RelationalNode.java
+          </URI>
+          <URI>lang/parser/RelationalNode.java
+          </URI>
+          <URI>lang/functions/Concatenate.java
+          </URI>
+          <URI>lang/functions/Min.java
+          </URI>
+          <URI>lang/functions/Max.java
+          </URI>
+          <URI>lang/functions/Tree.java
+          </URI>
+          <URI>lang/CollectionDecorator.java
+          </URI>
+          <URI>lang/reflect/ArrayReflector.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>lang/spi/ArrayListDecorator.java
+          </URI>
+          <URI>lang/spi/GenericCollectionDecorator.java
+          </URI>
+          <URI>lang/spi/GenericListDecorator.java
+          </URI>
+          <URI>lang/spi/ClosureFocus.java
+          </URI>
+          <URI>lang/spi/IterationDecorator.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>spiralcraft.data enhancements to support VFS mirroring
+            architecture
+          </scm:Note>
+          <scm:Note>Improved support for converting Tuple based interface
+            Proxies to and from data representations and dispatching Proxy
+            methods to high level implementations.
+          </scm:Note>
+          <scm:Note>Added spiralcraft.lang operations to Externalize
+            / Internalize object data. These operations are now supported
+            using Type.getExternalizer()
+          </scm:Note>
+          <scm:Note>Improve construction support for all composite data types 
+            by allowing Types to provide constructors and allowing the
+            automatic construction of Aggregates from any Iterable data.
+          </scm:Note>          
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/Type.java
+          </URI>
+          <URI>data/core/AbstractAggregateType.java
+          </URI>
+          <URI>data/core/TypeImpl.java
+          </URI>
+          <URI>data/lang/TupleDelegate.java
+          </URI>
+          <URI>data/lang/AggregateConstructorChannel.java
+          </URI>
+          <URI>data/lang/AggregateReflector.java
+          </URI>
+          <URI>data/lang/TupleReflector.java
+          </URI>
+          <URI>data/lang/ToDataTranslator.java
+          </URI>
+          <URI>data/lang/ToStringTranslator.java
+          </URI>
+          <URI>data/task/Internalize.java
+          </URI>
+          <URI>data/task/Externalize.java
+          </URI>
+          <URI>data/reflect/AssemblyType.java
+          </URI>
+          <URI>lang/spi/ReverseTranslator.java
+          </URI>
+          
+        </resources>
+      
+      </scm:Change>
+      
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>VFS mirroring implementation
+          </scm:Note>
+          <scm:Note>VFS enhancements for Volume management and 
+            Resource metadata. 
+          </scm:Note> 
+          <scm:Note>ContextResource resolution mechanism moved to a function
+            of ContextResourceMap. FileSpace, Authority and Graft mechanisms
+            created to provide modularized control over contextually
+            associated resources.
+          </scm:Note>
+          <scm:Note>CommandScheduler fix to abort run() when component 
+            is stopped after event is fired.
+          </scm:Note>                
+          <scm:Note>Path is now a managed spiralcraft.data primitive type
+          </scm:Note>                
+          <scm:Note>FileResource exposes setLastModified()
+          </scm:Note>                
+          <scm:Note>IteratorChain and IteratorStack support streaming 
+            Iteration by permitting the queuing and stacking of Iterators
+            during iteration.
+          </scm:Note>                
+          <scm:Note>Enhance support for spiralcraft.lang path manipulation: 
+            Path supports 
+            static create() method to create a standard '/' delimited path, and
+            is also Iterable.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        <resources>
+          <URI>vfs/context/ContextResource.java
+          </URI>
+          <URI>vfs/context/ContextResourceFactory.java
+          </URI>
+          <URI>vfs/context/ContextResourceMap.java
+          </URI>
+          <URI>vfs/context/Authority.java
+          </URI>
+          <URI>vfs/context/FileSpace.java
+          </URI>
+          <URI>vfs/context/Graft.java
+          </URI>
+          <URI>vfs/context/Mirror.java
+          </URI>
+          <URI>vfs/context/Redirect.java
+          </URI>
+          <URI>vfs/context/MirrorSubscriber.assy.xml
+          </URI>
+          <URI>vfs/meta/Entry.java
+          </URI>
+          <URI>vfs/meta/ResourceToEntry.java
+          </URI>
+          <URI>vfs/meta/TreeSnapshot.java
+          </URI>
+          <URI>command/CommandScheduler.java
+          </URI>
+          <URI>data/types/standard/PathType.java
+          </URI>
+          <URI>vfs/file/FileResource.java
+          </URI>
+          <URI>util/IteratorChain.java
+          </URI>
+          <URI>util/IteratorStack.java
+          </URI>
+          <URI>util/Path.java
+          </URI>
+        </resources>
+        
+        
+      </scm:Change>
+      
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>VFS refactoring pass to better organize interfaces
+          </scm:Note>
+          <scm:Note>spiralcraft.vfs.ByteArrayResource is now
+            spiralcraft.vfs.util.ByteArrayResource
+          </scm:Note>
+          <scm:Note>spiralcraft.vfs.AbstractResource is now 
+            spiralcraft.vfs.spi.AbstractResource
+          </scm:Note>
+          <scm:Note>Resource iface adds getChildren() for fluency
+          </scm:Note>
+          <scm:Note>Container iface adds listChildren(ResourceFilter)
+          </scm:Note>
+          <scm:Note>VfsUtil is obsolete
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>vfs/AbstractResource.java
+          </URI>
+          <URI>vfs/spi/AbstractResource.java
+          </URI>
+          <URI>vfs/jar/JarFileResource.java
+          </URI>
+          <URI>vfs/file/FileResource.java
+          </URI>
+          <URI>vfs/url/URLResource.java
+          </URI>
+          <URI>vfs/classpath/ClasspathResource.java
+          </URI>
+          <URI>vfs/util/ByteArrayResource.java
+          </URI>
+          <URI>vfs/util/ResourceWrapper.java
+          </URI>
+          <URI>vfs/ByteArrayResource.java
+          </URI>
+          <URI>vfs/VfsUtil.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
       <scm:Change>
         <notes>
           <scm:Note>Enclose CalculatedField in ClosureChannel to ensure

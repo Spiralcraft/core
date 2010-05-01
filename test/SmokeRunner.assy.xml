@@ -96,6 +96,10 @@
         <tasktest:Test
           xmlns:tasktest="class:/spiralcraft/task/test/"
         />
+
+        <vfstest:VfsTest
+          xmlns:vfstest="class:/spiralcraft/vfs/test/"
+        />
       </scenarios>
     </task:Sequence>
   </chain>

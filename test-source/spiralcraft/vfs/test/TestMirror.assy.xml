@@ -1,0 +1,29 @@
+<vfsc:Mirror
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:vfs="class:/spiralcraft/vfs/"
+  xmlns:vfsc="class:/spiralcraft/vfs/context/"
+  xmlns:vfsm="class:/spiralcraft/vfs/meta/"
+  xmlns:j="class:/java/lang/"
+  >
+  <remoteURI>./out/data/
+  </remoteURI>
+
+  <localURI>./out/mirror/data/
+  </localURI>
+
+  <subscriber>
+    <task:Eval>
+      <x>
+        [@vfs:Resolver].@getInstance().resolve([vfsc:Mirror].remoteURI)
+        {
+          .[*vfsm:TreeSnapshot].(excludes:=[@j:String][{"CVS",".svn"}])
+          #{[vfsc:Mirror].freshenEntry(.)}
+        }
+      </x>
+    
+    
+    </task:Eval>
+  </subscriber>
+
+</vfsc:Mirror>
+

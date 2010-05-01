@@ -6,6 +6,9 @@
   xmlns:lang="class:/spiralcraft/lang"
   xmlns:fn="class:/spiralcraft/lang/functions/"
   xmlns:util="class:/spiralcraft/util/"
+  xmlns:sutil="class:/spiralcraft/util/string/"
+  xmlns:vfs="class:/spiralcraft/vfs/"
+  xmlns="dynamic:/"
   >
   <name>spiralcraft.lang.test
   </name>
@@ -545,6 +548,57 @@
           
         </test:Assertion>        
 
+        <test:Assertion>
+          <name>vfs fixed depth traversal
+          </name>
+          
+          <subjectX>
+            [@vfs:Resolver].@getInstance().resolve("in")
+              .children{ .+ .$[ .children.[*fn:Concatenate] ] }
+          </subjectX>
+          
+          <testX>true
+          </testX>
+        
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>vfs tree
+          </name>
+          
+          <subjectX>
+            [@vfs:Resolver].@getInstance().resolve("in")
+              .[*fn:Tree{`.children`}]
+              #{"\r\n---"+.URI}
+          </subjectX>
+          
+          <testX>true
+          </testX>
+        
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>vfs decorated tree
+          </name>
+          
+          <subjectX>
+            [@vfs:Resolver].@getInstance().resolve("in")
+              {{ [#node]
+                resource:=..
+                ,depth:=0
+                ,size:=0L
+              }}
+              .[*fn:Tree
+                {`.resource.children#{..(resource:=.,depth:=..depth+1,size:=.size)}`
+                }
+              ]
+              #{"\r\n"+[@sutil:StringUtil].@repeat("  ",.depth)+.depth+": "+.resource.URI+" "+.size}
+          </subjectX>
+          
+          <testX>@size>=3
+          </testX>
+        
+        </test:Assertion>        
       </scenarios>
       
     </task:Sequence>

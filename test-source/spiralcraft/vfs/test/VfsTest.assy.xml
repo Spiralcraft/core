@@ -1,0 +1,109 @@
+<test:TestGroup
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:j="class:/java/lang/"
+  xmlns:jnet="class:/java/net/"
+  xmlns:ju="class:/java/util/"
+  xmlns:lang="class:/spiralcraft/lang"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  xmlns:util="class:/spiralcraft/util/"
+  xmlns:sutil="class:/spiralcraft/util/string/"
+  xmlns:vfs="class:/spiralcraft/vfs/"
+  xmlns:vfsm="class:/spiralcraft/vfs/meta/"
+  xmlns:vfsc="class:/spiralcraft/vfs/context/"
+  xmlns:vfst="class:/spiralcraft/vfs/test/"
+  xmlns="dynamic:/"
+  >
+  <name>spiralcraft.vfs.test
+  </name>
+  
+  <chain>
+ 
+    <task:Sequence>
+      <scenarios>
+    
+        <test:Assertion>
+        
+          <name>resource entry
+          </name>
+          
+          <subjectX>
+            [*vfsm:ResourceToEntry]
+              .(root:=[@vfs:Resolver].@getInstance().resolve([*jnet:URI{"."}]).URI
+                ,resource:=[@vfs:Resolver].@getInstance().resolve([*jnet:URI{"in/io"}])
+              )
+          </subjectX>
+          
+          <testX>.container 
+            &amp;&amp; 
+              !.path.absolute  
+            &amp;&amp; 
+              .path.path=="in/io"
+            
+          </testX>
+          
+        </test:Assertion>
+        
+        <test:Assertion>
+        
+          <name>resource snapshot
+          </name>
+          
+          <subjectX>
+            [@vfs:Resolver].@getInstance().resolve(".")
+              .[*vfsm:TreeSnapshot].(excludes:=[@j:String][{"CVS",".svn","log"}])
+              #{.path}
+          </subjectX>
+          
+          <testX>.@size>10 &amp;&amp; .[.path=="out/data/store/Customer.data.xml"].@size==1
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>mirror
+          </name>
+          
+          <subjectX>
+            [*vfst:TestMirror]
+            {[@vfs:Resolver].@getInstance().resolve("out/mirror").ensureContainer()
+              ,.start()
+              ,.stop()
+              ,.
+            }
+            
+          </subjectX>
+          
+          <testX>
+          [@vfs:Resolver].@getInstance()
+            { .resolve("out/mirror/data/store/Customer.data.xml").lastModified
+                ==.resolve("out/data/store/Customer.data.xml").lastModified
+              &amp;&amp;
+              .resolve("out/mirror/data/store/Customer.data.xml").lastModified
+                 &gt; [@ju:Date].().time-1000
+            }
+            
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>last modified
+          </name>
+          
+          <subjectX>
+            [@vfs:Resolver].@getInstance().resolve(".")
+              .[*vfsm:TreeSnapshot].(excludes:=[@j:String][{"CVS",".svn","log"}])
+              $[.lastModified.[*fn:Max]]
+          </subjectX>
+          
+          <testX>.>[@ju:Date].().time-1000
+          </testX>
+          
+        </test:Assertion>
+      </scenarios>
+    </task:Sequence>
+  </chain>
+</test:TestGroup>
