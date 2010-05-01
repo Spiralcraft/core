@@ -141,7 +141,9 @@ public abstract class AbstractChannel<T>
         );
       
       throw new 
-        BindException("Member signature '"+sig+"' not found. ("+toString()+") "+sigs);
+        BindException(
+          ((name==null || name.isEmpty())?"Constructor":"Member")
+          +" signature '"+sig+"' not found. ("+toString()+") "+sigs);
     }
     return binding;
   }
