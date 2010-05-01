@@ -123,6 +123,9 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
           { return null;
           }
         }
+        else if (val2==null)
+        { return null;
+        }
         
         int result=val1.compareTo(coercion!=null?coercion.coerce(val2):val2);
 
