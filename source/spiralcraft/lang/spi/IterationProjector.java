@@ -28,8 +28,8 @@ import spiralcraft.lang.IterationCursor;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.parser.TupleField;
-import spiralcraft.lang.parser.TupleNode;
+import spiralcraft.lang.parser.StructField;
+import spiralcraft.lang.parser.StructNode;
 import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.log.ClassLog;
@@ -106,22 +106,22 @@ public class IterationProjector<I,P,R>
     }
     else
     { 
-      if (function.getRootNode() instanceof TupleNode)
+      if (function.getRootNode() instanceof StructNode)
       {
         ArrayList<Channel<?>> keys=new ArrayList<Channel<?>>();
         
-        TupleNode tupleNode=(TupleNode) function.getRootNode();
-        for (TupleField field : tupleNode.getFields())
+        StructNode structNode=(StructNode) function.getRootNode();
+        for (StructField field : structNode.getFields())
         {
           int lastSize=viewCache.getSize();
           if (field.getSource()==null)
           { 
             throw new BindException
-              ("All fields in reduction tuple must be bound");
+              ("All fields in reduction struct must be bound");
           }
           
           // Provide same relative position to bind keys,
-          //   while disallowing having a key depend on the result tuple
+          //   while disallowing having a key depend on the result struct
           Focus<?> keyFocus=telefocus.telescope(new VoidChannel());
           
           Channel<?> fieldChan
