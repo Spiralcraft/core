@@ -16,7 +16,7 @@
         , lastModified:=resource.lastModified
         , size:=resource.size
         , container:=resource.asContainer()!=null
-      ).[*dtask:Internalize].@log("---------Entry is "+.)
+      ).[*dtask:Internalize]
     
   </x>
 </task:Eval>
