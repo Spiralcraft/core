@@ -19,7 +19,6 @@ import java.util.Iterator;
 
 import spiralcraft.util.string.StringUtil;
 
-import spiralcraft.annotation.PermittedDependency;
 
 /**
  * An immutable sequence of Strings which represent elements in an abstract hierarchy.
@@ -27,6 +26,20 @@ import spiralcraft.annotation.PermittedDependency;
 public class Path
   implements Iterable<String>
 {
+  public static final Path EMPTY_PATH=new Path("",'/');
+  public static final Path ROOT_PATH=new Path("/",'/');
+  
+  public static Path create(String standardPath)
+  { 
+    if (standardPath.equals(""))
+    { return EMPTY_PATH;
+    }
+    else if (standardPath.equals("/"))
+    { return ROOT_PATH;
+    }
+    else return new Path(standardPath,'/');
+  }
+    
   private boolean _absolute=false;
   private boolean _container=false;
   private final String[] _elements;
@@ -46,7 +59,6 @@ public class Path
    * Construct a path made up of a set of tokens embedded in a String and
    *   separated by the specified delimiter
    */
-  @PermittedDependency(StringUtil.class)
   public Path(String source,char delimiter)
   { 
     if (source.startsWith(Character.toString(delimiter)))
