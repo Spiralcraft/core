@@ -15,41 +15,31 @@
 package spiralcraft.util;
 
 import java.util.Iterator;
+import java.util.Stack;
 
-/**
- * <p>An Iterator which generates a concatenation of elements from a list of
- *   Iterators. 
- * </p>
- * 
- * <p>At any time before the end of the Iteration (the point when hasNext() 
- *   returns false), an additional iterator can be queued at the end.
- * </p>
- *   
- * @author mike
- *
- * @param <T>
- */
-public class IteratorChain<T>
+public class IteratorStack<T>
   implements Iterator<T>
 {
   
-  private Iterator<T>[] chain;
-  private int pos;
+  private final Stack<Iterator<T>> stack=new Stack<Iterator<T>>();
   private boolean done;
   
-  public IteratorChain(Iterator<T>... iterators)
-  { this.chain=iterators;
+  public IteratorStack(Iterator<T>... iterators)
+  { 
+    for (Iterator<T> iter : iterators)
+    { stack.add(iter);
+    }
   }
 
-  public void queue(Iterator<T> last)
+  public void push(Iterator<T> next)
   { 
     if (!done)
-    { chain=ArrayUtil.append(chain,last);
+    { stack.push(next);
     }
     else
     { 
       throw new IllegalStateException
-        ("Cannot queue an Iterator into an completed IteratorChain");
+        ("Cannot push an Iterator into a completed IteratorStack");
     }
   }
   
@@ -60,14 +50,14 @@ public class IteratorChain<T>
     { return false;
     }
     
-    if (pos<chain.length)
+    if (!stack.empty())
     {
-      if (chain[pos].hasNext())
+      if (stack.peek().hasNext())
       { return true;
       }
       else
       { 
-        pos++;
+        stack.pop();
         if (hasNext())
         { return true;
         }
@@ -91,7 +81,7 @@ public class IteratorChain<T>
   public T next()
   {
     if (hasNext())
-    { return chain[pos].next();
+    { return stack.peek().next();
     }
     else
     { return null;
@@ -102,7 +92,7 @@ public class IteratorChain<T>
   public void remove()
   {
     if (hasNext())
-    { chain[pos].remove();
+    { stack.peek().remove();
     }    
   }
 
