@@ -86,6 +86,10 @@ public enum Level
   { return canLog(Level.CONFIG);
   }
 
+  public boolean isInfo()
+  { return canLog(Level.INFO);
+  }
+
   /**
    * <p>Indicate whether messages of the specified level are finer than 
    *  (exclusively) the specified level
