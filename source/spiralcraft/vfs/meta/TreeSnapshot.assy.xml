@@ -1,0 +1,20 @@
+<task:Eval
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:j="class:/java/lang/"
+  xmlns:lang="class:/spiralcraft/lang/"
+  xmlns:jnet="class:/java/net/"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  xmlns:vfs="class:/spiralcraft/vfs/"
+  xmlns:vfsm="class:/spiralcraft/vfs/meta/"
+  >
+  <contextX>{ excludes:[@j:String][] }
+  </contextX>
+  <x>
+    ..[*fn:Tree{`.children[excludes==null || !(excludes?=.localName)]`}]
+      #{ [*vfsm:ResourceToEntry]
+        .(root:=...URI
+          ,resource:=.
+        )
+      }
+  </x>
+</task:Eval>

@@ -16,8 +16,12 @@ package spiralcraft.vfs.context;
 
 
 import java.util.HashMap;
-import java.util.Map;
 import java.net.URI;
+
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.UnresolvableURIException;
 
 /**
  * <P>Provides a mechanism for scoping ContextResource authority names to an
@@ -47,25 +51,37 @@ import java.net.URI;
 public class ContextResourceMap
 {
   
-  
+  private static final ClassLog log
+    =ClassLog.getInstance(ContextResourceMap.class);
+  private static final Level debugLevel
+    =ClassLog.getInitialDebugLevel(ContextResourceMap.class,null);
   private static final InheritableThreadLocal<ContextResourceMap> threadMap
     =new InheritableThreadLocal<ContextResourceMap>();
+  
   private static volatile int ID;
 
   static 
   { new ContextResourceMap().push();
   }
   
-  public static final URI lookup(String name)
-  { return threadMap.get().get(name);
-  }
   
-  public static final URI getDefault()
-  { return threadMap.get().get("_DEFAULT");
-  }
+
   
-  public static final Map<String,URI> getMap()
-  { return threadMap.get().map;
+//  public static final URI lookup(String name)
+//  { return threadMap.get().get(name);
+//  }
+  
+//  public static final URI getDefault()
+//  { return threadMap.get().get("");
+//  }
+  
+//  public static final Map<String,URI> getMap()
+//  { return threadMap.get().map;
+//  }
+  
+  public static final Resource resolve(URI contextURI)
+    throws UnresolvableURIException
+  { return threadMap.get().doResolve(contextURI);
   }
   
   
@@ -81,25 +97,37 @@ public class ContextResourceMap
     return out.toString();
   }
   
-  private final HashMap<String,URI> map
-    =new HashMap<String,URI>();
+  private final HashMap<String,Authority> map
+    =new HashMap<String,Authority>();
   
   private ContextResourceMap parent;
   private final int id=ID++;
 
 
+  
   public void putDefault(URI uri)
-  { put("_DEFAULT",uri);
+  { put("",uri);
   }
   
+  public void put(Authority authority)
+  { map.put(authority.getAuthorityName(),authority);
+  }
+  
+  /**
+   * Map the root for the specified authority name to the specified URI
+   * 
+   * @param name
+   * @param uri
+   */
   public void put(String name,URI uri)
-  { map.put(name,uri);
+  { map.put(name,new Authority(name,uri));
   }
 
   
   public URI get(String name)
   { 
-    URI ret=map.get(name);
+    Authority mapping=map.get(name);
+    URI ret=mapping!=null?mapping.getRootURI():null;
     if (ret==null && parent!=null)
     { ret=parent.get(name);
     }
@@ -122,4 +150,80 @@ public class ContextResourceMap
     }
   }
   
+  /**
+   * Return a Graft mapping for an authority 
+   * 
+   * @param authorityName
+   * @param relativePath
+   * @return
+   */
+  public Graft getGraft(String authorityName,String relativePath)
+  {
+    Authority authority=map.get(authorityName);
+    if (authority==null)
+    { 
+      throw new IllegalArgumentException
+        ("No authority named '"+authorityName+"' in this FileSpace");
+    }
+    
+    return authority.getGraft(relativePath);
+  }
+  
+  private Resource doResolve(URI contextURI)
+    throws UnresolvableURIException
+  {
+    String path=contextURI.getPath().substring(1);
+    String authorityName=contextURI.getAuthority();
+    Authority authority;
+
+    if (authorityName!=null)
+    { 
+      authority=map.get(authorityName);
+      if (authority==null && parent==null)
+      { 
+        throw new UnresolvableURIException
+        (contextURI
+          ,"Unknown context authority '"+authorityName+"' for "+contextURI
+          +": "+id+" mappings="+map
+        );
+      }
+    }
+    else
+    { 
+      authority=map.get("");
+      if (authority==null && parent==null)
+      { 
+        throw new UnresolvableURIException
+        (contextURI,"No default context authority for "+contextURI
+          +": "+id+" mappings="+map
+        );
+      }
+    }
+
+    if (authority==null)
+    { return parent.doResolve(contextURI);
+    }
+
+
+    Resource ret=authority.resolve(path);
+
+    if (ret==null && parent!=null)
+    { ret=parent.doResolve(contextURI);
+    }
+    else
+    {
+      if (debugLevel.canLog(Level.TRACE))
+      { 
+        log.trace
+        (ContextResourceMap.getMapId()
+          +": Resolved "+(ret!=null?ret.getURI():null)
+          +" from authority ["+authorityName+"] for "+path
+        );
+      }
+    }
+    return ret;
+  }  
 }
+
+
+

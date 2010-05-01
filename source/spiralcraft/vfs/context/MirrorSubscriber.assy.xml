@@ -1,0 +1,37 @@
+<sax:QueryXml
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:sax="class:/spiralcraft/data/sax/"
+  xmlns:vfsc="class:/spiralcraft/vfs/context/"
+  xmlns:vfsm="class:/spiralcraft/vfs/meta/"
+  xmlns:data="class:/spiralcraft/data/"
+  >
+  <whenX>[vfsc:Mirror].remoteURI.absolute
+  </whenX>
+  
+  <type x="[@vfsm:Entry.list].type"/>
+  
+  <uriX>[vfsc:Mirror].remoteURI+".snapshot"
+  </uriX>
+  
+  <ignoreEmpty>true
+  </ignoreEmpty>
+  
+  <uriQueryBindings>
+    <sax:AttributeBinding>
+      <name>lastModified
+      </name>
+      <target>[vfsc:Mirror].lastModified()
+      </target>
+    </sax:AttributeBinding>
+  </uriQueryBindings>
+  
+  <debug>false
+  </debug>
+
+  <chain>
+    <task:Eval>
+      <x>[vfsm:Entry.list]#{[vfsc:Mirror].freshenEntry(.[*dtask:Internalize])}
+      </x>
+    </task:Eval>
+  </chain>
+</sax:QueryXml>

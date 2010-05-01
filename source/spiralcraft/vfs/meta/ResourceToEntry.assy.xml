@@ -1,0 +1,22 @@
+<task:Eval
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:lang="class:/spiralcraft/lang/"
+  xmlns:jnet="class:/java/net/"
+  xmlns:ju="class:/java/util/"
+  xmlns:vfs="class:/spiralcraft/vfs/"
+  xmlns:meta="data:class:/spiralcraft/vfs/meta/"
+  xmlns:dtask="class:/spiralcraft/data/task/"
+  >
+  <contextX>{ root:[@jnet:URI], resource:[@vfs:Resource] }
+  </contextX>
+  
+  <x>
+    [@meta:Entry]
+      .(path:=root.relativize(resource.URI)
+        , lastModified:=resource.lastModified
+        , size:=resource.size
+        , container:=resource.asContainer()!=null
+      ).[*dtask:Internalize].@log("---------Entry is "+.)
+    
+  </x>
+</task:Eval>
