@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2009 Michael Toth
+// Copyright (c) 2009,2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -14,6 +14,7 @@
 //
 package spiralcraft.task;
 
+import java.io.PrintStream;
 import java.net.URI;
 
 import spiralcraft.command.Command;
@@ -22,6 +23,7 @@ import spiralcraft.data.persist.AbstractXmlObject;
 
 import spiralcraft.exec.BeanArguments;
 import spiralcraft.exec.Executable;
+import spiralcraft.exec.ExecutionContext;
 import spiralcraft.exec.ExecutionException;
 
 import spiralcraft.lang.BindException;
@@ -35,7 +37,15 @@ import spiralcraft.log.Log;
 import spiralcraft.registry.Registrant;
 import spiralcraft.registry.RegistryNode;
 import spiralcraft.service.Service;
+import spiralcraft.util.string.StringConverter;
 
+/**
+ * <p>An Executable that runs a task Scenario
+ * </p>
+ * 
+ * @author mike
+ *
+ */
 public class TaskRunner
   implements Executable,Registrant
 {
@@ -46,6 +56,7 @@ public class TaskRunner
   private Focus<?> rootFocus=new SimpleFocus<Void>();
   
   private final Log log=ClassLog.getInstance(TaskRunner.class);
+  private Level debugLevel=Level.INFO;
   
   private Thread executeThread;
 
@@ -57,6 +68,15 @@ public class TaskRunner
   
   {
     Runtime.getRuntime().addShutdownHook(shutdownThread);
+  }
+  
+  /**
+   * Log various messages during operation
+   * 
+   * @param debug
+   */
+  public void setDebugLevel(Level debugLevel)
+  { this.debugLevel=debugLevel;
   }
   
   /**
@@ -188,6 +208,7 @@ public class TaskRunner
     
   }
   
+  @SuppressWarnings("unchecked")
   protected void execute()
     throws ExecutionException
   {
@@ -246,18 +267,36 @@ public class TaskRunner
           )
         );
 
-
+      
       
       scenario.start();
+      
+      StringConverter converter
+        =scenario.getResultReflector()!=null
+        ?scenario.getResultReflector().getStringConverter()
+        :null;
+        
       try
       { 
         Command<?,?,?> command=scenario.command();
         command.execute();
-        if (command.getResult()!=null)
+        
+        Object result=command.getResult();
+        if (result!=null)
+        {
+          PrintStream out=ExecutionContext.getInstance().out();
+          out.println
+            (converter!=null
+            ?converter.toString(result)
+            :result.toString()
+            );
+        }
+        
+        if (result!=null && debugLevel.isDebug())
         { 
           log.log
-            (Level.INFO,"Scenario "+scenario+" completed with result: "
-            +command.getResult()
+            (Level.DEBUG,"Scenario "+scenario+" completed with result: "
+            +result
             );
         }
         if (command.getException()!=null)
@@ -294,7 +333,9 @@ public class TaskRunner
     @Override
     public void run()
     { 
-      log.log(Level.INFO,"Interrupting for shutdown");
+      if (debugLevel.isDebug())
+      { log.log(Level.DEBUG,"Interrupting for shutdown");
+      }
       if (executeThread!=null && executeThread.isAlive())
       { executeThread.interrupt();
       }
