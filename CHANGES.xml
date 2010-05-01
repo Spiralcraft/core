@@ -304,6 +304,8 @@
             static create() method to create a standard '/' delimited path, and
             is also Iterable.
           </scm:Note>
+          <scm:Note>New utility method URIUtil.ensureTrailingSlash(URI)
+          </scm:Note>
         </notes>
         
         <path>source/spiralcraft
@@ -344,6 +346,8 @@
           <URI>util/IteratorStack.java
           </URI>
           <URI>util/Path.java
+          </URI>
+          <URI>util/URIUtil.java
           </URI>
         </resources>
         
