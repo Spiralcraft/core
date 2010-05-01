@@ -55,6 +55,9 @@ import spiralcraft.lang.spi.VoidReflector;
 
 import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
+import spiralcraft.builder.AssemblyLoader;
+import spiralcraft.builder.BuildException;
+import spiralcraft.builder.BuilderChannel;
 import spiralcraft.common.Indexable;
 
 
@@ -90,6 +93,7 @@ import java.net.URI;
 
 import spiralcraft.log.ClassLog;
 // import spiralcraft.log.Level;
+import spiralcraft.log.Level;
 
 /**
  * A Reflector which uses Java Beans introspection and reflection
@@ -250,6 +254,29 @@ public class BeanReflector<T>
     return result;
   }
   
+  /**
+   * Return a signature for a Java method
+   * 
+   * @param method
+   * @return
+   */
+  public static Signature methodSignature(Method method)
+  {
+    Reflector[] paramTypes
+      =new Reflector[method.getParameterTypes().length];
+    int i=0;
+    for (Type clazz:method.getParameterTypes())
+    { 
+      paramTypes[i++]=BeanReflector.getInstance(clazz);
+    }
+
+    return new Signature
+      (method.getName()
+      ,BeanReflector.getInstance(method.getReturnType())
+      ,paramTypes
+      );
+  }
+  
   
   private final MappedBeanInfo beanInfo;
   private HashMap<String,BeanPropertyTranslator<?,T>> properties;
@@ -348,26 +375,13 @@ public class BeanReflector<T>
     
     Method[] methods=targetClass.getMethods();
     for (Method method:methods)
-    {
-      Reflector[] paramTypes
-        =new Reflector[method.getParameterTypes().length];
-      int i=0;
-      for (Type clazz:method.getParameterTypes())
-      { 
-        paramTypes[i++]=BeanReflector.getInstance(clazz);
-      }
-
-      signatures.add
-        (new Signature
-          (method.getName()
-          ,BeanReflector.getInstance(method.getReturnType())
-          ,paramTypes
-          )
-        );
+    { signatures.add(methodSignature(method));
     }
     
     return signatures;
   }
+  
+  
   
   @Override
   public boolean isAssignableFrom(Reflector<?> other)
@@ -822,11 +836,6 @@ public class BeanReflector<T>
     {   
       sigbuf.append(":");
       classSig[i]=params[i].getContentType();
-
-// Void means wildcard here, and is understood bu MethodResolver.
-//      if (classSig[i]==Void.class)
-//      { classSig[i]=Void.TYPE;
-//      }
       sigbuf.append(classSig[i].getName());
     }
     String sig=sigbuf.toString();
@@ -1163,7 +1172,7 @@ public class BeanReflector<T>
 
   @Override
   /**
-   * Create a constuctor channel
+   * Create a constructor channel
    */
   public Channel<T> bindChannel(
     Focus<?> focus,
@@ -1206,76 +1215,123 @@ public class BeanReflector<T>
     {   
       sigbuf.append(":");
       classSig[i]=indexedParamList.get(i).getContentType();
-      if (classSig[i]==Void.class)
-      { classSig[i]=Object.class;
-      }
       sigbuf.append(classSig[i].getName());
     }
     String sig=sigbuf.toString();
 
-    ConstructorTranslator<T> translator=null;
-    if (constructors==null)
-    { constructors=new HashMap<String,ConstructorTranslator<T>>();
-    }
-    else
-    { translator= constructors.get(sig);
-    }
 
-    if (translator==null)
+
+    Channel<T> constructorChannel=null;
+
+    if (targetClass.isInterface())
     {
-      try
+      if (indexedParamList.size()==0)
       {
-        Constructor<T> method
-          =(Constructor<T>) methodResolver.findConstructor(classSig);
-        
-        if (method!=null)
-        { 
-          translator=new ConstructorTranslator<T>(this,method);
-          constructors.put(sig,translator);
-        }
-      }
-      catch (NoSuchMethodException x)
-      { 
-        return null;
-//        throw new BindException
-//          ("Method "
-//          +name
-//          +"("+ArrayUtil.format(classSig,",","")
-//          +") not found in "+targetClass
-//          ,x
-//          );
-      }
-    }
-    
-    
-    // Create the channel to call the constructor
-    if (translator!=null)
-    { 
-      Channel<T> constructorChannel;
-      
-      Channel<Void> nullSource
-        =new SimpleChannel<Void>
-          (BeanReflector.<Void>getInstance(Void.class),null,true);
-        
-      Channel[] indexedParams
-        =indexedParamList.toArray(new Channel[indexedParamList.size()]);      
-      if (ENABLE_METHOD_BINDING_CACHE)
-      { 
-        MethodKey cacheKey=new MethodKey(translator,indexedParams);
-        constructorChannel=getSelfChannel().<T>getCached(cacheKey);
-        if (constructorChannel==null)
-        { 
+        try
+        {
           constructorChannel
-            =new TranslatorChannel<T,Void>(nullSource,translator,indexedParams);
-          getSelfChannel().cache(cacheKey,constructorChannel);
+            =new BuilderChannel
+              (focus
+              ,null
+              ,AssemblyLoader.getInstance().findAssemblyClass(targetClass)
+              );
+        }
+        catch (BuildException x)
+        { 
+          throw new BindException
+            ("Error creating Assembly constructor for proxied interface "
+            +targetClass
+            );
         }
       }
       else
-      { 
-        constructorChannel
-          =new TranslatorChannel<T,Void>(nullSource,translator,indexedParams);
+      {
+        throw new BindException
+          ("Proxied interface cannot have indexed constructor parameters for "
+          +targetClass
+          );
+      }
+    }
+    else 
+    {
+      ConstructorTranslator<T> translator=null;
+      if (constructors==null)
+      { constructors=new HashMap<String,ConstructorTranslator<T>>();
+      }
+      else
+      { translator= constructors.get(sig);
       }
       
+      if (translator==null)
+      {
+        try
+        {
+          Constructor<T> method
+            =(Constructor<T>) methodResolver.findConstructor(classSig);
+        
+          if (method!=null)
+          { 
+            translator=new ConstructorTranslator<T>(this,method);
+            constructors.put(sig,translator);
+          }
+        }
+        catch (NoSuchMethodException x)
+        { 
+          log.log
+            (Level.DEBUG
+            ,"Constructor "
+            +"("+ArrayUtil.format(classSig,",","")
+            +") not found in "+targetClass
+            ,x
+            );
+          
+        
+        
+          return null;
+//          throw new BindException
+//            ("Method "
+//            +name
+//            +"("+ArrayUtil.format(classSig,",","")
+//            +") not found in "+targetClass
+//            ,x
+//            );
+        }
+      }
+
+      // Create the channel to call the constructor
+      if (translator!=null)
+      { 
+      
+        Channel<Void> nullSource
+         =new SimpleChannel<Void>
+             (BeanReflector.<Void>getInstance(Void.class),null,true);
+        
+        Channel[] indexedParams
+          =indexedParamList.toArray(new Channel[indexedParamList.size()]);      
+        if (ENABLE_METHOD_BINDING_CACHE)
+        { 
+          MethodKey cacheKey=new MethodKey(translator,indexedParams);
+          constructorChannel=getSelfChannel().<T>getCached(cacheKey);
+          if (constructorChannel==null)
+          { 
+            constructorChannel
+              =new TranslatorChannel<T,Void>(nullSource,translator,indexedParams);
+            getSelfChannel().cache(cacheKey,constructorChannel);
+          }
+        }
+        else
+        { 
+          constructorChannel
+            =new TranslatorChannel<T,Void>(nullSource,translator,indexedParams);
+        }
+      
+      }
+    }
+    
+    
+   
+    if (constructorChannel!=null)
+    { 
       if (namedParamList.size()>0)
       { 
         constructorChannel
