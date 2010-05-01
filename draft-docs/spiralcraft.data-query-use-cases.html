@@ -22,7 +22,7 @@ a Focus and a Queryable.</li>
 Data path created when bound to a Queryable.<br>
 Can execute(), returning a SerialCursor<br>
 Several types of BoundQueries chained together help delegate
-appropriate parts to the Queryable implementation</li>
+appropriate parts to the Queryable implementation
   <ul>
     <li><span style="font-weight: bold;">BoundAggregateScan<br>
       <span style="font-weight: bold;"></span></span>Simply traverses
@@ -30,7 +30,7 @@ an aggregate and provides a reference all the Tuples contained within<br>
     </li>
     <li><span style="font-weight: bold;">BoundSqlScan<br>
       </span>Prepares a statement when bound and executes a SELECT,
-provides a reference to Tuple that wraps the ResultSet</li>
+provides a reference to Tuple that wraps the ResultSet
     <ul>
       <li>simple mode<br>
 Selects a Type (table) and returns all rows</li>
@@ -45,6 +45,7 @@ Retrieves from multiple types. Must go through the client-side join
 filter to ensure consistency.<br>
         <span style="font-weight: bold;"></span></li>
     </ul>
+    </li>
     <li><span style="font-weight: bold;">BoundFilter<br>
       </span>Filters another BoundQuery to only return matching Tuples.<br>
 A SQL store can check the BoundFilter to parse out translatable
@@ -53,6 +54,7 @@ expressions.<br>
     <li><br>
     </li>
   </ul>
+  </li>
   <li><span style="font-weight: bold;">SerialCursor</span><br>
 Data path root (return) is a SerialCursor (dataCanAdvance()),
 dataAdvance())<br>
@@ -62,24 +64,26 @@ on underlying data window representation<br>
 </ul>
 <h4>Query Subcomponents</h4>
 <ul>
-  <li>Projection</li>
+  <li>Projection
   <ul>
     <li>The FieldSet that defines the Tuples returned by the Query.
 This is composed entirely of the ProjectionFields<br>
     </li>
   </ul>
-  <li>ProjectionField</li>
+  </li>
+  <li>ProjectionField
   <ul>
     <li>Associates a Field name with a ProjectionExpression. The
 ProjectionFields compose the Projection.</li>
   </ul>
-  <li>ProjectionExpression</li>
-  <ul>
+  </li>
+  <li>ProjectionExpression
+
     <ul>
       <li>An Expression that references a Focus <br>
       </li>
     </ul>
-  </ul>
+  </li>
 </ul>
 <h4>Representative SQL syntax</h4>
 <pre style="margin-left: 40px;">SELECT [ DISTINCT | ALL ]<br>  column_expression1, column_expression2, ....<br>  [ FROM from_clause ]<br>  [ WHERE where_expression ]<br>  [ GROUP BY expression1, expression2, .... ]<br>  [ HAVING having_expression ]<br>  [ ORDER BY order_column_expr1, order_column_expr2, .... ]</pre>
