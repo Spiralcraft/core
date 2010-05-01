@@ -63,7 +63,7 @@ public abstract class AbstractFunctorChannel<Tresult>
   }  
   
   /**
-   * Override and call with the parameter context that parameter refs
+   * Override and call with the parameter context that parameter targets
    *   will be resolved against
    * 
    * @param contextFocus
