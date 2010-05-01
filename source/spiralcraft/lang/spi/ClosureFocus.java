@@ -64,7 +64,7 @@ public class ClosureFocus<T>
   { this(focusChain,focusChain.getSubject());
   }
   
-  public ClosureFocus(Focus<T> focusChain,Channel<T> subject)
+  public ClosureFocus(Focus<?> focusChain,Channel<T> subject)
   { 
     parent=focusChain;
     
