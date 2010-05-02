@@ -212,6 +212,13 @@ public class Mirror
     if (subscriber!=null)
     { subscriber.bind(focusChain);
     }
+    else
+    { 
+      log.warning
+        ("Mirror for "+getLocalURI()+" has no configured subscriber and will"
+        +" not be automatically synchronized"
+        );
+    }
     
     // XXX Change this to a metadata lookup for sync state.
     lastModified=new Binding<Long>(Expression.<Long>create(
