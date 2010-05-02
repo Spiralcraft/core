@@ -19,6 +19,7 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.spi.SimpleChannel;
 
 /**
  * <p>Manages and provides access to a set of VFS Resources by publishing
@@ -48,6 +49,7 @@ public class FileSpace
   public Focus<?> bind(Focus<?> focusChain)
     throws BindException
   { 
+    focusChain=focusChain.chain(new SimpleChannel<FileSpace>(this,true));
     for (Authority authority:authorities)
     { 
       authority.bind(focusChain);
