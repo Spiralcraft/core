@@ -55,6 +55,7 @@ public class Mirror
   private URI localURI;
   private Binding<Long> lastModified;
   
+  
   private final CommandScheduler updater
     =new CommandScheduler()
     {
@@ -117,6 +118,11 @@ public class Mirror
   
   public void setLastModifiedX(Binding<Long> lastModified)
   { this.lastModified=lastModified;
+  }
+  
+  
+  public void setDebugLevel(Level debugLevel)
+  { this.debugLevel=debugLevel;
   }
   
   public void triggerSubscriber()
