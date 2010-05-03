@@ -174,8 +174,13 @@ public class Mirror
     }
     else
     {
+      URI absRemoteURI
+        =remoteURI.isAbsolute()
+        ?remoteURI
+        :URI.create("context:/").resolve(remoteURI)
+        ;
       Resource remoteResource
-        =resolver.resolve(remoteURI.resolve(path));
+        =resolver.resolve(absRemoteURI.resolve(path));
     
       File tempFile=File.createTempFile("spiralcraft.vfs.context.Mirror-",".part~");
       tempFile.deleteOnExit();
