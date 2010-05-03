@@ -48,8 +48,6 @@ import spiralcraft.registry.RegistryNode;
 
 
 import spiralcraft.util.thread.ContextFrame;
-import spiralcraft.util.thread.Delegate;
-import spiralcraft.util.thread.DelegateException;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
