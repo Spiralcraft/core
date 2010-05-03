@@ -33,6 +33,10 @@
       <scm:Note>A StandardPrefixResolver implementation has been promoted
         from SaxPrefixResolver and moved to common/namespace. 
       </scm:Note>
+      <scm:Note>"Contextual" interface is replacing the "FocusChainObject"
+        interface. Contextual will extend FocusChainObject until the 
+        refactoring can be completed.
+      </scm:Note>
       <scm:Note>spiralcraft.builder enhancements to facilitate the repeated
         use of a single Assembly as a factory to apply structure to multiple 
         pre-constructed objects.
@@ -40,7 +44,62 @@
     </notes>
     
     <details>
-    
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>"Contextual" interface is replacing the "FocusChainObject"
+            interface. Contextual will extend FocusChainObject until the 
+            refactoring can be completed.
+          </scm:Note>      
+          <scm:Note>New ThreadContextual interface to represent Contextual
+            implementations that publish Thread-specific references.
+          </scm:Note>      
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/Contextual.java
+          </URI>
+          <URI>lang/ThreadContextual.java
+          </URI>
+          <URI>data/Space.java
+          </URI>
+          <URI>data/editor/TupleEditor.java
+          </URI>
+          <URI>data/flatfile/FieldMapping.java
+          </URI>
+          <URI>data/flatfile/RecordFormat.java
+          </URI>
+          <URI>data/persist/AbstractXmlObject.java
+          </URI>
+          <URI>data/persist/PersistentReference.java
+          </URI>
+          <URI>data/sax/XmlDataRenderer.java
+          </URI>
+          <URI>data/spi/AbstractStore.java
+          </URI>
+          <URI>data/util/RelationalMap.java
+          </URI>
+          <URI>lang/Operation.java
+          </URI>
+          <URI>lang/spi/ViewCache.java
+          </URI>
+          <URI>sax/ElementRenderer.java
+          </URI>
+          <URI>security/auth/Authenticator.java
+          </URI>
+          <URI>security/auth/AuthModule.java
+          </URI>
+          <URI>security/spi/CredentialValidator.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      
       <scm:Change>
         <notes>
           <scm:Note>A StandardPrefixResolver implementation has been promoted
