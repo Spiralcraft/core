@@ -182,7 +182,10 @@ public class TupleDelegate<T>
           
           // Shortcut Object methods
           if (params.length==0 && method.getName().equals("toString"))
-          { return this.toString();
+          { 
+            return 
+              "TupleDelegate("+getReflector().getContentType().getName()
+              +"):"+getTuple().toString();
           }
           else if (params.length==1 
                    && method.getName().equals("equals")
