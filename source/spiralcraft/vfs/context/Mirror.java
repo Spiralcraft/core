@@ -152,7 +152,7 @@ public class Mirror
   public void freshenEntry(Entry entry)
     throws IOException
   { 
-    if (debugLevel.canLog(Level.FINE))
+    if (debugLevel.canLog(Level.TRACE))
     { log.fine("Freshening "+entry.toString());
     }
     Resolver resolver=Resolver.getInstance();
