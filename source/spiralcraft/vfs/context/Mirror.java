@@ -149,6 +149,9 @@ public class Mirror
   public void freshenEntry(Entry entry)
     throws IOException
   { 
+    if (debugLevel.canLog(Level.FINE))
+    { log.fine("Freshening "+entry.toString());
+    }
     Resolver resolver=Resolver.getInstance();
     
     URI path=entry.getPath();
