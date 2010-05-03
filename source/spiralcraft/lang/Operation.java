@@ -25,7 +25,7 @@ package spiralcraft.lang;
  * @param <Tsource>
  */
 public class Operation<Tchannel, Tsource>
-  implements ChannelFactory<Tchannel, Tsource>, FocusChainObject
+  implements ChannelFactory<Tchannel, Tsource>, Contextual
 {
   
   private Expression<Tchannel> expression;

@@ -34,7 +34,7 @@ import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.spi.TranslatorChannel;
 import spiralcraft.log.ClassLog;
@@ -48,7 +48,7 @@ import spiralcraft.log.ClassLog;
  */
 public class TupleEditor
   extends EditorBase<BufferTuple>
-  implements FocusChainObject
+  implements Contextual
 {
   private static final ClassLog log
     =ClassLog.getInstance(TupleEditor.class);

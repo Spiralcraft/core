@@ -25,7 +25,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.ClosureFocus;
@@ -62,7 +62,7 @@ import spiralcraft.log.Level;
 public abstract class Scenario<Tcontext,Tresult>
   extends AbstractCommandFactory<Task,Tcontext,Tresult>
   implements Lifecycle
-    ,FocusChainObject
+    ,Contextual
     ,CommandFactory<Task,Tcontext,Tresult>
 {
 

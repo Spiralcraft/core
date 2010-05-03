@@ -32,7 +32,7 @@ import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.lang.spi.AbstractChannel;
@@ -53,7 +53,7 @@ import spiralcraft.log.Level;
  * @param <Tsource>
  */
 public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
-  implements ChannelFactory<Tdownstream, Tupstream>,FocusChainObject
+  implements ChannelFactory<Tdownstream, Tupstream>,Contextual
 {
   private static final ClassLog log
     =ClassLog.getInstance(RelationalMap.class);

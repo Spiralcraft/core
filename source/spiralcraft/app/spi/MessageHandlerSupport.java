@@ -22,11 +22,11 @@ import spiralcraft.app.MessageHandler;
 import spiralcraft.app.MessageHandlerChain;
 import spiralcraft.common.Lifecycle;
 
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
 
 public class MessageHandlerSupport
-  implements Lifecycle,FocusChainObject
+  implements Lifecycle,Contextual
 {
   
   private MessageHandler[] handlers;

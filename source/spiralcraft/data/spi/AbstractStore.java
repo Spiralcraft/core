@@ -42,7 +42,7 @@ import spiralcraft.data.query.Scan;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -59,7 +59,7 @@ import spiralcraft.log.Level;
  *
  */
 public abstract class AbstractStore
-  implements Store,FocusChainObject
+  implements Store,Contextual
 {
   protected final ClassLog log=ClassLog.getInstance(getClass());
   protected Level debugLevel=ClassLog.getInitialDebugLevel(getClass(),null);

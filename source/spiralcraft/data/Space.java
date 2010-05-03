@@ -37,6 +37,7 @@ import spiralcraft.data.query.ConcatenationBinding;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.spi.SimpleChannel;
 
 import spiralcraft.log.ClassLog;
@@ -55,7 +56,7 @@ import spiralcraft.util.ListMap;
  *   
  */
 public class Space
-  implements Queryable<Tuple>,Service,FocusChainObject
+  implements Queryable<Tuple>,Service,Contextual
 {
   public static final URI SPACE_URI 
     = URI.create("class:/spiralcraft/data/Space");

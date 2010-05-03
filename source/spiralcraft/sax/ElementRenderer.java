@@ -26,7 +26,7 @@ import spiralcraft.lang.util.DictionaryBinding;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.spi.SimpleChannel;
 
 import spiralcraft.text.Renderer;
@@ -54,7 +54,7 @@ import java.util.List;
  *
  */
 public abstract class ElementRenderer
-  implements Wrapper, FocusChainObject
+  implements Wrapper, Contextual
 {
 
   private List<DictionaryBinding<?>> attributes;

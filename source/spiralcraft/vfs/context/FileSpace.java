@@ -18,7 +18,7 @@ import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.spi.SimpleChannel;
 
 /**
@@ -33,7 +33,7 @@ import spiralcraft.lang.spi.SimpleChannel;
  *
  */
 public class FileSpace
-  implements FocusChainObject,Lifecycle
+  implements Contextual,Lifecycle
 {
   
   protected Authority[] authorities;

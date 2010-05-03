@@ -8,7 +8,7 @@ import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.vfs.Resolver;
@@ -22,7 +22,7 @@ import spiralcraft.vfs.UnresolvableURIException;
  *
  */
 public class Authority
-  implements FocusChainObject,Lifecycle
+  implements Contextual,Lifecycle
 {
   private static final ClassLog log
     =ClassLog.getInstance(Authority.class);

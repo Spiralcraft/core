@@ -16,7 +16,7 @@ package spiralcraft.app;
 
 
 import spiralcraft.common.Lifecycle;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 
 /**
  * <p>Implements arbitrary functionality within the context of a containership
@@ -32,7 +32,7 @@ import spiralcraft.lang.FocusChainObject;
  *
  */
 public interface Component
-  extends FocusChainObject,Lifecycle
+  extends Contextual,Lifecycle
 {
   
   /**

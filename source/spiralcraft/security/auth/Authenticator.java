@@ -20,7 +20,7 @@ import java.util.Map;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.lang.reflect.BeanReflector;
@@ -38,7 +38,7 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
  * </p>
  */
 public class Authenticator
-  implements FocusChainObject
+  implements Contextual
 {
   public static final URI FOCUS_URI
     =BeanReflector.getInstance(Authenticator.class).getTypeURI();

@@ -17,7 +17,7 @@ package spiralcraft.app;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 
 
 
@@ -28,7 +28,7 @@ import spiralcraft.lang.FocusChainObject;
  *
  */
 public interface Container
-  extends FocusChainObject,Lifecycle
+  extends Contextual,Lifecycle
 {
   
   

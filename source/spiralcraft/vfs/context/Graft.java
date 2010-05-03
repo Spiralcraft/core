@@ -17,7 +17,7 @@ package spiralcraft.vfs.context;
 
 import java.net.URI;
 
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.common.Lifecycle;
@@ -36,7 +36,7 @@ import spiralcraft.common.Lifecycle;
  *
  */
 public interface Graft
-  extends FocusChainObject,Lifecycle
+  extends Contextual,Lifecycle
 {
 
   /**

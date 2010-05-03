@@ -14,7 +14,7 @@
 //
 package spiralcraft.security.spi;
 
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 
 /**
  * Determines whether a particular credential evaluation operation is
@@ -24,7 +24,7 @@ import spiralcraft.lang.FocusChainObject;
  *
  */
 public interface CredentialValidator
-  extends FocusChainObject
+  extends Contextual
 {
   
   /**

@@ -20,7 +20,7 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 
@@ -32,7 +32,7 @@ import spiralcraft.lang.reflect.BeanReflector;
  * @author mike
  */
 public class ViewCache
-  implements FocusChainObject
+  implements Contextual
 {
   public static final URI FOCUS_URI
     =URI.create("class:/spiralcraft/lang/spi/ViewCache");

@@ -21,7 +21,7 @@ import java.io.Writer;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 
 import spiralcraft.lang.util.DictionaryBinding;
 import spiralcraft.util.string.StringConverter;
@@ -34,7 +34,7 @@ import spiralcraft.util.string.StringConverter;
  *
  */
 public class FieldMapping<T>
-  implements FocusChainObject
+  implements Contextual
 {
   private DictionaryBinding<T> channel=new DictionaryBinding<T>();
   private FieldEncoder encoder=new FieldEncoder();

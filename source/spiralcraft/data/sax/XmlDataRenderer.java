@@ -12,12 +12,12 @@ import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.log.ClassLog;
 import spiralcraft.text.Renderer;
 
 public class XmlDataRenderer<T>
-  implements Renderer,FocusChainObject
+  implements Renderer,Contextual
 {
   private static final ClassLog log
     =ClassLog.getInstance(XmlDataRenderer.class);

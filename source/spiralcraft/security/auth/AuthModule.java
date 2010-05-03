@@ -16,7 +16,7 @@ package spiralcraft.security.auth;
 
 import java.security.Principal;
 
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 
 /**
  * Authenticates a set of credentials
@@ -25,7 +25,7 @@ import spiralcraft.lang.FocusChainObject;
  *
  */
 public interface AuthModule
-  extends FocusChainObject
+  extends Contextual
 {
   /**
    * The name by which clients will reference the state

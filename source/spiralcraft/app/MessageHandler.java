@@ -14,10 +14,10 @@
 //
 package spiralcraft.app;
 
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 
 public interface MessageHandler
-  extends FocusChainObject
+  extends Contextual
 {
   /**
    * <p>Handle the Message. Handlers are used to bind messages to

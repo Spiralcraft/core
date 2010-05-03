@@ -18,7 +18,7 @@ import java.io.IOException;
 
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 
 /**
  * Turns flatfile records in arbitrary formats into data
@@ -28,7 +28,7 @@ import spiralcraft.lang.FocusChainObject;
  * @param <T>
  */
 public interface RecordFormat
-  extends FocusChainObject
+  extends Contextual
 {
 
 
