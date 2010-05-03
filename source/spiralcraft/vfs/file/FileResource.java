@@ -212,7 +212,9 @@ public class FileResource
     throws IOException
   { 
     if (!(target instanceof FileResource))
-    { super.moveTo(target);
+    { 
+      super.moveTo(target);
+      return;
     }
     
     Container container=target.asContainer();
