@@ -33,7 +33,7 @@ public interface Container
   
   
   /**
-   * FocusChainObject.bind() must bind and register children
+   * Contextual.bind() must bind and register children
    */
   Focus<?> bind(Focus<?> focus)
     throws BindException;
