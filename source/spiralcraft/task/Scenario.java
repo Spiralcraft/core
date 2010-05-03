@@ -286,7 +286,7 @@ public abstract class Scenario<Tcontext,Tresult>
   }
   
   /**
-   * Implement FocusChainObject.bind() by inserting self and command into Focus
+   * Implement Contextual.bind() by inserting self and command into Focus
    *   chain and calling bindChildren() to set up FocusChain for any contained
    *   scenarios.
    */

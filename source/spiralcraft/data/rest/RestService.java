@@ -237,7 +237,7 @@ public class RestService
   
   /**
    * <p>A command to execute the query. Must be called from within
-   *   the thread context of this FocusChainObject
+   *   the thread context of this ThreadContextual
    * </p>
    * 
    * @return The Command object

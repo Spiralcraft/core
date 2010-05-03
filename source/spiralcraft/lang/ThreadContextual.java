@@ -17,13 +17,14 @@ package spiralcraft.lang;
 
 
 /**
- * <p>A Contextual (aka FocusChainObject) that provides Thread specific
- *   contextual references.
+ * <p>A Contextual that provides Thread specific contextual references.
  * </p>
  * 
- * <p>The ThreadContextual expects push() to be called
+ * <p>The ThreadContextual expects push() to be called when a Thread
+ *   is about to enter the scope created by this ThreadContextual,
  *   before downstream bindings are accessed. pop() must -always- be called
- *   to restore references in effect for the Thread before push().
+ *   to restore references in effect for the Thread before push() as 
+ *   soon as the thread exits the scope.
  * </p>
  * 
  * 

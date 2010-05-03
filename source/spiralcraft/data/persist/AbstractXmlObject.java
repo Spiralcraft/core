@@ -63,7 +63,7 @@ import spiralcraft.vfs.Resource;
  * </p>
  * 
  * <p>If the Treferent class is assignable from 
- *    spiralcraft.lang.FocusChainObject, it will be inserted into the
+ *    spiralcraft.lang.Contextual, it will be inserted into the
  *    Focus Chain
  * </p>
  * 
@@ -158,7 +158,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
    *   the object will be registered with the local root registry node.
    * </p>
    * 
-   * <p>If the object implements the FocusChainObject interface, it will
+   * <p>If the object implements the Contextual interface, it will
    *   be bound onto the Focus chain at the Focus that references the object
    *   itself.
    * </p>
@@ -432,16 +432,16 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     // XXX Here, we insert the contained object as a bean into the Focus
     //   chain using this container as a writable store. This allows
     //   the client object to weave the contained object into the
-    //   Focus chain regardless of whether it is a FocusChainObject or not.
+    //   Focus chain regardless of whether it is a Contextual or not.
     //
-    //   On the other hand, if the instance -is- a FocusChainObject, this
+    //   On the other hand, if the instance -is- a Contextual, this
     //   is probably redundant and we lose the ability to control the
-    //   immediate parent context of the FocusChainObject.
+    //   immediate parent context of the Contextual.
     
     Treferent endInstance=get();
     if (endInstance instanceof Contextual)
     { 
-      // The FocusChainObject controls what goes into the chain
+      // The Contextual controls what goes into the chain
       this.focus=((Contextual) endInstance).bind(parentFocus);
     }
     else
