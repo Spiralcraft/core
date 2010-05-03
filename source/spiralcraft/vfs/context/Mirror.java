@@ -185,17 +185,13 @@ public class Mirror
           =new FileResource(tempFile);
       
         remoteResource.copyTo(tempResource);
+        
+        
         if (localResource.exists())
         { localResource.delete();
         }
-        
         tempResource.moveTo(localResource);
-        
-        if (localResource instanceof FileResource)
-        { 
-          ((FileResource) localResource)
-            .setLastModified(lastModified);
-        }
+        localResource.setLastModified(lastModified);
       }
       finally
       { tempFile.delete();
