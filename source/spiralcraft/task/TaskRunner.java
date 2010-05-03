@@ -28,7 +28,7 @@ import spiralcraft.exec.ExecutionException;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
@@ -236,11 +236,11 @@ public class TaskRunner
     {
       // Provide access to the Service
       
-      if (service instanceof FocusChainObject)
+      if (service instanceof Contextual)
       { 
         // Service will export into the Focus- ie. a ServiceGroup
         try
-        { focus=((FocusChainObject) service).bind(focus);
+        { focus=((Contextual) service).bind(focus);
         }
         catch (BindException x)
         { 

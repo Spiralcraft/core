@@ -37,7 +37,7 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.ThreadedFocusChainObject;
 import spiralcraft.lang.reflect.BeanReflector;
@@ -440,10 +440,10 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     //   immediate parent context of the FocusChainObject.
     
     Treferent endInstance=get();
-    if (endInstance instanceof FocusChainObject)
+    if (endInstance instanceof Contextual)
     { 
       // The FocusChainObject controls what goes into the chain
-      this.focus=((FocusChainObject) endInstance).bind(parentFocus);
+      this.focus=((Contextual) endInstance).bind(parentFocus);
     }
     else
     {

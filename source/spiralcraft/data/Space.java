@@ -36,7 +36,6 @@ import spiralcraft.data.query.ConcatenationBinding;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.spi.SimpleChannel;
 
@@ -143,8 +142,8 @@ public class Space
     focusChain=focusChain.chain(new SimpleChannel<Space>(this,true));
     for (Store store: stores)
     {
-      if (store instanceof FocusChainObject)
-      { ((FocusChainObject) store).bind(focusChain);
+      if (store instanceof Contextual)
+      { ((Contextual) store).bind(focusChain);
       }
     }
     return focusChain;

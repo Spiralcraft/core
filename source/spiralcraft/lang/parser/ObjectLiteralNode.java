@@ -19,7 +19,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.FocusChainObject;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Reflectable;
 import spiralcraft.lang.Reflector;
 
@@ -245,7 +245,7 @@ public class ObjectLiteralNode<Tobject,Treturn>
         
         Focus<?> innerFocus=focus;
         
-        if (object instanceof FocusChainObject)
+        if (object instanceof Contextual)
         {
           // Construct expr.[*ns:Type] expects that output of expr be  
           //  available to the object literal, making it roughly equivalent
@@ -253,9 +253,9 @@ public class ObjectLiteralNode<Tobject,Treturn>
           //  contextualized by the outer focus.
           
           
-          // Expose the Focus chained by the FocusChainObject
+          // Expose the Focus chained by the Contextual
           //   to a subcontext immediately downstream
-          innerFocus=((FocusChainObject) object).bind(sourceFocus);
+          innerFocus=((Contextual) object).bind(sourceFocus);
         }
         
         Channel<Treturn> returnChannel;

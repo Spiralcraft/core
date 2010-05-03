@@ -25,7 +25,7 @@ import spiralcraft.util.thread.ContextChain;
  * @author mike
  */
 public interface ThreadedFocusChainObject
-  extends FocusChainObject, ContextChain
+  extends Contextual, ContextChain
 {
 
 }
