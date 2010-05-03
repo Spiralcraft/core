@@ -366,8 +366,6 @@
           </scm:Note>                
           <scm:Note>Path is now a managed spiralcraft.data primitive type
           </scm:Note>                
-          <scm:Note>FileResource exposes setLastModified()
-          </scm:Note>                
           <scm:Note>IteratorChain and IteratorStack support streaming 
             Iteration by permitting the queuing and stacking of Iterators
             during iteration.
@@ -440,6 +438,8 @@
           </scm:Note>
           <scm:Note>Resource iface adds getChildren() for fluency
           </scm:Note>
+          <scm:Note>Resource iface adds setLastModified()
+          </scm:Note>
           <scm:Note>Container iface adds listChildren(ResourceFilter)
           </scm:Note>
           <scm:Note>VfsUtil is obsolete
@@ -450,7 +450,7 @@
         </path>
         
         <resources>
-          <URI>vfs/AbstractResource.java
+          <URI>vfs/Resource.java
           </URI>
           <URI>vfs/spi/AbstractResource.java
           </URI>
