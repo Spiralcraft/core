@@ -124,6 +124,16 @@ public interface Resource
    */
   public long getLastModified()
     throws IOException;
+
+  /**
+   * Attempt to change the lastModified time on the resource.
+   * 
+   * @param lastModified
+   * @return true of the operation succeeded, false otherwise
+   * @throws IOException
+   */
+  public boolean setLastModified(long lastModified)
+    throws IOException;
   
   /**
    * @return The size in bytes of this resource, or 0 if not known.

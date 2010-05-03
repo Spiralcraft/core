@@ -117,4 +117,9 @@ public abstract class ResourceWrapper
     throws IOException
   { getDelegate().moveTo(target);
   }
+  
+  public boolean setLastModified(long lastModified)
+    throws IOException
+  { return getDelegate().setLastModified(lastModified);
+  }
 }

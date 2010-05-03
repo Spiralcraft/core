@@ -85,6 +85,10 @@ public abstract class AbstractResource
   { return false;
   }
 
+  public boolean setLastModified(long lastModified)
+  { return false;
+  }
+  
   /**
    * Containership not supported
    */
