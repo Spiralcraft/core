@@ -34,7 +34,8 @@
         from SaxPrefixResolver and moved to common/namespace. 
       </scm:Note>
       <scm:Note>The "FocusChainObject" interface has been renamed to
-        "Contextual".
+        "Contextual". The ThreadedFocusChainObject interface has been replaced
+        with a different interface ThreadContextual.
       </scm:Note>
       <scm:Note>spiralcraft.builder enhancements to facilitate the repeated
         use of a single Assembly as a factory to apply structure to multiple 
@@ -47,7 +48,8 @@
       <scm:Change>
         <notes>
           <scm:Note>The "FocusChainObject" interface has been renamed to
-            "Contextual".
+            "Contextual". The ThreadedFocusChainObject interface has been 
+            replaced with a different interface ThreadContextual.
           </scm:Note>      
           <scm:Note>New ThreadContextual interface to represent Contextual
             implementations that publish Thread-specific references.
@@ -84,6 +86,10 @@
           </URI>
           <URI>data/util/RelationalMap.java
           </URI>
+          <URI>data/rest/RestClient.java
+          </URI>
+          <URI>data/rest/RestService.java
+          </URI>
           <URI>lang/Operation.java
           </URI>
           <URI>lang/parser/ObjectLiteralNode.java
@@ -101,6 +107,8 @@
           <URI>task/Scenario.java
           </URI>
           <URI>task/TaskRunner.java
+          </URI>
+          <URI>task/Reference.java
           </URI>
         </resources>
       </scm:Change>

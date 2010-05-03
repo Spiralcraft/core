@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2008 Michael Toth
+// Copyright (c) 1998,2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -39,10 +39,10 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Assignment;
+import spiralcraft.lang.ThreadContextual;
 
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.ThreadedFocusChainObject;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 
@@ -50,9 +50,6 @@ import spiralcraft.sax.XmlWriter;
 
 import spiralcraft.text.html.URLDataEncoder;
 
-import spiralcraft.util.thread.ContextFrame;
-import spiralcraft.util.thread.Delegate;
-import spiralcraft.util.thread.DelegateException;
 import spiralcraft.vfs.url.URLResource;
 
 /**
@@ -66,7 +63,7 @@ import spiralcraft.vfs.url.URLResource;
  *
  */
 public class RestClient
-  implements ThreadedFocusChainObject
+  implements ThreadContextual
 {
   private static final ClassLog log
     =ClassLog.getInstance(RestClient.class);
@@ -86,8 +83,6 @@ public class RestClient
 //  private Focus<Tuple> focus;
   private boolean debug;
 
-  // Related to ThreadContext 
-  private ContextFrame nextFrame;
   
   /**
    * <p>Provide the Handler which translates the query response
@@ -274,33 +269,13 @@ public class RestClient
   public Tuple query(final Tuple query)
     throws DataException
   { 
+    
+    push();
     try
-    { 
-      return runInContext
-        (new Delegate<Tuple>()
-        {
-          @Override
-          public Tuple run()
-            throws DelegateException
-          { 
-            try
-            { return queryImpl(query);
-            }
-            catch (DataException x)
-            { throw new DelegateException(x);
-            }
-          }
-        }
-        );
+    { return queryImpl(query);
     }
-    catch (DelegateException x)
-    { 
-      if (x.getCause() instanceof DataException)
-      { throw (DataException) x.getCause();
-      }
-      else
-      { throw new RuntimeException(x);
-      }
+    finally
+    { pop();
     }
   }  
 
@@ -417,34 +392,13 @@ public class RestClient
     
   }
 
-  @Override
-  public <T> T runInContext(
-    Delegate<T> delegate)
-    throws DelegateException
-  {
-
-    
-    // Push the query object
-    localQueryChannel.push(null);
-    try
-    { 
-      if (nextFrame!=null)
-      { return nextFrame.runInContext(delegate);
-      }
-      else
-      { return delegate.run();
-      }
-    }
-    finally
-    { localQueryChannel.pop();
-    }
+  public void push()
+  { localQueryChannel.push();
   }
-
-  @Override
-  public void setNext(
-    ContextFrame next)
-  { this.nextFrame=next;
-    
+  
+  public void pop()
+  { localQueryChannel.pop();
   }
+  
   
 }

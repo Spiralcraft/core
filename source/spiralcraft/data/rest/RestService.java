@@ -35,16 +35,15 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.ThreadContextual;
 
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.ThreadedFocusChainObject;
 import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
 import spiralcraft.log.ClassLog;
 
-import spiralcraft.util.thread.ContextFrame;
 import spiralcraft.util.thread.Delegate;
 import spiralcraft.util.thread.DelegateException;
 
@@ -56,7 +55,7 @@ import spiralcraft.util.thread.DelegateException;
  * @author mike
  */
 public class RestService
-  implements ThreadedFocusChainObject
+  implements ThreadContextual
 {
   
   private static final ClassLog log
@@ -271,17 +270,12 @@ public class RestService
   public Tuple query()
     throws DataException
   { 
+    push();
     try
-    { return runInContext(delegate);
+    { return queryImpl();
     }
-    catch (DelegateException x)
-    { 
-      if (x.getCause() instanceof DataException)
-      { throw (DataException) x.getCause();
-      }
-      else
-      { throw new RuntimeException(x);
-      }
+    finally
+    { pop();
     }
   }
   
@@ -329,7 +323,13 @@ public class RestService
       { localModelChannel.set(buffer);
       }
         
-      restClient.query();
+      restClient.push();
+      try
+      { restClient.query();
+      }
+      finally
+      { restClient.pop();
+      }
          
       if (debug)
       { log.fine("RestClient.query() finished");
@@ -371,33 +371,22 @@ public class RestService
 
   }
 
-  @Override
-  public void setNext(
-    ContextFrame next)
+
+  
+  public void push()
   { 
-    restClient.setNext(next);
-  }
-
-  @Override
-  public <T> T runInContext(
-    Delegate<T> delegate)
-    throws DelegateException
-  {
-    localQueryChannel.push(null);
+    localQueryChannel.push();
     if (localModelChannel!=null)
-    { localModelChannel.push(null);
-    }
-    try
-    { return restClient.runInContext(delegate);
-    }
-    finally
-    { 
-      if (localModelChannel!=null)
-      { localModelChannel.pop();
-      }
-      
-      localQueryChannel.pop();
+    { localModelChannel.push();
     }
   }
-
+  
+  public void pop()
+  {
+    if (localModelChannel!=null)
+    { localModelChannel.pop();
+    }
+    localQueryChannel.pop();
+  }
+  
 }

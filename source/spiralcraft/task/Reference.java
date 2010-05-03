@@ -19,8 +19,6 @@ import java.net.URI;
 import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.util.thread.Delegate;
-import spiralcraft.util.thread.DelegateException;
 
 /**
  * Integrates an arbitrary component into the Scenario chain
@@ -56,34 +54,17 @@ public class Reference<Tresult>
     return new AbstractTask()
     {
 
+      @SuppressWarnings("unchecked")
       @Override
       protected void work()
         throws InterruptedException
-      {            
+      {         
+        target.push();
         try
         {
           TaskCommand<Void,Tresult> command
-            =target.runInContext
-            (new Delegate<TaskCommand<Void,Tresult>>()
-              {
-                @SuppressWarnings("unchecked")
-                @Override
-                public TaskCommand<Void,Tresult> run()
-                  throws DelegateException
-                { 
-                  if (chain!=null)
-                  { 
-                    TaskCommand<Void,Tresult> command
-                      =((Scenario<Void,Tresult>) chain).command();
-                    command.execute();
-                    return command;
-                  }
-                  else
-                  { return null;
-                  }
-                }
-              }
-            );
+            =((Scenario<Void,Tresult>) chain).command();
+          command.execute();
           addResult(command);
           if (command.getException()!=null)
           { 
@@ -91,10 +72,8 @@ public class Reference<Tresult>
             return;
           }
         }
-        catch (DelegateException x)
-        {
-          addException(x);
-          return;
+        finally
+        { target.pop();
         }
         
       }      

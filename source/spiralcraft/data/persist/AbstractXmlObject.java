@@ -39,7 +39,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.ThreadedFocusChainObject;
+import spiralcraft.lang.ThreadContextual;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.registry.Registrant;
@@ -88,7 +88,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     Registrant
     ,PersistentReference<Treferent>
     ,Lifecycle
-    ,ThreadedFocusChainObject
+    ,ThreadContextual
 {
 
 
@@ -236,6 +236,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   private Channel<Treferent> channel;
   protected Focus<?> focus;
   protected ContextFrame next;
+  protected boolean threaded;
   
   /**
    * Construct an XmlObject from the given Type resource and instance
@@ -482,40 +483,27 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
       this.focus=intermediateFocus;    
     }
     
+    if (endInstance instanceof ThreadContextual)
+    { threaded=true;
+    }
     return getFocus();
       
   }
   
 
-
-  @Override
-  public <T> T runInContext(
-    Delegate<T> delegate)
-    throws DelegateException
+  public void push()
   {
-    if (instance instanceof ThreadedFocusChainObject)
-    { return ((ThreadedFocusChainObject) instance).runInContext(delegate);
-    }
-    else if (next!=null)
-    { return next.runInContext(delegate);
-    }
-    else
-    { return delegate.run();
+    if (threaded)
+    { ((ThreadContextual) get()).push();
     }
   }
-
-
-  @Override
-  public void setNext(
-    ContextFrame next)
-  { 
-    if (instance instanceof ThreadedFocusChainObject)
-    { ((ThreadedFocusChainObject) instance).setNext(next);
-    }
-    else
-    { this.next=next;
+  
+  public void pop()
+  {
+    if (threaded)
+    { ((ThreadContextual) get()).pop();
     }
   }
-
+  
     
 }
