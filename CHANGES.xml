@@ -33,9 +33,8 @@
       <scm:Note>A StandardPrefixResolver implementation has been promoted
         from SaxPrefixResolver and moved to common/namespace. 
       </scm:Note>
-      <scm:Note>"Contextual" interface is replacing the "FocusChainObject"
-        interface. Contextual will extend FocusChainObject until the 
-        refactoring can be completed.
+      <scm:Note>The "FocusChainObject" interface has been renamed to
+        "Contextual".
       </scm:Note>
       <scm:Note>spiralcraft.builder enhancements to facilitate the repeated
         use of a single Assembly as a factory to apply structure to multiple 
@@ -47,9 +46,8 @@
       
       <scm:Change>
         <notes>
-          <scm:Note>"Contextual" interface is replacing the "FocusChainObject"
-            interface. Contextual will extend FocusChainObject until the 
-            refactoring can be completed.
+          <scm:Note>The "FocusChainObject" interface has been renamed to
+            "Contextual".
           </scm:Note>      
           <scm:Note>New ThreadContextual interface to represent Contextual
             implementations that publish Thread-specific references.
@@ -62,7 +60,11 @@
         <resources>
           <URI>lang/Contextual.java
           </URI>
+          <URI>lang/FocusChainObject.java
+          </URI>
           <URI>lang/ThreadContextual.java
+          </URI>
+          <URI>lang/ThreadedFocusChainObject.java
           </URI>
           <URI>data/Space.java
           </URI>
@@ -84,6 +86,8 @@
           </URI>
           <URI>lang/Operation.java
           </URI>
+          <URI>lang/parser/ObjectLiteralNode.java
+          </URI>
           <URI>lang/spi/ViewCache.java
           </URI>
           <URI>sax/ElementRenderer.java
@@ -95,6 +99,8 @@
           <URI>security/spi/CredentialValidator.java
           </URI>
           <URI>task/Scenario.java
+          </URI>
+          <URI>task/TaskRunner.java
           </URI>
         </resources>
       </scm:Change>
