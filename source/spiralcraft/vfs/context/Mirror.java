@@ -120,6 +120,9 @@ public class Mirror
   { this.lastModified=lastModified;
   }
   
+  public long computeLastModified()
+  { return lastModified!=null?lastModified.get():0;
+  }
   
   public void setDebugLevel(Level debugLevel)
   { this.debugLevel=debugLevel;

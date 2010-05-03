@@ -20,7 +20,7 @@
     <sax:AttributeBinding>
       <name>lastModified
       </name>
-      <target>[vfsc:Mirror].lastModified()
+      <target>[vfsc:Mirror].computeLastModified()
       </target>
     </sax:AttributeBinding>
   </uriQueryBindings>
