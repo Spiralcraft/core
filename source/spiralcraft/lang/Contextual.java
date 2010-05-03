@@ -25,15 +25,11 @@ package spiralcraft.lang;
  * <p>Each instance of this object may only be bound into the FocusChain once.
  * </p>
  * 
- * <p>Note- this interface extends FocusChainObject for backwards
- *    compatibility until that interface is removed.
- * </p>
  *
  * @author mike
  *
  */
 public interface Contextual
-  extends FocusChainObject
 {
   /**
    * <p>Obtain any required references from the Focus chain.

@@ -31,7 +31,7 @@ package spiralcraft.lang;
  *
  */
 public interface ThreadContextual
-  extends FocusChainObject
+  extends Contextual
 {
 
 
