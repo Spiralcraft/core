@@ -15,8 +15,7 @@
     <notes>
       <scm:Note>Fix misconfiguration of VFS MirrorSubscriber assembly
       </scm:Note>
-      <scm:Note>Check source of ArrayListDecorator on construct to avoid
-        runtime ClassCastException.
+      <scm:Note>Prevent/catch ClassCastException in ArrayListDecorator
       </scm:Note>
     </notes>
     
