@@ -3,6 +3,29 @@
   >
   
   <scm:Change>
+    <revision>0.4.8.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-05-04
+    </date>
+    
+    <notes>
+      <scm:Note>Fix misconfiguration of VFS MirrorSubscriber assembly
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft
+    </path>
+    
+    <resources>
+      <URI>vfs/context/MirrorSubscriber.assy.xml</URI>
+    </resources>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.4.8
     </revision>
     
