@@ -28,10 +28,5 @@
   <debug>false
   </debug>
 
-  <chain>
-    <task:Eval>
-      <x>[vfsm:Entry.list]#{[vfsc:Mirror].freshenEntry(.[*dtask:Internalize])}
-      </x>
-    </task:Eval>
-  </chain>
+
 </sax:QueryXml>
