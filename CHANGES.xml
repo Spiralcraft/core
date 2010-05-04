@@ -15,6 +15,9 @@
     <notes>
       <scm:Note>Fix misconfiguration of VFS MirrorSubscriber assembly
       </scm:Note>
+      <scm:Note>Check source of ArrayListDecorator on construct to avoid
+        runtime ClassCastException.
+      </scm:Note>
     </notes>
     
     <path>source/spiralcraft
@@ -22,6 +25,7 @@
     
     <resources>
       <URI>vfs/context/MirrorSubscriber.assy.xml</URI>
+      <URI>lang/spi/ArrayListDecorator.java</URI>
     </resources>
   </scm:Change>
 
