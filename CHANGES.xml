@@ -18,7 +18,11 @@
       <scm:Note>Prevent/catch ClassCastException in ArrayListDecorator
       </scm:Note>
       <scm:Note>Make sure that ToDataTranslator returns appropriate
-        Reflector for data aspect of type
+        Reflector for data aspect of type. This is accomplished by 
+        DataReflector.getExternalizedInstance(), which ensures that
+        the data aspect of the given Type is reflected instead of the
+        normal aspect, which may be an instance of a native object or
+        array.
       </scm:Note>
     </notes>
     
@@ -31,6 +35,8 @@
       <URI>lang/spi/ArrayListDecorator.java
       </URI>
       <URI>data/lang/ToDataTranslator.java
+      </URI>
+      <URI>data/lang/DataReflector.java
       </URI>
     </resources>
   </scm:Change>
