@@ -17,14 +17,21 @@
       </scm:Note>
       <scm:Note>Prevent/catch ClassCastException in ArrayListDecorator
       </scm:Note>
+      <scm:Note>Make sure that ToDataTranslator returns appropriate
+        Reflector for data aspect of type
+      </scm:Note>
     </notes>
     
     <path>source/spiralcraft
     </path>
     
     <resources>
-      <URI>vfs/context/MirrorSubscriber.assy.xml</URI>
-      <URI>lang/spi/ArrayListDecorator.java</URI>
+      <URI>vfs/context/MirrorSubscriber.assy.xml
+      </URI>
+      <URI>lang/spi/ArrayListDecorator.java
+      </URI>
+      <URI>data/lang/ToDataTranslator.java
+      </URI>
     </resources>
   </scm:Change>
 
