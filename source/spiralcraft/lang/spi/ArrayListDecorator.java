@@ -15,6 +15,7 @@
 package spiralcraft.lang.spi;
 
 
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.ListDecorator;
 import spiralcraft.lang.Reflector;
@@ -32,7 +33,16 @@ public class ArrayListDecorator<I>
   extends ListDecorator<I[],I>
 {
   public ArrayListDecorator(Channel<I[]> source,Reflector<I> componentReflector)
-  { super(source,componentReflector);
+    throws BindException
+  { 
+    super(source,componentReflector);
+    if (!source.getReflector().getContentType().isArray())
+    { 
+      throw new BindException
+        ("ArrayListDecorator source type is not compatible with Object[]: "
+        +source.getReflector().getContentType()
+        );
+    }
   }
   
   @Override
