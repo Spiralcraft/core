@@ -11,7 +11,7 @@
   
   <type x="[@vfsm:Entry.list].type"/>
   
-  <uriX>[vfsc:Mirror].remoteURI.resolve([@jnet:URI{".snapshot"}])
+  <uriX>[vfsc:Mirror].remoteURI.resolve([*jnet:URI{".snapshot"}])
   </uriX>
   
   <ignoreEmpty>true
