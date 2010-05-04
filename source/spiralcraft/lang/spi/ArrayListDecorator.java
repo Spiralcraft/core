@@ -15,6 +15,7 @@
 package spiralcraft.lang.spi;
 
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.ListDecorator;
@@ -48,12 +49,20 @@ public class ArrayListDecorator<I>
   @Override
   public Iterator<I> createIterator()
   { 
-    I[] array=source.get();
-    if (array!=null)
-    { return ArrayUtil.<I>iterator( array);
+    try
+    {
+      I[] array=source.get();
+      if (array!=null)
+      { return ArrayUtil.<I>iterator( array);
+      }
+      else
+      { return null;
+      }
     }
-    else
-    { return null;
+    catch (ClassCastException x)
+    { 
+      throw new AccessException
+        ("Incompatible type returned by source: "+source ,x);
     }
   }
 
