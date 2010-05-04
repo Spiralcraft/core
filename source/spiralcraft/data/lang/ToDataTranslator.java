@@ -46,7 +46,22 @@ public class ToDataTranslator<T>
   { 
     this.type=type;
     try
-    { reflector=DataReflector.<DataComposite>getInstance(type);
+    { 
+      if (type.isAggregate())
+      {
+        reflector=AggregateReflector.getInstance(type);
+      }
+      else
+      { reflector=TupleReflector.getInstance(type);
+      }
+      
+      if (reflector==null)
+      {
+        throw new DataException
+          ("Could not resolve reflector for DataComposite aspect of"
+          +" type "+type.getURI()+"("+type.getNativeClass()+")"
+          );
+      }
     }
     catch (BindException x)
     { throw new DataException("Error resolving reflector for "+type.getURI(),x);
@@ -84,4 +99,8 @@ public class ToDataTranslator<T>
     }
   } 
   
+  @Override
+  public String toString()
+  { return super.toString()+"("+reflector.toString()+")";
+  }
 }
