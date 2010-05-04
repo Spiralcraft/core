@@ -4,13 +4,14 @@
   xmlns:vfsc="class:/spiralcraft/vfs/context/"
   xmlns:vfsm="class:/spiralcraft/vfs/meta/"
   xmlns:data="class:/spiralcraft/data/"
+  xmlns:jnet="class:/java/net/"
   >
   <whenX>[vfsc:Mirror].remoteURI.absolute
   </whenX>
   
   <type x="[@vfsm:Entry.list].type"/>
   
-  <uriX>[vfsc:Mirror].remoteURI+".snapshot"
+  <uriX>[vfsc:Mirror].remoteURI.resolve([@jnet:URI{".snapshot"}])
   </uriX>
   
   <ignoreEmpty>true
