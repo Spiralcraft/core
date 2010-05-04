@@ -47,14 +47,7 @@ public class ToDataTranslator<T>
     this.type=type;
     try
     { 
-      if (type.isAggregate())
-      {
-        reflector=AggregateReflector.getInstance(type);
-      }
-      else
-      { reflector=TupleReflector.getInstance(type);
-      }
-      
+      reflector=DataReflector.getExternalizedInstance(type);
       if (reflector==null)
       {
         throw new DataException

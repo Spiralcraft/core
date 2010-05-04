@@ -32,6 +32,7 @@ import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.AbstractReflector;
+//import spiralcraft.log.ClassLog;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
@@ -58,10 +59,15 @@ public abstract class DataReflector<T extends DataComposite>
   private static final TypeModel TYPE_MODEL
     =DataTypeModel.getInstance();
   
+//  private static final ClassLog log=ClassLog.getInstance(DataReflector.class);
+  
   // 
   // XXX Use weak map
   private static final WeakHashMap<Type<?>,WeakReference<Reflector<?>>>
     SINGLETONS=new WeakHashMap<Type<?>,WeakReference<Reflector<?>>>();
+  
+  private static final WeakHashMap<Type<?>,WeakReference<DataReflector<?>>>
+    EXT_SINGLETONS=new WeakHashMap<Type<?>,WeakReference<DataReflector<?>>>(); 
   
   protected final Type<T> type;
   
@@ -93,6 +99,10 @@ public abstract class DataReflector<T extends DataComposite>
         }
         else if (type instanceof ArrayType)
         { 
+//          log.fine
+//            ("Using native array of "+type.getContentType()
+//              +" for aggregate type "+type.getURI()
+//            );
           broker=new ArrayReflector
             (DataReflector.getInstance(type.getContentType()));
         }
@@ -117,6 +127,48 @@ public abstract class DataReflector<T extends DataComposite>
       SINGLETONS.put(type,new WeakReference(broker));
     }
       
+    return broker;
+  }
+  
+  @SuppressWarnings("unchecked")
+  public synchronized static final <T extends DataComposite> 
+    Reflector<T> getExternalizedInstance(Type type)
+    throws BindException
+  { 
+    Reflector standardReflector=getInstance(type);
+    if (standardReflector instanceof DataReflector)
+    { return (DataReflector) standardReflector;
+    }
+    
+    DataReflector broker=null;
+    
+    WeakReference<DataReflector<?>> ref=EXT_SINGLETONS.get(type);
+    if (ref!=null)
+    { broker=ref.get();
+    }
+    if (broker==null)
+    {
+      if (type.isAggregate())
+      { 
+        if (type instanceof BufferType)
+        { broker=new AggregateReflector(type,BufferAggregate.class);
+        }
+        else
+        { broker=new AggregateReflector(type,Aggregate.class);
+        }
+      }
+      else
+      {        
+        if (type instanceof BufferType)
+        { broker=new BufferReflector(type,BufferTuple.class);
+        }
+        else
+        { broker=new TupleReflector(type,Tuple.class);
+        }
+      }
+      EXT_SINGLETONS.put(type,new WeakReference(broker));
+      
+    }
     return broker;
   }
   
