@@ -158,6 +158,9 @@ public class Mirror
     Resolver resolver=Resolver.getInstance();
     
     URI path=entry.getPath();
+    if (path==null)
+    { path=URI.create("");
+    }
     boolean container=entry.isContainer();
     long lastModified=entry.getLastModified();
     
