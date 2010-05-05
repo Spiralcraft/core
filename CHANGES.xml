@@ -24,12 +24,16 @@
         normal aspect, which may be an instance of a native object or
         array.
       </scm:Note>
+      <scm:Note>Tolerate a null path in Mirror
+      </scm:Note>
     </notes>
     
     <path>source/spiralcraft
     </path>
     
     <resources>
+      <URI>vfs/context/Mirror.assy.xml
+      </URI>
       <URI>vfs/context/MirrorSubscriber.assy.xml
       </URI>
       <URI>lang/spi/ArrayListDecorator.java
