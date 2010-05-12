@@ -599,6 +599,20 @@
           </testX>
         
         </test:Assertion>        
+        
+        <test:Assertion>
+          <name>Broken literal
+          </name>
+          
+          <subjectX>
+            "hello\
+            there"
+          </subjectX>
+          
+          <testX>true
+          </testX>
+        
+        </test:Assertion>  
       </scenarios>
       
     </task:Sequence>
