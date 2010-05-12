@@ -21,9 +21,9 @@ package spiralcraft.text.html;
  * </p>
  * 
  * <p>Specifically, groups [A-Z], [a-z], and [0-9] are preserved, spaces are
- *   replaced with '+', and all other characters are numerically escaped using
- *   the %nn hex encoding method.
- * 
+ *   replaced with '+', and all other characters, including '+', are 
+ *   numerically escaped using the %nn hex encoding method.
+ * </p>
  * @author mike
  *
  */
@@ -42,7 +42,7 @@ public class URLDataEncoder
       else if ( ! ((c>='A' && c<='Z') || 
               (c>='a' && c<='z') || 
               (c>='0' && c<='9') ||
-              ("$-_.+!*'()".indexOf(c)>-1)
+              ("$-_.!*'()".indexOf(c)>-1)
               ))
       {
         encoded.append('%');
