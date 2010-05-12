@@ -3,6 +3,31 @@
   >
   
   <scm:Change>
+    <revision>0.4.8.2
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>?????
+    </date>
+    
+    <notes>
+      <scm:Note>Fix issue where '+' is not escaped when encoding URL query
+        data.
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft/
+    </path>
+    
+    <resources>
+      <URI>text/html/URLDataEncoder.java
+      </URI>
+    </resources>
+  </scm:Change>
+
+  <scm:Change>
     <revision>0.4.8.1
     </revision>
     
