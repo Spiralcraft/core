@@ -1,3 +1,17 @@
+//
+// Copyright (c) 2010 Michael Toth
+// Spiralcraft Inc., All Rights Reserved
+//
+// This package is part of the Spiralcraft project and is licensed under
+// a multiple-license framework.
+//
+// You may not use this file except in compliance with the terms found in the
+// SPIRALCRAFT-LICENSE.txt file at the top of this distribution, or available
+// at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
+//
+// Unless otherwise agreed to in writing, this software is distributed on an
+// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+//
 package spiralcraft.data.reflect;
 
 import java.net.URI;
@@ -14,6 +28,7 @@ import spiralcraft.data.TypeResolver;
 import spiralcraft.data.builder.BuilderType;
 import spiralcraft.data.core.SchemeImpl;
 import spiralcraft.data.core.TypeImpl;
+import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -74,6 +89,7 @@ public class AssemblyType<T>
     this.nativeClass=(Class<T>) assemblyClass.getJavaClass();
   }
   
+
   @SuppressWarnings("unchecked")
   @Override
   public T fromData(DataComposite data,InstanceResolver resolver)
@@ -86,8 +102,41 @@ public class AssemblyType<T>
     while (nextArchetype instanceof AssemblyType)
     { nextArchetype=nextArchetype.getArchetype();
     }
-    return (T) archetype.fromData(data,new AssemblyResolver(resolver));
+    return (T) nextArchetype.fromData(data,new AssemblyResolver(resolver));
 
+  }
+  
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public DataComposite toData(T val)
+    throws DataException
+  {
+    // Ignore intermediate AssemblyType archetypes, as they represent
+    //   supertypes that are already factored into the AssemblyResolver
+    //   that will be chained to the supplied InstanceResolver
+    Type<T> nextArchetype=(Type<T>) archetype;
+    while (nextArchetype instanceof AssemblyType)
+    { nextArchetype=(Type<T>) nextArchetype.getArchetype();
+    }
+    DataComposite base=(DataComposite) nextArchetype.toData(val);
+    if (base.isTuple())
+    { 
+      EditableArrayTuple ret=new EditableArrayTuple(this);
+      ret.copyFrom(base.asTuple());
+      return ret;
+    }
+    else
+    { 
+      throw new UnsupportedOperationException
+        ("Aggregate assembly types not supported");
+      
+//      EditableArrayListAggregate ret
+//        =new EditableArrayListAggregate(this);
+//      
+////      ret.copyFrom(base.asAggregate());
+//      return ret;
+    }
   }
   
   @Override
