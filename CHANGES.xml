@@ -3,13 +3,38 @@
   >
   
   <scm:Change>
-    <revision>0.4.8.2
+    <revision>0.4.8.3
     </revision>
     
     <authorId>miketoth
     </authorId>
     
     <date>?????
+    </date>
+    
+    <notes>
+      <scm:Note>Fix bug in AssemblyType.fromData(), implement
+        AssemblyType.toData()
+      </scm:Note>
+    </notes>
+    
+    <path>source/spiralcraft/
+    </path>
+    
+    <resources>
+      <URI>data/reflect/AssemblyType.java
+      </URI>
+    </resources>
+  </scm:Change>
+  
+  <scm:Change>
+    <revision>0.4.8.2
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-05-13
     </date>
     
     <notes>
