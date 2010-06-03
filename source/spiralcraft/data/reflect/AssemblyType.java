@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.reflect;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -21,8 +22,10 @@ import spiralcraft.builder.Assembly;
 import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.BuildException;
 import spiralcraft.builder.BuilderChannel;
+import spiralcraft.builder.PropertySpecifier;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DataComposite;
+import spiralcraft.data.Field;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.builder.BuilderType;
@@ -112,31 +115,59 @@ public class AssemblyType<T>
   public DataComposite toData(T val)
     throws DataException
   {
-    // Ignore intermediate AssemblyType archetypes, as they represent
-    //   supertypes that are already factored into the AssemblyResolver
-    //   that will be chained to the supplied InstanceResolver
-    Type<T> nextArchetype=(Type<T>) archetype;
-    while (nextArchetype instanceof AssemblyType)
-    { nextArchetype=(Type<T>) nextArchetype.getArchetype();
-    }
-    DataComposite base=(DataComposite) nextArchetype.toData(val);
-    if (base.isTuple())
-    { 
-      EditableArrayTuple ret=new EditableArrayTuple(this);
-      ret.copyFrom(base.asTuple());
-      return ret;
-    }
-    else
-    { 
-      throw new UnsupportedOperationException
-        ("Aggregate assembly types not supported");
+    
+//    for (Field field: this.getFieldSet().fieldIterable())
+//    { log.fine("Field "+field);
+//    }
+//
+//    for (PropertySpecifier member : assemblyClass.memberIterable())
+//    { log.fine("Member "+member);
+//    }
+
+    EditableArrayTuple tuple=new EditableArrayTuple(this);
+    for (Field field: this.getFieldSet().fieldIterable())
+    {
+      try
+      {
+        PropertySpecifier member=assemblyClass.getMember(field.getName());
+        if (member!=null && member.isPersistent())
+        { 
+          try
+          {
+            Object fieldVal=((ReflectionField) field).getReadMethod()
+              .invoke(val);
+        
+            Type memberType=field.getType();
+            if (memberType.isDataEncodable())
+            { field.setValue(tuple,memberType.toData(fieldVal));
+            }
+            else if (memberType.isStringEncodable())
+            { field.setValue(tuple,memberType.toString(fieldVal));
+            }
+          }
+          catch (InvocationTargetException x)
+          { 
+            throw new DataException
+              ("Error persisting "+field.getURI()+" from "+val,x);
+          }
+          catch (IllegalAccessException x)
+          {
+            throw new DataException
+              ("Error persisting "+field.getURI()+" from "+val,x);
+          
+          }
+        }
+      }
+      catch (BuildException x)
+      {
+        throw new DataException
+          ("Error getting assembly member for "+field.getURI(),x);
+      }
+        
       
-//      EditableArrayListAggregate ret
-//        =new EditableArrayListAggregate(this);
-//      
-////      ret.copyFrom(base.asAggregate());
-//      return ret;
     }
+    return tuple;
+    
   }
   
   @Override
