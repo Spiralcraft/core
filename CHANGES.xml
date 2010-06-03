@@ -18,6 +18,8 @@
       </scm:Note>
       <scm:Note>Removed unused method getMemberNames() in AssemblyClass
       </scm:Note>
+      <scm:Note>Fix typo in TaskCommand.getError() signature
+      </scm:Note>
     </notes>
     
     <path>source/spiralcraft/
@@ -27,6 +29,8 @@
       <URI>data/reflect/AssemblyType.java
       </URI>
       <URI>builder/AssemblyClass.java
+      </URI>
+      <URI>task/TaskCommand.java
       </URI>
     </resources>
   </scm:Change>
