@@ -20,7 +20,6 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.net.URI;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -791,21 +790,21 @@ public class AssemblyClass
   
 
   
-  /**
-   * 
-   * @return The list of bean properties 
-   * @throws BuildException
-   */
-  public List<String> getMemberNames()
-    throws BuildException
-  {
-    ArrayList<String> names
-      =new ArrayList<String>();
-    for (PropertyDescriptor prop:beanInfo.getPropertyDescriptors())
-    { names.add(prop.getName());
-    }
-    return names;
-  }
+//  /**
+//   * 
+//   * @return The list of bean properties 
+//   * @throws BuildException
+//   */
+//  public List<String> getMemberNames()
+//    throws BuildException
+//  {
+//    ArrayList<String> names
+//      =new ArrayList<String>();
+//    for (PropertyDescriptor prop:beanInfo.getPropertyDescriptors())
+//    { names.add(prop.getName());
+//    }
+//    return names;
+//  }
   
 //
 //  Make autodiscovery a switch
