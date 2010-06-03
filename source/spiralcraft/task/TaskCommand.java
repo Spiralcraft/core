@@ -64,7 +64,7 @@ public class TaskCommand<Tcontext,Tresult>
   { this.error=error;
   }
   
-  public Object getError(Object error)
+  public Object getError()
   { return error;
   }
   
