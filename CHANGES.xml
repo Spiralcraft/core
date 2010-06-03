@@ -9,12 +9,14 @@
     <authorId>miketoth
     </authorId>
     
-    <date>?????
+    <date>2010-06-03
     </date>
     
     <notes>
       <scm:Note>Fix bug in AssemblyType.fromData(), implement
         AssemblyType.toData()
+      </scm:Note>
+      <scm:Note>Removed unused method getMemberNames() in AssemblyClass
       </scm:Note>
     </notes>
     
@@ -23,6 +25,8 @@
     
     <resources>
       <URI>data/reflect/AssemblyType.java
+      </URI>
+      <URI>builder/AssemblyClass.java
       </URI>
     </resources>
   </scm:Change>
