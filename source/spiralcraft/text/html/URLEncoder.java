@@ -29,7 +29,7 @@ public class URLEncoder
 
 
   /**
-   * Translate an encoded URL by removing "%nn" and "+" hex encoded 
+   * Translate an encoded URL path by removing "%nn" hex encoded 
    *   characters
    * 
    * @param encodedText
@@ -56,19 +56,16 @@ public class URLEncoder
         }
         
       }
-      else if (c=='+')
-      { decoded.append(' ');
-      }
       else
-      {
-        decoded.append(c);
+      { decoded.append(c);
       }
     }
     return decoded.toString();
   }
 
   /**
-   * Encode a URL path (preserves path characters)
+   * Encode a path string for inclusion in the path portion of a URL 
+   *   (preserves path characters)
    */
   public static String encode(String urlNoQuery)
   {
@@ -93,9 +90,6 @@ public class URLEncoder
       case ')':
       case '/':
         encoded.append(c);
-        break;
-      case ' ':
-        encoded.append('+');
         break;
       default:
         if ((c>='A' && c<='Z') || (c>='a' && c<='z') || (c>='0' && c<='9'))
