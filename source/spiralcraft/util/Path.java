@@ -200,6 +200,22 @@ public class Path
   }
   
   /**
+   * Returns a non-absolute, non-container path with the same
+   *   elements as this path;
+   * 
+   * @return
+   */
+  public Path trim()
+  {
+    if (!_absolute && !_container)
+    { return this;
+    }
+    else
+    { return new Path(_elements,_delimiter,false,false);
+    }
+  }
+  
+  /**
    *@return the sub-path starting at the specified element
    */
   public Path subPath(int startElement)
