@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.Enumeration;
 
 /**
- * Implements an IterationDecorator for a source that returns an Array
+ * Implements an IterationDecorator for a source that returns an Enumeration
  */
 public class EnumerationIterationDecorator<I>
   extends IterationDecorator<Enumeration<I>,I>
