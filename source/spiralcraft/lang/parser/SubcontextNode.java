@@ -136,7 +136,7 @@ public class SubcontextNode<T,S>
     {
     
       ThreadLocalChannel<S> sourceLocal
-        =new ThreadLocalChannel<S>(sourceChannel.getReflector());
+        =new ThreadLocalChannel<S>(sourceChannel,true);
     
       Focus<S> subFocus=focus.telescope(sourceLocal);
       int i=0;
@@ -226,7 +226,7 @@ class SubcontextChannel<T,S>
     throws AccessException
   { 
     if (sourceLocal!=null)
-    { sourceLocal.push(source.get());
+    { sourceLocal.push();
     }
     try
     { return ((Channel<T>) channels[channels.length-1]).set(val);

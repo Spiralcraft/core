@@ -30,6 +30,13 @@ class IterableLengthTranslator<S extends Iterable<?>>
   { throw new UnsupportedOperationException("Cannot set Iterable length");
   }
   
+  /**
+   * Iterable has mutable length
+   */
+  public boolean isFunction()
+  { return false;
+  }
+  
   public Reflector<Integer> getReflector()
   { return _reflector;
   }

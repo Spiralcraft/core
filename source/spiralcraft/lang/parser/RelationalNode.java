@@ -148,6 +148,14 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
           }
         }
       }
+      
+      /**
+       * Relational ops are not Functions due to call to compareTo on
+       *   potentially mutable objects
+       */
+      public boolean isFunction()
+      { return false;
+      }      
     };
   }
   

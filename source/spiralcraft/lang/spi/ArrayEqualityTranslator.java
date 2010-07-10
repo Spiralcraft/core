@@ -53,6 +53,13 @@ public abstract class ArrayEqualityTranslator<T>
   { throw new UnsupportedOperationException("Can't reverse array equality");
   }
 
+  /**
+   * Arrays are mutable
+   */
+  public boolean isFunction()
+  { return false;
+  }
+  
   public abstract boolean compare(T source,T target);
   
   public class Negate implements Translator<Boolean,T>
@@ -87,6 +94,13 @@ public abstract class ArrayEqualityTranslator<T>
       Channel<?>[] modifiers)
     { return ArrayEqualityTranslator.this.translateForSet(source,modifiers);
     }
+    
+    /**
+     * Arrays are mutable
+     */
+    public boolean isFunction()
+    { return false;
+    }    
     
   }
   

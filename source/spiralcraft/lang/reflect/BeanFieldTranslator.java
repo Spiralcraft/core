@@ -45,6 +45,9 @@ class BeanFieldTranslator<Tprop,Tbean>
     catch (IllegalAccessException x)
     { return null;
     }
+    catch (NoClassDefFoundError x)
+    { throw new Error("Error reading field "+_field,x);
+    }
   }
 
   public Tbean translateForSet(Tprop val,Channel<?>[] modifiers)
@@ -54,6 +57,15 @@ class BeanFieldTranslator<Tprop,Tbean>
   public Reflector<Tprop> getReflector()
   { return _reflector;
   }
-
+  
+  /**
+   * Bean fields are mutable
+   * 
+   */
+  public boolean isFunction()
+  { 
+    // TODO: When "final", field is not mutable
+    return false;
+  }
 }
 

@@ -72,6 +72,14 @@ public class EqualityNode<X>
         }
         return _negate?Boolean.TRUE:Boolean.FALSE;
       }
+      
+      /**
+       * Equality is not a function because it calls "equals" on
+       *   potentially mutable objects
+       */
+      public boolean isFunction()
+      { return false;
+      }
   
     };
   }

@@ -22,6 +22,7 @@ import java.util.LinkedList;
 
 import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.AccessException;
+//import spiralcraft.lang.Binding;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -35,6 +36,7 @@ import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.AbstractFunctorChannel;
 import spiralcraft.lang.spi.AbstractReflector;
 import spiralcraft.lang.spi.AspectChannel;
+//import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.util.ArrayUtil;
@@ -911,10 +913,11 @@ public class StructNode
   public class FunctorChannel
     extends AbstractFunctorChannel<Struct>
   {
-    //private final ClosureFocus<?> closure;
+    // private final ClosureFocus<?> closure;
     private final StructReflector reflector;
     private final ThreadLocalChannel<Struct> local;
 
+    // @SuppressWarnings("unchecked")
     protected FunctorChannel
       (Channel<Struct> source
       ,Focus<?> focus
@@ -923,13 +926,15 @@ public class StructNode
       throws BindException
     { 
       super(source.getReflector());
-      //this.closure=new ClosureFocus(focus);
+//      this.closure=new ClosureFocus(focus);
       this.reflector=(StructReflector) source.getReflector();
 
       Channel<?>[] boundParams=new Channel[params.length];
       int i=0;
       for (Expression<?> x : params)
-      { boundParams[i++]=focus.bind(x);
+      { 
+        boundParams[i++]=focus.bind(x);
+        // boundParams[i++]=closure.bind(x);
       }
       
       local=new ThreadLocalChannel<Struct>(reflector);
@@ -953,7 +958,7 @@ public class StructNode
     @Override
     protected Struct retrieve()
     {
-//      closure.push();
+      //closure.push();
       try
       { 
         Struct ret=reflector.newStruct();
@@ -968,7 +973,7 @@ public class StructNode
         }
       }
       finally
-      { // closure.pop();
+      { //closure.pop();
       }
     }
 

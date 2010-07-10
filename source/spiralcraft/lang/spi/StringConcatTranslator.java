@@ -59,5 +59,11 @@ public class StringConcatTranslator
     return null;
   }
 
+  /**
+   * Strings are immutable, and concatenating them is a Function
+   */
+  public boolean isFunction()
+  { return true;
+  }
 
 }

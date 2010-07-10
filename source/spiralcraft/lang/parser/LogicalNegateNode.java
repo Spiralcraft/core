@@ -75,6 +75,13 @@ public class LogicalNegateNode
         { return Boolean.TRUE;
         }
       }
+      
+      /**
+       * Boolean logical ops are Functions
+       */
+      public boolean isFunction()
+      { return true;
+      }      
     };
     
   }

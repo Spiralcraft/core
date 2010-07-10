@@ -143,6 +143,16 @@ class MethodTranslator<Tprop,Tbean>
   { throw new UnsupportedOperationException();
   }
 
+  /**
+   * A method is generally mutable
+   */
+  public boolean isFunction()
+  { 
+    // TODO: Provide for annotations that declare certain methods
+    //   to be Functions or to reflect the mutability of their container.
+    return false;
+  }
+  
   public Reflector<Tprop> getReflector()
   { return _reflector;
   }

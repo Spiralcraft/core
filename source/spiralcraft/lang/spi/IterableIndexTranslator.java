@@ -67,6 +67,13 @@ public class IterableIndexTranslator<T>
     }
     return ret;
   }
+  
+  /**
+   * Iterables are mutable
+   */
+  public boolean isFunction()
+  { return false;
+  }
 
   public Iterable<T> translateForSet(T value,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException("Can't reverse Iterable index");

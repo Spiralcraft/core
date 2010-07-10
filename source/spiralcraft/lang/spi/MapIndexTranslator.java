@@ -54,5 +54,11 @@ public class MapIndexTranslator<I,T>
   { throw new UnsupportedOperationException("Can't reverse map index");
   }
 
+  /**
+   * Maps are mutable
+   */
+  public boolean isFunction()
+  { return false;
+  }
 
 }

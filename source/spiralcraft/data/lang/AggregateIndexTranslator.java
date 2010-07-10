@@ -73,5 +73,7 @@ public class AggregateIndexTranslator<T>
   { throw new UnsupportedOperationException("Can't reverse array index");
   }
 
-
+  public boolean isFunction()
+  { return false;
+  }
 }

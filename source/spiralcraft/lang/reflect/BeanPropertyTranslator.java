@@ -236,6 +236,15 @@ public class BeanPropertyTranslator<Tprop,Tbean>
   { throw new UnsupportedOperationException();
   }
 
+  /**
+   * Properties are mutable
+   */
+  public boolean isFunction()
+  { 
+    // TODO: Provide for annotation for properties immutable after binding
+    return false;
+  }  
+  
   public Reflector<Tprop> getReflector()
   { return _reflector;
   }

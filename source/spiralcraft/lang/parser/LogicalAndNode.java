@@ -61,6 +61,14 @@ public class LogicalAndNode
         boolean val2=mod!=null?mod.booleanValue():false;
         return val2?Boolean.TRUE:Boolean.FALSE;
       }
+      
+      /**
+       * Boolean logical ops are Functions
+       */
+      public boolean isFunction()
+      { return true;
+      }
+      
     };
   }
   

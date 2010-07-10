@@ -211,6 +211,13 @@ abstract class NegateTranslator<X>
   { return negate(val);
   }
 
+  /**
+   * Numeric negate is a function
+   */
+  public boolean isFunction()
+  { return true;
+  }
+  
   public Reflector<X> getReflector()
   { return reflector;
   }

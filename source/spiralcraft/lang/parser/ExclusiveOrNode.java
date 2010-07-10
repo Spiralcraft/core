@@ -74,6 +74,13 @@ public class ExclusiveOrNode
 
 
       }
+      
+      /**
+       * XOR is a Function
+       */
+      public boolean isFunction()
+      { return true;
+      }
     };
   }
     

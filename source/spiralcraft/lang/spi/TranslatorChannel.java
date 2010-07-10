@@ -69,22 +69,26 @@ public  class TranslatorChannel<T,S>
     
     // Determine default static by checking source, modifiers.
     // If all dependencies are static, this is static
-    boolean isConstant=true;
-    if (!source.isConstant())
-    { isConstant=false;
-    }
-    if (_modifiers!=null)
-    { 
-      for (int i=0;i<_modifiers.length;i++)
-      { 
-        if (!_modifiers[i].isConstant())
+    if (translator.isFunction())
+    {
+      boolean isConstant=source.isConstant();
+      
+      if (isConstant && _modifiers!=null)
+      {
+        for (int i=0;i<_modifiers.length;i++)
         { 
-          isConstant=false;
-          break;
+          if (!_modifiers[i].isConstant())
+          { 
+            isConstant=false;
+            break;
+          }
         }
       }
+      _constant=isConstant;
     }
-    _constant=isConstant;
+    else
+    { _constant=false;
+    }
     id=_ID++;  
 
   }

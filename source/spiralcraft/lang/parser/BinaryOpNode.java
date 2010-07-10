@@ -762,7 +762,15 @@ abstract class NumericTranslator<Tret extends Number,T1 extends Tret,T2 extends 
   { return set(val,((Channel<T2>) mods[0]).get());
   }
 
+  /**
+   * Arithmetic ops are functions in the formal sense
+   */
+  public boolean isFunction()
+  { return true;
+  }
+
   public Reflector<Tret> getReflector()
   { return reflector;
   }
+  
 }

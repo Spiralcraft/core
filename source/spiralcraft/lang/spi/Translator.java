@@ -40,4 +40,12 @@ public interface Translator<Tderived,Torigin>
    * Return the Reflector associated with the derived Object.
    */
   public Reflector<Tderived> getReflector();
+  
+  /**
+   * Indicate whether there is a fixed mapping from source values to
+   *   derived values.
+   * 
+   * @return
+   */
+  public boolean isFunction();
 }

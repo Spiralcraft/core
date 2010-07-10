@@ -29,6 +29,13 @@ class NamespaceAttribute<T>
   { throw new UnsupportedOperationException("Operation is not reversible");
   }
   
+  /**
+   * Namespaces are mutable
+   */
+  public boolean isFunction()
+  { return false;
+  }
+  
   int getIndex()
   { return index;
   }

@@ -149,4 +149,11 @@ class ConditionalTranslator<T>
     
     throw new UnsupportedOperationException();
   }
+  
+  /**
+   * The conditional itself is a simple binary function
+   */
+  public boolean isFunction()
+  { return true;
+  }
 }

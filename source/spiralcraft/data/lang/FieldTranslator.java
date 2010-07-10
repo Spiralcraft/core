@@ -67,4 +67,8 @@ public class FieldTranslator
   public Reflector<Object> getReflector()
   { return reflector;
   }
+  
+  public boolean isFunction()
+  { return false;
+  }
 }

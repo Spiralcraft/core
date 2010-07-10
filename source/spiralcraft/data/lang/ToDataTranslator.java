@@ -92,6 +92,10 @@ public class ToDataTranslator<T>
     }
   } 
   
+  public boolean isFunction()
+  { return false;
+  }
+  
   @Override
   public String toString()
   { return super.toString()+"("+reflector.toString()+")";

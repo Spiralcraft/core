@@ -22,6 +22,14 @@ class ArrayLengthTranslator<S>
   { throw new UnsupportedOperationException("Cannot set array length");
   }
   
+  /**
+   * An array's length can never change, therefore array length is a
+   *   function on the domain of arrays.
+   */
+  public boolean isFunction()
+  { return true;
+  }
+  
   public Reflector<Integer> getReflector()
   { return _reflector;
   }

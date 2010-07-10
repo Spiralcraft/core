@@ -58,5 +58,10 @@ public class ReverseTranslator<Tderived, Torigin>
   { return delegate.translateForGet(source,modifiers);
   }
   
-  
+  /**
+   * Can't assume that the reverse of a function is still a function
+   */
+  public boolean isFunction()
+  { return false;
+  }
 }

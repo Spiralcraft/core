@@ -44,6 +44,7 @@ import spiralcraft.lang.spi.IterableDecorator;
 import spiralcraft.lang.spi.IterableIndexTranslator;
 import spiralcraft.lang.spi.IterableRangeChannel;
 import spiralcraft.lang.spi.IterableSelectChannel;
+import spiralcraft.lang.spi.IteratorIterationDecorator;
 import spiralcraft.lang.spi.ListRangeChannel;
 import spiralcraft.lang.spi.MapIndexTranslator;
 import spiralcraft.lang.spi.SimpleChannel;
@@ -74,6 +75,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -613,6 +615,35 @@ public class BeanReflector<T>
         }
         
       }
+      else if (Iterator.class.isAssignableFrom(targetClass)
+          && decoratorInterface==(Class) IterationDecorator.class
+          )
+      {
+        if (targetType instanceof ParameterizedType)
+        {
+          Type[] parameterTypes
+            =((ParameterizedType) targetType).getActualTypeArguments();
+          if (parameterTypes.length>0)
+          {  
+            Type parameterType=parameterTypes[0];
+            Reflector reflector=BeanReflector.getInstance(parameterType);
+            return (D) new IteratorIterationDecorator(source,reflector);
+          }
+          else
+          {
+            // log.fine("IterationDecorator- Non-parameterized Iterator");
+            Reflector reflector=BeanReflector.getInstance(Object.class);
+            return (D) new IteratorIterationDecorator(source,reflector);
+          }
+        }
+        else
+        {
+          // log.fine("IterationDecorator- Non-parameterized Enumeration");
+          Reflector reflector=BeanReflector.getInstance(Object.class);
+          return (D) new IteratorIterationDecorator(source,reflector);
+        }
+
+      }
       else if (Iterable.class.isAssignableFrom(targetClass)
                && decoratorInterface==(Class) IterationDecorator.class
                )
@@ -645,8 +676,29 @@ public class BeanReflector<T>
   public Reflector<?> disambiguate(Reflector<?> alternate)
   {
     if (alternate==this || alternate.getTypeModel()!=getTypeModel())
-    { return this;
+    { 
+      // Force no override of BeanReflectors by other type models using
+      //   class:/x/y/z URIs
+      return this;
     }
+//    else if (alternate instanceof BeanReflector)
+//    {
+//      if (this.getTypeURI().equals(alternate.getTypeURI()))
+//      {
+//        throw new IllegalArgumentException
+//        ("Cannot disambiguate "+this+" from "
+//        +alternate
+//        );
+//        
+//      }
+//      else
+//      {
+//        throw new IllegalArgumentException
+//          ("Cannot disambiguate "+this.getTypeURI()+" from "
+//          +alternate.getTypeURI()
+//          );
+//      }
+//    }
     else
     { return alternate.disambiguate(this);
     }

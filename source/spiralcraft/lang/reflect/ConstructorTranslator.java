@@ -137,6 +137,13 @@ class ConstructorTranslator<Tbean>
   public Void translateForSet(Tbean val,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException();
   }
+  
+  /**
+   * A constructor is the antithesis of a Function
+   */
+  public boolean isFunction()
+  { return false;
+  }    
 
   public Reflector<Tbean> getReflector()
   { return _reflector;

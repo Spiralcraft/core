@@ -62,5 +62,10 @@ public class ArrayIndexTranslator<T>
   { throw new UnsupportedOperationException("Can't reverse array index");
   }
 
-
+  /**
+   * Arrays are mutable
+   */
+  public boolean isFunction()
+  { return false;
+  }
 }
