@@ -30,6 +30,7 @@ public final class Clock
   private final int _precision;
   private final Thread _thread=new Thread(this,"Clock");
   private long _time=System.currentTimeMillis();
+  private long _nanoOffset=(System.currentTimeMillis() * 1000000)-(System.nanoTime());
   private Object _lock=new Object();
 
   private ClockListener[] _clockListeners;
@@ -55,6 +56,26 @@ public final class Clock
     }
   }
 
+  /**
+   * Obtain the current time according to System.currentTimeMillis()
+   * 
+   * @return
+   */
+  public final long timeMillis()
+  { return System.currentTimeMillis();
+  }
+  
+  /**
+   * Obtain the current time according to System.nanoTime() offset to
+   *   be relative to System.currentTimeMillis() * 1e+6
+   *   
+   * @return
+   */
+  public final long timeNanos()
+  { return System.nanoTime()+_nanoOffset;
+  }
+  
+  
   public synchronized void addClockListener(ClockListener listener)
   { 
     if (_clockListeners!=null)
