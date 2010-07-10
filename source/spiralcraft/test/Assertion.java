@@ -65,22 +65,62 @@ public class Assertion
         if (debug)
         { log.log(Level.FINE,this+": executing");
         }
-        compareChannel.push(subjectChannel.get());
+        try
+        {  compareChannel.push(subjectChannel.get());
+        }
+        catch (RuntimeException x)
+        {
+          TestResult result=new TestResult
+            (name
+            ,false
+            ,"Caught Exception"
+            ,x
+            );        
+
+          if (testGroup!=null)
+          { testGroup.addTestResult(result);
+          }
+          if (throwFailure && !result.getPassed())
+          { addException(new TestFailedException(result));
+          }
+          addResult
+            (result
+            );
+          
+          return;
+          
+        }
+        
         try
         {
+          TestResult result;
         
-          Boolean condition=testChannel.get();
-          String message
-            ="Result of ["+subjectX.getText()+"] is ["
-              +Assertion.this.toString(compareChannel.get())+"] "
-              +", testing ["+testX.getText()+"]";
+          try
+          {
+            Boolean condition=testChannel.get();
+            String message
+              ="Result of ["+subjectX.getText()+"] is ["
+                +Assertion.this.toString(compareChannel.get())+"] "
+                +", testing ["+testX.getText()+"]";
           
-          TestResult result
-            =new TestResult
+            result=new TestResult
                (name
                ,Boolean.TRUE.equals(condition)
                ,message
                );
+         
+          }
+          catch (RuntimeException x)
+          {
+            result=new TestResult
+              (name
+              ,false
+              ,"Caught Exception"
+              ,x
+              );
+            
+          }
+          
           if (testGroup!=null)
           { testGroup.addTestResult(result);
           }
