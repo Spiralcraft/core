@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.lang;
 
+import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.util.string.StringConverter;
 
@@ -66,6 +67,24 @@ public class PrimitiveReflector<T>
   
   public Type<T> getType()
   { return type;
+  }
+  
+  @Override
+  public Reflector<?> disambiguate(Reflector<?> alternate)
+  {
+    if (alternate instanceof BeanReflector<?>)
+    { 
+      // Don't allow BeanReflectors to be overriden by Primitive reflectors
+      return alternate;
+    }
+    else if (getTypeModel()==alternate.getTypeModel())
+    { return this;
+    }
+    else
+    { 
+      // Defer to dependent type model
+      return alternate.disambiguate(this);
+    }    
   }
   
   @Override
