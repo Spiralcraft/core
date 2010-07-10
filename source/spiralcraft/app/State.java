@@ -57,7 +57,7 @@ package spiralcraft.app;
  *   indexes within the Component's child list to associate them.
  * </p>
  * 
- * <p>The MessageContext is responsible for traversing the State tree along
+ * <p>The Dispatcher is responsible for traversing the State tree along
  *   with the Component tree during the process of delivering a Message, and
  *   providing a Component with a reference to its own state.
  * </p>

@@ -107,14 +107,18 @@ public class Dispatcher
   }
 
   /**
-   * Send a Message into the Component hierarchy rooted at the 
+   * <p>Send a Message into the Component hierarchy rooted at the 
    *   specified Component, optionally associated with
    *   the specified State, and routed to the Component at the specified
    *   path.
+   * </p>
+   * 
+   * <p>Called once at the root of the hierarchy to dispatch a message
+   * </p>
    * 
    * @param state
    */
-  public void sendMessage
+  public void dispatch
     (Message message
     ,Component component
     ,State state
@@ -213,32 +217,48 @@ public class Dispatcher
    *   as indicated by the message path.
    * </p>
    * 
+   * <p>This method is called by a Component once the pre-order stage of
+   *   its local message processing has been completed. When this method
+   *   returns, the Component can complete the post-order stage of
+   *   its local message processing.
+   * </p>
+   * 
    * @param message The message to relay
    *
    */
   public final void relayMessage(Message message)
   { 
-    Container container=component.asContainer();
-    
-    if (container!=null)
+    Component view=null; //=component.getView();
+    if (view!=null)
+    { messageComponent(view,message);
+    }
+    else
     {
-      if (path!=null && !path.isEmpty())
+    
+      Container container=component.asContainer();
+    
+      if (container!=null)
       {
-        
-        try
-        { messageChild(pushPath(),message);
-        }
-        finally
-        { popPath();
-        }
-      }
-      else if (message.isMulticast())
-      { 
-        final int count=container.getChildCount();
-        if (count>0)
+        if (path!=null && !path.isEmpty())
         {
-          for (int i=0;i<count;i++)
-          { messageChild(i,message);
+          // 
+          try
+          { messageChild(pushPath(),message);
+          }
+          finally
+          { popPath();
+          }
+        }
+        else if (message.isMulticast())
+        { 
+          // No specific child was specified, and message is multicast, so
+          //   message all children
+          final int count=container.getChildCount();
+          if (count>0)
+          {
+            for (int i=0;i<count;i++)
+            { messageChild(i,message);
+            }
           }
         }
       }
@@ -278,6 +298,48 @@ public class Dispatcher
    */
   public final void setLocalPath(Path localPath)
   { this.localPath=localPath;
+  }
+  
+  /**
+   * <p>Message a specific child of the current Container.
+   * </p>
+   * 
+   * <p>This method ensures that the child Component's state is available in
+   *   the messageContext, and ensures that the state of the current
+   *   Container is restored to the messageContext upon return.
+   * </p>
+   * 
+   * @param context
+   * @param index
+   */
+  private void messageComponent
+    (Component component
+    ,Message message
+    )
+  {
+    if (isStateful() && state!=null)
+    {
+      final State lastState=state;
+      final Component lastComponent=component;
+      final Path lastLocalPath=localPath;
+      state=ensureChildState(-1);
+      try
+      { 
+        Component child=component.asContainer().getChild(-1);
+        child.message(this,message);
+      }
+      finally
+      { 
+        state=lastState;
+        component=lastComponent;
+        localPath=lastLocalPath;
+        
+      }
+    }
+    else
+    { component.asContainer().getChild(-1).message(this,message);
+    }
+    
   }
   
   /**
