@@ -94,6 +94,10 @@ public class RecurrenceRule
    */
   public Instant next(Calendar calendar,Instant basis,Instant mark)
   {
+    if (basis==null)
+    { throw new NullPointerException("Basis Instant cannot be null");
+    }
+    
     if (mark.compareTo(basis)<0)
     { return basis;
     }

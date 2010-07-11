@@ -53,6 +53,7 @@ public class Schedule
   @Override
   public Iterator<Instant> iterator(final Interval interval)
   { 
+    
     return new Iterator<Instant>()
     {
       private Instant next
@@ -93,6 +94,9 @@ public class Schedule
   @Override
   public Instant next(Instant mark)
   {
+    if (basis==null)
+    { basis=new Instant();
+    }
     Instant next=null;
     for (RecurrenceRule rule : rules)
     {
