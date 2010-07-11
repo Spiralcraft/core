@@ -124,7 +124,7 @@ public class TestGroup
           { testGroup.addTestResult(result);
           }
           if (throwFailure && !passed)
-          { addException(new TestFailedException(result));
+          { addException(new TestFailedException(result,result.getException()));
           }          
           addResult(result);
           

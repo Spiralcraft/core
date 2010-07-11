@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2009 Michael Toth
+// Copyright (c) 2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,27 +12,31 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.test;
+package spiralcraft.util.lang;
 
-public class TestFailedException
-  extends Exception
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+/**
+ * Utility methods to handle Exceptions
+ * 
+ * @author mike
+ *
+ */
+public class ExceptionUtil
 {
 
-  private static final long serialVersionUID = 1981392318389152266L;
-  private final TestResult result;
-  
-  public TestFailedException(TestResult result,Exception cause)
-  { 
-    super(cause);
-    this.result=result;
-  }
-  
-  public TestFailedException(TestResult result)
-  { this.result=result;
-  }
-  
-  @Override
-  public String toString()
-  { return super.toString()+": "+result.toString();
+  /**
+   * Convert a Throwable and its stack trace to text
+   * 
+   * @param throwable
+   */
+  public static String toText(Throwable throwable)
+  {
+    StringWriter ret=new StringWriter();
+    PrintWriter out=new PrintWriter(ret);
+    throwable.printStackTrace(out);
+    out.flush();
+    return ret.toString();
   }
 }

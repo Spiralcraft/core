@@ -81,7 +81,7 @@ public class Assertion
           { testGroup.addTestResult(result);
           }
           if (throwFailure && !result.getPassed())
-          { addException(new TestFailedException(result));
+          { addException(new TestFailedException(result,x));
           }
           addResult
             (result
@@ -125,7 +125,7 @@ public class Assertion
           { testGroup.addTestResult(result);
           }
           if (throwFailure && !result.getPassed())
-          { addException(new TestFailedException(result));
+          { addException(new TestFailedException(result,result.getException()));
           }
           addResult
             (result

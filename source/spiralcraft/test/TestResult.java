@@ -19,6 +19,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
+import spiralcraft.util.lang.ExceptionUtil;
+
 /**
  * Indicates the result of a test.
  * 
@@ -107,7 +109,7 @@ public class TestResult
       (passed?"PASS":"FAIL!!!")
       +(name!=null?": "+name:"")+": "
       +(message!=null?"\r\n"+prefix+"- "+message+": ":"")
-      +(exception!=null?"\r\n"+prefix+"- "+exception:"")
+      +(exception!=null?"\r\n"+prefix+"- "+ExceptionUtil.toText(exception):"")
       );
     
     if (results!=null)
