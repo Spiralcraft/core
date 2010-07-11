@@ -105,7 +105,11 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
     { 
       Aggregate<T> aggregate=getAggregate();
       if (aggregate==null)
-      { throw new DataException("Aggregate is null- cannot perform query");
+      {
+        throw new DataException
+          ("Aggregate of "+getType().getURI()+" from "
+            +getClass().getName()+" is null- cannot perform query"
+          );
       }
       // return new BoundScanScrollableCursor(aggregate); 
       if (debugTrace)
