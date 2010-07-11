@@ -147,7 +147,8 @@ public enum Chronology
   
   /**
    * Compute a Duration from an time range in terms of a specific set of units
-   *   as they relate to the Chronology
+   *   as they relate to the Chronology. If the duration is smaller than the
+   *   finest specified unit, the method returns null.
    * 
    * @param timeZone
    * @param locale
@@ -164,6 +165,9 @@ public enum Chronology
     ,Chronom[] units
     )
   {
+    if (units.length==0)
+    { throw new IllegalArgumentException("Units must be specified");
+    }
     boolean reverse=start.getOffsetMillis()>end.getOffsetMillis();
     if (reverse)
     { 
@@ -232,6 +236,9 @@ public enum Chronology
       unitNum++;
     }
     
+//    if (duration==null)
+//    { log.fine("start="+start+", end="+end+", units[0]="+units[0]+", units[n]="+units[units.length-1]);
+//    }
     return duration;
   }
   
