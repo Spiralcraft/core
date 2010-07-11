@@ -98,9 +98,10 @@ public class RecurrenceRule
     { throw new NullPointerException("Basis Instant cannot be null");
     }
     
-    if (mark.compareTo(basis)<=0)
+    if (mark.compareTo(basis)<0)
     { return basis;
     }
+    
     
     // Obtain the number of frequency units between the basis and the mark 
     Duration duration=calendar.subtract
