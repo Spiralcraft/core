@@ -29,7 +29,7 @@ public class Schedule
 
   
   private RecurrenceRule[] rules;
-  private Instant basis;
+  private Instant basis=new Instant();
   private Calendar calendar=Calendar.DEFAULT;
   
   
@@ -94,9 +94,6 @@ public class Schedule
   @Override
   public Instant next(Instant mark)
   {
-    if (basis==null)
-    { basis=new Instant();
-    }
     Instant next=null;
     for (RecurrenceRule rule : rules)
     {
