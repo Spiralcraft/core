@@ -44,6 +44,8 @@ public class CommandScheduler
   private boolean regular=false;
   private volatile boolean started=false;
   private Scheduler scheduler=Scheduler.instance();
+  private boolean debug;
+  
   private final Runnable runnable
     =new Runnable()
   {
@@ -114,12 +116,22 @@ public class CommandScheduler
   { this.mark=mark;
   }
 
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
   @Override
   public synchronized void start()
     throws LifecycleException
   { 
-    started=true;
-    reschedule();
+    if (!started)
+    {
+      started=true;
+      reschedule();
+    }
+    else
+    { log.warning("Multiple starts");
+    }
   }
 
   @Override
@@ -174,12 +186,18 @@ public class CommandScheduler
           mark=recurrent.next(new Instant()).getOffsetMillis();
         }
         
+        if (debug)
+        { log.fine("Scheduling for "+mark);
+        }
         scheduler.scheduleAt(runnable,mark);
       }
     }
     else
     { 
       // Mark is in the future, schedule for queued mark
+      if (debug)
+      { log.fine("Scheduling for "+mark);
+      }
       scheduler.scheduleAt(runnable,mark);
     }
     
