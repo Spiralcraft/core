@@ -232,6 +232,7 @@ public class XmlStore
     
     if (subscriber!=null)
     { 
+      triggerSubscriber();
       updater.start();
     }
   }
