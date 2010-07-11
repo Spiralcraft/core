@@ -3,6 +3,259 @@
   >
   
   <scm:Change>
+  
+    <revision>0.4.9
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>???????
+    </date>
+  
+    <notes>
+      <scm:Note>Fix non-compliant behavior where "+" would be erroneously 
+          treated as encoding a space in paths encoded and decoded by the 
+          URLEncoder. "+" maps to space only in the query portion of a URL.
+      </scm:Note>
+      <scm:Note>Added Path.trim() to remove leading and trailing slashes
+      </scm:Note>
+      <scm:Note>Time API enhancements
+      </scm:Note>
+      <scm:Note>Better exception handling for test assertions
+      </scm:Note>
+      <scm:Note>Task scheduling functionality
+      </scm:Note>
+      <scm:Note>ELaine enhancement to propagate "constant" values through
+        strict functions declared by Translators.
+      </scm:Note>
+    </notes>
+
+    <detail>
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Fix non-compliant behavior where "+" would be erroneously 
+            treated as encoding a space in paths encoded and decoded by the 
+            URLEncoder. "+" maps to space only in the query portion of a URL.
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/text/html/URLEncoder.java
+        </path>
+      
+      </scm:Change>
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Added Path.trim() to remove leading and trailing delimiters
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/util/Path.java
+        </path>
+      
+      </scm:Change>
+    
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Time representation system, initial release
+          </scm:Note>
+          <scm:Note>Clock now exposes exact millis and adjusted nanos
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/time/
+        </path>
+      
+        <resources>
+          <URI>Calendar.java
+          </URI>
+          <URI>Chronology.java
+          </URI>
+          <URI>Chronom.java
+          </URI>
+          <URI>Clock.java
+          </URI>
+          <URI>Duration.java
+          </URI>
+          <URI>Frequency.java
+          </URI>
+          <URI>Instant.java
+          </URI>
+          <URI>Interval.java
+          </URI>
+          <URI>RecurrenceRule.java
+          </URI>
+          <URI>Recurrent.java
+          </URI>
+          <URI>Schedule.java
+          </URI>
+          <URI>SimpleInstantFormat.java
+          </URI>
+          <URI>TimeField.java
+          </URI>
+          <URI>TimeX.java
+          </URI>
+        </resources>
+      </scm:Change>
+          
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Better exception reporting for test Assertions
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft
+        </path>
+      
+        <resources>
+          <URI>test/Assertion.java
+          </URI>
+          <URI>test/TestResult.java
+          </URI>
+          <URI>test/TestFailedException.java
+          </URI>
+          <URI>test/TestGroup.java
+          </URI>
+          <URI>util/lang/ExceptionUtil.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Task scheduling functionality
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>command/CommandScheduler.java
+          </URI>
+          <URI>task/TaskScheduler.java
+          </URI>
+        
+        </resources>
+      
+      </scm:Change>
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>ELaine enhancement to propagate "constant" values through
+            strict functions declared by Translators.
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/parser/BinaryOpNode.java
+          </URI>
+          <URI>lang/parser/ConditionalNode.java
+          </URI>
+          <URI>lang/parser/EqualityNode.java
+          </URI>
+          <URI>lang/parser/ExclusiveOrNode.java
+          </URI>
+          <URI>lang/parser/LogicalAndNode.java
+          </URI>
+          <URI>lang/parser/LogicalNegateNode.java
+          </URI>
+          <URI>lang/parser/LogicalOrNode.java
+          </URI>
+          <URI>lang/parser/NumericNegateNode.java
+          </URI>
+          <URI>lang/parser/RelationalNode.java
+          </URI>
+          <URI>lang/parser/StructNode.java
+          </URI>
+          <URI>lang/parser/SubcontextNode.java
+          </URI>
+          <URI>lang/reflect/ArrayLengthTranslator.java
+          </URI>
+          <URI>lang/reflect/BeanFieldTranslator.java
+          </URI>
+          <URI>lang/reflect/BeanPropertyTranslator.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>lang/reflect/ConstructorTranslator.java
+          </URI>
+          <URI>lang/reflect/IterableLengthTranslator.java
+          </URI>
+          <URI>lang/reflect/MethodTranslator.java
+          </URI>
+          <URI>lang/spi/ArrayEqualityTranslator.java
+          </URI>
+          <URI>lang/spi/ArrayIndexTranslator.java
+          </URI>
+          <URI>lang/spi/IterableIndexTranslator.java
+          </URI>
+          <URI>lang/spi/MapIndexTranslator.java
+          </URI>
+          <URI>lang/spi/NamespaceAttribute.java
+          </URI>
+          <URI>lang/spi/ReverseTranslator.java
+          </URI>
+          <URI>lang/spi/StringConcatTranslator.java
+          </URI>
+          <URI>lang/spi/Translator.java
+          </URI>
+          <URI>lang/spi/TranslatorChannel.java
+          </URI>
+          <URI>data/lang/AggregateIndexTranslator.java
+          </URI>
+          <URI>data/lang/FieldTranslator.java
+          </URI>
+          <URI>data/lang/ToDataTranslator.java
+          </URI>
+          <URI>data/lang/ToStringTranslator.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Don't allow BeanReflectors to be overridden by
+            data PrimitiveReflectors
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/data/lang/PrimitiveReflector.java
+        </path>
+      
+      </scm:Change>      
+      
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Provide a way to decorate methods that return an
+            Iterator.
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/lang/spi/IteratorIterationDecorator.java
+        </path>
+      
+      </scm:Change>      
+
+    </detail>
+  </scm:Change>
+  
+  
+  <scm:Change>
     <revision>0.4.8.3
     </revision>
     
