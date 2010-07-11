@@ -30,7 +30,7 @@ public class Schedule
   
   private RecurrenceRule[] rules;
   private Instant basis;
-  private Calendar calendar;
+  private Calendar calendar=Calendar.DEFAULT;
   
   
   public void setRecurrenceRules(RecurrenceRule[] rules)
