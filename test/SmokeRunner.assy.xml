@@ -100,6 +100,10 @@
         <vfstest:VfsTest
           xmlns:vfstest="class:/spiralcraft/vfs/test/"
         />
+
+        <timetest:TimeTest
+          xmlns:timetest="class:/spiralcraft/time/test/"
+        />
       </scenarios>
     </task:Sequence>
   </chain>
