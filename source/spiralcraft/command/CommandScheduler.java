@@ -18,10 +18,13 @@ import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.time.Instant;
+import spiralcraft.time.Recurrent;
 import spiralcraft.time.Scheduler;
 
 /**
- * Schedules a command to run periodically
+ * Schedules a command to run periodically. Designed to be subclassed by or
+ *   included in another object which provides context.
  * 
  * @author mike
  *
@@ -35,6 +38,7 @@ public class CommandScheduler
     =ClassLog.getInstance(CommandScheduler.class);
   
   private CommandFactory factory;
+  private Recurrent recurrent;
   private long period;
   private volatile long mark;
   private boolean regular=false;
@@ -73,7 +77,9 @@ public class CommandScheduler
         if (started)
         {
           if (!regular)
-          { mark=System.currentTimeMillis()+period;
+          { 
+            // Compute period from end of current run
+            mark=System.currentTimeMillis()+period;
           }
           reschedule();
         }
@@ -83,6 +89,17 @@ public class CommandScheduler
   
   public void setCommandFactory(CommandFactory factory)
   { this.factory=factory;
+  }
+  
+  /**
+   * A Recurrent implementation to determine the next scheduled Instant
+   * 
+   * @param recurrent
+   */
+  public void setRecurrent(Recurrent recurrent)
+  { 
+    this.recurrent=recurrent;
+    this.regular=true;
   }
   
   public void setPeriod(long period)
@@ -129,20 +146,55 @@ public class CommandScheduler
     long now=System.currentTimeMillis();
     if (now>=mark)
     { 
+      // Queued mark has passed, generate a new one
+      
       if (!regular)
       { scheduler.scheduleNow(runnable);
       }
       else
       { 
-        mark=mark+period;
+        if (recurrent==null)
+        { 
+          if (mark<now-period*100)
+          { 
+            // Reset, too far gone
+            mark=now;
+          }
+          else
+          {
+            // Isochronous
+            while (now>=mark)
+            { mark=mark+period;
+            }
+          }
+        }
+        else
+        { 
+          // Calendared
+          mark=recurrent.next(new Instant()).getOffsetMillis();
+        }
+        
         scheduler.scheduleAt(runnable,mark);
       }
     }
     else
-    { scheduler.scheduleAt(runnable,mark);
+    { 
+      // Mark is in the future, schedule for queued mark
+      scheduler.scheduleAt(runnable,mark);
     }
+    
     if (regular)
-    { mark=mark+period;
+    { 
+      if (recurrent==null)
+      {
+        // Queue up the next Isochronous mark
+        mark=mark+period;
+      }
+      else
+      { 
+        // Queue up the next calendared mark
+        mark=recurrent.next(new Instant(mark)).getOffsetMillis();
+      }
     }
     
   }

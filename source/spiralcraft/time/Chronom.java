@@ -109,7 +109,7 @@ public enum Chronom
   { 
     Chronom test=this;
     long multiple=1;
-    while (test.calendarField>-1)
+    while (test.calendarField==-1)
     { 
       multiple=multiple*test.duration.getCount();
       test=test.duration.getUnit();

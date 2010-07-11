@@ -98,16 +98,23 @@ public class RecurrenceRule
     { return basis;
     }
     
+    // Obtain the number of frequency units between the basis and the mark 
     Duration duration=calendar.subtract
-      (basis,mark,new Chronom[] {frequency.getChronom()});
+      (mark,basis,new Chronom[] {frequency.getChronom()});
     
     long unitsToMark=duration.getCount();
+    
+    // The whole number of intervals between the basis and mark 
+    //   last potential occurrence
     long intervalsToMark=unitsToMark/interval;
     
+    // Frequency units between basis and last potential occurrence
     Duration basisToLastOccurrence
       =new Duration(intervalsToMark*interval,frequency.getChronom());
     
+    // Instant of last potential occurrence
     Instant lastOccurrence=calendar.add(basis,basisToLastOccurrence);
+    
     Instant nextOccurrence
       =calendar.add
         (lastOccurrence
@@ -121,8 +128,6 @@ public class RecurrenceRule
   class RecurrenceIterator
     implements Iterator<Instant>
   {
-//    private final Calendar calendar;
-//    private final Instant basis;
     private Instant start;
     private Instant next;
     private final Iterator<Instant> majorIntervalIterator;
@@ -133,8 +138,6 @@ public class RecurrenceRule
       ,Interval range
       )
     { 
-//      this.calendar=calendar;
-//      this.basis=basis;
       this.start=range.getStart();
       this.majorIntervalIterator
         =calendar.iterate
