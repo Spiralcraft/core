@@ -98,7 +98,7 @@ public class RecurrenceRule
     { throw new NullPointerException("Basis Instant cannot be null");
     }
     
-    if (mark.compareTo(basis)<0)
+    if (mark.compareTo(basis)<=0)
     { return basis;
     }
     
@@ -106,18 +106,26 @@ public class RecurrenceRule
     Duration duration=calendar.subtract
       (mark,basis,new Chronom[] {frequency.getChronom()});
     
-    long unitsToMark=duration.getCount();
     
-    // The whole number of intervals between the basis and mark 
-    //   last potential occurrence
-    long intervalsToMark=unitsToMark/interval;
+    Instant lastOccurrence;
+    if (duration!=null)
+    {
+      long unitsToMark=duration.getCount();
     
-    // Frequency units between basis and last potential occurrence
-    Duration basisToLastOccurrence
-      =new Duration(intervalsToMark*interval,frequency.getChronom());
+      // The whole number of intervals between the basis and mark 
+      //   last potential occurrence
+      long intervalsToMark=unitsToMark/interval;
     
-    // Instant of last potential occurrence
-    Instant lastOccurrence=calendar.add(basis,basisToLastOccurrence);
+      // Frequency units between basis and last potential occurrence
+      Duration basisToLastOccurrence
+        =new Duration(intervalsToMark*interval,frequency.getChronom());
+    
+      // Instant of last potential occurrence
+      lastOccurrence=calendar.add(basis,basisToLastOccurrence);
+    }
+    else
+    { lastOccurrence=basis;
+    }
     
     Instant nextOccurrence
       =calendar.add
