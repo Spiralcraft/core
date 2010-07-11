@@ -1,0 +1,410 @@
+<test:TestGroup
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:j="class:/java/lang/"
+  xmlns:ju="class:/java/util/"
+  xmlns:jt="class:/java/text/"
+  xmlns:lang="class:/spiralcraft/lang"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  xmlns:util="class:/spiralcraft/util/"
+  xmlns:sutil="class:/spiralcraft/util/string/"
+  xmlns:vfs="class:/spiralcraft/vfs/"
+  xmlns="dynamic:/"
+  xmlns:st="class:/spiralcraft/time/"
+  >
+  <name>spiralcraft.time.test
+  </name>
+  
+  <chain>
+ 
+    <task:Sequence>
+      <scenarios>
+    
+        <test:Assertion>
+        
+          <name>Pacific time zone
+          </name>
+          
+          <subjectX>[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+          </subjectX>
+          
+          <testX>true
+          </testX>
+          
+        </test:Assertion>
+        
+        <test:Assertion>
+        
+          <name>Eastern time zone
+          </name>
+          
+          <subjectX>[@ju:TimeZone].@getTimeZone("America/New_York")
+          </subjectX>
+          
+          <testX>true
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>New Years 2008 UTC
+          </name>
+        
+          <subjectX>
+            [@jt:SimpleDateFormat].("yyyy/MM/dd HH:mm:ss.S Z")
+              .parse("2008/01/01 00:00:00.0000 UTC").time
+          </subjectX>
+          
+          <testX>.==1199145600000L
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>New Years 2008 -0800
+          </name>
+        
+          <subjectX>
+            [@jt:SimpleDateFormat].("yyyy/MM/dd HH:mm:ss.S ZZZZ")
+              .parse("2008/01/01 00:00:00.0000 -0800").time
+          </subjectX>
+          
+          <testX>.==1199174400000L
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>New Years 2008 -0500
+          </name>
+        
+          <subjectX>
+            [@jt:SimpleDateFormat].("yyyy/MM/dd HH:mm:ss.S ZZZZ")
+              .parse("2008/01/01 00:00:00.0000 -0500").time
+          </subjectX>
+          
+          <testX>.==1199163600000L
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>Now approximate
+          </name>
+          
+          <subjectX>[@st:Instant].()
+          </subjectX>
+          
+          <testX>true
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>Now millis
+          </name>
+          
+          <subjectX>[@st:Instant].([@st:Chronom].@MILLISECOND)
+          </subjectX>
+          
+          <testX>true
+          </testX>
+          
+        </test:Assertion>
+        
+        <test:Assertion>
+        
+          <name>Now seconds
+          </name>
+          
+          <subjectX>[@st:Instant].([@st:Chronom].@SECOND)
+          </subjectX>
+          
+          <testX>true
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>Now nanos
+          </name>
+          
+          <subjectX>[@st:Instant].([@st:Chronom].@NANOSECOND)
+          </subjectX>
+          
+          <testX>true
+          </testX>
+          
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>New years 2008 pacific POSIX time
+          </name>
+        
+          <subjectX>
+            [@jt:SimpleDateFormat].("yyyy/MM/dd HH:mm:ss.S")
+            {.timeZone=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            ,.parse("2008/01/01 00:00:00.0000").time
+            }
+          </subjectX>
+          
+          <testX>.==1199174400000L
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>New Years 2008 eastern POSIX time
+          </name>
+        
+          <subjectX>
+            [@jt:SimpleDateFormat].("yyyy/MM/dd HH:mm:ss.S")
+            {.timeZone=[@ju:TimeZone].@getTimeZone("America/New_York")
+            ,.parse("2008/01/01 00:00:00.0000").time
+            }
+          </subjectX>
+          
+          <testX>.==1199174400000L-10800000L
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>New Years 2008,2009,2010 pacific POSIX time
+          </name>
+        
+          <subjectX>
+            [@jt:SimpleDateFormat].("yyyy/MM/dd HH:mm:ss.S")
+            {.timeZone=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            ,[@j:String][{"2008","2009","2010"}]
+                #{..parse(.+"/01/01 00:00:00.0000").time}
+            }
+          </subjectX>
+          
+          <testX>.==[@j:Long][{1199174400000L,1230796800000L,1262332800000L}]
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>New Years 2008,2009,2010 pacific POSIX time
+          </name>
+        
+          <subjectX>
+            { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            , fmt:=[@jt:SimpleDateFormat].("yyyy/MM/dd HH:mm:ss.S")
+            , .fmt.timeZone=.tz
+            , start:=[@st:Instant]
+              .(.fmt.parse("2008/01/01 00:00:00.0000").time)
+            , stop:=[@st:Instant]
+              .(.fmt.parse("2011/01/01 00:00:00.0000").time)
+            , cal:=[@st:Calendar].(.tz)
+            , result:=.cal.iterate(.start,[@st:TimeField].@YEAR,1,.stop)
+              #{.@cast([@st:Instant]).offsetMillis}
+            }
+          </subjectX>
+          
+          <testX>
+            .result==[@j:Long][{1199174400000L,1230796800000L,1262332800000L}]
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>Instant to TimeX 
+          </name>
+        
+          <subjectX>
+            { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            , cal:=[@st:Calendar].(.tz)
+            , fmt:=[@st:SimpleInstantFormat].(.cal,"yyyy/MM/dd HH:mm:ss.S")
+            , instant:=.fmt.parse("2008/01/01 00:00:00.0000")
+            , result:=.cal.toTimeX(.instant)
+            }
+          </subjectX>
+          
+          <testX>
+            true
+          </testX>
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>Rebase birthday
+          </name>
+        
+          <subjectX>
+            { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            , cal:=[@st:Calendar].(.tz)
+            , fmt:=[@st:SimpleInstantFormat].(.cal,"yyyy/MM/dd HH:mm:ss.S")
+            , orig:=.fmt.parse("1915/01/26 15:45:01.0123")
+            , dest:=.fmt.parse("2010/07/30 00:00:00.0000")
+            , result:=.cal.rebase
+                (.cal.toTimeX(.orig)
+                ,.dest
+                ,[@st:TimeField].@YEAR
+                ,0
+                )
+            }
+          </subjectX>
+          
+          <testX>
+            .result
+              ==.cal.toTimeX
+                (.fmt.parse("2010/01/26 15:45:01.0123")
+                )
+          </testX>
+        </test:Assertion>
+     
+        <test:Assertion>
+          <name>Rebase leap day across months
+          </name>
+        
+          <subjectX>
+            { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            , cal:=[@st:Calendar].(.tz)
+            , fmt:=[@st:SimpleInstantFormat].(.cal,"yyyy/MM/dd HH:mm:ss.S")
+            , orig:=.fmt.parse("2004/02/29 15:45:01.0123")
+            , dest:=.fmt.parse("2010/02/01 00:00:00.0000")
+            , result:=.cal.rebase
+                (.cal.toTimeX(.orig)
+                ,.dest
+                ,[@st:TimeField].@MONTH_OF_YEAR
+                ,0
+                )
+            }
+          </subjectX>
+          
+          <testX>
+            .result
+              ==.cal.toTimeX
+                (.fmt.parse("2010/03/01 15:45:01.0123")
+                )
+          </testX>
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>Rebase leap day across years to non-leap year
+          </name>
+        
+          <subjectX>
+            { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            , cal:=[@st:Calendar].(.tz)
+            , fmt:=[@st:SimpleInstantFormat].(.cal,"yyyy/MM/dd HH:mm:ss.S")
+            , orig:=.fmt.parse("2004/02/29 15:45:01.0123")
+            , dest:=.fmt.parse("2010/02/01 00:00:00.0000")
+            , result:=.cal.rebase
+                (.cal.toTimeX(.orig)
+                ,.dest
+                ,[@st:TimeField].@YEAR
+                ,0
+                )
+            }
+          </subjectX>
+          
+          <testX>
+            .result
+              ==.cal.toTimeX
+                (.fmt.parse("2010/03/01 15:45:01.0123")
+                )
+          </testX>
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>Rebase leap day across years to leap year
+          </name>
+        
+          <subjectX>
+            { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            , cal:=[@st:Calendar].(.tz)
+            , fmt:=[@st:SimpleInstantFormat].(.cal,"yyyy/MM/dd HH:mm:ss.S")
+            , orig:=.fmt.parse("2004/02/29 15:45:01.0123")
+            , dest:=.fmt.parse("2012/02/01 00:00:00.0000")
+            , result:=.cal.rebase
+                (.cal.toTimeX(.orig)
+                ,.dest
+                ,[@st:TimeField].@YEAR
+                ,0
+                )
+            }
+          </subjectX>
+          
+          <testX>
+            .result
+              ==.cal.toTimeX
+                (.fmt.parse("2012/02/29 15:45:01.0123")
+                )
+          </testX>
+        </test:Assertion>
+
+        <test:Assertion>
+          <name>Rebase leap day to different week
+          </name>
+        
+          <subjectX>
+            { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            , cal:=[@st:Calendar].(.tz)
+            , fmt:=[@st:SimpleInstantFormat].(.cal,"yyyy/MM/dd HH:mm:ss.S")
+            , orig:=.fmt.parse("2004/02/29 15:45:01.0123")
+            , dest:=.fmt.parse("2008/06/02 00:00:00.0000")
+            , result:=.cal.rebase
+                (.cal.toTimeX(.orig)
+                ,.dest
+                ,[@st:TimeField].@WEEK_OF_YEAR
+                ,0
+                )
+            , fields:=[@st:TimeField]
+                [{
+                  [@st:TimeField].@DAY_OF_WEEK
+                , [@st:TimeField].@WEEK_OF_MONTH
+                , [@st:TimeField].@WEEK_OF_YEAR
+                }]
+            , resultfmt:=.fmt.format(.cal.toInstant(.result))
+            , origFields
+                :=.cal.toTimeX(.orig,.fields)
+            , destFields
+                :=.cal.toTimeX(.dest,.fields)
+            , resultFields
+                :=.cal.toTimeX(.cal.toInstant(.result),.fields)
+            }
+          </subjectX>
+          
+          <testX>
+            true
+          </testX>
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>Recurrence
+          </name>
+        
+          <subjectX>
+            { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            , cal:=[@st:Calendar].(.tz)
+            , fmt:=[@st:SimpleInstantFormat].(.cal,"yyyy/MM/dd HH:mm:ss.S")
+            , ofmt:=[@st:SimpleInstantFormat].(.cal,"E, yyyy/MM/dd HH:mm:ss.S Z")
+            , orig:=.fmt.parse("2008/02/01 15:45:01.0123")
+            , dest:=[@st:Instant]
+                [{..fmt.parse("2008/06/01 00:00:00.0000")
+                ,..fmt.parse("2008/08/01 00:00:00.0000")
+                ,..fmt.parse("2008/10/01 00:00:00.0000")
+                ,..fmt.parse("2008/12/01 00:00:00.0000")
+                ,..fmt.parse("2009/01/01 00:00:00.0000")
+                ,..fmt.parse("2009/03/01 00:00:00.0000")
+                ,..fmt.parse("2009/05/01 00:00:00.0000")
+                ,..fmt.parse("2009/07/01 00:00:00.0000")
+                ,..fmt.parse("2009/09/01 00:00:00.0000")
+                ,..fmt.parse("2009/11/01 00:00:00.0000") 
+                }]
+            , rule:=[*st:RecurrenceRule{frequency:=[@st:Frequency].@WEEKLY}]
+            , result:=.dest#{..rule.next(..cal,..orig,.)}
+            , resultfmt:=.result#{"\r\n"+..ofmt.format(.)}
+            }
+            .resultfmt
+          </subjectX>
+          
+          <testX>
+            true
+          </testX>
+        </test:Assertion>        
+      </scenarios>
+      
+    </task:Sequence>
+  </chain>
+        
+</test:TestGroup>
