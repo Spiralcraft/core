@@ -144,7 +144,7 @@ public interface Channel<T>
   boolean isConstant();
   
   /**
-   * Return the spiralcraft.lang.Reflector extended type of the referenced data 
+   * The spiralcraft.lang.Reflector extended type of the referenced data 
    */
   Reflector<T> getReflector();
   
