@@ -89,7 +89,7 @@ public class UniqueRule<T extends Tuple>
       catch (DataException x)
       { 
         throw new BindException
-          ("Error binding field unique query for "+context.getURI(),x);
+          ("Error binding field unique query for "+UniqueRule.this.context.getURI(),x);
       }
     }      
           
