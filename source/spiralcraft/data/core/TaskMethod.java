@@ -85,16 +85,25 @@ public class TaskMethod<T,C,R>
   @SuppressWarnings("unchecked")
   @Override
   public Channel<?> bind(
-    Focus<?> focus,
     Channel<?> source,
     Channel<?>[] params)
     throws BindException
   {
     
-    if (!focus.isContext(source))
-    { focus=focus.chain(source);
+    // Use original binding context, never bind source expression in
+    //   argument context
+    Focus<?> context=source.getContext();
+    if (context==null)
+    { 
+      throw new BindException
+        ("No context for "+this+" "+source);
+      // context=argFocus;
     }
-    
+
+    if (!context.isContext(source))
+    { context=context.chain(source);
+    }
+        
     if (scenarioURI==null)
     { 
       scenarioURI
@@ -104,22 +113,22 @@ public class TaskMethod<T,C,R>
     
     AbstractXmlObject<Scenario<C,R>,?> scenarioContainer
       =AbstractXmlObject
-        .<Scenario<C,R>>activate(null,scenarioURI, null, focus);
+        .<Scenario<C,R>>activate(null,scenarioURI, context);
 
-    focus=scenarioContainer.getFocus();
+    context=scenarioContainer.getFocus();
     
     Channel<Scenario<C,R>> scenarioChannel
-      =(Channel<Scenario<C,R>>) focus.getSubject();
+      =(Channel<Scenario<C,R>>) context.getSubject();
     
     final Channel<TaskCommand<C,R>> commandChannel
       =new TaskMethodChannel
         (scenarioChannel.<TaskCommand<C,R>>resolve
-          (focus
+          (context
           ,"command"
           ,new Expression<?>[0]
           )
         ,params
-        ,focus
+        ,context
         );
 
 
@@ -127,7 +136,7 @@ public class TaskMethod<T,C,R>
     { return commandChannel;
     }
     else
-    { return new ExecChannel(focus,commandChannel);
+    { return new ExecChannel(context,commandChannel);
     }
 
   }
@@ -150,6 +159,7 @@ public class TaskMethod<T,C,R>
     { 
       super(commandChannel.getReflector());
       this.commandChannel=commandChannel;
+      this.context=commandChannel.getContext();
       this.params=params;
       
       // CommandChannel always creates a new command
@@ -229,6 +239,7 @@ public class TaskMethod<T,C,R>
     { 
       super(commandChannel.resolve(focus,"result",null).getReflector());
       this.commandChannel=commandChannel;
+      this.context=commandChannel.getContext();
     }
    
     @Override
