@@ -27,6 +27,7 @@ import spiralcraft.data.Key;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.reflect.BeanFocus;
 
 import spiralcraft.data.query.BoundQuery;
 
@@ -61,7 +62,7 @@ public class DataSynchronizer
     throws DataException
   { 
     this.space=space;
-    tupleFocus=new TupleFocus<Tuple>(type.getScheme());
+    tupleFocus=TupleFocus.<Tuple>create(new BeanFocus(Void.class,null),type.getScheme());
     nextConsumer=space.getUpdater(type,tupleFocus);
     primaryKey=type.getScheme().getPrimaryKey();
     if (primaryKey==null)
@@ -69,7 +70,7 @@ public class DataSynchronizer
       throw new DataException
         ("DataSynchronizer: Type "+type.getURI()+" must have a primary key");
     }
-    primaryKeyFocus=new TupleFocus<Tuple>(primaryKey);
+    primaryKeyFocus=TupleFocus.<Tuple>create(new BeanFocus(Void.class,null),primaryKey);
     try
     {
       keyBinding=primaryKey.bindChannel
