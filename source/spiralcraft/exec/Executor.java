@@ -34,8 +34,6 @@ import spiralcraft.log.ConsoleHandler;
 import spiralcraft.log.EventHandler;
 import spiralcraft.log.GlobalLog;
 import spiralcraft.log.RotatingFileHandler;
-import spiralcraft.registry.Registry;
-import spiralcraft.registry.RegistryNode;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -79,7 +77,6 @@ public class Executor
   private URI instanceURI;
   private boolean persistOnCompletion;
   private AbstractXmlObject<Executable,?> wrapper;
-  private RegistryNode registryNode;  
   private int argCounter=-1;
   private EventHandler logHandler;
   private EventHandler consoleHandler;
@@ -277,11 +274,7 @@ public class Executor
     { throw new PersistenceException("Error instantiating Executable",x);
     }
     
-    if (registryNode==null)
-    { registryNode=Registry.getLocalRoot();
-    }
 
-    wrapper.register(registryNode);
     Object o=wrapper.get();
     if (!(o instanceof Executable))
     { 
