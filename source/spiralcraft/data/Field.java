@@ -103,13 +103,15 @@ public interface Field<T>
    *   depend on the availability of other resources mapped through the Focus.
    * </p>
    * 
-   * @param focus
+   * @param source
+   * @param paramFocus
+   * @param params
    * @return A Binding bound to the focus
    */
    @Override
   Channel<T> bindChannel
     (Channel<Tuple> source
-    ,Focus<?> focus
+    ,Focus<?> paramFocus
     ,Expression<?>[] params
     )
     throws BindException;

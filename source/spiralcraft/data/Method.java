@@ -16,7 +16,6 @@ package spiralcraft.data;
 
 
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Signature;
 
@@ -65,7 +64,7 @@ public interface Method
    * @return
    * @throws BindException
    */
-  Channel<?> bind(Focus<?> focus,Channel<?> source,Channel<?>[] params)
+  Channel<?> bind(Channel<?> source,Channel<?>[] params)
     throws BindException;
   
   /**
