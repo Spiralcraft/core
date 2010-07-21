@@ -62,14 +62,17 @@ public class Reference<Tresult>
         target.push();
         try
         {
-          TaskCommand<Void,Tresult> command
-            =((Scenario<Void,Tresult>) chain).command();
-          command.execute();
-          addResult(command);
-          if (command.getException()!=null)
-          { 
-            addException(command.getException());
-            return;
+          if (chain!=null)
+          {
+            TaskCommand<Void,Tresult> command
+              =((Scenario<Void,Tresult>) chain).command();
+            command.execute();
+            addResult(command);
+            if (command.getException()!=null)
+            { 
+              addException(command.getException());
+              return;
+            }
           }
         }
         finally
