@@ -589,9 +589,21 @@ public class XmlStore
                   {
                     if (!cursor.next())
                     {
-                      // Old one has been deleted
-                      log.warning("Adding back lost original on update"+t); 
-                      queryable.add(t);
+                      // Old one has been deleted, or never existed
+                      
+                      if (debug)
+                      { log.fine("Adding back lost original on update"+t); 
+                      }
+                      
+                      EditableTuple newOriginal
+                        =new EditableArrayTuple(t.getType().getArchetype());
+                      dt.updateTo(newOriginal);
+                      
+                      if (t instanceof BufferTuple)
+                      {
+                        ((BufferTuple) t).updateOriginal(newOriginal);
+                      }
+                      queryable.add(newOriginal);
                     }
                     else
                     { 
