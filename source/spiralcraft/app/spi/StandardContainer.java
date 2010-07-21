@@ -25,6 +25,14 @@ public class StandardContainer
   implements Container
 {
 
+  public StandardContainer()
+  {
+  }
+  
+  public StandardContainer(Component[] children)
+  { this.children=children;
+  }
+  
   protected Component[] children;
 
   
@@ -42,9 +50,7 @@ public class StandardContainer
     throws BindException
   { 
     for (Component child:children)
-    { 
-      child.bind(focusChain);
-      child.getParent().registerChild(child);
+    { child.bind(focusChain);
     }
   }
   

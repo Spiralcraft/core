@@ -25,7 +25,6 @@ import spiralcraft.app.State;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -42,7 +41,8 @@ public class AbstractComponent
   implements Component,Parent
 {
   protected final ClassLog log=ClassLog.getInstance(getClass());
-  protected Level debugLevel=ClassLog.getInitialDebugLevel(getClass(),null);
+  protected Level logLevel=ClassLog.getInitialDebugLevel(getClass(),null);
+  protected Level normalLogLevel=logLevel;
   
   protected final MessageHandlerSupport handlers
     =new MessageHandlerSupport();
@@ -50,8 +50,10 @@ public class AbstractComponent
   protected Parent parent;
   protected boolean bound=false;
   protected Container container;
-  
   protected Focus<?> selfFocus;
+  protected boolean acceptsChildren=true;
+
+  protected boolean exportSelf=true;  
   
   public void setParent(Parent parent)
   { this.parent=parent;
@@ -95,14 +97,26 @@ public class AbstractComponent
     Focus<?> focusChain)
     throws BindException
   { 
+    Focus<?> context=focusChain;
     if (selfFocus==null)
     { 
-      selfFocus=new SimpleFocus<AbstractComponent>
+      selfFocus=focusChain.chain
         (new SimpleChannel<AbstractComponent>(this,true));
     }
+
     focusChain=bindImports(focusChain);
     focusChain=handlers.bind(focusChain);
+    
     focusChain=bindExports(focusChain);
+    if (exportSelf)
+    {
+      if (focusChain==context)
+      { focusChain=selfFocus;
+      }
+      else
+      { focusChain.addFacet(selfFocus);
+      }
+    }
     if (container!=null)
     { container.bind(focusChain);
     }
@@ -114,14 +128,18 @@ public class AbstractComponent
     throws LifecycleException
   { 
     handlers.start();
-    container.start();
+    if (container!=null)
+    { container.start();
+    }
   }
 
   @Override
   public void stop()
     throws LifecycleException
   { 
-    container.stop();
+    if (container!=null)
+    { container.stop();
+    }
     handlers.stop();
   }
 
@@ -168,6 +186,20 @@ public class AbstractComponent
   { return this;
   }
 
+  public void setChildren(final Component[] newChildren)
+  {
+    if (!acceptsChildren)
+    { 
+      throw new UnsupportedOperationException
+        (getClass()+" does not accept children");
+    }
+    Component[] children=new Component[newChildren.length];
+    System.arraycopy(newChildren,0,children,0,newChildren.length);
+    
+    this.container
+      =new StandardContainer(children);
+  }
+    
   @Override
   public void handleEvent(
     Dispatcher context,
@@ -176,8 +208,22 @@ public class AbstractComponent
   }
 
   @Override
-  public void registerChild(Component child)
+  public void setLogLevel(Level logLevel)
   { 
+    this.logLevel=logLevel;
+    this.normalLogLevel=logLevel;
   }
 
+  public void setDebug(boolean debug)
+  { 
+    if (debug)
+    { this.logLevel=Level.FINE;
+    }
+    else
+    { 
+      if (this.logLevel.canLog(Level.DEBUG))
+      { this.logLevel=this.normalLogLevel;
+      }
+    }
+  }
 }

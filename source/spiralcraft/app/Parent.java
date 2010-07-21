@@ -56,9 +56,6 @@ public interface Parent
    */
   public Container asContainer();
   
-
-  void registerChild(Component child);
-  
   /**
    * <p>Indicates how many levels of States in the State tree are represented
    *   by this Context.

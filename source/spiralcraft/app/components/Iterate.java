@@ -178,7 +178,7 @@ public class Iterate<T>
     
     try
     {
-      if (debugLevel.isDebug())
+      if (logLevel.isDebug())
       { log.debug(toString()+": refreshing...");
       }      
       
@@ -191,7 +191,7 @@ public class Iterate<T>
       state.trim(iter.index);
       state.setValid(true);
 
-      if (debugLevel.isDebug())
+      if (logLevel.isDebug())
       { log.debug(toString()+": refreshed "+iter.index+" elements");
       }      
 
@@ -272,7 +272,7 @@ public class Iterate<T>
       }
       else
       {
-        if (debugLevel.isDebug())
+        if (logLevel.isDebug())
         { log.debug(toString()+": retraversing...");
         }      
         LookaroundIterator<ValueState<T>> cursor 
@@ -282,7 +282,7 @@ public class Iterate<T>
         { messageRetraverseChild(dispatcher,message,cursor,iter,path);
         }
       
-        if (debugLevel.isDebug())
+        if (logLevel.isDebug())
         { log.debug(toString()+": retraversed "+iter.index+" elements");
         }
       }
@@ -418,7 +418,7 @@ public class Iterate<T>
       
     }
     
-    if (debugLevel.isDebug())
+    if (logLevel.isDebug())
     { log.debug("Iterator exposes "+valueChannel);
     }
     return currentFocus;

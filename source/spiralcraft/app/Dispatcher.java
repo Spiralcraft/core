@@ -228,37 +228,30 @@ public class Dispatcher
    */
   public final void relayMessage(Message message)
   { 
-    Component view=null; //=component.getView();
-    if (view!=null)
-    { messageComponent(view,message);
-    }
-    else
+    
+    Container container=component.asContainer();
+    
+    if (container!=null)
     {
-    
-      Container container=component.asContainer();
-    
-      if (container!=null)
+      if (path!=null && !path.isEmpty())
       {
-        if (path!=null && !path.isEmpty())
-        {
-          // 
-          try
-          { messageChild(pushPath(),message);
-          }
-          finally
-          { popPath();
-          }
+        // 
+        try
+        { messageChild(pushPath(),message);
         }
-        else if (message.isMulticast())
-        { 
-          // No specific child was specified, and message is multicast, so
-          //   message all children
-          final int count=container.getChildCount();
-          if (count>0)
-          {
-            for (int i=0;i<count;i++)
-            { messageChild(i,message);
-            }
+        finally
+        { popPath();
+        }
+      }
+      else if (message.isMulticast())
+      { 
+        // No specific child was specified, and message is multicast, so
+        //   message all children
+        final int count=container.getChildCount();
+        if (count>0)
+        {
+          for (int i=0;i<count;i++)
+          { messageChild(i,message);
           }
         }
       }
@@ -300,47 +293,6 @@ public class Dispatcher
   { this.localPath=localPath;
   }
   
-  /**
-   * <p>Message a specific child of the current Container.
-   * </p>
-   * 
-   * <p>This method ensures that the child Component's state is available in
-   *   the messageContext, and ensures that the state of the current
-   *   Container is restored to the messageContext upon return.
-   * </p>
-   * 
-   * @param context
-   * @param index
-   */
-  private void messageComponent
-    (Component component
-    ,Message message
-    )
-  {
-    if (isStateful() && state!=null)
-    {
-      final State lastState=state;
-      final Component lastComponent=component;
-      final Path lastLocalPath=localPath;
-      state=ensureChildState(-1);
-      try
-      { 
-        Component child=component.asContainer().getChild(-1);
-        child.message(this,message);
-      }
-      finally
-      { 
-        state=lastState;
-        component=lastComponent;
-        localPath=lastLocalPath;
-        
-      }
-    }
-    else
-    { component.asContainer().getChild(-1).message(this,message);
-    }
-    
-  }
   
   /**
    * <p>Message a specific child of the current Container.

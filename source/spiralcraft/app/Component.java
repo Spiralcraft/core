@@ -17,6 +17,7 @@ package spiralcraft.app;
 
 import spiralcraft.common.Lifecycle;
 import spiralcraft.lang.Contextual;
+import spiralcraft.log.Level;
 
 /**
  * <p>Implements arbitrary functionality within the context of a containership
@@ -58,7 +59,7 @@ public interface Component
     );
   
   /**
-   * Create a new State subtype which represents this Component's
+   * Create a new State which represents this Component's
    *   conversational state.
    * 
    * @param parent
@@ -73,7 +74,7 @@ public interface Component
    * 
    * @return
    */
-  public Container asContainer();
+  Container asContainer();
   
   /**
    * Return a reference to the Parent aspect of this object, if this
@@ -81,7 +82,7 @@ public interface Component
    * 
    * @return
    */
-  public Parent asParent();
+  Parent asParent();
   
   
   /**
@@ -90,9 +91,14 @@ public interface Component
    * 
    * @return
    */
-  public Parent getParent();
+  Parent getParent();
   
 
-  
+  /**
+   * The volume of log messages emitted from this component
+   * 
+   * @param debugLevel
+   */
+  void setLogLevel(Level logLevel);
 
 }
