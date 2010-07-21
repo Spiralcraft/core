@@ -21,6 +21,7 @@ import spiralcraft.lang.parser.Node;
 import spiralcraft.lang.parser.ExpressionParser;
 import spiralcraft.log.ClassLog;
 
+import java.net.URI;
 import java.util.HashMap;
 
 /**
@@ -71,7 +72,43 @@ public class Expression<T>
     }
   }
   
- 
+  /**
+   * Generate an Expression that resolves a class instance Channel
+   *   
+   * @param <X>
+   * @param text
+   * @return
+   */
+  public static <X> Expression<X> instanceResolver(Class<X> type)
+  {
+    try
+    { 
+      return Expression.<X>parse
+        ("[:class:/"+type.getName().replace('.','/')+"]");
+    }
+    catch (ParseException x)
+    { throw new RuntimeException(x);
+    }
+  }
+  
+  /**
+   * Generate an Expression that resolves a Focus Channel from a URI
+   * 
+   * @param <X>
+   * @param text
+   * @return
+   */
+  public static <X> Expression<X> instanceResolver(URI typeURI)
+  {
+    try
+    { 
+      return Expression.<X>parse
+        ("[:"+typeURI+"]");
+    }
+    catch (ParseException x)
+    { throw new RuntimeException(x);
+    }
+  }
   
   /**
    * Create an Expression by parsing an expression language String. This is
