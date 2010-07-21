@@ -41,9 +41,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
 
-import spiralcraft.registry.RegistryNode;
-
-
 /**
  * Associates a PropertySpecifier with some value or value source
  *   in the context of an instantiated Assembly
@@ -65,8 +62,6 @@ public class PropertyBinding
   
   private Assembly[] _contents;
   private StringConverter _converter;
-  // private RegistryNode _registryNode;
-  private RegistryNode propertyNode;
   private boolean existingTargetValueUsed;
 
   public PropertyBinding(PropertySpecifier specifier,Assembly container)
@@ -220,54 +215,8 @@ public class PropertyBinding
   {
     _contents=contents;
     applySource();
-    if (propertyNode!=null)
-    { registerSubAssemblies();
-    }
   }
 
-  private void registerSubAssemblies()
-  {
-    if (!_target.getContentType().isArray())
-    { 
-      if (!_contents[0].getAssemblyClass().isSingleton())
-      { _contents[0].register(propertyNode);
-      }
-    }
-    else
-    {
-      for (int i=0;i<_contents.length;i++)
-      { 
-        if (!_contents[i].getAssemblyClass().isSingleton())
-        {
-          _contents[i].register
-            (propertyNode.createChild(Integer.toString(i))
-            );
-        }
-      }
-    }
-  }
-  
-  public void register(RegistryNode node)
-  {
-    // _registryNode=node;
-    if (_contents!=null && _contents.length>0)
-    { 
-      // Sub-assemblies (contents) are specified in definition.
-      // Register all sub-assemblies 
-      propertyNode=node.createChild(_specifier.getTargetName());
-      registerSubAssemblies();
-    }
-  }
-
-//  private void createSourceChannel()
-//  {
-//    if (_container.isFactoryMode())
-//    { _sourceChannel=new ThreadLocalChannel(_target.getReflector());
-//    }
-//    else
-//    { _sourceChannel=new SimpleChannel(_target.getReflector(),null,false);
-//    }
-//  }
   
   /**
    * Instantiate sub-Assemblies (but not the instances they contain yet)
@@ -301,7 +250,9 @@ public class PropertyBinding
       int i=0;
       for (AssemblyClass assemblyClass : contents)
       { 
-        Assembly assembly=assemblyClass.newInstance(factoryMode);
+        Assembly assembly=assemblyClass.newInstance
+          (_container.getFocus(),factoryMode);
+        
         if (_specifier.getExport())
         { exportSingletons(assembly);
         }
@@ -311,7 +262,7 @@ public class PropertyBinding
       for (Assembly assembly:_contents)
       { 
         if (!assembly.isBound())
-        { assembly.bind(_container.getFocus());
+        { assembly.bind();
         }
       }
 

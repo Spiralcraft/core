@@ -31,11 +31,6 @@ import spiralcraft.data.DataException;
 
 import java.util.HashMap;
 
-import spiralcraft.registry.RegistryNode;
-import spiralcraft.registry.Registrant;
-
-
-//import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringConverter;
 
 import spiralcraft.lang.AccessException;
@@ -69,7 +64,8 @@ import java.net.URI;
  */
 @SuppressWarnings("unchecked") // Heterogeneous design- does not use generics
 public class Assembly<T>
-  implements Registrant,Lifecycle
+  implements 
+    Lifecycle
 {
   private static ClassLog log=ClassLog.getInstance(Assembly.class);
   
@@ -89,7 +85,7 @@ public class Assembly<T>
    * Construct an instance of the specified AssemblyClass,
    *   without binding properties
    */
-  Assembly(AssemblyClass assemblyClass,boolean factoryMode)
+  Assembly(AssemblyClass assemblyClass,Focus parentFocus,boolean factoryMode)
     throws BuildException
   {
     // log.fine("Plain Constructor");
@@ -102,7 +98,7 @@ public class Assembly<T>
     { throw new BuildException("No java class defined for assembly");
     }
 
-    focus=new AssemblyFocus();
+    focus=new AssemblyFocus(parentFocus);
     if (factoryMode)
     {
       focus.setSubject
@@ -230,7 +226,7 @@ public class Assembly<T>
   { return bound;
   }
   
-  void bind(Focus<?> parentFocus)
+  void bind()
     throws BuildException
   {
     if (bound)
@@ -240,7 +236,7 @@ public class Assembly<T>
     if (instanceSource!=null)
     { 
       try
-      { instanceSourceChannel=parentFocus.bind(instanceSource);
+      { instanceSourceChannel=focus.getParentFocus().bind(instanceSource);
       }
       catch (BindException x)
       { 
@@ -248,7 +244,6 @@ public class Assembly<T>
           ("Error binding to instance source "+instanceSource,x);
       }
     }
-    focus.setParentFocus(parentFocus);
     _propertyBindings=_assemblyClass.bindProperties(this);
   }
   
@@ -446,30 +441,7 @@ public class Assembly<T>
     
   }
 
-  
-  @Override
-  public void register(RegistryNode node)
-  {
-    node.registerInstance(Assembly.class,this);
 
-    T instance=focus.getSubject().get();
-    if (instance instanceof Registrant)
-    { ((Registrant) instance).register(node);
-    }
-    
-    // Register the Object associated with this node as its
-    //   concrete Class identity.
-    // XXX We changed this from registering as Object.class- make sure
-    //   nothing breaks
-    node.registerInstance
-      (_assemblyClass.getJavaClass()
-      ,instance
-      );
-
-    for (int i=0;i<_propertyBindings.length;i++)
-    { _propertyBindings[i].register(node);
-    }
-  }
 
   @Override
   public void start() throws LifecycleException
@@ -490,13 +462,7 @@ public class Assembly<T>
     { ((Lifecycle) instance).stop();
     }
   }
-  
-  /**
-   * Return the Assembly which contains this one
-   */
-//  public Assembly<?> getParent()
-//  { return _parent;
-//  }
+
 
   public void registerSingletons(Class[] singletonInterfaces,Assembly singleton)
   { 
@@ -540,6 +506,10 @@ public class Assembly<T>
     extends BaseFocus<tFocus>
     implements Focus<tFocus>
   {
+    public AssemblyFocus(Focus<?> parentFocus)
+    { super(parentFocus);
+    }
+    
     @Override
     public boolean isFocus(URI uri)
     { 
