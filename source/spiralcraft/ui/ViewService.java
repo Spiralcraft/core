@@ -12,20 +12,20 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.service;
+package spiralcraft.ui;
 
-public class ServiceException
-  extends Exception
+import spiralcraft.app.View;
+import spiralcraft.service.Service;
+
+
+/**
+ * Generic UI service, typically subclassed for a specific View model, 
+ *   such as Swing or WebUI. 
+ */
+public interface ViewService
+  extends Service,View
 {
 
-  private static final long serialVersionUID = 1L;
 
-  public ServiceException(String message)
-  { super(message);
-  }
-
-  public ServiceException(String message,Throwable cause)
-  { super(message,cause);
-  }
-
+  
 }

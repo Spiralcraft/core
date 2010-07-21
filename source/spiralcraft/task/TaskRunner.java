@@ -34,8 +34,6 @@ import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.log.Log;
-import spiralcraft.registry.Registrant;
-import spiralcraft.registry.RegistryNode;
 import spiralcraft.service.Service;
 import spiralcraft.util.string.StringConverter;
 
@@ -47,7 +45,7 @@ import spiralcraft.util.string.StringConverter;
  *
  */
 public class TaskRunner
-  implements Executable,Registrant
+  implements Executable
 {
 
   private Scenario<?,?> scenario;
@@ -63,7 +61,6 @@ public class TaskRunner
   private Thread shutdownThread=new ShutdownHook();
   private Service service;
   private URI serviceURI;
-  private RegistryNode registryNode;
   
   
   {
@@ -118,15 +115,7 @@ public class TaskRunner
   { this.rootFocus=focus;
   }
   
-  @Override
-  public void register(RegistryNode registryNode)
-  { 
-    this.registryNode=registryNode;
-    if (service!=null)
-    { service.register(registryNode);
-    }
-    
-  }
+
   
   
   public void loadScenario(URI uri)
@@ -223,7 +212,6 @@ public class TaskRunner
       try
       { 
         service=AbstractXmlObject.<Service>create(null,serviceURI).get();
-        service.register(registryNode);
       }
       catch (BindException x)
       { throw new ExecutionException("Error binding service "+serviceURI,x);

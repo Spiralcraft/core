@@ -15,6 +15,9 @@
 package spiralcraft.service;
 
 
+import spiralcraft.app.Component;
+import spiralcraft.app.spi.AbstractComponent;
+import spiralcraft.app.spi.StandardContainer;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.exec.BeanArguments;
 import spiralcraft.exec.Executable;
@@ -43,7 +46,7 @@ import spiralcraft.task.Scenario;
  * </p>
  */
 public class Daemon
-  extends ServiceGroup
+  extends AbstractComponent
   implements Executable
 {
   private static final ClassLog log=ClassLog.getInstance(Daemon.class);
@@ -80,7 +83,20 @@ public class Daemon
     }
   };
 
-
+  public void setServices(final Service[] services)
+  {
+    this.container
+      =new StandardContainer()
+    {
+      { 
+        children=new Component[services.length];
+        int i=0;
+        for (Component service:services)
+        { children[i++]=service;
+        }
+      }
+    };
+  }
 
   public void setAfterStart(Scenario<?,?> afterStart)
   { this.afterStart=afterStart;
@@ -90,13 +106,14 @@ public class Daemon
   { return _args;
   }  
 
-  private void bind()
+  @Override
+  protected Focus<?> bindImports(Focus<?> chain)
     throws BindException
   { 
-    Focus<Daemon> focus=new BeanFocus<Daemon>(this);
     if (afterStart!=null)
-    { afterStart.bind(focus);
+    { afterStart.bind(selfFocus);
     }
+    return chain;
   }
   
   public final void execute(String ... args)
@@ -107,7 +124,7 @@ public class Daemon
       new BeanArguments(this).process(args);
       
       try
-      { bind();
+      { bind(new BeanFocus<Daemon>(this));
       }
       catch (BindException x)
       { throw new ExecutionException("Error binding",x);

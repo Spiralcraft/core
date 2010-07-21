@@ -15,11 +15,10 @@
 package spiralcraft.service;
 
 
+import spiralcraft.app.spi.AbstractComponent;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
-import spiralcraft.log.Log;
-import spiralcraft.registry.RegistryNode;
 import spiralcraft.time.Clock;
 
 /**
@@ -31,28 +30,23 @@ import spiralcraft.time.Clock;
  *
  */
 public abstract class ThreadService
-  implements Service,Runnable
+  extends AbstractComponent
+  implements Runnable
 {
 
-  protected final Log log
-    =ClassLog.getInstance(getClass());
   
   protected Thread thread;
   private volatile boolean stop=true;
   private boolean stopOnError;
   private int runIntervalMs=1000;
   private long lastRun;
-  protected boolean debug;
   
   
   
   public void setStopOnError(boolean stopOnError)
   { this.stopOnError=stopOnError;
   }
-  
-  public void setDebug(boolean debug)
-  { this.debug=debug;
-  }
+
   
   /**
    * <p>The minimum amount of time between the start of successive calls
@@ -65,12 +59,7 @@ public abstract class ThreadService
   public void setRunIntervalMs(int runIntervalMs)
   { this.runIntervalMs=runIntervalMs;
   }
-  
-  @Override
-  public synchronized void register(RegistryNode registryNode)
-  { }
-  
-  
+    
   @Override
   public synchronized void start()
     throws LifecycleException
@@ -83,6 +72,7 @@ public abstract class ThreadService
     thread=new Thread(this);
     thread.start();
     log.log(Level.FINE,("started"));
+    super.start();
   }
 
   @Override
@@ -113,7 +103,7 @@ public abstract class ThreadService
       try
       { 
         lastRun=Clock.instance().approxTimeMillis();
-        if (debug)
+        if (logLevel.canLog(Level.FINE))
         { log.log(Level.FINE,"Running...");
         }
         runOnce();
@@ -139,7 +129,7 @@ public abstract class ThreadService
       { 
         try
         { 
-          if (debug)
+          if (logLevel.canLog(Level.FINE))
           { log.log
               (Level.FINE,"Sleeping for "+(runIntervalMs-elapsedTime)+"ms");
           }

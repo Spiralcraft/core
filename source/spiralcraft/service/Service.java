@@ -14,9 +14,7 @@
 //
 package spiralcraft.service;
 
-import spiralcraft.common.Lifecycle;
-import spiralcraft.common.LifecycleException;
-import spiralcraft.registry.Registrant;
+import spiralcraft.app.Component;
 
 /**
  * <p>Represents a software subsystem which cooperates with other such
@@ -32,19 +30,8 @@ import spiralcraft.registry.Registrant;
  * </p>
  */
 public interface Service
-  extends Lifecycle,Registrant
+  extends Component
 {
 
-  /**
-   * Initialize the service by resolving all appropriate 
-   *   resources and dependent services.
-   */
-  public void start()
-    throws LifecycleException;
 
-  /**
-   * Shut down the service and release all resources
-   */
-  public void stop()
-    throws LifecycleException;
 }
