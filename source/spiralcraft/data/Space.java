@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import spiralcraft.app.spi.AbstractComponent;
 import spiralcraft.common.LifecycleException;
 
 import spiralcraft.data.access.Store;
@@ -37,32 +38,29 @@ import spiralcraft.data.query.ConcatenationBinding;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
-import spiralcraft.lang.spi.SimpleChannel;
 
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
-import spiralcraft.registry.RegistryNode;
 import spiralcraft.service.Service;
 import spiralcraft.util.ListMap;
 
 
 /**
- * <p>A logical data container. Provides access to a complete set of data used by
- *   one or more applications. Data reachable from a Space may be
+ * <p>A logical data container. Provides access to a complete set of data used 
+ *   by one or more applications. Data reachable from a Space may be
  *   contained in or more Stores. 
  * </p>
  *   
  */
 public class Space
-  implements Queryable<Tuple>,Service,Contextual
+  extends AbstractComponent
+  implements Queryable<Tuple>,Service
 {
   public static final URI SPACE_URI 
     = URI.create("class:/spiralcraft/data/Space");
   public static final ClassLog log
     =ClassLog.getInstance(Space.class);
-  public static final Level debugLevel
-    =ClassLog.getInitialDebugLevel(Space.class, null);
   
   public static final Space find(Focus<?> focus)
   {
@@ -76,7 +74,6 @@ public class Space
   }
 
   private Store[] stores;
-  private RegistryNode registryNode;
   
   private Type<?>[] types;
   
@@ -102,12 +99,7 @@ public class Space
     return types;
   }
   
-  
-  
-  @Override
-  public void register(RegistryNode node)
-  { registryNode=node;
-  }
+ 
   
   public BoundQuery<?,Tuple> getAll(Type<?> type)
     throws DataException
@@ -136,14 +128,13 @@ public class Space
 
 
   @Override
-  public Focus<?> bind(Focus<?> focusChain)
+  public Focus<?> bindImports(Focus<?> focusChain)
     throws BindException
   { 
-    focusChain=focusChain.chain(new SimpleChannel<Space>(this,true));
     for (Store store: stores)
     {
       if (store instanceof Contextual)
-      { ((Contextual) store).bind(focusChain);
+      { ((Contextual) store).bind(selfFocus);
       }
     }
     return focusChain;
@@ -153,11 +144,6 @@ public class Space
   public void start()
     throws LifecycleException
   { 
-    if (registryNode==null)
-    { 
-      throw new LifecycleException
-        ("SingleSpace: must call register() before start()");
-    }
     
     for (Store store: stores)
     { 
@@ -166,6 +152,7 @@ public class Space
     }
     
     computeTypes();
+    super.start();
   }
   
   
@@ -188,6 +175,7 @@ public class Space
   public void stop()
     throws LifecycleException
   { 
+    super.stop();
     for (Store store:stores)
     { store.stop();
     }
@@ -206,7 +194,7 @@ public class Space
     {
       BoundQuery<?,Tuple> ret=query.solve(focus,this);
       ret.resolve();
-      if (debugLevel.canLog(Level.DEBUG))
+      if (logLevel.canLog(Level.DEBUG))
       { log.debug("returning "+ret+" from query("+query+")");
       }
       return ret;
