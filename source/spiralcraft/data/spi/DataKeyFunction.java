@@ -39,6 +39,10 @@ public class DataKeyFunction<T>
   { 
     valueChannel=new ThreadLocalChannel<T>(valueReflector);
     Focus<T> focus=new SimpleFocus<T>(valueChannel);
+    
+    // Indexes are a function of the target type and cannot be contextual
+    valueChannel.setContext(new SimpleFocus<Void>(null));
+    
     projectionChannel=projection.bindChannel(valueChannel,focus,null);
   }
   
