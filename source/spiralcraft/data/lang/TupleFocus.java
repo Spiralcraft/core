@@ -34,20 +34,15 @@ public class TupleFocus<T extends Tuple>
     extends SimpleFocus<T>
 {
 
-  private final CursorBinding<T,ManualCursor<T>> cursorBinding;
   private final ManualCursor<T> cursor;
   
-  public TupleFocus(Focus<?> parentFocus,FieldSet fieldSet)
+  public static final <T extends Tuple> TupleFocus<T> create
+    (Focus<?> parentFocus,FieldSet fieldSet)
     throws DataException
-  { 
-    this(fieldSet);
-    setParentFocus(parentFocus);
-  }
-  
-  public TupleFocus(FieldSet fieldSet)
-    throws DataException
-  { 
-    cursor=new ManualCursor<T>(fieldSet);
+  {
+    ManualCursor<T> cursor=new ManualCursor<T>(fieldSet);
+    CursorBinding<T,ManualCursor<T>> cursorBinding;
+    
     try
     { cursorBinding=new CursorBinding<T,ManualCursor<T>>(cursor);
     }
@@ -56,9 +51,20 @@ public class TupleFocus<T extends Tuple>
       throw new DataException
         ("Error creating binding for FieldSet '"+fieldSet+"':"+x,x);
     }
-    
-    setSubject(cursorBinding);
+    return new TupleFocus<T>(parentFocus,cursor,cursorBinding);
   }
+  
+  public TupleFocus
+    (Focus<?> parentFocus
+    ,ManualCursor<T> cursor
+    ,CursorBinding<T,ManualCursor<T>> cursorBinding
+    )
+    throws DataException
+  { 
+    super(parentFocus,cursorBinding);
+    this.cursor=cursor;
+  }
+  
   
   public void setTuple(T tuple)
   { cursor.setTuple(tuple);

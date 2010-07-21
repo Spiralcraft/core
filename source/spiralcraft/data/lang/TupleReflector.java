@@ -451,7 +451,7 @@ public class TupleReflector<T extends Tuple>
               ("Found match for "+name
                +": return type is "+method.getReturnType());
           }
-          return method.bind(focus, source, paramChannels);
+          return method.bind(source, paramChannels);
           // Matching method- note: 
           // XXX Method resolution is first declared to match, not best fit
         }

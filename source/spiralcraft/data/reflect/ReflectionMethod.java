@@ -30,7 +30,6 @@ import spiralcraft.data.DataComposite;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.util.ArrayUtil;
 
@@ -155,7 +154,6 @@ public class ReflectionMethod
   
   @Override
   public Channel<?> bind(
-    Focus<?> focus,
     Channel<?> source,
     Channel<?>[] params)
     throws BindException

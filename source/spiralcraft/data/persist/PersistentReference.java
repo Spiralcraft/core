@@ -17,7 +17,7 @@ package spiralcraft.data.persist;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
-import spiralcraft.registry.Registrant;
+//import spiralcraft.registry.Registrant;
 
 import java.net.URI;
 
@@ -30,7 +30,7 @@ import java.net.URI;
  *XXX This interface is incomplete
  */
 public interface PersistentReference<T>
-  extends Registrant,Contextual
+  extends Contextual
 {
   /**
    * Save the state of this reference to the backing store

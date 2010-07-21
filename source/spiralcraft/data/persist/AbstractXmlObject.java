@@ -42,9 +42,6 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.ThreadContextual;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.registry.Registrant;
-import spiralcraft.registry.Registry;
-import spiralcraft.registry.RegistryNode;
 
 
 import spiralcraft.util.thread.ContextFrame;
@@ -83,8 +80,7 @@ import spiralcraft.vfs.Resource;
  */
 public abstract class AbstractXmlObject<Treferent,Tcontainer>
   implements 
-    Registrant
-    ,PersistentReference<Treferent>
+    PersistentReference<Treferent>
     ,Lifecycle
     ,ThreadContextual
 {
@@ -171,7 +167,10 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
    * @throws BindException
    */
   public static final <T> AbstractXmlObject<T,?> activate
-    (URI typeURI,URI instanceURI,RegistryNode registryNode,Focus<?> focus)
+    (URI typeURI
+    ,URI instanceURI
+    ,Focus<?> focus
+    )
     throws BindException
   {
     AbstractXmlObject<T,?> reference;
@@ -207,12 +206,8 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
       }
     }
     
-    if (registryNode==null)
-    { registryNode=Registry.getLocalRoot();
-    }
     try
     { 
-      reference.register(registryNode);
       if (focus!=null)
       { reference.bind(focus);
       }
@@ -230,7 +225,6 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   protected URI typeURI;
   protected Type<Tcontainer> type;
   protected Tcontainer instance;
-  protected RegistryNode registryNode;
   private Channel<Treferent> channel;
   protected Focus<?> focus;
   protected ContextFrame next;
@@ -386,17 +380,6 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     
   }
   
-  public void register(RegistryNode node)
-  {
-    registryNode=node;
-    if (instance instanceof Registrant)
-    { ((Registrant) instance).register(registryNode.createChild("instance"));
-    }
-    else
-    { registryNode.registerInstance(instance.getClass(),instance);
-    }    
-    registryNode.registerInstance(PersistentReference.class,this);
-  }
   
   public void start()
     throws LifecycleException

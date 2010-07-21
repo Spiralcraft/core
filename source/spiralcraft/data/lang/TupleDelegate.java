@@ -33,7 +33,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.SimpleFocus;
 
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
@@ -226,8 +225,7 @@ public class TupleDelegate<T>
             methodChannel
               =(Channel<Object>) 
                 dataMethod.bind
-                  (new SimpleFocus(null).chain(binding)
-                  ,binding
+                  (binding
                   ,paramChannels
                   );
             if (paramChannels.length==0)

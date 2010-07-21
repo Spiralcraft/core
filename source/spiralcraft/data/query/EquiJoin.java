@@ -317,7 +317,6 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
     {
       source.resolve();
       focus=new TeleFocus<Tt>(paramFocus,sourceChannel);
-      focus.setParentFocus(paramFocus);
       try
       { 
         int i=0;
