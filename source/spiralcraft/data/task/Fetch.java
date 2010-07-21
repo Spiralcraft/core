@@ -248,6 +248,9 @@ public class Fetch
 //    resultReflector=resultChannel.getReflector();
 
     focusChain=focusChain.chain(resultChannel);
+    if (debug)
+    { log.fine("Fetch Context is "+resultChannel.getContext());
+    }
     return focusChain;
   }
 
