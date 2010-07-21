@@ -567,6 +567,7 @@ class TopListChannel<T,I>
     );
     this.source=source;
     this.decorator=decorator;
+    this.context=source.getContext();
   }
 
   @Override
@@ -600,6 +601,7 @@ class TopIterChannel<T,I>
       (decorator.getComponentReflector()
       );
     this.decorator=decorator;
+    this.context=source.getContext();
   }
   
   @Override
@@ -645,6 +647,7 @@ class CollectionSizeChannel<T>
         (source.getReflector().getTypeURI()+" does not support @size()");
     }
     this.source=source;
+    this.context=source.getContext();
   }
   
   @Override
@@ -674,6 +677,7 @@ class CastChannel<S,T extends S>
   { 
     super(type);
     this.source=source;
+    this.context=source.getContext();
   }
 
   @SuppressWarnings("unchecked")
