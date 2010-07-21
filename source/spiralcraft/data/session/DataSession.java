@@ -32,6 +32,7 @@ import spiralcraft.data.transaction.Transaction.State;
 import spiralcraft.data.util.DebugDataConsumer;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
+import spiralcraft.log.ClassLog;
 
 
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class DataSession
 {
   public static final URI FOCUS_URI
     =URI.create("class:/spiralcraft/data/session/DataSession");
+  public static final ClassLog log=ClassLog.getInstance(DataSession.class);
   
   /**
    * Find the nearest DataSession in context
@@ -75,6 +77,7 @@ public class DataSession
   private ResourceManager<DataSessionBranch> resourceManager
     =new DataSessionResourceManager();
   private Focus<?> focus;
+  private boolean debug;
   
   public void setType(Type<? extends DataComposite> type)
   { this.type=type;
@@ -132,6 +135,10 @@ public class DataSession
   public synchronized Buffer buffer(DataComposite composite)
     throws DataException
   {
+    if (debug)
+    { log.fine("Buffering "+composite);
+    }
+    
     if (buffers==null)
     { buffers=new HashMap<Identifier,Buffer>();
     }
@@ -154,8 +161,18 @@ public class DataSession
         // Consider a Reference type
         throw new IllegalArgumentException("DataComposite not recognized");
       }
+      if (debug)
+      { log.fine("Using new buffer "+buffer);
+      }
       buffers.put(composite.getId(), buffer);
     }
+    else
+    { 
+      if (debug)
+      { log.fine("Using existing buffer "+buffer);
+      }
+    }
+        
     return buffer;
     
     
@@ -178,6 +195,9 @@ public class DataSession
     buffer.setId(new PojoIdentifier(buffer));
     
     buffers.put(buffer.getId(),buffer);
+    if (debug)
+    { log.fine("Created new buffer "+buffer);
+    }
     return (Tbuffer) buffer;
   }
   
@@ -191,7 +211,13 @@ public class DataSession
   synchronized void release(Buffer buffer,Identifier id)
   {
     if (buffers.get(id)==buffer)
-    { buffers.remove(id);
+    { 
+      if (buffers.remove(id)!=null)
+      {    
+        if (debug)
+        { log.fine("Released #"+id);
+        }
+      }
     }
   }
   
