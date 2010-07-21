@@ -1204,7 +1204,7 @@ public class AssemblyClass
    * Create an unbound assembly (if not a singleton), for later binding
    */
   @SuppressWarnings("unchecked") // Reflected type at Runtime
-  Assembly<?> newInstance(boolean factoryMode)
+  Assembly<?> newInstance(Focus parentFocus,boolean factoryMode)
     throws BuildException
   {
     if (_singleton)
@@ -1216,8 +1216,9 @@ public class AssemblyClass
         }
         else
         { 
-          _singletonInstance=new Assembly(this,factoryMode);
-          _singletonInstance.bind(null);
+          // Singleton doesn't bind to focus chain
+          _singletonInstance=new Assembly(this,null,factoryMode);
+          _singletonInstance.bind();
           // Note: resolve() is re-entrant, so it will be late-called
           
           return _singletonInstance;
@@ -1226,11 +1227,11 @@ public class AssemblyClass
     }
     else if (isUnmodifiedSubclass() && _baseAssemblyClass.isSingleton())
     { 
-      // Reference to a singleton
-      return _baseAssemblyClass.newInstance(factoryMode);
+      // Reference to a singleton, doesn't bind to focus chain
+      return _baseAssemblyClass.newInstance(null,factoryMode);
     }
     else
-    { return new Assembly(this,factoryMode);
+    { return new Assembly(this,parentFocus,factoryMode);
     }
   }
   
@@ -1241,9 +1242,9 @@ public class AssemblyClass
   public Assembly<?> newInstance(Focus<?> parentFocus)
     throws BuildException
   { 
-    Assembly<?> assembly=newInstance(false);
+    Assembly<?> assembly=newInstance(parentFocus,false);
     if (!assembly.isBound())
-    { assembly.bind(parentFocus);
+    { assembly.bind();
     }
     if (!assembly.isResolved())
     { assembly.resolve(null);
@@ -1259,9 +1260,9 @@ public class AssemblyClass
   public <T> Assembly<T> wrap(Focus<?> parentFocus,T val)
     throws BuildException
   { 
-    Assembly<T> assembly=(Assembly<T>) newInstance(false);
+    Assembly<T> assembly=(Assembly<T>) newInstance(parentFocus,false);
     if (!assembly.isBound())
-    { assembly.bind(parentFocus);
+    { assembly.bind();
     }
     if (!assembly.isResolved())
     { assembly.resolve(val);
@@ -1286,10 +1287,10 @@ public class AssemblyClass
   public Assembly<?> newFactoryInstance(Focus<?> parentFocus)
     throws BuildException
   {
-    Assembly<?> assembly=newInstance(true);
+    Assembly<?> assembly=newInstance(parentFocus,true);
     
     if (!assembly.isBound())
-    { assembly.bind(parentFocus);
+    { assembly.bind();
     }
     return assembly;    
   }
