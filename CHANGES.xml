@@ -159,6 +159,8 @@
           </URI>
           <URI>lang/spi/AbstractChannel.java
           </URI>
+          <URI>lang/spi/AbstractReflector.java
+          </URI>
           <URI>lang/spi/AbstractFunctorChannel.java
           </URI>
           <URI>lang/spi/ClosureFocus.java
