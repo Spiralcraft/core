@@ -514,12 +514,12 @@ public class ExpressionParser
     {
       case '-':
         consumeToken();
-        operation=firstOperand.minus(parseMultiplicativeExpression());
+        operation=firstOperand.minus(expectNode(parseMultiplicativeExpression()));
         node=parseAdditiveExpressionRest(operation);
         break;
       case '+':
         consumeToken();
-        operation=firstOperand.plus(parseMultiplicativeExpression());
+        operation=firstOperand.plus(expectNode(parseMultiplicativeExpression()));
         node=parseAdditiveExpressionRest(operation);
         break;
       default:
@@ -550,17 +550,17 @@ public class ExpressionParser
     {
       case '/':
         consumeToken();
-        operation = firstOperand.divide(parseUnaryExpression()); 
+        operation = firstOperand.divide(expectNode(parseUnaryExpression())); 
         node = parseMultiplicativeExpressionRest(operation);
         break;
       case '*':
         consumeToken();
-        operation = firstOperand.times(parseUnaryExpression()); 
+        operation = firstOperand.times(expectNode(parseUnaryExpression())); 
         node = parseMultiplicativeExpressionRest(operation);
         break;
       case '%':
         consumeToken();
-        operation = firstOperand.modulus(parseUnaryExpression()); 
+        operation = firstOperand.modulus(expectNode(parseUnaryExpression())); 
         node = parseMultiplicativeExpressionRest(operation);
         break;
       default:
@@ -568,6 +568,15 @@ public class ExpressionParser
         break;
     }
     return node;  
+  }
+  
+  private Node expectNode(Node node)
+    throws ParseException
+  {
+    if (node==null)
+    { throwUnexpected("Unexpected end of Expression");
+    }
+    return node;
   }
 
   /**
