@@ -1,6 +1,266 @@
 <scm:Change.list
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
+  <scm:Change>
+  
+    <revision>0.4.10
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-07-20
+    </date>
+  
+    <notes>
+      <scm:Note>Refactoring to propagate original binding context Focus through
+        Channels to support lazy-binding and subsequent binding-caching while
+        ensuring upward references.
+      </scm:Note>
+      <scm:Note>Refactor spiralcraft.registry and spiralcraft.service patterns
+        into spiralcraft.app component model. 
+      </scm:Note>
+      <scm:Note>Fix NPE in Reference task when chain is null
+      </scm:Note>
+      <scm:Note>Fix NPE after parsing expression with binary operator missing
+        second operand.
+      </scm:Note>
+      <scm:Note>Fix issue where the buffer type is written to the store instead
+        of the data type after editing an externally generated Tuple.
+      </scm:Note>
+      <scm:Note>Make Expression more code-friendly by adding adding static
+        methods to resolve class instances and Focus URIs.
+      </scm:Note>
+    </notes>
+    
+    <detail>
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Make Expression more code-friendly by adding adding static
+        methods to resolve class instances and Focus URIs.
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/lang/Expression.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Added debug logging to DataSession
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>session/DataSession.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Fix issue where the buffer type is written to the store
+            instead of the data type after editing an externally generated 
+            Tuple.
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/data/xml/
+        </path>
+        
+        <resources>
+          <URI>XmlStore.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Refactoring to propagate original binding context Focus
+            through Channels to support lazy-binding and subsequent
+            binding-caching while ensuring upward references.
+          </scm:Note>
+          <scm:Note>Lazy binding type members now use Channel.getContext()
+            to bind internals.
+          </scm:Note>          
+          <scm:Note>Focus must now be constructed with a parent, which
+            is made final.
+          </scm:Note>
+          <scm:Note>Method no longer accepts a Focus parameter.
+          </scm:Note>
+          <scm:Note>Renamed parameters in field to clarify that the supplied
+            Focus is the parameter context of ChannelFactory.
+          </scm:Note>
+          <scm:Note>Removed unused member from AbstractChannel
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>builder/Assembly.java
+          </URI>
+          <URI>builder/PropertyBinding.java
+          </URI>
+          <URI>builder/AssemblyClass.java
+          </URI>
+          <URI>data/access/DataSynchronizer.java
+          </URI>        
+          <URI>data/core/TaskMethod.java
+          </URI>             
+          <URI>data/core/UniqueRule.java
+          </URI>             
+          <URI>data/core/CalculatedFieldImpl.java
+          </URI>             
+          <URI>data/core/QueryField.java
+          </URI>         
+          <URI>data/core/KeyField.java
+          </URI>                 
+          <URI>data/Field.java
+          </URI>             
+          <URI>data/Method.java
+          </URI>             
+          <URI>data/lang/TupleDelegate.java
+          </URI>            
+          <URI>data/lang/TupleFocus.java
+          </URI> 
+          <URI>data/lang/TupleReflector.java
+          </URI> 
+          <URI>data/query/EquiJoin.java
+          </URI>             
+          <URI>data/reflect/ReflectionMethod.java
+          </URI>             
+          <URI>data/session/BufferChannel.java
+          </URI> 
+          <URI>data/session/BufferField.java
+          </URI>
+          <URI>data/spi/DataKeyFunction.java
+          </URI>
+          <URI>lang/BaseFocus.java
+          </URI>
+          <URI>lang/Channel.java
+          </URI>
+          <URI>lang/CompoundFocus.java
+          </URI>
+          <URI>lang/SimpleFocus.java
+          </URI>
+          <URI>lang/StaticFocus.java
+          </URI>
+          <URI>lang/TeleFocus.java
+          </URI>
+          <URI>lang/spi/AbstractChannel.java
+          </URI>
+          <URI>lang/spi/AbstractFunctorChannel.java
+          </URI>
+          <URI>lang/spi/ClosureFocus.java
+          </URI>
+          <URI>lang/spi/ProxyChannel.java
+          </URI>
+          <URI>lang/spi/ThreadLocalChannel.java
+          </URI>
+          <URI>lang/spi/TranslatorChannel.java
+          </URI>
+        </resources>      
+        
+      </scm:Change>
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Refactor spiralcraft.registry and spiralcraft.service
+           patterns into spiralcraft.app component model. 
+          </scm:Note>
+          <scm:Note>Removed the spiralcraft.registry package and all
+            references
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/
+        </path>
+
+        <resources>
+          <URI>registry/Registry.java
+          </URI>
+          <URI>registry/LocalRegistryNode.java
+          </URI>
+          <URI>registry/RegistryNode.java
+          </URI>
+          <URI>registry/Registrant.java
+          </URI>
+          <URI>registry/RegistryPathObject.java
+          </URI>
+          <URI>builder/Assembly.ava
+          </URI>
+          <URI>builder/PropertyBinding.ava
+          </URI>          
+          <URI>data/Space.java
+          </URI>         
+          <URI>data/core/TaskMethod.java
+          </URI>       
+          <URI>data/persist/PersistentReference.java
+          </URI> 
+          <URI>data/persist/AbstractXmlObject.java
+          </URI>                 
+          <URI>exec/Executor.java
+          </URI>                 
+          <URI>log/jul/RegistryLogger.java
+          </URI>                 
+          <URI>service/Daemon.java
+          </URI>                 
+          <URI>service/Service.java
+          </URI>                 
+          <URI>service/ServiceException.java
+          </URI>                 
+          <URI>service/ServiceGroup.java
+          </URI>                 
+          <URI>service/ThreadService.java
+          </URI>                 
+          <URI>task/TaskRunner.java
+          </URI>                 
+          <URI>ui/UIService.java
+          </URI>                 
+          <URI>ui/ViewService.java
+          </URI>                 
+        </resources>      
+      </scm:Change>
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Fix NPE in Reference task when chain is null
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/task/Reference.java
+        </path>
+      
+      </scm:Change>
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Fix NPE after parsing expression with binary operator missing
+        second operand.
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/lang/parser/ExpressionParser.java
+        </path>
+      
+      </scm:Change>
+
+    </detail>
+  </scm:Change>
+  
   
   <scm:Change>
   
