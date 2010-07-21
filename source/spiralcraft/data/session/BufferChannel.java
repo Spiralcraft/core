@@ -142,7 +142,6 @@ public class BufferChannel<Tbuffer extends Buffer>
   private void setupSession(Focus<?> focus)
     throws BindException
   {
-    metaChannel=this;
     sessionChannel=DataSession.findChannel(focus);
     if (sessionChannel==null)
     { throw new BindException("Can't find a DataSession in Focus chain");

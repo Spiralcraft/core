@@ -87,7 +87,6 @@ public class BufferField
 
       super(DataReflector.<Buffer>getInstance(getType()));
 
-      metaChannel=this;
       
       parentChannel
         =source;
