@@ -28,9 +28,7 @@ public class TeleFocus<T>
   * @param subject The channel which provides the subject.
   */
   public TeleFocus(Focus<?> parentFocus,Channel<T> subject)
-  { 
-    setParentFocus(parentFocus);
-    setSubject(subject);
+  { super(parentFocus,subject);
   }
   
   @Override

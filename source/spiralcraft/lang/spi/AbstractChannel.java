@@ -27,44 +27,36 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 
 /**
- * <P>A starting point for building a Channel.</P>
+ * <p>A starting point for building a Channel.</p>
  *
- * <P>Handles PropertyChangeSupport, caching bindings, and keeping a reference
+ * <p>Handles PropertyChangeSupport, caching bindings, and keeping a reference
  *   to the Reflector.
+ * </p>
  *
- * <P>Storage and retrieval is accomplished by abstract methods defined in the
+ * <p>Storage and retrieval is accomplished by abstract methods defined in the
  *   subclass.
+ * </p>
  *
- * <P> To summarize, a Channel provides an updateable "view" of a piece of 
- *   information from an underlying data source or data container. As the underlying
- *   data changes, property changes are propogated through the binding chain, and the
- *   get() method of the Channel will reflect the updated data.
+ * <p>To summarize, a Channel provides an updateable "view" of a piece of 
+ *   information from an underlying data source or data container. As the 
+ *   underlying data changes, property changes are propogated through the 
+ *   binding chain, and the get() method of the Channel will reflect the 
+ *   updated data.
+ * </p>
  */
 public abstract class AbstractChannel<T>
   implements Channel<T>
 {
  
   private final Reflector<T> _reflector;
-  protected Channel<?> metaChannel;
   private final boolean _static;
   private PropertyChangeSupport _propertyChangeSupport;
   private WeakChannelCache _cache;
   protected boolean debug;
+  protected Focus<?> context;
   
   
-  public synchronized void cache(Object key,Channel<?> channel)
-  { 
-    if (_cache==null)
-    { _cache=new WeakChannelCache();
-    }
-    _cache.put(key,channel);
-  }
-  
-  @SuppressWarnings("unchecked")
-  public synchronized <X> Channel<X>getCached(Object key)
-  { 
-    return _cache!=null?(Channel<X>) _cache.get(key):null;
-  }
+
   
   /**
    * Construct an AbstractChannel without an initial value
@@ -73,13 +65,9 @@ public abstract class AbstractChannel<T>
   { 
     _reflector=reflector;
     _static=false;
-    
-    
   }
 
-  public void setDebug(boolean val)
-  { this.debug=val;
-  }
+
   
   /**
    * Construct an AbstractChannel with an initial value
@@ -88,6 +76,35 @@ public abstract class AbstractChannel<T>
   {  
     _reflector=reflector;
     _static=isStatic;
+  }
+  
+  public void setDebug(boolean val)
+  { this.debug=val;
+  }
+  
+  public Focus<?> getContext()
+  { return context;
+  }
+
+  public void setContext(
+    Focus<?> context)
+  { this.context = context;
+  }
+
+  public synchronized void cache(Object key,Channel<?> channel)
+  { 
+    if (_cache==null)
+    { _cache=new WeakChannelCache();
+    }
+    _cache.put(key,channel);
+    if (channel.getContext()==null)
+    { channel.setContext(context);
+    }
+  }
+  
+  @SuppressWarnings("unchecked")
+  public synchronized <X> Channel<X>getCached(Object key)
+  { return _cache!=null?(Channel<X>) _cache.get(key):null;
   }
 
   public Class<T> getContentType()

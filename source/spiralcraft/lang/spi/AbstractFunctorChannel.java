@@ -52,6 +52,7 @@ public abstract class AbstractFunctorChannel<Tresult>
 
     bindings=new Channel[arguments.length];
     this.focus=bindImports(focus);
+    setContext(this.focus);
     this.bindings=arguments;
     bindTarget(this.focus);
     

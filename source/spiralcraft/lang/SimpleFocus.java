@@ -32,15 +32,12 @@ public class SimpleFocus<T>
   }
 
   public SimpleFocus(Channel<T> subject)
-  { this.subject=subject;
+  { setSubject(subject);
   }
 
   public SimpleFocus(Focus<?> parentFocus,Channel<T> subject)
-  { 
-    setParentFocus(parentFocus);
-    this.subject=subject;
+  { super(parentFocus,subject);
   }
-
     
   /**
    * Indicate that namespace resolution should end at this Focus node.

@@ -114,6 +114,7 @@ public class ProxyChannel<T>
       cache.put(key,channel);
     }
   }
+
   
   @SuppressWarnings("unchecked")
   public synchronized <X> Channel<X> getCached(Object key)
@@ -124,6 +125,14 @@ public class ProxyChannel<T>
     else
     { return cache!=null?(Channel<X>) cache.get(key):null;
     }
+  }
+
+  public Focus<?> getContext()
+  { return channel.getContext();
+  }
+  
+  public void setContext(Focus<?> context)
+  { channel.setContext(context);
   }
   
 }

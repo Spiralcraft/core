@@ -763,6 +763,7 @@ public class StructNode
         )
       { 
         super(target.getReflector());
+        this.context=source.getContext();
         this.field=field;
         this.source=source;
         this.target=target;

@@ -35,9 +35,7 @@ public class CompoundFocus<T>
     (Focus<?> parentFocus
     ,Channel<T> subject
     )
-  { 
-    setParentFocus(parentFocus);
-    setSubject(subject);
+  { super(parentFocus,subject);
   }
   
   public CompoundFocus()

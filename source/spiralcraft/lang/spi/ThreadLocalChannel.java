@@ -95,6 +95,7 @@ public class ThreadLocalChannel<T>
     { threadLocal=new ThreadLocal<ThreadReference<T>>();
     }
     this.sourceChannel=sourceChannel;
+    this.context=sourceChannel.getContext();
   }
 
   public ThreadLocalChannel(Reflector<T> reflector)
@@ -103,6 +104,7 @@ public class ThreadLocalChannel<T>
     threadLocal=new ThreadLocal<ThreadReference<T>>();    
     inheritable=false;
     this.sourceChannel=null;
+
   }
   
   public boolean isInheritable()

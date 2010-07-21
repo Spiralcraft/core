@@ -157,6 +157,21 @@ public interface Channel<T>
   <X> Channel<X> getCached(Object key);
   
   /**
+   * The Focus in scope when this Channel was bound. 
+   * 
+   * @return
+   */  
+  void setContext(Focus<?> context);
+
+  /**
+   * The Focus in scope when this Channel was bound. 
+   * 
+   * @return
+   */
+  Focus<?> getContext();
+  
+  
+  /**
    * Cache a Channel that is sourced from this Channel. to avoid creating 
    *   redundant channel instances. A Channel should only be cached in this
    *   manner if it depends solely on this Channel for input.

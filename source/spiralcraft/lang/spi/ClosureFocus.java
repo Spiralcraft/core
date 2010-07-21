@@ -65,9 +65,8 @@ public class ClosureFocus<T>
   }
   
   public ClosureFocus(Focus<?> focusChain,Channel<T> subject)
-  { 
-    parent=focusChain;
-    
+  { super(focusChain);
+
     if (subject!=null)
     {
       if (!subject.isConstant())
@@ -250,9 +249,8 @@ public class ClosureFocus<T>
     
     EnclosedFocus(Channel<Y> channel)
     { 
-      super(new ThreadLocalChannel<Y>(channel,true));
+      super(ClosureFocus.this,new ThreadLocalChannel<Y>(channel,true));
       sourceChannel=channel;
-      parent=ClosureFocus.this;
       if (debugLevel.canLog(Level.DEBUG))
       { log.debug("Enclosing "+channel.getReflector().getTypeURI());
       }

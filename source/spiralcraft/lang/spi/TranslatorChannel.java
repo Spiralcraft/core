@@ -52,6 +52,7 @@ public  class TranslatorChannel<T,S>
   private PropertyChangeListener _modifierListener;
   private WeakChannelCache _cache;
   protected boolean debug;
+  private Focus<?> context;
 
   /**
    * Create a Translator binding which translates values bidirectionally,
@@ -93,6 +94,20 @@ public  class TranslatorChannel<T,S>
 
   }
 
+  public void setContext(Focus<?> context)
+  { this.context=context;
+  }
+  
+  public Focus<?> getContext()
+  { 
+    if (context!=null)
+    { return context;
+    }
+    else
+    { return source.getContext();
+    }
+  }
+  
   public void setDebug(boolean val)
   { debug=val;
   }

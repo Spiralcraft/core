@@ -32,7 +32,7 @@ public abstract class BaseFocus<T>
   private volatile Channel<Focus<T>> selfChannel;
   
   protected Channel<T> subject;
-  protected Focus<?> parent;
+  protected final Focus<?> parent;
   protected PrefixResolver namespaceResolver;
   protected LinkedList<Focus<?>> facets;
   protected LinkedList<URI> aliases;
@@ -40,6 +40,20 @@ public abstract class BaseFocus<T>
 
   private HashMap<Expression<?>,WeakReference<Channel<?>>> channels; 
 
+  public BaseFocus()
+  { this.parent=null;
+  }
+  
+  public BaseFocus(Focus<?> parent)
+  { this.parent=parent;
+  }
+  
+  public BaseFocus(Focus<?> parent,Channel<T> subject)
+  { 
+    this.parent=parent;
+    setSubject(subject);
+  }
+  
 
   public Focus<?> getParentFocus()
   { return parent;
@@ -48,13 +62,21 @@ public abstract class BaseFocus<T>
   public synchronized void setSubject(Channel<T> val)
   { 
     subject=val;
+    if (subject!=null && subject.getContext()==null)
+    { subject.setContext(parent);
+    }
     channels=null;
   }
   
   
-  public void setParentFocus(Focus<?> parent)
-  { this.parent=parent;
-  }
+//  public void setParentFocus(Focus<?> parent)
+//  { 
+//    this.parent=parent;
+//    if (subject!=null && subject.getContext()==null)
+//    { subject.setContext(parent);
+//    }
+//    
+//  }
   
   /**
    * Return the Context for this Focus, or if there is none associated,
@@ -118,6 +140,10 @@ public abstract class BaseFocus<T>
     }
     else
     { channel=expression.bind(this);
+    }
+    
+    if (channel.getContext()==null)
+    { channel.setContext(this);
     }
     return channel;
   }
