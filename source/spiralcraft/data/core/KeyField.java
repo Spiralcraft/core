@@ -90,17 +90,28 @@ public class KeyField<T extends DataComposite>
   @SuppressWarnings("unchecked")
   public Channel<T> bindChannel
     (Channel<Tuple> source
-    ,Focus<?> focus
+    ,Focus<?> argFocus
     ,Expression<?>[] args
     )
     throws BindException
   { 
     
-    if (!focus.isContext(source))
-    { focus=focus.chain(source);
+    // Use original binding context, never bind source expression in
+    //   argument context
+    Focus<?> context=source.getContext();
+    if (context==null)
+    { 
+      throw new BindException
+        ("No context for "+this.getURI()+" "+source);
+      // context=argFocus;
     }
+
+    if (!context.isContext(source))
+    { context=context.chain(source);
+    }
+    
     ClosureFocus<Tuple> sourceFocus
-      =new ClosureFocus(focus,source);
+      =new ClosureFocus(context,source);
     
     Focus<Tuple> keyFocus
       =sourceFocus.chain
@@ -140,7 +151,7 @@ public class KeyField<T extends DataComposite>
         else
         { 
           throw new BindException
-            ("No Queryable available in Focus chain "+focus.toString());
+            ("No Queryable available in Focus chain "+context.toString());
         }
       }
       catch (DataException x)

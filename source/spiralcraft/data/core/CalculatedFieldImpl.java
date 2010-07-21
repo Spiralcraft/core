@@ -81,6 +81,7 @@ public class CalculatedFieldImpl<T>
       threadLocalBinding
         =new ThreadLocalChannel<Tuple>(TupleReflector.getInstance(getFieldSet()));
       SimpleFocus<Tuple> focus=new SimpleFocus<Tuple>(threadLocalBinding);
+      threadLocalBinding.setContext(focus);
       expressionBinding=bindChannel(threadLocalBinding,focus,null);
     }
     catch (BindException x)
@@ -159,7 +160,7 @@ public class CalculatedFieldImpl<T>
   @Override
   public Channel<T> bindChannel
     (Channel<Tuple> source
-    ,Focus<?> focus
+    ,Focus<?> argFocus
     ,Expression<?>[] args
     )
     throws BindException
@@ -170,12 +171,23 @@ public class CalculatedFieldImpl<T>
         ("CalculatedField "+getURI()+" must have an expression");
     }
     
-    if (!focus.isContext(source))
-    { focus=focus.chain(source);
+    
+    // Use original binding context, never bind source expression in
+    //   argument context
+    Focus<?> context=source.getContext();
+    if (context==null)
+    { 
+      throw new BindException
+        ("No context for "+this.getURI()+" "+source);
+      // context=argFocus;
+    }
+
+    if (!context.isContext(source))
+    { context=context.chain(source);
     }
     
     ClosureFocus<?> closure
-      =new ClosureFocus(focus,source);
+      =new ClosureFocus(context,source);
     
     return new ClosureChannel<T>(closure,closure.<T>bind(expression));
   }

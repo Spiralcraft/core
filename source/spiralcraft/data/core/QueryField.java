@@ -102,24 +102,34 @@ public class QueryField
   @SuppressWarnings("unchecked")
   public Channel<DataComposite> bindChannel
     (Channel<Tuple> source
-    ,Focus<?> focus
+    ,Focus<?> argFocus
     ,Expression<?>[] args
     )
     throws BindException
   { 
     
-    if (!focus.isContext(source))
-    { focus=focus.chain(source);
+    // Use original binding context, never bind source expression in
+    //   argument context
+    Focus<?> context=source.getContext();
+    if (context==null)
+    { 
+      throw new BindException
+        ("No context for "+this.getURI()+" "+source);
+      // context=argFocus;
+    }
+
+    if (!context.isContext(source))
+    { context=context.chain(source);
     }
     
-    Focus queryableFocus=focus.findFocus(Queryable.QUERYABLE_URI);
+    Focus queryableFocus=context.findFocus(Queryable.QUERYABLE_URI);
     if (queryableFocus!=null)
     { 
       
       try
       { 
         ClosureFocus<?> closure
-          =new ClosureFocus(focus,source);
+          =new ClosureFocus(context,source);
         BoundQuery boundQuery
           =((Queryable) queryableFocus.getSubject().get()).query
             (query,closure);
@@ -134,7 +144,7 @@ public class QueryField
     else
     { 
       throw new BindException
-        ("No Queryable reachable from Focus "+focus.getFocusChain());
+        ("No Queryable reachable from Focus "+context.getFocusChain());
     }
   }
   
