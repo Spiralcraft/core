@@ -18,7 +18,7 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.reflect.BeanReflector;
-import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.text.ParseException;
 
 /**
@@ -64,19 +64,17 @@ public interface Translator
 
 
 class TranslatorChannel
-  extends AbstractChannel<String>
+  extends SourcedChannel<String,String>
 {
   private final Translator translator;
-  private final Channel<String> source;
   
   public TranslatorChannel
     (Translator translator
     ,Channel<String> source
     )
   { 
-    super(BeanReflector.<String>getInstance(String.class));
+    super(BeanReflector.<String>getInstance(String.class),source);
     this.translator=translator;
-    this.source=source;
   }
 
   @Override

@@ -13,7 +13,7 @@ import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Decorator;
 
-import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
 import spiralcraft.util.IteratorStack;
@@ -101,13 +101,12 @@ public class Tree<Tcollection, Tsource>
 
   
   public class TreeChannel
-    extends AbstractChannel<Tcollection>
+    extends SourcedChannel<Tsource,Tcollection>
   {
 
     private final ThreadLocalChannel<Tsource> itemChannel;
     
     private final CollectionDecorator<Tcollection,Tsource> expansionDecorator;
-    private final Channel<Tsource> source;
 //    private Channel<Tchannel> expansionChannel;
     private final Channel<Boolean> stopChannel;
 
@@ -120,9 +119,8 @@ public class Tree<Tcollection, Tsource>
       )
       throws BindException
     { 
-      super(expansionChannel.getReflector());
+      super(expansionChannel.getReflector(),source);
       this.itemChannel=itemChannel;
-      this.source=source;
 //      this.expansionChannel=expansionChannel;
       this.expansionDecorator
         =expansionChannel.<CollectionDecorator>decorate(CollectionDecorator.class);

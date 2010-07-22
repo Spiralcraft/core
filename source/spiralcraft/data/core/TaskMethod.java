@@ -26,9 +26,9 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.AssignmentChannel;
 import spiralcraft.lang.spi.BindingChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.Level;
 
@@ -143,9 +143,8 @@ public class TaskMethod<T,C,R>
   
   
   public class TaskMethodChannel
-    extends AbstractChannel<TaskCommand<C,R>>
+    extends SourcedChannel<TaskCommand<C,R>,TaskCommand<C,R>>
   {
-    private final Channel<TaskCommand<C,R>> commandChannel;
     private final ThreadLocalChannel<C> contextChannel;
     private final Channel<?>[] params;
     
@@ -157,9 +156,7 @@ public class TaskMethod<T,C,R>
       )
       throws BindException
     { 
-      super(commandChannel.getReflector());
-      this.commandChannel=commandChannel;
-      this.context=commandChannel.getContext();
+      super(commandChannel.getReflector(),commandChannel);
       this.params=params;
       
       // CommandChannel always creates a new command
@@ -204,7 +201,7 @@ public class TaskMethod<T,C,R>
     @Override
     protected TaskCommand<C,R> retrieve()
     { 
-      TaskCommand<C,R> command=commandChannel.get();
+      TaskCommand<C,R> command=source.get();
       contextChannel.push(command.getContext());
       try
       {
@@ -230,22 +227,22 @@ public class TaskMethod<T,C,R>
 
   @SuppressWarnings("unchecked")
   class ExecChannel
-    extends AbstractChannel
+    extends SourcedChannel<TaskCommand,Object>
   {
-    private final Channel<TaskCommand<?,?>> commandChannel;
   
     public ExecChannel(Focus focus,Channel commandChannel)
       throws BindException
     { 
-      super(commandChannel.resolve(focus,"result",null).getReflector());
-      this.commandChannel=commandChannel;
-      this.context=commandChannel.getContext();
+      super
+        (commandChannel.resolve(focus,"result",null).getReflector()
+        ,commandChannel
+        );
     }
    
     @Override
     protected Object retrieve()
     { 
-      TaskCommand command=commandChannel.get();
+      TaskCommand command=source.get();
       command.execute();
       if (command.getException()!=null)
       { 

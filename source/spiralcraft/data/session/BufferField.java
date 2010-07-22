@@ -20,7 +20,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.log.ClassLog;
 
 import spiralcraft.data.DataComposite;
@@ -71,10 +71,9 @@ public class BufferField
   }
   
   class BufferFieldChannel
-    extends AbstractChannel<Buffer>
+    extends SourcedChannel<Tuple,Buffer>
   {
     private Channel<? extends Buffer> bufferSource;
-    private Channel<Tuple> parentChannel;
     
     public BufferFieldChannel
       (Channel<? extends DataComposite> originalChannel
@@ -85,15 +84,13 @@ public class BufferField
     { 
       // Our Focus provides access to our containing buffer
 
-      super(DataReflector.<Buffer>getInstance(getType()));
+      super(DataReflector.<Buffer>getInstance(getType()),source);
 
-      
-      parentChannel
-        =source;
+
           
       if (debug)
       {
-        log.fine("BufferFieldChannel parentChannel="+parentChannel);
+        log.fine("BufferFieldChannel parentChannel="+source);
         log.fine("Creating BufferChannel of type "+getType());
       }
       this.bufferSource
@@ -111,7 +108,7 @@ public class BufferField
     { 
       try
       { 
-        BufferTuple parent=(BufferTuple) parentChannel.get();
+        BufferTuple parent=(BufferTuple) source.get();
         BufferField.this.setValue(parent,val);
         return true;
       }
@@ -123,7 +120,7 @@ public class BufferField
     @Override
     public Buffer retrieve()
     { 
-      BufferTuple parent=(BufferTuple) parentChannel.get();
+      BufferTuple parent=(BufferTuple) source.get();
       try
       {
         Object maybeBuffer
@@ -134,7 +131,7 @@ public class BufferField
         if (maybeBuffer!=null && !(maybeBuffer instanceof Buffer))
         { 
           log.warning("BufferField "+getURI()+" field value was a non-Buffer: "
-              +"\r\n    parentChannel="+parentChannel
+              +"\r\n    parentChannel="+source
               +"\r\n      value="+maybeBuffer
               );
           maybeBuffer=null;

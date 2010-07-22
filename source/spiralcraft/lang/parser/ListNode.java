@@ -131,6 +131,9 @@ public class ListNode<T>
       (reflector)
     {
 
+      { this.context=focus;
+      }
+      
       @Override
       protected List<T> retrieve()
       {

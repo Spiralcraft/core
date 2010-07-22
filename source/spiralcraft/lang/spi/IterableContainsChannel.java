@@ -30,7 +30,7 @@ import spiralcraft.lang.reflect.BeanReflector;
  * @param <T>
  */
 public class IterableContainsChannel<C,T>
-  extends AbstractChannel<Boolean>
+  extends SourcedChannel<C,Boolean>
 {
   
   private final Channel<T> compareItemChannel;
@@ -43,7 +43,7 @@ public class IterableContainsChannel<C,T>
     )
     throws BindException
   { 
-    super(BeanReflector.<Boolean>getInstance(Boolean.class));
+    super(BeanReflector.<Boolean>getInstance(Boolean.class),iterableChannel);
     this.compareItemChannel=compareItemChannel;
     this.decorator
       = iterableChannel.<IterationDecorator>decorate(IterationDecorator.class);

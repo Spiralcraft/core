@@ -21,10 +21,9 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
 
 public class ArraySelectChannel<X>
-  extends AbstractChannel<X[]>
+  extends SourcedChannel<X[],X[]>
 {
 
-  private final Channel<X[]> source;
   private final ThreadLocalChannel<X> componentChannel;
   private final Channel<Boolean> selector;
   
@@ -41,8 +40,7 @@ public class ArraySelectChannel<X>
     ,Channel<Boolean> selector
     )
   { 
-    super(source.getReflector());
-    this.source=source;
+    super(source.getReflector(),source);
     this.componentChannel=componentChannel;
     this.selector=selector;
    

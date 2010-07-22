@@ -10,12 +10,11 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.log.ClassLog;
 
 public class BindingChannel<T>
-  extends AbstractChannel<T>
+  extends SourcedChannel<T,T>
 {
   private static final ClassLog log
     =ClassLog.getInstance(BindingChannel.class);
   
-  private final Channel<T> sourceChannel;
 
   private final Expression<T> targetX;
   private Channel<T> targetChannel;
@@ -25,8 +24,7 @@ public class BindingChannel<T>
   public BindingChannel
     (Channel<T> sourceChannel,Expression<T> targetX)
   {
-    super(sourceChannel.getReflector());
-    this.sourceChannel=sourceChannel;
+    super(sourceChannel.getReflector(),sourceChannel);
 
     this.targetX=targetX;
   }
@@ -65,14 +63,14 @@ public class BindingChannel<T>
 //    }
     
     if (!targetChannel.getReflector()
-          .isAssignableFrom(sourceChannel.getReflector())
+          .isAssignableFrom(source.getReflector())
        )
     { 
 
       if (targetChannel.getContentType().isAssignableFrom(Binding.class))
       { 
         // Provide a dynamic reference to the specified source data.
-        sourceBinding=new Binding<T>(sourceChannel);
+        sourceBinding=new Binding<T>(source);
       }
       else
       {
@@ -81,8 +79,8 @@ public class BindingChannel<T>
           ("Argument type mismatch: "
             +targetChannel.getReflector().getTypeURI()
             +" ("+targetChannel.getContentType().getName()+")"
-            +" is not assignable from "+sourceChannel.getReflector().getTypeURI()
-            +" ("+sourceChannel.getContentType().getName()+")"
+            +" is not assignable from "+source.getReflector().getTypeURI()
+            +" ("+source.getContentType().getName()+")"
           );
       }
     }
@@ -96,7 +94,7 @@ public class BindingChannel<T>
     { throw new IllegalStateException("Target '"+targetX+"' not bound");
     }
 
-    T val=sourceBinding!=null?(T) sourceBinding:sourceChannel.get();
+    T val=sourceBinding!=null?(T) sourceBinding:source.get();
     if (!targetChannel.set(val))
     { log.warning("Bound assignment failed");
     }
@@ -109,7 +107,7 @@ public class BindingChannel<T>
   throws AccessException
   { 
     boolean set=targetChannel.set(val);
-    sourceChannel.set(val);
+    source.set(val);
     return set;
   }
 

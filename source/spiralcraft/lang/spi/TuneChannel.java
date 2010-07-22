@@ -30,13 +30,12 @@ import spiralcraft.log.ClassLog;
  *
  */
 public class TuneChannel<T>
-  extends AbstractChannel<T>
+  extends SourcedChannel<T,T>
   implements Channel<T>
 {
   private static final ClassLog log=ClassLog.getInstance(TuneChannel.class);
   private static volatile int nextId=1;
   
-  private final Channel<T> source;
   private final Channel<?> message;
   private final ThreadLocalChannel<T> localSource;
   private final int id=nextId++;
@@ -44,8 +43,7 @@ public class TuneChannel<T>
   public TuneChannel(Channel<T> source,Focus<?> focus,Expression<?> message)
     throws BindException
   { 
-    super(source.getReflector());
-    this.source=source;
+    super(source.getReflector(),source);
     this.localSource=new ThreadLocalChannel<T>(source.getReflector());
     this.message=focus.telescope(localSource).bind(message);
     log.debug("#"+id+": created");

@@ -6,19 +6,17 @@ import spiralcraft.log.ClassLog;
 
 @SuppressWarnings("unchecked")
 public class AssignmentChannel
-  extends AbstractChannel
+  extends SourcedChannel
 {
   private static final ClassLog log
     =ClassLog.getInstance(AssignmentChannel.class);
   
-  public final Channel sourceChannel;
   public final Channel targetChannel;
 
   public AssignmentChannel
     (Channel sourceChannel,Channel targetChannel)
   {
-    super(sourceChannel.getReflector());
-    this.sourceChannel=sourceChannel;
+    super(sourceChannel.getReflector(),sourceChannel);
     this.targetChannel=targetChannel;
     
   }
@@ -26,7 +24,7 @@ public class AssignmentChannel
   @Override
   protected Object retrieve()
   {
-    Object val=sourceChannel.get();
+    Object val=source.get();
     if (!targetChannel.set(val))
     { log.warning("Assignment failed");
     }
@@ -38,7 +36,7 @@ public class AssignmentChannel
     Object val)
     throws AccessException
   {
-    if (sourceChannel.set(val))
+    if (source.set(val))
     { 
       targetChannel.set(val);
       return true;
@@ -48,6 +46,6 @@ public class AssignmentChannel
       
   @Override
   public boolean isWritable()
-  { return sourceChannel.isWritable() && targetChannel.isWritable();
+  { return source.isWritable() && targetChannel.isWritable();
   }
 }

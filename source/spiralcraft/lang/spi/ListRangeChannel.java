@@ -9,10 +9,9 @@ import spiralcraft.lang.ListDecorator;
 import spiralcraft.lang.Range;
 
 public class ListRangeChannel<C,X>
-  extends AbstractChannel<C>
+  extends SourcedChannel<C,C>
 {
 
-  private final Channel<C> source;
   private final Channel<Range> range;
   private final ListDecorator<C,X> sourceDecorator;
   
@@ -30,8 +29,7 @@ public class ListRangeChannel<C,X>
     )
     throws BindException
   { 
-    super(source.getReflector());
-    this.source=source;
+    super(source.getReflector(),source);
     this.range=range;
     this.sourceDecorator
       =source.<ListDecorator>decorate(ListDecorator.class);

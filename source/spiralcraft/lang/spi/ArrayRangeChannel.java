@@ -9,10 +9,9 @@ import spiralcraft.lang.Range;
 import spiralcraft.lang.Reflector;
 
 public class ArrayRangeChannel<X>
-  extends AbstractChannel<X[]>
+  extends SourcedChannel<X[],X[]>
 {
 
-  private final Channel<X[]> source;
   private final Channel<Range> range;
   private final Reflector<X> componentReflector;
   
@@ -29,9 +28,8 @@ public class ArrayRangeChannel<X>
     ,Channel<Range> range
     )
   { 
-    super(source.getReflector());
+    super(source.getReflector(),source);
     this.componentReflector=componentReflector;
-    this.source=source;
     this.range=range;
    
   }

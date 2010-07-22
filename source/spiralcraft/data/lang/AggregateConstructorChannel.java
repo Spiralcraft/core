@@ -28,7 +28,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationDecorator;
-import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 
 /**
  * <p>Constructs an Aggregate and initializes field values to the result of
@@ -40,7 +40,7 @@ import spiralcraft.lang.spi.AbstractChannel;
  * @param <T>
  */
 public class AggregateConstructorChannel<T extends Aggregate<I>,I>
-  extends AbstractChannel<T>
+  extends SourcedChannel<Object,T>
 {
   private final Type<T> type;
   private final boolean buffer;
@@ -52,7 +52,7 @@ public class AggregateConstructorChannel<T extends Aggregate<I>,I>
     (AggregateReflector<T,I> reflector,Focus<?> context,Channel<?> dataChannel)
     throws BindException
   { 
-    super(reflector);
+    super(reflector,(Channel<Object>) dataChannel);
       
     buffer=((Type) reflector.getType()) instanceof BufferType;
     if (buffer)

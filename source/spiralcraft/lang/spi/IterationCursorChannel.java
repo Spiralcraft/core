@@ -25,9 +25,8 @@ import spiralcraft.lang.Reflector;
  *   expressed by the IterationCursor returned by the specified Channel.
  */
 public class IterationCursorChannel<T>
-  extends AbstractChannel<T>
+  extends SourcedChannel<IterationCursor<T>,T>
 {
-  private final Channel<IterationCursor<T>> source;
   
   /**
    * Create a new IterationCursorBinding which obtains the value of the
@@ -36,9 +35,7 @@ public class IterationCursorChannel<T>
    */
   public IterationCursorChannel
     (Reflector<T> componentReflector,Channel<IterationCursor<T>> source)
-  { 
-    super(componentReflector);
-    this.source=source;
+  { super(componentReflector,source);
   }
   
  

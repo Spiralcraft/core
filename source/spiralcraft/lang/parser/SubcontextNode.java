@@ -22,8 +22,8 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.FocusChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
 
@@ -172,11 +172,10 @@ public class SubcontextNode<T,S>
 }
 
 class SubcontextChannel<T,S>
-  extends AbstractChannel<T>
+  extends SourcedChannel<S,T>
 {
   private final  Channel<?>[] channels;
   private final ThreadLocalChannel<S> sourceLocal;
-  private final Channel<S> source;
   
   
   @SuppressWarnings("unchecked")
@@ -187,11 +186,10 @@ class SubcontextChannel<T,S>
     )
     throws BindException
   {
-    super(subcontext[subcontext.length-1].getReflector());
+    super(subcontext[subcontext.length-1].getReflector(),source);
     
     this.channels=subcontext;
     this.sourceLocal=sourceLocal;
-    this.source=source;
 
   }
 

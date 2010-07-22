@@ -16,10 +16,9 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.ArrayReflector;
 
 public class ArrayConstructorChannel<C,T>
-  extends AbstractChannel<T[]>
+  extends SourcedChannel<C,T[]>
 {
   private Reflector<T> componentReflector;
-  private Channel<C> source;
   private IterationDecorator<C,T> decorator;
   
   public ArrayConstructorChannel
@@ -29,9 +28,8 @@ public class ArrayConstructorChannel<C,T>
     )
     throws BindException
   { 
-    super(ArrayReflector.getInstance(componentReflector));
+    super(ArrayReflector.getInstance(componentReflector),source);
     this.componentReflector=componentReflector;
-    this.source=source;
     this.decorator
       =sourceIterable;
     if (decorator==null)

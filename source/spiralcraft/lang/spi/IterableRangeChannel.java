@@ -10,10 +10,9 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Range;
 
 public class IterableRangeChannel<X>
-  extends AbstractChannel<Iterable<X>>
+  extends SourcedChannel<Iterable<X>,Iterable<X>>
 {
 
-  private final Channel<Iterable<X>> source;
   private final Channel<Range> range;
   
   /**
@@ -29,8 +28,7 @@ public class IterableRangeChannel<X>
     )
     throws BindException
   { 
-    super(source.getReflector());
-    this.source=source;
+    super(source.getReflector(),source);
     this.range=range;
    
   }

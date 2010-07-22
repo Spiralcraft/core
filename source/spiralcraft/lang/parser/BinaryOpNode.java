@@ -126,11 +126,15 @@ public class BinaryOpNode<T1 extends Comparable<T1>,T2>
           );
       
       }
-      
+      channel.setContext(focus);
       return channel;
     }
     else if (op1.decorate(IterationDecorator.class)!=null)
-    { return (Channel<T1>) IterationBindingHelper.bind(op1,op2,_op);
+    { 
+      Channel<T1> channel=(Channel<T1>) IterationBindingHelper.bind(op1,op2,_op);
+      channel.setContext(focus);
+      return channel;
+      
     }
     else
     { 

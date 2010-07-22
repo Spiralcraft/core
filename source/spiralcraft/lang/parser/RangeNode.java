@@ -87,7 +87,7 @@ public class RangeNode<T>
   
   @SuppressWarnings("unchecked")
   @Override
-  public Channel<?> bind(Focus<?> focus)
+  public Channel<?> bind(final Focus<?> focus)
     throws BindException
   {
     
@@ -97,6 +97,9 @@ public class RangeNode<T>
     return new AbstractChannel(BeanReflector.getInstance(Range.class))
     {
 
+      { this.context=focus;
+      }
+      
       @Override
       protected Object retrieve()
       { 

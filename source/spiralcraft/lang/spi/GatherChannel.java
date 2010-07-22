@@ -31,10 +31,9 @@ import spiralcraft.lang.SimpleFocus;
  * @param <T>
  */
 public class GatherChannel<T>
-  extends AbstractChannel<T>
+  extends SourcedChannel<T,T>
 {
 
-  private final Channel<T> source;
   private final ThreadLocalChannel<T> localChannel;
   private final BindingChannel<?>[] bindings;
   
@@ -44,8 +43,7 @@ public class GatherChannel<T>
     )
     throws BindException
   { 
-    super(source.getReflector());
-    this.source=source;
+    super(source.getReflector(),source);
     localChannel=new ThreadLocalChannel<T>(source.getReflector());
     this.bindings=bindings;
     

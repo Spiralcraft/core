@@ -160,7 +160,9 @@ public abstract class AbstractReflector<T>
       
     }
     else if (name.equals("@nil"))
-    { channel=((Channel<Reflector<?>>) source).get().getNilChannel();
+    { 
+      channel=((Channel<Reflector<?>>) source).get().getNilChannel();
+      channel.setContext(focus);
     }
     else if (name.equals("@top") && params==null)
     { 
@@ -526,15 +528,12 @@ public abstract class AbstractReflector<T>
   }
   
   class SubtypeChannel
-    extends AbstractChannel<Reflector<T>>
+    extends SourcedChannel<T,Reflector<T>>
   {
 
-    private Channel<T> source;
     
     public SubtypeChannel(Channel<T> source)
-    { 
-      super(getSelfChannel().getReflector());
-      this.source=source;
+    { super(getSelfChannel().getReflector(),source);
     }
     @Override
     protected Reflector<T> retrieve()
@@ -553,10 +552,9 @@ public abstract class AbstractReflector<T>
 }
 
 class TopListChannel<T,I>
-  extends AbstractChannel<I>
+  extends SourcedChannel<T,I>
 {
   private final ListDecorator<T,I> decorator;
-  private final Channel<T> source;
 
   @SuppressWarnings("unchecked")
   public TopListChannel(Channel<T> source,ListDecorator decorator)
@@ -564,10 +562,9 @@ class TopListChannel<T,I>
   { 
     super
     (decorator.getComponentReflector()
+    ,source
     );
-    this.source=source;
     this.decorator=decorator;
-    this.context=source.getContext();
   }
 
   @Override
@@ -589,7 +586,7 @@ class TopListChannel<T,I>
 }
 
 class TopIterChannel<T,I>
-  extends AbstractChannel<I>
+  extends SourcedChannel<T,I>
 {
   private final IterationDecorator<T,I> decorator;
   
@@ -599,9 +596,9 @@ class TopIterChannel<T,I>
   { 
     super
       (decorator.getComponentReflector()
+      ,source
       );
     this.decorator=decorator;
-    this.context=source.getContext();
   }
   
   @Override
@@ -629,16 +626,15 @@ class TopIterChannel<T,I>
 }
 
 class CollectionSizeChannel<T>
-  extends AbstractChannel<Integer>
+  extends SourcedChannel<T,Integer>
 {
   private final CollectionDecorator<T,?> decorator;
-  private final Channel<T> source;
   
   @SuppressWarnings("unchecked")
   public CollectionSizeChannel(Channel<T> source)
     throws BindException
   {
-    super(BeanReflector.<Integer>getInstance(Integer.class));
+    super(BeanReflector.<Integer>getInstance(Integer.class),source);
     this.decorator
       =source.<CollectionDecorator>decorate(CollectionDecorator.class);
     if (decorator==null)
@@ -646,8 +642,6 @@ class CollectionSizeChannel<T>
       throw new BindException
         (source.getReflector().getTypeURI()+" does not support @size()");
     }
-    this.source=source;
-    this.context=source.getContext();
   }
   
   @Override
@@ -669,15 +663,11 @@ class CollectionSizeChannel<T>
 }
 
 class CastChannel<S,T extends S>
-  extends AbstractChannel<T>
+  extends SourcedChannel<S,T>
 {
-  private Channel<S> source;
   
   public CastChannel(Channel<S> source,Reflector<T> type)
-  { 
-    super(type);
-    this.source=source;
-    this.context=source.getContext();
+  { super(type,source);
   }
 
   @SuppressWarnings("unchecked")

@@ -36,6 +36,7 @@ import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.AbstractFunctorChannel;
 import spiralcraft.lang.spi.AbstractReflector;
 import spiralcraft.lang.spi.AspectChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 //import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
@@ -255,7 +256,7 @@ public class StructNode
     else
     { 
       // struct wrapper case
-      return new StructChannel(new StructReflector(focus));
+      return new StructChannel(new StructReflector(focus),focus);
     }
   }
   
@@ -270,9 +271,6 @@ public class StructNode
     
     private final StructField[] fieldArray
       =fields.values().toArray(new StructField[fields.size()]);
-    
-//    private final Channel<?> sourceChannel;
-    
     
     private final ThreadLocalChannel<Struct> thisChannel
       =new ThreadLocalChannel<Struct>(this);
@@ -289,7 +287,6 @@ public class StructNode
       throws BindException
     {
     
-//      sourceChannel=focus.getSubject();
       functor=true;
       
       if (StructNode.this.typeURI==null)
@@ -727,14 +724,11 @@ public class StructNode
     }
     
     class BaseExtentChannel
-      extends AbstractChannel<Object>
+      extends SourcedChannel<Struct,Object>
     {
-      private final Channel<Struct> source;
       
       public BaseExtentChannel(Channel<Struct> source)
-      { 
-        super(baseChannel.getReflector());
-        this.source=source;
+      { super(baseChannel.getReflector(),source);
       }
       
       @Override
@@ -749,9 +743,8 @@ public class StructNode
     }
     
     class FieldChannel
-      extends AbstractChannel<Object>
+      extends SourcedChannel<Struct,Object>
     {
-      private final Channel<Struct> source;
       private final Channel<Object> target;
       private final StructField field;
       private final int index;
@@ -762,10 +755,8 @@ public class StructNode
         ,final Channel<Object> target
         )
       { 
-        super(target.getReflector());
-        this.context=source.getContext();
+        super(target.getReflector(),source);
         this.field=field;
-        this.source=source;
         this.target=target;
         this.index=field.index;
       }
@@ -808,9 +799,8 @@ public class StructNode
     
     
     class PassThroughChannel
-      extends AbstractChannel<Object>
+      extends SourcedChannel<Struct,Object>
     {
-      private final Channel<Struct> source;
       private final Channel<Object> target;
       // private final StructField field;
       
@@ -820,9 +810,8 @@ public class StructNode
         ,final Channel<Object> target
         )
       { 
-        super(target.getReflector());
+        super(target.getReflector(),source);
         // this.field=field;
-        this.source=source;
         this.target=target;
       }
       
@@ -873,10 +862,12 @@ public class StructNode
 
     private final StructReflector reflector;
     
-    public StructChannel(StructReflector reflector)
-    { super(reflector);
-      this.reflector=reflector;
     
+    public StructChannel(StructReflector reflector,Focus<?> context)
+    { 
+      super(reflector);
+      this.reflector=reflector;
+      this.context=context;
     } 
 
 

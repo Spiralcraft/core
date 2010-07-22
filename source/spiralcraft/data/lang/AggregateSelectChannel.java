@@ -4,7 +4,7 @@ package spiralcraft.data.lang;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
 import spiralcraft.data.Aggregate;
@@ -20,10 +20,9 @@ import spiralcraft.data.spi.EditableArrayListAggregate;
  * @param <X>
  */
 public class AggregateSelectChannel<T extends Aggregate<X>,X>
-  extends AbstractChannel<Aggregate<X>>
+  extends SourcedChannel<T,Aggregate<X>>
 {
 
-  private final Channel<T> source;
   private final ThreadLocalChannel<X> componentChannel;
   private final Channel<Boolean> selector;
   
@@ -43,8 +42,9 @@ public class AggregateSelectChannel<T extends Aggregate<X>,X>
     throws BindException
   { 
     super(DataReflector.<Aggregate<X>> getInstance
-        ( ((DataReflector<?>) source.getReflector()).getType()));
-    this.source=source;
+            ( ((DataReflector<?>) source.getReflector()).getType())
+         ,source
+         );
     this.componentChannel=componentChannel;
     this.selector=selector;   
   }

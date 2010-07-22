@@ -48,12 +48,16 @@ public class ViewCache
     }
   }  
 
-
+  
   @SuppressWarnings("unchecked")
   private final ThreadLocalChannel<ViewState[]> stateChannel
     =new ThreadLocalChannel<ViewState[]>
     (BeanReflector.<ViewState[]>getInstance(ViewState[].class));
   private volatile int dataLen;
+
+  public ViewCache(Focus<?> focus)
+  { stateChannel.setContext(focus);
+  }
   
   @Override
   public Focus<?> bind(
@@ -140,20 +144,20 @@ public class ViewCache
   }
 
   
+  @SuppressWarnings("unchecked")
   public class StateChannel<T>
-    extends AbstractChannel<ViewState<T>>
+    extends SourcedChannel<ViewState[],ViewState<T>>
   {
     private final int index=dataLen++;
     
     public StateChannel(Reflector<ViewState<T>> stateReflector)
-    { super(stateReflector);
+    { super(stateReflector,stateChannel);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected ViewState<T> retrieve()
     { 
-      ViewState<?>[] states=stateChannel.get();
+      ViewState<?>[] states=source.get();
       if (states!=null)
       { return (ViewState<T>) states[index];
       }
@@ -167,7 +171,7 @@ public class ViewCache
       ViewState<T> val)
       throws AccessException
     { 
-      ViewState<?>[] states=stateChannel.get();
+      ViewState<?>[] states=source.get();
       if (states!=null)
       { 
         states[index]=val;

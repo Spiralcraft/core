@@ -294,6 +294,7 @@ public class Collect<Titem>
 
       super(BeanReflector.<Command<?,?,?>>getInstance(Command.class));      
       closure=closureFocus.enclose();
+      this.context=closureFocus;
       this.aggregate=aggregate;
     
     }

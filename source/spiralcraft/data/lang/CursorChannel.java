@@ -21,21 +21,19 @@ import spiralcraft.data.access.Cursor;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 
 @SuppressWarnings("unchecked")
 public class CursorChannel<T>
-  extends AbstractChannel<T>
+  extends SourcedChannel<Cursor,T>
 {
     
-  protected final Channel<Cursor> cursorChannel;
   protected final Type<T> type;
     
   public CursorChannel(Type<T> type,Channel<Cursor> cursorChannel)
     throws BindException
   { 
-    super(DataReflector.<T>getInstance(type));
-    this.cursorChannel=cursorChannel;
+    super(DataReflector.<T>getInstance(type),cursorChannel);
     this.type=type;
   }
     
@@ -48,7 +46,7 @@ public class CursorChannel<T>
     throws DataException
   { 
     if (type.isAssignableFrom(cursor.getFieldSet().getType()))
-    { cursorChannel.set(cursor);
+    { source.set(cursor);
     }
     else
     { throw new TypeMismatchException
@@ -57,7 +55,7 @@ public class CursorChannel<T>
   }
     
   public Cursor getCursor()
-  { return cursorChannel.get();
+  { return source.get();
   }
       
   @Override
@@ -66,7 +64,7 @@ public class CursorChannel<T>
   {
     try
     {
-      Cursor cursor=cursorChannel.get();
+      Cursor cursor=source.get();
       if (cursor!=null)
       { return (T) cursor.getTuple();
       }

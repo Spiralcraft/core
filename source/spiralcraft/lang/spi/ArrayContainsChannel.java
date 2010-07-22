@@ -26,10 +26,9 @@ import spiralcraft.lang.reflect.BeanReflector;
  * @param <T>
  */
 public class ArrayContainsChannel<T>
-  extends AbstractChannel<Boolean>
+  extends SourcedChannel<T[],Boolean>
 {
   
-  private final Channel<T[]> arrayChannel;
   private final Channel<T> compareItemChannel;
   
   public ArrayContainsChannel
@@ -37,8 +36,7 @@ public class ArrayContainsChannel<T>
     ,Channel<T> compareItemChannel
     )
   { 
-    super(BeanReflector.<Boolean>getInstance(Boolean.class));
-    this.arrayChannel=arrayChannel;
+    super(BeanReflector.<Boolean>getInstance(Boolean.class),arrayChannel);
     this.compareItemChannel=compareItemChannel;
     
   }
@@ -46,7 +44,7 @@ public class ArrayContainsChannel<T>
   @Override
   protected Boolean retrieve()
   {
-    T[] array=arrayChannel.get();
+    T[] array=source.get();
     if (array==null)
     { return null;
     }

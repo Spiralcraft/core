@@ -28,10 +28,9 @@ import spiralcraft.lang.Channel;
  * @param <X>
  */
 public class IterableSelectChannel<X>
-  extends AbstractChannel<Iterable<X>>
+  extends SourcedChannel<Iterable<X>,Iterable<X>>
 {
 
-  private final Channel<Iterable<X>> source;
   private final ThreadLocalChannel<X> componentChannel;
   private final Channel<Boolean> selector;
   
@@ -48,8 +47,7 @@ public class IterableSelectChannel<X>
     ,Channel<Boolean> selector
     )
   { 
-    super(source.getReflector());
-    this.source=source;
+    super(source.getReflector(),source);
     this.componentChannel=componentChannel;
     this.selector=selector;
    

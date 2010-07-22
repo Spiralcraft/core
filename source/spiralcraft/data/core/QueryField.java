@@ -161,6 +161,7 @@ public class QueryField
       super(DataReflector.<DataComposite>getInstance(type));
       this.boundQuery=query;
       this.focus=focus;
+      this.context=focus;
     }
     
     @Override

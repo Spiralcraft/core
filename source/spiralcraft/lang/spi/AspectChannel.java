@@ -27,16 +27,14 @@ import spiralcraft.lang.Reflector;
  *
  */
 public class AspectChannel<T>
-  extends AbstractChannel<T>
+  extends SourcedChannel<T,T>
   implements Channel<T>
 {
 
-  private final Channel<T> source;
   
   public AspectChannel(Reflector<T> reflector,Channel<T> source)
   { 
-    super(reflector);
-    this.source=source;
+    super(reflector,source);
   }
   
   @Override

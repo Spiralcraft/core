@@ -103,6 +103,7 @@ public abstract class Accumulator<Tresult,Tsource>
       resultReflector=resolveResultReflector();
       
       result=new AccumulatorChannel();
+      result.setContext(stateChannel.getContext());
     }
     
     @SuppressWarnings("unchecked")

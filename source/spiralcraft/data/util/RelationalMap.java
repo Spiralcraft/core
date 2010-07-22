@@ -35,7 +35,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.ArrayReflector;
-import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
 import spiralcraft.log.ClassLog;
@@ -174,9 +174,8 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
   }
 
   class RelationalMapChannel
-    extends AbstractChannel<Tdownstream>
+    extends SourcedChannel<Tupstream,Tdownstream>
   {
-    private final Channel<Tupstream> source;
     private CollectionDecorator<Tupstream,TupstreamItem> sourceCollection;
 
     private final ThreadLocalChannel<Tdownstream> downstreamSource;
@@ -203,9 +202,8 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
       )
       throws BindException
     { 
-      super(reflector);
+      super(reflector,source);
       
-      this.source=source;
       this.sourceCollection
         =source.<CollectionDecorator>
           decorate(CollectionDecorator.class);

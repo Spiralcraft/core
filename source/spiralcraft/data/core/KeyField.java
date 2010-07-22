@@ -200,6 +200,7 @@ public class KeyField<T extends DataComposite>
       this.query=query;
       this.keyChannel=keyChannel;
       this.closure=closure;
+      this.context=closure;
     }
     
     @Override

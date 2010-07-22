@@ -61,7 +61,7 @@ public class IterationProjector<I,P,R>
   protected final Focus<I> telefocus;
     
   protected final Channel<P> functionChannel;  
-  protected final ViewCache viewCache=new ViewCache();
+  protected final ViewCache viewCache;
   protected final boolean reduce;
   
   @SuppressWarnings("unchecked")
@@ -73,6 +73,7 @@ public class IterationProjector<I,P,R>
     )
     throws BindException
   {
+    viewCache=new ViewCache(focus);
     this.reduce=reduce;
     
     iterable

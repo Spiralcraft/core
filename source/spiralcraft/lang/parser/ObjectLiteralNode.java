@@ -287,6 +287,7 @@ public class ObjectLiteralNode<Tobject,Treturn>
             ,(Treturn) object
             ,true
             );
+          returnChannel.setContext(focus);
         
         }
             

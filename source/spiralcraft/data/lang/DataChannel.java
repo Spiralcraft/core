@@ -19,7 +19,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Focus;
 
-import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
@@ -33,16 +33,13 @@ import spiralcraft.data.session.BufferChannel;
  *   model for binding expressions.
  */
 public class DataChannel<T extends DataComposite>
-  extends AbstractChannel<T>
+  extends SourcedChannel<T,T>
 {
  
-  private Channel<T> source;
   
   public DataChannel(Type<?> type,Channel<T> source,boolean isStatic)
     throws BindException
-  { 
-    super(DataReflector.<T>getInstance(type),isStatic);
-    this.source=source;
+  { super(DataReflector.<T>getInstance(type),source,isStatic);
   }
 
   @Override

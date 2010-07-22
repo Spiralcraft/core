@@ -21,10 +21,9 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
 public class ArrayIndexChannel<T>
-  extends AbstractChannel<T>
+  extends SourcedChannel<T[],T>
 {
   
-  private final Channel<T[]> arrayChannel;
   private final Channel<Number> subscriptChannel;
   private final boolean primitive;
   
@@ -34,8 +33,7 @@ public class ArrayIndexChannel<T>
     ,Channel<Number> subscriptChannel
     )
   { 
-    super(componentReflector);
-    this.arrayChannel=arrayChannel;
+    super(componentReflector,arrayChannel);
     this.subscriptChannel=subscriptChannel;
     this.primitive
       =arrayChannel.getReflector().getContentType().getComponentType()
@@ -50,7 +48,7 @@ public class ArrayIndexChannel<T>
     {
       if (!primitive)
       {
-        T[] array=arrayChannel.get();
+        T[] array=source.get();
         if (array==null)
         { return null;
         }
@@ -62,7 +60,7 @@ public class ArrayIndexChannel<T>
       }
       else
       { 
-        Object array=arrayChannel.get();
+        Object array=source.get();
         if (array==null)
         { return null;
         }
@@ -83,7 +81,7 @@ public class ArrayIndexChannel<T>
     T val)
     throws AccessException
   {
-    T[] array=arrayChannel.get();
+    T[] array=source.get();
     if (array==null)
     { return false;
     }

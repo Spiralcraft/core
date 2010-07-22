@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 1998,2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -96,7 +96,7 @@ public class Assignment<T>
       targetChannel
         =((AssignmentChannel) sourceChannel).targetChannel;
       sourceChannel
-        =((AssignmentChannel) sourceChannel).sourceChannel;
+        =((AssignmentChannel) sourceChannel).getSource();
     }
     Setter setter=new Setter<T>(sourceChannel,targetChannel);
     if (debug)

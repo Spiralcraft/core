@@ -28,6 +28,7 @@ public class ClosureChannel<T>
     super(enclosedChannel.getReflector());
     this.enclosedChannel=enclosedChannel;
     this.closure=closure;
+    this.context=closure;
   }
   
   @Override

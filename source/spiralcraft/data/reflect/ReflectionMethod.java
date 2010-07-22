@@ -30,7 +30,7 @@ import spiralcraft.data.DataComposite;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.util.ArrayUtil;
 
 
@@ -170,17 +170,15 @@ public class ReflectionMethod
 
   @SuppressWarnings("unchecked")
   class ReflectionMethodChannel
-    extends AbstractChannel
+    extends SourcedChannel
   {
-    protected final Channel<?> source;
     protected final Channel<?>[] params;
     
     public ReflectionMethodChannel
       (Channel<?> source,Channel<?>[] params)
       throws BindException
     { 
-      super(DataReflector.getInstance(returnType));
-      this.source=source;
+      super(DataReflector.getInstance(returnType),source);
       this.params=params;
     }
 

@@ -29,8 +29,8 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.AspectChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.rules.Inspector;
 import spiralcraft.rules.Rule;
@@ -589,9 +589,8 @@ public class FieldImpl<T>
   }
   
   public class FieldChannel
-    extends AbstractChannel<T>
+    extends SourcedChannel<Tuple,T>
   {
-    protected final Channel<? extends Tuple> source;
     protected final Inspector<FieldImpl<T>,T> inspector;
     protected final Inspector<Type<T>,T> typeInspector;
     protected final Focus<?> focus;
@@ -600,14 +599,13 @@ public class FieldImpl<T>
     
     
     public FieldChannel
-      (Channel<? extends Tuple> source
+      (Channel<Tuple> source
       ,Focus<?> focus
       )
       throws BindException
     { 
-      super(contentReflector);
+      super(contentReflector,source);
       this.focus=focus;
-      this.source=source;
       
       if (ruleSet!=null)
       { inspector=ruleSet.bind(contentReflector,focus);

@@ -19,7 +19,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanReflector;
-import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 
 /**
  * <p>Uses an Assembly to manufacture objects or customize objects retrieved 
@@ -32,10 +32,9 @@ import spiralcraft.lang.spi.AbstractChannel;
  * @param <T>
  */
 public class BuilderChannel<T>
-  extends AbstractChannel<T>
+  extends SourcedChannel<T,T>
 {
 
-  private final Channel<T> source;
   private final Assembly<T> assembly;
   
   @SuppressWarnings("unchecked")
@@ -50,9 +49,9 @@ public class BuilderChannel<T>
       (source!=null
       ?source.getReflector()
       :BeanReflector.<T>getInstance(assemblyClass.getJavaClass())
+      ,source
       );
     
-    this.source=source;
     try
     { this.assembly=(Assembly<T>) assemblyClass.newFactoryInstance(context);
     }

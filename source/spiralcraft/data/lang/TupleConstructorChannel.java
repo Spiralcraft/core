@@ -43,6 +43,7 @@ public class TupleConstructorChannel<T extends Tuple>
   { 
     super(reflector);
     local=new ThreadLocalChannel<T>(reflector);
+    this.context=context;
     Focus<T> focus=context.chain(local);
       
     ArrayList<Setter<?>> setterList=new ArrayList<Setter<?>>();

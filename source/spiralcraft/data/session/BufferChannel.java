@@ -26,7 +26,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 
-import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.log.ClassLog;
 
 /**
@@ -35,11 +35,10 @@ import spiralcraft.log.ClassLog;
  *
  */
 public class BufferChannel<Tbuffer extends Buffer>
-  extends AbstractChannel<Tbuffer>
+  extends SourcedChannel<DataComposite,Tbuffer>
 {
   private static final ClassLog log=ClassLog.getInstance(BufferChannel.class);
   
-  private Channel<? extends DataComposite> originalChannel;
   private Channel<DataSession> sessionChannel;
 
 /*
@@ -104,12 +103,12 @@ public class BufferChannel<Tbuffer extends Buffer>
              .getType()
          )
         )
+      ,(Channel<DataComposite>) original
       );
     if (debug)
     { log.fine("BufferChannel "+getReflector());
     }
     setupSession(focus);
-    this.originalChannel=original;
     
     
   }
@@ -120,6 +119,7 @@ public class BufferChannel<Tbuffer extends Buffer>
    * @param focus A focus, not necessarily on the originalChannel
    * 
    */
+  @SuppressWarnings("unchecked")
   public BufferChannel
     (Type<Buffer> bufferType
     ,Channel<? extends DataComposite> originalChannel
@@ -130,11 +130,12 @@ public class BufferChannel<Tbuffer extends Buffer>
     // Our Focus provides access to our containing scope,
     //   not the originalChannel
 
-    super(DataReflector.<Tbuffer>getInstance(bufferType));
+    super(DataReflector.<Tbuffer>getInstance(bufferType)
+          ,(Channel<DataComposite>) originalChannel
+          );
     if (debug)
     { log.fine("BufferChannel "+getReflector());
     }
-    this.originalChannel=originalChannel;
     setupSession(focus);
 
   }
@@ -171,7 +172,7 @@ public class BufferChannel<Tbuffer extends Buffer>
   public Tbuffer retrieve()
   { 
 
-    DataComposite original=originalChannel.get();
+    DataComposite original=source.get();
     
     if (original==null)
     { return null;

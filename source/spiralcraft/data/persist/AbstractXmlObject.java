@@ -409,7 +409,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   }
   
   @Override
-  public Focus<?> bind(Focus<?> parentFocus)
+  public Focus<?> bind(final Focus<?> parentFocus)
     throws BindException
   { 
     // XXX Here, we insert the contained object as a bean into the Focus
@@ -435,6 +435,9 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
         channel=new AbstractChannel<Treferent>
           (BeanReflector.<Treferent>getInstance(get().getClass()))
         {
+          { setContext(parentFocus);
+          }
+          
 
           @Override
           protected Treferent retrieve()
