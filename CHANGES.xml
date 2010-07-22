@@ -88,6 +88,10 @@
             through Channels to support lazy-binding and subsequent
             binding-caching while ensuring upward references.
           </scm:Note>
+          <scm:Note>Channels that perform an operation against the content
+            of a source Channel now inherit from SourceChannel in order
+            to propogate the binding context.
+          </scm:Note>
           <scm:Note>Lazy binding type members now use Channel.getContext()
             to bind internals.
           </scm:Note>          
@@ -113,8 +117,12 @@
           </URI>
           <URI>builder/AssemblyClass.java
           </URI>
+          <URI>builder/BuilderChannel.java
+          </URI>
           <URI>data/access/DataSynchronizer.java
           </URI>        
+          <URI>data/core/FieldImpl.java
+          </URI>             
           <URI>data/core/TaskMethod.java
           </URI>             
           <URI>data/core/UniqueRule.java
@@ -135,7 +143,19 @@
           </URI> 
           <URI>data/lang/TupleReflector.java
           </URI> 
+          <URI>data/lang/AggregateConstructorChannel.java
+          </URI> 
+          <URI>data/lang/AggregateSelectChannel.java
+          </URI> 
+          <URI>data/lang/CursorChannel.java
+          </URI> 
+          <URI>data/lang/DataChannel.java
+          </URI> 
+          <URI>data/lang/TupleConstructorChannel.java
+          </URI> 
           <URI>data/query/EquiJoin.java
+          </URI>             
+          <URI>data/persist/AbstractXmlObject.java
           </URI>             
           <URI>data/reflect/ReflectionMethod.java
           </URI>             
@@ -144,6 +164,12 @@
           <URI>data/session/BufferField.java
           </URI>
           <URI>data/spi/DataKeyFunction.java
+          </URI>
+          <URI>data/task/Collect.java
+          </URI>
+          <URI>data/util/RelationalMap.java
+          </URI>
+          <URI>lang/Assignment.java
           </URI>
           <URI>lang/BaseFocus.java
           </URI>
@@ -157,19 +183,79 @@
           </URI>
           <URI>lang/TeleFocus.java
           </URI>
+          <URI>lang/functions/Tree.java
+          </URI>
+          <URI>lang/parser/BinaryOpNode.java
+          </URI>
+          <URI>lang/parser/ListNode.java
+          </URI>
+          <URI>lang/parser/ObjectLiteralNode.java
+          </URI>
+          <URI>lang/parser/RangeNode.java
+          </URI>
+          <URI>lang/parser/StructNode.java
+          </URI>
+          <URI>lang/parser/SubcontextNode.java
+          </URI>
           <URI>lang/spi/AbstractChannel.java
           </URI>
           <URI>lang/spi/AbstractReflector.java
           </URI>
           <URI>lang/spi/AbstractFunctorChannel.java
           </URI>
+          <URI>lang/spi/Accumulator.java
+          </URI>
+          <URI>lang/spi/ArrayConstructorChannel.java
+          </URI>
+          <URI>lang/spi/ArrayContainsChannel.java
+          </URI>
+          <URI>lang/spi/ArrayIndexChannel.java
+          </URI>
+          <URI>lang/spi/ArrayRangeChannel.java
+          </URI>
+          <URI>lang/spi/ArraySelectChannel.java
+          </URI>
+          <URI>lang/spi/AspectChannel.java
+          </URI>
+          <URI>lang/spi/AssignmentChannel.java
+          </URI>
+          <URI>lang/spi/BindingChannel.java
+          </URI>
+          <URI>lang/spi/ClosureChannel.java
+          </URI>
           <URI>lang/spi/ClosureFocus.java
           </URI>
+          <URI>lang/spi/GatherChannel.java
+          </URI>
+          <URI>lang/spi/IterableContainsChannel.java
+          </URI>
+          <URI>lang/spi/IterableRangeChannel.java
+          </URI>
+          <URI>lang/spi/IterableSelectChannel.java
+          </URI>
+          <URI>lang/spi/IterationCursorChannel.java
+          </URI>
+          <URI>lang/spi/IterationProjector.java
+          </URI>
+          <URI>lang/spi/ListRangeChannel.java
+          </URI>
+          <URI>lang/spi/LogChannel.java
+          </URI>
+          <URI>lang/spi/PrimitiveArrayConstructorChannel.java
+          </URI>
           <URI>lang/spi/ProxyChannel.java
+          </URI>
+          <URI>lang/spi/SourceChannel.java
           </URI>
           <URI>lang/spi/ThreadLocalChannel.java
           </URI>
           <URI>lang/spi/TranslatorChannel.java
+          </URI>
+          <URI>lang/spi/TuneChannel.java
+          </URI>
+          <URI>lang/spi/ViewCache.java
+          </URI>
+          <URI>text/translator/Translator.java
           </URI>
         </resources>      
         
