@@ -37,7 +37,7 @@
                       
           <chain>
             <task:Exec>
-              <commandX>[dtask:Collect] commandAdd([example:Customer])
+              <commandX>[dtask:Collect].commandAdd([example:Customer])
               </commandX>
               
             </task:Exec>
