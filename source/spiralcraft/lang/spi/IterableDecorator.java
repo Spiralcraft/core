@@ -22,7 +22,7 @@ import spiralcraft.lang.Reflector;
 import java.util.Iterator;
 
 /**
- * Implements an IterationDecorator for a source that returns an Array
+ * Implements an IterationDecorator for a source that returns an Iterator
  */
 public class IterableDecorator<I>
   extends IterationDecorator<Iterable<I>,I>
