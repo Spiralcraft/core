@@ -9,7 +9,7 @@
     <authorId>miketoth
     </authorId>
     
-    <date>2010-07-21
+    <date>2010-07-25
     </date>
   
     <notes>
@@ -31,9 +31,64 @@
       <scm:Note>Make Expression more code-friendly by adding adding static
         methods to resolve class instances and Focus URIs.
       </scm:Note>
+      <scm:Note>Fix issue where base type unique key DI constraints are not 
+        checked on update
+      </scm:Note>
+      <scm:Note>Make Instant a first class data type
+      </scm:Note>
     </notes>
     
     <detail>
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Make Instant a first class data type
+          </scm:Note>
+
+        </notes>
+      
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/types/standard/InstantType.java
+          </URI>
+          <URI>util/string/StringConverter.java
+          </URI>
+          <URI>util/string/InstantToString.java
+          </URI>
+        </resources>
+      </scm:Change>
+    
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Fix issue where base type unique key DI constraints are not 
+            checked on update
+          </scm:Note>
+          <scm:Note>Added getKeys() method to Type to compile base type keys
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>Key.java
+          </URI>
+          <URI>Type.java
+          </URI>
+          <URI>core/KeyImpl.java
+          </URI>
+          <URI>core/SchemeImpl.java
+          </URI>
+          <URI>core/TypeImpl.java
+          </URI>
+          <URI>spi/KeyedListAggregate.java
+          </URI>
+        </resources>
+      </scm:Change>
+    
       <scm:Change>
       
         <notes>
@@ -50,7 +105,8 @@
       <scm:Change>
       
         <notes>
-          <scm:Note>Added debug logging to DataSession
+          <scm:Note>Added debug logging to DataSession and other objects in
+            the update path.
           </scm:Note>
         </notes>
       
@@ -59,6 +115,36 @@
         
         <resources>
           <URI>session/DataSession.java
+          </URI>
+          <URI>data/DataConsumer.java
+          </URI>
+          <URI>data/access/DataSynchronizer.java
+          </URI>
+          <URI>data/access/Entity.java
+          </URI>
+          <URI>data/core/QueryField.java
+          </URI>
+          <URI>data/flatfile/Parser.java
+          </URI>
+          <URI>data/flatfile/Writer.java
+          </URI>
+          <URI>data/lang/TupleReflector.java
+          </URI>
+          <URI>data/session/BufferTuple.java
+          </URI>
+          <URI>data/session/DataSession.java
+          </URI>
+          <URI>data/session/DataSessionFocus.java
+          </URI>
+          <URI>data/util/DataAggregator.java
+          </URI>
+          <URI>data/util/DebugDataConsumer.java
+          </URI>
+          <URI>data/xml/XmlStore.java
+          </URI>
+          <URI>lang/spi/AbstractReflector.java
+          </URI>
+          <URI>util/ArrayUtil.java
           </URI>
         </resources>
       </scm:Change>
@@ -70,14 +156,19 @@
             instead of the data type after editing an externally generated 
             Tuple.
           </scm:Note>
+          <scm:Note>Ensure that Tuples constructed with Types are 
+            constructed using the local Scheme and not the combined scheme
+          </scm:Note>
         </notes>
       
-        <path>source/spiralcraft/data/xml/
+        <path>source/spiralcraft/data/
         </path>
         
         <resources>
-          <URI>XmlStore.java
+          <URI>xml/XmlStore.java
           </URI>
+          <URI>spi/EditableArrayTuple.java
+          </URI>          
         </resources>
       </scm:Change>
 
