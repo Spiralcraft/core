@@ -93,6 +93,7 @@ public class DataSession
   public void setFocus(Focus<?> focus)
   { this.focus=focus;
   }
+
   
   /**
    * The Space which the DataSession queries and updates
@@ -113,10 +114,20 @@ public class DataSession
   
   public DataComposite getData()
   { 
-    if (data==null)
+    if (data==null && type!=null)
     { data=new EditableArrayTuple(type.getScheme());
     }
     return data;
+  }
+  
+  /**
+   * Specify whether to log activity of this DataSession and related resource 
+   *   managers.
+   * 
+   * @param debug
+   */
+  public void setDebug(boolean debug)
+  { this.debug=debug;
   }
   
   public ResourceManager<DataSessionBranch> getResourceManager()
@@ -306,6 +317,9 @@ public class DataSession
         if (updater!=null)
         { 
           updaterMap.put(type,updater);
+          if (DataSession.this.debug)
+          { updater.setDebug(true);
+          }
           updater.dataInitialize(type.getFieldSet());
         }
       }

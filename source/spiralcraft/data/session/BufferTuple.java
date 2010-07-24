@@ -243,12 +243,16 @@ public class BufferTuple
     EditableTuple dest)
     throws DataException
   {
+    if (debug)
+    { log.fine("Starting update to "+dest);
+    }
+    
     if (getFieldSet()==dest.getFieldSet()
         || (getType()!=null && getType().hasArchetype(dest.getType()))
        )
     { 
       Field<?>[] dirtyFields=getExtentDirtyFields();
-      if (dirtyFields!=null)
+      if (dirtyFields!=null && dirtyFields.length>0)
       {
       
         for (Field<?> field : dirtyFields)
@@ -258,11 +262,35 @@ public class BufferTuple
           { 
             // Don't do anything
             // XXX Need option to cascade. Buffer.getParent()==this?
+            if (debug)
+            {
+              log.fine("Ignoring dirty buffer field "+field.getURI());
+            }
           }
           else
-          { copyFieldTo(field,dest);
+          { 
+            if (debug)
+            { 
+              log.fine
+                ("Copying "+field.getURI()+" to "+dest.getType().getURI()+": "
+                +field.getValue(this)
+                );
+            }
+            copyFieldTo(field,dest);
           }
         }
+      }
+      else
+      {
+        if (debug)
+        { log.fine("No dirty fields in this extent "+getType().getURI());
+        }
+      }
+    }
+    else
+    { 
+      if (debug)
+      { log.fine("Can't update "+this+" to "+dest);
       }
     }
     if (baseExtent!=null)
@@ -442,7 +470,7 @@ public class BufferTuple
 
     if (dirtyFields!=null)
     {
-      for (Field<?> field : getDirtyFields())
+      for (Field<?> field : dirtyFields)
       { 
       
         Object val=field.getValue(this);
@@ -492,7 +520,7 @@ public class BufferTuple
   { 
     StringBuffer buf=new StringBuffer();
     buf.append(super.toString()+":"+getType().getURI()+"[");
-    Field<?>[] dirtyFields=getDirtyFields();
+    Field<?>[] dirtyFields=getExtentDirtyFields();
       
     if (dirtyFields!=null)
     {

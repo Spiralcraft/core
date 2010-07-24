@@ -134,6 +134,8 @@ public class Parser
 									}
                   public void dataFinalize()
                   {}
+                  public void setDebug(boolean debug)
+                  { }
 								}
 							);
 		}

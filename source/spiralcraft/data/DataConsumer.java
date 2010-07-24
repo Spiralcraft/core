@@ -44,4 +44,10 @@ public interface DataConsumer<T extends Tuple>
   void dataFinalize()
     throws DataException;
   
+  /**
+   * Enable logging of detailed activity
+   * 
+   * @param debug
+   */
+  void setDebug(boolean debug);
 }

@@ -80,5 +80,9 @@ public class DebugDataConsumer<T extends Tuple>
     { nextConsumer.dataInitialize(fieldSet);
     }
   }
+  
+  public void setDebug(boolean debug)
+  { nextConsumer.setDebug(debug);
+  }
 
 }

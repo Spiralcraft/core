@@ -204,7 +204,9 @@ public class DataSessionFocus
     // Note: The Focus is only used to bind the Updaters for 
     //   this session
     dataSession.setFocus(this);
-    
+    if (debug)
+    { dataSession.setDebug(true);
+    }
     return dataSession;
     
   }

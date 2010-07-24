@@ -54,6 +54,8 @@ public class DataSynchronizer
   private final Space space;
   private final TupleFocus<Tuple> primaryKeyFocus;
   private final TupleFocus<Tuple> tupleFocus;
+  @SuppressWarnings("unused")
+  private boolean debug;
   
   
   private DataConsumer nextConsumer;
@@ -98,6 +100,10 @@ public class DataSynchronizer
   { nextConsumer=consumer;
   }
 
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
   public void dataAvailable(Tuple tuple)
     throws DataException
   {

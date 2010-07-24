@@ -29,6 +29,7 @@ public class Entity
 {
   private Type<?> type;
   private String name;
+  private boolean debug;
   
   public Type<?> getType()
   { return type;
@@ -50,5 +51,13 @@ public class Entity
     else
     { return type.getPackageURI().relativize(type.getURI()).getPath();
     }
+  }
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
+  public boolean isDebug()
+  { return debug;
   }
 }

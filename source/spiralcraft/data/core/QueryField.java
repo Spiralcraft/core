@@ -216,8 +216,15 @@ public class QueryField
               if (val!=null)
               { 
                 throw new AccessException
-                  (getURI()+": Cardinality violation: non-aggregate query returned more" +
-                  " than one result"
+                  (getURI()
+                  +": Cardinality violation: non-aggregate query returned more"
+                  +" than one result: "
+                  +(debug
+                   ?"\r\n    A:"+val
+                      +"\r\n    B:"+cursor.getTuple()
+                   :"\r\n    A:"+val.getType().getURI()
+                      +"\r\n    B:"+cursor.getTuple().getType().getURI()
+                   )
                   );
               }
               else

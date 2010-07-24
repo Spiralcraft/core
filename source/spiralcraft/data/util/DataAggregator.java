@@ -72,5 +72,9 @@ public class DataAggregator<Ttype extends Tuple>
   public void clear()
   { list.clear();
   }
+  
+  public void setDebug(boolean debug)
+  {
+  }
 
 }

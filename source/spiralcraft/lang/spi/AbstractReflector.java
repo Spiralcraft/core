@@ -548,6 +548,10 @@ public abstract class AbstractReflector<T>
     }
   }
   
+  @Override
+  public String toString()
+  { return super.toString()+":"+getTypeURI();
+  }
   
 }
 

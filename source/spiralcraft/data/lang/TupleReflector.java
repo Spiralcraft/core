@@ -483,7 +483,7 @@ public class TupleReflector<T extends Tuple>
   { 
     return super.toString()
       +(type!=null
-          ?type.toString()
+          ?type.getURI()
           :"(untyped)["+untypedFieldSet.toString()+"]"
        );
   }

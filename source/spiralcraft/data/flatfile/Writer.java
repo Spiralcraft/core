@@ -64,6 +64,10 @@ public class Writer
   {
   }
   
+  public void setDebug(boolean debug)
+  {
+  }
+  
   public void setAutoFlush(boolean autoFlush)
   { this._autoFlush=autoFlush;
   }

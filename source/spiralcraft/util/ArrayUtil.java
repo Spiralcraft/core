@@ -16,11 +16,13 @@ package spiralcraft.util;
 
 import java.lang.reflect.Array;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.TreeSet;
 import java.util.Collection;
 import java.util.Iterator;
+
 
 /**
  * Static methods for array manipulation
@@ -555,6 +557,36 @@ public class ArrayUtil
   
   public static final Object asKey(final Object[] array)
   { return new ArrayKey(array);
+  }
+
+  /**
+   * Copy the contents of an Iterable to an array of the specified component
+   *   type.
+   * @param <T>
+   * @param componentType
+   * @param iterable
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> T[] toArray
+    (Class<T> componentType,Iterable<? extends T> iterable)
+  {
+    ArrayList<T> list=new ArrayList<T>();
+    for (T item : iterable)
+    { list.add(item);
+    }
+    return list.toArray((T[]) Array.newInstance(componentType,list.size()));
+
+  }
+  
+  @SuppressWarnings("unchecked")
+  public static <B,T extends B> T[] convert
+    (Class<T> componentType,B[] original)
+  {
+    T[] ret=(T[]) Array.newInstance(componentType,original.length);
+    System.arraycopy(original,0,ret,0,original.length);
+    return ret;
+    
   }
 }
 
