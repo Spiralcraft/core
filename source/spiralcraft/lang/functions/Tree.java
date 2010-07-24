@@ -15,6 +15,7 @@ import spiralcraft.lang.Decorator;
 
 import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.lang.util.FilterIterable;
 
 import spiralcraft.util.IteratorStack;
 import spiralcraft.util.ArrayUtil;
@@ -38,6 +39,7 @@ public class Tree<Tcollection, Tsource>
 
   private Expression<Tcollection> expansion;
   private Expression<Boolean> stopX;
+  private Expression<Boolean> filterX;
   
   public Tree()
   {
@@ -47,12 +49,22 @@ public class Tree<Tcollection, Tsource>
   { this.expansion=expansion;
   }
   
-  public Tree(Expression<Tcollection> expansion,Expression<Boolean> stopX)
+  public Tree(Expression<Tcollection> expansion,Expression<Boolean> filterX)
   { 
     this.expansion=expansion;
-    this.stopX=stopX;
+    this.filterX=filterX;
   }
   
+  public Tree(Expression<Tcollection> expansion
+              ,Expression<Boolean> filterX
+              ,Expression<Boolean> stopX
+              )
+  { 
+    this.expansion=expansion;
+    this.filterX=filterX;
+    this.stopX=stopX;
+  }
+
   /**
    * <p>An Expression which expands the children of the current node- evaluates
    *   to a collection of children.
@@ -60,10 +72,20 @@ public class Tree<Tcollection, Tsource>
    * 
    * @param x
    */
-  public void setChildrenX(Expression<Tcollection> x)
+  public void setExpansionX(Expression<Tcollection> x)
   { this.expansion=x;
   }
   
+  /**
+   * <p>An Expression which determines whether the node will be included
+   *   in the results
+   * </p>
+   * 
+   * @param x
+   */
+  public void setFilterX(Expression<Boolean> x)
+  { this.filterX=x;
+  }
   
   /**
    * <p>A boolean Expression which returns true when the current node should
@@ -89,12 +111,14 @@ public class Tree<Tcollection, Tsource>
     focus=focus.telescope(itemChannel);
     Channel<Tcollection> expansionChannel=focus.bind(expansion);
     Channel<Boolean> stopChannel=stopX!=null?focus.bind(stopX):null;
-    
+
+    Channel<Boolean> filterChannel=filterX!=null?focus.bind(filterX):null;    
     return new TreeChannel
      (expansionChannel
      ,source
      ,itemChannel
      ,stopChannel
+     ,filterChannel
      );
     
   }
@@ -107,15 +131,22 @@ public class Tree<Tcollection, Tsource>
     private final ThreadLocalChannel<Tsource> itemChannel;
     
     private final CollectionDecorator<Tcollection,Tsource> expansionDecorator;
+    
+    private Iterable<Tsource> expansionIterable;
+    
 //    private Channel<Tchannel> expansionChannel;
     private final Channel<Boolean> stopChannel;
 
+    
+    private FilterIterable<Tsource> filterIterable;
+    
     @SuppressWarnings("unchecked")
     public TreeChannel
       (Channel<Tcollection> expansionChannel
       ,Channel<Tsource> source
       ,ThreadLocalChannel<Tsource> itemChannel
       ,Channel<Boolean> stopChannel
+      ,Channel<Boolean> filterChannel
       )
       throws BindException
     { 
@@ -130,67 +161,81 @@ public class Tree<Tcollection, Tsource>
           ("Not a collection: "+expansionChannel.getReflector().getTypeURI());
       }
       this.stopChannel=stopChannel;
+
+
+      filterIterable=new FilterIterable<Tsource>
+        (new Iterable<Tsource>()
+          {
+            public Iterator<Tsource> iterator()
+            {
+              Tsource sourceVal=TreeChannel.this.source.get();
+              TreeChannel.this.itemChannel.push(sourceVal);
+              try
+              {    
+                return new TreeIterator
+                  ( (Iterator<Tsource>) ArrayUtil.iterator(new Object[] {sourceVal})
+                  );
+              }
+              finally
+              { TreeChannel.this.itemChannel.pop();
+              }
+        
+            }
+          }
+        
+        ,itemChannel
+        ,filterChannel
+        ,false
+        );    
+        
+      if (this.stopChannel==null)
+      { expansionIterable=expansionDecorator;
+      }
+      else
+      {
+        expansionIterable
+          =new FilterIterable<Tsource>
+          (expansionDecorator
+          ,itemChannel
+          ,stopChannel
+          ,true
+          );
+      }
     }
     
     
-    @SuppressWarnings("unchecked")
     @Override
     protected Tcollection retrieve()
     {
-      Tsource sourceVal=source.get();
-      itemChannel.push(sourceVal);
-      
-      try
-      {
-        Tcollection ret=expansionDecorator.newCollection();
-        ret=expansionDecorator.add(ret,sourceVal);
-
-        Iterator initial=expansionDecorator.iterator();
-        if (initial!=null)
-        {
+      Iterator<Tsource> it
+        =filterIterable.iterator();
         
-          Iterator<Tsource> it
-            =new TreeIterator(initial);
-        
-          ret=expansionDecorator.addAll
-            (ret
-            ,it
-            );
-        
-        }
-        return ret;
-      }
-      finally
-      { itemChannel.pop();
-      }
+      Tcollection ret=expansionDecorator.newCollection();
+      ret=expansionDecorator.addAll
+        (ret
+        ,it
+        );
+      return ret;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <D extends Decorator<Tcollection>> D decorate(Class<D> decorator)
+      throws BindException
     { 
       if ( ((Class) decorator)==IterationDecorator.class)
       { 
-        return (D) new IterationDecorator<Tcollection,Tsource>(this,source.getReflector())
+        
+        return (D) new IterationDecorator<Tcollection,Tsource>
+          (this,source.getReflector())
         {
-
+            
           @Override
           protected Iterator createIterator()
-          {
-            Tsource sourceVal=TreeChannel.this.source.get();
-            itemChannel.push(sourceVal);
-            try
-            { 
-              return new TreeIterator
-                ( (Iterator<Tsource>) ArrayUtil.iterator(new Object[] {sourceVal})
-                );
-            }
-            finally
-            { itemChannel.pop();
-            }
-            
+          { return filterIterable.iterator();
           }
         };
+          
         
       }
       return super.decorate(decorator);
@@ -209,9 +254,11 @@ public class Tree<Tcollection, Tsource>
       extends IteratorStack<Tsource>
     {
       
+      
       public TreeIterator(Iterator<Tsource>... initial)
       { super(initial);
       }
+      
       
       @Override
       public Tsource next()
@@ -223,7 +270,7 @@ public class Tree<Tcollection, Tsource>
         { 
           if (stopChannel==null || !Boolean.TRUE.equals(stopChannel.get()))
           {
-            Iterator<Tsource> childIter=expansionDecorator.iterator();
+            Iterator<Tsource> childIter=expansionIterable.iterator();
             push(childIter);
           }
         }
