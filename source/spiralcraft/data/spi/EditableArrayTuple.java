@@ -41,7 +41,11 @@ public class EditableArrayTuple
   }
   
   public EditableArrayTuple(Type<?> type)
-  { super(type.getFieldSet());
+  { 
+    // Never use type.getFieldSet() here. Type.getScheme() provides the
+    //   locally defined fields. ArrayTuple will take care of creating
+    //   base extents.
+    super(type.getScheme());
   }
 
   protected <X> void copyFieldFrom(Field<X> field,Tuple source)

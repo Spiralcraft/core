@@ -44,7 +44,6 @@ import spiralcraft.data.access.Entity;
 
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Queryable;
-import spiralcraft.data.sax.DataWriter;
 import spiralcraft.data.session.BufferTuple;
 import spiralcraft.data.session.BufferType;
 import spiralcraft.data.spi.AbstractStore;
@@ -395,7 +394,6 @@ public class XmlStore
     private ArrayList<Key<?>> uniqueKeys
       =new ArrayList<Key<?>>();
     
-    private DataWriter debugWriter=new DataWriter();
     
     
     public XmlUpdater(Focus<?> context,XmlQueryable queryable)
@@ -415,7 +413,7 @@ public class XmlStore
       { originalQuery=queryable.query(primaryKey.getQuery(), localFocus);
       }
       
-      for (Key<?> key: type.getScheme().keyIterable())
+      for (Key<?> key: type.getKeys())
       {
         if (key.isUnique() || key.isPrimary())
         { 
@@ -452,6 +450,11 @@ public class XmlStore
             {
               if (cursor.next())
               { 
+                if (debug)
+                { 
+                  log.fine
+                    ("Unique conflict on add: "+tuple+":"+uniqueKeys.get(i));
+                }
                 throw new UniqueKeyViolationException
                   (tuple,uniqueKeys.get(i));
               }
@@ -471,25 +474,30 @@ public class XmlStore
         EditableArrayTuple newTuple;
         if (tuple instanceof BufferTuple)
         { 
+          if (debug)
+          { log.fine("Copying buffer: "+tuple);
+          }
           newTuple
-            =new EditableArrayTuple(tuple.getFieldSet().getType()
-              .getArchetype().getScheme()
+            =new EditableArrayTuple(tuple.getType()
+              .getArchetype()
               );
           ((BufferTuple) tuple).updateTo(newTuple);
           ((BufferTuple) tuple).updateOriginal(newTuple);
           
         } 
         else
-        { newTuple=new EditableArrayTuple(tuple);
+        { 
+          if (debug)
+          { log.fine("Copying non-buffer: "+tuple);
+          }
+          newTuple=new EditableArrayTuple(tuple);
         }
         
         addList.add(newTuple);
         
 
         if (debug)
-        {
-          debugWriter.writeToOutputStream(System.out, tuple);
-          System.out.flush();
+        { log.fine("Created new store copy: "+newTuple);
         }
       }
       else if (!tuple.isDelete())
@@ -553,7 +561,7 @@ public class XmlStore
       throws DataException
     { 
       if (debug)
-      { log.fine("Finalizing updater for "+queryable.getResultType());
+      { log.fine("Finalizing updater for "+queryable.getResultType().getURI());
       }
       synchronized (queryable)
       {
@@ -562,11 +570,19 @@ public class XmlStore
         {
         
           for (Tuple t: deleteList)
-          { queryable.remove(t);
+          { 
+            queryable.remove(t);
+            if (debug)
+            { log.fine("Removing "+t); 
+            }
           }
 
           for (Tuple t: addList)
-          { queryable.add(t);
+          { 
+            queryable.add(t);
+            if (debug)
+            { log.fine("Adding "+t); 
+            }
           }
 
           for (Tuple t: updateList)
@@ -748,7 +764,7 @@ public class XmlStore
         {
           if (!result.next())
           {
-            EditableTuple row=new EditableArrayTuple(sequenceType.getScheme());
+            EditableTuple row=new EditableArrayTuple(sequenceType);
             row.set("uri",uri);
             row.set("nextValue",200);
             row.set("increment",100);
