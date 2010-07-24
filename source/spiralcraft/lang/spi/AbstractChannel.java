@@ -175,6 +175,7 @@ public abstract class AbstractChannel<T>
     throws AccessException;
 
   public <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
+    throws BindException
   { 
     try
     { return _reflector.decorate(this,decoratorInterface);
