@@ -26,6 +26,7 @@ import spiralcraft.data.session.BufferType;
 import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.rules.RuleSet;
+import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringConverter;
 import spiralcraft.util.thread.ThreadLocalStack;
 
@@ -338,6 +339,44 @@ public abstract class Type<T>
    * @return the Field
    */
   public abstract FieldSet getFieldSet();
+  
+  
+  /**
+   * Return the Keys defined for this Type, if any.
+   * 
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public Key<T>[] getKeys()
+  {
+    Key[] baseKeys=null;
+    
+    if (getBaseType()!=null)
+    { baseKeys=getBaseType().getKeys();
+    }
+    
+    Key<T>[] localKeys=null;
+    if (getScheme()!=null)
+    { 
+      localKeys
+        =(Key<T>[]) ArrayUtil.toArray(Key.class,getScheme().keyIterable());
+    }
+    
+    if (localKeys==null && baseKeys==null)
+    { return null;
+    }
+    
+    if (localKeys!=null && (baseKeys==null || baseKeys.length==0))
+    { return localKeys;
+    }
+
+    if (baseKeys!=null && (localKeys==null || localKeys.length==0))
+    { return baseKeys;
+    }
+    
+    return ArrayUtil.concat(localKeys,baseKeys);
+     
+  }
   
   /**
    * The Method with the specified name that best matches the

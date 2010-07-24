@@ -288,17 +288,17 @@ public class SchemeImpl
       }
     }
     
-    int keyIndex=0;
+//    int keyIndex=0;
     for (KeyImpl<Tuple> key:keys)
     {
       key.setScheme(this);
-      key.setIndex(keyIndex++);
+//      key.setIndex(keyIndex++);
       if (key.isPrimary())
       { 
-        if (primaryKey!=null)
+        if (getPrimaryKey()!=null)
         {
           throw new DataException
-            ("Scheme can only have one primary key: "+toString());
+            ("Duplicate primary key: "+key+" in scheme "+toString());
         }
         else
         { primaryKey=key;

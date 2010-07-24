@@ -15,7 +15,6 @@
 package spiralcraft.data;
 
 import spiralcraft.data.query.Query;
-import spiralcraft.annotation.PermittedDependency;
 
 /**
  * A set of Fields within a Scheme which uniquely identify a single Tuple 
@@ -39,11 +38,6 @@ public interface Key<T>
    */
   public Scheme getScheme();
   
-  /**
-   * @return The index of this Key within the set of Keys belonging to
-   *   Scheme
-   */
-  public int getIndex();
   
   /**
    * @return Whether this Key is the primary key for its Scheme
@@ -76,7 +70,6 @@ public interface Key<T>
    * @return The Query that will return the Tuple or Tuples when provided with
    *   the matching Field values.
    */
-  @PermittedDependency(Query.class)
   public Query getQuery();
   
 }

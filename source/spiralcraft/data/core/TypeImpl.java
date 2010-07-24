@@ -17,8 +17,8 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.Key;
 import spiralcraft.data.Method;
-import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
@@ -502,12 +502,13 @@ public class TypeImpl<T>
     return unifiedFieldSet;
   }
   
-  public void setKeys(KeyImpl<Tuple>[] keyArray)
+  @SuppressWarnings("unchecked")
+  public void setKeys(Key<T>[] keyArray)
   { 
     if (scheme==null)
     { scheme=new SchemeImpl();
     }
-    scheme.setKeys(keyArray);
+    scheme.setKeys( ArrayUtil.<Key,KeyImpl>convert(KeyImpl.class,keyArray) );
 
   }
   

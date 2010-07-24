@@ -15,13 +15,14 @@
 package spiralcraft.data.spi;
 
 import spiralcraft.data.Aggregate;
-import spiralcraft.data.Key;
 import spiralcraft.data.KeyTuple;
 import spiralcraft.data.Projection;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.lang.BindException;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.util.KeyedList;
 
 import java.util.ArrayList;
@@ -36,9 +37,14 @@ import java.util.Map;
 public class KeyedListAggregate<T>
   extends AbstractAggregate<T>
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(KeyedListAggregate.class);
+  
+  private static final Level logLevel
+    =ClassLog.getInitialDebugLevel(KeyedListAggregate.class,null);
+  
   protected final KeyedList<T> list;
   
-  private ArrayList<Index<T>> indices;
   private Map<Projection<T>,Index<T>> indexMap;
   
   /**
@@ -138,12 +144,6 @@ public class KeyedListAggregate<T>
     }
   }
   
-  private synchronized void createIndexList()
-  {
-    if (indices==null)
-    { indices=new ArrayList<Index<T>>();
-    }
-  }
 
   private synchronized void createIndexMap()
   {
@@ -152,22 +152,6 @@ public class KeyedListAggregate<T>
     }
   }
   
-  @SuppressWarnings("unchecked") // XXX Key<Tuple> -> Key<T>
-  private synchronized Index<T> createKeyIndex(int keyIndex)
-    throws DataException
-  {
-    while (indices.size()<=keyIndex)
-    { indices.add(null);
-    }
-    if (indices.get(keyIndex)!=null)
-    { return indices.get(keyIndex);
-    }
-    Key<T> key=(Key<T>) getType().getContentType().getScheme().getKeyByIndex(keyIndex);
-    HashMap<KeyTuple,List<T>> map=new HashMap<KeyTuple,List<T>>();
-    Index<T> index=new ListIndex(map,key);
-    indices.set(keyIndex,index);
-    return index;
-  }
   
   private synchronized Index<T> createIndex(Projection<T> projection)
     throws DataException
@@ -177,6 +161,9 @@ public class KeyedListAggregate<T>
     { return index;
     }
 
+    if (logLevel.canLog(Level.DEBUG))
+    { log.debug("Creating index on "+projection+" for "+getType().getURI());
+    }
     HashMap<KeyTuple,List<T>> map=new HashMap<KeyTuple,List<T>>();
     index=new ListIndex(map,projection);
     indexMap.put(projection,index);
@@ -193,26 +180,7 @@ public class KeyedListAggregate<T>
     
     
     Index<T> index=null;
-    if (projection instanceof Key<?>)
-    { 
-      // Find it in the key list.
-      
-      if (indices==null && create)
-      { createIndexList();
-      }
-    
-      if (indices==null)
-      { return null;
-      }
-      
-      Key<?> key=(Key<?>) projection;
-      if (indices.size()>key.getIndex())
-      { index=indices.get(key.getIndex());
-      }
-      if (index==null && create)
-      { index=createKeyIndex(key.getIndex());
-      }
-    }
+
     
     if (index==null)
     { 

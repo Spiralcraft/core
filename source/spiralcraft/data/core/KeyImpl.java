@@ -41,7 +41,7 @@ public class KeyImpl<T>
 {
   private Scheme scheme;
   private String name;
-  private int index;
+//  private int index;
   private boolean primary;
   private boolean unique;
   private Type<?> foreignType;
@@ -105,17 +105,17 @@ public class KeyImpl<T>
   }
   
   
-  /**
-   * @return The index of this Key within the set of Keys belonging to
-   *   Scheme
-   */
-  public int getIndex()
-  { return index;
-  }
+//  /**
+//   * @return The index of this Key within the set of Keys belonging to
+//   *   Scheme
+//   */
+//  public int getIndex()
+//  { return index;
+//  }
   
-  public void setIndex(int val)
-  { index=val;
-  }
+//  void setIndex(int val)
+//  { index=val;
+//  }
   
   /**
    * @return Whether this Key is the primary key for its Scheme
