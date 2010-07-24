@@ -36,9 +36,44 @@
       </scm:Note>
       <scm:Note>Make Instant a first class data type
       </scm:Note>
+      <scm:Note>Integrate filtering logic into Tree function
+      </scm:Note>
     </notes>
     
     <detail>
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Provide spiralcraft.lang function to resolve URI resources
+          </scm:Note>
+
+        </notes>
+      
+        <path>source/spiralcraft/vfs/Resolve.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Integrate filtering logic into Tree function
+          </scm:Note>
+
+        </notes>
+      
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/functions/Tree.java
+          </URI>
+          <URI>lang/spi/AbstractChannel.java
+          </URI>
+          <URI>lang/util/FilterIterable.java
+          </URI>
+        </resources>
+      </scm:Change>
+
       <scm:Change>
       
         <notes>
