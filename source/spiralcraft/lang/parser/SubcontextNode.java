@@ -186,7 +186,12 @@ class SubcontextChannel<T,S>
     )
     throws BindException
   {
-    super(subcontext[subcontext.length-1].getReflector(),source);
+    super
+      (subcontext.length>0
+      ?subcontext[subcontext.length-1].getReflector()
+      :source.getReflector()
+      ,source
+      );
     
     this.channels=subcontext;
     this.sourceLocal=sourceLocal;
@@ -197,6 +202,10 @@ class SubcontextChannel<T,S>
   @Override
   protected T retrieve()
   {
+    if (channels.length==0)
+    { return (T) source.get();
+    }
+
     if (sourceLocal!=null)
     { sourceLocal.push(source.get());
     }
@@ -223,6 +232,10 @@ class SubcontextChannel<T,S>
     T val)
     throws AccessException
   { 
+    if (channels.length==0)
+    { return source.set((S) val);
+    }
+    
     if (sourceLocal!=null)
     { sourceLocal.push();
     }
