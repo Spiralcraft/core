@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.app.components;
+package spiralcraft.app.components.old;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,6 +27,7 @@ public class IterationState<T>
   
   private final int grandchildCount;
   private final State parent;
+  private final String id;
   
   private ArrayList<ValueState<T>> children
     =new ArrayList<ValueState<T>>();
@@ -36,10 +37,11 @@ public class IterationState<T>
   
   private int[] path;
   
-  public IterationState(int grandchildCount,State parent)
+  public IterationState(int grandchildCount,State parent,String id)
   { 
     this.grandchildCount=grandchildCount;
     this.parent=parent;
+    this.id=id;
   }
 
   public boolean frameChanged(StateFrame frame)
@@ -72,7 +74,7 @@ public class IterationState<T>
   { 
     while (children.size()<=index)
     { 
-      ValueState<T> child=new ValueState<T>(grandchildCount,this);
+      ValueState<T> child=new ValueState<T>(grandchildCount,this,id);
       children.add(child);
     }
 
@@ -157,6 +159,13 @@ public class IterationState<T>
     throw new UnsupportedOperationException
       ("Cant set pathIndex of Iterationstate");
   }
+
+  @Override
+  public String getComponentId()
+  { return id;
+  }
+  
+  
 
 }
 

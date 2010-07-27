@@ -34,8 +34,8 @@ public class ValueState<Tvalue>
   private boolean valid;
   private volatile StateFrame lastFrame;
   
-  public ValueState(int childCount,State parent)
-  { super(childCount,parent);
+  public ValueState(int childCount,State parent,String id)
+  { super(childCount,parent,id);
   }
   
   public Tvalue getValue()

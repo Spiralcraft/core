@@ -45,6 +45,8 @@ public class Dispatcher
   private StateFrame currentFrame;
   private LinkedList<Integer> path=new LinkedList<Integer>();
   private LinkedList<Integer> reversePath=new LinkedList<Integer>();
+  private LinkedList<String> keys=new LinkedList<String>();
+  private LinkedList<String> reverseKeys=new LinkedList<String>();
   
   private Path localPath;
   
@@ -123,6 +125,7 @@ public class Dispatcher
     ,Component component
     ,State state
     ,Integer[] path
+    ,String[] keys
     )
   { 
     State lastState=state;
@@ -131,7 +134,6 @@ public class Dispatcher
     {
       this.state=state;
       this.component=component;
-      component.message(this,message);
       if (path!=null)
       {
         this.path=new LinkedList<Integer>();
@@ -140,6 +142,15 @@ public class Dispatcher
         { this.path.add(val);
         }
       }
+      if (keys!=null)
+      { 
+        this.keys=new LinkedList<String>();
+        this.reverseKeys.clear();
+        for (String val:keys)
+        { this.keys.add(val);
+        }
+      }
+      component.message(this,message);
     }
     finally
     { 
@@ -233,6 +244,7 @@ public class Dispatcher
     
     if (container!=null)
     {
+
       if (path!=null && !path.isEmpty())
       {
         // 
@@ -244,18 +256,22 @@ public class Dispatcher
         }
       }
       else if (message.isMulticast())
-      { 
-        // No specific child was specified, and message is multicast, so
-        //   message all children
-        final int count=container.getChildCount();
-        if (count>0)
-        {
-          for (int i=0;i<count;i++)
-          { messageChild(i,message);
-          }
-        }
+      { messageChildren(message);
       }
     }
+  }
+  
+  public final String pushKey()
+  { 
+    if (keys!=null && !keys.isEmpty())
+    { 
+      String element=keys.removeFirst();
+      reverseKeys.add(element);
+      return element;
+    }
+    else
+    { return null;
+    }    
   }
   
   public final Integer pushPath()
@@ -275,7 +291,7 @@ public class Dispatcher
   { path.add(reversePath.removeFirst());
   }
   
-  public final void setIntermediateState(State state)
+  public final void setNextState(State state)
   { this.state=state;
   }
   
@@ -316,11 +332,9 @@ public class Dispatcher
       final State lastState=state;
       final Component lastComponent=component;
       final Path lastLocalPath=localPath;
-      state=ensureChildState(index);
+      
       try
-      { 
-        Component child=component.asContainer().getChild(index);
-        child.message(this,message);
+      { component.asContainer().messageChild(this,index,message);
       }
       finally
       { 
@@ -331,19 +345,33 @@ public class Dispatcher
       }
     }
     else
-    { component.asContainer().getChild(index).message(this,message);
+    { component.asContainer().messageChild(this,index,message);
     }
   }  
-  
-  private State ensureChildState(int index)
+
+  private void messageChildren(Message message)
   {
-    State childState=state.getChild(index);
-    if (childState==null)
-    { 
-      childState=component.asContainer().getChild(index).createState(state);
-      state.setChild(index,childState);    
+    if (isStateful() && state!=null)
+    {
+      final State lastState=state;
+      final Component lastComponent=component;
+      final Path lastLocalPath=localPath;
+      try
+      { component.asContainer().messageChildren(this,message);
+      }
+      finally
+      { 
+        state=lastState;
+        component=lastComponent;
+        localPath=lastLocalPath;
+        
+      }
     }
-    return childState;
+    else
+    { component.asContainer().messageChildren(this,message);
+    }
   }
+  
+
 
 }

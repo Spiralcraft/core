@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2010 Michael Toth
+// Copyright (c) 2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,67 +12,45 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.app.components;
+package spiralcraft.app.spi;
 
+import spiralcraft.app.Dispatcher;
 import spiralcraft.app.InitializeMessage;
 import spiralcraft.app.Message;
-import spiralcraft.app.Dispatcher;
-import spiralcraft.app.State;
-import spiralcraft.app.spi.AbstractComponent;
-import spiralcraft.app.spi.StandardContainer;
-import spiralcraft.app.spi.ValueState;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Focus;
-
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.Expression;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationDecorator;
-
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
-
-
 import spiralcraft.util.LookaroundIterator;
 
-
-/**
- * Iterate through a collection of some type
- */
-@SuppressWarnings("unchecked") // Runtime type resolution
-public class Iterate<T>
-  extends AbstractComponent
+public class ExpansionContainer<C,T>
+  extends StandardContainer
 {
-  private static final ClassLog log=ClassLog.getInstance(Iterate.class);
-  
-  
-  private Expression<?> expression;
-  private Focus<?> currentFocus;
-  private Focus<?> lookaheadFocus;
-  private Focus<?> lookbehindFocus;
 
-  private IterationDecorator<?,T> decorator;
-  private ThreadLocalChannel valueChannel;
-  private ThreadLocalChannel lookaheadChannel;
-  private ThreadLocalChannel lookbehindChannel;
+
+  private static final ClassLog log
+    =ClassLog.getInstance(ExpansionContainer.class);
+  
+  
+  private Focus<T> currentFocus;
+  protected Focus<T> lookaheadFocus;
+  protected Focus<T> lookbehindFocus;
+
+  private IterationDecorator<C,T> decorator;
+  private ThreadLocalChannel<T> valueChannel;
+  private ThreadLocalChannel<T> lookaheadChannel;
+  private ThreadLocalChannel<T> lookbehindChannel;
   
   private ThreadLocalChannel<Iteration> iterationLocal
     =new ThreadLocalChannel<Iteration>
       (BeanReflector.<Iteration>getInstance(Iteration.class));
-  
-  private boolean initializeContent;
-  
-  { container=new StandardContainer();
-  }
 
-  /**
-   * The expression that references the Collection to iterate over
-   * 
-   * @param expression
-   */
-  public void setX(Expression<?> expression)
-  { this.expression=expression;
-  }
+  private boolean initializeContent;
+
+
   
   /**
    * 
@@ -126,27 +104,28 @@ public class Iterate<T>
   }
   
   
+  @SuppressWarnings("unchecked")
   @Override
-  public void message
+  public void messageChild
     (final Dispatcher dispatcher
+    ,int index
     ,Message message
     )
   {
-    Integer path=dispatcher.pushPath();
+    
     try
     {
-
-      IterationState state=getState(dispatcher);
+      ExpansionState<T> state=(ExpansionState<T>) dispatcher.getState();
       if (state==null || !state.isValid())
       { 
         if (message.getType()!=InitializeMessage.TYPE
             || initializeContent
             )
-        { messageRefresh(dispatcher,message,path,state);
+        { messageRefresh(dispatcher,message,index,state);
         }
       }
       else
-      { messageRetraverse(dispatcher,message,path,state);
+      { messageRetraverse(dispatcher,message,index,state);
       }
     }
     finally
@@ -170,7 +149,7 @@ public class Iterate<T>
     (Dispatcher dispatcher
    ,Message message
    ,Integer path
-   ,IterationState state
+   ,ExpansionState<T> state
    )
   { 
     Iteration iter=new Iteration();
@@ -183,7 +162,7 @@ public class Iterate<T>
       }      
       
       LookaroundIterator<T> cursor 
-        = new LookaroundIterator(decorator.iterator());
+        = new LookaroundIterator<T>(decorator.iterator());
 
       while (cursor.hasNext())
       { messageRefreshChild(dispatcher,message,cursor,iter,path,state);
@@ -209,7 +188,7 @@ public class Iterate<T>
     ,LookaroundIterator<T> cursor
     ,Iteration iter
     ,Integer path
-    ,IterationState state
+    ,ExpansionState<T> state
     )
   {
     T lastVal=cursor.getPrevious();
@@ -219,7 +198,7 @@ public class Iterate<T>
     
     ValueState<T> childState
       =(state!=null)
-      ?state.ensureChild(iter.index,childVal)
+      ?state.ensureChild(iter.index,childVal,childVal.toString())
       :null;
       
     if (path==null || path==iter.index)
@@ -231,16 +210,16 @@ public class Iterate<T>
       
         if (state!=null)
         {
-          dispatcher.setIntermediateState
+          dispatcher.setNextState
             (childState);
         }
         // Run handlers for each element
-        super.message(dispatcher,message);
+        super.messageChildren(dispatcher,message);
       }
       finally
       { 
         if (state!=null)
-        { dispatcher.setIntermediateState(state);
+        { dispatcher.setNextState(state);
         }
         popElement();
       }
@@ -249,7 +228,7 @@ public class Iterate<T>
   }
   
   /**
-   * <p>Retraverse the last iteration as represented in the IterationState
+   * <p>Retraverse the last iteration as represented in the ExpansionState
    * </p>
    * 
    * @param dispatcher
@@ -260,7 +239,7 @@ public class Iterate<T>
     (Dispatcher dispatcher
     ,Message message
     ,Integer path
-    ,IterationState state
+    ,ExpansionState<T> state
     )
   { 
     Iteration iter=new Iteration();
@@ -275,8 +254,10 @@ public class Iterate<T>
         if (logLevel.isDebug())
         { log.debug(toString()+": retraversing...");
         }      
-        LookaroundIterator<ValueState<T>> cursor 
-          = new LookaroundIterator(state.iterator());
+        
+        LookaroundIterator<ExpansionState<T>.MementoState> cursor 
+          = new LookaroundIterator<ExpansionState<T>.MementoState>
+            (state.iterator());
 
         while (cursor.hasNext())
         { messageRetraverseChild(dispatcher,message,cursor,iter,path);
@@ -292,10 +273,11 @@ public class Iterate<T>
     }
   }
   
+  @SuppressWarnings("unchecked")
   private void messageRetraverseChild
     (Dispatcher dispatcher
     ,Message message
-    ,LookaroundIterator<ValueState<T>> cursor
+    ,LookaroundIterator<ExpansionState<T>.MementoState> cursor
     ,Iteration iter
     ,Integer path
     )
@@ -317,17 +299,17 @@ public class Iterate<T>
           :null
         );
       
-      IterationState state=getState(dispatcher);
+      ExpansionState<T> state=(ExpansionState<T>) dispatcher.getState();
       try
       {
-        dispatcher.setIntermediateState(childState);
+        dispatcher.setNextState(childState);
         
         // Run handlers for each element
-        super.message(dispatcher,message);
+        super.messageChildren(dispatcher,message);
       }
       finally
       { 
-        dispatcher.setIntermediateState(state);
+        dispatcher.setNextState(state);
         popElement();
       }
     }
@@ -351,26 +333,19 @@ public class Iterate<T>
   }
     
   
-  @Override
-  protected IterationState getState(Dispatcher dispatcher)
-  { return (IterationState) dispatcher.getState();
-  }
   
+
+
+  @SuppressWarnings("unchecked")
   @Override
-  protected Focus<?> bindImports(Focus<?> parentFocus)
+  public Focus<?> bind(Focus<?> parentFocus)
     throws BindException
-  { 
-    Channel<?> target=null;
-    if (expression!=null)
-    { target=parentFocus.bind(expression);
+  {
+    Channel<?> target=parentFocus.getSubject();
+    if (target==null)
+    { throw new BindException("Focus "+parentFocus+" has no subject");
     }
-    else
-    { 
-      target=parentFocus.getSubject();
-      if (target==null)
-      { throw new BindException("Focus "+parentFocus+" has no subject");
-      }
-    }
+    
   
     decorator=
       target.<IterationDecorator>decorate(IterationDecorator.class);
@@ -380,60 +355,38 @@ public class Iterate<T>
       throw new BindException
         ("Cannot iterate through a "+target.getContentType().getName());
     }
-    return parentFocus;
-  }
-
-  @Override
-  protected Focus<?> bindExports(Focus<?> parentFocus)
-    throws BindException
-  {
-    
     
     {
       valueChannel
-        =new ThreadLocalChannel(decorator.getComponentReflector());
+        =new ThreadLocalChannel<T>(decorator.getComponentReflector());
     
       currentFocus=parentFocus.chain(valueChannel);
-    
-      currentFocus.addFacet
-        (selfFocus);
+
     }
     
     {
       lookaheadChannel
-        =new ThreadLocalChannel(decorator.getComponentReflector());
+        =new ThreadLocalChannel<T>(decorator.getComponentReflector());
 
       lookaheadFocus=parentFocus.chain(lookaheadChannel);
-      lookaheadFocus.addFacet
-        (selfFocus);
+
       
     }
     
     {
       lookbehindChannel
-        =new ThreadLocalChannel(decorator.getComponentReflector());
+        =new ThreadLocalChannel<T>(decorator.getComponentReflector());
       lookbehindFocus=parentFocus.chain(lookbehindChannel);
       
-      lookbehindFocus.addFacet(selfFocus);
       
     }
     
     if (logLevel.isDebug())
     { log.debug("Iterator exposes "+valueChannel);
     }
-    return currentFocus;
+    return super.bind(currentFocus);
   }
     
-  @Override
-  public int getStateDepth()
-  { return 2;
-  }
-  
-  @Override
-  public IterationState createState(State parent)
-  { return new IterationState(container.getChildCount(),parent);
-  }
-  
   class Iteration
   {
     public int index;
@@ -441,5 +394,6 @@ public class Iterate<T>
     
   }
   
+  
+  
 }
-

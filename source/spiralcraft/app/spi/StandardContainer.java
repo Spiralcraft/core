@@ -15,11 +15,16 @@
 package spiralcraft.app.spi;
 
 
+
 import spiralcraft.app.Component;
 import spiralcraft.app.Container;
+import spiralcraft.app.Dispatcher;
+import spiralcraft.app.Message;
+import spiralcraft.app.State;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.log.Level;
 
 public class StandardContainer
   implements Container
@@ -34,6 +39,7 @@ public class StandardContainer
   }
   
   protected Component[] children;
+  protected Level logLevel=Level.INFO;
 
   
   @Override
@@ -41,10 +47,20 @@ public class StandardContainer
     Focus<?> focusChain)
     throws BindException
   { 
+    resolveChildren(focusChain);
     bindChildren(focusChain);
     return focusChain;
   }
   
+  /**
+   * Override to generate/decorate children based on the exported data
+   *   type
+   * 
+   * @param focusChain
+   */
+  protected final void resolveChildren(Focus<?> focusChain)
+  {
+  }
   
   protected final void bindChildren(Focus<?> focusChain)
     throws BindException
@@ -86,7 +102,6 @@ public class StandardContainer
       child.start();
       
     }
-    // TODO Auto-generated method stub
     
   }
 
@@ -97,6 +112,7 @@ public class StandardContainer
   {
     for (Component child:children)
     { 
+      
       child.stop();
       
     }
@@ -105,4 +121,42 @@ public class StandardContainer
 
 
 
+  protected State ensureStaticChildState(State parentState,int stateIndex)
+  {
+    State childState=parentState.getChild(stateIndex);
+    if (childState==null)
+    { 
+      childState=children[stateIndex].createState(parentState);
+      parentState.setChild(stateIndex,childState);    
+    }
+    return childState;
+  }
+
+  @Override
+  public void messageChild(
+    Dispatcher dispatcher,
+    int index,
+    Message message)
+  {
+    dispatcher
+      .setNextState(ensureStaticChildState(dispatcher.getState(),index));
+    children[index].message(dispatcher,message);
+    
+  }
+
+  @Override
+  public void messageChildren(
+    Dispatcher dispatcher,
+    Message message)
+  {
+    int index=0;
+    for (Component child:children)
+    {
+      dispatcher
+        .setNextState(ensureStaticChildState(dispatcher.getState(),index++));
+      child.message(dispatcher,message);    
+    }
+    // TODO Auto-generated method stub
+    
+  }
 }

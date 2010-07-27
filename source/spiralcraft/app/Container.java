@@ -40,8 +40,17 @@ public interface Container
   
   Component[] getChildren();
   
-  Component getChild(int child);
+  /**
+   * The child component associated with the specified state index
+   * 
+   * @param child
+   * @return
+   */
+  Component getChild(int stateIndex);
   
   int getChildCount();
-
+  
+  void messageChild(Dispatcher dispatcher,int index,Message message);
+  
+  void messageChildren(Dispatcher dispatcher,Message message);
 }

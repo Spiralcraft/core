@@ -62,11 +62,6 @@ package spiralcraft.app;
  *   providing a Component with a reference to its own state.
  * </p>
  * 
- * <p>Various higher order functionality such as iteration and recursion 
- *   create more complex associates between States. Iteration involves 
- *   the creation of an internal child State for each element in the
- *   Iteration, for instance.
- * </p>
  * 
  * @author mike
  *
@@ -139,6 +134,15 @@ public interface State
    * @return The ancestor state.
    */
   State getAncestor(int distance);
+  
+  /**
+   * The id of the Component that this state belongs to, relative to the
+   *   containing component.
+   *   
+   * @return
+   */
+  String getComponentId();
+  
     
 }
 

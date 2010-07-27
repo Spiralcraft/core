@@ -54,6 +54,7 @@ public class AbstractComponent
   protected boolean acceptsChildren=true;
 
   protected boolean exportSelf=true;  
+  protected String id;
   
   public void setParent(Parent parent)
   { this.parent=parent;
@@ -63,6 +64,24 @@ public class AbstractComponent
   { return parent;
   }
   
+  /**
+   * A public identifier by which this component can be addressed within its
+   *   parent component.
+   * 
+   */
+  public void setId(String id)
+  { this.id=id;
+  }
+  
+  /**
+   * A public identifier by which this component can be addressed within its
+   *   parent component.
+   * 
+   * @return
+   */
+  public String getId()
+  { return this.id;
+  }
   
   @Override
   public void message
@@ -70,6 +89,7 @@ public class AbstractComponent
     ,Message message
     )
   { 
+    // Calls the context when done
     handlers.getChain(message.getType())
       .handleMessage(context,message);
   }
@@ -89,7 +109,7 @@ public class AbstractComponent
    */
   @Override
   public State createState(State parentState)
-  { return new SimpleState(-1,parentState);
+  { return new SimpleState(-1,parentState,id);
   }
 
   @Override
