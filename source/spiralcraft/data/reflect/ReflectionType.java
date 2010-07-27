@@ -51,6 +51,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import spiralcraft.time.Instant;
+
 import java.net.URI;
 
 import java.math.BigInteger;
@@ -96,6 +98,7 @@ public class ReflectionType<T>
       ,spiralcraft.lang.Binding.class
       ,Date.class
       ,Pattern.class
+      ,Instant.class
       );
     
     mapSystemClass
