@@ -89,7 +89,9 @@ public class CommandFunctorChannel<Ttarget,Tcontext,Tresult>
       if (newContextVal!=contextVal)
       { 
         command.setContext(newContextVal);
-        log.fine("Set context to "+context.get());
+        if (debug)
+        { log.fine("Set context to "+context.get());
+        }
       }
       
       command.execute();
