@@ -802,6 +802,7 @@ public class StructNode
       extends SourcedChannel<Struct,Object>
     {
       private final Channel<Object> target;
+      private boolean constant;
       // private final StructField field;
       
       public PassThroughChannel
@@ -813,17 +814,24 @@ public class StructNode
         super(target.getReflector(),source);
         // this.field=field;
         this.target=target;
+        this.constant=target.isConstant();
       }
       
       @Override
       protected Object retrieve()
       { 
-        thisChannel.push(source.get());
-        try
+        if (constant)
         { return target.get();
         }
-        finally
-        { thisChannel.pop();
+        else
+        {
+          thisChannel.push(source.get());
+          try
+          { return target.get();
+          }
+          finally
+          { thisChannel.pop();
+          }
         }
       }
 
@@ -832,23 +840,34 @@ public class StructNode
         Object val)
           throws AccessException
       { 
-        // log.fine("Store "+val+" to struct field "+field.name);              
-        thisChannel.push(source.get());
-        try
-        { 
-          if (target.isWritable())
-          { return target.set(val);
-          }
-          return false;
+        if (constant)
+        { return false;
         }
-        finally
-        { thisChannel.pop();
-        }              
+        else
+        {
+          // log.fine("Store "+val+" to struct field "+field.name);              
+          thisChannel.push(source.get());
+          try
+          { 
+            if (target.isWritable())
+            { return target.set(val);
+            }
+            return false;
+          }
+          finally
+          { thisChannel.pop();
+          }              
+        }
       }
             
       @Override
       public boolean isWritable()
       { return target.isWritable();
+      }
+      
+      @Override
+      public boolean isConstant()
+      { return constant;
       }
 
     }

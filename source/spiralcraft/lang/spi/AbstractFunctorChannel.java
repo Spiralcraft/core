@@ -103,10 +103,24 @@ public abstract class AbstractFunctorChannel<Tresult>
     }
     catch (BindException x)
     { 
+      
       if (paramIndex==0)
       { 
-        throw new BindException
-          ("Error binding parameter number "+(paramIndex+1)+". Functor does not accept any positional parameters");
+        
+        if (contextFocus.getSubject().getReflector()
+             .isAssignableFrom(source.getReflector())
+           )
+        { 
+          return new AssignmentChannel
+            (source,contextFocus.getSubject());
+        }
+        else
+        {
+          throw new BindException
+            ("Error binding parameter number "+(paramIndex+1)
+            +". Functor does not accept any positional parameters"
+            );
+        }
       }
       else
       {
