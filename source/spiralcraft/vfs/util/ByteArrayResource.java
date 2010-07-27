@@ -14,8 +14,11 @@
 //
 package spiralcraft.vfs.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
 
 import java.net.URI;
 
@@ -46,7 +49,27 @@ public class ByteArrayResource
   }
   
   @Override
+  public OutputStream getOutputStream()
+  {
+    return new ByteArrayOutputStream()
+    {
+      @Override
+      public void flush()
+        throws IOException
+      { 
+        super.flush();
+        ByteArrayResource.this._bytes=toByteArray();
+      }
+    };
+  }
+  
+  @Override
   public boolean supportsRead()
+  { return true;
+  }
+  
+  @Override
+  public boolean supportsWrite()
   { return true;
   }
   
@@ -68,4 +91,7 @@ public class ByteArrayResource
   { _bytes=null;
   }
 
+  public byte[] getBackingStore()
+  { return _bytes;
+  }
 }
