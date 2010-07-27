@@ -106,6 +106,31 @@ public abstract class Accumulator<Tresult,Tsource>
       result.setContext(stateChannel.getContext());
     }
     
+    public Context
+      (Channel<Tsource> source
+      ,Focus<?> focus
+      ,Reflector<Tstate> stateReflector
+      )
+      throws BindException
+    {
+      this.source=source;
+    
+      ViewCache cache=ViewCache.find(focus);
+      if (cache==null)
+      { 
+        throw new BindException
+          ("Aggregate function must be contained in an appropriate context ");
+      }
+    
+      this.stateReflector=stateReflector;
+      stateChannel=cache.bind(stateReflector);
+      stateDataChannel=stateChannel.resolve(focus,"data",null);
+      resultReflector=resolveResultReflector();
+    
+      result=new AccumulatorChannel();
+      result.setContext(stateChannel.getContext());
+    }
+    
     @SuppressWarnings("unchecked")
     protected Reflector<Tresult> resolveResultReflector()
     { return (Reflector<Tresult>) source.getReflector();
