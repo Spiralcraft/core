@@ -14,8 +14,12 @@
 //
 package spiralcraft.time;
 
+import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import spiralcraft.log.ClassLog;
 
 /**
  * Specifies a series of Recurrent Instants according to a specific Calendar
@@ -27,11 +31,28 @@ public class Schedule
   implements Recurrent
 {
 
+  private static final ClassLog log
+    =ClassLog.getInstance(Schedule.class);
   
   private RecurrenceRule[] rules;
   private Instant basis=new Instant();
   private Calendar calendar=Calendar.DEFAULT;
+  private boolean debug;
   
+  
+  public Schedule()
+  {
+  }
+  
+  public Schedule(Instant basis,RecurrenceRule rule)
+  {
+    this.basis=basis;
+    this.rules=new RecurrenceRule[] {rule};
+  }
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
   
   public void setRecurrenceRules(RecurrenceRule[] rules)
   { this.rules=rules;
@@ -102,7 +123,21 @@ public class Schedule
       { next=instant;
       }
     }
+    if (debug)
+    { 
+      log.fine
+        (toString()+".next("+new Date(mark.getOffsetMillis())+")"
+          +" = "+new Date(next.getOffsetMillis())
+        );
+    }
     return next;
   }
   
+  @Override
+  public String toString()
+  { 
+    return super.toString()
+      +"[basis="+new Date(basis.getOffsetMillis())
+      +",rules="+Arrays.toString(rules)+"]";
+  }
 }
