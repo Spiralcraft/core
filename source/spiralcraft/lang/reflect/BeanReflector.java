@@ -89,6 +89,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
@@ -290,6 +291,7 @@ public class BeanReflector<T>
   private URI uri;
   private MethodResolver methodResolver;
   private volatile Channel<T> staticChannel;
+  private final Reflector<T> boxedEquivalent;
   
   public BeanReflector(Type type)
   { 
@@ -354,6 +356,15 @@ public class BeanReflector<T>
     if (Functor.class.isAssignableFrom(clazz))
     { functor=true;
     }
+    
+    if (targetClass.isPrimitive() && !targetClass.isArray())
+    { 
+      boxedEquivalent
+        =BeanReflector.<T>getInstance(ClassUtil.boxedEquivalent(targetClass));
+    }
+    else
+    { boxedEquivalent=null;
+    }
 
   }
 
@@ -361,6 +372,13 @@ public class BeanReflector<T>
   public LinkedList<Signature> getSignatures(Channel source)
     throws BindException
   { 
+    
+    if (boxedEquivalent!=null)
+    { 
+      LinkedList<Signature> sigs=boxedEquivalent.getSignatures(source);
+      return sigs;
+    }
+    
     LinkedList signatures=super.getSignatures(source);
     signatures.addFirst(new Signature("@static",source.getReflector()));
     PropertyDescriptor[] props=beanInfo.getAllProperties();
@@ -371,13 +389,16 @@ public class BeanReflector<T>
       { out=getField(source,prop.getName());
       }
       if (out!=null)
-      { signatures.addFirst(new Signature(prop.getName(),out.getReflector()));
+      { signatures.add(new Signature(prop.getName(),out.getReflector()));
       }
     }
     
     Method[] methods=targetClass.getMethods();
     for (Method method:methods)
-    { signatures.add(methodSignature(method));
+    { 
+      if (!Modifier.isStatic(method.getModifiers()))
+      { signatures.add(methodSignature(method));
+      }
     }
     
     return signatures;
@@ -550,7 +571,13 @@ public class BeanReflector<T>
       { binding=this.<X>getArrayMethod(source,name);
       }
     }
-    return binding;
+    
+    if (binding==null && boxedEquivalent!=null)
+    { return boxedEquivalent.resolve(source,focus,name,params);
+    }
+    else
+    { return binding;
+    }
   }
 
   @Override
