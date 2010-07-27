@@ -104,6 +104,40 @@
         </resources>
       </scm:Change>
             
+      <scm:Change>      
+        <notes>
+          <scm:Note>[SCPUBLIC-13] Command scheduler should output human 
+            readable next-scheduled date
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/command/CommandScheduler.java
+        </path>
+
+      </scm:Change>
+      
+      <scm:Change>      
+        <notes>
+          <scm:Note>[SCPUBLIC-14] Command scheduler does not pick up basis time
+          </scm:Note>
+          <scm:Note>Added new constructor to Schedule for testing purposes,
+            and added debugging output
+          </scm:Note>
+          <scm:Note>Added Instant as a standard type
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>time/Schedule.java
+          </URI>
+          <URI>reflect/ReflectionType.java
+          </URI>
+        </resources>
+
+      </scm:Change>      
     </detail>
   </scm:Change>
   

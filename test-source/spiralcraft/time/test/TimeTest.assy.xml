@@ -402,6 +402,52 @@
             true
           </testX>
         </test:Assertion>        
+
+        <test:Assertion>
+          <name>Schedule Weekly
+          </name>
+        
+          <subjectX>
+            { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            , cal:=[@st:Calendar].(.tz)
+            , fmt:=[@st:SimpleInstantFormat].(.cal,"yyyy/MM/dd HH:mm:ss.S")
+            , ofmt:=[@st:SimpleInstantFormat].(.cal,"E, yyyy/MM/dd HH:mm:ss.S Z")
+            , basis:=.fmt.parse("2008/02/01 15:45:01.0123")
+            , start:=.fmt.parse("2008/02/01 15:44:30.6666")
+            , rule:=[*st:RecurrenceRule{frequency:=[@st:Frequency].@WEEKLY}]
+            , schedule:=[@st:Schedule].(.basis,.rule)
+            , result:=.schedule.next(.start)
+            , resultfmt:=.ofmt.format(.result)
+            }
+          </subjectX>
+          
+          <testX>
+            .resultfmt=="Fri, 2008/02/01 15:45:01.123 -0800"
+          </testX>
+        </test:Assertion>        
+
+        <test:Assertion>
+          <name>Schedule Weekly 2
+          </name>
+        
+          <subjectX>
+            { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            , cal:=[@st:Calendar].(.tz)
+            , fmt:=[@st:SimpleInstantFormat].(.cal,"yyyy/MM/dd HH:mm:ss.S")
+            , ofmt:=[@st:SimpleInstantFormat].(.cal,"E, yyyy/MM/dd HH:mm:ss.S Z")
+            , basis:=.fmt.parse("2112/02/01 15:45:01.0123")
+            , start:=.fmt.parse("2112/02/01 15:44:30.6666")
+            , rule:=[*st:RecurrenceRule{frequency:=[@st:Frequency].@WEEKLY}]
+            , schedule:=[@st:Schedule].(.basis,.rule)
+            , result:=.schedule.next(.start)
+            , resultfmt:=.ofmt.format(.result)
+            }
+          </subjectX>
+          
+          <testX>
+            .resultfmt=="Mon, 2112/02/01 15:45:01.123 -0800"
+          </testX>
+        </test:Assertion> 
       </scenarios>
       
     </task:Sequence>
