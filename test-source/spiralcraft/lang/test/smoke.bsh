@@ -119,10 +119,10 @@ Evaluator.parseAndEvaluateObject(".concat(.).@channel","test");
 Evaluator.parseAndEvaluateObject(".concat(.).@focus","test");
 
 Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math]","test");
-Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math] typeURI","test");
-Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math] @static.@type","test");
-Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math] @static.min(1,2)","test");
-Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math] @min(3,2)","test");
+Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math].typeURI","test");
+Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math].@static.@type","test");
+Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math].@static.min(1,2)","test");
+Evaluator.parseAndEvaluateObject("[@:class:/java/lang/Math].@min(3,2)","test");
 
 "// Casts";
 Evaluator.parseAndEvaluateObject("@cast([@:class:/java/lang/Number]).@type",new Integer(3));

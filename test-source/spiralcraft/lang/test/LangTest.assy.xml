@@ -3,6 +3,7 @@
   xmlns:test="class:/spiralcraft/test/"
   xmlns:j="class:/java/lang/"
   xmlns:ju="class:/java/util/"
+  xmlns:jn="class:/java/net/"
   xmlns:lang="class:/spiralcraft/lang"
   xmlns:fn="class:/spiralcraft/lang/functions/"
   xmlns:util="class:/spiralcraft/util/"
@@ -283,6 +284,20 @@
           </testX>
         </test:Assertion>   
 
+        <test:Assertion>
+          <name>inductive string concatenation
+          </name>
+          
+          <subjectX>
+            [@j:String][{"one","two","three","two","one","four","four"}]
+                $[ .[*fn:Induce{`.+..`}] 
+                ]
+          </subjectX>
+          
+          <testX>.=="onetwothreetwoonefourfour"
+          </testX>
+        </test:Assertion>  
+        
         <test:Assertion>
           <name>array reduce summary Tuple
           </name>
@@ -601,6 +616,150 @@
         </test:Assertion>        
         
         <test:Assertion>
+          <name>Lexical similarity measure
+          </name>
+          
+          <subjectX>
+          {
+            [#nn]
+            lineSet
+              :=[@j:String]
+              .([*jn:URI{"in/LoremIpsumList.txt"}]
+                .[*vfs:Resolve]
+                .[*vfs:IO]
+              )
+              .split("\r\n")
+            ,root
+              :=.lineSet[0]
+            ,friendNormal
+              :~[*task:Eval
+                  {`[@j:String].@nil`
+                  ,`.replace(",","")
+                    .replace(".","")
+                    .replace("*","")
+                    .trim()
+                     .toLowerCase()
+                    `
+                  }
+                ]
+            ,friendFn
+              :~[*task:Eval
+                  {`[@j:String].@nil`
+                  ,`.split(" ")#{[nn].friendNormal.(.)}[!.empty]`
+                  }
+                ]
+            ,friends
+              :=.friendFn.(.root)
+            ,map
+              :=.friends
+              #{
+                { word:=..
+                , lines:=...lineSet[ [nn].friendFn.(.) ?= ..word ]
+                }
+              }
+            ,reduce
+              :=.map
+              $[ .lines.[*fn:Concatenate]
+              ]
+              $[
+                { line:=..
+                , count:=..[*fn:Count]
+                }
+              ]
+              
+          }
+          {
+            "\r\n  root="+.root
+            +"\r\n  friends="+[@ju:Arrays].@deepToString(.friends)
+            +"\r\n  map="
+            +.map
+              $[ 
+                ("\r\n   "+.word
+                +.lines
+                  $[
+                    ("\r\n         "+.)
+                    .[*fn:Format] 
+                  ]
+                )
+                .[*fn:Format] 
+              ]
+            +.reduce
+              $[ 
+                ("\r\n   rln: "+.count+": "+.line)
+                .[*fn:Format] 
+              ]
+            
+          }
+          
+          
+<!--           
+           
+            [@j:String]
+            .([*jn:URI{"in/LoremIpsumList.txt"}].[*vfs:Resolve].[*vfs:IO])
+            {
+            }
+            .split("\r\n")
+            {
+              #{
+                {sentence:=..
+                ,digest:=
+                  .sentence
+                  {
+                    .replace(",","")
+                    .replace(".","")
+                    .toLowerCase()
+                    .split(" ")
+                    [ 
+                      .length()>0
+                      ?[@j:Character].@isLetterOrDigit(.charAt(0))
+                      :false
+                    ]
+                    #{
+                      { word:=.. 
+                      , count:=1
+                      }
+                    }  
+                  }
+                }
+              }
+              {
+                {digests:=..
+                ,summary:=
+                  .digests
+                    $[.digest.[*fn:Concatenate]]
+                    $[
+                      { word:=..word
+                      ,count:=..count.[*fn:Sum]
+                      }
+                    ]
+                   
+                }
+                
+              }
+              { 
+                .digests
+                #{ "\r\n Sentence Data: "+.sentence
+                   +[@util:ArrayUtil].@format
+                     (.digest#{"\r\n =====> "+.count+":"+.word}
+                     ,""
+                     ,""
+                     )
+                }
+                +
+                .summary
+                #{ "\r\n ====> "+.count+":"+.word}
+                
+              }
+            }
+-->            
+          </subjectX>
+          
+          <testX>true
+          </testX>
+        
+        </test:Assertion>  
+
+        <test:Assertion>
           <name>Broken literal
           </name>
           
@@ -613,6 +772,21 @@
           </testX>
         
         </test:Assertion>  
+        
+        <test:Assertion>
+          <name>Split
+          </name>
+          
+          <subjectX>
+            "2&amp;".split("&amp;")
+          </subjectX>
+          
+          <testX>true
+          </testX>
+        
+        </test:Assertion>  
+        
+                
       </scenarios>
       
     </task:Sequence>

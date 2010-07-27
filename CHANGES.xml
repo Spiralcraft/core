@@ -3,6 +3,113 @@
   >
   <scm:Change>
   
+    <revision>0.4.10.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-07-27
+    </date>
+  
+    <notes>
+
+    </notes>
+    
+    <detail>
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>[SCPUBLIC-4] Empty subcontext expression throws AIOOB 
+            exception on bind
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/SubcontextNode.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>[SCPUBLIC-5] Autobox primitive types when resolving members
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/reflect/BeanReflector.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>      
+        <notes>
+          <scm:Note>[SCPUBLIC-9] Remove spurious debug message when exec'ing a command functor
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/reflect/CommandFunctorChannel.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>      
+        <notes>
+          <scm:Note>[SCPUBLIC-8] Support the use of functors as members of structs
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/
+        </path>
+
+        <resources>
+          <URI>lang/spi/AbstractFunctorChannel.java
+          </URI>
+          <URI>lang/parser/StructNode.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+            
+      <scm:Change>      
+        <notes>
+          <scm:Note>[SCPUBLIC-10] General purpose accumulators required to manipulate data inside reduce constructs
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/
+        </path>
+        
+        <resources>
+          <URI>lang/functions/Induce.java
+          </URI>
+          <URI>lang/functions/Format.java
+          </URI>
+          <URI>lang/spi/Accumulator.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>      
+        <notes>
+          <scm:Note>[SCPUBLIC-11] Provide means to perform VFS IO from expressions
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/
+        </path>
+        
+        <resources>
+          <URI>vfs/IO.java
+          </URI>
+          <URI>vfs/util/ByteArrayResource.java
+          </URI>
+        </resources>
+      </scm:Change>
+            
+    </detail>
+  </scm:Change>
+  
+
+  <scm:Change>
+  
     <revision>0.4.10
     </revision>
     
