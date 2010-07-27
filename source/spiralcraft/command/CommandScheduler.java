@@ -14,6 +14,8 @@
 //
 package spiralcraft.command;
 
+import java.util.Date;
+
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.log.ClassLog;
@@ -187,7 +189,7 @@ public class CommandScheduler
         }
         
         if (debug)
-        { log.fine("Scheduling for "+mark);
+        { log.fine("Scheduling for "+mark+" ("+new Date(mark)+")");
         }
         scheduler.scheduleAt(runnable,mark);
       }
@@ -196,7 +198,7 @@ public class CommandScheduler
     { 
       // Mark is in the future, schedule for queued mark
       if (debug)
-      { log.fine("Scheduling for "+mark);
+      { log.fine("Scheduling for "+mark+" ("+new Date(mark)+")");
       }
       scheduler.scheduleAt(runnable,mark);
     }
