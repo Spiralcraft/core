@@ -189,7 +189,7 @@ public class CommandScheduler
         }
         
         if (debug)
-        { log.fine("Scheduling for "+mark+" ("+new Date(mark)+")");
+        { log.fine("Scheduling regular item for "+mark+" ("+new Date(mark)+")");
         }
         scheduler.scheduleAt(runnable,mark);
       }
@@ -198,7 +198,7 @@ public class CommandScheduler
     { 
       // Mark is in the future, schedule for queued mark
       if (debug)
-      { log.fine("Scheduling for "+mark+" ("+new Date(mark)+")");
+      { log.fine("Scheduling for queued time "+mark+" ("+new Date(mark)+")");
       }
       scheduler.scheduleAt(runnable,mark);
     }
@@ -214,6 +214,9 @@ public class CommandScheduler
       { 
         // Queue up the next calendared mark
         mark=recurrent.next(new Instant(mark)).getOffsetMillis();
+      }
+      if (debug)
+      { log.fine("Queued next run for  "+mark+" ("+new Date(mark)+")");
       }
     }
     
