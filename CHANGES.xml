@@ -1,6 +1,48 @@
 <scm:Change.list
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
+  
+  <scm:Change>
+  
+    <revision>0.4.10.2
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-07-29
+    </date>
+  
+    <notes>
+
+    </notes>
+    
+    <detail>
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>[SCPUBLIC-18] Simpler way to specify array content 
+            involving string-constructable immutables in XML data file
+          </scm:Note>
+          <scm:Note>Created a common "@Immutable" annotation
+          </scm:Note>      
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>common/Immutable.java
+          </URI>
+          <URI>data/core/ArrayType.java
+          </URI>
+          <URI>data/reflect/ReflectionType.java
+          </URI>
+        </resources>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+  
   <scm:Change>
   
     <revision>0.4.10.1
