@@ -227,7 +227,9 @@ public class DataHandler
             { addAggregateFromChars(fromString(formalType,text));
             }
             else
-            { addAggregateFromChars
+            {
+              //log.fine("Populating "+formalType+" with ["+text+"]");
+              addAggregateFromChars
                 (formalType.toData(fromString(formalType,text)));
             }
           }
@@ -237,7 +239,9 @@ public class DataHandler
             { addObject(fromString(formalType,text));
             }
             else
-            { addObject(formalType.toData(fromString(formalType,text)));
+            { 
+              //log.fine("Populating "+formalType+" with ["+text+"]");
+              addObject(formalType.toData(fromString(formalType,text)));
             }
           }
         }
@@ -318,7 +322,9 @@ public class DataHandler
           Object nativeObject=fromString(type,text);
                     
           if (!type.isPrimitive())
-          { object=type.toData(nativeObject);
+          { 
+//            log.fine("Converting "+nativeObject+" back to data");
+            object=type.toData(nativeObject);
           }
           else
           { object=nativeObject;
@@ -673,7 +679,9 @@ public class DataHandler
       else
       {
         for (Object val : (Aggregate) object)
-        { addObject(val);
+        { 
+//          log.fine("Adding "+val+" to "+formalType);
+          addObject(val);
         }
       }
     }
