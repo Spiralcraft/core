@@ -25,6 +25,7 @@ import spiralcraft.data.session.BufferType;
 // import spiralcraft.log.ClassLogger;
 import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.lang.spi.Translator;
+//import spiralcraft.log.ClassLog;
 import spiralcraft.rules.RuleSet;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringConverter;
@@ -100,6 +101,8 @@ public abstract class Type<T>
   
   private static ThreadLocalStack<URI> linkStack
     =new ThreadLocalStack<URI>();
+  
+//  protected final ClassLog log=ClassLog.getInstance(getClass());
   
   protected final void pushLink(URI uri)
   { linkStack.push(uri);
