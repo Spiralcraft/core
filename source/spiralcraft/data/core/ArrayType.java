@@ -89,7 +89,7 @@ public class ArrayType<T>
             );
         }
       }
-      else
+      else if (type.isDataEncodable())
       { 
         Object convertedVal=type.fromData((DataComposite) val,resolver);
         try
@@ -102,6 +102,21 @@ public class ArrayType<T>
             +"to array of content type "+contentType.getNativeClass()
             );
         }
+      }
+      else if (type.isStringEncodable())
+      { 
+        Object convertedVal=type.fromString((String) val);
+        try
+        { Array.set(array,index++,convertedVal);
+        }
+        catch (IllegalArgumentException x)
+        { 
+          throw new DataException
+            ("Cannot apply "+convertedVal.getClass().getName()
+            +"to array of content type "+contentType.getNativeClass()
+            );
+        }
+        
       }
     }
     return (T[]) array;
@@ -123,7 +138,7 @@ public class ArrayType<T>
 	    
       return aggregate;
     }
-    else
+    else if (contentType.isDataEncodable())
     {
       EditableAggregate<DataComposite> aggregate
         =new EditableArrayListAggregate<DataComposite>(this);
@@ -133,6 +148,21 @@ public class ArrayType<T>
       { aggregate.add(contentType.toData((T) Array.get(array,index)));
       }
       return aggregate;
+    }
+    else if (contentType.isStringEncodable())
+    { 
+      EditableAggregate<Object> aggregate
+        =new EditableArrayListAggregate<Object>(this);
+
+      int len=Array.getLength(array);
+      for (int index=0;index<len;index++)
+      { aggregate.add(contentType.toString((T) Array.get(array,index)));
+      }
+      return aggregate;
+      
+    }
+    else
+    { throw new DataException("Could not externalize "+contentType);
     }
     
   }

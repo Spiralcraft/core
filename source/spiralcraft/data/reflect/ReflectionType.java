@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.reflect;
 
+import spiralcraft.common.Immutable;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataComposite;
@@ -32,6 +33,7 @@ import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.data.core.TypeImpl;
 import spiralcraft.lang.BindException;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 import spiralcraft.util.CycleDetector;
 
@@ -112,6 +114,7 @@ public class ReflectionType<T>
   private final Class<?> reflectedClass;
   private Constructor<T> stringConstructor;
   private Constructor<T> tupleConstructor;
+  private Constructor<T> defaultConstructor;
   private ReflectionField<Class<?>> classField;
   private boolean linked;
   
@@ -123,6 +126,7 @@ public class ReflectionType<T>
   private MethodBinding depersistMethodBinding;
   
   private StringConverter<T> stringConverter;
+  private final boolean immutable;
 
   private ThreadLocal<CycleDetector<Object>> cycleDetectorLocal
     =new ThreadLocal<CycleDetector<Object>>()
@@ -269,8 +273,14 @@ public class ReflectionType<T>
     }
     catch (NoSuchMethodException x)
     { }
+    try
+    { defaultConstructor=clazz.getConstructor();
+    }
+    catch (NoSuchMethodException x)
+    { }
 
-    stringConverter=StringConverter.getInstance(clazz);    
+    stringConverter=StringConverter.getInstance(clazz); 
+    immutable=clazz.getAnnotation(Immutable.class)!=null;
   }
   
   
@@ -306,7 +316,15 @@ public class ReflectionType<T>
     catch (NoSuchMethodException x)
     { }
     
+    try
+    { defaultConstructor=clazz.getConstructor();
+    }
+    catch (NoSuchMethodException x)
+    { }
+
     stringConverter=StringConverter.getInstance(clazz);
+    immutable=clazz.getAnnotation(Immutable.class)!=null;
+
   }
 
   @Override
@@ -544,8 +562,10 @@ public class ReflectionType<T>
     { return null;
     }
     
-    if (!nativeClass.getClass().isAssignableFrom(val.getClass()))
-    { throw new IllegalArgumentException("Not type compatible");
+    if (!nativeClass.isAssignableFrom(val.getClass()))
+    { 
+      throw new IllegalArgumentException
+        ("Not type compatible "+nativeClass+" <-- "+val.getClass());
     }
     
     if (stringConverter!=null)
@@ -602,21 +622,22 @@ public class ReflectionType<T>
         { 
           if (!Modifier.isAbstract(referencedClass.getModifiers()))
           {
-              
-            try
-            {
             
-              if (referencedClass.getConstructor()!=null)
-              { bean=(T) referencedClass.newInstance();
-              }
+
+          
+            if (defaultConstructor!=null)
+            { bean=(T) referencedClass.newInstance();
             }
-            catch (NoSuchMethodException x)
+            else 
             { 
-              log.trace
-                ("ReflectionType: "+referencedClass.getName()
+              log.log
+                (Level.TRACE
+                ,"ReflectionType: "+this
                 +" has no default constructor"
+                ,new Exception()
                 );
             }
+
           }
           else
           { 
@@ -788,6 +809,15 @@ public class ReflectionType<T>
   public String toString()
   { return super.toString()+" reflects "+this.reflectedClass.getName();
   }
-  
+ 
+  @Override
+  public boolean isDataEncodable()
+  { 
+    if (immutable && tupleConstructor==null)
+    { return false;
+    }
+//    log.fine(getURI().toString()+":"+immutable+":"+tupleConstructor);
+    return super.isDataEncodable();
+  }
   
 }
