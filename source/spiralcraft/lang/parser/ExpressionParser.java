@@ -744,7 +744,9 @@ public class ExpressionParser
 //        ret=parseExpression();
 //    }
     
-    
+    if (ret==null)
+    { throwException("Expected selector expression");
+    }
     Node subscriptNode=primary.subscript(ret);
     expect(']');
     return subscriptNode;
@@ -1211,7 +1213,12 @@ public class ExpressionParser
       field.source=parseExpression();
     }
     
-    struct.addField(field);
+    if (field!=null)
+    { struct.addField(field);
+    }
+    else
+    { throwException("Expected struct field");
+    }
   }
   
   
