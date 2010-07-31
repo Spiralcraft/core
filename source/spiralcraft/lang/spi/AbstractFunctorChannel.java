@@ -118,7 +118,11 @@ public abstract class AbstractFunctorChannel<Tresult>
         {
           throw new BindException
             ("Error binding parameter number "+(paramIndex+1)
-            +". Functor does not accept any positional parameters"
+            +". Functor does not accept any positional parameters and "
+            +" context type "
+            +contextFocus.getSubject().getReflector().getTypeURI()
+            +" cannot be assigned from parameter of type "
+            +source.getReflector().getTypeURI()
             );
         }
       }
