@@ -4,6 +4,63 @@
   
   <scm:Change>
   
+    <revision>0.4.10.3
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-07-31
+    </date>
+  
+    <notes>
+
+    </notes>
+    
+    <detail>
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>[SCPUBLIC-19] Implement Sort channel function
+          </scm:Note>    
+        </notes>
+        
+        <path>source/spiralcraft/lang/functions
+        </path>
+        
+        <resources>
+          <URI>Sort.java
+          </URI>
+          <URI>Ordering.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>[SCPUBLIC-20] syntax error NPE
+          </scm:Note>    
+          <scm:Note>[SCPUBLIC-21] Add types to error message for
+            single arg functor call
+          </scm:Note>    
+        </notes>
+        
+        <path>source/spiralcraft/lang/
+        </path>
+        
+        <resources>
+          <URI>parser/ExpressionParser.java
+          </URI>
+          <URI>spi/AbstractFunctorChannel.java
+          </URI>
+        </resources>
+      </scm:Change>      
+    </detail>
+  </scm:Change>
+  
+  <scm:Change>
+  
     <revision>0.4.10.2
     </revision>
     

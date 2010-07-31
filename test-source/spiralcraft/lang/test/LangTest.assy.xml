@@ -4,6 +4,7 @@
   xmlns:j="class:/java/lang/"
   xmlns:ju="class:/java/util/"
   xmlns:jn="class:/java/net/"
+  xmlns:jt="class:/java/text/"
   xmlns:lang="class:/spiralcraft/lang"
   xmlns:fn="class:/spiralcraft/lang/functions/"
   xmlns:util="class:/spiralcraft/util/"
@@ -692,66 +693,6 @@
           }
           
           
-<!--           
-           
-            [@j:String]
-            .([*jn:URI{"in/LoremIpsumList.txt"}].[*vfs:Resolve].[*vfs:IO])
-            {
-            }
-            .split("\r\n")
-            {
-              #{
-                {sentence:=..
-                ,digest:=
-                  .sentence
-                  {
-                    .replace(",","")
-                    .replace(".","")
-                    .toLowerCase()
-                    .split(" ")
-                    [ 
-                      .length()>0
-                      ?[@j:Character].@isLetterOrDigit(.charAt(0))
-                      :false
-                    ]
-                    #{
-                      { word:=.. 
-                      , count:=1
-                      }
-                    }  
-                  }
-                }
-              }
-              {
-                {digests:=..
-                ,summary:=
-                  .digests
-                    $[.digest.[*fn:Concatenate]]
-                    $[
-                      { word:=..word
-                      ,count:=..count.[*fn:Sum]
-                      }
-                    ]
-                   
-                }
-                
-              }
-              { 
-                .digests
-                #{ "\r\n Sentence Data: "+.sentence
-                   +[@util:ArrayUtil].@format
-                     (.digest#{"\r\n =====> "+.count+":"+.word}
-                     ,""
-                     ,""
-                     )
-                }
-                +
-                .summary
-                #{ "\r\n ====> "+.count+":"+.word}
-                
-              }
-            }
--->            
           </subjectX>
           
           <testX>true
@@ -759,6 +700,129 @@
         
         </test:Assertion>  
 
+        <test:Assertion>
+          <name>Sort 1
+          </name>
+          
+          <subjectX>
+            [@j:String]
+            .([*jn:URI{"in/LoremIpsumList.txt"}]
+              .[*vfs:Resolve]
+              .[*vfs:IO]
+            )
+            .split("\r\n")
+            $[.split(" ")
+              #{.trim()}
+              [.length()>0]
+              .[*fn:Concatenate]
+              $[.[*fn:Distinct]
+              ]
+            ]
+            .[*fn:Sort]
+          </subjectX>
+          
+          <testX>true
+          </testX>
+        
+        </test:Assertion>  
+        
+        <test:Assertion>
+          <name>Sort 2
+          </name>
+          
+          <subjectX>
+            [@j:String]
+            .([*jn:URI{"in/LoremIpsumList.txt"}]
+              .[*vfs:Resolve]
+              .[*vfs:IO]
+            )
+            .split("\r\n")
+            $[.split(" ")
+              #{.trim()}
+              [.length()>0]              
+              .[*fn:Concatenate]
+            ]
+            $[.[*fn:Distinct]
+            ]
+            .[*fn:Sort{true}]
+          </subjectX>
+          
+          <testX>true
+          </testX>
+        
+        </test:Assertion>          
+
+        <test:Assertion>
+          <name>Sort 3
+          </name>
+          
+          <subjectX>
+            [@j:String]
+            .([*jn:URI{"in/LoremIpsumList.txt"}]
+              .[*vfs:Resolve]
+              .[*vfs:IO]
+            )
+            .split("\r\n")
+            $[.split(" ")
+              #{.trim()}
+              [.length()>0]              
+              .[*fn:Concatenate]
+            ]
+            $[.[*fn:Distinct]
+            ]
+            .[*fn:Sort
+              { [*fn:Ordering
+                  {`.length()`
+                  ,false
+                  ,[*fn:Ordering]
+                  }
+                ]
+              }
+            ]
+          </subjectX>
+          
+          <testX>true
+          </testX>
+        
+        </test:Assertion>    
+        
+        <test:Assertion>
+          <name>Sort 4
+          </name>
+          
+          <subjectX>
+            [@j:String]
+            .([*jn:URI{"in/LoremIpsumList.txt"}]
+              .[*vfs:Resolve]
+              .[*vfs:IO]
+            )
+            .split("\r\n")
+            $[.split(" ")
+              #{.trim()}
+              [.length()>0]              
+              .[*fn:Concatenate]
+            ]
+            $[.[*fn:Distinct]
+            ]
+            .[*fn:Sort
+              { [*fn:Ordering
+                  {`.length()`
+                  ,false
+                  , [*fn:Ordering
+                      { comparator:=[@jt:Collator].@getInstance()
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          </subjectX>
+          
+          <testX>true
+          </testX>
+        
+        </test:Assertion>    
+        
         <test:Assertion>
           <name>Broken literal
           </name>
