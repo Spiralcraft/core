@@ -106,6 +106,13 @@ public class PathTree<T>
     children.remove(child);
   }
   
+  /**
+   * Returns the deepest child of the tree that is at the same depth 
+   *   or shallower than the specified path
+   * 
+   * @param path
+   * @return
+   */
   public PathTree<T> findDeepestChild(Path path)
   {
     PathTree<T> ret=this;
