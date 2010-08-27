@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Something the can be accessed using streams.
+ * Represents a streaming resource that can be accessed with a URI
  */
 public interface Resource
 {
