@@ -26,6 +26,7 @@ import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.ResourceFilter;
 import spiralcraft.vfs.StreamUtil;
+import spiralcraft.vfs.UnresolvableURIException;
 
 public abstract class AbstractResource
   implements Resource
@@ -144,6 +145,37 @@ public abstract class AbstractResource
     throws IOException
   { throw new IOException(getClass().getName()+" does not support containership");
   }
+  
+  /**
+   * <p>Convenience implementation of Container.ensureChildContainer() for
+   *   Resources that also implement Container. 
+   * </p>
+   * 
+   * @param name
+   * @return
+   * @throws IOException
+   */
+  public Container ensureChildContainer(String name)
+    throws IOException
+  { 
+    Container container=asContainer();
+    if (container!=null)
+    {
+      Resource child=container.getChild(name);
+      if (child!=null)
+      { return child.ensureContainer();
+      }
+      else
+      { 
+        throw new UnresolvableURIException
+          (getURI(),"Could not resolve  '"+name+"' in "+getURI());
+      }
+    }
+    else
+    { throw new IOException("Not a container: "+getURI());
+    }
+  }  
+  
   
   @Override
   public String toString()

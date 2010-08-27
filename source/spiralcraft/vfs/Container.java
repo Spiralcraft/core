@@ -68,6 +68,18 @@ public interface Container
    */
   Resource getChild(String name)
     throws UnresolvableURIException;
+  
+  /**
+   * Obtain a child container and ensure that it exists after this method
+   *   returns.
+   * 
+   * @param name
+   * @return
+   * @throws IOException If the child container cannot be created
+   */
+  Container ensureChildContainer(String name)
+    throws IOException;
+  
 
   /**
    * Create a new Resource in this container which is a link to the specified
