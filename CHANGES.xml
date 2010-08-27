@@ -4,6 +4,44 @@
   
   <scm:Change>
   
+    <revision>0.4.11
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-08-26
+    </date>
+  
+    <notes>
+
+    </notes>
+    
+    <detail>
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>vfs.Container now has an ensureChildContainer() interface
+            to assist in the dynamic creation of directory trees.
+          </scm:Note>    
+        </notes>
+        
+        <path>source/spiralcraft/vfs
+        </path>
+        
+        <resources>
+          <URI>Container.java
+          </URI>
+          <URI>spi/AbstractResource.java
+          </URI>
+        </resources>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+      
+
+  <scm:Change>
+  
     <revision>0.4.10.3
     </revision>
     
