@@ -805,7 +805,7 @@ public class BeanReflector<T>
       PropertyDescriptor prop
         =beanInfo.findProperty(name);
       
-      if (prop!=null)
+      if (prop!=null && prop.getPropertyType()!=null)
       { 
         translator=new BeanPropertyTranslator<X,T>(prop,beanInfo);
         properties.put(name,translator);

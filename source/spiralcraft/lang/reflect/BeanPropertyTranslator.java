@@ -64,7 +64,12 @@ public class BeanPropertyTranslator<Tprop,Tbean>
     
     Class beanClass=beanInfo.getBeanDescriptor().getBeanClass();
     
-    
+    Class<Tprop> propertyType=(Class<Tprop>) _property.getPropertyType();
+    if (propertyType==null)
+    { 
+      throw new IllegalArgumentException
+        ("Property '"+_property.getName()+"' must have a type"); 
+    }
     
     Reflector<Tprop> reflector
       =BeanReflector.<Tprop>getInstance

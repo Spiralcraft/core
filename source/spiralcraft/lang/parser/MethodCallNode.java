@@ -137,11 +137,29 @@ public class MethodCallNode
     if (_identifierName=="" && !source.getReflector().isFunctor())
     { throw new BindException("Not a functor: "+source.getReflector());
     }
-    Channel<?> ret=source
-      .resolve(focus
-              ,_identifierName
-              ,_parameters
-              );
+    
+    Channel<?> ret=null;
+    try
+    {
+      ret=source
+        .resolve(focus
+                ,_identifierName
+                ,_parameters
+                );
+    }
+    catch (RuntimeException x)
+    { 
+      throw new BindException
+        ("Could not bind method '"
+        +(_identifierName!=null
+          ?_identifierName
+          :"(functor)"
+          )
+        +"' in "
+        +_source.toString()
+        ,x
+        );
+    }
 
 //    System.out.println("MethodCallNode "+toString()+" bound to "+ret);
     
