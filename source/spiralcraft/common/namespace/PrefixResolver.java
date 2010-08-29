@@ -15,6 +15,7 @@
 package spiralcraft.common.namespace;
 
 import java.net.URI;
+import java.util.Map;
 
 /**
  * An interface which resolves namespace prefixes to namespace URIs. Used to
@@ -35,5 +36,5 @@ public interface PrefixResolver
    */
   URI resolvePrefix(String prefix);
   
-
+  Map<String,URI> computeMappings();
 }
