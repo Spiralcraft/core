@@ -16,6 +16,7 @@ package spiralcraft.data.sax;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -490,6 +491,25 @@ public abstract class DataHandlerBase
       }
       return ret!=null?URI.create(ret):null;
     }
+    
+    public Map<String,URI> computeMappings()
+    { 
+      Map<String,URI> computedMappings=new HashMap<String,URI>();
+
+      Map<String,URI> parentMappings
+        =parentFrame!=null?parentFrame.computeMappings():null;
+      if (parentMappings!=null)
+      { computedMappings.putAll(parentMappings);
+      }
+      
+      if (prefixMappings!=null)
+      { 
+        for (String key:prefixMappings.keySet())
+        { computedMappings.put(key,URI.create(prefixMappings.get(key)));
+        }
+      }
+      return computedMappings;
+    }    
     
     /**
      * Resolve a URI reference that may include an optional namespace

@@ -17,6 +17,7 @@ package spiralcraft.data.sax;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Stack;
 
 import org.xml.sax.Attributes;
@@ -242,6 +243,21 @@ public abstract class AbstractFrameHandler
     return mapping;
   }
   
+  public Map<String,URI> computeMappings()
+  { 
+    Map<String,URI> computedMappings=new HashMap<String,URI>();
+
+    Map<String,URI> parentMappings
+      =parent!=null?parent.computeMappings():null;
+    if (parentMappings!=null)
+    { computedMappings.putAll(parentMappings);
+    }
+    
+    if (prefixMappings!=null)
+    { computedMappings.putAll(prefixMappings);
+    }
+    return computedMappings;
+  }    
   
   /**
    * Allows a nested FrameHandler to refer to this FrameHandler using the

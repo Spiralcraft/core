@@ -16,6 +16,8 @@ package spiralcraft.data.access;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.data.DataConsumer;
@@ -273,6 +275,21 @@ public class Updater<T extends Tuple>
             { return null;
             }
           }
+          
+          public Map<String,URI> computeMappings()
+          { 
+            Map<String,URI> computedMappings=new HashMap<String,URI>();
+
+            Map<String,URI> parentMappings
+              =parent!=null?parent.computeMappings():null;
+            if (parentMappings!=null)
+            { computedMappings.putAll(parentMappings);
+            }
+            
+            computedMappings.put("data",dataURI);
+            computedMappings.put("",dataURI);
+            return computedMappings;
+          }            
           
         }
       );

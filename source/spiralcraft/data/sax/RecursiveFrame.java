@@ -16,6 +16,7 @@ package spiralcraft.data.sax;
 
 import java.net.URI;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.sax.ForeignDataHandler.HandledFrame;
@@ -134,6 +135,10 @@ public class RecursiveFrame
   
   public URI resolvePrefix(String name)
   { return frameRef.resolvePrefix(name);
+  }
+  
+  public Map<String,URI> computeMappings()
+  { return frameRef.computeMappings();
   }
   
   public void closingChild(FrameHandler child)
