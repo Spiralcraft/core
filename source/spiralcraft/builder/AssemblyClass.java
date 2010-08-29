@@ -700,7 +700,8 @@ public class AssemblyClass
       }
       else if (_javaClass!=null)
       { 
-        return uri.getScheme().equals("class")
+        return uri.getScheme()!=null
+          && uri.getScheme().equals("class")
           && uri.getPath().equals(classNameToPath(_javaClass.getName()));
       }
 
