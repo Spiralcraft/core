@@ -21,6 +21,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 import java.net.URI;
 import java.util.List;
@@ -115,6 +116,9 @@ public abstract class Node
       uriStr=uriStr+suffix;
       uri=URI.create(uriStr);
     }
+    else if (suffix!=null)
+    { uri=URI.create(suffix);
+    }
     return uri;
   }   
   
@@ -140,12 +144,32 @@ public abstract class Node
     (String prefix,String suffix)
   {
     PrefixResolver resolver=NamespaceContext.getPrefixResolver();
+    URI ret=null;
     if (resolver!=null)
-    { return resolveQName(prefix,suffix,resolver);
+    { 
+      ret=resolveQName(prefix,suffix,resolver);
+      if (ret==null)
+      {
+        log.log
+          (Level.WARNING
+          ,"Unresolved qname '"
+          +(prefix==null || prefix.isEmpty()?"":prefix+":")+suffix+"'"
+          +"\r\n"+resolver.computeMappings()
+          ,new Exception()
+          );
+      }
     }
     else
-    { return null;
+    {
+      log.log
+        (Level.WARNING
+        ,"Unresolved qname '"
+        +(prefix==null || prefix.isEmpty()?"":prefix+":")+suffix+"'"
+        +": No contextual resolver found"
+        ,new Exception()
+        );
     }
+    return ret;
   }
   
   
