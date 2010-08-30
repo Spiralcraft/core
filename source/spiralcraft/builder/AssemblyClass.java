@@ -698,6 +698,13 @@ public class AssemblyClass
       if (sourceURI!=null && sourceURI.relativize(uri)!=uri)
       { return true;
       }
+// XXX: Redundant?
+//      else if (_basePackage!=null 
+//          && _baseName!=null 
+//          && uri.relativize(_basePackage).getPath().equals(_baseName)
+//          )
+//      { return true;
+//      }      
       else if (_javaClass!=null)
       { 
         return uri.getScheme()!=null
