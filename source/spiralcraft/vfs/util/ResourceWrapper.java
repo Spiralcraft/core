@@ -74,6 +74,7 @@ public abstract class ResourceWrapper
   }
 
   public Resource getParent()
+    throws IOException
   { return getDelegate().getParent();
   }
 
@@ -81,6 +82,10 @@ public abstract class ResourceWrapper
   { return getDelegate().getURI();
   }
 
+  public URI getResolvedURI()
+  { return getDelegate().getResolvedURI();
+  }
+  
   public boolean supportsRead()
   { return getDelegate().supportsRead();
   }

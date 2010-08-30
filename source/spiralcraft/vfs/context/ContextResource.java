@@ -17,6 +17,8 @@ package spiralcraft.vfs.context;
 //
 //import spiralcraft.log.ClassLog;
 //import spiralcraft.log.Level;
+import java.net.URI;
+
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.vfs.util.ResourceWrapper;
@@ -64,11 +66,13 @@ public class ContextResource
   
 //  private String path;
   private Resource delegate;
+  private URI resolvedURI;
   
-  public ContextResource(Resource delegate)
+  public ContextResource(URI resolvedURI,Resource delegate)
     throws UnresolvableURIException
   { 
     this.delegate=delegate;
+    this.resolvedURI=resolvedURI;
 //    path=uri.getPath().substring(1);
 //    String authority=uri.getAuthority();
 //    URI root;
@@ -107,6 +111,11 @@ public class ContextResource
 //    delegate=Resolver.getInstance().resolve(target);
     
     
+  }
+  
+  @Override
+  public URI getResolvedURI()
+  { return resolvedURI;
   }
   
   @Override

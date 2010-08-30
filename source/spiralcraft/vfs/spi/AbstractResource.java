@@ -33,15 +33,28 @@ public abstract class AbstractResource
 {
   
   private final URI _uri;
+  private final URI _resolvedURI;
 
-  public AbstractResource(URI uri)
-  { _uri=uri;
+  public AbstractResource(URI uri,URI resolvedURI)
+  { 
+    _uri=uri;
+    _resolvedURI=resolvedURI;
   }
 
+  public AbstractResource(URI uri)
+  { 
+    _uri=uri;
+    _resolvedURI=_uri;
+  }
+  
   public URI getURI()
   { return _uri;
   }
 
+  public URI getResolvedURI()
+  { return _resolvedURI;
+  }
+  
 	/**
    * Read not supported, throw an IOException
 	 */	
@@ -69,6 +82,7 @@ public abstract class AbstractResource
    * Doesn't know about parents
    */
   public Resource getParent()
+    throws IOException
   { return null;
   }
 

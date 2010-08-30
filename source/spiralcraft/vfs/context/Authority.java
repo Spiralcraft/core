@@ -100,6 +100,9 @@ public class Authority
     
   }
   
+  /**
+   *  Resolve a relative path
+   */
   Resource resolve(String path)
     throws UnresolvableURIException
   {
@@ -146,7 +149,12 @@ public class Authority
     {
       return defaultRoot!=null
       ?new ContextResource
-        (Resolver.getInstance().resolve
+        (new URI
+          ("context"
+          ,(authorityName!=null?"//"+authorityName:"")+"/"+path
+          ,null
+          )
+        ,Resolver.getInstance().resolve
           (defaultRoot.resolve(new URI(null,path,null))
           )
         )

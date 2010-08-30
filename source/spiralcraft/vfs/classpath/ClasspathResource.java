@@ -39,13 +39,8 @@ public class ClasspathResource
 {
   private static final ClassLog log
     =ClassLog.getInstance(ClasspathResource.class);
-  
-  private final ClassLoader _classLoader;
-  private final String _path;
-  private URL _url;
-  private List<String> _contents;
 
-  private static final URI stripTrailingSlash(URI uri)
+  public static final URI stripTrailingSlash(URI uri)
   { 
     if (uri.getPath()==null)
     { 
@@ -74,9 +69,16 @@ public class ClasspathResource
     }
   }
   
+  private final ClassLoader _classLoader;
+  private final String _path;
+  private URL _url;
+  private List<String> _contents;
+
+
+  
   public ClasspathResource(URI uri)
   { 
-    super(stripTrailingSlash(uri));
+    super(stripTrailingSlash(uri),uri);
     _path=getURI().getPath().substring(1);
     _classLoader=Thread.currentThread().getContextClassLoader();
   }
@@ -211,8 +213,9 @@ public class ClasspathResource
   @Override
   public ClasspathResource getChild(String name)
   { 
+    URI child=URI.create(getURI().getScheme()+":/"+_path+"/"+name);
     return new ClasspathResource
-      (URI.create(getURI().getScheme()+":/"+_path+"/"+name));
+      (child);
   }
   
   @Override

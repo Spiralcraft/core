@@ -32,7 +32,12 @@ public interface Resource
    */
   public URI getURI();
 
-	/**
+  /**
+   * Return the URI that was used to resolve this Resource
+   */
+  public URI getResolvedURI();
+
+  /**
 	 * Read the resource data.
    *
    *@return An InputStream, or null if the resource can't be read.
@@ -101,9 +106,11 @@ public interface Resource
     throws IOException;
   
   /**
-   * @return the enclosing or containing Resource.
+   * @return the enclosing or containing Resource of the canonical
+   *   underlying Resource.
    */
-  public Resource getParent();
+  public Resource getParent()
+    throws IOException;
   
   /**
    * 

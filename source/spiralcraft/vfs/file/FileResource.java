@@ -21,6 +21,7 @@ import spiralcraft.vfs.NotStreamableException;
 import spiralcraft.vfs.spi.AbstractResource;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,18 +35,40 @@ public class FileResource
   extends AbstractResource
   implements Container
 {
+  
+  public static URI toRelativeURI(File file)
+  { 
+    try
+    {
+      return new URI
+        (null
+        ,file.getPath().replace(File.separatorChar,'/')
+        ,null
+        );
+    }
+    catch (URISyntaxException x)
+    { throw new RuntimeException(x);
+    }
+  }
+  
   private File _file;
   private Resource[] _contents;
 
+  
   public FileResource(File file)
   { 
-    super(file.toURI());
+    super
+      (file.toURI()
+      ,file.isAbsolute()
+      ?file.toURI()
+      :toRelativeURI(file)
+      );
     _file=file;
   }
   
   public FileResource(URI uri)
   { 
-    super(uri);
+    super(uri,uri);
     _file=new File(uri);
   }
 
@@ -125,7 +148,8 @@ public class FileResource
   
   @Override
   public Resource getParent()
-  { return new FileResource(_file.getParentFile().toURI());
+    throws IOException
+  { return new FileResource(_file.getParentFile());
   }
 
   @Override
@@ -144,12 +168,14 @@ public class FileResource
   }
   
   public Resource[] listContents()
+    throws UnresolvableURIException  
   { 
     makeContents();
     return _contents;
   }
 
   public Resource[] listChildren()
+    throws UnresolvableURIException
   {
     makeContents();
     return _contents;
@@ -167,7 +193,7 @@ public class FileResource
     if (name==null)
     { throw new NullPointerException("Child name cannot be null");
     }
-    return new FileResource(new File(_file,name).toURI());
+    return new FileResource(new File(_file,name));
   }
 
   public Resource createLink(String name,Resource resource)
@@ -176,13 +202,14 @@ public class FileResource
   }
 
   private void makeContents()
+    throws UnresolvableURIException
   { 
     File[] contents=_file.listFiles();
     if (contents!=null)
     {
       _contents=new Resource[contents.length];
       for (int i=0;i<contents.length;i++)
-      { _contents[i]=new FileResource(contents[i].toURI());
+      { _contents[i]=new FileResource(contents[i]);
       }
     }
     else
