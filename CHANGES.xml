@@ -18,9 +18,98 @@
     </notes>
     
     <detail>
+    
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-30] Fix NPE when a BeanReflector finds an
+             IndexedPropertyDescriptor with no standard accessors
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/
+        </path>
+        
+        <resources>
+          <URI>parser/methodCallNode.java
+          </URI>
+          <URI>reflect/BeanPropertyTranslator.java
+          </URI>
+          <URI>reflect/BeanReflector.java
+          </URI>
+        </resources>
+      
+      </scm:Change>
+      
       <scm:Change>
       
         <notes>
+          <scm:Note>[SCPUBLIC-29] Namespace definitions should be exclusively 
+            document-scoped
+          </scm:Note>
+          <scm:Note>Provide for no-default-namespace scenario
+          </scm:Note>    
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>common/namespace/PrefixResolver.java
+          </URI>
+          <URI>common/namespace/StandardPrefixResolver.java
+          </URI>
+          <URI>builder/AssemblyClass.java
+          </URI>
+          <URI>data/access/Updater.java
+          </URI>
+          <URI>data/sax/AbstractFrameHandler.java
+          </URI>
+          <URI>data/sax/DataHandlerBase.java
+          </URI>
+          <URI>data/sax/RecursiveFrame.java
+          </URI>
+          <URI>lang/parser/Node.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>[SCPUBLIC-32] VFS Resources should capture the URI used to 
+            resolve them in addition to the canonical URI
+          </scm:Note>   
+        </notes>
+        
+        <path>source/spiralcraft/vfs/
+        </path>
+        
+        <resources>
+          <URI>Resource.java
+          </URI>
+          <URI>classpath/ClasspathResource.java
+          </URI>
+          <URI>context/Authority.java
+          </URI>
+          <URI>context/ContextResource.java
+          </URI>
+          <URI>file/FileResource.java
+          </URI>
+          <URI>spi/AbstractResource.java
+          </URI>
+          <URI>uri/URLResource.java
+          </URI>
+          <URI>util/ResourceWrapper.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>[SCPUBLIC-31] VFS should provide a simpler method to create
+            directory paths
+          </scm:Note>
           <scm:Note>vfs.Container now has an ensureChildContainer() interface
             to assist in the dynamic creation of directory trees.
           </scm:Note>    
