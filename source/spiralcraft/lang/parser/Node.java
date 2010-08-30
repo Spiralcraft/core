@@ -104,7 +104,14 @@ public abstract class Node
       else
       { uri=nsr.resolvePrefix("");
       }
+      if (uri==null
+          && suffix!=null 
+          && (prefix==null || prefix.isEmpty()) 
+          )
+      { uri=URI.create(suffix);
+      }
     }
+
     if (uri!=null)
     { 
       String uriStr=uri.toString();
@@ -116,9 +123,7 @@ public abstract class Node
       uriStr=uriStr+suffix;
       uri=URI.create(uriStr);
     }
-    else if (suffix!=null)
-    { uri=URI.create(suffix);
-    }
+
     return uri;
   }   
   
