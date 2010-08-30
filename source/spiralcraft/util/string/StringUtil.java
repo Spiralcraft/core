@@ -324,6 +324,33 @@ public class StringUtil
   }
   
   /**
+   * Return the remainder of the string after the last occurrence of the 
+   *   delimiter char
+   * 
+   * @param input
+   * @param delimiter
+   * @return
+   */
+  public static String suffix(String input,char delimiter)
+  { 
+    if (input==null)
+    { return null;
+    }
+    int pos=input.lastIndexOf(delimiter);
+    if (pos>=0)
+    { 
+      if (input.length()>pos+1)
+      { return input.substring(pos+1);
+      }
+      else 
+      { return "";
+      }
+    }
+    return null;
+    
+  }
+  
+  /**
    * Prints a string representation of a character's textual and integer
    *   value
    *   
