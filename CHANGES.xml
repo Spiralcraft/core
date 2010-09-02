@@ -4,6 +4,79 @@
   
   <scm:Change>
   
+    <revision>0.4.11.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-09-??
+    </date>
+  
+    <notes>
+
+    </notes>
+    
+    <detail>
+      <scm:Change>
+        <notes>
+          <scm:Note>Refactor low level XML SAX components and ParseTree 
+            implementation to improve access to API in various application
+            scenarios such as manipulating String based XML fragments.
+          </scm:Note>
+          <scm:Note>Make the ParseTree conform to the 
+            spiralcraft.util.tree.Tree interfaces to allow for consumption by
+            more generic interfaces.
+          </scm:Note>          
+          <scm:Note>Provide an "ellipsize" function to truncate XML over
+            a certain number of characters.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>builder/AssemblyLoader.java
+          </URI>
+          <URI>sax/Characters.java
+          </URI>
+          <URI>sax/Document.java
+          </URI>
+          <URI>sax/Element.java
+          </URI>
+          <URI>sax/Node.java
+          </URI>
+          <URI>sax/ParseTreeFactory.java
+          </URI>
+          <URI>sax/SaxUtil.java
+          </URI>
+          <URI>sax/TreeFilter.java
+          </URI>
+          <URI>sax/XmlFilter.java
+          </URI>
+          <URI>sax/XmlWriter.java
+          </URI>
+          <URI>test/xml/XmlEncoder.java
+          </URI>
+          <URI>util/MutableInt.java
+          </URI>
+          <URI>util/MutableReference.java
+          </URI>
+          <URI>util/tree/DepthFirstSearch.java
+          </URI>
+          <URI>util/tree/DepthFirstTraversal.java
+          </URI>
+        
+        </resources>
+      
+      </scm:Change>
+    </detail>
+    
+  </scm:Change>
+
+  <scm:Change>
+  
     <revision>0.4.11
     </revision>
     

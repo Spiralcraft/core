@@ -1,0 +1,100 @@
+<test:TestGroup
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:j="class:/java/lang/"
+  xmlns:jnet="class:/java/net/"
+  xmlns:ju="class:/java/util/"
+  xmlns:lang="class:/spiralcraft/lang"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  xmlns:util="class:/spiralcraft/util/"
+  xmlns:sutil="class:/spiralcraft/util/string/"
+  xmlns:vfs="class:/spiralcraft/vfs/"
+  xmlns:vfsm="class:/spiralcraft/vfs/meta/"
+  xmlns:vfsc="class:/spiralcraft/vfs/context/"
+  xmlns:sax="class:/spiralcraft/sax/"
+  xmlns="dynamic:/"
+  >
+  <name>spiralcraft.sax.test
+  </name>
+  
+  <chain>
+ 
+    <task:Sequence>
+      <scenarios>
+    
+        <test:Assertion>
+        
+          <name>resource entry
+          </name>
+          
+          <subjectX>
+            [@jnet:URI]
+            {{[*jnet:URI{"class:/spiralcraft/sax/test/fragment1.xmlf"}]
+            ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment2.xmlf"}]
+            ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment3.xmlf"}]            
+            }}
+            #{
+              .[*vfs:Resolve].[*vfs:IO]
+              { [@sax:ParseTreeFactory].@fromFragment([@j:String].(.),null)
+              }
+              { 
+                [@sax:SaxUtil].@ellipsize
+                  (.document.getChild(0)
+                  ,140
+                  ,120
+                  ,"..."
+                  ,[@ju:Locale].@US
+                  )
+                ,.
+              }
+              { [@sax:ParseTreeFactory].@toFragment(.)
+              }
+            }
+              
+          </subjectX>
+          
+          <testX>
+            .[0].contains("...")
+            &amp;&amp; !.[1].contains("...")
+            &amp;&amp; .[2].contains("...")
+          </testX>
+          
+        </test:Assertion>
+        
+        <test:Assertion>
+        
+          <name>resource entry
+          </name>
+          
+          <subjectX>
+            [@jnet:URI]
+            {{[*jnet:URI{"class:/spiralcraft/sax/test/fragment1.xmlf"}]
+            ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment2.xmlf"}]
+            ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment3.xmlf"}]            
+            }}
+            #{
+              .[*vfs:Resolve].[*vfs:IO]
+              { 
+                [@sax:SaxUtil].@ellipsizeFragment
+                  ([@j:String].(.)
+                  ,140
+                  ,120
+                  ,"..."
+                  ,[@ju:Locale].@US
+                  )
+              }
+            }
+              
+          </subjectX>
+          
+          <testX>
+            .[0].contains("...")
+            &amp;&amp; !.[1].contains("...")
+            &amp;&amp; .[2].contains("...")
+          </testX>
+          
+        </test:Assertion>        
+      </scenarios>
+    </task:Sequence>
+  </chain>
+</test:TestGroup>

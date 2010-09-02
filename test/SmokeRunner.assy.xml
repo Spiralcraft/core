@@ -104,6 +104,10 @@
         <timetest:TimeTest
           xmlns:timetest="class:/spiralcraft/time/test/"
         />
+
+        <saxtest:SaxTest
+          xmlns:saxtest="class:/spiralcraft/sax/test/"
+        />
       </scenarios>
     </task:Sequence>
   </chain>
