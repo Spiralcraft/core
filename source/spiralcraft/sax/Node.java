@@ -14,6 +14,7 @@
 //
 package spiralcraft.sax;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.ArrayList;
@@ -23,11 +24,14 @@ import org.xml.sax.SAXException;
 
 import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.text.ParsePosition;
+import spiralcraft.util.EmptyIterator;
+import spiralcraft.util.tree.Tree;
 
 /**
  * Represents a portion of an XML document
  */
 public abstract class Node
+  implements Tree<Node,Object>
 {
   private LinkedList<Node> _children;
   private Node _parent;
@@ -40,7 +44,7 @@ public abstract class Node
    * Associate an application specific Object with this
    *   node.
    */
-  public void setPeer(Object peer)
+  public void set(Object peer)
   { _peer=peer;
   }
   
@@ -49,8 +53,12 @@ public abstract class Node
    *   associated with this node.
    *   
    */
-  public Object getPeer()
+  public Object get()
   { return _peer;
+  }
+  
+  public boolean isLeaf()
+  { return _children==null || _children.isEmpty();
   }
   
   public void removeChild(Node child)
@@ -64,8 +72,46 @@ public abstract class Node
     }
   }
 
-  public List<Node> getChildren()
+  /**
+   * Returns a direct reference to the internal list of child Nodes
+   * 
+   * @return
+   */
+  public List<Node> getChildList()
   { return _children;
+  }
+  
+  public int getChildCount()
+  { 
+    if (_children!=null)
+    { return _children.size();
+    }
+    else
+    { return 0;
+    }
+  }
+  
+  public Iterator<Node> iterator()
+  { 
+    if (_children!=null)
+    { return _children.iterator();
+    }
+    else
+    { return new EmptyIterator<Node>();
+    }
+  }
+  
+  /**
+   * Returns a new copy of the list of child nodes
+   */
+  public Node[] getChildren()
+  { 
+    if (_children!=null)
+    { return _children.toArray(new Node[_children.size()]);
+    }
+    else
+    { return null;
+    }
   }
 
   @SuppressWarnings("unchecked") // Runtime type check
@@ -85,6 +131,21 @@ public abstract class Node
     return ret;
   }
 
+  /**
+   * Remove children including and after the specified child node. 
+   * 
+   * @param afterChild
+   */
+  public void truncate(int index)
+  { 
+    if (_children!=null)
+    { 
+      while (_children.size()>index)
+      { _children.removeLast();
+      }
+    }
+  }
+  
   public void addChild(Node child)
   { 
     if (_children==null)
@@ -110,6 +171,16 @@ public abstract class Node
   { return _parent;
   }
 
+  public Node getChild(int index)
+  { 
+    if (_children!=null)
+    { return _children.get(index);
+    }
+    else
+    { throw new IndexOutOfBoundsException(index+">0");
+    }
+  }
+  
   /**
    * 
    * @return The namespace PrefixResolver in effect for this Element

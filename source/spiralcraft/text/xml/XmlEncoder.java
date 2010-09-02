@@ -27,7 +27,7 @@ import java.io.IOException;
 public class XmlEncoder
   implements Encoder
 {
-  public void encode(CharSequence in,Writer out)
+  public void encodeRaw(CharSequence in,Writer out)
     throws IOException
   {
     for (int i=0;i<in.length();i++)
@@ -40,12 +40,45 @@ public class XmlEncoder
           case '\r':
           case '\n':
           case '\t':
-//            out.write(value);
-            out.write("&#"+((int) value)+";"); 
-            break;
-          default:
-            out.write("&#"+((int) value)+";"); 
+            out.write(value);
+          break;
+        default:
+          out.write("&#"+((int) value)+";"); 
         }
+      }      
+      else switch (value)
+      { 
+        case '&':
+          out.write("&amp;");
+          break;
+        case '<':
+          out.write("&lt;");
+          break;
+        case '>':
+          out.write("&gt;");
+          break;
+        default:
+          out.write(value);
+          break;
+      }
+    }
+  }
+
+  /**
+   * <p>Escapes all control characters and XML entities, including whitespace.
+   * </p>
+   * 
+   * <p>Whitespace is preserved in data.
+   * </p> 
+   */
+  public void encode(CharSequence in,Writer out)
+    throws IOException
+  {
+    for (int i=0;i<in.length();i++)
+    { 
+      final char value=in.charAt(i);
+      if (value < ' ')
+      { out.write("&#"+((int) value)+";"); 
       }      
       else switch (value)
       { 

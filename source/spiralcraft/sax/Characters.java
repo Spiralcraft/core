@@ -35,6 +35,10 @@ public class Characters
   { return _characters;
   }
 
+  public void setCharacters(char[] characters)
+  { _characters=characters;
+  }
+  
   @Override
   public void playEvents(ContentHandler handler)
     throws SAXException

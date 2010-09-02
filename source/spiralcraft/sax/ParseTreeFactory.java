@@ -18,20 +18,27 @@ import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
 import java.net.URI;
+import java.nio.charset.Charset;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.Writer;
 
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 public class ParseTreeFactory
 {
 
+  private static Charset UTF8=Charset.forName("UTF-8");
+  
   /**
    * Load a ParseTree from a URI. 
    *
@@ -72,6 +79,42 @@ public class ParseTreeFactory
   }
 
   /**
+   * Parse fragmentary XML contained in a String. Encapsulates a String within
+   *   &lt;_%gt; tags.
+   * 
+   * @param string
+   * @param filter
+   * @return
+   * @throws SAXException
+   * @throws IOException
+   */
+  public static ParseTree fromFragment(String string,XmlFilter filter)
+    throws SAXException,IOException
+  { return fromString("<_>"+string+"</_>",filter);
+  }
+  
+  /**
+   * Parse an XML document contained in a UTF-8 string. 
+   */
+  public static ParseTree fromString(String string,XmlFilter filter)
+    throws SAXException,IOException
+  { return fromBytes(string.getBytes(UTF8),filter);
+  }
+  
+  /**
+   * Parse an XML document contained in a byte[] 
+   * 
+   * @param bytes
+   * @return
+   * @throws SAXException
+   * @throws IOException
+   */
+  public static ParseTree fromBytes(byte[] bytes,XmlFilter filter)
+    throws SAXException,IOException
+  { return fromInputStream(new ByteArrayInputStream(bytes),filter);
+  }
+  
+  /**
    * Write a ParseTree to a resource. 
    */
   public static void toResource(ParseTree parseTree,Resource resource)
@@ -90,17 +133,80 @@ public class ParseTreeFactory
     }
   }
 
+  
+  /**
+   * Write a parse tree to an OutputStream.
+   */
+  public static void toOutputStream(ParseTree tree,OutputStream out)
+    throws SAXException
+  {
+    XmlWriter writer=new XmlWriter(out,null);
+    tree.playEvents(writer);
+  }
+  
+  /**
+   * Write a parse tree to an OutputStream.
+   */
+  public static void toOutputStream
+    (ParseTree tree,OutputStream out,XmlFilter filter)
+    throws SAXException
+  {
+    XmlWriter writer=new XmlWriter(out,null);
+    filter.getLast().setContentHandler(writer);
+    tree.playEvents(filter);
+  } 
+  
+  
+  public static void toWriter(ParseTree tree,Writer writer)
+    throws SAXException  
+  {
+    XmlWriter xmlWriter=new XmlWriter(writer,null);
+    xmlWriter.setEscapeWhitespace(false);
+    tree.playEvents(xmlWriter);
+  }
+  
+  public static String toString(ParseTree parseTree)
+    throws SAXException
+  { 
+    StringWriter writer=new StringWriter();
+    toWriter(parseTree,writer);
+    return writer.toString();
+    
+  }
+
+  public static String toFragment(ParseTree tree)
+    throws SAXException
+  { 
+    StringWriter writer=new StringWriter();
+    XmlWriter xmlWriter=new XmlWriter(writer,null);
+    xmlWriter.setEscapeWhitespace(false);
+    xmlWriter.setFragmentMode(true);
+    tree.playEvents(xmlWriter);    
+    return writer.toString();
+  
+  }
+
   /**
    * Load a parse tree from an InputStream.
    *@return The ParseTree, or null if the supplied InputStream is null.
    */
   public static ParseTree fromInputStream(InputStream in)
     throws SAXException,IOException
+  { return fromInputStream(in,null);
+  }
+  
+  /**
+   * Load a parse tree from an InputStream.
+   *@return The ParseTree, or null if the supplied InputStream is null.
+   */
+  public static ParseTree fromInputStream(InputStream in,XmlFilter filter)
+    throws SAXException,IOException
   {
     if (in==null)
     { return null;
     }
 
+    
     SAXParserFactory factory=SAXParserFactory.newInstance();
     factory.setNamespaceAware(true);
 
@@ -115,18 +221,16 @@ public class ParseTreeFactory
       throw new IOException(x.toString());
     }
     ParseTree parseTree=new ParseTree();
+    ContentHandler handler=parseTree;
+    if (filter!=null)
+    { 
+      filter.getLast().setContentHandler(handler);
+      handler=filter;
+    }
     parser.parse(in,parseTree);
     return parseTree;
   }
 
-  /**
-   * Write a parse tree to an OutputStream.
-   */
-  public static void toOutputStream(ParseTree tree,OutputStream out)
-    throws SAXException
-  {
-    XmlWriter writer=new XmlWriter(out,null);
-    tree.playEvents(writer);
-  }
+ 
 
 }

@@ -20,28 +20,23 @@ import java.util.Stack;
 import spiralcraft.log.ClassLog;
 
 /**
- * Implements a Depth First Search (preorder) algorithm on a Tree
+ * Implements a Depth First Traversal (preorder) algorithm of a Tree
  */
-public class DepthFirstSearch<T extends Tree<T,?>>
+public class DepthFirstTraversal<T extends Tree<T,?>>
   implements Iterable<T>
 {
 
-  static final ClassLog log=ClassLog.getInstance(DepthFirstSearch.class);
-
-  
-
+  static final ClassLog log=ClassLog.getInstance(DepthFirstTraversal.class);
   
   private final T tree;
   
-  public DepthFirstSearch(T tree)
+  public DepthFirstTraversal(T tree)
   { this.tree=tree;
   }
   
-  public Iterator<T> iterator()
+  public DFSIterator iterator()
   { return new DFSIterator();
   }
-  
-  
   
   class DFSIterator
     implements Iterator<T>

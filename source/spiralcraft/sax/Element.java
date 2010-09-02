@@ -88,10 +88,12 @@ public class Element
     }
   }
 
+
+    
   public int pruneElements(Set<String> uriList)
   { 
     int count=0;
-    Iterator<Node> it=getChildren().iterator();
+    Iterator<Node> it=iterator();
     while (it.hasNext())
     {
       Node node=it.next();
@@ -134,9 +136,9 @@ public class Element
       }
     }
 
-    if (getChildren()!=null)
+    if (!isLeaf())
     {
-      Iterator<Node> it=getChildren().iterator();
+      Iterator<Node> it=iterator();
       while (it.hasNext())
       {
         Node node=it.next();

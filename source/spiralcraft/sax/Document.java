@@ -40,8 +40,8 @@ public class Document
 
   public Element getRootElement()
   { 
-    if (getChildren().size()>0)
-    { return (Element) getChildren().get(0);
+    if (!isLeaf())
+    { return (Element) getChild(0);
     }
     else
     { return null;

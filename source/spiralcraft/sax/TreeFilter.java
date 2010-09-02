@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -14,61 +14,34 @@
 //
 package spiralcraft.sax;
 
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
-
+import org.xml.sax.SAXException;
 
 /**
- * Writes XML as SAX events are fired through the ContentHandler interface
+ * Computes a parse tree from the stream
  * 
- * When connected to a SAX parser, this class should write an exact copy
- *   of the document being read.
+ * @author mike
+ *
  */
-public class XmlFilter
-  implements ContentHandler
+public class TreeFilter
+  extends XmlFilter
 {
-  protected ContentHandler out;
-  protected XmlFilter next;
-  private Locator _locator;  
 
-  public XmlFilter()
-  { 
-  }
+  protected ParseTree tree;
   
-  public void setContentHandler(ContentHandler out)
-  { this.out=out;
-  }
-  
-  public void setNext(XmlFilter next)
-  { 
-    this.out=next;
-    this.next=next;
-  }
-  
-  public XmlFilter getLast()
-  { 
-    if (next!=null)
-    { return next.getLast();
-    }
-    else
-    { return this;
-    }
-  }
-  
+  @Override
   public void setDocumentLocator(Locator locator)
   { 
-    this._locator=locator;
-    out.setDocumentLocator(locator);
+    tree.setDocumentLocator(locator);
+    super.setDocumentLocator(locator);
   }
 
-  public Locator getDocumentLocator()
-  { return _locator;
+  public ParseTree getTree()
+  { return tree;
   }
   
-
-  
+  @Override
   public void startElement
     (String namespaceURI
     ,String localName
@@ -77,56 +50,85 @@ public class XmlFilter
     )
     throws SAXException
   { 
-    
-    out.startElement(namespaceURI,localName,qName,attribs);
+    tree.startElement(namespaceURI,localName,qName,attribs);
+    super.startElement(namespaceURI,localName,qName,attribs);
   }
 
+  @Override
   public void startPrefixMapping(String prefix,String uri)
     throws SAXException
-  { out.startPrefixMapping(prefix, uri);
+  { 
+    tree.startPrefixMapping(prefix, uri);
+    super.startPrefixMapping(prefix, uri);
   }
 
+  @Override
   public void endPrefixMapping(String prefix)
     throws SAXException
-  { out.endPrefixMapping(prefix);
+  { 
+    tree.endPrefixMapping(prefix);
+    super.endPrefixMapping(prefix);
   }
 
+  @Override
   public void endElement(String namespaceURI,String localName,String qName)
     throws SAXException
-  { out.endElement(namespaceURI,localName,qName);
+  { 
+    tree.endElement(namespaceURI,localName,qName);
+    super.endElement(namespaceURI,localName,qName);
   }
 
   
+  @Override
   public void characters(char[] ch,int start,int length)
     throws SAXException
-  { out.characters(ch,start,length);
+  { 
+    tree.characters(ch,start,length);
+    super.characters(ch,start,length);
   }
 
 
+  @Override
   public void ignorableWhitespace(char[] ch,int start,int length)
     throws SAXException
-  { out.ignorableWhitespace(ch, start, length);
+  { 
+    tree.ignorableWhitespace(ch, start, length);
+    super.ignorableWhitespace(ch, start, length);
   }
 
+  @Override
   public void processingInstruction(String target,String data)
     throws SAXException
-  { out.processingInstruction(target,data);
+  { 
+    tree.processingInstruction(target,data);
+    super.processingInstruction(target,data);
   }
 
+  @Override
   public void skippedEntity(String name)
     throws SAXException
-  { out.skippedEntity(name);
+  { 
+    tree.skippedEntity(name);
+    super.skippedEntity(name);
   }
 
 
+  @Override
   public void startDocument()
     throws SAXException
-  { out.startDocument();
+  { 
+    tree.startDocument();
+    super.startDocument();
   }
 
+  @Override
   public void endDocument()
     throws SAXException
-  { out.endDocument();
+  { 
+    tree.endDocument();
+    super.endDocument();
   }
-
+  
+ 
+  
 }

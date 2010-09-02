@@ -49,6 +49,8 @@ public class XmlWriter
   private Charset encoding=Charset.forName("UTF-8");
   private final AttributeEncoder attributeEncoder=new AttributeEncoder();
   private final XmlEncoder xmlEncoder=new XmlEncoder();
+  private boolean escapeWhitespace=true;
+  private boolean fragmentMode=false;
   
 
   public XmlWriter(OutputStream out,Charset charset)
@@ -75,9 +77,29 @@ public class XmlWriter
   }
   
   /**
-   * <P>Format the output by inserting line breaks and indent spaces where
+   * <p>Don't write the XML header or the root element itself
+   * </p>
+   * 
+   * @param fragmentMode
+   */
+  public void setFragmentMode(boolean fragmentMode)
+  { this.fragmentMode=fragmentMode;
+  }
+  
+  /**
+   * <p>Escape whitespace to ensure that data is preserved. Defaults to true.
+   * </p>
+   * 
+   * @param escapeWhitespace
+   */
+  public void setEscapeWhitespace(boolean escapeWhitespace)
+  { this.escapeWhitespace=escapeWhitespace;
+  }
+  
+  /**
+   * <p>Format the output by inserting line breaks and indent spaces where
    *   appropriate
-   * </P>
+   * </p>
    * 
    * @param format
    */
@@ -96,9 +118,19 @@ public class XmlWriter
     checkElementClose();      
     try
     {
-      if (format)
-      { _writer.write("\r\n\r\n"+StringUtil.repeat(indentString,indentLevel++));
+      if (fragmentMode && indentLevel==0)
+      { 
+        indentLevel++;
+        return;
       }
+      
+      if (format)
+      { _writer.write("\r\n\r\n"+StringUtil.repeat(indentString,indentLevel));
+      }
+      if (format || fragmentMode)
+      { indentLevel++;
+      }
+      
       _writer.write("<");
       _writer.write(qName);
       for (int i=0;i<attribs.getLength();i++)
@@ -139,8 +171,11 @@ public class XmlWriter
   { 
     try
     {
-      if (format)
+      if (format || fragmentMode)
       { indentLevel--;
+      }
+      if (fragmentMode && indentLevel==0)
+      { return;
       }
       if (_elementDelimiterPending)
       { 
@@ -149,6 +184,7 @@ public class XmlWriter
       }
       else
       {
+        
         if (format)
         { _writer.write("\r\n"+StringUtil.repeat(indentString,indentLevel));
         }
@@ -156,6 +192,7 @@ public class XmlWriter
         _writer.write(qName);
         _writer.write(">");
       }
+      
     }
     catch (IOException x)
     { fail(x);
@@ -180,7 +217,12 @@ public class XmlWriter
         }
       }
       
-      xmlEncoder.encode(new String(ch,start,length),_writer);
+      if (escapeWhitespace)
+      { xmlEncoder.encode(new String(ch,start,length),_writer);
+      }
+      else
+      { xmlEncoder.encodeRaw(new String(ch,start,length),_writer);
+      }
     }
     catch (IOException x)
     { fail(x);
@@ -225,6 +267,9 @@ public class XmlWriter
   public void startDocument()
     throws SAXException
   { 
+    if (fragmentMode)
+    { return;
+    }
     try
     { 
       _writer.write("<?xml version=\"1.0\" ");
