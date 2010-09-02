@@ -36,7 +36,6 @@ import spiralcraft.sax.Attribute;
 
 import org.xml.sax.SAXException;
 
-import java.util.Iterator;
 import java.util.HashMap;
 
 
@@ -417,10 +416,8 @@ public class AssemblyLoader
       StringBuilder constructorBuff=new StringBuilder();
       boolean readProperties=false;
       
-      Iterator<Node> it=node.getChildren().iterator();
-      while (it.hasNext())
-      { 
-        Node child = it.next();
+      for (Node child: node)
+      {
         if (child instanceof Element)
         { 
           if (constructorBuff.length()>0)
@@ -547,10 +544,8 @@ public class AssemblyLoader
     containerClass.addPropertySpecifier(prop);
     if (node.hasChildren())
     {
-      Iterator<Node> it=node.getChildren().iterator();
-      while (it.hasNext())
-      { 
-        Node child = it.next();
+      for (Node child:node)
+      {
         if (child instanceof Element)
         { prop.addAssemblyClass(readAssemblyClass(sourceUri,(Element) child,containerClass));
         }
