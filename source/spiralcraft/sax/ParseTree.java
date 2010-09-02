@@ -27,7 +27,8 @@ import spiralcraft.text.ParsePosition;
 
 
 /**
- * A lightweight parse tree of an XML document which captures and preserves SAX events.
+ * A lightweight parse tree of an XML document which captures and preserves SAX
+ *  events.
  *
  * Intended as a convenient non-event-driven alternative for applications that
  *   wish to avoid the complexity of DOM- ie. applications that are oriented
