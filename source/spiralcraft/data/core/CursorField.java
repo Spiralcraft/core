@@ -44,7 +44,7 @@ public class CursorField<T>
  
   
   @Override
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public Channel<T> bindChannel
     (Channel<Tuple> source
     ,Focus<?> focus

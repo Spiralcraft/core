@@ -47,7 +47,7 @@ public class AggregateConstructorChannel<T extends Aggregate<I>,I>
   private final Channel<DataSession> dataSessionChannel;
   private final IterationDecorator<T,I> iterable;
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public AggregateConstructorChannel
     (AggregateReflector<T,I> reflector,Focus<?> context,Channel<?> dataChannel)
     throws BindException
@@ -79,7 +79,7 @@ public class AggregateConstructorChannel<T extends Aggregate<I>,I>
     }
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   protected T retrieve()
   { 

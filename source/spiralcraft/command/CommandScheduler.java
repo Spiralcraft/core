@@ -31,7 +31,7 @@ import spiralcraft.time.Scheduler;
  * @author mike
  *
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"rawtypes"})
 public class CommandScheduler
   implements Lifecycle
 {
@@ -51,6 +51,7 @@ public class CommandScheduler
   private final Runnable runnable
     =new Runnable()
   {
+    @Override
     public void run()
     {
       if (!started)

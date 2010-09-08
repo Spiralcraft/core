@@ -93,6 +93,7 @@ public class Space
   { return storeMap.get(storeName);
   }
   
+  @Override
   public Type<?>[] getTypes()
   { 
 
@@ -101,6 +102,7 @@ public class Space
   
  
   
+  @Override
   public BoundQuery<?,Tuple> getAll(Type<?> type)
     throws DataException
   { 
@@ -181,6 +183,7 @@ public class Space
     }
   }
   
+  @Override
   public BoundQuery<?,Tuple> query(Query query,Focus<?> focus)
     throws DataException
   { 
@@ -245,6 +248,7 @@ public class Space
   
   }
 
+  @Override
   public boolean containsType(Type<?> type)
   { return typeStores.containsKey(type);
   }

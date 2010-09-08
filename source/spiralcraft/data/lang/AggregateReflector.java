@@ -71,7 +71,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   private final Functor<T> constructor;
   
 
-  @SuppressWarnings("unchecked") // We only create Reflector with erased type
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // We only create Reflector with erased type
   public synchronized static final 
     <T extends Tuple> TupleReflector<T> getInstance(FieldSet fieldSet)
     throws BindException
@@ -102,7 +102,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   /**
    * Resolve a meta name
    */
-  @SuppressWarnings("unchecked") // We haven't genericized the data package yet
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // We haven't genericized the data package yet
   @Override
   public synchronized <X> Channel<X> resolveMeta
     (final Channel<T> source
@@ -143,7 +143,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
    * Resolve a Binding that provides access to a member of a Tuple given a 
    *   source that provides Tuples.
    */
-  @SuppressWarnings("unchecked") // We haven't genericized the data package yet
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // We haven't genericized the data package yet
   @Override
   public synchronized <X> Channel<X> resolve
     (final Channel<T> source
@@ -199,7 +199,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
     }
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public Aggregate<T> fromArray(Object[] array)
   { 
     if (array==null)
@@ -209,7 +209,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   }
 
   
-  @SuppressWarnings("unchecked") // Generic factory method, manip. unknown types
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Generic factory method, manip. unknown types
   @Override
   public <D extends Decorator<T>> D
     decorate(Channel<T> binding,Class<D> decoratorInterface)
@@ -232,7 +232,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
   }
   
   
-  @SuppressWarnings("unchecked") // Reflective subscript type
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Reflective subscript type
   private Channel<?> subscript
     (Channel<T> source
     ,Focus<?> focus

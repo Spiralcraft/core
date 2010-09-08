@@ -41,6 +41,7 @@ public class FieldTranslator
   { return field;
   }
   
+  @Override
   public Object translateForGet(Object value,Channel<?>[] modifiers)
   { 
     if (value==null)
@@ -57,6 +58,7 @@ public class FieldTranslator
     }
   }
 
+  @Override
   public Object translateForSet(Object val,Channel<?>[] modifiers)
   { 
     // We can't turn the value into a Tuple, lacking access to
@@ -64,10 +66,12 @@ public class FieldTranslator
     throw new UnsupportedOperationException();
   }
     
+  @Override
   public Reflector<Object> getReflector()
   { return reflector;
   }
   
+  @Override
   public boolean isFunction()
   { return false;
   }

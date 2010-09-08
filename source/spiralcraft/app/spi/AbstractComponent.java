@@ -60,6 +60,7 @@ public class AbstractComponent
   { this.parent=parent;
   }
   
+  @Override
   public Parent getParent()
   { return parent;
   }
@@ -173,6 +174,7 @@ public class AbstractComponent
   { return focusChain;
   }
   
+  @Override
   public int getStateDepth()
   { return 1;
   }
@@ -181,6 +183,7 @@ public class AbstractComponent
   { return context.getState();
   }
   
+  @Override
   public int getStateDistance(Class<?> clazz)
   {
     if (clazz.isAssignableFrom(getClass()))

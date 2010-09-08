@@ -54,7 +54,7 @@ public class Order
    * @param elements
    * @throws ParseException
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "rawtypes" })
   public Order(String ... elements) 
     throws ParseException
   {

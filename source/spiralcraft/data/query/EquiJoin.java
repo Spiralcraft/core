@@ -309,7 +309,7 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
   }
 
   @Override
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public void resolve() throws DataException
   { 
     super.resolve();

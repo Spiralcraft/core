@@ -184,7 +184,7 @@ public abstract class AbstractFrameHandler
   private HashMap<String,URI> prefixMappings;
 
   private ElementAssignment<?>[] elementAssignments;
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "rawtypes" })
   private HashMap<String,Setter> elementSetterMap;
   
   private URI defaultURI;
@@ -199,6 +199,7 @@ public abstract class AbstractFrameHandler
   }
     
   
+  @Override
   public String getElementURI()
   { return elementURI;
   }
@@ -234,6 +235,7 @@ public abstract class AbstractFrameHandler
     }
   }
   
+  @Override
   public URI resolvePrefix(String prefix)
   {
     URI mapping=prefixMappings!=null?prefixMappings.get(prefix):null;
@@ -243,6 +245,7 @@ public abstract class AbstractFrameHandler
     return mapping;
   }
   
+  @Override
   public Map<String,URI> computeMappings()
   { 
     Map<String,URI> computedMappings=new HashMap<String,URI>();
@@ -271,6 +274,7 @@ public abstract class AbstractFrameHandler
     this.recursive=true;
   }
   
+  @Override
   public FrameHandler findFrameHandler(String id)
   {
     if (this.id!=null && id.equals(this.id))
@@ -289,6 +293,7 @@ public abstract class AbstractFrameHandler
    * 
    * @param parent
    */
+  @Override
   public void setParent(FrameHandler parent)
   { this.parent=parent;
   }
@@ -328,6 +333,7 @@ public abstract class AbstractFrameHandler
    * 
    * @param focus
    */
+  @Override
   public void bind()
     throws BindException
   {
@@ -343,6 +349,7 @@ public abstract class AbstractFrameHandler
   { this.focus=focus;
   }
   
+  @Override
   @SuppressWarnings("unchecked") // Cast current Focus to requested generic
   public <X> Focus<X> getFocus()
   { 
@@ -368,7 +375,7 @@ public abstract class AbstractFrameHandler
   { defaultSetters=Assignment.bindArray(defaultAssignments,getFocus());
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   protected void bindElementAssignments()
     throws BindException
   { 
@@ -502,6 +509,7 @@ public abstract class AbstractFrameHandler
    * 
    * @return strictMapping 
    */
+  @Override
   public boolean isStrictMapping()
   { return strictMapping;
   }
@@ -520,6 +528,7 @@ public abstract class AbstractFrameHandler
   { return this.children;
   }
 
+  @Override
   public LinkedHashMap<String,FrameHandler> getChildMap()
   { return childMap;
   }
@@ -587,6 +596,7 @@ public abstract class AbstractFrameHandler
    * 
    * @param frame
    */
+  @Override
   public final void openFrame(ForeignDataHandler.HandledFrame frame)
     throws DataException
   { 
@@ -619,7 +629,8 @@ public abstract class AbstractFrameHandler
    *   
    * @param child
    */
-  @SuppressWarnings("unchecked")
+  @Override
+  @SuppressWarnings({ "rawtypes" })
   public final void closingChild(FrameHandler child)
     throws DataException
   { 
@@ -647,6 +658,7 @@ public abstract class AbstractFrameHandler
    * 
    * @param frame
    */
+  @Override
   public final void closeFrame(ForeignDataHandler.HandledFrame frame)
     throws DataException
   { 
@@ -708,6 +720,7 @@ public abstract class AbstractFrameHandler
    * @return A RecursionContext which pushes channel data from the last
    *   segment of a recursive chain to the first.
    */
+  @Override
   public ClosureFocus<?>.RecursionContext 
     getRecursionContext(Focus<?> focusChain)
   { 
@@ -723,6 +736,7 @@ public abstract class AbstractFrameHandler
   { this.allowMixedContent=allowMixedContent;
   }
   
+  @Override
   public boolean getAllowMixedContent()
   { return allowMixedContent;
   }

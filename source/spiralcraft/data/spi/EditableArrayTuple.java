@@ -53,6 +53,7 @@ public class EditableArrayTuple
   { field.setValue(this,field.getValue(source));
   }
   
+  @Override
   public void set(int index,Object val)
   { 
     if (debug)
@@ -72,6 +73,7 @@ public class EditableArrayTuple
   { return (EditableTuple) super.widen(type);
   }
   
+  @Override
   public void set(String fieldName,Object data)
     throws DataException
   {
@@ -87,6 +89,7 @@ public class EditableArrayTuple
     field.setValue(this,data);
   } 
   
+  @Override
   public void copyFrom(Tuple source)
     throws DataException
   { 

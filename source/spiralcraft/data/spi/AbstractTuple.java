@@ -74,6 +74,7 @@ public abstract class AbstractTuple
 //    this.baseExtent=baseExtent;
 //  }
 
+  @Override
   public Object get(String fieldName)
     throws DataException
   { 
@@ -96,26 +97,32 @@ public abstract class AbstractTuple
     return field.getValue(this);
   }
   
+  @Override
   public Tuple getBaseExtent()
   { return baseExtent;
   }
   
+  @Override
   public boolean isTuple()
   { return true;
   }
   
+  @Override
   public Tuple asTuple()
   { return this;
   }
   
+  @Override
   public boolean isAggregate()
   { return false;
   }
   
+  @Override
   public Aggregate<?> asAggregate()
   { throw new UnsupportedOperationException("Not an Aggregate");
   }
   
+  @Override
   public Identifier getId()
   { 
     if (id==null && getType()!=null)
@@ -139,10 +146,12 @@ public abstract class AbstractTuple
     }
   }
   
+  @Override
   public Type<?> getType()
   { return fieldSet.getType();
   }
   
+  @Override
   public FieldSet getFieldSet()
   { return fieldSet;
   }
@@ -157,6 +166,7 @@ public abstract class AbstractTuple
     }
   }
   
+  @Override
   public Tuple widen(Type<?> type)
     throws DataException
   {
@@ -188,6 +198,7 @@ public abstract class AbstractTuple
     }
   }
   
+  @Override
   public Tuple snapshot()
     throws DataException
   { 
@@ -199,10 +210,12 @@ public abstract class AbstractTuple
     }
   }
   
+  @Override
   public boolean isMutable()
   { return false;
   }
   
+  @Override
   public synchronized Object getBehavior()
     throws DataException
   {
@@ -285,6 +298,7 @@ public abstract class AbstractTuple
   { return tupleToString(this);
   }
   
+  @Override
   public String toText(String indent)
     throws DataException
   {
@@ -431,6 +445,7 @@ public abstract class AbstractTuple
     return sb.toString();
   }
   
+  @Override
   public String dumpData()
     throws DataException
   { return toText("| ");

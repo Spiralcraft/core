@@ -156,7 +156,7 @@ public class CalculatedFieldImpl<T>
     
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Channel<T> bindChannel
     (Channel<Tuple> source

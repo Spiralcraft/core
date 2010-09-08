@@ -68,7 +68,7 @@ public class DataChannel<T extends DataComposite>
    * @throws BindException
    * @throws DataException
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public BufferChannel buffer(Focus<?> focus)
     throws BindException,DataException
   { 

@@ -71,7 +71,7 @@ public abstract class DataReflector<T extends DataComposite>
   
   protected final Type<T> type;
   
-  @SuppressWarnings("unchecked") // We only create Reflector with erased type
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // We only create Reflector with erased type
   public synchronized static final 
     <T> Reflector<T> getInstance(Type type)
     throws BindException
@@ -130,7 +130,7 @@ public abstract class DataReflector<T extends DataComposite>
     return broker;
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public synchronized static final <T extends DataComposite> 
     Reflector<T> getExternalizedInstance(Type type)
     throws BindException
@@ -224,6 +224,7 @@ public abstract class DataReflector<T extends DataComposite>
     return false;
   }
   
+  @Override
   public Type<T> getType()
   { return type;
   }
@@ -280,7 +281,7 @@ public abstract class DataReflector<T extends DataComposite>
    * @return The type of an expression when scoped to a Focus that has a 
    *   Channel with this Reflector as its subject.
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public <X> Type<X> getTypeAsSubject(Expression<X> expr)
     throws DataException
   {

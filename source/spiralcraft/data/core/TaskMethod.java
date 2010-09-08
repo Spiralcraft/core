@@ -148,7 +148,7 @@ public class TaskMethod<T,C,R>
     private final ThreadLocalChannel<C> contextChannel;
     private final Channel<?>[] params;
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public TaskMethodChannel
       (Channel<TaskCommand<C,R>> commandChannel
       ,Channel<?>[] params
@@ -225,7 +225,7 @@ public class TaskMethod<T,C,R>
     }
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   class ExecChannel
     extends SourcedChannel<TaskCommand,Object>
   {

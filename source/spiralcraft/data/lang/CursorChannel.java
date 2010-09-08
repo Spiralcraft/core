@@ -23,7 +23,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.spi.SourcedChannel;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class CursorChannel<T>
   extends SourcedChannel<Cursor,T>
 {

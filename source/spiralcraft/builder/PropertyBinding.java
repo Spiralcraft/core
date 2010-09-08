@@ -45,7 +45,7 @@ import java.beans.PropertyChangeEvent;
  * Associates a PropertySpecifier with some value or value source
  *   in the context of an instantiated Assembly
  */
-@SuppressWarnings("unchecked") // Heterogenous design- does not use generics
+@SuppressWarnings({"unchecked","rawtypes"}) // Heterogenous design- does not use generics
 public class PropertyBinding
   implements PropertyChangeListener
 {
@@ -616,6 +616,7 @@ public class PropertyBinding
   
 
   
+  @Override
   public void propertyChange(PropertyChangeEvent event)
   { applySafe(event.getNewValue());
   } 

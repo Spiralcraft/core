@@ -42,35 +42,43 @@ public abstract class CommandAdapter<Ttarget,Tcontext,Tresult>
   private Tcontext context;
   protected String name;
   
+  @Override
   public boolean isStarted()
   { return started;
   }
   
+  @Override
   public boolean isCompleted()
   { return completed;
   }
   
+  @Override
   public Exception getException()
   { return exception;
   }
   
+  @Override
   public void setContext(Tcontext context)
   { this.context=context;
   }
 
+  @Override
   public void setTarget(Ttarget target)
   { this.target=target; 
   }
   
+  @Override
   public Ttarget getTarget()
   { return target;
   }
   
+  @Override
   public Tcontext getContext()
   { return context;
   }
   
   
+  @Override
   public Tresult getResult()
   { return result;
   }
@@ -111,6 +119,7 @@ public abstract class CommandAdapter<Ttarget,Tcontext,Tresult>
    *   method instead.
    * </p>
    */
+  @Override
   public final void execute()
   {
     notifyStarted();
@@ -147,6 +156,7 @@ public abstract class CommandAdapter<Ttarget,Tcontext,Tresult>
   { return false;
   }
   
+  @Override
   public void undo()
   { throw new IllegalStateException("Command cannot be undone");
   }

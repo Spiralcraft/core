@@ -80,6 +80,7 @@ public interface Tuple
   /**
    *@return the Type for this Tuple, if it has one. 
    */
+  @Override
   Type<?> getType();
   
   /**
@@ -149,6 +150,7 @@ public interface Tuple
    * Return the Tuple's hash code, which is a function of the Tuple's data
    *   elements.
    */
+  @Override
   int hashCode();
   
   /**
@@ -157,6 +159,7 @@ public interface Tuple
    *   Tuple 'a' is equal to its counterpart in Tuple 'b', and both Tuples
    *   have the same Scheme.
    */
+  @Override
   boolean equals(Object o);
   
   /**

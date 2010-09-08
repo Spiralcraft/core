@@ -100,7 +100,7 @@ public class ReflectionScheme
     
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   protected ReflectionField<?> generateField
     (MappedBeanInfo beanInfo,PropertyDescriptor prop)
     throws DataException

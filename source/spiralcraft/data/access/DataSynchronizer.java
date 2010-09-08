@@ -44,7 +44,7 @@ import spiralcraft.data.spi.ArrayDeltaTuple;
  *   with an externally maintained data source that does not provide an update
  *   log.
  */
-@SuppressWarnings("unchecked") // Chains are heterogeneous
+@SuppressWarnings({ "unchecked", "rawtypes" }) // Chains are heterogeneous
 public class DataSynchronizer
   implements DataConsumerChain
 {
@@ -88,6 +88,7 @@ public class DataSynchronizer
     
   }
   
+  @Override
   public void insertDataConsumer(DataConsumerChain consumerChain)
   { 
     if (nextConsumer!=null)
@@ -96,14 +97,17 @@ public class DataSynchronizer
     nextConsumer=consumerChain;
   }
 
+  @Override
   public void setDataConsumer(DataConsumer consumer)
   { nextConsumer=consumer;
   }
 
+  @Override
   public void setDebug(boolean debug)
   { this.debug=debug;
   }
   
+  @Override
   public void dataAvailable(Tuple tuple)
     throws DataException
   {
@@ -143,12 +147,14 @@ public class DataSynchronizer
     return storeTuple;
   }
 
+  @Override
   public void dataInitialize(FieldSet fieldSet)
     throws DataException
   { 
     nextConsumer.dataInitialize(fieldSet);
   }
   
+  @Override
   public void dataFinalize()
     throws DataException
   { nextConsumer.dataFinalize();

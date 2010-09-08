@@ -39,6 +39,7 @@ public class StandardPrefixResolver
   { this.parent=parent;
   }
   
+  @Override
   public URI resolvePrefix(String prefix)
   {
     URI uri=map.get(prefix);
@@ -55,6 +56,7 @@ public class StandardPrefixResolver
   { map.put(prefix,uri);
   }
 
+  @Override
   public Map<String,URI> computeMappings()
   { 
     Map<String,URI> computedMappings=new HashMap<String,URI>();

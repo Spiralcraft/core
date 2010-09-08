@@ -38,66 +38,81 @@ public class ReadOnlyFascadeTuple
   { this.delegate=delegate;
   }
   
+  @Override
   public Object get(String fieldName)
     throws DataException
   { return delegate.get(fieldName);
   }
   
+  @Override
   public Identifier getId()
   { return delegate.getId();
   }
   
+  @Override
   public Tuple widen(Type<?> type)
     throws DataException
   { return new ReadOnlyFascadeTuple(delegate.widen(type));
   }
   
+  @Override
   public Tuple getBaseExtent()
   { return new ReadOnlyFascadeTuple(delegate.getBaseExtent());
   }
   
+  @Override
   public Type<?> getType()
   { return delegate.getType();
   }
   
+  @Override
   public boolean isTuple()
   { return true;
   }
   
+  @Override
   public Tuple asTuple()
   { return this;
   }
   
+  @Override
   public boolean isAggregate()
   { return false;
   }
   
+  @Override
   public Aggregate<?> asAggregate()
   { throw new UnsupportedOperationException("Not an Aggregate");
   }
  
+  @Override
   public FieldSet getFieldSet()
   { return delegate.getFieldSet();
   }
   
+  @Override
   public Object get(int index)
     throws DataException
   { return delegate.get(index);
   }
   
+  @Override
   public String toText(String indent)
     throws DataException
   { return delegate.toText(indent);
   }
   
+  @Override
   public boolean isMutable()
   { return delegate.isMutable();
   }
   
+  @Override
   public boolean isVolatile()
   { return delegate.isVolatile();
   }
   
+  @Override
   public Tuple snapshot()
     throws DataException
   { return delegate.snapshot();
@@ -113,11 +128,13 @@ public class ReadOnlyFascadeTuple
   { return delegate.hashCode();
   }
   
+  @Override
   public String dumpData()
     throws DataException
   { return delegate.dumpData();
   }
   
+  @Override
   public Object getBehavior()
     throws DataException
   { return delegate.getBehavior();

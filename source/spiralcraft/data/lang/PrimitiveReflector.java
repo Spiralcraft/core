@@ -65,6 +65,7 @@ public class PrimitiveReflector<T>
     this.type=type;
   }
   
+  @Override
   public Type<T> getType()
   { return type;
   }

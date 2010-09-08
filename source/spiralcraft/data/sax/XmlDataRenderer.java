@@ -61,7 +61,7 @@ public class XmlDataRenderer<T>
 
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Focus<?> bind(
     Focus<?> focusChain)

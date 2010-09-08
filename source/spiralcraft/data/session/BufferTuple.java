@@ -92,6 +92,7 @@ public class BufferTuple
     }
   }
 
+  @Override
   public Object get(String fieldName)
     throws DataException
   { 
@@ -102,6 +103,7 @@ public class BufferTuple
     return field.getValue(this);
   }
   
+  @Override
   public void set(String fieldName,Object data)
     throws DataException
   {
@@ -239,6 +241,7 @@ public class BufferTuple
   }
   
   
+  @Override
   public void updateTo(
     EditableTuple dest)
     throws DataException
@@ -400,6 +403,7 @@ public class BufferTuple
   { return true;
   }
 
+  @Override
   public boolean isVolatile()
   { return false;
   }
@@ -510,6 +514,7 @@ public class BufferTuple
     return sb.toString();
   }  
 
+  @Override
   public String dumpData()
     throws DataException
   { return toDirtyText("| ");
@@ -576,6 +581,7 @@ public class BufferTuple
     }
   }
   
+  @Override
   public Field<?>[] getDirtyFields()
   {
     Field<?>[] baseDirty=(baseExtent!=null?baseExtent.getDirtyFields():null);
@@ -810,6 +816,7 @@ public class BufferTuple
     }
   }
   
+  @Override
   public synchronized Object getBehavior()
     throws DataException
   {

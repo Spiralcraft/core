@@ -85,7 +85,7 @@ public class DataSessionFocus
    * @param dataType The data type of the Tuple associated with the DataSession
    * @throws BindException
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   public DataSessionFocus
     (Focus<?> parentFocus
     ,Channel<DataSession> source
@@ -163,7 +163,7 @@ public class DataSessionFocus
   }
 
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   private Setter<?> bindSetter(Field field,Expression expression)
     throws BindException
   {

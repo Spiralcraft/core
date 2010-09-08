@@ -127,7 +127,7 @@ public class Projection<T extends Tuple>
   }
 
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public <X extends Tuple> BoundQuery<?,X> 
     getDefaultBinding(Focus<?> focus,Queryable<?> store)
@@ -288,7 +288,7 @@ class ProjectionBinding<Tt extends Tuple>
     }
   
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public boolean next()
       throws DataException
@@ -357,6 +357,7 @@ class ProjectionBinding<Tt extends Tuple>
       }
     }
     
+    @Override
     public void close()
       throws DataException
     {

@@ -37,34 +37,42 @@ class BeanInfoProxy
   { this.beanInfo=beanInfo;
   }
 
+  @Override
   public BeanInfo[] getAdditionalBeanInfo()
   { return beanInfo.getAdditionalBeanInfo();
   }
 
+  @Override
   public BeanDescriptor getBeanDescriptor()
   { return beanInfo.getBeanDescriptor();
   }
 
+  @Override
   public int getDefaultEventIndex()
   { return beanInfo.getDefaultEventIndex();
   }
   
+  @Override
   public int getDefaultPropertyIndex()
   { return beanInfo.getDefaultPropertyIndex();
   }
 
+  @Override
   public EventSetDescriptor[] getEventSetDescriptors()
   { return beanInfo.getEventSetDescriptors();
   }
 
+  @Override
   public Image getIcon(int iconKind)
   { return beanInfo.getIcon(iconKind);
   }
 
+  @Override
   public MethodDescriptor[] getMethodDescriptors()
   { return beanInfo.getMethodDescriptors();
   }
 
+  @Override
   public PropertyDescriptor[] getPropertyDescriptors()
   { return beanInfo.getPropertyDescriptors();
   }

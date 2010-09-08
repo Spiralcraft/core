@@ -106,6 +106,7 @@ public class Updater<T extends Tuple>
   { this.context=context;
   }
 
+  @Override
   public void setDebug(boolean debug)
   { this.debug=debug;
   }
@@ -232,7 +233,7 @@ public class Updater<T extends Tuple>
 
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void dataInitialize(
     FieldSet fieldSet)
@@ -260,6 +261,7 @@ public class Updater<T extends Tuple>
             =localFocus.getNamespaceResolver();
           
           
+          @Override
           public URI resolvePrefix(String namespace)
           {
             if (namespace.equals("data"))
@@ -276,6 +278,7 @@ public class Updater<T extends Tuple>
             }
           }
           
+          @Override
           public Map<String,URI> computeMappings()
           { 
             Map<String,URI> computedMappings=new HashMap<String,URI>();
@@ -382,7 +385,7 @@ public class Updater<T extends Tuple>
 
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   private Setter<?> bindSetter(Field field,Expression expression)
     throws DataException
   {

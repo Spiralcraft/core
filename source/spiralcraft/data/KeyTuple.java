@@ -59,6 +59,7 @@ public class KeyTuple
     this.hashCode=ArrayUtil.arrayHashCode(data);
   }
   
+  @Override
   public Object get(String fieldName)
     throws DataException
   { 
@@ -98,10 +99,12 @@ public class KeyTuple
     return AbstractTuple.tupleEquals(this,(Tuple) o);
   }
   
+  @Override
   public boolean isMutable()
   { return false;
   }
   
+  @Override
   public boolean isVolatile()
   { return false;
   }

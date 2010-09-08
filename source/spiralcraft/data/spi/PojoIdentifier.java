@@ -29,6 +29,7 @@ public class PojoIdentifier<T>
     hashCode=System.identityHashCode(instance);
   }
   
+  @Override
   public Identifier copy()
   { return new PojoIdentifier<T>(instance.get());
   }

@@ -104,7 +104,7 @@ public class RootFrame<T>
   
 
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void bind()
     throws BindException

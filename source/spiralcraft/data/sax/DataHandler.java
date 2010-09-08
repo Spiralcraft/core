@@ -47,7 +47,7 @@ import java.io.IOException;
  * Reads SAX events into a Data graph from a resource in the 
  *   spiralcraft.data XML dialect.
  */
-@SuppressWarnings("unchecked") // Mostly runtime type resolution
+@SuppressWarnings({"unchecked","rawtypes"}) // Mostly runtime type resolution
 public class DataHandler
   extends DataHandlerBase
 {

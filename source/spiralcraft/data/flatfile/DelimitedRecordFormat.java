@@ -69,6 +69,7 @@ public class DelimitedRecordFormat
   { this.fieldSet=fieldSet;
   }
   
+  @Override
   public Type<?> getType()
   { return type;
   }
@@ -156,7 +157,7 @@ public class DelimitedRecordFormat
     }
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   private void automapFields()
   {
     FieldSet fieldSet=type!=null?type.getFieldSet():this.fieldSet;

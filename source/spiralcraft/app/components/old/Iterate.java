@@ -39,7 +39,7 @@ import spiralcraft.util.LookaroundIterator;
 /**
  * Iterate through a collection of some type
  */
-@SuppressWarnings("unchecked") // Runtime type resolution
+@SuppressWarnings({"unchecked","rawtypes"}) // Runtime type resolution
 public class Iterate<T>
   extends AbstractComponent
 {

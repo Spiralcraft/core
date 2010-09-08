@@ -49,6 +49,7 @@ public abstract class AbstractAggregate<T>
     this.type=type;
   }
 
+  @Override
   public Identifier getId()
   { return id;
   }
@@ -57,18 +58,22 @@ public abstract class AbstractAggregate<T>
   { this.id=id;
   }
   
+  @Override
   public boolean isAggregate()
   { return true;
   }
   
+  @Override
   public Aggregate<?> asAggregate()
   { return this;
   }
   
+  @Override
   public boolean isTuple()
   { return false;
   }
 
+  @Override
   public Tuple asTuple()
   { throw new UnsupportedOperationException("An aggregate is not a Tuple");
   }
@@ -76,12 +81,15 @@ public abstract class AbstractAggregate<T>
   /**
    * Return the Aggregate Type (ie. MyType.list)
    */
+  @Override
   public Type<?> getType()
   { return type;
   }
   
+  @Override
   public abstract Iterator<T> iterator();
   
+  @Override
   public abstract int size();
     
   @Override
@@ -106,6 +114,7 @@ public abstract class AbstractAggregate<T>
 
   }
   
+  @Override
   public String toText(String indent)
     throws DataException
   {
@@ -136,16 +145,20 @@ public abstract class AbstractAggregate<T>
     return builder.toString();
   }
 
+  @Override
   public abstract T get(int index);
 
+  @Override
   public boolean isMutable()
   { return false;
   }
 
+  @Override
   public abstract Aggregate<T> snapshot()
     throws DataException;
   
   
+  @Override
   public Index<T> getIndex(Projection<T> projection,boolean create)
     throws DataException
   { return null;

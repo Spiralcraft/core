@@ -37,6 +37,7 @@ public class EditableArrayListAggregate<T>
   }
       
   
+  @Override
   public void add(T val)
   { list.add(val);
   }
@@ -46,6 +47,7 @@ public class EditableArrayListAggregate<T>
   { return true;
   }
   
+  @Override
   public void addAll(Aggregate<T> values)
   {
     for (T value: values)
@@ -53,6 +55,7 @@ public class EditableArrayListAggregate<T>
     }
   }
   
+  @Override
   public void addAll(Iterator<T> values)
   {
     while (values.hasNext())
@@ -60,10 +63,12 @@ public class EditableArrayListAggregate<T>
     }
   }
   
+  @Override
   public void remove(T value)
   { list.remove(value);
   }
   
+  @Override
   public void clear()
   { list.clear();
   }

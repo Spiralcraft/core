@@ -142,7 +142,7 @@ public class DataSession
    * @param composite
    * @return
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public synchronized Buffer buffer(DataComposite composite)
     throws DataException
   {
@@ -189,7 +189,7 @@ public class DataSession
     
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public synchronized <Tbuffer extends Buffer> Tbuffer newBuffer(Type<?> type)
     throws DataException
   {

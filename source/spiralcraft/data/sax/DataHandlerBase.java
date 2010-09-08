@@ -492,6 +492,7 @@ public abstract class DataHandlerBase
       return ret!=null?URI.create(ret):null;
     }
     
+    @Override
     public Map<String,URI> computeMappings()
     { 
       Map<String,URI> computedMappings=new HashMap<String,URI>();

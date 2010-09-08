@@ -73,6 +73,7 @@ public class ToStringTranslator<T>
     }
   } 
   
+  @Override
   public boolean isFunction()
   { return false;
   }

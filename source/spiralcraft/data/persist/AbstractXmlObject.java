@@ -251,6 +251,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
 
   }
   
+  @Override
   public void setResourceUri(URI instanceURI)
   { this.instanceURI=instanceURI;
   }
@@ -270,9 +271,10 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   /**
    *@return The Java object referred to and activated by this XmlObject
    */
+  @Override
   public abstract Treferent get();
 
-  @SuppressWarnings("unchecked") // Narrowing from Assembly to Assembly<T>
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Narrowing from Assembly to Assembly<T>
   public void load()
     throws PersistenceException
   {
@@ -358,6 +360,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     
   }
 
+  @Override
   public void save()
     throws PersistenceException
   { 
@@ -381,6 +384,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   }
   
   
+  @Override
   public void start()
     throws LifecycleException
   {
@@ -389,6 +393,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     }
   }
   
+  @Override
   public void stop()
     throws LifecycleException
   {
@@ -475,6 +480,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   }
   
 
+  @Override
   public void push()
   {
     if (threaded)
@@ -482,6 +488,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     }
   }
   
+  @Override
   public void pop()
   {
     if (threaded)

@@ -84,7 +84,7 @@ public class ValueFrame<T>
   { this.assignment=assignment;
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void bind()
     throws BindException

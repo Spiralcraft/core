@@ -130,6 +130,7 @@ public class ArrayTuple
     }
   }
 
+  @Override
   public Object get(int index)
     throws DataException
   { return data[index];
@@ -140,6 +141,7 @@ public class ArrayTuple
   { return ArrayUtil.arrayHashCode(data);
   }
 
+  @Override
   public boolean isVolatile()
   { return false;
   }

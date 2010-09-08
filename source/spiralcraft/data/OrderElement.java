@@ -151,7 +151,7 @@ public class OrderElement<T>
     private final Channel<T> chA,chB;
     private Comparator<T> comparator=OrderElement.this.specifiedComparator;
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public OrderElementChannel(Channel<T> chA,Channel<T> chB)
       throws BindException
     { 
@@ -232,6 +232,7 @@ public class OrderElement<T>
 class DefaultComparator<X extends Comparable<X>>
   implements Comparator<X>
 {
+    @Override
     public int compare(
       X o1,
       X o2)

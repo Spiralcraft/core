@@ -336,7 +336,7 @@ public class ExpansionContainer<C,T>
   
 
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Focus<?> bind(Focus<?> parentFocus)
     throws BindException

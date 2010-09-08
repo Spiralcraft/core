@@ -49,7 +49,7 @@ import java.lang.reflect.Proxy;
  * Effectively allows a Tuple to automatically implement a "data container" 
  *  Java interface.
  */
-@SuppressWarnings("unchecked") // Proxy is not generic
+@SuppressWarnings({"unchecked","rawtypes"}) // Proxy is not generic
 public class TupleDelegate<T>
   extends AbstractChannel<T>
   implements InvocationHandler
@@ -123,6 +123,7 @@ public class TupleDelegate<T>
    *   XXX We need to implement 'methods' by delegating to some functionality
    *       associated with the Tuple.
    */
+  @Override
   public Object invoke
     (Object proxy,
     Method method,
@@ -289,7 +290,7 @@ class TupleDelegateReflector<T>
   // We haven't genericized the data package builder yet
   // XXX TODO- this gets pretty hacked up using generics- figure out something cleaner
   @Override
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public <X> Channel<X> 
     resolve(Channel<T> source
         ,Focus<?> focus
@@ -308,7 +309,7 @@ class TupleDelegateReflector<T>
   // We haven't genericized the data package builder yet
   // XXX TODO- this gets pretty hacked up using generics- figure out something cleaner
   @Override
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public <D extends Decorator<T>> D 
     decorate(Channel<T> source,Class<D> decoratorInterface)
   { 

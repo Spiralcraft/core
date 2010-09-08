@@ -318,7 +318,7 @@ public class TupleEditor
    * <p>Bind the Editor into the focus chain
    * </p>
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Focus<?> bind
     (Focus<?> parentFocus)

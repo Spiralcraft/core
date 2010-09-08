@@ -59,6 +59,7 @@ public class SchemeImpl
   protected final HashMap<Expression<?>[],ProjectionImpl<Tuple>> projectionMap
     =new HashMap<Expression<?>[],ProjectionImpl<Tuple>>();
     
+  @Override
   public Type<?> getType()
   { return type;
   }
@@ -69,6 +70,7 @@ public class SchemeImpl
     archetypeScheme=scheme;
   }
   
+  @Override
   public boolean hasArchetype(Scheme scheme)
   {
     if (this==scheme)
@@ -88,11 +90,13 @@ public class SchemeImpl
     this.type=type;
   }
   
+  @Override
   @SuppressWarnings("unchecked") // Map cast
   public <X> Field<X> getFieldByIndex(int index)
   { return (Field<X>) fields.get(index);
   }
   
+  @Override
   @SuppressWarnings("unchecked") // Map cast
   public <X> Field<X> getFieldByName(String name)
   { return (Field<X>) fieldMap.get(name);
@@ -106,6 +110,7 @@ public class SchemeImpl
    *@return An Iterable that iterates through all fields of this Type and its
    *  archetype.
    */
+  @Override
   public Iterable<? extends Field<?>> fieldIterable()
   { return fields;
   }
@@ -113,7 +118,7 @@ public class SchemeImpl
   /**
    * Get the list of local fields
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public List<FieldImpl> getFields()
   { return (List<FieldImpl>) localFields.clone();
   }
@@ -158,6 +163,7 @@ public class SchemeImpl
     localFieldMap.clear();
   }
 
+  @Override
   public int getFieldCount()
   { return fields.size();
   }
@@ -334,7 +340,7 @@ public class SchemeImpl
     
   }
   
-  @SuppressWarnings("unchecked") // We only know the actual type at runtime
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // We only know the actual type at runtime
   private void addNewKeyField(KeyImpl key)
     throws DataException
   { 
@@ -359,14 +365,17 @@ public class SchemeImpl
     }
   }
 
+  @Override
   public Key<Tuple> getKeyByIndex(int index)
   { return keys.get(index);
   }
 
+  @Override
   public int getKeyCount()
   { return keys.size();
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public Key<Tuple> getPrimaryKey()
   { 
@@ -386,6 +395,7 @@ public class SchemeImpl
     }
   }
   
+  @Override
   public Iterable<? extends Key<Tuple>> keyIterable()
   { return keys;
   }

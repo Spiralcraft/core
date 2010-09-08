@@ -139,24 +139,29 @@ public class ProjectionImpl<T>
   { this.debug=debug;
   }
   
+  @Override
   public Type<?> getType()
   { return type;
   }
   
+  @Override
   public Iterable<? extends ProjectionField<?>> fieldIterable()
   { return fields;
   }
 
+  @Override
   @SuppressWarnings("unchecked") // Map value cast
   public <X> ProjectionField<X> getFieldByIndex(int index)
   { return (ProjectionField<X>) fields.get(index);
   }
 
+  @Override
   @SuppressWarnings("unchecked") // Map value cast
   public <X> ProjectionField<X> getFieldByName(String name)
   { return (ProjectionField<X>) fieldMap.get(name);
   }
   
+  @Override
   public int getFieldCount()
   { return fields.size();
   }
@@ -214,6 +219,7 @@ public class ProjectionImpl<T>
     resolved=true;
   }
   
+  @Override
   public Expression<?>[] getTargetExpressions()
   {
     Expression<?>[] ret=new Expression[getFieldCount()];

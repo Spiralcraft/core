@@ -61,10 +61,12 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
   
   protected abstract Type<?> getResultType();
   
+  @Override
   public boolean containsType(Type<?> type)
   { return type.isAssignableFrom(getResultType());
   }
 
+  @Override
   public BoundQuery<?,T> getAll(Type<?> type) throws DataException
   {
     BoundScan scan=new BoundScan(new Scan(getResultType()));
@@ -72,10 +74,12 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
     return scan;
   }
 
+  @Override
   public Type<?>[] getTypes()
   { return new Type[] {getResultType()};
   }
 
+  @Override
   public BoundQuery<?,T> query(Query q, Focus<?> context)
     throws DataException
   { 
@@ -202,6 +206,7 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
         
       }
       
+      @Override
       public void close()
         throws DataException
       { cursor.close();

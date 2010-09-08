@@ -122,7 +122,7 @@ class BoundReferenceQuery<T extends Tuple>
   private IterationDecorator<?,T> iterationDecorator;
   private Type<T> type;
   
-  @SuppressWarnings("unchecked") // Expression is untyped
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Expression is untyped
   public BoundReferenceQuery(ReferenceQuery query,Focus<?> focus)
     throws BindException
   { 

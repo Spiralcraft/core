@@ -27,7 +27,7 @@ import java.util.List;
  * @param <Ttarget>
  * @param <Tresult>
  */
-@SuppressWarnings("unchecked") // Non type specific Command ops
+@SuppressWarnings({"unchecked","rawtypes"}) // Non type specific Command ops
 public class CommandBlock
   extends CommandAdapter
 {

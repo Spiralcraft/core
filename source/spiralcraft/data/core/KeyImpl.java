@@ -64,6 +64,7 @@ public class KeyImpl<T>
   { super(fieldSet,StringUtil.tokenize(fieldList,","));
   }
   
+  @Override
   public String getName()
   { return name;
   }
@@ -73,6 +74,7 @@ public class KeyImpl<T>
   }
   
   
+  @Override
   public String getTitle()
   { return title;
   }
@@ -86,6 +88,7 @@ public class KeyImpl<T>
   /**
    * @return The Scheme to which this Key belongs.
    */
+  @Override
   public Scheme getScheme()
   { return scheme;
   }
@@ -120,6 +123,7 @@ public class KeyImpl<T>
   /**
    * @return Whether this Key is the primary key for its Scheme
    */
+  @Override
   public boolean isPrimary()
   { return primary;
   }
@@ -131,6 +135,7 @@ public class KeyImpl<T>
   /**
    * @return Whether this Key uniquely identifies a single Tuple
    */
+  @Override
   public boolean isUnique()
   { return primary || unique;
   }
@@ -142,6 +147,7 @@ public class KeyImpl<T>
   /**
    * @return A Type which maps data to this Key's Fields.
    */
+  @Override
   public Type<?> getForeignType()
   { return foreignType;
   }
@@ -157,6 +163,7 @@ public class KeyImpl<T>
    * @return A Key from the foreign Type that originates the data values
    *   for this Key's Fields. 
    */
+  @Override
   public Key<?> getImportedKey()
   { return importedKey;
   }
@@ -165,6 +172,7 @@ public class KeyImpl<T>
   { this.importedKey=(KeyImpl<?>) key;
   }
 
+  @Override
   public Query getQuery()
   { return query;
   }

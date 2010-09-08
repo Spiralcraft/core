@@ -36,6 +36,7 @@ public class EditableKeyedListAggregate<T>
   { super(original);
   }
 
+  @Override
   public void add(T val)
   { list.add(val);
   }
@@ -45,6 +46,7 @@ public class EditableKeyedListAggregate<T>
   { return true;
   }
   
+  @Override
   public void addAll(Aggregate<T> values)
   {
     for (T value: values)
@@ -52,6 +54,7 @@ public class EditableKeyedListAggregate<T>
     }
   }
   
+  @Override
   public void addAll(Iterator<T> values)
   {
     while (values.hasNext())
@@ -59,10 +62,12 @@ public class EditableKeyedListAggregate<T>
     }
   }
   
+  @Override
   public void remove(T value)
   { list.remove(value);
   }
   
+  @Override
   public void clear()
   { list.clear();
   }

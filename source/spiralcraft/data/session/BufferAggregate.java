@@ -59,6 +59,7 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
     this.type=type;
   }
   
+  @Override
   public void clear()
   { buffers.clear();
   }
@@ -100,6 +101,7 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
     touched=false;
   }
   
+  @Override
   public Identifier getId()
   { return id;
   }
@@ -286,6 +288,7 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
     {
       private int i=0;
       
+      @Override
       public T next()
       { 
         if (i<size())
@@ -304,10 +307,12 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
         
       }
       
+      @Override
       public boolean hasNext()
       { return i<size();
       }
       
+      @Override
       public void remove()
       {
       }

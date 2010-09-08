@@ -92,6 +92,7 @@ public class IterationState<T>
   { return children.size();
   }
   
+  @Override
   public Iterator<ValueState<T>> iterator()
   { return children.iterator();
   }

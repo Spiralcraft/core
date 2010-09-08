@@ -29,7 +29,8 @@ public class CoreTypeFactory
   implements TypeFactory
 {
   
-  @SuppressWarnings("unchecked")
+  @Override
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public Type createType(TypeResolver resolver,URI uri)
     throws DataException
   {

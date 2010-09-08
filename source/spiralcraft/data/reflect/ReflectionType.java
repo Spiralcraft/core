@@ -582,7 +582,7 @@ public class ReflectionType<T>
    * Override this method in subclasses to provide alternative or context
    *   dependend constructors/resolvers
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   protected T obtainInstance(Tuple tuple,InstanceResolver context)
     throws DataException
   {
@@ -739,7 +739,7 @@ public class ReflectionType<T>
   }
 
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   @Override
   public DataComposite toData(Object val)
     throws DataException

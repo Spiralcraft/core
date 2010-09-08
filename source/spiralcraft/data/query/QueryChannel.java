@@ -19,7 +19,7 @@ import spiralcraft.lang.spi.AbstractChannel;
  * @author mike
  *
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class QueryChannel
   extends AbstractChannel<Aggregate>
 {

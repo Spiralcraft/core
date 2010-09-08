@@ -64,6 +64,7 @@ public class Writer
   {
   }
   
+  @Override
   public void setDebug(boolean debug)
   {
   }
@@ -84,6 +85,7 @@ public class Writer
   { this.recordFormat=recordFormat;
   }
   
+  @Override
   public void dataFinalize()
     throws DataException
   { 
@@ -95,6 +97,7 @@ public class Writer
     }
   }
 
+  @Override
   public void dataInitialize(FieldSet fields)
     throws DataException
   { 
@@ -166,6 +169,7 @@ public class Writer
   }
   
 //  @SuppressWarnings("unchecked")
+  @Override
   public void dataAvailable(Tuple data)
     throws DataException
   {

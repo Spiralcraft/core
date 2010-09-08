@@ -93,6 +93,7 @@ public abstract class MethodImpl
     throws DataException
   { }
   
+  @Override
   public Signature getSignature()
     throws BindException
   { 

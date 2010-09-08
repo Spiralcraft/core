@@ -31,7 +31,7 @@ public class CommandFunctorChannel<Ttarget,Tcontext,Tresult>
   private final CommandFactory<Ttarget,Tcontext,Tresult> factory;
   
   // XXX Move to new CommandReflector class as generic subtype
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   protected static <X> Reflector<X> 
     getResultReflector(CommandFactory<?,?,?> factory)
       throws BindException
@@ -41,7 +41,7 @@ public class CommandFunctorChannel<Ttarget,Tcontext,Tresult>
   }
 
   // XXX Move to new CommandReflector class as generic subtype
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   protected static <X> Reflector<X> 
     getContextReflector(CommandFactory<?,?,?> factory)
       throws BindException

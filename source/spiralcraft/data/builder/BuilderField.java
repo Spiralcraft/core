@@ -40,7 +40,7 @@ import spiralcraft.builder.PropertyBinding;
 import spiralcraft.builder.Assembly;
 import spiralcraft.builder.BuildException;
 
-@SuppressWarnings("unchecked") // Not genericized yet
+@SuppressWarnings({ "unchecked", "rawtypes" }) // Not genericized yet
 public class BuilderField
   extends FieldImpl
 {

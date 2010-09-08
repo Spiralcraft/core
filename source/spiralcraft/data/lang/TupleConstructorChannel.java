@@ -37,7 +37,7 @@ public class TupleConstructorChannel<T extends Tuple>
   private final boolean buffer;
   private final Channel<DataSession> dataSessionChannel;
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public TupleConstructorChannel(TupleReflector<T> reflector,Focus<?> context)
     throws BindException
   { 

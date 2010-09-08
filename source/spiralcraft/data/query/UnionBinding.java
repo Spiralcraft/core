@@ -197,11 +197,13 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
     { return getType();
     }
 
+    @Override
     public Channel<Tt> bind()
       throws BindException
     { return new CursorBinding<Tt,UnionSerialCursor>(this);
     }
     
+    @Override
     public void close()
       throws DataException
     { 

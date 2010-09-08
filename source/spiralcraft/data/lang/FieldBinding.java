@@ -24,7 +24,7 @@ import spiralcraft.lang.spi.TranslatorChannel;
 /**
  * A binding to a value of a field
  */
-@SuppressWarnings("unchecked") // We haven't genericized the data package yet
+@SuppressWarnings({ "unchecked", "rawtypes" }) // We haven't genericized the data package yet
 public class FieldBinding
   extends TranslatorChannel
 {

@@ -220,7 +220,7 @@ class SetFilterBinding<Ti,Tt extends Tuple>
     
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void resolve() throws DataException
   { 

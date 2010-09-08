@@ -246,7 +246,8 @@ public class TypeResolver
     }
   }
 
-  @SuppressWarnings("unchecked") // Heterogenous ArrayType construction
+  @SuppressWarnings({"unchecked","rawtypes"}) // Heterogenous ArrayType construction
+  
   private final Type loadArrayType(Type baseType,URI typeURI)
     throws DataException
   {
@@ -260,7 +261,7 @@ public class TypeResolver
     return type;
   }
   
-  @SuppressWarnings("unchecked") // Heterogeneuous CollectionType construction
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Heterogeneuous CollectionType construction
   private final Type loadListType(Type baseType,URI typeURI)
     throws DataException
   {
@@ -325,7 +326,7 @@ public class TypeResolver
   }
 
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "rawtypes" })
   private final Type findLoadedType(URI typeUri)
     throws DataException
   {
@@ -447,7 +448,7 @@ public class TypeResolver
    * Find a type in the local classloader that is a derivative of another
    *   type (ie. an ArrayType based on the type, or the type's Type)
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   private final Type findTypeExtended(URI typeUri)
     throws DataException
   {
@@ -510,7 +511,7 @@ public class TypeResolver
    * @return the Type which corresponds to the specified name
    *   within the specified namespace.
    */
-  @SuppressWarnings("unchecked") // Types not genericized in dynamic loader
+  @SuppressWarnings("rawtypes")
   synchronized final Type load(URI typeUri)
     throws DataException
   { 

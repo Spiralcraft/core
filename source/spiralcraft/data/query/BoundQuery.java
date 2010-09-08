@@ -155,15 +155,18 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
     { return query.getFieldSet();
     }
         
+    @Override
     public CursorBinding<Tt,? extends SerialCursor<Tt>> bind()
       throws BindException
     { return new CursorBinding<Tt,SerialCursor<Tt>>(this);
     }
 
+    @Override
     public Identifier getRelationId()
     { return relationId;
     }
     
+    @Override
     public Type<?> getResultType()
     { return BoundQuery.this.getType();
     }

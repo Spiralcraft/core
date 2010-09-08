@@ -55,6 +55,7 @@ public abstract class AbstractCommandFactory<Ttarget,Tcontext,Tresult>
     return true;
   }
 
+  @Override
   public Reflector<? extends Command<Ttarget,Tcontext,Tresult>> 
     getCommandReflector()
       throws BindException
@@ -99,6 +100,7 @@ public abstract class AbstractCommandFactory<Ttarget,Tcontext,Tresult>
     return reflector;
   }
 
+  @Override
   public Channel<Tresult> bindChannel(Focus<?> focus,Channel<?>[] arguments)
     throws BindException
   {

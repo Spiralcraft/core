@@ -23,7 +23,6 @@ import spiralcraft.data.FieldSet;
 /**
  * A TupleBinding where the contained Tuple never changes
  */
-@SuppressWarnings("unchecked") // Haven't genericized the data package yet
 public class StaticTupleBinding<T extends Tuple>
   extends TupleBinding<T>
 {
@@ -36,6 +35,7 @@ public class StaticTupleBinding<T extends Tuple>
     tuple=data;
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public FieldSet getFieldSet()
   { return ((TupleReflector) getReflector()).getFieldSet();

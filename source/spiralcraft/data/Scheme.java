@@ -36,23 +36,27 @@ public interface Scheme
    *@return the Field that corresponds to the specified index. Fields are
    *   assigned indexes in order of their definition in the Scheme.
    */
+  @Override
   <X> Field<X> getFieldByIndex(int index);
 
   /**
    *@return the Field that corresponds to the specified name. 
    * Field names are unique within a Scheme. 
    */
+  @Override
   <X> Field<X> getFieldByName(String name);
   
   /**
    *@return the number of Fields in this scheme
    */
+  @Override
   int getFieldCount();
   
   /**
    *@return an Iterable which provides access to 
    *   fields in order of their indices
    */
+  @Override
   Iterable<? extends Field<?>> fieldIterable();
   
   /**

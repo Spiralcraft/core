@@ -171,6 +171,7 @@ public class RestClient
    * @param parentFocus
    * @throws BindException
    */
+  @Override
   @SuppressWarnings("unchecked") // Checking wildcard Focus for right object
   public Focus<?> bind(Focus<?> parentFocus)
     throws BindException
@@ -392,10 +393,12 @@ public class RestClient
     
   }
 
+  @Override
   public void push()
   { localQueryChannel.push();
   }
   
+  @Override
   public void pop()
   { localQueryChannel.pop();
   }

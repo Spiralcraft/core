@@ -27,6 +27,7 @@ public interface Aggregate<T>
   /**
    * Obtain the value at the specified index of this aggregate
    */
+  @Override
   T get(int index);
   
   /**
@@ -46,6 +47,7 @@ public interface Aggregate<T>
   /**
    * The number of elements in this Aggregate
    */
+  @Override
   public int size();
  
   /**

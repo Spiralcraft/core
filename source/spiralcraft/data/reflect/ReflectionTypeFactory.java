@@ -44,7 +44,8 @@ public class ReflectionTypeFactory
   private static final Level debugLevel
     =ClassLog.getInitialDebugLevel(ReflectionTypeFactory.class,null);
   
-  @SuppressWarnings("unchecked")
+  @Override
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public Type<?> createType(TypeResolver resolver,URI uri)
     throws DataException
   {

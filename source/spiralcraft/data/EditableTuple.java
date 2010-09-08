@@ -33,6 +33,7 @@ public interface EditableTuple
    *@return the extent Tuple associated with an ancestor base Type of
    *  this Tuple's extent Type.
    */
+  @Override
   EditableTuple widen(Type<?> type)
     throws DataException;
 

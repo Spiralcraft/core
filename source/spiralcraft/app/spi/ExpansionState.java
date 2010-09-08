@@ -50,6 +50,7 @@ public class ExpansionState<T>
   }
   
   
+  @Override
   public void setPathIndex(int index)
   { path[path.length-1]=index;;
   }
@@ -58,6 +59,7 @@ public class ExpansionState<T>
    * 
    * @return The path from the root of the ComponentState tree 
    */
+  @Override
   public int[] getPath()
   { return path;
   }
@@ -79,14 +81,17 @@ public class ExpansionState<T>
    * 
    * @return The index of this State within its parent State
    */
+  @Override
   public int getPathIndex()
   { return path[path.length-1];
   }
   
+  @Override
   public State getParent()
   { return parent;
   }
   
+  @Override
   public State getChild(int index)
   { return children.get(index);
   }

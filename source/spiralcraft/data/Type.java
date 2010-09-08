@@ -349,7 +349,7 @@ public abstract class Type<T>
    * 
    * @return
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public Key<T>[] getKeys()
   {
     Key[] baseKeys=null;

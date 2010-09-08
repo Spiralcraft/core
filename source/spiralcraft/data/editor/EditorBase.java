@@ -247,7 +247,7 @@ public abstract class EditorBase<Tbuffer extends Buffer>
     };
   }
   
-  @SuppressWarnings("unchecked") // Command block doesn't care about types
+  @SuppressWarnings({ "rawtypes" }) // Command block doesn't care about types
   public Command<Tbuffer,Void,Void> saveCommand
     (final List<Command> postSaveCommandList)
   {

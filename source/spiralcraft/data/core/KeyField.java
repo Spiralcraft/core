@@ -58,7 +58,7 @@ public class KeyField<T extends DataComposite>
   { return key;
   }
   
-  @SuppressWarnings("unchecked") // Key.getForeignType() is not generic
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Key.getForeignType() is not generic
   @Override
   public void resolve()
     throws DataException
@@ -87,7 +87,7 @@ public class KeyField<T extends DataComposite>
   }
   
   @Override
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public Channel<T> bindChannel
     (Channel<Tuple> source
     ,Focus<?> argFocus
@@ -179,7 +179,7 @@ public class KeyField<T extends DataComposite>
   }
   
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked","rawtypes"})
   public class KeyFieldChannel
     extends AbstractChannel<T>
   {

@@ -123,6 +123,7 @@ public class XmlBean<T>
   { return instance;
   }
   
+  @Override
   public void set(T instance)
   { this.instance=instance;
   }

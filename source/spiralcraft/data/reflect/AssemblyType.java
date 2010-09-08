@@ -56,7 +56,7 @@ public class AssemblyType<T>
   private boolean linked;
   private boolean delegate;
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "rawtypes" })
   public static <X> Type<X> canonicalType(AssemblyClass assemblyClass)
     throws DataException
   { 
@@ -93,7 +93,7 @@ public class AssemblyType<T>
   }
   
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public T fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
@@ -110,7 +110,7 @@ public class AssemblyType<T>
   }
   
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public DataComposite toData(T val)
     throws DataException
@@ -273,7 +273,7 @@ public class AssemblyType<T>
     }
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Channel<T> bindChannel(
     Focus<?> focus,

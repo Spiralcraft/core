@@ -92,6 +92,7 @@ public class ToDataTranslator<T>
     }
   } 
   
+  @Override
   public boolean isFunction()
   { return false;
   }

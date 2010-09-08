@@ -26,10 +26,12 @@ public class CursorIterator<T extends Tuple>
     
   }
   
+  @Override
   public boolean hasNext()
   { return hasNext;
   }
   
+  @Override
   public T next()
   {
     if (!hasNext)
@@ -47,6 +49,7 @@ public class CursorIterator<T extends Tuple>
     }
   }
   
+  @Override
   public void remove()
   { 
     throw new UnsupportedOperationException

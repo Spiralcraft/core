@@ -66,6 +66,7 @@ public interface DeltaTuple
   void updateTo(EditableTuple tuple)
     throws DataException;
   
+  @Override
   DeltaTuple getBaseExtent();
   
 }

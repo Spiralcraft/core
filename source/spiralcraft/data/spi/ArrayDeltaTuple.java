@@ -131,6 +131,7 @@ public class ArrayDeltaTuple
   }
   
   
+  @Override
   public void updateTo(
     EditableTuple dest)
     throws DataException
@@ -198,6 +199,7 @@ public class ArrayDeltaTuple
     dirtyFlags.set(field.getIndex(),true);
   }
 
+  @Override
   public Field<?>[] getExtentDirtyFields()
   {
     ArrayList<Field<?>> fields=new ArrayList<Field<?>>();
@@ -212,6 +214,7 @@ public class ArrayDeltaTuple
     return ret;
   }
 
+  @Override
   public Field<?>[] getDirtyFields()
   {
     Field<?>[] baseDirty
@@ -229,18 +232,22 @@ public class ArrayDeltaTuple
     }
   }  
   
+  @Override
   public Tuple getOriginal()
   { return original;
   }
 
+  @Override
   public boolean isDelete()
   { return delete;
   }
 
+  @Override
   public boolean isDirty(int index)
   { return dirtyFlags.get(index);
   }
 
+  @Override
   public boolean isDirty()
   { 
     if (baseExtent!=null)

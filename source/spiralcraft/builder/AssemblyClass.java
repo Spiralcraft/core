@@ -1211,7 +1211,7 @@ public class AssemblyClass
   /**
    * Create an unbound assembly (if not a singleton), for later binding
    */
-  @SuppressWarnings("unchecked") // Reflected type at Runtime
+  @SuppressWarnings({"rawtypes"}) // Reflected type at Runtime
   Assembly<?> newInstance(Focus parentFocus,boolean factoryMode)
     throws BuildException
   {

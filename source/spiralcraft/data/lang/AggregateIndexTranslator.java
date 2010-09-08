@@ -37,6 +37,7 @@ public class AggregateIndexTranslator<T>
            (aggregateReflector.getType().getContentType());
   }
   
+  @Override
   public Reflector<T> getReflector()
   { return contentReflector;
   }
@@ -69,10 +70,12 @@ public class AggregateIndexTranslator<T>
     }
   }
 
+  @Override
   public Aggregate<T> translateForSet(T value,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException("Can't reverse array index");
   }
 
+  @Override
   public boolean isFunction()
   { return false;
   }

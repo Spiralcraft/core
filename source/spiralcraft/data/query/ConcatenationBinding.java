@@ -61,7 +61,7 @@ public class ConcatenationBinding<Tq extends Concatenation,Tt extends Tuple>
     setQuery(query);
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public ConcatenationBinding(List<BoundQuery<?,Tt>> boundQueries,Type boundType)
     throws DataException
   {
@@ -176,11 +176,13 @@ public class ConcatenationBinding<Tq extends Concatenation,Tt extends Tuple>
     { return getType();
     }
 
+    @Override
     public Channel<Tt> bind()
       throws BindException
     { return new CursorBinding<Tt,ConcatenationSerialCursor>(this);
     }
     
+    @Override
     public void close()
       throws DataException
     { 

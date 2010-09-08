@@ -32,7 +32,7 @@ import java.net.URI;
 /**
  * A Type implementation that implements the canonical MetaType of a canonical Type
  */
-@SuppressWarnings("unchecked") // Runtime class resolution
+@SuppressWarnings({"unchecked","rawtypes"}) // Runtime class resolution
 public class MetaType
   extends ReflectionType<Type>
 {

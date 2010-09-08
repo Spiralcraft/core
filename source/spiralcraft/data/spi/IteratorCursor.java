@@ -44,6 +44,7 @@ public class IteratorCursor<T extends Tuple>
   protected boolean eof;
   
   
+  @Override
   public Type<?> getResultType()
   { return type;
   }

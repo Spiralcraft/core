@@ -31,7 +31,7 @@ import java.util.Collection;
 /**
  * Base type for Collections
  */
-@SuppressWarnings("unchecked") // Runtime resolution
+@SuppressWarnings({ "unchecked", "rawtypes" }) // Runtime resolution
 public class AbstractCollectionType<T extends Collection,Tcontent>
   extends AbstractAggregateType<T,Tcontent>
 {  

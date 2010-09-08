@@ -66,6 +66,7 @@ public interface Projection<T>
    *@return an Iterable which provides access to 
    *   fields in order of their indexes
    */
+  @Override
   Iterable<? extends ProjectionField<?>> fieldIterable();  
   
 }

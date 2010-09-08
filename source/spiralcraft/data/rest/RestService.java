@@ -86,6 +86,7 @@ public class RestService
   private Delegate<Tuple> delegate
     =new Delegate<Tuple>()
   { 
+    @Override
     public Tuple run()
       throws DelegateException
     {
@@ -373,6 +374,7 @@ public class RestService
 
 
   
+  @Override
   public void push()
   { 
     localQueryChannel.push();
@@ -381,6 +383,7 @@ public class RestService
     }
   }
   
+  @Override
   public void pop()
   {
     if (localModelChannel!=null)

@@ -25,7 +25,6 @@ import spiralcraft.data.FieldSet;
  * A spiralcraft.lang binding for Tuples, which uses the Tuple's Scheme
  *   as the type model for binding expressions.
  */
-@SuppressWarnings("unchecked") // Haven't genericized the data package yet
 public abstract class TupleBinding<T extends Tuple>
   extends AbstractChannel<T>
 {
@@ -36,6 +35,7 @@ public abstract class TupleBinding<T extends Tuple>
   }
   
 
+  @SuppressWarnings("rawtypes")
   public FieldSet getFieldSet()
   { return ((TupleReflector) getReflector()).getFieldSet();
   }

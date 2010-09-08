@@ -99,6 +99,7 @@ public abstract class AbstractStore
   { this.name=name;
   }
   
+  @Override
   public String getName()
   { return name;
   }
@@ -106,6 +107,7 @@ public abstract class AbstractStore
   /**
    * The id of the last transaction processed by this store. 
    */
+  @Override
   public long getLastTransactionId()
   { return lastTransactionId;
   }
@@ -214,6 +216,7 @@ public abstract class AbstractStore
   }  
   
   
+  @Override
   public Focus<?> bind(Focus<?> focusChain)
     throws BindException
   { 

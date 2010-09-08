@@ -281,6 +281,7 @@ class JoinBinding<Tq extends Join,Tt extends Tuple>
       }
     }
     
+    @Override
     public void close()
       throws DataException
     {

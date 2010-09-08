@@ -39,7 +39,7 @@ import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.reflect.BeanPropertyTranslator;
 import spiralcraft.log.Level;
 
-@SuppressWarnings("unchecked") // Not fully genericized yet
+@SuppressWarnings({"unchecked","rawtypes"}) // Not fully genericized yet
 public class ReflectionField<T>
   extends FieldImpl<T>
 {

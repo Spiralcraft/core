@@ -38,6 +38,7 @@ public class MessageHandlerSupport
   private boolean started;
  
 
+  @Override
   public Focus<?> bind(Focus<?> focusChain)
   { 
     recomputeChains();
@@ -45,6 +46,7 @@ public class MessageHandlerSupport
     return focusChain;
   }
   
+  @Override
   public void start()
   { 
     started=true;
@@ -52,6 +54,7 @@ public class MessageHandlerSupport
     
   }
   
+  @Override
   public void stop()
   { started=false;
   }

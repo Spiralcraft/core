@@ -45,7 +45,7 @@ public class BufferChannel<Tbuffer extends Buffer>
   private Channel<Buffer> parentChannel;
 */
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public static final BufferChannel<? extends Buffer>
     create(Type<Buffer> bufferType
     ,Channel<? extends DataComposite> originalChannel
@@ -89,7 +89,7 @@ public class BufferChannel<Tbuffer extends Buffer>
    * @param focus A focus, not necessarily on the originalChannel
    * 
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public BufferChannel
     (Focus<?> focus
     ,Channel<? extends DataComposite> original

@@ -173,7 +173,7 @@ public class ListAggregate<T>
     if (isMutable())
     { 
       if (list instanceof ArrayList)
-      { return new ListAggregate<T>(this,new ArrayList(list.size()));
+      { return new ListAggregate<T>(this,new ArrayList<T>(list.size()));
       }
       else
       {

@@ -116,6 +116,7 @@ public class RecursiveFrame
 
 
 
+  @Override
   public boolean getAllowMixedContent()
   { return frameRef.getAllowMixedContent();
   }
@@ -133,14 +134,17 @@ public class RecursiveFrame
       ("RecursiveFrame can't provide a RecursionContext");
   }
   
+  @Override
   public URI resolvePrefix(String name)
   { return frameRef.resolvePrefix(name);
   }
   
+  @Override
   public Map<String,URI> computeMappings()
   { return frameRef.computeMappings();
   }
   
+  @Override
   public void closingChild(FrameHandler child)
   { // We don't have children, so won't be called
   }

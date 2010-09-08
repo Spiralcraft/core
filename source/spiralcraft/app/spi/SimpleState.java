@@ -49,6 +49,7 @@ public class SimpleState
   }
   
   
+  @Override
   public void setPathIndex(int index)
   { path[path.length-1]=index;;
   }
@@ -57,6 +58,7 @@ public class SimpleState
    * 
    * @return The path from the root of the ComponentState tree 
    */
+  @Override
   public int[] getPath()
   { return path;
   }
@@ -67,14 +69,17 @@ public class SimpleState
    * 
    * @return The index of this ElementState within its parent ElementState
    */
+  @Override
   public int getPathIndex()
   { return path[path.length-1];
   }
   
+  @Override
   public State getParent()
   { return parent;
   }
   
+  @Override
   public State getChild(int index)
   { 
     if (children==null)

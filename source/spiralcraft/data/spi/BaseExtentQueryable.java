@@ -122,7 +122,8 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
   { return new Type[] {type};
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public BoundQuery<?,Ttuple> query(Query q, Focus<?> context)
     throws DataException
   { 

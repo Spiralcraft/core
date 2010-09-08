@@ -47,6 +47,7 @@ public class ListCursor<T extends Tuple>
   protected Type<?> type;
   
   
+  @Override
   public Type<?> getResultType()
   { return type;
   }

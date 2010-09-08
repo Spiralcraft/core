@@ -43,7 +43,7 @@ import spiralcraft.data.lang.DataReflector;
 import java.net.URI;
 import java.util.WeakHashMap;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","rawtypes"})
 /**
  * <P>Implementation of a standard Field.
  */
@@ -114,6 +114,7 @@ public class FieldImpl<T>
     
   }
   
+  @Override
   public Reflector<T> getContentReflector()
   { return contentReflector;
   }
@@ -145,6 +146,7 @@ public class FieldImpl<T>
   /**
    *@return the owning FieldSet
    */
+  @Override
   public FieldSet getFieldSet()
   { return fieldSet;
   }
@@ -161,6 +163,7 @@ public class FieldImpl<T>
   { this.uniqueValue=uniqueValue;
   }
   
+  @Override
   public boolean isUniqueValue()
   { 
     return this.uniqueValue 
@@ -180,10 +183,12 @@ public class FieldImpl<T>
     }
   }
 
+  @Override
   public URI getURI()
   { return uri;
   }
 
+  @Override
   public RuleSet<? extends FieldImpl<T>,T> getRuleSet()
   { return ruleSet;
   }
@@ -203,6 +208,7 @@ public class FieldImpl<T>
     ruleSet.addRules(rules);
   }
   
+  @Override
   public Expression<T> getNewExpression()
   { 
     return (newExpression==null && archetypeField!=null)
@@ -214,6 +220,7 @@ public class FieldImpl<T>
   { this.newExpression=newExpression;
   }
 
+  @Override
   public Expression<T> getDefaultExpression()
   { 
     return (defaultExpression==null && archetypeField!=null)
@@ -225,6 +232,7 @@ public class FieldImpl<T>
   { this.defaultExpression=defaultExpression;
   }
   
+  @Override
   public Expression<T> getFixedExpression()
   { 
     return (fixedExpression==null && archetypeField!=null)
@@ -259,6 +267,7 @@ public class FieldImpl<T>
    *@return Whether this field is stored or whether it is recomputed every time
    *  the value is accessed.
    */
+  @Override
   public boolean isTransient()
   { return tranzient;
   }
@@ -290,6 +299,7 @@ public class FieldImpl<T>
   /**
    * Return the index
    */
+  @Override
   public int getIndex()
   { return index;
   }
@@ -303,10 +313,12 @@ public class FieldImpl<T>
     this.name=name;
   }
   
+  @Override
   public String getName()
   { return name;
   }
   
+  @Override
   public String getTitle()
   { 
     if (title==null)
@@ -323,6 +335,7 @@ public class FieldImpl<T>
     this.title=title;
   }
 
+  @Override
   public String getDescription()
   { 
     if (description==null)
@@ -363,6 +376,7 @@ public class FieldImpl<T>
     }
   }
   
+  @Override
   public Type<T> getType()
   { return type;
   }
@@ -416,6 +430,7 @@ public class FieldImpl<T>
     return t;
   }
   
+  @Override
   public final T getValue(Tuple t)
     throws DataException
   { 
@@ -440,6 +455,7 @@ public class FieldImpl<T>
   }
   
 
+  @Override
   public final void setValue(EditableTuple t,T value)
     throws DataException
   { 

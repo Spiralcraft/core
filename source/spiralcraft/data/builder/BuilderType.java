@@ -47,7 +47,7 @@ import java.net.URI;
  * A Type based on a spiralcraft.builder Assembly. The Scheme is defined
  *   by a combination of the AssemblyClass members and Bean reflection.
  */
-@SuppressWarnings({ "unchecked", "cast" }) // Can't further specify Assembly generic
+@SuppressWarnings({ "unchecked", "cast" ,"rawtypes" }) // Can't further specify Assembly generic
 public class BuilderType
   extends TypeImpl<Assembly<?>>
 {

@@ -121,7 +121,7 @@ public class BeanInfoCache
    * @return The Class identified by the URI, if the URI scheme is "class" and
    *   the Class is accessible from the context ClassLoader.
    */
-  @SuppressWarnings("unchecked") 
+  @SuppressWarnings({ "unchecked", "rawtypes"}) 
   public static final synchronized <X> Class<X> getClassForURI(URI uri)
   { 
     if (uri==null || uri.getScheme()==null || !uri.getScheme().equals("class"))

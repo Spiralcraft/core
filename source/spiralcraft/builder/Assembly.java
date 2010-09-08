@@ -62,7 +62,7 @@ import java.net.URI;
  * After instantiation, the register(RegistryNode node) method is invoked 
  *   to provide context.
  */
-@SuppressWarnings("unchecked") // Heterogeneous design- does not use generics
+@SuppressWarnings({"unchecked","rawtypes"}) // Heterogeneous design- does not use generics
 public class Assembly<T>
   implements 
     Lifecycle

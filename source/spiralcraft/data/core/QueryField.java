@@ -77,7 +77,7 @@ public class QueryField
       && super.isFunctionalEquivalent(field);
   }
   
-  @SuppressWarnings("unchecked") // Cast type
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Cast type
   @Override
   public void resolveType()
     throws DataException
@@ -99,7 +99,7 @@ public class QueryField
   
 
   @Override
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public Channel<DataComposite> bindChannel
     (Channel<Tuple> source
     ,Focus<?> argFocus
@@ -148,7 +148,7 @@ public class QueryField
     }
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked","rawtypes"})
   public class QueryFieldChannel
     extends AbstractChannel<DataComposite>
   {

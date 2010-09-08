@@ -115,7 +115,7 @@ public class DataWriter
   
 }
 
-@SuppressWarnings("unchecked") // Mostly runtime type resolution
+@SuppressWarnings({"unchecked","rawtypes"}) // Mostly runtime type resolution
 class Context
 {
   private static final AttributesImpl NULL_ATTRIBUTES

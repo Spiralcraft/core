@@ -120,7 +120,7 @@ public class TypeImpl<T>
     }
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   private void resolveRules()
   {
     if (ruleSet==null 
@@ -334,7 +334,7 @@ public class TypeImpl<T>
    * Default implementation is to set up the SchemeImpl scheme with 
    *   arechetype and base type and resolve it.
    */
-  @SuppressWarnings("unchecked") // Dealing with rule
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Dealing with rule
   @Override
   public void link()
     throws DataException
@@ -502,7 +502,7 @@ public class TypeImpl<T>
     return unifiedFieldSet;
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public void setKeys(Key<T>[] keyArray)
   { 
     if (scheme==null)

@@ -32,7 +32,7 @@ import spiralcraft.util.ArrayUtil;
  * A Tuple where each Field references a language binding to an arbitrary
  *   data source. The Field values may change if the source changes. 
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class BoundTuple
   extends AbstractTuple
   implements EditableTuple
@@ -73,6 +73,7 @@ public class BoundTuple
   { throw new RuntimeException("Bound Tuple cannot have a base extent");
   }
   
+  @Override
   public Object get(int index)
   { return bindings[index].get();
   }
@@ -86,6 +87,7 @@ public class BoundTuple
     
   }
 
+  @Override
   public void set(String fieldName,Object data)
     throws DataException
   {
@@ -101,6 +103,7 @@ public class BoundTuple
   { return true;
   }
   
+  @Override
   public boolean isVolatile()
   { return true;
   }

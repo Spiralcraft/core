@@ -38,7 +38,7 @@ import spiralcraft.builder.BuildException;
  * An instance of a persistent object is tied to its non-volatile representation
  *   in a storage medium.
  */
-@SuppressWarnings("unchecked") // BuilderType is not genericized
+@SuppressWarnings({"rawtypes"}) // BuilderType is not genericized
 public class XmlAssembly<Treferent>
   extends AbstractXmlObject<Treferent,Assembly<Treferent>>
 {
@@ -87,12 +87,13 @@ public class XmlAssembly<Treferent>
     }
   }
   
+  @SuppressWarnings("unchecked")
   @Override
-  protected Assembly newInstance()
+  protected Assembly<Treferent> newInstance()
     throws DataException
   { 
     try
-    { return ((BuilderType) (Type) type).newAssembly(null);
+    { return (Assembly) ((BuilderType) (Type) type).newAssembly(null);
     }
     catch (BuildException x)
     { throw new DataException("Error instantiating assembly "+typeURI+": "+x,x);

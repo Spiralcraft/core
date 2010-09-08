@@ -168,7 +168,7 @@ public class ReflectionMethod
   }
 
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   class ReflectionMethodChannel
     extends SourcedChannel
   {
