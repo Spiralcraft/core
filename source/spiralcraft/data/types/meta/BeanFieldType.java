@@ -24,7 +24,7 @@ import java.net.URI;
 /**
  * A Field that holds a bean
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class BeanFieldType
   extends ReflectionType<BeanField>
 {

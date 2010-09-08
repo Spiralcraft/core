@@ -60,6 +60,7 @@ public class EqualityNode<X>
     return new LogicalTranslator()
     {  
       
+      @Override
       public Boolean translateForGet(X val,Channel<?>[] mods)
       { 
         Object mod=mods[0].get();
@@ -77,6 +78,7 @@ public class EqualityNode<X>
        * Equality is not a function because it calls "equals" on
        *   potentially mutable objects
        */
+      @Override
       public boolean isFunction()
       { return false;
       }

@@ -55,7 +55,7 @@ public class NamespaceReflector
   }
   
   
-  @SuppressWarnings("unchecked") // Expression array params heterogeneous
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Expression array params heterogeneous
   @Override
   public synchronized <X> Channel<X> resolve
     (Channel<Namespace> source
@@ -92,7 +92,7 @@ public class NamespaceReflector
   { return null;
   }
   
-  @SuppressWarnings("unchecked") // We don't know specific type
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // We don't know specific type
   public void register(String name,Reflector val)
     throws BindException
   { 

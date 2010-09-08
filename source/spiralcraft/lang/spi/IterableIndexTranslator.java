@@ -38,10 +38,12 @@ public class IterableIndexTranslator<T>
   { _reflector=reflector;
   }
   
+  @Override
   public Reflector<T> getReflector()
   { return _reflector;
   }
 
+  @Override
   @SuppressWarnings("unchecked") // Upcast for expected modifiers
   public T translateForGet(Iterable<T> source,Channel<?>[] modifiers)
   { 
@@ -71,10 +73,12 @@ public class IterableIndexTranslator<T>
   /**
    * Iterables are mutable
    */
+  @Override
   public boolean isFunction()
   { return false;
   }
 
+  @Override
   public Iterable<T> translateForSet(T value,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException("Can't reverse Iterable index");
   }

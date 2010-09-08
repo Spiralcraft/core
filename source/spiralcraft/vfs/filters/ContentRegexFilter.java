@@ -47,6 +47,7 @@ public class ContentRegexFilter
   { _pattern=Pattern.compile(expression);
   }
 
+  @Override
   public boolean accept(Resource resource)
   {
     InputStream in=null;

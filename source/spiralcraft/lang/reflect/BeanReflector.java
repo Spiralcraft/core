@@ -102,7 +102,7 @@ import spiralcraft.log.Level;
  * A Reflector which uses Java Beans introspection and reflection
  *   to navigate a Java object provided by a source optic.
  */
-@SuppressWarnings("unchecked") // Various levels of heterogeneous runtime ops
+@SuppressWarnings({"unchecked","rawtypes"}) // Various levels of heterogeneous runtime ops
 public class BeanReflector<T>
   extends AbstractReflector<T>
   implements Reflector<T>,Functor<T>

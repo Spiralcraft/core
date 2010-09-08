@@ -25,7 +25,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 
 
-@SuppressWarnings("unchecked") // Runtime .class resolution
+@SuppressWarnings("rawtypes")
 public class ExpressionType
   extends PrimitiveTypeImpl<Expression>
 {

@@ -78,20 +78,25 @@ public abstract class AbstractAuthModule
     protected AuthSession authSession
       =sessionFocus.getSubject().get();
   
+    @Override
     public abstract boolean authenticate();
     
+    @Override
     public boolean isAuthenticated()
     { return authenticated;
     }
     
+    @Override
     public Principal getPrincipal()
     { return principal;
     }
     
+    @Override
     public void refresh()
     {
     }
     
+    @Override
     public void credentialsChanged()
     {
       if (usesActiveCredentials)
@@ -105,6 +110,7 @@ public abstract class AbstractAuthModule
      * Logs out the user by clearing all credentials, attributes and principal 
      *   data and setting authenticated to false.
      */
+    @Override
     public synchronized void logout()
     {
       principal=null;

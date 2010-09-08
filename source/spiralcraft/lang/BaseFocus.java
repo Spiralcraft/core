@@ -55,6 +55,7 @@ public abstract class BaseFocus<T>
   }
   
 
+  @Override
   public Focus<?> getParentFocus()
   { return parent;
   }
@@ -82,6 +83,7 @@ public abstract class BaseFocus<T>
    * Return the Context for this Focus, or if there is none associated,
    *   return the Context for the parent Focus.
    */
+  @Override
   public Channel<?> getContext()
   { return subject;
   }
@@ -90,27 +92,33 @@ public abstract class BaseFocus<T>
   /**
    * Return the subject of expression evaluation
    */
+  @Override
   public Channel<T> getSubject()
   { return subject;
   }
   
+  @Override
   public <Tchannel> TeleFocus<Tchannel> telescope(Channel<Tchannel> channel)
   { return new TeleFocus<Tchannel>(this,channel);
   }
   
+  @Override
   public <Tchannel> Focus<Tchannel> chain(Channel<Tchannel> channel)
   { return new SimpleFocus<Tchannel>(this,channel);
   }
 
+  @Override
   public Focus<T> chain(PrefixResolver resolver)
   { return new NamespaceFocus<T>(this,resolver);
   }
   
+  @Override
   public boolean isContext(Channel<?> channel)
   { return getSubject()==channel && getContext()==channel;
   }
 
-  @SuppressWarnings("unchecked") // Heterogeneous hash map
+  @Override
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Heterogeneous hash map
   public synchronized <X> Channel<X> bind(Expression<X> expression)
     throws BindException
   { 
@@ -148,6 +156,7 @@ public abstract class BaseFocus<T>
     return channel;
   }
 
+  @Override
   public PrefixResolver getNamespaceResolver()
   { 
     if (namespaceResolver!=null)
@@ -166,6 +175,7 @@ public abstract class BaseFocus<T>
   }
   
   
+  @Override
   public boolean isFocus(URI uri)
   { 
     URI baseURI=uri.isAbsolute()?URIUtil.trimToPath(uri):null;
@@ -256,6 +266,7 @@ public abstract class BaseFocus<T>
   }    
   
   
+  @Override
   public synchronized void addFacet(Focus<?> facet)
   { 
     if (facets==null)
@@ -264,6 +275,7 @@ public abstract class BaseFocus<T>
     facets.add(facet);
   }
   
+  @Override
   public synchronized void addAlias(URI alias)
   {
     if (aliases==null)
@@ -273,6 +285,7 @@ public abstract class BaseFocus<T>
   }
   
  
+  @Override
   public Channel<Focus<T>> getSelfChannel()
   { 
     if (selfChannel==null)
@@ -315,6 +328,7 @@ public abstract class BaseFocus<T>
 //      +"]";
   }
 
+  @Override
   public String toFormattedString(String prefix)
   { 
     StringBuffer buf=new StringBuffer();

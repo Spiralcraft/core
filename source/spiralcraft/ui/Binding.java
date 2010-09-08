@@ -53,7 +53,7 @@ import java.beans.PropertyChangeSupport;
  *   uiExpression (against a text field): text
  *   
  */
-@SuppressWarnings("unchecked") // Not a specific use of Generics
+@SuppressWarnings({"unchecked","rawtypes"}) // Not a specific use of Generics
 public class Binding
   implements PropertyChangeListener
 {
@@ -208,6 +208,7 @@ public class Binding
     }
   }
 
+  @Override
   public void propertyChange(PropertyChangeEvent event)
   { 
     try

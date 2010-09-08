@@ -58,7 +58,7 @@ public class Configurator<T>
   { channel.set(target);
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   private DictionaryBinding getBinding(String targetExpression)
   {
     DictionaryBinding binding=bindingMap.get(targetExpression);

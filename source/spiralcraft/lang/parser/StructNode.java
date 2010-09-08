@@ -243,7 +243,7 @@ public class StructNode
     fields.put(field.name,field);
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Channel<?> bind(final Focus<?> focus)
     throws BindException
@@ -282,7 +282,7 @@ public class StructNode
     private final Reflector<Object> iterableItemReflector;
     
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public StructReflector(Focus<?> focus)
       throws BindException
     {
@@ -547,7 +547,7 @@ public class StructNode
       return struct;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public boolean update(Struct val)
     {
       boolean updated=false;
@@ -654,7 +654,7 @@ public class StructNode
     }
     
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public <X> Channel<X> resolveMeta(
       final Channel<Struct> source,
@@ -678,7 +678,7 @@ public class StructNode
     
     }    
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public <X> Channel<X> resolve(
       final Channel<Struct> source,

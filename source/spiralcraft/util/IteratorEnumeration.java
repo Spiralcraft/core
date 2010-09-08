@@ -30,10 +30,12 @@ public class IteratorEnumeration<T>
   { _iterator=iterator;
   }    
 
+  @Override
   public boolean hasMoreElements()
   { return _iterator.hasNext();
   }
 
+  @Override
   public T nextElement()
   { return _iterator.next();
   }

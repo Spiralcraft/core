@@ -33,6 +33,7 @@ public class StaticInstanceResolver
    *@return the Object, or null if none is available that is derived from the
    *  specified class.
    */
+  @Override
   public Object resolve(Class<?> clazz)
   {
     if (object==null)

@@ -89,7 +89,7 @@ public class DataAuthModule
     
   
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public DataAuthModule()
     throws DataException
   {
@@ -222,7 +222,7 @@ public class DataAuthModule
   }
   
   @Override
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public Focus<?> bind(Focus<?> context)
     throws BindException
   { 
@@ -534,6 +534,7 @@ public class DataAuthModule
       }
     }
 
+    @Override
     public String getAccountId()
     { 
       push();
@@ -565,6 +566,7 @@ public class DataAuthModule
       
     }
     
+    @Override
     public synchronized boolean associateLogin()
     { 
       push();

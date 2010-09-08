@@ -68,7 +68,7 @@ public class DataBatchProcessor<I,R>
     return focus;
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void postResult(List<TaskCommand<I,R>> completedCommands)
   {

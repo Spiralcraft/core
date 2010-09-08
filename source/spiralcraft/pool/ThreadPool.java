@@ -49,6 +49,7 @@ public class ThreadPool
     thread.start(runnable);
   }
 
+  @Override
   public PooledThread createResource()
   { 
     PooledThread thread=new PooledThread();
@@ -56,6 +57,7 @@ public class ThreadPool
     return thread;
   }
 
+  @Override
   public void discardResource(PooledThread resource)
   { resource.finish();
   }

@@ -113,7 +113,7 @@ public abstract class ElementRenderer
    * @param name
    * @param expression
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   protected void addAttributeBinding(String name,Expression expression)
   { 
     if (attributes==null)
@@ -132,7 +132,7 @@ public abstract class ElementRenderer
    * @param name
    * @param expression
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   protected void addLeaf(String name,Expression expression)
   {
     if (expression==null)

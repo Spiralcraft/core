@@ -51,7 +51,7 @@ public class CollectionReflector<C extends Collection<T>,T>
     =ClassLog.getInstance(CollectionReflector.class);
   
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "rawtypes" })
   private static final 
     WeakHashMap<Type,WeakHashMap<Reflector,WeakReference<CollectionReflector>>> reflectorMap
       =new WeakHashMap<Type,WeakHashMap<Reflector,WeakReference<CollectionReflector>>>();
@@ -65,7 +65,7 @@ public class CollectionReflector<C extends Collection<T>,T>
    * @param reflector
    * @return
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public static synchronized final 
     <C extends Collection<T>,T> CollectionReflector<C,T>
     getInstance(Class<?> clazz,Reflector<T> componentReflector)
@@ -114,7 +114,7 @@ public class CollectionReflector<C extends Collection<T>,T>
       );
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public <D extends Decorator<C>> D decorate
     (Channel<C> source,Class<D> decoratorInterface)

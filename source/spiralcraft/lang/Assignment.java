@@ -98,7 +98,7 @@ public class Assignment<T>
       sourceChannel
         =((AssignmentChannel) sourceChannel).getSource();
     }
-    Setter setter=new Setter<T>(sourceChannel,targetChannel);
+    Setter<T> setter=new Setter<T>(sourceChannel,targetChannel);
     if (debug)
     { setter.setDebug(true);
     }

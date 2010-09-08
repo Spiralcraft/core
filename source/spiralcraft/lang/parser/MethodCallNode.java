@@ -33,7 +33,7 @@ public class MethodCallNode
   
 
   
-  @SuppressWarnings("unchecked") // Raw type for parameter node array
+  @SuppressWarnings("rawtypes")
   public MethodCallNode(Node source,String identifierName,List<Node> parameterList)
   { 
     

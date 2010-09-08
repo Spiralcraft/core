@@ -205,7 +205,7 @@ public abstract class Scenario<Tcontext,Tresult>
   }
   
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   protected Class<TaskCommand> getCommandClass()
   { return TaskCommand.class;
   }
@@ -290,7 +290,7 @@ public abstract class Scenario<Tcontext,Tresult>
    *   chain and calling bindChildren() to set up FocusChain for any contained
    *   scenarios.
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Focus<?> bind(
     Focus<?> focusChain)

@@ -22,7 +22,7 @@ public class ListRangeChannel<C,X>
    * @param selector The selector which evaluates the filter expression
    *  
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public ListRangeChannel
     (Channel<C> source
     ,Channel<Range> range

@@ -22,7 +22,7 @@ import java.util.Collection;
 
 import java.net.URI;
 
-@SuppressWarnings("unchecked") // Runtime resolution
+@SuppressWarnings("rawtypes")
 public class CollectionType<T extends Collection<Tcontent>,Tcontent>
   extends AbstractCollectionType<Collection,Tcontent>
 {

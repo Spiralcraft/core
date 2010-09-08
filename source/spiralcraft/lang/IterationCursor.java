@@ -30,9 +30,8 @@ import spiralcraft.lang.reflect.BeanReflector;
 public class IterationCursor<I>
   implements Iterator<I>
 {
-  @SuppressWarnings("unchecked")
   public static final URI FOCUS_URI
-    =BeanReflector.<IterationCursor>getInstance(IterationCursor.class)
+    =BeanReflector.<IterationCursor<?>>getInstance(IterationCursor.class)
       .getTypeURI();
     
   private int index=-1;
@@ -51,6 +50,7 @@ public class IterationCursor<I>
   { return value;
   }
   
+  @Override
   public boolean hasNext()
   { 
     if (iterator!=null)
@@ -61,6 +61,7 @@ public class IterationCursor<I>
     }
   }
   
+  @Override
   public I next()
   {
     if (iterator!=null)
@@ -71,6 +72,7 @@ public class IterationCursor<I>
     return value;
   }
   
+  @Override
   public void remove()
   { 
     if (iterator!=null)

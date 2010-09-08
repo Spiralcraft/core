@@ -72,7 +72,7 @@ public class MapReduceNode<T,C>
             );
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Channel<?> bind(Focus<?> focus)
     throws BindException

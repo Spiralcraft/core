@@ -31,7 +31,7 @@ import spiralcraft.lang.spi.ViewState;
  * @param <Tstate>
  * @param <Tsource>
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class Min<T>
   extends Accumulator<Comparable,Comparable>
 {

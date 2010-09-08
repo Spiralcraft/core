@@ -49,6 +49,7 @@ public class LogicalOrNode
   { 
     return new LogicalTranslator()
     {  
+      @Override
       @SuppressWarnings("unchecked") // Heterogeneous Array
       public Boolean translateForGet(Boolean val,Channel<?>[] mods)
       { 
@@ -64,6 +65,7 @@ public class LogicalOrNode
       /**
        * Boolean logical ops are Functions
        */
+      @Override
       public boolean isFunction()
       { return true;
       }      

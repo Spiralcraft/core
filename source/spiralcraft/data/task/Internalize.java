@@ -48,7 +48,7 @@ public class Internalize<T,D>
   { this.type=type;
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Channel<T> bindChannel(
     final Channel<D> source,

@@ -255,6 +255,7 @@ public abstract class OutputAgent
 
   protected abstract String getLogPrefix();
   
+  @Override
   public void run()
   {
     try

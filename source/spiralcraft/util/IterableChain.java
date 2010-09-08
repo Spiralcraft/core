@@ -33,6 +33,7 @@ public class IterableChain<T>
   { this.chain=iterables;
   }
   
+  @Override
   public Iterator<T> iterator()
   { return new ChainIterator();
   }

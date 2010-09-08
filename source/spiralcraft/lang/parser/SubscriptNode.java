@@ -75,7 +75,7 @@ public class SubscriptNode<T,C,I>
   { return _source.reconstruct()+"["+_selector.reconstruct()+"]";
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Channel<?> bind(Focus<?> focus)
     throws BindException

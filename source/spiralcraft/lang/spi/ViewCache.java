@@ -49,7 +49,7 @@ public class ViewCache
   }  
 
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   private final ThreadLocalChannel<ViewState[]> stateChannel
     =new ThreadLocalChannel<ViewState[]>
     (BeanReflector.<ViewState[]>getInstance(ViewState[].class));
@@ -144,7 +144,7 @@ public class ViewCache
   }
 
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public class StateChannel<T>
     extends SourcedChannel<ViewState[],ViewState<T>>
   {

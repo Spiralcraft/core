@@ -134,10 +134,12 @@ public abstract class LogicalNode<T1,T2>
     implements Translator<Boolean,T1>
   {
     
+    @Override
     public Reflector<Boolean> getReflector()
     { return BOOLEAN_REFLECTOR;
     }
     
+    @Override
     public T1 translateForSet(Boolean val,Channel<?>[] mods)
     { 
       // Not reversible

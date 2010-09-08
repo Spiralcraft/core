@@ -84,7 +84,7 @@ public abstract class StringConverter<T>
    *   type.
    * </p>
    */
-  @SuppressWarnings("unchecked") // Type logic
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Type logic
   public static <T> StringConverter<T> getInstance(Class type)
   { 
     

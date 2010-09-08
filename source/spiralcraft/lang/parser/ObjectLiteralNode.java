@@ -156,7 +156,7 @@ public class ObjectLiteralNode<Tobject,Treturn>
     }
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Channel<Treturn> bind(final Focus<?> focus)
     throws BindException

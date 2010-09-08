@@ -45,7 +45,7 @@ public class StringType
     
   }
   
-  @SuppressWarnings("unchecked") // Generic array in addRules
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Generic array in addRules
   @Override
   public void createRules()
   { 

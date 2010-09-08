@@ -34,6 +34,7 @@ public class DepthFirstTraversal<T extends Tree<T,?>>
   { this.tree=tree;
   }
   
+  @Override
   public DFSIterator iterator()
   { return new DFSIterator();
   }
@@ -48,10 +49,12 @@ public class DepthFirstTraversal<T extends Tree<T,?>>
     { stack.push(tree);
     }
 
+    @Override
     public boolean hasNext()
     { return !stack.isEmpty();
     }
     
+    @Override
     public T next()
     {
       lastNode=stack.pop();
@@ -67,6 +70,7 @@ public class DepthFirstTraversal<T extends Tree<T,?>>
       return lastNode;
     }
     
+    @Override
     public void remove()
     { 
       if (lastNode!=null && lastNode.getParent()!=null)

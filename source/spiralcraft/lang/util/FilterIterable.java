@@ -80,6 +80,7 @@ public class FilterIterable<I>
     { this.iterator=iterator;
     }
     
+    @Override
     public boolean hasNext()
     { 
       if (next!=null)
@@ -126,6 +127,7 @@ public class FilterIterable<I>
       return false;
     }
 
+    @Override
     public I next()
     { 
       if (hasNext())

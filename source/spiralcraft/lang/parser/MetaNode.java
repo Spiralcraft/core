@@ -58,7 +58,7 @@ public class MetaNode<T extends Channel<?>>
   }
 
   @Override
-  @SuppressWarnings("unchecked") // Heterogeneous operation
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Heterogeneous operation
   public Channel<T> bind(final Focus focus)
     throws BindException
   { 

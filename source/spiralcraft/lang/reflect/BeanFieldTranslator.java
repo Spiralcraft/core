@@ -36,6 +36,7 @@ class BeanFieldTranslator<Tprop,Tbean>
   { return _field;
   }
 
+  @Override
   @SuppressWarnings("unchecked") // Field is not generic
   public Tprop translateForGet(Tbean value,Channel<?>[] modifiers)
   { 
@@ -50,10 +51,12 @@ class BeanFieldTranslator<Tprop,Tbean>
     }
   }
 
+  @Override
   public Tbean translateForSet(Tprop val,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException();
   }
 
+  @Override
   public Reflector<Tprop> getReflector()
   { return _reflector;
   }
@@ -62,6 +65,7 @@ class BeanFieldTranslator<Tprop,Tbean>
    * Bean fields are mutable
    * 
    */
+  @Override
   public boolean isFunction()
   { 
     // TODO: When "final", field is not mutable

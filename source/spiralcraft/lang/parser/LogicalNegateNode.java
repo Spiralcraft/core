@@ -49,6 +49,7 @@ public class LogicalNegateNode
   { 
     return new LogicalTranslator()
     {  
+      @Override
       public Boolean translateForGet(Boolean val,Channel<?>[] mods)
       { 
         if (val==null)
@@ -79,6 +80,7 @@ public class LogicalNegateNode
       /**
        * Boolean logical ops are Functions
        */
+      @Override
       public boolean isFunction()
       { return true;
       }      

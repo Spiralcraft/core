@@ -83,6 +83,7 @@ public abstract class MarkupCompiler<U extends Unit<U>>
     }
   }
 
+  @Override
   public void setPosition(ParsePosition position)
   { this.position=position;
   }
@@ -123,9 +124,11 @@ public abstract class MarkupCompiler<U extends Unit<U>>
     }
   }
   
+  @Override
   public abstract void handleMarkup(CharSequence code)
     throws ParseException;
 
+  @Override
   public abstract void handleContent(CharSequence text)
     throws ParseException;
   

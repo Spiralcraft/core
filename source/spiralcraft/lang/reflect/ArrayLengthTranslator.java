@@ -26,10 +26,12 @@ class ArrayLengthTranslator<S>
    * An array's length can never change, therefore array length is a
    *   function on the domain of arrays.
    */
+  @Override
   public boolean isFunction()
   { return true;
   }
   
+  @Override
   public Reflector<Integer> getReflector()
   { return _reflector;
   }

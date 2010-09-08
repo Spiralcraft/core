@@ -57,6 +57,7 @@ public class XmlFilter
     }
   }
   
+  @Override
   public void setDocumentLocator(Locator locator)
   { 
     this._locator=locator;
@@ -69,6 +70,7 @@ public class XmlFilter
   
 
   
+  @Override
   public void startElement
     (String namespaceURI
     ,String localName
@@ -81,49 +83,58 @@ public class XmlFilter
     out.startElement(namespaceURI,localName,qName,attribs);
   }
 
+  @Override
   public void startPrefixMapping(String prefix,String uri)
     throws SAXException
   { out.startPrefixMapping(prefix, uri);
   }
 
+  @Override
   public void endPrefixMapping(String prefix)
     throws SAXException
   { out.endPrefixMapping(prefix);
   }
 
+  @Override
   public void endElement(String namespaceURI,String localName,String qName)
     throws SAXException
   { out.endElement(namespaceURI,localName,qName);
   }
 
   
+  @Override
   public void characters(char[] ch,int start,int length)
     throws SAXException
   { out.characters(ch,start,length);
   }
 
 
+  @Override
   public void ignorableWhitespace(char[] ch,int start,int length)
     throws SAXException
   { out.ignorableWhitespace(ch, start, length);
   }
 
+  @Override
   public void processingInstruction(String target,String data)
     throws SAXException
   { out.processingInstruction(target,data);
   }
 
+  @Override
   public void skippedEntity(String name)
     throws SAXException
   { out.skippedEntity(name);
   }
 
 
+  @Override
   public void startDocument()
     throws SAXException
   { out.startDocument();
   }
 
+  @Override
   public void endDocument()
     throws SAXException
   { out.endDocument();

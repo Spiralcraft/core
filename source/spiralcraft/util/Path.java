@@ -365,6 +365,7 @@ public class Path
            +(_container?separator:"");
   }
   
+  @Override
   public Iterator<String> iterator()
   { return ArrayUtil.<String>iterator(_elements);
   }

@@ -71,7 +71,7 @@ public class RuleSet<Tcontext,Tvalue>
     =new ArrayList<Rule<Tcontext,Tvalue>>();
   
 
-  @SuppressWarnings("unchecked") // Varargs parameter
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Varargs parameter
   @Override
   public Iterator<Rule<Tcontext,Tvalue>> iterator()
   { 

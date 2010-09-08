@@ -108,7 +108,7 @@ public class SubcontextNode<T,S>
     return ret.toString();
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Channel<?> bind(Focus<?> focus)
     throws BindException
@@ -178,7 +178,7 @@ class SubcontextChannel<T,S>
   private final ThreadLocalChannel<S> sourceLocal;
   
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   SubcontextChannel
     (Channel<S> source
     ,ThreadLocalChannel<S> sourceLocal

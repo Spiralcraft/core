@@ -80,7 +80,7 @@ public class Sort<Tcollection,Titem,Tfunction>
     private final CollectionDecorator<Tcollection,Titem> decorator;
     private final Ordering<Titem,?>.OrderingComparator comparator;
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public SortChannel
       (Focus<?> focus
       ,Channel<Tcollection> source

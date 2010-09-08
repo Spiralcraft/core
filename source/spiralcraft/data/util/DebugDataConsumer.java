@@ -43,6 +43,7 @@ public class DebugDataConsumer<T extends Tuple>
   { this.nextConsumer=nextConsumer;
   }
   
+  @Override
   @SuppressWarnings("unchecked") // Chains can convert between tuple types
   public void insertDataConsumer(DataConsumerChain<?> consumerChain)
   { 
@@ -52,11 +53,13 @@ public class DebugDataConsumer<T extends Tuple>
     nextConsumer=(DataConsumerChain<T>) consumerChain;
   }
 
+  @Override
   @SuppressWarnings("unchecked") // Chains can convert between tuple types
   public void setDataConsumer(DataConsumer<?> consumer)
   { nextConsumer=(DataConsumer<T>) consumer;
   }
 
+  @Override
   public void dataAvailable(T tuple) throws DataException
   {
     out.println(tuple.toText("| "));
@@ -65,6 +68,7 @@ public class DebugDataConsumer<T extends Tuple>
     }
   }
 
+  @Override
   public void dataFinalize() throws DataException
   {
     out.println("DebugDataConsumer:dataFinalize()");
@@ -73,6 +77,7 @@ public class DebugDataConsumer<T extends Tuple>
     }
   }
 
+  @Override
   public void dataInitialize(FieldSet fieldSet) throws DataException
   {
     out.println("DebugDataConsumer:dataInitialize(): "+fieldSet.toString());
@@ -81,6 +86,7 @@ public class DebugDataConsumer<T extends Tuple>
     }
   }
   
+  @Override
   public void setDebug(boolean debug)
   { nextConsumer.setDebug(debug);
   }

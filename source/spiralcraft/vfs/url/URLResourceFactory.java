@@ -25,6 +25,7 @@ public class URLResourceFactory
 
 {
 
+  @Override
   public Resource resolve(URI uri)
     throws UnresolvableURIException
   { return new URLResource(uri);

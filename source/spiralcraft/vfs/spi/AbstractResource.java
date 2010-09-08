@@ -47,10 +47,12 @@ public abstract class AbstractResource
     _resolvedURI=_uri;
   }
   
+  @Override
   public URI getURI()
   { return _uri;
   }
 
+  @Override
   public URI getResolvedURI()
   { return _resolvedURI;
   }
@@ -58,6 +60,7 @@ public abstract class AbstractResource
 	/**
    * Read not supported, throw an IOException
 	 */	
+  @Override
   public InputStream getInputStream()
     throws IOException
   { throw new IOException("Resource "+getURI()+" cannot be read");
@@ -66,6 +69,7 @@ public abstract class AbstractResource
   /**
    * Read not supported by default
    */
+  @Override
   public boolean supportsRead()
   { return false;
   }
@@ -73,6 +77,7 @@ public abstract class AbstractResource
 	/**
    * Throw an IOException, can't write
 	 */	
+  @Override
   public OutputStream getOutputStream()
     throws IOException
   { throw new IOException("Resource "+getURI()+" cannot be written");
@@ -81,6 +86,7 @@ public abstract class AbstractResource
   /**
    * Doesn't know about parents
    */
+  @Override
   public Resource getParent()
     throws IOException
   { return null;
@@ -89,6 +95,7 @@ public abstract class AbstractResource
   /**
    * Gets local name from the last element in the URI.
    */
+  @Override
   public String getLocalName()
   { return new Path(_uri.getPath(),'/').lastElement();
   }
@@ -96,10 +103,12 @@ public abstract class AbstractResource
   /**
    * Write not supported by default
    */
+  @Override
   public boolean supportsWrite()
   { return false;
   }
 
+  @Override
   public boolean setLastModified(long lastModified)
   { return false;
   }
@@ -107,6 +116,7 @@ public abstract class AbstractResource
   /**
    * Containership not supported
    */
+  @Override
   public Container asContainer()
   { return null;
   }    
@@ -121,6 +131,7 @@ public abstract class AbstractResource
    * 
    * @return
    */
+  @Override
   public Resource[] getChildren()
     throws IOException
   { 
@@ -155,6 +166,7 @@ public abstract class AbstractResource
     return buffer.toArray(new Resource[buffer.size()]);
   }  
   
+  @Override
   public Container ensureContainer()
     throws IOException
   { throw new IOException(getClass().getName()+" does not support containership");
@@ -199,11 +211,13 @@ public abstract class AbstractResource
   /**
    * Abstract resources don't exist
    */
+  @Override
   public boolean exists()
     throws IOException
   { return false;
   }
   
+  @Override
   public long getLastModified()
     throws IOException
   { return 0;
@@ -217,6 +231,7 @@ public abstract class AbstractResource
    *   aspect, this resource will ensure that it has a Container
    *   aspect as well.
    */
+  @Override
   public void copyFrom(Resource source)
     throws IOException
   { 
@@ -262,6 +277,7 @@ public abstract class AbstractResource
    * Default implementation obtains an OutputStream
    *   and copies the InputStream to it.
    */
+  @Override
   public long write(InputStream in)
     throws IOException
   { 
@@ -293,6 +309,7 @@ public abstract class AbstractResource
     
   }
   
+  @Override
   public void moveTo(Resource target)
     throws IOException
   { 
@@ -310,6 +327,7 @@ public abstract class AbstractResource
     
   }  
   
+  @Override
   public void copyTo(Resource target)
     throws IOException
   { 
@@ -327,6 +345,7 @@ public abstract class AbstractResource
 
   }  
   
+  @Override
   public long getSize()
     throws IOException
   { return 0;

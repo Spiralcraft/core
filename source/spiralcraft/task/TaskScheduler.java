@@ -29,7 +29,7 @@ import spiralcraft.lang.Focus;
  *
  */
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class TaskScheduler
   extends CommandScheduler
   implements Contextual

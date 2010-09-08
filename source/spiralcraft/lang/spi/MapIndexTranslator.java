@@ -30,10 +30,12 @@ public class MapIndexTranslator<I,T>
   { _reflector=reflector;
   }
   
+  @Override
   public Reflector<T> getReflector()
   { return _reflector;
   }
 
+  @Override
   @SuppressWarnings("unchecked") // Upcast for expected modifiers
   public T translateForGet(Map<I,T> source,Channel<?>[] modifiers)
   { 
@@ -50,6 +52,7 @@ public class MapIndexTranslator<I,T>
     return source.get(index);
   }
 
+  @Override
   public Map<I,T> translateForSet(T value,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException("Can't reverse map index");
   }
@@ -57,6 +60,7 @@ public class MapIndexTranslator<I,T>
   /**
    * Maps are mutable
    */
+  @Override
   public boolean isFunction()
   { return false;
   }

@@ -26,6 +26,7 @@ public class JarResourceFactory
 
 {
 
+  @Override
   public Resource resolve(URI uri)
     throws UnresolvableURIException
   { 

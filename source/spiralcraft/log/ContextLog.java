@@ -69,6 +69,7 @@ public class ContextLog
   }
   
 
+  @Override
   public void log(
     Level level,
     String message,

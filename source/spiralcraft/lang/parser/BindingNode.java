@@ -94,7 +94,7 @@ public class BindingNode<Ttarget,Tsource extends Ttarget>
 
     
   @Override
-  @SuppressWarnings("unchecked") // Heterogeneous operation
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Heterogeneous operation
   public Channel bind(final Focus focus)
     throws BindException
   { return new BindingChannel(source.bind(focus),new Expression(target));

@@ -119,6 +119,7 @@ public class Authenticator
    * @param context
    * @throws BindException
    */
+  @Override
   public Focus<?> bind(Focus<?> context)
     throws BindException
   { 

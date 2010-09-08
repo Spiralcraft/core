@@ -22,7 +22,7 @@ import java.util.List;
 
 import java.net.URI;
 
-@SuppressWarnings("unchecked") // Runtime resolution
+@SuppressWarnings("rawtypes")
 public class ListType<Tcontent>
   extends AbstractCollectionType<List,Tcontent>
 {

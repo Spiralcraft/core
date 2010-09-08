@@ -174,7 +174,7 @@ public class Batch<I,R>
           }          
         }
         
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         public void run()
         { 
@@ -234,7 +234,7 @@ public class Batch<I,R>
       };
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void bindChildren(
     Focus<?> focusChain)

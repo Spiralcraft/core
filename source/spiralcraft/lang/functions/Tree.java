@@ -140,7 +140,7 @@ public class Tree<Tcollection, Tsource>
     
     private FilterIterable<Tsource> filterIterable;
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public TreeChannel
       (Channel<Tcollection> expansionChannel
       ,Channel<Tsource> source
@@ -166,6 +166,7 @@ public class Tree<Tcollection, Tsource>
       filterIterable=new FilterIterable<Tsource>
         (new Iterable<Tsource>()
           {
+            @Override
             public Iterator<Tsource> iterator()
             {
               Tsource sourceVal=TreeChannel.this.source.get();
@@ -218,7 +219,7 @@ public class Tree<Tcollection, Tsource>
       return ret;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public <D extends Decorator<Tcollection>> D decorate(Class<D> decorator)
       throws BindException

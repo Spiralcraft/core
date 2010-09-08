@@ -57,7 +57,7 @@ public class Concatenate<C>
     
     private CollectionDecorator<C,?> collector;
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public ConcatenateContext
      (Channel<C> source
      ,Focus<?> focus

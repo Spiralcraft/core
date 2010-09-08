@@ -36,93 +36,114 @@ public abstract class ResourceWrapper
 
   protected abstract Resource getDelegate();
   
+  @Override
   public Container asContainer()
   { return getDelegate().asContainer();
   }
 
+  @Override
   public Resource[] getChildren()
     throws IOException
   { return getDelegate().getChildren();
   }
 
+  @Override
   public void copyFrom(Resource source) throws IOException
   { getDelegate().copyFrom(source);
   }
 
+  @Override
   public Container ensureContainer() throws IOException
   { return getDelegate().ensureContainer();
   }
 
+  @Override
   public boolean exists() throws IOException
   { return getDelegate().exists();
   }
 
+  @Override
   public InputStream getInputStream() throws IOException
   { return getDelegate().getInputStream();
   }
 
+  @Override
   public long getLastModified() throws IOException
   { return getDelegate().getLastModified();
   }
 
+  @Override
   public String getLocalName()
   { return getDelegate().getLocalName();
   }
 
+  @Override
   public OutputStream getOutputStream() throws IOException
   { return getDelegate().getOutputStream();
   }
 
+  @Override
   public Resource getParent()
     throws IOException
   { return getDelegate().getParent();
   }
 
+  @Override
   public URI getURI()
   { return getDelegate().getURI();
   }
 
+  @Override
   public URI getResolvedURI()
   { return getDelegate().getResolvedURI();
   }
   
+  @Override
   public boolean supportsRead()
   { return getDelegate().supportsRead();
   }
 
+  @Override
   public boolean supportsWrite()
   { return getDelegate().supportsWrite();
   }
 
+  @Override
   public long write(InputStream in) throws IOException
   { return getDelegate().write(in);
   }
   
+  @Override
   public long getSize()
     throws IOException
   { return getDelegate().getSize();
   }
   
+  @Override
   public void renameTo(URI uri)
     throws IOException
   { getDelegate().renameTo(uri);
   }
   
+  @Override
   public void delete()
     throws IOException
   { getDelegate().delete();
   }
 
+  @Override
   public void copyTo(Resource target)
     throws IOException
   { getDelegate().copyTo(target);
   }
   
+  @Override
   public void moveTo(Resource target)
     throws IOException
   { getDelegate().moveTo(target);
   }
   
+  @Override
   public boolean setLastModified(long lastModified)
     throws IOException
   { return getDelegate().setLastModified(lastModified);

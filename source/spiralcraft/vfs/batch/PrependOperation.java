@@ -35,10 +35,12 @@ public class PrependOperation
   private URI _contentUri;
   private Operation _nextOperation;
   
+  @Override
   public void setNextOperation(Operation next)
   { _nextOperation=next;
   }
   
+  @Override
   public void invoke(Resource resource)
     throws OperationException
   { 
@@ -81,6 +83,7 @@ public class PrependOperation
     }
   }
   
+  @Override
   public boolean processOption(Arguments args,String option)
   { 
     if (option.equals("content"))
@@ -98,6 +101,7 @@ public class PrependOperation
     return true;
   }
   
+  @Override
   public boolean processArgument(Arguments args,String argument)
   { return false;
   }

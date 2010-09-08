@@ -19,6 +19,7 @@ public class Ordering<T,I>
   private boolean reverse;
   
   
+  @SuppressWarnings("rawtypes")
   private Comparator<I> comparator=new DefaultComparator();
   
   public Ordering()
@@ -96,6 +97,7 @@ public class Ordering<T,I>
     implements Comparator<X>
   {
     
+    @Override
     public int compare(
       X o1,
       X o2)

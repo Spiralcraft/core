@@ -55,23 +55,28 @@ public class InputStreamRecordIterator
     forwardMatcher=new KmpMatcher(delimiter);
   }
   
+  @Override
   public int getRecordPointer()
   { return recordPointer;
   }
   
+  @Override
   public boolean isEOF()
     throws IOException
   { return eof;
   }
   
+  @Override
   public boolean isBOF()
   { return recordPointer<0;
   }
   
+  @Override
   public byte[] read()
   { return recordBuffer;
   }
   
+  @Override
   public void close()
     throws IOException
   { in.close();
@@ -90,6 +95,7 @@ public class InputStreamRecordIterator
    * @return The number of bytes read
    * @throws IOException If there is a problem reading data
    */
+  @Override
   public int read(int recordOffset,byte[] buffer,int bufferOffset,int len)
     throws IOException
   { 
@@ -118,6 +124,7 @@ public class InputStreamRecordIterator
    * @return true If the record pointer moved, false if EOF
    * @throws IOException
    */  
+  @Override
   public boolean next()
     throws IOException
   { 
@@ -148,6 +155,7 @@ public class InputStreamRecordIterator
   }
   
 
+  @Override
   public void skip(int count)
     throws IOException
   {

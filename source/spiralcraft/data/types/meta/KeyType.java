@@ -24,7 +24,7 @@ import java.net.URI;
 /**
  * A Type implementation that represents a Field
  */
-@SuppressWarnings("unchecked") // Not propagating generic
+@SuppressWarnings("rawtypes")
 public class KeyType
   extends ReflectionType<KeyImpl>
 {

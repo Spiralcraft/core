@@ -24,6 +24,7 @@ public class ContextResourceFactory
   implements ResourceFactory
 {
 
+  @Override
   public Resource resolve(URI uri)
     throws UnresolvableURIException
   { return ContextResourceMap.resolve(uri);

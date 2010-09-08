@@ -68,6 +68,7 @@ public class XmlWriter
     this.encoding=encoding;
   }
 
+  @Override
   public void setDocumentLocator(Locator locator)
   { _locator=locator;
   }
@@ -107,6 +108,7 @@ public class XmlWriter
   { this.format=format;
   }
   
+  @Override
   public void startElement
     (String namespaceURI
     ,String localName
@@ -156,16 +158,19 @@ public class XmlWriter
   { checkElementClose();
   }
   
+  @Override
   public void startPrefixMapping(String prefix,String uri)
   { 
 //    System.err.println("XmlWriter.startPrefixMapping("+prefix+","+uri+")");
   }
 
+  @Override
   public void endPrefixMapping(String prefix)
   { 
 //    System.err.println("XmlWriter.endPrefixMapping("+prefix+")");
   }
 
+  @Override
   public void endElement(String namespaceURI,String localName,String qName)
     throws SAXException
   { 
@@ -204,6 +209,7 @@ public class XmlWriter
   { return c=='\t' || c=='\r' || c=='\n' || c==' ';
   }
   
+  @Override
   public void characters(char[] ch,int start,int length)
     throws SAXException
   { 
@@ -240,6 +246,7 @@ public class XmlWriter
     }
   }
 
+  @Override
   public void ignorableWhitespace(char[] ch,int start,int length)
     throws SAXException
   { 
@@ -255,15 +262,18 @@ public class XmlWriter
     }
   }
 
+  @Override
   public void processingInstruction(String target,String data)
   { System.err.println("XmlWriter.processingInstruction("+target+","+data+")");
   }
 
+  @Override
   public void skippedEntity(String name)
   { System.err.println("XmlWriter.skippedEntity("+name+")");
   }
 
 
+  @Override
   public void startDocument()
     throws SAXException
   { 
@@ -283,6 +293,7 @@ public class XmlWriter
     }
   }
 
+  @Override
   public void endDocument()
     throws SAXException
   {

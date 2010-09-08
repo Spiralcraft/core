@@ -28,11 +28,13 @@ public class StringConcatTranslator
   { _reflector=reflector;
   }
   
+  @Override
   public Reflector<String> getReflector()
   { return _reflector;
   }
 
-  @SuppressWarnings("unchecked") // Upcast for expected modifiers
+  @Override
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Upcast for expected modifiers
   public String translateForGet(String source,Channel[] modifiers)
   { 
     Object omodifier=((Channel<Object>)modifiers[0]).get();
@@ -46,7 +48,8 @@ public class StringConcatTranslator
     return source.concat(modifier);
   }
 
-  @SuppressWarnings("unchecked") // Upcast for expected modifiers
+  @Override
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Upcast for expected modifiers
   public String translateForSet(String string,Channel[] modifiers)
   { 
     String concat=((Channel<String>) modifiers[0]).get();
@@ -62,6 +65,7 @@ public class StringConcatTranslator
   /**
    * Strings are immutable, and concatenating them is a Function
    */
+  @Override
   public boolean isFunction()
   { return true;
   }

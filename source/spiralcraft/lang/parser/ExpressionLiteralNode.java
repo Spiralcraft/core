@@ -28,7 +28,7 @@ public class ExpressionLiteralNode
   private final Node expression;
   private final SimpleChannel<Expression<?>> _optic;
 
-  @SuppressWarnings("unchecked") // Type check
+  @SuppressWarnings("rawtypes")
   public ExpressionLiteralNode(Node expression)
   { 
     this.expression=expression;

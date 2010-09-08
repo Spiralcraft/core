@@ -67,6 +67,7 @@ public class XmlTypeFactory
   
     
   
+  @Override
   public Type<?> createType(TypeResolver resolver,URI uri)
     throws DataException
   {
@@ -128,7 +129,7 @@ public class XmlTypeFactory
     }
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   private synchronized Type<?> loadType(final TypeResolver resolver,final URI uri)
     throws DataException
   {

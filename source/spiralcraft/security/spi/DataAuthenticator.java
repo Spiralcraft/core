@@ -142,7 +142,7 @@ public class DataAuthenticator
   }
   
   @Override
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public Focus<?> bind(Focus<?> context)
     throws BindException
   { 

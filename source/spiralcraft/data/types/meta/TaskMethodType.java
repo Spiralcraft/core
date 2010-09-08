@@ -24,7 +24,7 @@ import java.net.URI;
 /**
  * A Type implementation that represents a TaskMethod
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class TaskMethodType
   extends ReflectionType<TaskMethod>
 {

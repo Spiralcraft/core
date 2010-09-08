@@ -71,7 +71,7 @@ public class NumericNegateNode<T extends Number>
   //   content type in type selector. Also Reflector is cast up to specific type, also safe
   //   due to API. There might be a cleaner way to do this. This class is heterogeneous.
   @Override
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public Channel<T> bind(Focus<?> focus)
     throws BindException
   {
@@ -203,10 +203,12 @@ abstract class NegateTranslator<X>
   
   protected abstract X negate(X val);
   
+  @Override
   public X translateForGet(X val,Channel<?>[] mods)
   { return negate(val);
   }
   
+  @Override
   public X translateForSet(X val,Channel<?>[] mods)
   { return negate(val);
   }
@@ -214,10 +216,12 @@ abstract class NegateTranslator<X>
   /**
    * Numeric negate is a function
    */
+  @Override
   public boolean isFunction()
   { return true;
   }
   
+  @Override
   public Reflector<X> getReflector()
   { return reflector;
   }

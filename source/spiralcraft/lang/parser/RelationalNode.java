@@ -69,7 +69,7 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
     }
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   protected LogicalTranslator 
     newTranslator(final Reflector<T1> r1,final Reflector<T2> r2)
@@ -91,6 +91,7 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
               coercion=(Coercion) 
                 new Coercion<Number,Float>() 
               {
+                @Override
                 public Float coerce(Number val)
                 { return val.floatValue();
                 }
@@ -109,6 +110,7 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
         }
       }
       
+      @Override
       public Boolean translateForGet(T1 val,Channel<?>[] mods)
       { 
         Comparable<T1> val1= val;
@@ -153,6 +155,7 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
        * Relational ops are not Functions due to call to compareTo on
        *   potentially mutable objects
        */
+      @Override
       public boolean isFunction()
       { return false;
       }      

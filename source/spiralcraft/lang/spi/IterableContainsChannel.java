@@ -36,7 +36,7 @@ public class IterableContainsChannel<C,T>
   private final Channel<T> compareItemChannel;
   private final IterationDecorator<C,T> decorator;
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public IterableContainsChannel
     (Channel<C> iterableChannel
     ,Channel<T> compareItemChannel

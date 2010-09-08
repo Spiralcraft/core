@@ -51,7 +51,7 @@ public class BeanPropertyTranslator<Tprop,Tbean>
   private final Reflector<Tprop> _reflector;
   private final Field _publicField;
   
-  @SuppressWarnings("unchecked") // PropertyDescriptor is not generic
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // PropertyDescriptor is not generic
   public BeanPropertyTranslator
     (PropertyDescriptor property
     ,MappedBeanInfo beanInfo
@@ -184,6 +184,7 @@ public class BeanPropertyTranslator<Tprop,Tbean>
   { return _property;
   }
 
+  @Override
   @SuppressWarnings("unchecked") // Method is not generic
   public Tprop translateForGet(Tbean value,Channel<?>[] modifiers)
   { 
@@ -237,6 +238,7 @@ public class BeanPropertyTranslator<Tprop,Tbean>
     }
   }
 
+  @Override
   public Tbean translateForSet(Tprop val,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException();
   }
@@ -244,12 +246,14 @@ public class BeanPropertyTranslator<Tprop,Tbean>
   /**
    * Properties are mutable
    */
+  @Override
   public boolean isFunction()
   { 
     // TODO: Provide for annotation for properties immutable after binding
     return false;
   }  
   
+  @Override
   public Reflector<Tprop> getReflector()
   { return _reflector;
   }

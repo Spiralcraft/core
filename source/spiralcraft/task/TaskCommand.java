@@ -175,7 +175,7 @@ public class TaskCommand<Tcontext,Tresult>
   { this.collectResults=collectResults;
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void taskAddedResult(
     TaskEvent event,

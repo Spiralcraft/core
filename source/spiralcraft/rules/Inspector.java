@@ -37,7 +37,7 @@ public class Inspector<Tcontext,Tsubject>
   private Focus<Tsubject> localFocus;
   private final Channel<Violation<Tsubject>>[] ruleChannels;
   
-  @SuppressWarnings("unchecked") // Generic array creation
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Generic array creation
   Inspector
     (RuleSet<Tcontext,Tsubject> ruleSet
     ,Reflector<Tsubject> subjectReflector

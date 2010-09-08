@@ -43,7 +43,8 @@ class ConstructorTranslator<Tbean>
   { return _method;
   }
 
-  @SuppressWarnings("unchecked") // Method is not generic
+  @SuppressWarnings("rawtypes")
+  @Override
   public Tbean translateForGet(Void value,Channel<?>[] params)
   { 
 //    System.out.println("MethodTranslator "+toString()+" translateForGet: ["+value+"]");
@@ -134,6 +135,7 @@ class ConstructorTranslator<Tbean>
     }
   }
 
+  @Override
   public Void translateForSet(Tbean val,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException();
   }
@@ -141,10 +143,12 @@ class ConstructorTranslator<Tbean>
   /**
    * A constructor is the antithesis of a Function
    */
+  @Override
   public boolean isFunction()
   { return false;
   }    
 
+  @Override
   public Reflector<Tbean> getReflector()
   { return _reflector;
   }

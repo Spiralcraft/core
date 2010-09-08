@@ -90,10 +90,12 @@ public class FileSpace
   { return map.getGraft(authorityName,path);
   }
   
+  @Override
   public void push()
   { map.push();
   }
   
+  @Override
   public void pop()
   { map.pop();
   }

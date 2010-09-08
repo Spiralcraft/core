@@ -185,6 +185,7 @@ public class ClasspathResource
   }
 
   
+  @Override
   public void renameTo(URI name)
   { 
     throw new UnsupportedOperationException
@@ -204,6 +205,7 @@ public class ClasspathResource
     return false; 
   }
   
+  @Override
   public void delete()
     throws IOException
   { throw new IOException("ClasspathResource is read-only");

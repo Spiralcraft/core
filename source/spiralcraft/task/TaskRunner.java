@@ -95,7 +95,7 @@ public class TaskRunner
   { this.serviceURI=serviceURI;
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   public void setChain(Scenario<?,?>[] chain)
   { 
 
@@ -197,7 +197,7 @@ public class TaskRunner
     
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   protected void execute()
     throws ExecutionException
   {

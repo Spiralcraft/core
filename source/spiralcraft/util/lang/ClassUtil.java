@@ -117,7 +117,7 @@ public abstract class ClassUtil
    *   class, taking into account primitive promotion and auto-boxing
    *   semantics.
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public static boolean isClassAssignableFrom(Class formal,Class actual)
   {
     // Suppress generic warnings b/c we're in meta-land here
@@ -262,7 +262,7 @@ public abstract class ClassUtil
    * @param type the type
    * @return the underlying class
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   public static Class<?> getClass(Type type) 
   {
     if (type instanceof Class) 

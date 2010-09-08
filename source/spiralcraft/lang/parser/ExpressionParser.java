@@ -457,7 +457,7 @@ public class ExpressionParser
     return parseRangeExpressionRest(node);
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   private Node parseRangeExpressionRest(Node firstOperand)
     throws ParseException
   {
@@ -926,7 +926,7 @@ public class ExpressionParser
     }
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   private Node parseObjectLiteralExpression(Node source)
     throws ParseException
   {
@@ -1014,7 +1014,7 @@ public class ExpressionParser
    *                    | ExpressionLiteral
    */
   // Called only from parseFocusExpression
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   private Node parsePrimaryExpression(FocusNode focus)
     throws ParseException
   {
@@ -1075,7 +1075,7 @@ public class ExpressionParser
   }
 
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "rawtypes" })
   private Node parseExpressionLiteral()
     throws ParseException
   {
@@ -1213,12 +1213,7 @@ public class ExpressionParser
       field.source=parseExpression();
     }
     
-    if (field!=null)
-    { struct.addField(field);
-    }
-    else
-    { throwException("Expected struct field");
-    }
+    struct.addField(field);
   }
   
   

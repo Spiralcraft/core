@@ -38,10 +38,12 @@ public class ArrayIndexTranslator<T>
   { _reflector=reflector;
   }
   
+  @Override
   public Reflector<T> getReflector()
   { return _reflector;
   }
 
+  @Override
   @SuppressWarnings("unchecked") // Upcast for expected modifiers
   public T translateForGet(T[] source,Channel<?>[] modifiers)
   { 
@@ -58,6 +60,7 @@ public class ArrayIndexTranslator<T>
     return source[index.intValue()];
   }
 
+  @Override
   public T[] translateForSet(T value,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException("Can't reverse array index");
   }
@@ -65,6 +68,7 @@ public class ArrayIndexTranslator<T>
   /**
    * Arrays are mutable
    */
+  @Override
   public boolean isFunction()
   { return false;
   }

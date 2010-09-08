@@ -75,17 +75,20 @@ class CredentialMapReflector
   { this.protoMap=protoMap;
   }
   
+  @SuppressWarnings("rawtypes")
   @Override
   public Decorator decorate(Channel source, Class decoratorInterface)
     throws BindException
   { return null;
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public Class getContentType()
   { return Map.class;
   }
   
+  @SuppressWarnings("rawtypes")
   @Override
   public <X> Channel<X> resolve
     (Channel<Map<String,Credential<?>>> source

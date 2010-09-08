@@ -61,6 +61,7 @@ public abstract class IterationDecorator<T,I>
    * <p>Create a new IterationCursor that holds the state of a new iteration
    * </p>
    */
+  @Override
   public IterationCursor<I> iterator()
   { return new IterationCursor<I>(createIterator());
   }

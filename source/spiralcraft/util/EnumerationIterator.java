@@ -30,14 +30,17 @@ public class EnumerationIterator<T>
   { _enumeration=enumeration;
   }    
 
+  @Override
   public boolean hasNext()
   { return _enumeration.hasMoreElements();
   }
 
+  @Override
   public T next()
   { return _enumeration.nextElement();
   }
   
+  @Override
   public void remove()
   { throw new UnsupportedOperationException
       ("Cannot remove: backed by an Enumeration");

@@ -227,11 +227,13 @@ public class URLResource
     
   }
   
+  @Override
   public void renameTo(URI uri)
     throws IOException
   { throw new UnsupportedOperationException("URL rename not supported "+uri);
   }
   
+  @Override
   public void delete()
     throws IOException
   { throw new IOException("URL Delete is not implemented");

@@ -60,6 +60,7 @@ public class JarFileResource
     this.path=new Path(uriParts[1].substring(1),'/');
   }
 
+  @Override
   public Resource asResource()
   { return this;
   }
@@ -163,6 +164,7 @@ public class JarFileResource
 
   }
   
+  @Override
   public Resource[] listContents()
     throws IOException
   { 
@@ -170,6 +172,7 @@ public class JarFileResource
     return _contents;
   }
 
+  @Override
   public Resource[] listChildren()
     throws IOException
   {
@@ -177,12 +180,14 @@ public class JarFileResource
     return _contents;
   }
 
+  @Override
   public Resource[] listLinks()
   { 
     // We don't know how to determine symbolic link
     return null;
   }
 
+  @Override
   public Resource getChild(String name)
     throws UnresolvableURIException
   { 
@@ -192,6 +197,7 @@ public class JarFileResource
     return new JarFileResource(file,path.append(name));
   }
 
+  @Override
   public Resource createLink(String name,Resource resource)
     throws UnresolvableURIException
   { throw new UnsupportedOperationException();
@@ -277,6 +283,7 @@ public class JarFileResource
     }
   }
   
+  @Override
   public void renameTo(URI uri)
     throws IOException
   { throw new UnsupportedOperationException("Cannot rename a jar entry");
@@ -288,6 +295,7 @@ public class JarFileResource
   { throw new UnsupportedOperationException("Cannot move a jar entry");
   }      
   
+  @Override
   public void delete()
   { throw new UnsupportedOperationException("Cannot delete a jar entry");
   }

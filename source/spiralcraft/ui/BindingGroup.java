@@ -91,7 +91,8 @@ public abstract class BindingGroup
    */
   protected abstract Object getModelObject();
 
-  @SuppressWarnings("unchecked") // Not a specific use of generics
+  @Override
+  @SuppressWarnings({"unchecked","rawtypes"}) // Not a specific use of generics
 	public void start()
     throws LifecycleException
 	{  
@@ -128,6 +129,7 @@ public abstract class BindingGroup
     }
   }
 
+  @Override
   public void stop()
     throws LifecycleException
   {

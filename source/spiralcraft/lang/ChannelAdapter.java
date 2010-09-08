@@ -26,6 +26,7 @@ public abstract class ChannelAdapter<T>
   /**
    * Return null. no names exposed
    */
+  @Override
   public <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] parameters)
     throws BindException
   { return null;
@@ -34,6 +35,7 @@ public abstract class ChannelAdapter<T>
   /**
    * The target is null
    */
+  @Override
   public T get()
   { return null;
   }
@@ -41,6 +43,7 @@ public abstract class ChannelAdapter<T>
   /**
    * The target cannot be modified 
    */
+  @Override
   public boolean set(T value)
   { return false;
   }
@@ -48,6 +51,7 @@ public abstract class ChannelAdapter<T>
   /**
    * No immediate decorator support
    */
+  @Override
   public <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
   { return null;
   }
@@ -55,10 +59,12 @@ public abstract class ChannelAdapter<T>
   /**
    * The underlying value is not guaranteed to remain unchanged
    */
+  @Override
   public boolean isConstant()
   { return false;
   }
 
+  @Override
   public final Class<T> getContentType()
   { return getReflector().getContentType();
   }
@@ -66,6 +72,7 @@ public abstract class ChannelAdapter<T>
   /**
    * Property change not supported by default
    */
+  @Override
   public PropertyChangeSupport propertyChangeSupport()
   { return null;
   }
@@ -73,5 +80,6 @@ public abstract class ChannelAdapter<T>
   /**
    * This needs to be implemented by the subclass
    */
+  @Override
   public abstract Reflector<T> getReflector();
 }

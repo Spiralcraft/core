@@ -53,45 +53,55 @@ public class ProxyChannel<T>
   
 
 
+  @Override
   public void setDebug(boolean val)
   { //debug=val;
   }
   
+  @Override
   public <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
   { return channel.resolve(focus,name,params);
   }
 
+  @Override
   public T get()
   { return channel.get();
   }
 
+  @Override
   public boolean set(T value)
     throws AccessException
   { return channel.set(value);
   }
   
+  @Override
   public boolean isWritable()
   { return channel.isWritable();
   }
 
+  @Override
   public Class<T> getContentType()
   { return channel.getContentType();
   }
 
+  @Override
   public <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
     throws BindException
   { return channel.decorate(decoratorInterface);
   }
 
+  @Override
   public PropertyChangeSupport propertyChangeSupport()
   { return channel.propertyChangeSupport();
   }
 
+  @Override
   public boolean isConstant()
   { return channel.isConstant();
   }
 
+  @Override
   public Reflector<T> getReflector()
   { return channel.getReflector();
   }
@@ -101,6 +111,7 @@ public class ProxyChannel<T>
   { return super.toString()+":"+channel.toString();
   }
   
+  @Override
   public synchronized void cache(Object key,Channel<?> channel)
   { 
     if (delegateCache)
@@ -116,6 +127,7 @@ public class ProxyChannel<T>
   }
 
   
+  @Override
   @SuppressWarnings("unchecked")
   public synchronized <X> Channel<X> getCached(Object key)
   { 
@@ -127,10 +139,12 @@ public class ProxyChannel<T>
     }
   }
 
+  @Override
   public Focus<?> getContext()
   { return channel.getContext();
   }
   
+  @Override
   public void setContext(Focus<?> context)
   { channel.setContext(context);
   }

@@ -41,6 +41,7 @@ public class ListMap<K,T>
    *   specified value
    * </P>
    */
+  @Override
   public void set(K key,T value)
   { 
     List<T> list=new LinkedList<T>();
@@ -53,6 +54,7 @@ public class ListMap<K,T>
    *   If the List does not exist, it will be created
    * </P>
    */
+  @Override
   public void add(K key,T value)
   { 
     List<T> list=get(key);
@@ -69,6 +71,7 @@ public class ListMap<K,T>
    *   List is empty after removal, the key will be removed.
    * </P>
    */
+  @Override
   public void remove(K key,T value)
   { 
     List<T> list=get(key);
@@ -83,6 +86,7 @@ public class ListMap<K,T>
   /**
    * Return the first element of the array mapped to the specified key
    */
+  @Override
   public T getOne(K key)
   { 
     List<T> list=get(key);

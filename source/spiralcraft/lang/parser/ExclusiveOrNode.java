@@ -54,6 +54,7 @@ public class ExclusiveOrNode
   { 
     return new LogicalTranslator()
     {
+      @Override
       @SuppressWarnings("unchecked") // Heterogeneous Array
       public Boolean translateForGet(Boolean val,Channel<?>[] mods)
       { 
@@ -78,6 +79,7 @@ public class ExclusiveOrNode
       /**
        * XOR is a Function
        */
+      @Override
       public boolean isFunction()
       { return true;
       }

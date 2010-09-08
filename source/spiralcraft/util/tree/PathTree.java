@@ -68,26 +68,32 @@ public class PathTree<T>
   { return childMap.get(name);
   }
   
+  @Override
   public void set(T object)
   { this.object=object;
   }
   
+  @Override
   public T get()
   { return object;
   }
   
+  @Override
   public PathTree<T> getParent()
   { return parent;
   }
   
+  @Override
   public void setParent(PathTree<T> parent)
   { this.parent=parent;
   }
   
+  @Override
   public boolean isLeaf()
   { return children.size()==0;
   }
   
+  @Override
   public void addChild(PathTree<T> child)
   {
     PathTree<T> oldChild=getChild(child.getName());
@@ -100,6 +106,7 @@ public class PathTree<T>
     childMap.put(child.getName(), child);
   }
   
+  @Override
   public void removeChild(PathTree<T> child)
   {
     childMap.remove(child.getName());
@@ -129,6 +136,7 @@ public class PathTree<T>
     return ret;
   }
   
+  @Override
   @SuppressWarnings("unchecked") // Array creation
   public PathTree<T>[] getChildren()
   { 
@@ -137,6 +145,7 @@ public class PathTree<T>
     return ret;
   }
   
+  @Override
   public Iterator<PathTree<T>> iterator()
   { return children.iterator();
   }

@@ -26,10 +26,12 @@ public class PrintOperation
 
   private Operation _nextOperation;
   
+  @Override
   public void setNextOperation(Operation next)
   { _nextOperation=next;
   }
   
+  @Override
   public void invoke(Resource resource)
     throws OperationException
   { 
@@ -39,10 +41,12 @@ public class PrintOperation
     }
   }
   
+  @Override
   public boolean processOption(Arguments args,String option)
   { return false;
   }
   
+  @Override
   public boolean processArgument(Arguments args,String argument)
   { return false;
   }

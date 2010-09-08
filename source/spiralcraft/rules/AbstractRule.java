@@ -11,10 +11,12 @@ public abstract class AbstractRule<C, T>
   { this.message=message;
   }
   
+  @Override
   public String getMessage()
   { return message;
   }
   
+  @Override
   public C getContext()
   { return context;
   }

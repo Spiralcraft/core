@@ -73,7 +73,7 @@ public class Collect<Titem>
   private Scenario<?,?> fillScenario;
   private ClosureFocus<?> closureFocus;
   private Expression<Titem> cursorX;
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   private CursorChannel cursorChannel;
   private Channel<Integer> expectedSizeChannel;
   private Expression<Integer> expectedSizeX;
@@ -163,7 +163,7 @@ public class Collect<Titem>
     };
   }
 
-  @SuppressWarnings("unchecked") // Type query
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Type query
   @Override
   public void bindChildren(
     Focus<?> focusChain)
@@ -205,7 +205,7 @@ public class Collect<Titem>
     return new ChainTask()
     {
         
-      @SuppressWarnings("unchecked")
+      @SuppressWarnings({ "unchecked", "rawtypes" })
       @Override
       public void work()
         throws InterruptedException
@@ -299,7 +299,7 @@ public class Collect<Titem>
     
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     @Override
     protected Command<?,?,?> retrieve()
     { 

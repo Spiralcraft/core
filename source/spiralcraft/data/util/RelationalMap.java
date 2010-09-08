@@ -194,7 +194,7 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
     private final BoundQuery<?,Tuple> upstreamQuery;
     
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public RelationalMapChannel
       (Reflector<Tdownstream> reflector
       ,Channel<Tupstream> source

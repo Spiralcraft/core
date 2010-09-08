@@ -300,6 +300,7 @@ class BeanPropertyChannel<T,S>
   class BeanPropertyChangeListener
     implements PropertyChangeListener
   {
+    @Override
     public void propertyChange(PropertyChangeEvent event)
     {
       if (event.getPropertyName().equals(_property.getName()))

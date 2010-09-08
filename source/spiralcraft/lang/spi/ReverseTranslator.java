@@ -61,6 +61,7 @@ public class ReverseTranslator<Tderived, Torigin>
   /**
    * Can't assume that the reverse of a function is still a function
    */
+  @Override
   public boolean isFunction()
   { return false;
   }

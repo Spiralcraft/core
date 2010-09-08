@@ -25,7 +25,7 @@ import spiralcraft.lang.Binding;
 import spiralcraft.lang.ParseException;
 
 
-@SuppressWarnings("unchecked") // Runtime .class resolution
+@SuppressWarnings("rawtypes")
 public class BindingType
   extends PrimitiveTypeImpl<Binding>
 {

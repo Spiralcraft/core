@@ -31,10 +31,12 @@ public class ArrayEnumeration<T>
     _pos=0;
   }
 
+  @Override
   public boolean hasMoreElements()
   { return _pos<_array.length;
   }
 
+  @Override
   public T nextElement()
   { return _array[_pos++];
   }

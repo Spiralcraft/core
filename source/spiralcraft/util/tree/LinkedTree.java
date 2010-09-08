@@ -39,40 +39,49 @@ public class LinkedTree<T>
   { this.object=object;
   }
   
+  @Override
   public void set(T object)
   { this.object=object;
   }
   
+  @Override
   public T get()
   { return object;
   }
   
+  @Override
   public LinkedTree<T> getParent()
   { return parent;
   }
   
+  @Override
   public void setParent(LinkedTree<T> parent)
   { this.parent=parent;
   }
   
+  @Override
   public void addChild(LinkedTree<T> child)
   { 
     children.add(child);
     child.setParent(this);
   }
   
+  @Override
   public void removeChild(LinkedTree<T> child)
   { children.remove(child);
   }
   
+  @Override
   public boolean isLeaf()
   { return children.size()==0;
   }
   
+  @Override
   public Iterator<LinkedTree<T>> iterator()
   { return children.iterator();
   }
   
+  @Override
   @SuppressWarnings("unchecked") // Array creation
   public LinkedTree<T>[] getChildren()
   { 

@@ -55,7 +55,8 @@ class MethodTranslator<Tprop,Tbean>
   { return _method;
   }
 
-  @SuppressWarnings("unchecked") // Method is not generic
+  @Override
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Method is not generic
   public Tprop translateForGet(Tbean value,Channel<?>[] params)
   { 
 //    System.out.println("MethodTranslator "+toString()+" translateForGet: ["+value+"]");
@@ -139,6 +140,7 @@ class MethodTranslator<Tprop,Tbean>
     }
   }
 
+  @Override
   public Tbean translateForSet(Tprop val,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException();
   }
@@ -146,6 +148,7 @@ class MethodTranslator<Tprop,Tbean>
   /**
    * A method is generally mutable
    */
+  @Override
   public boolean isFunction()
   { 
     // TODO: Provide for annotations that declare certain methods
@@ -153,6 +156,7 @@ class MethodTranslator<Tprop,Tbean>
     return false;
   }
   
+  @Override
   public Reflector<Tprop> getReflector()
   { return _reflector;
   }

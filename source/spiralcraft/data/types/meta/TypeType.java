@@ -35,9 +35,10 @@ import java.net.URI;
  *   the purpose of examining and extending them.
  */
 
-@SuppressWarnings("unchecked") // Runtime .class resolution
+//@SuppressWarnings("unchecked") // Runtime .class resolution
+@SuppressWarnings("rawtypes")
 public class TypeType
-  extends ReflectionType<TypeImpl>
+  extends ReflectionType<Type>
 {
   
   { 
@@ -59,18 +60,19 @@ public class TypeType
    *   will create Type objects with the specified URI that have their Scheme
    *   and other Properties defined from data.
    */
+  @SuppressWarnings("unchecked")
   public TypeType(TypeResolver resolver,URI uri)
-  { super(resolver,uri,TypeImpl.class,TypeImpl.class);
+  { super(resolver,uri,(Class) TypeImpl.class,(Class) TypeImpl.class);
   }
 
   @Override
-  public Tuple toData(Object obj)
+  public Tuple toData(Type obj)
     throws DataException
   { 
     log.fine("Generating typeRef for "+obj);
     
     MetaType metaType
-      =new MetaType((Type) obj);
+      =new MetaType(obj);
     return new EditableArrayTuple(metaType);
   }
   

@@ -94,10 +94,12 @@ public  class TranslatorChannel<T,S>
 
   }
 
+  @Override
   public void setContext(Focus<?> context)
   { this.context=context;
   }
   
+  @Override
   public Focus<?> getContext()
   { 
     if (context!=null)
@@ -108,10 +110,12 @@ public  class TranslatorChannel<T,S>
     }
   }
   
+  @Override
   public void setDebug(boolean val)
   { debug=val;
   }
   
+  @Override
   public synchronized void cache(Object key,Channel<?> channel)
   { 
     if (_cache==null)
@@ -120,6 +124,7 @@ public  class TranslatorChannel<T,S>
     _cache.put(key,channel);
   }
   
+  @Override
   @SuppressWarnings("unchecked")
   public synchronized <X> Channel<X>getCached(Object key)
   { 
@@ -127,6 +132,7 @@ public  class TranslatorChannel<T,S>
   }
   
   
+  @Override
   public final T get()
   { 
     if (debug)
@@ -159,6 +165,7 @@ public  class TranslatorChannel<T,S>
   /**
    * Override if value can be set
    */
+  @Override
   public boolean set(T value)
     throws AccessException
   { return false;
@@ -167,14 +174,17 @@ public  class TranslatorChannel<T,S>
   /**
    * Override if value can be set
    */
+  @Override
   public boolean isWritable()
   { return false;
   }
 
+  @Override
   public final Reflector<T> getReflector()
   { return translator.getReflector();
   }
 
+  @Override
   public <X> Channel<X> resolve(Focus<?> focus,String name,Expression<?>[] params)
     throws BindException
   {     
@@ -224,10 +234,12 @@ public  class TranslatorChannel<T,S>
     return binding;
   }
   
+  @Override
   public Class<T> getContentType()
   { return translator.getReflector().getContentType();
   }
   
+  @Override
   public <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
   { 
     try
@@ -241,10 +253,12 @@ public  class TranslatorChannel<T,S>
   /**
    * Override if standard definition of isStatic is false
    */
+  @Override
   public boolean isConstant()
   { return _constant;
   }
 
+  @Override
   @SuppressWarnings("unchecked") // PropertyChange is not generic- values are Object type
   public void propertyChange(PropertyChangeEvent event)
   {
@@ -287,6 +301,7 @@ public  class TranslatorChannel<T,S>
     }
   }
 
+  @Override
   public PropertyChangeSupport propertyChangeSupport()
   { 
     if (isConstant())
@@ -306,6 +321,7 @@ public  class TranslatorChannel<T,S>
       _modifierListener
         =new PropertyChangeListener()
       {
+        @Override
         public void propertyChange(PropertyChangeEvent event)
         { modifierChanged();
         }

@@ -25,6 +25,7 @@ public class FileResourceFactory
 
 {
 
+  @Override
   public Resource resolve(URI uri)
     throws UnresolvableURIException
   { return new FileResource(uri);

@@ -177,6 +177,7 @@ public abstract class CommandConsole
     return command;
   }
   
+  @Override
   public void handleMessage(Object[] messageLines)
   { 
     for (int i=0;i<messageLines.length;i++)

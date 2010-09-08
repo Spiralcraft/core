@@ -59,14 +59,17 @@ public class InputStreamCharSequence
     }
   }
   
+  @Override
   public CharSequence subSequence(int start,int end)
   { return _buffer.subSequence(start,end);
   }
   
+  @Override
   public int length()
   { return _buffer.length();
   }
   
+  @Override
   public char charAt(int index)
   { return _buffer.charAt(index);
   }

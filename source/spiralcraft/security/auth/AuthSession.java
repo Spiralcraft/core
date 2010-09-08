@@ -182,7 +182,7 @@ public class AuthSession
   { authenticator.popSession();
   }
   
-  @SuppressWarnings("unchecked") // Required downcast
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Required downcast
   protected synchronized <T extends Credential> T 
     getCredential(Class<T> clazz)
   {

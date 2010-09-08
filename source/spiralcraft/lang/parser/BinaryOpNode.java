@@ -160,7 +160,7 @@ public class BinaryOpNode<T1 extends Comparable<T1>,T2>
 }
 
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","rawtypes"})
 class IterationBindingHelper
 {
   public static final Channel bind(Channel<?> t1,Channel<?> t2,char op)
@@ -351,7 +351,7 @@ class NumberBindingHelper
   private static HashMap<Class<?>,NumericTranslator<?,?,?>> _translatorMapModulus
     =new HashMap<Class<?>,NumericTranslator<?,?,?>>();
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public static final <Tret extends Number,T1 extends Tret,T2 extends Tret> Channel<Tret> 
     bindNumber(Channel<T1> op1,Channel<T2> op2,char operator)
     throws BindException
@@ -756,11 +756,13 @@ abstract class NumericTranslator<Tret extends Number,T1 extends Tret,T2 extends 
   { throw new UnsupportedOperationException(oper+" is not reversible");
   }
 
+  @Override
   @SuppressWarnings("unchecked") // Heterogeneous Array
   public Tret translateForGet(T1 val,Channel<?>[] mods)
   { return get(val,((Channel<T2>) mods[0]).get());
   }
   
+  @Override
   @SuppressWarnings("unchecked") // Heterogeneous Array
   public T1 translateForSet(Tret val,Channel<?>[] mods)
   { return set(val,((Channel<T2>) mods[0]).get());
@@ -769,10 +771,12 @@ abstract class NumericTranslator<Tret extends Number,T1 extends Tret,T2 extends 
   /**
    * Arithmetic ops are functions in the formal sense
    */
+  @Override
   public boolean isFunction()
   { return true;
   }
 
+  @Override
   public Reflector<Tret> getReflector()
   { return reflector;
   }

@@ -50,7 +50,7 @@ public class DataAggregator<Ttype extends Tuple>
   {    
   }
 
-  @SuppressWarnings("unchecked") // Type cast
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Type cast
   @Override
   public void dataInitialize(
     FieldSet fieldSet)
@@ -73,6 +73,7 @@ public class DataAggregator<Ttype extends Tuple>
   { list.clear();
   }
   
+  @Override
   public void setDebug(boolean debug)
   {
   }

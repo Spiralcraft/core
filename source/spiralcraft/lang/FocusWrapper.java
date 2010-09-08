@@ -118,11 +118,13 @@ public abstract class FocusWrapper<Tfocus>
   { return super.toString()+":"+focus.toString();
   }
   
+  @Override
   public LinkedList<Focus<?>> getFocusChain() 
   { return focus.getFocusChain();
   }
 
 
+  @Override
   public Channel<Focus<Tfocus>> getSelfChannel()
   {
     if (selfChannel==null)
@@ -147,18 +149,22 @@ public abstract class FocusWrapper<Tfocus>
   { return new TeleFocus<Tchannel>(this,subject);
   }
   
+  @Override
   public void addFacet(Focus<?> facet)
   { focus.addFacet(facet);
   }
   
+  @Override
   public void addAlias(URI alias)
   { focus.addAlias(alias);
   }
   
+  @Override
   public String toFormattedString(String prefix)
   { return focus.toFormattedString(prefix)+"{wrapped by "+super.toString()+"}";
   }
   
+  @Override
   public boolean isContext(Channel<?> channel)
   { return focus.isContext(channel);
   }

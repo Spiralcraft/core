@@ -155,7 +155,7 @@ public class XmlStore
   }
 
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   @Override
   public DataConsumer<DeltaTuple> getUpdater(
     Type<?> type,Focus<?> focus)
@@ -306,6 +306,7 @@ public class XmlStore
   }
   
 
+  @Override
   public void update(Snapshot snapshot)
   {
     for (Aggregate<Tuple> aggregate : snapshot.getData())
@@ -338,6 +339,7 @@ public class XmlStore
     lastTransactionId=snapshot.getTransactionId();
   }
 
+  @Override
   public Snapshot snapshot(long transactionId)
     throws DataException
   {
@@ -735,6 +737,7 @@ public class XmlStore
       uriFocus=new SimpleFocus<URI>(new SimpleChannel<URI>(uri,true));
     }
 
+    @Override
     public void start()
       throws LifecycleException
     {
@@ -750,6 +753,7 @@ public class XmlStore
       }
     }
     
+    @Override
     public void stop()
     {
     }

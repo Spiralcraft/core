@@ -86,6 +86,7 @@ public abstract class AbstractTask
   { this.debug=debug;
   }
   
+  @Override
   public Exception getException()
   { return exception;
   }
@@ -95,42 +96,52 @@ public abstract class AbstractTask
    * </p>
    * @param scheduler
    */
+  @Override
   public void setScheduler(Scheduler scheduler)
   { this.scheduler=scheduler;
   }
   
+  @Override
   public int getOpsInUnit()
   { return _opsInUnit;
   }
   
+  @Override
   public int getOpsCompletedInUnit()
   { return _opsCompletedInUnit;
   }
 
+  @Override
   public int getUnitsInTask()
   { return _unitsInTask;
   }
 
+  @Override
   public int getUnitsCompletedInTask()
   { return _unitsCompletedInTask;
   }
 
+  @Override
   public String getCurrentOpTitle()
   { return _currentOpTitle;
   }
 
+  @Override
   public String getCurrentUnitTitle()
   { return _currentUnitTitle;
   }
   
+  @Override
   public boolean isStartable()
   { return _startable;
   }
   
+  @Override
   public boolean isStoppable()
   { return _stoppable;
   }
     
+  @Override
   public boolean isRunning()
   { return _running;
   }
@@ -139,10 +150,12 @@ public abstract class AbstractTask
   { return _stopRequested;
   }
   
+  @Override
   public boolean isCompleted()
   { return _completed;
   }
   
+  @Override
   public void start()
   {
     synchronized (_lock)
@@ -160,6 +173,7 @@ public abstract class AbstractTask
     }
   }
   
+  @Override
   public final synchronized void run()
   {
     synchronized (_lock)
@@ -204,6 +218,7 @@ public abstract class AbstractTask
     }
   }
   
+  @Override
   public void stop()
   {
     synchronized (_lock)
@@ -329,6 +344,7 @@ public abstract class AbstractTask
   /**
    * Add a listener to be notified when enabled state changes.
    */
+  @Override
   public void addPropertyChangeListener
     (PropertyChangeListener listener)
   {
@@ -338,6 +354,7 @@ public abstract class AbstractTask
     _propertyChangeSupport.addPropertyChangeListener(listener);    
   }
 
+  @Override
   public void removePropertyChangeListener
     (PropertyChangeListener listener)
   {
@@ -381,12 +398,14 @@ public abstract class AbstractTask
   }
 
   
+  @Override
   public void addTaskListener(TaskListener listener)
   { 
     _taskListeners
       =ArrayUtil.append(_taskListeners,listener);
   }
   
+  @Override
   public void removeTaskListener(TaskListener listener)
   { 
     _taskListeners

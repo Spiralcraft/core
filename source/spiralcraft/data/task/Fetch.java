@@ -46,7 +46,7 @@ public class Fetch
   protected BoundQuery<?,Tuple> boundQuery;
   protected ThreadLocalChannel<Aggregate<Tuple>> resultChannel;
   protected Expression<Tuple> cursorX;
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   protected CursorChannel cursorChannel;
   protected int batchSize;
   protected Queryable<?> queryable;
@@ -187,7 +187,7 @@ public class Fetch
     return focusChain;
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Focus<?> bindExports(
     Focus<?> focusChain)

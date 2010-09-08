@@ -178,12 +178,12 @@ public abstract class Node
   }
   
   
-  @SuppressWarnings("unchecked") // Genericized for internal purposes only
+  @SuppressWarnings("rawtypes")
   public final Node isEqual(Node source)
   { return new EqualityNode(false,this,source);
   }
   
-  @SuppressWarnings("unchecked") // Genericized for internal purposes only
+  @SuppressWarnings("rawtypes")
   public final Node isNotEqual(Node source)
   { return new EqualityNode(true,this,source);
   }
@@ -192,7 +192,7 @@ public abstract class Node
   { return new MethodCallNode(this,identifier,params);
   }
   
-  @SuppressWarnings("unchecked") // Genericized for internal purposes only
+  @SuppressWarnings("rawtypes")
   public final Node resolve(String identifier)
   { return new ResolveNode(this,identifier);
   }
@@ -217,87 +217,87 @@ public abstract class Node
   { return new ConditionalNode(this,trueResult,falseResult);
   }
 
-  @SuppressWarnings("unchecked") // Generics for internal use only
+  @SuppressWarnings("rawtypes") // Generics for internal use only
   public Node negative()
   { return new NumericNegateNode(this);
   }
 
-  @SuppressWarnings("unchecked") // Generics for internal use only
+  @SuppressWarnings("rawtypes") // Generics for internal use only
   public Node plus(Node op)
   { return new BinaryOpNode(this,op,'+');
   }
   
-  @SuppressWarnings("unchecked") // Generics for internal use only
+  @SuppressWarnings("rawtypes") // Generics for internal use only
   public Node minus(Node op)
   { return new BinaryOpNode(this,op,'-');
   }
   
-  @SuppressWarnings("unchecked") // Generics for internal use only
+  @SuppressWarnings("rawtypes") // Generics for internal use only
   public Node times(Node op)
   { return new BinaryOpNode(this,op,'*');
   }
   
-  @SuppressWarnings("unchecked") // Generics for internal use only
+  @SuppressWarnings("rawtypes") // Generics for internal use only
   public Node divide(Node op)
   { return new BinaryOpNode(this,op,'/');
   }
   
-  @SuppressWarnings("unchecked") // Generics for internal use only
+  @SuppressWarnings("rawtypes") // Generics for internal use only
   public Node modulus(Node op)
   { return new BinaryOpNode(this,op,'%');
   }
 
-  @SuppressWarnings("unchecked") // Generics for internal use only
+  @SuppressWarnings("rawtypes") // Generics for internal use only
   public Node greaterThan(Node op)
   { return new RelationalNode(true,false,this,op);
   }
   
-  @SuppressWarnings("unchecked") // Generics for internal use only
+  @SuppressWarnings("rawtypes") // Generics for internal use only
   public Node lessThan(Node op)
   { return new RelationalNode(false,false,this,op);
   }
 
-  @SuppressWarnings("unchecked") // Generics for internal use only
+  @SuppressWarnings("rawtypes") // Generics for internal use only
   public Node greaterThanOrEquals(Node op)
   { return new RelationalNode(true,true,this,op);
   }
   
-  @SuppressWarnings("unchecked") // Generics for internal use only
+  @SuppressWarnings("rawtypes") // Generics for internal use only
   public Node lessThanOrEquals(Node op)
   { return new RelationalNode(false,true,this,op);
   }  
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   public Node subscript(Node index)
   { return new SubscriptNode(this,index);
   }
     
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   public Node assign(Node source)
   { return new AssignmentNode(this,source);
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   public Node contains(Node source)
   { return new ContainsNode(this,source);
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   protected Node map(Node projection)
   { return new MapReduceNode(this,projection,false);
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   protected Node reduce(Node reduction)
   { return new MapReduceNode(this,reduction,true);
   }
     
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   protected Node subcontext(List<Node> subcontextList)
   { return new SubcontextNode(this,subcontextList);
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   protected Node bindFrom(Node source)
   { return new BindingNode(this,source);
   }

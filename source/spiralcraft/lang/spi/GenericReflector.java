@@ -216,7 +216,7 @@ public class GenericReflector<T>
       );
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public <X> Channel<X> resolve(
     Channel<T> source,

@@ -55,7 +55,7 @@ public class IterationProjector<I,P,R>
     
   protected final ThreadLocalChannel<I> channel;
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   protected final ThreadLocalChannel<IterationCursor> cursorChannel;
         
   protected final Focus<I> telefocus;
@@ -64,7 +64,7 @@ public class IterationProjector<I,P,R>
   protected final ViewCache viewCache;
   protected final boolean reduce;
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public IterationProjector
     (Channel<I[]> source
     ,Focus<?> focus
@@ -177,7 +177,7 @@ public class IterationProjector<I,P,R>
 
   
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   protected  R createArray(ArrayList<P> output)
   {
     Class pclass=functionChannel.getContentType();

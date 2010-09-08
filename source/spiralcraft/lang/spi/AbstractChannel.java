@@ -78,19 +78,23 @@ public abstract class AbstractChannel<T>
     _static=isStatic;
   }
   
+  @Override
   public void setDebug(boolean val)
   { this.debug=val;
   }
   
+  @Override
   public Focus<?> getContext()
   { return context;
   }
 
+  @Override
   public void setContext(
     Focus<?> context)
   { this.context = context;
   }
 
+  @Override
   public synchronized void cache(Object key,Channel<?> channel)
   { 
     if (_cache==null)
@@ -102,15 +106,18 @@ public abstract class AbstractChannel<T>
     }
   }
   
+  @Override
   @SuppressWarnings("unchecked")
   public synchronized <X> Channel<X>getCached(Object key)
   { return _cache!=null?(Channel<X>) _cache.get(key):null;
   }
 
+  @Override
   public Class<T> getContentType()
   { return _reflector.getContentType();
   }
   
+  @Override
   public <X> Channel<X> resolve
     (Focus<?> focus
     ,String name
@@ -165,6 +172,7 @@ public abstract class AbstractChannel<T>
     return binding;
   }
   
+  @Override
   public T get()
   { return retrieve();
   }
@@ -174,6 +182,7 @@ public abstract class AbstractChannel<T>
   protected abstract boolean store(T val)
     throws AccessException;
 
+  @Override
   public <D extends Decorator<T>> D decorate(Class<D> decoratorInterface)
     throws BindException
   { 
@@ -185,6 +194,7 @@ public abstract class AbstractChannel<T>
     }
   }
   
+  @Override
   public synchronized boolean set(T value)
     throws AccessException
   { 
@@ -210,18 +220,22 @@ public abstract class AbstractChannel<T>
   /**
    * Return the Reflector ("type" model/name resolver) for this Channel
    */
+  @Override
   public Reflector<T> getReflector()
   { return _reflector;
   }
 
+  @Override
   public boolean isConstant()
   { return _static;
   }
 
+  @Override
   public boolean isWritable()
   { return true;
   }
   
+  @Override
   public synchronized PropertyChangeSupport propertyChangeSupport()
   { 
     if (_static)

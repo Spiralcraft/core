@@ -72,6 +72,7 @@ public class FileResource
     _file=new File(uri);
   }
 
+  @Override
   public Resource asResource()
   { return this;
   }
@@ -167,6 +168,7 @@ public class FileResource
   { return _file.setLastModified(lastModified);
   }
   
+  @Override
   public Resource[] listContents()
     throws UnresolvableURIException  
   { 
@@ -174,6 +176,7 @@ public class FileResource
     return _contents;
   }
 
+  @Override
   public Resource[] listChildren()
     throws UnresolvableURIException
   {
@@ -181,12 +184,14 @@ public class FileResource
     return _contents;
   }
 
+  @Override
   public Resource[] listLinks()
   { 
     // We don't know how to determine symbolic link
     return null;
   }
 
+  @Override
   public Resource getChild(String name)
     throws UnresolvableURIException
   { 
@@ -196,6 +201,7 @@ public class FileResource
     return new FileResource(new File(_file,name));
   }
 
+  @Override
   public Resource createLink(String name,Resource resource)
     throws UnresolvableURIException
   { throw new UnsupportedOperationException();
@@ -227,6 +233,7 @@ public class FileResource
   { return _file.length();
   }
   
+  @Override
   public void renameTo(URI uri)
     throws IOException
   { 
@@ -273,6 +280,7 @@ public class FileResource
     
   }      
   
+  @Override
   public void delete()
   { _file.delete();
   }

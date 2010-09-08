@@ -35,6 +35,7 @@ public class DebugInvocationHandler
   { // _interface=clazz;
   }
   
+  @Override
   public Object invoke
     (Object proxy
     ,Method method,

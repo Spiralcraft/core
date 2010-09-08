@@ -36,6 +36,7 @@ public class PatternFilter
   { _pattern=pattern;
   }
   
+  @Override
   public boolean accept(Resource resource)
   { return _pattern.matches(new Path(resource.getURI().getPath(),'/'));
   }

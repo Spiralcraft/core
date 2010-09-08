@@ -44,6 +44,7 @@ public abstract class Node
    * Associate an application specific Object with this
    *   node.
    */
+  @Override
   public void set(Object peer)
   { _peer=peer;
   }
@@ -53,14 +54,17 @@ public abstract class Node
    *   associated with this node.
    *   
    */
+  @Override
   public Object get()
   { return _peer;
   }
   
+  @Override
   public boolean isLeaf()
   { return _children==null || _children.isEmpty();
   }
   
+  @Override
   public void removeChild(Node child)
   { _children.remove(child);
   }
@@ -91,6 +95,7 @@ public abstract class Node
     }
   }
   
+  @Override
   public Iterator<Node> iterator()
   { 
     if (_children!=null)
@@ -104,6 +109,7 @@ public abstract class Node
   /**
    * Returns a new copy of the list of child nodes
    */
+  @Override
   public Node[] getChildren()
   { 
     if (_children!=null)
@@ -146,6 +152,7 @@ public abstract class Node
     }
   }
   
+  @Override
   public void addChild(Node child)
   { 
     if (_children==null)
@@ -163,10 +170,12 @@ public abstract class Node
   { return false;
   }
 
+  @Override
   public void setParent(Node parent)
   { _parent=parent;
   }
 
+  @Override
   public Node getParent()
   { return _parent;
   }

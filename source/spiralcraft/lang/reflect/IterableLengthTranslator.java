@@ -33,10 +33,12 @@ class IterableLengthTranslator<S extends Iterable<?>>
   /**
    * Iterable has mutable length
    */
+  @Override
   public boolean isFunction()
   { return false;
   }
   
+  @Override
   public Reflector<Integer> getReflector()
   { return _reflector;
   }

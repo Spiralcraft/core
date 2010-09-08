@@ -104,7 +104,8 @@ public class XmlQueryable
   private WatcherHandler handler
     =new WatcherHandler()
     {
-      @SuppressWarnings("unchecked") // Downcast
+      @Override
+      @SuppressWarnings({ "unchecked", "rawtypes" }) // Downcast
       public int handleUpdate(Resource resource)
       {
         DataReader reader=new DataReader();

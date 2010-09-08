@@ -83,10 +83,12 @@ public class ByteArrayResource
   { return _bytes.length;
   }
   
+  @Override
   public void renameTo(URI name)
   { throw new UnsupportedOperationException("A ByteArray cannot be renamed");
   }
 
+  @Override
   public void delete()
   { _bytes=null;
   }

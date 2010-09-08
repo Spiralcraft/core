@@ -28,6 +28,7 @@ public class ClasspathResourceFactory
   { return scheme.equals("java") || scheme.equals("class");
   }
 
+  @Override
   public Resource resolve(URI uri)
     throws UnresolvableURIException
   { return new ClasspathResource(uri);

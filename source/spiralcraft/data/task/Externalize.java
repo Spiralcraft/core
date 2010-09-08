@@ -40,7 +40,7 @@ public class Externalize<D,T>
   implements ChannelFactory<D,T>
 {
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Channel<D> bindChannel(
     final Channel<T> source,

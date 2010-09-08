@@ -59,6 +59,7 @@ public class Search
   /**
    * Execute a search specified by arguments
    */
+  @Override
   public void execute(String ... args)
   { 
     ExecutionContext context=ExecutionContext.getInstance();
@@ -130,6 +131,7 @@ public class Search
   /**
    * Run an already configured search
    */
+  @Override
   public synchronized void run()
   { 
     final Stack<Resource> stack=new Stack<Resource>();

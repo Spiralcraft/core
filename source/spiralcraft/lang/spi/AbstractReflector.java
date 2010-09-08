@@ -108,7 +108,7 @@ public abstract class AbstractReflector<T>
    *   method but must call this superclass method to resolve standard names.
    * </p>
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public <X> Channel<X> resolveMeta
     (Channel<T> source
     ,Focus<?> focus
@@ -286,7 +286,8 @@ public abstract class AbstractReflector<T>
    * @return The set of member Signatures published by this reflector. If
    *   null, the set of Signatures is not obtainable.
    */
-  @SuppressWarnings("unchecked")
+  @Override
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public LinkedList<Signature> getSignatures(Channel<?> source)
     throws BindException
   { 
@@ -320,6 +321,7 @@ public abstract class AbstractReflector<T>
   /**
    * @param val
    */
+  @Override
   public Reflector<T> subtype(T val)
   { 
     throw new AccessException
@@ -330,6 +332,7 @@ public abstract class AbstractReflector<T>
    * @return A Channel<T> connected to nothing, useful for type
    *   inference.
    */
+  @Override
   public Channel<T> getNilChannel()
   { 
     return new AbstractChannel<T>(this)
@@ -365,6 +368,7 @@ public abstract class AbstractReflector<T>
    * @param source
    * @return
    */
+  @Override
   public boolean canCastFrom(Reflector<?> source)
   { 
     if (base!=null)
@@ -373,6 +377,7 @@ public abstract class AbstractReflector<T>
     return true;
   }
   
+  @Override
   public Channel<Reflector<T>> getSelfChannel()
   { 
     makeSelfChannel();
@@ -396,6 +401,7 @@ public abstract class AbstractReflector<T>
    *   expressions against the source Channel and the supplied Focus.
    * </p>
    */
+  @Override
   public abstract <X> Channel<X> resolve
     (Channel<T> source
     ,Focus<?> focus
@@ -408,6 +414,7 @@ public abstract class AbstractReflector<T>
    * Decorate the specified Channel with a decorator that implements the
    *   specified interface
    */
+  @Override
   public abstract <D extends Decorator<T>> D decorate
     (Channel<T> source,Class<D> decoratorInterface)
     throws BindException;
@@ -416,6 +423,7 @@ public abstract class AbstractReflector<T>
    * Return the Java class of the data object accessible through Channels 
    *   associated with this Reflector
    */
+  @Override
   public abstract Class<T> getContentType();
   
   /**
@@ -423,6 +431,7 @@ public abstract class AbstractReflector<T>
    *   described by this Reflector. The URI is defined by the type system
    *   that provides the Reflector implementation.
    */
+  @Override
   public abstract URI getTypeURI();
   
   /**
@@ -432,8 +441,10 @@ public abstract class AbstractReflector<T>
    *   is defined by the type system that provides the Reflector 
    *   implementation.
    */
+  @Override
   public abstract boolean isAssignableTo(URI typeURI);
   
+  @Override
   public boolean isAssignableFrom(Reflector<?> reflector)
   { return reflector.isAssignableTo(getTypeURI());
   }
@@ -453,6 +464,7 @@ public abstract class AbstractReflector<T>
    * @return The TypeModel, if any, to which this Reflector belongs, or null
    *   if this Reflector is not associated with a TypeModel. 
    */
+  @Override
   public TypeModel getTypeModel()
   { return null;
   }
@@ -466,6 +478,7 @@ public abstract class AbstractReflector<T>
    * @param alternate
    * @return
    */
+  @Override
   public Reflector<?> disambiguate(Reflector<?> alternate)
   { return this;
   }
@@ -477,10 +490,12 @@ public abstract class AbstractReflector<T>
    * </p>
    * @return
    */
+  @Override
   public StringConverter<T> getStringConverter()
   { return StringConverter.getInstance(getContentType());
   }
   
+  @Override
   public Reflector<?> getCommonType(Reflector<?> other)
   {
     if (other==this)
@@ -515,6 +530,7 @@ public abstract class AbstractReflector<T>
    * @param val
    * @return true, if the value is compatible with this type
    */
+  @Override
   public boolean accepts(Object val)
   { 
     if (base!=null)
@@ -523,6 +539,7 @@ public abstract class AbstractReflector<T>
     return true;
   }
 
+  @Override
   public boolean isFunctor()
   { return functor || (base!=null && base.isFunctor());
   }
@@ -560,7 +577,7 @@ class TopListChannel<T,I>
 {
   private final ListDecorator<T,I> decorator;
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public TopListChannel(Channel<T> source,ListDecorator decorator)
   throws BindException
   { 
@@ -594,7 +611,7 @@ class TopIterChannel<T,I>
 {
   private final IterationDecorator<T,I> decorator;
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public TopIterChannel(Channel<T> source,IterationDecorator decorator)
     throws BindException
   { 
@@ -634,7 +651,7 @@ class CollectionSizeChannel<T>
 {
   private final CollectionDecorator<T,?> decorator;
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public CollectionSizeChannel(Channel<T> source)
     throws BindException
   {

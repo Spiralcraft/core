@@ -50,6 +50,7 @@ public class LogicalAndNode
   { 
     return new LogicalTranslator()
     {
+      @Override
       @SuppressWarnings("unchecked") // Non-generic array
       public Boolean translateForGet(Boolean val,Channel<?>[] mods)
       { 
@@ -65,6 +66,7 @@ public class LogicalAndNode
       /**
        * Boolean logical ops are Functions
        */
+      @Override
       public boolean isFunction()
       { return true;
       }

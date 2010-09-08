@@ -74,6 +74,7 @@ public class ConditionalNode
       +" : "+_falseResult.reconstruct();
   }
   
+  @SuppressWarnings("rawtypes")
   @Override
   public Channel bind(Focus focus)
     throws BindException
@@ -129,10 +130,12 @@ class ConditionalTranslator<T>
     
   }
   
+  @Override
   public Reflector<T> getReflector()
   { return reflector;
   }
   
+  @Override
   @SuppressWarnings("unchecked") // Arrays and Generics issue
   public T translateForGet(Boolean val,Channel<?>[] modifiers)
   { 
@@ -142,6 +145,7 @@ class ConditionalTranslator<T>
     return val?((Channel<T>)modifiers[0]).get():((Channel<T>)modifiers[1]).get();
   }
 
+  @Override
   public Boolean translateForSet(T val,Channel<?>[] modifiers)
   { 
     // TODO: We can check which one of the modifiers "val" equals and
@@ -153,6 +157,7 @@ class ConditionalTranslator<T>
   /**
    * The conditional itself is a simple binary function
    */
+  @Override
   public boolean isFunction()
   { return true;
   }

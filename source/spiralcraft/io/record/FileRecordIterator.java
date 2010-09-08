@@ -60,23 +60,28 @@ public class FileRecordIterator
     file.seek(0);
   }
   
+  @Override
   public int getRecordPointer()
   { return recordPointer;
   }
   
+  @Override
   public boolean isEOF()
     throws IOException
   { return file.getFilePointer()>=file.length();
   }
   
+  @Override
   public boolean isBOF()
   { return recordPointer<0;
   }
 
+  @Override
   public byte[] read()
   { return recordBuffer;
   }
   
+  @Override
   public void close()
     throws IOException
   { file.close();
@@ -95,6 +100,7 @@ public class FileRecordIterator
    * @return The number of bytes read
    * @throws IOException If there is a problem reading data
    */
+  @Override
   public int read(int recordOffset,byte[] buffer,int bufferOffset,int len)
     throws IOException
   { 
@@ -172,6 +178,7 @@ public class FileRecordIterator
    * @return true If the record pointer moved, false if EOF
    * @throws IOException
    */  
+  @Override
   public boolean next()
     throws IOException
   { 
@@ -219,6 +226,7 @@ public class FileRecordIterator
   }
   
 
+  @Override
   public void skip(int count)
     throws IOException
   {
@@ -236,6 +244,7 @@ public class FileRecordIterator
    * @return The record pointer
    * @throws IOException
    */
+  @Override
   public boolean previous()
     throws IOException
   { 
@@ -300,6 +309,7 @@ public class FileRecordIterator
    * 
    * @param recordNum
    */
+  @Override
   public boolean seek(long recordNum)
     throws IOException
   { 
@@ -332,6 +342,7 @@ public class FileRecordIterator
    * Position the record pointer after the last record
    * 
    */
+  @Override
   public void bottom()
     throws IOException
   { 
@@ -343,6 +354,7 @@ public class FileRecordIterator
   /**
    * Position the record pointer on the first record
    */
+  @Override
   public void top()
     throws IOException
   { 

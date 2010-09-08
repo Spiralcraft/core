@@ -38,30 +38,37 @@ public class ArrayAttributes
     }
   }
 
+  @Override
   public int getLength()
   { return _attributes.length;
   }
 
+  @Override
   public String getURI(int index)
   { return _attributes[index].getURI();
   }
 
+  @Override
   public String getLocalName(int index)
   { return _attributes[index].getLocalName();
   }
 
+  @Override
   public String getQName(int index)
   { return _attributes[index].getQName();
   }
 
+  @Override
   public String getType(int index)
   { return _attributes[index].getType();
   }
 
+  @Override
   public String getValue(int index)
   { return _attributes[index].getValue();
   }
 
+  @Override
   public int getIndex(String uri,String localName)
   {
     for (int i=0;i<_attributes.length;i++)
@@ -75,6 +82,7 @@ public class ArrayAttributes
     return -1;
   }
 
+  @Override
   public int getIndex(String qname)
   {
     for (int i=0;i<_attributes.length;i++)
@@ -86,6 +94,7 @@ public class ArrayAttributes
     return -1;
   }
 
+  @Override
   public String getType(String uri,String localName)
   {
     int index=getIndex(uri,localName);
@@ -97,6 +106,7 @@ public class ArrayAttributes
     }
   }
 
+  @Override
   public String getType(String qname)
   {
     int index=getIndex(qname);
@@ -108,6 +118,7 @@ public class ArrayAttributes
     }
   }
 
+  @Override
   public String getValue(String uri,String localName)
   {
     int index=getIndex(uri,localName);
@@ -119,6 +130,7 @@ public class ArrayAttributes
     }
   }
 
+  @Override
   public String getValue(String qname)
   {
     int index=getIndex(qname);

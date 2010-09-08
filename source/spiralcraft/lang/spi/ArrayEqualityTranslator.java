@@ -35,10 +35,12 @@ public abstract class ArrayEqualityTranslator<T>
   
   public final Negate negate=new Negate();
   
+  @Override
   public Reflector<Boolean> getReflector()
   { return _reflector;
   }
 
+  @Override
   @SuppressWarnings("unchecked") // Upcast for expected modifiers
   public Boolean translateForGet(T source,Channel<?>[] modifiers)
   { 
@@ -49,6 +51,7 @@ public abstract class ArrayEqualityTranslator<T>
     return source==null ? aCompare==null : compare(source,aCompare);
   }
 
+  @Override
   public T translateForSet(Boolean value,Channel<?>[] modifiers)
   { throw new UnsupportedOperationException("Can't reverse array equality");
   }
@@ -56,6 +59,7 @@ public abstract class ArrayEqualityTranslator<T>
   /**
    * Arrays are mutable
    */
+  @Override
   public boolean isFunction()
   { return false;
   }
@@ -98,6 +102,7 @@ public abstract class ArrayEqualityTranslator<T>
     /**
      * Arrays are mutable
      */
+    @Override
     public boolean isFunction()
     { return false;
     }    

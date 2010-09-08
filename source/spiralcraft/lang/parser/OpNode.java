@@ -61,7 +61,7 @@ public class OpNode<T1,T2 extends T1>
   }
   
   @Override
-  @SuppressWarnings("unchecked") // Heterogeneous operation
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Heterogeneous operation
   public Channel bind(final Focus focus)
     throws BindException
   { 

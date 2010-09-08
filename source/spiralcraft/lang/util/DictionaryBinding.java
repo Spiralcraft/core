@@ -55,7 +55,7 @@ public class DictionaryBinding<T>
   private IterationDecorator<T,Object> decorator;
   private CollectionDecorator<T,Object> collectionDecorator;
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   private Map<Class,StringConverter> converterMap;
   
     
@@ -127,7 +127,7 @@ public class DictionaryBinding<T>
    * 
    * @param converterMap
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   public void setConverterMap(Map<Class,StringConverter> converterMap)
   { this.converterMap=converterMap;
   }
@@ -170,7 +170,7 @@ public class DictionaryBinding<T>
   { return name;
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public void bind(Focus<?> focus)
     throws BindException
   {

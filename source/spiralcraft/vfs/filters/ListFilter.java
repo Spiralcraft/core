@@ -32,6 +32,7 @@ public class ListFilter
   private final LinkedList<Resource> _list
     =new LinkedList<Resource>();
     
+  @Override
   public boolean accept(Resource resource)
   { 
     _list.add(resource);

@@ -494,10 +494,12 @@ public class ArrayUtil
       private int index=0;
       private final int length=array.length;
 
+      @Override
       public boolean hasNext()
       { return index<length;
       }
       
+      @Override
       public X next()
       { 
         if (index>=length)
@@ -506,6 +508,7 @@ public class ArrayUtil
         return array[index++];
       }
       
+      @Override
       public void remove()
       { 
         throw new UnsupportedOperationException
@@ -519,6 +522,7 @@ public class ArrayUtil
   {
     return new Iterable<T>()
     {
+      @Override
       public Iterator<T> iterator()
       {
         return new Iterator<T>()
@@ -526,15 +530,18 @@ public class ArrayUtil
           private int index=0;
           private int length=Array.getLength(array);
 
+          @Override
           public boolean hasNext()
           { return index<length;
           }
           
+          @Override
           @SuppressWarnings("unchecked") // Cast from not-generic method
           public T next()
           { return (T) Array.get(array,index++);
           }
           
+          @Override
           public void remove()
           { 
             throw new UnsupportedOperationException

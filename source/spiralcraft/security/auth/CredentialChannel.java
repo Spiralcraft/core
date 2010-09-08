@@ -35,7 +35,7 @@ public class CredentialChannel<T>
   private final String name;
   private final Channel<Map<String,Credential<?>>> mapChannel;
 
-  @SuppressWarnings("unchecked") // Heterogeneous map
+  @SuppressWarnings({ "unchecked", "rawtypes" }) // Heterogeneous map
   public CredentialChannel
     (Channel<Map<String,Credential<?>>> mapChannel,Class tokenType,String name)
   { 

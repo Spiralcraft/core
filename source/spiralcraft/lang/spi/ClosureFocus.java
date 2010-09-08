@@ -55,7 +55,7 @@ public class ClosureFocus<T>
   private static final Level debugLevel
     =ClassLog.getInitialDebugLevel(ClosureFocus.class,null);
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   private LinkedHashMap<URI,EnclosedFocus> foci
     =new LinkedHashMap<URI,EnclosedFocus>();
   private EnclosedFocus<T> subjectFocus;
@@ -82,7 +82,7 @@ public class ClosureFocus<T>
     }
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public <X> Focus<X> findFocus(URI focusURI)
   {
@@ -116,7 +116,7 @@ public class ClosureFocus<T>
     return focus;
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "rawtypes" })
   /**
    * Caches the current data value of all the Channels obtained from
    *   ancestors for access by the current Thread.
@@ -132,7 +132,7 @@ public class ClosureFocus<T>
    * Releases the data values previously cached by push()
    *   for the current Thread.
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   public void pop()
   {
     for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
@@ -172,7 +172,7 @@ public class ClosureFocus<T>
     
     private final Channel<?>[] downChannels;
                              
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public RecursionContext(Focus<?> focusChain)
     {
       int i=0;
@@ -182,7 +182,7 @@ public class ClosureFocus<T>
       }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void push()
     {
       int i=0;
@@ -191,7 +191,7 @@ public class ClosureFocus<T>
       }       
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void pop()
     {
       for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
@@ -207,7 +207,7 @@ public class ClosureFocus<T>
   {
     private final Object[] values;
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     Closure()
     {
       values=new Object[foci.size()];
@@ -221,7 +221,7 @@ public class ClosureFocus<T>
      * Provides access to the snapshot of data values for the current
      *   Thread. 
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void push()
     {
       int i=0;
@@ -233,7 +233,7 @@ public class ClosureFocus<T>
     /**
      * Releases the snapshot of data values for the current Thread.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void pop()
     {
       for (Entry<URI, EnclosedFocus> entry : foci.entrySet())

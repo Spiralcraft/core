@@ -49,7 +49,7 @@ import spiralcraft.log.ClassLog;
 /**
  * A Reflector which exposes an Iterable an extended type.
  */ 
-@SuppressWarnings("unchecked") // Various levels of heterogeneous runtime ops
+@SuppressWarnings({"unchecked","rawtypes"}) // Various levels of heterogeneous runtime ops
 public class IterableReflector<I>
   extends AbstractReflector<Iterable<I>>
 {

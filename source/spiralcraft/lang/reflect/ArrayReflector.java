@@ -53,7 +53,7 @@ import spiralcraft.log.ClassLog;
 /**
  * A Reflector which exposes an Array of an extended type.
  */
-@SuppressWarnings("unchecked") // Various levels of heterogeneous runtime ops
+@SuppressWarnings({"unchecked","rawtypes"}) // Various levels of heterogeneous runtime ops
 public class ArrayReflector<I>
   extends AbstractReflector<I[]>
 {

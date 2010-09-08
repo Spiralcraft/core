@@ -39,6 +39,7 @@ public class RollingIterable<T>
   { list.add(item);
   }
   
+  @Override
   public Iterator<T> iterator()
   { return new Itr();
   }
@@ -48,6 +49,7 @@ public class RollingIterable<T>
   {
     int pos;
     
+    @Override
     public boolean hasNext()
     {
       synchronized (RollingIterable.this)
@@ -55,6 +57,7 @@ public class RollingIterable<T>
       }
     }
     
+    @Override
     public T next()
     {
       synchronized (RollingIterable.this)
@@ -68,6 +71,7 @@ public class RollingIterable<T>
       }
     }
     
+    @Override
     public void remove()
     { 
       throw new UnsupportedOperationException

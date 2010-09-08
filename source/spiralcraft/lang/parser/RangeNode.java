@@ -85,7 +85,7 @@ public class RangeNode<T>
             
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Channel<?> bind(final Focus<?> focus)
     throws BindException

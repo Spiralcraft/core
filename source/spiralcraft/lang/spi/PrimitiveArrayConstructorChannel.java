@@ -21,7 +21,7 @@ public class PrimitiveArrayConstructorChannel<C,T>
   private Reflector<T> componentReflector;
   private IterationDecorator<C,T> decorator;
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public PrimitiveArrayConstructorChannel
     (Reflector componentReflector
     ,Channel<C> source

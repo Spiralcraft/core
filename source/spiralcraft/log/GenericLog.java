@@ -157,6 +157,7 @@ public class GenericLog
     
   }
 
+  @Override
   public void log(
     Level level,
     String message,
