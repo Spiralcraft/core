@@ -35,6 +35,7 @@ public interface Container
   /**
    * Contextual.bind() must bind and register children
    */
+  @Override
   Focus<?> bind(Focus<?> focus)
     throws BindException;
   
