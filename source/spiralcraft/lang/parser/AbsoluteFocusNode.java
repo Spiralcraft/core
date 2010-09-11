@@ -99,11 +99,14 @@ public class AbsoluteFocusNode
     if (namespace!=null)
     { return "["+namespace+":"+suffix+"]";
     }
+    else if (suffix!=null)
+    { return "["+suffix+"]";
+    }
     else if (uri!=null)
     { return "[:"+uri+"]";
     }
     else
-    { return "["+suffix+"]";
+    { return "[]";
     }
   }
   

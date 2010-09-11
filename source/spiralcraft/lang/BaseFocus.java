@@ -178,7 +178,7 @@ public abstract class BaseFocus<T>
   @Override
   public boolean isFocus(URI uri)
   { 
-    URI baseURI=uri.isAbsolute()?URIUtil.trimToPath(uri):null;
+    URI baseURI=URIUtil.trimToPath(uri);
         
     if (subject==null)
     { return false;

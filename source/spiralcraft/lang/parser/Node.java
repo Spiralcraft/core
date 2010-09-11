@@ -104,24 +104,26 @@ public abstract class Node
       else
       { uri=nsr.resolvePrefix("");
       }
-      if (uri==null
-          && suffix!=null 
-          && (prefix==null || prefix.isEmpty()) 
-          )
-      { uri=URI.create(suffix);
-      }
-    }
 
-    if (uri!=null)
-    { 
-      String uriStr=uri.toString();
-      if (!uriStr.endsWith("/"))
+
+      if (uri!=null)
       { 
-        uriStr=uriStr+"/";
+        String uriStr=uri.toString();
+        if (!uriStr.endsWith("/"))
+        { 
+          uriStr=uriStr+"/";
+        }
+        // Don't use URI.resolve() here because scheme-nested URIs get mangled
+        uriStr=uriStr+suffix;
+        uri=URI.create(uriStr);
       }
-      // Don't use URI.resolve() here because scheme-nested URIs get mangled
-      uriStr=uriStr+suffix;
-      uri=URI.create(uriStr);
+      else if (suffix!=null 
+              && (prefix==null || prefix.isEmpty()) 
+              )
+      {
+        uri=URI.create(suffix);
+      }
+    
     }
 
     return uri;
