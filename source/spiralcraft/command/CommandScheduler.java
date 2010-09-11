@@ -92,6 +92,15 @@ public class CommandScheduler
     }
   };
   
+  /**
+   * The Scheduler which will manage the thread pool for this client
+   * 
+   * @param scheduler
+   */
+  public void setScheduler(Scheduler scheduler)
+  { this.scheduler=scheduler;
+  }
+  
   public void setCommandFactory(CommandFactory factory)
   { this.factory=factory;
   }
