@@ -1,0 +1,69 @@
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  >
+  <fields>
+    <meta:Field>
+      <name>repository
+      </name>
+    
+      <type><URI.type/>
+      </type>
+    
+    </meta:Field>
+    
+    <meta:Field>
+      <name>organization
+      </name>
+    
+      <type><String.type/>
+      </type>
+    
+    </meta:Field>
+    
+    <meta:Field>
+      <name>module
+      </name>
+    
+      <type><String.type/>
+      </type>
+    
+    </meta:Field>
+
+    <meta:Field>
+      <name>version
+      </name>
+    
+      <type><String.type/>
+      </type>
+    
+    </meta:Field>
+    
+    <meta:Field>
+      <name>status
+      </name>
+    
+      <type><String.type/>
+      </type>
+    
+    </meta:Field>
+    
+    <meta:Field>
+      <name>filename
+      </name>
+    
+      <type><String.type/>
+      </type>
+    
+    </meta:Field>
+    
+    <meta:Field>
+      <name>extension
+      </name>
+    
+      <type><String.type/>
+      </type>
+    
+    </meta:Field>    
+  </fields>
+
+</meta:Type>
