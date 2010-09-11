@@ -25,6 +25,7 @@ import spiralcraft.data.Sequence;
 import spiralcraft.data.Type;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Tuple;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
 
 
@@ -38,7 +39,7 @@ import spiralcraft.lang.Focus;
  * </p>
  */
 public interface Store
-  extends Queryable<Tuple>,Lifecycle
+  extends Queryable<Tuple>,Lifecycle,Contextual
 {
   /**
    * A name for the store within the containing Space (or containing store,

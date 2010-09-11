@@ -24,7 +24,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import spiralcraft.app.Component;
 import spiralcraft.app.spi.AbstractComponent;
+import spiralcraft.app.spi.StandardContainer;
 import spiralcraft.common.LifecycleException;
 
 import spiralcraft.data.access.Store;
@@ -37,7 +39,6 @@ import spiralcraft.data.query.ConcatenationBinding;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.Contextual;
 
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -73,7 +74,7 @@ public class Space
     }
   }
 
-  private Store[] stores;
+  private Store[] stores=new Store[0];
   
   private Type<?>[] types;
   
@@ -92,6 +93,27 @@ public class Space
   public Store getStore(String storeName)
   { return storeMap.get(storeName);
   }
+  
+  /**
+   * The Services that will run in the context of this Space
+   * 
+   * @param services
+   */
+  public void setServices(final Service[] services)
+  {
+    this.container
+      =new StandardContainer()
+    {
+      { 
+        children=new Component[services.length];
+        int i=0;
+        for (Component service:services)
+        { children[i++]=service;
+        }
+      }
+    };
+  }
+  
   
   @Override
   public Type<?>[] getTypes()
@@ -134,10 +156,7 @@ public class Space
     throws BindException
   { 
     for (Store store: stores)
-    {
-      if (store instanceof Contextual)
-      { ((Contextual) store).bind(selfFocus);
-      }
+    { store.bind(selfFocus);
     }
     return focusChain;
   }
