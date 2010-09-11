@@ -29,6 +29,7 @@ import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.types.standard.AnyType;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.sax.XmlWriter;
 import spiralcraft.task.AbstractTask;
@@ -59,6 +60,18 @@ public class ParseXml<Tresult>
   protected Binding<URI> uriX;
   protected boolean preBuffer;
   protected boolean ignoreEmpty;
+  
+  public ParseXml()
+  {
+  }
+  
+  public ParseXml(Type<Tresult> type,Expression<URI> uriX)
+    throws BindException
+  { 
+    setType(type);
+    setUriX(new Binding<URI>(uriX));
+  }
+  
   
   protected Type<Tresult> type;
   { storeResults=true;
