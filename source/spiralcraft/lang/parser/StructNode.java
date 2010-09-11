@@ -22,7 +22,6 @@ import java.util.LinkedList;
 
 import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.AccessException;
-//import spiralcraft.lang.Binding;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -273,7 +272,7 @@ public class StructNode
       =fields.values().toArray(new StructField[fields.size()]);
     
     private final ThreadLocalChannel<Struct> thisChannel
-      =new ThreadLocalChannel<Struct>(this);
+      =new ThreadLocalChannel<Struct>(this,true);
     
     private final URI typeURI;
     
@@ -282,11 +281,13 @@ public class StructNode
     private final Reflector<Object> iterableItemReflector;
     
     
+    private Focus<?> context;
+    
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public StructReflector(Focus<?> focus)
       throws BindException
     {
-    
+      this.context=focus;
       functor=true;
       
       if (StructNode.this.typeURI==null)
@@ -640,6 +641,7 @@ public class StructNode
     public boolean isAssignableTo(
       URI typeURI)
     { 
+
       if (typeURI.equals(this.typeURI))
       { return true;
       }
@@ -711,6 +713,19 @@ public class StructNode
           { return (Channel<X>) new PassThroughChannel(field,source,target);
           }
         }
+      }
+      else
+      {
+        final StructField field=fields.get(name);
+        
+        if (field!=null)
+        {
+          final Channel target
+            =field.source.bind(context.chain(source))
+            .resolve(focus,"",params);
+          return (Channel<X>) new MethodChannel(field,source,target);
+        }
+        
       }
       
       
@@ -871,6 +886,63 @@ public class StructNode
       }
 
     }
+    
+    class MethodChannel
+      extends SourcedChannel<Struct,Object>
+    {
+      private final Channel<Object> target;
+      private boolean constant;
+      // private final StructField field;
+
+      public MethodChannel
+      (final StructField field
+        ,final Channel<Struct> source
+        ,final Channel<Object> target
+      )
+      { 
+        super(target.getReflector(),source);
+        // this.field=field;
+        this.target=target;
+        this.constant=target.isConstant();
+      }
+
+      @Override
+      protected Object retrieve()
+      { 
+        if (constant)
+        { return target.get();
+        }
+        else
+        {
+          thisChannel.push(source.get());
+          try
+          { return target.get();
+          }
+          finally
+          { thisChannel.pop();
+          }
+        }
+      }
+
+      @Override
+      protected boolean store(
+        Object val)
+      throws AccessException
+      { 
+        return false;
+      }
+
+      @Override
+      public boolean isWritable()
+      { return false;
+      }
+
+      @Override
+      public boolean isConstant()
+      { return false;
+      }
+
+    }    
     
   }
   
