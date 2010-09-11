@@ -4,6 +4,101 @@
   
   <scm:Change>
   
+    <revision>0.4.11.2
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-09-10
+    </date>
+  
+    <notes>
+
+    </notes>
+    
+    <detail>
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-39] Structs should support method call syntax to 
+            invoke member functors that modify the Struct
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/StructNode.java
+        </path>
+      </scm:Change>
+          
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-38]  Need way to read data from an XML resource 
+            from within an expression
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/sax/ParseXml.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-29] Fix various corner cases associated with
+            no-default-namespace scenario.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/
+        </path>
+        
+        <resources>
+          <URI>BaseFocus.java
+          </URI>
+          <URI>parser/AbsoluteFocusNode.java
+          </URI>
+          <URI>parser/Node.java
+          </URI>         
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-37] Need mechanism to run scheduled tasks in a 
+            daemon outside of any UI service or UI context
+          </scm:Note>
+          <scm:Note>Space accomodates child services. Store implements
+            Contextual.
+          </scm:Note>
+          <scm:Note>SchedulerService runs multiple TaskSchedulers
+            which share the same context.
+          </scm:Note>
+          <scm:Note>CommandScheduler accepts a Scheduler component to permit
+            the grouping of threads and to provide tasks that run on
+            separate threads the ability to use contextual 
+            inheritable ThreadLocals.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>command/CommandScheduler.java
+          </URI>
+          <URI>data/Space.java
+          </URI>
+          <URI>data/access/Store.java
+          </URI>
+          <URI>lang/spi/CachedChannel.java
+          </URI>
+          <URI>lang/spi/SchedulerService.java
+          </URI>          
+        </resources>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+  
+  <scm:Change>
+  
     <revision>0.4.11.1
     </revision>
     

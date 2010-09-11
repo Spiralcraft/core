@@ -12,7 +12,7 @@ t1.addChild(t3);
 t1.addChild(t4);
 t2.addChild(t5);
 t2.addChild(t6);
-dfs=new spiralcraft.util.tree.DepthFirstSearch(t0);
+dfs=new spiralcraft.util.tree.DepthFirstTraversal(t0);
 dfsit=dfs.iterator();
 dfsit.next();
 dfsit.next();
