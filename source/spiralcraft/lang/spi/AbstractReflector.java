@@ -506,10 +506,12 @@ public abstract class AbstractReflector<T>
     }
     
     Reflector<?> reflector=null;
-    if (getContentType()==Void.class)
+    if (getContentType()==Void.class || getContentType()==Void.TYPE)
     { reflector=other;
     }
-    else if (other.getContentType()==Void.class)
+    else if (other.getContentType()==Void.class 
+              || other.getContentType()==Void.TYPE
+            )
     { reflector=this;
     }
     else if (isAssignableFrom(other))
