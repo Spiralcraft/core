@@ -408,24 +408,54 @@ public class DataHandler
         { 
           DataReader dataReader=new DataReader();
           dataReader.setDataFactory(dataFactory);
-          currentField.setValue
+
+          if (fieldType.isAggregate())
+          {
+            if (fieldType.getContentType().isPrimitive())
+            {
+              currentField.setValue
+              (tuple
+              ,fieldType.fromData
+                ((DataComposite) dataReader.readFromURI(ref,fieldType),null)
+              );
+            }
+            else
+            {
+              currentField.setValue
+              (tuple
+              ,dataReader.readFromURI(ref,fieldType)
+              );
+            }
+          }
+          else
+          { 
+            currentField.setValue
             (tuple
             ,dataReader.readFromURI(ref,fieldType)
             );
-          
+            return new EmptyFrame(); //XXX Until merge works
+          }
         }
         catch (IOException x)
         { throw new DataException("Error reading "+ref+": "+x,x);
         
         }
-        return new EmptyFrame(); //XXX Until merge works
       }
 
       // 2009-07-29 mike Pass in current field value instead of null, so
       //   data is additive to an aggregate
       if (fieldType.isAggregate())
-      { return new AggregateFrame
-          (fieldType,(Aggregate) currentField.getValue(tuple));
+      { 
+        if (fieldType.getContentType().isPrimitive())
+        {
+          return new AggregateFrame
+            (fieldType,(Aggregate) fieldType.toData(currentField.getValue(tuple)));
+        }
+        else
+        {
+          return new AggregateFrame
+            (fieldType,(Aggregate) currentField.getValue(tuple));
+        }
       }
       else
       { return new ObjectFrame(fieldType);
@@ -447,7 +477,28 @@ public class DataHandler
           // Figure out how to merge the two
         }
         try
-        { currentField.setValue(tuple,childObject);
+        { 
+          Type fieldType=currentField.getType();
+          if (fieldType.isAggregate())
+          { 
+            if (fieldType.getContentType().isPrimitive())
+            {
+              currentField.setValue
+              (tuple
+              ,fieldType.fromData((DataComposite) childObject,null)
+              );
+            }
+            else
+            {
+              currentField.setValue
+              (tuple
+              ,childObject
+              );
+            }
+          }
+          else
+          {  currentField.setValue(tuple,childObject);
+          }
         }
         catch (DataException x)
         { throw new DataSAXException(x.toString()+formatPosition(),x);
@@ -721,8 +772,19 @@ public class DataHandler
         }
       }
       
-      Type type=resolveType(uri,localName);
-      assertCompatibleType(formalType.getContentType(),type);
+      
+      Type type=null;
+      
+      if (qName.equals("_"))
+      { type=formalType.getContentType();
+      }
+      else
+      {
+        type=resolveType(uri,localName);
+        assertCompatibleType(formalType.getContentType(),type);
+      }
+        
+      
       return createFrame(type,ref);
     }
     
