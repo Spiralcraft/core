@@ -54,8 +54,11 @@ public class CommandScheduler
     @Override
     public void run()
     {
-      if (!started)
-      { return;
+      synchronized (CommandScheduler.this)
+      {
+        if (!started)
+        { return;
+        }
       }
       
       try
