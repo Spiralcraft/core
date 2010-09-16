@@ -12,6 +12,7 @@
   xmlns:vfsm="class:/spiralcraft/vfs/meta/"
   xmlns:vfsc="class:/spiralcraft/vfs/context/"
   xmlns:vfst="class:/spiralcraft/vfs/test/"
+  xmlns:vfilt="class:/spiralcraft/vfs/filters/"  
   xmlns="dynamic:/"
   >
   <name>spiralcraft.vfs.test
@@ -103,6 +104,81 @@
           </testX>
           
         </test:Assertion>
+        
+        <test:Assertion>
+        
+          <name>pattern1
+          </name>
+          
+          <subjectX>
+            [*vfilt:PatternFilter{"**/CVS/*"}]
+              .accept([@vfs:Resolver].@getInstance().resolve("./x/CVS/Entries"))
+          </subjectX>
+          
+          <testX>.
+          </testX>
+          
+        </test:Assertion>
+        
+        <test:Assertion>
+        
+          <name>pattern2
+          </name>
+          
+          <subjectX>
+            [*vfilt:PatternFilter{"**/CVS/*"}]
+              .accept([@vfs:Resolver].@getInstance().resolve("./x/y/CVS/Entries"))
+          </subjectX>
+          
+          <testX>.
+          </testX>
+          
+        </test:Assertion>
+        
+        <test:Assertion>
+        
+          <name>pattern3
+          </name>
+          
+          <subjectX>
+            [*vfilt:PatternFilter{"**/CVS/*"}]
+              .accept([@vfs:Resolver].@getInstance().resolve("/x/y/CVS/Entries"))
+          </subjectX>
+          
+          <testX>.
+          </testX>
+          
+        </test:Assertion>     
+           
+        <test:Assertion>
+        
+          <name>pattern4
+          </name>
+          
+          <subjectX>
+            [*vfilt:PatternFilter{"**/CVS/*"}]
+              .accept([@vfs:Resolver].@getInstance().resolve("CVS/Entries"))
+          </subjectX>
+          
+          <testX>.
+          </testX>
+          
+        </test:Assertion>    
+        
+                <test:Assertion>
+        
+          <name>pattern5
+          </name>
+          
+          <subjectX>
+            [*vfilt:PatternFilter{"**/.cvsignore"}]
+              .accept([@vfs:Resolver].@getInstance().resolve("logs/.cvsignore"))
+          </subjectX>
+          
+          <testX>.
+          </testX>
+          
+        </test:Assertion>    
       </scenarios>
     </task:Sequence>
   </chain>

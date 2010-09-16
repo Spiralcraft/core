@@ -71,7 +71,7 @@
           </fileURI>
       
         </iotest:RecordIteratorTest>
-<!--         
+        
         <vfs:Copy>
           
           <verbose>true
@@ -79,14 +79,31 @@
           
           <sourceResource>class:/spiralcraft/data/test/example
           </sourceResource>
-
-          <pattern>*.data.xml
-          </pattern>
           
-          <targetResource>out/data/store
+          <targetResource>out/copy/
           </targetResource>
         </vfs:Copy>
--->        
+        
+        <vfs:Copy>
+          
+          <verbose>true
+          </verbose>
+          
+          <sourceResource>../test-source
+          </sourceResource>
+          
+          <preserveTime>true
+          </preserveTime>
+          
+          <targetResource>out/copy/test/
+          </targetResource>
+          
+          <pattern>**
+          </pattern>
+          
+
+        </vfs:Copy>
+
         <dtest:DataTest/>
 
         <sectest:AuthTest

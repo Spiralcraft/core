@@ -89,6 +89,13 @@
   
     <score>50.423
     </score>
+    
+    <discountCodes>a
+    </discountCodes>
+
+    <discountCodes>b
+    </discountCodes>
+
   </example:Customer>
 
 </example:Customer.list>

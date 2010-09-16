@@ -850,7 +850,18 @@
         
         </test:Assertion>  
         
-                
+        <test:Assertion>
+          <name>Null arg constructor
+          </name>
+          
+          <subjectX>
+            [@jn:URI].(null,"test",null)
+          </subjectX>
+          
+          <testX>.!=null
+          </testX>
+        
+        </test:Assertion>                  
       </scenarios>
       
     </task:Sequence>

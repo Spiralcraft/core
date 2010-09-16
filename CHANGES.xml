@@ -4,6 +4,129 @@
   
   <scm:Change>
   
+    <revision>0.4.11.3
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-09-16
+    </date>
+  
+    <notes>
+
+    </notes>
+    
+    <detail>
+       <scm:Change>
+        <notes>
+          <scm:Note>Add (context, query) constructor to Fetch
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/task/Fetch.java
+        </path>
+      </scm:Change>
+      
+       <scm:Change>
+        <notes>
+          <scm:Note>Fix NPE in expression parser when expression starts with
+            "*"
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/ExpressionParser.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>A Reflector for Void.TYPE (null) should cause 
+            getCommonType(type) to return the specified type.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi/AbstractReflector.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Synchronize CommandScheduler around started flag to
+            prevent stray Commands from running after stop.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/command/CommandScheduler.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-42] VFS Copy task features
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>util/PathPattern.java
+          </URI>
+          <URI>util/URIUtil.java
+          </URI>
+          <URI>vfs/batch/Search.java
+          </URI>
+          <URI>vfs/batch/Search.java
+          </URI>
+          <URI>vfs/filters/ListFilter.java
+          </URI>
+          <URI>vfs/filters/PatterntFilter.java
+          </URI>
+          <URI>vfs/task/Copy.java
+          </URI>
+        </resources>
+      </scm:Change>
+          
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-41] Array typed fields should be represented as 
+            native arrays in Tuple data
+          </scm:Note>
+          <scm:Note>Fix NPE in ArrayType.toData()
+          </scm:Note>
+          <scm:Note>ReflectionField writes a native array of "primitives" 
+            to aggregate methods 
+          </scm:Note>
+          <scm:Note>DataHandler converts array types to primitive arrays
+            on input
+          </scm:Note>
+          <scm:Note>DataWriter converts native array type to an Aggregate
+            on output
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/core/ArrayType.java
+          </URI>
+          <URI>data/reflect/ReflectionField.java
+          </URI>
+          <URI>data/sax/DataHandler.java
+          </URI>
+          <URI>data/sax/DataWriter.java
+          </URI>
+        
+        </resources>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+      
+
+  <scm:Change>
+  
     <revision>0.4.11.2
     </revision>
     

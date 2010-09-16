@@ -68,6 +68,16 @@
       </expression>
     </meta:CalculatedField>
     
+    <meta:Field>
+        
+      <name>discountCodes
+      </name>
+        
+      <type>
+        <String.array.type/>
+      </type>
+      
+    </meta:Field>    
   </fields>
       
   <keys>
