@@ -583,7 +583,13 @@ class Context
     public void next()
       throws SAXException,DataException
     {
-      Aggregate value=(Aggregate) field.getValue(tuple);
+      Aggregate value=null;
+      if (componentType.isPrimitive())
+      { value=(Aggregate) field.getType().toData(field.getValue(tuple));
+      }
+      else
+      { value=(Aggregate) field.getValue(tuple);
+      }
       if (value==null)
       { 
         finish();
