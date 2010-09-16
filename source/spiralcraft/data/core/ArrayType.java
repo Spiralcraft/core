@@ -127,6 +127,9 @@ public class ArrayType<T>
   public DataComposite toData(Object[] array)
     throws DataException
   { 
+    if (array==null)
+    { return null;
+    }
     if (contentType.isPrimitive())
     {
       EditableAggregate<Object> aggregate=new EditableArrayListAggregate<Object>(this);
