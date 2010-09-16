@@ -538,7 +538,10 @@ public class ExpressionParser
     throws ParseException
   {
     Node node=parseUnaryExpression();
-    return parseMultiplicativeExpressionRest(node);
+    if (node!=null)
+    { return parseMultiplicativeExpressionRest(node);
+    }
+    return null;
   }
   
   private Node parseMultiplicativeExpressionRest(Node firstOperand)
@@ -1034,7 +1037,7 @@ public class ExpressionParser
         }
         else if (_tokenizer.sval.equals("null"))
         { 
-          node=new LiteralNode<Void>(null,Void.class);
+          node=new LiteralNode<Void>(null,Void.TYPE);
           consumeToken();
         }
         else if (Character.isDigit(_tokenizer.sval.charAt(0)))
