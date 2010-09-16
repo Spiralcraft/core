@@ -55,6 +55,7 @@ public class Search
   // private boolean _print;
   private Operation _operation;
   private Operation _currentOperation;
+  private ResourceFilter expansionFilter;
 
   /**
    * Execute a search specified by arguments
@@ -166,15 +167,27 @@ public class Search
             for (int i=children.length;i-->0;)
             { 
               Resource child=children[i];
+              boolean filterPass=false;
               if (child.asContainer()!=null)
-              { stack.push(child);
+              { 
+                if (_filter!=null && !_filter.accept(child))
+                { continue;
+                }
+                else
+                { filterPass=true;
+                }
+                
+                if (expansionFilter==null || expansionFilter.accept(child))
+                { stack.push(child);
+                }
+                
               }
               
               if (_pattern==null || _pattern.matches(relativePath(child)))
               {
                 if (_contentFilter==null || _contentFilter.accept(child))
                 {
-                  if (_filter==null || _filter.accept(child))
+                  if (_filter==null || filterPass || _filter.accept(child))
                   { 
                     if (_operation!=null)
                     { _operation.invoke(child);
@@ -212,9 +225,11 @@ public class Search
    */
   public synchronized List<Resource> list()
   { 
-    ListFilter filter=new ListFilter();
+    
+    ListFilter filter=new ListFilter(_filter);
     setFilter(filter);
     run();
+    setFilter(filter.getNext());
     return filter.getList();
   }
   
@@ -246,6 +261,20 @@ public class Search
   }
 
 
+  /**
+   * The filter that will determine whether a container should be expanded
+   * 
+   * @param filter
+   */
+  public void setExpansionFilter(ResourceFilter expansionFilter)
+  { this.expansionFilter=expansionFilter;
+  }
+  
+  /**
+   * The filter that will operate on the leaf Resources
+   * 
+   * @param filter
+   */
   public void setFilter(ResourceFilter filter)
   { _filter=filter;
   }

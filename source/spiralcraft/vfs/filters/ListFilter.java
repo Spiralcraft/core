@@ -31,14 +31,32 @@ public class ListFilter
 {
   private final LinkedList<Resource> _list
     =new LinkedList<Resource>();
-    
+
+  private final ResourceFilter next;
+  
+  public ListFilter()
+  { next=null;
+  }
+  
+  public ListFilter(ResourceFilter next)
+  { this.next=next;
+  }
+
   @Override
   public boolean accept(Resource resource)
   { 
-    _list.add(resource);
-    return true;
+    if (next==null || next.accept(resource))
+    {
+      _list.add(resource);
+      return true;
+    }
+    return false;
   }
 
+  public ResourceFilter getNext()
+  { return next;
+  }
+  
   public List<Resource> getList()
   { return _list;
   }

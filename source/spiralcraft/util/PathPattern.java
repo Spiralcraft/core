@@ -44,6 +44,7 @@ public class PathPattern
   public static final ClassLog log
     =ClassLog.getInstance(PathPattern.class);
   public static boolean debug;
+  private String patternString;
   
   enum Type
   { TREE,GLOB,ROOT;
@@ -83,7 +84,14 @@ public class PathPattern
   }
   
   public PathPattern(String pattern)
-  { this.tokens=parse(pattern);
+  { 
+    this.patternString=pattern;
+    this.tokens=parse(pattern);
+  }
+  
+  @Override
+  public String toString()
+  { return (prefix!=null?prefix:"")+patternString;
   }
   
   public boolean matches(Path path)

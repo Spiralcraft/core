@@ -41,6 +41,9 @@ public class PatternFilter
   { return _pattern.matches(new Path(resource.getURI().getPath(),'/'));
   }
 
+  public PathPattern getPattern()
+  { return _pattern;
+  }
 
 
 }

@@ -26,6 +26,14 @@ import java.net.URISyntaxException;
 public class URIUtil
 {
 
+  /**
+   * Creates a new URI, adding the specified pre-encoded String to the
+   *   end of the path String.
+   * 
+   * @param source
+   * @param rawSuffix
+   * @return
+   */
   public static final URI addPathSuffix(URI source,String rawSuffix)
   { 
     return URI.create
