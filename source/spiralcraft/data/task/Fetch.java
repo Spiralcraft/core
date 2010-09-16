@@ -38,8 +38,8 @@ import spiralcraft.task.Chain;
  * @author mike
  *
  */
-public class Fetch
-  extends Chain<Void,Aggregate<Tuple>>
+public class Fetch<Tcontext>
+  extends Chain<Tcontext,Aggregate<Tuple>>
 {
   
   protected Query query;
@@ -56,6 +56,12 @@ public class Fetch
 
   public Fetch()
   {
+  }
+  
+  public Fetch(Expression<Tcontext> contextX,Query query)
+  { 
+    this.contextX=contextX;
+    this.query=query;
   }
   
   public Fetch(Query query)
