@@ -242,7 +242,9 @@ public class ReflectionField<T>
       {
         try
         {
-          if (type.isPrimitive())
+          if (type.isPrimitive()
+              || (type.isAggregate() && type.getContentType().isPrimitive())
+             )
           { 
             if (writeMethod!=null)
             {
