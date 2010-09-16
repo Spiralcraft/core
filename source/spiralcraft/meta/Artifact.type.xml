@@ -1,5 +1,6 @@
 <meta:Type
   xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:jnet="class:/java/net/"
   >
   <fields>
     <meta:Field>
@@ -64,6 +65,30 @@
       </type>
     
     </meta:Field>    
+    
+    <meta:CalculatedField>
+      <name>location
+      </name>
+      
+      <type><URI.type/>
+      </type>
+      
+      <expression>
+        {
+          path:=
+            (..organization!=null?..organization+"/":null)
+            +(..module!=null?..module+"/":null)
+            +(..version!=null?..version+"/":null)
+            +(..filename!=null?..filename:null)
+            +(..extension!=null?"."+..extension:null)
+        , loc:=
+            ..repository!=null
+            ?..repository.resolve(.path)
+            :[@jnet:URI].(null,.path,null)
+        
+        }.loc
+      </expression>
+    </meta:CalculatedField>
   </fields>
 
 </meta:Type>
