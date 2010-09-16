@@ -1353,6 +1353,16 @@ public class BeanReflector<T>
             translator=new ConstructorTranslator<T>(this,method);
             constructors.put(sig,translator);
           }
+          else
+          {
+            log.log
+              (Level.DEBUG
+              ,"Constructor "
+              +"("+ArrayUtil.format(classSig,",","")
+              +") not found in "+targetClass
+              );
+            
+          }
         }
         catch (NoSuchMethodException x)
         { 
