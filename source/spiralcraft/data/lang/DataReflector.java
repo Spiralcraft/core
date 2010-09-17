@@ -242,7 +242,7 @@ public abstract class DataReflector<T extends DataComposite>
   @Override
   public boolean isAssignableTo(URI typeURI)
   {
-    if (type==null)
+    if (type==null || !typeURI.isAbsolute())
     { return false;
     }
     try
