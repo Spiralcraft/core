@@ -18,7 +18,28 @@
     </notes>
     
     <detail>
-       <scm:Change>
+      <scm:Change>
+        <notes>
+          <scm:Note>Implement Renderer interface using an Expression
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/util/ExpressionRenderer.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Fix NPE checking a non-absolute URI against a 
+            DataReflector
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/lang/DataReflector.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <notes>
           <scm:Note>Add (context, query) constructor to Fetch
           </scm:Note>
@@ -28,7 +49,7 @@
         </path>
       </scm:Change>
       
-       <scm:Change>
+      <scm:Change>
         <notes>
           <scm:Note>Fix NPE in expression parser when expression starts with
             "*"
