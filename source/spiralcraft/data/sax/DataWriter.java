@@ -244,6 +244,18 @@ class Context
       =new HashMap<String,URI>();
     protected AttributesImpl attributes=NULL_ATTRIBUTES;
     
+    public TypeFrame(Type type,String qname)
+    {
+      this.type=type;
+      URI typeUri=type.getURI();
+      String[] path=StringUtil.tokenize(typeUri.getPath(),"/");
+
+      
+      typeName=path[path.length-1];  
+      typeNamespace=typeUri.resolve(".");
+      this.qName=qname;
+    }
+    
     public TypeFrame(Type type)
     {
       this.type=type;
@@ -351,12 +363,21 @@ class Context
   {
     private final Object value;
     private final boolean singleContext;
+
+
     
     public PrimitiveFrame(Type<?> type,Object value,boolean singleContext)
     {
       super(type);
       this.value=value;
       this.singleContext=singleContext; 
+    }
+
+    public PrimitiveFrame(Type<?> type,Object value,String qname)
+    {
+      super(type,qname);
+      this.value=value;
+      this.singleContext=false; 
     }
     
     @Override
@@ -479,11 +500,13 @@ class Context
   {
     private final Aggregate<?> aggregate;
     private Iterator<?> aggregateIterator;
+    private Type componentType;
   
     public AggregateFrame(Aggregate<?> aggregate)
     { 
       super(aggregate.getType());
       this.aggregate=aggregate;
+      this.componentType=type.getContentType();
     }
   
   
@@ -504,14 +527,14 @@ class Context
         }
         else
         { 
-          if (type.getContentType().isDataEncodable())
+          if (componentType.isDataEncodable())
           { 
             DataComposite data
-              =type.getContentType().toData(object);
+              =componentType.toData(object);
             pushCompositeFrame(data);
           }
           else
-          { currentFrame=new PrimitiveFrame(type,object,false);
+          { currentFrame=new PrimitiveFrame(componentType,object,false);
           }
         }
         
