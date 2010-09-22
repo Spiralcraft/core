@@ -15,6 +15,7 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.common.namespace.PrefixResolver;
+import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.lang.BindException;
@@ -38,6 +39,7 @@ public class AbsoluteFocusNode
   private URI uri;
 
   public AbsoluteFocusNode(String qname)
+    throws UnresolvedPrefixException
   { 
     int colonPos=qname.indexOf(':');
     if (colonPos==0)

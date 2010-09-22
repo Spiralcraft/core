@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import spiralcraft.common.namespace.PrefixResolver;
+import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
@@ -200,6 +201,7 @@ public class StructNode
   }
   
   public void setTypeQName(String qname)
+    throws UnresolvedPrefixException
   {     
     int colonPos=qname.indexOf(':');
     if (colonPos==0)

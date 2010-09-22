@@ -31,6 +31,14 @@ public class ParseException
     _text=text;
   }
 
+  public ParseException(String message,Throwable cause,int pos,String progress,String text)
+  {
+    super(message,cause);
+    _pos=pos;
+    _progress=progress;
+    _text=text;
+  }
+
   @Override
   public String toString()
   {

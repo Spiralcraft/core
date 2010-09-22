@@ -17,6 +17,7 @@ package spiralcraft.lang.parser;
 
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.common.namespace.PrefixResolver;
+import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -149,6 +150,7 @@ public abstract class Node
    */
   protected URI resolveQName
     (String prefix,String suffix)
+    throws UnresolvedPrefixException
   {
     PrefixResolver resolver=NamespaceContext.getPrefixResolver();
     URI ret=null;
@@ -156,14 +158,8 @@ public abstract class Node
     { 
       ret=resolveQName(prefix,suffix,resolver);
       if (ret==null)
-      {
-        log.log
-          (Level.WARNING
-          ,"Unresolved qname '"
-          +(prefix==null || prefix.isEmpty()?"":prefix+":")+suffix+"'"
-          +"\r\n"+resolver.computeMappings()
-          ,new Exception()
-          );
+      {  throw new UnresolvedPrefixException(prefix,suffix,resolver);
+
       }
     }
     else

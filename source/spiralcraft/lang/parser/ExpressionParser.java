@@ -18,6 +18,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 import spiralcraft.log.ClassLog;
 
+import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.io.LookaheadStreamTokenizer;
 
 import java.io.StreamTokenizer;
@@ -132,6 +133,18 @@ public class ExpressionParser
   {
     throw new ParseException
       (message+": In '"+tokenString()+"' @line "+_tokenizer.lineno()
+      ,_pos
+      ,_progressBuffer.toString()
+      ,_text
+      );
+  }
+  
+  private void throwException(String message,Exception cause)
+    throws ParseException
+  {
+    throw new ParseException
+      (message+": In '"+tokenString()+"' @line "+_tokenizer.lineno()
+      ,cause
       ,_pos
       ,_progressBuffer.toString()
       ,_text
@@ -947,7 +960,14 @@ public class ExpressionParser
     }
     expect(']');
 
-    return new ObjectLiteralNode(source,typeString,params);
+    try
+    { return new ObjectLiteralNode(source,typeString,params);
+    }
+    catch (UnresolvedPrefixException x)
+    { 
+      throwException("Unresolved prefix",x);
+      return null;
+    }
   }
   
   
@@ -1142,7 +1162,13 @@ public class ExpressionParser
       // Publish as specified URI 
       expect('[');
       expect('#');
-      struct.setTypeQName(parseURIName("]"));
+      try
+      {  struct.setTypeQName(parseURIName("]"));
+      }
+      catch (UnresolvedPrefixException x)
+      { throwException("Unresolved prefix",x);
+      }
+      
       expect(']');
     }
     
@@ -1386,6 +1412,7 @@ public class ExpressionParser
     throws ParseException
   {
     
+    
     expect('[');
 
     String focusString=parseURIName("]");
@@ -1396,20 +1423,26 @@ public class ExpressionParser
     FocusNode focusNode=null;
     
     char prefix=focusString.charAt(0);
+    try
+    {
     
-    if (prefix=='@')
-    { 
-      TypeFocusNode typeFocusNode=new TypeFocusNode(focusString.substring(1),0);
-      while (_tokenizer.ttype=='[' && _tokenizer.lookahead.ttype==']')
-      {
-        consumeToken();
-        consumeToken();
-        typeFocusNode=typeFocusNode.arrayType();
+      if (prefix=='@')
+      { 
+        TypeFocusNode typeFocusNode=new TypeFocusNode(focusString.substring(1),0);
+        while (_tokenizer.ttype=='[' && _tokenizer.lookahead.ttype==']')
+        {
+          consumeToken();
+          consumeToken();
+          typeFocusNode=typeFocusNode.arrayType();
+        }
+        focusNode=typeFocusNode;
       }
-      focusNode=typeFocusNode;
+      else 
+      { focusNode=new AbsoluteFocusNode(focusString);
+      }
     }
-    else 
-    { focusNode=new AbsoluteFocusNode(focusString);
+    catch (UnresolvedPrefixException x)
+    { throwException("Unresolved prefix",x);
     }
 
     return focusNode;

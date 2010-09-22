@@ -15,6 +15,7 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.common.namespace.PrefixResolver;
+import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 
@@ -42,6 +43,7 @@ public class TypeFocusNode
   private final int arrayDepth;
 
   public TypeFocusNode(String qname,int arrayDepth)
+    throws UnresolvedPrefixException
   { 
     int colonPos=qname.indexOf(':');
     if (colonPos==0)

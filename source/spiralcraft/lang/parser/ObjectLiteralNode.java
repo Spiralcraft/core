@@ -15,6 +15,7 @@
 package spiralcraft.lang.parser;
 
 import spiralcraft.common.namespace.PrefixResolver;
+import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
@@ -54,6 +55,7 @@ public class ObjectLiteralNode<Tobject,Treturn>
     ,String qname
     ,List<Node> paramNodes
     )
+    throws UnresolvedPrefixException
   { 
     this.source=source;
     int colonPos=qname.indexOf(':');
