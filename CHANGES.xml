@@ -4,6 +4,55 @@
   
   <scm:Change>
   
+    <revision>0.4.11.4
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-09-16
+    </date>
+  
+    <notes>
+
+    </notes>
+    
+    <detail>
+      <scm:Change>
+        <notes>
+          <scm:Note>Require that all namespace prefixes in Expressions are 
+            resolved at parse-time instead of generating a hard-to-trace
+            warning.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>common/namespace/UnresolvedPrefixException.java
+          </URI>
+          <URI>lang/ParseException.java
+          </URI>
+          <URI>lang/parser/AbsoluteFocusNode.java
+          </URI>
+          <URI>lang/parser/ExpressionParser.java
+          </URI>
+          <URI>lang/parser/Node.java
+          </URI>
+          <URI>lang/parser/ObjectLiteralNode.java
+          </URI>
+          <URI>lang/parser/StructNode.java
+          </URI>
+          <URI>lang/parser/TypeFocusNode.java
+          </URI>
+        </resources>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+
+  <scm:Change>
+  
     <revision>0.4.11.3
     </revision>
     
