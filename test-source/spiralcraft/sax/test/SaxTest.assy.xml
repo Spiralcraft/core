@@ -94,6 +94,35 @@
           </testX>
           
         </test:Assertion>        
+
+        <test:Assertion>
+        
+          <name>strip fragment markup
+          </name>
+          
+          <subjectX>
+            [@jnet:URI]
+            {{[*jnet:URI{"class:/spiralcraft/sax/test/fragment1.xmlf"}]
+            ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment2.xmlf"}]
+            ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment3.xmlf"}]            
+            }}
+            #{
+              .[*vfs:Resolve].[*vfs:IO]
+              { 
+                [@sax:SaxUtil].@stripFragmentMarkup
+                  ([@j:String].(.))
+              }
+            }
+            #{.length()
+            }
+              
+          </subjectX>
+          
+          <testX>.==[@j:Integer][{1799,129,255}]
+          </testX>
+          
+        </test:Assertion>        
+
       </scenarios>
     </task:Sequence>
   </chain>

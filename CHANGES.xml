@@ -4,6 +4,55 @@
   
   <scm:Change>
   
+    <revision>0.4.11.5
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-09-24
+    </date>
+  
+    <notes>
+
+    </notes>
+    
+    <detail>
+    
+      <scm:Change>
+        <notes>
+          <scm:Note>Expose "overwrite" property for Copy task
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/task/Copy.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Provide function to strip XML tags from a document
+            fragment.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/sax/
+        </path>
+        
+        <resources>
+          <URI>Element.java
+          </URI>
+          <URI>SaxUtil.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+    </detail>
+  </scm:Change>
+    
+  <scm:Change>
+  
     <revision>0.4.11.4
     </revision>
     
