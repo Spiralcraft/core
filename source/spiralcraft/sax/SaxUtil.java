@@ -69,6 +69,20 @@ public class SaxUtil
     return ParseTreeFactory.toFragment(tree);
   }
 
+  /**
+   * Strip all markup from an XML fragment.
+   * 
+   * @param fragment
+   * @return
+   */
+  public static String stripFragmentMarkup
+    (String fragment) 
+    throws SAXException, IOException
+  { 
+    ParseTree tree=ParseTreeFactory.fromFragment(fragment,null);
+    return tree.getDocument().getRootElement().getDeepCharacters();
+  }  
+
   
   /**
    * Ellipsize a text based node tree. If the tree contains textual

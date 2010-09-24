@@ -225,6 +225,25 @@ public class Element
   
 
   /**
+   * A concatenation of the character data in this element and in all
+   *   descendant Elements
+   */
+  public String getDeepCharacters()
+  {
+    StringBuilder buf=new StringBuilder();
+    for (Node node: getChildren())
+    {
+      if (node instanceof Characters)
+      { buf.append( ((Characters) node).getCharacters());
+      }
+      else if (node instanceof Element)
+      { buf.append( ((Element) node).getDeepCharacters());
+      }
+    }
+    return buf.toString();
+  }
+  
+  /**
    * A concatenation of the character data in this element
    */
   public String getCharacters()
