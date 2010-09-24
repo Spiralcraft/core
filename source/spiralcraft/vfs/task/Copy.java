@@ -140,6 +140,10 @@ public class Copy
   { this.preserveTime=preserveTime;
   }
   
+  public void setOverwrite(boolean overwrite)
+  { this.overwrite=overwrite;
+  }
+  
   private Resource resolveWithDefault(Binding<URI> binding,Resource rdefault)
     throws UnresolvableURIException
   {
