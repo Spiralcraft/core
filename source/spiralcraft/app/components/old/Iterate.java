@@ -62,7 +62,7 @@ public class Iterate<T>
   
   private boolean initializeContent;
   
-  { container=new StandardContainer();
+  { childContainer=new StandardContainer();
   }
 
   /**
@@ -431,7 +431,7 @@ public class Iterate<T>
   
   @Override
   public IterationState createState(State parent)
-  { return new IterationState(container.getChildCount(),parent,id);
+  { return new IterationState(childContainer.getChildCount(),parent,id);
   }
   
   class Iteration
