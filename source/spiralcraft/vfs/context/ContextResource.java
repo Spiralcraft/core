@@ -59,12 +59,7 @@ public class ContextResource
   extends ResourceWrapper
 { 
 
-//  private static final ClassLog log
-//    =ClassLog.getInstance(ContextResource.class);
-//  private static final Level debugLevel
-//    =ClassLog.getInitialDebugLevel(ContextResource.class,null);
   
-//  private String path;
   private Resource delegate;
   private URI resolvedURI;
   
@@ -73,42 +68,6 @@ public class ContextResource
   { 
     this.delegate=delegate;
     this.resolvedURI=resolvedURI;
-//    path=uri.getPath().substring(1);
-//    String authority=uri.getAuthority();
-//    URI root;
-//    if (authority!=null)
-//    { 
-//      root=ContextResourceMap.lookup(authority);
-//      if (root==null)
-//      { 
-//        throw new UnresolvableURIException
-//          (uri
-//          ,"Unknown resource context '"+authority+"' for "+uri
-//          +": "+ContextResourceMap.getMapId()+" mappings="+ContextResourceMap.getMap()
-//          );
-//      }
-//    }
-//    else
-//    { 
-//      root=ContextResourceMap.getDefault();
-//      if (root==null)
-//      { 
-//        throw new UnresolvableURIException
-//          (uri,"No default resource context for "+uri
-//          +": "+ContextResourceMap.getMapId()+" mappings="+ContextResourceMap.getMap()
-//          );
-//      }
-//    }
-//    
-//    if (debugLevel.canLog(Level.TRACE))
-//    { 
-//      log.trace
-//        (ContextResourceMap.getMapId()
-//        +": Resolved "+root+" from "+authority+" for "+path
-//        );
-//    }
-//    URI target=root.resolve(path);
-//    delegate=Resolver.getInstance().resolve(target);
     
     
   }
