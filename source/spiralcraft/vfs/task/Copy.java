@@ -36,6 +36,7 @@ public class Copy
   private boolean preserveTime;
   private String[] excludes;
   private Binding<String[]> excludesX;
+  private boolean excludeUnchanged;
   
   
   class ExcludesFilter
@@ -72,9 +73,9 @@ public class Copy
       { 
         if (pattern.accept(resource))
         { 
-          if (verbose)
+          if (debug)
           {
-            log.info
+            log.fine
               ("Excluding "+resource.getURI());
           }
           return false;
@@ -132,6 +133,10 @@ public class Copy
   { this.excludesX=excludesX;
   }
 
+  public void setExcludeUnchanged(boolean excludeUnchanged)
+  { this.excludeUnchanged=excludeUnchanged;
+  }
+  
   public void setPattern(PathPattern pattern)
   { this.pattern=pattern;
   }
@@ -259,14 +264,14 @@ public class Copy
             Resource to=Resolver.getInstance().resolve
               (targetRoot.getURI().resolve(relativeURI));
               
-            if (verbose)
-            {
-              log.info
-                ("Copying "+from.getURI()+" to "+to.getURI());
-            }
             
             if (from.asContainer()!=null)
             { 
+              if (verbose && !to.exists())
+              {
+                log.info
+                  ("Creating "+to.getURI());
+              }
               to.ensureContainer();
               if (preserveTime)
               { to.setLastModified(from.getLastModified());
@@ -275,8 +280,20 @@ public class Copy
             else if (!overwrite && to.exists())
             { 
             }
+            else if (excludeUnchanged 
+                    && from.getLastModified()==to.getLastModified()
+                    && from.getSize()==to.getSize()
+                    )
+            {
+            }
             else
             { 
+              if (verbose)
+              {
+                log.info
+                  ("Copying "+from.getURI()+" to "+to.getURI());
+              }
+              
               from.copyTo(to);
               if (preserveTime)
               { to.setLastModified(from.getLastModified());

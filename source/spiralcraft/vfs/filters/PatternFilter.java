@@ -32,6 +32,10 @@ public class PatternFilter
   { _pattern=new PathPattern(expression);
   }
   
+  public PatternFilter(Path prefix,String expression)
+  { _pattern=new PathPattern(prefix,expression);
+  }
+  
   public PatternFilter(PathPattern pattern)
   { _pattern=pattern;
   }
