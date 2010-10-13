@@ -49,7 +49,7 @@ public class AbstractComponent
   
   protected Parent parent;
   protected boolean bound=false;
-  protected Container container;
+  protected Container childContainer;
   protected Focus<?> selfFocus;
   protected boolean acceptsChildren=true;
 
@@ -97,12 +97,12 @@ public class AbstractComponent
 
   @Override
   public Container asContainer()
-  { return container;
+  { return childContainer;
   }
 
   @Override
   public Parent asParent()
-  { return null;
+  { return this;
   }
   
   /**
@@ -138,8 +138,8 @@ public class AbstractComponent
       { focusChain.addFacet(selfFocus);
       }
     }
-    if (container!=null)
-    { container.bind(focusChain);
+    if (childContainer!=null)
+    { childContainer.bind(focusChain);
     }
     return focusChain;
   }
@@ -149,8 +149,8 @@ public class AbstractComponent
     throws LifecycleException
   { 
     handlers.start();
-    if (container!=null)
-    { container.start();
+    if (childContainer!=null)
+    { childContainer.start();
     }
   }
 
@@ -158,8 +158,8 @@ public class AbstractComponent
   public void stop()
     throws LifecycleException
   { 
-    if (container!=null)
-    { container.stop();
+    if (childContainer!=null)
+    { childContainer.stop();
     }
     handlers.stop();
   }
@@ -219,7 +219,7 @@ public class AbstractComponent
     Component[] children=new Component[newChildren.length];
     System.arraycopy(newChildren,0,children,0,newChildren.length);
     
-    this.container
+    this.childContainer
       =new StandardContainer(children);
   }
     
