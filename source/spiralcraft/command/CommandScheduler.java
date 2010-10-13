@@ -23,6 +23,7 @@ import spiralcraft.log.Level;
 import spiralcraft.time.Instant;
 import spiralcraft.time.Recurrent;
 import spiralcraft.time.Scheduler;
+import spiralcraft.vfs.context.ContextResourceMap;
 
 /**
  * Schedules a command to run periodically. Designed to be subclassed by or
@@ -47,6 +48,45 @@ public class CommandScheduler
   private volatile boolean started=false;
   private Scheduler scheduler=Scheduler.instance();
   private boolean debug;
+  private boolean delay;
+  protected ContextResourceMap resourceMap;
+  
+  /**
+   * Construct a default CommandScheduler for external configuration
+   */
+  public CommandScheduler()
+  {
+  }
+  
+  /**
+   * Construct a CommandScheduler that will run the specified task
+   *   every <i>period</i> milliseconds.
+   *   
+   * @param period
+   * @param task
+   */
+  public CommandScheduler(long period,final Runnable task)
+  {
+    
+    this.period=period;
+    this.factory
+      =new AbstractCommandFactory<Void,Void,Void>()
+      {
+
+        @Override
+        public Command<Void, Void, Void> command()
+        { 
+          return new CommandAdapter<Void,Void,Void>()
+          { 
+            @Override
+            protected void run()
+            { task.run();
+            }
+          };
+        }
+      };
+      
+  }
   
   private final Runnable runnable
     =new Runnable()
@@ -61,6 +101,9 @@ public class CommandScheduler
         }
       }
       
+      if (resourceMap!=null)
+      { resourceMap.push();
+      }
       try
       {
         Command command=factory.command();
@@ -79,6 +122,12 @@ public class CommandScheduler
         (Level.WARNING,"Scheduled command threw exception "
         ,x
         );
+      }
+      finally
+      {
+        if (resourceMap!=null)
+        { resourceMap.pop();
+        }
       }
       synchronized (CommandScheduler.this)
       {
@@ -121,6 +170,15 @@ public class CommandScheduler
   
   public void setPeriod(long period)
   { this.period=period;
+  }
+  
+  /**
+   * Delay the first run instead of executing it on start
+   * 
+   * @param delay
+   */
+  public void setDelay(boolean delay)
+  { this.delay=delay;
   }
   
   public void setRegular(boolean regular)
@@ -170,7 +228,15 @@ public class CommandScheduler
   
   private synchronized void reschedule()
   {
+    
     long now=System.currentTimeMillis();
+    if (mark==0 && delay)
+    {
+      if (recurrent==null)
+      { mark=now+period;
+      }
+    }
+    
     if (now>=mark)
     { 
       // Queued mark has passed, generate a new one
