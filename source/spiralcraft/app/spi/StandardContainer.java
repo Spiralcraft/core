@@ -38,6 +38,7 @@ public class StandardContainer
   { this.children=children;
   }
   
+  
   protected Component[] children;
   protected Level logLevel=Level.INFO;
 
@@ -66,11 +67,14 @@ public class StandardContainer
     throws BindException
   { 
     for (Component child:children)
-    { child.bind(focusChain);
+    { bindChild(focusChain,child);
     }
   }
   
- 
+  protected Focus<?> bindChild(Focus<?> context,Component child) 
+    throws BindException
+  { return child.bind(context);
+  }
 
   @Override
   public Component getChild(
