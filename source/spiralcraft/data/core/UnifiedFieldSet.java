@@ -112,6 +112,16 @@ public class UnifiedFieldSet
   }
 
   @Override
+  public String[] getFieldNames()
+  { 
+    String[] ret=new String[fieldCount];
+    for (int i=0;i<fieldCount;i++)
+    { ret[i]=getFieldByIndex(i).getName();
+    }
+    return ret;
+  }
+  
+  @Override
   public Type<?> getType()
   { return type;
   }

@@ -71,5 +71,13 @@ public interface Key<T>
    *   the matching Field values.
    */
   public Query getQuery();
+
+  /**
+   * 
+   * @return The names of the Fields that make up this Key definition
+   */
+  @Override
+  public String[] getFieldNames();
+  
   
 }

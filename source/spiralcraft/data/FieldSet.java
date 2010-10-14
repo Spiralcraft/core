@@ -42,6 +42,11 @@ public interface FieldSet
   int getFieldCount();
   
   /**
+   *@return the names of the Fields in this FieldSet
+   */
+  String[] getFieldNames();
+  
+  /**
    *@return an Iterable which provides access to 
    *   fields in order of their indexes
    */

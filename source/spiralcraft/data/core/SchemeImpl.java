@@ -97,6 +97,17 @@ public class SchemeImpl
   }
   
   @Override
+  public String[] getFieldNames()
+  { 
+    String[] ret=new String[fields.size()];
+    int i=0;
+    for (Field<?> field:fields)
+    { ret[i++]=field.getName();
+    }
+    return ret;
+  }
+  
+  @Override
   @SuppressWarnings("unchecked") // Map cast
   public <X> Field<X> getFieldByName(String name)
   { return (Field<X>) fieldMap.get(name);
