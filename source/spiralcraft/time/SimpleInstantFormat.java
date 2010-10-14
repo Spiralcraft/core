@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -18,6 +18,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Translates Instants to and from Strings according to the rules of
+ *   SimpleDateFormat.
+ * 
+ * @author mike
+ *
+ */
 public class SimpleInstantFormat
 {
 
