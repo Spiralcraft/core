@@ -7,6 +7,8 @@ import spiralcraft.data.FieldSet;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Aggregate;
+import spiralcraft.data.Type;
+import spiralcraft.data.UpdateConflictException;
 import spiralcraft.data.session.Buffer;
 import spiralcraft.util.ArrayUtil;
 
@@ -38,8 +40,8 @@ public class ArrayDeltaTuple
   { 
     super
       (original!=null
-      ?original.getFieldSet()
-      :updated.getFieldSet()
+      ?Type.getDeltaType(original.getFieldSet().getType()).getScheme()
+      :Type.getDeltaType(updated.getFieldSet().getType()).getScheme()
       );
     
     dirtyFlags=new BitSet(fieldSet.getFieldCount());
@@ -97,6 +99,54 @@ public class ArrayDeltaTuple
    * @param updated
    * @throws DataException
    */  
+  public ArrayDeltaTuple(Type<?> archetype,DeltaTuple updated)
+    throws DataException
+  { this(archetype,updated,updated.getOriginal());
+  }
+  
+  public ArrayDeltaTuple(Type<?> archetype,DeltaTuple updated,Tuple original)
+    throws DataException
+  { 
+    super(Type.getDeltaType(archetype).getScheme());
+//    log.fine("Delta Tuple: "+getScheme());
+    dirtyFlags=new BitSet(fieldSet.getFieldCount());
+    copyFrom(updated);
+    this.original=original;
+    
+    if (getType()!=null && getType().getPrimaryKey()!=null)
+    { 
+      for (Field<?> sourceField: archetype.getPrimaryKey().getSourceFields())
+      { 
+        
+        ArrayDeltaTuple extent
+          =(ArrayDeltaTuple) this.widen(sourceField.getFieldSet().getType());
+        if (extent==null)
+        { 
+          throw new DataException
+            ("Field "+sourceField+" not found in "+this);
+        }
+        
+       
+        Object val=sourceField.getValue(updated);
+//        log.fine("Copying key field "
+//          +sourceField+"(#"+sourceField.getIndex()+") from "+updated+" to "+this
+//          +" with value ["+val+"]"
+//          );
+        extent.data[sourceField.getIndex()]=val;
+        
+      }
+    }
+  }
+
+
+  
+  /**
+   * Constructs a DeltaTuple from another DeltaTuple
+   *   
+   * @param original
+   * @param updated
+   * @throws DataException
+   */  
   public ArrayDeltaTuple(DeltaTuple updated)
     throws DataException
   { 
@@ -106,6 +156,42 @@ public class ArrayDeltaTuple
     this.original=updated.getOriginal();
   }
 
+  @Override
+  public ArrayDeltaTuple rebase(Tuple newOriginal)
+    throws DataException
+  { 
+    if (newOriginal==null)
+    { 
+      if (original!=null)
+      { throw new UpdateConflictException(this,null);
+      }
+      else
+      { return this;
+      }
+    }
+    ArrayDeltaTuple incoming=new ArrayDeltaTuple(original,newOriginal);
+    Field<?>[] intersection
+      =ArrayUtil.intersection(getDirtyFields(),incoming.getDirtyFields());
+    if (intersection!=null && intersection.length>0)
+    { 
+      ArrayList<Field<?>> conflicts=new ArrayList<Field<?>>();
+      for (int i=0;i<intersection.length;i++)
+      { 
+        Object o1=intersection[i].getValue(this);
+        Object o2=intersection[i].getValue(incoming);
+        if (o1!=o2 && (o1==null || !o1.equals(o2)))
+        { conflicts.add(intersection[i]);
+        }
+      }
+      
+      if (conflicts.size()>0)
+      { throw new UpdateConflictException(this,incoming);
+      }
+    }
+    return new ArrayDeltaTuple
+      (newOriginal.getType(),this,newOriginal);
+  }
+  
   void copyFrom(DeltaTuple updated)
     throws DataException
   { 

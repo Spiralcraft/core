@@ -30,12 +30,14 @@ import spiralcraft.data.JournalTuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.TypeMismatchException;
+import spiralcraft.data.UpdateConflictException;
 
 import spiralcraft.data.session.DataSession.DataSessionBranch;
 import spiralcraft.data.spi.ArrayTuple;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.util.StaticInstanceResolver;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.util.ArrayUtil;
 
 /**
@@ -114,6 +116,25 @@ public class BufferTuple
     field.setValue(this,data);
   }  
   
+  /** 
+   * Update original to a new copy. Any conflicting modifications will
+   *   be overwritten. 
+   */
+  @Override
+  public DeltaTuple rebase(Tuple newOriginal)
+    throws UpdateConflictException
+  {
+    // TODO Check for conflict by finding delta between old original and
+    //   new original, and looking for dirty fields overlap
+    setOriginal(newOriginal);
+    return this;
+  }
+  
+  /**
+   * Queue the result of the transaction to be the new original
+   * 
+   * @param tuple
+   */
   public void updateOriginal(Tuple tuple)
   { 
     if (debug)
@@ -733,21 +754,32 @@ public class BufferTuple
           if (updater!=null)
           { 
             updater.dataAvailable(this);
-            ok=true;
+            transaction.commit();
           }
           else
           { log.fine("No updater in Space for Type "+getType());
           }
+          if (debug)
+          { log.fine("Finished commit of "+this);
+          }
+          ok=true;
         }
         finally
         {
-          if (ok)
-          { transaction.commit();
-          }
-          else
+          if (!ok)
           { transaction.rollback();
           }
         }
+      }
+      catch (DataException x)
+      { 
+        log.log(Level.FINE,"RE",x);
+        throw x;
+      }
+      catch (RuntimeException x)
+      { 
+        log.log(Level.FINE,"RE",x);
+        throw x;
       }
       finally
       {
@@ -761,17 +793,17 @@ public class BufferTuple
   void prepare()
     throws DataException
   {
-    if (original instanceof JournalTuple)
-    { original=((JournalTuple) original).prepareUpdate(this);
-    }
+//    if (original instanceof JournalTuple)
+//    { original=((JournalTuple) original).prepareUpdate(this);
+//    }
     
   }
   
   void rollback()
   {
-    if (original instanceof JournalTuple)
-    { ((JournalTuple) original).rollback();
-    }
+//    if (original instanceof JournalTuple)
+//    { ((JournalTuple) original).rollback();
+//    }
   }
   
   void commit()
@@ -784,8 +816,8 @@ public class BufferTuple
     {
       if (original instanceof JournalTuple)
       { 
-        ((JournalTuple) original).commit();
-        reset();
+//        ((JournalTuple) original).commit();
+//        reset();
       }
       else if (original instanceof EditableTuple)
       { // writeThrough();
