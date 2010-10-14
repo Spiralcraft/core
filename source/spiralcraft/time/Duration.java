@@ -44,7 +44,7 @@ public class Duration
   
   public Duration(long count,Chronom unit,Duration rest)
   {
-    if (unit.compareTo(rest.getUnit())<=0)
+    if (rest!=null && unit.compareTo(rest.getUnit())<=0)
     { 
       throw new IllegalArgumentException
         ("A Duration may not be expressed in terms of a coarser Duration: "
@@ -56,7 +56,7 @@ public class Duration
     this.unit=unit;
     this.rest=rest;
   }
-  
+
   public long getCount()
   { return count;
   }

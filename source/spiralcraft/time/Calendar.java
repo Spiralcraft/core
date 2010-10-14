@@ -115,6 +115,9 @@ public class Calendar
   { return chronology.add(timeZone,locale,start,field,amount);
   }
 
+  public Instant subtract(Instant end,Duration duration)
+  { return chronology.subtract(timeZone,locale,end,duration);
+  }
   
   public Duration subtract(Instant end,Instant start)
   { return chronology.subtract(timeZone,locale,end,start);

@@ -132,6 +132,29 @@ public enum Chronology
     
   }
   
+  public Instant subtract
+    (TimeZone timeZone
+    ,Locale locale
+    ,Instant end
+    ,Duration duration
+    )
+  { 
+    Calendar calendar=newCalendarImpl(timeZone,locale);
+    calendar.setTimeInMillis(end.getOffsetMillis());
+    Duration rest=duration;
+    while (rest!=null)
+    { 
+
+      Duration calDuration=rest.getUnit().getCalendarDuration();
+      int calAmount
+        =Long.valueOf(rest.getCount()*calDuration.getCount()).intValue();
+      calendar.add(calDuration.getUnit().getCalendarField(),-calAmount);
+      rest=rest.getRest();
+    }
+    return new Instant(calendar.getTimeInMillis());
+
+  }
+  
   /**
    * Compute a Duration from an time range in terms of a specific set of units
    *   as they relate to the Chronology
