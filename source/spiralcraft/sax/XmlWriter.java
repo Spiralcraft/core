@@ -32,10 +32,15 @@ import java.nio.charset.Charset;
 
 
 /**
- * Writes XML as SAX events are fired through the ContentHandler interface
+ * <p>Writes XML as SAX events are fired through the ContentHandler interface
+ * </p>
  * 
- * When connected to a SAX parser, this class should write a copy
+ * <p>When connected to a SAX parser, this class should write a copy
  *   of the document being read.
+ * </p>
+ *   
+ * <p>Data is encoded using XML 1.0 semantics
+ * </p>
  */
 public class XmlWriter
   implements ContentHandler
