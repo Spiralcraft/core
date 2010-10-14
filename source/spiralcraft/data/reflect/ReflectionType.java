@@ -333,6 +333,9 @@ public class ReflectionType<T>
     if (reflectedClass.isEnum())
     { return true;
     }
+    if (immutable)
+    { return true;
+    }
     return super.isPrimitive();
   }
 
