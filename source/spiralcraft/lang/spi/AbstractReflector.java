@@ -188,6 +188,30 @@ public abstract class AbstractReflector<T>
         }
       }
     }
+    else if (name.equals("@last") && params==null)
+    { 
+      channel=source.getCached("@last");
+      if (channel==null)
+      { 
+        ListDecorator d
+          =source.<ListDecorator>decorate(ListDecorator.class);
+        if (d!=null)
+        { 
+          channel=new LastListChannel(source,d);
+          source.cache("@last",channel);
+        }
+      }
+      if (channel==null)
+      { 
+        IterationDecorator d
+          =source.<IterationDecorator>decorate(IterationDecorator.class);
+        if (d!=null)
+        { 
+          channel=new LastIterChannel(source,d);
+          source.cache("@last",channel);
+        }
+      }
+    }    
     else if (name.equals("@log") && params.length==1)
     { 
       assertSingleParameter(params,name,"String");
@@ -647,6 +671,80 @@ class TopIterChannel<T,I>
   { return false;
   }
 }
+
+class LastListChannel<T,I>
+  extends SourcedChannel<T,I>
+{
+  private final ListDecorator<T,I> decorator;
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public LastListChannel(Channel<T> source,ListDecorator decorator)
+  throws BindException
+  { 
+    super
+    (decorator.getComponentReflector()
+      ,source
+    );
+    this.decorator=decorator;
+  }
+
+  @Override
+  public I retrieve()
+  { 
+    T list=source.get();
+    if (list!=null)
+    { return decorator.get(list,decorator.size(list)-1);
+    }
+    else
+    { return null;
+    }
+  }
+
+  @Override
+  public boolean store(I val)
+  { return false;
+  }
+}
+
+class LastIterChannel<T,I>
+  extends SourcedChannel<T,I>
+{
+  private final IterationDecorator<T,I> decorator;
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public LastIterChannel(Channel<T> source,IterationDecorator decorator)
+  throws BindException
+  { 
+    super
+    (decorator.getComponentReflector()
+      ,source
+    );
+    this.decorator=decorator;
+  }
+
+  @Override
+  public I retrieve()
+  { 
+    Iterator<I> it=decorator.iterator();
+    if (it!=null)
+    {
+      I next=null;
+      while (it.hasNext())
+      { next=it.next();
+      }
+      return next;
+    }
+    else
+    { return null;
+    }
+  }
+
+  @Override
+  public boolean store(I val)
+  { return false;
+  }
+}
+
 
 class CollectionSizeChannel<T>
   extends SourcedChannel<T,Integer>
