@@ -126,6 +126,55 @@ public class StreamUtil
   }
   
   /**
+   * Read buffers of text, stopping cleanly as line endings are
+   *   encountered or the buffer fills up.
+   */
+  public final static String readUntilEOL
+    (final InputStream in
+    ,byte[] buffer
+    ,int maxLength
+    ,String encoding
+    )
+    throws IOException
+  {
+    if (buffer==null)
+    { buffer=new byte[8192];
+    }
+    int totalCount=0;
+
+    String ret=null;
+    while (totalCount<maxLength)
+    {
+      int count
+        =readUntil
+          (in
+          ,buffer
+          ,(byte) '\n'
+          ,0
+          ,Math.min(maxLength-totalCount,buffer.length)
+          );
+     
+      if (count==-1)
+      { break;
+      }
+      totalCount+=count;
+      
+
+      if (buffer[count-1]=='\n')
+      { 
+        // Deal with possibility of just a \n as a line term 
+        final int trim=(count==1||buffer[count-2]!='\r')?1:2;
+        ret=new String(buffer,0,count-trim,encoding);
+        break;
+      }
+      else
+      { ret=new String(buffer,0,count,encoding);
+      }
+    }
+    return ret;
+  }
+
+  /**
    * Read a line of ascii text ending with an \r\n.
    */
   public final static String readAsciiLine
