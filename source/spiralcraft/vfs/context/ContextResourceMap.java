@@ -84,6 +84,9 @@ public class ContextResourceMap
   { return threadMap.get().doResolve(contextURI);
   }
   
+  public static ContextResourceMap get()
+  { return threadMap.get();
+  }
   
   public static final String getMapId()
   {
