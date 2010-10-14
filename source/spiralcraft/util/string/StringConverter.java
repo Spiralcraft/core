@@ -77,6 +77,7 @@ public abstract class StringConverter<T>
     _MAP.put(byte[].class,new ByteArrayToHex());
     
     _MAP.put(spiralcraft.time.Instant.class,new InstantToString());
+    _MAP.put(spiralcraft.time.Duration.class,new DurationToString());    
   }
 
   /**
