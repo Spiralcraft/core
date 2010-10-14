@@ -28,12 +28,16 @@ import spiralcraft.data.Type;
 
 import spiralcraft.data.lang.BoundTuple;
 import spiralcraft.data.lang.TupleReflector;
+import spiralcraft.data.query.EquiJoin;
+import spiralcraft.data.query.Query;
+import spiralcraft.data.query.Scan;
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.ParseException;
 import spiralcraft.lang.spi.AbstractChannel;
 
 /**
@@ -162,6 +166,17 @@ public class ProjectionImpl<T>
   }
   
   @Override
+  public String[] getFieldNames()
+  { 
+    String[] ret=new String[fields.size()];
+    int i=0;
+    for (Field<?> field:fields)
+    { ret[i++]=field.getName();
+    }
+    return ret;
+  }
+  
+  @Override
   public int getFieldCount()
   { return fields.size();
   }
@@ -170,7 +185,17 @@ public class ProjectionImpl<T>
   { return masterFieldSet;
   }
 
-
+  @Override
+  public Field<?>[] getSourceFields()
+  { 
+    Field<?>[] sourceFields=new Field[fields.size()];
+    int i=0;
+    for (ProjectionField<?> field: fields)
+    { sourceFields[i++]=field.getSourceField();
+    }
+    return sourceFields;
+  }
+  
   
   protected <X> void addMasterField(String name,Field<X> masterField)
     throws DataException
@@ -183,6 +208,7 @@ public class ProjectionImpl<T>
     field.setType(masterField.getType());
     field.setName(name);
     field.setExpression(Expression.create("."+masterField.getName()));
+    field.setSourceField(masterField);
     fields.add(field);
     fieldMap.put(field.getName(),field);
   }
@@ -229,6 +255,38 @@ public class ProjectionImpl<T>
     return ret;
   }
   
+  public Query getIdentityQuery()
+    throws DataException
+
+  {
+    if (masterFieldSet==null)
+    { return null;
+    }
+    EquiJoin ej=new EquiJoin();
+    Expression<?>[] rhsExpressions=new Expression<?>[fields.size()];
+    int i=0;
+    for (Field<?> field : fields)
+    {
+      try
+      { rhsExpressions[i++]=Expression.parse(field.getName());
+      }
+      catch (ParseException x)
+      {
+        throw new DataException
+        ("Error parsing Key expression '"+field.getName()+"':"+x,x);
+      }
+
+    }
+    //  ej.setDebug(true);
+    ej.setExpressions
+    (getTargetExpressions()
+      ,rhsExpressions
+    );
+    ej.setSource(new Scan(masterFieldSet.getType()));
+    ej.setDebug(debug);
+    return ej;
+
+  }
   @Override
   public Channel<Tuple> bindChannel
     (Channel<T> source

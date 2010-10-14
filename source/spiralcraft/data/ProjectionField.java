@@ -25,4 +25,11 @@ public interface ProjectionField<T>
    * @return The Expression associated with this Field
    */
   Expression<?> getExpression();
+  
+  /**
+   * 
+   * @return The Source field associated with this ProjectionField, if it 
+   *   maps directly onto a field in the projection source.
+   */
+  Field<?> getSourceField();
 }

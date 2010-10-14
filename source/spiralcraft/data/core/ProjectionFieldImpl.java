@@ -15,6 +15,7 @@
 package spiralcraft.data.core;
 
 
+import spiralcraft.data.Field;
 import spiralcraft.data.ProjectionField;
 import spiralcraft.lang.Expression;
 
@@ -41,6 +42,7 @@ public class ProjectionFieldImpl<T>
 {
 
   private Expression<?> expression;
+  private Field<T> sourceField;
   
   public void setExpression(Expression<?> expression)
   { this.expression=expression;
@@ -49,6 +51,15 @@ public class ProjectionFieldImpl<T>
   @Override
   public Expression<?> getExpression()
   { return expression;
+  }
+  
+  public void setSourceField(Field<T> sourceField)
+  { this.sourceField=sourceField;
+  }
+  
+  @Override
+  public Field<T> getSourceField()
+  { return sourceField;
   }
 
 }

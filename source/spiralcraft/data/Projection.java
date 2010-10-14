@@ -63,6 +63,15 @@ public interface Projection<T>
   Expression<?>[] getTargetExpressions();
   
   /**
+   * 
+   * @return An array of Fields containing one element for each Field in the 
+   *   projection, which contains the source field for the corresponding
+   *   projection Field, or null if the field is not associated directly
+   *   with a Field in the projection source. 
+   */
+  Field<?>[] getSourceFields();
+  
+  /**
    *@return an Iterable which provides access to 
    *   fields in order of their indexes
    */
