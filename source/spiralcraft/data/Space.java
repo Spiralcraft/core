@@ -101,7 +101,7 @@ public class Space
    */
   public void setServices(final Service[] services)
   {
-    this.container
+    this.childContainer
       =new StandardContainer()
     {
       { 
@@ -156,8 +156,11 @@ public class Space
     throws BindException
   { 
     for (Store store: stores)
-    { store.bind(selfFocus);
+    { 
+      store.bind(selfFocus);
+      storeMap.put(store.getName(),store);      
     }
+    computeTypes();
     return focusChain;
   }
   
@@ -168,11 +171,9 @@ public class Space
     
     for (Store store: stores)
     { 
-      storeMap.put(store.getName(),store);
       store.start();
     }
     
-    computeTypes();
     super.start();
   }
   
