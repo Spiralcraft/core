@@ -127,7 +127,7 @@ public abstract class DataHandlerBase
     { initialFrame.start(null);
     } 
     catch (DataException x)
-    { this.throwSAXException("Error starting root frame", x);
+    { throw newSAXException("Error starting root frame", x);
     }
   }
 
@@ -146,7 +146,7 @@ public abstract class DataHandlerBase
     { initialFrame.finish();
     } 
     catch (DataException x)
-    { this.throwSAXException("Error finalizing document", x);
+    { throw newSAXException("Error finalizing document", x);
     }
   }
    
@@ -226,6 +226,10 @@ public abstract class DataHandlerBase
     { traceHandler.characters(ch,start,length);
     }
     
+//    log.fine("CHARACTERS ("+start+","+length+") ["
+//            +new String(ch,start,length)+"]"
+//            );
+
     currentFrame.characters(ch,start,length);
   }
 
@@ -242,14 +246,12 @@ public abstract class DataHandlerBase
     }
   }  
   
-  protected void throwSAXException(String message)
-    throws SAXException
-  { throw new DataSAXException(message+": "+formatPosition());
+  protected SAXException newSAXException(String message)
+  { return new DataSAXException(message+": "+formatPosition());
   }
   
-  protected void throwSAXException(String message,Exception cause)
-    throws SAXException
-  { throw new DataSAXException(message+": "+formatPosition(),cause);
+  protected SAXException newSAXException(String message,Exception cause)
+  { return new DataSAXException(message+": "+formatPosition(),cause);
   }
 
   /**
@@ -335,7 +337,7 @@ public abstract class DataHandlerBase
       throws SAXException
     { 
       if (!hasElements)
-      { chars.append(new String(ch,start,length));
+      { chars.append(ch,start,length);
       }
       else
       { 
@@ -560,11 +562,16 @@ public abstract class DataHandlerBase
     
     
     public Object fromString(Type<?> type,String text)
-      throws DataException
+      throws DataException,SAXException
     {
       NamespaceContext.push(this);
       try
       { return type.fromString(text);
+      }
+      catch (RuntimeException x)
+      { 
+        throw newSAXException
+          ("Error translating text content",x);
       }
       finally
       { NamespaceContext.pop();

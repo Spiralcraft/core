@@ -118,13 +118,12 @@ public class ForeignDataHandler
       { 
         if (frameHandler.isStrictMapping())
         { 
-          throwSAXException
+          throw newSAXException
             ("Unmapped element '"+fullName+"': uri="+uri
             +", localName="+localName
             +", qname="+qName
             );
           
-          return null; // Unreachable, but required
         }
         else
         { return new IgnoredFrame();
@@ -166,10 +165,10 @@ public class ForeignDataHandler
         }
       }
       catch (DataException x)
-      { throwSAXException(x.toString(),x);
+      { throw newSAXException(x.toString(),x);
       }      
       catch (RuntimeException x)
-      { throwSAXException(x.toString(),x);
+      { throw newSAXException(x.toString(),x);
       }
     }
         

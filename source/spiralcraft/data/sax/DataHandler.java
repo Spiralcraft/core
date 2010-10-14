@@ -311,7 +311,7 @@ public class DataHandler
     
     @Override
     protected void closeFrame()
-      throws DataException
+      throws DataException,SAXException
     {
       String text=getCharacters();
       if (text.length()>0)
@@ -536,7 +536,7 @@ public class DataHandler
       throws SAXException
     { 
       if (this.object!=null)
-      { throwSAXException("Cannot contain more than one Object");
+      { throw newSAXException("Cannot contain more than one Object");
       }
       else
       { 
@@ -558,7 +558,7 @@ public class DataHandler
     {
       if (object!=null)
       { 
-        throwSAXException
+        throw newSAXException
           ("Type "+formalType.getURI()+" cannot contain more than one Object");
       }
       
