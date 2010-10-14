@@ -23,7 +23,7 @@ import spiralcraft.lang.spi.Accumulator;
 import spiralcraft.lang.spi.ViewState;
 
 /**
- * Computes the number of non-null values in a sequence
+ * Concatenates the members of a set as strings
  * 
  * @author mike
  *
