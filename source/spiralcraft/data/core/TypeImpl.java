@@ -80,7 +80,7 @@ public class TypeImpl<T>
     this.resolver=resolver;
     this.uri=uri;
     this.packageURI=resolver.getPackageURI(uri);
-    this.debug=debugLevel.canLog(Level.DEBUG);
+    this.debug=debugLevel.isDebug();
   }
   
   @Override
