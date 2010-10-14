@@ -17,7 +17,7 @@ package spiralcraft.data.access;
 import spiralcraft.data.Type;
 
 /**
- * <p>Defines the role of a Type within a Schema. A Store will map the
+ * <p>Represents a persistent Type within a Schema. A Store will map the
  *   Entity definitions in a Schema to storage and retrieval pathways,
  *   eg. tables.
  * </p>
@@ -30,6 +30,15 @@ public class Entity
   private Type<?> type;
   private String name;
   private boolean debug;
+  private DeltaTrigger[] deltaTriggers;
+  
+  public Entity()
+  {
+  }
+  
+  public Entity(Type<?> type)
+  { this.type=type;
+  }
   
   public Type<?> getType()
   { return type;
@@ -59,5 +68,23 @@ public class Entity
   
   public boolean isDebug()
   { return debug;
+  }
+  
+  /**
+   * <p>The Triggers associated with this Entity
+   * </p>
+   * 
+   * @param triggers
+   */
+  public void setDeltaTriggers(DeltaTrigger[] deltaTriggers)
+  { this.deltaTriggers=deltaTriggers;
+  }
+  
+  /**
+   * 
+   * @return the Triggers associated with this Entity
+   */
+  public DeltaTrigger[] getDeltaTriggers()
+  { return deltaTriggers;
   }
 }

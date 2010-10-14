@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.spi;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,17 +22,23 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 
+import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
+import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.Sequence;
 import spiralcraft.data.Space;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
+import spiralcraft.data.access.Entity;
 import spiralcraft.data.access.Schema;
 import spiralcraft.data.access.Store;
+import spiralcraft.data.access.DeltaTrigger;
+import spiralcraft.data.access.Updater;
 import spiralcraft.data.core.SequenceField;
 
 import spiralcraft.data.query.BoundQuery;
@@ -39,6 +46,12 @@ import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Scan;
+import spiralcraft.data.transaction.Branch;
+import spiralcraft.data.transaction.ResourceManager;
+import spiralcraft.data.transaction.Transaction;
+import spiralcraft.data.transaction.TransactionException;
+import spiralcraft.data.transaction.Transaction.State;
+import spiralcraft.data.types.standard.AnyType;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
@@ -46,7 +59,7 @@ import spiralcraft.lang.Contextual;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
-
+import spiralcraft.util.ArrayUtil;
 /**
  * <p>Starting point for building a new type of Store.
  * </p>
@@ -61,6 +74,7 @@ import spiralcraft.log.Level;
 public abstract class AbstractStore
   implements Store,Contextual
 {
+  
   protected final ClassLog log=ClassLog.getInstance(getClass());
   protected Level debugLevel=ClassLog.getInitialDebugLevel(getClass(),null);
 
@@ -69,18 +83,26 @@ public abstract class AbstractStore
   protected final Type<?> sequenceType;  
   protected final EquiJoin sequenceQuery;
   
+  
   protected Schema schema;
   
   protected long lastTransactionId;
   
   private HashSet<Type<?>> authoritativeTypes=new HashSet<Type<?>>();
   
-  private LinkedHashMap<Type<?>,Queryable<Tuple>> queryables
-    =new LinkedHashMap<Type<?>,Queryable<Tuple>>();
+//  private LinkedHashMap<Type<?>,Queryable<Tuple>> queryables
+//    =new LinkedHashMap<Type<?>,Queryable<Tuple>>();
 
+  private LinkedHashMap<Type<?>,EntityBinding> entities
+    =new LinkedHashMap<Type<?>,EntityBinding>();
+  
   private HashMap<URI,Sequence> sequences;  
   private String name;
   private Focus<Store> focus;
+  private Sequence txIdSequence;
+  
+  private StoreResourceManager resourceManager
+    =new StoreResourceManager();
   
   public AbstractStore()
     throws DataException
@@ -112,6 +134,10 @@ public abstract class AbstractStore
   { return lastTransactionId;
   }
   
+  /**
+   * Indicates that this Store represents the authoritative copy of the data
+   *   for the specified Type, and should be used to handle data updates.
+   */
   @Override
   public boolean isAuthoritative(Type<?> type)
   { return authoritativeTypes.contains(type);
@@ -153,10 +179,10 @@ public abstract class AbstractStore
   @Override
   public Type<?>[] getTypes()
   {
-    Type<?>[] types=new Type[queryables.size()];
+    Type<?>[] types=new Type[entities.size()];
     int i=0;
-    for (Queryable<Tuple> queryable: queryables.values())
-    { types[i++]=queryable.getTypes()[0];
+    for (EntityBinding entity: entities.values())
+    { types[i++]=entity.getEntity().getType();
     }
     return types;
   }
@@ -194,7 +220,7 @@ public abstract class AbstractStore
     
     BoundQuery<?,Tuple> ret=query.solve(context,container);
     ret.resolve();
-    if (debugLevel.canLog(Level.DEBUG))
+    if (debugLevel.isDebug())
     { log.debug("returning "+ret+" from query("+query+")");
     }
     return ret;
@@ -221,6 +247,15 @@ public abstract class AbstractStore
     throws BindException
   { 
     focus=focusChain.chain(new SimpleChannel<Store>(this,true));
+    txIdSequence=createTxIdSequence();
+    if (sequences==null)
+    { sequences=new HashMap<URI,Sequence>();
+    }
+    for (EntityBinding binding : entities.values())
+    { binding.bind(focus);
+    }
+
+    sequences.put(URI.create("_TXID"),txIdSequence);
     return focus;
   }
   
@@ -229,9 +264,10 @@ public abstract class AbstractStore
   public void start()
     throws LifecycleException
   { 
-    for (Queryable<?> queryable:queryables.values())
-    { addSequences(queryable.getTypes()[0]);
+    for (EntityBinding binding: entities.values())
+    { binding.start();
     }
+
     
     if (sequences!=null)
     {
@@ -247,13 +283,15 @@ public abstract class AbstractStore
   public void stop()
     throws LifecycleException
   { 
+
+    started=false;
+    // log.fine("Stopping store...");
     if (sequences!=null)
     {
       for (Sequence sequence : sequences.values())
       { sequence.stop();
       }
     }
-    started=false;
   }  
   
   /**
@@ -261,19 +299,17 @@ public abstract class AbstractStore
    * @param type The Queryable which handles the specified Type
    * @return
    */
-  protected Queryable<Tuple> getQueryable(Type<?> type)
-  { return queryables.get(type);
-  }
-   
-  protected void addPrimaryQueryable(Type<?> type,Queryable<Tuple> queryable)
-  {
-    queryables.put(type,queryable);
-    addAuthoritativeType(type);
-    addBaseTypes(queryable,type);    
+  protected final Queryable<Tuple> getQueryable(Type<?> type)
+  { 
+    EntityBinding entity=entities.get(type);
+    return entity!=null?entity.getQueryable():null;
   }
   
+  protected final EntityBinding getEntityBinding(Type<?> type)
+  { return entities.get(type);
+  }
   
-  protected void addAuthoritativeType(Type<?> type)
+  private void addAuthoritativeType(Type<?> type)
   { authoritativeTypes.add(type);
   }
   
@@ -300,18 +336,22 @@ public abstract class AbstractStore
     Type<?> type=subtype.getBaseType();
     while (type!=null)
     { 
-      // Set up a queryable for each of the XmlQueryable's base types
+      // Set up a queryable for each of the Queryable's base types
       
-      Queryable<Tuple> candidateQueryable=getQueryable(type);
+      EntityBinding targetBinding=entities.get(type);
+        
       BaseExtentQueryable<Tuple> baseQueryable;
         
-      if (candidateQueryable==null)
+      if (targetBinding==null)
       { 
         baseQueryable=new BaseExtentQueryable<Tuple>(type);
-        addBaseExtentQueryable(type, baseQueryable);
         baseQueryable.addExtent(subtype,queryable);
+        
+        targetBinding=createEntityBinding(new Entity(type));
+        targetBinding.setQueryable(baseQueryable);
+        addEntityBinding(targetBinding);
       }
-      else if (!(candidateQueryable instanceof BaseExtentQueryable<?>))
+      else if (!(targetBinding.getQueryable() instanceof BaseExtentQueryable<?>))
       {
         // The base extent queryable is already "concrete"
         // This is ambiguous, though. The base extent queryable only
@@ -319,13 +359,15 @@ public abstract class AbstractStore
         //   base type.
           
         baseQueryable=new BaseExtentQueryable<Tuple>(type);
-        addBaseExtentQueryable(type, baseQueryable);
-        baseQueryable.addExtent(type,candidateQueryable);
+        baseQueryable.addExtent(type,targetBinding.getQueryable());
         baseQueryable.addExtent(subtype,queryable);
+
+        targetBinding.setQueryable(baseQueryable);
       }
       else
       {
-        ((BaseExtentQueryable<Tuple>) candidateQueryable)
+
+        ((BaseExtentQueryable<Tuple>) targetBinding.getQueryable())
           .addExtent(subtype, queryable);
       }
       type=type.getBaseType();
@@ -333,27 +375,26 @@ public abstract class AbstractStore
     }
     
   }
-  
- 
-  
-  /**
-   * <p>Called from addBaseTypes to add a queryable for a common base type.
-   *   Adds a queryable for the base extent to the set of queryable types.
-   * </p>
-   * 
-   * <p>Override and call super method to perform additional registration
-   *   or wrapping of the base type
-   * </p>
-   * 
-   * @param type
-   * @param queryable
-   */
-  protected void addBaseExtentQueryable
-    (Type<?> baseType,BaseExtentQueryable<Tuple> queryable)
-  { queryables.put(baseType,queryable);
-  }
-  
+   
 
+  /**
+   * <p>Register a configured EntityBinding with this Store to manage an
+   *   access path for a Type.
+   * </p> 
+   * 
+   * @param binding
+   */
+  protected void addEntityBinding(EntityBinding binding)
+  { 
+    entities.put(binding.getEntity().getType(),binding);
+    if (binding.isAuthoritative())
+    { 
+      addAuthoritativeType(binding.getEntity().getType());
+    }
+    if (!(binding.getQueryable() instanceof BaseExtentQueryable))
+    { addBaseTypes(binding.getQueryable(),binding.getEntity().getType());
+    }
+  }
   
   /**
    * Create a new Sequence object that manages the sequence 
@@ -364,6 +405,24 @@ public abstract class AbstractStore
    */
   protected abstract Sequence createSequence(Field<?> field);
 
+
+  /**
+   * Create the transactionId sequence
+   * 
+   * @param field
+   * @return
+   */
+  protected abstract Sequence createTxIdSequence();
+  
+  /**
+   * Construct a new EntityBinding appropriate for the Store implementation.
+   * 
+   * @param entity
+   * @return
+   */
+  protected EntityBinding createEntityBinding(Entity entity)
+  { return new EntityBinding(entity);
+  }
   
   protected void assertStarted()
   { 
@@ -394,4 +453,352 @@ public abstract class AbstractStore
     
   }  
   
+
+  protected synchronized StoreBranch joinTransaction()
+    throws TransactionException
+  { 
+    Transaction transaction=Transaction.getContextTransaction();
+    if (transaction!=null)
+    { return resourceManager.branch(transaction);
+    }
+    else
+    { throw new TransactionException("Transaction required");
+    }
+  }
+  
+  protected void flushLog(Aggregate<DeltaTuple> deltaList,long txId)
+    throws IOException, DataException
+  {
+    
+  }
+  
+  protected void transactionCommitted(long txId)
+  {
+  
+  }
+  
+  /**
+   * Encapsulates the state of an Entity with a running Store.
+   * 
+   * @author mike
+   *
+   */
+  public class EntityBinding
+    implements Contextual,Lifecycle
+  {
+
+    private final Entity entity;
+    private Queryable<Tuple> queryable;
+    private Updater<DeltaTuple> updater;
+    private boolean authoritative;
+    
+    private DeltaTrigger[] beforeInsert=new DeltaTrigger[0];
+    private DeltaTrigger[] afterInsert=new DeltaTrigger[0];
+    private DeltaTrigger[] beforeUpdate=new DeltaTrigger[0];
+    private DeltaTrigger[] afterUpdate=new DeltaTrigger[0];
+    private DeltaTrigger[] beforeDelete=new DeltaTrigger[0];
+    private DeltaTrigger[] afterDelete=new DeltaTrigger[0];
+    
+    public EntityBinding(Entity entity)
+    { this.entity=entity;
+    }
+    
+    public Entity getEntity()
+    { return entity;
+    }
+    
+    public void setQueryable(Queryable<Tuple> queryable)
+    { this.queryable=queryable;
+    }
+    
+    public Queryable<Tuple> getQueryable()
+    { return queryable;
+    }
+    
+    public void setUpdater(Updater<DeltaTuple> updater)
+    { this.updater=updater;
+    }
+    
+    public Updater<DeltaTuple> getUpdater()
+    { return updater;
+    }
+    
+    public boolean isAuthoritative()
+    { return authoritative;
+    }
+    
+    public void setAuthoritative(boolean authoritative)
+    { this.authoritative=authoritative;
+    }
+    
+    @Override
+    public Focus<?> bind(Focus<?> focusChain)
+      throws BindException
+    { 
+      addSequences(entity.getType());
+      
+      if (updater!=null)
+      {
+        Focus<?> updaterFocus=updater.bind(focusChain);
+      
+      
+      
+        DeltaTrigger[] tupleTriggers=entity.getDeltaTriggers();
+        if (tupleTriggers!=null)
+        {
+          for (DeltaTrigger trigger : tupleTriggers)
+          { 
+            if (trigger.getTask()!=null)
+            { trigger.bind(updaterFocus);
+            }
+          
+            switch (trigger.getWhen())
+            {
+              case BEFORE:
+                if (trigger.isForInsert())
+                { beforeInsert=ArrayUtil.append(beforeInsert,trigger);
+                }
+                if (trigger.isForUpdate())
+                { beforeUpdate=ArrayUtil.append(beforeUpdate,trigger);
+                }
+                if (trigger.isForDelete())
+                { beforeDelete=ArrayUtil.append(beforeDelete,trigger);
+                }
+                break;
+              case AFTER:
+                if (trigger.isForInsert())
+                { afterInsert=ArrayUtil.append(afterInsert,trigger);
+                }
+                if (trigger.isForUpdate())
+                { afterUpdate=ArrayUtil.append(afterUpdate,trigger);
+                }
+                if (trigger.isForDelete())
+                { afterDelete=ArrayUtil.append(afterDelete,trigger);
+                }
+                break;
+            }
+          }
+        }
+        
+      }
+      else if (entity.getDeltaTriggers()!=null)
+      { 
+        throw new BindException
+          ("Triggers require an Updater in Entity "+entity.getType());
+      }
+      
+      return focusChain;
+    }
+
+    
+    @Override
+    public void start()
+      throws LifecycleException
+    { 
+    }
+
+    @Override
+    public void stop()
+      throws LifecycleException
+    {      
+    }
+    
+    public DeltaTuple beforeInsert(DeltaTuple tuple)
+      throws TransactionException
+    { return beforeTrigger(beforeInsert,tuple);
+    }
+    
+    public DeltaTuple beforeUpdate(DeltaTuple tuple)
+      throws TransactionException
+    { return beforeTrigger(beforeUpdate,tuple);
+    }
+
+    public DeltaTuple beforeDelete(DeltaTuple tuple)
+      throws TransactionException
+    { return beforeTrigger(beforeDelete,tuple);
+    }
+
+    public void afterInsert(DeltaTuple tuple)
+      throws TransactionException
+    { afterTrigger(afterInsert,tuple);
+    }
+  
+    public void afterUpdate(DeltaTuple tuple)
+      throws TransactionException
+    { afterTrigger(afterUpdate,tuple);
+    }
+
+    public void afterDelete(DeltaTuple tuple)
+      throws TransactionException
+    { afterTrigger(afterDelete,tuple);
+    }
+
+  
+    private DeltaTuple beforeTrigger(DeltaTrigger[] triggers,DeltaTuple tuple)
+      throws TransactionException
+    { 
+      for (DeltaTrigger trigger: triggers)
+      { 
+        tuple=trigger.trigger();
+        if (tuple==null)
+        { break;
+        }
+
+      }
+      return tuple;
+    }
+    
+    private void afterTrigger(DeltaTrigger[] triggers,DeltaTuple tuple)
+      throws TransactionException
+    {
+      for (DeltaTrigger trigger: triggers)
+      { trigger.trigger();
+      }
+    }
+  }
+  
+  class StoreResourceManager
+    extends ResourceManager<StoreBranch>
+  {
+
+    @Override
+    public StoreBranch createBranch(Transaction transaction)
+      throws TransactionException
+    { return new StoreBranch();
+    }
+  
+  }
+  
+  protected class StoreBranch
+    implements Branch
+  {
+
+
+    private EditableArrayListAggregate<DeltaTuple> deltaList
+      =new EditableArrayListAggregate<DeltaTuple>(AnyType.resolve());
+
+    private State state=State.STARTED;
+
+    long txId;
+    
+    public StoreBranch()
+      throws TransactionException
+    { 
+      
+      try
+      { txId=txIdSequence.next();
+      }
+      catch (DataException x)
+      { throw new TransactionException("Could not get next transaction id",x);
+      }
+    }
+    
+    
+    /**
+     * Log a Delta
+     * 
+     * @param tuple
+     */
+    public void log(DeltaTuple tuple)
+      throws DataException
+    { 
+      deltaList.add
+        (new ArrayDeltaTuple
+          (tuple.getType().getArchetype()
+          ,tuple
+          )
+        );
+    }
+
+
+    ListAggregate<DeltaTuple> getDeltaList()
+    { return deltaList;
+    }
+
+    public long getTxId()
+    { return txId;
+    }
+    
+    @Override
+    public void commit()
+    throws TransactionException
+    {
+      try
+      { 
+        // XXX Move to prepare when we can save log as temp
+        synchronized (AbstractStore.this)
+        { AbstractStore.this.flushLog(deltaList,txId);
+        }
+      }
+      catch (IOException x)
+      { throw new TransactionException("Error committing",x);
+      }
+      catch (DataException x)
+      { throw new TransactionException("Error committing",x);
+      }
+      state=State.COMMITTED;
+
+      transactionCommitted(txId);
+    }
+
+    @Override
+    public void complete()
+    {
+      try
+      {
+        if (state!=State.COMMITTED)
+        { rollback();
+        }
+      }
+      catch (TransactionException x)
+      { log.log(Level.WARNING,"Error rolling back incomplete transaction",x);
+      }
+      finally
+      { 
+        if (debugLevel.isTrace())
+        { log.trace("Completed StoreBranch "+txId);
+        }
+        // Release anything here
+        
+      }
+      state=State.COMPLETED;
+
+    }
+
+    @Override
+    public State getState()
+    { return state;
+    }
+
+    @Override
+    public boolean is2PC()
+    { return true;
+    }
+
+    @Override
+    public void prepare()
+    throws TransactionException
+    { 
+      
+      this.state=State.PREPARED;
+    }
+
+    @Override
+    public void rollback()
+    throws TransactionException
+    { 
+
+      if (state!=State.COMMITTED)
+      { 
+      }
+
+
+    }
+
+    @Override
+    public String toString()
+    { return super.toString()+": "+AbstractStore.this.toString();
+    }
+  }
+
 }

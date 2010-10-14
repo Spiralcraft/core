@@ -20,9 +20,7 @@ import java.net.URI;
 
 import java.util.ArrayList;
 
-import spiralcraft.command.AbstractCommandFactory;
 import spiralcraft.command.Command;
-import spiralcraft.command.CommandAdapter;
 import spiralcraft.command.CommandScheduler;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.data.Aggregate;
@@ -44,13 +42,16 @@ import spiralcraft.data.access.Entity;
 
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Queryable;
-import spiralcraft.data.session.BufferTuple;
+import spiralcraft.data.sax.DataWriter;
 import spiralcraft.data.session.BufferType;
 import spiralcraft.data.spi.AbstractStore;
+import spiralcraft.data.spi.ArrayDeltaTuple;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.spi.EditableArrayTuple;
+import spiralcraft.data.spi.ResourceSequence;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.transaction.Transaction.Nesting;
+import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.data.types.standard.AnyType;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
@@ -58,6 +59,10 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.Level;
 import spiralcraft.task.Scenario;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.UnresolvableURIException;
+import spiralcraft.vfs.util.RetentionPolicy;
 
 
 /**
@@ -69,7 +74,7 @@ import spiralcraft.task.Scenario;
 public class XmlStore
   extends AbstractStore
 {
-
+  
   private ArrayList<XmlQueryable> xmlQueryables
     =new ArrayList<XmlQueryable>();
   
@@ -80,31 +85,34 @@ public class XmlStore
   
   private URI masterURI;
   private Scenario<?,Tuple> subscriber;
+  private RetentionPolicy historyRetention
+    =new RetentionPolicy();
   
-  private final CommandScheduler updater
-    =new CommandScheduler()
-  {
-    { 
-      setPeriod(2000);
-      setCommandFactory(new AbstractCommandFactory<Void,Void,Void>()
-      {
+  private final CommandScheduler historyCleaner
+    =new CommandScheduler
+      (10000
+      ,new Runnable()
+        {
+          @Override
+          public void run()
+          { XmlStore.this.cleanHistory();
+          }
+        }
+      );
 
+  private final CommandScheduler updater
+    =new CommandScheduler
+    (2000
+    ,new Runnable()
+      {
         @Override
-        public Command<Void, Void, Void> command()
+        public void run()
         { 
-          return new CommandAdapter<Void,Void,Void>()
-          {
-            @Override
-            protected void run()
-            { XmlStore.this.triggerSubscriber();
-            }
-          };
+          log.fine("Running subscription");
+          XmlStore.this.triggerSubscriber();
         }
       }
-      );
-    
-    }
-  };
+    );
   
   public XmlStore()
     throws DataException
@@ -119,11 +127,45 @@ public class XmlStore
   public Focus<?> bind(Focus<?> focus)
     throws BindException
   { 
+    if (schema!=null)
+    {
+
+      
+      for (Entity entity: schema.getEntities())
+      {
+        XmlQueryable queryable=new XmlQueryable();
+        queryable.setResultType(entity.getType());
+        queryable.setResourceURI(URI.create(entity.getName()+".data.xml"));
+        queryable.setAutoCreate(true);
+        xmlQueryables.add(queryable);
+        EntityBinding binding=createEntityBinding(entity);
+        binding.setAuthoritative(true);
+        binding.setQueryable(queryable);
+        binding.setUpdater(new XmlUpdater(queryable,binding));   
+        
+        addEntityBinding(binding);
+        
+        if (debugLevel.isDebug())
+        { log.debug("Added XmlQueryable from schema");
+        }        
+      }
+    }
+    
+    
     focus=super.bind(focus);
+
+    for (XmlQueryable queryable:xmlQueryables)
+    { queryable.bind(focus);
+    }
+    sequenceQueryable.bind(focus);
     if (subscriber!=null)
     { subscriber.bind(focus);
     }
     return focus;
+  }
+  
+  public RetentionPolicy getHistoryRetention()
+  { return historyRetention;
   }
   
   public void setSubscriber(Scenario<?,Tuple> subscriber)
@@ -132,6 +174,10 @@ public class XmlStore
   
   public void setMasterRefreshSeconds(int seconds)
   { updater.setPeriod(seconds*1000);
+  }
+  
+  public void setHistoryCleanSeconds(int seconds)
+  { historyCleaner.setPeriod(seconds*1000);
   }
   
   public void setBaseResourceURI(URI uri)
@@ -150,35 +196,42 @@ public class XmlStore
   { 
     
     for (XmlQueryable queryable:list)
-    { addQueryable(queryable);
+    { 
+      xmlQueryables.add(queryable);
+      Type<?> subtype=queryable.getResultType();
+      EntityBinding entityBinding=createEntityBinding(new Entity(subtype));
+      entityBinding.setAuthoritative(true);
+      entityBinding.setQueryable(queryable);
+      entityBinding.setUpdater(new XmlUpdater(queryable,entityBinding));
+      addEntityBinding(entityBinding);
     }
   }
 
   
-  @SuppressWarnings("rawtypes")
   @Override
   public DataConsumer<DeltaTuple> getUpdater(
     Type<?> type,Focus<?> focus)
     throws DataException
   {
-    Queryable queryable;
     
     if (type instanceof BufferType)
-    { queryable=getQueryable(type.getArchetype());
-    }
-    else
-    { queryable=getQueryable(type);
+    { type=type.getArchetype();
     }
     
-    if (queryable==null)
+    EntityBinding binding=getEntityBinding(type);
+    
+    if (binding==null)
     { return null;
     }
-    if (!(queryable instanceof XmlQueryable))
-    { throw new DataException("Cannot update an abstract type");
+    else if (binding.getUpdater()==null)
+    { 
+      throw new DataException
+        ("Cannot directly update data of type "
+        +binding.getEntity().getType().getURI()
+        );
     }
-      
-    return new XmlUpdater(focus,(XmlQueryable) queryable);
-
+    
+    return binding.getUpdater();
   }
 
   @Override
@@ -186,24 +239,9 @@ public class XmlStore
     throws LifecycleException
   {
     
-    if (schema!=null)
-    {
 
-      
-      for (Entity entity: schema.getEntities())
-      {
-        XmlQueryable queryable=new XmlQueryable();
-        queryable.setResultType(entity.getType());
-        queryable.setResourceURI(URI.create(entity.getName()+".data.xml"));
-        queryable.setAutoCreate(true);
-        addQueryable(queryable);
-        
-        if (debugLevel.canLog(Level.DEBUG))
-        { log.debug("Added XmlQueryable from schema");
-        }        
-      }
-    }
-    
+
+    log.info("Serving data in "+baseResourceURI);
     for (XmlQueryable queryable:xmlQueryables)
     { 
       try
@@ -212,9 +250,7 @@ public class XmlStore
         queryable.getAll(queryable.getResultType());
       }
       catch (DataException x)
-      {
-        // TODO Auto-generated catch block
-        x.printStackTrace();
+      { x.printStackTrace();
       }
     }
     
@@ -232,14 +268,17 @@ public class XmlStore
     if (subscriber!=null)
     { 
       triggerSubscriber();
+      updater.setDelay(true);
       updater.start();
     }
+    historyCleaner.start();
   }
 
   @Override
   public void stop()
     throws LifecycleException
   { 
+    historyCleaner.stop();
     if (subscriber!=null)
     { updater.stop();
     }
@@ -252,21 +291,35 @@ public class XmlStore
   { return new XmlSequence(field.getURI());
   }
 
-  
- 
-  private void addQueryable(XmlQueryable queryable)
-  {
-    xmlQueryables.add(queryable);
-    Type<?> subtype=queryable.getResultType();
-    addPrimaryQueryable(subtype,queryable);
-  }
+  @Override
+  protected Sequence createTxIdSequence()
+  { 
+    try
+    {
+      return new ResourceSequence
+        (Resolver.getInstance().resolve(baseResourceURI.resolve(".txid")));
+    }
+    catch (UnresolvableURIException x)
+    { throw new RuntimeException("Cannot resolve transaction id resource .txid in "+baseResourceURI,x);
+    }
     
+  }
+  
+  private void cleanHistory()
+  { 
+    for (XmlQueryable queryable:xmlQueryables)
+    { queryable.cleanHistory(historyRetention);
+    }
+    
+    
+  }
+  
   
   private void triggerSubscriber()
   { 
     if (subscriber!=null)
     {
-      if (debugLevel.canLog(Level.FINE))
+      if (debugLevel.isFine())
       { log.fine("Checking subscription...");
       }
       Command<?,?,Tuple> command
@@ -275,7 +328,7 @@ public class XmlStore
       Tuple tuple=command.getResult();
       if (tuple!=null)
       { 
-        if (debugLevel.canLog(Level.FINE))
+        if (debugLevel.isFine())
         { log.fine("Got result "+tuple);
         }
         try
@@ -291,7 +344,7 @@ public class XmlStore
       }
       else
       { 
-        if (debugLevel.canLog(Level.FINE))
+        if (debugLevel.isFine())
         { log.fine("Subscriber returned null");
         }
       }
@@ -309,33 +362,51 @@ public class XmlStore
   @Override
   public void update(Snapshot snapshot)
   {
-    for (Aggregate<Tuple> aggregate : snapshot.getData())
+    Transaction transaction
+      =Transaction.startContextTransaction(Nesting.PROPOGATE);
+    try
     { 
-      Type<?> type=aggregate.getType().getContentType();
-      Queryable<?> queryable=getQueryable(type);
-      if (queryable==null || !(queryable instanceof XmlQueryable))
-      { log.warning("Ignoring snapshot of "+type.getURI());
-      }
-      else
+
+      for (Aggregate<Tuple> aggregate : snapshot.getData())
       { 
-        try
-        { ((XmlQueryable) queryable).update(aggregate);
+        Type<?> type=aggregate.getType().getContentType();
+        Queryable<?> queryable=getQueryable(type);
+        if (queryable==null || !(queryable instanceof XmlQueryable))
+        { log.warning("Ignoring snapshot of "+type.getURI());
         }
-        catch (DataException x)
+        else
         { 
-          log.log
+          long txId=joinTransaction().getTxId();
+          ((XmlQueryable) queryable).joinTransaction().setTxId(txId);
+          try
+          { ((XmlQueryable) queryable).updateFromSnapshot(aggregate);
+          }
+          catch (DataException x)
+          { 
+            log.log
+              (Level.WARNING,"Failed to deliver subscription to "+type.getURI()
+              ,x);
+          }
+          catch (IOException x)
+          { 
+            log.log
             (Level.WARNING,"Failed to deliver subscription to "+type.getURI()
             ,x);
+          }
         }
-        catch (IOException x)
-        { 
-          log.log
-          (Level.WARNING,"Failed to deliver subscription to "+type.getURI()
-          ,x);
-        }
+        
       }
-      
+      transaction.commit();
     }
+    catch (TransactionException x)
+    { 
+      x.printStackTrace();
+      transaction.rollbackOnComplete();
+    }
+    finally
+    { transaction.complete();
+    }
+      
     lastTransactionId=snapshot.getTransactionId();
   }
 
@@ -370,14 +441,30 @@ public class XmlStore
     }
   }
 
-  private void transactionCommitted(XmlQueryable queryable,long transactionId)
+  @Override
+  protected void transactionCommitted(long transactionId)
   { 
     lastTransactionId=transactionId;
-    if (debugLevel.canLog(Level.TRACE))
+    if (debugLevel.isTrace())
     { 
       log.fine
-        ("TX "+transactionId
-        +" committed in "+queryable.getResultType().getURI());
+        ("StoreBranch TX "+transactionId+" committed");
+    }
+  }
+  
+  @Override
+  protected synchronized void flushLog(Aggregate<DeltaTuple> aggregate,long txId)
+    throws DataException,IOException
+  {
+    if (aggregate.size()>0)
+    {
+      Resource logResource
+        =Resolver.getInstance().resolve(baseResourceURI.resolve("xlog"))
+        .ensureContainer()
+        .getChild("tx"+txId+".delta.xml");
+
+      DataWriter writer=new DataWriter();
+      writer.writeToResource(logResource, aggregate);
     }
   }
   
@@ -385,11 +472,9 @@ public class XmlStore
     extends Updater<DeltaTuple>
   {
     private XmlQueryable queryable;
-    private ArrayList<Tuple> addList=new ArrayList<Tuple>();
-    private ArrayList<Tuple> updateList=new ArrayList<Tuple>();
-    private ArrayList<Tuple> deleteList=new ArrayList<Tuple>();
+    private EntityBinding entityBinding;
+    
 
-    private BoundQuery<?,Tuple> originalQuery;
     
     private ArrayList<BoundQuery<?,Tuple>> uniqueQueries
       =new ArrayList<BoundQuery<?,Tuple>>();
@@ -398,10 +483,46 @@ public class XmlStore
     
     
     
-    public XmlUpdater(Focus<?> context,XmlQueryable queryable)
+    public XmlUpdater
+      (XmlQueryable queryable,EntityBinding binding
+      )
     { 
-      super(context);
+      super();
       this.queryable=queryable;
+      this.entityBinding=binding;
+      this.debug=XmlStore.this.debugLevel.isDebug();
+      setFieldSet(binding.getEntity().getType().getFieldSet());
+
+    }
+    
+    @Override
+    public Focus<?> bind(Focus<?> context)
+      throws BindException
+    {
+      Type<?> type=queryable.getResultType();
+      
+      context=super.bind(context);
+      
+      try
+      {
+      
+        for (Key<?> key: type.getKeys())
+        {
+          if (key.isUnique() || key.isPrimary())
+          { 
+            // Create queries for unique keys and associate the Key 
+            //   with the query via a parallel list for error reporting.
+            uniqueQueries.add(queryable.query(key.getQuery(),localFocus));
+            uniqueKeys.add(key);
+          }
+        }
+      }
+      catch (DataException x)
+      { throw new BindException("Error binding DRI rules for "+type.getURI()); 
+      }
+      
+      
+      return context;
     }
     
     @Override
@@ -409,25 +530,11 @@ public class XmlStore
       throws DataException
     { 
       super.dataInitialize(fieldSet);
-      Type<?> type=queryable.getResultType();
-      Key<?> primaryKey=type.getPrimaryKey();
-      if (primaryKey!=null)
-      { originalQuery=queryable.query(primaryKey.getQuery(), localFocus);
-      }
-      
-      for (Key<?> key: type.getKeys())
-      {
-        if (key.isUnique() || key.isPrimary())
-        { 
-          // Create queries for unique keys and associate the Key 
-          //   with the query via a parallel list for error reporting.
-          uniqueQueries.add(queryable.query(key.getQuery(),localFocus));
-          uniqueKeys.add(key);
-        }
-      }
-      
+
       // Make sure queryable has had a chance to init.
       queryable.getAggregate();
+      long txId=joinTransaction().getTxId();
+      queryable.joinTransaction().setTxId(txId);
       
     }
     
@@ -436,287 +543,145 @@ public class XmlStore
       throws DataException
     {
       super.dataAvailable(tuple);
-      if (tuple.getOriginal()==null && !tuple.isDelete())
-      { 
-        // New case
-        
-        // Check unique keys
-        localChannel.push(tuple);
-        try
-        {
-          int i=0;
-          for (BoundQuery<?,Tuple> query: uniqueQueries)
-          {
-            SerialCursor<Tuple> cursor=query.execute();
-            try
-            {
-              if (cursor.next())
-              { 
-                if (debug)
-                { 
-                  log.fine
-                    ("Unique conflict on add: "+tuple+":"+uniqueKeys.get(i));
-                }
-                throw new UniqueKeyViolationException
-                  (tuple,uniqueKeys.get(i));
-              }
-            }
-            finally
-            { cursor.close();
-            }
-            i++;
-            
-          }
-        }
-        finally
-        { localChannel.pop();
-        }
-        
-        // Copy
-        EditableArrayTuple newTuple;
-        if (tuple instanceof BufferTuple)
+      localChannel.push(tuple);
+      try
+      {
+        if (tuple.getOriginal()==null && !tuple.isDelete())
         { 
-          if (debug)
-          { log.fine("Copying buffer: "+tuple);
-          }
-          newTuple
-            =new EditableArrayTuple(tuple.getType()
-              .getArchetype()
-              );
-          ((BufferTuple) tuple).updateTo(newTuple);
-          ((BufferTuple) tuple).updateOriginal(newTuple);
+          // New case
           
-        } 
+          // Run triggers
+          tuple=entityBinding.beforeInsert(tuple);
+          if (tuple==null)
+          { return;
+          }
+          checkInsertIntegrity(tuple);
+
+          joinTransaction().log(tuple);
+          queryable.joinTransaction().insert(tuple);
+          entityBinding.afterInsert(tuple);
+        }
+        else if (!tuple.isDelete())
+        { 
+          // Run trigger
+          tuple=entityBinding.beforeUpdate(tuple);
+          if (tuple==null)
+          { return;
+          }
+          checkUpdateIntegrity(tuple);
+
+          joinTransaction().log(tuple);
+          queryable.joinTransaction().update(tuple);
+          entityBinding.afterUpdate(tuple);
+        }
         else
         { 
-          if (debug)
-          { log.fine("Copying non-buffer: "+tuple);
+          // Delete case
+          tuple=entityBinding.beforeDelete(tuple);
+          if (tuple==null)
+          { return;
           }
-          newTuple=new EditableArrayTuple(tuple);
-        }
-        
-        addList.add(newTuple);
-        
 
-        if (debug)
-        { log.fine("Created new store copy: "+newTuple);
+          joinTransaction().log(tuple);
+          queryable.joinTransaction().delete(tuple);
+          entityBinding.afterDelete(tuple);
         }
+
       }
-      else if (!tuple.isDelete())
-      { 
-        // Check unique keys
-        localChannel.push(tuple);
+      finally
+      { localChannel.pop();
+      }
+    }
+    
+    /**
+     * Check data integrity constraints for an insert
+     * 
+     * @param tuple
+     * @throws DataException
+     */
+    private void checkInsertIntegrity(DeltaTuple tuple)
+      throws DataException
+    {      
+      // Check unique keys
+
+      int i=0;
+      for (BoundQuery<?,Tuple> query: uniqueQueries)
+      {
+        SerialCursor<Tuple> cursor=query.execute();
         try
         {
-          int i=0;
-          for (BoundQuery<?,Tuple> query: uniqueQueries)
-          {
-            SerialCursor<Tuple> cursor=query.execute();
-            try
-            {
-              if (cursor.next())
-              { 
-                if (!cursor.getTuple().equals(tuple.getOriginal()))
-                {
-                  // XXX We need to check if tuple is a later version of
-                  //  original, and then check for an update conflict
-                  if (debug)
-                  { 
-                    log.fine("\r\n  existing="+cursor.getTuple()
-                      +"\r\n  new="+tuple.getOriginal()
-                      +"\r\n updated="+tuple
-                      );
-                  }
-                  throw new UniqueKeyViolationException
-                    (tuple,uniqueKeys.get(i));
-                }
-              }
+          if (cursor.next())
+          { 
+            if (debug)
+            { 
+              log.fine
+                ("Unique conflict on add: "+tuple+":"+uniqueKeys.get(i));
             }
-            finally
-            { cursor.close();
-            }
-            i++;
-            
+            throw new UniqueKeyViolationException
+              (tuple,uniqueKeys.get(i));
           }
         }
         finally
-        { localChannel.pop();
+        { cursor.close();
         }
-        // Update case
-        updateList.add(tuple);
+        i++;
+        
       }
-      else
-      { 
-        // Delete case
-        deleteList.add(tuple.getOriginal());
-      }
-      if (!addList.isEmpty()
-          ||!updateList.isEmpty()
-          ||!deleteList.isEmpty()
-          )
-      { queryable.joinTransaction();
+
+    }
+    
+
+    
+    /**
+     * Check data integrity constraints for an update
+     * 
+     * @param tuple
+     * @throws DataException
+     */
+    private void checkUpdateIntegrity(DeltaTuple tuple)
+      throws DataException
+    {      
+      // Check unique keys
+      int i=0;
+      for (BoundQuery<?,Tuple> query: uniqueQueries)
+      {
+        SerialCursor<Tuple> cursor=query.execute();
+        try
+        {
+          if (cursor.next())
+          { 
+            if (!cursor.getTuple().equals(tuple.getOriginal()))
+            {
+              // XXX We need to check if tuple is a later version of
+              //  original, and then check for an update conflict
+              if (debug)
+              { 
+                log.fine("\r\n  existing="+cursor.getTuple()
+                  +"\r\n  new="+tuple.getOriginal()
+                  +"\r\n updated="+tuple
+                  );
+              }
+              throw new UniqueKeyViolationException
+                (tuple,uniqueKeys.get(i));
+            }
+          }
+        }
+        finally
+        { cursor.close();
+        }
+        i++;
+        
       }
     }
+    
+
     
     @Override
     public void dataFinalize()
       throws DataException
     { 
-      if (debug)
-      { log.fine("Finalizing updater for "+queryable.getResultType().getURI());
-      }
-      synchronized (queryable)
-      {
-        queryable.freeze();
-        try
-        {
-        
-          for (Tuple t: deleteList)
-          { 
-            queryable.remove(t);
-            if (debug)
-            { log.fine("Removing "+t); 
-            }
-          }
+             
 
-          for (Tuple t: addList)
-          { 
-            queryable.add(t);
-            if (debug)
-            { log.fine("Adding "+t); 
-            }
-          }
-
-          for (Tuple t: updateList)
-          {
-            if (t instanceof DeltaTuple)
-            { 
-              DeltaTuple dt=(DeltaTuple) t;
-
-              // Must find the old copy
-              EditableTuple original=(EditableTuple) dt.getOriginal();
-              if (originalQuery!=null)
-              {
-                localChannel.push(dt);
-                try
-                {
-                
-                  // Find a more certain original
-                  SerialCursor<Tuple> cursor=originalQuery.execute();
-                  try
-                  {
-                    if (!cursor.next())
-                    {
-                      // Old one has been deleted, or never existed
-                      
-                      if (debug)
-                      { log.fine("Adding back lost original on update"+t); 
-                      }
-                      
-                      EditableTuple newOriginal
-                        =new EditableArrayTuple(t.getType().getArchetype());
-                      dt.updateTo(newOriginal);
-                      
-                      if (t instanceof BufferTuple)
-                      {
-                        ((BufferTuple) t).updateOriginal(newOriginal);
-                      }
-                      queryable.add(newOriginal);
-                    }
-                    else
-                    { 
-                      EditableTuple newOriginal
-                        =(EditableTuple) cursor.getTuple();
-                      if (newOriginal!=original)
-                      { 
-                        if (debug)
-                        { 
-                          log.fine
-                            ("Updating original to new version "+newOriginal);
-                        }
-                        if (t instanceof BufferTuple)
-                        { ((BufferTuple) t).updateOriginal(newOriginal);
-                        }
-                        original=newOriginal;
-
-                      }
-                      else
-                      { 
-                        if (debug)
-                        { log.fine("Read back same data"+original);
-                        }
-                      }
-                    }
-
-                    if (cursor.next())
-                    {
-                      log.warning
-                      ("Cardinality violation: duplicate "
-                        +cursor.getTuple()
-                      );
-                    }
-                  }
-                  finally
-                  { cursor.close();
-                  }
-                }
-                finally
-                { localChannel.pop();
-                }
-              }
-              else
-              { log.fine("No primary key defined for "+t.getType());
-              }
-
-              // Really should be working on a copy here, but that's what Journaling
-              //   is for.
-              dt.updateTo(original);
-            }
-          }
-
-
-          try
-          {
-            Transaction transaction=Transaction.getContextTransaction();
-            String suffix
-              =transaction!=null
-              ?(".tx"+transaction.getId())
-              :".new"
-              ;
-            
-            queryable.flush(suffix);
-
-            if (transaction==null)
-            { 
-              // No transaction, commit manually
-              queryable.commit(suffix);
-              
-              // Make -sure- we re-read to verify data and fail for transaction
-              //   user
-              queryable.refresh();              
-            }
-            
-            
-            if (transaction!=null)
-            { transactionCommitted(queryable,transaction.getId());
-            }
-
-          }
-          catch (IOException x)
-          { throw new DataException("IOException persisting data",x);
-          }
-     
-        }
-        finally
-        {
-          if (Transaction.getContextTransaction()==null)
-          { 
-            // Unfreeze here if no transaction, otherwise complete() will do it
-            queryable.unfreeze();
-          }
-        }
-      
-      }
     }
   }
   
@@ -725,8 +690,8 @@ public class XmlStore
   {
 
     private int increment;
-    private volatile int next;
-    private volatile int stop;
+    private volatile long next;
+    private volatile long stop;
     private BoundQuery<?,Tuple> boundQuery;
     private Focus<URI> uriFocus;
     private URI uri;
@@ -755,7 +720,73 @@ public class XmlStore
     
     @Override
     public void stop()
+      throws LifecycleException
     {
+      try
+      {
+        deallocate();
+      }
+      catch (DataException x)
+      { 
+        throw new LifecycleException
+          ("Error deallocating sequence "+uri,x);
+      }
+    }
+
+    public void deallocate()
+      throws DataException
+    {
+      synchronized(sequenceQueryable)
+      {
+        Transaction.startContextTransaction(Nesting.ISOLATE);
+        try
+        {
+          SerialCursor<Tuple> result=boundQuery.execute();
+          EditableTuple row=null;
+          Tuple oldRow=null;
+          
+          try
+          {
+            if (!result.next())
+            {
+            }
+            else
+            {
+              oldRow=result.getTuple().snapshot();
+              row=new EditableArrayTuple(oldRow);
+              row.set("nextValue",next);
+            }
+            if (result.next())
+            {
+              throw new DataException
+                ("Cardinality violation in Sequence store- non unique URI "+uri); 
+            }
+          }
+          finally
+          { result.close();
+          }
+          
+  
+          if (oldRow!=null && row!=null)
+          {
+          
+            long txId=joinTransaction().getTxId();
+            sequenceQueryable.joinTransaction().setTxId(txId);
+            
+            DeltaTuple dt=new ArrayDeltaTuple(oldRow,row);
+            sequenceQueryable.joinTransaction().update(dt);
+            joinTransaction().log(dt);
+            Transaction.getContextTransaction().commit();
+          
+          
+          }
+        }
+        finally
+        { Transaction.getContextTransaction().complete();
+        }
+        
+      }
+
     }
     
     public void allocate()
@@ -763,63 +794,78 @@ public class XmlStore
     {
       synchronized(sequenceQueryable)
       {
-        SerialCursor<Tuple> result=boundQuery.execute();
-        try
-        {
-          if (!result.next())
-          {
-            EditableTuple row=new EditableArrayTuple(sequenceType);
-            row.set("uri",uri);
-            row.set("nextValue",200);
-            row.set("increment",100);
 
-            next=100;
-            stop=200;
-            increment=100;
-            sequenceQueryable.add(row);
-          }
-          else
-          {
-            EditableTuple row=(EditableTuple) result.getTuple();
-            next=(Integer) row.get("nextValue");
-            increment=(Integer) row.get("increment");
-          
-            stop=next+increment;
-            row.set("nextValue",next+increment);
-          
-          }
-          if (result.next())
-          {
-            throw new DataException
-              ("Cardinality violation in Sequence store- non unique URI "+uri); 
-          }
-        }
-        finally
-        { result.close();
-        }
-        
+        Transaction.startContextTransaction(Nesting.ISOLATE);
         try
         {
-          Transaction.startContextTransaction(Nesting.ISOLATE);
+          SerialCursor<Tuple> result=boundQuery.execute();
+  
+          EditableTuple row=null;
+          Tuple oldRow=null;
+          
           try
           {
-            sequenceQueryable.flush(".new");
-            Transaction.getContextTransaction().commit();
+            if (!result.next())
+            {
+              row=new EditableArrayTuple(sequenceType);
+              
+              row.set("uri",uri);
+              row.set("nextValue",200L);
+              row.set("increment",100);
+  
+              next=100;
+              stop=200;
+              increment=100;
+  
+            }
+            else
+            {
+              oldRow=result.getTuple().snapshot();
+              row=new EditableArrayTuple(oldRow);
+              
+              next=(Long) row.get("nextValue");
+              increment=(Integer) row.get("increment");
+            
+              stop=next+increment;
+              row.set("nextValue",next+increment);            
+            
+            }
+          
+            if (result.next())
+            {
+              throw new DataException
+                ("Cardinality violation in Sequence store- non unique URI "+uri); 
+            }
           }
           finally
-          { Transaction.getContextTransaction().complete();
+          { result.close();
           }
+        
+
+          long txId=joinTransaction().getTxId();
+          sequenceQueryable.joinTransaction().setTxId(txId);
+          DeltaTuple dt=new ArrayDeltaTuple(oldRow,row);
+          if (oldRow!=null)
+          { sequenceQueryable.joinTransaction().update(dt);   
+          }
+          else
+          { sequenceQueryable.joinTransaction().insert(dt);   
+          }
+          joinTransaction().log(dt);
+
+          Transaction.getContextTransaction().commit();
         }
-        catch (IOException x)
-        { throw new DataException
-            ("Error writing data while allocating sequence",x); 
+        finally
+        { Transaction.getContextTransaction().complete();
         }
         
       }
     }
     
+    
+    
     @Override
-    public synchronized Integer next()
+    public synchronized Long next()
       throws DataException
     {
       if (next==stop)
@@ -828,4 +874,6 @@ public class XmlStore
       return next++;
     }
   }
+  
+  
 }

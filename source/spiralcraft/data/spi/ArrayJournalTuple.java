@@ -6,6 +6,7 @@ import spiralcraft.data.JournalTuple;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.transaction.Transaction;
+import spiralcraft.log.Level;
 
 public class ArrayJournalTuple
   extends ArrayTuple
@@ -45,7 +46,7 @@ public class ArrayJournalTuple
     super(delta);
 //    this.type=delta.getType().getArchetype();
     JournalTuple original=(JournalTuple) delta.getOriginal();
-    this.version=original.getVersion()+1;
+    this.version=original!=null?original.getVersion()+1:0;
     transactionId=transactionId();
     
   }
@@ -108,27 +109,34 @@ public class ArrayJournalTuple
     { 
       synchronized (this)
       {
-        if (transactionContext!=null)
-        { 
-          try
-          { 
-            log.fine("Waiting on transaction...");
-            transactionContext.wait();
-          }
-          catch (InterruptedException x)
-          { throw new DataException("Interrupted waiting for transaction");
-          }
-        }
-        
         if (this.delta==null)
         {
-          ArrayJournalTuple nextVersion=null;
-          if (!delta.isDelete())
-          { nextVersion=new ArrayJournalTuple(delta);
+          if (transactionContext!=null)
+          { 
+            synchronized (transactionContext)
+            {
+              try
+              { 
+                log.log(Level.FINE,"Waiting on transaction...",new Exception());
+                
+                transactionContext.wait();
+              }
+              catch (InterruptedException x)
+              { throw new DataException("Interrupted waiting for transaction");
+              }
+            }
           }
-          transactionContext
-            =new TransactionContext(nextVersion,delta);
-          return nextVersion;
+          
+          if (this.delta==null)
+          {
+            ArrayJournalTuple nextVersion=null;
+            if (!delta.isDelete())
+            { nextVersion=new ArrayJournalTuple(delta);
+            }
+            transactionContext
+              =new TransactionContext(nextVersion,delta);
+            return nextVersion;
+          }
         }
       }
     }
@@ -138,11 +146,14 @@ public class ArrayJournalTuple
   @Override
   public void rollback()
   {
-    // TODO Auto-generated method stub
     synchronized (this)
     { 
-      transactionContext.notifyAll();
-      transactionContext=null;
+      synchronized (transactionContext)
+      {
+        // Let the next one in
+        transactionContext.notify();
+        transactionContext=null;
+      }
     }
     
   }
@@ -153,10 +164,21 @@ public class ArrayJournalTuple
     
     synchronized (this)
     { 
-      nextVersion=transactionContext.nextVersion;
-      delta=transactionContext.delta;
-      transactionContext.notifyAll();
-      transactionContext=null;
+      if (transactionContext!=null)
+      {
+        synchronized (transactionContext)
+        {
+          nextVersion=transactionContext.nextVersion;
+          delta=transactionContext.delta;
+          // Let waiters advance to the next version
+          // TODO: make this a fifo queue
+          transactionContext.notifyAll();
+          transactionContext=null;
+        }
+      }
+      else
+      { log.warning("Nothing to commit in "+this);
+      }
     }
   }
   
@@ -170,7 +192,21 @@ public class ArrayJournalTuple
     
   }
 
-  
+  public ArrayJournalTuple getTxVersion()
+  {
+    synchronized (this)
+    {
+      if (transactionContext!=null)
+      { return transactionContext.nextVersion;
+      }
+      else
+      { return null;
+      }
+    }
+
+    
+  }
+
   @Override
   public long getTransactionId()
   { return transactionId;
@@ -195,5 +231,6 @@ public class ArrayJournalTuple
       this.delta=delta;
     }
   }
+
 
 }

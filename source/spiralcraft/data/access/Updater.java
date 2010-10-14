@@ -35,11 +35,13 @@ import spiralcraft.data.lang.TupleReflector;
 
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.rules.Inspector;
 import spiralcraft.rules.RuleException;
@@ -71,7 +73,7 @@ import spiralcraft.rules.Violation;
  * @param <T>
  */
 public class Updater<T extends Tuple>
-  implements DataConsumer<T>
+  implements DataConsumer<T>,Contextual
 {
 
   protected static final ClassLog log
@@ -81,6 +83,7 @@ public class Updater<T extends Tuple>
     =URI.create("class:/spiralcraft/data/");
 
   private Focus<?> context;
+  private Store store;
   
   protected SimpleFocus<T> localFocus;
   protected ThreadLocalChannel<T> localChannel;
@@ -94,18 +97,23 @@ public class Updater<T extends Tuple>
   private Space space;
   protected boolean debug;
   private Inspector<Type<T>,T> inspector;
+
+  private FieldSet fieldSet;
   
   /**
-   * <p>Create a new Updater, which uses the provided context to to resolve any
-   *   external references associated with Tuple fields
+   * <p>Create a new Updater
    * </p>
    *   
    * @param context
    */
-  public Updater(Focus<?> context)
-  { this.context=context;
+  public Updater()
+  { 
   }
 
+  public void setFieldSet(FieldSet fieldSet)
+  { this.fieldSet=fieldSet;
+  }
+  
   @Override
   public void setDebug(boolean debug)
   { this.debug=debug;
@@ -160,7 +168,7 @@ public class Updater<T extends Tuple>
       {
         if (sequenceField.getValue(tuple)==null)
         { 
-          String sequenceVal = Integer.toString(sequence.next());
+          String sequenceVal = Long.toString(sequence.next());
           if (debug)
           { 
             log.fine
@@ -233,12 +241,70 @@ public class Updater<T extends Tuple>
 
   }
 
-  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
-  public void dataInitialize(
-    FieldSet fieldSet)
+  public void dataInitialize(FieldSet fieldSet)
     throws DataException
   {
+    if (localChannel==null)
+    { 
+      this.fieldSet=fieldSet;
+      try
+      { bind(context);
+      }
+      catch (BindException x)
+      { throw new DataException("Error binding Updater for "+fieldSet);
+      }
+    }
+    else
+    { 
+      if (this.fieldSet.getType()!=null 
+          && fieldSet.getType()!=null
+          && !this.fieldSet.getType().isAssignableFrom(fieldSet.getType())
+         )
+      { 
+        throw new DataException
+          ("Updator for "+this.fieldSet.getType().getURI()
+            +" does not accept values of type "+fieldSet.getType().getURI()
+          );
+      }
+      else if (!fieldSet.equals(this.fieldSet))
+      { 
+        throw new DataException
+          ("Updator for "+this.fieldSet
+            +" does not accept values with fields "+fieldSet
+          );
+      }
+    }
+  }
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private Setter<?> bindSetter(Field field,Expression expression)
+    throws BindException
+  {
+    try
+    {
+      return new Assignment
+        (Expression.create(field.getName())
+        ,expression
+        ).bind(localFocus);
+    }
+    catch (BindException x)
+    { 
+      throw new BindException
+        ("Error binding Expression '"+expression+"' for "+field.getURI(),x);
+    }
+    
+  }
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @Override
+  public Focus<?> bind(Focus<?> focusChain)
+    throws BindException
+  {
+    if (context==null)
+    { context=focusChain;
+    }
+    
     if (fieldSet.getType()!=null && fieldSet.getType().getDebug())
     { debug=true;
     }
@@ -248,12 +314,13 @@ public class Updater<T extends Tuple>
     }
     catch (BindException x)
     { 
-      throw new DataException
+      throw new BindException
         ("Error creating channel for fieldSet "+fieldSet,x);
     }
     
     localFocus=new SimpleFocus<T>(context,localChannel);
 
+    // XXX Deprecated
     localFocus.setNamespaceResolver
       (new PrefixResolver()
         {
@@ -296,10 +363,16 @@ public class Updater<T extends Tuple>
           
         }
       );
+    
+    
     if (space==null)
     { space=Space.find(context);
     }
 
+    if (store==null)
+    { store=LangUtil.findInstance(Store.class,context);
+    }
+    
     // Takes care of key sequences? Nope.
     for (Field field: fieldSet.fieldIterable())
     {
@@ -312,11 +385,11 @@ public class Updater<T extends Tuple>
         if (sequence!=null)
         { log.warning("Ignoring additional SequenceField "+field.getURI());
         }
-        else if (space==null)
+        else if (store==null && space==null)
         {
           log.warning
             ("Ignoring SequenceField-"
-            +" not attached to a Space: "+field.getURI()
+            +" not attached to a Store or Space: "+field.getURI()
             );
         }
         else
@@ -324,9 +397,22 @@ public class Updater<T extends Tuple>
           if (debug)
           { log.fine("Binding sequence field "+field.getURI());
           }
-          sequence=space.getSequence(field.getURI());
+          
+          try
+          { 
+            if (store!=null)
+            { sequence=store.getSequence(field.getURI());
+            }
+            if (sequence==null && space!=null)
+            { sequence=space.getSequence(field.getURI());
+            }
+          }
+          catch (DataException x)
+          { throw new BindException("Error getting sequence for  "+field.getURI(),x);
+          }
+          
           if (sequence==null)
-          { throw new DataException("Sequence not found for "+field.getURI());
+          { throw new BindException("Sequence not found for "+field.getURI());
           }
           sequenceField=field;
         }
@@ -370,7 +456,7 @@ public class Updater<T extends Tuple>
         }
         catch (BindException x)
         { 
-          throw new DataException
+          throw new BindException
             ("Error binding rules for Type "+type.getURI(),x);
         }
 
@@ -383,25 +469,7 @@ public class Updater<T extends Tuple>
       }
     }
 
-  }
-
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-  private Setter<?> bindSetter(Field field,Expression expression)
-    throws DataException
-  {
-    try
-    {
-      return new Assignment
-        (Expression.create(field.getName())
-        ,expression
-        ).bind(localFocus);
-    }
-    catch (BindException x)
-    { 
-      throw new DataException
-        ("Error binding Expression '"+expression+"' for "+field.getURI(),x);
-    }
-    
+    return localFocus;
   }
 
 }
