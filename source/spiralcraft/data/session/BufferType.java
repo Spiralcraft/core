@@ -84,6 +84,9 @@ public class BufferType
     }
     this.scheme.setArchetypeScheme(this.archetype.getScheme());
     
+
+    Key<?> primaryKey=this.archetype.getPrimaryKey();
+    
     if (this.archetype.getScheme()!=null && !isAggregate()) 
     { 
       for (Field<?> field : this.archetype.getScheme().fieldIterable())
@@ -100,7 +103,6 @@ public class BufferType
           continue;
         }
 
-        Key<?> primaryKey=this.archetype.getPrimaryKey();
         
         // Primitives are immutable
         if (primaryKey!=null && !field.getType().isPrimitive())
