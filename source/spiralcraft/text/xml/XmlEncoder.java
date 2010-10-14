@@ -14,6 +14,7 @@
 //
 package spiralcraft.text.xml;
 
+import spiralcraft.log.ClassLog;
 import spiralcraft.text.Encoder;
 
 import java.io.Writer;
@@ -27,6 +28,9 @@ import java.io.IOException;
 public class XmlEncoder
   implements Encoder
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(XmlEncoder.class);
+  
   public void encodeRaw(CharSequence in,Writer out)
     throws IOException
   {
@@ -43,9 +47,14 @@ public class XmlEncoder
             out.write(value);
           break;
         default:
-          out.write("&#"+((int) value)+";"); 
+          log.warning
+            ("Non-encodable character "+((int) value)+" ignored");
+          // out.write("&#"+((int) value)+";"); 
         }
       }      
+      else if (value >= 0x7F && value <=0x9F)
+      { out.write("&#"+((int) value)+";");
+      }
       else switch (value)
       { 
         case '&':
