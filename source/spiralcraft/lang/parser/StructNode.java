@@ -916,9 +916,19 @@ public class StructNode
         }
         else
         {
-          thisChannel.push(source.get());
+          Struct struct=source.get();
+          thisChannel.push(struct);
           try
-          { return target.get();
+          { 
+            if (struct!=null)
+            {
+              synchronized (struct)
+              { return target.get();
+              }
+            }
+            else
+            { return target.get();
+            }
           }
           finally
           { thisChannel.pop();
