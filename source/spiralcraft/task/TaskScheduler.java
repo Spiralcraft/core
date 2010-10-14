@@ -19,6 +19,7 @@ import spiralcraft.command.CommandScheduler;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
+import spiralcraft.vfs.context.ContextResourceMap;
 
 /**
  * <p>Runs a Scenario periodically. The Scenario is added to the
@@ -41,7 +42,9 @@ public class TaskScheduler
   public Focus<?> bind(
     Focus<?> focusChain)
     throws BindException
-  { return scenario.bind(focusChain);
+  { 
+    resourceMap=ContextResourceMap.get();
+    return scenario.bind(focusChain);
   }
   
   /**
