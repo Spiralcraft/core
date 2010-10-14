@@ -38,8 +38,11 @@ public class Sequence
   extends Scenario<Void,List<?>>
 {
 
-  protected Scenario<?,?>[] scenarios;
   
+  protected Scenario<?,?>[] scenarios;
+
+  { importContext=false;
+  }
   
   public void setScenarios(Scenario<?,?>[] scenarios)
   { this.scenarios=scenarios;
@@ -57,28 +60,21 @@ public class Sequence
   @Override
   protected Task task()
   {
-    return new AbstractTask()
+    
+    return new CommandTask()
     {
-        
+      { addResult=true;
+      }
+      
       @Override
       public void work()
         throws InterruptedException
       {
+        
         for (Scenario<?,?> scenario: scenarios)
         { 
-          TaskCommand<?,?> command
-            =scenario.command();
-          if (debug)
-          { log.fine("Executing "+command);
-          }
-          command.execute();
-          addResult(command);
-          if (command.getException()!=null)
-          { 
-            addException(command.getException());
-            // XXX Add error scenario
-            return ;
-          }
+          command=scenario.command();
+          super.work();
         }
       }
     };

@@ -48,8 +48,11 @@ public class Chain<Tcontext,Tresult>
   protected boolean addChainResult=false;
     
   protected class ChainTask
-    extends AbstractTask
+    extends CommandTask
   {
+    
+    { addResult=addChainResult;
+    }
     
     @Override
     protected void work()
@@ -57,16 +60,8 @@ public class Chain<Tcontext,Tresult>
     { 
       if (chain!=null && exception==null)
       {
-        TaskCommand<?,?> command=chain.command();
-        
-//        command.setCollectResults(true);
-        command.execute();
-        if (command.getException()!=null)
-        { addException(command.getException());
-        }
-        if (addChainResult)
-        { addResult(command);
-        }
+        command=chain.command();
+        super.work();
       }
     }
   }

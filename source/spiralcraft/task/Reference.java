@@ -37,7 +37,9 @@ public class Reference<Tresult>
   
   private AbstractXmlObject<?,?> target;
   
-
+  { addChainResult=true;
+  }
+  
   public void setTargetTypeURI(URI targetTypeURI)
   { this.targetTypeURI=targetTypeURI;
   }
@@ -51,29 +53,15 @@ public class Reference<Tresult>
   {
     
     
-    return new AbstractTask()
+    return new ChainTask()
     {
-
-      @SuppressWarnings("unchecked")
       @Override
       protected void work()
         throws InterruptedException
       {         
         target.push();
         try
-        {
-          if (chain!=null)
-          {
-            TaskCommand<Void,Tresult> command
-              =((Scenario<Void,Tresult>) chain).command();
-            command.execute();
-            addResult(command);
-            if (command.getException()!=null)
-            { 
-              addException(command.getException());
-              return;
-            }
-          }
+        { super.work();
         }
         finally
         { target.pop();
