@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import spiralcraft.data.core.DeltaType;
 import spiralcraft.data.session.Buffer;
 import spiralcraft.data.session.BufferType;
 // import spiralcraft.log.ClassLogger;
@@ -73,6 +74,8 @@ public abstract class Type<T>
     }
   }
 
+
+  
   @SuppressWarnings("unchecked")
   
   /**
@@ -92,6 +95,33 @@ public abstract class Type<T>
 //        );
       return type.getTypeResolver().<Buffer>resolve
         (URI.create(type.getURI().toString()+".buffer"));
+      
+    }
+    catch (DataException x)
+    { throw new RuntimeException(x);
+    }
+  }
+  
+  
+  @SuppressWarnings("unchecked")
+  
+  /**
+   * Return the corresponding DeltaType for specified type. If the type
+   *   is already a DeltaType, it will be returned.
+   */
+  public static <X> Type<DeltaTuple> getDeltaType(Type<X> type)
+  { 
+    try
+    { 
+      if (type instanceof DeltaType)
+      { return (Type<DeltaTuple>) type;
+      }
+//      log.fine
+//        ("Delta Type for "+type+" is "
+//        +resolve(type.getURI().toString()+".buffer")
+//        );
+      return type.getTypeResolver().<DeltaTuple>resolve
+        (URI.create(type.getURI().toString()+".delta"));
       
     }
     catch (DataException x)
@@ -548,5 +578,7 @@ public abstract class Type<T>
   public boolean getDebug()
   { return debug;
   }
+
+
   
 }

@@ -29,6 +29,7 @@ import spiralcraft.vfs.UnresolvableURIException;
 
 import spiralcraft.data.core.ArrayType;
 import spiralcraft.data.core.AbstractCollectionType;
+import spiralcraft.data.core.DeltaType;
 //import spiralcraft.data.core.CoreTypeFactory;
 import spiralcraft.data.core.MetaType;
 
@@ -303,6 +304,29 @@ public class TypeResolver
     return type;
   } 
 
+  private final Type<?> loadDeltaType(Type<?> baseType,URI typeURI)
+    throws DataException
+  {
+    Type<?> type=map.get(typeURI);
+    if (type!=null)
+    { return type;
+    }
+
+    type=new DeltaType
+      (this
+      ,typeURI
+      ,baseType
+      );
+
+    Type<?> existingType=map.get(typeURI);
+    if (existingType!=null)
+    { return existingType;
+    }
+    type=putMap(typeURI,type);
+    type.link();
+    return type;
+  } 
+  
   private final Type<?> loadMetaType(Type<?> baseType,URI typeURI)
     throws DataException
   {
@@ -376,6 +400,16 @@ public class TypeResolver
       { return loadBufferType(baseType,typeUri);
       }
     }
+    else if (typeUri.getPath().endsWith(".delta"))
+    {
+      URI baseTypeUri=desuffix(typeUri,".delta");
+
+      // Recurse to resolve baseType
+      Type baseType=findLoadedType(baseTypeUri);
+      if (baseType!=null)
+      { return loadDeltaType(baseType,typeUri);
+      }
+    }    
     
     return null;
   }
@@ -484,6 +518,16 @@ public class TypeResolver
       { return loadBufferType(baseType,typeUri);
       }
     }
+    else if (typeUri.getPath().endsWith(".delta"))
+    {
+      URI baseTypeUri=desuffix(typeUri,".delta");
+
+      // Recurse to resolve baseType
+      Type baseType=findTypeExtended(baseTypeUri);
+      if (baseType!=null)
+      { return loadDeltaType(baseType,typeUri);
+      }
+    }    
     else if (typeUri.getPath().endsWith(".type"))
     {
       URI baseTypeUri=desuffix(typeUri,".type");
