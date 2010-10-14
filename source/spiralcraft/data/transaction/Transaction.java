@@ -231,7 +231,17 @@ public class Transaction
 
   @Override
   public String toString()
-  { return super.toString()+" txid="+id+" "+branches.toString();
+  { 
+    
+    StringBuffer buffer=new StringBuffer();
+    if (branches!=null)
+    {
+      for (Branch branch:branches)
+      { buffer.append(branch.toString()+" , ");
+      }
+    }
+    return super.toString()+" txid="+id+" "
+      +buffer.toString();
   }
   
   public synchronized void commit()
