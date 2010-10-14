@@ -17,6 +17,7 @@ package spiralcraft.util;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -87,11 +88,23 @@ public class KeyedList<T>
   public T set(int index,T val)
   {
     T oldval=super.get(index);
-    indexRemove(val);
+    indexRemove(oldval);
     super.set(index,val);
     indexAdd(val);
     return oldval;
   }
+  
+  public void replace(T oldval,T newval)
+  { 
+    int index=super.indexOf(oldval);
+    if (index<0)
+    { throw new NoSuchElementException("Value not in list: "+oldval);
+    }
+    else
+    { set(index,newval);
+    } 
+  }
+  
 
   private void indexAdd(T val)
   {

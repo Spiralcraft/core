@@ -76,10 +76,12 @@ public class ListMap<K,T>
   { 
     List<T> list=get(key);
     if (list!=null)
-    { list.remove(value);
-    }
-    if (list.isEmpty())
-    { super.remove(key);
+    { 
+      list.remove(value);
+    
+      if (list.isEmpty())
+      { super.remove(key);
+      }
     }
   }
 
