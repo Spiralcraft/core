@@ -22,6 +22,7 @@ import java.io.IOException;
  *   links to other resources.
  */
 public interface Container
+  extends Resource
 {
   /**
    * List all resources associated with this ResourceContainer
@@ -94,6 +95,8 @@ public interface Container
    * </p>
    * 
    * @return The resource which represents this Container (eg. a directory)
+   * @deprecated Containers are resources
    */
+  @Deprecated
   Resource asResource();
 }
