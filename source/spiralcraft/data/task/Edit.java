@@ -17,8 +17,10 @@ package spiralcraft.data.task;
 
 import spiralcraft.command.Command;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 //import spiralcraft.data.Type;
 import spiralcraft.data.editor.TupleEditor;
+import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.session.BufferChannel;
 import spiralcraft.data.session.BufferTuple;
 //import spiralcraft.data.lang.DataReflector;
@@ -49,7 +51,7 @@ public class Edit<Titem extends Tuple>
 
   private Expression<Titem> targetX;
   private Channel<BufferTuple> resultChannel;
-//  private Type<Titem> type;
+  private Type<Titem> type;
   private ThreadLocalChannel<BufferTuple> localChannel;
   private TupleEditor editor
     =new TupleEditor();
@@ -59,6 +61,15 @@ public class Edit<Titem extends Tuple>
   { storeResults=true;
   }
   
+  public Edit()
+  { 
+  }
+  
+  public Edit(Type<Titem> type)
+  { 
+    this.type=type;
+    autoCreate=true;
+  }
   
   public void setAutoSave(boolean autoSave)
   { this.autoSave=autoSave;
@@ -96,9 +107,15 @@ public class Edit<Titem extends Tuple>
     { 
       resultChannel
         =new BufferChannel<BufferTuple>(focusChain,focusChain.bind(targetX));
-      resultReflector
-        =resultChannel.getReflector();
 
+    }
+    else if (type!=null)
+    { 
+      resultChannel
+        =new BufferChannel<BufferTuple>
+          (focusChain
+          ,DataReflector.<Titem>getInstance(type).getNilChannel()
+          );
     }
     else
     {
@@ -106,9 +123,10 @@ public class Edit<Titem extends Tuple>
         =new BufferChannel<BufferTuple>
           (focusChain,(Channel<Tuple>) focusChain.getSubject());
       
-      resultReflector
-        =resultChannel.getReflector();
+      
     }
+    resultReflector
+      =resultChannel.getReflector();
     return focusChain;
     
   }
