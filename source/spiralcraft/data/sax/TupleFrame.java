@@ -152,7 +152,6 @@ public class TupleFrame
    *   with the populated Tuple on completion of the frame.
    * </p>
    * 
-   * @param container
    */
   public void setAssignment(Expression<Tuple> assignment)
   { this.assignment=assignment;

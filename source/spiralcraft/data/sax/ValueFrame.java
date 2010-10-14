@@ -78,7 +78,6 @@ public class ValueFrame<T>
    *   with the value on completion of the frame.
    * </p>
    * 
-   * @param container
    */
   public void setAssignment(Expression<T> assignment)
   { this.assignment=assignment;
