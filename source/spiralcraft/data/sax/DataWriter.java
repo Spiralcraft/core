@@ -25,6 +25,7 @@ import spiralcraft.data.DataException;
 
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.EmptyIterator;
+import spiralcraft.util.IteratorChain;
 import spiralcraft.util.string.StringUtil;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -425,21 +426,47 @@ class Context
     {
       if (fieldIterator==null)
       { 
-        startType();
+        
         if (tuple instanceof DeltaTuple)
         { 
+          DeltaTuple dt=(DeltaTuple) tuple;
           if (DataWriter.debugLevel.canLog(Level.FINE))
           { DataWriter.log.fine("Writing DeltaTuple "+tuple.getType().getURI());
           }
-          Field[] dirtyFields=((DeltaTuple) tuple).getDirtyFields();
+          
+          Field[] dirtyFields=dt.getDirtyFields();
           if (dirtyFields!=null)
           {
             fieldIterator
-              =ArrayUtil.iterator(((DeltaTuple) tuple).getDirtyFields());
+              =ArrayUtil.iterator(dirtyFields);
           }
           else 
           { fieldIterator=new EmptyIterator<Field>();
           }
+          
+          if (dt.isDelete())
+          { 
+            attributes.addAttribute(null,"delta","delta",null,"D");
+            fieldIterator
+              =ArrayUtil.iterator
+                (dt.getType().getPrimaryKey().getSourceFields());
+          }
+          else if (dt.getOriginal()!=null)
+          { 
+            attributes.addAttribute(null,"delta","delta",null,"U");
+            fieldIterator
+              =new IteratorChain<Field>
+                (ArrayUtil.iterator
+                  (dt.getType().getPrimaryKey().getSourceFields())
+                ,fieldIterator
+                );
+          }
+          else
+          { attributes.addAttribute(null,"delta","delta",null,"C");
+          }
+          
+          
+          
         }
         else
         { 
@@ -461,6 +488,8 @@ class Context
             fieldIterator=tuple.getFieldSet().fieldIterable().iterator();
           }
         }
+        startType();
+        
       }
       else if (fieldIterator.hasNext())
       {
