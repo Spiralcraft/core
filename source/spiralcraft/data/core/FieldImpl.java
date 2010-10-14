@@ -792,10 +792,15 @@ public class FieldImpl<T>
     @Override
     protected boolean store(T val)
     {
-      EditableTuple t=(EditableTuple) source.get();
-      if (t==null)
+      Tuple tuple=source.get();
+      if (tuple==null)
       { return false;
       }
+      if (!tuple.isMutable())
+      { return false;
+      }
+      EditableTuple t=(EditableTuple) tuple;
+
       
       try
       { t=widenTuple(t);
