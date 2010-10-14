@@ -16,6 +16,8 @@ package spiralcraft.time;
 
 import java.math.BigDecimal;
 
+import spiralcraft.common.Immutable;
+
 
 /**
  * <p>A specific point in time relative to the Posix EPOCH of 
@@ -32,6 +34,7 @@ import java.math.BigDecimal;
  * @author mike
  *
  */
+@Immutable
 public class Instant
   implements Comparable<Instant>
 {
