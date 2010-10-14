@@ -6,11 +6,21 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
+/**
+ * Evaluates an expression and returns the result
+ * 
+ * @author mike
+ *
+ * @param <Tcontext>
+ * @param <Tresult>
+ */
 public class Eval<Tcontext,Tresult>
   extends Chain<Tcontext,Tresult>
 {
 
-  { storeResults=true;
+  { 
+    storeResults=true;
+    importContext=true;
   }
 
   private Binding<Tresult> x;
@@ -43,11 +53,8 @@ public class Eval<Tcontext,Tresult>
   public Focus<?> bindImports(Focus<?> focus)
     throws BindException
   { 
-    Focus<?> contextFocus=focus;
-    if (contextChannel!=null)
-    { contextFocus=focus.chain(contextChannel);
-    }
-    x.bind(contextFocus);
+
+    x.bind(focus);
     resultReflector=x.getReflector();
     resultChannel=new ThreadLocalChannel<Tresult>(resultReflector);
     

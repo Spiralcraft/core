@@ -72,6 +72,7 @@ public abstract class Scenario<Tcontext,Tresult>
   protected ThreadLocalChannel<Tcontext> contextChannel; 
   
   protected ClosureFocus<Scenario<Tcontext,Tresult>> closureFocus;
+  protected boolean importContext;
   
   protected boolean debug;
   protected boolean verbose;
@@ -309,8 +310,12 @@ public abstract class Scenario<Tcontext,Tresult>
 
       // Allow imports to bind against context channel
       contextChannel
-        =new ThreadLocalChannel<Tcontext>(contextReflector);
+        =new ThreadLocalChannel<Tcontext>(contextReflector,true);
 
+    }
+    
+    if (importContext && contextChannel!=null)
+    { focusChain=focusChain.chain(contextChannel);
     }
     
     focusChain=bindImports(focusChain);
