@@ -188,8 +188,15 @@ public class KeyImpl<T>
       =StringUtil.tokenize(fieldList,",");
   }
   
+  @Override
   public String[] getFieldNames()
   { return fieldNames;
+  }
+  
+  public void setFieldNames(String[] fieldNames)
+  { 
+    assertUnresolved();
+    this.fieldNames=fieldNames;
   }
   
   @Override
