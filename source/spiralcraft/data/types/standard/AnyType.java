@@ -16,6 +16,7 @@ package spiralcraft.data.types.standard;
 
 import java.net.URI;
 
+import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.core.TypeImpl;
@@ -33,6 +34,16 @@ public class AnyType
 
   public static final URI TYPE_URI
     =URI.create("class:/spiralcraft/data/types/standard/Any");
+  
+  public static final Type<?> resolve()
+  { 
+    try
+    { return Type.resolve(TYPE_URI);
+    }
+    catch (DataException x)
+    { throw new RuntimeException(x);
+    }
+  } 
   
   public AnyType(TypeResolver resolver,URI uri)
   { super(resolver,uri);
