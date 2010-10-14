@@ -67,6 +67,10 @@ public class EditableKeyedListAggregate<T>
   { list.remove(value);
   }
   
+  public void replace(T oldValue,T newValue)
+  { list.replace(oldValue,newValue);
+  }
+  
   @Override
   public void clear()
   { list.clear();
