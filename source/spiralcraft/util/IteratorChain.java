@@ -33,11 +33,11 @@ public class IteratorChain<T>
   implements Iterator<T>
 {
   
-  private Iterator<T>[] chain;
+  private Iterator<? extends T>[] chain;
   private int pos;
   private boolean done;
   
-  public IteratorChain(Iterator<T>... iterators)
+  public IteratorChain(Iterator<? extends T>... iterators)
   { this.chain=iterators;
   }
 
