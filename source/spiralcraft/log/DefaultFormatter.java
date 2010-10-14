@@ -48,18 +48,17 @@ public class DefaultFormatter
       out.append(event.getContext().format(":"));
       out.append("}");
     }
-    if (event.getLevel().isFinerThan(Level.DEBUG))
-    {
-      out.append(" (");
-      out.append(event.getCallSite().getClassName());
-      out.append(".");
-      out.append(event.getCallSite().getMethodName());
-      out.append("(");
-      out.append(event.getCallSite().getFileName());
-      out.append(":"+event.getCallSite().getLineNumber());
-      out.append(")");
-      out.append(")");
-    }
+    
+    out.append(" (");
+    out.append(event.getCallSite().getClassName());
+    out.append(".");
+    out.append(event.getCallSite().getMethodName());
+    out.append("(");
+    out.append(event.getCallSite().getFileName());
+    out.append(":"+event.getCallSite().getLineNumber());
+    out.append(")");
+    out.append(")");
+  
     
     out.append(_cr);
     out.append("  ");

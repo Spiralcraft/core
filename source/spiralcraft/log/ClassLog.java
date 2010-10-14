@@ -96,6 +96,10 @@ public class ClassLog
   { log(FINE,message,null,1);
   }
 
+  public void fine(String message,Exception exception)
+  { log(Level.FINE,message,exception,1);
+  }
+    
   public void fine(String message,int stackOffset)
   { log(FINE,message,null,1+stackOffset);
   }
