@@ -28,6 +28,15 @@ public class Schema
   private final ArrayList<Entity> entities=new ArrayList<Entity>();
   
   
+  /**
+   * <p>Specify the set of Types that represent first class Entities.</p>
+   * 
+   * <p>Creates an Entity with a default configuration for each specified
+   *   Type.
+   * </p>
+   *  
+   * @param types
+   */
   public void setTypes(Type<?>[] types)
   { 
     for (Type<?> type : types)
@@ -41,10 +50,18 @@ public class Schema
 
 
   
+  /**
+   * 
+   * @return the Entities associated with this Schema
+   */
   public Entity[] getEntities()
   { return entities.toArray(new Entity[entities.size()]);
   }
-  
+
+  /**
+   * 
+   * @param entities The Entities associated with this Schema
+   */
   public void setEntities(Entity[] entities)
   { 
     this.entities.clear();
