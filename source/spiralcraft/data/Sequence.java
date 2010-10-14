@@ -17,7 +17,7 @@ package spiralcraft.data;
 import spiralcraft.common.Lifecycle;
 
 /**
- * <p>Issues a sequence of Integers from a longer scoped source, primarily for 
+ * <p>Issues a sequence of Longs from a longer scoped source, primarily for 
  *   the generation of keys.
  * </p>
  * 
@@ -27,6 +27,6 @@ import spiralcraft.common.Lifecycle;
 public interface Sequence
   extends Lifecycle
 {
-  public Integer next()
+  public Long next()
     throws DataException;
 }

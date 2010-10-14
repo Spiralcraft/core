@@ -23,7 +23,7 @@
       <name>nextValue
       </name>
       
-      <type><Integer.type/>
+      <type><Long.type/>
       </type>
 
     </meta:Field>
@@ -41,5 +41,15 @@
 
 
   </fields>
+  
+  <keys>
+    <meta:Key>
+      <primary>true
+      </primary>
+      
+      <fieldList>uri
+      </fieldList>
+    </meta:Key>
+  </keys>
 
 </meta:Type>
