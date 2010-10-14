@@ -159,7 +159,10 @@ public class ListAggregate<T>
     if (fillCommand!=null)
     { fillTo(index);
     }
-    return list.get(index);
+    if (index<list.size())
+    { return list.get(index);
+    }
+    return null;
   }
 
   @Override
