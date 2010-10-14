@@ -1,0 +1,101 @@
+<task:Sequence
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  >
+  <scenarios>
+    <test:Assertion>
+      <name>Eval
+      </name>
+      <subjectX>[*task:Eval{ `{x:=2,y:=5}` , `x*y` }].()
+      </subjectX>
+      <testX>.==10
+      </testX>
+    </test:Assertion>
+    
+    <task:Cycle>
+    
+      <contextX>{ [#context] count:=0 }
+      </contextX>
+
+      <maxCycles>3
+      </maxCycles>
+      
+      <chain>
+        <test:Assertion>
+        
+          <name>Cycle
+          </name>
+          <subjectX>([context].count=[context].count+1).@log("Cycling"+[context])
+          </subjectX>
+          <testX>true
+          </testX>
+      
+        </test:Assertion>
+      
+      </chain>
+    </task:Cycle>    
+    
+    <task:Sequence>
+
+        
+      <contextX>
+        { [#context] 
+          count:=0
+          ,increment:~[*task:Eval{`.count=.count+1`}]
+        }
+      </contextX>
+    
+
+      <scenarios>
+        <task:Fork>
+          
+          <scenarios>
+            <test:Assertion>
+            
+              <name>Fork #1
+              </name>
+              <subjectX>[context].increment().@log("Fork #1: "+[context].count)
+              </subjectX>
+              <testX>true
+              </testX>
+          
+            </test:Assertion>
+            
+            <test:Assertion>
+            
+              <name>Fork #2
+              </name>
+              <subjectX>[context].increment().@log("Fork #2: "+[context].count)
+              </subjectX>
+              <testX>true
+              </testX>
+          
+            </test:Assertion>
+            
+            <test:Assertion>
+            
+              <name>Fork #3
+              </name>
+              <subjectX>[context].increment().@log("Fork #3: "+[context].count)
+              </subjectX>
+              <testX>true
+              </testX>
+          
+            </test:Assertion>  
+                        
+          </scenarios>
+        </task:Fork>    
+        <test:Assertion>
+        
+          <name>Fork
+          </name>
+          <subjectX>[context].count
+          </subjectX>
+          <testX>.==3
+          </testX>
+      
+        </test:Assertion>  
+      </scenarios>   
+    </task:Sequence>
+  </scenarios>
+</task:Sequence>

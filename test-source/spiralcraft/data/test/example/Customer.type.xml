@@ -30,6 +30,16 @@
     </meta:Field>
         
     <meta:Field>
+        
+      <name>lastContact
+      </name>
+                
+      <type><Instant.type/>
+      </type>
+                
+    </meta:Field>
+            
+    <meta:Field>
 
       <name>paymentTerms
       </name>
@@ -78,6 +88,17 @@
       </type>
       
     </meta:Field>    
+    
+    <meta:Field>
+        
+      <name>notes
+      </name>
+        
+      <type>
+        <String.type/>
+      </type>
+      
+    </meta:Field>        
   </fields>
       
   <keys>

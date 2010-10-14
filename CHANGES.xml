@@ -4,6 +4,381 @@
   
   <scm:Change>
   
+    <revision>0.4.12
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>????
+    </date>
+  
+    <notes>
+
+    </notes>
+    
+    <detail>
+    
+      <scm:Change>
+        <notes>
+          <scm:Note>Minor log enhancements- add 
+            ClassLog.fine(String msg,Exception exception) and ensure that
+            class/line no. detail is never suppressed.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/log/
+        </path>
+        
+        <resources>
+          <URI>ClassLog.java
+          </URI>
+          <URI>DefaultFormatter.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-44] Provide a facility to update a standalone 
+            installation from another VFS resource, using basic directory
+            synchronization logic.
+          </scm:Note>
+          <scm:Note>Add 'excludeUnchanged' property to Copy task
+          </scm:Note>
+          <scm:Note>Add convenience constructor to PatternFilter
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/
+        </path>
+        
+        <resources>
+          <URI>filters/PatternFilter.java
+          </URI>
+          <URI>task/Copy.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-45] XML Store should have a configurable 
+            retention policy for history files
+          </scm:Note>
+          <scm:Note>Complete implementation of Duration string encoding and
+            time logic.
+          </scm:Note>
+          <scm:Note>Declare Instant immutable, and ensure that immutable types
+            are treated as primitives
+          </scm:Note>
+          <scm:Note>Add 'head' and 'tail' methods to ArrayUtil
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>vfs/util/LastModifiedComparator.java
+          </URI>
+          <URI>vfs/util/RetentionPolicy.java
+          </URI>
+          <URI>data/xml/XmlStore.java
+          </URI>
+          <URI>data/xml/XmlQueryable.java
+          </URI>
+          <URI>data/reflect/ReflectionType.java
+          </URI>
+          <URI>time/Calendar.java
+          </URI>
+          <URI>time/Chronology.java
+          </URI>
+          <URI>time/Duration.java
+          </URI>
+          <URI>time/StandardDurationFormat.java
+          </URI>
+          <URI>time/Instant.java
+          </URI>
+          <URI>util/string/DurationToString.java
+          </URI>
+          <URI>util/string/StringConverter.java
+          </URI>
+          <URI>util/ArrayUtil.java
+          </URI>          
+        </resources>
+
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-46] Refactor XML store to support triggers and 
+            versioned transactions
+          </scm:Note>
+          <scm:Note>Enhance utility of Projections by exposing mappings and
+            creating reverse Queries.
+          </scm:Note>      
+          <scm:Note>FieldSet must provide Field name String[]
+          </scm:Note>    
+          <scm:Note>Sequences now provide Long values and are accessed via
+            primary key using standard store mechanisms
+          </scm:Note>
+          <scm:Note>Implemented conflict resolution logic within DeltaTuple
+            via rebase(Tuple) method
+          </scm:Note>
+          <scm:Note>XML data writer knows how to write delta tuples
+          </scm:Note>
+          <scm:Note>Recognize DeltaType and .delta type name extension where
+            appropriate
+          </scm:Note>
+          <scm:Note>Exclude C1 control chars in XmlEncoder
+          </scm:Note>
+          <scm:Note>Avoid double-check of XmlStore subscriber. Delay first 
+            scheduled subscription check because initial check is run 
+            synchronously on start. 
+          </scm:Note>
+          <scm:Note>Add option to delay first run in CommandScheduler
+          </scm:Note>
+          <scm:Note>New LangUtil provides convenience method to find Java
+            type in the Focus chain
+          </scm:Note>
+          <scm:Note>Provide singleton resolver for AnyType
+          </scm:Note>
+          <scm:Note>Implement Transaction.toString() for debugging purposes
+          </scm:Note>
+          <scm:Note>Fix bug in KeyedList.set() which did not remove the
+            replaced value from indexes
+          </scm:Note>
+          <scm:Note>Add replace(oldval,newval) method to KeyedList
+          </scm:Note>
+          <scm:Note>Fix potential NPE in ListMap.remove(K,V)
+          </scm:Note>
+          <scm:Note>Add intersection(a1,a2) method to ArrayUtil
+          </scm:Note>
+          <scm:Note>Loosen generic type to accomodate subtypes in IteratorChain
+          </scm:Note>
+          <scm:Note>Fix NPE in ListAggregate.get(int index)
+          </scm:Note>
+
+
+        </notes>
+
+        <path>source/spiralcraft/
+        </path>
+
+        <resources>
+          <URI>data/DeltaTuple.java
+          </URI>
+          <URI>data/Sequence.java
+          </URI>
+          <URI>data/Space.java
+          </URI>
+          <URI>data/Type.java
+          </URI>
+          <URI>data/TypeResolver.java
+          </URI>
+          <URI>data/FieldSet.java
+          </URI>
+          <URI>data/Key.java
+          </URI>
+          <URI>data/Projection.java
+          </URI>
+          <URI>data/ProjectionField.java
+          </URI>
+          <URI>data/core/DeltaType.java
+          </URI>
+          <URI>data/core/DeltaField.java
+          </URI>
+          <URI>data/core/FieldImpl.java
+          </URI>
+          <URI>data/core/KeyImpl.java
+          </URI>
+          <URI>data/core/ProjectionImpl.java
+          </URI>
+          <URI>data/core/ProjectionFieldImpl.java
+          </URI>
+          <URI>data/core/SchemeImpl.java
+          </URI>
+          <URI>data/core/UnifiedFieldSet.java
+          </URI>
+          <URI>data/sax/DataHandler.java
+          </URI>
+          <URI>data/sax/DataWriter.java
+          </URI>
+          <URI>data/sax/DataHandlerBase.java
+          </URI>
+          <URI>data/sax/ForeignDataHandler.java
+          </URI>
+          <URI>data/session/BufferTuple.java
+          </URI>
+          <URI>data/spi/ArrayDeltaTuple.java
+          </URI>
+          <URI>data/spi/EditableKeyedListAggregate.java
+          </URI>
+          <URI>data/spi/ListAggregate.java
+          </URI>
+          <URI>data/spi/Sequence.type.xml
+          </URI>
+          <URI>data/spi/ResourceSequence.java
+          </URI>
+          <URI>data/xml/XmlStore.java
+          </URI>
+          <URI>data/xml/XmlQueryable.java
+          </URI>
+          <URI>data/types/standard/AnyType.java
+          </URI>
+          <URI>data/transaction/Transaction.java
+          </URI>
+          <URI>command/CommandScheduler.java
+          </URI>
+          <URI>lang/util/LangUtil.java
+          </URI>
+          <URI>lang/util/KeyedList.java
+          </URI>
+          <URI>lang/util/ListMap.java
+          </URI>
+          <URI>text/xml/XmlEncoder.java
+          </URI>
+          <URI>util/ArrayUtil.java
+          </URI>
+          <URI>util/IteratorChain.java
+          </URI>
+        </resources>      
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-47] Support for multi-headed apps- Daemon should
+            publish child Services into Focus chain and define a VFS resource 
+            context
+          </scm:Note>
+          <scm:Note>Add hook for binding child component into StandardContainer
+          </scm:Note>
+          <scm:Note>Allow configuration of Daemon VFS context root to be
+            inherited by all children.
+          </scm:Note>
+          <scm:Note>Updated CommandScheduler to cache contextual VFS URIs at
+            bind-time so they are available on command threads. 
+          </scm:Note>          
+          <scm:Note>Allow client to obtain a reference to the current
+            ContextResourceMap
+          </scm:Note>
+          <scm:Note>TaskScheduler pulls ContextResourceMap for use by
+            CommandScheduler
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>app/spi/AbstractComponent.java
+          </URI>
+          <URI>app/spi/StandardContainer.java
+          </URI>
+          <URI>service/Daemon.java
+          </URI>
+          <URI>command/CommandScheduler.java
+          </URI>
+          <URI>vfs/context/ContextResourceMap.java
+          </URI>
+          <URI>task/TaskScheduler.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <note>
+          <scm:Note>[SCPUBLIC-48] Methods on structs should execute atomically 
+            against a given struct
+          </scm:Note>
+        </note>
+        
+        <path>source/spiralcraft/lang/parser/StructNode.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-49] Implement @last meta-property to function 
+            like @top
+          </scm:Note>
+          
+          <path>source/spiralcraft/lang/spi/AbstractReflector.java
+          </path>
+        </notes>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-50] Edit task should be easily configurable for 
+            create-only mode
+          </scm:Note>
+          
+          <path>source/spiralcraft/data/task/Edit.java
+          </path>
+        </notes>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-51] vfs.Container interface should extend
+            vfs.Resource
+          </scm:Note>
+          
+          <path>source/spiralcraft/vfs/Container.java
+          </path>
+        </notes>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>[SCPUBLIC-52] Extend task and test packages to support 
+            stress testing
+          </scm:Note>
+          <scm:Note>LoadGroup allows for configuration of stress factors
+          </scm:Note>
+          <scm:Note>New Cycle and Fork components for repetitive and parallel
+            tasks.
+          </scm:Note>
+          <scm:Note>Factored the "execute the command of a nested Scenario"
+            pattern into a new CommandTask from Chain,Sequence and Reference
+          </scm:Note>
+          <scm:Note>Scenario has protected "importContext" field to supply
+            the parameter context to the bindImports method.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>test/LoadGroup.java
+          </URI>
+          <URI>task/Chain.java
+          </URI>
+          <URI>task/CommandTask.java
+          </URI>
+          <URI>task/Cycle.java
+          </URI>
+          <URI>task/Eval.java
+          </URI>
+          <URI>task/Fork.java
+          </URI>
+          <URI>task/Reference.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+          <URI>task/Sequence.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+    </detail>
+  </scm:Change>
+  
+  <scm:Change>
+  
     <revision>0.4.11.5
     </revision>
     
@@ -7148,22 +7523,22 @@
             and use of a ClosureFocus at the cyclical boundary
           </scm:Note>
 
-          <scm:Notes>More complete namespace management- expanded namespaces
+          <scm:Note>More complete namespace management- expanded namespaces
             are used internally for all references and lookups.
-          </scm:Notes> 
-          <scm:Notes>Nodes with both elements and character data will be
+          </scm:Note> 
+          <scm:Note>Nodes with both elements and character data will be
             processed if allowMixedContent property is set
-          </scm:Notes> 
+          </scm:Note> 
           <scm:Note>Factored out redundancy between AttributeBinding and
             lang.DictionaryBinding by moving useful assignment code into
             DictionaryBinding and making AttributeBinding a subclass.
           </scm:Note>          
-          <scm:Notes>ElementAssignments allow a Frame to post a value
+          <scm:Note>ElementAssignments allow a Frame to post a value
             created by a child context into the Focus chain via Expressions
-          </scm:Notes>
-          <scm:Notes>Support proper generation of closed elements for empty 
+          </scm:Note>
+          <scm:Note>Support proper generation of closed elements for empty 
             Tuples (eg. Type references) in the native XML format
-          </scm:Notes>
+          </scm:Note>
           <scm:Note>DataHandler now appends aggregate field values to
             any pre-existing aggregate to ensure that deep prototype
             references work as expected.
@@ -7172,13 +7547,13 @@
             to missing trailing slashes, and frames can be configured to allow 
             mixed content (elements and text) without throwing an exception.
           </scm:Note>
-          <scm:Notes>ParseXml is a Scenario that retrieves and processes 
+          <scm:Note>ParseXml is a Scenario that retrieves and processes 
             XML content from a resolved URI.
-          </scm:Notes>
-          <scm:Notes>QueryXml is a Scenario based on ParseXml that constructs
+          </scm:Note>
+          <scm:Note>QueryXml is a Scenario based on ParseXml that constructs
             a Resource from the FocusChain context and extracts data objects
             from the returned XML.
-          </scm:Notes>
+          </scm:Note>
         </notes>
     
         <path>source/spiralcraft/data/sax/

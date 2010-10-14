@@ -11,6 +11,7 @@
   xmlns:jnet="class:/java/net/"
   xmlns:sec="class:/spiralcraft/security/"
   xmlns:fn="class:/spiralcraft/lang/functions/"
+  xmlns:time="class:/spiralcraft/time/"
   >
   <chain>
  
@@ -274,7 +275,11 @@
             <test:Stub>
               <name>Expression Insert
               </name>
-              <messageX>[@example:Customer.buffer].(displayName:="New Customer").@tuple.save()
+              <messageX>
+                [@example:Customer.buffer]
+                  .(displayName:="New Customer"
+                    ,lastContact:=[@time:Instant].()
+                  ).@tuple.save()
               </messageX>
               <conditionX>true
               </conditionX>
@@ -289,9 +294,10 @@
                       }
                     ]
                   }
-                ].()#{.displayName}
+                ].()
               </subjectX>
-              <testX>.[3]=="New Customer"
+              <testX>.[3].displayName=="New Customer"
+                &amp;&amp; .[3].id==100
               </testX>
             </test:Assertion>
           
@@ -314,6 +320,8 @@
                 ].().@top
                 .[*dtask:Edit].()
                 { .displayName="Mary Second Edited"
+                  , .lastContact=[@time:Instant].()
+                  , .notes=.notes+"\r\n edited &#x2122;"
                   ,.
                 }.@tuple.save()
               </messageX>
@@ -343,7 +351,7 @@
           <name>Snapshot
           </name>
           <subjectX>
-            [data:Space].getStore("local").snapshot(0L)
+            [data:Space].getStore("local").snapshot(0L).@log("snap: \r\n---"+.data[0]+"\r\n---"+.data[1])
           </subjectX>
           <testX>
             .data[0].@cast([@data:Aggregate]).size()==4 

@@ -1,0 +1,121 @@
+<task:Chain
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:query="class:/spiralcraft/data/query/"
+  xmlns:data="class:/spiralcraft/data/"
+  xmlns:sax="class:/spiralcraft/data/sax"
+  xmlns:dtask="class:/spiralcraft/data/task/"
+  xmlns:dutil="class:/spiralcraft/data/util/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:dtest="class:/spiralcraft/data/test/"  
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:j="class:/java/lang/"
+  xmlns:jnet="class:/java/net/"
+  xmlns:sec="class:/spiralcraft/security/"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  >
+  <chain>
+    <task:Sequence>
+      <contextX>{ [#context] count:=0 }
+      </contextX>
+      
+      <scenarios>
+        <task:Cycle>
+
+    
+          <maxRuntimeMs x="1000*[test:LoadGroup].durationFactor"/>
+          
+          <chain>
+    
+            <task:Sequence>
+              <scenarios>
+            
+        
+        
+                <dtask:Session>
+                  <chain>
+                    <task:Eval>
+                      <x>[@example:Customer.buffer].(displayName:="New Customer "+[context].count).@tuple.save()
+                      </x>
+                    </task:Eval>
+ 
+                  
+                  </chain>
+                </dtask:Session>
+        
+                <dtask:Session>
+                  <chain>
+                    <task:Eval>
+                      <x>
+                        [*dtask:Fetch
+                          { [*query:Selection
+                              { [@example:Customer].type
+                              , `.id==2`
+                              }
+                            ]
+                          }
+                        ].().@top
+                        .[*dtask:Edit].()
+                        { .displayName="Mary Second Edited "+[context].count
+                          ,.
+                        }.@tuple.save()
+                      </x>
+                    </task:Eval>
+    
+                  
+                  </chain>
+                </dtask:Session>
+    
+
+                    
+                <task:Eval>
+                  <x>([context].count=[context].count+1)
+                  </x>
+                </task:Eval>
+                
+              </scenarios>
+              
+            </task:Sequence>        
+          </chain>
+        
+        </task:Cycle>
+        
+        <test:Assertion>
+          <name>Check update result
+          </name>
+          <subjectX>
+            [*dtask:Fetch
+              { [*query:Scan
+                  {[@example:Customer].type
+                  }
+                ]
+              }
+            ].().@last
+          </subjectX>
+          <testX>.displayName=="New Customer "+([context].count-1)
+          </testX>
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>Check update result
+          </name>
+          <subjectX>
+              [*dtask:Fetch
+                { [*query:Selection
+                    { [@example:Customer].type
+                    , `.id==2`                          
+                    }
+                  ]
+                }
+              ].()#{.displayName}
+          </subjectX>
+          <testX>.@top=="Mary Second Edited "+([context].count-1)
+          </testX>
+        </test:Assertion>        
+      
+      </scenarios>
+    
+    </task:Sequence>
+    
+  </chain>
+        
+</task:Chain>

@@ -1,4 +1,4 @@
-<project name="spiralcraft-core-shell" basedir="." default="smoke-tests">
+<project name="spiralcraft-core-shell" basedir="." default="smokeTest">
 
 	<import file="../build.xml"/>
 <!--
@@ -6,7 +6,7 @@
 
         vmargs="-Dspiralcraft.data.TypeResolver.debugLevel=FINE"
 -->  
-  <target name="smoke-tests"
+  <target name="smokeTest"
     depends="clean,spiralcraft-task"
     >
     <mkdir dir="out/io"/>
@@ -18,15 +18,24 @@
     <devtask
       codebase=".."
         exec="--log log/spiralcraft --consoleLog
-         SmokeRunner.assy
+         SmokeRunner
          "
     />
   </target>
 	
   <target name="all-tests" 
-    depends="clean,smoke-tests,spiralcraft-io-long"
+    depends="clean,smokeTest,spiralcraft-io-long"
     >
 
+  </target>
+    
+  <target name="stressTest">
+    <devtask
+      codebase=".."
+        exec="--log log/spiralcraft --consoleLog
+         StressRunner
+         "
+    />
   </target>
 
   <target name="clean">

@@ -1,0 +1,105 @@
+<task:TaskRunner
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:io="class:/spiralcraft/io/"
+  xmlns:iotest="class:/spiralcraft/io/test/"
+  xmlns:service="class:/spiralcraft/service/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:dxml="class:/spiralcraft/data/xml/"
+  xmlns:data="class:/spiralcraft/data/"
+  xmlns:da="class:/spiralcraft/data/access/"
+  xmlns:query="class:/spiralcraft/data/query/"
+  xmlns:dtest="class:/spiralcraft/data/test/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:vfs="class:/spiralcraft/vfs/task/"
+  >
+  
+  <service>
+    <data:Space>
+      <stores>
+        <dxml:XmlStore>
+          <name>local
+          </name>
+          
+          <subscriber>
+            <dxml:Subscriber>
+              <debug>true
+              </debug>
+            </dxml:Subscriber>
+          </subscriber>
+          
+          <masterURI>class:/spiralcraft/data/test/example/Snapshot.xml
+          </masterURI>
+          
+          
+          <masterRefreshSeconds>300
+          </masterRefreshSeconds>
+
+          <historyCleanSeconds>1
+          </historyCleanSeconds>
+          
+          <historyRetention.minAge>T10S
+          </historyRetention.minAge>
+          
+          <historyRetention.minCount>8
+          </historyRetention.minCount>
+          
+          <historyRetention.maxCount>16
+          </historyRetention.maxCount>
+                              
+          <baseResourceURI>out/data/store/
+          </baseResourceURI>
+          
+          <schema 
+            dataURI="example:Example.schema.xml"
+          />
+          
+          <debugLevel>INFO
+          </debugLevel>
+        </dxml:XmlStore>
+      </stores>
+    </data:Space>
+  </service>
+  
+  <chain>
+    <test:LoadGroup>
+      <name>spiralcraft-core:stress
+      </name>
+      
+      
+      <durationFactor>30
+      </durationFactor>
+      
+      <cycleFactor>30
+      </cycleFactor>
+      
+      <forkFactor>6
+      </forkFactor>
+      
+      
+      
+      <chain>
+        <task:Sequence>
+    
+          
+          <scenarios>
+            
+            <datatest:StressTest
+              xmlns:datatest="class:/spiralcraft/data/test/"
+            />
+            <tasktest:Stress
+              xmlns:tasktest="class:/spiralcraft/task/test/"
+            />
+          </scenarios>
+            
+
+        </task:Sequence>
+      
+      
+      </chain>
+      
+      <throwFailure>true
+      </throwFailure>
+    </test:LoadGroup>
+  </chain>
+    
+</task:TaskRunner>

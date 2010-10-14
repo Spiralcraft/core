@@ -1,3 +1,4 @@
+<?xml version="1.1" encoding="UTF-8"?>
 
 <example:Customer.list
   xmlns:example="class:/spiralcraft/data/test/example"
@@ -40,6 +41,9 @@
     <displayName>Mary Second
     </displayName>
     
+    <lastContact>2010-06-03 23:57:06.123 PST
+    </lastContact>
+    
     <address>
       <example:Address>
      
@@ -58,6 +62,8 @@
     <paymentTerms>net 20
     </paymentTerms>
     
+    <notes>spiralcraft ™
+    </notes>
     
   
   </example:Customer>

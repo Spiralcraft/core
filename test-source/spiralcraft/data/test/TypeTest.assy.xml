@@ -22,70 +22,68 @@
           </conditionX>
         </test:Stub>
 
-        <dtask:Fetch>
-          
-          <query>
-            <query:Scan>
-              <type x="[@example:Customer].type"/>
-            </query:Scan>
-          </query>
+        <task:Eval>
+          <x>[@example:Customer].(score:=20.216F)
+          </x>
           
           <chain>
+          
+            
             <test:Assertion>
               <name>scenario method pre-test
               </name>
-              <subjectX>[example:Customer.list][0].score
+              <subjectX>[example:Customer].score
               </subjectX>
               <testX>.==20.216F
               </testX>
             </test:Assertion>
 
             <task:Exec>
-              <commandX>[example:Customer.list][0].score1().@tune("TaskMethod 1")
+              <commandX>[example:Customer].score1().@tune("TaskMethod 1")
               </commandX>
             </task:Exec>
 
             <test:Assertion>
               <name>scenario method post-test
               </name>
-              <subjectX>[example:Customer.list][0].score
+              <subjectX>[example:Customer].score
               </subjectX>
               <testX>.==21.216F
               </testX>
             </test:Assertion>
             
             <task:Exec>
-              <commandX>[example:Customer.list][0].score1().@tune("TaskMethod 2")
+              <commandX>[example:Customer].score1().@tune("TaskMethod 2")
               </commandX>
             </task:Exec>
 
             <test:Assertion>
               <name>scenario method post-test
               </name>
-              <subjectX>[example:Customer.list][0].score
+              <subjectX>[example:Customer].score
               </subjectX>
               <testX>.==22.216F
               </testX>
             </test:Assertion>
             
             <task:Exec>
-              <commandX>[example:Customer.list][0].score(10).@tune("TaskMethod 3")
+              <commandX>[example:Customer].score(10).@tune("TaskMethod 3")
               </commandX>
             </task:Exec>
                         
             <test:Assertion>
               <name>parameterized scenario method post-test
               </name>
-              <subjectX>[example:Customer.list][0].score
+              <subjectX>[example:Customer].score
               </subjectX>
               <testX>.==32.216F
               </testX>
             </test:Assertion>
-            
+ 
             <test:Assertion>
               <name>calculated field
               </name>
-              <subjectX>[example:Customer.list][0].computedScore
+              <subjectX>[example:Customer].computedScore
               </subjectX>
               <testX>.==322.16F
               </testX>
@@ -103,7 +101,7 @@
               </testX>
             </test:Assertion>
           </chain>
-        </dtask:Fetch>
+        </task:Eval>
                 
       </scenarios>
       

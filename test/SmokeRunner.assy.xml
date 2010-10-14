@@ -30,6 +30,12 @@
           <masterURI>class:/spiralcraft/data/test/example/Snapshot.xml
           </masterURI>
           
+          <masterRefreshSeconds>30
+          </masterRefreshSeconds>
+          
+          <historyCleanSeconds>5
+          </historyCleanSeconds>
+                    
           <baseResourceURI>out/data/store/
           </baseResourceURI>
           
@@ -37,7 +43,7 @@
             dataURI="example:Example.schema.xml"
           />
           
-          <debugLevel>DEBUG
+          <debugLevel>INFO
           </debugLevel>
         </dxml:XmlStore>
       </stores>
@@ -49,84 +55,89 @@
       <name>spiralcraft-core:smoke
       </name>
       
+      <chain>
+        <task:Sequence>
+    
+          
+          <scenarios>
+            
+            <langtest:LangTest
+              xmlns:langtest="class:/spiralcraft/lang/test/"
+            />
+            
+            <utiltest:UtilTest
+              xmlns:utiltest="class:/spiralcraft/util/test/"
+            />
+            
+            <iotest:RecordIteratorTest>
+    
+              <fileURI>in/io/RecordFile.small.log
+              </fileURI>
+          
+            </iotest:RecordIteratorTest>
+            
+            <vfs:Copy>
+              
+              <verbose>true
+              </verbose>
+              
+              <sourceResource>class:/spiralcraft/data/test/example
+              </sourceResource>
+              
+              <targetResource>out/copy/
+              </targetResource>
+            </vfs:Copy>
+            
+            <vfs:Copy>
+              
+              <verbose>true
+              </verbose>
+              
+              <sourceResource>../test-source
+              </sourceResource>
+              
+              <preserveTime>true
+              </preserveTime>
+              
+              <targetResource>out/copy/test/
+              </targetResource>
+              
+              <pattern>**
+              </pattern>
+              
+    
+            </vfs:Copy>
+    
+            <dtest:DataTest/>
+    
+            <sectest:AuthTest
+              xmlns:sectest="class:/spiralcraft/security/test/"
+            />
+            
+            <tasktest:Smoke
+              xmlns:tasktest="class:/spiralcraft/task/test/"
+            />
+    
+            <vfstest:VfsTest
+              xmlns:vfstest="class:/spiralcraft/vfs/test/"
+            />
+    
+            <timetest:TimeTest
+              xmlns:timetest="class:/spiralcraft/time/test/"
+            />
+    
+            <saxtest:SaxTest
+              xmlns:saxtest="class:/spiralcraft/sax/test/"
+            />
+          </scenarios>
+        </task:Sequence>
+      
+      
+      </chain>
+      
       <throwFailure>true
       </throwFailure>
     </test:TestGroup>
-    <task:Sequence>
-
-      
-      <scenarios>
-        
-        <langtest:LangTest
-          xmlns:langtest="class:/spiralcraft/lang/test/"
-        />
-        
-        <utiltest:UtilTest
-          xmlns:utiltest="class:/spiralcraft/util/test/"
-        />
-        
-        <iotest:RecordIteratorTest>
-
-          <fileURI>in/io/RecordFile.small.log
-          </fileURI>
-      
-        </iotest:RecordIteratorTest>
-        
-        <vfs:Copy>
-          
-          <verbose>true
-          </verbose>
-          
-          <sourceResource>class:/spiralcraft/data/test/example
-          </sourceResource>
-          
-          <targetResource>out/copy/
-          </targetResource>
-        </vfs:Copy>
-        
-        <vfs:Copy>
-          
-          <verbose>true
-          </verbose>
-          
-          <sourceResource>../test-source
-          </sourceResource>
-          
-          <preserveTime>true
-          </preserveTime>
-          
-          <targetResource>out/copy/test/
-          </targetResource>
-          
-          <pattern>**
-          </pattern>
-          
-
-        </vfs:Copy>
-
-        <dtest:DataTest/>
-
-        <sectest:AuthTest
-          xmlns:sectest="class:/spiralcraft/security/test/"
-        />
-        
-        <tasktest:Test
-          xmlns:tasktest="class:/spiralcraft/task/test/"
-        />
-
-        <vfstest:VfsTest
-          xmlns:vfstest="class:/spiralcraft/vfs/test/"
-        />
-
-        <timetest:TimeTest
-          xmlns:timetest="class:/spiralcraft/time/test/"
-        />
-
-        <saxtest:SaxTest
-          xmlns:saxtest="class:/spiralcraft/sax/test/"
-        />
-      </scenarios>
-    </task:Sequence>
   </chain>
     
 </task:TaskRunner>

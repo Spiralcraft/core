@@ -448,6 +448,40 @@
             .resultfmt=="Mon, 2112/02/01 15:45:01.123 -0800"
           </testX>
         </test:Assertion> 
+        
+        <test:Assertion>
+          <name>Duration format
+          </name>
+        
+          <subjectX>
+            { fmt:=[@st:StandardDurationFormat].()
+            , in:="6Y7M30DT21H6M25.123S"
+            , duration:=.fmt.parse(.in)
+            , out:=.fmt.format(.duration)
+            }
+          </subjectX>
+          
+          <testX>
+            .out==.in
+          </testX>
+        </test:Assertion> 
+        
+        <test:Assertion>
+          <name>Duration formats
+          </name>
+        
+          <subjectX>
+            { fmt:=[@st:StandardDurationFormat].()
+            , in:=[@j:String][{"1D","6Y7M30DT21H6M25.123S","T21H6M25.123S","T0.123S"}]
+            , duration:=.in#{..fmt.parse(.)}
+            , out:=.duration#{..fmt.format(.)}
+            }
+          </subjectX>
+          
+          <testX>
+            .out==.in
+          </testX>
+        </test:Assertion>         
       </scenarios>
       
     </task:Sequence>
