@@ -18,6 +18,7 @@ import java.lang.reflect.Array;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.TreeSet;
 import java.util.Collection;
@@ -594,6 +595,54 @@ public class ArrayUtil
     System.arraycopy(original,0,ret,0,original.length);
     return ret;
     
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> T head(T input,int split)
+  { 
+    T result
+      =(T) Array.newInstance
+        (input.getClass().getComponentType()
+        ,split
+        );
+    System.arraycopy(input, 0, result, 0, split);
+    return result;
+  }
+  
+  @SuppressWarnings("unchecked")
+  public static <T> T tail(T input,int split)
+  { 
+    int rest=Array.getLength(input)-split;
+    T result
+      =(T) Array.newInstance
+        (input.getClass().getComponentType()
+        ,rest
+        );
+    System.arraycopy(input, split, result, 0, rest);
+    return result;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> T[] intersection(T[] sorted1,T[] sorted2)
+  {
+    HashSet<T> set1=new HashSet<T>();
+    for (T t:sorted1)
+    { set1.add(t);
+    }
+    
+    ArrayList<T> ret=new ArrayList<T>();
+    for (T t:sorted2)
+    { 
+      if (set1.contains(t))
+      { ret.add(t);
+      }
+    }
+    return ret.toArray
+      ((T[]) Array.newInstance
+        (sorted1.getClass().getComponentType()
+        ,ret.size()
+        )
+      );
   }
 }
 
