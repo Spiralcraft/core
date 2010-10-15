@@ -221,6 +221,7 @@ public class ClasspathResource
   }
   
   @Override
+  @Deprecated
   public Resource asResource()
   { return this;
   }

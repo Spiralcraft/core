@@ -73,6 +73,7 @@ public class FileResource
   }
 
   @Override
+  @Deprecated
   public Resource asResource()
   { return this;
   }

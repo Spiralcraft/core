@@ -61,6 +61,7 @@ public class JarFileResource
   }
 
   @Override
+  @Deprecated
   public Resource asResource()
   { return this;
   }
