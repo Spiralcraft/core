@@ -312,7 +312,7 @@ public class SchemeImpl
 //      key.setIndex(keyIndex++);
       if (key.isPrimary())
       { 
-        if (getPrimaryKey()!=null)
+        if (getInheritedPrimaryKey()!=null)
         {
           throw new DataException
             ("Duplicate primary key: "+key+" in scheme "+toString());
@@ -387,8 +387,12 @@ public class SchemeImpl
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public Key<Tuple> getPrimaryKey()
+  { return primaryKey;
+  }
+  
+  @SuppressWarnings("unchecked")
+  private Key<Tuple> getInheritedPrimaryKey()
   { 
     if (primaryKey==null 
         && type!=null
@@ -398,7 +402,7 @@ public class SchemeImpl
     }
     return primaryKey;
   }
-
+  
   public void setKeys(KeyImpl<Tuple>[] keyArray)
   { 
     for (KeyImpl<Tuple> key: keyArray)

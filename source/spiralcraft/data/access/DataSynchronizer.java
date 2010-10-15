@@ -66,7 +66,7 @@ public class DataSynchronizer
     this.space=space;
     tupleFocus=TupleFocus.<Tuple>create(new BeanFocus(Void.class,null),type.getScheme());
     nextConsumer=space.getUpdater(type,tupleFocus);
-    primaryKey=type.getScheme().getPrimaryKey();
+    primaryKey=type.getPrimaryKey();
     if (primaryKey==null)
     { 
       throw new DataException
