@@ -3,7 +3,7 @@
   xmlns:example="class:/spiralcraft/data/test/example"
   >
   <fields>
-    <meta:Field>
+    <meta:SequenceField>
       
       <name>nodeId
       </name>
@@ -12,7 +12,7 @@
         <String.type/>
       </type>
 
-    </meta:Field>
+    </meta:SequenceField>
 
     <meta:Field>
       
