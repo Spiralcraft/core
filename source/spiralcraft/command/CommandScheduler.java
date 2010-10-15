@@ -199,6 +199,9 @@ public class CommandScheduler
   { 
     if (!started)
     {
+      if (resourceMap==null)
+      { resourceMap=ContextResourceMap.get();
+      }
       started=true;
       reschedule();
     }
