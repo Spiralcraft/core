@@ -27,7 +27,6 @@ import spiralcraft.data.core.TypeImpl;
 import spiralcraft.data.core.SchemeImpl;
 
 import java.net.URI;
-import java.util.Iterator;
 
 
 
@@ -82,7 +81,6 @@ public class DeltaType
     if (this.archetype.getScheme()!=null && !isAggregate()) 
     { 
 
-      Key<?> primaryKey=this.archetype.getPrimaryKey();
       
       for (Field<?> field : this.archetype.getScheme().fieldIterable())
       { 
@@ -100,33 +98,13 @@ public class DeltaType
 
         
         Type<?> fieldType=field.getType();
-        // Primitives are immutable
-        if (primaryKey!=null && !fieldType.isPrimitive())
-        {
-          if (field instanceof KeyField<?>
-              && isChildKey
-                (((KeyField<?>) field).getKey().fieldIterable()
-                ,primaryKey.fieldIterable()
-                )
-              )
-          {
-            // Only buffer Key fields with parent-child relationships
-            
-            // If we didn't buffer it already
-            if (this.scheme.getLocalFieldByName(field.getName())==null)
-            { 
-              // AutoBuffer 
-              DeltaField newField=new DeltaField();
-              newField.setName(field.getName());
-              newField.setType(getDeltaType(fieldType));
-              scheme.addField(newField);
-
-            }
-          }
-
-        }
+    
         
-        if (fieldType.isPrimitive()
+        if (field.isTransient())
+        {
+          // Leave it alone
+        }
+        else if (fieldType.isPrimitive()
             || (fieldType.isAggregate() && fieldType.getContentType().isPrimitive())
             )
         { 
@@ -190,40 +168,5 @@ public class DeltaType
     }
   }
   
-
-  /**
-   * Indicate whether the given relation includes the primary key of this
-   *   Type's Scheme.
-   * 
-   * @param relation
-   * @param primary
-   * @return
-   */
-  private boolean isChildKey
-    (Iterable<? extends Field<?>> relation,Iterable<? extends Field<?>> primary)
-  {
-    Iterator<? extends Field<?>> primaryField=primary.iterator();
-    for (Field<?> childField: relation)
-    {
-      if (!primaryField.hasNext())
-      { 
-        // Primary key has fewer fields than used in relation
-        return true;
-      }
-      if (!childField.getName().equals(primaryField.next().getName()))
-      { return false;
-      }
-     
-    }
-    
-    if (primaryField.hasNext())
-    {
-      // Primary key has more fields than used in relation
-      //   so child is really a parent (less specific)
-      return false;
-    }
-    return true;
-    
-  }
 }
 
