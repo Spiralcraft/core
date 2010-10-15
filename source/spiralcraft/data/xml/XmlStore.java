@@ -710,6 +710,11 @@ public class XmlStore
       {
         boundQuery
           =sequenceQueryable.query(sequenceQuery,uriFocus);
+        if (boundQuery==null)
+        { 
+          throw new LifecycleException
+            ("Got null for sequence query "+sequenceQuery);
+        }
       }
       catch (DataException x)
       { 
