@@ -202,7 +202,8 @@ public abstract class AbstractStore
     { container=this;
     }
     
-    assertStarted();
+    // Can be called during bind
+    // assertStarted();
     HashSet<Type<?>> typeSet=new HashSet<Type<?>>();
     query.getScanTypes(typeSet);
     Type<?>[] types=typeSet.toArray(new Type[typeSet.size()]);
@@ -310,7 +311,10 @@ public abstract class AbstractStore
   }
   
   private void addAuthoritativeType(Type<?> type)
-  { authoritativeTypes.add(type);
+  { 
+    if (!authoritativeTypes.contains(type))
+    { authoritativeTypes.add(type);
+    }
   }
   
   protected List<Queryable<Tuple>> getPrimaryQueryables()
@@ -349,7 +353,7 @@ public abstract class AbstractStore
         
         targetBinding=createEntityBinding(new Entity(type));
         targetBinding.setQueryable(baseQueryable);
-        addEntityBinding(targetBinding);
+        addStandardEntityBinding(targetBinding);
       }
       else if (!(targetBinding.getQueryable() instanceof BaseExtentQueryable<?>))
       {
@@ -376,6 +380,21 @@ public abstract class AbstractStore
     
   }
    
+  
+  /**
+
+   * 
+   * @param binding
+   */
+  private void addStandardEntityBinding(EntityBinding binding)
+  { 
+    Type<?> type=binding.getEntity().getType();
+    entities.put(type,binding);
+    addSequences(type);
+    if (binding.isAuthoritative())
+    { addAuthoritativeType(type);
+    }
+  }
 
   /**
    * <p>Register a configured EntityBinding with this Store to manage an
@@ -386,11 +405,7 @@ public abstract class AbstractStore
    */
   protected void addEntityBinding(EntityBinding binding)
   { 
-    entities.put(binding.getEntity().getType(),binding);
-    if (binding.isAuthoritative())
-    { 
-      addAuthoritativeType(binding.getEntity().getType());
-    }
+    addStandardEntityBinding(binding);
     if (!(binding.getQueryable() instanceof BaseExtentQueryable))
     { addBaseTypes(binding.getQueryable(),binding.getEntity().getType());
     }
@@ -442,6 +457,7 @@ public abstract class AbstractStore
       { 
         if (field instanceof SequenceField<?>)
         { 
+          log.fine("added sequence "+field.getURI());
           sequences.put
           (field.getURI()
           ,createSequence(field)
@@ -535,8 +551,8 @@ public abstract class AbstractStore
     public Focus<?> bind(Focus<?> focusChain)
       throws BindException
     { 
-      addSequences(entity.getType());
-      
+
+      Type.getDeltaType(entity.getType());
       if (updater!=null)
       {
         Focus<?> updaterFocus=updater.bind(focusChain);
