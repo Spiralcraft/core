@@ -457,7 +457,9 @@ public abstract class AbstractStore
       { 
         if (field instanceof SequenceField<?>)
         { 
-          log.fine("added sequence "+field.getURI());
+          if (debugLevel.isDebug())
+          { log.fine("added sequence "+field.getURI());
+          }
           sequences.put
           (field.getURI()
           ,createSequence(field)
