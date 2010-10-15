@@ -39,7 +39,7 @@ public class FieldSetType
   
   @Override
   public Scheme getScheme()
-  { throw new UnsupportedOperationException("Use getFieldSet()");
+  { throw new UnsupportedOperationException("Use getFieldSet(): "+getURI());
   }
   
   @Override
