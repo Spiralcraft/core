@@ -694,9 +694,13 @@ public class XmlQueryable
   }
   
   void cleanHistory(RetentionPolicy storePolicy) 
+    throws DataException
   {
+    getAggregate();
     if (resource==null)
-    { return;
+    { 
+      log.fine("Resource "+resourceURI+" is null");
+      return;
     }
     
     try
@@ -714,9 +718,22 @@ public class XmlQueryable
               )
             );
         Resource[] expired=storePolicy.getExclusion(children);
-        for (Resource resource: expired)
-        { resource.delete();
+        if (expired.length>0)
+        {
+          if (debug)
+          {
+            log.debug
+              ("Deleting "+expired.length+"/"+children.length
+                +" history copies for "+resource.getURI()
+              );
+          }
+          for (Resource resource: expired)
+          { resource.delete();
+          }
         }
+      }
+      else
+      { log.fine("No history exists for "+resource.getURI());
       }
     }
     catch (UnresolvableURIException x)

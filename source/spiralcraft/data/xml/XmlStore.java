@@ -90,7 +90,7 @@ public class XmlStore
   
   private final CommandScheduler historyCleaner
     =new CommandScheduler
-      (10000
+      (60*60*1000
       ,new Runnable()
         {
           @Override
@@ -176,6 +176,12 @@ public class XmlStore
   { updater.setPeriod(seconds*1000);
   }
   
+  /**
+   * The frequency that the store will check the history directory to remove
+   *   older files.
+   * 
+   * @param seconds
+   */
   public void setHistoryCleanSeconds(int seconds)
   { historyCleaner.setPeriod(seconds*1000);
   }
@@ -307,10 +313,18 @@ public class XmlStore
   
   private void cleanHistory()
   { 
-    for (XmlQueryable queryable:xmlQueryables)
-    { queryable.cleanHistory(historyRetention);
+    if (debugLevel.isDebug())
+    { log.debug("Cleaning history for "+baseResourceURI);
     }
-    
+    try
+    {
+      for (XmlQueryable queryable:xmlQueryables)
+      { queryable.cleanHistory(historyRetention);
+      }
+    }
+    catch (DataException x)
+    { log.log(Level.WARNING,"Error cleaning history for "+baseResourceURI,x);
+    }
     
   }
   
