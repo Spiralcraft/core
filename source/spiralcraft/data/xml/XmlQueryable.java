@@ -38,6 +38,7 @@ import spiralcraft.data.transaction.Transaction.State;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DeltaTuple;
+import spiralcraft.data.Field;
 import spiralcraft.data.JournalTuple;
 import spiralcraft.data.Key;
 import spiralcraft.data.Tuple;
@@ -204,10 +205,20 @@ public class XmlQueryable
     { 
       try
       {
+
+        ArrayList<String> fields=new ArrayList<String>();
+        for (Field<?> field: getResultType().getFieldSet().fieldIterable())
+        { 
+          if ( !field.isTransient() )
+          { fields.add(field.getName());
+          }
+        }
+        String[] fieldNames=fields.toArray(new String[fields.size()]);
+        
         ProjectionImpl<Tuple> equijoin
           =new ProjectionImpl<Tuple>
             (getResultType().getFieldSet()
-            ,getResultType().getFieldSet().getFieldNames()
+            ,fieldNames
             );
         originalQuery=query(equijoin.getIdentityQuery(), localFocus);
       }
