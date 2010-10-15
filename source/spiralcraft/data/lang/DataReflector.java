@@ -30,8 +30,8 @@ import spiralcraft.lang.TypeModel;
 
 import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.lang.reflect.BeanReflector;
-import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.AbstractReflector;
+import spiralcraft.lang.spi.NullChannel;
 //import spiralcraft.log.ClassLog;
 
 import spiralcraft.data.DataComposite;
@@ -285,21 +285,7 @@ public abstract class DataReflector<T extends DataComposite>
   public <X> Type<X> getTypeAsSubject(Expression<X> expr)
     throws DataException
   {
-    Channel<?> channel=new AbstractChannel(this)
-    {
-
-      @Override
-      protected Object retrieve()
-      { return null;
-      }
-
-      @Override
-      protected boolean store(
-        Object val)
-        throws AccessException
-      { return false;
-      }
-    };
+    Channel<?> channel=new NullChannel(this);
     
     Focus teleFocus=new TeleFocus(null,channel);
     try
