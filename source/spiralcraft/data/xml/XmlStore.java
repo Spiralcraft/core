@@ -321,6 +321,10 @@ public class XmlStore
       for (XmlQueryable queryable:xmlQueryables)
       { queryable.cleanHistory(historyRetention);
       }
+      
+      if (sequenceQueryable!=null)
+      { sequenceQueryable.cleanHistory(historyRetention);
+      }
     }
     catch (DataException x)
     { log.log(Level.WARNING,"Error cleaning history for "+baseResourceURI,x);
