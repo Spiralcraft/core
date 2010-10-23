@@ -61,8 +61,8 @@ public class Distinct
   }
   
   /**
-   * Construct a Selection which reads data from the specified source Query and filters
-   *   data according to the specified constraints expression.
+   * Construct a Distinct query which filters data from the specified source 
+   *   Query and removes duplicates identified by the projection "key"
    */
   public Distinct(Query source,Projection<Tuple> projection)
   { 

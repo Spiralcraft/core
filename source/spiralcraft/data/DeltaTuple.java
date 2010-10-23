@@ -47,7 +47,8 @@ public interface DeltaTuple
   Field<?>[] getExtentDirtyFields();
   
   /**
-   * Indicate whether the field specified by the index has been locally modified
+   * Indicate whether the field from this extent specified by the index has 
+   *   been locally modified
    */
   boolean isDirty(int index);
   
