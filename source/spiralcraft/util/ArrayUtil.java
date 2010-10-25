@@ -66,10 +66,18 @@ public class ArrayUtil
   }
 
   /**
-   * Append an array to an array
+   * Append an array to an array. If one of the arrays is null, return
+   *   the non-null array. If both arrays are null, return null.
    */
   public static Object concat(Object array1,Object array2)
   { 
+    if (array1==null)
+    { return array2;
+    }
+    else if (array2==null)
+    { return array1;
+    }
+    
     int appendPoint=Array.getLength(array1);
     int appendElements=Array.getLength(array2);
     array1=expandBy(array1,appendElements);
@@ -78,10 +86,17 @@ public class ArrayUtil
   }  
   
   /**
-   * Append an array to an array
+   * Append an array to an array. If one of the arrays is null, return
+   *   the non-null array. If both arrays are null, return null.
    */
   public static <T> T[] concat(T[] array1,T[] array2)
   { 
+    if (array1==null)
+    { return array2;
+    }
+    if (array2==null)
+    { return array1;
+    }
     int appendPoint=array1.length;
     int appendElements=array2.length;
     array1=expandBy(array1,appendElements);
