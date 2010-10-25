@@ -40,9 +40,17 @@ public class Setter<T>
   private boolean debug;
   
   public Setter(Channel<? extends T> source,Channel<T> target)
+    throws BindException
   { 
     this.source=source;
     this.target=target;
+    if (target!=null && !target.getReflector().isAssignableFrom(source.getReflector()))
+    { 
+      throw new BindException
+        ("Cannot assign a "+source.getReflector().getTypeURI()
+        +" to a location of type "+target.getReflector().getTypeURI()
+        );
+    }
   }
   
   public void setDebug(boolean debug)
