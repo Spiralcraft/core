@@ -217,9 +217,15 @@ public class ReflectionType<T>
       }
       else
       {
-        Class<?> compType=(Class<?>) iface.getTypeParameters()[0].getBounds()[0];
-        arraySuffix.append(".list");
-        iface=ClassUtil.boxedEquivalent(compType);
+        if (iface.getTypeParameters().length>0)
+        {
+          Class<?> compType=(Class<?>) iface.getTypeParameters()[0].getBounds()[0];
+          arraySuffix.append(".list");
+          iface=ClassUtil.boxedEquivalent(compType);
+        }
+        else
+        { iface=Object.class;
+        }
       }
       if (iface==null)
       { throw new RuntimeException("Error finding component type of "+oiface);
