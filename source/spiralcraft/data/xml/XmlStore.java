@@ -48,6 +48,7 @@ import spiralcraft.data.spi.AbstractStore;
 import spiralcraft.data.spi.ArrayDeltaTuple;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.spi.EditableArrayTuple;
+import spiralcraft.data.spi.EntityBinding;
 import spiralcraft.data.spi.ResourceSequence;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.transaction.Transaction.Nesting;
@@ -124,12 +125,17 @@ public class XmlStore
   }
   
   @Override
+  public URI getLocalResourceURI()
+  { return baseResourceURI;
+  }
+  
+  @Override
   public Focus<?> bind(Focus<?> focus)
     throws BindException
   { 
     if (schema!=null)
     {
-
+      schema.resolve();
       
       for (Entity entity: schema.getEntities())
       {
@@ -385,6 +391,8 @@ public class XmlStore
     try
     { 
 
+      ArrayList<Type<?>> types=new ArrayList<Type<?>>();
+      
       for (Aggregate<Tuple> aggregate : snapshot.getData())
       { 
         Type<?> type=aggregate.getType().getContentType();
@@ -394,8 +402,9 @@ public class XmlStore
         }
         else
         { 
-          long txId=joinTransaction().getTxId();
-          ((XmlQueryable) queryable).joinTransaction().setTxId(txId);
+          
+          StoreBranch tx=joinTransaction();
+          ((XmlQueryable) queryable).joinTransaction().setStoreBranch(tx);
           try
           { ((XmlQueryable) queryable).updateFromSnapshot(aggregate);
           }
@@ -411,9 +420,13 @@ public class XmlStore
             (Level.WARNING,"Failed to deliver subscription to "+type.getURI()
             ,x);
           }
+          types.add(type);
         }
         
       }
+      
+      onReload(types.toArray(new Type[types.size()]));
+      
       transaction.commit();
     }
     catch (TransactionException x)
@@ -459,16 +472,7 @@ public class XmlStore
     }
   }
 
-  @Override
-  protected void transactionCommitted(long transactionId)
-  { 
-    lastTransactionId=transactionId;
-    if (debugLevel.isTrace())
-    { 
-      log.fine
-        ("StoreBranch TX "+transactionId+" committed");
-    }
-  }
+
   
   @Override
   protected synchronized void flushLog(Aggregate<DeltaTuple> aggregate,long txId)
@@ -551,8 +555,8 @@ public class XmlStore
 
       // Make sure queryable has had a chance to init.
       queryable.getAggregate();
-      long txId=joinTransaction().getTxId();
-      queryable.joinTransaction().setTxId(txId);
+      StoreBranch tx=joinTransaction();
+      queryable.joinTransaction().setStoreBranch(tx);
       
     }
     
@@ -586,7 +590,7 @@ public class XmlStore
           if (tuple==null)
           { return;
           }
-          checkUpdateIntegrity(tuple);
+          tuple=checkUpdateIntegrity(tuple);
 
           joinTransaction().log(tuple);
           queryable.joinTransaction().update(tuple);
@@ -656,7 +660,7 @@ public class XmlStore
      * @param tuple
      * @throws DataException
      */
-    private void checkUpdateIntegrity(DeltaTuple tuple)
+    private DeltaTuple checkUpdateIntegrity(DeltaTuple tuple)
       throws DataException
     {      
       // Check unique keys
@@ -670,17 +674,24 @@ public class XmlStore
           { 
             if (!cursor.getTuple().equals(tuple.getOriginal()))
             {
-              // XXX We need to check if tuple is a later version of
-              //  original, and then check for an update conflict
-              if (debug)
-              { 
-                log.fine("\r\n  existing="+cursor.getTuple()
-                  +"\r\n  new="+tuple.getOriginal()
-                  +"\r\n updated="+tuple
-                  );
+              Tuple newOriginal=queryable.getStoreVersion(tuple.getOriginal());
+              if (!cursor.getTuple().equals(newOriginal))
+              {
+                if (debug)
+                { 
+                  log.fine("\r\n  existing="+cursor.getTuple()
+                    +"\r\n  new="+tuple.getOriginal()
+                    +"\r\n updated="+tuple
+                    );
+                }
+                throw new UniqueKeyViolationException
+                  (tuple,uniqueKeys.get(i));
               }
-              throw new UniqueKeyViolationException
-                (tuple,uniqueKeys.get(i));
+              else
+              { 
+                // Deal with concurrent update- overwrite for now
+                tuple=tuple.rebase(newOriginal);
+              }
             }
           }
         }
@@ -690,6 +701,7 @@ public class XmlStore
         i++;
         
       }
+      return tuple;
     }
     
 
@@ -793,8 +805,8 @@ public class XmlStore
           if (oldRow!=null && row!=null)
           {
           
-            long txId=joinTransaction().getTxId();
-            sequenceQueryable.joinTransaction().setTxId(txId);
+            StoreBranch tx=joinTransaction();
+            sequenceQueryable.joinTransaction().setStoreBranch(tx);
             
             DeltaTuple dt=new ArrayDeltaTuple(oldRow,row);
             sequenceQueryable.joinTransaction().update(dt);
@@ -865,8 +877,8 @@ public class XmlStore
           }
         
 
-          long txId=joinTransaction().getTxId();
-          sequenceQueryable.joinTransaction().setTxId(txId);
+          StoreBranch tx=joinTransaction();
+          sequenceQueryable.joinTransaction().setStoreBranch(tx);
           DeltaTuple dt=new ArrayDeltaTuple(oldRow,row);
           if (oldRow!=null)
           { sequenceQueryable.joinTransaction().update(dt);   

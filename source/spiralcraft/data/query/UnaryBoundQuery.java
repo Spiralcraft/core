@@ -22,6 +22,7 @@ import spiralcraft.log.Level;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 
 import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.data.access.SerialCursor;
@@ -70,7 +71,9 @@ public abstract class UnaryBoundQuery
     }
   }
   
-
+  protected Type<?> getSourceType()
+  { return source.getType();
+  }
   
   protected abstract SerialCursor<Tt> 
     newSerialCursor(SerialCursor<Ts> source) throws DataException;

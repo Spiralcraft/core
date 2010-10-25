@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2009 Michael Toth
+// Copyright (c) 1998,2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -14,51 +14,55 @@
 //
 package spiralcraft.data.access;
 
-import spiralcraft.lang.Contextual;
-
+import spiralcraft.data.Field;
 
 /**
- * <p>Specifies an operation to be performed at a point in the data modification
- *   process.
- * </p>
+ * Specifies persistence related characteristics of a Field as associated
+ *   with a Schema Entity.
  * 
  * @author mike
  *
  */
-public abstract class Trigger
-  implements Contextual
+public class EntityField
+  extends SchemaMetaObject<EntityField>
 {
-  public static enum When
-  { 
-    BEFORE
-    ,AFTER
-  }
-   
+
   private String name;
-  private When when;
-  private boolean debug;
+  private String storeName;
+  private Entity entity;
+  
   
   public void setName(String name)
   { this.name=name;
+  }
+  
+  public void setStoreName(String storeName)
+  { this.storeName=storeName;
   }
   
   public String getName()
   { return name;
   }
   
-  public void setWhen(When when)
-  { this.when=when;
-  }
-  
-  public When getWhen()
-  { return when;
-  }
+  public String getStoreName()
+  { 
+    if (storeName!=null)
+    { return storeName;
+    }
 
-  public void setDebug(boolean debug)
-  { this.debug=debug;
+    if (base!=null)
+    { return base.getStoreName();
+    }
+    else
+    { return name;
+    }
   }
   
-  public boolean isDebug()
-  { return debug;
+  public Field<?> getTypeField()
+  { return entity.getType().getField(name);
+  }
+  
+  void setEntity(Entity entity)
+  { this.entity=entity;
   }
 }

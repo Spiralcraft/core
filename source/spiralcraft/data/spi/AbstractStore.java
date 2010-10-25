@@ -20,10 +20,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
-import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.common.Lifecycler;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
@@ -37,8 +39,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.access.Entity;
 import spiralcraft.data.access.Schema;
 import spiralcraft.data.access.Store;
-import spiralcraft.data.access.DeltaTrigger;
-import spiralcraft.data.access.Updater;
+import spiralcraft.data.access.StoreService;
 import spiralcraft.data.core.SequenceField;
 
 import spiralcraft.data.query.BoundQuery;
@@ -55,11 +56,10 @@ import spiralcraft.data.types.standard.AnyType;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.Contextual;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
-import spiralcraft.util.ArrayUtil;
+
 /**
  * <p>Starting point for building a new type of Store.
  * </p>
@@ -72,7 +72,7 @@ import spiralcraft.util.ArrayUtil;
  *
  */
 public abstract class AbstractStore
-  implements Store,Contextual
+  implements Store
 {
   
   protected final ClassLog log=ClassLog.getInstance(getClass());
@@ -97,12 +97,27 @@ public abstract class AbstractStore
     =new LinkedHashMap<Type<?>,EntityBinding>();
   
   private HashMap<URI,Sequence> sequences;  
+  
+  private StoreService[] services;
+  
   private String name;
   private Focus<Store> focus;
   private Sequence txIdSequence;
   
-  private StoreResourceManager resourceManager
-    =new StoreResourceManager();
+  private final LinkedHashSet<Long> txInProgress
+    =new LinkedHashSet<Long>();
+  private long minOpenTx;
+  
+  protected ResourceManager<? extends StoreBranch> resourceManager
+    =new ResourceManager<StoreBranch>()
+  {
+    @Override
+    public StoreBranch createBranch(Transaction transaction)
+      throws TransactionException
+    { return new StoreBranch();
+    }
+  };
+  
   
   public AbstractStore()
     throws DataException
@@ -143,10 +158,18 @@ public abstract class AbstractStore
   { return authoritativeTypes.contains(type);
   }
   
+  @Override
+  public Schema getSchema()
+  { return schema;
+  }
   
   public void setSchema(Schema schema)
   { this.schema=schema;
   }  
+  
+  public void setServices(StoreService[] services)
+  { this.services=services; 
+  }
   
   
 //  @Override
@@ -202,11 +225,20 @@ public abstract class AbstractStore
     { container=this;
     }
     
-    // Can be called during bind
-    // assertStarted();
     HashSet<Type<?>> typeSet=new HashSet<Type<?>>();
-    query.getScanTypes(typeSet);
+    query.getAccessTypes(typeSet);
     Type<?>[] types=typeSet.toArray(new Type[typeSet.size()]);
+    
+    if (services!=null)
+    {
+      for (StoreService service:services)
+      { query=service.handleQuery(query,types);
+      }
+    }
+    
+    
+    
+
     
     if (types.length==1)
     {
@@ -248,6 +280,9 @@ public abstract class AbstractStore
     throws BindException
   { 
     focus=focusChain.chain(new SimpleChannel<Store>(this,true));
+    
+    bindServices(focus);
+    
     txIdSequence=createTxIdSequence();
     if (sequences==null)
     { sequences=new HashMap<URI,Sequence>();
@@ -260,15 +295,26 @@ public abstract class AbstractStore
     return focus;
   }
   
+  private void bindServices(Focus<?> focusChain)
+    throws BindException
+  {
+    if (services!=null)
+    { 
+      for (StoreService service:services)
+      { 
+        Focus<?> serviceFocus=service.bind(focusChain);
+        if (serviceFocus!=focusChain)
+        { focusChain.addFacet(serviceFocus);
+        }
+      }
+    }
+  }
+  
   
   @Override
   public void start()
     throws LifecycleException
   { 
-    for (EntityBinding binding: entities.values())
-    { binding.start();
-    }
-
     
     if (sequences!=null)
     {
@@ -276,6 +322,12 @@ public abstract class AbstractStore
       { sequence.start();
       }
     }
+    
+    for (EntityBinding binding : entities.values())
+    { binding.start();
+    }    
+    
+    Lifecycler.start(services);
     
     started=true;
   }
@@ -287,12 +339,20 @@ public abstract class AbstractStore
 
     started=false;
     // log.fine("Stopping store...");
+    
+    Lifecycler.stop(services);
+
+    for (EntityBinding binding : entities.values())
+    { binding.stop();
+    }    
+
     if (sequences!=null)
     {
       for (Sequence sequence : sequences.values())
       { sequence.stop();
       }
     }
+
   }  
   
   /**
@@ -490,204 +550,29 @@ public abstract class AbstractStore
     
   }
   
-  protected void transactionCommitted(long txId)
-  {
   
+  protected void transactionCommitted(long transactionId)
+  { 
+    lastTransactionId=transactionId;
+    if (debugLevel.isTrace())
+    { 
+      log.fine
+        ("StoreBranch TX "+transactionId+" committed");
+    }
   }
   
-  /**
-   * Encapsulates the state of an Entity with a running Store.
-   * 
-   * @author mike
-   *
-   */
-  public class EntityBinding
-    implements Contextual,Lifecycle
+  public void onReload(Type<?>[] types)
   {
-
-    private final Entity entity;
-    private Queryable<Tuple> queryable;
-    private Updater<DeltaTuple> updater;
-    private boolean authoritative;
     
-    private DeltaTrigger[] beforeInsert=new DeltaTrigger[0];
-    private DeltaTrigger[] afterInsert=new DeltaTrigger[0];
-    private DeltaTrigger[] beforeUpdate=new DeltaTrigger[0];
-    private DeltaTrigger[] afterUpdate=new DeltaTrigger[0];
-    private DeltaTrigger[] beforeDelete=new DeltaTrigger[0];
-    private DeltaTrigger[] afterDelete=new DeltaTrigger[0];
-    
-    public EntityBinding(Entity entity)
-    { this.entity=entity;
-    }
-    
-    public Entity getEntity()
-    { return entity;
-    }
-    
-    public void setQueryable(Queryable<Tuple> queryable)
-    { this.queryable=queryable;
-    }
-    
-    public Queryable<Tuple> getQueryable()
-    { return queryable;
-    }
-    
-    public void setUpdater(Updater<DeltaTuple> updater)
-    { this.updater=updater;
-    }
-    
-    public Updater<DeltaTuple> getUpdater()
-    { return updater;
-    }
-    
-    public boolean isAuthoritative()
-    { return authoritative;
-    }
-    
-    public void setAuthoritative(boolean authoritative)
-    { this.authoritative=authoritative;
-    }
-    
-    @Override
-    public Focus<?> bind(Focus<?> focusChain)
-      throws BindException
-    { 
-
-      Type.getDeltaType(entity.getType());
-      if (updater!=null)
-      {
-        Focus<?> updaterFocus=updater.bind(focusChain);
-      
-      
-      
-        DeltaTrigger[] tupleTriggers=entity.getDeltaTriggers();
-        if (tupleTriggers!=null)
-        {
-          for (DeltaTrigger trigger : tupleTriggers)
-          { 
-            if (trigger.getTask()!=null)
-            { trigger.bind(updaterFocus);
-            }
-          
-            switch (trigger.getWhen())
-            {
-              case BEFORE:
-                if (trigger.isForInsert())
-                { beforeInsert=ArrayUtil.append(beforeInsert,trigger);
-                }
-                if (trigger.isForUpdate())
-                { beforeUpdate=ArrayUtil.append(beforeUpdate,trigger);
-                }
-                if (trigger.isForDelete())
-                { beforeDelete=ArrayUtil.append(beforeDelete,trigger);
-                }
-                break;
-              case AFTER:
-                if (trigger.isForInsert())
-                { afterInsert=ArrayUtil.append(afterInsert,trigger);
-                }
-                if (trigger.isForUpdate())
-                { afterUpdate=ArrayUtil.append(afterUpdate,trigger);
-                }
-                if (trigger.isForDelete())
-                { afterDelete=ArrayUtil.append(afterDelete,trigger);
-                }
-                break;
-            }
-          }
-        }
-        
-      }
-      else if (entity.getDeltaTriggers()!=null)
-      { 
-        throw new BindException
-          ("Triggers require an Updater in Entity "+entity.getType());
-      }
-      
-      return focusChain;
-    }
-
-    
-    @Override
-    public void start()
-      throws LifecycleException
-    { 
-    }
-
-    @Override
-    public void stop()
-      throws LifecycleException
-    {      
-    }
-    
-    public DeltaTuple beforeInsert(DeltaTuple tuple)
-      throws TransactionException
-    { return beforeTrigger(beforeInsert,tuple);
-    }
-    
-    public DeltaTuple beforeUpdate(DeltaTuple tuple)
-      throws TransactionException
-    { return beforeTrigger(beforeUpdate,tuple);
-    }
-
-    public DeltaTuple beforeDelete(DeltaTuple tuple)
-      throws TransactionException
-    { return beforeTrigger(beforeDelete,tuple);
-    }
-
-    public void afterInsert(DeltaTuple tuple)
-      throws TransactionException
-    { afterTrigger(afterInsert,tuple);
-    }
-  
-    public void afterUpdate(DeltaTuple tuple)
-      throws TransactionException
-    { afterTrigger(afterUpdate,tuple);
-    }
-
-    public void afterDelete(DeltaTuple tuple)
-      throws TransactionException
-    { afterTrigger(afterDelete,tuple);
-    }
-
-  
-    private DeltaTuple beforeTrigger(DeltaTrigger[] triggers,DeltaTuple tuple)
-      throws TransactionException
-    { 
-      for (DeltaTrigger trigger: triggers)
-      { 
-        tuple=trigger.trigger();
-        if (tuple==null)
-        { break;
-        }
-
-      }
-      return tuple;
-    }
-    
-    private void afterTrigger(DeltaTrigger[] triggers,DeltaTuple tuple)
-      throws TransactionException
+    if (services!=null)
     {
-      for (DeltaTrigger trigger: triggers)
-      { trigger.trigger();
+      for (StoreService service:services)
+      { service.onReload(types);
       }
-    }
+    }    
   }
   
-  class StoreResourceManager
-    extends ResourceManager<StoreBranch>
-  {
-
-    @Override
-    public StoreBranch createBranch(Transaction transaction)
-      throws TransactionException
-    { return new StoreBranch();
-    }
-  
-  }
-  
-  protected class StoreBranch
+  public class StoreBranch
     implements Branch
   {
 
@@ -696,21 +581,40 @@ public abstract class AbstractStore
       =new EditableArrayListAggregate<DeltaTuple>(AnyType.resolve());
 
     private State state=State.STARTED;
+    private final Set<Long> txOpen=new HashSet<Long>(txInProgress);
+    private final long earliestOpenTx=minOpenTx;
 
     long txId;
     
     public StoreBranch()
       throws TransactionException
     { 
-      
-      try
-      { txId=txIdSequence.next();
-      }
-      catch (DataException x)
-      { throw new TransactionException("Could not get next transaction id",x);
+      synchronized (txInProgress)
+      {
+        try
+        { txId=txIdSequence.next();
+        }
+        catch (DataException x)
+        { throw new TransactionException("Could not get next transaction id",x);
+        }
+        txInProgress.add(txId);
+        if (minOpenTx==0)
+        { minOpenTx=txId;
+        }
       }
     }
     
+    
+    public boolean isVisible(long txId)
+    { 
+      return 
+        (earliestOpenTx==0 && txId<=this.txId)
+        || txId==this.txId 
+        || txId<earliestOpenTx
+        || (txId<this.txId && !txOpen.contains(txId))
+        ;
+        
+    }
     
     /**
      * Log a Delta
@@ -776,9 +680,20 @@ public abstract class AbstractStore
         if (debugLevel.isTrace())
         { log.trace("Completed StoreBranch "+txId);
         }
-        // Release anything here
-        
+        synchronized (txInProgress)
+        {
+          // Release anything here
+          txInProgress.remove(txId);
+          if (minOpenTx==this.txId)
+          { 
+            if (!txInProgress.isEmpty())
+            { minOpenTx=txInProgress.iterator().next();
+            }
+          }
+          
+        }
       }
+      
       state=State.COMPLETED;
 
     }

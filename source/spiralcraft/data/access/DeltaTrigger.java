@@ -14,33 +14,36 @@
 //
 package spiralcraft.data.access;
 
+
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.transaction.TransactionException;
+
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.task.Scenario;
-import spiralcraft.task.TaskCommand;
 
 
 /**
- * <p>Specifies a Task to be performed when Entity data is modified.
+ * <p>Abstract trigger for Delta level updates
  * </p>
+ * 
+ * <p>The trigger is bound into a Focus where the DeltaTuple representing
+ *   the incoming change is the subject.
+ * </p>
+ *   
  * 
  * @author mike
  *
  */
-public class DeltaTrigger
+public abstract class DeltaTrigger
   extends Trigger
 {
  
-  private Scenario<DeltaTuple,DeltaTuple> task;
   private boolean forInsert;
   private boolean forUpdate;
   private boolean forDelete;
-    
-  public void setTask(Scenario<DeltaTuple,DeltaTuple> task)
-  { this.task=task;
-  }
+  
+
+  
   
   /**
    * Specify that the Trigger should run when a Tuple is inserted
@@ -94,39 +97,18 @@ public class DeltaTrigger
   { return forDelete;
   }
  
-  public Scenario<DeltaTuple,DeltaTuple> getTask()
-  { return task;
-  }
-
   
   @Override
   public Focus<?> bind(Focus<?> focusChain)
     throws BindException
   {
-    if (task!=null)
-    { task.bind(focusChain);
-    }
     return focusChain;
   }
   
-  public DeltaTuple trigger()
-    throws TransactionException
-  { 
-    DeltaTuple tuple=null;
-    if (task!=null)
-    {
-      TaskCommand<DeltaTuple,DeltaTuple> command
-        =task.command();
-      command.execute();
-      if (command.getException()!=null)
-      { 
-        throw new TransactionException
-          ("Error running trigger",command.getException());
-      }
-      tuple=command.getResult();
-    }
-    return tuple;
-    
-  }
+  public abstract DeltaTuple trigger()
+    throws TransactionException;
   
+
+
+
 }

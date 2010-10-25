@@ -51,6 +51,13 @@ public interface Store
   String getName();
   
   /**
+   * The Schema of this Store, which contains the data model metadata
+   * 
+   * @return
+   */
+  Schema getSchema();
+  
+  /**
    * Retrieve an update 'channel'. The DataConsumer can be used once to update
    *   a batch of Tuples of the same Type.
    * 
@@ -84,6 +91,15 @@ public interface Store
    * @return
    */
   boolean isAuthoritative(Type<?> type);
+  
+  /**
+   * <p>Return the URI of the local writable directory tree that will
+   *   hold persistent data
+   * </p>
+   * 
+   * @return
+   */
+  URI getLocalResourceURI();
   
   /**
    * Take a snapshot of the changes to the datastore since transactionId

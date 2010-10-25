@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.core;
 
+import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
@@ -473,8 +474,31 @@ public class FieldImpl<T>
     else
     {
       throw new IllegalArgumentException
-        ("Tuple does not belong to FieldSet "+getFieldSet());
+        ("Tuple "+t+" does not belong to FieldSet "+getFieldSet());
     }
+  }
+  
+  @Override
+  public final boolean isDirty(DeltaTuple dt)
+    throws DataException
+  {
+    if (dt==null)
+    {
+      throw new IllegalArgumentException
+        ("DeltaTuple cannot be null");
+    }
+    
+    dt=(DeltaTuple) widenTuple(dt);
+    
+    if (dt!=null)
+    { return dt.isDirty(index);
+    }
+    else
+    {
+      throw new IllegalArgumentException
+        ("Tuple "+dt+" does not belong to FieldSet "+getFieldSet());
+    }
+    
   }
   
   /**

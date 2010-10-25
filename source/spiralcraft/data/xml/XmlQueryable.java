@@ -22,6 +22,7 @@ import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Scan;
 import spiralcraft.data.spi.AbstractAggregateQueryable;
+import spiralcraft.data.spi.AbstractStore;
 import spiralcraft.data.spi.ArrayJournalTuple;
 import spiralcraft.data.spi.EditableKeyedListAggregate;
 import spiralcraft.data.spi.KeyedListAggregate;
@@ -61,6 +62,8 @@ import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.io.IOException;
 
 import org.xml.sax.SAXException;
@@ -69,6 +72,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
@@ -89,6 +93,8 @@ public class XmlQueryable
   private static final ClassLog log
     =ClassLog.getInstance(XmlQueryable.class);
   
+  private static final Level logLevel
+    =ClassLog.getInitialDebugLevel(XmlQueryable.class,null);
   
   private SimpleDateFormat dateFormat
     =new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
@@ -106,7 +112,7 @@ public class XmlQueryable
   
   private boolean autoCreate;
   
-  private boolean debug;
+  
   private int freezeCount;
   private long lastTransactionId;
   
@@ -117,7 +123,8 @@ public class XmlQueryable
   private ThreadLocalChannel<Tuple> localData;
   private Focus<Tuple> localFocus;
   private BoundQuery<?,Tuple> originalQuery;
-
+  private final Lock setLock=new ReentrantLock(true);
+  private XmlStore store;
   
   public long getLastTransactionId()
   { return lastTransactionId;
@@ -133,7 +140,7 @@ public class XmlQueryable
         try
         {
           exception=null;
-          if (debug)
+          if (logLevel.isFine())
           { log.fine("Resource "+resource.getURI()+" changed");
           }
           
@@ -149,6 +156,8 @@ public class XmlQueryable
         return 0;
       }
     };
+
+
   
   public XmlQueryable() 
   { super();
@@ -187,10 +196,10 @@ public class XmlQueryable
   public Focus<?> bind(Focus<?> focusChain)
     throws BindException
   {
+    this.store=LangUtil.findInstance(XmlStore.class,focusChain);
     localData=new ThreadLocalChannel<Tuple>
       (DataReflector.<Tuple>getInstance(getResultType()));
     localFocus=focusChain.chain(localData);
-
     Key<?> primaryKey=getResultType().getPrimaryKey();
     if (primaryKey!=null)
     { 
@@ -319,7 +328,7 @@ public class XmlQueryable
       freeze();
       try
       {
-        if (debug)
+        if (logLevel.isFine())
         { log.fine("Base resource modified, reloading from "+resource.getURI());
         }
 
@@ -334,9 +343,13 @@ public class XmlQueryable
           ArrayJournalTuple nt=new ArrayJournalTuple(t);
           add(nt);
         }
+        if (store!=null)
+        { store.onReload(new Type[] {getResultType()});
+        }
         if (newTransaction!=null)
         { newTransaction.commit();
         }
+        
       }
       finally
       { unfreeze();
@@ -359,7 +372,7 @@ public class XmlQueryable
 
     if (freezeCount==0)
     {
-      if (debug)
+      if (logLevel.isFine())
       { log.fine("Checking resource "+resource.getURI());
       }
       try
@@ -454,7 +467,7 @@ public class XmlQueryable
     Tuple latest=getStoreVersion(dt);
     if (latest!=original)
     { 
-      if (debug)
+      if (logLevel.isFine())
       { log.fine("Rebasing "+dt+" to "+latest);
       }
       return dt.rebase(latest);
@@ -534,7 +547,7 @@ public class XmlQueryable
         ArrayJournalTuple nt=new ArrayJournalTuple(t);
         add(nt);
       }
-      if (debug)
+      if (logLevel.isFine())
       { log.fine("Updated base cache for "+resource.getURI()+" from snapshot");
       }
     }
@@ -545,7 +558,7 @@ public class XmlQueryable
   }
 
 
-  synchronized XmlBranch joinTransaction()
+  XmlBranch joinTransaction()
     throws TransactionException
   { 
     Transaction transaction=Transaction.getContextTransaction();
@@ -580,7 +593,7 @@ public class XmlQueryable
     
     if (resource==null)
     { 
-      if (debug)
+      if (logLevel.isFine())
       { log.fine("Resource is null for "+type);
       }
     }
@@ -604,7 +617,7 @@ public class XmlQueryable
     joinTransaction().addResource(tempSuffix);
     verifyData(tempResource);
 
-    if (debug)
+    if (logLevel.isFine())
     { log.fine("Wrote data for "+tempResource+" : tx"+txId);
     }
   }
@@ -665,7 +678,7 @@ public class XmlQueryable
           ("Transaction resource "+tempResource+" does not exist"); 
     }
     
-    if (debug)
+    if (logLevel.isFine())
     {
       log.fine
         ("Renaming "+tempResource.getURI()+" to "+resource.getURI());
@@ -688,7 +701,7 @@ public class XmlQueryable
     { this.lastTransactionId=txId;
     }
     watcher.reset();
-    if (debug)
+    if (logLevel.isFine())
     { log.fine("Committed resource for "+resource.getURI()+" in "+txId);
     }
   }
@@ -720,7 +733,7 @@ public class XmlQueryable
         Resource[] expired=storePolicy.getExclusion(children);
         if (expired.length>0)
         {
-          if (debug)
+          if (logLevel.isDebug())
           {
             log.debug
               ("Deleting "+expired.length+"/"+children.length
@@ -765,7 +778,7 @@ public class XmlQueryable
   
   synchronized void add(Tuple t)
   { 
-    if (debug)
+    if (logLevel.isFine())
     { log.fine("Adding live "+t);
     }
     ((EditableKeyedListAggregate<Tuple>) this.aggregate).add(t);
@@ -773,7 +786,7 @@ public class XmlQueryable
   
   synchronized void remove(Tuple t)
   { 
-    if (debug)
+    if (logLevel.isFine())
     { log.fine("Removing live "+t);
     }
     ((EditableKeyedListAggregate<Tuple>) this.aggregate).remove(t);
@@ -781,7 +794,7 @@ public class XmlQueryable
   
   synchronized void replace(Tuple ot,Tuple nt)
   { 
-    if (debug)
+    if (logLevel.isFine())
     { log.fine("Replacing live "+ot+" with "+nt);
     }
     ((EditableKeyedListAggregate<Tuple>) this.aggregate).replace(ot,nt);
@@ -813,7 +826,7 @@ public class XmlQueryable
     { throw new IllegalStateException("Transaction required to freeze "+type.getURI());
     }
 
-    if (debug)
+    if (logLevel.isFine())
     { log.fine("Froze ("+freezeCount+") "+type.getURI()+" in "+transaction.getId());
     }
     freezeCount++;
@@ -832,7 +845,7 @@ public class XmlQueryable
       }
       freezeCount--;
 
-      if (debug)
+      if (logLevel.isFine())
       { log.fine("Unfroze ("+freezeCount+") "+resource.getURI()+" in "+transaction.getId());
       }
       if (freezeCount==0)
@@ -870,13 +883,20 @@ public class XmlQueryable
     private ArrayList<DeltaTuple> deltaList=new ArrayList<DeltaTuple>();
     
     private State state=State.STARTED;
+    
+    @SuppressWarnings("unused")
+    private AbstractStore.StoreBranch storeBranch;
+    
     private long txId;
     
     XmlBranch()
       throws TransactionException
     { 
+      setLock.lock();
       // Don't allow reloads or updates during a transaction
       XmlQueryable.this.freeze();
+      
+
       
       // Make sure we have latest copy from disk
       boolean ok=false;
@@ -907,11 +927,12 @@ public class XmlQueryable
     public void addResource(String suffix)
     { resources.add(suffix);
     }
-    
-    public void setTxId(long txId)
-    { this.txId=txId;
-    }
 
+    public void setStoreBranch(AbstractStore.StoreBranch storeBranch)
+    {       
+      this.storeBranch=storeBranch;
+      this.txId=storeBranch.getTxId();     
+    }
     
     /**
      * Perform implementation specific insert logic
@@ -978,7 +999,7 @@ public class XmlQueryable
           try
           { 
             XmlQueryable.this.commit(suffix,txId);
-            if (debug)
+            if (logLevel.isFine())
             { log.fine("Committed "+resource.getURI()+": "+suffix+" in "+txId);
             }
           }
@@ -1009,7 +1030,9 @@ public class XmlQueryable
       { log.log(Level.WARNING,"Error rolling back incomplete transaction",x);
       }
       finally
-      { XmlQueryable.this.unfreeze();
+      { 
+        XmlQueryable.this.unfreeze();
+        setLock.unlock();
       }
       state=State.COMPLETED;
 
@@ -1029,7 +1052,7 @@ public class XmlQueryable
     public void prepare()
       throws TransactionException
     { 
-      if (debug)
+      if (logLevel.isFine())
       { log.fine("Preparing "+resource.getURI()+" tx="+txId);
       }
 
@@ -1042,11 +1065,11 @@ public class XmlQueryable
         try
         {
             
-          // Handle case where the Store was reloaded during an edit.
+          // Handle case where the Store was reloaded during an edit
           Tuple storeVersion=XmlQueryable.this.getStoreVersion(dt);
           if (storeVersion!=dt.getOriginal())
           { 
-            if (debug)
+            if (logLevel.isFine())
             { log.fine("Merging store changes for "+dt);
             }
             
@@ -1079,7 +1102,7 @@ public class XmlQueryable
           ArrayJournalTuple nt=ot.getTxVersion();
           if (nt==null)
           { 
-            if (debug)
+            if (logLevel.isFine())
             { log.fine("Null txversion in "+ot);
             }
           }
@@ -1102,7 +1125,7 @@ public class XmlQueryable
         { 
           try
           { 
-            if (debug)
+            if (logLevel.isFine())
             { log.fine("Type="+dt.getType().getURI());
             }
             ArrayJournalTuple at=new ArrayJournalTuple(dt);
@@ -1137,7 +1160,7 @@ public class XmlQueryable
       { throw new TransactionException("Error flushing resource .tx"+txId,x);
       }
 
-      if (debug)
+      if (logLevel.isFine())
       { log.fine("Prepared "+resource.getURI()+": "+txId);
       }
       

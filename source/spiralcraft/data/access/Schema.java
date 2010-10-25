@@ -15,6 +15,7 @@
 package spiralcraft.data.access;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import spiralcraft.data.Type;
 
@@ -24,9 +25,12 @@ import spiralcraft.data.Type;
  *   which provides access to the data.
  */
 public class Schema
+  extends SchemaMetaObject<Schema>
 {
-  private final ArrayList<Entity> entities=new ArrayList<Entity>();
+  private final LinkedHashMap<Type<?>,Entity> entities
+    =new LinkedHashMap<Type<?>,Entity>();
   
+  private Entity[] combinedEntities;
   
   /**
    * <p>Specify the set of Types that represent first class Entities.</p>
@@ -43,7 +47,7 @@ public class Schema
     { 
       Entity table=new Entity();
       table.setType(type);
-      entities.add(table);
+      entities.put(type,table);
     }
     
   }
@@ -55,7 +59,9 @@ public class Schema
    * @return the Entities associated with this Schema
    */
   public Entity[] getEntities()
-  { return entities.toArray(new Entity[entities.size()]);
+  { 
+    return combinedEntities;
+    
   }
 
   /**
@@ -66,7 +72,55 @@ public class Schema
   { 
     this.entities.clear();
     for (Entity entity:entities)
-    { this.entities.add(entity);
+    { this.entities.put(entity.getType(),entity);
     }
   }
+  
+  public Entity getEntity(Type<?> type)
+  { 
+    Entity ret=entities.get(type);
+    if (ret==null && base!=null)
+    { ret=base.getEntity(type);
+    }
+    return ret;
+  }
+  
+  
+
+  
+  @Override
+  public void resolve()
+  { 
+    ArrayList<Entity> allEntities
+      =new ArrayList<Entity>();
+    if (base!=null)
+    {
+      base.resolve();
+      for (Entity entity: base.getEntities())
+      { 
+        Entity extension=entities.get(entity.getType());
+        if (extension!=null)
+        { 
+          extension.setExtends(entity);
+          allEntities.add(extension);
+        }
+        else
+        { allEntities.add(entity);
+        }
+      }
+    }
+    else
+    {
+      for (Entity entity:entities.values())
+      { allEntities.add(entity);
+      }
+    }
+    for (Entity entity:entities.values())
+    { entity.resolve();
+    }
+    this.combinedEntities=allEntities.toArray(new Entity[allEntities.size()]);
+    super.resolve();
+
+  }
+  
 }

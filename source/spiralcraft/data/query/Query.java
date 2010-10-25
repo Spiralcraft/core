@@ -97,13 +97,13 @@ public abstract class Query
   
   /**
    * Search for the leaf Types of the Query operation- the full set of Types the
-   *   query will access.
+   *   query will access in the persistent store
    * 
    * @param result A set to fill with the results
    * @return The filled result passed in, or if null was passed in, a new Set 
    *   filled with the results
    */
-  public Set<Type<?>> getScanTypes(Set<Type<?>> result)
+  public Set<Type<?>> getAccessTypes(Set<Type<?>> result)
   { 
     
     if (result==null)
@@ -118,7 +118,7 @@ public abstract class Query
     if (sources!=null)
     { 
       for (Query sq : sources)
-      { sq.getScanTypes(result);
+      { sq.getAccessTypes(result);
       }
     }
     return result;

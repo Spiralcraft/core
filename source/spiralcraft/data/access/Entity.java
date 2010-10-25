@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2009 Michael Toth
+// Copyright (c) 1998,2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -14,23 +14,34 @@
 //
 package spiralcraft.data.access;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+
 import spiralcraft.data.Type;
+import spiralcraft.data.access.DeltaTrigger;
+import spiralcraft.util.ArrayUtil;
 
 /**
  * <p>Represents a persistent Type within a Schema. A Store will map the
  *   Entity definitions in a Schema to storage and retrieval pathways,
- *   eg. tables.
+ *   eg. tables, files.
  * </p>
  * 
  * @author mike
  *
  */
 public class Entity
+  extends SchemaMetaObject<Entity>
 {
   private Type<?> type;
   private String name;
   private boolean debug;
   private DeltaTrigger[] deltaTriggers;
+  private DeltaTrigger[] allDeltaTriggers;
+  
+  private LinkedHashMap<String,EntityField> fields
+    =new LinkedHashMap<String,EntityField>();
+  private EntityField[] allFields;
   
   public Entity()
   {
@@ -47,6 +58,7 @@ public class Entity
   public void setType(Type<?> type)
   { this.type=type;
   }
+
   
   public void setName(String storeName)
   { this.name=storeName;
@@ -85,6 +97,70 @@ public class Entity
    * @return the Triggers associated with this Entity
    */
   public DeltaTrigger[] getDeltaTriggers()
-  { return deltaTriggers;
+  { 
+    return allDeltaTriggers;
   }
+
+  public void addDeltaTrigger(DeltaTrigger dt)
+  { 
+    if (this.allDeltaTriggers!=null)
+    { this.allDeltaTriggers=ArrayUtil.append(this.allDeltaTriggers,dt);
+    }
+    else
+    { this.allDeltaTriggers=new DeltaTrigger[]{dt};
+    }
+  }
+  
+  public void setFields(EntityField[] fields)
+  { 
+    for (EntityField field:fields)
+    { this.fields.put(field.getName(),field);
+    }
+  }
+  
+  public EntityField[] getFields()
+  { return this.allFields;
+  }
+  
+  @Override
+  void resolve()
+  {
+    ArrayList<EntityField> allFields=new ArrayList<EntityField>();
+    if (base!=null)
+    {
+      allDeltaTriggers=
+        ArrayUtil.concat(base.getDeltaTriggers(),deltaTriggers);
+
+      for (EntityField field:base.getFields())
+      { 
+        EntityField extendedField=fields.get(field.getName());
+        if (extendedField!=null)
+        { 
+          extendedField.setExtends(field);
+          allFields.add(extendedField);
+        }
+        else
+        { allFields.add(field);
+        }
+        
+      }
+    }
+    else
+    { 
+      
+      for (EntityField field:fields.values())
+      { allFields.add(field);
+      }
+      allDeltaTriggers=deltaTriggers;
+    }
+    for (EntityField field:fields.values())
+    { 
+      field.setEntity(this);
+      field.resolve();
+    
+    }
+    this.allFields=allFields.toArray(new EntityField[allFields.size()]);
+    super.resolve();
+  }
+  
 }

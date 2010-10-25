@@ -158,5 +158,12 @@ public interface Field<T>
   void setValue(EditableTuple t,T value)
     throws DataException;
 
-  
+  /**
+   * Indicate whether the value of the field is being updated in the specified
+   *   DeltaTuple
+   * 
+   * @param t
+   */
+  boolean isDirty(DeltaTuple dt)
+    throws DataException;
 }

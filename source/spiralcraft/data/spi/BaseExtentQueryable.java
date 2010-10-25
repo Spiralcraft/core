@@ -135,7 +135,7 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
       //   queryable's type will be mapped to a concatenation of 
       //   the results of the query as bound to each subtype extent.
       
-      Set<Type<?>> scanTypes=q.getScanTypes(new HashSet<Type<?>>());
+      Set<Type<?>> scanTypes=q.getAccessTypes(new HashSet<Type<?>>());
       if (scanTypes.size()==1 
           && scanTypes.iterator().next().isAssignableFrom(this.type)
           )
