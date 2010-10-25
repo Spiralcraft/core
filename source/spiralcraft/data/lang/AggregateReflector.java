@@ -433,7 +433,11 @@ class AggregateListDecorator<T extends Aggregate<I>,I>
   
   @Override
   public int size(T collection)
-  { return collection.size();
+  { 
+    if (collection==null)
+    { return 0;
+    }
+    return collection.size();
   }
   
   @Override
