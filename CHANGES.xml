@@ -4,6 +4,172 @@
   
   <scm:Change>
   
+    <revision>0.4.12.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-10-25
+    </date>
+  
+    <notes>
+      <scm:Change>
+        <notes>
+          <scm:Note>StoreService extension mechanism to integrate third
+            party indexing into any Store.
+          </scm:Note>
+          <scm:Note>Schema inheritance mechanism for deployment options
+          </scm:Note>
+          <scm:Note>Field.isDirty(tuple)
+          </scm:Note>                 
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>Field.java
+          </URI>
+          <URI>access/DeltaTrigger.java
+          </URI>
+          <URI>access/Entity.java
+          </URI>
+          <URI>access/EntityField.java
+          </URI>
+          <URI>access/IndexableText.java
+          </URI>          
+          <URI>access/Schema.java
+          </URI>
+          <URI>access/SchemaAttribute.java
+          </URI>
+          <URI>access/SchemaMetaObject.java
+          </URI>         
+          <URI>access/Store.java
+          </URI>
+          <URI>access/StoreService.java
+          </URI>     
+          <URI>access/Trigger.java
+          </URI>     
+          <URI>core/FieldImpl.java
+          </URI>
+          <URI>query/Query.java
+          </URI>                  
+          <URI>query/TextSearch.java
+          </URI>
+          <URI>query/UnaryBoundQuery.java
+          </URI>  
+          <URI>spi/AbstractStore.java
+          </URI>  
+          <URI>spi/BaseExtentQueryable.java
+          </URI>
+          <URI>spi/EntityBinding.java
+          </URI>
+          <URI>spi/TaskDeltaTrigger.java
+          </URI>
+          <URI>xml/XmlQueryable.java
+          </URI>
+          <URI>xml/XmlStore.java
+          </URI>                                                                          
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Regression and other fixes 
+          </scm:Note>
+          <scm:Note>Some cases of Tuple construction would use all Type fields
+            instead of just their own Scheme, causing issues with comparisons
+            now performed before updating the store.
+          </scm:Note>
+          <scm:Note>NPE in AggregateReflector
+          </scm:Note>
+          <scm:Note>NPE in ReflectionType
+          </scm:Note>
+          <scm:Note>Check for null aggregate element in DataWriter
+          </scm:Note>                 
+          <scm:Note>Fix UnionBinding logic distinct logic
+          </scm:Note>
+          <scm:Note>Augment AIOOB Exception in BufferTuple
+          </scm:Note>          
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>KeyTuple.java
+          </URI>
+          <URI>spi/AbstractTuple.java
+          </URI>   
+          <URI>spi/ArrayJournalTuple.java
+          </URI>                     
+          <URI>spi/ArrayTuple.java
+          </URI> 
+          <URI>lang/AggregateReflector.java
+          </URI>
+          <URI>query/UnionBinding.java
+          </URI>
+          <URI>reflect/ReflectionType.java
+          </URI>
+          <URI>sax/DataWriter.java
+          </URI>  
+          <URI>session/BufferTuple.java
+          </URI>
+                             
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Lifecycler helper class implements Lifecycle 
+            design contract for a set of Lifecycle objects
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>common/LifeCycler.java
+          </URI>
+          <URI>app/spi/StandardContainer.java
+          </URI>
+          <URI>data/Space.java
+          </URI>          
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Array.concat(a1,a2) handles nulls appropriately
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/ArrayUtil.java
+        </path>
+      </scm:Change>
+       
+      <scm:Change>
+        <notes>
+          <scm:Note>Setter performs a type check on bind
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/ArrayUtil.java
+        </path>
+      </scm:Change>
+    </notes>
+    
+    <detail>
+    
+    
+    
+    </detail>
+  </scm:Change>
+  
+  <scm:Change>
+  
     <revision>0.4.12
     </revision>
     

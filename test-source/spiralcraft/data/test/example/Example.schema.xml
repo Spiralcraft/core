@@ -4,6 +4,7 @@
   xmlns:meta="class:/spiralcraft/data/types/meta/"
   xmlns:sec="class:/spiralcraft/security/"
   xmlns:task="class:/spiralcraft/task/"
+  xmlns:dspi="class:/spiralcraft/data/spi/"
   >
    
   <entities>
@@ -13,7 +14,7 @@
       </type>
       
       <deltaTriggers>
-        <_>
+        <dspi:TaskDeltaTrigger>
         
           <when>AFTER
           </when>
@@ -33,7 +34,7 @@
               </x>
             </task:Eval>
           </task>  
-        </_>
+        </dspi:TaskDeltaTrigger>
       </deltaTriggers>
     </meta:Entity>
 

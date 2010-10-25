@@ -1,0 +1,93 @@
+<task:Sequence
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:query="class:/spiralcraft/data/query/"
+  xmlns:data="class:/spiralcraft/data/"
+  xmlns:sax="class:/spiralcraft/data/sax"
+  xmlns:dtask="class:/spiralcraft/data/task/"
+  xmlns:dutil="class:/spiralcraft/data/util/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:dtest="class:/spiralcraft/data/test/"  
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:j="class:/java/lang/"
+  xmlns:jnet="class:/java/net/"
+  xmlns:sec="class:/spiralcraft/security/"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  >
+
+  <contextX>   
+    { [#context] 
+      count:=0
+      ,increment:~[*task:Eval{`.count=.count+1`}] 
+    }
+
+  </contextX>
+  
+  <scenarios>
+  
+    <task:Fork>
+    
+      <multiplier x="[test:LoadGroup].forkFactor"/>
+      
+      <scenarios>
+        <task:Cycle>
+    
+    
+          <maxRuntimeMs x="1000*[test:LoadGroup].durationFactor"/>
+          
+          <chain>
+    
+            <task:Sequence>
+              <scenarios>
+               
+                <dtask:Session>
+                  <chain>
+                    <task:Eval>
+                      <x>
+                        [*dtask:Fetch
+                          { [*query:Selection
+                              { [@example:Customer].type
+                              , `.id==2`
+                              }
+                            ]
+                          }
+                        ].().@top
+                        .[*dtask:Edit].()
+                        { .displayName="Mary Second Edited "+[context].increment()
+                          ,.
+                        }.@tuple.save()
+                      </x>
+                    </task:Eval>
+    
+                  
+                  </chain>
+                </dtask:Session>
+                
+              </scenarios>
+              
+            </task:Sequence>        
+          </chain>
+        
+        </task:Cycle>
+      </scenarios>
+    </task:Fork>    
+    
+    <test:Assertion>
+      <name>UpdateContentionFork
+      </name>
+      <subjectX>
+          [*dtask:Fetch
+            { [*query:Selection
+                { [@example:Customer].type
+                , `.id==2`                          
+                }
+              ]
+            }
+          ].()#{.displayName}
+      </subjectX>
+      <testX>.@top=="Mary Second Edited "+([context].count)
+      </testX>
+    </test:Assertion>        
+  
+  </scenarios>
+        
+</task:Sequence>

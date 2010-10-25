@@ -15,7 +15,11 @@
   >
   <chain>
     <task:Sequence>
-      <contextX>{ [#context] count:=0, increment:~[*task:Eval{`.count=.count+1`}] }
+      <contextX>
+        { [#context] 
+          count:=0
+          ,increment:~[*task:Eval{`.count=.count+1`}] 
+        }
       </contextX>
       
       <scenarios>

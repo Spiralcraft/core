@@ -270,6 +270,25 @@
           </testX>
         </test:Assertion>
 
+        <test:Assertion>
+          <name>Text Search
+          </name>
+          <subjectX>[*dtask:Fetch
+                      { [*query:TextSearch
+                          { [*query:Scan
+                                {[@example:Customer].type
+                                }
+                            ]
+                            ,`"spiralcraft third"`
+                          }
+                        ]
+                      }
+                    ].().@log("Expression fetch: "+.)
+          </subjectX>
+          <testX>@size()==2
+          </testX>
+        </test:Assertion>
+        
         <dtask:Session>
           <chain>
             <test:Stub>
@@ -341,6 +360,82 @@
                 ].()#{.displayName}
               </subjectX>
               <testX>.[1]=="Mary Second Edited"
+              </testX>
+            </test:Assertion>
+          
+          </chain>
+        </dtask:Session>
+        
+        <dtask:Session>
+          <chain>
+            <test:Stub>
+              <name>Expression Insert
+              </name>
+              <messageX>
+                [@example:Customer.buffer]
+                  .(displayName:="Another New Customer"
+                    ,lastContact:=[@time:Instant].()
+                  ).@tuple.save()
+              </messageX>
+              <conditionX>true
+              </conditionX>
+            </test:Stub>
+            <test:Assertion>
+              <name>Check update result
+              </name>
+              <subjectX>
+                [*dtask:Fetch
+                  { [*query:Scan
+                      {[@example:Customer].type
+                      }
+                    ]
+                  }
+                ].()
+              </subjectX>
+              <testX>.[4].displayName=="Another New Customer"
+                &amp;&amp; .[4].id==101
+              </testX>
+            </test:Assertion>
+          
+          </chain>
+        </dtask:Session>
+        
+        <dtask:Session>
+          <chain>
+            <test:Stub>
+              <name>Expression Delete
+              </name>
+              <messageX>
+                [*dtask:Fetch
+                  { [*query:Selection
+                      { [*query:Scan{ [@example:Customer].type }]
+                      , `.displayName=="Another New Customer"`
+                      }
+                    ]
+                  }
+                ].().@top
+                .[*dtask:Edit].()
+                { .@tuple.delete()
+                , .@tuple.save()
+                }
+              </messageX>
+              <conditionX>true
+              </conditionX>
+            </test:Stub>
+            <test:Assertion>
+              <name>Check delete result
+              </name>
+              <subjectX>
+                [*dtask:Fetch
+                  { [*query:Scan
+                      {[@example:Customer].type
+                      }
+                    ]
+                  }
+                ].()
+              </subjectX>
+              <testX>.[3].displayName=="New Customer"
+                &amp;&amp; .[3].id==100
               </testX>
             </test:Assertion>
           
