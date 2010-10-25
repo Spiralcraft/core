@@ -551,7 +551,10 @@ class Context
       else if (aggregateIterator.hasNext())
       {
         Object object=aggregateIterator.next();
-        if (object instanceof DataComposite)
+        if (object==null)
+        {
+        }
+        else if (object instanceof DataComposite)
         { pushCompositeFrame((DataComposite) object);
         }
         else
