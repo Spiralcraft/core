@@ -15,6 +15,7 @@
 package spiralcraft.data.query;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -116,6 +117,8 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
 
     private SerialCursor<Tt> currentSource;
     private Iterator<BoundQuery<?,Tt>> sourceIterator;
+    private HashSet<Tuple> seen=new HashSet<Tuple>();
+    
     
     public UnionSerialCursor()
       throws DataException
@@ -136,7 +139,7 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
         
         if (currentSource.next())
         { 
-          if (!checkDuplicate())
+          if (!checkDuplicate(currentSource.getTuple()))
           { return true;
           }
         }
@@ -162,9 +165,14 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
     }
     
     
-    private boolean checkDuplicate()
+    private boolean checkDuplicate(Tuple t)
     { 
-      // XXX implement, perhaps using Identifier
+      if (seen.contains(t))
+      { return true;
+      }
+      else
+      { seen.add(t);
+      }
       return false;
     }
 
