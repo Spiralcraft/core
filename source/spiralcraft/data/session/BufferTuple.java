@@ -387,7 +387,13 @@ public class BufferTuple
     { return data[index];
     }
     else if (original!=null)
-    { return original.get(index);
+    { 
+      try
+      { return original.get(index);
+      }
+      catch (ArrayIndexOutOfBoundsException x)
+      { throw new DataException(this.toString(),x);
+      }
     }
     else
     { return null;
