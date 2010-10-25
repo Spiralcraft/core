@@ -23,7 +23,7 @@ public class ArrayJournalTuple
   
   public ArrayJournalTuple(Type<?> type)
   { 
-    super(type.getFieldSet());
+    super(type.getScheme());
 //    this.type=type;
     
     this.version=0;
@@ -115,14 +115,17 @@ public class ArrayJournalTuple
           { 
             synchronized (transactionContext)
             {
-              try
-              { 
-                log.log(Level.FINE,"Waiting on transaction...",new Exception());
+              if (this.delta==null)
+              {
+                try
+                { 
+                  log.log(Level.FINE,"Waiting on transaction...",new Exception());
                 
-                transactionContext.wait();
-              }
-              catch (InterruptedException x)
-              { throw new DataException("Interrupted waiting for transaction");
+                  transactionContext.wait();
+                }
+                catch (InterruptedException x)
+                { throw new DataException("Interrupted waiting for transaction");
+                }
               }
             }
           }
@@ -148,11 +151,18 @@ public class ArrayJournalTuple
   {
     synchronized (this)
     { 
-      synchronized (transactionContext)
+      if (transactionContext!=null)
       {
-        // Let the next one in
-        transactionContext.notify();
-        transactionContext=null;
+      
+        synchronized (transactionContext)
+        {
+          // Let the next one in
+          transactionContext.notify();
+          transactionContext=null;
+        }
+      }
+      else
+      { log.warning("Nothing to rollback in "+this);
       }
     }
     

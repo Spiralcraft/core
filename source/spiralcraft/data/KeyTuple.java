@@ -88,15 +88,27 @@ public class KeyTuple
     { return false;
     }
 
+    if (o==this)
+    { return true;
+    }
+    
     if (!(o instanceof Tuple))
     { return false;
     }
 
-    if (o instanceof KeyTuple && o.hashCode()!=hashCode())
-    { return false;
-    }
     
-    return AbstractTuple.tupleEquals(this,(Tuple) o);
+    if (o instanceof KeyTuple)
+    { 
+      if (o.hashCode()!=hashCode())
+      { return false;
+      }
+      else
+      { return ArrayUtil.arrayEquals(data,((KeyTuple) o).data);
+      }
+    }
+    else
+    { return AbstractTuple.tupleEquals(this,(Tuple) o);
+    }
   }
   
   @Override

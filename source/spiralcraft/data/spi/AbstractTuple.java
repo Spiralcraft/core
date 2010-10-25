@@ -276,6 +276,10 @@ public abstract class AbstractTuple
         }
       }
     }
+    
+    if (a.getBaseExtent()!=null)
+    { return a.getBaseExtent().equals(t.getBaseExtent());
+    }
     return true;
   }
   
@@ -284,6 +288,10 @@ public abstract class AbstractTuple
   {
     if (o==null)
     { return false;
+    }
+    
+    if (o==this)
+    { return true;
     }
     
     if (!(o instanceof Tuple))

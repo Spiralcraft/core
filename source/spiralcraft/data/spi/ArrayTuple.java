@@ -123,7 +123,7 @@ public class ArrayTuple
     (DeltaTuple delta)
     throws DataException
   { 
-    super(delta.getType().getArchetype().getFieldSet());
+    super(delta.getType().getArchetype().getScheme());
     this.data=copyData(delta);
     if (delta.getBaseExtent()!=null)
     { baseExtent=createDeltaBaseExtent(delta.getBaseExtent());
