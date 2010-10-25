@@ -28,6 +28,7 @@ import spiralcraft.app.Component;
 import spiralcraft.app.spi.AbstractComponent;
 import spiralcraft.app.spi.StandardContainer;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.common.Lifecycler;
 
 import spiralcraft.data.access.Store;
 
@@ -168,12 +169,7 @@ public class Space
   public void start()
     throws LifecycleException
   { 
-    
-    for (Store store: stores)
-    { 
-      store.start();
-    }
-    
+    Lifecycler.start(stores);
     super.start();
   }
   
@@ -198,9 +194,7 @@ public class Space
     throws LifecycleException
   { 
     super.stop();
-    for (Store store:stores)
-    { store.stop();
-    }
+    Lifecycler.stop(stores);
   }
   
   @Override
@@ -211,7 +205,7 @@ public class Space
     List<BoundQuery<?,Tuple>> queries
       =new LinkedList<BoundQuery<?,Tuple>>();
     
-    Set<Type<?>> scanTypes=query.getScanTypes(null);
+    Set<Type<?>> scanTypes=query.getAccessTypes(null);
 
     if (scanTypes.size()==0)
     {

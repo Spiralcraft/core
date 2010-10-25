@@ -22,6 +22,7 @@ import spiralcraft.app.Dispatcher;
 import spiralcraft.app.Message;
 import spiralcraft.app.State;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.common.Lifecycler;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.Level;
@@ -100,27 +101,14 @@ public class StandardContainer
   @Override
   public void start()
     throws LifecycleException
-  {
-    for (Component child:children)
-    { 
-      child.start();
-      
-    }
-    
+  { Lifecycler.start(children);
   }
 
 
   @Override
   public void stop()
     throws LifecycleException
-  {
-    for (Component child:children)
-    { 
-      
-      child.stop();
-      
-    }
-    
+  { Lifecycler.stop(children);
   }
 
 
