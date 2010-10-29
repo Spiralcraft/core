@@ -14,6 +14,14 @@
 //
 package spiralcraft.text.html;
 
+/**
+ * Encodes a hierarchical path 
+ * 
+ * TODO: Rename this class to URLPathEncoder
+ * 
+ * @author mike
+ *
+ */
 public class URLEncoder
 {
 
@@ -64,8 +72,12 @@ public class URLEncoder
   }
 
   /**
-   * Encode a path string for inclusion in the path portion of a URL 
-   *   (preserves path characters)
+   * <p>Encode a path string for inclusion in the path segment of a URL.
+   * </p>
+   * 
+   * <p>Preserve path characters '/' and ';' and all reserved inclusions of 
+   *   the rfc2396 pchar set ':','@','&','=','+','$',','. 
+   *   
    */
   public static String encode(String urlNoQuery)
   {
@@ -89,6 +101,14 @@ public class URLEncoder
       case '(':
       case ')':
       case '/':
+      case ';':
+      case ':':
+      case '@':
+      case '&':
+      case '=':
+      case '+':
+      case '$':
+      case ',':
         encoded.append(c);
         break;
       default:
