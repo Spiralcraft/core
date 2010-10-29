@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -35,6 +35,13 @@ import spiralcraft.lang.Reflector;
 
 import spiralcraft.util.string.StringUtil;
 
+/**
+ * Implements a Key
+ * 
+ * @author mike
+ *
+ * @param <T>
+ */
 public class KeyImpl<T>
   extends ProjectionImpl<T>
   implements Key<T>

@@ -64,7 +64,7 @@ import spiralcraft.log.Level;
  * <p>Starting point for building a new type of Store.
  * </p>
  * 
- * <p>The AbstractStore generally represents a set of Queryables that provide
+ * <p>The AbstractStore holds a set of Queryables that provide
  *   access to data for a set of Types. 
  * </p>
  * 
