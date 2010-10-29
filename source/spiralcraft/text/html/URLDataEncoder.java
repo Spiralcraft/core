@@ -16,14 +16,21 @@ package spiralcraft.text.html;
 
 
 /**
- * <p>Encodes and decodes URLEncoded text, for escaping arbitrary character
+ * <p>Encodes and decodes URLEncoded text for escaping arbitrary character
  *   data for embedding in URLs.
  * </p>
+ * 
+ * <p>This encoder is suitable for embedding data in individual values
+ *   within a query string or a post of application/x-www-form-urlencoded 
+ *   content type.
+ * </p>
+ *   
  * 
  * <p>Specifically, groups [A-Z], [a-z], and [0-9] are preserved, spaces are
  *   replaced with '+', and all other characters, including '+', are 
  *   numerically escaped using the %nn hex encoding method.
  * </p>
+ * 
  * @author mike
  *
  */
