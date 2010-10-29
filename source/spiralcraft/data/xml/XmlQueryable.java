@@ -230,6 +230,7 @@ public class XmlQueryable
             ,fieldNames
             );
         originalQuery=query(equijoin.getIdentityQuery(), localFocus);
+        //originalQuery.setDebugLevel(Level.FINE);
       }
       catch (DataException x)
       { throw new BindException("Error resolving identity query",x);
@@ -1065,18 +1066,25 @@ public class XmlQueryable
         try
         {
             
+          Tuple orig=dt.getOriginal();
           // Handle case where the Store was reloaded during an edit
-          Tuple storeVersion=XmlQueryable.this.getStoreVersion(dt);
-          if (storeVersion!=dt.getOriginal())
+          Tuple storeVersion
+            =XmlQueryable.this.getStoreVersion
+              (orig!=null
+              ?orig
+              :dt
+              );
+          
+          if (storeVersion!=orig)
           { 
             if (logLevel.isFine())
             { log.fine("Merging store changes for "+dt);
             }
             
-            if (dt.getOriginal() instanceof JournalTuple)
+            if (orig instanceof JournalTuple)
             { 
-              if (preparedUpdates.remove(dt.getOriginal()))
-              { ((JournalTuple) dt.getOriginal()).rollback();
+              if (preparedUpdates.remove(orig))
+              { ((JournalTuple) orig).rollback();
               }
             }
             rebaseList.add(dt);

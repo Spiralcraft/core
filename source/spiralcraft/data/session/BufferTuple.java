@@ -850,7 +850,12 @@ public class BufferTuple
   { 
     this.original=original;
     if (baseExtent!=null)
-    { baseExtent.setOriginal(original.getBaseExtent());
+    { 
+      baseExtent.setOriginal
+        (original!=null
+          ?original.getBaseExtent()
+          :null
+        );
     }
   }
   
