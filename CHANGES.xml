@@ -4,6 +4,63 @@
   
   <scm:Change>
   
+    <revision>0.4.12.2
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-10-25
+    </date>
+    
+    <detail>
+      <scm:Change>
+      
+      
+        <notes>
+          <scm:Note>Updating an entity with no declared primary key now 
+            functions properly using self-identity.
+          </scm:Note>
+          <scm:Note>DataWriter.java calls sync() on FileOuputStreams.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>sax/DataWriter.java
+          </URI>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>xml/XmlQueryable.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+      
+      <scm:Change>
+      
+      
+        <notes>
+          <scm:Note>URLEncoder passes all legal RFC2396 "pchar" tokens
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/text/html/URLEncoder.java
+        </path>
+        
+      </scm:Change>
+      
+    </detail>
+        
+  
+    
+  </scm:Change>
+  
+  <scm:Change>
+  
     <revision>0.4.12.1
     </revision>
     
@@ -13,7 +70,7 @@
     <date>2010-10-25
     </date>
   
-    <notes>
+    <detail>
       <scm:Change>
         <notes>
           <scm:Note>StoreService extension mechanism to integrate third
@@ -159,13 +216,9 @@
         <path>source/spiralcraft/util/ArrayUtil.java
         </path>
       </scm:Change>
-    </notes>
-    
-    <detail>
-    
-    
-    
     </detail>
+    
+
   </scm:Change>
   
   <scm:Change>
