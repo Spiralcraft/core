@@ -38,6 +38,7 @@ import org.xml.sax.SAXException;
 
 import org.xml.sax.helpers.AttributesImpl;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -78,6 +79,9 @@ public class DataWriter
     if (out!=null)
     {
       out.flush();
+      if (out instanceof FileOutputStream)
+      { ((FileOutputStream) out).getFD().sync();
+      }
       out.close();
     }
   }
@@ -447,19 +451,35 @@ class Context
           if (dt.isDelete())
           { 
             attributes.addAttribute(null,"delta","delta",null,"D");
-            fieldIterator
-              =ArrayUtil.iterator
-                (dt.getType().getPrimaryKey().getSourceFields());
+            if (dt.getType().getPrimaryKey()!=null)
+            {
+              fieldIterator
+                =ArrayUtil.iterator
+                  (dt.getType().getPrimaryKey().getSourceFields());
+            }
+            else
+            {
+              fieldIterator
+                =dt.getType().getFieldSet().fieldIterable().iterator();              
+            }
           }
           else if (dt.getOriginal()!=null)
           { 
             attributes.addAttribute(null,"delta","delta",null,"U");
-            fieldIterator
-              =new IteratorChain<Field>
-                (ArrayUtil.iterator
-                  (dt.getType().getPrimaryKey().getSourceFields())
-                ,fieldIterator
-                );
+            if (dt.getType().getPrimaryKey()!=null)
+            {
+              fieldIterator
+                =new IteratorChain<Field>
+                  (ArrayUtil.iterator
+                    (dt.getType().getPrimaryKey().getSourceFields())
+                  ,fieldIterator
+                  );
+            }
+            else
+            { 
+              fieldIterator
+                =dt.getType().getFieldSet().fieldIterable().iterator();
+            }
           }
           else
           { attributes.addAttribute(null,"delta","delta",null,"C");
