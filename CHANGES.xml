@@ -39,7 +39,19 @@
         
       </scm:Change>
       
+      <scm:Change>
       
+      
+        <notes>
+          <scm:Note>Removed 'No archetype scheme' spurious log warning
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/core/DeltaType.java
+        </path>
+        
+      </scm:Change>
+         
       <scm:Change>
       
       
