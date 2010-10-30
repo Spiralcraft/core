@@ -25,6 +25,7 @@ import spiralcraft.data.Field;
 import spiralcraft.data.core.KeyField;
 import spiralcraft.data.core.TypeImpl;
 import spiralcraft.data.core.SchemeImpl;
+import spiralcraft.data.types.standard.ObjectType;
 
 import java.net.URI;
 
@@ -126,10 +127,10 @@ public class DeltaType
     }
     else
     { 
-      if (!isAggregate())
+      if (!isAggregate() && !(this.archetype instanceof ObjectType))
       {
         log.warning("Archetype scheme is null: "
-          +archetype+" in BufferType"+toString());
+          +archetype+" in DeltaType"+toString());
       }
     }
     super.link();
