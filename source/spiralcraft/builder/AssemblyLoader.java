@@ -356,6 +356,7 @@ public class AssemblyLoader
         );
         
     assemblyClass.setDeclarationName(node.getQName());
+    assemblyClass.setPrefixResolver(node.getPrefixResolver());
 
     Attribute[] attribs
       =node.getAttributes();

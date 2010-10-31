@@ -26,6 +26,8 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.common.namespace.NamespaceContext;
+import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.data.lang.TupleDelegate;
 import spiralcraft.data.DataException;
 
@@ -211,7 +213,22 @@ public class Assembly<T>
   {
     StringConverter<T> converter=StringConverter.<T>getInstance(clazz);
     if (converter!=null)
-    { return converter.fromString(constructor);
+    { 
+      PrefixResolver resolver=_assemblyClass.getPrefixResolver();
+      
+      if (resolver!=null)
+      { NamespaceContext.push(resolver);
+      }
+      
+      try
+      { return converter.fromString(constructor);
+      }
+      finally
+      { 
+        if (resolver!=null)
+        { NamespaceContext.pop();
+        }
+      }
     }
     else
     { throw new BuildException("Can't construct a "+clazz+" from text"); 

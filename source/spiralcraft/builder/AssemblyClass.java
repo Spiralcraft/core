@@ -29,6 +29,7 @@ import java.util.HashMap;
 
 import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
+import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
 import spiralcraft.text.ParseException;
@@ -139,6 +140,8 @@ public class AssemblyClass
   private final URI _containerURI;
   private String _id;  
   
+  private PrefixResolver prefixResolver;
+  
   private AssemblyClass _baseAssemblyClass;
 
   private final AssemblyClass _outerClass;
@@ -237,6 +240,14 @@ public class AssemblyClass
 
       
     }
+  }
+  
+  void setPrefixResolver(PrefixResolver prefixResolver)
+  { this.prefixResolver=prefixResolver;
+  }
+  
+  public PrefixResolver getPrefixResolver()
+  { return prefixResolver;
   }
 
   public void define(String contextName,String expansion)
