@@ -62,7 +62,6 @@ import spiralcraft.log.Level;
 import spiralcraft.task.Scenario;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
-import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.vfs.util.RetentionPolicy;
 
 
@@ -306,15 +305,8 @@ public class XmlStore
   @Override
   protected Sequence createTxIdSequence()
   { 
-    try
-    {
-      return new ResourceSequence
-        (Resolver.getInstance().resolve(baseResourceURI.resolve(".txid")));
-    }
-    catch (UnresolvableURIException x)
-    { throw new RuntimeException("Cannot resolve transaction id resource .txid in "+baseResourceURI,x);
-    }
-    
+    return new ResourceSequence
+      (baseResourceURI.resolve(".txid"));
   }
   
   private void cleanHistory()
