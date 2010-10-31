@@ -28,12 +28,11 @@ import spiralcraft.exec.ExecutionException;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.Contextual;
 import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.log.Log;
+import spiralcraft.service.ResourceContext;
 import spiralcraft.service.Service;
 import spiralcraft.util.string.StringConverter;
 
@@ -45,6 +44,7 @@ import spiralcraft.util.string.StringConverter;
  *
  */
 public class TaskRunner
+  extends ResourceContext
   implements Executable
 {
 
@@ -59,7 +59,6 @@ public class TaskRunner
   private Thread executeThread;
 
   private Thread shutdownThread=new ShutdownHook();
-  private Service service;
   private URI serviceURI;
   
   
@@ -82,7 +81,7 @@ public class TaskRunner
    * @param service
    */
   public void setService(Service service)
-  { this.service=service;
+  { this.setServices(new Service[] {service});
   }
   
   /**
@@ -197,6 +196,14 @@ public class TaskRunner
     
   }
   
+  @Override
+  public Focus<?> bind(Focus<?> focus)
+    throws BindException
+  {
+    focus=super.bind(focus);
+    return scenario.bind(focus);
+  }
+  
   @SuppressWarnings({ "unchecked", "rawtypes" })
   protected void execute()
     throws ExecutionException
@@ -206,56 +213,33 @@ public class TaskRunner
     if (scenario==null)
     { throw new ExecutionException("No scenario provided");
     }
-
+  
     if (serviceURI!=null)
     { 
       try
       { 
-        service=AbstractXmlObject.<Service>create(null,serviceURI).get();
+        setService(AbstractXmlObject.<Service>create(null,serviceURI).get());
       }
       catch (BindException x)
       { throw new ExecutionException("Error binding service "+serviceURI,x);
       }
     }
     
-    Focus<?> focus=rootFocus;
-    
-    if (service!=null)
-    {
-      // Provide access to the Service
-      
-      if (service instanceof Contextual)
-      { 
-        // Service will export into the Focus- ie. a ServiceGroup
-        try
-        { focus=((Contextual) service).bind(focus);
-        }
-        catch (BindException x)
-        { 
-          throw new ExecutionException
-            ("Error binding service into Focus chain",x);
-        }
-      }
-      else
-      { 
-        // Service is simply exposed into the FocusChain
-        focus=focus.<Service>chain(new SimpleChannel<Service>(service,true));
-      }
+    try
+    { bind(rootFocus);
     }
+    catch (BindException x)
+    { throw new ExecutionException("Error binding",x);
+    }
+
+  
     
+    
+            
+    push();
     try
     {
-      if (service!=null)
-      { service.start();
-      }
-            
-      scenario.bind
-        (focus.chain
-          (new SimpleChannel<TaskRunner>(this,true)
-          )
-        );
-
-      
+      start();
       
       scenario.start();
       
@@ -300,18 +284,16 @@ public class TaskRunner
       }
       scenario.stop();
       
-      if (service!=null)
-      { service.stop();
-      }
-    }
-    catch (BindException x)
-    { throw new ExecutionException("Error binding focus",x);
-    }    
+      stop();
+    }   
     catch (LifecycleException x)
     { 
       throw new ExecutionException
-        ("Error starting/stopping scenario or service",x);
-    }    
+        ("Error stopping scenario or service",x);
+    }
+    finally
+    { pop();
+    }
   }
  
   

@@ -15,11 +15,7 @@
 package spiralcraft.service;
 
 
-import java.net.URI;
 
-import spiralcraft.app.Component;
-import spiralcraft.app.spi.AbstractComponent;
-import spiralcraft.app.spi.StandardContainer;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.exec.BeanArguments;
 import spiralcraft.exec.Executable;
@@ -37,7 +33,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.log.ClassLog;
 import spiralcraft.task.Scenario;
-import spiralcraft.vfs.context.ContextResourceMap;
 
 
 /**
@@ -49,7 +44,7 @@ import spiralcraft.vfs.context.ContextResourceMap;
  * </p>
  */
 public class Daemon
-  extends AbstractComponent
+  extends ResourceContext
   implements Executable
 {
   private static final ClassLog log=ClassLog.getInstance(Daemon.class);
@@ -59,7 +54,6 @@ public class Daemon
   private boolean _stopRequested=false;
   private String[] _args;
   private Scenario<?,?> afterStart;
-  private URI resourceContextURI;
   
   private ShutdownHook _shutdownHook=new ShutdownHook();
   
@@ -87,32 +81,7 @@ public class Daemon
     }
   };
 
-  public void setServices(final Service[] services)
-  {
-    this.childContainer
-      =new StandardContainer()
-    {
-      { 
-        children=new Component[services.length];
-        int i=0;
-        for (Component service:services)
-        { children[i++]=service;
-        }
-      }
-      
-      
-      @Override
-      protected Focus<?> bindChild(Focus<?> context,Component service) 
-        throws BindException
-      { 
-        Focus<?> ret=super.bindChild(context,service);
-        if (service instanceof Service && ret!=context)
-        { context.addFacet(ret);
-        }
-        return ret;
-      }
-    };
-  }
+
 
   public void setAfterStart(Scenario<?,?> afterStart)
   { this.afterStart=afterStart;
@@ -132,9 +101,7 @@ public class Daemon
     return chain;
   }
   
-  public void setResourceContextURI(URI resourceContextURI)
-  { this.resourceContextURI=resourceContextURI;
-  }
+
   
   @Override
   public final void execute(String ... args)
@@ -144,22 +111,19 @@ public class Daemon
     { 
       new BeanArguments(this).process(args);
       
-      ContextResourceMap resourceMap
-        =new ContextResourceMap()
-      {{
-         if (resourceContextURI!=null)
-         { 
-           log.fine(resourceContextURI.toString());
-           putDefault(resourceContextURI);
-         }
-      }};
+      try
+      { bind(new BeanFocus<Daemon>(this));
+      }
+      catch (BindException x)
+      { throw new ExecutionException("Error binding",x);
+      }
       
-      resourceMap.push();
+      push();
       try
       { executeInContext();
       }
       finally
-      { resourceMap.pop();
+      { pop();
       }
 
     }
@@ -172,12 +136,7 @@ public class Daemon
   private void executeInContext() 
     throws ExecutionException, LifecycleException
   {
-    try
-    { bind(new BeanFocus<Daemon>(this));
-    }
-    catch (BindException x)
-    { throw new ExecutionException("Error binding",x);
-    }
+
     
     start();
     
