@@ -16,6 +16,7 @@ package spiralcraft.vfs.context;
 
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.net.URI;
 
 import spiralcraft.log.ClassLog;
@@ -81,8 +82,23 @@ public class ContextResourceMap
   
   public static final Resource resolve(URI contextURI)
     throws UnresolvableURIException
-  { return threadMap.get().doResolve(contextURI);
+  { 
+    Resource ret=threadMap.get().doResolve(contextURI);
+    if (ret!=null)
+    { return ret;
+    }
+    else
+    { 
+      
+      throw new UnresolvableURIException
+        (contextURI
+        ,"Could not resolve "+contextURI+" : mappings="
+        +threadMap.get().computeMappings()
+        );
+    }
   }
+  
+
   
   public static ContextResourceMap get()
   { return threadMap.get();
@@ -172,6 +188,25 @@ public class ContextResourceMap
     return authority.getGraft(relativePath);
   }
   
+  LinkedHashSet<URI> computeMappings()
+  { 
+    LinkedHashSet<URI> set
+      =parent!=null
+      ?parent.computeMappings()
+      :new LinkedHashSet<URI>();
+      
+    for (String name:map.keySet())
+    { 
+      if (name.equals(""))
+      { set.add(URI.create("context:/"));
+      }
+      else
+      { set.add(URI.create("context://"+name));
+      }
+    }
+    return set;
+  }
+  
   private Resource doResolve(URI contextURI)
     throws UnresolvableURIException
   {
@@ -183,23 +218,23 @@ public class ContextResourceMap
     { 
       authority=map.get(authorityName);
       if (authority==null && parent==null)
-      { 
-        throw new UnresolvableURIException
-        (contextURI
-          ,"Unknown context authority '"+authorityName+"' for "+contextURI
-          +": "+id+" mappings="+map
-        );
+      { return null;
+//        throw new UnresolvableURIException
+//        (contextURI
+//          ,"Unknown context authority '"+authorityName+"' for "+contextURI
+//          +": "+id+" mappings="+map
+//        );
       }
     }
     else
     { 
       authority=map.get("");
       if (authority==null && parent==null)
-      { 
-        throw new UnresolvableURIException
-        (contextURI,"No default context authority for "+contextURI
-          +": "+id+" mappings="+map
-        );
+      { return null;
+//        throw new UnresolvableURIException
+//        (contextURI,"No default context authority for "+contextURI
+//          +": "+id+" mappings="+map
+//        );
       }
     }
 
