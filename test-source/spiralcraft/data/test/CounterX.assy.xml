@@ -1,0 +1,11 @@
+<lang:Expression
+  xmlns:lang="class:/spiralcraft/lang/"
+  xmlns:task="class:/spiralcraft/task/"
+  >
+  { [#context] 
+    count:=0
+    ,increment:~[*task:Eval{`.count=.count+1`}] 
+  }
+  
+</lang:Expression>
+  

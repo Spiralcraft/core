@@ -1,0 +1,53 @@
+<task:Cycle
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:query="class:/spiralcraft/data/query/"
+  xmlns:data="class:/spiralcraft/data/"
+  xmlns:sax="class:/spiralcraft/data/sax"
+  xmlns:dtask="class:/spiralcraft/data/task/"
+  xmlns:dutil="class:/spiralcraft/data/util/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:dtest="class:/spiralcraft/data/test/"  
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:j="class:/java/lang/"
+  xmlns:jnet="class:/java/net/"
+  xmlns:sec="class:/spiralcraft/security/"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  >
+
+  <maxCycles x="[test:LoadGroup].cycleFactor"/>
+    
+  <contextX><dtest:CounterX/>
+  </contextX>
+  
+  <chain>
+
+    <task:Sequence>
+      <scenarios>
+    
+
+
+        <dtask:Session>
+          <chain>
+            <task:Eval>
+              <x>
+                [@example:Customer.buffer]
+                  .(displayName:="Customer "+[context].count)
+                  .@tuple.save()
+              </x>
+            </task:Eval>
+
+          
+          </chain>
+        </dtask:Session>
+        
+        
+        
+        <task:Eval>
+          <x>[context].increment()
+          </x>
+        </task:Eval>
+      
+      </scenarios>
+    </task:Sequence>
+  </chain>
+</task:Cycle>

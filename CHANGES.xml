@@ -10,7 +10,7 @@
     <authorId>miketoth
     </authorId>
     
-    <date>2010-10-25
+    <date>2010-10-30
     </date>
     
     <detail>
@@ -40,8 +40,77 @@
       </scm:Change>
       
       <scm:Change>
+        <notes>
+          <scm:Note>TaskRunner now allows for multiple services, including
+            ThreadContextual services, to be published into the context that 
+            the specified task will use.
+          </scm:Note>
+          <scm:Note>Implementation refactoring to move toward encapsulated
+            notion of a "ResourceContext"- a Component which provides a set
+            of services, which may include a set of contextual VFS mappings
+          </scm:Note>
+          <scm:Note>ResourceSequence is now constructed with a URI, not a
+             Resource.
+          </scm:Note>          
+          <scm:Note>FileSpace is now a Service.
+          </scm:Note>          
+          <scm:Note>Fix AIOOB exception when Authority has no sub-mappings.
+          </scm:Note>          
+          <scm:Note>More informative exception handling in ContextResourceMap
+          </scm:Note>          
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/xml/XmlStore.java
+          </URI>
+          <URI>service/Daemon.java
+          </URI>
+          <URI>service/ResourceContext.java
+          </URI>
+          <URI>task/TaskRunner.java
+          </URI>
+          <URI>vfs/context/Authority.java
+          </URI>
+          <URI>vfs/context/ContextResourceMap.java
+          </URI>
+          <URI>vfs/context/FileSpace.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
       
       
+      <scm:Change>
+      
+        <notes>
+          <scm:Note>Builder passed NamespaceContext to an Assembly
+            defined using string content.
+          </scm:Note>
+          <scm:Note>Builder provides a NamespacePrefix to AssemblyClass to
+            support construction of NamespaceContext dependent objects
+            from their String representations (e.g. Expressions).
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder/
+        </path>
+        
+        <resources>
+          <URI>Assembly.java
+          </URI>
+          <URI>AssemblyClass.java
+          </URI>
+          <URI>AssemblyLoader.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+
         <notes>
           <scm:Note>Removed 'No archetype scheme' spurious log warning
           </scm:Note>
