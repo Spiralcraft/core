@@ -14,12 +14,13 @@
 //
 package spiralcraft.vfs.context;
 
-import spiralcraft.common.Lifecycle;
+import spiralcraft.app.spi.AbstractComponent;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.common.Lifecycler;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.ThreadContextual;
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.service.Service;
 
 /**
  * <p>Manages and provides access to a set of VFS Resources by publishing
@@ -33,7 +34,8 @@ import spiralcraft.lang.spi.SimpleChannel;
  *
  */
 public class FileSpace
-  implements ThreadContextual,Lifecycle
+  extends AbstractComponent
+  implements Service,ThreadContextual
 {
   
   protected Authority[] authorities;
@@ -46,10 +48,10 @@ public class FileSpace
   }
 
   @Override
-  public Focus<?> bind(Focus<?> focusChain)
+  public Focus<?> bindExports(Focus<?> focusChain)
     throws BindException
   { 
-    focusChain=focusChain.chain(new SimpleChannel<FileSpace>(this,true));
+    focusChain=super.bindExports(focusChain);
     for (Authority authority:authorities)
     { 
       authority.bind(focusChain);
@@ -63,19 +65,16 @@ public class FileSpace
   public void start()
     throws LifecycleException
   {
-    for (Authority authority:authorities)
-    { authority.start();
-    }
+    Lifecycler.start(authorities);
+    super.start();
   }
 
   @Override
   public void stop()
     throws LifecycleException
   {
-    for (Authority authority:authorities)
-    { authority.stop();
-    }
-    
+    super.stop();
+    Lifecycler.stop(authorities);
   }
 
   /**
