@@ -3,13 +3,16 @@ package spiralcraft.data.spi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.charset.Charset;
 
 import spiralcraft.common.LifecycleException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Sequence;
+import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.StreamUtil;
+import spiralcraft.vfs.UnresolvableURIException;
 
 /**
  * A sequence which stores data in a Resource.
@@ -27,16 +30,26 @@ public class ResourceSequence
   private volatile long next;
   private volatile long stop;
   private Resource resource;
+  private URI resourceURI;
 
-  public ResourceSequence (Resource resource)
+  public ResourceSequence (URI resourceURI)
   { 
-    this.resource=resource;
+    this.resourceURI=resourceURI;
   }
 
   @Override
   public void start()
   throws LifecycleException
-  {
+  { 
+    try
+    { resource=Resolver.getInstance().resolve(resourceURI);
+    }
+    catch (UnresolvableURIException x)
+    { throw new LifecycleException("Could not resolve ResourceSequence URI",x);
+    }
+    if (resource==null)
+    { throw new LifecycleException("Could not resolve "+resourceURI);
+    }
 
   }
 
