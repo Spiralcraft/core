@@ -29,7 +29,7 @@ public class Authority
   
   private String authorityName="";
   private URI defaultRoot;
-  private Graft[] grafts;
+  private Graft[] grafts=new Graft[0];
   
   private HashMap<String,Graft> pathMap;
   
