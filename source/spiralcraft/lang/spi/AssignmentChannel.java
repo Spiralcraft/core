@@ -1,6 +1,7 @@
 package spiralcraft.lang.spi;
 
 import spiralcraft.lang.AccessException;
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.log.ClassLog;
 
@@ -15,10 +16,20 @@ public class AssignmentChannel
 
   public AssignmentChannel
     (Channel sourceChannel,Channel targetChannel)
+    throws BindException
   {
     super(sourceChannel.getReflector(),sourceChannel);
     this.targetChannel=targetChannel;
-    
+    if (targetChannel!=null 
+        && !targetChannel.getReflector().isAssignableFrom
+          (sourceChannel.getReflector())
+       )
+    { 
+      throw new BindException
+        ("Cannot assign a "+sourceChannel.getReflector().getTypeURI()
+        +" to a location of type "+targetChannel.getReflector().getTypeURI()
+        );
+    }    
   }
     
   @Override
