@@ -10,7 +10,7 @@
     <authorId>miketoth
     </authorId>
     
-    <date>2010-10-30
+    <date>2010-10-31
     </date>
     
     <detail>
@@ -34,6 +34,30 @@
           <URI>session/BufferTuple.java
           </URI>
           <URI>xml/XmlQueryable.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+      
+      
+        <notes>
+          <scm:Note>Type safety: spiralcraft.lang assignment operator checks 
+            type on bind.
+          </scm:Note>
+          <scm:Note>BeanReflector is always assignable from Void.class and
+            Void.TYPE.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang
+        </path>
+        
+        <resources>
+          <URI>spi/AssignmentChannel.java
+          </URI>
+          <URI>reflect/BeanReflector.java
           </URI>
         </resources>
         
