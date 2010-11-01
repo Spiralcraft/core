@@ -410,6 +410,11 @@ public class BeanReflector<T>
   public boolean isAssignableFrom(Reflector<?> other)
   { 
     final Class otherClass=other.getContentType();
+    
+    if (otherClass==Void.class || otherClass==Void.TYPE)
+    { return true;
+    }
+    
     if (otherClass.isPrimitive())
     { 
       if (getContentType().isPrimitive())
