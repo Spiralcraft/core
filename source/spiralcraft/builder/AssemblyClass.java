@@ -39,6 +39,8 @@ import spiralcraft.util.Path;
 import spiralcraft.util.URIUtil;
 import spiralcraft.util.lang.ClassUtil;
 
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.vfs.classpath.ClasspathResourceFactory;
 
 /**
@@ -962,6 +964,21 @@ public class AssemblyClass
         
         _baseAssemblyClass=_loader.findAssemblyDefinition(baseResource);
 
+        URI canonicalBaseUri=null;
+        try
+        {
+          // For debugging
+          canonicalBaseUri
+            =Resolver.getInstance().resolve(baseResource).getURI();
+        }
+        catch (UnresolvableURIException x)
+        { 
+          log.warning
+            ("Unresolvable URI "+baseResource
+            +x.getMessage()
+            );
+        }        
+        
         // 2009-04-30 miketoth 
         //
         //   Exclude lang classes like "String", which are available by
@@ -989,9 +1006,8 @@ public class AssemblyClass
                 )
             )
         { 
-          // Load the canonical assembly class for the specified qualified
-          //   class URI.
 
+          
           _baseAssemblyClass
             =_loader.findAssemblyClass(_basePackage.resolve(_baseName));
 
@@ -1020,7 +1036,11 @@ public class AssemblyClass
               +this.getSourceURI()+" "+this.getContainingProperty()+" "
               + this.getDeclarationName()
               +": Could not resolve "+baseResource+" to an assy.xml or a" 
-              +" Java class "
+              +" Java class. "
+              +(canonicalBaseUri==null
+                ?""
+                :canonicalBaseUri+" does not exist"
+                )
               );
           }
         }
