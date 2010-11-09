@@ -265,6 +265,9 @@ public class TypeImpl<T>
     if (type.isPrimitive())
     { return getNativeClass().isAssignableFrom(type.getNativeClass());
     }
+    else if (type.hasArchetype(this))
+    { return true;
+    }
     else
     {
       // Check native compatability
