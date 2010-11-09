@@ -143,7 +143,16 @@ public class ArrayJournalTuple
         }
       }
     }
-    return latestVersion().update(delta);
+    
+    JournalTuple latestVersion
+      =latestVersion();
+    if (latestVersion!=null)
+    { return latestVersion().update(delta);
+    }
+    else
+    { return null;
+    }
+    
   }
 
   @Override
