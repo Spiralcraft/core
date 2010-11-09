@@ -4,6 +4,117 @@
   
   <scm:Change>
   
+    <revision>0.4.12.3
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-11-09
+    </date>
+    
+    <detail>
+      <scm:Change>
+        
+        <notes>
+          <scm:Note>Fix issue where retrieving a keyed relationship from a
+            Buffer would throw a ClassCastException for a non-new buffer.
+          </scm:Note>
+          <scm:Note>BufferType now provides a non-null native class, which is
+            always a Buffer subclass. This is also expressed as a generic type
+            parameter.
+          </scm:Note>
+          <scm:Note>BufferTuple provides access to local data to allow
+            BufferField to bypass the public api to check for an existing
+            buffer. This is enabled by exposing FieldImpl.widen() as protected.
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/data/</path>
+        
+        <resources>
+          <URI>TypeResolver.java
+          </URI>
+          <URI>core/FieldImpl.java
+          </URI>
+          <URI>session/BufferField.java
+          </URI>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>session/BufferType.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        
+        <notes>
+          <scm:Note>Make sure ResourceSequence, if using a File, is sync()'ed
+            after flush to reduce chance of data loss
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/spi/ResourceSequence.java
+        </path>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        
+        <notes>
+          <scm:Note>Executor accepts a --context command line argument to
+            define the "context:/" URI for resource resolution.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/exec/
+        </path>
+        
+        <resources>
+          <URI>ExecutionContext.java
+          </URI>
+          <URI>Executor.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <notes>
+          <scm:Note>Provide useful error message when a StructField is
+            forward-referenced.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/
+        </path>
+        
+        <resources>
+          <URI>StructField.java
+          </URI>
+          <URI>StructNode.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>SchedulerService returns it self-focus from bind(), not its 
+          context.
+        </notes>
+        
+        <path>source/spiralcraft/service/SchedulerSerice.java
+        </path>
+        
+      </scm:Change>
+
+    </detail>
+  </scm:Change>
+
+  <scm:Change>
+  
     <revision>0.4.12.2
     </revision>
     
