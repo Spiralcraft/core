@@ -392,7 +392,7 @@ public class FieldImpl<T>
   {
   }
   
-  private Tuple widenTuple(Tuple t)
+  protected final Tuple widenTuple(Tuple t)
     throws DataException
   {
     final Type fieldSetType=fieldSet.getType();

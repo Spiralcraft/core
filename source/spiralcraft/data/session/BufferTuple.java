@@ -116,6 +116,7 @@ public class BufferTuple
     field.setValue(this,data);
   }  
   
+  
   /** 
    * Update original to a new copy. Any conflicting modifications will
    *   be overwritten. 
@@ -258,7 +259,9 @@ public class BufferTuple
   
   private <X> void copyFieldFrom(Field<X> field,Tuple source)
     throws DataException
-  { field.setValue(this,field.getValue(source));
+  { 
+    X value=field.getValue(source);
+    field.setValue(this,value);
   }
   
   
@@ -337,6 +340,32 @@ public class BufferTuple
     Object data)
     throws DataException
   {
+     
+    if (data!=null)
+    {
+      Field<?> field=getFieldSet().getFieldByIndex(index);
+      Type<?> fieldType=field.getType();
+
+      if ( (fieldType.isPrimitive()
+            && (!(fieldType.getNativeClass().isAssignableFrom(data.getClass())))
+           )
+           || 
+           ( !fieldType.isPrimitive()
+           && !(data instanceof Buffer)
+           )
+        )
+      {
+        throw new DataException
+          ("Cannot update field "+field.getURI()
+          +"("+field.getType().getNativeClass()
+          +") with data "+data
+          );
+      }
+    }
+    
+    
+    
+    
     if (this.data==null)
     { 
       this.data=new Object[getFieldSet().getFieldCount()];
@@ -378,6 +407,17 @@ public class BufferTuple
     
   }
 
+  /**
+   * Return the local object for the field, if any, without delegating to the
+   *   original that this tuple buffers.
+   * 
+   * @param index
+   * @return
+   */
+  Object getBuffer(int index)
+  { return data!=null?data[index]:null;
+  }
+  
   @Override
   public Object get(
     int index)

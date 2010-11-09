@@ -106,9 +106,14 @@ public class BufferField
     @Override
     public boolean store(Buffer val)
     { 
+      if (val!=null && !(val instanceof Buffer))
+      { throw new AccessException("Not a buffer: "+val);
+      }
+      
       try
       { 
         BufferTuple parent=(BufferTuple) source.get();
+        
         BufferField.this.setValue(parent,val);
         return true;
       }
@@ -123,10 +128,14 @@ public class BufferField
       BufferTuple parent=(BufferTuple) source.get();
       try
       {
-        Object maybeBuffer
-          =parent!=null
-          ?BufferField.this.getValue(parent)
-          :null;
+        
+        Object maybeBuffer=null;
+        if (parent!=null)
+        {
+
+          BufferTuple parentExtent=(BufferTuple) widenTuple(parent);
+          maybeBuffer=parentExtent.getBuffer(getIndex());
+        }
           
         if (maybeBuffer!=null && !(maybeBuffer instanceof Buffer))
         { 

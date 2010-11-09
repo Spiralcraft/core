@@ -31,8 +31,8 @@ import java.util.Iterator;
 
 
 
-public class BufferType
-  extends TypeImpl<Buffer>
+public class BufferType<T extends Buffer>
+  extends TypeImpl<T>
 {
   
 //  public static final BufferType getBufferType(Type<?> bufferedType)
@@ -48,6 +48,7 @@ public class BufferType
   
   private boolean linked;
   
+  @SuppressWarnings("unchecked")
   public BufferType(TypeResolver resolver,URI typeURI,Type<?> archetype)
   { 
     
@@ -55,12 +56,16 @@ public class BufferType
     // log.fine("Buffer type for "+archetype);
     this.archetype=archetype;
     if (archetype.getBaseType()!=null)
-    { this.baseType=getBufferType(archetype.getBaseType());
+    { this.baseType=(Type<T>) getBufferType(archetype.getBaseType());
     }
     if (this.archetype.isAggregate())
     { 
       this.aggregate=true;
       this.contentType=getBufferType(archetype.getContentType());
+      this.nativeClass=(Class<T>) BufferAggregate.class;
+    }
+    else
+    { this.nativeClass=(Class<T>) BufferTuple.class;
     }
     if (archetype.getDebug())
     { debug=true;
@@ -147,6 +152,7 @@ public class BufferType
 
   
 
+  
   /**
    * Indicate whether the given relation includes the primary key of this
    *   Type's Scheme.

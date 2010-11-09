@@ -282,6 +282,7 @@ public class TypeResolver
     return type;
   }
 
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   private final Type<?> loadBufferType(Type<?> baseType,URI typeURI)
     throws DataException
   {
