@@ -14,6 +14,32 @@
     </date>
     
     <detail>
+    
+      <scm:Change>
+        <notes>
+          <scm:Note>Add Resource.unwrap(Class clazz) method to allow VFS
+            clients to obtain references to concrete resources wrapped in
+            indirection layers.
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/vfs/
+        </path>
+        
+        <resources>
+          <URI>Resource.java
+          </URI>
+          <URI>context/ContextResource.java
+          </URI>
+          <URI>spi/AbstractResource.java
+          </URI>
+          <URI>util/ResourceWrapper.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
       <scm:Change>
         
         <notes>
