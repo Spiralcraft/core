@@ -28,6 +28,7 @@ public class StructField
   Node source;
   boolean passThrough;
   boolean anonymous;
+  boolean linked;
   
   public StructField copy(Object visitor)
   {

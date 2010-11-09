@@ -352,6 +352,10 @@ public class StructNode
         { 
 //          log.fine("Binding "+field.name+" to "+field.source.reconstruct());
           channels[i]= field.source.bind(focus);
+          if (channels[i]==null)
+          { throw new BindException("Could not bind field '"+field.name+"' to "+field.source);
+          } 
+          
           if (field.type!=null)
           { 
             // Set up field with a different declared type
@@ -376,6 +380,13 @@ public class StructNode
           channels[i]= new SimpleChannel
             ((Reflector) field.type.bind(focus).get());
         }
+        else
+        {
+          throw new BindException
+            ("Field '"+field.name
+            +"' must have a source expression and/or a declared type"
+            );
+        }
         
         if (iterableItemReflector==null)
         { iterableItemReflector=channels[i].getReflector();
@@ -386,6 +397,7 @@ public class StructNode
             =iterableItemReflector.getCommonType
               (channels[i].getReflector());
         }
+        field.linked=true;
         
         i++;
       }
@@ -706,6 +718,11 @@ public class StructNode
        
         if (field!=null)
         {
+          if (!field.linked)
+          { throw new BindException
+              ("Field "+field.name+" cannot be forward referenced");
+          }
+          
           final Channel target=channels[field.index];
         
           if (!field.passThrough)
@@ -718,13 +735,29 @@ public class StructNode
       }
       else
       {
+        // Method
         final StructField field=fields.get(name);
         
         if (field!=null)
         {
+          if (!field.linked)
+          { throw new BindException
+              ("Field '"+field.name+"' cannot be forward referenced");
+          }
+
+          final Channel<?> structChannel
+            =field.source.bind(context.chain(source));
+          
           final Channel target
-            =field.source.bind(context.chain(source))
-            .resolve(focus,"",params);
+            =structChannel.resolve(focus,"",params);
+          
+          if (target==null)
+          { 
+            throw new BindException
+              ("Could not resolve functor channel for field '"+field.name+"' "
+                +" from "+structChannel
+              );
+          }
           return (Channel<X>) new MethodChannel(field,source,target);
         }
         
