@@ -209,6 +209,7 @@ public class ArrayDeltaTuple
       }
     }
     this.dirty=updated.isDirty();
+    this.delete=updated.isDelete();
     if (baseExtent!=null)
     { 
       ((ArrayDeltaTuple) baseExtent)
