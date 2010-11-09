@@ -105,7 +105,9 @@ public abstract class AbstractAggregateType<T,Tcontent>
   @Override
   public boolean isAssignableFrom(Type<?> type)
   {
-    
+    if (type.hasArchetype(this))
+    { return true;
+    }
     if (getNativeClass()!=null && type.getNativeClass()!=null &&
         !getNativeClass().isAssignableFrom(type.getNativeClass())
         )
