@@ -1,5 +1,6 @@
 package spiralcraft.data.spi;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,6 +31,7 @@ public class ResourceSequence
   private volatile long next;
   private volatile long stop;
   private Resource resource;
+  
   private URI resourceURI;
 
   public ResourceSequence (URI resourceURI)
@@ -50,7 +52,6 @@ public class ResourceSequence
     if (resource==null)
     { throw new LifecycleException("Could not resolve "+resourceURI);
     }
-
   }
 
   @Override
@@ -91,6 +92,9 @@ public class ResourceSequence
     { 
       out.write(val.getBytes(ASCII));
       out.flush();
+      if (out instanceof FileOutputStream)
+      { ((FileOutputStream) out).getFD().sync();
+      }
     }
     finally
     { out.close();
