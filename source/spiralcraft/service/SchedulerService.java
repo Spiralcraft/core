@@ -49,6 +49,14 @@ public class SchedulerService<Tcontext>
   }
   
   @Override
+  public Focus<?> bind(Focus<?> chain)
+    throws BindException
+  { 
+    super.bind(chain);
+    return selfFocus;
+  }  
+  
+  @Override
   protected Focus<?> bindImports(Focus<?> chain)
     throws BindException
   { 
