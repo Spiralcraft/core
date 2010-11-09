@@ -18,7 +18,9 @@
           </messageX>
           <conditionX>[@example:USDate].type.@cast([@std:DateType])
                         .fromString("12/28/2010").toString()
-                      =="Tue Dec 28 00:00:00 PST 2010"
+                        { .startsWith("Tue Dec 28 00:00:00")
+                          &amp;&amp; .endsWith("2010")
+                        }
           </conditionX>
         </test:Stub>
 
