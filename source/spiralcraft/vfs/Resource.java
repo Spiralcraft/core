@@ -198,4 +198,13 @@ public interface Resource
    */
   public long write(InputStream in)
     throws IOException;
+  
+  /**
+   * Obtain an indirectly referenced resource
+   * 
+   * @param <T>
+   * @param clazz
+   * @return
+   */
+  public <T extends Resource> T unwrap(Class<T> clazz);
 }

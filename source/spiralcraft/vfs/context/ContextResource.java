@@ -82,6 +82,6 @@ public class ContextResource
   { return delegate;
   }    
   
-  
+
   
 }

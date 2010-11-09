@@ -350,4 +350,14 @@ public abstract class AbstractResource
     throws IOException
   { return 0;
   }
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T extends Resource> T unwrap(Class<T> clazz)
+  {
+    if (clazz.isAssignableFrom(this.getClass()))
+    { return (T) this;
+    }
+    return null;
+  }
 }

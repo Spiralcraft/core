@@ -148,4 +148,14 @@ public abstract class ResourceWrapper
     throws IOException
   { return getDelegate().setLastModified(lastModified);
   }
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T extends Resource> T unwrap(Class<T> clazz)
+  {
+    if (clazz.isAssignableFrom(this.getClass()))
+    { return (T) this;
+    }
+    return getDelegate().unwrap(clazz);
+  }
 }
