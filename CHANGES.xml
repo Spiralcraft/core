@@ -17,6 +17,19 @@
     
       <scm:Change>
         <notes>
+          <scm:Note>Fixed problem where BufferFields logged a warning because
+            their native types were not compatible.
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/data/core/TypeImpl.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
           <scm:Note>Add Resource.unwrap(Class clazz) method to allow VFS
             clients to obtain references to concrete resources wrapped in
             indirection layers.
