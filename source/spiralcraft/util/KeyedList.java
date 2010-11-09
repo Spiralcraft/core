@@ -106,6 +106,21 @@ public class KeyedList<T>
   }
   
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public boolean remove(Object val)
+  {
+    if (super.remove(val))
+    { 
+      indexRemove((T) val);
+      return true;
+    }
+    else
+    { return false;
+    }
+    
+  }
+  
   private void indexAdd(T val)
   {
     for (int i=0;i<_numKeys;i++)
