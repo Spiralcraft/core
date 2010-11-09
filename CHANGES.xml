@@ -23,9 +23,53 @@
           
         </notes>
         
-        <path>source/spiralcraft/data/core/TypeImpl.java
+        <path>source/spiralcraft/data/core/
         </path>
         
+        <resources>
+          <URI>TypeImpl.java
+          </URI>
+          <URI>AbstractAggregateType.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>
+            Clean up issues with deletions.
+          </scm:Note>
+          <scm:Note>
+            ArrayDeltaTuple properly copies delete flag from buffer
+          </scm:Note>
+          <scm:Note>
+            ArrayJournalTuple returns null for prepareUpdate() when Tuple
+            has already been deleted.
+          </scm:Note>
+          <scm:Note>
+            Added undelete() method to BufferTuple to deal with
+            situation where buffer is re-added during editing (delete is
+            cancelled).
+          </scm:Note>
+          <scm:Note>
+            KeyedList.remove() was not updating indexes
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+      
+        <resources>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>spi/ArrayDeltaTuple.java
+          </URI>
+          <URI>spi/ArrayJournalTuple.java
+          </URI>
+          <URI>util/KeyedList.java
+          </URI>
+        </resources>
       </scm:Change>
 
       <scm:Change>
