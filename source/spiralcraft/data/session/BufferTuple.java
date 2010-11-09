@@ -183,11 +183,22 @@ public class BufferTuple
   public void delete()
   { 
     this.delete=true;
-    this.data=null;
+//    this.data=null;
     this.dirty=true;
-    this.dirtyFlags=null;
+//    this.dirtyFlags=null;
     if (baseExtent!=null)
     { baseExtent.delete();
+    }
+  }
+  
+  /**
+   * Reset the deleted flag
+   */
+  public void undelete()
+  { 
+    this.delete=false;
+    if (baseExtent!=null)
+    { baseExtent.undelete();
     }
   }
   
