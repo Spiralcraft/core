@@ -347,6 +347,14 @@ public class Executor
           else if (option.equals("-consoleLog"))
           { Executor.this.consoleLog=true;
           }
+          else if (option.equals("-context"))
+          { 
+            URI contextUri=URI.create(nextArgument());
+            if (!contextUri.isAbsolute())
+            { contextUri=ExecutionContext.getInstance().canonicalize(contextUri);
+            }
+            ContextResourceMap.get().putDefault(contextUri);
+          }
           else if (option.equals("-persist"))
           { 
             instanceURI=URI.create(nextArgument());

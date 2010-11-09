@@ -93,7 +93,7 @@ public abstract class ExecutionContext
   public URI canonicalize(URI relativeURI)
   {
     if (!relativeURI.isAbsolute())
-    { return focusURI().resolve(relativeURI);
+    { return focusURI().resolve(relativeURI).normalize();
     }
     else
     { return relativeURI;
