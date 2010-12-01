@@ -60,6 +60,7 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.Level;
 import spiralcraft.task.Scenario;
+import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.util.RetentionPolicy;
@@ -79,6 +80,8 @@ public class XmlStore
     =new ArrayList<XmlQueryable>();
   
   private URI baseResourceURI;
+  
+  private Container logContainer;
   
   private XmlQueryable sequenceQueryable
     =new XmlQueryable();
@@ -134,7 +137,12 @@ public class XmlStore
   { 
     if (schema!=null)
     {
-      schema.resolve();
+      try
+      { schema.resolve();
+      }
+      catch (DataException x)
+      { throw new BindException("Error resolving schema ",x);
+      }
       
       for (Entity entity: schema.getEntities())
       {
@@ -147,7 +155,9 @@ public class XmlStore
         binding.setAuthoritative(true);
         binding.setQueryable(queryable);
         binding.setUpdater(new XmlUpdater(queryable,binding));   
-        
+        if (entity.isDebug())
+        { queryable.setLogLevel(Level.TRACE);
+        }
         addEntityBinding(binding);
         
         if (debugLevel.isDebug())
@@ -253,6 +263,20 @@ public class XmlStore
 
 
     log.info("Serving data in "+baseResourceURI);
+    try
+    {
+      logContainer
+        =Resolver.getInstance().resolve(baseResourceURI.resolve("xlog"))
+          .ensureContainer();
+    }
+    catch (IOException x)
+    { 
+      throw new LifecycleException
+        ("Error resolving transaction log container "
+        +baseResourceURI.resolve("xlog")
+        );
+    }
+    
     for (XmlQueryable queryable:xmlQueryables)
     { 
       try
@@ -417,7 +441,9 @@ public class XmlStore
         
       }
       
-      onReload(types.toArray(new Type[types.size()]));
+      if (!types.isEmpty())
+      { onReload(types.toArray(new Type[types.size()]));
+      }
       
       transaction.commit();
     }
@@ -473,9 +499,7 @@ public class XmlStore
     if (aggregate.size()>0)
     {
       Resource logResource
-        =Resolver.getInstance().resolve(baseResourceURI.resolve("xlog"))
-        .ensureContainer()
-        .getChild("tx"+txId+".delta.xml");
+        =logContainer.getChild("tx"+txId+".delta.xml");
 
       DataWriter writer=new DataWriter();
       writer.writeToResource(logResource, aggregate);

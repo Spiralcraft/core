@@ -90,10 +90,10 @@ public class XmlQueryable
   extends AbstractAggregateQueryable<Tuple>
   implements Contextual
 {
-  private static final ClassLog log
+  private final ClassLog log
     =ClassLog.getInstance(XmlQueryable.class);
   
-  private static final Level logLevel
+  private Level logLevel
     =ClassLog.getInitialDebugLevel(XmlQueryable.class,null);
   
   private SimpleDateFormat dateFormat
@@ -126,6 +126,10 @@ public class XmlQueryable
   private final Lock setLock=new ReentrantLock(true);
   private XmlStore store;
   
+  public void setLogLevel(Level logLevel)
+  { this.logLevel=logLevel;
+  }
+  
   public long getLastTransactionId()
   { return lastTransactionId;
   }
@@ -140,8 +144,8 @@ public class XmlQueryable
         try
         {
           exception=null;
-          if (logLevel.isFine())
-          { log.fine("Resource "+resource.getURI()+" changed");
+          if (logLevel.isDebug())
+          { log.debug("Resource "+resource.getURI()+" changed");
           }
           
           reload();
@@ -355,6 +359,7 @@ public class XmlQueryable
       finally
       { unfreeze();
       }
+      
     
     }
     finally
