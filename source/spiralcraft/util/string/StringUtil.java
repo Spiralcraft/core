@@ -14,7 +14,9 @@
 //
 package spiralcraft.util.string;
 
+import spiralcraft.log.ClassLog;
 import spiralcraft.text.Filter;
+import spiralcraft.util.ArrayUtil;
 
 import java.io.StreamTokenizer;
 import java.io.StringReader;
@@ -33,6 +35,88 @@ import java.util.List;
 public class StringUtil
 {
 
+  /**
+   * Separate the components of a String that has been imploded using the
+   *   specified delimiter and escape character
+   *   
+   * @param input The imploded String
+   * @param delimiter The character used to separate the component Strings 
+   * @param escape The character used to escape the delimiter
+   * @param capacity The anticipated size of the resulting array
+   * @return
+   */
+  public static String[] explode
+    (String input,final char delimiter,final char escape,final int capacity)
+  {
+    if (input==null)
+    { return null;
+    }
+    
+    StringBuilder seg=new StringBuilder();
+    ArrayList<String> result=new ArrayList<String>(3);
+    
+    boolean inEscape=false;
+    for (char chr:input.toCharArray())
+    {
+      if (inEscape)
+      { 
+        inEscape=false;
+        seg.append(chr);
+      }
+      else if (chr==escape)
+      { inEscape=true;
+      }
+      else if (chr==delimiter)
+      { 
+        result.add(seg.toString());
+        seg.setLength(0);
+      }
+      else
+      { seg.append(chr);
+      }
+    }
+    
+    if (inEscape)
+    { 
+      throw new IllegalArgumentException
+        ("Incomplete escape sequence at end of string: "+input);
+    }
+    result.add(seg.toString());
+    return result.toArray(new String[result.size()]);
+  }
+  
+  /**
+   * Combine multiple Strings into one using the specified delimiter and
+   *   the specified escape character. Occurrences of the delimiter and
+   *   the escape character in the individual components will be escaped
+   *   by prepending the escape character.
+   * 
+   * @param input
+   * @param delimiter
+   * @param escape
+   * @return
+   */
+  public static String implode(char delimiter,char escape,String ... input)
+  {
+    ClassLog log=ClassLog.getInstance(StringUtil.class);
+    boolean first=true;
+    StringBuilder result=new StringBuilder();
+    log.fine("Imploding '"+delimiter+"','"+escape+"',"+ArrayUtil.format(input,"|",null));
+    for (String str:input)
+    {
+      if (!first)
+      { result.append(delimiter);
+      }
+      else
+      { first=false;
+      }
+      result.append(escape(str,escape,Character.toString(delimiter)));
+    }
+    return result.toString();
+  }
+  
+  
+                       
   /**
    * <p>Tokenize a String into a List</p>
    * 

@@ -17,7 +17,7 @@ package spiralcraft.util.string;
 import java.lang.reflect.Array;
 
 /**
- * <p>Translates an array of objects to a comma-delimited list and back. 
+ * <p>Translates a homogenous array of objects to a delimited list and back. 
  * </p>
  * 
  * @author mike
@@ -29,15 +29,41 @@ public final class ArrayToString<Tdata>
 {
   private final StringConverter<Tdata> converter;
   private final Class<Tdata> componentClass;
+  private final char escapeChar;
+  private final char delimiter;
+  private final int capacity;
   
+  /**
+   * Converts an Array to a comma-delimited String using the default converter 
+   *   for the specified component class. Commas and backslashes in the text 
+   *   will be escaped with backslashes.
+   *   
+   * @param componentClass
+   */
   @SuppressWarnings("unchecked")
   public ArrayToString(Class<Tdata> componentClass)
   { 
     this.converter
       =(StringConverter<Tdata>) StringConverter.getInstance(componentClass);
     this.componentClass=componentClass;
+    this.escapeChar='\\';
+    this.delimiter=',';
+    this.capacity=10;
   }
   
+  /**
+   * <p>Converts an Array to a comma-delimited String using the specified 
+   *   converter. Commas and backslashes in the text 
+   *   will be escaped with backslashes. 
+   * </p>
+   * 
+   * <p>This is the default constructor
+   *   used for automatic conversion.
+   * </p>
+   * 
+   * @param converter
+   * @param componentClass
+   */
   public ArrayToString
     (StringConverter<Tdata> converter
     ,Class<Tdata> componentClass
@@ -45,7 +71,37 @@ public final class ArrayToString<Tdata>
   {
     this.converter=converter;
     this.componentClass=componentClass;
+    this.escapeChar='\\';
+    this.delimiter=',';
+    this.capacity=10;
   }
+  
+  /**
+   * <p>Converts an Array to a delimited String using the specified
+   *   converter, delimiter, escape character, and initial buffer capacity
+   * </p>
+   * 
+   * @param converter
+   * @param componentClass
+   * @param delimiter
+   * @param escapeChar
+   * @param capacity
+   */
+  public ArrayToString
+    (StringConverter<Tdata> converter
+    ,Class<Tdata> componentClass
+    ,char delimiter
+    ,char escapeChar
+    ,int capacity
+    )
+  {
+    this.converter=converter;
+    this.componentClass=componentClass;
+    this.escapeChar=escapeChar;
+    this.delimiter=delimiter;
+    this.capacity=capacity;
+  }
+  
   
   @Override
   public String toString(Tdata[] val)
@@ -54,30 +110,24 @@ public final class ArrayToString<Tdata>
     { return null;
     }
     
-    StringBuilder buf=new StringBuilder();
-    for (Tdata item : val)
-    { 
-      if (buf.length()>0)
-      { buf.append(",");
-      }
-      buf.append(converter.toString(item));
+    String[] input=new String[val.length];
+    for (int i=0;i<input.length;i++)
+    { input[i]=converter.toString(val[i]);
     }
-    return buf.toString();
+    return StringUtil.implode(delimiter,escapeChar,input);
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   /**
-   * <p>Turns a comma delimited list into an array of the target type.
+   * <p>Turns a delimited list into an array of the target type.
    * </p>
    * 
-   * <p>XXX: Add escaping code commas in strings ie. \, and \\
-   * </p>
    */
+  @SuppressWarnings("unchecked")
   public Tdata[] fromString(String val)
   { 
     
-    String[] strings=StringUtil.tokenize(val,",");
+    String[] strings=StringUtil.explode(val,delimiter,escapeChar,capacity);
     Tdata[] data=(Tdata[]) Array.newInstance(componentClass,strings.length);
     for (int i=0;i<strings.length;i++)
     { data[i]=converter.fromString(strings[i]);
