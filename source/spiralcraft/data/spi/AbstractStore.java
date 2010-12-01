@@ -265,7 +265,7 @@ public abstract class AbstractStore
     Type<?> type)
     throws DataException
   {
-    assertStarted();
+    //assertStarted();
     
     Queryable<Tuple> queryable=getQueryable(type);
     if (queryable!=null)
@@ -563,7 +563,6 @@ public abstract class AbstractStore
   
   public void onReload(Type<?>[] types)
   {
-    
     if (services!=null)
     {
       for (StoreService service:services)
