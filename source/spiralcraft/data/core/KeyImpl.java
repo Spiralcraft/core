@@ -17,6 +17,7 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Key;
+import spiralcraft.data.KeyTuple;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
@@ -28,11 +29,15 @@ import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Selection;
 import spiralcraft.data.query.Scan;
+import spiralcraft.data.spi.DataKeyFunction;
 
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.Reflector;
 
+import spiralcraft.util.KeyFunction;
+import spiralcraft.util.string.StringConverter;
 import spiralcraft.util.string.StringUtil;
 
 /**
@@ -57,6 +62,8 @@ public class KeyImpl<T>
   private Query query;
   private Query foreignQuery;
   private String title;
+  private DataKeyFunction<T> function;
+  private StringConverter<?>[] stringConverters;
 
   /**
    * Construct an unresolved KeyImpl which will be configured and resolved
@@ -214,7 +221,8 @@ public class KeyImpl<T>
     { return;
     }
 
-    
+    stringConverters=new StringConverter[fieldNames.length];
+    int i=0;
     for (String fieldName: fieldNames)
     { 
       Field<?> masterField=masterFieldSet.getFieldByName(fieldName);
@@ -228,6 +236,10 @@ public class KeyImpl<T>
           );
       }
       addMasterField(masterField.getName(),masterField);
+      
+      stringConverters[i]
+        =masterField.getContentReflector().getStringConverter();
+      i++;
     }
     
     
@@ -247,7 +259,8 @@ public class KeyImpl<T>
       }
       title=titleBuf.toString();
     }
-    
+
+    projectionId=title;
     
     if (importedKey!=null)
     { 
@@ -284,12 +297,28 @@ public class KeyImpl<T>
     
     createLocalEquiJoin();
 
-    
     super.resolve();
     
-    
+    try
+    { function=new DataKeyFunction<T>(this);
+    }
+    catch (BindException x)
+    { throw new DataException("Error binding key "+getType().getURI());
+    }
   }
 
+  @Override
+  public KeyFunction<KeyTuple,T> getFunction()
+  { return function;
+  }
+  
+  @Override
+  public StringConverter<?>[] getStringConverters()
+  { return stringConverters;
+  }
+  
+
+  
   private void createLocalEquiJoin()
     throws DataException
    

@@ -39,6 +39,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.util.URIUtil;
 
 /**
  * <p>Implements a Projection- a FieldSet that references a set of expressions
@@ -51,6 +52,8 @@ import spiralcraft.lang.spi.AbstractChannel;
 public class ProjectionImpl<T>
   implements Projection<T>
 {
+  
+  protected static int NEXT_ID=1;
   protected final ArrayList<ProjectionFieldImpl<?>> fields
   =new ArrayList<ProjectionFieldImpl<?>>();
 
@@ -67,6 +70,8 @@ public class ProjectionImpl<T>
   private Type<?> type;
   
   protected boolean debug;
+  
+  protected String projectionId="-p"+(NEXT_ID++);
 
 
   public ProjectionImpl()
@@ -239,7 +244,7 @@ public class ProjectionImpl<T>
     {
       this.type
         =new FieldSetType
-          (masterFieldSet.getType().getURI().resolve("-projection"),this);
+          (URIUtil.addPathSuffix(masterFieldSet.getType().getURI(),projectionId),this);
       this.type.link();
     }
     resolved=true;
