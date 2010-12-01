@@ -264,7 +264,9 @@ public abstract class DataReflector<T extends DataComposite>
     { return getType().isAssignableFrom(((DataReflector<?>) other).getType());
     }
     else
-    { return false;
+    { 
+      return Void.class==other.getContentType() 
+        || Void.TYPE==other.getContentType();
     }
   }  
   
