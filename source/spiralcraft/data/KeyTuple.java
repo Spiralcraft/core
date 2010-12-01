@@ -72,6 +72,13 @@ public class KeyTuple
     }
   }
   
+  public Object[] getData()
+  {
+    Object[] data=new Object[this.data.length];
+    System.arraycopy(this.data,0,data,0,data.length);
+    return data;
+  }
+  
   @Override
   public int hashCode()
   { return hashCode;
