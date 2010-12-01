@@ -90,6 +90,9 @@ public class Sort<Tcollection,Titem,Tfunction>
       super(source.getReflector(),source);
 
       decorator=source.<CollectionDecorator>decorate(CollectionDecorator.class);
+      if (decorator==null)
+      { throw new BindException("Not a collection "+source.getReflector());
+      }
       
       this.item1Channel
         =new ThreadLocalChannel<Titem>(decorator.getComponentReflector());
