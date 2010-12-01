@@ -172,6 +172,43 @@ public abstract class StringConverter<T>
   }
 
   /**
+   * Convert an array of Objects to an array of Strings using the 
+   *   provided array of StringConverters.
+   *   
+   * @param converters
+   * @param input
+   * @return
+   */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public static String[] toStrings(StringConverter[] converters,Object[] input)
+  { 
+    String[] result=new String[input.length];
+    for (int i=0;i<input.length;i++)
+    { result[i]=converters[i].toString(input[i]);
+    }
+    return result;
+  }
+  
+  
+  /**
+   * Convert an array of Strings to an array of Objects using the 
+   *   provided array of StringConverters.
+   *   
+   * @param converters
+   * @param input
+   * @return
+   */
+  public static Object[] fromStrings
+    (StringConverter<?>[] converters,String[] input)
+  { 
+    Object[] result=new Object[input.length];
+    for (int i=0;i<input.length;i++)
+    { result[i]=converters[i].fromString(input[i]);
+    }
+    return result;
+  }
+
+  /**
    * Convert an Object to a String
    */
   public String toString(T val)
