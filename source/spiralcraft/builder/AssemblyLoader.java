@@ -533,6 +533,9 @@ public class AssemblyLoader
           String debugLevel=attribs[i].getValue();
           prop.setDebugLevel(Level.valueOf(debugLevel));
         }
+        else if (name=="contextualize")
+        { prop.setContextualize(readBoolean(attribs[i]));
+        }
         else
         { 
           throw new BuildException

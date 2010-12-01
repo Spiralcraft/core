@@ -75,6 +75,8 @@ public class PropertySpecifier
   
   private ParsePosition position;
   private Level debugLevel=Level.INFO;
+  
+  private boolean contextualize=true;
 
   public PropertySpecifier
     (AssemblyClass container
@@ -126,6 +128,34 @@ public class PropertySpecifier
   {
     this(container,specifier);
     addAssemblyClass(content);
+  }
+  
+  /**
+   * <p>Whether contextual String substitution should be performed on any 
+   *   specified text at instantiation time.
+   * </p>
+   * 
+   * <p>true by default
+   * </p>
+   *   
+   * @return
+   */
+  public boolean getContextualize()
+  { return contextualize;
+  }
+  
+  /**
+   * <p>Whether contextual String substitution should be performed on any 
+   *   specified text at instantiation time.
+   * </p>
+   * 
+   * <p>true by default
+   * </p>
+   *   
+   * @return
+   */
+  public void setContextualize(boolean contextualize)
+  { this.contextualize=contextualize;
   }
   
   public void setDebugLevel(Level debugLevel)
