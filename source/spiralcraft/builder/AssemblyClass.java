@@ -200,7 +200,7 @@ public class AssemblyClass
     )
   { 
     this.sourceURI=sourceUri;
-    _basePackage=basePackage;
+    _basePackage=URIUtil.ensureTrailingSlash(basePackage);
     _baseName=baseName;
     _containerURI=_basePackage.resolve(baseName);
     _outerClass=outerClass;
@@ -917,15 +917,15 @@ public class AssemblyClass
       { translatedOverlayId=ContextDictionary.substitute(overlayId);
       }
       catch (ParseException x)
-      { throw new BuildException("Error resolving overlayId "+overlayId,x);
+      { throw newBuildException("Error resolving overlayId "+overlayId,x);
       }
       
       URI baseResource
         =_basePackage.resolve(_baseName+"."+translatedOverlayId+".assy.xml");
       if (baseResource.equals(sourceURI) && _outerClass==null)
       { 
-        throw new BuildException
-          ("Circular AssemblyClass definition "+baseResource);
+        throw newBuildException
+          ("Circular AssemblyClass definition "+baseResource,null);
         
       }
       _baseAssemblyClass=_loader.findAssemblyDefinition(baseResource);
@@ -948,14 +948,15 @@ public class AssemblyClass
         }
         catch (ClassNotFoundException x)
         { 
-          throwBuildException
+          throw newBuildException
             ("Could not resolve Java class as basis for "+baseResource,x);
         }
         if (_javaClass==null)
         { 
-          throw new BuildException
+          throw newBuildException
             ("Assembly "+sourceURI+" is not contained in a Java package and "
             +" thus cannot be based on a Java class of the same name"
+            ,null
             );
         }
       }
@@ -1021,7 +1022,7 @@ public class AssemblyClass
           }
           catch (ClassNotFoundException x)
           {
-            throw new BuildException
+            throw newBuildException
               ("Could not find "+baseResource+" and failed to load "
               +" default assembly for Java class"
               ,x
@@ -1031,7 +1032,7 @@ public class AssemblyClass
           
           if (_javaClass==null)
           {
-            throw new BuildException
+            throw newBuildException
               ("Base AssemblyClass not found for AssemblyClass in "
               +this.getSourceURI()+" "+this.getContainingProperty()+" "
               + this.getDeclarationName()
@@ -1041,6 +1042,7 @@ public class AssemblyClass
                 ?""
                 :canonicalBaseUri+" does not exist"
                 )
+              ,null
               );
           }
         }
@@ -1054,7 +1056,7 @@ public class AssemblyClass
       { beanInfo=_BEAN_INFO_CACHE.getBeanInfo(_javaClass);
       }
       catch (IntrospectionException x)
-      { throw new BuildException("Error introspecting "+_javaClass,x);
+      { throw newBuildException("Error introspecting "+_javaClass,x);
       }
     }
     
@@ -1112,14 +1114,19 @@ public class AssemblyClass
   /**
    * Throw a build exception and add location information
    */
-  private void throwBuildException(String message,Exception cause)
-    throws BuildException
+  BuildException newBuildException(String message,Exception cause)
   { 
     if (sourceURI!=null)
-    { throw new BuildException(message+" ("+sourceURI.toString()+")",cause);
+    { 
+      return new BuildException
+        (message+" ("+sourceURI.toString()+": assembling "+resolveBaseURI()+")"
+        ,cause
+        );
     }
     else
-    { throw new BuildException(message+" ("+toString()+")",cause);
+    { 
+      return new BuildException
+        (message+" ("+toString()+": assembling "+resolveBaseURI()+")",cause);
     }
   }
 
@@ -1271,6 +1278,29 @@ public class AssemblyClass
     }
     else
     { return new Assembly(this,parentFocus,factoryMode);
+    }
+  }
+  
+
+  private URI resolveBaseURI()
+  {
+    if (_basePackage!=null)
+    {
+      if (_baseName!=null)
+      { return _basePackage.resolve(_baseName);
+      }
+      else
+      { return _basePackage;
+      }
+    }
+    else
+    { 
+      if (_baseName!=null)
+      { return _basePackage.resolve(_baseName);
+      }
+      else
+      { return _basePackage;
+      }
     }
   }
   

@@ -39,6 +39,7 @@ import spiralcraft.lang.AccessException;
 
 import spiralcraft.log.ClassLog;
 
+import java.lang.reflect.Modifier;
 import java.net.URI;
 
 /**
@@ -97,7 +98,8 @@ public class Assembly<T>
 
     Class javaClass=_assemblyClass.getJavaClass();
     if (javaClass==null)
-    { throw new BuildException("No java class defined for assembly");
+    { throw _assemblyClass.newBuildException
+        ("No java class defined for assembly",null);
     }
 
     focus=new AssemblyFocus(parentFocus);
@@ -146,10 +148,16 @@ public class Assembly<T>
     }
     
     if (javaClass==null)
-    { throw new BuildException("No java class defined for assembly");
+    { 
+      throw _assemblyClass.newBuildException
+        ("No java class defined for assembly",null);
     }
-
-    if (!javaClass.isInterface())
+    else if (Modifier.isAbstract(javaClass.getModifiers()))
+    { 
+      throw _assemblyClass.newBuildException
+        ("Cannot instantiate an abstract class "+javaClass.getName(),null);
+    }
+    else if (!javaClass.isInterface())
     { 
       try
       {
@@ -164,10 +172,10 @@ public class Assembly<T>
         focus.getSubject().set(instance);
       }
       catch (AccessException x)
-      { throw new BuildException("Error publishing instance in Focus chain",x);
+      { throw _assemblyClass.newBuildException("Error publishing instance in Focus chain",x);
       }
       catch (InstantiationException x)
-      { throw new BuildException("Error instantiating assembly",x);
+      { throw _assemblyClass.newBuildException("Error instantiating assembly",x);
       }
       catch (IllegalAccessException x)
       { 
@@ -177,7 +185,7 @@ public class Assembly<T>
           log.debug(dumpClass.toString());
           dumpClass=dumpClass.getBaseClass();
         }
-        throw new BuildException("Error instantiating assembly",x);
+        throw _assemblyClass.newBuildException("Error instantiating assembly",x);
       }
     }
     else
@@ -188,13 +196,13 @@ public class Assembly<T>
         focus.getSubject().set((T) new TupleDelegate(javaClass).get());
       }
       catch (AccessException x)
-      { throw new BuildException("Error publishing instance in Focus chain",x);
+      { throw _assemblyClass.newBuildException("Error publishing instance in Focus chain",x);
       }
       catch (DataException x)
-      { throw new BuildException("Error binding instance",x);
+      { throw _assemblyClass.newBuildException("Error binding instance",x);
       }
       catch (BindException x)
-      { throw new BuildException("Error binding instance",x);
+      { throw _assemblyClass.newBuildException("Error binding instance",x);
       }
     }
     
@@ -231,7 +239,8 @@ public class Assembly<T>
       }
     }
     else
-    { throw new BuildException("Can't construct a "+clazz+" from text"); 
+    { throw _assemblyClass.newBuildException
+        ("Can't construct a "+clazz+" from text",null); 
     }
   }
 
@@ -257,7 +266,7 @@ public class Assembly<T>
       }
       catch (BindException x)
       { 
-        throw new BuildException
+        throw _assemblyClass.newBuildException
           ("Error binding to instance source "+instanceSource,x);
       }
     }
