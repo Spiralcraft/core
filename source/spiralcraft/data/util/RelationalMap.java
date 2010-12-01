@@ -64,7 +64,7 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
   private Query downstreamQuery;
   private Expression<TdownstreamItem> downstreamProjectionX;
   private Query upstreamQuery;
-  private Expression<TupstreamItem> upstreamProjection;
+  private Expression<TupstreamItem> upstreamProjectionX;
   private Queryable<Tuple> queryable;
   
   private Focus<Tuple> resultFocus;
@@ -72,6 +72,7 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
   private Channel<TdownstreamItem> downstreamProjection;  
 
   private Level debugLevel=Level.INFO;
+  private boolean unique;
   
   public RelationalMap()
   {
@@ -102,6 +103,10 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
     this.downstreamFieldName=downstreamFieldName;
   }
 
+  public void setUnique(boolean unique)
+  { this.unique=unique;
+  }
+  
   public void setType(Type<?> entityType)
   { this.entityType=entityType;
   }
@@ -122,24 +127,45 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
     queryable=Space.find(focusChain);
     try
     {
-      downstreamQuery
-        =new EquiJoin
-          (entityType
-          ,Expression.create("."+upstreamFieldName)
-          ,Expression.create("..")
-          );
-      downstreamQuery.setDebug(true);
-      downstreamQuery.resolve();
-      downstreamProjectionX=Expression.create("."+downstreamFieldName);
+      if (upstreamFieldName!=null)
+      {
+        downstreamQuery
+          =new EquiJoin
+            (entityType
+            ,Expression.create("."+upstreamFieldName)
+            ,Expression.create("..")
+            );
+        //downstreamQuery.setDebug(true);
+        downstreamQuery.resolve();
+
+        upstreamProjectionX=Expression.create("."+upstreamFieldName);
+        
+      }
+      else
+      { upstreamProjectionX=Expression.create(".");
+      }
+      
+      
+        
+      if (downstreamFieldName!=null)
+      {
+        
     
-      upstreamQuery
-      =new EquiJoin
-        (entityType
+        upstreamQuery
+          =new EquiJoin
+          (entityType
           ,Expression.create("."+downstreamFieldName)
           ,Expression.create("..")
-        );
-      upstreamQuery.resolve();
-      upstreamProjection=Expression.create("."+upstreamFieldName);
+          );
+        upstreamQuery.resolve();
+      
+
+        downstreamProjectionX=Expression.create("."+downstreamFieldName);
+      }
+      else
+      { downstreamProjectionX=Expression.create("."+downstreamFieldName);
+      }
+      
       
       resultChannel=new ThreadLocalChannel<Tuple>
         (DataReflector.<Tuple>getInstance(entityType));
@@ -164,14 +190,244 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
     Expression<?>[] arguments)
     throws BindException
   {
-    // TODO Auto-generated method stub
-    return new RelationalMapChannel
-      ((Reflector<Tdownstream>) 
-          ArrayReflector.getInstance(downstreamProjection.getReflector())
+    
+    if (!unique)
+    {
+        
+      return new RelationalMapChannel
+        ((Reflector<Tdownstream>) 
+            ArrayReflector.getInstance(downstreamProjection.getReflector())
+        ,source
+        ,focus
+        );
+    }
+    else
+    {
+      return new UniqueRelationalMapChannel
+      (downstreamProjection.getReflector()
       ,source
       ,focus
       );
+    }
   }
+  
+  class UniqueRelationalMapChannel
+    extends SourcedChannel<Tupstream,Tdownstream>
+  {
+
+    private final ThreadLocalChannel<TdownstreamItem> downstreamSource;
+
+
+    private final ThreadLocalChannel<Tupstream> upstreamInputItem;
+    private final ThreadLocalChannel<TdownstreamItem> downstreamInputItem;
+
+
+
+    private final Channel<TupstreamItem> upstreamProjection;
+
+
+    private final BoundQuery<?,Tuple> downstreamQuery;
+    private final BoundQuery<?,Tuple> upstreamQuery;
+
+
+    @SuppressWarnings("unchecked")
+    public UniqueRelationalMapChannel
+    (Reflector<TdownstreamItem> reflector
+      ,Channel<Tupstream> source
+      ,Focus<?> focus
+    )
+    throws BindException
+    { 
+      super((Reflector<Tdownstream>) reflector,source);
+
+
+      this.downstreamSource
+        =new ThreadLocalChannel<TdownstreamItem>(reflector);
+
+      downstreamInputItem
+      =new ThreadLocalChannel<TdownstreamItem>
+        (downstreamSource.getReflector());
+
+      upstreamProjection
+      =resultFocus.<TupstreamItem>bind(RelationalMap.this.upstreamProjectionX);
+
+      upstreamInputItem
+      =new ThreadLocalChannel<Tupstream>
+      (source.getReflector());
+
+      try
+      {
+        if (RelationalMap.this.downstreamQuery!=null)
+        {
+          downstreamQuery
+            =queryable.query
+            (RelationalMap.this.downstreamQuery
+            ,focus.chain(upstreamInputItem)
+            );
+        }
+        else
+        { downstreamQuery=null;
+        }
+        
+        
+        if (RelationalMap.this.upstreamQuery!=null)
+        {
+
+          upstreamQuery
+            =queryable.query
+            (RelationalMap.this.upstreamQuery
+            ,focus.chain(downstreamInputItem)
+            );
+        }
+        else
+        { upstreamQuery=null;
+        }
+      }
+      catch (DataException x)
+      { throw new BindException("Error binding queries",x);
+      }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Tdownstream retrieve()
+    {
+
+      try
+      {
+        Tdownstream ret=null;
+        Tupstream item = source.get();
+        
+        if (debugLevel.isFine())
+        { log.fine("Mapping "+item);
+        }
+        upstreamInputItem.push(item);
+        try
+        {
+          if (downstreamQuery!=null)
+          {
+            SerialCursor<Tuple> result=downstreamQuery.execute();
+            while (result.next())
+            { 
+              if (debugLevel.isFine())
+              { log.fine("Mapped to "+result.getTuple());
+              }
+              if (ret!=null)
+              { 
+                throw new AccessException
+                  ("Value '"+item+"' maps to multiple results");
+              }
+              
+              resultChannel.push(result.getTuple().snapshot());
+              try
+              { ret=(Tdownstream) downstreamProjection.get();
+              }
+              finally
+              {  resultChannel.pop();
+              }
+            }
+          }
+          else
+          { 
+            resultChannel.push((Tuple) item);
+            try
+            { ret=(Tdownstream) downstreamProjection.get();
+            }
+            finally
+            {  resultChannel.pop();
+            }            
+          }
+        }
+        finally
+        { upstreamInputItem.pop();
+        }
+        
+        return ret;
+      }
+      catch (DataException x)
+      { throw new AccessException("Error retrieving data",x);
+      }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected boolean store(
+      Tdownstream val)
+    throws AccessException
+    {
+      if (val==null)
+      { return source.set(null);
+      }
+
+      downstreamSource.push((TdownstreamItem) val);
+      try
+      {
+        Tupstream ret=null;
+        TdownstreamItem item = (TdownstreamItem) val;
+        {
+          if (debugLevel.isFine())
+          { log.fine("Reverse mapping "+item);
+          }
+          downstreamInputItem.push(item);
+          try
+          {
+            if (upstreamQuery!=null)
+            {
+              SerialCursor<Tuple> result=upstreamQuery.execute();
+              while (result.next())
+              { 
+                if (debugLevel.isFine())
+                { log.fine("Mapped to "+result.getTuple());
+                }
+                if (ret!=null)
+                { 
+                  throw new AccessException
+                    ("Value '"+item+"' maps to multiple results");
+                }
+                
+                resultChannel.push(result.getTuple());
+                try
+                { ret=(Tupstream) upstreamProjection.get();
+                }
+                finally
+                { resultChannel.pop();
+                }
+              }
+            }
+            else
+            {
+              resultChannel.push((Tuple) item);
+              try
+              { ret=(Tupstream) upstreamProjection.get();
+              }
+              finally
+              { resultChannel.pop();
+              }
+            }
+          }
+          finally
+          { downstreamInputItem.pop();
+          }
+        }
+        return source.set(ret);
+      }
+      catch (DataException x)
+      { throw new AccessException("Error retrieving data",x);
+      }
+      finally
+      { downstreamSource.pop();
+      }
+
+    }
+
+    @Override
+    public boolean isWritable()
+    { return source.isWritable();
+    }
+  }
+
 
   class RelationalMapChannel
     extends SourcedChannel<Tupstream,Tdownstream>
@@ -224,7 +480,7 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
         (downstreamSourceCollection.getComponentReflector());
       
       upstreamProjection
-        =resultFocus.<TupstreamItem>bind(RelationalMap.this.upstreamProjection);
+        =resultFocus.<TupstreamItem>bind(RelationalMap.this.upstreamProjectionX);
 
       upstreamInputItem
         =new ThreadLocalChannel<TupstreamItem>
@@ -232,17 +488,31 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
       
       try
       {
-        downstreamQuery
-          =queryable.query
-            (RelationalMap.this.downstreamQuery
-            ,focus.chain(upstreamInputItem)
-            );
-      
-        upstreamQuery
-          =queryable.query
-            (RelationalMap.this.upstreamQuery
-            ,focus.chain(downstreamInputItem)
-            );
+        if (RelationalMap.this.downstreamQuery!=null)
+        {
+
+          downstreamQuery
+            =queryable.query
+              (RelationalMap.this.downstreamQuery
+              ,focus.chain(upstreamInputItem)
+              );
+        }
+        else
+        { downstreamQuery=null;
+        }
+        
+        if (RelationalMap.this.upstreamQuery!=null)
+        {
+
+          upstreamQuery
+            =queryable.query
+              (RelationalMap.this.upstreamQuery
+              ,focus.chain(downstreamInputItem)
+              );
+        }
+        else
+        { upstreamQuery=null;
+        }
       }
       catch (DataException x)
       { throw new BindException("Error binding queries",x);
@@ -265,19 +535,33 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
           upstreamInputItem.push(item);
           try
           {
-            SerialCursor<Tuple> result=downstreamQuery.execute();
-            while (result.next())
-            { 
-              if (debugLevel.isFine())
-              { log.fine("Mapped to "+result.getTuple());
+            if (downstreamQuery!=null)
+            {
+              SerialCursor<Tuple> result=downstreamQuery.execute();
+              while (result.next())
+              { 
+                if (debugLevel.isFine())
+                { log.fine("Mapped to "+result.getTuple());
+                }
+                resultChannel.push(result.getTuple());
+                try
+                { ret=downstreamSourceCollection.add(ret,downstreamProjection.get());
+                }
+                finally
+                {  resultChannel.pop();
+                }
               }
-              resultChannel.push(result.getTuple());
+            }
+            else
+            {
+              resultChannel.push((Tuple) item);
               try
               { ret=downstreamSourceCollection.add(ret,downstreamProjection.get());
               }
               finally
               {  resultChannel.pop();
               }
+              
             }
           }
           finally
@@ -313,19 +597,34 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
           downstreamInputItem.push(item);
           try
           {
-            SerialCursor<Tuple> result=upstreamQuery.execute();
-            while (result.next())
-            { 
-              if (debugLevel.isFine())
-              { log.fine("Mapped to "+result.getTuple());
+            if (upstreamQuery!=null)
+            {
+              
+              SerialCursor<Tuple> result=upstreamQuery.execute();
+              while (result.next())
+              { 
+                if (debugLevel.isFine())
+                { log.fine("Mapped to "+result.getTuple());
+                }
+                resultChannel.push(result.getTuple());
+                try
+                { ret=sourceCollection.add(ret,upstreamProjection.get());
+                }
+                finally
+                { resultChannel.pop();
+                }
               }
-              resultChannel.push(result.getTuple());
+            }
+            else
+            {
+              resultChannel.push((Tuple) item);
               try
               { ret=sourceCollection.add(ret,upstreamProjection.get());
               }
               finally
               { resultChannel.pop();
               }
+              
             }
           }
           finally
