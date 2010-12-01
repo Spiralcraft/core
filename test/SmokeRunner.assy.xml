@@ -78,7 +78,7 @@
             
             <vfs:Copy>
               
-              <verbose>true
+              <verbose>false
               </verbose>
               
               <sourceResource>class:/spiralcraft/data/test/example
@@ -90,7 +90,7 @@
             
             <vfs:Copy>
               
-              <verbose>true
+              <verbose>false
               </verbose>
               
               <sourceResource>../test-source

@@ -172,7 +172,7 @@
               </name>
               <messageX>""+[sec:Login.list].@size()+" results"
               </messageX>
-              <conditionX>[sec:Login.list].@log(.).@size()==2
+              <conditionX>[sec:Login.list].@size()==2
               </conditionX>
             </test:Stub>
           </chain>
@@ -245,7 +245,7 @@
                           }
                         ]
                       }
-                    ].().@log("Expression fetch: "+.)
+                    ].()
           </subjectX>
           <testX>@size()==3
           </testX>
@@ -264,7 +264,7 @@
                           }
                         ]
                       }
-                    ].().@log("Expression fetch: "+.)
+                    ].()
           </subjectX>
           <testX>@size()==1
           </testX>
@@ -283,7 +283,7 @@
                           }
                         ]
                       }
-                    ].().@log("Expression fetch: "+.)
+                    ].()
           </subjectX>
           <testX>@size()==2
           </testX>
@@ -446,7 +446,7 @@
           <name>Snapshot
           </name>
           <subjectX>
-            [data:Space].getStore("local").snapshot(0L).@log("snap: \r\n---"+.data[0]+"\r\n---"+.data[1])
+            [data:Space].getStore("local").snapshot(0L)
           </subjectX>
           <testX>
             .data[0].@cast([@data:Aggregate]).size()==4 

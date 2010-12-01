@@ -4,6 +4,262 @@
   
   <scm:Change>
   
+    <revision>0.4.12.4
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-12-01
+    </date>
+    
+    <detail>
+      <scm:Change>
+        <notes>
+          <scm:Note>DALai and util enhancements to support external indexing
+          </scm:Note>
+          
+        </notes>
+        
+        <detail>
+          <scm:Change>
+          
+            <notes>
+              <scm:Note>Implement StringUtil.implode and StringUtil.explode
+                functions to support canonical text representations of
+                String arrays.
+              </scm:Note>
+              <scm:Note>Provide static methods to StringConverter to
+                facilitate bulk conversion using an array of StringConverters
+              </scm:Note>
+            </notes>
+          
+            <path>source/spiralcraft/util/string/
+            </path>
+            
+            <resources>
+              <URI>StringConverter.java
+              </URI>
+              <URI>ArrayToString.java
+              </URI>
+              <URI>StringUtil.java
+              </URI>
+            </resources>
+          </scm:Change>
+        
+          <scm:Change>
+            <notes>
+              <scm:Note>Store now allows query binding before start is 
+                completed
+              </scm:Note>
+              <scm:Note>Transaction log resource is resolved
+                within the context in which the store is bound.
+              </scm:Note>
+              <scm:Note>XmlQueryable is given debug setting from the
+                associated Entity
+              </scm:Note>
+            </notes>
+          
+            <path>source/spiralcraft/data/
+            </path>
+            
+            <resources>
+              <URI>spi/AbstractStore.java
+              </URI>
+              <URI>xml/XmlStore.java
+              </URI>
+              <URI>xml/XmlQueryable.java
+              </URI>
+            </resources>
+          </scm:Change>
+        
+          <scm:Change>
+            <notes>
+              <scm:Note>Fixed issue in extension logic where SchemaMetaObject
+                subtypes, when overriding a default instance, would not add 
+                additional members that did not override a member of the
+                default instance.
+              </scm:Note>
+              <scm:Note>EntityField names are now validated against the Entity 
+                type.
+              </scm:Note>
+            </notes>
+          
+            <path>source/spiralcraft/data/access/
+            </path>
+            
+            <resources>
+              <URI>Entity.java
+              </URI>
+              <URI>EntityField.java
+              </URI>
+              <URI>Schema.java
+              </URI>
+              <URI>SchemaMetaObject.java
+              </URI>
+            </resources>
+          </scm:Change>
+          
+          
+          <scm:Change>
+          
+            <notes>
+              <scm:Note>Key interface and implementation provide a KeyFunction
+                to simplify obtaining a KeyTuple for a given data value
+              </scm:Note>
+              <scm:Note>Key interface and implementation provide a 
+                StringConverter array to simplify the externalization of
+                key values in a canonical text representation.
+              </scm:Note>
+              <scm:Note>Projections and Keys now provide derivative Type
+                objects using unique URIs to facilitate manipulation 
+                in Java and ELaine code.
+              </scm:Note>
+              <scm:Note>KeyTuple provides a getData() method to obtain a
+                copy of the key data as an Object[], matching the 
+                constructor which accepts an Object[].
+              </scm:Note>
+              <scm:Note>DataKeyFunction can be constructed from a
+                 ProjectionImpl.
+              </scm:Note>
+              
+            </notes>
+            
+            <path>source/spiralcraft/data/
+            </path>
+            
+            <resources>
+              <URI>Key.java
+              </URI>
+              <URI>KeyTuple.java
+              </URI>
+              <URI>core/KeyImpl.java
+              </URI>
+              <URI>core/ProjectionImpl.java
+              </URI>
+              <URI>spi/DataKeyFunction.java
+              </URI>
+            </resources>
+
+          </scm:Change>
+          
+          <scm:Change>
+          
+            <notes>
+              <scm:Note>In DataReflector, everything is assignable from Void
+              </scm:Note>
+            </notes>
+            
+            <path>source/spiralcraft/data/lang/DataReflector.java
+            </path>
+            
+          </scm:Change>
+        
+        </detail>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>RelationalMap now supports one-to-one mapping using the 
+            "unique" property.
+          </scm:Note>
+          <scm:Note>Omitting either the upstream or downstream field name
+            will cause the identity (the Tuple(s) themselves) to used for
+            input or output. 
+          </scm:Note>
+        
+        </notes>
+        
+        <path>source/spiralcraft/data/util/RelationalMap.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Builder checks for an abstract class before trying to
+            instantiate an object.
+          </scm:Note>
+          <scm:Note>Builder normalizes supplied package URI by appending a
+            trailing slash.
+          </scm:Note>
+          <scm:Note>Enhanced exception handling logic provides contextual
+            information in more scenarios.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder/
+        </path>
+        
+        <resources>
+          <URI>Assembly.java
+          </URI>
+          <URI>AssemblyClass.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>"contextualize" attribute for a PropertySpecifier 
+            to turn contextual string substitution off to avoid having to code
+            around escape logic.
+          </scm:Note>        
+        </notes>
+
+        <path>source/spiralcraft/builder/
+        </path>
+
+        <resources>
+          <URI>AssemblyLoader.java
+          </URI>
+          <URI>PropertyBinding.java
+          </URI>
+          <URI>PropertySpecifier.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Fix NPE in Sort when input is not a collection
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/functions/Sort.java
+        </path>
+      
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Ensure that character and expression literals are
+            reconstructed with appropriate quote characters.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/LiteralNode.java
+        </path>
+      
+      </scm:Change>
+      
+       <scm:Change>
+        <notes>
+          <scm:Note>Add type coercion for all numeric primitives for
+            relational comparisons
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/RelationalNode.java
+        </path>
+      
+      </scm:Change>
+    
+    </detail>
+  </scm:Change>
+  
+  <scm:Change>
+  
     <revision>0.4.12.3
     </revision>
     

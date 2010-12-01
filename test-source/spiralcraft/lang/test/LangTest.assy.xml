@@ -314,7 +314,7 @@
           
           <testX>.totalLen==25
             &amp;&amp; .count==7 
-            &amp;&amp; .items.@log("Distinct: "+[@util:ArrayUtil].@format(.,",",null)).length==4
+            &amp;&amp; .items.length==4
           </testX>
         </test:Assertion>   
 

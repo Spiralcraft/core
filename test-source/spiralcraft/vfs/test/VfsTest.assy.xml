@@ -82,7 +82,7 @@
                 ==.resolve("out/data/store/Customer.data.xml").lastModified
               &amp;&amp;
               .resolve("out/mirror/data/store/Customer.data.xml").lastModified
-                 &gt; [@ju:Date].().time-1000
+                 &gt; [@ju:Date].().time-10000
             }
             
           </testX>
