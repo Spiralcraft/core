@@ -19,6 +19,9 @@ import spiralcraft.data.KeyTuple;
 import spiralcraft.data.Projection;
 import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
+import spiralcraft.data.core.ProjectionImpl;
+import spiralcraft.data.lang.TupleReflector;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
@@ -34,6 +37,14 @@ public class DataKeyFunction<T>
   private final ThreadLocalChannel<T> valueChannel;
   private final Channel<? extends Tuple> projectionChannel;
   
+  @SuppressWarnings("unchecked")
+  public DataKeyFunction(ProjectionImpl<T> projection)
+    throws BindException
+  { 
+    this(TupleReflector.<T>getInstance
+      ((Type<T>) projection.getMasterFieldSet().getType()),projection);
+  }
+
   public DataKeyFunction(Reflector<T> valueReflector,Projection<T> projection)
     throws BindException
   { 
