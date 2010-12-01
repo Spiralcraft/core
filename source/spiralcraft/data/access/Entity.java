@@ -17,6 +17,7 @@ package spiralcraft.data.access;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.DeltaTrigger;
 import spiralcraft.util.ArrayUtil;
@@ -124,6 +125,7 @@ public class Entity
   
   @Override
   void resolve()
+    throws DataException
   {
     ArrayList<EntityField> allFields=new ArrayList<EntityField>();
     if (base!=null)
@@ -146,15 +148,15 @@ public class Entity
       }
     }
     else
-    { 
-      
-      for (EntityField field:fields.values())
-      { allFields.add(field);
-      }
-      allDeltaTriggers=deltaTriggers;
+    { allDeltaTriggers=deltaTriggers;
     }
+
+    
     for (EntityField field:fields.values())
     { 
+      if (field.base==null)
+      { allFields.add(field);
+      }
       field.setEntity(this);
       field.resolve();
     

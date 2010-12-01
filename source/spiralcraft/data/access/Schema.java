@@ -17,6 +17,7 @@ package spiralcraft.data.access;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 
 
@@ -90,6 +91,7 @@ public class Schema
   
   @Override
   public void resolve()
+    throws DataException
   { 
     ArrayList<Entity> allEntities
       =new ArrayList<Entity>();
@@ -109,14 +111,13 @@ public class Schema
         }
       }
     }
-    else
-    {
-      for (Entity entity:entities.values())
+
+    for (Entity entity:entities.values())
+    { 
+      if (entity.base==null)
       { allEntities.add(entity);
       }
-    }
-    for (Entity entity:entities.values())
-    { entity.resolve();
+      entity.resolve();
     }
     this.combinedEntities=allEntities.toArray(new Entity[allEntities.size()]);
     super.resolve();

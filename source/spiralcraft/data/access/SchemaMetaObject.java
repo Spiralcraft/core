@@ -17,6 +17,8 @@ package spiralcraft.data.access;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import spiralcraft.data.DataException;
+
 /**
  * <p>Base for objects that represent extensible Schema components- Schema, 
  *   Entity, EntityField, and SchemaAttribute.
@@ -78,6 +80,7 @@ public abstract class SchemaMetaObject<T extends SchemaMetaObject<?>>
   }
   
   void resolve()
+    throws DataException
   {
     ArrayList<SchemaAttribute> allAttributes=new ArrayList<SchemaAttribute>();
     if (base!=null)
@@ -105,7 +108,11 @@ public abstract class SchemaMetaObject<T extends SchemaMetaObject<?>>
       }
     }
     for (SchemaAttribute attribute:attributes.values())
-    { attribute.resolve();
+    { 
+      if (attribute.base==null)
+      { allAttributes.add(attribute);
+      }
+      attribute.resolve();
     }
     this.combinedAttributes
       =allAttributes.toArray(new SchemaAttribute[allAttributes.size()]);

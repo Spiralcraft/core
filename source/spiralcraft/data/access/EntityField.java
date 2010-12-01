@@ -14,7 +14,9 @@
 //
 package spiralcraft.data.access;
 
+import spiralcraft.data.DataException;
 import spiralcraft.data.Field;
+import spiralcraft.data.FieldNotFoundException;
 
 /**
  * Specifies persistence related characteristics of a Field as associated
@@ -55,6 +57,16 @@ public class EntityField
     }
     else
     { return name;
+    }
+  }
+  
+  @Override
+  public void resolve()
+    throws DataException
+  { 
+    super.resolve();
+    if (getTypeField()==null)
+    { throw new FieldNotFoundException(entity.getType(),name);
     }
   }
   
