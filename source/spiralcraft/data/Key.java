@@ -15,6 +15,8 @@
 package spiralcraft.data;
 
 import spiralcraft.data.query.Query;
+import spiralcraft.util.KeyFunction;
+import spiralcraft.util.string.StringConverter;
 
 /**
  * A set of Fields within a Scheme which uniquely identify a single Tuple 
@@ -79,5 +81,17 @@ public interface Key<T>
   @Override
   public String[] getFieldNames();
   
+  /**
+   * 
+   * @return A KeyFunction that returns the projected key value for a
+   *   Tuple
+   */
+  public KeyFunction<KeyTuple,T> getFunction();
+  
+  /**
+   * 
+   * @return The default set of String converters for the Key elements
+   */
+  public StringConverter<?>[] getStringConverters();
   
 }
