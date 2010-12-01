@@ -97,6 +97,61 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
                 }
               };
             }
+            else if (r1.getContentType().equals(Long.class))
+            {
+              coercion=(Coercion) 
+                new Coercion<Number,Long>() 
+              {
+                @Override
+                public Long coerce(Number val)
+                { return val.longValue();
+                }
+              };
+            }
+            else if (r1.getContentType().equals(Double.class))
+            {
+              coercion=(Coercion) 
+                new Coercion<Number,Double>() 
+              {
+                @Override
+                public Double coerce(Number val)
+                { return val.doubleValue();
+                }
+              };
+            }     
+            else if (r1.getContentType().equals(Integer.class))
+            {
+              coercion=(Coercion) 
+                new Coercion<Number,Integer>() 
+              {
+                @Override
+                public Integer coerce(Number val)
+                { return val.intValue();
+                }
+              };
+            }
+            else if (r1.getContentType().equals(Short.class))
+            {
+              coercion=(Coercion) 
+                new Coercion<Number,Short>() 
+              {
+                @Override
+                public Short coerce(Number val)
+                { return val.shortValue();
+                }
+              };
+            }     
+            else if (r1.getContentType().equals(Byte.class))
+            {
+              coercion=(Coercion) 
+                new Coercion<Number,Byte>() 
+              {
+                @Override
+                public Byte coerce(Number val)
+                { return val.byteValue();
+                }
+              };
+            }              
             else
             { coercion=null;
             }
