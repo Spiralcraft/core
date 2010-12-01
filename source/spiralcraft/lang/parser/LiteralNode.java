@@ -59,6 +59,12 @@ public class LiteralNode<X>
       if (val instanceof String)
       { return "\""+val.toString()+"\"";
       }
+      else if (val instanceof Character)
+      { return "'"+val.toString()+"'";
+      }
+      else if (val instanceof Expression)
+      { return "`"+val.toString()+"`";
+      }
       else
       { return val.toString();
       }
