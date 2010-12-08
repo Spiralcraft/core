@@ -71,7 +71,7 @@ public class ProjectionImpl<T>
   
   protected boolean debug;
   
-  protected String projectionId="-p"+(NEXT_ID++);
+  protected String projectionId="p"+(NEXT_ID++);
 
 
   public ProjectionImpl()
@@ -244,7 +244,7 @@ public class ProjectionImpl<T>
     {
       this.type
         =new FieldSetType
-          (URIUtil.addPathSuffix(masterFieldSet.getType().getURI(),projectionId),this);
+          (URIUtil.addPathSuffix(masterFieldSet.getType().getURI(),"-"+projectionId),this);
       this.type.link();
     }
     resolved=true;
