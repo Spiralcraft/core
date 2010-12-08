@@ -1,6 +1,8 @@
 <secauth:Authenticator
+  xmlns:sec="class:/spiralcraft/security/"
   xmlns:secauth="class:/spiralcraft/security/auth/"
   xmlns:secspi="class:/spiralcraft/security/spi/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
   >
   <debug>true
   </debug>
@@ -16,5 +18,23 @@
     
     </secspi:PasswordDataAuthModule>
   </authModules>
+  
+  <authorizer>
+    <secspi:DataAuthorizer>
+      <principalType x="[@sec:Login].type"/>
+      
+      <principalNameFieldName>username
+      </principalNameFieldName>
+      
+      <principalIdFieldName>principalId
+      </principalIdFieldName>
+      
+      <registeredRoles dataURI="example:Roles.xml"/>
+      
+      <roleBindings>(searchname!="denied")?[@secauth:SignedInRole].typeURI:null      
+      </roleBindings>
+      
+    </secspi:DataAuthorizer>
+  </authorizer>
 
 </secauth:Authenticator>

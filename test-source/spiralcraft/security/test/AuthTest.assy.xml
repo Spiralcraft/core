@@ -92,9 +92,63 @@
               <testX>
                 [secauth:AuthSession].authenticate()
                 &amp;&amp; [secauth:AuthSession].principal.name=="UserThree"
+                &amp;&amp; [secauth:AuthSession].hasPermission([@secauth:LoginPermission].())
+              </testX>
+            </test:Assertion>
+            
+            <test:Assertion>
+              <name>logout
+              </name>
+              <subjectX>[secauth:AuthSession].logout()
+              </subjectX>
+              <testX>![secauth:AuthSession].authenticate()
               </testX>
             </test:Assertion>
 
+            <test:Assertion>
+              <name>login nopass
+              </name>
+              <subjectX>
+                [@secauth:LoginEntry]
+                  .([secauth:AuthSession].@channel
+                    ,username:="userFour"
+                    ,passwordCleartext:=""
+                  )
+                  .update()
+              </subjectX>
+              <testX>
+                ![secauth:AuthSession].authenticate()
+                &amp;&amp; ![secauth:AuthSession].hasPermission([@secauth:LoginPermission].())
+              </testX>
+            </test:Assertion>
+            
+            <test:Assertion>
+              <name>logout
+              </name>
+              <subjectX>[secauth:AuthSession].logout()
+              </subjectX>
+              <testX>![secauth:AuthSession].authenticate()
+              </testX>
+            </test:Assertion>
+            
+            <test:Assertion>
+              <name>login denied
+              </name>
+              <subjectX>
+                [@secauth:LoginEntry]
+                  .([secauth:AuthSession].@channel
+                    ,username:="denied"                    
+                    ,passwordCleartext:="test"
+                  )
+                  .update()
+              </subjectX>
+              <testX>
+                [secauth:AuthSession].authenticate()
+                &amp;&amp; [secauth:AuthSession].principal.name=="Denied"
+                &amp;&amp; ![secauth:AuthSession].hasPermission([@secauth:LoginPermission].())
+              </testX>
+            </test:Assertion>
+            
             <test:Assertion>
               <name>digest
               </name>

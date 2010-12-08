@@ -25,4 +25,10 @@
     <username>UserFour</username>
     <searchname>userfour</searchname>
   </security:Login>
+  <security:Login>
+    <principalId>6</principalId>
+    <username>Denied</username>
+    <searchname>denied</searchname>    
+    <clearpass>test</clearpass>
+  </security:Login>
 </security:Login.list>

@@ -7,3 +7,4 @@ ivy.settings.xml
 ivy.lunt.settings.xml
 test-out
 build-local.xml
+build-local.properties

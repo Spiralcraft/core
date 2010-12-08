@@ -10,10 +10,105 @@
     <authorId>miketoth
     </authorId>
     
-    <date>2010-12-01
+    <date>2010-12-08
     </date>
     
     <detail>
+    
+
+      <scm:Change>
+        <notes>DALai and security enhancements to support Role Based Access
+          Control authorization mechanism.
+        </notes>
+        
+        <detail>
+        
+          <scm:Change>
+            <notes>
+              <scm:Note>Added basic RBAC authorization mechanism to security
+                framework.
+              </scm:Note>
+            </notes>
+              
+            <path>source/spiralcraft/security
+            </path>
+              
+            <resources>
+              <URI>auth/Authenticator.java
+              </URI>
+              <URI>auth/Authorizer.java
+              </URI>
+              <URI>auth/AuthSession.java
+              </URI>
+              <URI>auth/Permission.java
+              </URI>
+              <URI>auth/Role.java
+              </URI>
+              <URI>auth/LoginPermission.type.xml
+              </URI>
+              <URI>auth/SignedInRole.type.xml
+              </URI>
+              <URI>spi/AbstractAuthorizer.java
+              </URI>
+              <URI>spi/DataAuthorizer.java
+              </URI>
+              <URI>spi/StandardRole.java
+              </URI>
+            </resources>
+          </scm:Change>
+          
+          
+          <scm:Change>
+            <notes>
+              <scm:Note>Support for Type implementation inheritance for
+                ReflectionTypes, allowing the same POJO class to implement
+                the behavior of multiple Type URIs.
+              </scm:Note>
+            
+            </notes>
+            
+            <path>source/spiralcraft/data/
+            </path>
+            
+            <resources>
+              <URI>IdentityConstructor.java
+              </URI>
+              <URI>Type.java
+              </URI>
+              <URI>core/MetaType.java
+              </URI>
+              <URI>data/lang/PrimitiveReflector.java
+              </URI>
+              <URI>data/reflect/ReflectionType.java
+              </URI>
+            </resources>
+          </scm:Change>
+        
+          <scm:Change>
+            <notes>
+              <scm:Note>LangUtil static method to find a Channel for a 
+                Java class/interface in the focus chain.
+              </scm:Note>
+            </notes>
+            
+            <path>source/spiralcraft/lang/util/LangUtil.java
+            </path>
+          </scm:Change>
+
+          <scm:Change>
+            <notes>
+              <scm:Note>Fix NPE in XmlTypeFactory when a type object cannot
+                be created
+              </scm:Note>
+            </notes>
+            
+            <path>source/spiralcraft/data/xml/XmlTypeFactory.java
+            </path>
+          </scm:Change>
+
+        </detail>
+      </scm:Change>
+      
       <scm:Change>
         <notes>
           <scm:Note>DALai and util enhancements to support external indexing
@@ -157,6 +252,18 @@
         
         </detail>
       </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>RestService returns a self-reference so it can be 
+            published into the container's Focus chain. This broke when
+            the design contract of Contextual was updated.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/rest/RestService.java
+        </path>
+      </scm:Change>
       
       <scm:Change>
         <notes>
@@ -171,6 +278,25 @@
         </notes>
         
         <path>source/spiralcraft/data/util/RelationalMap.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>Fix circular reference problem where UniqueRule attempts to find
+           its own type before binding and fails. UniqueRule now queries the
+           containing Store and not the Space.
+        </notes>
+        
+        <path>source/spiralcraft/data/core/UniqueRule.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>Fix: Non-default Join query constructor ignored child query
+          parameter.
+        </notes>
+        
+        <path>source/spiralcraft/data/query/Join.java
         </path>
       </scm:Change>
       
@@ -194,6 +320,23 @@
           <URI>Assembly.java
           </URI>
           <URI>AssemblyClass.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>"uri" attribute for a PropertySpecifier allows for
+            creating a URI using a declared namespace prefix. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder/
+        </path>
+        
+        <resources>
+          <URI>AssemblyLoader.java
           </URI>
         </resources>
         
