@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.util;
 
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanReflector;
 
@@ -31,6 +32,22 @@ public class LangUtil
       =context.findFocus(BeanReflector.getInstance(clazz).getTypeURI());
     if (focus!=null && focus.getSubject()!=null)
     { return (T) focus.getSubject().get();
+    }
+    
+    return null;
+  }
+  
+  @SuppressWarnings("unchecked")
+  public static <T> Channel<T> findChannel(Class<T> clazz,Focus<?> context)
+  {
+    if (context==null)
+    { return null;
+    }
+    
+    Focus<?> focus
+      =context.findFocus(BeanReflector.getInstance(clazz).getTypeURI());
+    if (focus!=null)
+    { return (Channel<T>) focus.getSubject();
     }
     
     return null;
