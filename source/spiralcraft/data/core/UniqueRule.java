@@ -6,6 +6,7 @@ import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.SerialCursor;
+import spiralcraft.data.access.Store;
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
@@ -16,6 +17,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 
 import spiralcraft.rules.AbstractRule;
@@ -81,15 +83,16 @@ public class UniqueRule<T extends Tuple>
       this.source=source;
       fieldChannel=field.bindChannel((Channel<Tuple>) source,focus,null);
       
+      Store store=LangUtil.findInstance(Store.class,focus);
       try
       { 
         boundQuery
-          =(BoundQuery<?,T>) query.bind(focus);
+          =(BoundQuery<?,T>) store.query(query,focus);
       }
       catch (DataException x)
       { 
         throw new BindException
-          ("Error binding field unique query for "+UniqueRule.this.context.getURI(),x);
+          ("Error binding field unique query for "+field.getURI()+" in "+UniqueRule.this.context.getURI(),x);
       }
     }      
           
