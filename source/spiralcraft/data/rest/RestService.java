@@ -161,6 +161,8 @@ public class RestService
   public Focus<?> bind(Focus<?> parentFocus) 
     throws BindException
   {
+    parentFocus=parentFocus.chain(parentFocus.getSubject());
+    parentFocus.addFacet(new BeanFocus<RestService>(this));
     
     // Note: We can't expose any of the ThreadLocalChannels, because they
     //   are only populated under this objects stack, and the data won't be
@@ -209,9 +211,6 @@ public class RestService
         (new SimpleFocus<Buffer>(restFocus,localModelChannel)
         );
     }
-    restFocus.addFacet
-      (new BeanFocus<RestService>(this)
-      );
 
     Focus<?> focus=restFocus;
 
