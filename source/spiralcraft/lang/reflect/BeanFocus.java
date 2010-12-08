@@ -27,6 +27,13 @@ public class BeanFocus<T>
   
   SimpleChannel<T> binding;
   
+  /**
+   * Publish a channel containing the specified initial value into the focus 
+   *   chain
+   * 
+   * @param clazz
+   * @param bean
+   */
   public BeanFocus(Class<T> clazz,T bean)
   { 
     binding=new SimpleChannel<T>(clazz,bean,false);
@@ -34,6 +41,10 @@ public class BeanFocus<T>
   }
   
   @SuppressWarnings("unchecked") // Stupid cast 
+  
+  /**
+   * Publish a constant channel containing the bean into the focus chain
+   */
   public BeanFocus(T bean)
   { 
     binding=new SimpleChannel<T>( (Class<T>) bean.getClass(),bean,true);
