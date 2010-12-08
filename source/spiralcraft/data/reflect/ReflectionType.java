@@ -18,6 +18,7 @@ import spiralcraft.common.Immutable;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataComposite;
+import spiralcraft.data.IdentityConstructor;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Field;
@@ -28,6 +29,7 @@ import spiralcraft.data.Method;
 
 import spiralcraft.data.lang.TupleDelegate;
 import spiralcraft.data.spi.EditableArrayTuple;
+import spiralcraft.data.util.ConstructorInstanceResolver;
 import spiralcraft.data.util.InstanceResolver;
 
 import spiralcraft.data.core.TypeImpl;
@@ -115,6 +117,8 @@ public class ReflectionType<T>
   private Constructor<T> stringConstructor;
   private Constructor<T> tupleConstructor;
   private Constructor<T> defaultConstructor;
+  private Constructor<T> uriConstructor;
+  
   private ReflectionField<Class<?>> classField;
   private boolean linked;
   
@@ -256,6 +260,7 @@ public class ReflectionType<T>
 
   }
   
+  
   /** 
    * Construct a ReflectionType which reflects 'clazz' and exposes itself
    *   as Tuple data.
@@ -280,11 +285,26 @@ public class ReflectionType<T>
     catch (NoSuchMethodException x)
     { }
     try
+    { tupleConstructor=clazz.getConstructor(Tuple.class);
+    }
+    catch (NoSuchMethodException x)
+    { }
+    try
     { defaultConstructor=clazz.getConstructor();
     }
     catch (NoSuchMethodException x)
     { }
-
+    
+    try
+    { 
+      uriConstructor=clazz.getConstructor(URI.class);
+      if (!uriConstructor.isAnnotationPresent(IdentityConstructor.class))
+      { uriConstructor=null;
+      }
+    }
+    catch (NoSuchMethodException x)
+    { }
+    
     stringConverter=StringConverter.getInstance(clazz); 
     immutable=clazz.getAnnotation(Immutable.class)!=null;
   }
@@ -333,6 +353,22 @@ public class ReflectionType<T>
 
   }
 
+  /**
+   * 
+   * @param resolver
+   * @param uri
+   * @return A resolver that constructs a new Type instance that uses
+   *   this Type as prototype
+   */
+  @Override
+  public InstanceResolver getExtensionResolver(TypeResolver resolver,URI uri)
+  {
+    return new ConstructorInstanceResolver
+      (new Class[] {TypeResolver.class,URI.class,Class.class}
+      ,new Object[] {resolver,uri,nativeClass}
+      );
+  }
+  
   @Override
   public boolean isPrimitive()
   { 
@@ -691,7 +727,7 @@ public class ReflectionType<T>
 
     Tuple tuple=val.asTuple();
     
-    if (tupleConstructor!=null)
+    if (tupleConstructor!=null && context==null)
     { 
       try
       { return tupleConstructor.newInstance(tuple);
@@ -728,11 +764,17 @@ public class ReflectionType<T>
     
       try
       {
-        if (bean!=null && depersistMethodBinding!=null)
-        { depersistMethodBinding.invoke(bean,tuple);
+        if (bean!=null)
+        {
+          if (depersistMethodBinding!=null)
+          { depersistMethodBinding.invoke(bean,tuple);
+          }
+          else
+          { ((ReflectionScheme) scheme).depersistBeanProperties(tuple,bean);
+          }
         }
         else
-        { ((ReflectionScheme) scheme).depersistBeanProperties(tuple,bean);
+        { throw new DataException("Instance of "+uri+" could not be created");
         }
       }
       catch (DataException x)
@@ -825,6 +867,7 @@ public class ReflectionType<T>
     if (immutable && tupleConstructor==null)
     { return false;
     }
+
 //    log.fine(getURI().toString()+":"+immutable+":"+tupleConstructor);
     return super.isDataEncodable();
   }

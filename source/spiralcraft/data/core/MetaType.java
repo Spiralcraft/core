@@ -116,9 +116,9 @@ public class MetaType
   {
     
     InstanceResolver instanceResolver
-      =new ConstructorInstanceResolver
-        (new Class[] {TypeResolver.class,URI.class}
-        ,new Object[] {TypeResolver.getTypeResolver(),uri}
+      =referencedType.getExtensionResolver
+        (TypeResolver.getTypeResolver()
+        ,uri
         );
     return super.fromData(composite,instanceResolver);
     

@@ -14,11 +14,18 @@
 //
 package spiralcraft.data.lang;
 
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.ReverseTranslator;
+import spiralcraft.lang.spi.TranslatorChannel;
 import spiralcraft.util.string.StringConverter;
 
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
 /**
@@ -97,6 +104,42 @@ public class PrimitiveReflector<T>
     else
     { return null;
     }
+  }
+  
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @Override
+  /**
+   * Create a constructor channel
+   */
+  public Channel<T> bindChannel(
+    Focus<?> focus,
+    Channel<?>[] arguments)
+    throws BindException
+  {
+    if (type.isDataEncodable())
+    { 
+      TupleReflector dataReflector
+        =(TupleReflector<Tuple>) DataReflector.<Tuple>getExternalizedInstance(type);
+      
+      Channel<DataComposite> tupleChannel
+        =dataReflector.bindChannel(focus,arguments);
+      
+      try
+      {
+        return new TranslatorChannel<T,DataComposite>
+          (tupleChannel
+          ,new ReverseTranslator<T,DataComposite>
+            (this,new ToDataTranslator<T>(type))
+          ,arguments
+          );
+      }
+      catch (DataException x)
+      { 
+        throw new BindException
+          ("Error creating tuple constructor channel for "+getTypeURI(),x);
+      }
+    }
+    return super.bindChannel(focus,arguments);
   }
 
 }

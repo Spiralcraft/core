@@ -24,6 +24,7 @@ import spiralcraft.data.core.DeltaType;
 import spiralcraft.data.session.Buffer;
 import spiralcraft.data.session.BufferType;
 // import spiralcraft.log.ClassLogger;
+import spiralcraft.data.util.ConstructorInstanceResolver;
 import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.lang.spi.Translator;
 //import spiralcraft.log.ClassLog;
@@ -459,6 +460,21 @@ public abstract class Type<T>
     return ret;
     
   }  
+  
+  /**
+   * 
+   * @param resolver
+   * @param uri
+   * @return A resolver that constructs a new Type instance that uses
+   *   this Type as prototype
+   */
+  public InstanceResolver getExtensionResolver(TypeResolver resolver,URI uri)
+  {
+    return new ConstructorInstanceResolver
+      (new Class[] {TypeResolver.class,URI.class}
+      ,new Object[] {resolver,uri}
+      );
+  }
   
   /**
    * <p>Return the Translator used to externalize/internalize this Type
