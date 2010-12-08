@@ -260,7 +260,8 @@ public class KeyImpl<T>
       title=titleBuf.toString();
     }
 
-    projectionId=title;
+    
+    projectionId=StringUtil.implode(',',',',fieldNames);
     
     if (importedKey!=null)
     { 
