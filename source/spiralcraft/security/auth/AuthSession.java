@@ -65,15 +65,19 @@ public class AuthSession
   protected AuthModule.Session[] sessions;
   protected AuthModule.Session primarySession;
   
+  
+  
+  
   public AuthSession(Authenticator authenticator)
   { this.authenticator=authenticator;
   }
   
   /**
-   * @return The Principal currently authenticated in this session.
+   * @return The login Principal currently authenticated in this session.
    * 
-   * <P>In the case of Principal escalation, the most privileged Principal
+   * <p>In the case of Principal escalation, the most privileged Principal
    *   will be returned.
+   * </p>
    */
   public synchronized Principal getPrincipal()
   { 
@@ -91,6 +95,7 @@ public class AuthSession
     MessageDigest.getInstance(digestAlgorithm);
     this.digestAlgorithm=digestAlgorithm;
   }
+  
   
   /**
    * Returns the local identifier for the account as shared between
@@ -140,6 +145,7 @@ public class AuthSession
     }
   }
  
+  
   public synchronized boolean isAuthenticated(String moduleName)
   { 
     push();
@@ -169,6 +175,8 @@ public class AuthSession
     { return false;
     }
   }
+  
+
   
   public void setDebug(boolean debug)
   { this.debug=debug;
@@ -246,6 +254,23 @@ public class AuthSession
   }
   
   /**
+   * Indicate whether the current Principal has the specified Permission
+   * 
+   * @param permission
+   * @return
+   */
+  public boolean hasPermission(Permission permission)
+  { 
+    push();
+    try
+    { return authenticator.authorizer.hasPermission(this,permission);
+    }
+    finally
+    { pop();
+    }
+  }
+  
+  /**
    * <p>Provide an opportunity for modules to update the authentication state
    *   based on the application context.
    * </p>
@@ -276,6 +301,7 @@ public class AuthSession
     }
     
   }
+
   
   private AuthModule.Session getModuleSession(String moduleName)
   { 

@@ -15,6 +15,7 @@
 package spiralcraft.security.auth;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +25,9 @@ import spiralcraft.lang.Contextual;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.GenericReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+
 //import spiralcraft.log.ClassLog;
 
 
@@ -48,6 +51,9 @@ public class Authenticator
   
   protected String realmName;
   protected ThreadLocalChannel<AuthSession> sessionChannel;
+
+  protected GenericReflector<AuthSession> sessionReflector;
+  
   protected Focus<AuthSession> sessionFocus;
   protected final HashMap<String,Credential<?>> protoMap
     =new HashMap<String,Credential<?>>();
@@ -58,6 +64,9 @@ public class Authenticator
   protected boolean debug;
 
   protected HashMap<String,Integer> moduleMap;
+  
+  
+  protected Authorizer authorizer;
   
   /**
    * @return The name of the realm this Authenticator will be serving.
@@ -105,7 +114,12 @@ public class Authenticator
   { this.authModules=authModules;
   }
   
+  public void setAuthorizer(Authorizer authorizer)
+  { this.authorizer=authorizer;
+  }
   
+
+
   public void setDebug(boolean debug)
   { this.debug=debug;
   }
@@ -123,9 +137,15 @@ public class Authenticator
   public Focus<?> bind(Focus<?> context)
     throws BindException
   { 
+    
+    this.sessionReflector
+      =new GenericReflector<AuthSession>
+        (BeanReflector.<AuthSession>getInstance(AuthSession.class));
+    
+    
     this.sessionChannel
       =new ThreadLocalChannel<AuthSession>
-        (BeanReflector.<AuthSession>getInstance(AuthSession.class));
+        (this.sessionReflector);
     
     if (context!=null)
     { this.sessionFocus=new SimpleFocus<AuthSession>(context,sessionChannel);
@@ -151,6 +171,12 @@ public class Authenticator
         i++;
       }
     }
+    if (authorizer!=null)
+    { 
+      authorizer.bind(sessionFocus);
+//      sessionFocus.addFacet(new BeanFocus<Authorizer>(authorizer));
+      
+    }
     return sessionFocus;
   }
   
@@ -164,6 +190,16 @@ public class Authenticator
   
   public HashMap<String,Integer> getModuleMap()
   { return moduleMap;
+  }
+  
+
+  
+  public Role[] getRolesForPrincipal(Principal principal)
+  { 
+    
+    // Look up principal id in 
+    return null;
+    
   }
   
   protected void setAcceptedCredentials

@@ -1,0 +1,3 @@
+<secauth:Permission.type
+  xmlns:secauth="class:/spiralcraft/security/auth/"
+/>
