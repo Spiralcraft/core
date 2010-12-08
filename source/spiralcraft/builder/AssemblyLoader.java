@@ -24,6 +24,7 @@ import spiralcraft.vfs.Resource;
 
 import java.io.IOException;
 
+import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -497,35 +498,25 @@ public class AssemblyLoader
         else if (name=="export")
         { prop.setExport(readBoolean(attribs[i]));
         }
+        else if (name=="uri")
+        { 
+          prop.addCharacters
+            (resolveNsUri
+              (attribs[i].getValue()
+                ,node.getPrefixResolver()
+                ,sourceUri
+              ).toCharArray()
+            );
+        }
         else if (name=="dataURI")
         { 
-          // Resolve namespace prefix for data URI
-          String uriStr=attribs[i].getValue();
-          
-          int colonPos=uriStr.indexOf(':');
-          if (colonPos==0)
-          { uriStr=uriStr.substring(1);
-          }
-          else if (colonPos>0)
-          { 
-            String nsPrefix=uriStr.substring(0,colonPos);
-            URI nsURI=node.getPrefixResolver().resolvePrefix(nsPrefix);
-            if (nsURI==null)
-            { 
-              throw new BuildException
-                ("Namespace prefix '"+nsPrefix+"' not found in "+sourceUri);
-            }
-            String nsURIstr=nsURI.toString();
-            uriStr=uriStr.substring(colonPos+1);
-            if (!nsURIstr.endsWith("/"))
-            { uriStr=nsURIstr+"/"+uriStr;
-            }
-            else
-            { uriStr=nsURIstr+uriStr;
-            }
-            
-          }
-          
+
+          String uriStr
+            =resolveNsUri
+              (attribs[i].getValue()
+              ,node.getPrefixResolver()
+              ,sourceUri
+              );
           prop.setDataURI(URI.create(uriStr));
         }
         else if (name=="debugLevel")
@@ -561,6 +552,38 @@ public class AssemblyLoader
     }
   }
 
+  private String resolveNsUri(String uriStr,PrefixResolver resolver,URI sourceUri)
+    throws BuildException
+  {           
+    // Resolve namespace prefix for URI
+    
+    int colonPos=uriStr.indexOf(':');
+    if (colonPos==0)
+    { uriStr=uriStr.substring(1);
+    }
+    else if (colonPos>0)
+    { 
+      String nsPrefix=uriStr.substring(0,colonPos);
+      URI nsURI=resolver.resolvePrefix(nsPrefix);
+      if (nsURI==null)
+      { 
+        throw new BuildException
+          ("Namespace prefix '"+nsPrefix+"' not found in "+sourceUri);
+      }
+      String nsURIstr=nsURI.toString();
+      uriStr=uriStr.substring(colonPos+1);
+      if (!nsURIstr.endsWith("/"))
+      { uriStr=nsURIstr+"/"+uriStr;
+      }
+      else
+      { uriStr=nsURIstr+uriStr;
+      }
+      
+    }
+    return uriStr;
+
+  }
+  
   private static final boolean readBoolean(Attribute attrib)
     throws BuildException
   {
