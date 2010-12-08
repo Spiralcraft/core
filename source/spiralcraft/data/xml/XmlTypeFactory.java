@@ -201,6 +201,10 @@ public class XmlTypeFactory
                         +instance+"\r\n of type "+type.getURI());
                   }
                 }
+                
+                if (instance==null)
+                { throw new DataException("Null instance from type "+type);
+                }
 //                log.fine("Preregistering "+instance);
                 // Pre-instantiate so rest of XML can resolve Type
                 instanceResolver
