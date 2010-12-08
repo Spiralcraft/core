@@ -57,7 +57,9 @@ public class Join
    *   the parent.
    */
   public Join(Query parentQuery,Query childQuery)
-  { addSource(parentQuery);
+  { 
+    addSource(parentQuery);
+    this.childQuery=childQuery;
   }
   
   @Override
@@ -76,7 +78,8 @@ public class Join
 
   
   /**
-   * Specify the Expression which constrains the result
+   * Specify the child query to be run in the context of each Tuple returned
+   *   by the parent query
    */
   public void setChildQuery(Query childQuery)
   { 
