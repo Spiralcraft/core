@@ -14,9 +14,9 @@
 //
 package spiralcraft.util.string;
 
-import spiralcraft.log.ClassLog;
+//import spiralcraft.log.ClassLog;
 import spiralcraft.text.Filter;
-import spiralcraft.util.ArrayUtil;
+//import spiralcraft.util.ArrayUtil;
 
 import java.io.StreamTokenizer;
 import java.io.StringReader;
@@ -98,10 +98,10 @@ public class StringUtil
    */
   public static String implode(char delimiter,char escape,String ... input)
   {
-    ClassLog log=ClassLog.getInstance(StringUtil.class);
+    // ClassLog log=ClassLog.getInstance(StringUtil.class);
     boolean first=true;
     StringBuilder result=new StringBuilder();
-    log.fine("Imploding '"+delimiter+"','"+escape+"',"+ArrayUtil.format(input,"|",null));
+    //log.fine("Imploding '"+delimiter+"','"+escape+"',"+ArrayUtil.format(input,"|",null));
     for (String str:input)
     {
       if (!first)
