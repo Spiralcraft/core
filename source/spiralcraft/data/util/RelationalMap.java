@@ -163,7 +163,7 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
         downstreamProjectionX=Expression.create("."+downstreamFieldName);
       }
       else
-      { downstreamProjectionX=Expression.create("."+downstreamFieldName);
+      { downstreamProjectionX=Expression.create(".");
       }
       
       
@@ -172,7 +172,7 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
       resultFocus=focusChain.chain(resultChannel);
 
       downstreamProjection
-        =resultFocus.<TdownstreamItem>bind(downstreamProjectionX);      
+        =resultFocus.<TdownstreamItem>bind(downstreamProjectionX); 
       
     }
     catch (DataException x)
