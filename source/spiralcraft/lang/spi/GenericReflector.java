@@ -233,6 +233,10 @@ public class GenericReflector<T>
     { result= base.resolve(source,focus,name,params);
     }
     
+    // TODO: Check result for contextual type reference and look up in
+    //   local name->reflector map to augment type for use context
+    
+    
     if (result!=null && enhancerMap!=null)
     { 
 
