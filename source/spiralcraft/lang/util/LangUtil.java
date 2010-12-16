@@ -52,4 +52,16 @@ public class LangUtil
     
     return null;
   }
+
+  @SuppressWarnings("unchecked")
+  public static <T> Focus<T> findFocus(Class<T> clazz,Focus<?> context)
+  {
+    if (context==null)
+    { return null;
+    }
+    
+    return (Focus<T>) 
+      context.findFocus(BeanReflector.getInstance(clazz).getTypeURI());
+
+  }
 }
