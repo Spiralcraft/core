@@ -65,13 +65,15 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
   { 
     if (subtype==type)
     { 
-      throw new IllegalArgumentException
-        ("Unsupported configuration- concrete base type:"
-        +" extent Type cannot be same as " +
-        		"base Type "+type.getURI()
-        );
+      subtypeQueryables.put(subtype,extent);
+      log.debug("Using concrete base type for "+subtype.getURI());
+//      throw new IllegalArgumentException
+//        ("Unsupported configuration- concrete base type:"
+//        +" extent Type cannot be same as " +
+//        		"base Type "+type.getURI()
+//        );
     }
-    if (subtype.hasBaseType(type))
+    else if (subtype.hasBaseType(type))
     { subtypeQueryables.put(subtype,extent);
     }
     else
