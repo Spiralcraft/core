@@ -252,7 +252,76 @@
         
         </detail>
       </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Support conversion between spiralcraft.time.Instant and 
+            java.util.Date
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/time/Instant.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>Fix NPE, define behavior of null data when using ELaine 
+            Sort function Ordering specifier.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/functions/Ordering.java
+        </path>
+      
+      </scm:Change>
 
+      <scm:Change>
+        <notes>
+          <scm:Note>Support concrete base types when using DALai extent
+            inheritance.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/spi/BaseExtentQueryable.java
+        </path>
+      
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Added standard, clean syntax for implementing DALai type 
+            methods  using ELaine expressions via the meta:Method construct.
+          </scm:Note>
+          <scm:Note>Positional arguments are now assigned to struct fields in
+            order of their declaration, allowing method code to refer to
+            positional arguments by name.
+          </scm:Note>
+          <scm:Note>Add static method to find a Focus for a Java interface in 
+            the Focus chain.
+          </scm:Note>
+        </notes>
+      
+        <path>/source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/core/AbstractTaskMethod.java
+          </URI>
+          <URI>data/core/TaskMethod.java
+          </URI>
+          <URI>data/core/ExpressionMethod.java
+          </URI>
+          <URI>data/types/meta/MethodType.java
+          </URI>
+          <URI>lang/parser/StructNode.java
+          </URI>
+          <URI>lang/util/LangUtil.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      
       <scm:Change>
         <notes>
           <scm:Note>RestService returns a self-reference so it can be 

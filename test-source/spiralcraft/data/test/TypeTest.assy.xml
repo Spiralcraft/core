@@ -82,6 +82,7 @@
               </testX>
             </test:Assertion>
  
+ 
             <test:Assertion>
               <name>calculated field
               </name>
@@ -90,7 +91,16 @@
               <testX>.==322.16F
               </testX>
             </test:Assertion>
-
+                        
+            <test:Assertion>
+              <name>parameterized expression method
+              </name>
+              <subjectX>[example:Customer].score2(10).@tune("TaskMethod 4")
+              </subjectX>
+              <testX>.==42.216F
+              </testX>
+            </test:Assertion>
+            
             <test:Assertion>
               <name>Tuple instantiation
               </name>

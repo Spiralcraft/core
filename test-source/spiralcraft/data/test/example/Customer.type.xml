@@ -3,6 +3,7 @@
 <meta:Type
   xmlns:meta="class:/spiralcraft/data/types/meta/"
   xmlns:example="class:/spiralcraft/data/test/example"
+  xmlns:j="class:/java/lang/"
   >
   <archetype><example:Contact.type/>
   </archetype>
@@ -146,7 +147,27 @@
       <parameterTypes>
         <Integer.type/>
       </parameterTypes>
+      
     </meta:TaskMethod>
+    
+    <meta:Method>
+      <name>score2</name>
+      
+      <parameterTypes>
+        <Integer.type/>
+      </parameterTypes>
+      
+      <returnType>
+        <Integer.type/>
+      </returnType>
+      
+      <contextX>{ score:[@j:Integer] }
+      </contextX>
+          
+      <x>..score=..score+.score
+      </x>
+          
+    </meta:Method>
   </methods>
 
 </meta:Type>
