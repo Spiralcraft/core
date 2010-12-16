@@ -15,6 +15,7 @@
 package spiralcraft.time;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import spiralcraft.common.Immutable;
 
@@ -38,6 +39,11 @@ import spiralcraft.common.Immutable;
 public class Instant
   implements Comparable<Instant>
 {
+  
+  public static final Instant fromDate(Date date)
+  { return new Instant(date.getTime());
+  }
+  
   protected final long offset;
   protected final Chronom resolution;
   protected final int hashCode;
@@ -232,6 +238,10 @@ public class Instant
     { return getOffsetSeconds().compareTo(o.getOffsetSeconds());
     }
     
+  }
+  
+  public Date toDate()
+  { return new Date(getOffsetMillis());
   }
   
   @Override
