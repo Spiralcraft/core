@@ -711,6 +711,21 @@ public class StructNode
       { return (Channel<X>) new FunctorChannel(source,focus,params);
       }
       
+      if (name.startsWith("_") && name.length()>1)
+      { 
+        try
+        {
+          int index=Integer.parseInt(name.substring(1));
+          if (fieldArray.length>index)
+          { name=fieldArray[index].name;
+          }
+        }
+        catch (NumberFormatException x)
+        { // Ignore
+        }
+      }
+       
+          
       if (params==null)
       {
         
