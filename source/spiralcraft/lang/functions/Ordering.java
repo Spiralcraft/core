@@ -101,7 +101,14 @@ public class Ordering<T,I>
     public int compare(
       X o1,
       X o2)
-    { return o1.compareTo(o2);
+    { 
+      if (o1==null)
+      { return o2==null?0:-1;
+      }
+      else if (o2==null)
+      { return 1;
+      }
+      return o1.compareTo(o2);
     }
   }
 
