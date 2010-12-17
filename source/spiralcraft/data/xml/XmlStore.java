@@ -111,7 +111,9 @@ public class XmlStore
         @Override
         public void run()
         { 
-          log.fine("Running subscription");
+          if (debugLevel.isFine())
+          { log.fine("Running subscription");
+          }
           XmlStore.this.triggerSubscriber();
         }
       }
