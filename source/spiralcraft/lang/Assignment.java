@@ -98,10 +98,22 @@ public class Assignment<T>
       sourceChannel
         =((AssignmentChannel) sourceChannel).getSource();
     }
-    Setter<T> setter=new Setter<T>(sourceChannel,targetChannel);
-    if (debug)
-    { setter.setDebug(true);
+    
+    try
+    { 
+      Setter<T> setter=new Setter<T>(sourceChannel,targetChannel);
+      if (debug)
+      { setter.setDebug(true);
+      }
+      return setter;
     }
-    return setter;
+    catch (BindException x)
+    { 
+      throw new BindException
+        ("Error binding assignment "+(target!=null?target.getText()+" = ":"")
+          +(source!=null?source.getText():"")
+        ,x
+        );
+    }
   }
 }

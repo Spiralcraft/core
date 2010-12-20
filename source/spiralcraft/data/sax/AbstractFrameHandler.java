@@ -396,14 +396,27 @@ public abstract class AbstractFrameHandler
               +assignment.getTarget().getText()
               );
           }
-          elementSetterMap.put
-            (elementName
-            ,assignment.bind 
-              (getFocus().telescope(child.getFocus().getSubject()))
-            );
+          
+          try
+          {
+            elementSetterMap.put
+              (elementName
+              ,assignment.bind 
+                (getFocus().telescope(child.getFocus().getSubject()))
+              );
+          }
+          catch (BindException x)
+          { 
+            throw new BindException
+              ("Error binding assignent of "+elementName+" child of "
+              +elementURI
+              ,x
+              );
+          }
         }
         catch (DataException x)
-        { throw new BindException
+        { 
+          throw new BindException
             ("Error mapping element namespace for Assignment",x);
         }
       }
