@@ -4,6 +4,39 @@
   
   <scm:Change>
   
+    <revision>0.4.12.5
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-12-20
+    </date>
+    
+    <detail>
+    
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Minor exception handling improvements for type compatibility
+            exceptions, XML-data conversion.
+          </scm:Note>
+        </notes>
+        
+        <path>/source/spiralcraft</path>
+        
+        <resources>
+          <URI>data/sax/AbstractFrameHandler.java
+          </URI>
+          <URI>lang/Assignment.java
+          </URI>
+        </resources>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+  
+  <scm:Change>
+  
     <revision>0.4.12.4
     </revision>
     
