@@ -17,10 +17,10 @@ public class FieldSetType
   private static int seq=0;
   private FieldSet fieldSet;
   
-  public FieldSetType(URI baseURI,FieldSet fieldSet)
+  public FieldSetType(TypeResolver resolver,URI baseURI,FieldSet fieldSet)
   {
     
-    super(TypeResolver.getTypeResolver()
+    super(resolver
         ,URI.create(baseURI+"-"+seq++)
         );
     this.fieldSet=fieldSet;
@@ -46,7 +46,7 @@ public class FieldSetType
   public void link()
     throws DataException
   {
-    TypeResolver.getTypeResolver().register(getURI(),this);
+    getTypeResolver().register(getURI(),this);
     super.link();
   }
 }

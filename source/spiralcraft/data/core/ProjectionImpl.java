@@ -244,7 +244,7 @@ public class ProjectionImpl<T>
     {
       this.type
         =new FieldSetType
-          (URIUtil.addPathSuffix(masterFieldSet.getType().getURI(),"-"+projectionId),this);
+          (masterFieldSet.getType().getTypeResolver(),URIUtil.addPathSuffix(masterFieldSet.getType().getURI(),"-"+projectionId),this);
       this.type.link();
     }
     resolved=true;
