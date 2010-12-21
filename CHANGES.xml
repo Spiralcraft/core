@@ -4,6 +4,41 @@
   
   <scm:Change>
   
+    <revision>0.4.12.6
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-12-20
+    </date>
+    
+    <detail>
+    
+
+      <scm:Change>
+        <notes>
+          <scm:Note>Fix deadlock in Type linking due to "Key Projection Types"
+            using the contextual TypeResolver instead of the TypeResolver of 
+            the containing type.
+          </scm:Note>
+        </notes>
+        
+        <path>/source/spiralcraft/data/core/
+        </path>
+        
+        <resources>
+          <URI>FieldSetType.java
+          </URI>
+          <URI>ProjectionImpl.java
+          </URI>
+        </resources>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+  
+  <scm:Change>
+  
     <revision>0.4.12.5
     </revision>
     
