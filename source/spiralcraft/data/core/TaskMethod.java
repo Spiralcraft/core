@@ -16,24 +16,13 @@ package spiralcraft.data.core;
 
 import java.net.URI;
 
-import spiralcraft.data.DataException;
 import spiralcraft.data.persist.AbstractXmlObject;
-import spiralcraft.data.reflect.ReflectionType;
 
-import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.spi.AssignmentChannel;
-import spiralcraft.lang.spi.BindingChannel;
-import spiralcraft.lang.spi.SourcedChannel;
-import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.log.Level;
 
 import spiralcraft.task.Scenario;
-import spiralcraft.task.TaskCommand;
 
 /**
  * Allows Task scenarios to implement data methods

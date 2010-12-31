@@ -18,7 +18,6 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.lang.util.LangUtil;
 
 import spiralcraft.task.Eval;
