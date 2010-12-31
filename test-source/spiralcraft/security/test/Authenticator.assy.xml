@@ -29,7 +29,7 @@
       <principalIdFieldName>principalId
       </principalIdFieldName>
       
-      <registeredRoles dataURI="example:Roles.xml"/>
+      <registeredRoles dataURI="secspi:StandardRoles.data.xml"/>
       
       <roleBindings>(searchname!="denied")?[@secauth:SignedInRole].typeURI:null      
       </roleBindings>

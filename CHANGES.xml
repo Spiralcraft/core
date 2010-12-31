@@ -4,6 +4,36 @@
   
   <scm:Change>
   
+    <revision>0.4.12.7
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-12-31
+    </date>
+    
+    <detail>
+      <scm:Change>
+        <notes>
+          <scm:Note>Provide standard set of security roles for use by
+            framework apps.
+          </scm:Note>
+        </notes>
+        
+        <path>/source/spiralcraft/security/spi/
+        </path>
+        
+        <resources>
+          <URI>StandardRoles.data.xml
+          </URI>
+        </resources>
+      </scm:Change>
+    
+    </detail>
+    
+  <scm:Change>
+  
     <revision>0.4.12.6
     </revision>
     
