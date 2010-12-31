@@ -25,7 +25,17 @@ import spiralcraft.lang.spi.Accumulator;
 import spiralcraft.lang.spi.ViewState;
 
 /**
- * Computes the number of non-null values in a sequence
+ * <p>Uses an Expression to accumulate a result from an input sequence.
+ * </p>
+ * 
+ * <p>Within the expression, the accumulated state is referenced as the
+ *   subject (".") and the input is referenced as the immediate containing 
+ *   context ("..")
+ * </p>
+ *   
+ * <p>For example, the following expression computes the sum of a set of
+ *   numbers:  numbers$[ [*fn:Induce{`.+..`}] ]
+ * </p>
  * 
  * @author mike
  *
