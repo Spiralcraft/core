@@ -30,7 +30,19 @@
         </resources>
       </scm:Change>
     
+      <scm:Change>
+        <notes>
+          <scm:Note>Added one-time expression eval utility method usable in 
+            Java code.
+          </scm:Note>
+        </notes>
+        
+        <path>/source/spiralcraft/lang/util/LangUtil.java
+        </path>
+        
+      </scm:Change>
     </detail>
+  </scm:Change>
     
   <scm:Change>
   
