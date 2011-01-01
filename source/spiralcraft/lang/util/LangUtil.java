@@ -14,8 +14,11 @@
 //
 package spiralcraft.lang.util;
 
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.reflect.BeanReflector;
 
 public class LangUtil
@@ -63,5 +66,19 @@ public class LangUtil
     return (Focus<T>) 
       context.findFocus(BeanReflector.getInstance(clazz).getTypeURI());
 
+  }
+  
+ 
+  /**
+   * Return the result of a single evaluation of a self-contained Expression 
+   * 
+   * @param <T>
+   * @param expression
+   * @return
+   * @throws BindException
+   */
+  public static <T> T eval(String expression)
+    throws BindException
+  { return new SimpleFocus<T>().bind(Expression.<T>create(expression)).get();
   }
 }
