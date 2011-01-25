@@ -74,6 +74,19 @@
           </testX>
           
         </test:Assertion>
+        
+        <test:Assertion>
+        
+          <name>dynamic array equals- Integer
+          </name>
+          
+          <subjectX>[{1,2,3}]
+          </subjectX>
+          
+          <testX>.==[@j:Integer][{1,2,3}]
+          </testX>
+          
+        </test:Assertion>
 
         <test:Assertion>
         
@@ -114,6 +127,19 @@
           
         </test:Assertion>
 
+        <test:Assertion>
+        
+          <name>dynamic array equals- String
+          </name>
+          
+          <subjectX>[{"one","two","three"}] 
+          </subjectX>
+          
+          <testX>.== [@j:String][{"one","two","three"}]
+          </testX>
+          
+        </test:Assertion>
+        
         <test:Assertion>
         
           <name>contains

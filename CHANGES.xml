@@ -4,6 +4,40 @@
   
   <scm:Change>
   
+    <revision>0.4.12.8
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>
+    </date>
+    
+    <detail>
+      <scm:Change>
+        <notes>
+          <scm:Note>Add compact array literal syntax with type inference 
+            to ELaine, eg. [{ expr, expr, ... }]
+          </scm:Note>
+        </notes>
+        
+        <path>/source/spiralcraft/lang/parser/
+        </path>
+        
+        <resources>
+          <URI>ExpressionParser.java
+          </URI>
+          <URI>SubscriptNode.java
+          </URI>
+        </resources>
+      </scm:Change>
+    </detail>
+    
+  </scm:Change>
+    
+
+  <scm:Change>
+  
     <revision>0.4.12.7
     </revision>
     
