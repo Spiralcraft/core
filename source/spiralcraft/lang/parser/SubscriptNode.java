@@ -72,7 +72,7 @@ public class SubscriptNode<T,C,I>
   
   @Override
   public String reconstruct()
-  { return _source.reconstruct()+"["+_selector.reconstruct()+"]";
+  { return (_source!=null?_source.reconstruct():"")+"["+_selector.reconstruct()+"]";
   }
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -183,7 +183,9 @@ public class SubscriptNode<T,C,I>
   { 
     out.append(prefix).append("Subscript");
     prefix=prefix+"  ";
-    _source.dumpTree(out,prefix);
+    if (_source!=null)
+    { _source.dumpTree(out,prefix);
+    }
     out.append(prefix).append("[");
     _selector.dumpTree(out,prefix);
     out.append(prefix).append("]");
