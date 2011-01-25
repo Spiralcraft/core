@@ -111,6 +111,15 @@ public class SubscriptNode<T,C,I>
           );
       }
     }
+    else if (_source==null)
+    { 
+      // Dynamic array literal
+      Channel<?> iterChannel=focus.bind(new Expression(_selector));
+      IterationDecorator<?,?> decorator
+        =iterChannel.<IterationDecorator>decorate(IterationDecorator.class);
+      Reflector<T> type=(Reflector<T>) decorator.getComponentReflector();
+      return new ArrayConstructorChannel(type,iterChannel,decorator);
+    }
     else
     {
     

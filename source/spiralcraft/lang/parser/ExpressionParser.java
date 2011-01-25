@@ -736,7 +736,7 @@ public class ExpressionParser
   
   
   /**
-   * ArraySelectorExpression -> "[" ( "{" ExpressionList "}" | Expression ) "]"
+   * ArraySelectorExpression -> "["  Expression  "]"
    * 
    * @return
    */
@@ -774,6 +774,8 @@ public class ExpressionParser
    *   (  FocusSpecifier  ) 
    *     |
    *   ( "." FocusRelativeExpression 
+   *     | ObjectLiteralExpression
+   *     | ArrayLiteralExpression
    *     | IdentifierExpression
    *     | PrimaryExpression
    *   )
@@ -784,9 +786,10 @@ public class ExpressionParser
     if (_tokenizer.ttype=='[')
     { 
       if (_tokenizer.lookahead.ttype=='*')
-      { 
-        return parseObjectLiteralExpression(new CurrentFocusNode());
-
+      { return parseObjectLiteralExpression(new CurrentFocusNode());
+      }
+      else if (_tokenizer.lookahead.ttype=='{')
+      { return parseArrayLiteralExpression(new CurrentFocusNode());
       }
       else
       { 
@@ -970,6 +973,17 @@ public class ExpressionParser
     }
   }
   
+  @SuppressWarnings("rawtypes")
+  private Node parseArrayLiteralExpression(Node source)
+    throws ParseException
+  {
+    expect('[');
+    StructNode struct=parseStruct();
+    expect(']');
+    return new SubscriptNode(null,struct);
+      
+  }
+
   
   /**
    * ExpressionList -> Expression ("," Expression)*
