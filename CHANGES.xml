@@ -1,6 +1,93 @@
 <scm:Change.list
   xmlns:scm="class:/spiralcraft/scm/meta/"
   >
+  <scm:Change>
+  
+    <revision>0.4.12.9
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>2010-02-09
+    </date>
+    
+    <detail>
+      <scm:Change>
+        <notes>
+          <scm:Note>Updates to data Store components for Lucene integration
+          </scm:Note>
+          <scm:Note>StoreService now returns a BoundQuery from handleQuery
+            or null if an enhanced binding is not provided for the Query
+          </scm:Note>
+          <scm:Note>NPE and Exception reporting fixes
+          </scm:Note>
+        </notes>
+        
+        <path>/source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>access/StoreService.java
+          </URI>
+          <URI>spi/AbstractAggregateQueryable.java
+          </URI>
+          <URI>spi/AbstractStore.java
+          </URI>
+          <URI>xml/XmlStore.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>ELaine type coercion and type promotion fixes
+          </scm:Note>
+          <scm:Note>Ensure that BigDecimal, BigInteger can participate
+            in comparisons
+          </scm:Note>
+          <scm:Note>Fix issue where type promotion translator was cached
+            under wrong type, causing erroneous resolved type for 
+            arithmetic operations after previous binding of operations using
+            the same first operand type. 
+          </scm:Note>
+        </notes>
+        
+        <path>/source/spiralcraft/lang/
+        </path>
+        
+        <resources>
+          <URI>parser/BinaryOpNode.java
+          </URI>
+          <URI>parser/RelationalNode.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>ELaine debugging enhancements
+          </scm:Note>
+          <scm:Note>LogChannel outputs source channel on creation
+          </scm:Note>
+          <scm:Note>BeanReflector for a specific type can be set to
+            trace resolution
+          </scm:Note>
+        </notes>
+        
+        <path>/source/spiralcraft/lang/
+        </path>
+        
+        <resources>
+          <URI>reflect/BeanReflector.java
+          </URI>
+          <URI>spi/LogChannel.java
+          </URI>
+        </resources>
+      </scm:Change>
+    </detail>
+    
+  </scm:Change>
   
   <scm:Change>
   
