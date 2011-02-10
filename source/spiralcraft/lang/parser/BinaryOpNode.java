@@ -592,7 +592,7 @@ class NumberBindingHelper
       { throw new BindException("Don't know how to handle a "+clazz);
       }
       
-      translatorMap.put(op1.getContentType(),translator);
+      translatorMap.put(clazz,translator);
     }
     
     return new TranslatorChannel<Tret,T1>
