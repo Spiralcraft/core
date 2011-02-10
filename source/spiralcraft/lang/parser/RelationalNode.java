@@ -14,6 +14,9 @@
 //
 package spiralcraft.lang.parser;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.Coercion;
@@ -149,6 +152,28 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
                 @Override
                 public Byte coerce(Number val)
                 { return val.byteValue();
+                }
+              };
+            }              
+            else if (r1.getContentType().equals(BigDecimal.class))
+            {
+              coercion=(Coercion) 
+                new Coercion<Number,BigDecimal>() 
+              {
+                @Override
+                public BigDecimal coerce(Number val)
+                { return BigDecimal.valueOf(val.doubleValue());
+                }
+              };
+            }              
+            else if (r1.getContentType().equals(BigInteger.class))
+            {
+              coercion=(Coercion) 
+                new Coercion<Number,BigInteger>() 
+              {
+                @Override
+                public BigInteger coerce(Number val)
+                { return BigInteger.valueOf(val.intValue());
                 }
               };
             }              
