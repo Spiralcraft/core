@@ -45,7 +45,10 @@ public class LogChannel<T>
     super(source.getReflector(),source);
     this.localSource=new ThreadLocalChannel<T>(source.getReflector());
     this.message=focus.telescope(localSource).bind(message);
-    log.debug("#"+id+": created");
+    log.debug
+      ("#"+id
+        +": channeling "+source.toString()
+      );
   }
   
   @Override
