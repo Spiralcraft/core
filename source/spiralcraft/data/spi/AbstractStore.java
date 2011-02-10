@@ -232,13 +232,13 @@ public abstract class AbstractStore
     if (services!=null)
     {
       for (StoreService service:services)
-      { query=service.handleQuery(query,types);
+      { 
+        BoundQuery<?,Tuple> ret=service.handleQuery(query,types,context);
+        if (ret!=null)
+        { return ret;
+        }
       }
     }
-    
-    
-    
-
     
     if (types.length==1)
     {

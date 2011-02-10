@@ -276,6 +276,7 @@ public class XmlStore
       throw new LifecycleException
         ("Error resolving transaction log container "
         +baseResourceURI.resolve("xlog")
+        ,x
         );
     }
     

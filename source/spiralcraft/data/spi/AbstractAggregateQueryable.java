@@ -83,6 +83,9 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
   public BoundQuery<?,T> query(Query q, Focus<?> context)
     throws DataException
   { 
+    if (q==null)
+    { throw new IllegalArgumentException("Query cannot be null");
+    }
     
     BoundQuery<?,T> ret;
 

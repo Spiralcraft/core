@@ -15,8 +15,12 @@
 package spiralcraft.data.access;
 
 import spiralcraft.app.Component;
+import spiralcraft.data.DataException;
+import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
+import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Query;
+import spiralcraft.lang.Focus;
 
 /**
  * <p>Provide data-related services- e.g. text indexing, query optimization
@@ -26,8 +30,23 @@ public interface StoreService
   extends Component
 {
 
-  Query handleQuery(Query q,Type<?>[] types);
+  /**
+   * Bind a Query if this StoreService will provide a more desirable execution
+   *   path than the default binding.
+   * 
+   * @param q
+   * @param types
+   * @param paramFocus
+   * @return
+   */
+  BoundQuery<?,Tuple> handleQuery(Query q,Type<?>[] types,Focus<?> paramFocus)
+    throws DataException;
   
+  /**
+   * Called when data for the specified type is replaced/reloaded in bulk
+   * 
+   * @param types
+   */
   void onReload(Type<?>[] types);
   
 }
