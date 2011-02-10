@@ -292,6 +292,7 @@ public class BeanReflector<T>
   private MethodResolver methodResolver;
   private volatile Channel<T> staticChannel;
   private final Reflector<T> boxedEquivalent;
+  private boolean traceResolution=false;
   
   public BeanReflector(Type type)
   { 
@@ -513,6 +514,9 @@ public class BeanReflector<T>
 
   }
   
+  public void setTraceResolution(boolean traceResolution)
+  { this.traceResolution=traceResolution;
+  }
   
   @Override
   public synchronized <X> Channel<X> 
@@ -523,6 +527,15 @@ public class BeanReflector<T>
         )
     throws BindException
   {    
+    if (traceResolution)
+    { 
+      log.trace
+        ("Resolving in "+toString()
+        +":\r\n  "+source
+        +"\r\n  ."+name
+        +"\r\n  "+ArrayUtil.format(params,"\r\n","")
+        );
+    }
     
     if (name.startsWith("@"))
     { return this.<X>resolveMeta(source,focus,name,params);
@@ -550,7 +563,11 @@ public class BeanReflector<T>
       
       Channel[] optics=new Channel[params.length];
       for (int i=0;i<optics.length;i++)
-      { optics[i]=focus.bind(params[i]);
+      { 
+        optics[i]=focus.bind(params[i]);
+        if (traceResolution)
+        { log.trace("Param #"+i+" ("+params[i]+") binds to a "+optics[i].getReflector()+" from +"+optics[i]);
+        }
       }
       
       if (name=="" && functor)
@@ -947,7 +964,9 @@ public class BeanReflector<T>
       }
       catch (NoSuchMethodException x)
       { 
-//        log.log(Level.DEBUG,"Error finding method",x);
+        if (traceResolution)
+        { log.log(Level.TRACE,"Error finding method "+sig,x);
+        }
         return null;
 
       }
@@ -967,6 +986,12 @@ public class BeanReflector<T>
       }
       else
       { return new TranslatorChannel<X,T>(source,translator,params);
+      }
+    }
+    else
+    { 
+      if (traceResolution)
+      { log.trace("No resolution for method "+sig);
       }
     }
     return null;
