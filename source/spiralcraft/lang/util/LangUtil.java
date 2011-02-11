@@ -24,6 +24,15 @@ import spiralcraft.lang.reflect.BeanReflector;
 public class LangUtil
 {
 
+  /**
+   * Find the nearest instance of the specified class in the context or null,
+   *   if it is not present.
+   * 
+   * @param <T>
+   * @param clazz
+   * @param context
+   * @return
+   */
   @SuppressWarnings("unchecked")
   public static <T> T findInstance(Class<T> clazz,Focus<?> context)
   {
@@ -39,6 +48,28 @@ public class LangUtil
     
     return null;
   }
+  
+  /**
+   * Find the nearest instance of the specified class in the context or 
+   *   throw a BindException.
+   *   
+   * @param <T>
+   * @param clazz
+   * @param context
+   * @return
+   */
+  public static <T> T assertInstance(Class<T> clazz,Focus<?> context)
+    throws BindException
+  {
+    T ret=findInstance(clazz,context);
+    if (ret==null)
+    { 
+      throw new BindException
+        ("Could not find an instance of class "+clazz+" in context.");
+    }
+    return ret;
+  }
+  
   
   @SuppressWarnings("unchecked")
   public static <T> Channel<T> findChannel(Class<T> clazz,Focus<?> context)
