@@ -3,13 +3,52 @@
   >
   <scm:Change>
   
+    <revision>0.4.12.10
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>?????
+    </date>
+    
+    <detail>
+      <scm:Change>
+        <notes>
+          <scm:Note>Enhancements to support concise invocation from Java 
+            components of primary key queries and other operations bound to 
+            thread-context data. 
+          </scm:Note>
+          <scm:Note>LangUtil provides assertInstance() method to find a
+            Java class in the Focus chain and throw an Exception when not
+            found.
+          </scm:Note>
+        </notes>
+        <path>/source/spiralcraft/
+        </path>
+        <resources>
+          <URI>common/UnaryFunction.java
+          </URI>
+          <URI>data/util/QueryFunction.java
+          </URI>
+          <URI>lang/spi/ContextualFunction.java
+          </URI>
+          <URI>lang/util/LangUtil.java
+          </URI>
+        </resources>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+
+  <scm:Change>
+  
     <revision>0.4.12.9
     </revision>
     
     <authorId>miketoth
     </authorId>
     
-    <date>2010-02-09
+    <date>2011-02-09
     </date>
     
     <detail>
@@ -97,7 +136,7 @@
     <authorId>miketoth
     </authorId>
     
-    <date>2010-01-25
+    <date>2011-01-25
     </date>
     
     <detail>
