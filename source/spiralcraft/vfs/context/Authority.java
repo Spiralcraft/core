@@ -147,19 +147,31 @@ public class Authority
     
     try
     {
-      return defaultRoot!=null
-      ?new ContextResource
-        (new URI
-          ("context"
-          ,(authorityName!=null?"//"+authorityName:"")+"/"+path
-          ,null
-          )
-        ,Resolver.getInstance().resolve
-          (defaultRoot.resolve(new URI(null,path,null))
-          )
-        )
-      :null
-      ;
+      if (defaultRoot!=null)
+      {
+        URI pathURI=new URI(null,path,null);
+        
+        // Important security check
+        if (pathURI.isAbsolute() 
+            || pathURI.getAuthority()!=null
+            || pathURI.getPath().startsWith("/")
+            )
+        { throw new UnresolvableURIException(pathURI,"URI is not relative");
+        }
+        
+        return new ContextResource
+          (new URI
+            ("context"
+            ,(authorityName!=null?"//"+authorityName:"")+"/"+path
+            ,null
+            )
+          ,Resolver.getInstance().resolve(defaultRoot.resolve(pathURI))
+          );
+            
+      }
+      else
+      { return null;
+      }
     }
     catch (URISyntaxException x)
     { throw new IllegalArgumentException
