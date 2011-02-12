@@ -149,7 +149,13 @@ public class Authority
     {
       if (defaultRoot!=null)
       {
-        URI pathURI=new URI(null,path,null);
+        URI pathURI;
+        try
+        { pathURI=new URI(null,path,null);
+        }
+        catch (URISyntaxException x)
+        { throw new UnresolvableURIException(path,"Invalid syntax in URI",x);
+        }
         
         // Important security check
         if (pathURI.isAbsolute() 
