@@ -26,4 +26,8 @@ public class UnresolvableURIException
   public UnresolvableURIException(URI uri,String message)
   { super(message+": "+uri.toString());
   }
+  
+  public UnresolvableURIException(String uriString,String message,Throwable x)
+  { super(message+": "+uriString,x);
+  }
 }
