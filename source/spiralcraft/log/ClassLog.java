@@ -26,8 +26,11 @@ public class ClassLog
   extends ContextLog
 {
   
+  
   private static final WeakHashMap<Class<?>,ClassLog> map
     =new WeakHashMap<Class<?>,ClassLog>();
+
+  private static final ClassLog log=new ClassLog(ClassLog.class.getName());
   
   /**
    * Return the initial level at which the given class should output
@@ -45,6 +48,10 @@ public class ClassLog
             ,defaultLevel!=null?defaultLevel.getName():"OFF"
             );
     
+    Level lvl=Level.valueOf(level);
+    if (lvl.isDebug())
+    { log.debug("Log Level = "+lvl.getName()+" for "+subject.getName());
+    }
     return Level.valueOf(level);
   }
   
@@ -92,6 +99,11 @@ public class ClassLog
 //      );
 //  }
 
+
+  ClassLog(String className)
+  { this.context=new Path(className,'/');
+  }
+  
   public void fine(String message)
   { log(FINE,message,null,1);
   }
@@ -125,9 +137,6 @@ public class ClassLog
   { log(SEVERE,message,null,1);
   }
 
-  ClassLog(String className)
-  { this.context=new Path(className,'/');
-  }
    
 
 }
