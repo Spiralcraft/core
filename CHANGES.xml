@@ -15,6 +15,32 @@
     <detail>
       <scm:Change>
         <notes>
+          <scm:Note>ClassLog logs levels DEBUG and finer when registered for
+            a specified class name.
+          </scm:Note>
+        </notes>
+        <path>/source/spiralcraft/log/ClassLog.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Note>VFS security check to prevent inadvertent resolution of 
+            absolute URIs nested within URI paths.
+          </scm:Note>
+        </notes>
+        <path>/source/spiralcraft/
+        </path>
+        <resources>
+          <URI>vfs/context/Authority.java
+          </URI>
+          <URI>vfs/context/ContextResourceMap.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
           <scm:Note>Enhancements to support concise invocation from Java 
             components of primary key queries and other operations bound to 
             thread-context data. 
