@@ -29,12 +29,14 @@
             absolute URIs nested within URI paths.
           </scm:Note>
         </notes>
-        <path>/source/spiralcraft/
+        <path>/source/spiralcraft/vfs/
         </path>
         <resources>
-          <URI>vfs/context/Authority.java
+          <URI>context/Authority.java
           </URI>
-          <URI>vfs/context/ContextResourceMap.java
+          <URI>context/ContextResourceMap.java
+          </URI>
+          <URI>UnresolvableURIException.java
           </URI>
         </resources>
       </scm:Change>
