@@ -213,6 +213,9 @@ public class ContextResourceMap
   private Resource doResolve(URI contextURI)
     throws UnresolvableURIException
   {
+    if (contextURI.getPath().length()==0)
+    { throw new UnresolvableURIException(contextURI,"URI has no path");
+    }
     String path=contextURI.getPath().substring(1);
     String authorityName=contextURI.getAuthority();
     Authority authority;
