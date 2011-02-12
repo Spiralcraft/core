@@ -83,6 +83,9 @@ public class ContextResourceMap
   public static final Resource resolve(URI contextURI)
     throws UnresolvableURIException
   { 
+    if (debugLevel.isTrace())
+    { log.trace("Resolving "+contextURI);
+    }
     Resource ret=threadMap.get().doResolve(contextURI);
     if (ret!=null)
     { return ret;
