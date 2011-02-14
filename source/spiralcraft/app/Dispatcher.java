@@ -55,8 +55,7 @@ public class Dispatcher
   
   
   /**
-   * <p>Create a GenerationContext that does not refer to any ancestors,
-   *  and sends output to the specified Writer.
+   * <p>Create a Dispatcher that does not refer to any ancestors
    * </p>
    * 
    * <p>If a StateFrame is not provided, a new one will be created
