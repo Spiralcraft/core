@@ -15,8 +15,23 @@
     <detail>
       <scm:Change>
         <notes>
+          <scm:Note>
+            Convenience method readString to read a number of bytes from an 
+              inputStream into a String of the specified encoding.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/vfs/StreamUtil.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
           <scm:Note>Increase portability of text generating components by
             using Appendable instead of Writer
+          </scm:Note>
+          <scm:Note>StringUtil.renderToString() renders a Renderer to a 
+            String.
           </scm:Note>
         </notes>
         <path>/source/spiralcraft/
@@ -53,6 +68,8 @@
           <URI>text/xml/AttributeEncoder.java
           </URI>
           <URI>text/xml/XmlEncoder.java
+          </URI>
+          <URI>util/string/StringUtil.java
           </URI>
         </resources>
       </scm:Change>
