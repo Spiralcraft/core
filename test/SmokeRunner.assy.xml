@@ -93,6 +93,18 @@
               <verbose>false
               </verbose>
               
+              <sourceResource>in
+              </sourceResource>
+              
+              <targetResource>out/copy/
+              </targetResource>
+            </vfs:Copy>
+                        
+            <vfs:Copy>
+              
+              <verbose>false
+              </verbose>
+              
               <sourceResource>../test-source
               </sourceResource>
               
@@ -128,6 +140,9 @@
     
             <saxtest:SaxTest
               xmlns:saxtest="class:/spiralcraft/sax/test/"
+            />
+            <texttest:TextTest
+              xmlns:texttest="class:/spiralcraft/text/test/"
             />
           </scenarios>
         </task:Sequence>

@@ -1,0 +1,49 @@
+<test:TestGroup
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:j="class:/java/lang/"
+  xmlns:ju="class:/java/util/"
+  xmlns:jn="class:/java/net/"
+  xmlns:jt="class:/java/text/"
+  xmlns:jio="class:/java/io/"
+  xmlns:lang="class:/spiralcraft/lang"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  xmlns:util="class:/spiralcraft/util/"
+  xmlns:sutil="class:/spiralcraft/util/string/"
+  xmlns:text="class:/spiralcraft/text/"
+  xmlns="dynamic:/"
+  >
+  <name>spiralcraft.text.test
+  </name>
+  
+  <chain>
+ 
+    <task:Sequence>
+      <scenarios>
+    
+        <test:Assertion>
+        
+          <name>MessageFormat
+          </name>
+          
+          <subjectX>
+            [@jio:StringWriter].()
+               { [*text:MessageFormat{"One plus one is {|1+1|}."}].render(.)
+               , .
+               }
+               .toString()
+            
+          </subjectX>
+          
+          <testX>
+            .=="One plus one is 2."
+          </testX>
+          
+        </test:Assertion>
+                
+      </scenarios>
+      
+    </task:Sequence>
+  </chain>
+        
+</test:TestGroup>
