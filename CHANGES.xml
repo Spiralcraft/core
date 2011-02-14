@@ -3,7 +3,7 @@
   >
   <scm:Change>
   
-    <revision>0.4.12.10
+    <revision>0.4.13
     </revision>
     
     <authorId>miketoth
@@ -13,6 +13,50 @@
     </date>
     
     <detail>
+      <scm:Change>
+        <notes>
+          <scm:Note>Increase portability of text generating components by
+            using Appendable instead of Writer
+          </scm:Note>
+        </notes>
+        <path>/source/spiralcraft/
+        </path>
+        <resources>
+          <URI>data/flatfile/DelimitedRecordFormat.java
+          </URI>
+          <URI>data/flatfile/FieldEncoder.java
+          </URI>
+          <URI>data/flatfile/FieldMapping.java
+          </URI>
+          <URI>data/sax/DataWriter.java
+          </URI>
+          <URI>data/sax/XmlDataRenderer.java
+          </URI>
+          <URI>lang/util/ExpressionRenderer.java
+          </URI>
+          <URI>sax/ElementRenderer.java
+          </URI>
+          <URI>sax/ParseTreeFactory.java
+          </URI>
+          <URI>sax/XmlWriter.java
+          </URI>
+          <URI>test/TestResult.java
+          </URI>
+          <URI>text/Encoder.java
+          </URI>
+          <URI>text/MessageFormat.java
+          </URI>
+          <URI>text/Renderer.java
+          </URI>
+          <URI>text/Wrapper.java
+          </URI>
+          <URI>text/xml/AttributeEncoder.java
+          </URI>
+          <URI>text/xml/XmlEncoder.java
+          </URI>
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <notes>
           <scm:Note>MessageFormat provides a mechanism for templating
