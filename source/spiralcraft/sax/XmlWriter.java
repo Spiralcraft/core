@@ -76,7 +76,9 @@ public class XmlWriter
     if (writer instanceof Flushable)
     { _flushable=(Flushable) writer;
     }
-    this.encoding=encoding;
+    if (encoding!=null)
+    { this.encoding=encoding;
+    }
   }
 
   @Override
