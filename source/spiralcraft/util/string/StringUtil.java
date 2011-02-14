@@ -16,6 +16,7 @@ package spiralcraft.util.string;
 
 //import spiralcraft.log.ClassLog;
 import spiralcraft.text.Filter;
+import spiralcraft.text.Renderer;
 //import spiralcraft.util.ArrayUtil;
 
 import java.io.StreamTokenizer;
@@ -244,6 +245,14 @@ public class StringUtil
     return filter.filter(source);
   }
 
+  public static String renderToString(Renderer renderer)
+    throws IOException
+  { 
+    StringBuilder buf=new StringBuilder();
+    renderer.render(buf);
+    return buf.toString();
+  }
+  
   /**
    * Remove the part of the String including and after the specified
    *   character, if it exists.
