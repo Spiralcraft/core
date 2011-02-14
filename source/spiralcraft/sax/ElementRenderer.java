@@ -15,7 +15,6 @@
 package spiralcraft.sax;
 
 import java.io.IOException;
-import java.io.Writer;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -64,10 +63,10 @@ public abstract class ElementRenderer
 
   @Override
   public void render(
-    Writer writer,Renderer nestedContent)
+    Appendable out,Renderer nestedContent)
     throws IOException
   {
-    XmlWriter xmlWriter=new XmlWriter(writer,null);
+    XmlWriter xmlWriter=new XmlWriter(out,null);
     try
     { 
       if (document)
@@ -83,7 +82,7 @@ public abstract class ElementRenderer
         // XXX The writer should be more intelligent and keep some state.
         xmlWriter.startElementContent();
         
-        nestedContent.render(writer);
+        nestedContent.render(out);
       }
       xmlWriter.endElement(getURI(),getLocalName(),getQName());
       if (document)

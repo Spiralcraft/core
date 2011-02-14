@@ -23,8 +23,8 @@ import spiralcraft.text.xml.AttributeEncoder;
 import spiralcraft.text.xml.XmlEncoder;
 import spiralcraft.util.string.StringUtil;
 
+import java.io.Flushable;
 import java.io.IOException;
-import java.io.Writer;
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.io.OutputStream;
@@ -45,7 +45,9 @@ import java.nio.charset.Charset;
 public class XmlWriter
   implements ContentHandler
 {
-  private Writer _writer;
+  private Appendable _out;
+  private Flushable _flushable;
+  
   private Locator _locator;
   private boolean _elementDelimiterPending=false;
   private boolean format;
@@ -64,12 +66,16 @@ public class XmlWriter
     if (charset!=null)
     { this.encoding=charset;
     }
-    _writer=new BufferedWriter(new OutputStreamWriter(out,this.encoding));
+    _out=new BufferedWriter(new OutputStreamWriter(out,this.encoding));
+    _flushable=(Flushable) _out;
   }
   
-  public XmlWriter(Writer writer,Charset encoding)
+  public XmlWriter(Appendable writer,Charset encoding)
   { 
-    this._writer=writer;
+    this._out=writer;
+    if (writer instanceof Flushable)
+    { _flushable=(Flushable) writer;
+    }
     this.encoding=encoding;
   }
 
@@ -132,24 +138,24 @@ public class XmlWriter
       }
       
       if (format)
-      { _writer.write("\r\n\r\n"+StringUtil.repeat(indentString,indentLevel));
+      { _out.append("\r\n\r\n"+StringUtil.repeat(indentString,indentLevel));
       }
       if (format || fragmentMode)
       { indentLevel++;
       }
       
-      _writer.write("<");
-      _writer.write(qName);
+      _out.append("<");
+      _out.append(qName);
       for (int i=0;i<attribs.getLength();i++)
       { 
-        _writer.write(" ");
+        _out.append(" ");
         if (format && i>0)
-        { _writer.write("\r\n"+StringUtil.repeat(indentString,indentLevel));
+        { _out.append("\r\n"+StringUtil.repeat(indentString,indentLevel));
         }
-        _writer.write(attribs.getQName(i));
-        _writer.write("=\"");
+        _out.append(attribs.getQName(i));
+        _out.append("=\"");
         writeAttributeValue(attribs.getValue(i));
-        _writer.write("\"");
+        _out.append("\"");
       }
       _elementDelimiterPending=true;
     }
@@ -189,18 +195,18 @@ public class XmlWriter
       }
       if (_elementDelimiterPending)
       { 
-        _writer.write("/>");
+        _out.append("/>");
         _elementDelimiterPending=false;
       }
       else
       {
         
         if (format)
-        { _writer.write("\r\n"+StringUtil.repeat(indentString,indentLevel));
+        { _out.append("\r\n"+StringUtil.repeat(indentString,indentLevel));
         }
-        _writer.write("</");
-        _writer.write(qName);
-        _writer.write(">");
+        _out.append("</");
+        _out.append(qName);
+        _out.append(">");
       }
       
     }
@@ -229,10 +235,10 @@ public class XmlWriter
       }
       
       if (escapeWhitespace)
-      { xmlEncoder.encode(new String(ch,start,length),_writer);
+      { xmlEncoder.encode(new String(ch,start,length),_out);
       }
       else
-      { xmlEncoder.encodeRaw(new String(ch,start,length),_writer);
+      { xmlEncoder.encodeRaw(new String(ch,start,length),_out);
       }
     }
     catch (IOException x)
@@ -244,7 +250,7 @@ public class XmlWriter
     throws SAXException
   { 
     try
-    { attributeEncoder.encode(value,_writer);
+    { attributeEncoder.encode(value,_out);
     }
     catch (IOException x)
     { fail(x);
@@ -259,7 +265,7 @@ public class XmlWriter
     try
     { 
       if (!format)
-      { _writer.write(ch,start,length);
+      { _out.append(new String(ch,start,length));
       }
     }
     catch (IOException x)
@@ -287,11 +293,11 @@ public class XmlWriter
     }
     try
     { 
-      _writer.write("<?xml version=\"1.0\" ");
+      _out.append("<?xml version=\"1.0\" ");
       if (encoding!=null)
-      { _writer.write("encoding=\""+encoding+"\"");
+      { _out.append("encoding=\""+encoding+"\"");
       }
-      _writer.write("?>\r\n");
+      _out.append("?>\r\n");
     }
     catch (IOException x)
     { fail(x);
@@ -302,12 +308,17 @@ public class XmlWriter
   public void endDocument()
     throws SAXException
   {
-    checkElementClose();      
-    try
-    { _writer.flush();
-    }
-    catch (IOException x)
-    { fail(x);
+    checkElementClose(); 
+    
+    // XXX We should flush at a higher level
+    if (_flushable!=null)
+    {
+      try
+      { _flushable.flush();
+      }
+      catch (IOException x)
+      { fail(x);
+      }
     }
   }
 
@@ -325,7 +336,7 @@ public class XmlWriter
     {
       if (_elementDelimiterPending)
       {
-        _writer.write(">");
+        _out.append(">");
         _elementDelimiterPending=false;
       }
     }

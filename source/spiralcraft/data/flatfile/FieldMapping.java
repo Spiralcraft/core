@@ -16,7 +16,6 @@ package spiralcraft.data.flatfile;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Expression;
@@ -73,9 +72,9 @@ public class FieldMapping<T>
   { channel.set(encoder.parse(data));
   }
   
-  public void format(Writer writer)
+  public void format(Appendable out)
     throws IOException
-  { encoder.format(writer,channel.get());
+  { encoder.format(out,channel.get());
   }
   
   @Override

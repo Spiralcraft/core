@@ -2,8 +2,6 @@ package spiralcraft.text.xml;
 
 import spiralcraft.text.Encoder;
 
-import java.io.Writer;
-
 import java.io.IOException;
 
 /**
@@ -31,7 +29,7 @@ public class AttributeEncoder
   private static final String LT_S="&lt;";
 
   @Override
-  public void encode(CharSequence in,Writer out)
+  public void encode(CharSequence in,Appendable out)
     throws IOException
   {
     if (in==null)
@@ -41,26 +39,26 @@ public class AttributeEncoder
     { 
       char c=in.charAt(i);
       if (c < ' ')
-      { out.write("&#"+((int) c)+";"); 
+      { out.append("&#"+((int) c)+";"); 
       }
       else
       {
         switch (c)
         {
         case AMP_C:
-          out.write(AMP_S);
+          out.append(AMP_S);
           break;
         case GT_C:
-          out.write(GT_S);
+          out.append(GT_S);
           break;
         case LT_C:
-          out.write(LT_S);
+          out.append(LT_S);
           break;
         case '"':
-          out.write("&quot;");
+          out.append("&quot;");
           break;
         default:
-          out.write(c);
+          out.append(c);
         }
       }
       

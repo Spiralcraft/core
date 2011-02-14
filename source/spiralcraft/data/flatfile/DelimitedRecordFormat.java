@@ -17,7 +17,6 @@ package spiralcraft.data.flatfile;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.nio.charset.Charset;
 
 import spiralcraft.data.Field;
@@ -92,7 +91,7 @@ public class DelimitedRecordFormat
     throws IOException
   {
     channel.set(data);
-    StringWriter writer=new StringWriter();
+    StringBuffer buf=new StringBuffer();
     boolean first=true;
     for (FieldMapping<?> mapping : fields)
     { 
@@ -100,11 +99,11 @@ public class DelimitedRecordFormat
       { first=false;
       }
       else
-      { writer.write(fieldSeparator);
+      { buf.append(fieldSeparator);
       }
-      mapping.format(writer);
+      mapping.format(buf);
     }
-    String out=writer.toString();
+    String out=buf.toString();
     if (trim)
     { out=out.trim();
     }

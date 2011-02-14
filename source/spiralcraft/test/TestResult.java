@@ -16,7 +16,6 @@ package spiralcraft.test;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.List;
 
 import spiralcraft.util.lang.ExceptionUtil;
@@ -101,11 +100,11 @@ public class TestResult
     return "\r\n  "+writer.toString();
   }
   
-  public void format(Writer writer,String prefix)
+  public void format(Appendable out,String prefix)
     throws IOException
   {
     String subPrefix=prefix+"  ";
-    writer.write(
+    out.append(
       (passed?"PASS":"FAIL!!!")
       +(name!=null?": "+name:"")+": "
       +(message!=null?"\r\n"+prefix+"- "+message+": ":"")
@@ -116,8 +115,8 @@ public class TestResult
     {
       for (TestResult result:results)
       { 
-        writer.write("\r\n"+subPrefix);
-        result.format(writer, subPrefix);
+        out.append("\r\n"+subPrefix);
+        result.format(out, subPrefix);
       }
     }
   }

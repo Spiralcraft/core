@@ -14,7 +14,6 @@
 //
 package spiralcraft.text;
 
-import java.io.Writer;
 import java.io.IOException;
 
 /**
@@ -25,9 +24,9 @@ public interface Encoder
 {
   /**
    * Encode the specified CharSequence to
-   *   the specified Writer.
+   *   the specified Appendable.
    */
-  void encode(CharSequence in,Writer out)
+  void encode(CharSequence in,Appendable out)
     throws IOException;
   
 }

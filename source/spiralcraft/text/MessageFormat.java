@@ -15,7 +15,6 @@
 package spiralcraft.text;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -88,11 +87,11 @@ public class MessageFormat
   }
   
   @Override
-  public void render(Writer writer)
+  public void render(Appendable appendable)
     throws IOException
   {
     for (Renderer renderer:renderers)
-    { renderer.render(writer);
+    { renderer.render(appendable);
     }
   }
 
@@ -125,10 +124,9 @@ class ContentRenderer
   }
   
   @Override
-  public void render(
-    Writer writer)
+  public void render(Appendable out)
     throws IOException
-  { writer.append(content);
+  { out.append(content);
   }
 
   @Override
@@ -152,12 +150,12 @@ class MarkupRenderer
   }
   
   @Override
-  public void render(Writer writer)
+  public void render(Appendable out)
     throws IOException
   { 
     Object ret=binding.get();
     if (ret!=null)
-    { writer.write(ret.toString());
+    { out.append(ret.toString());
     }
   }
   

@@ -16,7 +16,6 @@ package spiralcraft.data.flatfile;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
 
 import spiralcraft.text.KmpMatcher;
 
@@ -220,7 +219,7 @@ public class FieldEncoder
     }
   }
   
-  public void format(Writer writer,String data)
+  public void format(Appendable out,String data)
     throws IOException
   { 
     // TODO: Escape delimiter
@@ -232,20 +231,20 @@ public class FieldEncoder
     { 
       if (writeDelimiter)
       {
-        writer.write(startDelimiter);
-        writer.write(endDelimiter);
+        out.append(startDelimiter);
+        out.append(endDelimiter);
       }
     }
     else if (!writeDelimiter && !data.contains(separator))
-    { writer.write(data);
+    { out.append(data);
     }
     else
     { 
       // Always write the delimiter if the data contains an unescaped 
       //   field separator, otherwise we definitely break things
-      writer.write(startDelimiter);
-      writer.write(data);
-      writer.write(endDelimiter);
+      out.append(startDelimiter);
+      out.append(data);
+      out.append(endDelimiter);
     }
   }
 

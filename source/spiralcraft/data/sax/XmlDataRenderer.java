@@ -1,7 +1,6 @@
 package spiralcraft.data.sax;
 
 import java.io.IOException;
-import java.io.Writer;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
@@ -32,7 +31,7 @@ public class XmlDataRenderer<T>
   @SuppressWarnings("unchecked")
   @Override
   public void render(
-    Writer writer)
+    Appendable out)
     throws IOException
   { 
     DataWriter dataWriter=new DataWriter();
@@ -48,7 +47,7 @@ public class XmlDataRenderer<T>
           :type.toData( (T) val);
           
         if (data!=null)
-        { dataWriter.writeToWriter(writer,data);
+        { dataWriter.writeToWriter(out,data);
         }
         else
         { log.warning("Type.toData() returned null: "+type+" object="+val+" class="+val.getClass());

@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.io.Writer;
 
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -157,10 +156,10 @@ public class ParseTreeFactory
   } 
   
   
-  public static void toWriter(ParseTree tree,Writer writer)
+  public static void toWriter(ParseTree tree,Appendable out)
     throws SAXException  
   {
-    XmlWriter xmlWriter=new XmlWriter(writer,null);
+    XmlWriter xmlWriter=new XmlWriter(out,null);
     xmlWriter.setEscapeWhitespace(false);
     tree.playEvents(xmlWriter);
   }

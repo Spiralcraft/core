@@ -17,7 +17,6 @@ package spiralcraft.text.xml;
 import spiralcraft.log.ClassLog;
 import spiralcraft.text.Encoder;
 
-import java.io.Writer;
 import java.io.IOException;
 
 /**
@@ -31,7 +30,7 @@ public class XmlEncoder
   private static final ClassLog log
     =ClassLog.getInstance(XmlEncoder.class);
   
-  public void encodeRaw(CharSequence in,Writer out)
+  public void encodeRaw(CharSequence in,Appendable out)
     throws IOException
   {
     for (int i=0;i<in.length();i++)
@@ -44,7 +43,7 @@ public class XmlEncoder
           case '\r':
           case '\n':
           case '\t':
-            out.write(value);
+            out.append(value);
           break;
         default:
           log.warning
@@ -53,21 +52,21 @@ public class XmlEncoder
         }
       }      
       else if (value >= 0x7F && value <=0x9F)
-      { out.write("&#"+((int) value)+";");
+      { out.append("&#"+((int) value)+";");
       }
       else switch (value)
       { 
         case '&':
-          out.write("&amp;");
+          out.append("&amp;");
           break;
         case '<':
-          out.write("&lt;");
+          out.append("&lt;");
           break;
         case '>':
-          out.write("&gt;");
+          out.append("&gt;");
           break;
         default:
-          out.write(value);
+          out.append(value);
           break;
       }
     }
@@ -81,28 +80,28 @@ public class XmlEncoder
    * </p> 
    */
   @Override
-  public void encode(CharSequence in,Writer out)
+  public void encode(CharSequence in,Appendable out)
     throws IOException
   {
     for (int i=0;i<in.length();i++)
     { 
       final char value=in.charAt(i);
       if (value < ' ')
-      { out.write("&#"+((int) value)+";"); 
+      { out.append("&#"+((int) value)+";"); 
       }      
       else switch (value)
       { 
         case '&':
-          out.write("&amp;");
+          out.append("&amp;");
           break;
         case '<':
-          out.write("&lt;");
+          out.append("&lt;");
           break;
         case '>':
-          out.write("&gt;");
+          out.append("&gt;");
           break;
         default:
-          out.write(value);
+          out.append(value);
           break;
       }
     }

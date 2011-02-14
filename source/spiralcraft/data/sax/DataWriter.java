@@ -41,7 +41,6 @@ import org.xml.sax.helpers.AttributesImpl;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 
 import java.net.URI;
 
@@ -87,7 +86,7 @@ public class DataWriter
   }
   
   public void writeToWriter
-    (Writer out
+    (Appendable out
     ,DataComposite data
     )
     throws DataException

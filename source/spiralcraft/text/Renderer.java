@@ -15,7 +15,6 @@
 package spiralcraft.text;
 
 import java.io.IOException;
-import java.io.Writer;
 
 
 
@@ -30,13 +29,13 @@ public interface Renderer
 {
 
   /**
-   * <p>Render markup to a Writer
+   * <p>Render markup to an Appendable
    * </p>
    * 
    * @param writer
    * @throws IOException
    */
-  public void render(Writer writer)
+  public void render(Appendable appendable)
     throws IOException;
 
 }

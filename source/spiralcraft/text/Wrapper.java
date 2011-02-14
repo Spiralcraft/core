@@ -15,7 +15,6 @@
 package spiralcraft.text;
 
 import java.io.IOException;
-import java.io.Writer;
 
 /**
  * <p>A means to render nested streaming text in a concurrent context
@@ -27,12 +26,12 @@ import java.io.Writer;
 public interface Wrapper
 {
   /**
-   * <p>Wrap the output of the Renderer, sending it to the Writer
+   * <p>Wrap the output of the Renderer, sending it to the Appendable
    * </p>
    * 
    * @param writer
    * @throws IOException
    */
-  void render(Writer writer,Renderer renderer)
+  void render(Appendable out,Renderer renderer)
     throws IOException;
 }

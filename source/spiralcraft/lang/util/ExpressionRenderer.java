@@ -15,7 +15,6 @@
 package spiralcraft.lang.util;
 
 import java.io.IOException;
-import java.io.Writer;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -72,17 +71,17 @@ public class ExpressionRenderer<T>
   }
 
   @Override
-  public void render(Writer writer)
+  public void render(Appendable out)
     throws IOException
   { 
     if (converter!=null)
-    { writer.write(converter.toString(channel.get()));
+    { out.append(converter.toString(channel.get()));
     }
     else
     {
       T val=channel.get();
       if (val!=null)
-      { writer.write(val.toString());
+      { out.append(val.toString());
       }
     }
   }
