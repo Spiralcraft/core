@@ -16,13 +16,32 @@
       <scm:Change>
         <notes>
           <scm:Note>
-            Convenience method readString to read a number of bytes from an 
-              inputStream into a String of the specified encoding.
+            Fixes for passing multibyte characters transparently
+          </scm:Note>
+          <scm:Note>
+            Convenience method StreamUtil.readString to read a number of bytes
+              from an inputStream into a String of the specified encoding.
+          </scm:Note>
+          <scm:Note>
+             XmlWriter uses UTF-8 when specified encoding is null
+          </scm:Note>
+          <scm:Note>
+             URLDataEncoder properly converts input to bytes before applying
+               UTF-8 character encoding.
           </scm:Note>
         </notes>
 
-        <path>source/spiralcraft/vfs/StreamUtil.java
+        <path>source/spiralcraft/
         </path>
+        
+        <resources>
+          <URI>vfs/StreamUtil.java
+          </URI>
+          <URI>sax/XmlWriter.java
+          </URI>
+          <URI>text/html/URLDataEncoder.java
+          </URI>
+        </resources>
       </scm:Change>
       
       <scm:Change>
