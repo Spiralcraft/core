@@ -14,6 +14,10 @@
 //
 package spiralcraft.text.html;
 
+import java.nio.charset.Charset;
+
+import spiralcraft.util.ByteBuffer;
+
 
 /**
  * <p>Encodes and decodes URLEncoded text for escaping arbitrary character
@@ -36,13 +40,15 @@ package spiralcraft.text.html;
  */
 public class URLDataEncoder
 {  
+  private static final Charset UTF_8=Charset.forName("UTF-8");
+  
   public static String encode(String plaintext)
   {
     StringBuilder encoded = new StringBuilder();
-    char[] chars = plaintext.toCharArray();
-    for (int i=0; i<chars.length; i++)
+    byte[] bytes = plaintext.getBytes(UTF_8);
+    for (int i=0; i<bytes.length; i++)
     {
-      char c = chars[i];
+      byte c = bytes[i];
       if (c==' ')
       { encoded.append('+');
       }
@@ -74,7 +80,7 @@ public class URLDataEncoder
   public static String decode(String encodedText)
   {
     // System.out.println("encoded Text: "+encodedText);
-    StringBuilder decoded = new StringBuilder();
+    ByteBuffer decoded = new ByteBuffer();
     char[] chars = encodedText.toCharArray();
     for (int i=0; i<chars.length; i++)
     {
@@ -96,12 +102,11 @@ public class URLDataEncoder
         
       }
       else
-      {
-        decoded.append(c);
+      { decoded.append(c);
       }
     }
     //System.out.println("plaintext: "+decoded.toString());
-    return decoded.toString();
+    return new String(decoded.toByteArray(),UTF_8);
   }
 
 }
