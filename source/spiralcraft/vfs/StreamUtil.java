@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * A collection of static methods useful for Stream manipulation
@@ -49,7 +50,8 @@ public class StreamUtil
 
   /**
    * Copy (len) bytes from an InputStream to an OutputStream 
-   *   using a buffer of the specified size.
+   *   using a buffer of the specified size and blocking until the specified
+   *   number of bytes is read.
    */
   public static long copyRaw
     (InputStream in
@@ -111,6 +113,21 @@ public class StreamUtil
     return out.toByteArray();
   }
   
+  /**
+   * Read numBytes from an InputStream and encode them into a String.
+   * 
+   * @param in
+   * @param numBytes
+   * @param encoding
+   * @return
+   * @throws IOException
+   */
+  public static String readString(InputStream in,int numBytes,Charset encoding)
+    throws IOException
+  { 
+    byte[] bytes=readBytes(in,numBytes);
+    return new String(bytes,encoding);
+  }
  
   public static String readAsciiString(InputStream in,int len)
     throws IOException
