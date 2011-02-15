@@ -43,9 +43,13 @@ public class URLDataEncoder
   private static final Charset UTF_8=Charset.forName("UTF-8");
   
   public static String encode(String plaintext)
+  { return encode(plaintext,UTF_8);
+  }
+  
+  public static String encode(String plaintext,Charset encoding)
   {
     StringBuilder encoded = new StringBuilder();
-    byte[] bytes = plaintext.getBytes(UTF_8);
+    byte[] bytes = plaintext.getBytes(encoding!=null?encoding:UTF_8);
     for (int i=0; i<bytes.length; i++)
     {
       byte c = bytes[i];
@@ -73,11 +77,15 @@ public class URLDataEncoder
     return encoded.toString();
   }
   
+  public static String decode(String encodedText)
+  { return decode(encodedText,UTF_8);
+  } 
+  
   /**
    * Decode a URLEncoded string. Return null if
    *   there was a format problem.
    */
-  public static String decode(String encodedText)
+  public static String decode(String encodedText,Charset encoding)
   {
     // System.out.println("encoded Text: "+encodedText);
     ByteBuffer decoded = new ByteBuffer();
@@ -106,7 +114,7 @@ public class URLDataEncoder
       }
     }
     //System.out.println("plaintext: "+decoded.toString());
-    return new String(decoded.toByteArray(),UTF_8);
+    return new String(decoded.toByteArray(),encoding!=null?encoding:UTF_8);
   }
 
 }
