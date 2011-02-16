@@ -49,10 +49,10 @@ public class URLDataEncoder
   public static String encode(String plaintext,Charset encoding)
   {
     StringBuilder encoded = new StringBuilder();
-    byte[] bytes = plaintext.getBytes(encoding!=null?encoding:UTF_8);
-    for (int i=0; i<bytes.length; i++)
+    char[] chars = plaintext.toCharArray();
+    for (int i=0; i<chars.length; i++)
     {
-      byte c = bytes[i];
+      char c = chars[i];
       if (c==' ')
       { encoded.append('+');
       }
@@ -62,12 +62,19 @@ public class URLDataEncoder
               ("$-_.!*'()".indexOf(c)>-1)
               ))
       {
-        encoded.append('%');
-        String hex=(Integer.toHexString(c));
-        if (hex.length()==1)       
-        { encoded.append("0");
+        
+        byte[] bytes
+          =Character.toString(c).getBytes(encoding!=null?encoding:UTF_8);
+        for (byte b:bytes)
+        {
+          encoded.append('%');
+          String hex=(Integer.toHexString(b & 0xFF)).toUpperCase();
+          if (hex.length()==1)       
+          { encoded.append("0");
+          }
+          encoded.append(hex);
+          
         }
-        encoded.append(hex);
       }
       else
       { encoded.append(c);

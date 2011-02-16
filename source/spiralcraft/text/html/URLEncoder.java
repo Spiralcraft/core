@@ -14,6 +14,8 @@
 //
 package spiralcraft.text.html;
 
+import java.nio.charset.Charset;
+
 /**
  * Encodes a hierarchical path 
  * 
@@ -25,6 +27,8 @@ package spiralcraft.text.html;
 public class URLEncoder
 {
 
+  private static final Charset UTF_8=Charset.forName("UTF-8");
+  
   public static final char AMP_C='&';
   public static final char GT_C='>';
   public static final char LT_C='<';
@@ -117,12 +121,18 @@ public class URLEncoder
         }
         else
         {
-          encoded.append('%');
-          String hex=(Integer.toHexString(c));
-          if (hex.length()==1)
-          { encoded.append("0");
-          }
-          encoded.append(hex);
+          byte[] bytes
+            =Character.toString(c).getBytes(UTF_8);
+          for (byte b:bytes)
+          {
+            encoded.append('%');
+            String hex=(Integer.toHexString(b & 0xFF)).toUpperCase();
+            if (hex.length()==1)       
+            { encoded.append("0");
+            }
+            encoded.append(hex);
+          
+          }          
         }
       }
 
