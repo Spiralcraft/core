@@ -818,10 +818,14 @@ public class FieldImpl<T>
     {
       Tuple tuple=source.get();
       if (tuple==null)
-      { return false;
+      { 
+        log.warning("Assignment failed to "+uri+"- tuple is null");
+        return false;
       }
       if (!tuple.isMutable())
-      { return false;
+      { 
+        log.warning("Assignment failed to "+uri+"- tuple is not editable");
+        return false;
       }
       EditableTuple t=(EditableTuple) tuple;
 
@@ -877,6 +881,10 @@ public class FieldImpl<T>
       }      
     }
     
+    @Override
+    public String toString()
+    { return super.toString()+":"+uri;
+    }
     
   }
 }
