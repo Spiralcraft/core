@@ -60,6 +60,7 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.Level;
 import spiralcraft.task.Scenario;
+import spiralcraft.util.string.StringUtil;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -502,7 +503,8 @@ public class XmlStore
     if (aggregate.size()>0)
     {
       Resource logResource
-        =logContainer.getChild("tx"+txId+".delta.xml");
+        =logContainer.getChild
+          ("tx"+StringUtil.prepad(Long.toHexString(txId),'0',12)+".delta.xml");
 
       DataWriter writer=new DataWriter();
       writer.writeToResource(logResource, aggregate);
