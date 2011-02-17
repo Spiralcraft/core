@@ -22,6 +22,7 @@ import spiralcraft.data.Method;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
+import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.lang.ToDataTranslator;
@@ -400,7 +401,10 @@ public class TypeImpl<T>
 
       
     }
-    finally
+    catch (TypeNotFoundException x)
+    { throw new TypeNotFoundException("Unresolved dependency linking "+uri,x);
+    }
+    finally 
     { popLink();
     }
         

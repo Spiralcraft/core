@@ -31,4 +31,8 @@ public class TypeNotFoundException
   public TypeNotFoundException(URI typeURI,Throwable reason)
   { super("Type "+typeURI.toString()+" not found: "+reason.toString(),reason);
   }
+  
+  public TypeNotFoundException(String dependencyMessage,TypeNotFoundException reason)
+  { super(dependencyMessage,reason);
+  }
 }
