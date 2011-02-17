@@ -171,6 +171,24 @@ public class Transaction
     { parent.rollbackOnComplete();
     }
   }
+  
+  /**
+   * Query whether the Transaction can only rollback on completion
+   * 
+   * @return
+   */
+  public boolean getRollbackOnComplete()
+  {
+    if (rollbackOnly)
+    { return true;
+    }
+    else if (nesting==Nesting.PROPOGATE && parent!=null)
+    { return parent.getRollbackOnComplete();
+    }
+    else
+    { return false;
+    }
+  }
 
   synchronized Branch branch(ResourceManager<?> manager)
     throws TransactionException
