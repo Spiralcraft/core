@@ -51,6 +51,7 @@ public class FileSpace
   public Focus<?> bindExports(Focus<?> focusChain)
     throws BindException
   { 
+    map.setParent(ContextResourceMap.get());
     focusChain=super.bindExports(focusChain);
     for (Authority authority:authorities)
     { 

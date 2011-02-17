@@ -21,6 +21,7 @@ import java.net.URI;
 
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.thread.ThreadLocalStack;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
 
@@ -56,8 +57,12 @@ public class ContextResourceMap
     =ClassLog.getInstance(ContextResourceMap.class);
   private static final Level debugLevel
     =ClassLog.getInitialDebugLevel(ContextResourceMap.class,null);
-  private static final InheritableThreadLocal<ContextResourceMap> threadMap
-    =new InheritableThreadLocal<ContextResourceMap>();
+  
+  private static final ThreadLocalStack<ContextResourceMap> threadStack
+    =new ThreadLocalStack<ContextResourceMap>(true);
+  
+//  private static final InheritableThreadLocal<ContextResourceMap> threadMap
+//    =new InheritableThreadLocal<ContextResourceMap>();
   
   private static volatile int ID;
 
@@ -86,7 +91,7 @@ public class ContextResourceMap
     if (debugLevel.isTrace())
     { log.trace("Resolving "+contextURI);
     }
-    Resource ret=threadMap.get().doResolve(contextURI);
+    Resource ret=threadStack.get().doResolve(contextURI);
     if (ret!=null)
     { return ret;
     }
@@ -96,21 +101,30 @@ public class ContextResourceMap
       throw new UnresolvableURIException
         (contextURI
         ,"Could not resolve "+contextURI+" : mappings="
-        +threadMap.get().computeMappings()
+        +threadStack.get().computeMappings()
         );
     }
   }
   
 
+  public void setParent(ContextResourceMap parent)
+  {
+    if (this.parent==null)
+    { this.parent=parent;
+    }
+    else
+    { throw new IllegalStateException("Cannot change parent of "+this);
+    }
+  }
   
   public static ContextResourceMap get()
-  { return threadMap.get();
+  { return threadStack.get();
   }
   
   public static final String getMapId()
   {
     StringBuffer out=new StringBuffer();
-    ContextResourceMap map=threadMap.get();
+    ContextResourceMap map=threadStack.get();
     while (map!=null)
     { 
       out.append("/"+map.id);
@@ -157,19 +171,11 @@ public class ContextResourceMap
   }
   
   public void push()
-  { 
-    parent=threadMap.get();
-    threadMap.set(this);
+  { threadStack.push(this);
   }
   
   public void pop()
-  { 
-    if (parent!=null)
-    { threadMap.set(parent);
-    }
-    else
-    { threadMap.remove();
-    }
+  { threadStack.pop();
   }
   
   /**
@@ -218,6 +224,9 @@ public class ContextResourceMap
     }
     String path=contextURI.getPath().substring(1);
     String authorityName=contextURI.getAuthority();
+    if (authorityName!=null && !contextURI.isAbsolute())
+    { throw new UnresolvableURIException(contextURI,"Absolute URI has no scheme");
+    }
     Authority authority;
 
     if (authorityName!=null)
@@ -267,6 +276,11 @@ public class ContextResourceMap
     }
     return ret;
   }  
+  
+  @Override
+  public String toString()
+  { return super.toString()+": "+map.toString()+" parent="+parent;
+  }
 }
 
 

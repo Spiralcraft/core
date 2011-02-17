@@ -43,7 +43,9 @@ public class TaskScheduler
     Focus<?> focusChain)
     throws BindException
   { 
+    // Make sure that we transfer the resourceMap from the binding thread
     resourceMap=ContextResourceMap.get();
+    
     return scenario.bind(focusChain);
   }
   

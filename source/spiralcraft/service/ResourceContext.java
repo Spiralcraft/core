@@ -34,6 +34,7 @@ public class ResourceContext
   public Focus<?> bind(Focus<?> focus) 
     throws BindException
   {    
+    resourceMap.setParent(ContextResourceMap.get());
     resourceMap.push();
     try
     { return super.bind(focus);
