@@ -267,8 +267,14 @@ public class ExpressionParser
     { 
       consumeToken();
       Node trueResult=this.parseConditionalExpression();
+      if (trueResult==null)
+      { this.throwException("Missing conditional result expression");
+      }
       expect(':');
       Node falseResult=this.parseConditionalExpression();
+      if (falseResult==null)
+      { this.throwException("Missing conditional result expression");
+      }
       node=node.onCondition(trueResult, falseResult);
     }
     return node;
