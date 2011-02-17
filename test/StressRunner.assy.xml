@@ -66,13 +66,13 @@
       </name>
       
       
-      <durationFactor>3
+      <durationFactor>30
       </durationFactor>
       
       <cycleFactor>30
       </cycleFactor>
       
-      <forkFactor>6
+      <forkFactor>20
       </forkFactor>
       
       

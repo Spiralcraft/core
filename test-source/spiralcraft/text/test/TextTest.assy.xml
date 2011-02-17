@@ -11,6 +11,7 @@
   xmlns:util="class:/spiralcraft/util/"
   xmlns:sutil="class:/spiralcraft/util/string/"
   xmlns:text="class:/spiralcraft/text/"
+  xmlns:html="class:/spiralcraft/text/html/"
   xmlns="dynamic:/"
   >
   <name>spiralcraft.text.test
@@ -40,7 +41,66 @@
           </testX>
           
         </test:Assertion>
-                
+
+        <test:Assertion>
+        
+          <name>Stock URLEncoder.encode
+          </name>
+          
+          <subjectX>
+            [@jn:URLEncoder].@encode("This is an encoder test &#x00A9;&#x2211;","UTF-8")
+          </subjectX>
+          
+          <testX>
+            .=="This+is+an+encoder+test+%C2%A9%E2%88%91"
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>URLDataEncoder.encode
+          </name>
+          
+          <subjectX>
+            [@html:URLDataEncoder].@encode("This is an encoder test &#x00A9;&#x2211;")
+          </subjectX>
+          
+          <testX>
+            .=="This+is+an+encoder+test+%C2%A9%E2%88%91"
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>Stock URLDecoder.decode
+          </name>
+          
+          <subjectX>
+            [@jn:URLDecoder].@decode("This+is+an+encoder+test+%C2%A9%E2%88%91","UTF-8")
+          </subjectX>
+          
+          <testX>
+            .=="This is an encoder test &#x00A9;&#x2211;"
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>URLDataEncoder.encode
+          </name>
+          
+          <subjectX>
+            [@html:URLDataEncoder].@decode("This+is+an+encoder+test+%C2%A9%E2%88%91")
+          </subjectX>
+          
+          <testX>
+            .=="This is an encoder test &#x00A9;&#x2211;"
+          </testX>
+          
+        </test:Assertion>                
       </scenarios>
       
     </task:Sequence>

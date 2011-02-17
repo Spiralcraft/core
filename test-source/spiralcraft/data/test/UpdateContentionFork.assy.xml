@@ -39,28 +39,51 @@
             <task:Sequence>
               <scenarios>
                
-                <dtask:Session>
+                <dtask:Transaction>
+                  <debug>false
+                  </debug>
                   <chain>
-                    <task:Eval>
-                      <x>
-                        [*dtask:Fetch
-                          { [*query:Selection
-                              { [@example:Customer].type
-                              , `.id==2`
-                              }
-                            ]
-                          }
-                        ].().@top
-                        .[*dtask:Edit].()
-                        { .displayName="Mary Second Edited "+[context].increment()
-                          ,.
-                        }.@tuple.save()
-                      </x>
-                    </task:Eval>
-    
+                    <dtask:Session>
+                      <contextX>{[#session] tag:=[context].increment()}
+                      </contextX>
+                      <chain>
+                        <task:Sequence>
+                          <scenarios>
+                            <task:Eval>
+                              <x>
+                                [*dtask:Fetch
+                                  { [*query:Selection
+                                      { [@example:Customer].type
+                                      , `.id==2`
+                                      }
+                                    ]
+                                  }
+                                ].().@top
+                                .[*dtask:Edit].()
+                                { .displayName="Mary Second Edited "+[session].tag
+                                  ,.
+                                }.@tuple.save()
+                              </x>
+                            </task:Eval>
+                            
+                            <task:Eval>
+                              <x>
+                              [session].tag%4!=2
+                                ?null
+                                :[dtask:Transaction].rollbackOnComplete()
+                              </x>
+                            </task:Eval>
+                          
+                          </scenarios>
+                        </task:Sequence>
+        
+                      
+                      </chain>
+                    </dtask:Session>
+                  
                   
                   </chain>
-                </dtask:Session>
+                </dtask:Transaction>
                 
               </scenarios>
               
@@ -82,9 +105,10 @@
                 }
               ]
             }
-          ].()#{.displayName}
+          ].().@top.displayName
+          
       </subjectX>
-      <testX>.@top=="Mary Second Edited "+([context].count)
+      <testX>.=="Mary Second Edited "+( ([context].count%4!=2)?[context].count:[context].count-1)
       </testX>
     </test:Assertion>        
   

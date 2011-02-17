@@ -15,6 +15,118 @@
     <detail>
       <scm:Change>
         <notes>
+          <scm:Node>Output an informative log message when an assignment fails
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/lang/spi/AssignmentChannel.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Node>Throw a parseException when a conditional expression is
+            missing components
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/lang/parser/ExpressionParser.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>
+            Fix issue where a Journal Tuple lock was not released when a
+              transaction was rolled back.
+          </scm:Note>
+          <scm:Note>
+            XmlQueryable rollback behavior updated to better track partial
+              execution of prepare stage.
+          </scm:Note>
+          <scm:Note>
+            Logging and debugging additions to help uncover data persistence
+              issues
+          </scm:Note>
+          <scm:Note>
+            Journal Tuple notifies all TransactionContext waiters instead of
+              just one as TransactionContext. Won't make a difference 
+              unless/until outer synchronization is changed.
+          </scm:Note>
+          <scm:Note>
+            Fixed sporadic ConcurrentModificationException when starting a
+              transaction.
+          </scm:Note>
+          <scm:Note>
+            New Transaction data task wraps a transactional operation
+          </scm:Note>
+          <scm:Note>
+            Transaction provides getRollbackOnComplete() method to determine
+              whether further work will be discarded.
+          </scm:Note>
+          <scm:Note>
+            WorkUnit provides setIsolation() and setRequirement() to control
+              Transaction parameters.
+          </scm:Note>
+          <scm:Note>
+            Made transaction filenames fixed length hexadecimal for more
+              orderly file management.
+          </scm:Note>
+        </notes>
+        <path>source/spiralcraft/data/
+        </path>
+        <resources>
+          <URI>core/FieldImpl.java
+          </URI>
+          <URI>spi/ArrayJournalTuple.java
+          </URI>
+          <URI>spi/AbstractStore.java
+          </URI>
+          <URI>task/Transaction.java
+          </URI>
+          <URI>transaction/Transaction.java
+          </URI>
+          <URI>transaction/WorkUnit.java
+          </URI>
+          <URI>xml/XmlQueryable.java
+          </URI>
+          <URI>xml/XmlStore.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
+          <scm:Note>
+            New spiralcraft.measure package for representing unit-based amounts.
+          </scm:Note>
+        </notes>
+        <path>source/spiralcraft/measure/
+        </path>
+        <resources>
+          <URI>Byte.java
+          </URI>
+          <URI>DecimalPrefix.java
+          </URI>
+          <URI>DerivedUnit.java
+          </URI>
+          <URI>DoubleQuantity.java
+          </URI>
+          <URI>Information.java
+          </URI>
+          <URI>IntegerQuantity.java
+          </URI>
+          <URI>Prefix.java
+          </URI>
+          <URI>Quantifiable.java
+          </URI>
+          <URI>Quantity.java
+          </URI>
+          <URI>Unit.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
           <scm:Note>
             Fixes for passing multibyte characters transparently
           </scm:Note>
