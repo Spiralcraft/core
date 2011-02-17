@@ -119,7 +119,9 @@ public class ArrayJournalTuple
               {
                 try
                 { 
-                  log.log(Level.FINE,"Waiting on transaction...",new Exception());
+                  log.log(Level.FINE,"Waiting on transaction created by thread "
+                    +transactionContext.threadName+" : "
+                    +transactionContext.delta,transactionContext.trace);
                 
                   transactionContext.wait();
                 }
@@ -165,8 +167,12 @@ public class ArrayJournalTuple
       
         synchronized (transactionContext)
         {
-          // Let the next one in
-          transactionContext.notify();
+          // log.fine("Rolling back "+transactionContext.delta);
+          
+          // Let waiters contend for the next version
+          // If we don't notify all, nothing else will be around to
+          //   notify remaining waiters.
+          transactionContext.notifyAll();
           transactionContext=null;
         }
       }
@@ -240,6 +246,8 @@ public class ArrayJournalTuple
   {
     public final ArrayJournalTuple nextVersion;
     public final DeltaTuple delta;
+    public final Exception trace;
+    public final String threadName;
 
     public TransactionContext
       (ArrayJournalTuple nextVersion
@@ -248,6 +256,8 @@ public class ArrayJournalTuple
     { 
       this.nextVersion=nextVersion;
       this.delta=delta;
+      this.trace=new Exception();
+      this.threadName=Thread.currentThread().getName();
     }
   }
 
