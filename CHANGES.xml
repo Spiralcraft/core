@@ -258,15 +258,24 @@
           <scm:Note>VFS security check to prevent inadvertent resolution of 
             absolute URIs nested within URI paths.
           </scm:Note>
+          <scm:Note>Fixed issues when chaining VFS Contexts through 
+            thread-contextual trees.
+          </scm:Note>
         </notes>
-        <path>/source/spiralcraft/vfs/
+        <path>/source/spiralcraft/
         </path>
         <resources>
-          <URI>context/Authority.java
+          <URI>vfs/context/Authority.java
           </URI>
-          <URI>context/ContextResourceMap.java
+          <URI>vfs/context/ContextResourceMap.java
           </URI>
-          <URI>UnresolvableURIException.java
+          <URI>vfs/context/FileSpace.java
+          </URI>
+          <URI>vfs/UnresolvableURIException.java
+          </URI>
+          <URI>task/TaskScheduler.java
+          </URI>
+          <URI>service/ResourceContext.java
           </URI>
         </resources>
       </scm:Change>
