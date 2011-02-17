@@ -108,6 +108,8 @@ public class XmlQueryable
   private Type<?> type;
   
   private KeyedListAggregate<Tuple> aggregate;
+//  private KeyedListAggregate<Tuple> snapshot;
+  
   private Exception exception;
   
   private boolean autoCreate;
@@ -888,6 +890,9 @@ public class XmlQueryable
     
     private ArrayList<DeltaTuple> deltaList=new ArrayList<DeltaTuple>();
     
+    private ArrayList<ArrayJournalTuple> undoList
+      =new ArrayList<ArrayJournalTuple>();
+    
     private State state=State.STARTED;
     
     @SuppressWarnings("unused")
@@ -1028,7 +1033,7 @@ public class XmlQueryable
     {
       try
       {
-        if (state!=State.COMMITTED)
+        if (state!=State.COMMITTED && state!=State.ABORTED)
         { rollback();
         }
       }
@@ -1122,6 +1127,7 @@ public class XmlQueryable
           if (!dt.isDelete())
           { 
             replace(ot,nt);
+            undoList.add(ot);
             if (dt instanceof BufferTuple)
             { ((BufferTuple) dt).updateOriginal(null);
             }
@@ -1129,6 +1135,7 @@ public class XmlQueryable
           else
           { 
             remove(ot);
+            undoList.add(ot);
             if (dt instanceof BufferTuple)
             { ((BufferTuple) dt).updateOriginal(null);
             }
@@ -1187,47 +1194,59 @@ public class XmlQueryable
     { 
 
       
-      if (state!=State.COMMITTED)
+      if (state!=State.COMMITTED && state!=State.ABORTED)
       { 
+        for (DeltaTuple dt: deltaList)
+        {
+          if (dt.getOriginal()!=null)
+          {
+            ArrayJournalTuple ot=(ArrayJournalTuple) dt.getOriginal();
+            if (!dt.isDelete())
+            { 
+              if (dt instanceof BufferTuple)
+              { ((BufferTuple) dt).updateOriginal(ot);
+              }
+            }
+            else
+            { 
+              if (dt instanceof BufferTuple)
+              { ((BufferTuple) dt).updateOriginal(ot);
+              }
+            }
+          }
+        }
+        for (ArrayJournalTuple ot:undoList)
+        { 
+          ArrayJournalTuple nt=ot.getTxVersion();
+          if (nt==null || nt.isDeletedVersion())
+          { add(ot);
+          }
+          else
+          { replace(nt,ot);
+          }
+        }
+        for (JournalTuple jt: preparedUpdates)
+        { jt.rollback();
+        }
+        for (Tuple t: preparedAdds)
+        { remove(t);
+        }
+        
         for (String suffix:resources)
         { 
           try
-          { 
-            for (DeltaTuple dt: deltaList)
-            {
-              if (dt.getOriginal()!=null)
-              {
-                ArrayJournalTuple ot=(ArrayJournalTuple) dt.getOriginal();
-                ArrayJournalTuple nt=ot.getTxVersion();
-                if (!dt.isDelete())
-                { 
-                  replace(nt,ot);
-                  if (dt instanceof BufferTuple)
-                  { ((BufferTuple) dt).updateOriginal(ot);
-                  }
-                }
-                else
-                { 
-                  add(ot);
-                  if (dt instanceof BufferTuple)
-                  { ((BufferTuple) dt).updateOriginal(ot);
-                  }
-                }
-                ot.rollback();
-              }
-            }
-            for (Tuple t: preparedAdds)
-            { remove(t);
-            }
-            XmlQueryable.this.rollback(suffix);
+          { XmlQueryable.this.rollback(suffix);
           }
           catch (IOException x)
           { log.log(Level.WARNING,"IOException rolling back '"+suffix+"'",x);
           }
         }
       }
+      else
+      { log.warning("Rollback on txid "+txId+" called in inapplicable state "+state);
+      }
 
-
+      this.state=Transaction.State.ABORTED;
     }
     
     @Override
