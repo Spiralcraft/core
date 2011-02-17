@@ -36,6 +36,18 @@ public abstract class WorkUnit<Tresult>
   private boolean newTransaction;
   private boolean debug;
 
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
+  public void setNesting(Transaction.Nesting nesting)
+  { this.nesting=nesting;
+  }
+  
+  public void setRequirement(Transaction.Requirement requirement)
+  { this.requirement=requirement;
+  }
+  
   public final Tresult work()
     throws TransactionException
   { 
@@ -76,7 +88,14 @@ public abstract class WorkUnit<Tresult>
       Tresult ret=run();
 
       if (newTransaction)
-      { transaction.commit();
+      { 
+        if ((transaction.getState()==Transaction.State.STARTED
+            || transaction.getState()==Transaction.State.PREPARED
+            )
+            && !transaction.getRollbackOnComplete()
+            )
+        { transaction.commit();
+        }
       }
       return ret;
     }
