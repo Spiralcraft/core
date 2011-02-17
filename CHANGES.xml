@@ -15,6 +15,31 @@
     <detail>
       <scm:Change>
         <notes>
+          <scm:Node>Provide resolution chain details when type linking fails
+            due to TypeNotFound exception
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/data/
+        </path>
+        <resources>
+          <URI>TypeNotFoundException.java
+          </URI>
+          <URI>core/TypeImpl.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Node>Add a BigInteger type to wrap Java's
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/data/types/standard/BigIntegerType.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <notes>
           <scm:Node>Output an informative log message when an assignment fails
           </scm:Node>
         </notes>
