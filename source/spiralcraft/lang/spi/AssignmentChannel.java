@@ -37,7 +37,7 @@ public class AssignmentChannel
   {
     Object val=source.get();
     if (!targetChannel.set(val))
-    { log.warning("Assignment failed");
+    { log.warning("Assignment failed to "+targetChannel.toString());
     }
     return val;
   }
