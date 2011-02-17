@@ -580,7 +580,7 @@ public abstract class AbstractStore
       =new EditableArrayListAggregate<DeltaTuple>(AnyType.resolve());
 
     private State state=State.STARTED;
-    private final Set<Long> txOpen=new HashSet<Long>(txInProgress);
+    private final Set<Long> txOpen;
     private final long earliestOpenTx=minOpenTx;
 
     long txId;
@@ -590,6 +590,7 @@ public abstract class AbstractStore
     { 
       synchronized (txInProgress)
       {
+        txOpen=new HashSet<Long>(txInProgress);
         try
         { txId=txIdSequence.next();
         }
