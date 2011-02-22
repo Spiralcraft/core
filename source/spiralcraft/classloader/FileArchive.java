@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.vfs.file.FileResource;
 
 /**
@@ -41,7 +43,24 @@ public class FileArchive
   }
   
   public FileArchive(FileResource resource)
-  { this.rootResource=resource;
+  { 
+    
+    if (!resource.getURI().getRawPath().toString().endsWith("/"))
+    { 
+      try
+      {
+        rootResource
+          =Resolver.getInstance().resolve
+            (URIUtil.ensureTrailingSlash(resource.getURI()))
+              .unwrap(FileResource.class);
+      }
+      catch (UnresolvableURIException x)
+      { throw new IllegalArgumentException(resource.getURI().toString(),x);
+      }
+    }
+    else
+    { this.rootResource=resource;
+    }
   }
   
   
