@@ -31,7 +31,7 @@ import spiralcraft.lang.spi.ProxyChannel;
  */
 public class Binding<T>
   extends ProxyChannel<T>
-  implements Channel<T>
+  implements Channel<T>,Contextual
 {
 
   private final Expression<T> expression;
@@ -64,18 +64,20 @@ public class Binding<T>
   { return expression!=null?expression.getText():null;
   }
   
-  public void bind(Focus<?> focus)
+  @Override
+  public Focus<?> bind(Focus<?> focus)
     throws BindException
   { 
     if (expression==null && channel!=null)
     { 
       // Pre-bound
-      return;
+      return focus.chain(channel);
     }
     
     if (channel==null)
     { channel=focus.bind(expression);
     }
+    return focus.chain(channel);
   }
   
   public void reset()
