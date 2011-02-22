@@ -15,6 +15,57 @@
     <detail>
       <scm:Change>
         <notes>
+          <scm:Node>New ChannelBuffer utility component to maintain state and
+            detect when a Channel's value changes.
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/lang/util/ChannelBuffer.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Node>Sort provides a new constructor which accepts an
+            Expression and a boolean (for direction) to handle the common
+            simple case of a single ordering.
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/lang/functions/Sort.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Node>Binding now implements Contextual to provide additional
+            utility.
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/lang/Binding.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Node>Provide a new constructor for Loader which accepts 
+            a parent ClassLoader and a list of Resources that
+            comprise the "classpath".
+          </scm:Node>
+          <scm:Node>Fix issue where missing trailing slash on 
+            classloader FileArchive prevented file resolution.
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/classloader/
+        </path>
+        <resources>
+          <URI>Loader.java
+          </URI>
+          <URI>FileArchive.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
           <scm:Node>Provide resolution chain details when type linking fails
             due to TypeNotFound exception
           </scm:Node>
