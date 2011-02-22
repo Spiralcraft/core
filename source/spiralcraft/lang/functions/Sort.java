@@ -48,6 +48,10 @@ public class Sort<Tcollection,Titem,Tfunction>
   { this.order=order;
   }
   
+  public Sort(Expression<Titem> expr,boolean reverse)
+  { this.order=new Ordering<Titem,Titem>(expr,reverse);
+  }
+  
   public Sort(boolean reverse)
   { this.order=new Ordering<Titem,Titem>(reverse);
   }
