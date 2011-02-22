@@ -27,6 +27,8 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.util.IteratorEnumeration;
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.file.FileResource;
 
 public class Loader
   extends ClassLoader
@@ -48,6 +50,31 @@ public class Loader
   
   public Loader(ClassLoader parent)
   { super(parent);
+  }
+  
+  public Loader(ClassLoader parent,Resource[] classPath)
+  {
+    super(parent);
+    if (classPath!=null)
+    {
+      for (Resource resource:classPath)
+      {
+        FileResource fileResource=resource.unwrap(FileResource.class);
+        if (fileResource!=null)
+        {
+          if (fileResource.asContainer()==null)
+          { addArchive(new JarArchive(fileResource));
+          }
+          else
+          { addArchive(new FileArchive(fileResource));
+          }
+        }
+        else
+        { throw new UnsupportedOperationException
+            ("Only FileResources are supported at this time"); 
+        }
+      }
+    }
   }
   
   public void setDebug(boolean debug)
