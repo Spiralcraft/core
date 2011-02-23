@@ -15,6 +15,24 @@
     <detail>
       <scm:Change>
         <notes>
+          <scm:Node>Implement @empty meta-property for iterables.
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/lang/spi/AbstractReflector.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Node>Don't try to save a new buffer that is marked for deletion
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/data/session/BufferTuple.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
           <scm:Node>New ChannelBuffer utility component to maintain state and
             detect when a Channel's value changes.
           </scm:Node>
