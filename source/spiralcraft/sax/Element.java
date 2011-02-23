@@ -231,13 +231,17 @@ public class Element
   public String getDeepCharacters()
   {
     StringBuilder buf=new StringBuilder();
-    for (Node node: getChildren())
+    Node[] children=getChildren();
+    if (children!=null)
     {
-      if (node instanceof Characters)
-      { buf.append( ((Characters) node).getCharacters());
-      }
-      else if (node instanceof Element)
-      { buf.append( ((Element) node).getDeepCharacters());
+      for (Node node: children)
+      {
+        if (node instanceof Characters)
+        { buf.append( ((Characters) node).getCharacters());
+        }
+        else if (node instanceof Element)
+        { buf.append( ((Element) node).getDeepCharacters());
+        }
       }
     }
     return buf.toString();
