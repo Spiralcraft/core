@@ -229,6 +229,11 @@ public abstract class AbstractReflector<T>
       assertNoParameters(params,name);
       channel=new CollectionSizeChannel(source);
     }
+    else if (name.equals("@empty"))
+    {
+      assertNoParameters(params,name);
+      channel=new CollectionEmptyChannel(source);
+    }
     return (Channel<X>) channel;
   }
   
@@ -781,6 +786,43 @@ class CollectionSizeChannel<T>
   public boolean store(Integer val)
   { return false;
   }  
+}
+
+class CollectionEmptyChannel<T>
+  extends SourcedChannel<T,Boolean>
+{
+  private final IterationDecorator<T,?> decorator;
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public CollectionEmptyChannel(Channel<T> source)
+    throws BindException
+  {
+    super(BeanReflector.<Boolean>getInstance(Boolean.class),source);
+    this.decorator
+      =source.<IterationDecorator>decorate(IterationDecorator.class);
+    if (decorator==null)
+    { 
+      throw new BindException
+        (source.getReflector().getTypeURI()+" does not support @empty");
+    }
+  }
+
+  @Override
+  public Boolean retrieve()
+  { 
+    T collection=source.get();
+    if (collection==null)
+    { return null;
+    }
+    else
+    { return !decorator.iterator().hasNext();
+    }
+  }
+
+  @Override
+  public boolean store(Boolean val)
+  { return false;
+  }   
 }
 
 class CastChannel<S,T extends S>
