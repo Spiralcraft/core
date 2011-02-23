@@ -15,6 +15,15 @@
     <detail>
       <scm:Change>
         <notes>
+          <scm:Node>Fix NPE in spiralcraft.sax.Element.getDeepCharacters()
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/sax/Element.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
           <scm:Node>Implement @empty meta-property for iterables.
           </scm:Node>
         </notes>
