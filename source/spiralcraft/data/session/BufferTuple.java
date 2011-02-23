@@ -750,7 +750,7 @@ public class BufferTuple
   public void save()
     throws DataException
   {
-    if (!isDirty())
+    if (!isDirty() || (isDelete() && original==null))
     { return;
     }
     
