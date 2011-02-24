@@ -14,6 +14,7 @@
 //
 package spiralcraft.command;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,6 +37,10 @@ public class CommandBlock
   
   public CommandBlock()
   {
+  }
+  
+  public CommandBlock(Command[] commands)
+  { setCommands(Arrays.asList(commands));
   }
   
   public CommandBlock(List<Command> commands)
