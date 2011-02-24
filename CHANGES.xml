@@ -15,6 +15,15 @@
     <detail>
       <scm:Change>
         <notes>
+          <scm:Node>Added array constructor for CommandBlock
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/command/CommandBlock.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
           <scm:Node>Fix NPE in spiralcraft.sax.Element.getDeepCharacters()
           </scm:Node>
         </notes>
