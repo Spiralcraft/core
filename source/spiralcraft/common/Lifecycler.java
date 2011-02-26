@@ -42,7 +42,7 @@ public final class Lifecycler
     catch (LifecycleException x)
     {
       log.log(Level.WARNING,"Failed to start "+la[i],x);
-      for (;--i>0;)
+      for (;i-->0;)
       { 
         try
         { la[i].stop();
@@ -64,7 +64,7 @@ public final class Lifecycler
     
     int i=la.length;
 
-    for (;--i>0;)
+    for (;i-->0;)
     {
       try
       { la[i].stop();
