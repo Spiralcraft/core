@@ -55,6 +55,7 @@ public class AbstractComponent
 
   protected boolean exportSelf=true;  
   protected String id;
+  protected Object key;
   
   public void setParent(Parent parent)
   { this.parent=parent;
@@ -67,7 +68,7 @@ public class AbstractComponent
   
   /**
    * A public identifier by which this component can be addressed within its
-   *   parent component.
+   *   parent component. Must be unique within the parent component.
    * 
    */
   public void setId(String id)
@@ -83,6 +84,30 @@ public class AbstractComponent
   public String getId()
   { return this.id;
   }
+
+//  /**
+//   * An non-unique value that associates this component with some aspect of
+//   *   its parent container.
+//   * 
+//   */
+//  @Override
+//  public void setKey(Object key)
+//  { this.key=key;
+//  }
+//  
+//  /**
+//   * A non-unique value that associates this component with some aspect of
+//   *   its parent container.
+//   * 
+//   * @return
+//   */
+//  @Override
+//  public Object getKey()
+//  { return this.key;
+//  }
+
+  
+  
   
   @Override
   public void message
