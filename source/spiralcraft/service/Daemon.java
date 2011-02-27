@@ -50,8 +50,8 @@ public class Daemon
   private static final ClassLog log=ClassLog.getInstance(Daemon.class);
   
   private Object _eventMonitor=new Object();
-  private boolean _running=true;
-  private boolean _stopRequested=false;
+  private volatile boolean _running=true;
+  private volatile boolean _stopRequested=false;
   private String[] _args;
   private Scenario<?,?> afterStart;
   
@@ -163,7 +163,11 @@ public class Daemon
   { 
     _stopRequested=true;
     synchronized (_eventMonitor)
-    { _eventMonitor.notify();
+    { 
+      _eventMonitor.notifyAll();
+      if (logLevel.isDebug())
+      { log.debug("Notified event handler of termination...");
+      }
     }
 
   }
@@ -177,7 +181,17 @@ public class Daemon
       while (_running && !_stopRequested)
       {
         synchronized (_eventMonitor)
-        { _eventMonitor.wait();
+        { 
+          if (_running && !_stopRequested)
+          { 
+            if (logLevel.isDebug())
+            { log.debug("Waiting for next process event...");
+            }
+            _eventMonitor.wait();
+          }
+          if (logLevel.isDebug())
+          { log.debug("Event handler terminating...");
+          }
         }
       }
     }
