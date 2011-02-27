@@ -29,7 +29,6 @@ import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.lang.Expression;
-import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
