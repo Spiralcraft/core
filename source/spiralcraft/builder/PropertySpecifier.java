@@ -29,6 +29,8 @@ import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.lang.Expression;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
 import java.util.List;
@@ -44,6 +46,9 @@ import java.util.List;
  */
 public class PropertySpecifier
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(PropertySpecifier.class);
+  
   private final AssemblyClass _container;
   private final String[] _specifier;
   private StringBuffer _textContent;
@@ -764,7 +769,18 @@ public class PropertySpecifier
   { 
     List<AssemblyClass> ret=new ArrayList<AssemblyClass>();
     if (_baseMember!=null)
-    { ret.addAll(_baseMember.getCombinedContents());
+    { 
+      ret.addAll(_baseMember.getCombinedContents());
+      if (debugLevel.isDebug())
+      { 
+        log.debug
+          ("Property "+_targetName+" in "
+          +_container.getSourceURI()
+          +" inherited "+ret.size()+" assemblies "
+          +" from "+_baseMember._targetName+" in "
+          +_baseMember._container.getSourceURI()
+          );
+      }
     }
     if (_contents!=null)
     { 
@@ -782,8 +798,10 @@ public class PropertySpecifier
       else if 
         (_contents.size()==1 
         && !AssemblyClass.isAggregate(_contents.get(0).getJavaClass())
+        && !isAggregatePropertyType()
         )
       { 
+
         // If this is not an aggregate property, and we are specifying a
         //   value here, replace the value specified in the base type
         if (ret.size()>0)
@@ -798,6 +816,13 @@ public class PropertySpecifier
       }
     }
     return ret;
+  }
+  
+  private boolean isAggregatePropertyType()
+  {
+    return propertyType!=null 
+           && (propertyType.isArray() 
+            || Collection.class.isAssignableFrom(propertyType));
   }
   
   public List<String> getTextDataList()
