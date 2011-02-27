@@ -1,0 +1,46 @@
+<!--
+  Create an assembly which exposes a JavaBean naming context for
+    access to the properties of SimpleWidget. 
+    
+  New instances of the assembly will configure SimpleWidget with the
+    specified properties.
+    
+  Assemblies which extend this assembly will inherit the property
+    settings for SimpleWidget  
+-->
+
+<test:SimpleWidget
+  xmlns:test="class:/spiralcraft/builder/test/"
+  xmlns:jtext="class:/java/text/"
+  >
+
+  <title>My Widget</title>
+  <id>3</id>
+  <on>false</on>
+  <amount>17.43</amount>
+  <milliseconds>123456789012345</milliseconds>
+  <friend>
+    <test:SimpleWidget>
+      <title>My Friend</title>
+      <friend>
+        <test:SimpleWidget>
+          <title x="...title"/>
+        </test:SimpleWidget>
+      </friend>
+    </test:SimpleWidget>
+  </friend>
+  <children>
+    <test:SimpleWidget>
+      <title>Child 1</title>
+    </test:SimpleWidget>
+  </children>  
+  <aliases>
+    <String id="0">alias 1 ${user.name}</String>
+    <String id="1">alias 2 ${user.home}</String>
+    <String id="2">alias 3 ${user.dir} \${notmarkup</String>
+  </aliases>
+
+  <dateFormat>
+    <jtext:SimpleDateFormat>MM/dd/yy hh:mm:ss.S</jtext:SimpleDateFormat>
+  </dateFormat>
+</test:SimpleWidget>

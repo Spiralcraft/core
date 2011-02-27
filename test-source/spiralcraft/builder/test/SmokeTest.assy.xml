@@ -1,0 +1,48 @@
+<test:TestGroup
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:j="class:/java/lang/"
+  xmlns:jm="class:/java/math/"
+  xmlns:lang="class:/spiralcraft/lang"
+  xmlns:util="class:/spiralcraft/util/string/"
+  xmlns:btest="class:/spiralcraft/builder/test/"
+  >
+  <name>spiralcraft.builder.test
+  </name>
+  
+  <chain>
+ 
+    <task:Sequence>
+      <scenarios>
+    
+        <test:Assertion>
+        
+          <name>Collection inheritance and aggregation
+          </name>
+          
+          <subjectX>[@btest:ExtendedWidget2].().children
+          </subjectX>
+          
+          <testX>.@size==9
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>Collection inheritance and aggregation- single case
+          </name>
+          
+          <subjectX>[@btest:XBarWidget].().children
+          </subjectX>
+          
+          <testX>.@size==2
+          </testX>
+          
+        </test:Assertion>
+      </scenarios>
+      
+    </task:Sequence>
+  </chain>
+        
+</test:TestGroup>

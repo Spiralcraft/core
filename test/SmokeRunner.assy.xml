@@ -144,6 +144,9 @@
             <texttest:TextTest
               xmlns:texttest="class:/spiralcraft/text/test/"
             />
+            <buildertest:SmokeTest
+              xmlns:buildertest="class:/spiralcraft/builder/test/"
+            />
           </scenarios>
         </task:Sequence>
       

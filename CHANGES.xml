@@ -13,6 +13,56 @@
     </date>
     
     <detail>
+
+      <scm:Change>
+        <notes>
+          <scm:Node>Add an id property to Component interface. 
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/app/
+        </path>
+        <resources>
+          <URI>Component.java
+          </URI>
+          <URI>spi/AbstractComponent.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Node>Fix bug in Builder that prevented an aggregate property in 
+            a sub-assemblyclass from pre-catenating the super-assemblyclass's
+            property value when there was only a single element in the 
+            superclass definition. PropertySpecifier now looks at the
+            target property type to determine if it is an aggregate and
+            should be concatenated instead of overridden.
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/builder/PropertySpecifier.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Node>Fix fencepost error in Lifecycler which left 1st service
+            running on shutdown.
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/common/Lifecycler.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <notes>
+          <scm:Node>Shutdown sequence debugging code and synchronization logic
+            tighten-up.
+          </scm:Node>
+        </notes>
+        <path>source/spiralcraft/service/Daemon.java
+        </path>
+      </scm:Change>
+
       <scm:Change>
         <notes>
           <scm:Node>Added array constructor for CommandBlock
