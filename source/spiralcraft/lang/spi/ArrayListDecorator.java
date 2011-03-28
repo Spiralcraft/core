@@ -80,11 +80,8 @@ public class ArrayListDecorator<I>
     )
   {
     LinkedList<I> itemList=new LinkedList<I>();
-    int i=0;
     while (items.hasNext())
-    { 
-      itemList.add(items.next());
-      i++;
+    { itemList.add(items.next());
     }
     return ArrayUtil.concat(collection,itemList);
     
