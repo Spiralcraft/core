@@ -16,17 +16,12 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>Add an id property to Component interface. 
+          <scm:Node>Add an LSID (Local String Identifier) type to formalize
+            exportable synthetic object keys.
           </scm:Node>
         </notes>
-        <path>source/spiralcraft/app/
+        <path>source/spiralcraft/data/types/common/LSID.type.xml
         </path>
-        <resources>
-          <URI>Component.java
-          </URI>
-          <URI>spi/AbstractComponent.java
-          </URI>
-        </resources>
       </scm:Change>
 
       <scm:Change>
