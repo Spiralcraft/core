@@ -19,8 +19,19 @@ import spiralcraft.util.KeyFunction;
 import spiralcraft.util.string.StringConverter;
 
 /**
- * A set of Fields within a Scheme which uniquely identify a single Tuple 
- *   or distinctly identify a group of Tuples within a given Space.
+ * <p>Defines relationships between Tuples of the same type and different
+ *   types. 
+ * </p>
+ * 
+ * <p>Defines a set of Fields within a Scheme which uniquely identify a single 
+ *   Tuple or distinctly identify a group of Tuples within a given Space.
+ * </p>
+ * 
+ * <p>May define a relationship on a set of fields between relations of
+ *   different Types
+ * </p>
+ * 
+ * 
  */
 public interface Key<T>
   extends Projection<T>
@@ -34,6 +45,12 @@ public interface Key<T>
    * @return
    */
   public String getName();
+  
+  /**
+   * <p>Describes the purpose of 
+   * @return
+   */
+  public String getDescription();
   
   /**
    * @return The Scheme to which this Key belongs.
