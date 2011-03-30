@@ -53,6 +53,8 @@ public class KeyImpl<T>
 {
   private Scheme scheme;
   private String name;
+  private String description;
+  
 //  private int index;
   private boolean primary;
   private boolean unique;
@@ -83,10 +85,19 @@ public class KeyImpl<T>
   { return name;
   }
   
+  
   public void setName(String name)
   { this.name=name;
   }
+
+  @Override
+  public String getDescription()
+  { return description;
+  }
   
+  public void setDescription(String description)
+  { this.description=description;
+  }
   
   @Override
   public String getTitle()
@@ -174,8 +185,8 @@ public class KeyImpl<T>
   }
 
   /**
-   * @return A Key from the foreign Type that originates the data values
-   *   for this Key's Fields. 
+   * @return A Key based on the foreign Type that defines the set of related 
+   *   fields and the cardinality of the relation.
    */
   @Override
   public Key<?> getImportedKey()
@@ -221,6 +232,64 @@ public class KeyImpl<T>
     { return;
     }
 
+    if (foreignType!=null)
+    { 
+      if (importedKey==null)
+      {
+        Key<?>[] keys=foreignType.getKeys();
+        for (Key<?> key : keys)
+        { 
+          // Check for reciprocal definition
+          if (key.getForeignType()!=null
+              && key.getForeignType().isAssignableFrom(getType())
+              )
+          { importedKey=(KeyImpl<?>) key;
+          }
+        }
+        if (importedKey==null)
+        {
+        
+          // Use default reference to a primary key
+          importedKey=(KeyImpl<?>) foreignType.getPrimaryKey();
+        }
+        if (importedKey==null)
+        {
+          throw new DataException("In "+getType().getURI()+", no "
+            +" suitable foreign Key found in foreign type "+foreignType.getURI()
+            );
+        }
+      }
+      else if (importedKey.getName()!=null)
+      { 
+        // Use a named reference to a foreign key
+        if (importedKey.getFieldNames()!=null)
+        { 
+          throw new DataException
+            ("imported key reference '"+importedKey.getName()+"'"
+            +" in "+getType().getURI()
+            +"' cannot also define a fieldList"
+            );
+        }
+        
+        Key<?>[] keys=foreignType.getKeys();
+        for (Key<?> key : keys)
+        { 
+          if (importedKey.getName().equals(key.getName()))
+          { importedKey=(KeyImpl<?>) key;
+          }
+        }
+        
+        
+        
+      }
+    }
+    
+    if (fieldNames==null)
+    { 
+      throw new DataException
+        ("Key in "+getType().getURI()+" has no fields");
+    }
+    
     stringConverters=new StringConverter[fieldNames.length];
     int i=0;
     for (String fieldName: fieldNames)
@@ -262,6 +331,9 @@ public class KeyImpl<T>
 
     
     projectionId=StringUtil.implode(',',',',fieldNames);
+    
+
+    
     
     if (importedKey!=null)
     { 
