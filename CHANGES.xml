@@ -9,16 +9,30 @@
     <authorId>miketoth
     </authorId>
     
-    <date>?????
+    <date>2011-03-30
     </date>
     
     <detail>
+    
+      <scm:Change>
+        <notes>
+          <scm:Note>Add "description" property to Key definition.
+          </scm:Note>
+          <scm:Note>Import foreign Key information into Key definitions to
+            remove redundancy in Key definition. When a foreignType is
+            specified, if an importedKey is not specified, the primary key
+            of the foreign type will be used. When an importedKey has a 
+            "name" property specified, the key with that name will be
+            imported from the foreignType.
+          </scm:Note>
+        </notes>
+      </scm:Change>
 
       <scm:Change>
         <notes>
-          <scm:Node>Add an LSID (Local String Identifier) type to formalize
+          <scm:Note>Add an LSID (Local String Identifier) type to formalize
             exportable synthetic object keys.
-          </scm:Node>
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/data/types/common/LSID.type.xml
         </path>
@@ -26,13 +40,13 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>Fix bug in Builder that prevented an aggregate property in 
+          <scm:Note>Fix bug in Builder that prevented an aggregate property in 
             a sub-assemblyclass from pre-catenating the super-assemblyclass's
             property value when there was only a single element in the 
             superclass definition. PropertySpecifier now looks at the
             target property type to determine if it is an aggregate and
             should be concatenated instead of overridden.
-          </scm:Node>
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/builder/PropertySpecifier.java
         </path>
@@ -40,9 +54,9 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>Fix fencepost error in Lifecycler which left 1st service
+          <scm:Note>Fix fencepost error in Lifecycler which left 1st service
             running on shutdown.
-          </scm:Node>
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/common/Lifecycler.java
         </path>
@@ -50,9 +64,9 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>Shutdown sequence debugging code and synchronization logic
+          <scm:Note>Shutdown sequence debugging code and synchronization logic
             tighten-up.
-          </scm:Node>
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/service/Daemon.java
         </path>
@@ -60,8 +74,8 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>Added array constructor for CommandBlock
-          </scm:Node>
+          <scm:Note>Added array constructor for CommandBlock
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/command/CommandBlock.java
         </path>
@@ -69,8 +83,8 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>Fix NPE in spiralcraft.sax.Element.getDeepCharacters()
-          </scm:Node>
+          <scm:Note>Fix NPE in spiralcraft.sax.Element.getDeepCharacters()
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/sax/Element.java
         </path>
@@ -78,8 +92,8 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>Implement @empty meta-property for iterables.
-          </scm:Node>
+          <scm:Note>Implement @empty meta-property for iterables.
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/lang/spi/AbstractReflector.java
         </path>
@@ -87,8 +101,8 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>Don't try to save a new buffer that is marked for deletion
-          </scm:Node>
+          <scm:Note>Don't try to save a new buffer that is marked for deletion
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/data/session/BufferTuple.java
         </path>
@@ -96,9 +110,9 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>New ChannelBuffer utility component to maintain state and
+          <scm:Note>New ChannelBuffer utility component to maintain state and
             detect when a Channel's value changes.
-          </scm:Node>
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/lang/util/ChannelBuffer.java
         </path>
@@ -106,10 +120,10 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>Sort provides a new constructor which accepts an
+          <scm:Note>Sort provides a new constructor which accepts an
             Expression and a boolean (for direction) to handle the common
             simple case of a single ordering.
-          </scm:Node>
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/lang/functions/Sort.java
         </path>
@@ -117,9 +131,9 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>Binding now implements Contextual to provide additional
+          <scm:Note>Binding now implements Contextual to provide additional
             utility.
-          </scm:Node>
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/lang/Binding.java
         </path>
@@ -127,13 +141,13 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>Provide a new constructor for Loader which accepts 
+          <scm:Note>Provide a new constructor for Loader which accepts 
             a parent ClassLoader and a list of Resources that
             comprise the "classpath".
-          </scm:Node>
-          <scm:Node>Fix issue where missing trailing slash on 
+          </scm:Note>
+          <scm:Note>Fix issue where missing trailing slash on 
             classloader FileArchive prevented file resolution.
-          </scm:Node>
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/classloader/
         </path>
@@ -147,9 +161,9 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>Provide resolution chain details when type linking fails
+          <scm:Note>Provide resolution chain details when type linking fails
             due to TypeNotFound exception
-          </scm:Node>
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/data/
         </path>
@@ -163,8 +177,8 @@
 
       <scm:Change>
         <notes>
-          <scm:Node>Add a BigInteger type to wrap Java's
-          </scm:Node>
+          <scm:Note>Add a BigInteger type to wrap Java's
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/data/types/standard/BigIntegerType.java
         </path>
@@ -172,8 +186,8 @@
       
       <scm:Change>
         <notes>
-          <scm:Node>Output an informative log message when an assignment fails
-          </scm:Node>
+          <scm:Note>Output an informative log message when an assignment fails
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/lang/spi/AssignmentChannel.java
         </path>
@@ -181,9 +195,9 @@
       
       <scm:Change>
         <notes>
-          <scm:Node>Throw a parseException when a conditional expression is
+          <scm:Note>Throw a parseException when a conditional expression is
             missing components
-          </scm:Node>
+          </scm:Note>
         </notes>
         <path>source/spiralcraft/lang/parser/ExpressionParser.java
         </path>
