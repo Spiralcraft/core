@@ -22,6 +22,18 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 
+/**
+ * <p>Evaluates a condition, and returns the result of the positive case
+ *   if the condition evalues to "true", otherwise returns the result of
+ *   the negative case.
+ * </p>
+ * 
+ * <p>A null value always returns the result of the negative case
+ * </p>
+ * 
+ * @author mike
+ */
+
 @SuppressWarnings("unchecked") // Nodes are not generic
 public class ConditionalNode
   extends Node
