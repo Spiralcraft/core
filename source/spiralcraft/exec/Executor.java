@@ -37,6 +37,7 @@ import spiralcraft.log.RotatingFileHandler;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.ServiceLoader;
 
 import java.io.IOException;
@@ -81,6 +82,7 @@ public class Executor
   private EventHandler logHandler;
   private EventHandler consoleHandler;
   private boolean consoleLog;
+  private URI altContextURI;
   
   protected ExecutionContext context
     =ExecutionContext.getInstance();
@@ -94,6 +96,24 @@ public class Executor
     =new StandardPrefixResolver();
   
   
+  /**
+   * Legacy entry point from launcher
+   * 
+   * @see execute(String[] args)
+   * @param args
+   * @throws IOException
+   * @throws URISyntaxException
+   * @throws PersistenceException
+   * @throws ExecutionException
+   */
+  public static void launch(String ... args)
+    throws IOException
+      ,URISyntaxException
+      ,PersistenceException
+      ,ExecutionException
+  { new Executor().execute(args);
+  }
+  
   
   /**
    * Entry point from launcher
@@ -105,14 +125,21 @@ public class Executor
    * @throws PersistenceException
    * @throws ExecutionException
    */
-  public static void launch(String ... args)
+  public static void launch(HashMap<String,Object> contextMap,String ... args)
     throws IOException
             ,URISyntaxException
             ,PersistenceException
             ,ExecutionException
-  { new Executor().execute(args);
+  {  
+    ExecutionContext.pushInstance
+      (new ExecutionContext(ExecutionContext.getInstance(),contextMap));
+    try
+    { new Executor().execute(args);
+    }
+    finally
+    { ExecutionContext.popInstance();
+    }
   }
-
   
   public void setTypeURI(URI typeURI)
   { this.typeURI=typeURI;
@@ -143,7 +170,6 @@ public class Executor
   protected void execute(String ... args)
     throws ExecutionException
   {
-
     ExecutionContext.pushInstance(context);
     ContextDictionary.pushInstance(properties);
     
@@ -221,9 +247,30 @@ public class Executor
         
       Executable executable=resolveExecutable(); 
       
-      executable.execute(arguments);
-      if (persistOnCompletion && instanceURI!=null)
-      { wrapper.save();
+      try
+      {
+        if (altContextURI!=null)
+        {
+          ExecutionContext.pushInstance
+            (new ExecutionContext(context)
+              {
+                @Override
+                public URI focusURI()
+                { return altContextURI;
+                }
+              }
+            );
+        }
+        executable.execute(arguments);
+        if (persistOnCompletion && instanceURI!=null)
+        { wrapper.save();
+        }
+      }
+      finally
+      {
+        if (altContextURI!=null)
+        { ExecutionContext.popInstance();
+        }
       }
       
     
@@ -354,6 +401,7 @@ public class Executor
             { contextUri=ExecutionContext.getInstance().canonicalize(contextUri);
             }
             ContextResourceMap.get().putDefault(contextUri);
+            altContextURI=contextUri;
           }
           else if (option.equals("-persist"))
           { 

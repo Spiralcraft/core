@@ -25,7 +25,9 @@ import java.net.URI;
 public class SystemExecutionContext
   extends ExecutionContext
 {
-  
+  public SystemExecutionContext()
+  { super(null);
+  }
   
   @Override
   public PrintStream out()

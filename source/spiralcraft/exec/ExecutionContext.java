@@ -14,10 +14,11 @@
 //
 package spiralcraft.exec;
 
-import java.io.PrintStream;
 import java.io.InputStream;
+import java.io.PrintStream;
 
 import java.net.URI;
+import java.util.HashMap;
 
 import spiralcraft.util.thread.ThreadLocalStack;
 
@@ -27,7 +28,7 @@ import spiralcraft.util.thread.ThreadLocalStack;
  *   java.lang.System as a "global" context.
  * </p>
  */
-public abstract class ExecutionContext
+public class ExecutionContext
 {
   private static final ExecutionContext _SYSTEM_CONTEXT
     =new SystemExecutionContext();
@@ -61,7 +62,7 @@ public abstract class ExecutionContext
    * 
    * @return
    */
-  static final void pushInstance(ExecutionContext context)
+  public static final void pushInstance(ExecutionContext context)
   { _INSTANCE.push(context);
   }
   
@@ -69,22 +70,57 @@ public abstract class ExecutionContext
    * <p>Reset the current thread-local singleton instance
    * </p>
    */
-  static final void popInstance()
+  public static final void popInstance()
   { _INSTANCE.pop();
   }
- 
-  public abstract PrintStream out();
   
-  public abstract InputStream in();
+  private final ExecutionContext parent;
+  private final PrintStream out;
+  private final PrintStream err;
+  private final InputStream in;
+  private final URI focusURI;
+  
+  
+  public ExecutionContext
+    (ExecutionContext parent,HashMap<String,Object> contextMap)
+  { 
+    this.parent=parent;
+    this.out=(PrintStream) contextMap.get("out");
+    this.err=(PrintStream) contextMap.get("err");
+    this.in=(InputStream) contextMap.get("in");
+    this.focusURI=(URI) contextMap.get("focusURI");
+  }
+  
+  public ExecutionContext(ExecutionContext parent)
+  { 
+    this.parent=parent;
+    this.out=null;
+    this.err=null;
+    this.in=null;
+    this.focusURI=null;
+  }
+  
+  
+  public PrintStream out()
+  { return out!=null?out:parent.out();
+  }
+  
+  public InputStream in()
+  { return in!=null?in:parent.in();
+  }
 
-  public abstract PrintStream err();
+  public PrintStream err()
+  { return err!=null?err:parent.err();
+  }
   
   
   /**
    * Return the user focus URI- the URI equivalent of the "current directory"
    *   in a file system
    */
-  public abstract URI focusURI();
+  public URI focusURI()
+  { return focusURI!=null?focusURI:parent.focusURI();
+  }
   
   /**
    * Convert a relative or context-mapped URI to an absolute URI. Other
