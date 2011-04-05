@@ -72,7 +72,7 @@ public class MetaNode<T extends Channel<?>>
     }
     else
     { 
-      System.out.println("MetaNode:"+super.toString()+" DEFAULT Using Focus subject");
+      // System.out.println("MetaNode:"+super.toString()+" DEFAULT Using Focus subject");
       sourceOptic=focus.getSubject();
       if (sourceOptic==null)
       { throw new BindException("Focus "+focus+" has no subject");
@@ -80,7 +80,7 @@ public class MetaNode<T extends Channel<?>>
     }
 
     
-    Channel<T> ret=sourceOptic.resolve(focus,"!",null);
+    Channel<T> ret=sourceOptic.resolve(focus,"@",null);
     if (ret==null)
     { return new SimpleChannel<T>((T) sourceOptic,true);
     }
