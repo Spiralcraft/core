@@ -3,6 +3,337 @@
   >
   <scm:Change>
   
+    <revision>0.4.14
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>
+    </date>
+    
+    <detail>
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>MessageFormat renders to a String for use in objects that
+            use Strings for labels, etc.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/text/MessageFormat.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>New Scaffold package to represent composition
+            specification architecture to unify textgen and common component
+            models.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/scaffold/Scaffold.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>ThreadLocalStack supports size()
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/ThreadLocalStack.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Moved spiralcraft.shell package into its own module
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/shell/
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix delayed NPE in AbstractChannel when no reflector is
+            provided
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi/AbstractChannel.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Command line argument processing mechanism supports
+            multi-valued options.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>exec/Arguments.java
+          </URI>
+          <URI>exec/BeanArguments.java
+          </URI>
+          <URI>lang/util/Configurator.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Executor supports passing of contextual information 
+            through isolation barrier, specifically "system" IO streams.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/exec/
+        </path>
+        
+        <resources>
+          <URI>Executor.java
+          </URI>
+          <URI>ExecutionContext.java
+          </URI>
+          <URI>SystemExecutionContext.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Begin unification of the Exception model to allow for 
+            context to be associated with any of the exceptions thrown from 
+            composed models- e.g. non-java source code location.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>common/ContextualException.java
+          </URI>
+          <URI>data/DataException.java
+          </URI>
+          <URI>text/ParseException.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Ensure that Types loaded through the "file" scheme are
+            always loaded in the leaf TypeResolver, as these Types may
+            reference "class" scheme Types only found in the leaf TypeResolver
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/TypeResolver.java
+        </path>
+        
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>CoreTypeFactory checks URI scheme to ensure that
+            a "class" or "java" type is being referenced.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/core/CoreTypeFactory.java
+        </path>
+        
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Reduce startup time and memory consumption by avoiding
+            automatic traversal of entire reachable object graph during Type 
+            resolution.
+          </scm:Note>
+          <scm:Note>Field and Method linking logic delays resolution of derived
+            Type information until it is needed.
+          </scm:Note>
+          <scm:Note>Support tracing of recursive Type linking using
+            spiralcraft.lang.Type TRACE log level.
+          </scm:Note>
+          <scm:Note>Limit exposure of BeanInfo in Builder by delegating to
+            AssemblyClass for information to avoid pulling in java.awt
+            graph due to PropertyDescriptor->PropertyEditor->java.awt.Component
+            reference.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>builder/AssemblyClass.java
+          </URI>
+          <URI>builder/PropertyBinding.java
+          </URI>
+          <URI>builder/PropertySpecifier.java
+          </URI>
+          <URI>data/Type.java
+          </URI>
+          <URI>data/builder/BuilderField.java
+          </URI>
+          <URI>data/builder/BuilderType.java
+          </URI>
+          <URI>data/core/FieldImpl.java
+          </URI>
+          <URI>data/core/MethodImpl.java
+          </URI>
+          <URI>data/core/PrimitiveTypeImpl.java
+          </URI>
+          <URI>data/core/QueryField.java
+          </URI>
+          <URI>data/core/SchemeImpl.java
+          </URI>
+          <URI>data/core/TypeImpl.java
+          </URI>
+          <URI>data/reflect/ReflectionField.java
+          </URI>
+          <URI>data/reflect/ReflectionMethod.java
+          </URI>
+        </resources>
+        
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Remove unused "addedChildView" method in View
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/View.java
+        </path>
+        
+        
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix NPE when no children in container
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/spi/StandardContainer.java
+        </path>
+        
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Lifecycler supports groups of Lifecycle objects
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/common/Lifecycler.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Common component model supports registering Contextual
+            objects for binding at various points in the binding process.
+          </scm:Note>
+          <scm:Note>Common component model provides support for differentiating
+            "peers" and generic children. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/spi/AbstractComponent.java
+        </path>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Add QName facility to help deal with qualified names
+            created from namespace prefix resolution
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/common/namespace/QName.java
+        </path>
+        
+      </scm:Change>
+    </detail>
+  </scm:Change>
+  
+  <scm:Change>
+  
     <revision>0.4.13
     </revision>
     

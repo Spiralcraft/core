@@ -2,7 +2,10 @@
 
   <property name="classpath" value=""/>
   <property name="module" value="core"/>
-  <property name="buildVersion" value="0.4.13"/>
+  <property name="buildVersion" value="0.4.14-dev1"/>
+
+  <property name="logs.dir" location="test/log"/>
+    
     
   <import file="../../build/build-spiralcraft-common.xml"/>
   

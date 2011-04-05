@@ -3,6 +3,7 @@
 <ivy-module version="2.0">
   <info organisation="spiralcraft" module="core" status="integration">
   </info>
+
   
   <publications>
     <artifact name="spiralcraft-core" type="jar" ext="jar"/>
