@@ -15,6 +15,11 @@
 package spiralcraft.app.spi;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+
 import spiralcraft.app.Component;
 import spiralcraft.app.Container;
 import spiralcraft.app.Event;
@@ -22,12 +27,16 @@ import spiralcraft.app.Parent;
 import spiralcraft.app.Message;
 import spiralcraft.app.Dispatcher;
 import spiralcraft.app.State;
+import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.common.Lifecycler;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.ArrayUtil;
 
 /**
  * <p>Basic implementation of a component which uses a set of MessageHandlers
@@ -56,6 +65,14 @@ public class AbstractComponent
   protected boolean exportSelf=true;  
   protected String id;
   protected Object key;
+  
+  private Component[] peers;
+  private HashSet<Component> peerSet;
+  private Component[] contents;
+  
+  private LinkedList<Contextual> parentContextuals;
+  private LinkedList<Contextual> exportContextuals;
+  private LinkedList<Contextual> selfContextuals;
   
   public void setParent(Parent parent)
   { this.parent=parent;
@@ -107,8 +124,172 @@ public class AbstractComponent
 //  }
 
   
+  /**
+   * <p>Add a Peer Component
+   * </p>
+   * 
+   * <p>A Peer is a child that has a specific role in this Component's function, 
+   *   as opposed to Contents, which are generically managed children.
+   * </p>
+   * 
+   * @param peer
+   */
+  protected void addPeer(Component peer)
+  { 
+    if (peer!=null)
+    {
+      if (this.peers==null)
+      { 
+        this.peers=new Component[] {peer};
+        this.peerSet=new HashSet<Component>();
+      }
+      else 
+      { this.peers=ArrayUtil.append(this.peers,peer);
+      }
+      this.peerSet.add(peer);
+    }
+  }
+  
+  /**
+   * <p>Remove a Peer Component
+   * </p>
+   * 
+   * <p>A Peer is a child that has a specific role in this Component's function, 
+   *   as opposed to Contents, which are generically managed children.
+   * </p>
+   * 
+   * @param peer
+   */
+  protected void removePeer(Component peer)
+  {
+    if (peer!=null)
+    {
+      if (this.peers!=null)
+      { 
+        this.peers=ArrayUtil.remove(this.peers,peer);
+        this.peerSet.remove(peer);
+      }
+    }
+  }
+  
+  /**
+   * <p>Determine if a given child Component is a peer to exclude it from
+   *   generic handling of child Components.
+   * </p>
+   * 
+   * @param child
+   * @return
+   */
+  protected boolean isPeer(Component child)
+  { return peerSet!=null && peerSet.contains(child);
+  }
+  
+  /**
+   * <p>Add a Contextual to be bound to this Control's parent's context.
+   * </p>
+   * 
+   * <p>The Focus returned by the Contextual will not be used by this
+   *   component.
+   * </p>
+   * 
+   * @param contextual
+   */
+  protected void addParentContextual(Contextual contextual)
+  { 
+    if (this.parentContextuals==null)
+    { this.parentContextuals=new LinkedList<Contextual>();
+    }
+    this.parentContextuals.add(contextual);
+  }
+
+  /**
+   * <p>Remove a Contextual from the list of Contextuals to be bound
+   * </p>
+   * 
+   * @param contextual
+   */
+  protected void removeParentContextual(Contextual contextual)
+  {
+    if (this.parentContextuals!=null)
+    { this.parentContextuals.remove(contextual);
+    }
+  }
+  
+  /**
+   * <p>Add a Contextual to be bound to this Control's target's context 
+   * </p>
+   * 
+   * <p>The Focus returned by the Contextual will not be used by this
+   *   component.
+   * </p>
+   *
+   * @param contextual
+   */
+  protected void addExportContextual(Contextual contextual)
+  { 
+    if (this.exportContextuals==null)
+    { this.exportContextuals=new LinkedList<Contextual>();
+    }
+    this.exportContextuals.add(contextual);
+  }
+
+  /**
+   * <p>Remove a Contextual from the list of Contextuals to be bound
+   * </p>
+   * 
+   * @param contextual
+   */
+  protected void removeExportContextual(Contextual contextual)
+  {
+    if (this.exportContextuals!=null)
+    { this.exportContextuals.remove(contextual);
+    }
+  }
+  
+  /**
+   * <p>Add a Contextual to be bound to this Control's own context 
+   * </p>
+   * 
+   * <p>The Focus returned by the Contextual will not be used by this
+   *   component.
+   * </p>
+   * 
+   * @param contextual
+   */
+  protected void addSelfContextual(Contextual contextual)
+  { 
+    if (this.selfContextuals==null)
+    { this.selfContextuals=new LinkedList<Contextual>();
+    }
+    this.selfContextuals.add(contextual);
+  }
   
   
+  /**
+   * </p>Remove a Contextual from the list of Contextuals to be bound
+   * <p>
+   * 
+   * @param contextual
+   */
+  protected void removeSelfContextual(Contextual contextual)
+  {
+    if (this.selfContextuals!=null)
+    { this.selfContextuals.remove(contextual);
+    }
+  }
+  
+  protected final void bindContextuals
+    (Focus<?> focus,List<Contextual> contextuals)
+    throws BindException
+  { 
+    if (contextuals!=null)
+    {
+      for (Contextual contextual:contextuals)
+      { contextual.bind(focus);
+      }
+    }
+  }
+
   @Override
   public void message
     (Dispatcher context
@@ -132,6 +313,7 @@ public class AbstractComponent
   
   /**
    * <p>Override to create a new State.
+   * </p>
    */
   @Override
   public State createState(State parentState)
@@ -143,14 +325,19 @@ public class AbstractComponent
     Focus<?> focusChain)
     throws BindException
   { 
+    bound=true;
+    bindContextuals(focusChain,parentContextuals);
+    
     Focus<?> context=focusChain;
     if (selfFocus==null)
     { 
       selfFocus=focusChain.chain
         (new SimpleChannel<AbstractComponent>(this,true));
+      bindContextuals(selfFocus,selfContextuals);
     }
 
     focusChain=bindImports(focusChain);
+    
     focusChain=handlers.bind(focusChain);
     
     focusChain=bindExports(focusChain);
@@ -163,30 +350,84 @@ public class AbstractComponent
       { focusChain.addFacet(selfFocus);
       }
     }
+    bindContextuals(focusChain,exportContextuals);
+
+    List<Component> children=composeChildren(focusChain);
+    if (children!=null)
+    { 
+      childContainer
+        =createChildContainer(children.toArray(new Component[children.size()]));
+    }
+    
     if (childContainer!=null)
     { childContainer.bind(focusChain);
     }
     return focusChain;
   }
 
+  /**
+   * Assemble all child components in their appropriate order, starting with
+   *   peers and any pre-defined contents.
+   * 
+   * @param focusChain
+   */
+  protected List<Component> composeChildren(Focus<?> focusChain)
+  {
+    if (peers==null && contents==null)
+    { return null;
+    }
+    
+    ArrayList<Component> childList
+      =new ArrayList<Component>
+        ( (peers!=null?peers.length:0) + (contents!=null?contents.length:0));
+    if (peers!=null)
+    { 
+      for (Component comp:peers)
+      { childList.add(comp);
+      }
+    }
+    
+    if (contents!=null)
+    { 
+      for (Component comp:contents)
+      { childList.add(comp);
+      }
+    }
+    
+    return childList;
+    
+  }
+  
+  /**
+   * Create the container for child components. Defaults to creating a
+   *   StandardContainer.
+   * 
+   * @param children
+   * @return
+   */
+  protected Container createChildContainer(Component[] children)
+  { return new StandardContainer(children);
+  }
+  
+  
   @Override
   public void start()
     throws LifecycleException
   { 
-    handlers.start();
-    if (childContainer!=null)
-    { childContainer.start();
-    }
+    Lifecycler.start
+      (new Lifecycle[] 
+        {handlers,childContainer}
+      );
   }
 
   @Override
   public void stop()
     throws LifecycleException
   { 
-    if (childContainer!=null)
-    { childContainer.stop();
-    }
-    handlers.stop();
+    Lifecycler.stop
+      (new Lifecycle[]
+        {handlers,childContainer}
+      );
   }
 
   protected Focus<?> bindImports(Focus<?> focusChain)
@@ -234,20 +475,20 @@ public class AbstractComponent
   { return this;
   }
 
-  public void setChildren(final Component[] newChildren)
+  protected void setContents(final Component[] contents)
   {
     if (!acceptsChildren)
     { 
       throw new UnsupportedOperationException
         (getClass()+" does not accept children");
     }
-    Component[] children=new Component[newChildren.length];
-    System.arraycopy(newChildren,0,children,0,newChildren.length);
-    
-    this.childContainer
-      =new StandardContainer(children);
+    this.contents=contents;
   }
     
+  public boolean isBound()
+  { return bound;
+  }
+  
   @Override
   public void handleEvent(
     Dispatcher context,
