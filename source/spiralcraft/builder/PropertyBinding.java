@@ -285,7 +285,7 @@ public class PropertyBinding
         +" ("+_specifier.getSourceCodeLocation()+"): available properties are "
         +"["
         +ArrayUtil.format
-          (_specifier.getTargetAssemblyClass().getBeanInfo()
+          (_specifier.getTargetAssemblyClass()
             .getAllPropertyNames()
           ,","
           ,""

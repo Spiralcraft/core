@@ -1062,7 +1062,7 @@ public class AssemblyClass
     
   }
 
-  public MappedBeanInfo getBeanInfo()
+  private MappedBeanInfo getBeanInfo()
   { 
     if (beanInfo!=null)
     { return beanInfo;
@@ -1071,6 +1071,14 @@ public class AssemblyClass
     { return _baseAssemblyClass.getBeanInfo();
     }
     return null;
+  }
+  
+  public String[] getAllPropertyNames()
+  { return getBeanInfo().getAllPropertyNames();
+  }
+  
+  public Class<?> getCovariantPropertyType(PropertyDescriptor descriptor)
+  { return getBeanInfo().getCovariantPropertyType(descriptor);
   }
   
   /**

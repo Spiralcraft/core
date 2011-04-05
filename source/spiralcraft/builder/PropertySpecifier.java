@@ -25,7 +25,6 @@ import spiralcraft.text.ParsePosition;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringUtil;
 
-import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.lang.Expression;
@@ -218,7 +217,7 @@ public class PropertySpecifier
       +" in "+_targetAssemblyClass.getJavaClass().getName()+"- available "
       +" properties are ["
       +ArrayUtil.format
-        (_targetAssemblyClass.getBeanInfo().getAllPropertyNames(),",","")
+        (_targetAssemblyClass.getAllPropertyNames(),",","")
       +"]"
           
       );
@@ -479,13 +478,11 @@ public class PropertySpecifier
   }
 
   private void resolveType()
-  { 
-    MappedBeanInfo beanInfo
-      =_targetAssemblyClass.getBeanInfo();
-    
+  {     
     PropertyDescriptor desc=getPropertyDescriptor();
     if (desc!=null)
-    { propertyType=beanInfo.getCovariantPropertyType(getPropertyDescriptor());
+    { propertyType
+        =_targetAssemblyClass.getCovariantPropertyType(getPropertyDescriptor());
     }
     
   }
