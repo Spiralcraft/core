@@ -23,6 +23,8 @@ import spiralcraft.lang.Binding;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.text.markup.MarkupException;
 import spiralcraft.text.markup.MarkupHandler;
 import spiralcraft.text.markup.MarkupParser;
@@ -44,12 +46,17 @@ public class MessageFormat
   private static final MarkupParser substitutionParser
     =new MarkupParser("{|","|}",'\\');
   
+  private static final ClassLog log
+    =ClassLog.getInstance(MessageFormat.class);
+  
   private List<AbstractRenderer> renderers
     =new LinkedList<AbstractRenderer>();
+  private String template;
 
   public MessageFormat(String template)
     throws spiralcraft.text.ParseException,MarkupException
   {
+    this.template=template;
     substitutionParser.parse
       (template
       ,new MarkupHandler()
@@ -93,6 +100,23 @@ public class MessageFormat
     for (Renderer renderer:renderers)
     { renderer.render(appendable);
     }
+  }
+  
+  /**
+   * Convenience method to render to a String
+   * 
+   * @return
+   */
+  public String render()
+  { 
+    StringBuilder builder=new StringBuilder();
+    try
+    { render(builder);
+    }
+    catch (IOException x)
+    { log.log(Level.WARNING,"Caught exception rendering ["+template+"]",x);
+    }
+    return builder.toString();
   }
 
   @Override
