@@ -77,22 +77,21 @@ public class QueryField
       && super.isFunctionalEquivalent(field);
   }
   
-  @SuppressWarnings({ "unchecked", "rawtypes" }) // Cast type
   @Override
-  public void resolveType()
+  protected Type<?> resolveType()
     throws DataException
   {
     if (query!=null)
     { 
       query.resolve();
-      if (getType()==null && query.getType()!=null)
-      { setType((Type) Type.getAggregateType((query.getType())));
+      if (typeIsNull() && query.getType()!=null)
+      { return Type.getAggregateType((query.getType()));
       }
     }
     else
     { throw new DataException("Missing query in field "+toString());
     }
-    super.resolveType();
+    return super.resolveType();
   }
   
   

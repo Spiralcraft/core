@@ -101,7 +101,9 @@ public class BuilderType
         )
     { return true;
     }
-    System.out.println("BuilderType -isAssignableFrom "+this+" : "+type);
+    if (debug)
+    { log.fine("BuilderType -isAssignableFrom "+this+" : "+type);
+    }
     return false;
   }
   

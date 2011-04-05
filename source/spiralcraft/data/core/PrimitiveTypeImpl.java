@@ -62,10 +62,10 @@ public abstract class PrimitiveTypeImpl<T>
   { 
     if (!linked)
     { 
+      linked=true;
       createRules();
       linkPrimitive();
       super.link();
-      linked=true;
     }
   }
   

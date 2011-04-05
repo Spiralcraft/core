@@ -250,7 +250,7 @@ public class SchemeImpl
       
       Field<?> archetypeField=null;
       field.setScheme(this);
-      field.resolveType();
+      // field.resolveType();
       
       if (archetypeScheme!=null)
       { 

@@ -53,7 +53,9 @@ public abstract class MethodImpl
 
   @Override
   public Type<?>[] getParameterTypes()
-  { return parameterTypes!=null?parameterTypes:NULL_TYPES;
+  { 
+    assertTypes();
+    return parameterTypes!=null?parameterTypes:NULL_TYPES;
   }
 
   public void setParameterTypes(Type<?>[] types)
@@ -62,7 +64,9 @@ public abstract class MethodImpl
 
   @Override
   public Type<?> getReturnType()
-  { return returnType;
+  { 
+    assertTypes();
+    return returnType;
   }
 
   public void setReturnType(Type<?> type)
@@ -74,12 +78,35 @@ public abstract class MethodImpl
   { locked=true;
   }
 
+  private void assertTypes()
+  { 
+    if (locked)
+    {
+      if (returnType==null)
+      { resolveTypes();
+      }
+      if (returnType==null)
+      { throw new RuntimeException("Method return type is null for "+qualifiedName);
+      }
+    }
+  }
+  
+  protected void updateTypes(Type<?> returnType,Type<?>[] parameterTypes)
+  {
+    this.returnType=returnType;
+    this.parameterTypes=parameterTypes;
+  }
+  
+  protected void resolveTypes()
+  {
+  }
+  
   /**
    * Resolve any external dependencies.
    * 
    * @throws DataException
    */
-  public void resolve()
+  protected void resolve()
     throws DataException
   {
     if (!locked)

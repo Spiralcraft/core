@@ -122,18 +122,18 @@ public class ReflectionField<T>
   }
   
   @Override
-  public void resolveType()
+  protected Type resolveType()
     throws DataException
   {
     try
-    { 
-      setType(this.<T>findType(translator.getReflector().getContentType()));
+    { return this.<T>findType(translator.getReflector().getContentType());
     }
     catch (TypeNotFoundException x)
-    { 
+    {
       // This should NEVER happen- there always exists a Type for
       //   every java class
       x.printStackTrace();
+      throw x;
     }
 
    

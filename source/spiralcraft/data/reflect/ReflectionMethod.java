@@ -23,6 +23,7 @@ import spiralcraft.data.lang.DataReflector;
 
 
 import spiralcraft.data.DataException;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
@@ -126,22 +127,26 @@ public class ReflectionMethod
   }
   
   @Override
-  public void resolve()
-    throws DataException
-  {
-      setReturnType(findType(method.getReturnType()));
+  protected void resolveTypes()
+  { 
+    try
+    {
+      Type<?> returnType=findType(method.getReturnType());
       Class<?>[] formalTypes=method.getParameterTypes();
       Type<?>[] parameterTypes=new Type[formalTypes.length];
-      
+    
       for (int i=0;i<formalTypes.length;i++)
       { parameterTypes[i]=findType(formalTypes[i]);
       }
-      setParameterTypes(parameterTypes);
-      super.resolve();
-    
+      updateTypes(returnType,parameterTypes);
+    }
+    catch (DataException x)
+    { 
+      throw new RuntimeDataException
+        ("Error resolving types for method "+getQualifiedName(),x);
+    }
   }
   
-
   protected Type<?> findType(Class<?> iface)
     throws DataException
   { 

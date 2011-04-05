@@ -15,6 +15,7 @@
 package spiralcraft.data.core;
 
 import spiralcraft.data.DeltaTuple;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
@@ -124,10 +125,17 @@ public class FieldImpl<T>
   { return archetypeField;
   }
   
+
+  
   public void setArchetypeField(Field field)
     throws DataException
   {
     assertUnlocked();
+    assertType();
+    if (typeIsNull())
+    { updateType(resolveType());
+    }
+    
     archetypeField=field;
     this.index=archetypeField.getIndex();
     
@@ -139,7 +147,7 @@ public class FieldImpl<T>
         +" cannot extend field "+archetypeField.getURI()
         +" as types are not compatible"
         ,field.getType()
-        ,this.type
+        ,this.getType()
         );
     }
   }
@@ -366,20 +374,71 @@ public class FieldImpl<T>
     { throw new IllegalArgumentException("Field type cannot be null");
     }
     assertUnlocked();
+    updateType(type);
+  }
+  
+  protected boolean typeIsNull()
+  { return type==null;
+  }
+  
+  @Override
+  public Type<T> getType()
+  { 
+    if (locked && type==null)
+    {
+      // Late-resolved type
+      synchronized (this)
+      {
+        if (type==null)
+        {
+            
+          try
+          { 
+            updateType(resolveType());
+            if (type==null)
+            { 
+              throw new RuntimeDataException
+                ("Could not resolve type for field "+getURI(),null);
+            }  
+          }
+          catch (DataException x)
+          { 
+            throw new RuntimeDataException
+              ("Could not resolve type for field "+getURI(),x);
+          }
+        }
+      }
+    }
+    return type;
+  }
+  
+  protected void assertType()
+  { 
+    if (typeIsNull())
+    {
+      try
+      { updateType(resolveType());
+      }
+      catch (DataException x)
+      { 
+        throw new RuntimeDataException
+          ("Error asserting type for field "+getURI(),x);
+      }
+    }
+  }
+  
+  protected void updateType(Type type) 
+  {
+    if (type==null)
+    { throw new IllegalArgumentException("Type is null for field "+getURI());
+    }
     this.type=type;
     try
     { this.contentReflector=DataReflector.getInstance(type);
     }
     catch (BindException x)
-    { 
-      throw new IllegalArgumentException
-        ("Could not find spiralcraft.lang.Reflector for Type "+type.getURI());
+    { throw new RuntimeException(x);
     }
-  }
-  
-  @Override
-  public Type<T> getType()
-  { return type;
   }
 
   /**
@@ -387,9 +446,9 @@ public class FieldImpl<T>
    *    
    * @throws DataException
    */
-  protected void resolveType()
+  protected Type resolveType()
     throws DataException
-  {
+  { return null;
   }
   
   protected final Tuple widenTuple(Tuple t)
@@ -622,6 +681,7 @@ public class FieldImpl<T>
     Channel binding=source.getCached(this);
     if (binding==null)
     { 
+      assertType();
       binding=new FieldChannel(source,focus);
       source.cache(this,binding);
     }
@@ -654,7 +714,7 @@ public class FieldImpl<T>
       { inspector=null;
       }
       
-      if (type.getRuleSet()!=null)
+      if (getType().getRuleSet()!=null)
       { 
         typeInspector=getType().getRuleSet().bind
           (contentReflector,focus);

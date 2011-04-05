@@ -87,10 +87,9 @@ public class BuilderField
   }
   
   @Override
-  public void resolveType()
+  public Type resolveType()
     throws DataException
   {
-    super.resolveType();
     if (specifier!=null)
     { //setType(BuilderType.canonicalType(specifier));
 //      
@@ -112,6 +111,7 @@ public class BuilderField
 //        }
 //      }
     }
+    return super.resolveType();
 
   }
   
@@ -241,7 +241,9 @@ public class BuilderField
                 }
                 else
                 {
-                  System.out.println("BuilderField: Unpacking "+subAssembly);
+                  if (debug)
+                  { log.fine("BuilderField: Unpacking "+subAssembly);
+                  }
                   // Not a builder type, and can't get type from assembly
                   // Unpackage the assembly and store as a reflection type
                   Object subjectBean=subAssembly.get();
