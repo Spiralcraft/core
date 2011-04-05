@@ -23,6 +23,25 @@ public final class Lifecycler
   private static final ClassLog log
     =ClassLog.getInstance(Lifecycler.class);
 
+  public static Lifecycle group(final Lifecycle[] la)
+  {
+    return new Lifecycle()
+    {
+
+      @Override
+      public void start()
+        throws LifecycleException
+      { Lifecycler.start(la);
+      }
+
+      @Override
+      public void stop()
+        throws LifecycleException
+      { Lifecycler.stop(la);
+      }
+    };
+  }
+  
   public static void start(Lifecycle[] la)
     throws LifecycleException
   {
@@ -35,7 +54,9 @@ public final class Lifecycler
     {
       for (Lifecycle l:la)
       {
-        l.start();
+        if (l!=null)
+        { l.start();
+        }
         i++;
       }
     }
@@ -45,7 +66,10 @@ public final class Lifecycler
       for (;i-->0;)
       { 
         try
-        { la[i].stop();
+        { 
+          if (la[i]!=null)
+          { la[i].stop();
+          }
         }
         catch (LifecycleException y)
         { log.log(Level.DEBUG,"Error stopping after failed start "+la[i],y);
@@ -67,7 +91,10 @@ public final class Lifecycler
     for (;i-->0;)
     {
       try
-      { la[i].stop();
+      { 
+        if (la[i]!=null)
+        { la[i].stop();
+        }
       }
       catch (LifecycleException y)
       { log.log(Level.DEBUG,"Error stopping "+la[i],y);
