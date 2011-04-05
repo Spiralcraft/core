@@ -58,6 +58,7 @@ public abstract class Arguments
         }
       }
     }
+    completed();
         
   }
 
@@ -96,6 +97,14 @@ public abstract class Arguments
    */
   protected boolean processArgument(String argument)
   { return false;
+  }
+  
+  /**
+   * Subclass should complete any remaining processing, such as applying
+   *   any buffered values.
+   */
+  protected void completed()
+  {
   }
 
 }

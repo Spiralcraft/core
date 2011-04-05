@@ -14,9 +14,12 @@
 //
 package spiralcraft.exec;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import spiralcraft.lang.util.Configurator;
+import spiralcraft.util.ListMap;
 
 /**
  * Generic 'command line' argument handling. Command line arguments
@@ -30,6 +33,9 @@ public class BeanArguments
   private HashMap<Character,String> shortOptionMap
     =new HashMap<Character,String>();
   
+  private ListMap<String,String> values
+    =new ListMap<String,String>();
+  
   public BeanArguments(Object bean)
   { configurator=Configurator.forBean(bean);
   }
@@ -38,6 +44,7 @@ public class BeanArguments
   { shortOptionMap.put(shortOption,longOption);
   }
 
+  
   /**
    * Subclass should process an option, and return true
    *   if the option was recognized. String will be 'interned'
@@ -77,15 +84,31 @@ public class BeanArguments
 
     Class<?> type=configurator.getType(option);
     if (type==Boolean.class || type==boolean.class)
-    { configurator.set(option,"true");
+    { values.set(option,"true");
     }
     else if (!hasMoreArguments())
     { throw new IllegalArgumentException("Option --"+option+" requires an argument, which must be translatable to a "+type.getName());
     }
     else
-    { configurator.set(option,nextArgument());
+    { values.add(option,nextArgument());
     }
     return true;
+  }
+  
+  @Override
+  protected void completed()
+  {
+    for (String key:values.keySet())
+    {
+      Class<?> type=configurator.getType(key);
+      List<String> valueList=values.get(key);
+      if (type.isArray() && Collection.class.isAssignableFrom(type))
+      { configurator.set(key,valueList.toArray(new String[valueList.size()]));
+      }
+      else
+      { configurator.set(key,valueList.get(valueList.size()-1));
+      }
+    }
   }
 
 }

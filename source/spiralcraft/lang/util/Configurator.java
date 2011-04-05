@@ -86,6 +86,10 @@ public class Configurator<T>
   { getBinding(targetExpression).set(value);
   }
   
+  public void set(String targetExpression,String[] value)
+  { getBinding(targetExpression).arraySet(value);
+  }
+
   public String get(String targetExpression)
   { return getBinding(targetExpression).get();
   }
