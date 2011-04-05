@@ -18,6 +18,7 @@ import java.net.URI;
 
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import java.lang.ref.WeakReference;
 
@@ -84,6 +85,14 @@ public class TypeResolver
 
   private final ArrayList<TypeFactory> factories=new ArrayList<TypeFactory>();
   private final int id=NEXT_ID++;
+  
+  // XXX This is a temporary fix- any global scheme must be post-delegated
+  //   because it may reference a non-global scheme (ie "class"), which
+  //   may cause a type reference in the wrong direction
+  private final HashSet<String> postDelegatedSchemes
+    =new HashSet<String>();
+  { postDelegatedSchemes.add("file"); 
+  }
   
   public static synchronized final TypeResolver getTypeResolver()
   { 
@@ -564,15 +573,15 @@ public class TypeResolver
     if (type!=null)
     { return type;
     }
-    
-    if (debugLevel.canLog(Level.FINE))
-    { log.fine(logMessage("Cache miss- loading "+typeUri));
-    }
-    
 
+    boolean postDelegate=postDelegatedSchemes.contains(typeUri.getScheme());
+    
     // Delegate to parent
-    if (parent!=null)
+    if (!postDelegate && parent!=null)
     {
+      if (debugLevel.canLog(Level.FINE))
+      { log.fine(logMessage("Pre-Delegating "+typeUri));
+      }
       type=parent.load(typeUri);
       if (type!=null)
       { 
@@ -581,6 +590,11 @@ public class TypeResolver
       }
     }
     
+    if (debugLevel.canLog(Level.FINE))
+    { log.fine(logMessage("Cache miss- loading "+typeUri));
+    }
+    
+    
     type=findTypeExtended(typeUri);
 
     if (type!=null)
@@ -588,6 +602,20 @@ public class TypeResolver
       type.link();
       if (debugLevel.canLog(Level.FINE))
       { log.fine(logMessage("Finished loading "+typeUri));
+      }
+      return type;
+    }
+    
+    if (postDelegate && parent!=null)
+    {
+      if (debugLevel.canLog(Level.FINE))
+      { log.fine(logMessage("Post-Delegating "+typeUri));
+      }
+      type=parent.load(typeUri);
+      if (type!=null)
+      { 
+        type.link();
+        return type;
       }
     }
     return type;
