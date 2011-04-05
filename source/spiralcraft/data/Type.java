@@ -27,10 +27,13 @@ import spiralcraft.data.session.BufferType;
 import spiralcraft.data.util.ConstructorInstanceResolver;
 import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.lang.spi.Translator;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 //import spiralcraft.log.ClassLog;
 import spiralcraft.rules.RuleSet;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringConverter;
+import spiralcraft.util.string.StringUtil;
 import spiralcraft.util.thread.ThreadLocalStack;
 
 
@@ -39,7 +42,9 @@ import spiralcraft.util.thread.ThreadLocalStack;
  */
 public abstract class Type<T>
 {  
-//  private static final ClassLogger log=ClassLogger.getInstance(Type.class);
+  private static final ClassLog log=ClassLog.getInstance(Type.class);
+  private static final Level LOG_LEVEL
+    =ClassLog.getInitialDebugLevel(Type.class,null);
   
   public static <X> Type<X> resolve(String uriString)
     throws DataException
@@ -136,11 +141,34 @@ public abstract class Type<T>
 //  protected final ClassLog log=ClassLog.getInstance(getClass());
   
   protected final void pushLink(URI uri)
-  { linkStack.push(uri);
+  { 
+    linkStack.push(uri);
+    if (LOG_LEVEL.isTrace())
+    { 
+      log.trace
+        (StringUtil.repeat("->",getLinkDepth())
+        +"Linking Type "+uri
+        );
+      if (LOG_LEVEL.isFine())
+      { log.log(Level.FINE,"Link trace",new Exception());
+      }
+    }
   }
   
   protected final void popLink()
-  { linkStack.pop();
+  { 
+    if (LOG_LEVEL.isTrace())
+    { 
+      log.trace
+        (StringUtil.repeat("->",getLinkDepth())
+        +"Done Linking Type "+linkStack.get()
+        );
+    }
+    linkStack.pop();
+  }
+  
+  protected int getLinkDepth()
+  { return linkStack.size();
   }
   
   protected final URI[] linkStack()
