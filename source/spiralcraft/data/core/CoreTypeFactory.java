@@ -34,6 +34,14 @@ public class CoreTypeFactory
   public Type createType(TypeResolver resolver,URI uri)
     throws DataException
   {
+    String scheme=uri.getScheme();
+    if (scheme!=null && !scheme.equals("java") && !scheme.equals("class"))
+    { return null;
+    }
+    if (uri.getAuthority()!=null)
+    { return null;
+    }
+    
     String path=uri.getPath().substring(1);
 
     String className
