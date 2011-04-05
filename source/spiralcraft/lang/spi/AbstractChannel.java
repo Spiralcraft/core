@@ -65,6 +65,9 @@ public abstract class AbstractChannel<T>
   { 
     _reflector=reflector;
     _static=false;
+    if (reflector==null)
+    { throw new IllegalArgumentException("Reflector cannot be null");
+    }
   }
 
 
@@ -76,6 +79,9 @@ public abstract class AbstractChannel<T>
   {  
     _reflector=reflector;
     _static=isStatic;
+    if (reflector==null)
+    { throw new IllegalArgumentException("Reflector cannot be null");
+    }
   }
   
   @Override
