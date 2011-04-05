@@ -14,17 +14,17 @@
 //
 package spiralcraft.data;
 
+import spiralcraft.common.ContextualException;
+
 /**
  * A generic exception associated with the spiralcraft.data package
  *   functionality
  */
 public class DataException
-  extends Exception
+  extends ContextualException
 {
   private static final long serialVersionUID=1;
-  
-  public DataException()
-  { }
+
   
   public DataException(String message)
   { super(message);
@@ -34,25 +34,5 @@ public class DataException
   { super(message,cause);
   }
   
-  public Throwable getRootCause()
-  {
-    Throwable cause=this;
-    while (cause.getCause()!=null)
-    { cause=cause.getCause();
-    }
-    return cause!=this?cause:null;
-  }
-  
-  @Override
-  public String toString()
-  { 
-    Throwable rootCause=getRootCause();
-    if (rootCause!=null)
-    { return super.toString()+" (root cause: "+getRootCause()+")";
-    }
-    else
-    { return super.toString();
-    }
-      
-  }
+
 }

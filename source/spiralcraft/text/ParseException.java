@@ -14,11 +14,13 @@
 //
 package spiralcraft.text;
 
+import spiralcraft.common.ContextualException;
+
 /**
  * A generic exception parsing text
  */
 public class ParseException
-  extends Exception
+  extends ContextualException
 {
   private static final long serialVersionUID = 1L;
 
@@ -26,19 +28,19 @@ public class ParseException
   
   public ParseException(String message, ParsePosition position)
   { 
-    super(message+" (@"+position.toString()+")");
+    super(message,position);
     this.position=position;
   }
   
   public ParseException(String message, ParsePosition position, Throwable cause)
   {
-    super(message+"\r\n(@"+position.toString()+")",cause);
+    super(message,position,cause);
     this.position=position;
   }
 
   public ParseException(ParsePosition position, Throwable cause)
   {
-    super("(@"+position.toString()+")",cause);
+    super("", position,cause);
     this.position=position;
   }
   
