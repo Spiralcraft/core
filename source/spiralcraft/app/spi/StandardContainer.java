@@ -67,8 +67,11 @@ public class StandardContainer
   protected final void bindChildren(Focus<?> focusChain)
     throws BindException
   { 
-    for (Component child:children)
-    { bindChild(focusChain,child);
+    if (children!=null)
+    {
+      for (Component child:children)
+      { bindChild(focusChain,child);
+      }
     }
   }
   
