@@ -28,10 +28,5 @@ package spiralcraft.app;
 public interface View
   extends Component
 {
-  /**
-   * Called when an immediate descendant View in the View hierarchy is bound
-   * 
-   * @param child
-   */
-  void addedChildView(View child);
+
 }
