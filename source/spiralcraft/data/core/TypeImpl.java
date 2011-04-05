@@ -349,9 +349,6 @@ public class TypeImpl<T>
     pushLink(getURI());
     try
     {
-      if (debug)
-      { log.fine("Linking Type "+getURI());
-      }
       linked=true;
     
       if (baseType!=null && scheme==null)
@@ -398,8 +395,6 @@ public class TypeImpl<T>
         { ((MethodImpl) method).resolve();
         }
       }
-
-      
     }
     catch (TypeNotFoundException x)
     { throw new TypeNotFoundException("Unresolved dependency linking "+uri,x);
@@ -408,9 +403,7 @@ public class TypeImpl<T>
     { popLink();
     }
         
-    if (debug)
-    { log.fine("Done Linking Type "+getURI());
-    }
+
     
   }
     
