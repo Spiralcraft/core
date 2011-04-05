@@ -94,6 +94,17 @@ public class ThreadLocalStack<T>
 
   }
   
+  public int size()
+  {
+    ThreadReference<T> r=threadLocal.get();
+    if (r==null)
+    { return 0;
+    }
+    else
+    { return r.count;
+    }
+  }
+  
   /**
    * Call when 
    */
@@ -111,6 +122,7 @@ public class ThreadLocalStack<T>
     ThreadReference<T> newref=new ThreadReference<T>();
     newref.object=val;
     newref.prior=oldref;
+    newref.count=oldref!=null?oldref.count+1:1;
     threadLocal.set(newref);
   }
   
@@ -149,6 +161,7 @@ public class ThreadLocalStack<T>
   {
     public ThreadReference<X> prior;
     public X object;
+    public int count;
   }
 
 }
