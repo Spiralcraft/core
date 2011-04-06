@@ -51,6 +51,10 @@ public class JarArchive
   @Override
   protected Entry loadEntry(String path)
   {
+    if (jarFile==null)
+    { return null;
+    }
+    
     JarEntry jarEntry=jarFile.getJarEntry(path);
     if (jarEntry!=null)
     { return new JarFileEntry(jarEntry);
