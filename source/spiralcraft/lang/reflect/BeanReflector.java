@@ -630,7 +630,8 @@ public class BeanReflector<T>
           return (D) new GenericCollectionDecorator(source,reflector);
         }
         else
-        { return (D) new GenericCollectionDecorator(source,null);
+        { return (D) new GenericCollectionDecorator
+            (source,BeanReflector.getInstance(Object.class));
         }
 
         
