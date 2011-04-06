@@ -37,6 +37,10 @@ public abstract class IterationDecorator<T,I>
   
   public IterationDecorator(Channel<T> source,Reflector<I> componentReflector)
   { 
+    if (componentReflector==null)
+    { throw new IllegalArgumentException
+        ("Component reflector cannot be null. Source="+source);
+    }
     this.source=source;
     this.componentReflector=componentReflector;
   }
