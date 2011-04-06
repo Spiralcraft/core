@@ -33,7 +33,9 @@ public class ContextualException
   }
 
   public ContextualException(String message,Object context)
-  { super(message);
+  {
+    super(message);
+    this.context=context;
   }
 
   public ContextualException(String message,Throwable cause)
@@ -41,7 +43,9 @@ public class ContextualException
   }
   
   public ContextualException(String message,Object context,Throwable cause)
-  { super(message,cause);
+  { 
+    super(message,cause);
+    this.context=context;
   }
 
   public Object getContext()
