@@ -34,6 +34,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.rules.Inspector;
 import spiralcraft.rules.Rule;
 import spiralcraft.rules.RuleException;
@@ -118,7 +119,12 @@ public class FieldImpl<T>
   
   @Override
   public Reflector<T> getContentReflector()
-  { return contentReflector;
+  { 
+    assertType();
+    if (contentReflector==null)
+    { log.log(Level.WARNING,"Content reflector is null for "+getURI());
+    }
+    return contentReflector;
   }
   
   public Field getArchetypeField()
