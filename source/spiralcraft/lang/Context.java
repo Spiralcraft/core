@@ -17,21 +17,20 @@ package spiralcraft.lang;
 
 
 /**
- * <p>A Contextual that provides Thread specific contextual references.
+ * <p>A Contextual that exports its context to some contained scope on the
+ *   current Thread.
  * </p>
  * 
- * <p>The ThreadContextual expects push() to be called when a Thread
- *   is about to enter the scope created by this ThreadContextual,
- *   before downstream bindings are accessed. pop() must -always- be called
- *   to restore references in effect for the Thread before push() as 
- *   soon as the thread exits the scope.
+ * <p>The Context expects push() to be called before the contained scope
+ *   is entered and before downstream bindings are accessed. 
+ *   pop() must -always- be called as soon as the contained scope is exited.
  * </p>
  * 
  * 
  * @author mike
  *
  */
-public interface ThreadContextual
+public interface Context
   extends Contextual
 {
 
@@ -56,5 +55,7 @@ public interface ThreadContextual
    * </p>
    */
   void pop();
+
+  
   
 }
