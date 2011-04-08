@@ -18,6 +18,49 @@
         </revision>
       
         <notes>
+          <scm:Note>ThreadContextual is now called a "Context", as the 
+            primary purpose of this object is to establish context in the
+            FocusChain around the execution of some scope.
+          </scm:Note>
+          <scm:Note>Chainable context and implementations are derived from
+            this interface to help factor specific behavior out of framework
+            superclasses that use context generically.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resource>
+          <URI>data/persist/AbstractXmlObject.java
+          </URI>
+          <URI>data/rest/RestClient.java
+          </URI>
+          <URI>data/rest/RestService.java
+          </URI>
+          <URI>lang/ChainableContext.java
+          </URI>
+          <URI>lang/Context.java
+          </URI>
+          <URI>lang/ThreadContextual.java
+          </URI>
+          <URI>lang/spi/AbstractChainableContext.java
+          </URI>
+          <URI>lang/spi/ThreadLocalContext.java
+          </URI>
+          <URI>service/ResourceContext.java
+          </URI>
+          <URI>vfs/context/FileSpace.java
+          </URI>
+        </resource>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
           <scm:Note>MessageFormat renders to a String for use in objects that
             use Strings for labels, etc.
           </scm:Note>
