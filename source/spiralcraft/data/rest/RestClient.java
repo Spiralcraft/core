@@ -39,7 +39,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Assignment;
-import spiralcraft.lang.ThreadContextual;
+import spiralcraft.lang.Context;
 
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
@@ -63,7 +63,7 @@ import spiralcraft.vfs.url.URLResource;
  *
  */
 public class RestClient
-  implements ThreadContextual
+  implements Context
 {
   private static final ClassLog log
     =ClassLog.getInstance(RestClient.class);

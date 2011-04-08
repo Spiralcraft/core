@@ -19,7 +19,7 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.ThreadContextual;
+import spiralcraft.lang.Context;
 import spiralcraft.service.Service;
 
 /**
@@ -35,7 +35,7 @@ import spiralcraft.service.Service;
  */
 public class FileSpace
   extends AbstractComponent
-  implements Service,ThreadContextual
+  implements Service,Context
 {
   
   protected Authority[] authorities;

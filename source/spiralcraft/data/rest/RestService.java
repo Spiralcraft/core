@@ -35,7 +35,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.ThreadContextual;
+import spiralcraft.lang.Context;
 
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
@@ -55,7 +55,7 @@ import spiralcraft.util.thread.DelegateException;
  * @author mike
  */
 public class RestService
-  implements ThreadContextual
+  implements Context
 {
   
   private static final ClassLog log

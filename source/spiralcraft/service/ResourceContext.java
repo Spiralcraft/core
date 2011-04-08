@@ -7,7 +7,7 @@ import spiralcraft.app.spi.AbstractComponent;
 import spiralcraft.app.spi.StandardContainer;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.ThreadContextual;
+import spiralcraft.lang.Context;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.vfs.context.ContextResourceMap;
 
@@ -19,7 +19,7 @@ import spiralcraft.vfs.context.ContextResourceMap;
  */
 public class ResourceContext
   extends AbstractComponent
-  implements ThreadContextual
+  implements Context
 {
 
 
@@ -27,8 +27,8 @@ public class ResourceContext
   ContextResourceMap resourceMap
     =new ContextResourceMap();
   
-  ThreadContextual[] threadContextuals
-    =new ThreadContextual[0];
+  Context[] threadContextuals
+    =new Context[0];
   
   @Override
   public Focus<?> bind(Focus<?> focus) 
@@ -70,10 +70,10 @@ public class ResourceContext
         if (service instanceof Service && ret!=context)
         { context.addFacet(ret);
         }
-        if (service instanceof ThreadContextual)
+        if (service instanceof Context)
         { 
           threadContextuals
-            =ArrayUtil.append(threadContextuals,(ThreadContextual) service);
+            =ArrayUtil.append(threadContextuals,(Context) service);
         }
         return ret;
       }
@@ -84,7 +84,7 @@ public class ResourceContext
   public void push()
   {
     resourceMap.push();
-    for (ThreadContextual tc : threadContextuals)
+    for (Context tc : threadContextuals)
     { tc.push();
     }
     

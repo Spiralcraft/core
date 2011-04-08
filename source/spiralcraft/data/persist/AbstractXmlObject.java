@@ -39,7 +39,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.ThreadContextual;
+import spiralcraft.lang.Context;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 
@@ -82,7 +82,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   implements 
     PersistentReference<Treferent>
     ,Lifecycle
-    ,ThreadContextual
+    ,Context
 {
 
 
@@ -472,7 +472,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
       this.focus=intermediateFocus;    
     }
     
-    if (endInstance instanceof ThreadContextual)
+    if (endInstance instanceof Context)
     { threaded=true;
     }
     return getFocus();
@@ -484,7 +484,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   public void push()
   {
     if (threaded)
-    { ((ThreadContextual) get()).push();
+    { ((Context) get()).push();
     }
   }
   
@@ -492,9 +492,8 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   public void pop()
   {
     if (threaded)
-    { ((ThreadContextual) get()).pop();
+    { ((Context) get()).pop();
     }
   }
-  
-    
+
 }
