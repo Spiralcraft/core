@@ -3,6 +3,7 @@ package spiralcraft.common.namespace;
 import java.net.URI;
 
 import spiralcraft.common.Immutable;
+import spiralcraft.util.URIUtil;
 import spiralcraft.util.string.StringUtil;
 
 /**
@@ -110,6 +111,22 @@ public class QName
     }
     else
     { return localName;
+    }
+  }
+
+  /**
+   * Resolve the localName as the final path segment of the hierarchical
+   *   namespace URI. Will add a "/" to the URI if it is not present.
+   * 
+   * @return
+   */
+  public URI toURIPath()
+  {
+    if (namespaceURI==null)
+    { return URI.create(localName);
+    }
+    else
+    { return URIUtil.addPathSegment(namespaceURI,localName);
     }
   }
 }
