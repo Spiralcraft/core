@@ -51,6 +51,22 @@ public class URIUtil
   }
   
   /**
+   * <p>Add a pre-encoded path segment to the specified URI
+   * </p>
+   * 
+   * @return
+   */
+  public static final URI addPathSegment(URI in,String segment)
+  {
+    if (in.getPath().endsWith("/"))
+    { return in.resolve(segment);
+    }
+    else
+    { return replaceUnencodedPath(in,in.getPath()+"/").resolve(segment);
+    }
+  }
+  
+  /**
    * <p>Ensures that the URI path has a trailing slash. If it does,
    *   simply return the original URI, otherwise rewrite the URI
    * </p>
