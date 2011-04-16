@@ -356,7 +356,9 @@ public class XmlQueryable
         if (newTransaction!=null)
         { newTransaction.commit();
         }
-        
+        if (logLevel.isFine())
+        { log.fine("Reloaded "+orig.size()+" tuples from "+resource.getURI());
+        }
       }
       finally
       { unfreeze();
@@ -710,7 +712,11 @@ public class XmlQueryable
     }
     watcher.reset();
     if (logLevel.isFine())
-    { log.fine("Committed resource for "+resource.getURI()+" in "+txId);
+    { 
+      log.fine
+        ("Committed resource for "+resource.getURI()+" in "+txId
+        +" ("+transaction.getId()+")"
+        );
     }
   }
   
@@ -1148,7 +1154,7 @@ public class XmlQueryable
             if (logLevel.isFine())
             { log.fine("Type="+dt.getType().getURI());
             }
-            ArrayJournalTuple at=new ArrayJournalTuple(dt);
+            ArrayJournalTuple at=ArrayJournalTuple.freezeDelta(dt);
             add(at);
             preparedAdds.add(at);
             if (dt instanceof BufferTuple)
