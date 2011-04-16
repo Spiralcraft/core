@@ -18,6 +18,7 @@ package spiralcraft.task;
 import java.util.List;
 
 import spiralcraft.common.LifecycleException;
+import spiralcraft.common.Lifecycler;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.util.ArrayUtil;
@@ -71,10 +72,13 @@ public class Sequence
         throws InterruptedException
       {
         
-        for (Scenario<?,?> scenario: scenarios)
-        { 
-          command=scenario.command();
-          super.work();
+        if (scenarios!=null)
+        {
+          for (Scenario<?,?> scenario: scenarios)
+          { 
+            command=scenario.command();
+            super.work();
+          }
         }
       }
     };
@@ -85,18 +89,15 @@ public class Sequence
     throws LifecycleException
   {
     super.start();
-    for (Scenario<?,?> scenario: scenarios)
-    { scenario.start();
-    }
+    Lifecycler.start(Lifecycler.group(scenarios));
+    
   }
 
   @Override
   public void stop()
     throws LifecycleException
   {
-    for (Scenario<?,?> scenario: scenarios)
-    { scenario.stop();
-    }
+    Lifecycler.stop(Lifecycler.group(scenarios));
     super.stop();
   }
   
@@ -107,9 +108,11 @@ public class Sequence
     throws BindException
   {
     
-    
-    for (Scenario<?,?> scenario: scenarios)
-    { scenario.bind(focusChain);
+    if (scenarios!=null)
+    {
+      for (Scenario<?,?> scenario: scenarios)
+      { scenario.bind(focusChain);
+      }
     }
     super.bindChildren(focusChain);
   }
