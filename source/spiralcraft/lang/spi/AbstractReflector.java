@@ -35,8 +35,10 @@ import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringConverter;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * <p>A Reflector is a "type broker" which exposes parts of an object model 
@@ -233,6 +235,11 @@ public abstract class AbstractReflector<T>
     {
       assertNoParameters(params,name);
       channel=new CollectionEmptyChannel(source);
+    }
+    else if (name.equals("@list"))
+    {
+      assertNoParameters(params,name);
+      channel=new IterAsListChannel(source);
     }
     return (Channel<X>) channel;
   }
@@ -810,18 +817,68 @@ class CollectionEmptyChannel<T>
   @Override
   public Boolean retrieve()
   { 
-    T collection=source.get();
-    if (collection==null)
+    Iterator<?> iter=decorator.iterator();
+    if (iter==null)
     { return null;
     }
     else
-    { return !decorator.iterator().hasNext();
+    { return !iter.hasNext();
     }
   }
 
   @Override
   public boolean store(Boolean val)
   { return false;
+  }   
+}
+
+
+class IterAsListChannel<T,C>
+  extends SourcedChannel<T,List<C>>
+{
+  private final IterationDecorator<T,C> decorator;
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public IterAsListChannel(Channel<T> source)
+    throws BindException
+  {
+    super(BeanReflector.<List<C>>getInstance(List.class),source);
+    this.decorator
+      =source.<IterationDecorator>decorate(IterationDecorator.class);
+    if (decorator==null)
+    { 
+      throw new BindException
+      (source.getReflector().getTypeURI()+" does not support @list");
+    }
+  }
+
+  @Override
+  public List<C> retrieve()
+  { 
+    Iterator<C> iter=decorator.iterator();
+    if (iter==null)
+    { return null;
+    }
+    else
+    { 
+      ArrayList<C> list=new ArrayList<C>();
+      while (iter.hasNext())
+      { list.add(iter.next());
+      }
+      return list;
+    }
+  }
+  
+  @Override
+  public boolean isWritable()
+  { return false;
+  }
+
+  @Override
+  public boolean store(List<C> val)
+  { 
+    // XXX Can support this if there's a CollectionDecorator
+    return false;
   }   
 }
 
