@@ -13,6 +13,178 @@
     </date>
     
     <detail>
+
+
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix NPE in Task Sequence when no contents are defined
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/Sequence.java
+        </path>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Added new built in ELaine property @list which converts
+            any iterable source into a java.util.List to support
+            interoperability with collections.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi/AbstractReflector.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Update intrinsic data XML format to contain transaction
+            and version ids when writing JournalTuples
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/sax/
+        </path>
+        
+        <resources>
+          <URI>DataHandler.java
+          </URI>
+          <URI>DataWriter.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue constructing multi-extent DeltaTuples where
+            base extents would not get a reference to unmodified data. This
+            fix allows for proper transaction logging. 
+          </scm:Note>
+          <scm:Note>Change access to ArrayTuple constructors to avoid
+            unintentional use of wrong patterns.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>spi/AbstractTuple.java
+          </URI>
+          <URI>spi/ArrayDeltaTuple.java
+          </URI>
+          <URI>spi/ArrayJournalTuple.java
+          </URI>
+          <URI>spi/ArrayTuple.java
+          </URI>
+          <URI>xml/XmlQueryable.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>AbstractXmlObject.instantiate(URI) enables the 
+            instantiation of a single URI which can reference either a
+            Type or an instance resource.
+          </scm:Note>
+          <scm:Note>TaskRunner.serviceURI uses single URI for either a
+            service Type or a service instance.
+          </scm:Note>          
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/persist/AbstractXmlObject.java       
+          </URI> 
+          <URI>task/TaskRunner.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Simplify configuration of Type relationships.
+          </scm:Note>
+          <scm:Note>RelativeField has replaced KeyField and removes
+            redundant and/or superfluous configuration details.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>core/DeltaType.java
+          </URI>
+          <URI>core/FieldImpl.java
+          </URI>
+          <URI>core/KeyField.java
+          </URI>
+          <URI>core/KeyImpl.java
+          </URI>
+          <URI>core/RelativeField.java
+          </URI>
+          <URI>core/SchemeImpl.java
+          </URI>
+          <URI>session/BufferType.java
+          </URI>
+          <URI>types/meta/RelativeFieldType.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Added Store.public property. Non-public Stores in a Space 
+            do not export their types for queries.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>Space.java</URI>
+          <URI>access/Store.java</URI>
+          <URI>spi/AbstractStore.java</URI>
+        </resources>
+        
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev1
         </revision>
@@ -302,6 +474,8 @@
           </URI>
           <URI>data/builder/BuilderType.java
           </URI>
+          <URI>data/core/CalculatedFieldImpl.java
+          </URI>
           <URI>data/core/FieldImpl.java
           </URI>
           <URI>data/core/MethodImpl.java
@@ -360,6 +534,8 @@
       
         <notes>
           <scm:Note>Lifecycler supports groups of Lifecycle objects
+          </scm:Note>
+          <scm:Note>Lifecycler methods accept vararg arrays
           </scm:Note>
         </notes>
         

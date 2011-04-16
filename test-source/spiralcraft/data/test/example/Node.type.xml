@@ -36,5 +36,15 @@
 
     </meta:Field>
   </fields>
+  
+  <keys>
+    <meta:Key>
+      <fieldList>nodeId
+      </fieldList>
+      
+      <primary>true
+      </primary>
+    </meta:Key>
+  </keys>
 
 </meta:Type>

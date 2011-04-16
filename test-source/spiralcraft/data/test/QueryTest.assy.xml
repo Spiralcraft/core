@@ -442,6 +442,48 @@
           </chain>
         </dtask:Session>
 
+        <dtask:Session>
+          <chain>
+            <test:Stub>
+              <name>BaseTyped Update
+              </name>
+              <messageX>
+                [*dtask:Fetch
+                  { [*query:Selection
+                      { [*query:Scan{ [@example:StringNode].type }]
+                      , `.nodeId=="6"`
+                      }
+                    ]
+                  }
+                ].().@top
+                .[*dtask:Edit].()
+                { .value="edited value"
+                , .@tuple.save()
+                }
+              </messageX>
+              <conditionX>true
+              </conditionX>
+            </test:Stub>
+            <test:Assertion>
+              <name>Check Update result
+              </name>
+              <subjectX>
+                [*dtask:Fetch
+                  { [*query:Selection
+                      {[@example:StringNode].type
+                      ,`.nodeId=="6"`
+                      }
+                    ]
+                  }
+                ].()
+              </subjectX>
+              <testX>.@top.value=="edited value"
+                &amp;&amp; @top.nodeId=="6"
+              </testX>
+            </test:Assertion>
+          
+          </chain>
+        </dtask:Session>
         <test:Assertion>
           <name>Snapshot
           </name>
@@ -472,13 +514,14 @@
         </test:Assertion>
 
         <test:Assertion>
-          <name>Store update self
+          <name>Store update
           </name>
           <subjectX>
-            [data:Space].getStore("local"){.update(.snapshot(0L))}
+            [data:Space].getStore("slave").update
+              ([data:Space].getStore("local").snapshot(0L))
           </subjectX>
           <testX>
-            [data:Space].getStore("local").snapshot(0L)
+            [data:Space].getStore("slave").snapshot(0L)
             {
               .data[0].@cast([@data:Aggregate]).size()==4 
               &amp;&amp; 

@@ -12,6 +12,7 @@
     <mkdir dir="out/io"/>
     <mkdir dir="out/data"/>
     <mkdir dir="out/data/store"/>
+    <mkdir dir="out/data/store2"/>
     <mkdir dir="out/copy"/>
     <mkdir dir="out/copy/test"/>
       

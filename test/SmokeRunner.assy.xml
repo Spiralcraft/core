@@ -46,6 +46,27 @@
           <debugLevel>INFO
           </debugLevel>
         </dxml:XmlStore>
+        
+        <dxml:XmlStore>
+          <name>slave
+          </name>
+          
+          <public>false
+          </public>          
+          
+          <historyCleanSeconds>5
+          </historyCleanSeconds>
+                    
+          <baseResourceURI>out/data/store2/
+          </baseResourceURI>
+          
+          <schema 
+            dataURI="example:Example.schema.xml"
+          />
+          
+          <debugLevel>INFO
+          </debugLevel>
+        </dxml:XmlStore>        
       </stores>
     </data:Space>
   </service>
