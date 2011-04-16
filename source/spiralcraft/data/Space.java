@@ -179,10 +179,13 @@ public class Space
     LinkedHashSet<Type<?>> set=new LinkedHashSet<Type<?>>();
     for (Store store:stores)
     { 
-      for (Type<?> type:store.getTypes())
-      { 
-        set.add(type);
-        typeStores.add(type,store);
+      if (store.isPublic())
+      {
+        for (Type<?> type:store.getTypes())
+        { 
+          set.add(type);
+          typeStores.add(type,store);
+        }
       }
     }
     types=set.toArray(new Type[set.size()]);

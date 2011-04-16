@@ -124,4 +124,9 @@ public interface Store
 
   long getLastTransactionId();
   
+  
+  public void setPublic(boolean pub);
+  
+  public boolean isPublic();
+  
 }
