@@ -24,6 +24,7 @@ import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DataComposite;
@@ -88,6 +89,39 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
 
   public static final URI typeFromClass(Class<?> clazz)
   { return ReflectionType.canonicalURI(clazz);
+  }
+  
+  
+  /**
+   * <p>Instantiate the object referenced by the specified URI. The returned 
+   *   reference will not be bound or started.
+   * </p>
+   * 
+   * @param <T> The Java generic type of object that is being referred to
+   * @param uri A URI referencing either a Type or a resource that contains
+   *   instance data.
+   * @return The AbstractXmlObject that references the instance.
+   * @throws BindException
+   * 
+   */ 
+  public static final <T> AbstractXmlObject<T,?> instantiate
+    (URI uri)
+    throws BindException
+  { 
+    URI typeURI=null;
+    URI instanceURI=null;
+    try
+    {
+      Type.<T>resolve(uri);
+      typeURI=uri;
+    }
+    catch (TypeNotFoundException x)
+    { instanceURI=uri;
+    }
+    catch (DataException x)
+    { throw new BindException("Error loading referenced type "+uri,x);
+    }
+    return create(typeURI,instanceURI);
   }
   
   /**
