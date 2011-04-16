@@ -108,6 +108,8 @@ public abstract class AbstractStore
     =new LinkedHashSet<Long>();
   private long minOpenTx;
   
+  private boolean pub=true;
+  
   protected ResourceManager<? extends StoreBranch> resourceManager
     =new ResourceManager<StoreBranch>()
   {
@@ -156,6 +158,16 @@ public abstract class AbstractStore
   @Override
   public boolean isAuthoritative(Type<?> type)
   { return authoritativeTypes.contains(type);
+  }
+  
+  @Override
+  public void setPublic(boolean pub)
+  { this.pub=pub;
+  }
+  
+  @Override
+  public boolean isPublic()
+  { return pub;
   }
   
   @Override
@@ -625,7 +637,7 @@ public abstract class AbstractStore
       throws DataException
     { 
       deltaList.add
-        (new ArrayDeltaTuple
+        (ArrayDeltaTuple.copy
           (tuple.getType().getArchetype()
           ,tuple
           )
