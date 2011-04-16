@@ -24,6 +24,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.security.auth.AuthSession;
 import spiralcraft.security.auth.Authorizer;
 import spiralcraft.security.auth.Permission;
@@ -41,6 +42,12 @@ public abstract class AbstractAuthorizer
   protected LinkedHashMap<URI,Role> registeredRoles
     =new LinkedHashMap<URI,Role>();
 
+  protected Level logLevel=Level.INFO;
+  
+  public void setLogLevel(Level logLevel)
+  { this.logLevel=logLevel;
+  }
+  
   public void setRegisteredRoles(Role[] registeredRoles)
   { 
     if (registeredRoles!=null)
@@ -119,11 +126,14 @@ public abstract class AbstractAuthorizer
             vote=Role.Vote.GRANT;
         }
         
-        if (vote==Role.Vote.GRANT)
-        { log.fine("Permission granted in "+role.getId()+": "+permission);
-        }
-        else
-        { log.fine("Permission not granted in "+role.getId()+": "+permission);
+        if (logLevel.isDebug())
+        {
+          if (vote==Role.Vote.GRANT)
+          { log.debug("Permission granted in "+role.getId()+": "+permission);
+          }
+          else
+          { log.debug("Permission not granted in "+role.getId()+": "+permission);
+          }
         }
       }
 

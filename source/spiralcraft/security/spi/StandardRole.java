@@ -40,6 +40,7 @@ public class StandardRole
     =new ListMap<URI,Permission>();
   
   private final URI id;
+  private boolean debug;
   
   public StandardRole(Tuple t)
     throws DataException
@@ -53,11 +54,18 @@ public class StandardRole
     Focus<?> focusChain)
     throws BindException
   { 
-    log.fine("Granted in "+this+": "+grantedPermissions);
-    log.fine("Denied in "+this+": "+deniedPermissions);
+    if (debug)
+    {
+      log.fine("Granted in "+this+": "+grantedPermissions);
+      log.fine("Denied in "+this+": "+deniedPermissions);
+    }
     return focusChain;
   }
 
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
   @Override
   public String getName()
   {
@@ -99,7 +107,10 @@ public class StandardRole
     for (Permission assignedPermission : permissionList)
     { 
 
-      log.fine("Checking "+assignedPermission+" -> "+permission);
+      if (debug)
+      { log.fine("Checking "+assignedPermission+" -> "+permission);
+      }
+      
       if (assignedPermission.implies(permission))
       { 
         return true;
