@@ -23,7 +23,7 @@ public final class Lifecycler
   private static final ClassLog log
     =ClassLog.getInstance(Lifecycler.class);
 
-  public static Lifecycle group(final Lifecycle[] la)
+  public static Lifecycle group(final Lifecycle ... la)
   {
     return new Lifecycle()
     {
@@ -42,7 +42,7 @@ public final class Lifecycler
     };
   }
   
-  public static void start(Lifecycle[] la)
+  public static void start(Lifecycle ... la)
     throws LifecycleException
   {
     if (la==null)
@@ -79,7 +79,7 @@ public final class Lifecycler
     }
   }
   
-  public static void stop(Lifecycle[] la)
+  public static void stop(Lifecycle ... la)
     throws LifecycleException
   {
     if (la==null)
