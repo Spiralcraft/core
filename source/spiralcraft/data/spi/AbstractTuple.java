@@ -313,7 +313,7 @@ public abstract class AbstractTuple
     return tupleToText(this,indent);
   }
   
-  public static String tupleToString(Tuple tuple)
+  public static String fieldsToString(Tuple tuple)
   {
     StringBuilder sb=new StringBuilder();
     sb.append(tuple.getClass().getName()+"@"+tuple.hashCode());
@@ -379,6 +379,13 @@ public abstract class AbstractTuple
       
     }
     sb.append("]");
+    return sb.toString();
+  }
+  
+  public static String tupleToString(Tuple tuple)
+  {
+    StringBuffer sb=new StringBuffer();
+    sb.append(fieldsToString(tuple));
     if (tuple.getBaseExtent()!=null)
     { sb.append("baseExtent="+tuple.getBaseExtent());
     }

@@ -26,6 +26,19 @@ public class ArrayDeltaTuple
   private boolean delete;
   private boolean dirty;
 
+  /**
+   * <p>Constructs a DeltaTuple from another DeltaTuple of a different
+   *   nature
+   * </p>
+   * 
+   * @param archetype
+   * @param updated
+   * @throws DataException
+   */  
+  public static ArrayDeltaTuple copy(Type<?> archetype,DeltaTuple updated)
+    throws DataException
+  { return new ArrayDeltaTuple(Type.getDeltaType(archetype).getScheme(),updated);
+  }
   
   /**
    * Constructs a DeltaTuple based on the difference between and
@@ -83,7 +96,12 @@ public class ArrayDeltaTuple
       }
     }
   }
-
+  
+  /**
+   * 
+   * <p>Called from createBaseExtent
+   * </p>
+   */
   public ArrayDeltaTuple(FieldSet fieldSet)
   { 
     super(fieldSet);
@@ -92,30 +110,37 @@ public class ArrayDeltaTuple
   }
 
   
+
+  
+  private ArrayDeltaTuple(FieldSet fieldSet,DeltaTuple source)
+      throws DataException
+  { this(fieldSet,source,source.getOriginal());
+  }
+  
   /**
-   * Constructs a DeltaTuple from another DeltaTuple
+   * <p>Constructs a DeltaTuple from another DeltaTuple
+   * </p>
+   * 
+   * <p>Called from rebase() and (archetype,updated) constructor
+   * </p>
    *   
+   * @param archetype
    * @param original
    * @param updated
    * @throws DataException
    */  
-  public ArrayDeltaTuple(Type<?> archetype,DeltaTuple updated)
-    throws DataException
-  { this(archetype,updated,updated.getOriginal());
-  }
-  
-  public ArrayDeltaTuple(Type<?> archetype,DeltaTuple updated,Tuple original)
+  private ArrayDeltaTuple(FieldSet fieldSet,DeltaTuple source,Tuple newOriginal)
     throws DataException
   { 
-    super(Type.getDeltaType(archetype).getScheme());
-//    log.fine("Delta Tuple: "+getScheme());
+    super(fieldSet,source);
     dirtyFlags=new BitSet(fieldSet.getFieldCount());
-    copyFrom(updated);
-    this.original=original;
+    this.original=newOriginal;
+    copyFrom(source);
+    Type<?> type=fieldSet.getType();
     
-    if (getType()!=null && getType().getPrimaryKey()!=null)
+    if (type!=null && type.getPrimaryKey()!=null)
     { 
-      for (Field<?> sourceField: archetype.getPrimaryKey().getSourceFields())
+      for (Field<?> sourceField: type.getArchetype().getPrimaryKey().getSourceFields())
       { 
         
         ArrayDeltaTuple extent
@@ -127,7 +152,7 @@ public class ArrayDeltaTuple
         }
         
        
-        Object val=sourceField.getValue(updated);
+        Object val=sourceField.getValue(source);
 //        log.fine("Copying key field "
 //          +sourceField+"(#"+sourceField.getIndex()+") from "+updated+" to "+this
 //          +" with value ["+val+"]"
@@ -141,19 +166,21 @@ public class ArrayDeltaTuple
 
   
   /**
-   * Constructs a DeltaTuple from another DeltaTuple
+   * <p>Constructs a DeltaTuple from another DeltaTuple. 
+   * </p>
+   *
    *   
    * @param original
    * @param updated
    * @throws DataException
    */  
-  public ArrayDeltaTuple(DeltaTuple updated)
+  protected ArrayDeltaTuple(DeltaTuple updated)
     throws DataException
   { 
     super(updated.getFieldSet());
+    this.original=updated.getOriginal();
     dirtyFlags=new BitSet(fieldSet.getFieldCount());
     copyFrom(updated);
-    this.original=updated.getOriginal();
   }
 
   @Override
@@ -189,7 +216,7 @@ public class ArrayDeltaTuple
       }
     }
     return new ArrayDeltaTuple
-      (newOriginal.getType(),this,newOriginal);
+      (newOriginal.getType().getScheme(),this,newOriginal);
   }
   
   void copyFrom(DeltaTuple updated)
@@ -212,6 +239,12 @@ public class ArrayDeltaTuple
     this.delete=updated.isDelete();
     if (baseExtent!=null)
     { 
+      if ( original!=null
+          && ((ArrayDeltaTuple) baseExtent).getOriginal()==null
+          )
+      { throw new DataException("Missing original in base extent of "+this);
+      }
+          
       ((ArrayDeltaTuple) baseExtent)
         .copyFrom(updated.getBaseExtent());
     }
@@ -375,9 +408,15 @@ public class ArrayDeltaTuple
   }
 
   @Override
-  protected AbstractTuple createBaseExtent(
-    Tuple tuple)
+  protected AbstractTuple createBaseExtent(Tuple originalBaseExtent)
     throws DataException
-  { return new ArrayDeltaTuple((DeltaTuple) tuple);
+  { return new ArrayDeltaTuple((DeltaTuple) originalBaseExtent);
   }
+  
+  @Override
+  protected AbstractTuple createBaseExtent(FieldSet fieldSet,Tuple originalBaseExtent)
+    throws DataException
+  { return new ArrayDeltaTuple(fieldSet,(DeltaTuple) originalBaseExtent);
+  }
+
 }

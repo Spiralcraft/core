@@ -12,6 +12,11 @@ public class ArrayJournalTuple
   extends ArrayTuple
   implements JournalTuple
 {
+  
+  public static ArrayJournalTuple freezeDelta(DeltaTuple delta)
+    throws DataException
+  { return new ArrayJournalTuple(delta);
+  }
 
 //  private final Type<?> type;
   private final long version;
@@ -40,7 +45,7 @@ public class ArrayJournalTuple
     transactionId=transactionId();
   }
   
-  public ArrayJournalTuple(DeltaTuple delta)
+  protected ArrayJournalTuple(DeltaTuple delta)
     throws DataException
   { 
     super(delta);
@@ -136,7 +141,7 @@ public class ArrayJournalTuple
           {
             ArrayJournalTuple nextVersion=null;
             if (!delta.isDelete())
-            { nextVersion=new ArrayJournalTuple(delta);
+            { nextVersion=freezeDelta(delta);
             }
             transactionContext
               =new TransactionContext(nextVersion,delta);

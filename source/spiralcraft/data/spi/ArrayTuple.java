@@ -33,6 +33,10 @@ public class ArrayTuple
 {
   protected final Object[] data;
   
+  public static ArrayTuple freezeDelta(DeltaTuple delta)
+      throws DataException
+  { return new ArrayTuple(delta);
+  }
 
   /**
    * Construct an ArrayTuple with an empty set of data
@@ -77,7 +81,45 @@ public class ArrayTuple
     { baseExtent=createBaseExtent(original.getBaseExtent());
     }
   }
+  
 
+  /**
+   * <p>Construct an ArrayTuple to receive data after the extent structure
+   *   is created
+   * </p>
+   */
+  protected ArrayTuple(FieldSet fieldSet,Tuple original)
+    throws DataException
+  { 
+    super(fieldSet);
+    this.data=new Object[fieldSet.getFieldCount()];
+    
+    if (fieldSet.getType()!=null)
+    {
+      if (fieldSet.getType().getBaseType()!=null)
+      { 
+        FieldSet baseScheme=fieldSet.getType().getBaseType().getScheme();
+        if (baseScheme!=null)
+        { baseExtent=createBaseExtent(baseScheme,original.getBaseExtent());
+        }
+      }
+    }
+  }
+
+  /**
+   * Construct an ArrayTuple that contains a copy of the
+   *   data in the specified DeltaTuple
+   */
+  protected ArrayTuple
+    (DeltaTuple delta)
+    throws DataException
+  { 
+    super(delta.getType().getArchetype().getScheme());
+    this.data=copyData(delta);
+    if (delta.getBaseExtent()!=null)
+    { baseExtent=createDeltaBaseExtent(delta.getBaseExtent());
+    }
+  }  
   private Object[] copyData(Tuple original)
     throws DataException
   {
@@ -115,20 +157,7 @@ public class ArrayTuple
     
   }
   
-  /**
-   * Construct an ArrayTuple that contains a copy of the
-   *   data in the specified DeltaTuple
-   */
-  public ArrayTuple
-    (DeltaTuple delta)
-    throws DataException
-  { 
-    super(delta.getType().getArchetype().getScheme());
-    this.data=copyData(delta);
-    if (delta.getBaseExtent()!=null)
-    { baseExtent=createDeltaBaseExtent(delta.getBaseExtent());
-    }
-  }
+
 
   @Override
   public Object get(int index)
@@ -154,15 +183,21 @@ public class ArrayTuple
 
   @Override
   protected AbstractTuple createBaseExtent(
-    Tuple tuple)
+    Tuple original)
     throws DataException
-  { return new ArrayTuple(tuple);
+  { return new ArrayTuple(original);
+  }
+  
+  protected AbstractTuple createBaseExtent(
+    FieldSet fieldSet,Tuple original)
+    throws DataException
+  { return new ArrayTuple(fieldSet,original);
   }
   
   @Override
   protected AbstractTuple createDeltaBaseExtent(
     DeltaTuple tuple)
     throws DataException
-  { return new ArrayTuple(tuple);
+  { return ArrayTuple.freezeDelta(tuple);
   }  
 }
