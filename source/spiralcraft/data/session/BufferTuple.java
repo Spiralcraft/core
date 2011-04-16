@@ -489,7 +489,7 @@ public class BufferTuple
   @Override
   public Tuple snapshot()
     throws DataException
-  { return new ArrayTuple(this);
+  { return ArrayTuple.freezeDelta(this);
   }
 
   @Override
