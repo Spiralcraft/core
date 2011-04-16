@@ -21,7 +21,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Field;
 
-import spiralcraft.data.core.KeyField;
+import spiralcraft.data.core.RelativeField;
 import spiralcraft.data.core.TypeImpl;
 import spiralcraft.data.core.SchemeImpl;
 
@@ -112,9 +112,9 @@ public class BufferType<T extends Buffer>
         // Primitives are immutable
         if (primaryKey!=null && !field.getType().isPrimitive())
         {
-          if (field instanceof KeyField<?>
+          if (field instanceof RelativeField<?>
               && isChildKey
-                (((KeyField<?>) field).getKey().fieldIterable()
+                (((RelativeField<?>) field).getKey().fieldIterable()
                 ,primaryKey.fieldIterable()
                 )
               )

@@ -22,7 +22,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Field;
 
-import spiralcraft.data.core.KeyField;
+import spiralcraft.data.core.RelativeField;
 import spiralcraft.data.core.TypeImpl;
 import spiralcraft.data.core.SchemeImpl;
 import spiralcraft.data.types.standard.ObjectType;
@@ -111,7 +111,7 @@ public class DeltaType
         { 
           // Leave it alone
         }
-        else if (!(field instanceof KeyField))
+        else if (!(field instanceof RelativeField))
         {
           // Embedded Tuple
           FieldImpl newField=new FieldImpl();

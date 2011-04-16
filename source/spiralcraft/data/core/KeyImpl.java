@@ -15,6 +15,7 @@
 package spiralcraft.data.core;
 
 
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Key;
 import spiralcraft.data.KeyTuple;
@@ -36,6 +37,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.Reflector;
 
+import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.KeyFunction;
 import spiralcraft.util.string.StringConverter;
 import spiralcraft.util.string.StringUtil;
@@ -47,7 +49,7 @@ import spiralcraft.util.string.StringUtil;
  *
  * @param <T>
  */
-public class KeyImpl<T>
+public class KeyImpl<T extends DataComposite>
   extends ProjectionImpl<T>
   implements Key<T>
 {
@@ -55,7 +57,6 @@ public class KeyImpl<T>
   private String name;
   private String description;
   
-//  private int index;
   private boolean primary;
   private boolean unique;
   private Type<?> foreignType;
@@ -67,6 +68,8 @@ public class KeyImpl<T>
   private DataKeyFunction<T> function;
   private StringConverter<?>[] stringConverters;
 
+  private RelativeField<T> relativeField;
+  
   /**
    * Construct an unresolved KeyImpl which will be configured and resolved
    *   manually by the containing object.
@@ -74,6 +77,32 @@ public class KeyImpl<T>
   public KeyImpl()
   { }
 
+  
+  public KeyImpl(RelativeField<T> relativeField)
+  {
+    this.relativeField=relativeField;
+    this.name=relativeField.getName();
+    if (relativeField.getType().isAggregate())
+    { this.foreignType=relativeField.getType().getContentType();
+    }
+    else
+    { this.foreignType=relativeField.getType();
+    }
+    if (relativeField.isUniqueValue())
+    { this.unique=true;
+    }
+    if (relativeField.getReferencedFieldNames()!=null
+        || relativeField.getReferencedKeyName()!=null
+        || !relativeField.getType().isAggregate()
+        )
+    {
+      importedKey=new KeyImpl<Tuple>();
+      importedKey.fieldNames=relativeField.getReferencedFieldNames();
+      importedKey.name=relativeField.getReferencedKeyName();
+      importedKey.unique=!relativeField.getType().isAggregate();
+    }
+    this.fieldNames=relativeField.getFieldNames();
+  }
   
   public KeyImpl(FieldSet fieldSet,String fieldList)
     throws DataException
@@ -132,18 +161,9 @@ public class KeyImpl<T>
     }
   }
   
-  
-//  /**
-//   * @return The index of this Key within the set of Keys belonging to
-//   *   Scheme
-//   */
-//  public int getIndex()
-//  { return index;
-//  }
-  
-//  void setIndex(int val)
-//  { index=val;
-//  }
+  public RelativeField<T> getRelativeField()
+  { return relativeField;
+  }
   
   /**
    * @return Whether this Key is the primary key for its Scheme
@@ -224,6 +244,22 @@ public class KeyImpl<T>
     this.fieldNames=fieldNames;
   }
   
+  private KeyImpl<?> findReciprocalKey()
+  {
+    Key<?>[] keys=foreignType.getKeys();
+    for (Key<?> key : keys)
+    { 
+      // Check for reciprocal definition
+      if (key.getForeignType()!=null
+          && key.getForeignType().isAssignableFrom(scheme.getType())
+          )
+      { return (KeyImpl<?>) key;
+      }
+    }
+    return null;
+
+  }
+  
   @Override
   public void resolve()
     throws DataException
@@ -231,21 +267,14 @@ public class KeyImpl<T>
     if (resolved)
     { return;
     }
+    resolved=true;
 
     if (foreignType!=null)
     { 
       if (importedKey==null)
       {
-        Key<?>[] keys=foreignType.getKeys();
-        for (Key<?> key : keys)
-        { 
-          // Check for reciprocal definition
-          if (key.getForeignType()!=null
-              && key.getForeignType().isAssignableFrom(getType())
-              )
-          { importedKey=(KeyImpl<?>) key;
-          }
-        }
+
+        importedKey=findReciprocalKey();
         if (importedKey==null)
         {
         
@@ -254,7 +283,8 @@ public class KeyImpl<T>
         }
         if (importedKey==null)
         {
-          throw new DataException("In "+getType().getURI()+", no "
+          throw new DataException("In "+scheme.getType().getURI()+"#"+getName()
+            +", no "
             +" suitable foreign Key found in foreign type "+foreignType.getURI()
             );
         }
@@ -280,6 +310,32 @@ public class KeyImpl<T>
         }
         
         
+        
+      }
+      else if (importedKey.getFieldNames()==null)
+      {
+        KeyImpl<?> reciprocalKey=findReciprocalKey();
+        if (reciprocalKey!=null)
+        { importedKey.fieldNames=reciprocalKey.fieldNames;
+        }
+        else
+        {
+          if (foreignType.getPrimaryKey()==null)
+          { 
+            throw new DataException("Foreign type "+foreignType.getURI()
+              +" for key "+getScheme().getType().getURI()+"#"+name+" does not "
+              +" contain a suitable key to reference and has no primary key");
+          }
+          String[] fieldNames=foreignType.getPrimaryKey().getFieldNames();
+          
+          if (importedKey.isUnique())
+          { importedKey.fieldNames=fieldNames;
+          }
+          else
+          { importedKey.fieldNames
+              =ArrayUtil.truncate(fieldNames,this.fieldNames.length);
+          }
+        }
         
       }
     }

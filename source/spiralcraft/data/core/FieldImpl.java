@@ -56,7 +56,6 @@ public class FieldImpl<T>
   protected final ClassLog log=ClassLog.getInstance(getClass());
   
   private boolean locked;
-  private FieldSet fieldSet;
   private int index;
   private String name;
   private String title;
@@ -78,6 +77,7 @@ public class FieldImpl<T>
   protected boolean debug;
 
   protected Reflector contentReflector;
+  protected FieldSet fieldSet;
 
 //  protected boolean debugData;
   
@@ -188,10 +188,10 @@ public class FieldImpl<T>
   /**
    *@return the Scheme
    */
-  public Scheme getScheme()
+  public SchemeImpl getScheme()
   { 
     if (fieldSet instanceof Scheme)
-    { return (Scheme) fieldSet;
+    { return (SchemeImpl) fieldSet;
     }
     else
     { return null;
@@ -573,19 +573,17 @@ public class FieldImpl<T>
   { locked=true;
   }
   
-  void unlock()
-  { locked=false;
-  }
-  
   /**
    * Resolve any external dependencies.
    */
   void resolve()
     throws DataException
   {
-    if (!locked)
-    { lock();
+    if (locked)
+    { return;
     }
+    lock();
+    
     if (getType()==null)
     { 
       generateURI();

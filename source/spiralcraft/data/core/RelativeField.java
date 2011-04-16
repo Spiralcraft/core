@@ -23,10 +23,12 @@ import spiralcraft.lang.BindException;
 
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.ClosureFocus;
+import spiralcraft.util.string.StringUtil;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Field;
+import spiralcraft.data.Key;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
@@ -39,23 +41,69 @@ import spiralcraft.data.query.Queryable;
 
 import spiralcraft.data.lang.DataReflector;
 
-
-public class KeyField<T extends DataComposite>
+/**
+ * A Field which provides a reference to an entity related to this one by
+ *   relational keys.
+ * 
+ * @author mike
+ *
+ * @param <T>
+ */
+public class RelativeField<T extends DataComposite>
   extends FieldImpl<T>
 {
   
   private KeyImpl<Tuple> key;
+  private final boolean generated;
+  private boolean resolved;
+  private String[] fieldNames;
+  private String[] referencedFieldNames;
+  private String referencedKeyName;
   
   { this.setTransient(true);
   }
   
-  public KeyField(KeyImpl<Tuple> key)
+  public RelativeField(KeyImpl<Tuple> key)
   { 
+    // This RelativeField was generated from an explicit key definition
     this.key=key;
+    this.generated=true;
+  }
+  
+  public RelativeField()
+  { this.generated=false;
   }
   
   public KeyImpl<?> getKey()
   { return key;
+  }
+  
+  public void setKey(KeyImpl<Tuple> key)
+  { this.key=key;
+  }
+  
+  public void setFieldList(String fieldList)
+  { fieldNames=StringUtil.explode(fieldList,',',(char) 0,2);
+  }
+
+  public void setReferencedFieldList(String fieldList)
+  { referencedFieldNames=StringUtil.explode(fieldList,',',(char) 0,2);
+  }
+  
+  public void setReferencedKeyName(String keyName)
+  { referencedKeyName=keyName;
+  }
+  
+  String[] getFieldNames()
+  { return fieldNames;
+  }
+  
+  String[] getReferencedFieldNames()
+  { return referencedFieldNames;
+  }
+  
+  String getReferencedKeyName()
+  { return referencedKeyName;
   }
   
   @SuppressWarnings({ "unchecked", "rawtypes" }) // Key.getForeignType() is not generic
@@ -63,18 +111,88 @@ public class KeyField<T extends DataComposite>
   public void resolve()
     throws DataException
   { 
-    setName(key.getName());
-    
-    if (key.getForeignType()==null)
-    { throw new DataException("Foreign type is null Key "+key);
+    if (resolved)
+    { return;
     }
+    resolved=true;
     
-    if (key.getImportedKey().isUnique())
-    { setType((Type) key.getForeignType());
+    
+    if (!generated)
+    { 
+     
+      // Generate the key
+      if (key==null)
+      { key=new KeyImpl(this);
+      }
+      
+      if (key.getFieldNames()==null)
+      { 
+        Key primaryKey=getScheme().getType().getPrimaryKey();
+        if (primaryKey==null)
+        { 
+          throw new DataException
+            ("Relative Field "+getScheme().getType().getURI()+"#"+getName()
+            +" with no relational fieldList"
+            +" requires that a primary key be defined in the containing type"
+            ); 
+        }
+
+        if (isUniqueValue())
+        {
+          // We just use the primary key
+          key.setFieldNames(primaryKey.getFieldNames());
+        }
+        else
+        {
+          // Use the part of the our primary key that corresponds to the
+          //   parent's primary key
+          Key foreignKey=getType().getPrimaryKey();
+          if (foreignKey==null)
+          {
+            throw new DataException
+              ("Relative Field "+getURI()+" containing non unique value "
+              +" requires that a primary key be defined in the referenced"
+              +" type "+getType().getURI()
+              ); 
+          }
+            
+          if (foreignKey.getFieldCount()>primaryKey.getFieldCount())
+          { 
+            throw new DataException
+              ("Relative Field "+getURI()+" containing non unique value "
+              +" requires that the primary key defined in the referenced"
+              +" type "+getType().getURI()+" be a subset of the primary "
+              +" key defined in this type"
+              ); 
+              
+          }
+          String[] fieldNames=new String[foreignKey.getFieldCount()];
+          for (int i=0;i<foreignKey.getFieldCount();i++)
+          { fieldNames[i]=primaryKey.getFieldByIndex(i).getName();
+          }
+          key.setFieldNames(fieldNames);
+        }
+      }
+      getScheme().addKey(key);
+      
     }
     else
-    { setType((Type) Type.getAggregateType(key.getForeignType()));
+    {
+      // This field was generated from the key
+      setName(key.getName());
+    
+      if (key.getForeignType()==null)
+      { throw new DataException("Foreign type is null Key "+key);
+      }
+    
+      if (key.getImportedKey().isUnique())
+      { setType((Type) key.getForeignType());
+      }
+      else
+      { setType((Type) Type.getAggregateType(key.getForeignType()));
+      }
     }
+
     if (key.getForeignQuery()!=null)
     { key.getForeignQuery().resolve();
     }

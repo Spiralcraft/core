@@ -287,7 +287,6 @@ public class SchemeImpl
         field.setIndex(fieldIndex++);
         fields.add(field);
       }
-      field.lock();
       fieldMap.put(field.getName(),field);
       
     }
@@ -299,10 +298,7 @@ public class SchemeImpl
       //   we always extend an Archetype field (in the above block) to avoid
       //   this?
       
-      // Concrete fields first
-      if (!field.isTransient())
-      { field.resolve();
-      }
+      field.resolve();
     }
     
 //    int keyIndex=0;
@@ -323,7 +319,10 @@ public class SchemeImpl
       }
       key.resolve();
       
-      if (key.getForeignType()!=null && key.getName()!=null)
+      if (key.getForeignType()!=null 
+          && key.getName()!=null 
+          && key.getRelativeField()==null
+          )
       {
         // Expose a Field to provide direct access to the join
         
@@ -343,12 +342,13 @@ public class SchemeImpl
     
     // Transient fields 
     for (FieldImpl<?> field: localFields)
-    { 
-      if (field.isTransient())
-      { field.resolve();
-      }
+    { field.resolve();
     }
     
+  }
+  
+  void addKey(KeyImpl<Tuple> key)
+  { this.keys.add(key);
   }
   
   @SuppressWarnings({ "unchecked", "rawtypes" }) // We only know the actual type at runtime
@@ -356,7 +356,7 @@ public class SchemeImpl
     throws DataException
   { 
     addFieldPostResolve
-      (new KeyField(key));
+      (new RelativeField(key));
   }
   
   private <X> void addFieldPostResolve(FieldImpl<X> field)
