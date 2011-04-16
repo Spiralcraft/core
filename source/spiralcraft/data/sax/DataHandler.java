@@ -572,6 +572,12 @@ public class DataHandler
         else if (attributes.getLocalName(i).equals("ref"))
         { ref=resolveRef(contextualize(attributes,i));
         }
+        else if (attributes.getLocalName(i).equals("tx"))
+        { // Transactional object
+        }
+        else if (attributes.getLocalName(i).equals("v"))
+        { // Transactional object
+        }
         else
         { 
           throw new DataSAXException
@@ -763,6 +769,12 @@ public class DataHandler
         else if (attributes.getLocalName(i).equals("ref"))
         { ref=resolveRef(contextualize(attributes,i));
         }
+        else if (attributes.getLocalName(i).equals("tx"))
+        { // Transactional object
+        }
+        else if (attributes.getLocalName(i).equals("v"))
+        { // Transactional object
+        }        
         else
         { 
           throw new DataSAXException

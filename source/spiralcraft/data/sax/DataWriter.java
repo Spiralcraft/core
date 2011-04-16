@@ -17,6 +17,7 @@ package spiralcraft.data.sax;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DeltaTuple;
+import spiralcraft.data.JournalTuple;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.Field;
@@ -92,7 +93,7 @@ public class DataWriter
     throws DataException
   {
     try
-    { new Context(new XmlWriter(out,null)).write(data);
+    { new Context(this,new XmlWriter(out,null)).write(data);
     }
     catch (SAXException x)
     { throw new DataException("Error writing data "+x,x);
@@ -107,7 +108,7 @@ public class DataWriter
     throws DataException
   {
     try
-    { new Context(new XmlWriter(out,null)).write(data);
+    { new Context(this,new XmlWriter(out,null)).write(data);
     }
     catch (SAXException x)
     { throw new DataException("Error writing data "+x,x);
@@ -130,9 +131,12 @@ class Context
 
   private final XmlWriter writer;
   private Frame currentFrame; 
+  private ClassLog log;
   
-  public Context(XmlWriter writer)
-  { this.writer=writer;
+  public Context(DataWriter dataWriter,XmlWriter writer)
+  { 
+    this.writer=writer;
+    this.log=DataWriter.log;
   }
   
   public void write(DataComposite data)
@@ -246,7 +250,7 @@ class Context
       =new HashMap<URI,String>();
     private final HashMap<String,URI> reverseNamespaceMap
       =new HashMap<String,URI>();
-    protected AttributesImpl attributes=NULL_ATTRIBUTES;
+    private AttributesImpl attributes=NULL_ATTRIBUTES;
     
     public TypeFrame(Type type,String qname)
     {
@@ -283,6 +287,15 @@ class Context
       }
     }
 
+    protected void addAttribute
+      (String uri,String localname,String qname,String type,String value)
+    {
+      if (attributes==NULL_ATTRIBUTES)
+      { attributes=new AttributesImpl();
+      }
+      attributes.addAttribute(uri,localname,qname,type,value);
+    }
+    
     private String makeNamespace(URI uri)
     {
       String namespace=null;
@@ -305,10 +318,8 @@ class Context
       }
       namespaceMap.put(uri,namespace);
       reverseNamespaceMap.put(namespace,uri);
-      if (attributes==NULL_ATTRIBUTES)
-      { attributes=new AttributesImpl();
-      }
-      attributes.addAttribute
+
+      addAttribute
         (null
         ,namespace
         ,"xmlns:"+namespace
@@ -449,7 +460,7 @@ class Context
           
           if (dt.isDelete())
           { 
-            attributes.addAttribute(null,"delta","delta",null,"D");
+            addAttribute(null,"delta","delta",null,"D");
             if (dt.getType().getPrimaryKey()!=null)
             {
               fieldIterator
@@ -464,7 +475,7 @@ class Context
           }
           else if (dt.getOriginal()!=null)
           { 
-            attributes.addAttribute(null,"delta","delta",null,"U");
+            addAttribute(null,"delta","delta",null,"U");
             if (dt.getType().getPrimaryKey()!=null)
             {
               fieldIterator
@@ -473,15 +484,27 @@ class Context
                     (dt.getType().getPrimaryKey().getSourceFields())
                   ,fieldIterator
                   );
+
+              if (DataWriter.debugLevel.isFine())
+              {
+                for (Field field:dt.getType().getPrimaryKey().getSourceFields())
+                { 
+                  log.fine("Primary Key Field: "+field+" type="+field.getFieldSet());
+                  log.fine("Primary Key Value: "+field.getValue(dt)+" from "+dt);
+                  log.fine("Base extent: "+dt.widen(field.getFieldSet().getType()));
+                }
+              }
+              
             }
             else
             { 
+              log.warning("No primary key writing update transaction for "+dt);
               fieldIterator
                 =dt.getType().getFieldSet().fieldIterable().iterator();
             }
           }
           else
-          { attributes.addAttribute(null,"delta","delta",null,"C");
+          { addAttribute(null,"delta","delta",null,"C");
           }
           
           
@@ -489,6 +512,15 @@ class Context
         }
         else
         { 
+          if (tuple instanceof JournalTuple)
+          { 
+            JournalTuple jt=(JournalTuple) tuple;
+            addAttribute
+              (null,"tx","tx",null,Long.toString(jt.getTransactionId()));
+            addAttribute
+              (null,"v","v",null,Long.toString(jt.getVersion()));
+          }
+          
           if (tuple.getType()!=null)
           { 
             if (DataWriter.debugLevel.canLog(Level.FINE))
