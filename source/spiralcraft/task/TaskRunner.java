@@ -218,7 +218,7 @@ public class TaskRunner
     { 
       try
       { 
-        setService(AbstractXmlObject.<Service>create(null,serviceURI).get());
+        setService(AbstractXmlObject.<Service>instantiate(serviceURI).get());
       }
       catch (BindException x)
       { throw new ExecutionException("Error binding service "+serviceURI,x);
