@@ -46,6 +46,7 @@ public class CalculatedFieldImpl<T>
   private ThreadLocalChannel<Tuple> threadLocalBinding;
   private Channel<T> expressionBinding;
   private Expression<T> expression;
+  private boolean resolved;
   
   { setTransient(true);
   }
@@ -75,6 +76,11 @@ public class CalculatedFieldImpl<T>
   void resolve()
     throws DataException
   {
+    if (resolved)
+    { return;
+    }
+    resolved=true;
+    
     super.resolve();
     try
     {
