@@ -67,7 +67,7 @@ public class KeyImpl<T extends DataComposite>
   private String title;
   private DataKeyFunction<T> function;
   private StringConverter<?>[] stringConverters;
-
+  private boolean resolved;
   private RelativeField<T> relativeField;
   
   /**

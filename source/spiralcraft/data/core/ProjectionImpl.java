@@ -63,7 +63,7 @@ public class ProjectionImpl<T>
   
   protected FieldSet masterFieldSet;
   
-  protected boolean resolved;
+  private boolean resolved;
   
   protected TupleReflector<Tuple> reflector;
   
