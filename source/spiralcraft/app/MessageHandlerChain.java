@@ -86,9 +86,6 @@ public class MessageHandlerChain
     if (next!=null)
     { next.handleMessage(dispatcher,message,nextChain);
     }
-    else
-    { dispatcher.relayMessage(message);
-    }
   }
   
 }

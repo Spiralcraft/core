@@ -12,11 +12,12 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.app.spi;
+package spiralcraft.app.kit;
 
 import spiralcraft.app.Dispatcher;
 import spiralcraft.app.InitializeMessage;
 import spiralcraft.app.Message;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
@@ -106,33 +107,25 @@ public class ExpansionContainer<C,T>
   
   @SuppressWarnings("unchecked")
   @Override
-  public void messageChild
+  public void relayMessage
     (final Dispatcher dispatcher
-    ,int index
     ,Message message
     )
   {
-    
-    try
-    {
-      ExpansionState<T> state=(ExpansionState<T>) dispatcher.getState();
-      if (state==null || !state.isValid())
-      { 
-        if (message.getType()!=InitializeMessage.TYPE
-            || initializeContent
-            )
-        { messageRefresh(dispatcher,message,index,state);
-        }
-      }
-      else
-      { messageRetraverse(dispatcher,message,index,state);
+    ExpansionState<T> state=(ExpansionState<T>) dispatcher.getState();
+
+    Integer index=dispatcher.getNextRoute();
+    if (state==null || !state.isValid())
+    { 
+      if (message.getType()!=InitializeMessage.TYPE
+          || initializeContent
+          )
+      { messageRefresh(dispatcher,message,index,state);
       }
     }
-    finally
-    { dispatcher.popPath();
+    else
+    { messageRetraverse(dispatcher,message,index,state);
     }
-   
-   
   }
   
   /**
@@ -196,31 +189,20 @@ public class ExpansionContainer<C,T>
     T childVal=cursor.next();
     iter.hasNext=cursor.hasNext();
     
-    ValueState<T> childState
-      =(state!=null)
-      ?state.ensureChild(iter.index,childVal,childVal.toString())
-      :null;
+    if (state!=null)
+    { state.ensureChild(iter.index,childVal,childVal.toString());
+    }
       
     if (path==null || path==iter.index)
     {
       pushElement(lastVal,childVal,cursor.getCurrent());
+      dispatcher.descend(iter.index);
       try
-      { 
-
-      
-        if (state!=null)
-        {
-          dispatcher.setNextState
-            (childState);
-        }
-        // Run handlers for each element
-        super.messageChildren(dispatcher,message);
+      { messageChildren(dispatcher,message);
       }
       finally
       { 
-        if (state!=null)
-        { dispatcher.setNextState(state);
-        }
+        dispatcher.ascend();
         popElement();
       }
     }
@@ -273,7 +255,6 @@ public class ExpansionContainer<C,T>
     }
   }
   
-  @SuppressWarnings("unchecked")
   private void messageRetraverseChild
     (Dispatcher dispatcher
     ,Message message
@@ -299,24 +280,36 @@ public class ExpansionContainer<C,T>
           :null
         );
       
-      ExpansionState<T> state=(ExpansionState<T>) dispatcher.getState();
+      dispatcher.descend(iter.index);
       try
       {
-        dispatcher.setNextState(childState);
-        
         // Run handlers for each element
-        super.messageChildren(dispatcher,message);
+        messageChildren(dispatcher,message);
       }
       finally
       { 
-        dispatcher.setNextState(state);
+        dispatcher.ascend();
         popElement();
       }
     }
     iter.index++;    
   }
   
-  
+  protected void messageChild(
+    Dispatcher dispatcher,
+    int index,
+    Message message)
+  { dispatcher.relayMessage(children[index],index,message);
+  }
+
+  protected void messageChildren(
+    Dispatcher dispatcher,
+    Message message)
+  {
+    for (int index=0;index<children.length;index++)
+    { dispatcher.relayMessage(children[index],index,message);
+    }
+  }
   
   private void pushElement(T lastVal,T val,T nextVal)
   {
@@ -338,8 +331,8 @@ public class ExpansionContainer<C,T>
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
-  public Focus<?> bind(Focus<?> parentFocus)
-    throws BindException
+  public void bind(Focus<?> parentFocus)
+    throws ContextualException
   {
     Channel<?> target=parentFocus.getSubject();
     if (target==null)
@@ -384,7 +377,7 @@ public class ExpansionContainer<C,T>
     if (logLevel.isDebug())
     { log.debug("Iterator exposes "+valueChannel);
     }
-    return super.bind(currentFocus);
+    super.bind(currentFocus);
   }
     
   class Iteration

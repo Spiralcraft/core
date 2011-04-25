@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.app.spi;
+package spiralcraft.app.kit;
 
 
 import java.util.ArrayList;
@@ -23,16 +23,23 @@ import java.util.List;
 import spiralcraft.app.Component;
 import spiralcraft.app.Container;
 import spiralcraft.app.Event;
+import spiralcraft.app.Message.Type;
+import spiralcraft.app.MessageHandler;
+import spiralcraft.app.MessageHandlerChain;
 import spiralcraft.app.Parent;
 import spiralcraft.app.Message;
 import spiralcraft.app.Dispatcher;
 import spiralcraft.app.State;
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.ChainableContext;
+import spiralcraft.lang.Context;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.kit.AbstractChainableContext;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -74,6 +81,8 @@ public class AbstractComponent
   private LinkedList<Contextual> exportContextuals;
   private LinkedList<Contextual> selfContextuals;
   
+  private ChainableContext outerContext;
+  
   public void setParent(Parent parent)
   { this.parent=parent;
   }
@@ -101,27 +110,6 @@ public class AbstractComponent
   public String getId()
   { return this.id;
   }
-
-//  /**
-//   * An non-unique value that associates this component with some aspect of
-//   *   its parent container.
-//   * 
-//   */
-//  @Override
-//  public void setKey(Object key)
-//  { this.key=key;
-//  }
-//  
-//  /**
-//   * A non-unique value that associates this component with some aspect of
-//   *   its parent container.
-//   * 
-//   * @return
-//   */
-//  @Override
-//  public Object getKey()
-//  { return this.key;
-//  }
 
   
   /**
@@ -182,6 +170,16 @@ public class AbstractComponent
    */
   protected boolean isPeer(Component child)
   { return peerSet!=null && peerSet.contains(child);
+  }
+  
+  protected void chainOuterContext(Context context)
+  {
+    if (outerContext==null)
+    { outerContext=AbstractChainableContext.createChain(context);
+    }
+    else
+    { outerContext.chain(context);
+    }
   }
   
   /**
@@ -280,7 +278,7 @@ public class AbstractComponent
   
   protected final void bindContextuals
     (Focus<?> focus,List<Contextual> contextuals)
-    throws BindException
+    throws ContextualException
   { 
     if (contextuals!=null)
     {
@@ -292,13 +290,28 @@ public class AbstractComponent
 
   @Override
   public void message
-    (Dispatcher context
+    (Dispatcher dispatcher
     ,Message message
     )
   { 
-    // Calls the context when done
-    handlers.getChain(message.getType())
-      .handleMessage(context,message);
+    if (outerContext!=null)
+    { outerContext.push();
+    }
+    try
+    {
+    
+      // Calls the context when done
+      handlers.getChain(message.getType())
+        .handleMessage(dispatcher,message);
+    }
+    finally
+    {
+      if (outerContext!=null)
+      { outerContext.pop();
+      }
+    }
+    
+    
   }
 
   @Override
@@ -316,30 +329,60 @@ public class AbstractComponent
    * </p>
    */
   @Override
-  public State createState(State parentState)
-  { return new SimpleState(-1,parentState,id);
+  public State createState()
+  { return new SimpleState(-1,id);
   }
 
   @Override
-  public Focus<?> bind(
+  public final Focus<?> bind(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
     bound=true;
-    bindContextuals(focusChain,parentContextuals);
     
+    Contextual self=new Contextual()
+    {
+      @Override
+      public Focus<?> bind(Focus<?> focusChain)
+        throws ContextualException
+      { return bindInternal(focusChain);
+      }
+    };
+    
+    if (outerContext!=null)
+    { 
+      outerContext.seal(self);
+      return outerContext.bind(focusChain);
+    }
+    else
+    { return self.bind(focusChain);
+    }
+    
+  }
+  
+  protected void bindComplete(Focus<?> focusChain)
+    throws ContextualException
+  {
+  }
+
+  private final Focus<?> bindInternal(Focus<?> focusChain)
+    throws ContextualException
+  {
+    bindContextuals(focusChain,parentContextuals);
+      
     Focus<?> context=focusChain;
     if (selfFocus==null)
     { 
       selfFocus=focusChain.chain
-        (new SimpleChannel<AbstractComponent>(this,true));
+        (new SimpleChannel<AbstractComponent>(AbstractComponent.this,true));
       bindContextuals(selfFocus,selfContextuals);
     }
 
     focusChain=bindImports(focusChain);
     
+    handlers.terminate(new DefaultHandler());
     focusChain=handlers.bind(focusChain);
-    
+      
     focusChain=bindExports(focusChain);
     if (exportSelf)
     {
@@ -358,13 +401,17 @@ public class AbstractComponent
       childContainer
         =createChildContainer(children.toArray(new Component[children.size()]));
     }
-    
+      
     if (childContainer!=null)
     { childContainer.bind(focusChain);
     }
+    
+    bindComplete(focusChain);
+    // XXX We shouldn't return anything that relies on a Context. Ideally,
+    //   we should return selfFocus only.
     return focusChain;
   }
-
+  
   /**
    * Assemble all child components in their appropriate order, starting with
    *   peers and any pre-defined contents.
@@ -431,12 +478,12 @@ public class AbstractComponent
   }
 
   protected Focus<?> bindImports(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { return focusChain;
   }
 
   protected Focus<?> bindExports(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { return focusChain;
   }
   
@@ -445,8 +492,8 @@ public class AbstractComponent
   { return 1;
   }
 
-  protected State getState(Dispatcher context)
-  { return context.getState();
+  protected State getState(Dispatcher dispatcher)
+  { return dispatcher.getState();
   }
   
   @Override
@@ -513,6 +560,34 @@ public class AbstractComponent
       if (this.logLevel.canLog(Level.DEBUG))
       { this.logLevel=this.normalLogLevel;
       }
+    }
+  }
+  
+  class DefaultHandler
+    implements MessageHandler
+  {
+
+    @Override
+    public Focus<?> bind(Focus<?> focusChain)
+      throws BindException
+    { return focusChain;
+    }
+
+    @Override
+    public void handleMessage(
+      Dispatcher dispatcher,
+      Message message,
+      MessageHandlerChain chain)
+    { 
+      
+      if (childContainer!=null)
+      { childContainer.relayMessage(dispatcher,message);
+      }
+    }
+
+    @Override
+    public Type getType()
+    { return null;
     }
   }
 }

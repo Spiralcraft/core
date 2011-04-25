@@ -12,47 +12,48 @@
 //Unless otherwise agreed to in writing, this software is distributed on an
 //"AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.app.spi;
+package spiralcraft.app.kit;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import spiralcraft.app.State;
 
-public class SimpleState
+public class ExpansionState<T>
   implements State
 {
 
-  private final State parent;
-  private final State[] children;
-  private final int[] path;
+  private List<MementoState> children;
   private final String componentId;
+  private final int grandchildCount;
+
+  private boolean valid;
+  private State parent;
+  private int[] path;
   
-  public SimpleState(int childCount,State parent,String componentId)
-  { 
-    this.parent=parent;
-    if (parent!=null)
-    { 
-      int[] parentPath=parent.getPath();
-      path=new int[parentPath.length+1];
-      System.arraycopy(parentPath,0,path,0,parentPath.length);      
-    }
-    else
-    { path = new int[0];
-    }
-    
-    if (childCount>0)
-    { children=new State[childCount];
-    }
-    else
-    { children=null;
-    }
+  public ExpansionState(String componentId,int grandchildCount)
+  {     
+    children=new ArrayList<MementoState>();
     this.componentId=componentId;
-    
+    this.grandchildCount=grandchildCount;
   }
   
   
   @Override
-  public void setPathIndex(int index)
-  { path[path.length-1]=index;;
+  public void link(State parent,int[] path)
+  { 
+    if (this.parent!=null)
+    { throw new IllegalStateException("Can't change parent from "+this.parent);
+    }
+    this.parent=parent;
+    this.path=path;
   }
+   
+//  @Override
+//  public void setPathIndex(int index)
+//  { path[path.length-1]=index;;
+//  }
   
   /**
    * 
@@ -64,15 +65,26 @@ public class SimpleState
   }
   
 
-  
-  /**
-   * 
-   * @return The index of this ElementState within its parent ElementState
-   */
-  @Override
-  public int getPathIndex()
-  { return path[path.length-1];
+  public void invalidate()
+  { this.valid=false;
   }
+  
+  public void setValid(boolean valid)
+  { this.valid=valid;
+  }
+  
+  public boolean isValid()
+  { return valid;
+  }
+  
+//  /**
+//   * 
+//   * @return The index of this State within its parent State
+//   */
+//  @Override
+//  public int getPathIndex()
+//  { return path[path.length-1];
+//  }
   
   @Override
   public State getParent()
@@ -81,19 +93,60 @@ public class SimpleState
   
   @Override
   public State getChild(int index)
-  { 
-    if (children==null)
-    { throw new IndexOutOfBoundsException("This State has no children");
-    }
-    else
-    { return children[index];
-    }
+  { return children.get(index);
   }
+  
+  public void trim(int index)
+  { children=children.subList(0,index);
+  }
+    
+  public MementoState ensureChild(int index,T childData,String childKey)
+  { 
+    MementoState ret=null;
+    if (index<children.size())
+    { ret=children.get(index);
+    }
+    
+    if (ret==null)
+    {
+      ret=new MementoState(childKey);
+      
+      int[] newPath=new int[path.length+1];
+      System.arraycopy(path,0,newPath,0,path.length);
+      newPath[path.length]=index;      
+      
+      ret.link(this,newPath);
+      
+      
+      ret.setValue(childData);
+      int i=children.size()-index;
+      while (i-->1)
+      { children.add(null);
+      }
+      if (index<children.size())
+      { children.set(index,ret);
+      }
+      else
+      { children.add(ret);
+      }
+    }
+    
+    return ret;
+    
+  }
+  
     
   
   @Override
   public void setChild(int index,State child)
-  { children[index]=child;
+  { 
+    throw new UnsupportedOperationException
+      ("Cannot alter children of an ExpansionState");
+  }
+
+  
+  public Iterator<MementoState> iterator()
+  { return children.iterator();
   }
   
   /**
@@ -149,7 +202,14 @@ public class SimpleState
   { return componentId;
   }
   
+  class MementoState
+    extends ValueState<T>
+  {
+    public MementoState(String key)
+    { super(grandchildCount,key);
+    }
     
+  }
 }
 
 

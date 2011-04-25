@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.app.spi;
+package spiralcraft.app.kit;
 
 
 
@@ -20,10 +20,9 @@ import spiralcraft.app.Component;
 import spiralcraft.app.Container;
 import spiralcraft.app.Dispatcher;
 import spiralcraft.app.Message;
-import spiralcraft.app.State;
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.Level;
 
@@ -45,13 +44,12 @@ public class StandardContainer
 
   
   @Override
-  public Focus<?> bind(
+  public void bind(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
     resolveChildren(focusChain);
     bindChildren(focusChain);
-    return focusChain;
   }
   
   /**
@@ -65,7 +63,7 @@ public class StandardContainer
   }
   
   protected final void bindChildren(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
     if (children!=null)
     {
@@ -76,7 +74,7 @@ public class StandardContainer
   }
   
   protected Focus<?> bindChild(Focus<?> context,Component child) 
-    throws BindException
+    throws ContextualException
   { return child.bind(context);
   }
 
@@ -114,44 +112,37 @@ public class StandardContainer
   { Lifecycler.stop(children);
   }
 
-
-
-  protected State ensureStaticChildState(State parentState,int stateIndex)
-  {
-    State childState=parentState.getChild(stateIndex);
-    if (childState==null)
+ 
+  /**
+   * <p>Relay a message to the appropriate children
+   *   as indicated by the message path.
+   * </p>
+   * 
+   * <p>This method is called by a Component once the pre-order stage of
+   *   its local message processing has been completed. When this method
+   *   returns, the Component can complete the post-order stage of
+   *   its local message processing.
+   * </p>
+   * 
+   * @param dispatcher The dispatcher
+   * @param message The message to relay
+   *
+   */
+  @Override
+  public void relayMessage(Dispatcher dispatcher,Message message)
+  { 
+    Integer index=dispatcher.getNextRoute();
+    if (index!=null)
+    { dispatcher.relayMessage(children[index],index,message);
+    }
+    else if (message.isMulticast())
     { 
-      childState=children[stateIndex].createState(parentState);
-      parentState.setChild(stateIndex,childState);    
+      for (int i=0;i<children.length;i++)
+      { dispatcher.relayMessage(children[i],i,message);
+      }
     }
-    return childState;
   }
+  
 
-  @Override
-  public void messageChild(
-    Dispatcher dispatcher,
-    int index,
-    Message message)
-  {
-    dispatcher
-      .setNextState(ensureStaticChildState(dispatcher.getState(),index));
-    children[index].message(dispatcher,message);
-    
-  }
 
-  @Override
-  public void messageChildren(
-    Dispatcher dispatcher,
-    Message message)
-  {
-    int index=0;
-    for (Component child:children)
-    {
-      dispatcher
-        .setNextState(ensureStaticChildState(dispatcher.getState(),index++));
-      child.message(dispatcher,message);    
-    }
-    // TODO Auto-generated method stub
-    
-  }
 }

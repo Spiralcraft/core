@@ -14,10 +14,9 @@
 //
 package spiralcraft.app;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.Contextual;
 
 
 
@@ -28,17 +27,21 @@ import spiralcraft.lang.Contextual;
  *
  */
 public interface Container
-  extends Contextual,Lifecycle
+  extends Lifecycle
 {
   
   
   /**
-   * Contextual.bind() must bind and register children
+   * Bind and register children
    */
-  @Override
-  Focus<?> bind(Focus<?> focus)
-    throws BindException;
+  void bind(Focus<?> focus)
+    throws ContextualException;
   
+  /**
+   * The children of this container
+   * 
+   * @return
+   */  
   Component[] getChildren();
   
   /**
@@ -49,9 +52,19 @@ public interface Container
    */
   Component getChild(int stateIndex);
   
+  /**
+   * The number of child Components in this Container 
+   * 
+   * @return
+   */
   int getChildCount();
   
-  void messageChild(Dispatcher dispatcher,int index,Message message);
+  /**
+   * Relay a message to the contents of this Container
+   * 
+   * @param dispatcher
+   * @param message
+   */
+  void relayMessage(Dispatcher dispatcher,Message message);
   
-  void messageChildren(Dispatcher dispatcher,Message message);
 }

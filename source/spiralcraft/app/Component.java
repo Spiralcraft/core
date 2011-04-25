@@ -15,8 +15,10 @@
 package spiralcraft.app;
 
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.lang.Contextual;
+import spiralcraft.lang.Focus;
 import spiralcraft.log.Level;
 
 /**
@@ -35,6 +37,18 @@ import spiralcraft.log.Level;
 public interface Component
   extends Contextual,Lifecycle
 {
+  
+  /**
+   * Bind this Component and everything it contains into the Focus chain.
+   * 
+   * @param focus
+   * @return A Focus that contains anything this component wants to export
+   *   to its parent component.
+   * @throws ContextualException
+   */
+  @Override
+  Focus<?> bind(Focus<?> focus)
+    throws ContextualException;
   
   /**
    * <p>Recursively send a message to one or more descendants, to
@@ -65,7 +79,7 @@ public interface Component
    * @param parent
    * @return
    */
-  State createState(State parent);
+  State createState();
 
   
   /**

@@ -12,9 +12,8 @@
 //Unless otherwise agreed to in writing, this software is distributed on an
 //"AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.app.spi;
+package spiralcraft.app.kit;
 
-import spiralcraft.app.State;
 import spiralcraft.app.StateFrame;
 
 /**
@@ -34,8 +33,8 @@ public class ValueState<Tvalue>
   private boolean valid;
   private volatile StateFrame lastFrame;
   
-  public ValueState(int childCount,State parent,String id)
-  { super(childCount,parent,id);
+  public ValueState(int childCount,String id)
+  { super(childCount,id);
   }
   
   public Tvalue getValue()

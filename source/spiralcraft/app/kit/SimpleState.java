@@ -12,47 +12,46 @@
 //Unless otherwise agreed to in writing, this software is distributed on an
 //"AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.app.spi;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+package spiralcraft.app.kit;
 
 import spiralcraft.app.State;
 
-public class ExpansionState<T>
+public class SimpleState
   implements State
 {
 
-  private final State parent;
-  private List<MementoState> children;
-  private final int[] path;
+  private State parent;
+  private final State[] children;
+  private int[] path;
   private final String componentId;
-  private boolean valid;
-  private final int grandchildCount;
   
-  public ExpansionState(State parent,String componentId,int grandchildCount)
-  { 
-    this.parent=parent;
-    if (parent!=null)
-    { 
-      int[] parentPath=parent.getPath();
-      path=new int[parentPath.length+1];
-      System.arraycopy(parentPath,0,path,0,parentPath.length);      
+  public SimpleState(int childCount,String componentId)
+  {     
+    if (childCount>0)
+    { children=new State[childCount];
     }
     else
-    { path = new int[0];
+    { children=null;
     }
-    
-    children=new ArrayList<MementoState>();
     this.componentId=componentId;
-    this.grandchildCount=grandchildCount;
+    
   }
   
   
+//  @Override
+//  public void setPathIndex(int index)
+//  { path[path.length-1]=index;;
+//  }
+//  
+  
   @Override
-  public void setPathIndex(int index)
-  { path[path.length-1]=index;;
+  public void link(State parent,int[] path)
+  { 
+    if (this.parent!=null)
+    { throw new IllegalStateException("Can't change parent from "+this.parent);
+    }
+    this.parent=parent;
+    this.path=path;
   }
   
   /**
@@ -65,26 +64,15 @@ public class ExpansionState<T>
   }
   
 
-  public void invalidate()
-  { this.valid=false;
-  }
-  
-  public void setValid(boolean valid)
-  { this.valid=valid;
-  }
-  
-  public boolean isValid()
-  { return valid;
-  }
-  
-  /**
-   * 
-   * @return The index of this State within its parent State
-   */
-  @Override
-  public int getPathIndex()
-  { return path[path.length-1];
-  }
+//  
+//  /**
+//   * 
+//   * @return The index of this ElementState within its parent ElementState
+//   */
+//  @Override
+//  public int getPathIndex()
+//  { return path[path.length-1];
+//  }
   
   @Override
   public State getParent()
@@ -93,52 +81,24 @@ public class ExpansionState<T>
   
   @Override
   public State getChild(int index)
-  { return children.get(index);
-  }
-  
-  public void trim(int index)
-  { children=children.subList(0,index);
-  }
-    
-  public MementoState ensureChild(int index,T childData,String childKey)
   { 
-    MementoState ret=null;
-    if (index<children.size())
-    { ret=children.get(index);
+    if (children==null)
+    { throw new IndexOutOfBoundsException("This State has no children");
     }
-    
-    if (ret==null)
-    {
-      ret=new MementoState(childKey);
-      ret.setValue(childData);
-      int i=children.size()-index;
-      while (i-->1)
-      { children.add(null);
-      }
-      if (index<children.size())
-      { children.set(index,ret);
-      }
-      else
-      { children.add(ret);
-      }
+    else
+    { return children[index];
     }
-    
-    return ret;
-    
   }
-  
     
   
   @Override
   public void setChild(int index,State child)
   { 
-    throw new UnsupportedOperationException
-      ("Cannot alter children of an ExpansionState");
-  }
-
-  
-  public Iterator<MementoState> iterator()
-  { return children.iterator();
+    children[index]=child;
+    int[] newPath=new int[path.length+1];
+    System.arraycopy(path,0,newPath,0,path.length);
+    newPath[path.length]=index;
+    child.link(this,newPath);
   }
   
   /**
@@ -194,14 +154,7 @@ public class ExpansionState<T>
   { return componentId;
   }
   
-  class MementoState
-    extends ValueState<T>
-  {
-    public MementoState(String key)
-    { super(grandchildCount,ExpansionState.this,key);
-    }
     
-  }
 }
 
 

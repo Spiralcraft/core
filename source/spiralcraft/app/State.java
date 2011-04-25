@@ -71,23 +71,11 @@ public interface State
 
   /**
    * 
-   * @return The index of this State within its parent State
-   */
-  int getPathIndex();
-
-  /**
-   * Specify this state's index within its parent state
-   *   
-   * @param index
-   */
-  void setPathIndex(int index);
-  
-  /**
-   * 
    * @return The path from the root of the State tree to this state
    */
   int[] getPath();  
   
+ 
   /**
    * 
    * @return This state's parent state
@@ -102,6 +90,14 @@ public interface State
    */
   State getChild(int index);
   
+ 
+  /**
+   * Link this State into the state tree
+   * 
+   * @param parentState
+   * @param path
+   */
+  void link(State parentState,int[] path);
   
   /**
    * Replace the n'th child with the specified State tree

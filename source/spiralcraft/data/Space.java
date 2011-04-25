@@ -25,8 +25,9 @@ import java.util.List;
 import java.util.Set;
 
 import spiralcraft.app.Component;
-import spiralcraft.app.spi.AbstractComponent;
-import spiralcraft.app.spi.StandardContainer;
+import spiralcraft.app.kit.AbstractComponent;
+import spiralcraft.app.kit.StandardContainer;
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
 
@@ -38,7 +39,6 @@ import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Concatenation;
 import spiralcraft.data.query.ConcatenationBinding;
 
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.log.ClassLog;
@@ -154,7 +154,7 @@ public class Space
 
   @Override
   public Focus<?> bindImports(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
     for (Store store: stores)
     { 

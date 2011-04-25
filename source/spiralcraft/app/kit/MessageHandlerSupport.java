@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.app.spi;
+package spiralcraft.app.kit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,9 +35,16 @@ public class MessageHandlerSupport
     =new HashMap<Message.Type,MessageHandlerChain>();
   
   private MessageHandlerChain standardChain;
+
+  private MessageHandler terminus;
+  
   private boolean started;
  
 
+  public void terminate(MessageHandler handler)
+  { terminus=handler;
+  }
+  
   @Override
   public Focus<?> bind(Focus<?> focusChain)
   { 
@@ -100,6 +107,7 @@ public class MessageHandlerSupport
     }
     
     standardChain=new MessageHandlerChain(standardHandlers);
+    standardChain.add(terminus);
     
     for (Message.Type type : typeHandlers.keySet())
     {
@@ -109,6 +117,8 @@ public class MessageHandlerSupport
       for (MessageHandler handler : typeHandlers.get(type))
       { typeChain.add(handler);
       }
+      typeChain.add(terminus);
+      
       chainMap.put
         (type
         ,typeChain
