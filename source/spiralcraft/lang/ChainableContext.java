@@ -34,15 +34,26 @@ public interface ChainableContext
    *   delegate the chain(method) to the supplied Context.
    * </p>
    * 
-   * <p>If the chain ends in a Contextual other than a ChainableContext, this
-   *   method will throw a BindException
+   * <p>If the specified Contextual is not a ChainableContext, it will be
+   *   wrapped in one in order to maintain chainability.
+   * </p>
+
+   * <p>If the chain is already sealed (terminated) with an ordinary Contextual,
+   *   an IllegalStateException will be thrown.
    * </p>
    * 
    * @param chain
    * @returns The specified context (for further chaining) if the 
    *   specified context is a ChainableContext.
    */
-  ChainableContext chain(Contextual chain)
-    throws BindException;  
+  ChainableContext chain(Contextual chain);
   
+  /**
+   * <p>Provide the last item to chain and prevent further chaining of this
+   *   chain.
+   * </p>
+   * 
+   * @param chain
+   */
+  void seal(Contextual chain);
 }

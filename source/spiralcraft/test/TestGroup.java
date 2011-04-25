@@ -18,7 +18,7 @@ import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
-import spiralcraft.lang.BindException;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -71,7 +71,7 @@ public class TestGroup
   
   @Override
   public Focus<?> bind(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     testGroup=TestGroup.find(focusChain);
     if (testGroup==null)
@@ -147,7 +147,7 @@ public class TestGroup
   
   @Override
   protected void bindChildren(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {  
     resultChannel
       =new ThreadLocalChannel<List<TestResult>>

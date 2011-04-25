@@ -19,8 +19,8 @@ import java.net.URI;
 
 import org.xml.sax.SAXException;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataException;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.text.html.URLDataEncoder;
 import spiralcraft.util.URIUtil;
@@ -76,7 +76,7 @@ public class QueryXml<Tresult>
   
   @Override
   public Focus<?> bind(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     if (debug)
     { log.fine("Binding "+getClass());
@@ -92,7 +92,7 @@ public class QueryXml<Tresult>
   
   @Override
   protected Focus<?> bindExports(Focus<?> exportChain)
-    throws BindException
+    throws ContextualException
   { 
     exportChain=super.bindExports(exportChain);
     // Query bindings need access to the command context

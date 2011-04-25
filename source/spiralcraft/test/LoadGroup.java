@@ -14,7 +14,7 @@
 //
 package spiralcraft.test;
 
-import spiralcraft.lang.BindException;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.util.LangUtil;
 
@@ -121,7 +121,7 @@ public class LoadGroup
   
   @Override
   public Focus<?> bind(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     loadGroup=LangUtil.findInstance(LoadGroup.class,focusChain);
     if (loadGroup!=null)

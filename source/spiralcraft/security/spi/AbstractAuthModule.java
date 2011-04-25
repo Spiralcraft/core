@@ -3,6 +3,7 @@ package spiralcraft.security.spi;
 import java.security.Principal;
 import java.util.Map;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.security.auth.AuthModule;
@@ -38,7 +39,7 @@ public abstract class AbstractAuthModule
   @Override
   public Focus<?> bind(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     Focus<Authenticator> authFocus
       =focusChain.findFocus(Authenticator.FOCUS_URI);

@@ -17,9 +17,9 @@ package spiralcraft.task;
 
 import java.util.List;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.util.ArrayUtil;
 
@@ -105,7 +105,7 @@ public class Sequence
   @Override
   protected void bindChildren(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     
     if (scenarios!=null)

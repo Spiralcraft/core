@@ -14,6 +14,8 @@
 //
 package spiralcraft.lang;
 
+import spiralcraft.common.ContextualException;
+
 /**
  * <p>An object that utilizes and/or provides context via the Focus chain.
  * </p>
@@ -46,5 +48,5 @@ public interface Contextual
    * @throws BindException If any resources are not found
    */
   Focus<?> bind(Focus<?> focusChain)
-    throws BindException;  
+    throws ContextualException;  
 }

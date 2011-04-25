@@ -20,11 +20,11 @@ import java.net.URI;
 
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.task.Collect;
 
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
@@ -97,7 +97,7 @@ public class Output<Titem extends Tuple>
   @Override
   public void bindChildren(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
 
     format.bind(focusChain);

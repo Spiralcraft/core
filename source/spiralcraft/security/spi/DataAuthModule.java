@@ -15,6 +15,7 @@
 package spiralcraft.security.spi;
 
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.access.SerialCursor;
 
 import spiralcraft.data.lang.DataReflector;
@@ -224,7 +225,7 @@ public class DataAuthModule
   @Override
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public Focus<?> bind(Focus<?> context)
-    throws BindException
+    throws ContextualException
   { 
     dataSessionChannel
      =new ThreadLocalChannel<DataSession>

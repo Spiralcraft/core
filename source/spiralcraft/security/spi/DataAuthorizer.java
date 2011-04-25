@@ -18,9 +18,9 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.Type;
 import spiralcraft.data.util.RelationalMap;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
@@ -69,7 +69,7 @@ public class DataAuthorizer<TprincipalData,TprincipalId>
   
   @Override
   public Focus<?> bind(Focus<?> chain) 
-    throws BindException
+    throws ContextualException
   { 
     chain=super.bind(chain);
     

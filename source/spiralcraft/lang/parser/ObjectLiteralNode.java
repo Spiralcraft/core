@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.lang.Channel;
@@ -257,7 +258,13 @@ public class ObjectLiteralNode<Tobject,Treturn>
           
           // Expose the Focus chained by the Contextual
           //   to a subcontext immediately downstream
-          innerFocus=((Contextual) object).bind(sourceFocus);
+          try
+          { innerFocus=((Contextual) object).bind(sourceFocus);
+          }
+          catch (ContextualException x)
+          { throw new BindException
+              ("Error binding literal contextual '"+source+"'",x);
+          }
         }
         
         Channel<Treturn> returnChannel;

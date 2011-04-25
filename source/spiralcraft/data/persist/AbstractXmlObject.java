@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.xml.sax.SAXException;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.data.Type;
@@ -205,7 +206,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     ,URI instanceURI
     ,Focus<?> focus
     )
-    throws BindException
+    throws ContextualException
   {
     AbstractXmlObject<T,?> reference;
     Type<?> type=null;
@@ -449,7 +450,7 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
   
   @Override
   public Focus<?> bind(final Focus<?> parentFocus)
-    throws BindException
+    throws ContextualException
   { 
     // XXX Here, we insert the contained object as a bean into the Focus
     //   chain using this container as a writable store. This allows

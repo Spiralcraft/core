@@ -17,6 +17,7 @@ package spiralcraft.task;
 import spiralcraft.command.AbstractCommandFactory;
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandFactory;
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
@@ -200,7 +201,7 @@ public abstract class Scenario<Tcontext,Tresult>
    * @throws BindException
    */
   protected void bindChildren(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
 
   }
@@ -295,7 +296,7 @@ public abstract class Scenario<Tcontext,Tresult>
   @Override
   public Focus<?> bind(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
     
     if (contextX!=null)
@@ -362,7 +363,7 @@ public abstract class Scenario<Tcontext,Tresult>
    * @return
    */
   protected Focus<?> bindImports(Focus<?> importChain)
-    throws BindException
+    throws ContextualException
   { return importChain;
   }
   
@@ -378,7 +379,7 @@ public abstract class Scenario<Tcontext,Tresult>
    * @return
    */
   protected Focus<?> bindExports(Focus<?> exportChain)
-    throws BindException
+    throws ContextualException
   { return exportChain;
   }
 

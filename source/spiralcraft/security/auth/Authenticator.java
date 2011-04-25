@@ -19,6 +19,7 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
@@ -135,7 +136,7 @@ public class Authenticator
    */
   @Override
   public Focus<?> bind(Focus<?> context)
-    throws BindException
+    throws ContextualException
   { 
     
     this.sessionReflector

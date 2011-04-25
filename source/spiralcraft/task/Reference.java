@@ -16,6 +16,7 @@ package spiralcraft.task;
 
 import java.net.URI;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
@@ -75,11 +76,17 @@ public class Reference<Tresult>
   @Override
   public void bindChildren(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     target=AbstractXmlObject.create
       (targetTypeURI,targetURI);
-    focusChain=target.bind(focusChain);
+    try
+    { focusChain=target.bind(focusChain);
+    }
+    catch (ContextualException x)
+    { throw new BindException
+        ("Error resolving contextual "+targetTypeURI+" : "+targetURI,x);
+    }
     super.bindChildren(focusChain);
   }
 

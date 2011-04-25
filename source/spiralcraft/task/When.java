@@ -15,7 +15,7 @@
 package spiralcraft.task;
 
 import spiralcraft.command.Command;
-import spiralcraft.lang.BindException;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -91,7 +91,7 @@ public class When
 
   @Override
   protected void bindChildren(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {  
 
     if (conditionX!=null)

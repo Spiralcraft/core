@@ -14,8 +14,8 @@
 //
 package spiralcraft.task;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Assignment;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Setter;
 import spiralcraft.log.Level;
@@ -68,7 +68,7 @@ public class Assign
 
   @Override
   protected void bindChildren(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {  
     setters=Assignment.bindArray(assignments,focusChain);
     defaultSetters=Assignment.bindArray(defaultAssignments,focusChain);

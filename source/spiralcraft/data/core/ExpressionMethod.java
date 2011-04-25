@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.core;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -62,7 +63,12 @@ public class ExpressionMethod<T,C,R>
     }
     
     Eval<C,R> eval=new Eval<C,R>(contextX,x);
-    return LangUtil.findFocus(Eval.class,eval.bind(context));
+    try
+    { return LangUtil.findFocus(Eval.class,eval.bind(context));
+    }
+    catch (ContextualException x)
+    { throw new BindException("Error binding ExpressionMethod ",x);
+    }
 
   }
   

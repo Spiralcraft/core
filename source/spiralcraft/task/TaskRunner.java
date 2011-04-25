@@ -18,6 +18,7 @@ import java.io.PrintStream;
 import java.net.URI;
 
 import spiralcraft.command.Command;
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.data.persist.AbstractXmlObject;
 
@@ -31,7 +32,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
-import spiralcraft.log.Log;
 import spiralcraft.service.ResourceContext;
 import spiralcraft.service.Service;
 import spiralcraft.util.string.StringConverter;
@@ -53,13 +53,14 @@ public class TaskRunner
   
   private Focus<?> rootFocus=new SimpleFocus<Void>();
   
-  private final Log log=ClassLog.getInstance(TaskRunner.class);
+  private final ClassLog log=ClassLog.getInstance(TaskRunner.class);
   private Level debugLevel=Level.INFO;
   
   private Thread executeThread;
 
   private Thread shutdownThread=new ShutdownHook();
   private URI serviceURI;
+  
   
   
   {
@@ -196,12 +197,19 @@ public class TaskRunner
     
   }
   
+//  @Override
+//  public Focus<?> bind(Focus<?> focus)
+//    throws BindException
+//  {
+//    focus=super.bind(focus);
+//    log.fine("TaskRunner binding scenario to "+focus.getSubject());
+//    return scenario.bind(focus);
+//  }  
+  
   @Override
-  public Focus<?> bind(Focus<?> focus)
-    throws BindException
-  {
-    focus=super.bind(focus);
-    return scenario.bind(focus);
+  public void bindComplete(Focus<?> focus)
+    throws ContextualException
+  { scenario.bind(focus);
   }
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -228,7 +236,7 @@ public class TaskRunner
     try
     { bind(rootFocus);
     }
-    catch (BindException x)
+    catch (ContextualException x)
     { throw new ExecutionException("Error binding",x);
     }
 

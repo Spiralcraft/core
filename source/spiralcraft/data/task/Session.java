@@ -15,13 +15,13 @@
 package spiralcraft.data.task;
 
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.Type;
 import spiralcraft.data.session.DataSessionFocus;
 import spiralcraft.data.session.DataSession;
 
 import spiralcraft.lang.Assignment;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -95,7 +95,7 @@ public class Session
   @Override
   protected void bindChildren(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     if (typeX!=null)
     { 

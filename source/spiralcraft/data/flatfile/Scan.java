@@ -18,6 +18,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URI;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.lang.DataReflector;
@@ -172,10 +173,15 @@ public class Scan
   @Override
   public void bindChildren(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     
-    format.bind(focusChain);
+    try
+    { format.bind(focusChain);
+    }
+    catch (ContextualException x)
+    { throw new BindException("Error binding record format '"+format+"'",x);
+    }
     
     resultChannel
       =new ThreadLocalChannel<Tuple>

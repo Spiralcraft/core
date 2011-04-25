@@ -15,7 +15,7 @@
 package spiralcraft.test;
 
 
-import spiralcraft.lang.BindException;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Focus;
 import spiralcraft.task.Scenario;
 
@@ -49,7 +49,7 @@ public abstract class Test
   
   @Override
   public Focus<?> bind(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     testGroup=TestGroup.find(focusChain);
     if (testGroup==null)

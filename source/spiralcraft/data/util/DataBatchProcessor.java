@@ -17,11 +17,11 @@ package spiralcraft.data.util;
 import java.util.List;
 
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -59,7 +59,7 @@ public class DataBatchProcessor<I,R>
   @Override
   public Focus<?> bind(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     Focus<?> focus=super.bind(focusChain);
     if (resultAssignment!=null)

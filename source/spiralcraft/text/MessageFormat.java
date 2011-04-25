@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Contextual;
@@ -121,7 +122,7 @@ public class MessageFormat
 
   @Override
   public Focus<?> bind(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     for (AbstractRenderer renderer:renderers)
     { renderer.bind(focusChain);

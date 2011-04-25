@@ -14,6 +14,7 @@
 //
 package spiralcraft.test;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -152,7 +153,7 @@ public class Assertion
 
   @Override
   protected void bindChildren(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {  
     
     if (subjectX!=null)

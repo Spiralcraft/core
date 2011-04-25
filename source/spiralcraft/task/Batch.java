@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -238,7 +239,7 @@ public class Batch<I,R>
   @Override
   public void bindChildren(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     sourceChannel=focusChain.bind(source);
     decorator=sourceChannel.<IterationDecorator>decorate(IterationDecorator.class);

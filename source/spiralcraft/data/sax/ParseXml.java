@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 
 import org.xml.sax.SAXException;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
@@ -141,7 +142,7 @@ public class ParseXml<Tresult>
   
   @Override
   protected Focus<?> bindExports(Focus<?> focus)
-    throws BindException
+    throws ContextualException
   {
     focus=super.bindExports(focus);
     

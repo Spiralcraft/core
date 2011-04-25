@@ -22,8 +22,8 @@ import spiralcraft.command.AbstractCommandFactory;
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
 import spiralcraft.command.CommandScheduler;
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -222,7 +222,7 @@ public class Mirror
   @Override
   public Focus<?> bind(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
     focusChain=focusChain.chain(new SimpleChannel<Mirror>(this,true));
     if (subscriber!=null)

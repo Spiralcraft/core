@@ -4,9 +4,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
 import spiralcraft.log.ClassLog;
@@ -188,7 +188,7 @@ public class Authority
   @Override
   public Focus<?> bind(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     for (Graft graft:grafts)
     { 

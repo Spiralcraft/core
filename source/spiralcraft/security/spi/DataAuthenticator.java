@@ -20,6 +20,7 @@ import spiralcraft.security.auth.DigestCredential;
 import spiralcraft.security.auth.UsernameCredential;
 import spiralcraft.security.auth.PasswordCleartextCredential;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.access.SerialCursor;
 
 import spiralcraft.data.lang.DataReflector;
@@ -144,7 +145,7 @@ public class DataAuthenticator
   @Override
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public Focus<?> bind(Focus<?> context)
-    throws BindException
+    throws ContextualException
   { 
     // superclass provides a credentialFocus member field which 
     //   provides values for the various accepted credentials,

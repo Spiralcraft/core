@@ -16,7 +16,7 @@ package spiralcraft.task;
 
 import spiralcraft.command.CommandFactory;
 import spiralcraft.command.CommandScheduler;
-import spiralcraft.lang.BindException;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
 import spiralcraft.vfs.context.ContextResourceMap;
@@ -41,7 +41,7 @@ public class TaskScheduler
   @Override
   public Focus<?> bind(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
     // Make sure that we transfer the resourceMap from the binding thread
     resourceMap=ContextResourceMap.get();

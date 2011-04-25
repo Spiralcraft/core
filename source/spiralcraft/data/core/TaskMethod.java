@@ -16,6 +16,7 @@ package spiralcraft.data.core;
 
 import java.net.URI;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.persist.AbstractXmlObject;
 
 import spiralcraft.lang.BindException;
@@ -60,11 +61,19 @@ public class TaskMethod<T,C,R>
           (getDataType().getURI().toString()+"_"+getName()+".scenario.xml");
     }
     
-    AbstractXmlObject<Scenario<C,R>,?> scenarioContainer
-      =AbstractXmlObject
-        .<Scenario<C,R>>activate(null,scenarioURI, context);
+    try
+    {
+    
+      AbstractXmlObject<Scenario<C,R>,?> scenarioContainer
+        =AbstractXmlObject
+          .<Scenario<C,R>>activate(null,scenarioURI, context);
+      return scenarioContainer.getFocus();
 
-    return scenarioContainer.getFocus();
+    }
+    catch (ContextualException x)
+    { throw new BindException("Error binding task method",x);
+    }
+
 
   }
   

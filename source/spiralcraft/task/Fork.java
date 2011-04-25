@@ -18,8 +18,8 @@ package spiralcraft.task;
 import java.util.LinkedList;
 import java.util.List;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.util.ArrayUtil;
 
@@ -121,7 +121,7 @@ public class Fork
   @Override
   protected void bindChildren(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     
     

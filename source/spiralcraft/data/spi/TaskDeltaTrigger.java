@@ -15,6 +15,7 @@
 package spiralcraft.data.spi;
 
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.access.DeltaTrigger;
 import spiralcraft.data.transaction.TransactionException;
@@ -49,7 +50,13 @@ public class TaskDeltaTrigger
     throws BindException
   {
     if (task!=null)
-    { task.bind(focusChain);
+    { 
+      try
+      { task.bind(focusChain);
+      }
+      catch (ContextualException x)
+      { throw new BindException("Error binding task trigger",x);
+      }
     }
     return focusChain;
   }

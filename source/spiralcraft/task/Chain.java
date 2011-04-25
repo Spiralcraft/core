@@ -14,6 +14,7 @@
 //
 package spiralcraft.task;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
@@ -85,7 +86,7 @@ public class Chain<Tcontext,Tresult>
    */
   @Override
   protected void bindChildren(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
     if (chain!=null)
     { chain.bind(focusChain);

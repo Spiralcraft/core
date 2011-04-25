@@ -15,8 +15,8 @@
 package spiralcraft.task;
 
 import spiralcraft.command.Command;
+import spiralcraft.common.ContextualException;
 
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -62,7 +62,7 @@ public class Exec<T,C,R>
     
   @Override
   protected void bindChildren(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
 
     targetCommandChannel=focusChain.bind(commandX);

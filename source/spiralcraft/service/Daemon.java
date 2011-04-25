@@ -16,6 +16,7 @@ package spiralcraft.service;
 
 
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.exec.BeanArguments;
 import spiralcraft.exec.Executable;
@@ -28,7 +29,6 @@ import spiralcraft.command.CommandAdapter;
 import spiralcraft.command.CommandFactory;
 
 
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.log.ClassLog;
@@ -93,7 +93,7 @@ public class Daemon
 
   @Override
   protected Focus<?> bindImports(Focus<?> chain)
-    throws BindException
+    throws ContextualException
   { 
     if (afterStart!=null)
     { afterStart.bind(selfFocus);
@@ -114,7 +114,7 @@ public class Daemon
       try
       { bind(new BeanFocus<Daemon>(this));
       }
-      catch (BindException x)
+      catch (ContextualException x)
       { throw new ExecutionException("Error binding",x);
       }
       

@@ -14,8 +14,10 @@
 //
 package spiralcraft.lang;
 
+import spiralcraft.common.ContextualException;
+
 public class BindException
-  extends Exception
+  extends ContextualException
 {
   private static final long serialVersionUID=1;
   

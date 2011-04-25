@@ -14,7 +14,7 @@
 //
 package spiralcraft.task;
 
-import spiralcraft.lang.BindException;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanReflector;
@@ -84,7 +84,7 @@ public class Debug<Tcontext>
 
   @Override
   protected void bindChildren(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {  
     if (messageX!=null)
     { messageX.bind(focusChain);

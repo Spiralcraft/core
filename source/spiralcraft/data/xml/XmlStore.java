@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandScheduler;
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataConsumer;
@@ -136,7 +137,7 @@ public class XmlStore
   
   @Override
   public Focus<?> bind(Focus<?> focus)
-    throws BindException
+    throws ContextualException
   { 
     if (schema!=null)
     {

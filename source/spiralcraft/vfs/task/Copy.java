@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
-import spiralcraft.lang.BindException;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 import spiralcraft.task.AbstractTask;
@@ -98,7 +98,7 @@ public class Copy
 
   @Override
   public Focus<?> bind(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
     if (sourceUriX!=null)
     { sourceUriX.bind(focusChain);

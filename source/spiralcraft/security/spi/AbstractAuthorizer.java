@@ -19,7 +19,7 @@ import java.security.Principal;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
-import spiralcraft.lang.BindException;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.util.LangUtil;
@@ -203,7 +203,7 @@ public abstract class AbstractAuthorizer
   @Override
   public Focus<?> bind(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     sessionChannel=LangUtil.findChannel(AuthSession.class,focusChain);
 

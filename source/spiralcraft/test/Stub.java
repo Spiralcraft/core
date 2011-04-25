@@ -14,7 +14,7 @@
 //
 package spiralcraft.test;
 
-import spiralcraft.lang.BindException;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -86,7 +86,7 @@ public class Stub
 
   @Override
   protected void bindChildren(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {  
     if (messageX!=null)
     { messageChannel=focusChain.bind(messageX);

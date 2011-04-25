@@ -24,6 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
 
@@ -54,7 +55,6 @@ import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.data.transaction.Transaction.State;
 import spiralcraft.data.types.standard.AnyType;
 
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
@@ -289,7 +289,7 @@ public abstract class AbstractStore
   
   @Override
   public Focus<?> bind(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
     focus=focusChain.chain(new SimpleChannel<Store>(this,true));
     
@@ -308,7 +308,7 @@ public abstract class AbstractStore
   }
   
   private void bindServices(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     if (services!=null)
     { 

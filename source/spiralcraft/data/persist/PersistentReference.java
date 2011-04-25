@@ -14,7 +14,7 @@
 //
 package spiralcraft.data.persist;
 
-import spiralcraft.lang.BindException;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
 //import spiralcraft.registry.Registrant;
@@ -61,6 +61,6 @@ public interface PersistentReference<T>
    */
   @Override
   public Focus<?> bind(Focus<?> parent)
-    throws BindException;
+    throws ContextualException;
   
 }

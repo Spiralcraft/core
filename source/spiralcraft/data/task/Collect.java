@@ -17,6 +17,7 @@ package spiralcraft.data.task;
 
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
 import spiralcraft.data.EditableAggregate;
@@ -27,7 +28,6 @@ import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.spi.ListCursor;
 
 import spiralcraft.lang.AccessException;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -167,7 +167,7 @@ public class Collect<Titem>
   @Override
   public void bindChildren(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     if (targetX!=null)
     { 
