@@ -15,7 +15,7 @@
 package spiralcraft.service;
 
 
-import spiralcraft.app.spi.AbstractComponent;
+import spiralcraft.app.kit.AbstractComponent;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;

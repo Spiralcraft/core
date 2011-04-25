@@ -15,7 +15,8 @@
 package spiralcraft.service;
 
 
-import spiralcraft.app.spi.AbstractComponent;
+import spiralcraft.app.kit.AbstractComponent;
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
@@ -47,15 +48,7 @@ public class SchedulerService<Tcontext>
   public void setContextX(Binding<Tcontext> contextX)
   { this.contextX=contextX;
   }
-  
-  @Override
-  public Focus<?> bind(Focus<?> chain)
-    throws BindException
-  { 
-    super.bind(chain);
-    return selfFocus;
-  }  
-  
+   
   @Override
   protected Focus<?> bindImports(Focus<?> chain)
     throws BindException
@@ -72,7 +65,7 @@ public class SchedulerService<Tcontext>
   
   @Override
   protected Focus<?> bindExports(Focus<?> chain)
-    throws BindException
+    throws ContextualException
   { 
 
     if (schedulers!=null)

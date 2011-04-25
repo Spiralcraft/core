@@ -14,10 +14,10 @@
 //
 package spiralcraft.vfs.context;
 
-import spiralcraft.app.spi.AbstractComponent;
+import spiralcraft.app.kit.AbstractComponent;
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Context;
 import spiralcraft.service.Service;
@@ -49,9 +49,9 @@ public class FileSpace
 
   @Override
   public Focus<?> bindExports(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
-    map.setParent(ContextResourceMap.get());
+    map.bind(focusChain);
     focusChain=super.bindExports(focusChain);
     for (Authority authority:authorities)
     { 
