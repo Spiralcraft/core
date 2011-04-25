@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.net.URI;
 
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.kit.AbstractChainableContext;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.util.thread.ThreadLocalStack;
@@ -51,6 +54,7 @@ import spiralcraft.vfs.UnresolvableURIException;
  *   </PRE></CODE>
  */
 public class ContextResourceMap
+  extends AbstractChainableContext
 {
   
   private static final ClassLog log
@@ -107,7 +111,7 @@ public class ContextResourceMap
   }
   
 
-  public void setParent(ContextResourceMap parent)
+  private void setParent(ContextResourceMap parent)
   {
     if (this.parent==null)
     { this.parent=parent;
@@ -169,15 +173,17 @@ public class ContextResourceMap
     }
     return ret;
   }
+
   
-  public void push()
+  @Override
+  protected void pushLocal()
   { threadStack.push(this);
   }
   
-  public void pop()
+  @Override
+  protected void popLocal()
   { threadStack.pop();
   }
-  
   /**
    * Return a Graft mapping for an authority 
    * 
@@ -280,6 +286,16 @@ public class ContextResourceMap
   @Override
   public String toString()
   { return super.toString()+": "+map.toString()+" parent="+parent;
+  }
+
+
+  @Override
+  public Focus<?> bindImports(
+    Focus<?> focusChain)
+    throws BindException
+  { 
+    setParent(ContextResourceMap.get());
+    return focusChain;
   }
 }
 

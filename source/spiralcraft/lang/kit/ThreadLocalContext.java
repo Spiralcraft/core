@@ -12,11 +12,12 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.lang.spi;
+package spiralcraft.lang.kit;
 
-import spiralcraft.lang.BindException;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 
 /**
  * <p>A Context which publishes a value into the FocusChain.
@@ -39,8 +40,8 @@ public class ThreadLocalContext<T>
   }
   
   @Override
-  public Focus<?> bind(Focus<?> focusChain)
-    throws BindException
+  public Focus<?> bindImports(Focus<?> focusChain)
+    throws ContextualException
   { 
     local=new ThreadLocalChannel<T>(reflector,inheritable);
     return super.bind(focusChain.chain(local));
@@ -55,17 +56,13 @@ public class ThreadLocalContext<T>
   }
   
   @Override
-  public void push()
-  { 
-    local.push();
-    super.push();
+  public void pushLocal()
+  { local.push();
   }
 
   @Override
-  public void pop()
-  {
-    super.pop();
-    local.pop();
+  public void popLocal()
+  { local.pop();
   }
 
   
