@@ -19,11 +19,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.flatfile.RecordCursor;
 import spiralcraft.data.flatfile.RecordFormat;
 import spiralcraft.io.record.InputStreamRecordIterator;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.Level;
 import spiralcraft.task.AbstractTask;
@@ -164,7 +164,7 @@ public class FormatTest
   @Override
   public Focus<?> bind(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { return recordFormat.bind(focusChain);
   }
 

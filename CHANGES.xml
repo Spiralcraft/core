@@ -14,7 +14,187 @@
     
     <detail>
 
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Refactored Contextual to throw ContextualException
+            instead of BindException to allow for re-transmission of
+            a wider class of exceptions during bind()
+          </scm:Note>
+          <scm:Note>Enhanced Context chaining mechanism to allow for any
+            Contextual to be part of a chain and to permit explicit
+            chain termination in order to support arbitrary composition of
+            Contextual stacks.
+          </scm:Note>
+          <scm:Note>Moved spiralcraft.app.spi package to 
+            spiralcraft.app.kit
+          </scm:Note>  
+                  
+          <scm:Note>Changes to spiralcraft.app Component api to get closer to
+             merging with spiralcraft.textgen component api.
+          </scm:Note>
 
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>app/Component.java
+          </URI>
+          <URI>app/Container.java
+          </URI>
+          <URI>app/Dispatcher.java
+          </URI>
+          <URI>app/MessageHandlerChain.java
+          </URI>
+          <URI>app/State.java
+          </URI>
+          <URI>app/kit/AbstractComponent.java
+          </URI>
+          <URI>app/kit/ExpansionContainer.java
+          </URI>
+          <URI>app/kit/ExpansionState.java
+          </URI>
+          <URI>app/kit/MessageHandlerSupport.java
+          </URI>
+          <URI>app/kit/SimpleState.java
+          </URI>
+          <URI>app/kit/StandardContainer.java
+          </URI>
+          <URI>app/kit/StandardDispatcher.java
+          </URI>
+          <URI>app/kit/VaueState.java
+          </URI>
+          <URI>app/spi/AbstractComponent.java
+          </URI>
+          <URI>app/spi/ExpansionContainer.java
+          </URI>
+          <URI>app/spi/ExpansionState.java
+          </URI>
+          <URI>app/spi/MessageHandlerSupport.java
+          </URI>
+          <URI>app/spi/SimpleState.java
+          </URI>
+          <URI>app/spi/StandardContainer.java
+          </URI>
+          <URI>app/spi/VaueState.java
+          </URI>
+          <URI>data/Space.java
+          </URI>
+          <URI>data/core/ExpressionMethod.java
+          </URI>
+          <URI>data/core/TaskMethod.java
+          </URI>
+          <URI>data/flatfile/Output.java
+          </URI>
+          <URI>data/flatfile/Scan.java
+          </URI>
+          <URI>data/persist/AbstractXmlObject.java
+          </URI>
+          <URI>data/persist/PersistentReference.java
+          </URI>
+          <URI>data/sax/ParseXml.java
+          </URI>
+          <URI>data/sax/QueryXml.java
+          </URI>
+          <URI>data/spi/AbstractStore.java
+          </URI>
+          <URI>data/spi/TaskDeltaTrigger.java
+          </URI>
+          <URI>data/task/Collect.java
+          </URI>
+          <URI>data/task/Session.java
+          </URI>
+          <URI>data/util/DataBatchProcessor.java
+          </URI>
+          <URI>data/xml/XmlStore.java
+          </URI>
+          <URI>lang/BindException.java
+          </URI>
+          <URI>lang/ChainableContext.java
+          </URI>
+          <URI>lang/Contextual.java
+          </URI>
+          <URI>lang/kit/AbstractChainableContext.java
+          </URI>
+          <URI>lang/kit/ChainableContextAdapter.java
+          </URI>
+          <URI>lang/kit/ChainableContextualAdapter.java
+          </URI>
+          <URI>lang/kit/ThreadLocalContext.java
+          </URI>
+          <URI>lang/parser/ObjectLiteralNode.java
+          </URI>
+          <URI>security/auth/Authenticator.java
+          </URI>
+          <URI>security/spi/AbstractAuthModule.java
+          </URI>
+          <URI>security/spi/AbstractAuthorizer.java
+          </URI>
+          <URI>security/spi/DataAuthenticator.java
+          </URI>
+          <URI>security/spi/DataAuthModule.java
+          </URI>
+          <URI>security/spi/DataAuthorizer.java
+          </URI>
+          <URI>service/Daemon.java
+          </URI>
+          <URI>service/ResourceContext.java
+          </URI>
+          <URI>service/SchedulerService.java
+          </URI>
+          <URI>service/ThreadService.java
+          </URI>
+          <URI>task/Assign.java
+          </URI>
+          <URI>task/Batch.java
+          </URI>
+          <URI>task/Chain.java
+          </URI>
+          <URI>task/Debug.java
+          </URI>
+          <URI>task/Exec.java
+          </URI>
+          <URI>task/Fork.java
+          </URI>
+          <URI>task/Reference.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+          <URI>task/TaskRunner.java
+          </URI>
+          <URI>task/TaskScheduler.java
+          </URI>
+          <URI>task/When.java
+          </URI>
+          <URI>test/Assertion.java
+          </URI>
+          <URI>test/LoadGroup.java
+          </URI>
+          <URI>test/Stub.java
+          </URI>
+          <URI>test/Test.java
+          </URI>
+          <URI>test/TestGroup.java
+          </URI>
+          <URI>text/MessageFormat.java
+          </URI>
+          <URI>vfs/context/Authority.java
+          </URI>
+          <URI>vfs/context/ContextResourceMap.java
+          </URI>
+          <URI>vfs/context/FileSpace.java
+          </URI>
+          <URI>vfs/context/Mirror.java
+          </URI>
+          <URI>vfs/task/Copy.java
+          </URI>
+        </resources>
+      
+      </scm:Change>
 
       <scm:Change>
         <revision>-dev1

@@ -1,6 +1,6 @@
 package spiralcraft.task.test;
 
-import spiralcraft.lang.BindException;
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -43,7 +43,7 @@ public class StubScenario
 
   @Override
   protected void bindChildren(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {  
     if (resultX!=null)
     { resultChannel=focusChain.bind(resultX);
