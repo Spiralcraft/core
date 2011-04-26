@@ -44,17 +44,17 @@ package spiralcraft.data;
 public interface Tuple
   extends DataComposite
 {
-  /**
-   *@return the Type associated with this extent, if any
-   */
+//  /**
+//   *@return the Type associated with this extent, if any
+//   */
 //  Type getExtentType();
 
-  /**
-   *@return the Type associated with the data instance this Tuple belongs to.
-   *  If this Tuple is an extent of some specific Type, the specific Type will
-   *  be returned, otherwise the Type returned will be the same as from
-   *  getExtentType().
-   */
+//  /**
+//   *@return the Type associated with the data instance this Tuple belongs to.
+//   *  If this Tuple is an extent of some specific Type, the specific Type will
+//   *  be returned, otherwise the Type returned will be the same as from
+//   *  getExtentType().
+//   */
 //  Type getSpecificType();
 
   /**
@@ -64,16 +64,17 @@ public interface Tuple
   Tuple widen(Type<?> type)
     throws DataException;
     
-  /**
-   *@return the extent Tuple associated with a Type that inherits from this
-   *  Tuple's extent type.
-   */
+//  /**
+//   *@return the extent Tuple associated with a Type that inherits from this
+//   *  Tuple's extent type.
+//   */
 //  Tuple narrow(Type type)
 //    throws DataException;
   
   /**
    *@return the FieldSet for this Tuple. If this Tuple has a base extent, 
-   *  only the local Fields will be returned
+   *  only the Fields associated with this extent will be returned. To get all
+   *  fields, use getType().getFieldSet().
    */
   FieldSet getFieldSet();
   
@@ -83,10 +84,10 @@ public interface Tuple
   @Override
   Type<?> getType();
   
-  /**
-   * Return the Scheme of this Tuple
-   */
-  // Scheme getScheme();
+//  /**
+//   * Return the Scheme of this Tuple
+//   */
+//  // Scheme getScheme();
   
   /**
    *@return the Object in the specified Field position. The index supplied
@@ -103,12 +104,13 @@ public interface Tuple
    *   development / diagnostic use only.
    * </p>
    * 
-   * <p><b>IMPORTANT: THIS METHOD CARRIES A PERFORMANCE PENALTY!</b>
+   * <p>Due to repeated run-time lookup of field names, this method may
+   *   be slower than alternatives and is not subject to bind-time checks.
+   * </p>
    * 
+   * <p>
    *  For repeated usage, use Field.get(Tuple) or
-   *   spiralcraft.lang.Channel bindings, as this method may be orders of 
-   *   magnitude less efficient than the former methods due to the repeated
-   *   lookup and comparison of field names.
+   *   spiralcraft.lang.Channel bindings.
    * </p> 
    * 
    *@return the Object in the field with the specified name.
@@ -168,14 +170,16 @@ public interface Tuple
    */
   Tuple getBaseExtent();
   
-  public String dumpData()
-    throws DataException;
   
   /**
    * 
    * @return The behavior POJO on which compiled methods are invoked
    */
   public Object getBehavior()
+    throws DataException;
+  
+
+  public String dumpData()
     throws DataException;
 }
 
