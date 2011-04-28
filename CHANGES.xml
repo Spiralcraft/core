@@ -13,6 +13,26 @@
     </date>
     
     <detail>
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Add PrefixedName class to cleanly represent namespace
+            prefixed names
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/common/namespace/
+        </path>
+        
+        <resources>
+          <URI>PrefixedName.java
+          </URI>
+          <URI>QName.java
+          </URI>
+        </resources>
+      </scm:Change>
 
       <scm:Change>
         <revision>-dev2
@@ -31,7 +51,6 @@
           <scm:Note>Moved spiralcraft.app.spi package to 
             spiralcraft.app.kit
           </scm:Note>  
-                  
           <scm:Note>Changes to spiralcraft.app Component api to get closer to
              merging with spiralcraft.textgen component api.
           </scm:Note>
@@ -51,6 +70,8 @@
           <URI>app/MessageHandlerChain.java
           </URI>
           <URI>app/State.java
+          </URI>
+          <URI>app/Parent.java
           </URI>
           <URI>app/kit/AbstractComponent.java
           </URI>
