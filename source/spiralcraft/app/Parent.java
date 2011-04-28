@@ -14,8 +14,6 @@
 //
 package spiralcraft.app;
 
-
-
 /**
  * A Parent provides descendants access to ancestors in the Component tree 
  * 
@@ -49,12 +47,6 @@ public interface Parent
    */
   public Component asComponent();
 
-  /**
-   * 
-   * @return The Container aspect of this context, for children to 
-   *   reference one another
-   */
-  public Container asContainer();
   
   /**
    * <p>Indicates how many levels of States in the State tree are represented
@@ -74,4 +66,26 @@ public interface Parent
    * @return The state depth of this Component.
    */
   public int getStateDepth();  
+  
+  /**
+   * Find a Component among this Component's ancestors/containers
+   * 
+   * @param <X>
+   * @param clazz
+   * @return The Element with the specific class or interface, or null if
+   *   none was found
+   */
+  public <X> X findComponent(Class<X> clazz);
+  
+  /**
+   * Find a Component among this Component's ancestors/containers, but stop
+   *   looking when we reach the stop class.
+   * 
+   * @param <X>
+   * @param clazz
+   * @return The Element with the specific class or interface, or null if
+   *   none was found
+   */
+  public <X> X findComponent(Class<X> clazz,Class<?> stop);
+  
 }

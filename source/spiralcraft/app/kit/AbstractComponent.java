@@ -31,9 +31,7 @@ import spiralcraft.app.Message;
 import spiralcraft.app.Dispatcher;
 import spiralcraft.app.State;
 import spiralcraft.common.ContextualException;
-import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
-import spiralcraft.common.Lifecycler;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.ChainableContext;
 import spiralcraft.lang.Context;
@@ -60,8 +58,7 @@ public class AbstractComponent
   protected Level logLevel=ClassLog.getInitialDebugLevel(getClass(),null);
   protected Level normalLogLevel=logLevel;
   
-  protected final MessageHandlerSupport handlers
-    =new MessageHandlerSupport();
+  protected MessageHandlerChain handler;
   
   protected Parent parent;
   protected boolean bound=false;
@@ -299,10 +296,12 @@ public class AbstractComponent
     }
     try
     {
-    
-      // Calls the context when done
-      handlers.getChain(message.getType())
-        .handleMessage(dispatcher,message);
+      if (handler!=null)
+      { handler.handleMessage(dispatcher,message);
+      }
+      else if (childContainer!=null)
+      { childContainer.relayMessage(dispatcher,message);
+      }
     }
     finally
     {
@@ -314,9 +313,18 @@ public class AbstractComponent
     
   }
 
-  @Override
-  public Container asContainer()
+  protected Container asContainer()
   { return childContainer;
+  }
+  
+  protected Component[] getChildren()
+  { 
+    if (childContainer!=null)
+    { return childContainer.getChildren();
+    }
+    else
+    { return null;
+    }
   }
 
   @Override
@@ -380,9 +388,12 @@ public class AbstractComponent
 
     focusChain=bindImports(focusChain);
     
-    handlers.terminate(new DefaultHandler());
-    focusChain=handlers.bind(focusChain);
-      
+    if (handler!=null)
+    {
+      handler.chain(new DefaultHandler());
+      handler.bind(focusChain);
+    }
+    
     focusChain=bindExports(focusChain);
     if (exportSelf)
     {
@@ -461,20 +472,18 @@ public class AbstractComponent
   public void start()
     throws LifecycleException
   { 
-    Lifecycler.start
-      (new Lifecycle[] 
-        {handlers,childContainer}
-      );
+    if (childContainer!=null)
+    { childContainer.start();
+    }
   }
 
   @Override
   public void stop()
     throws LifecycleException
   { 
-    Lifecycler.stop
-      (new Lifecycle[]
-        {handlers,childContainer}
-      );
+    if (childContainer!=null)
+    { childContainer.stop();
+    }
   }
 
   protected Focus<?> bindImports(Focus<?> focusChain)
@@ -561,6 +570,57 @@ public class AbstractComponent
       { this.logLevel=this.normalLogLevel;
       }
     }
+  }
+  
+  /**
+   * Find a Component among this Component's ancestors/containers
+   * 
+   * @param <X>
+   * @param clazz
+   * @return The Element with the specific class or interface, or null if
+   *   none was found
+   */
+  @SuppressWarnings("unchecked") // Downcast from runtime check
+  @Override
+  public <X> X findComponent(Class<X> clazz)
+  {
+    if (clazz.isAssignableFrom(getClass()))
+    { return (X) this;
+    }
+    else if (parent!=null)
+    { return parent.<X>findComponent(clazz);
+    }
+    else
+    { return null;
+    }
+  }
+  
+  /**
+   * Find a Component among this Component's ancestors/containers, but stop
+   *   looking when we reach the stop class.
+   * 
+   * @param <X>
+   * @param clazz
+   * @return The Element with the specific class or interface, or null if
+   *   none was found
+   */
+  @SuppressWarnings("unchecked") // Downcast from runtime check
+  @Override
+  public <X> X findComponent(Class<X> clazz,Class<?> stop)
+  {
+    if (stop.isAssignableFrom(getClass()))
+    { return null;
+    }
+    else if (clazz.isAssignableFrom(getClass()))
+    { return (X) this;
+    }
+    else if (parent!=null)
+    { return parent.<X>findComponent(clazz,stop);
+    }
+    else
+    { return null;
+    }
+    
   }
   
   class DefaultHandler

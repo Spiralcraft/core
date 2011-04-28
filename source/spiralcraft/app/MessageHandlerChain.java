@@ -14,61 +14,18 @@
 //
 package spiralcraft.app;
 
-import java.util.List;
+import spiralcraft.lang.Contextual;
 
-public class MessageHandlerChain
+public interface MessageHandlerChain
+  extends Contextual
 {
-
-  private MessageHandler next;
-  private MessageHandlerChain nextChain;
-  
-  /**
-   * Create a terminal link
-   */
-  public MessageHandlerChain()
-  { 
-  }
-  
-  /**
-   * Create a chain composed of the handlers in the array starting with the
-   *   handler at the specified index.
-   * 
-   * @param handlers
-   * @param start
-   */
-  public MessageHandlerChain(MessageHandler[] handlers,int start)
-  { 
-    if (start<handlers.length)
-    { 
-      next=handlers[start];
-      nextChain=new MessageHandlerChain(handlers,start+1);
-    }
-  
-  }
-  
-  /**
-   * Create a chain composed of the handlers in the specified list
-   */
-  public MessageHandlerChain(List<MessageHandler> handlers)
-  { this(handlers.toArray(new MessageHandler[handlers.size()]),0);
-  }
   
   /**
    * Add the specified handler to the end of the chain
    * 
    * @param handler
    */
-  public void add(MessageHandler handler)
-  { 
-    if (next!=null)
-    { nextChain.add(handler);
-    }
-    else
-    { 
-      next=handler;
-      nextChain=new MessageHandlerChain();
-    }
-  }
+  void chain(MessageHandler handler);
   
   /**
    * <p>Handle the Message. This will be called twice- once before children are
@@ -78,14 +35,9 @@ public class MessageHandlerChain
    * @param dispatcher The Dispatcher that holds the Element's state
    * @param message The message
    */
-  public void handleMessage
+  void handleMessage
     (Dispatcher dispatcher
     ,Message message
-    )
-  { 
-    if (next!=null)
-    { next.handleMessage(dispatcher,message,nextChain);
-    }
-  }
+    );
   
 }

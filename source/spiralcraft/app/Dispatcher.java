@@ -25,11 +25,40 @@ package spiralcraft.app;
  */
 public interface Dispatcher
 {
+  
   /**
    * @return The State currently being traversed. 
    */
   State getState();
-   
+  
+  /**
+   * <p>A StateFrame defines a period where a stateful Component may process
+   *   a sequence of messages atomically and/or in isolation from changes
+   *   to external data.
+   * </p>
+   * 
+   * </p>A change in the StateFrame indicates that a component should
+   *   re-synchronize its state with the external environment.
+   * </p>
+   * 
+   * @return The StateFrame associated with the current set of messages.
+   */
+  StateFrame getFrame();
+
+  /**
+   *   
+   * <p>A stateful model allows for interactivity, but costs memory and
+   *   CPU
+   * </p>
+   * 
+   * @return Whether States should be created and maintained for
+   *   components.
+   * 
+   * 
+   * @return Whether state is maintained during message dispatch
+   */
+  boolean isStateful();
+  
   /**
    * @return the index of the next route segment
    *   (State tree branch) to traverse, or null
@@ -50,9 +79,9 @@ public interface Dispatcher
    */
   void ascend();
   
-  /**
-   * Relay a message to a childComponent along a specific branch of the 
-   *   state tree.
+  /** 
+   * Relay a message to a child Component along a specific branch of the 
+   *   current state tree.
    * 
    * @param childComponent
    * @param routeSegment
@@ -61,9 +90,46 @@ public interface Dispatcher
   void relayMessage(Component childComponent,int routeSegment,Message message);
   
   /**
+   * <p>Relay a message to a child Component along a specific branch of the
+   *   state tree underneath the specified state.
+   * </p>
+   * 
+   * <p>This method permits the calling component to substitute a child state
+   *   not included in the route.
+   *   
+   *   
+   * @param childComponent
+   * @param newParentState
+   * @param routeSegment
+   * @param message
+   */
+  void relayMessage
+    (Component childComponent
+    ,State newParentState
+    ,int routeSegment
+    ,Message message
+    );
+  
+  /**
    * Relay an Event up the state tree
    * 
    * @param event
    */
   void handleEvent(Event event);
+  
+  /**
+   * Indicate whether the message is targeted at the current component, i.e.
+   *   there no more route segments to process.
+   * 
+   * @return
+   */
+  boolean isTarget();
+  
+  /**
+   * Provide information for logs about the context from which the dispatcher
+   *   originated.
+   * 
+   * @return
+   */
+  String getContextInfo();
 }

@@ -83,14 +83,6 @@ public interface Component
 
   
   /**
-   * Return a reference to the Container aspect of this object, if this
-   *   Component supports containership.
-   * 
-   * @return
-   */
-  Container asContainer();
-  
-  /**
    * Return a reference to the Parent aspect of this object, if this
    *   Component is a Parent.
    * 

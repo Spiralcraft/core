@@ -44,8 +44,7 @@ import spiralcraft.util.Path;
 public class StandardDispatcher
   implements Dispatcher
 {
-  @SuppressWarnings("unused")
-  private final StandardDispatcher parent;
+  // private final Dispatcher parent;
 
   
   private final boolean stateful;
@@ -72,7 +71,7 @@ public class StandardDispatcher
    */
   public StandardDispatcher(boolean stateful,StateFrame frame)
   { 
-    this.parent=null;
+    // this.parent=null;
     this.stateful=stateful;
     this.currentFrame=frame;
     
@@ -88,11 +87,11 @@ public class StandardDispatcher
    * 
    * @param parent The parent GenerationContext
    */
-  public StandardDispatcher(StandardDispatcher parent)
+  public StandardDispatcher(Dispatcher parent)
   { 
-    this.parent=parent;
+    // this.parent=parent;
     this.stateful=parent.isStateful();
-    currentFrame=parent.getCurrentFrame();
+    currentFrame=parent.getFrame();
   }
 
   
@@ -102,7 +101,7 @@ public class StandardDispatcher
    * 
    * @param frame
    */
-  public void setCurrentFrame(StateFrame frame)
+  public void setFrame(StateFrame frame)
   { this.currentFrame=frame;
   }
     
@@ -173,13 +172,14 @@ public class StandardDispatcher
   
   
   /**
-   * <p>A stateful rendering or messaging allows for direct
-   *   manipulation of document content, but costs memory and CPU.
+   * <p>A stateful model allows for interactivity, but costs memory and
+   *   CPU
    * </p>
    * 
-   * @return Whether ElementStates should be created and maintained for
+   * @return Whether States should be created and maintained for
    *   components.
    */
+  @Override
   public boolean isStateful()
   { return stateful;
   }
@@ -188,7 +188,8 @@ public class StandardDispatcher
   { return logPrefix;
   }
   
-  public StateFrame getCurrentFrame()
+  @Override
+  public StateFrame getFrame()
   { return currentFrame;
   }
   
@@ -354,7 +355,33 @@ public class StandardDispatcher
   }
 
 
+  @Override
+  public void relayMessage
+    (Component childComponent
+    ,State newParentState
+    ,int childIndex
+    ,Message message
+    )
+  { 
+    final State lastState=this.state;
+    try
+    { 
+      this.state=newParentState;
+      relayMessage(childComponent,childIndex,message);
+    }
+    finally
+    { this.state=lastState;
+    }
+    
+  }
   
+  @Override
+  public boolean isTarget()
+  { return path==null || path.isEmpty();
+  }
 
-
+  @Override
+  public String getContextInfo()
+  { return null;
+  }
 }
