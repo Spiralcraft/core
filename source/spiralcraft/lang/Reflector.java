@@ -87,7 +87,7 @@ public interface Reflector<T>
    * @return A Channel<T> connected to nothing, useful for type
    *   inference.
    */
-  public Channel<T> getNilChannel();
+  public Channel<T> createNilChannel();
   
   /**
    * <p>Indicate whether the source type can be cast to this type
