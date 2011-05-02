@@ -24,16 +24,17 @@ import spiralcraft.lang.kit.Member;
 /**
  * Returns the Focus used to bind the subject
  */
-public class MetaFocusMember<T>
-  extends Member<Reflector<T>,Focus<?>,T>
+public class MetaFocusMember<T,F>
+  extends Member<Reflector<T>,Focus<F>,T>
 {
 
 
   { name="@focus";
   }
   
+  @SuppressWarnings("unchecked")
   @Override
-  public Channel<Focus<?>> resolve(
+  public Channel<Focus<F>> resolve(
     Reflector<T> reflector,
     Channel<T> source,
     Focus<?> focus,
@@ -41,7 +42,7 @@ public class MetaFocusMember<T>
     throws BindException
   { 
     assertNoArguments(arguments);
-    return focus.getSelfChannel();
+    return ((Focus<F>) focus).getSelfChannel();
   }
 
 }
