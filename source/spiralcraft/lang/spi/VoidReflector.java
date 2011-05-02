@@ -21,6 +21,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.kit.AbstractReflector;
 
 
 /**

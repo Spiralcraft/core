@@ -27,7 +27,7 @@ import spiralcraft.lang.Range;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.TypeModel;
-import spiralcraft.lang.spi.AbstractReflector;
+import spiralcraft.lang.kit.AbstractReflector;
 import spiralcraft.lang.spi.ArrayContainsChannel;
 import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;

@@ -22,6 +22,7 @@ import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.kit.AbstractReflector;
 
 public class ExtendedReflector<T>
   extends AbstractReflector<T>

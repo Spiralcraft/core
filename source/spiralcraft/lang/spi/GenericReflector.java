@@ -25,6 +25,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
+import spiralcraft.lang.kit.AbstractReflector;
 import spiralcraft.log.ClassLog;
 
 /**

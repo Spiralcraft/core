@@ -20,6 +20,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.kit.AbstractReflector;
 
 import java.net.URI;
 import java.util.HashMap;

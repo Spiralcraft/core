@@ -22,8 +22,8 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Channel;
 
+import spiralcraft.lang.kit.AbstractReflector;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.lang.spi.AbstractReflector;
 
 import java.net.URI;
 import java.util.Map;

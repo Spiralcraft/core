@@ -29,7 +29,7 @@ import spiralcraft.lang.Signature;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.TypeModel;
 
-import spiralcraft.lang.spi.AbstractReflector;
+import spiralcraft.lang.kit.AbstractReflector;
 import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;
 import spiralcraft.lang.spi.ArrayContainsChannel;
