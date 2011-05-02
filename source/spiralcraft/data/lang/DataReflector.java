@@ -28,9 +28,9 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.TypeModel;
 
+import spiralcraft.lang.kit.AbstractReflector;
 import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.lang.reflect.BeanReflector;
-import spiralcraft.lang.spi.AbstractReflector;
 import spiralcraft.lang.spi.NullChannel;
 //import spiralcraft.log.ClassLog;
 
