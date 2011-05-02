@@ -114,7 +114,7 @@ public class Edit<Titem extends Tuple>
       resultChannel
         =new BufferChannel<BufferTuple>
           (focusChain
-          ,DataReflector.<Titem>getInstance(type).getNilChannel()
+          ,DataReflector.<Titem>getInstance(type).createNilChannel()
           );
     }
     else
