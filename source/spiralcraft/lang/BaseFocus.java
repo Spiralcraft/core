@@ -278,6 +278,9 @@ public abstract class BaseFocus<T>
   @Override
   public synchronized void addAlias(URI alias)
   {
+    if (alias==null)
+    { throw new IllegalArgumentException("Cannot add null alias to Focus");
+    }
     if (aliases==null)
     { aliases=new LinkedList<URI>();
     }
