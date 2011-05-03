@@ -20,30 +20,29 @@
         </revision>
         
         <notes>
-          <scm:Note>Implemented pathway to pull metadata extents from Channels, 
-            primarily to drive automatic UI bindings
+          <scm:Note>Implemented pathway to pull metadata extents (information
+            sets) from Channels, primarily to drive automatic UI bindings
           </scm:Note>
         </notes>
         
         <path>source/spiralcraft/
         </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev2
+        </revision>
         
-        <resources>
-          <URI>data/core/FieldImpl.java
-          </URI>
-          <URI>lang/Channel.java
-          </URI>
-          <URI>lang/spi/AbstractChannel.java
-          </URI>
-          <URI>lang/spi/ProxyChannel.java
-          </URI>
-          <URI>lang/spi/TranslatorChannel.java
-          </URI>
-          <URI>ui/MetadataType.java
-          </URI>
-          <URI>ui/FieldMetadata.type.xml
-          </URI>
-        </resources>
+        <notes>
+          <scm:Note>XmlStore transaction log splits up xlog directory to
+            avoid stressing the FS by accumulating too many entries in one 
+            directory.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/xml/XmlStore.java
+        </path>
+
       </scm:Change>
       
       <scm:Change>
