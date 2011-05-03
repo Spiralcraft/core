@@ -27,6 +27,7 @@ import spiralcraft.log.ClassLog;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.net.URI;
 import java.util.ArrayList;
 
 /**
@@ -232,6 +233,20 @@ public  class TranslatorChannel<T,S>
         BindException("Member signature '"+sig+"' not found. ("+translator.getReflector()+") "+sigs);      
     }
     return binding;
+  }
+  
+  /**
+   * Resolve contextual metadata for this Channel from an appropriate provider
+   *   in the Focus chain.
+   * 
+   * @param <X>
+   * @param focus
+   * @param metadataTypeURI
+   * @return
+   */
+  @Override
+  public <X> Channel<X> resolveMeta(Focus<?> focus,URI metadataTypeURI)
+  { return null;
   }
   
   @Override

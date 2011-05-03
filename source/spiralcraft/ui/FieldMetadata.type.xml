@@ -1,0 +1,24 @@
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/meta"
+  >
+  <fields>
+    <meta:Field>
+      <name>fieldURI
+      </name>
+      
+      <type><URI.type/>
+      </type>
+    </meta:Field>
+    
+    <meta:Field>
+      <name>label
+      </name>
+      
+      <type><String.type/>
+      </type>
+    </meta:Field>
+    
+  </fields>
+
+
+</meta:Type>

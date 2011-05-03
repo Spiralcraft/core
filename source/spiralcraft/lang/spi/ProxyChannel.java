@@ -23,6 +23,7 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Decorator;
 
 import java.beans.PropertyChangeSupport;
+import java.net.URI;
 
 /**
  * An Channel which delegates to another Channel, usually in order to
@@ -64,6 +65,23 @@ public class ProxyChannel<T>
   { return channel.resolve(focus,name,params);
   }
 
+
+
+
+  /**
+   * Resolve contextual metadata for this Channel from an appropriate provider
+   *   in the Focus chain.
+   * 
+   * @param <X>
+   * @param focus
+   * @param metadataTypeURI
+   * @return
+   */
+  @Override
+  public <X> Channel<X> resolveMeta(Focus<?> focus,URI metadataTypeURI)
+  { return channel.resolveMeta(focus,metadataTypeURI);
+  }
+  
   @Override
   public T get()
   { return channel.get();
@@ -148,5 +166,6 @@ public class ProxyChannel<T>
   public void setContext(Focus<?> context)
   { channel.setContext(context);
   }
+  
   
 }

@@ -16,6 +16,8 @@ package spiralcraft.lang;
 
 import java.beans.PropertyChangeSupport;
 
+import java.net.URI;
+
 
 /**
  * <P>A Channel is a "data pipe" that provides a "view" of the contents of an 
@@ -85,6 +87,18 @@ public interface Channel<T>
     )
     throws BindException;
 
+
+  /**
+   * Resolve contextual metadata for this Channel from an appropriate provider
+   *   in the Focus chain.
+   * 
+   * @param <X>
+   * @param focus
+   * @param metadataTypeURI
+   * @return
+   */
+  <X> Channel<X> resolveMeta(Focus<?> focus,URI metadataTypeURI);
+  
   /**
    * Return the content of this view.
    */

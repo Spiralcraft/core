@@ -31,6 +31,7 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.kit.ConstantChannel;
 import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.log.ClassLog;
@@ -40,6 +41,7 @@ import spiralcraft.rules.Rule;
 import spiralcraft.rules.RuleException;
 import spiralcraft.rules.RuleSet;
 import spiralcraft.rules.Violation;
+import spiralcraft.ui.MetadataType;
 
 import spiralcraft.data.lang.DataReflector;
 
@@ -53,7 +55,10 @@ import java.util.WeakHashMap;
 public class FieldImpl<T>
   implements Field<T>
 {
+  
+      
   protected final ClassLog log=ClassLog.getInstance(getClass());
+  
   
   private boolean locked;
   private int index;
@@ -74,9 +79,13 @@ public class FieldImpl<T>
   private boolean required;
   private boolean tranzient;
   
+  protected Tuple defaultUIMetadata;
+  protected Channel uiMetadataChannel;
+  
   protected boolean debug;
 
-  protected Reflector contentReflector;
+  private Reflector contentReflector;
+  
   protected FieldSet fieldSet;
 
 //  protected boolean debugData;
@@ -176,6 +185,17 @@ public class FieldImpl<T>
    */
   public void setUniqueValue(boolean uniqueValue)
   { this.uniqueValue=uniqueValue;
+  }
+  
+  /**
+   * <p>The default UI metadata for this field, in the form of a Tuple of
+   *   type class:/spiralcraft/ui/FieldMetadata
+   * </p>
+   * 
+   * @param uiMetadata
+   */
+  public void setDefaultUIMetadata(Tuple uiMetadata)
+  { this.defaultUIMetadata=uiMetadata;
   }
   
   @Override
@@ -943,6 +963,24 @@ public class FieldImpl<T>
            );
 
       }      
+    }
+    
+    @Override
+    public <X> Channel<X> resolveMeta(Focus<?> focus,URI typeURI)
+    {
+      if (typeURI.equals(MetadataType.FIELD.uri))
+      { 
+        if (uiMetadataChannel==null)
+        { 
+          uiMetadataChannel
+            =new ConstantChannel
+              (MetadataType.FIELD.reflector
+              ,defaultUIMetadata
+              );
+        }
+        return uiMetadataChannel;
+      }
+      return null;
     }
     
     @Override

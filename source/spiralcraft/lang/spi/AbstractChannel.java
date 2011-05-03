@@ -24,6 +24,7 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Signature;
 
 import java.beans.PropertyChangeSupport;
+import java.net.URI;
 import java.util.ArrayList;
 
 /**
@@ -239,6 +240,20 @@ public abstract class AbstractChannel<T>
   @Override
   public boolean isWritable()
   { return true;
+  }
+  
+  /**
+   * Resolve contextual metadata for this Channel from an appropriate provider
+   *   in the Focus chain.
+   * 
+   * @param <X>
+   * @param focus
+   * @param metadataTypeURI
+   * @return
+   */
+  @Override
+  public <X> Channel<X> resolveMeta(Focus<?> focus,URI metadataTypeURI)
+  { return null;
   }
   
   @Override
