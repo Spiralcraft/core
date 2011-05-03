@@ -20,6 +20,20 @@
         </revision>
         
         <notes>
+          <scm:Note>Check for null alias passed to Focus.addAlias()
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/BaseFocus.java
+        </path>
+
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
           <scm:Note>Implemented pathway to pull metadata extents (information
             sets) from Channels, primarily to drive automatic UI bindings
           </scm:Note>
