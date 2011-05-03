@@ -503,9 +503,17 @@ public class XmlStore
   {
     if (aggregate.size()>0)
     {
+      
+      String txidHex=StringUtil.prepad(Long.toHexString(txId),'0',12);
+      
+      String bundle1=txidHex.substring(0,9)+".dir";
+      
+      Container bundle1Container
+        =logContainer.getChild(bundle1).ensureContainer();
+      
       Resource logResource
-        =logContainer.getChild
-          ("tx"+StringUtil.prepad(Long.toHexString(txId),'0',12)+".delta.xml");
+        =bundle1Container.getChild
+          ("tx"+txidHex+".delta.xml");
 
       DataWriter writer=new DataWriter();
       writer.writeToResource(logResource, aggregate);
