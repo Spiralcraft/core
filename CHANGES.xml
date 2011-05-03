@@ -13,6 +13,172 @@
     </date>
     
     <detail>
+    
+
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Implemented pathway to pull metadata extents from Channels, 
+            primarily to drive automatic UI bindings
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/core/FieldImpl.java
+          </URI>
+          <URI>lang/Channel.java
+          </URI>
+          <URI>lang/spi/AbstractChannel.java
+          </URI>
+          <URI>lang/spi/ProxyChannel.java
+          </URI>
+          <URI>lang/spi/TranslatorChannel.java
+          </URI>
+          <URI>ui/MetadataType.java
+          </URI>
+          <URI>ui/FieldMetadata.type.xml
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Moved AbstractReflector from spiralcraft.lang.spi to
+            spiralcraft.lang.kit
+          </scm:Note>
+          <scm:Note>Factored common '@' meta members from AbstractReflector 
+            into lookup table and new package spiralcraft.lang.kit.Member
+          </scm:Note>
+          <scm:Note>Reflector getNilChannel() refactored
+            to Reflector.createNilChannel()
+          </scm:Note>          
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/lang/DataReflector.java
+          </URI>
+          <URI>data/task/Edit.java
+          </URI>
+          <URI>data/core/BeanField.java
+          </URI>
+          <URI>lang/kit/AbstractReflector.java
+          </URI>
+          <URI>lang/kit/Member.java
+          </URI>
+          <URI>lang/kit/members/MetaCastMember.java
+          </URI>
+          <URI>lang/kit/members/MetaChannelMember.java
+          </URI>
+          <URI>lang/kit/members/MetaEmptyMember.java
+          </URI>
+          <URI>lang/kit/members/MetaFocusMember.java
+          </URI>
+          <URI>lang/kit/members/MetaLastMember.java
+          </URI>
+          <URI>lang/kit/members/MetaListMember.java
+          </URI>
+          <URI>lang/kit/members/MetaLogMember.java
+          </URI>
+          <URI>lang/kit/members/MetaNilMember.java
+          </URI>
+          <URI>lang/kit/members/MetaSizeMember.java
+          </URI>
+          <URI>lang/kit/members/MetaSubtypeMember.java
+          </URI>
+          <URI>lang/kit/members/MetaTopMember.java
+          </URI>
+          <URI>lang/kit/members/MetaTuneMember.java
+          </URI>
+          <URI>lang/kit/members/MetaTypeMember.java
+          </URI>
+          <URI>lang/parser/StructNode.java
+          </URI>
+          <URI>lang/reflect/ArrayReflector.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>lang/reflect/IterableReflector.java
+          </URI>
+          <URI>lang/spi/ExtendedReflector.java
+          </URI>
+          <URI>lang/spi/GenericReflector.java
+          </URI>
+          <URI>lang/spi/NamespaceReflector.java
+          </URI>
+          <URI>lang/spi/VoidReflector.java
+          </URI>
+          <URI>lang/spi/AbstractReflector.java
+          </URI>
+          <URI>security/auth/CredentialSetChannel.java
+          </URI>
+        </resources>
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Repurposed package spiralcraft.ui- obsoleted classes
+            Binding, BindingGroup, Control, ControlGroup, Step, StepControl
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/ui/
+        </path>
+        
+        <resources>
+          <URI>Binding.java
+          </URI>
+          <URI>BindingGroup.java
+          </URI>
+          <URI>Control.java
+          </URI>
+          <URI>ControlGroup.java
+          </URI>
+          <URI>Step.java
+          </URI>
+          <URI>StepControl.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Obsolete classes BeanField, BeanFieldType, FieldBinding,
+            FieldTranslator
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>types/meta/BeanFieldType.java
+          </URI>
+          <URI>core/BeanField.java
+          </URI>
+          <URI>lang/FieldBinding.java
+          </URI>
+          <URI>lang/FieldTranslator.java
+          </URI>
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev2
         </revision>
