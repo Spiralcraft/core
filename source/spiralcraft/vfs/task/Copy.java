@@ -1,10 +1,12 @@
 package spiralcraft.vfs.task;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URI;
 import java.util.List;
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.exec.ExecutionContext;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 import spiralcraft.task.AbstractTask;
@@ -176,6 +178,8 @@ public class Copy
     {  
       try
       {
+        PrintStream info=verbose?ExecutionContext.getInstance().out():null;
+        
         Resource sourceResource
           =resolveWithDefault(sourceUriX,Copy.this.sourceResource);
         
@@ -269,8 +273,7 @@ public class Copy
             { 
               if (verbose && !to.exists())
               {
-                log.info
-                  ("Creating "+to.getURI());
+                info.println("Creating container "+to.getURI());
               }
               to.ensureContainer();
               if (preserveTime)
@@ -290,8 +293,7 @@ public class Copy
             { 
               if (verbose)
               {
-                log.info
-                  ("Copying "+from.getURI()+" to "+to.getURI());
+                info.println("Copying "+from.getURI()+" to "+to.getURI());
               }
               
               from.copyTo(to);
