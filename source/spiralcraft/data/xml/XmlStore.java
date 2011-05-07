@@ -65,6 +65,7 @@ import spiralcraft.util.string.StringUtil;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.vfs.util.RetentionPolicy;
 
 
@@ -263,7 +264,12 @@ public class XmlStore
   public void start()
     throws LifecycleException
   {
-    
+    try
+    { baseResourceURI=Resolver.getInstance().resolve(baseResourceURI).getURI();
+    }
+    catch (UnresolvableURIException x)
+    { throw new LifecycleException("Error resolving "+baseResourceURI,x);
+    }
 
 
     log.info("Serving data in "+baseResourceURI);
@@ -755,6 +761,7 @@ public class XmlStore
     private BoundQuery<?,Tuple> boundQuery;
     private Focus<URI> uriFocus;
     private URI uri;
+    private volatile boolean allocated=false;
     
     public XmlSequence (URI uri)
     { 
@@ -789,7 +796,9 @@ public class XmlStore
     {
       try
       {
-        deallocate();
+        if (allocated)
+        { deallocate();
+        }
       }
       catch (DataException x)
       { 
@@ -919,6 +928,7 @@ public class XmlStore
           joinTransaction().log(dt);
 
           Transaction.getContextTransaction().commit();
+          allocated=true;
         }
         finally
         { Transaction.getContextTransaction().complete();
