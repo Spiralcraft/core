@@ -220,7 +220,16 @@ public class FieldImpl<T>
 
   @Override
   public URI getURI()
-  { return uri;
+  { 
+    if (uri==null)
+    { 
+      // We might not have all the information we need pre-resolution when
+      //   the URI field is null, so just do the best we can.
+      return createURI();
+    }
+    else
+    { return uri;
+    }
   }
 
   @Override
@@ -618,18 +627,22 @@ public class FieldImpl<T>
   
   
   
+  private URI createURI()
+  {
+    if (fieldSet.getType()==null)
+    { return URI.create("untyped#"+getName());
+    }
+    else
+    { return
+        URI.create(fieldSet.getType().getURI().toString()+"#"+getName());
+
+    }
+    
+  }
   
   
   protected void generateURI()
-  {
-    if (fieldSet.getType()==null)
-    { this.uri=URI.create("untyped#"+getName());
-    }
-    else
-    { this.uri
-        =URI.create(fieldSet.getType().getURI().toString()+"#"+getName());
-
-    }
+  { this.uri=createURI();
   }
   
 
