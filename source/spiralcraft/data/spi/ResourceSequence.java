@@ -30,6 +30,7 @@ public class ResourceSequence
   private int increment;
   private volatile long next;
   private volatile long stop;
+  private volatile boolean allocated;
   private Resource resource;
   
   private URI resourceURI;
@@ -106,15 +107,18 @@ public class ResourceSequence
   {
     
     try
-    { write(Long.toString(next));
+    { 
+      if (allocated)
+      { write(Long.toString(next));
+      }
     }
     catch (IOException x)
     { throw new DataException("Error deallocating sequence",x);
     }
   }
 
-  public void allocate()
-  throws DataException
+  private void allocate()
+    throws DataException
   {
     try
     {
@@ -133,6 +137,7 @@ public class ResourceSequence
         stop=next+increment;
         write(Long.toString(stop));
       }
+      allocated=true;
     }
     catch (IOException x)
     { throw new DataException("Error allocating sequence",x);
