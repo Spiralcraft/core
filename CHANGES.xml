@@ -14,6 +14,47 @@
     
     <detail>
     
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Progress reporting for the Copy task now goes to stdout
+            instead of the log.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/task/Copy.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix issue where Sequences were being deallocated even
+            when they were never allocated, resetting the nextValue to 0 and
+            resulting in duplicate primary key errors.
+          </scm:Note>
+          <scm:Note>Fix issue where XmlStore baseResource was canonicalized
+            in the query context and not at startup, resulting in use
+            of the wrong contextual resource mappings.
+          </scm:Note>          
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>spi/ResourceSequence.java
+          </URI>
+          <URI>xml/XmlStore.java
+          </URI>
+        </resources>
+
+      </scm:Change>
 
       <scm:Change>
         <revision>-dev2
