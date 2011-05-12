@@ -291,6 +291,11 @@ public class SchemeImpl
       
     }
     
+    
+    preprocessKeyDeclarations();
+    
+    resolveLocalKeys();
+    
     for (FieldImpl<?> field: localFields)
     { 
       // XXX There may be fields in this list that were not made part of this
@@ -301,11 +306,30 @@ public class SchemeImpl
       field.resolve();
     }
     
-//    int keyIndex=0;
+    resolveRelativeKeys();
+
+    
+    // Transient fields 
+    for (FieldImpl<?> field: localFields)
+    { field.resolve();
+    }
+    
+  }
+
+  
+  
+  /**
+   * <p>Process important components of the Key declarations (e.g.
+   *   finding the primary key) before fields are resolved
+   * </p>
+   *   
+   * @throws DataException
+   */
+  void preprocessKeyDeclarations()
+    throws DataException
+  {
     for (KeyImpl<Tuple> key:keys)
     {
-      key.setScheme(this);
-//      key.setIndex(keyIndex++);
       if (key.isPrimary())
       { 
         if (getInheritedPrimaryKey()!=null)
@@ -317,35 +341,56 @@ public class SchemeImpl
         { primaryKey=key;
         }
       }
-      key.resolve();
-      
-      if (key.getForeignType()!=null 
-          && key.getName()!=null 
-          && key.getRelativeField()==null
-          )
-      {
-        // Expose a Field to provide direct access to the join
-        
-        if (getFieldByName(key.getName())!=null)
-        { 
-          throw new DataException
-            ("Key "+getType().getURI()+"."+key.getName()+": Field '"
-              +key.getName()+"' already exists"
-            );
-        }
-        else
-        { addNewKeyField(key);
-        }
-      }
-      
-    }
     
-    // Transient fields 
-    for (FieldImpl<?> field: localFields)
-    { field.resolve();
     }
-    
   }
+  
+  void resolveLocalKeys()
+    throws DataException
+  {
+    for (KeyImpl<Tuple> key:keys)
+    {
+      if (key.getForeignType()==null)
+      {
+        key.setScheme(this);
+        key.resolve();
+      }
+    }
+  }
+
+  void resolveRelativeKeys()
+    throws DataException
+  {
+    
+    for (KeyImpl<Tuple> key:keys)
+    {
+      if (key.getForeignType()!=null)
+      {
+        key.setScheme(this);
+        key.resolve();
+    
+        if (key.getRelativeField()==null
+            && key.getName()!=null 
+           )
+        {
+          // Expose a Field to provide direct access to the join
+      
+          if (getFieldByName(key.getName())!=null)
+          { 
+            throw new DataException
+              ("Key "+getType().getURI()+"."+key.getName()+": Field '"
+                +key.getName()+"' already exists"
+              );
+          }
+          else
+          { addNewKeyField(key);
+          }
+        }
+    
+      }
+    }
+  }
+
   
   void addKey(KeyImpl<Tuple> key)
   { this.keys.add(key);
