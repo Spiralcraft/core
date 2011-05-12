@@ -144,33 +144,47 @@ public class RelativeField<T extends DataComposite>
         }
         else
         {
-          // Use the part of the our primary key that corresponds to the
-          //   parent's primary key
-          Key foreignKey=getType().getPrimaryKey();
-          if (foreignKey==null)
-          {
-            throw new DataException
-              ("Relative Field "+getURI()+" containing non unique value "
-              +" requires that a primary key be defined in the referenced"
-              +" type "+getType().getURI()
-              ); 
-          }
-            
-          if (foreignKey.getFieldCount()>primaryKey.getFieldCount())
+          if (referencedFieldNames!=null)
           { 
-            throw new DataException
-              ("Relative Field "+getURI()+" containing non unique value "
-              +" requires that the primary key defined in the referenced"
-              +" type "+getType().getURI()+" be a subset of the primary "
-              +" key defined in this type"
-              ); 
+            // Use the part of our primary key that corresponds to the
+            //   specified set of foreign fields
+            String[] fieldNames=new String[referencedFieldNames.length];
+            for (int i=0;i<fieldNames.length;i++)
+            { fieldNames[i]=primaryKey.getFieldByIndex(i).getName();
+            }
+            key.setFieldNames(fieldNames);
+            
+          }
+          else
+          {
+            // Use the part of our primary key that corresponds to the
+            //   parent's primary key
+            Key foreignKey=getType().getPrimaryKey();
+            if (foreignKey==null)
+            {
+              throw new DataException
+                ("Relative Field "+getURI()+" containing non unique value "
+                +" requires that a primary key be defined in the referenced"
+                +" type "+getType().getURI()
+                ); 
+            }
+            
+            if (foreignKey.getFieldCount()>primaryKey.getFieldCount())
+            { 
+              throw new DataException
+                ("Relative Field "+getURI()+" containing non unique value "
+                +" requires that the primary key defined in the referenced"
+                +" type "+getType().getURI()+" be a subset of the primary "
+                +" key defined in this type"
+                ); 
               
+            }
+            String[] fieldNames=new String[foreignKey.getFieldCount()];
+            for (int i=0;i<fieldNames.length;i++)
+            { fieldNames[i]=primaryKey.getFieldByIndex(i).getName();
+            }
+            key.setFieldNames(fieldNames);
           }
-          String[] fieldNames=new String[foreignKey.getFieldCount()];
-          for (int i=0;i<foreignKey.getFieldCount();i++)
-          { fieldNames[i]=primaryKey.getFieldByIndex(i).getName();
-          }
-          key.setFieldNames(fieldNames);
         }
       }
       getScheme().addKey(key);
