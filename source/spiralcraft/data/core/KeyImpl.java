@@ -147,7 +147,7 @@ public class KeyImpl<T extends DataComposite>
   { return scheme;
   }
   
-  public void setScheme(Scheme scheme)
+  void setScheme(Scheme scheme)
   { 
     assertUnresolved();
     this.scheme=scheme;
@@ -247,13 +247,16 @@ public class KeyImpl<T extends DataComposite>
   private KeyImpl<?> findReciprocalKey()
   {
     Key<?>[] keys=foreignType.getKeys();
-    for (Key<?> key : keys)
-    { 
-      // Check for reciprocal definition
-      if (key.getForeignType()!=null
-          && key.getForeignType().isAssignableFrom(scheme.getType())
-          )
-      { return (KeyImpl<?>) key;
+    if (keys!=null)
+    {
+      for (Key<?> key : keys)
+      { 
+        // Check for reciprocal definition
+        if (key.getForeignType()!=null
+            && key.getForeignType().isAssignableFrom(scheme.getType())
+            )
+        { return (KeyImpl<?>) key;
+        }
       }
     }
     return null;
