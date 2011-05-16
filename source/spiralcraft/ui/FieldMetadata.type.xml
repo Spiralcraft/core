@@ -1,5 +1,6 @@
 <meta:Type
   xmlns:meta="class:/spiralcraft/data/meta"
+  xmlns:ui="class:/spiralcraft/ui"
   >
   <fields>
     <meta:Field>
@@ -18,6 +19,13 @@
       </type>
     </meta:Field>
     
+    <meta:Field>
+      <name>controlModel
+      </name>
+      
+      <type><ui:ViewModel.type/>
+      </type>
+    </meta:Field>
   </fields>
 
 

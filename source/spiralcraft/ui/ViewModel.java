@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2011 Michael Toth
+// Copyright (c) 2011 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -14,18 +14,18 @@
 //
 package spiralcraft.ui;
 
-import spiralcraft.app.View;
-import spiralcraft.service.Service;
-
-
 /**
- * Generic UI service, typically subclassed for a specific View model, 
- *   such as Swing or WebUI. 
+ * <p>Provides metadata to a UI control implementation to guide the automatic generation and
+ *   configuration of UI widgets across multiple UI toolkits an modalities.
+ * </p>
+ * 
+ * <p>A UI toolkit will base specific controls on a ViewModel type
+ * </p>
+ *   
+ * @author mike
+ *
  */
-public interface ViewService
-  extends Service,View
+public interface ViewModel
 {
-
-
   
 }
