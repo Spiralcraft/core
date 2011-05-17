@@ -151,23 +151,26 @@ public class XmlStore
       
       for (Entity entity: schema.getEntities())
       {
-        XmlQueryable queryable=new XmlQueryable();
-        queryable.setResultType(entity.getType());
-        queryable.setResourceURI(URI.create(entity.getName()+".data.xml"));
-        queryable.setAutoCreate(true);
-        xmlQueryables.add(queryable);
-        EntityBinding binding=createEntityBinding(entity);
-        binding.setAuthoritative(true);
-        binding.setQueryable(queryable);
-        binding.setUpdater(new XmlUpdater(queryable,binding));   
-        if (entity.isDebug())
-        { queryable.setLogLevel(Level.TRACE);
-        }
-        addEntityBinding(binding);
+        if (!entity.isAbstract())
+        {
+          XmlQueryable queryable=new XmlQueryable();
+          queryable.setResultType(entity.getType());
+          queryable.setResourceURI(URI.create(entity.getName()+".data.xml"));
+          queryable.setAutoCreate(true);
+          xmlQueryables.add(queryable);
+          EntityBinding binding=createEntityBinding(entity);
+          binding.setAuthoritative(true);
+          binding.setQueryable(queryable);
+          binding.setUpdater(new XmlUpdater(queryable,binding));   
+          if (entity.isDebug())
+          { queryable.setLogLevel(Level.TRACE);
+          }
+          addEntityBinding(binding);
         
-        if (debugLevel.isDebug())
-        { log.debug("Added XmlQueryable from schema");
-        }        
+          if (debugLevel.isDebug())
+          { log.debug("Added XmlQueryable from schema");
+          }
+        }
       }
     }
     
@@ -293,7 +296,7 @@ public class XmlStore
       try
       { 
         queryable.setResourceContextURI(baseResourceURI);
-        queryable.getAll(queryable.getResultType());
+        queryable.getAll(queryable.getResultType());    
       }
       catch (DataException x)
       { x.printStackTrace();
@@ -310,6 +313,17 @@ public class XmlStore
     }
 
     super.start();
+    
+    // Go into data-ready state
+    for (XmlQueryable queryable:xmlQueryables)
+    { 
+      try
+      { queryable.getAggregate();
+      }
+      catch (DataException x)
+      { x.printStackTrace();
+      }
+    }
     
     if (subscriber!=null)
     { 
