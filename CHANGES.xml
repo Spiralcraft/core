@@ -13,6 +13,158 @@
     </date>
     
     <detail>
+      
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Add StringUtil.tokenizeOnWhitespace() function to tokenize
+            non-whitespace portions of a String using Character.isWhitespace()
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/string/StringUtil.java
+        </path>
+      </scm:Change>
+            
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Enhancements to Schema definition to support abstract
+            Entities and resolution of Entities associated with an
+            Entity's base Types.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>xml/XmlStore.java
+          </URI>
+          <URI>access/SchemaMetaObject.java
+          </URI>
+          <URI>access/Schema.java
+          </URI>
+          <URI>access/Entity.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Make sure XmlStore data is available on start
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/xml/XmlStore.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix issue introduced in dev1 where QueryField doesn't
+            resolve Query when type is specified.
+          </scm:Note>
+        
+        </notes>
+        
+        <path>source/spiralcraft/data/core/QueryField.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Query now supports a conditionX property which is evaluated
+            to determine whether or not the query will be executed or an
+            empty result set will be returned. This allows for the dynamic
+            selection of a query strategy based on input.
+          </scm:Note>
+          <scm:Note>BoundQuery now requires constructor with original Query
+            and parameter Focus, and contains logic to handle an invariant
+            condition for performing the query.
+          </scm:Note>
+          <scm:Note>Query binding logic changed along with Queryable interface
+            to provide opportunity for components to solve queries or decline
+            to provide a custom solution, returning null from the new
+            Queryable.solve() method instead of calling Query.solve() to
+            create the default solution. All Query processing components
+            now get the opportunity to provide a custom solution for each
+            subtree of the Query tree.
+          </scm:Note>
+
+       
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>Space.java
+          </URI>
+          <URI>spi/AbstractAggregateQueryable.java
+          </URI>
+          <URI>spi/AbstractStore.java
+          </URI>
+          <URI>spi/BaseExtentQueryable.java
+          </URI>
+          <URI>xml/XmlQueryable.java
+          </URI>
+          <URI>query/BoundQuery.java
+          </URI>
+          <URI>query/Concatenation.java
+          </URI>
+          <URI>query/ConcatenationBinding.java
+          </URI>
+          <URI>query/Distinct.java
+          </URI>
+          <URI>query/EquiJoin.java
+          </URI>
+          <URI>query/Join.java
+          </URI>
+          <URI>query/Projection.java
+          </URI>
+          <URI>query/Query.java
+          </URI>
+          <URI>query/Queryable.java
+          </URI>
+          <URI>query/ReferenceQuery.java
+          </URI>
+          <URI>query/Scan.java
+          </URI>
+          <URI>query/Selection.java
+          </URI>
+          <URI>query/SetFilter.java
+          </URI>
+          <URI>query/Shuffle.java
+          </URI>
+          <URI>query/Sort.java
+          </URI>
+          <URI>query/TextSearch.java
+          </URI>
+          <URI>query/UnaryBoundQuery.java
+          </URI>
+          <URI>query/Union.java
+          </URI>
+          <URI>query/UnionBinding.java
+          </URI>
+          <URI>kit/EmptyCursor.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
     
       <scm:Change>
         <revision>-dev2

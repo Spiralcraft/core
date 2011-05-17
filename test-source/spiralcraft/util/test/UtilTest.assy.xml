@@ -313,6 +313,23 @@
           </testX>
           
         </test:Assertion>
+        
+        <test:Assertion>
+        
+          <name>tokenizeOnWhitespace
+          </name>
+          
+          <subjectX contextualize="false">
+            [@util:StringUtil].@tokenizeOnWhitespace
+              ("Hello  there, how\n are you\t today?"
+              )
+          </subjectX>
+          
+          <testX contextualize="false">
+            .==[{ "Hello", "there,", "how", "are", "you", "today?"}]
+          </testX>
+          
+        </test:Assertion>
 
       </scenarios>
       
