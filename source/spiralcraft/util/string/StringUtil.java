@@ -116,7 +116,26 @@ public class StringUtil
     return result.toString();
   }
   
-  
+  public static String[] tokenizeOnWhitespace(String input)
+  {
+    ArrayList<String> out=new ArrayList<String>();
+
+    int mark=-1;
+    for (int i=0;i<input.length();i++)
+    { 
+      if (Character.isWhitespace(input.charAt(i)))
+      { 
+        if (i-mark>1)
+        { out.add(input.substring(mark+1,i));
+        }
+        mark=i;
+      }
+    }
+    if (input.length()-mark>1)
+    { out.add(input.substring(mark+1,input.length()));
+    }
+    return out.toArray(new String[out.size()]);
+  }
                        
   /**
    * <p>Tokenize a String into a List</p>
