@@ -18,9 +18,6 @@ import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.core.ProjectionImpl;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.query.BoundQuery;
-import spiralcraft.data.query.EquiJoin;
-import spiralcraft.data.query.Query;
-import spiralcraft.data.query.Scan;
 import spiralcraft.data.spi.AbstractAggregateQueryable;
 import spiralcraft.data.spi.AbstractStore;
 import spiralcraft.data.spi.ArrayJournalTuple;
@@ -175,28 +172,6 @@ public class XmlQueryable
     setResourceURI(resourceURI);
   }
   
-  @Override
-  public BoundQuery<?,Tuple> query(Query q, Focus<?> context)
-    throws DataException
-  {   
-    BoundQuery<?,Tuple> ret;
-    if ( (q instanceof EquiJoin)
-        && (q.getSources().get(0) instanceof Scan)
-        && q.getType().isAssignableFrom(getResultType())
-        )
-    { 
-      
-      EquiJoin ej=(EquiJoin) q;
-      
-      ret=new BoundIndexScan(ej,context);
-      ret.resolve();
-      return ret;
-      
-    }
-    else 
-    { return super.query(q, context);
-    }
-  }
 
   @Override
   public Focus<?> bind(Focus<?> focusChain)

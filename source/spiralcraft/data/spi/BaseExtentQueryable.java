@@ -123,70 +123,106 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
   public Type<?>[] getTypes()
   { return new Type[] {type};
   }
+  
+  
 
-  @Override
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public BoundQuery<?,Ttuple> query(Query q, Focus<?> context)
+  @Override
+  public BoundQuery<?,Ttuple> solve(Query q, Focus<?> context)
     throws DataException
-  { 
+  {
+    // Queries that map to a single scan type that is wider than this
+    //   queryable's type will be mapped to a concatenation of 
+    //   the results of the query as bound to each subtype extent.
     BoundQuery<?,Ttuple> ret=null;
-    
-    if (ret==null)
-    {
-      // Queries that map to a single scan type that is wider than this
-      //   queryable's type will be mapped to a concatenation of 
-      //   the results of the query as bound to each subtype extent.
       
-      Set<Type<?>> scanTypes=q.getAccessTypes(new HashSet<Type<?>>());
-      if (scanTypes.size()==1 
-          && scanTypes.iterator().next().isAssignableFrom(this.type)
+    Set<Type<?>> scanTypes=q.getAccessTypes(new HashSet<Type<?>>());
+    if (scanTypes.size()==1 
+        && scanTypes.iterator().next().isAssignableFrom(this.type)
+        )
+    { 
+      ArrayList<BoundQuery> subQueries=new ArrayList<BoundQuery>();
+      ArrayList<Queryable<Ttuple>> skippedSubtypes
+        =new ArrayList<Queryable<Ttuple>>();
+      
+      boolean mergeable=q.isMergeable();
+      
+      for (Map.Entry<Type<?>,Queryable<Ttuple>> entry 
+            : subtypeQueryables.entrySet()
           )
       { 
-        ArrayList<BoundQuery> subQueries=new ArrayList<BoundQuery>();
+        // Deletage to each subtype queryable to check if there is a 
+        //   custom solution for the top level query.
         
-        boolean mergeable=q.isMergeable();
-        for (Map.Entry<Type<?>,Queryable<Ttuple>> entry 
-              : subtypeQueryables.entrySet()
-            )
+        BoundQuery<?,Ttuple> subQuery
+          =entry.getValue().solve(q,context);
+        
+        if (subQuery==null)
         { 
-          BoundQuery<?,Ttuple> subQuery
-            =entry.getValue().query(q,context);
-          
-          if (subQuery!=null)
+          if (subQueries.size()==0)
           { 
-            
-            if (subQueries.size()>0 && !mergeable)
-            { 
-              subQueries=null;
-              break;
-            }
-            else
-            { subQueries.add(subQuery);
-            }
+            // Keep for later
+            skippedSubtypes.add(entry.getValue());
           }
           else
+          { 
+            // If one provides a custom accessor, we need to combine all
+            //   subQueries at this level
+            subQuery=entry.getValue().query(q,context);
+          }
+        }
+        
+        if (subQuery!=null)
+        { 
+          // One of the subtype queryables provides a custom solution
+          
+          if (subQueries.size()>0 && !mergeable)
           { 
             subQueries=null;
             break;
           }
-          
-        }
-        
-        if (subQueries!=null)
-        { 
-          if (debugLevel.isDebug())
-          {
-            log.debug
-              ("Optimized "+q+" for BaseExtentQueryable "+this.type.getURI());
+          else
+          { 
+            if (skippedSubtypes.size()>0 && !mergeable)
+            { 
+              subQueries=null;
+              break;
+            }
+            
+            for (Queryable<Ttuple> skipped : skippedSubtypes)
+            { subQueries.add(skipped.query(q,context));
+            }
+            subQueries.add(subQuery);
           }
-          ret=q.merge((List) subQueries);
         }
-        
       }
-    
+      
+      if (subQueries!=null && subQueries.size()>0)
+      { 
+        if (debugLevel.isDebug())
+        {
+          log.debug
+            ("Optimized "+q+" for BaseExtentQueryable "+this.type.getURI());
+        }
+        ret=q.merge((List) subQueries,context);
+      }
+      
     }
+  
     
     
+    
+    if (ret!=null)
+    { ret.resolve();
+    }
+    return ret;
+  }
+  
+  @Override
+  public BoundQuery<?,Ttuple> query(Query q, Focus<?> context)
+    throws DataException
+  { 
+    BoundQuery<?,Ttuple> ret=solve(q,context);
     if (ret==null)
     {
       if (debugLevel.isDebug())

@@ -70,4 +70,17 @@ public interface Queryable<Ttuple extends Tuple>
    */
   BoundQuery<?,Ttuple> query(Query q,Focus<?> context)
     throws DataException;
+
+  /**
+   * Provide a custom binding solution for the root node of the provided Query
+   *   structure, or return null if this Queryable does not provide a custom
+   *   binding solution for the provided Query node.
+   *
+   * @param q
+   * @param context
+   * @return
+   * @throws DataException
+   */
+  BoundQuery<?,Ttuple> solve(Query q,Focus<?> context)
+    throws DataException;
 }

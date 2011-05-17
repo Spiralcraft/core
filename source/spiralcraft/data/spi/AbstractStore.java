@@ -222,8 +222,29 @@ public abstract class AbstractStore
     return types;
   }
   
+  
   @Override
   public BoundQuery<?,Tuple> query(
+    Query query,
+    Focus<?> context)
+    throws DataException
+  {
+    BoundQuery<?,Tuple> ret=solve(query,context);
+    if (ret==null)
+    { 
+      ret=query.solve(context,this);
+    }
+    ret.resolve();
+    if (debugLevel.isDebug())
+    { log.debug("returning "+ret+" from query("+query+")");
+    }
+    return ret;
+    
+  }
+  
+  
+  @Override
+  public BoundQuery<?,Tuple> solve(
     Query query,
     Focus<?> context)
     throws DataException
@@ -259,16 +280,10 @@ public abstract class AbstractStore
       { return null;
       }
       else
-      { return queryable.query(query, context);
+      { return queryable.solve(query, context);
       }
     }
-    
-    BoundQuery<?,Tuple> ret=query.solve(context,container);
-    ret.resolve();
-    if (debugLevel.isDebug())
-    { log.debug("returning "+ret+" from query("+query+")");
-    }
-    return ret;
+    return null;
 
   }
   

@@ -42,7 +42,6 @@ import spiralcraft.data.query.ConcatenationBinding;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.log.ClassLog;
-import spiralcraft.log.Level;
 
 import spiralcraft.service.Service;
 import spiralcraft.util.ListMap;
@@ -145,7 +144,7 @@ public class Space
         for (Store store: stores)
         { boundQueries.add(store.getAll(type));
         }
-        return new ConcatenationBinding<Concatenation,Tuple>(boundQueries,type);
+        return new ConcatenationBinding<Concatenation,Tuple>(boundQueries,type,selfFocus);
       }
     }
     return null;
@@ -200,8 +199,23 @@ public class Space
     Lifecycler.stop(stores);
   }
   
+  
   @Override
   public BoundQuery<?,Tuple> query(Query query,Focus<?> focus)
+    throws DataException
+  {
+    BoundQuery<?,Tuple> ret=solve(query,focus);
+    
+    if (ret==null)
+    { 
+      ret=query.solve(focus,this);
+      ret.resolve();
+    }
+    return ret;
+  }
+  
+  @Override
+  public BoundQuery<?,Tuple> solve(Query query,Focus<?> focus)
     throws DataException
   { 
     
@@ -211,13 +225,7 @@ public class Space
     Set<Type<?>> scanTypes=query.getAccessTypes(null);
 
     if (scanTypes.size()==0)
-    {
-      BoundQuery<?,Tuple> ret=query.solve(focus,this);
-      ret.resolve();
-      if (logLevel.canLog(Level.DEBUG))
-      { log.debug("returning "+ret+" from query("+query+")");
-      }
-      return ret;
+    { return null;
     }
     
     
@@ -239,18 +247,18 @@ public class Space
     for (Store store: stores)
     {
       // Stores that can't process the type should return null
-      BoundQuery<?,Tuple> boundQuery=store.query(query,focus);
+      BoundQuery<?,Tuple> boundQuery=store.solve(query,focus);
       if (boundQuery!=null)
       { 
         if (queries.size()>0 && !mergeable)
-        { return query.solve(focus,this);
+        { return null;
         }
         queries.add(boundQuery);
       }
     }
 
     if (queries.isEmpty())
-    { throw new DataException("No path to process Query "+query);
+    { return null;
     }
     else if (queries.size()==1)
     { return queries.get(0);
@@ -258,7 +266,7 @@ public class Space
     else
     { 
       // The Query needs to solve for multiple sources.
-      return query.merge(queries);
+      return query.merge(queries,focus);
       
     }
   
