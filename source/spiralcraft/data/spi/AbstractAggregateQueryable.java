@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.KeyTuple;
 import spiralcraft.data.Projection;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
@@ -38,7 +39,9 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.TeleFocus;
+import spiralcraft.lang.kit.ConstantChannel;
 import spiralcraft.log.Level;
 import spiralcraft.util.ArrayUtil;
 
@@ -61,6 +64,21 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
   
   protected abstract Type<?> getResultType();
   
+  protected Focus<Queryable<T>> selfFocus;
+  {
+    try
+    { 
+      selfFocus
+        =new SimpleFocus<Queryable<T>>
+          (ConstantChannel.<Queryable<T>>forBean(this));
+    }
+    catch (BindException x)
+    { throw new RuntimeDataException("",x);
+    }
+    
+
+  }
+  
   @Override
   public boolean containsType(Type<?> type)
   { return type.isAssignableFrom(getResultType());
@@ -69,7 +87,7 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
   @Override
   public BoundQuery<?,T> getAll(Type<?> type) throws DataException
   {
-    BoundScan scan=new BoundScan(new Scan(getResultType()));
+    BoundScan scan=new BoundScan(new Scan(getResultType()),selfFocus);
     scan.resolve();
     return scan;
   }
@@ -77,6 +95,30 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
   @Override
   public Type<?>[] getTypes()
   { return new Type[] {getResultType()};
+  }
+  
+  
+  @Override
+  public BoundQuery<?,T> solve(Query q, Focus<?> context)
+    throws DataException
+  { 
+    if (q==null)
+    { throw new IllegalArgumentException("Query cannot be null");
+    }
+    
+    BoundQuery<?,T> ret=null;
+    if (q instanceof Scan
+        && q.getType().isAssignableFrom(getResultType())
+        )
+    { ret=new BoundScan((Scan) q,context);
+    }
+    else if ( (q instanceof EquiJoin)
+        && (q.getSources().get(0) instanceof Scan)
+        && q.getType().isAssignableFrom(getResultType())
+        )
+    { ret=new BoundIndexScan((EquiJoin) q,context);
+    }
+    return ret;
   }
 
   @Override
@@ -87,10 +129,10 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
     { throw new IllegalArgumentException("Query cannot be null");
     }
     
-    BoundQuery<?,T> ret;
-
-    // Just do a scan, because we're just a dumb list
-    ret=q.solve(context, this);
+    BoundQuery<?,T> ret=solve(q,context);
+    if (ret==null)
+    { ret=q.solve(context, this);
+    }
     ret.resolve();
     return ret;
   }
@@ -101,14 +143,14 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
     
     private final boolean debugTrace;
     
-    public BoundScan(Scan query)
+    public BoundScan(Scan query,Focus<?> paramFocus)
     { 
-      setQuery(query);
+      super(query,paramFocus);
       debugTrace=debugLevel.canLog(Level.TRACE);
     }
     
     @Override
-    public SerialCursor<T> execute() throws DataException
+    public SerialCursor<T> doExecute() throws DataException
     { 
       Aggregate<T> aggregate=getAggregate();
       if (aggregate==null)
@@ -229,6 +271,7 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
     public BoundIndexScan(EquiJoin ej,Focus<?> context)
       throws DataException
     { 
+      super(ej,context);
       // Create a focus to resolve all the RHSExpressions
       Focus<?> focus=new TeleFocus<Void>(context,null);
       
@@ -253,13 +296,12 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
         }
       }
       
-      setQuery(ej);
       debugTrace=debugLevel.canLog(Level.TRACE);
     }
     
     
     @Override
-    public SerialCursor<T> execute() throws DataException
+    public SerialCursor<T> doExecute() throws DataException
     { 
       KeyedListAggregate<T> aggregate=(KeyedListAggregate<T>) getAggregate();
       if (aggregate==null)
