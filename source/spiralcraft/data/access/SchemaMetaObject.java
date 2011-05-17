@@ -36,7 +36,7 @@ public abstract class SchemaMetaObject<T extends SchemaMetaObject<?>>
 {
   protected T base;
 
-  private final LinkedHashMap<Class<?>,SchemaAttribute> attributes
+  private final LinkedHashMap<Class<?>,SchemaAttribute> definedAttributes
     =new LinkedHashMap<Class<?>,SchemaAttribute>();
   
   private SchemaAttribute[] combinedAttributes;
@@ -63,51 +63,60 @@ public abstract class SchemaMetaObject<T extends SchemaMetaObject<?>>
    */
   public void setAttributes(SchemaAttribute[] attributes)
   { 
-    this.attributes.clear();
+    this.definedAttributes.clear();
     for (SchemaAttribute attribute:attributes)
-    { this.attributes.put(attribute.getClass(),attribute);
+    { this.definedAttributes.put(attribute.getClass(),attribute);
     }
   }
   
   @SuppressWarnings("unchecked")
   public <A extends SchemaAttribute> A getAttribute(Class<?> clazz)
   { 
-    A ret=(A) attributes.get(clazz);
+    A ret=(A) definedAttributes.get(clazz);
     if (ret==null && base!=null)
     { ret=base.<A>getAttribute(clazz);
     }
     return ret;
   }
   
+  protected SchemaAttribute[] getInheritedAttributes()
+  {
+    if (base!=null)
+    { return base.getAttributes();
+    }
+    else
+    { return new SchemaAttribute[0];
+    }
+  }
+  
   void resolve()
     throws DataException
   {
     ArrayList<SchemaAttribute> allAttributes=new ArrayList<SchemaAttribute>();
-    if (base!=null)
-    {
 
-      for (SchemaAttribute attribute:base.getAttributes())
-      { 
-        SchemaAttribute extendedAttribute=attributes.get(attribute.getClass());
-        if (extendedAttribute!=null)
-        { 
-          extendedAttribute.setExtends(attribute);
-          allAttributes.add(extendedAttribute);
-        }
-        else
-        { allAttributes.add(attribute);
-        }
-        
-      }
-    }
-    else
+    for (SchemaAttribute attribute:getInheritedAttributes())
     { 
-      
-      for (SchemaAttribute attribute:attributes.values())
-      { allAttributes.add(attribute);
+      SchemaAttribute extendedAttribute=definedAttributes.get(attribute.getClass());
+      if (extendedAttribute!=null)
+      { 
+        // Add the extended attribute in the same position the base would
+        //   have been added
+        extendedAttribute.base=attribute;
+        allAttributes.add(extendedAttribute);
       }
+      else
+      { 
+        // Add the base attribute
+        allAttributes.add(attribute);
+      }
+      
     }
-    for (SchemaAttribute attribute:attributes.values())
+    
+    
+    
+    // Add the rest of the newly defined attributes that don't override
+    //   anything.
+    for (SchemaAttribute attribute:definedAttributes.values())
     { 
       if (attribute.base==null)
       { allAttributes.add(attribute);

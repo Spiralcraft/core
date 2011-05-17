@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.DeltaTrigger;
+import spiralcraft.log.Level;
 import spiralcraft.util.ArrayUtil;
 
 /**
@@ -36,13 +37,17 @@ public class Entity
 {
   private Type<?> type;
   private String name;
-  private boolean debug;
   private DeltaTrigger[] deltaTriggers;
   private DeltaTrigger[] allDeltaTriggers;
   
   private LinkedHashMap<String,EntityField> fields
     =new LinkedHashMap<String,EntityField>();
   private EntityField[] allFields;
+
+  private Schema schema;
+  
+  private Level logLevel=Level.INFO;
+  private boolean isAbstract;
   
   public Entity()
   {
@@ -64,7 +69,7 @@ public class Entity
   public void setName(String storeName)
   { this.name=storeName;
   }
-  
+
   public String getName()
   { 
     if (name!=null)
@@ -75,14 +80,53 @@ public class Entity
     }
   }
   
+  public boolean isAbstract()
+  { return isAbstract;
+  }
+  
+  /**
+   * Abstract Entities exist only to provide attributes to for
+   *   subtypes, and cannot be queried or stored directly.
+   * 
+   * @param isAbstract
+   */
+  public void setAbstract(boolean isAbstract)
+  { this.isAbstract=isAbstract;
+  }
+  
+  
   public void setDebug(boolean debug)
-  { this.debug=debug;
+  { 
+    if (debug)
+    { 
+      if (!logLevel.isDebug())
+      { logLevel=Level.DEBUG;
+      }
+    }
+    else
+    { 
+      if (logLevel.isDebug())
+      { logLevel=Level.INFO;
+      }
+    }
   }
   
   public boolean isDebug()
-  { return debug;
+  { return logLevel.isDebug();
   }
   
+  public Level getLogLevel()
+  { return logLevel;
+  }
+  
+  public void setLogLevel(Level logLevel)
+  { 
+    if (logLevel==null)
+    { throw new IllegalArgumentException("logLevel cannot be null");
+    }
+    this.logLevel=logLevel;
+  }
+
   /**
    * <p>The Triggers associated with this Entity
    * </p>
@@ -121,6 +165,27 @@ public class Entity
   
   public EntityField[] getFields()
   { return this.allFields;
+  }
+  
+  /**
+   * @return the Entity which governs a base type of this Entity's type,
+   *   skipping base types that have no corresponding Entity definition
+   * 
+   */
+  public Entity getBaseTypeEntity()
+  {
+    Type<?> baseType=type.getBaseType();
+    Entity entity=null;
+    while (baseType!=null && entity==null)
+    { 
+      entity=schema.getEntity(baseType);
+      baseType=baseType.getBaseType();
+    }
+    return entity;
+  }
+  
+  void setSchema(Schema schema)
+  { this.schema=schema;
   }
   
   @Override
@@ -163,6 +228,5 @@ public class Entity
     }
     this.allFields=allFields.toArray(new EntityField[allFields.size()]);
     super.resolve();
-  }
-  
+  }  
 }

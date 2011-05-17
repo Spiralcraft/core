@@ -107,7 +107,11 @@ public class Schema
           allEntities.add(extension);
         }
         else
-        { allEntities.add(entity);
+        { 
+          // Make sure inherited entities can resolve base type entities
+          //   in this Schema.
+          entity.setSchema(this);
+          allEntities.add(entity);
         }
       }
     }
@@ -115,8 +119,11 @@ public class Schema
     for (Entity entity:entities.values())
     { 
       if (entity.base==null)
-      { allEntities.add(entity);
+      { 
+        // Add remaining entities at the end
+        allEntities.add(entity);
       }
+      entity.setSchema(this);
       entity.resolve();
     }
     this.combinedEntities=allEntities.toArray(new Entity[allEntities.size()]);
