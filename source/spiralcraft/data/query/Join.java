@@ -158,8 +158,6 @@ public class Join
 class JoinBinding<Tq extends Join,Tt extends Tuple>
   extends BoundQuery<Tq,Tt>
 {
-  private final Focus<?> paramFocus;
-  private Focus<Tuple> parentFocus;
   private boolean resolved;
   private BoundQuery<?,Tt> childBinding;
   private BoundQuery<?,Tuple> parentBinding;
@@ -172,11 +170,7 @@ class JoinBinding<Tq extends Join,Tt extends Tuple>
     ,Queryable<?> store
     )
     throws DataException
-  { 
-    super();
-    setQuery(query);
-    this.paramFocus=paramFocus;
-    
+  { super(query,paramFocus);
   }
 
   @SuppressWarnings("unchecked")
@@ -202,7 +196,7 @@ class JoinBinding<Tq extends Join,Tt extends Tuple>
       { throw new DataException("Error binding child query context",x);
       }
       
-      parentFocus= paramFocus.chain(parentLocal);
+      Focus<?> parentFocus= paramFocus.chain(parentLocal);
       
       if (debugLevel.canLog(Level.DEBUG))
       { log.debug("Binding child query "+childQuery);
@@ -218,7 +212,7 @@ class JoinBinding<Tq extends Join,Tt extends Tuple>
   
 
   @Override
-  public SerialCursor<Tt> execute()
+  public SerialCursor<Tt> doExecute()
     throws DataException
   { return new JoinSerialCursor();
   }

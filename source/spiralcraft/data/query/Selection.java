@@ -67,6 +67,16 @@ public class Selection
   
   }
   
+  @Override
+  public void resolve()
+    throws DataException
+  { 
+    super.resolve();
+    if (type==null)
+    { type=sources.get(0).getType();
+    }
+  }
+  
   /**
    * Construct a Selection which reads data from the specified source Query and filters
    *   data according to the specified constraints expression.
@@ -378,7 +388,6 @@ public class Selection
 class SelectionBinding<Tq extends Selection,Tt extends Tuple>
   extends UnaryBoundQuery<Tq,Tt,Tt>
 {
-  private final Focus<?> paramFocus;
   private Focus<Tt> focus;
   private Channel<Boolean> filter;
   private boolean resolved;
@@ -390,37 +399,34 @@ class SelectionBinding<Tq extends Selection,Tt extends Tuple>
     )
     throws DataException
   { 
-    super(query.getSources(),paramFocus,store);
-    setQuery(query);
-    this.paramFocus=paramFocus;
-    
+    super(query,query.getSources(),paramFocus,store);    
   }
 
   @Override
   public void resolve() throws DataException
   { 
-    if (!resolved)
-    {
-      super.resolve();
-    
+    if (resolved)
+    { return;
+    }
+    resolved=true;
 
-      focus= new TeleFocus<Tt>(paramFocus,sourceChannel);
+    super.resolve();
+    
+    focus= new TeleFocus<Tt>(paramFocus,sourceChannel);
       
-      if (debugLevel.canLog(Level.DEBUG))
-      { log.debug("Binding constraints "+getQuery().getConstraints());
-      }
+    if (debugLevel.canLog(Level.DEBUG))
+    { log.debug("Binding constraints "+getQuery().getConstraints());
+    }
       
-      try
-      { 
-        filter=focus.<Boolean>bind(getQuery().getConstraints());
-        if (debugLevel.canLog(Level.FINE))
-        { filter.setDebug(true);
-        }
+    try
+    { 
+      filter=focus.<Boolean>bind(getQuery().getConstraints());
+      if (debugLevel.canLog(Level.FINE))
+      { filter.setDebug(true);
       }
-      catch (BindException x)
-      { throw new DataException("Error binding constraints "+x,x);
-      }
-      resolved=true;
+    }
+    catch (BindException x)
+    { throw new DataException("Error binding constraints "+x,x);
     }
   }
   

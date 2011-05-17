@@ -199,7 +199,6 @@ public class SetFilter<T>
 class SetFilterBinding<Ti,Tt extends Tuple>
   extends UnaryBoundQuery<SetFilter<Ti>,Tt,Tt>
 {
-  private final Focus<?> paramFocus;
   private Focus<Tt> focus;
   private IterationDecorator<?,Ti> decorator;
   private Channel<Ti> searchChannel;
@@ -213,9 +212,7 @@ class SetFilterBinding<Ti,Tt extends Tuple>
     )
     throws DataException
   { 
-    super(query.getSources(),paramFocus,store);
-    setQuery(query);
-    this.paramFocus=paramFocus;
+    super(query,query.getSources(),paramFocus,store);
     this.excludeMatch=getQuery().getExcludeMatch();
     
   }

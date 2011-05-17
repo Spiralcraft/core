@@ -33,7 +33,6 @@ import spiralcraft.lang.Focus;
 public class ConcatenationBinding<Tq extends Concatenation,Tt extends Tuple>
   extends BoundQuery<Tq,Tt>
 {
-  private Focus<?> focus;
   private List<BoundQuery<?,Tt>> sources
     =new ArrayList<BoundQuery<?,Tt>>();
   private boolean resolved;
@@ -47,34 +46,31 @@ public class ConcatenationBinding<Tq extends Concatenation,Tt extends Tuple>
     )
     throws DataException
   { 
-    this.focus=paramFocus;
+    super(query,paramFocus);
     for (Query sourceQuery : query.getSources())
     { 
       sources.add
         ( (BoundQuery<?,Tt>) 
             (store!=null
-                ?store.query(sourceQuery,focus)
-                :sourceQuery.bind(focus)
+                ?store.query(sourceQuery,paramFocus)
+                :sourceQuery.bind(paramFocus)
             )
         );
     }
-    setQuery(query);
   }
   
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  public ConcatenationBinding(List<BoundQuery<?,Tt>> boundQueries,Type boundType)
+  public ConcatenationBinding(List<BoundQuery<?,Tt>> boundQueries,Type boundType,Focus<?> paramFocus)
     throws DataException
   {
+    super((Tq) new Concatenation(),paramFocus);
     this.boundType=boundType;
-    Tq query=(Tq) new Concatenation();
     for (BoundQuery<?,Tt> boundQuery : boundQueries)
     { 
-      query.addSource(boundQuery.getQuery());
+      getQuery().addSource(boundQuery.getQuery());
       sources.add(boundQuery);
     }
-    query.resolve();
-
-    setQuery(query);
+    getQuery().resolve();
   }
     
 
@@ -92,13 +88,9 @@ public class ConcatenationBinding<Tq extends Concatenation,Tt extends Tuple>
   }
   
   @Override
-  public SerialCursor<Tt> execute()
+  public SerialCursor<Tt> doExecute()
     throws DataException
-  {
-    if (!resolved)
-    { resolve();
-    }
-    return new ConcatenationSerialCursor();
+  { return new ConcatenationSerialCursor();
   }
   
 

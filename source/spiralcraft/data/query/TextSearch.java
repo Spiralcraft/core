@@ -121,7 +121,12 @@ public class TextSearch
    */
   public <T extends Tuple> BoundQuery<?,T> getDefaultBinding(Focus<?> focus,Queryable<?> store)
     throws DataException
-  { return new TextSearchBinding<TextSearch,T,Tuple>(this,focus,store);
+  { 
+    if (this.debugLevel.isDebug())
+    { log.log(Level.DEBUG,"Using default binding for TextSearch on "+getType().getURI(),new Exception());
+    }
+
+    return new TextSearchBinding<TextSearch,T,Tuple>(this,focus,store);
     
   }
   
@@ -138,7 +143,6 @@ class TextSearchBinding<Tq extends TextSearch,T extends Tuple,Ts extends Tuple>
   extends UnaryBoundQuery<Tq,T,Ts>
 {
 
-  private final Focus<?> paramFocus;
   private Focus<Ts> focus;
   private boolean resolved;
   private Channel<String>[] fieldBindings;
@@ -151,17 +155,14 @@ class TextSearchBinding<Tq extends TextSearch,T extends Tuple,Ts extends Tuple>
     )
     throws DataException
   { 
-    super(query.getSources(),paramFocus,store);
-    setQuery(query);
-    this.paramFocus=paramFocus;
+    super(query,query.getSources(),paramFocus,store);
     try
     { this.queryString=paramFocus.bind(query.getQueryStringX());
     }
     catch (BindException x)
     { throw new DataException("Error binding query string",x);
     }
-    
-
+    this.debugLevel=query.debugLevel;
   }
 
   @Override
@@ -175,7 +176,7 @@ class TextSearchBinding<Tq extends TextSearch,T extends Tuple,Ts extends Tuple>
 
       focus=paramFocus.chain(sourceChannel);
       if (debugLevel.canLog(Level.DEBUG))
-      { log.fine("Binding text search "+getQuery().getType());
+      { log.fine("Binding text search "+getQuery().getType().getURI());
       }
       
       ArrayList<Field<String>> searchFields=new ArrayList<Field<String>>();

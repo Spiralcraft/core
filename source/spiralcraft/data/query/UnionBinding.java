@@ -51,7 +51,7 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
     )
     throws DataException
   { 
-
+    super(query,paramFocus);
     for (Query sourceQuery : query.getSources())
     { 
       sources.add
@@ -63,7 +63,6 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
       );      
     }
 
-    setQuery(query);
     debugTrace=debugLevel.canLog(Level.TRACE);
     
     debugFine=debugLevel.canLog(Level.FINE);
@@ -73,9 +72,11 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
   public UnionBinding
     (Tq query
     ,List<BoundQuery<?,Tt>> sources
+    ,Focus<?> paramFocus
     )
     throws DataException
   { 
+    super(query,paramFocus);
     this.sources=sources;
     debugTrace=debugLevel.canLog(Level.TRACE);
     
@@ -86,23 +87,20 @@ class UnionBinding<Tq extends Union,Tt extends Tuple>
   @Override
   public void resolve() throws DataException
   { 
+    if (resolved)
+    { return;
+    }
+    resolved=true;
     super.resolve();
-    if (!resolved)
-    { 
-      for (BoundQuery<?,?> source : sources)
-      { source.resolve();
-      }
-      resolved=true;
-    }    
+    for (BoundQuery<?,?> source : sources)
+    { source.resolve();
+    }
   }
   
   @Override
-  public SerialCursor<Tt> execute()
+  public SerialCursor<Tt> doExecute()
     throws DataException
   {
-    if (!resolved)
-    { resolve();
-    }
     if (debugTrace)
     { log.trace(toString()+": Executing Union ");
     }

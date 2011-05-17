@@ -175,7 +175,6 @@ public class Projection<T extends Tuple>
 class ProjectionBinding<Tt extends Tuple>
   extends BoundQuery<Projection<Tt>,Tuple>
 {
-  private final Focus<?> paramFocus;
   private boolean resolved;
   private Channel<Tt> projectionChannel;
   private BoundQuery<?,Tuple> source;
@@ -190,8 +189,7 @@ class ProjectionBinding<Tt extends Tuple>
     )
     throws DataException
   { 
-    setQuery(query);
-    this.paramFocus=paramFocus;
+    super(query,paramFocus);
     
     Query sourceQuery=query.getSource();
     
@@ -268,7 +266,7 @@ class ProjectionBinding<Tt extends Tuple>
   }
   
   @Override
-  public SerialCursor<Tuple> execute()
+  public SerialCursor<Tuple> doExecute()
     throws DataException
   { return new ProjectionSerialCursor();
   }

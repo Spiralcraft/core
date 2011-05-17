@@ -126,7 +126,7 @@ class BoundReferenceQuery<T extends Tuple>
   public BoundReferenceQuery(ReferenceQuery query,Focus<?> focus)
     throws BindException
   { 
-    setQuery(query);
+    super(query,focus);
     Channel channel=focus.<T>bind(query.getReference());
     
     Reflector<T> reflector=channel.getReflector();
@@ -189,7 +189,7 @@ class BoundReferenceQuery<T extends Tuple>
 
 
   @Override
-  public SerialCursor<T> execute() throws DataException
+  public SerialCursor<T> doExecute() throws DataException
   { 
     if (source!=null)
     {

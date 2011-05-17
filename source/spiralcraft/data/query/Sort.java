@@ -47,6 +47,7 @@ public class Sort
   
   private Order order;
   private String[] names;
+  private boolean resolved;
   
   public Sort()
   { 
@@ -92,6 +93,11 @@ public class Sort
   public void resolve()
     throws DataException
   { 
+    if (resolved)
+    { return;
+    }
+    resolved=true;
+    
     super.resolve();
     List<Query> sources=getSources();
     if (sources==null || sources.size()!=1)
@@ -144,7 +150,6 @@ class SortBinding<Tq extends Sort,T extends Tuple>
   extends BoundQuery<Tq,T>
 {
   private OrderComparator comparator;
-  private Focus<?> paramFocus;
   private boolean resolved;
   private BoundQuery<?,T> source;
   
@@ -156,8 +161,8 @@ class SortBinding<Tq extends Sort,T extends Tuple>
     )
     throws DataException
   { 
-    setQuery(query);
-    this.paramFocus=paramFocus;
+    super(query,paramFocus);
+    query.resolve();
     
     if (store!=null)
     { 
@@ -181,44 +186,46 @@ class SortBinding<Tq extends Sort,T extends Tuple>
   @Override
   public void resolve() throws DataException
   { 
-    if (!resolved)
+    if (resolved)
+    { return;
+    }
+    resolved=true;
+    
+    super.resolve();
+    source.resolve();
+    try
     {
-      super.resolve();
-      try
-      {
-        if (getQuery().getOrder()==null)
-        { throw new DataException("No ordering supplied");
-        }
-
-        FieldSet fieldSet=getQuery().getFieldSet();
-        if (fieldSet==null)
-        { fieldSet=source.getType().getFieldSet();
-        }
-        if (fieldSet==null)
-        { 
-          throw new DataException
-            ("Unable to resolve fieldSet for Sort query based on "+source);
-        }
-        
-        comparator
-          =new OrderComparator
-            (getQuery().getOrder()
-            ,fieldSet
-            ,paramFocus
-            );
-        
+      if (getQuery().getOrder()==null)
+      { throw new DataException("No ordering supplied");
       }
-      catch (BindException x)
+
+      FieldSet fieldSet=getQuery().getFieldSet();
+      if (fieldSet==null && source.getType()!=null)
+      { fieldSet=source.getType().getFieldSet();
+      }
+      if (fieldSet==null)
       { 
         throw new DataException
-          ("Error creating Comparator for sort: "+toString(),x);
+        ("Unable to resolve fieldSet for Sort query based on "+source.getQuery());
       }
-      resolved=true;
+
+      comparator
+      =new OrderComparator
+      (getQuery().getOrder()
+        ,fieldSet
+        ,paramFocus
+          );
+
+    }
+    catch (BindException x)
+    { 
+      throw new DataException
+      ("Error creating Comparator for sort: "+toString(),x);
     }
   }
   
   @Override
-  public SerialCursor<T> execute()
+  public SerialCursor<T> doExecute()
     throws DataException
   {
     SerialCursor<T> sourceCursor=source.execute();

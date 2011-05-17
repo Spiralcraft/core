@@ -14,10 +14,12 @@
 //
 package spiralcraft.data.query;
 
+
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.access.SerialCursor;
 
 import spiralcraft.lang.Focus;
 
@@ -77,22 +79,58 @@ public class Scan
 
 
   @Override
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("unchecked")  
   public <T extends Tuple> BoundQuery<?,T> 
     getDefaultBinding(Focus<?> focus,Queryable<?> queryable)
     throws DataException
   { 
     if (queryable==null)
-    { throw new DataException
+    { 
+      throw new DataException
         ("No Queryable available for scan of type "+type.getURI()); 
     }
-    return (BoundQuery<?,T>) queryable.getAll(type);
+    if (conditionX!=null)
+    { return new BoundScan<Scan,T>(this,focus,queryable);
+    }
+    else
+    { return (BoundQuery<?,T>) queryable.getAll(type);
+    }
   }
+  
   
   @Override
   public String toString()
   { return super.toString()+"[type="+getType()+"]";
   }
 }
+
+class BoundScan<Tq extends Scan,Tt extends Tuple>
+  extends BoundQuery<Tq,Tt>
+{
+
+  public BoundQuery<?,Tt> delegate;
+  
+  @SuppressWarnings("unchecked")
+  public BoundScan
+  (Tq query
+  ,Focus<?> paramFocus
+  ,Queryable<?> store
+  )
+    throws DataException
+  { 
+    super(query,paramFocus);
+    delegate=(BoundQuery<Tq,Tt>) store.getAll(query.getType());
+  }
+
+  @Override
+  protected SerialCursor<Tt> doExecute()
+    throws DataException
+  { return delegate.execute();
+  }
+  
+  
+}
+
+
 
 

@@ -149,7 +149,6 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
   extends UnaryBoundQuery<Tq,T,Ts>
 {
 
-  private final Focus<?> paramFocus;
   private Focus<Ts> focus;
   private Channel<T> projectionChannel;
   private boolean resolved;
@@ -161,9 +160,7 @@ class DistinctBinding<Tq extends Distinct,T extends Tuple,Ts extends Tuple>
     )
     throws DataException
   { 
-    super(query.getSources(),paramFocus,store);
-    setQuery(query);
-    this.paramFocus=paramFocus;
+    super(query,query.getSources(),paramFocus,store);
     
   }
 

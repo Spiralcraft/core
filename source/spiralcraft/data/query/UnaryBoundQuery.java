@@ -47,9 +47,10 @@ public abstract class UnaryBoundQuery
   private boolean resolved;
   protected ThreadLocalChannel<Ts> sourceChannel;
   
-  protected UnaryBoundQuery(List<Query> sources,Focus<?> focus,Queryable<?> store)
+  protected UnaryBoundQuery(Tq query,List<Query> sources,Focus<?> focus,Queryable<?> store)
     throws DataException
   { 
+    super(query,focus);
     if (sources.size()<1)
     { throw new DataException(getClass().getName()+": No source to bind to");
     }
@@ -83,13 +84,9 @@ public abstract class UnaryBoundQuery
 
   @Override
   @SuppressWarnings("unchecked") // Converting from source Tuple type
-  public SerialCursor<Tt> execute()
+  public SerialCursor<Tt> doExecute()
     throws DataException
   {
-    if (!resolved)
-    { resolve();
-    }
-    
     SerialCursor<Ts> cursor=(SerialCursor<Ts>) source.execute();
     SerialCursor<Tt> ret=null;
     if (cursor instanceof ScrollableCursor)
@@ -109,16 +106,16 @@ public abstract class UnaryBoundQuery
   public void resolve()
     throws DataException
   { 
-    super.resolve();
-    if (!resolved)
-    { 
-      source.resolve();
-      sourceChannel
-        =new ThreadLocalChannel<Ts>
-          (new TupleReflector<Ts>(source.getQuery().getFieldSet(),null));
-
-      resolved=true;
+    if (resolved)
+    { return;
     }
+    resolved=true;
+    
+    super.resolve();
+    source.resolve();
+    sourceChannel
+      =new ThreadLocalChannel<Ts>
+        (new TupleReflector<Ts>(source.getQuery().getFieldSet(),null));
   }
   
   protected abstract class UnaryBoundQuerySerialCursor

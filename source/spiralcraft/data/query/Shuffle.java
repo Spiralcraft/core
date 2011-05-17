@@ -113,7 +113,7 @@ class ShuffleBinding<Tq extends Shuffle,T extends Tuple>
     )
     throws DataException
   { 
-    setQuery(query);
+    super(query,paramFocus);
     
     source=(BoundQuery<?,T>) store.query(getQuery().getSources().get(0),paramFocus);
 
@@ -137,7 +137,7 @@ class ShuffleBinding<Tq extends Shuffle,T extends Tuple>
   }
   
   @Override
-  public SerialCursor<T> execute()
+  public SerialCursor<T> doExecute()
     throws DataException
   {
     SerialCursor<T> sourceCursor=source.execute();

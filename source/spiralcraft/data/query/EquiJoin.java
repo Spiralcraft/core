@@ -289,7 +289,6 @@ public class EquiJoin
 class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
   extends UnaryBoundQuery<Tq,Tt,Tt>
 {
-  private final Focus<?> paramFocus;
   private TeleFocus<Tt> focus;
   private Channel<Boolean>[] filter;
   private boolean resolved;
@@ -301,11 +300,7 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
     )
     throws DataException
   { 
-    super(query.getSources(),paramFocus,store);
-    setQuery(query);
-    this.paramFocus=paramFocus;
-    
-    
+    super(query,query.getSources(),paramFocus,store);
   }
 
   @Override

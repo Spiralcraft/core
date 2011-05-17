@@ -21,8 +21,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
-import spiralcraft.data.Type;
-
 
 /**
  * A Query operation which combines the results of several Queries
@@ -31,13 +29,14 @@ public class Union
   extends Query
 {
   
+  private boolean resolved;
+  
   public Union()
   {
   }
   
   /**
-   * Construct a Union which reads data from the specified source Query and filters
-   *   data according to the specified constraints expression.
+   * Construct a Union which reads data from the specified source Query
    */
   public Union(Query ... sources)
     throws DataException
@@ -53,47 +52,36 @@ public class Union
   public void resolve()
     throws DataException
   { 
+    if (resolved)
+    { return;
+    }
+    resolved=true;
+    
     super.resolve();
-    for (Query query:sources)
-    { 
-      if (type==null)
-      { type=query.getType();
-      }
-      else
-      { 
-        Type<?> initialType=type;
-        // Make sure all types have something in common, and return
-        //   the most concrete common type.
-        if (type.hasBaseType(query.getType()))
-        { 
-          // We found a more general query
-          type=query.getType();
-        }
-        else 
-        {
-          while (type!=null && !query.getType().hasBaseType(type))
-          { 
-            type=type.getBaseType();
-          }
-          
-          if (type==null)
-          {
-            throw new DataException
-              ("Query type"+initialType.getURI()
-              +" has nothing in common with "
-              +query.getType().getURI()
-              );
-          }
-        }
-      }
-      
-    }    
+    if (sources.size()<1)
+    { throw new DataException("Union must have at least one source query");
+    }
+    
+    type=commonBaseType(sources);
+    if (type==null)
+    {
+      throw new DataException
+        ("Union source queries have no base type in common: "+this);
+    }
+    
+    
   }
   
   
   @Override
   public FieldSet getFieldSet()
-  { return type.getScheme();
+  { 
+    if (type!=null)
+    { return type.getScheme();
+    }
+    else
+    { return null;
+    }
   }
 
 

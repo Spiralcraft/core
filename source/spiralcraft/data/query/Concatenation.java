@@ -21,8 +21,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
-import spiralcraft.data.Type;
-
 
 /**
  * A Query operation which concatenates the results of several Queries of the
@@ -57,42 +55,13 @@ public class Concatenation
     throws DataException
   {
     super.resolve();
-    for (Query query:sources)
-    { 
     
-      if (type==null)
-      { type=query.getType();
-      }
-      else
-      { 
-        Type<?> initialType=type;
-        // Make sure all types have something in common, and return
-        //   the most concrete common type.
-        if (type.hasBaseType(query.getType()))
-        { 
-          // We found a more general query
-          type=query.getType();
-        }
-        else 
-        {
-          while (type!=null && !query.getType().hasBaseType(type))
-          { 
-            type=type.getBaseType();
-          }
-          
-          if (type==null)
-          {
-            throw new DataException
-              ("Query type"+initialType.getURI()
-              +" has nothing in common with "
-              +query.getType().getURI()
-              );
-          }
-        }
-      }
-      
+    type=commonBaseType(sources);
+    if (type==null)
+    {
+      throw new DataException
+        ("Concatenation source queries have no base type in common: "+this);
     }
-    
     
   }
   

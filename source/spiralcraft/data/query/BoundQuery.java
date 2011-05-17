@@ -23,8 +23,11 @@ import spiralcraft.data.Type;
 import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.data.access.SerialCursor;
 
+import spiralcraft.data.kit.EmptyCursor;
 import spiralcraft.data.lang.CursorBinding;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
@@ -49,9 +52,22 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
   protected Level debugLevel
     =ClassLog.getInitialDebugLevel(getClass(), Level.INFO);
   
-  private Tq query;
+  private final Tq query;
   private boolean resolved;
   protected Type<?> boundType;
+  protected final Focus<?> paramFocus;
+  protected Channel<Boolean> condition;
+  protected EmptyCursor<Tt> emptyCursor;
+  
+  public BoundQuery(Tq query,Focus<?> paramFocus)
+  { 
+    this.query=query;
+    this.paramFocus=paramFocus;
+    
+    if (query.getDebugLevel().canLog(debugLevel))
+    { debugLevel=query.getDebugLevel();
+    }
+  }
   
   /**
    * Return the element Type of the relation returned by the bound query.
@@ -72,17 +88,7 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
   public void setDebugLevel(Level debugLevel)
   { this.debugLevel=debugLevel;
   }
-  /**
-   * Set/reset the Query this binding will implement.
-   */
-  public void setQuery(Tq query)
-  { 
-    assertUnresolved();
-    this.query=query;
-    if (query.getDebugLevel().canLog(debugLevel))
-    { debugLevel=query.getDebugLevel();
-    }
-  }  
+  
   
   /**
    * <p>A BoundQuery is often composed of nested BoundQueries, which form a 
@@ -102,6 +108,24 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
     { return;
     }
     resolved=true;
+    
+    if (query!=null 
+        && paramFocus!=null 
+        && condition==null
+        && query.conditionX!=null
+        )
+    { 
+      try
+      { 
+        condition=paramFocus.bind(query.conditionX);
+        emptyCursor=new EmptyCursor<Tt>(getType().getFieldSet());
+      }
+      catch (BindException x)
+      { 
+        throw new DataException
+          ("Error binding query condition "+query.conditionX,x);
+      }
+    }
 
   }
   
@@ -111,9 +135,22 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
    *
    * @throws DataException If anything goes wrong when executing the Query
    */
-  public abstract SerialCursor<Tt> execute()
-    throws DataException;
+  public final SerialCursor<Tt> execute()
+    throws DataException
+  {
+    if (!resolved)
+    { resolve();
+    }
+    if (enabled())
+    { return doExecute();
+    }
+    else
+    { return emptyCursor;
+    }
+  }
   
+  protected abstract SerialCursor<Tt> doExecute()
+    throws DataException;
 
   protected void assertUnresolved()
   { 
@@ -128,6 +165,9 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
   { return new QueryChannel((BoundQuery<Query,Tuple>) this);
   }
   
+  protected boolean enabled()
+  { return condition==null || Boolean.TRUE==condition.get();
+  }
   
   protected abstract class BoundQuerySerialCursor
     implements SerialCursor<Tt>
