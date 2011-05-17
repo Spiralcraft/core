@@ -47,7 +47,7 @@ public class QueryField
 {
   
   private Query query;
-//  private boolean resolved;
+  private boolean resolved;
   
   { setTransient(true);
   }
@@ -77,19 +77,36 @@ public class QueryField
       && super.isFunctionalEquivalent(field);
   }
   
+  private void resolveQuery()
+    throws DataException
+  {    
+    if (query!=null)
+    { query.resolve();
+    }
+    else
+    { throw new DataException("Missing query in field "+toString());
+    }
+  }
+  
+  @Override
+  protected void resolve()
+    throws DataException
+  { 
+    if (resolved)
+    { return;
+    }
+    resolved=true;
+    resolveQuery();
+    super.resolve();
+  }
+  
   @Override
   protected Type<?> resolveType()
     throws DataException
   {
-    if (query!=null)
-    { 
-      query.resolve();
-      if (typeIsNull() && query.getType()!=null)
-      { return Type.getAggregateType((query.getType()));
-      }
-    }
-    else
-    { throw new DataException("Missing query in field "+toString());
+    
+    if (typeIsNull() && query.getType()!=null)
+    { return Type.getAggregateType((query.getType()));
     }
     return super.resolveType();
   }
