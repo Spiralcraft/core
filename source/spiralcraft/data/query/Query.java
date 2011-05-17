@@ -58,6 +58,60 @@ import spiralcraft.data.Type;
  */
 public abstract class Query
 { 
+  protected static final ClassLog log
+    =ClassLog.getInstance(Query.class);
+  
+  /**
+   * <p>Return the common base type across the specified Queries,
+   *   or null if their types have no commonalities. All Queries must
+   *   be resolved and must provide a Type.
+   * </p>
+   * 
+   * @param sources
+   * @return
+   * @throws DataException
+   */
+  public static Type<?> commonBaseType(List<Query> queries)
+    throws DataException
+  {
+    Type<?> type=null;
+    for (Query query:queries)
+    { 
+      if (query.getType()==null)
+      { 
+        throw new 
+          DataException("Subquery has no Type: "+query.toString());
+      }
+      
+      if (type==null)
+      { type=query.getType();
+      }
+      else
+      { 
+        // Make sure all types have something in common, and return
+        //   the most concrete common type.
+        if (type.hasBaseType(query.getType()))
+        { 
+          // We found a more general query
+          type=query.getType();
+        }
+        else 
+        {
+          while (type!=null && !query.getType().hasBaseType(type))
+          { 
+            type=type.getBaseType();
+          }
+          
+          if (type==null)
+          { return null;
+          }
+        }
+      }
+      
+    }
+    return type;
+  }
+  
   protected final Query baseQuery;
   protected final List<Query> sources=new ArrayList<Query>(1);
   protected Type<?> type;
@@ -65,6 +119,7 @@ public abstract class Query
     =ClassLog.getInitialDebugLevel(getClass(),Level.INFO);
   protected boolean logStatistics;
   protected boolean mergeable=false;
+  protected Expression<Boolean> conditionX;
   
   /**
    * Construct a new, unfactored Query
@@ -164,7 +219,18 @@ public abstract class Query
   public List<Query> getSources()
   { return sources;
   }
- 
+
+  /**
+   * <p>An optional boolean Expression which ensures that the Query
+   *   executes only when the condition returns true.
+   * </p>
+   * 
+   * @param conditionX
+   */
+  public void setConditionX(Expression<Boolean> conditionX)
+  { this.conditionX=conditionX;
+  }
+
   /**
    * Called by the creator/user of the Query to complete any configuration
    *   steps required for the Query to export a FieldSet defining the result.
@@ -380,9 +446,11 @@ public abstract class Query
    * @return
    * @throws DataException
    */
-  public <T extends Tuple> BoundQuery<?,T> merge(List<BoundQuery<?,T>> sources)
+  public <T extends Tuple> BoundQuery<?,T> merge
+    (List<BoundQuery<?,T>> sources,Focus<?> paramFocus
+    )
     throws DataException
-  { return new ConcatenationBinding<Concatenation,T>(sources,null);
+  { return new ConcatenationBinding<Concatenation,T>(sources,null,paramFocus);
   }
 
 }
