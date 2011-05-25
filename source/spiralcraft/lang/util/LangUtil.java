@@ -87,6 +87,19 @@ public class LangUtil
     return null;
   }
 
+  public static <T> Channel<T> assertChannel
+    (Class<T> clazz, Focus<?> focusChain)
+    throws BindException
+  {
+    Channel<T> ret=findChannel(clazz,focusChain);
+    if (ret==null)
+    {
+      throw new BindException
+        ("Could not find a provider of class "+clazz+" in context.");
+    }
+    return ret;
+  }
+  
   @SuppressWarnings("unchecked")
   public static <T> Focus<T> findFocus(Class<T> clazz,Focus<?> context)
   {
@@ -112,4 +125,6 @@ public class LangUtil
     throws BindException
   { return new SimpleFocus<T>().bind(Expression.<T>create(expression)).get();
   }
+
+
 }
