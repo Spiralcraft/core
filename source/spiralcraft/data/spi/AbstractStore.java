@@ -652,10 +652,7 @@ public abstract class AbstractStore
       throws DataException
     { 
       deltaList.add
-        (ArrayDeltaTuple.copy
-          (tuple.getType().getArchetype()
-          ,tuple
-          )
+        (ArrayDeltaTuple.copy(tuple)
         );
     }
 
