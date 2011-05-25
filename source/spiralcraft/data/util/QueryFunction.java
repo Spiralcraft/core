@@ -115,7 +115,7 @@ public class QueryFunction<I,R extends DataComposite>
 
   @SuppressWarnings("unchecked")
   @Override
-  protected Channel<R> bindSource(
+  protected Channel<R> bindResult(
     Focus<I> inputFocus)
     throws BindException
   {

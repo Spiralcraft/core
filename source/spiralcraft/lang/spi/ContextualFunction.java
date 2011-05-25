@@ -29,13 +29,13 @@ import spiralcraft.lang.Reflector;
 public abstract class ContextualFunction<I,R,X extends Exception>
   implements Contextual,UnaryFunction<I,R,X>
 {
-  private Channel<R> source;
+  private Channel<R> result;
   private ThreadLocalChannel<I> inputChannel;
 
   protected abstract Reflector<I> getInputReflector()
     throws BindException;
   
-  protected abstract Channel<R> bindSource(Focus<I> inputFocus) 
+  protected abstract Channel<R> bindResult(Focus<I> inputFocus) 
     throws BindException;
 
   @Override
@@ -43,7 +43,7 @@ public abstract class ContextualFunction<I,R,X extends Exception>
     throws BindException
   {
     inputChannel=new ThreadLocalChannel<I>(getInputReflector());
-    source=bindSource(focusChain.chain(inputChannel));
+    result=bindResult(focusChain.chain(inputChannel));
     return focusChain;
   }
   
@@ -56,7 +56,7 @@ public abstract class ContextualFunction<I,R,X extends Exception>
   {
     inputChannel.push(input);
     try
-    { return source.get();
+    { return result.get();
     }
     finally
     { inputChannel.pop();
