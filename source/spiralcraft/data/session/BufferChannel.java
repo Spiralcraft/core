@@ -57,32 +57,6 @@ public class BufferChannel<Tbuffer extends Buffer>
       (bufferType,originalChannel,focus);
   }
   
-      
-//  /**
-//   * Construct a BufferChannel
-//   * 
-//   * @param focus A Focus on the DataComposite being buffered
-//   * 
-//   */
-//  @SuppressWarnings("unchecked")
-//  public BufferChannel(Focus<? extends DataComposite> focus)
-//    throws BindException
-//  { 
-//    super
-//      (DataReflector.<Tbuffer>getInstance
-//        (Type.<DataComposite>getBufferType
-//         ( ((DataReflector) focus.getSubject().getReflector())
-//             .getType()
-//         )
-//        )
-//      );
-//    
-//    log.fine("BufferChannel "+getReflector());
-//    setupSession(focus);
-//    this.originalChannel=focus.getSubject();
-//    
-//  }
-
   /**
    * Construct a BufferChannel
    * 
@@ -143,6 +117,9 @@ public class BufferChannel<Tbuffer extends Buffer>
   private void setupSession(Focus<?> focus)
     throws BindException
   {
+    if (focus==null)
+    { throw new IllegalArgumentException("Focus can't be null");
+    }
     sessionChannel=DataSession.findChannel(focus);
     if (sessionChannel==null)
     { throw new BindException("Can't find a DataSession in Focus chain");
@@ -160,7 +137,6 @@ public class BufferChannel<Tbuffer extends Buffer>
   @Override
   public boolean store(Buffer val)
   { 
-    // TODO This will be useful, to place whole buffers
     if (debug)
     { log.fine("Not storing Buffer "+val);
     }
@@ -189,15 +165,7 @@ public class BufferChannel<Tbuffer extends Buffer>
     }
     catch (DataException x)
     { throw new AccessException("Error buffering "+original,x);
-    }
-//    Buffer parentBuffer=parentChannel!=null?parentChannel.get():null;
-//    if (parentBuffer!=null)
-//    { 
-//      // We're at the top
-//      parentBuffer.addChild(buffer);
-//    }
-
-    
+    }   
 
   }
 
