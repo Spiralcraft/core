@@ -23,6 +23,10 @@ package spiralcraft.lang.spi;
  */
 public class ViewState<T>
 { 
+  public ViewState()
+  {
+  }
+  
   /**
    * Set when input should be considered
    */
@@ -38,5 +42,10 @@ public class ViewState<T>
    *   this ViewState has been allocated.
    */
   public volatile T data;
+  
+  @Override
+  public String toString()
+  { return super.toString()+": "+frameChanged+", "+checkpoint+", "+data;
+  }
       
 }
