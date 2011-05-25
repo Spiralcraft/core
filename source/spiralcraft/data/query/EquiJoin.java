@@ -20,6 +20,8 @@ import spiralcraft.lang.ParseException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.TeleFocus;
+import spiralcraft.lang.parser.BindingNode;
+import spiralcraft.lang.parser.ContextIdentifierNode;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
@@ -99,6 +101,38 @@ public class EquiJoin
     setRHSExpressions(new Expression[] {rhs});
   }
   
+  /**
+   * <p>Construct an EquiJoin which returns entities of the specified type
+   *   where the expression "lhs == rhs" evaluates to true.
+   * </p> 
+   *   
+   * 
+   * @param type
+   * @param lhs An expression, normally in the form ".field"
+   * @param rhs An expression, normally referencing the parent context
+   */
+  public EquiJoin(Type<?> type,Expression<?>[] lhs,Expression<?>[] rhs)
+  {
+    setSource(new Scan(type));
+    setLHSExpressions(lhs);
+    setRHSExpressions(rhs);
+  }
+  
+  /**
+   * <p>Construct an EquiJoin which returns entities of the specified type
+   *   where the expression "lhs == rhs" evaluates to true.
+   * </p> 
+   *   
+   * 
+   * @param type
+   * @param lhs An expression, normally in the form ".field"
+   * @param rhs An expression, normally referencing the parent context
+   */
+  public EquiJoin(Type<?> type,Expression<?>[] bindings)
+  {
+    setSource(new Scan(type));
+    setBindings(bindings);
+  }
   
 //  
 //  public EquiJoin subtypeCopy(Type<?> subtype)
@@ -142,6 +176,48 @@ public class EquiJoin
 //    addSource(source);
 //  }
 //  
+  
+  /**
+   * <p>Use a set of Binding Expressions to specify field values.
+   * </p>
+   * 
+   */
+  public void setBindings(Expression<?> ... bindings)
+    throws IllegalArgumentException
+  { 
+    if (lhsExpressions==null)
+    { lhsExpressions=new ArrayList<Expression<?>>();
+    }
+    
+    if (rhsExpressions==null)
+    { rhsExpressions=new ArrayList<Expression<?>>();
+    }
+
+    for (Expression<?> binding : bindings)
+    { 
+      if (binding.getRootNode() instanceof BindingNode)
+      {
+        BindingNode<?,?> bnode=(BindingNode<?,?>) binding.getRootNode();
+        if (bnode.getSource() instanceof ContextIdentifierNode)
+        {
+          ContextIdentifierNode inode=(ContextIdentifierNode) bnode.getSource();
+          lhsExpressions.add(new Expression<Object>(inode));
+          rhsExpressions.add(new Expression<Object>(bnode.getTarget()));
+        }
+        else
+        { 
+          throw new IllegalArgumentException
+            ("Binding '"+binding.getText()+"' is not in the form:  field:=expression");
+        }
+      }
+      else
+      { 
+        throw new IllegalArgumentException
+          ("Binding '"+binding.getText()+"' is not in the form:  field:=expression");
+      }
+      
+    }
+  }
   
   /**
    * <p>Set assignments shorthand method. Each string in the specified
@@ -216,6 +292,7 @@ public class EquiJoin
   public String[] getAssignments()
   { return assignments;
   }
+
   
   @Override
   public <T extends Tuple> BoundQuery<?,T> getDefaultBinding
