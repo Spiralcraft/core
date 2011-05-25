@@ -20,13 +20,13 @@ import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.spi.AbstractAggregateQueryable;
 import spiralcraft.data.spi.AbstractStore;
+import spiralcraft.data.spi.ArrayDeltaTuple;
 import spiralcraft.data.spi.ArrayJournalTuple;
 import spiralcraft.data.spi.EditableKeyedListAggregate;
 import spiralcraft.data.spi.KeyedListAggregate;
 
 import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.sax.DataWriter;
-import spiralcraft.data.session.BufferTuple;
 import spiralcraft.data.transaction.Branch;
 import spiralcraft.data.transaction.ResourceManager;
 import spiralcraft.data.transaction.Transaction;
@@ -37,6 +37,7 @@ import spiralcraft.data.transaction.Transaction.State;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Field;
+import spiralcraft.data.Identifier;
 import spiralcraft.data.JournalTuple;
 import spiralcraft.data.Key;
 import spiralcraft.data.Tuple;
@@ -58,7 +59,9 @@ import spiralcraft.vfs.watcher.WatcherHandler;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.io.IOException;
@@ -847,8 +850,7 @@ public class XmlQueryable
     { throw new IllegalStateException("Not frozen: "+resource.getURI());
     }
   }
-
-
+  
   class XmlResourceManager
     extends ResourceManager<XmlBranch>
   {
@@ -870,6 +872,9 @@ public class XmlQueryable
     private ArrayList<JournalTuple> preparedUpdates=new ArrayList<JournalTuple>();
     
     private ArrayList<DeltaTuple> deltaList=new ArrayList<DeltaTuple>();
+    
+    private HashMap<Identifier,DeltaTuple> bufferMap
+       =new HashMap<Identifier,DeltaTuple>();
     
     private ArrayList<ArrayJournalTuple> undoList
       =new ArrayList<ArrayJournalTuple>();
@@ -916,15 +921,16 @@ public class XmlQueryable
       }
     }
     
-    public void addResource(String suffix)
+    void addResource(String suffix)
     { resources.add(suffix);
     }
 
-    public void setStoreBranch(AbstractStore.StoreBranch storeBranch)
+    void setStoreBranch(AbstractStore.StoreBranch storeBranch)
     {       
       this.storeBranch=storeBranch;
       this.txId=storeBranch.getTxId();     
     }
+
     
     /**
      * Perform implementation specific insert logic
@@ -933,7 +939,11 @@ public class XmlQueryable
      */
     void insert(DeltaTuple tuple)
       throws DataException
-    { deltaList.add(tuple);
+    { 
+
+      tuple=checkBuffer(tuple);
+      coalesce(tuple);
+      deltaList.add(tuple);
     }
     
     /**
@@ -944,16 +954,9 @@ public class XmlQueryable
     void update(DeltaTuple tuple)
       throws DataException
     {
-      if (!(tuple.getOriginal() instanceof JournalTuple))
-      { 
-        // TODO: Rebase the original to be friendly
-        throw new DataException("Not a JournalTuple "+tuple.getOriginal());
-      }
-      JournalTuple jt=(JournalTuple) tuple.getOriginal();
-      
-      
-      jt.prepareUpdate(tuple);        
-      preparedUpdates.add(jt);
+      tuple=checkBuffer(tuple);
+      coalesce(tuple);
+      tuple=lockOriginal(tuple);
       deltaList.add(tuple);
     }
     
@@ -966,16 +969,84 @@ public class XmlQueryable
      */
     void delete(DeltaTuple tuple)
       throws DataException
-    { 
-      JournalTuple jt=(JournalTuple) tuple.getOriginal();
-      jt.prepareUpdate(tuple);        
-      preparedUpdates.add(jt);
+    {       
+      tuple=checkBuffer(tuple);
+      coalesce(tuple);
+      tuple=lockOriginal(tuple);
       deltaList.add(tuple);
+      
+    }
+
+    DeltaTuple checkBuffer(DeltaTuple tuple)
+      throws DataException
+    {
+      if (tuple.isMutable())
+      { 
+        bufferMap.put(tuple.getId(),tuple);
+        tuple=ArrayDeltaTuple.copy(tuple);
+      }
+      return tuple;
+      
+    }
+    
+    void notifyBuffer(Identifier id,Tuple newOriginal)
+      throws TransactionException
+    { 
+      DeltaTuple buffer=bufferMap.get(id);
+      if (buffer!=null)
+      {
+        try
+        { buffer.updateOriginal(newOriginal);
+        }
+        catch (DataException x)
+        { 
+          throw new TransactionException("Error notifying buffer "+buffer+" of "
+            +" new original "+newOriginal,x);
+        }
+      }
+    }
+    
+    /**
+     * Handle multiple operations applied to the same id
+     * 
+     * @param tuple
+     */
+    void coalesce(DeltaTuple tuple)
+    {
+
+    }
+    
+    /**
+     * Lock the original while we update it
+     * 
+     * @param tuple
+     * @throws DataException
+     */
+    DeltaTuple lockOriginal(DeltaTuple tuple)
+      throws DataException
+    {
+      if (!(tuple.getOriginal() instanceof JournalTuple))
+      { 
+        // TODO: Rebase the original to be friendly
+        throw new DataException("Not a JournalTuple "+tuple.getOriginal());
+      }
+      JournalTuple jt=(JournalTuple) tuple.getOriginal();
+      
+      
+      DeltaTuple prepared=jt.prepareUpdate(tuple);  
+      
+      // Original might be rebased
+      preparedUpdates.add((JournalTuple) prepared.getOriginal());
+
+//      if (jt!= prepared.getOriginal() )
+//      { log.fine("Added updated original "+prepared.getOriginal());
+//      }
+      return prepared;
     }
     
     @Override
     public void commit()
-    throws TransactionException
+      throws TransactionException
     {
       if (state!=State.PREPARED)
       { 
@@ -1059,40 +1130,65 @@ public class XmlQueryable
             
           Tuple orig=dt.getOriginal();
           // Handle case where the Store was reloaded during an edit
-          Tuple storeVersion
-            =XmlQueryable.this.getStoreVersion
+          JournalTuple storeVersion
+            =(JournalTuple) XmlQueryable.this.getStoreVersion
               (orig!=null
               ?orig
               :dt
               );
           
+          
           if (storeVersion!=orig)
-          { 
-            if (logLevel.isFine())
-            { log.fine("Merging store changes for "+dt);
-            }
-            
-            if (orig instanceof JournalTuple)
+          {
+            if (storeVersion==null 
+                  || (orig!=null && !(orig instanceof JournalTuple))
+                  || (!storeVersion.isPreviousVersion((JournalTuple) orig)
+                      && storeVersion.getTransactionId() 
+                          != Transaction.getContextTransaction().getId()
+                          // storeVersion is from current transaction
+                     )
+                 )
+             
             { 
-              if (preparedUpdates.remove(orig))
-              { ((JournalTuple) orig).rollback();
+              if (logLevel.isFine())
+              { 
+                log.fine
+                  ("Merging store changes for "+dt+" to rebase "
+                  +orig+" to "+storeVersion
+                  );
               }
-            }
-            rebaseList.add(dt);
-            dt=dt.rebase(storeVersion);
-            replaceList.add(dt);
+            
+              if (orig instanceof JournalTuple)
+              { 
+                if (preparedUpdates.remove(orig))
+                { ((JournalTuple) orig).rollback();
+                }
+              }
+              rebaseList.add(dt);
+              dt=dt.rebase(storeVersion);
+              replaceList.add(dt);
               
-            if (storeVersion!=null)
-            {  
-              ((JournalTuple) storeVersion).prepareUpdate(dt);
-              preparedUpdates.add((JournalTuple) storeVersion);
-            }
+              if (storeVersion!=null)
+              {  
+                storeVersion.prepareUpdate(dt);
+                // Original might be rebased
+                preparedUpdates.add((JournalTuple) dt.getOriginal());
+              }
               
+            }
+            else if (orig==null)
+            { 
+              dt=dt.updateOriginal(storeVersion);
+              
+              // An additional insert for a storeVersion that was placed
+              // during this transaction
+            }
           }
         }
         catch (DataException x)
         { throw new TransactionException("Error merging "+dt,x);
         }
+        
           
         if (dt.getOriginal()!=null)
         {
@@ -1107,19 +1203,17 @@ public class XmlQueryable
           }
           if (!dt.isDelete())
           { 
+            // log.fine("Replacing "+ot+" with "+nt);
             replace(ot,nt);
             undoList.add(ot);
-            if (dt instanceof BufferTuple)
-            { ((BufferTuple) dt).updateOriginal(null);
-            }
+            
+            notifyBuffer(dt.getId(),nt);
           }
           else
           { 
             remove(ot);
             undoList.add(ot);
-            if (dt instanceof BufferTuple)
-            { ((BufferTuple) dt).updateOriginal(null);
-            }
+            notifyBuffer(dt.getId(),null);
           }
         }
         else
@@ -1132,9 +1226,7 @@ public class XmlQueryable
             ArrayJournalTuple at=ArrayJournalTuple.freezeDelta(dt);
             add(at);
             preparedAdds.add(at);
-            if (dt instanceof BufferTuple)
-            { ((BufferTuple) dt).updateOriginal(at);
-            }
+            notifyBuffer(dt.getId(),at);
             
           }
           catch (DataException x)
@@ -1177,6 +1269,7 @@ public class XmlQueryable
       
       if (state!=State.COMMITTED && state!=State.ABORTED)
       { 
+        Collections.reverse(deltaList);
         for (DeltaTuple dt: deltaList)
         {
           if (dt.getOriginal()!=null)
@@ -1184,18 +1277,15 @@ public class XmlQueryable
             ArrayJournalTuple ot=(ArrayJournalTuple) dt.getOriginal();
             if (!dt.isDelete())
             { 
-              if (dt instanceof BufferTuple)
-              { ((BufferTuple) dt).updateOriginal(ot);
-              }
+              notifyBuffer(dt.getId(),ot);
             }
             else
             { 
-              if (dt instanceof BufferTuple)
-              { ((BufferTuple) dt).updateOriginal(ot);
-              }
+              notifyBuffer(dt.getId(),ot);
             }
           }
         }
+        Collections.reverse(undoList);
         for (ArrayJournalTuple ot:undoList)
         { 
           ArrayJournalTuple nt=ot.getTxVersion();
@@ -1206,9 +1296,13 @@ public class XmlQueryable
           { replace(nt,ot);
           }
         }
+        
+        Collections.reverse(preparedUpdates);
         for (JournalTuple jt: preparedUpdates)
         { jt.rollback();
         }
+        
+        Collections.reverse(preparedAdds);
         for (Tuple t: preparedAdds)
         { remove(t);
         }
