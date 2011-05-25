@@ -48,15 +48,17 @@ public interface Aggregate<T>
    * The number of elements in this Aggregate
    */
   @Override
-  public int size();
+  int size();
  
+  boolean isEmpty();
+  
   /**
    *
    * @param projection
    * @return The Index associated with the specified Projection, optionally
    *   creating it.
    */
-  public Index<T> getIndex(Projection<T> projection,boolean create)
+  Index<T> getIndex(Projection<T> projection,boolean create)
     throws DataException;
   
   /**
@@ -65,7 +67,7 @@ public interface Aggregate<T>
    * </p>
    * 
    */
-  public interface Index<T>
+  interface Index<T>
   {
     public Aggregate<T> get(KeyTuple key);
     
