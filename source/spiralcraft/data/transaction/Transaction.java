@@ -190,6 +190,22 @@ public class Transaction
     }
   }
 
+//  public synchronized <X extends Branch> X getBranch(ResourceManager<X> manager)
+//  {
+//    @SuppressWarnings("unchecked")
+//    X branch=(X) branchMap.get(manager);
+//    if (branch==null)
+//    {
+//      if (parent!=null && nesting==Nesting.PROPOGATE)
+//      {
+//        // Propogated transaction uses same branches. Resources use different
+//        //   ResourceManagers, so they can still manage their own commits.
+//        branch=parent.<X>getBranch(manager);
+//      }
+//    }
+//    return branch;
+//  }
+  
   synchronized Branch branch(ResourceManager<?> manager)
     throws TransactionException
   { 
