@@ -47,6 +47,32 @@ import spiralcraft.log.Level;
  */
 public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
 {
+  
+  public static final <Tt extends Tuple> Tt fetchUnique(BoundQuery<?,Tt> query)
+    throws DataException
+  { 
+    SerialCursor<Tt> cursor=query.execute();
+    Tt ret=null;
+    try
+    {
+      while (cursor.next())
+      {
+        if (ret==null)
+        { ret=cursor.getTuple();
+        }
+        else
+        { 
+          throw new DataException
+            ("Non unique value encountered for "+ret.getType().getURI());
+        }
+      }
+      return ret;
+    }
+    finally
+    { cursor.close();
+    }
+  }
+  
   protected final ClassLog log
     =ClassLog.getInstance(getClass());
   protected Level debugLevel
