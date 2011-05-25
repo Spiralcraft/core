@@ -50,7 +50,7 @@ public class ExpressionParser
     createTokenizer(text);
     _text=text;
     consumeToken();
-    Node ret=parseExpression();
+    Node ret=parseBindingExpression();
     if (ret==null)
     { throwUnexpected();
     }
@@ -222,6 +222,27 @@ public class ExpressionParser
     return _tokenizer.ttype!=StreamTokenizer.TT_EOF;
   }
 
+  /**
+   * BindingExpression -> Expression ( ":=" Expression)
+   * 
+   * @return
+   */
+  private Node parseBindingExpression()
+    throws ParseException
+  {
+    Node node=this.parseExpression();
+    if (_tokenizer.ttype==':' && _tokenizer.lookahead.ttype=='=')
+    { 
+      if (node==null)
+      { this.throwException("Missing left hand side of binding expression");
+      }
+      consumeToken();
+      consumeToken();
+      node=node.bindFrom(parseExpression());
+    }
+    return node;
+  }
+  
   /**
    * Expression -> AssignmentExpression
    * 
@@ -1024,26 +1045,7 @@ public class ExpressionParser
     return;
   }
 
-  /**
-   * BindingExpression -> Expression ( ":=" Expression)
-   * 
-   * @return
-   */
-  private Node parseBindingExpression()
-    throws ParseException
-  {
-    Node node=this.parseExpression();
-    if (_tokenizer.ttype==':' && _tokenizer.lookahead.ttype=='=')
-    { 
-      if (node==null)
-      { this.throwException("Missing left hand side of binding expression");
-      }
-      consumeToken();
-      consumeToken();
-      node=node.bindFrom(parseExpression());
-    }
-    return node;
-  }
+
   
   /**
    * PrimaryExpression -> Number
