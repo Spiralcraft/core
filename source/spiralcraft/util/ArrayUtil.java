@@ -24,6 +24,8 @@ import java.util.TreeSet;
 import java.util.Collection;
 import java.util.Iterator;
 
+import spiralcraft.common.Immutable;
+
 
 /**
  * Static methods for array manipulation
@@ -661,6 +663,7 @@ public class ArrayUtil
   }
 }
 
+@Immutable
 class ArrayKey
 {
   private final Object[] array;
