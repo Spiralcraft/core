@@ -20,23 +20,18 @@ package spiralcraft.data.editor;
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
 import spiralcraft.data.DataException;
-import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
-import spiralcraft.data.lang.AggregateIndexTranslator;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.session.Buffer;
 import spiralcraft.data.session.BufferAggregate;
-import spiralcraft.data.session.BufferChannel;
 import spiralcraft.data.session.BufferTuple;
-import spiralcraft.data.session.BufferType;
-
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Setter;
-import spiralcraft.lang.spi.TranslatorChannel;
+import spiralcraft.lang.spi.BindingChannel;
 import spiralcraft.log.ClassLog;
 
 /**
@@ -58,7 +53,9 @@ public class TupleEditor
   private Setter<?>[] defaultSetters;
   private Setter<?>[] newSetters;
   private Setter<?>[] publishedSetters;
+  private BindingChannel<?>[] newBindings;
 
+  private BindingChannel<?>[] preSaveBindings;
 
   
   private Channel<BufferAggregate<Buffer,?>> aggregateChannel;
@@ -121,7 +118,7 @@ public class TupleEditor
           { 
             try
             { 
-              BufferTuple buffer=(BufferTuple) bufferChannel.get();
+              BufferTuple buffer=localChannel.get();
               if (buffer!=null)
               { buffer.delete();
               }
@@ -143,7 +140,7 @@ public class TupleEditor
       { 
         try
         { 
-          BufferTuple buffer=(BufferTuple) bufferChannel.get();
+          BufferTuple buffer=localChannel.get();
           if (buffer!=null)
           { buffer.delete();
           }
@@ -158,9 +155,10 @@ public class TupleEditor
     };
   }
 
+  @Override
   protected void ensureInitialized()
   {
-    Buffer buffer=bufferChannel.get();
+    Buffer buffer=localChannel.get();
     
     if (buffer!=null)
     {
@@ -176,6 +174,16 @@ public class TupleEditor
           { setter.set();
           }
         }
+        
+        if (newBindings!=null && buffer.getOriginal()==null)
+        {
+          if (debug)
+          { log.fine(toString()+": applying new values");
+          }
+          
+          BindingChannel.apply(newBindings);
+        }
+        
         
         if (initialSetters!=null)
         {
@@ -193,6 +201,16 @@ public class TupleEditor
   }
   
       
+  public void setNewBindings(BindingChannel<?>[] bindings)
+  { this.newBindings=bindings;
+  }
+  
+  
+  public void setPreSaveBindings(BindingChannel<?>[] bindings)
+  { this.preSaveBindings=bindings;
+  }
+  
+  
   @Override
   public void save(boolean force)
     throws DataException
@@ -204,7 +222,11 @@ public class TupleEditor
       }
     }
     
-    Buffer buffer=bufferChannel.get();
+    Buffer buffer=localChannel.get();
+    
+    if (buffer!=null && preSaveBindings!=null)
+    { BindingChannel.apply(preSaveBindings);
+    }
     
     if (buffer!=null && (buffer.isDirty() || force))
     {
@@ -273,7 +295,7 @@ public class TupleEditor
     if (aggregateChannel!=null)
     {
       BufferAggregate<Buffer,?> aggregate=aggregateChannel.get();
-      Buffer buffer=bufferChannel.get();
+      Buffer buffer=localChannel.get();
 
       if (aggregate!=null && buffer!=null)
       { 
@@ -314,100 +336,10 @@ public class TupleEditor
     }
   }  
 
-  /**
-   * <p>Bind the Editor into the focus chain
-   * </p>
-   */
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-  @Override
-  public Focus<?> bind
-    (Focus<?> parentFocus)
-      throws BindException
-  { 
-    if (debug)
-    { log.fine("Editor.bind() "+parentFocus);
-    }
-    
-    
-    
-    if (source==null)
-    { 
-      source=(Channel<Tuple>) parentFocus.getSubject();
-      if (source==null)
-      {
-        log.fine
-          ("No source specified, and parent Focus has no subject: "+parentFocus);
-      }
-    }
-    
-    
-    if (source.getReflector() 
-          instanceof DataReflector
-        )
-    { 
-      DataReflector dataReflector=(DataReflector) source.getReflector();
-      
-      if ( dataReflector.getType() 
-            instanceof BufferType
-         ) 
-      { 
-        if (dataReflector.getType().isAggregate())
-        {          
-          bufferChannel
-            =new TranslatorChannel
-              (source
-              ,new AggregateIndexTranslator(dataReflector)
-              ,null // parentFocus.bind(indexExpression);
-              );
-          if (debug)
-          { log.fine("Buffering indexed detail "+bufferChannel.getReflector());
-          }
-          Channel x=source;
-          aggregateChannel=x;
-          
-        }
-        else
-        {
-          if (debug)
-          { log.fine("Using existing BufferChannel for "+source.getReflector());
-          }
-          Channel x=source;
-          bufferChannel=x;
-        }
-      }
-      else
-      {
-        if (debug)
-        { log.fine("Creating BufferChannel for "+source.getReflector());
-        }
-        
-        Channel x=source;
-        bufferChannel=new BufferChannel
-          (parentFocus
-          ,x
-          );
-      }
-      
-      setupType();
-    }
-    
-    if (bufferChannel==null)
-    { 
-      throw new BindException
-        ("Not a DataReflector "
-          +parentFocus.getSubject().getReflector()
-        );
-          
-    }
-    
-    focus=parentFocus.chain(bufferChannel);
-    setupSession(parentFocus);
-    bindExports(focus);
-    return focus;
-  }
   
   @SuppressWarnings("unchecked")
-  protected void bindExports(Focus<?> focus)
+  @Override
+  protected Focus<?> bindExports(Focus<?> focus)
     throws BindException
   {
     DataReflector<Buffer> reflector
@@ -432,9 +364,12 @@ public class TupleEditor
     fixedSetters=Assignment.bindArray(fixedAssignments,focus);
     defaultSetters=Assignment.bindArray(defaultAssignments,focus);
     newSetters=Assignment.bindArray(newAssignments,focus);
+    BindingChannel.bindTarget(newBindings,focus);
+    BindingChannel.bindTarget(preSaveBindings,focus);
+
     initialSetters=Assignment.bindArray(initialAssignments,focus);
     publishedSetters=Assignment.bindArray(publishedAssignments,focus);
-    
+    return focus;
   }
 
 }
