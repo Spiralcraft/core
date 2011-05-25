@@ -343,6 +343,9 @@ public class SchemeImpl
       }
     
     }
+    if (primaryKey==null && archetypeScheme!=null)
+    { primaryKey=archetypeScheme.getPrimaryKey();
+    }
   }
   
   void resolveLocalKeys()

@@ -36,18 +36,18 @@ public class DataKeyFunction<T>
   
   private final ThreadLocalChannel<T> valueChannel;
   private final Channel<? extends Tuple> projectionChannel;
+  private final Type<T> masterType;
   
   @SuppressWarnings("unchecked")
   public DataKeyFunction(ProjectionImpl<T> projection)
     throws BindException
-  { 
-    this(TupleReflector.<T>getInstance
-      ((Type<T>) projection.getMasterFieldSet().getType()),projection);
+  { this((Type<T>) projection.getMasterFieldSet().getType(),projection);
   }
 
-  public DataKeyFunction(Reflector<T> valueReflector,Projection<T> projection)
+  public DataKeyFunction
+    (Reflector<T> valueReflector,Projection<T> projection,Type<T> masterType)
     throws BindException
-  { 
+  {
     valueChannel=new ThreadLocalChannel<T>(valueReflector);
     Focus<T> focus=new SimpleFocus<T>(valueChannel);
     
@@ -55,6 +55,12 @@ public class DataKeyFunction<T>
     valueChannel.setContext(new SimpleFocus<Void>(null));
     
     projectionChannel=projection.bindChannel(valueChannel,focus,null);
+    this.masterType=masterType;
+  }
+  
+  public DataKeyFunction(Type<T> masterType,Projection<T> projection)
+    throws BindException
+  { this(TupleReflector.<T>getInstance(masterType),projection,masterType);
   }
   
   @Override
@@ -62,7 +68,13 @@ public class DataKeyFunction<T>
   {
     valueChannel.push(value);
     try
-    { return new KeyTuple(projectionChannel.get()); 
+    { 
+      if (masterType!=null)
+      { return new KeyIdentifier<T>(masterType,projectionChannel.get()); 
+      }
+      else
+      { return new KeyTuple(projectionChannel.get());
+      }
     }
     catch (DataException x)
     { throw new RuntimeDataException("Error generating retrieving key",x);

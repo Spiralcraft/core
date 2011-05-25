@@ -33,25 +33,15 @@ public interface Identifier
   /**
    * @return The data Type of the DataComposite being identified.
    */
-  Type<?> getIdentifiedType();
+  Type<?> getIdentifiedType(); 
   
   /**
-   * Create a copy of this identifier that is not referenced by the original.
    * 
-   * @return
+   * @return true if this Identifier instance can be shared between 
+   *   DataComposites in different scopes, or false if this Identifier 
+   *   can only be used in a localized context, such as for data that does
+   *   not yet have stable key values.
    */
-  Identifier copy();
-  
-  /**
-   * Indicate whether the specified identifier refers to the same conceptual
-   *   entity as the specified identifier.
-   *   
-   * @param identifier
-   * @return
-   */
-  boolean equals(Identifier identifier);
-  
-  
-  
+  boolean isPublic();
   
 }
