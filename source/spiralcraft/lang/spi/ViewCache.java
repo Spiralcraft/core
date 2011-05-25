@@ -50,13 +50,13 @@ public class ViewCache
 
   
   @SuppressWarnings("rawtypes")
-  private final ThreadLocalChannel<ViewState[]> stateChannel
+  private final ThreadLocalChannel<ViewState[]> compVectorChannel
     =new ThreadLocalChannel<ViewState[]>
     (BeanReflector.<ViewState[]>getInstance(ViewState[].class));
   private volatile int dataLen;
 
   public ViewCache(Focus<?> focus)
-  { stateChannel.setContext(focus);
+  { compVectorChannel.setContext(focus);
   }
   
   @Override
@@ -81,9 +81,13 @@ public class ViewCache
   
   
   public void push()
-  { stateChannel.push(null);
+  { compVectorChannel.push(null);
   }
   
+  /**
+   * Initialize the set of states for storing running elements of the  
+   *   computation sequence currently referenced by the stateChannel
+   */
   public void init()
   {
     if (dataLen==0)
@@ -95,7 +99,7 @@ public class ViewCache
     for (int i=0;i<states.length;i++)
     { states[i]=new ViewState<Object>();
     }
-    stateChannel.set(states);
+    compVectorChannel.set(states);
   }
   
   public void touch()
@@ -104,7 +108,7 @@ public class ViewCache
     { return;
     }
 
-    ViewState<?>[] states=stateChannel.get();
+    ViewState<?>[] states=compVectorChannel.get();
     for (int i=0;i<states.length;i++)
     { states[i].frameChanged=true;
     }    
@@ -116,22 +120,22 @@ public class ViewCache
     { return;
     }
 
-    ViewState<?>[] states=stateChannel.get();
+    ViewState<?>[] states=compVectorChannel.get();
     for (int i=0;i<states.length;i++)
     { states[i].checkpoint=true;
     }    
   }
   
   public void set(ViewState<?>[] states)
-  { stateChannel.set(states);
+  { compVectorChannel.set(states);
   }
   
   public ViewState<?>[] get()
-  { return stateChannel.get();
+  { return compVectorChannel.get();
   }
   
   public void pop()
-  { stateChannel.pop();
+  { compVectorChannel.pop();
   }
   
   public <X> Channel<ViewState<X>> bind(Reflector<X> dataReflector)
@@ -151,7 +155,7 @@ public class ViewCache
     private final int index=dataLen++;
     
     public StateChannel(Reflector<ViewState<T>> stateReflector)
-    { super(stateReflector,stateChannel);
+    { super(stateReflector,compVectorChannel);
     }
 
     @Override
