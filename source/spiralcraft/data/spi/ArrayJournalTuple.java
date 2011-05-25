@@ -2,6 +2,7 @@ package spiralcraft.data.spi;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
+import spiralcraft.data.Identifier;
 import spiralcraft.data.JournalTuple;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
@@ -15,7 +16,13 @@ public class ArrayJournalTuple
   
   public static ArrayJournalTuple freezeDelta(DeltaTuple delta)
     throws DataException
-  { return new ArrayJournalTuple(delta);
+  { 
+    ArrayJournalTuple ret=new ArrayJournalTuple(delta);
+    Identifier id=delta.getId();
+    if (id!=null && id.isPublic())
+    { ret.setId(id);
+    }
+    return ret;
   }
 
 //  private final Type<?> type;
@@ -106,7 +113,36 @@ public class ArrayJournalTuple
   }
 
   @Override
-  public JournalTuple prepareUpdate(
+  public boolean isPreviousVersion(JournalTuple tuple)
+  {
+    if (tuple==this)
+    { return true;
+    }
+    else if (nextVersion!=null)
+    { return nextVersion.isPreviousVersion(tuple);
+    }
+    else 
+    {
+      synchronized (this)
+      {
+        if (transactionContext!=null)
+        {
+          synchronized (transactionContext)
+          {
+            if (this.delta==null 
+                && transactionContext.transactionId==transactionId()
+                )
+            { return transactionContext.nextVersion.isPreviousVersion(tuple);
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+  
+  @Override
+  public DeltaTuple prepareUpdate(
     DeltaTuple delta)
     throws DataException
   {
@@ -122,16 +158,33 @@ public class ArrayJournalTuple
             {
               if (this.delta==null)
               {
-                try
+                if (transactionContext.transactionId==transactionId())
                 { 
-                  log.log(Level.FINE,"Waiting on transaction created by thread "
-                    +transactionContext.threadName+" : "
-                    +transactionContext.delta,transactionContext.trace);
-                
-                  transactionContext.wait();
+                  // Multiple updates in the same transaction
+                  if (!transactionContext.forward)
+                  { 
+                    delta=delta.updateOriginal(transactionContext.nextVersion);
+                    // log.fine("Rebased "+delta);
+                    transactionContext.forward=true;
+                  }
+                  return transactionContext.nextVersion.prepareUpdate(delta);
                 }
-                catch (InterruptedException x)
-                { throw new DataException("Interrupted waiting for transaction");
+                else
+                {
+                  try
+                  { 
+                    log.log(Level.FINE,"Transaction "+transactionId()
+                      +": Waiting on transaction "
+                      +transactionContext.transactionId+" created by thread "
+                      +transactionContext.threadName+" : "
+                      +transactionContext.delta,transactionContext.trace);
+                  
+                    // TODO: Soft-code timeout
+                    transactionContext.wait(60000);
+                  }
+                  catch (InterruptedException x)
+                  { throw new DataException("Interrupted waiting for transaction");
+                  }
                 }
               }
             }
@@ -145,7 +198,7 @@ public class ArrayJournalTuple
             }
             transactionContext
               =new TransactionContext(nextVersion,delta);
-            return nextVersion;
+            return delta;
           }
         }
       }
@@ -213,15 +266,16 @@ public class ArrayJournalTuple
   }
   
   @Override
-  public JournalTuple update(DeltaTuple delta)
+  public DeltaTuple update(DeltaTuple delta)
     throws DataException
   {
-    JournalTuple next=prepareUpdate(delta);
+    DeltaTuple next=prepareUpdate(delta);
     commit();
     return next;
     
   }
 
+  @Override
   public ArrayJournalTuple getTxVersion()
   {
     synchronized (this)
@@ -236,6 +290,8 @@ public class ArrayJournalTuple
 
     
   }
+  
+  
 
   @Override
   public long getTransactionId()
@@ -247,12 +303,19 @@ public class ArrayJournalTuple
   { return version;
   }
   
+  @Override
+  public String toString()
+  { return super.toString()+" version="+version+", transaction="+transactionId;
+  }
+  
   class TransactionContext
   {
     public final ArrayJournalTuple nextVersion;
     public final DeltaTuple delta;
     public final Exception trace;
     public final String threadName;
+    public final long transactionId;
+    public boolean forward=false;
 
     public TransactionContext
       (ArrayJournalTuple nextVersion
@@ -263,6 +326,7 @@ public class ArrayJournalTuple
       this.delta=delta;
       this.trace=new Exception();
       this.threadName=Thread.currentThread().getName();
+      this.transactionId=transactionId();
     }
   }
 

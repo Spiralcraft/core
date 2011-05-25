@@ -4,6 +4,7 @@ import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Aggregate;
@@ -37,7 +38,19 @@ public class ArrayDeltaTuple
    */  
   public static ArrayDeltaTuple copy(Type<?> archetype,DeltaTuple updated)
     throws DataException
-  { return new ArrayDeltaTuple(Type.getDeltaType(archetype).getScheme(),updated);
+  { 
+    ArrayDeltaTuple ret
+      =new ArrayDeltaTuple(Type.getDeltaType(archetype).getScheme(),updated);
+    Identifier id=updated.getId();
+    if (id!=null && id.isPublic())
+    { ret.setId(id);
+    }
+    return ret;
+  }
+  
+  public static ArrayDeltaTuple copy(DeltaTuple updated)
+      throws DataException
+  { return copy(updated.getType().getArchetype(),updated);
   }
   
   /**
@@ -183,6 +196,17 @@ public class ArrayDeltaTuple
     copyFrom(updated);
   }
 
+  @Override
+  public ArrayDeltaTuple updateOriginal(Tuple newOriginal)
+    throws DataException
+  {
+    return new ArrayDeltaTuple
+      (getFieldSet(),this,newOriginal);
+    
+    
+  }
+  
+  
   @Override
   public ArrayDeltaTuple rebase(Tuple newOriginal)
     throws DataException

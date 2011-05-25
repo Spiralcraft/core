@@ -64,7 +64,17 @@ public interface JournalTuple
    *   and the next.
    */
   DeltaTuple nextDelta();
-   
+  
+  /**
+   * <p>Indicate whether this JournalTuple is a previous version of the 
+   *   supplied JournalTuple.
+   * </p>
+   * 
+   * @param newer
+   * @return
+   */
+  boolean isPreviousVersion(JournalTuple newer);
+  
   /**
    * Indicate whether the problem domain object was deleted.
    * Deleted versions will also have all data nulled.
@@ -75,7 +85,7 @@ public interface JournalTuple
    * Create a new JournalTuple from the changes made in the specified DeltaTuple
    *   and set it as the next version in the Journal.
    */
-  JournalTuple update(DeltaTuple delta)
+  DeltaTuple update(DeltaTuple delta)
     throws DataException;
   
   /**
@@ -83,8 +93,15 @@ public interface JournalTuple
    *   and remain in a locked state until commit() or rollback() is called, or
    *   the Transaction is aborted.
    */
-  JournalTuple prepareUpdate(DeltaTuple delta)
+  DeltaTuple prepareUpdate(DeltaTuple delta)
     throws DataException;
+  
+  /**
+   * 
+   * @return The JournalTuple that holds the next version of the data
+   *   after the transaction commits 
+   */
+  JournalTuple getTxVersion();
   
   /**
    * Commit a prepared Update and unlock the JournalTuple
