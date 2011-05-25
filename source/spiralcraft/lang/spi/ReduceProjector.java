@@ -44,14 +44,14 @@ import spiralcraft.util.lang.ClassUtil;
  * @param <I>
  * @param <P>
  */
-public class IterationProjector<I,P,R>
+public class ReduceProjector<I,P,R,C>
 {
   private static final ClassLog log
-    =ClassLog.getInstance(IterationProjector.class);
+    =ClassLog.getInstance(ReduceProjector.class);
 
   public final Channel<R> result;
   
-  protected final IterationDecorator<I[],I> iterable;
+  protected final IterationDecorator<C,I> iterable;
     
   protected final ThreadLocalChannel<I> channel;
   
@@ -62,19 +62,16 @@ public class IterationProjector<I,P,R>
     
   protected final Channel<P> functionChannel;  
   protected final ViewCache viewCache;
-  protected final boolean reduce;
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public IterationProjector
-    (Channel<I[]> source
+  public ReduceProjector
+    (Channel<C> source
     ,Focus<?> focus
     ,Expression<P> function
-    ,boolean reduce
     )
     throws BindException
   {
     viewCache=new ViewCache(focus);
-    this.reduce=reduce;
     
     iterable
       =source.getReflector()
@@ -97,81 +94,72 @@ public class IterationProjector<I,P,R>
     telefocus.addFacet(new SimpleFocus(cursorChannel));
     telefocus.addFacet(viewCache.bind(telefocus));
     
-    if (!reduce)
+
+    if (function.getRootNode() instanceof StructNode)
     {
-    
-      functionChannel=telefocus.bind(function);
-    
-      result=new MapChannel
-        (aggregateReflector(functionChannel));
-    }
-    else
-    { 
-      if (function.getRootNode() instanceof StructNode)
+      ArrayList<Channel<?>> keys=new ArrayList<Channel<?>>();
+      
+      StructNode structNode=(StructNode) function.getRootNode();
+      for (StructField field : structNode.getFields())
       {
-        ArrayList<Channel<?>> keys=new ArrayList<Channel<?>>();
-        
-        StructNode structNode=(StructNode) function.getRootNode();
-        for (StructField field : structNode.getFields())
-        {
-          int lastSize=viewCache.getSize();
-          if (field.getSource()==null)
-          { 
-            throw new BindException
-              ("All fields in reduction struct must be bound");
-          }
-          
-          // Provide same relative position to bind keys,
-          //   while disallowing having a key depend on the result struct
-          Focus<?> keyFocus=telefocus.telescope(new VoidChannel());
-          
-          Channel<?> fieldChan
-            =keyFocus.bind(new Expression(field.getSource()));
-          
-          if (viewCache.getSize()==lastSize)
-          { keys.add(fieldChan);
-          }
-          else
-          { viewCache.setSize(lastSize);
-          }
+        int lastSize=viewCache.getSize();
+        if (field.getSource()==null)
+        { 
+          throw new BindException
+            ("All fields in reduction struct must be bound");
         }
         
+        // Provide same relative position to bind keys,
+        //   while disallowing having a key depend on the result struct
+        Focus<?> keyFocus=telefocus.telescope(new VoidChannel());
         
-        functionChannel=telefocus.bind(function);
+        Channel<?> fieldChan
+          =keyFocus.bind(new Expression(field.getSource()));
         
-        if (keys.size()==0)
-        { 
-          result
-            =new ReduceScalarChannel
-              ((Reflector<R>) functionChannel.getReflector());
+        if (viewCache.getSize()==lastSize)
+        { keys.add(fieldChan);
         }
         else
-        { 
-          result
-            =new ReduceGroupChannel
-              (aggregateReflector(functionChannel)
-              ,new KeyChannel(keys)
-              );
+        { viewCache.setSize(lastSize);
         }
+      }
+      
+      
+      functionChannel=telefocus.bind(function);
+      
+      if (keys.size()==0)
+      { 
+        result
+          =new ReduceScalarChannel
+            ((Reflector<R>) functionChannel.getReflector());
       }
       else
-      {
-
-        functionChannel=telefocus.bind(function);
-        if (viewCache.getSize()>0)
-        { 
-          result
-            =new ReduceScalarChannel
-              ((Reflector<R>) functionChannel.getReflector());
-        }
-        else
-        { 
-          result
-            =new ReduceDistinctChannel
-              (aggregateReflector(functionChannel));
-        }
+      { 
+        result
+          =new ReduceGroupChannel
+            (aggregateReflector(functionChannel)
+            ,new KeyChannel(keys)
+            );
       }
     }
+    else
+    {
+
+      functionChannel=telefocus.bind(function);
+      if (viewCache.getSize()>0)
+      { 
+        result
+          =new ReduceScalarChannel
+            ((Reflector<R>) functionChannel.getReflector());
+      }
+      else
+      { 
+        result
+          =new ReduceDistinctChannel
+            (aggregateReflector(functionChannel));
+      }
+    }
+    
   }
   
 
@@ -228,53 +216,6 @@ public class IterationProjector<I,P,R>
     
   }
     
-  class MapChannel
-    extends AbstractChannel<R>
-  {
-    public MapChannel(Reflector<R> resultReflector)
-    { super(resultReflector);
-    }
-
-    @Override
-    protected R retrieve()
-    {
-      ArrayList<P> output=new ArrayList<P>();
-
-      IterationCursor<I> it=iterable.iterator();
-      cursorChannel.push(it);
-      channel.push(null);
-      viewCache.push();
-      viewCache.init();
-      try
-      {
-        while (it.hasNext())
-        {
-          I item=it.next();
-          channel.set(item);
-          viewCache.touch();
-          output.add(functionChannel.get());
-        }
-        viewCache.checkpoint();
-        return createArray(output); 
-      }
-      finally
-      { 
-        viewCache.pop();
-        channel.pop();
-        cursorChannel.pop();
-      }
-
-    }
-
-    @Override
-    protected boolean store(
-      R val)
-    throws AccessException
-    { return false;
-    }
-
-  }  
-
   class ReduceDistinctChannel
     extends AbstractChannel<R>
   {
@@ -464,7 +405,7 @@ public class IterationProjector<I,P,R>
     }
 
   }  
-  
+   
 }
 
 class ViewStateRef<Tstate,TinputItem>

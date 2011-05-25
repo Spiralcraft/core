@@ -18,7 +18,8 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.spi.IterationProjector;
+import spiralcraft.lang.spi.MapProjector;
+import spiralcraft.lang.spi.ReduceProjector;
 
 
 /**
@@ -81,7 +82,12 @@ public class MapReduceNode<T,C>
     Channel<C> collection=focus.<C>bind(new Expression<C>(_source,null));
     Expression<T> function=new Expression<T>(_function);
 
-    return new IterationProjector(collection,focus,function,_reduce).result;
+    if (_reduce)
+    { return new ReduceProjector(collection,focus,function).result;
+    }
+    else
+    { return new MapProjector(collection,focus,function).result;
+    }
     
   }
   
