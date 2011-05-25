@@ -49,6 +49,22 @@ public abstract class AbstractChannel<T>
   implements Channel<T>
 {
  
+  public static Channel<?>[] bind
+    (Expression<?>[] expressions,Focus<?> focus)
+    throws BindException
+  {
+    if (expressions==null)
+    { return null;
+    }
+  
+    Channel<?>[] ret=new Channel<?>[expressions.length];
+    int i=0;
+    for (Expression<?> x:expressions)
+    { ret[i++]=focus.bind(x);
+    }
+    return ret;
+  }
+  
   private final Reflector<T> _reflector;
   private final boolean _static;
   private PropertyChangeSupport _propertyChangeSupport;
