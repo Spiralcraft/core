@@ -202,6 +202,51 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
    * @throws BindException
    */
   public static final <T> AbstractXmlObject<T,?> activate
+    (URI referenceURI
+    ,Focus<?> focus
+    )
+    throws ContextualException
+  {
+    AbstractXmlObject<T,?> instance=instantiate(referenceURI);
+    try
+    { 
+      if (focus!=null)
+      { instance.bind(focus);
+      }
+      instance.start();
+    }
+    catch (LifecycleException x)
+    { throw new BindException("Error starting Xml object",x);
+    }
+    return instance;    
+  }
+  
+  
+  /**
+   * <p>Create a new AbstractXmlObject appropriate for the specified Type,
+   *   read from the optional instanceURI.
+   * </p>
+   * 
+   * <p>The AbstractXmlObject will be registered and started, where applicable.
+   * </p>
+   * 
+   * <p>If no RegistryNode is specified, and the object is a Registrant,  
+   *   the object will be registered with the local root registry node.
+   * </p>
+   * 
+   * <p>If the object implements the Contextual interface, it will
+   *   be bound onto the Focus chain at the Focus that references the object
+   *   itself.
+   * </p>
+   * 
+   * @param <T> The Java generic type of object that is being referred to
+   * @param typeURI The spiralcraft.data.Type of the object being referred to
+   * @param instanceURI The URI of the resource from which to read the instance
+   * @param registryNode The RegistryNode under which to register this object
+   * @return The AbstractXmlObject
+   * @throws BindException
+   */
+  public static final <T> AbstractXmlObject<T,?> activate
     (URI typeURI
     ,URI instanceURI
     ,Focus<?> focus
