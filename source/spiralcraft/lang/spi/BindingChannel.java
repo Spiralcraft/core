@@ -16,16 +16,88 @@ public class BindingChannel<T>
     =ClassLog.getInstance(BindingChannel.class);
   
 
+  public static final BindingChannel<?>[] bind
+    (Expression<?>[] expressions,Focus<?> focus)
+    throws BindException
+  {
+    if (expressions==null)
+    { return null;
+    }
+    
+    BindingChannel<?>[] ret=new BindingChannel<?>[expressions.length];
+    int i=0;
+    for (Expression<?> x:expressions)
+    {
+      Channel<?> channel=focus.bind(x);
+      if (channel instanceof BindingChannel)
+      { ret[i++]=(BindingChannel<?>) channel;
+      }
+      else
+      {
+        throw new BindException
+          ("Expected expression in the form:  target:=sourceExpr");
+      }
+    }
+    return ret;
+  }
+  
+  public static final void bindTarget
+    (BindingChannel<?>[] channels,Focus<?> focus)
+    throws BindException
+  {
+    if (channels==null)
+    { return;
+    } 
+    
+    for (BindingChannel<?> channel:channels)
+    { channel.bindTarget(focus);
+    }
+  }
+  
+  public static final void apply(BindingChannel<?>[] channels)
+  {
+    if (channels==null)
+    { return;
+    } 
+
+    for (BindingChannel<?> channel:channels)
+    { channel.get();
+    }
+  }
+  
+  public static final void applyReverse(BindingChannel<?>[] channels)
+  {
+    if (channels==null)
+    { return;
+    } 
+
+    for (BindingChannel<?> channel:channels)
+    { channel.applyReverse();
+    }
+  }
+  
+  public static final Channel<?>[] sources(BindingChannel<?>[] channels)
+  { 
+    Channel<?>[] sources=new Channel[channels.length];
+    int i=0;
+    for (BindingChannel<?> channel:channels)
+    { sources[i++]=channel.getSource();
+    }
+    return sources;
+  }
+  
+  private final Expression<T> sourceX;
   private final Expression<T> targetX;
   private Channel<T> targetChannel;
   private Binding<T> sourceBinding;
 
 
   public BindingChannel
-    (Channel<T> sourceChannel,Expression<T> targetX)
+    (Focus<?> focus,Expression<T> sourceX,Expression<T> targetX)
+    throws BindException
   {
-    super(sourceChannel.getReflector(),sourceChannel);
-
+    super(focus.bind(sourceX));
+    this.sourceX=sourceX;
     this.targetX=targetX;
   }
 
@@ -47,7 +119,7 @@ public class BindingChannel<T>
   }
 
   public void bindTarget(Focus<?> targetFocus)
-  throws BindException
+    throws BindException
   { 
     targetChannel=targetFocus.bind(targetX);
 
@@ -79,21 +151,32 @@ public class BindingChannel<T>
           ("Argument type mismatch: "
             +targetChannel.getReflector().getTypeURI()
             +" ("+targetChannel.getContentType().getName()+")"
-            +" is not assignable from "+source.getReflector().getTypeURI()
+            +" is not assignable from `"+sourceX+"` "+source.getReflector().getTypeURI()
             +" ("+source.getContentType().getName()+")"
           );
       }
     }
   }
 
+  public Channel<T> getTarget()
+  { 
+    assertTarget();
+    return targetChannel;
+  }
+  
+  public boolean applyReverse()
+  { 
+    assertTarget();
+    return source.set(targetChannel.get());
+  }
+  
+
+  
   @SuppressWarnings("unchecked")
   @Override
   protected T retrieve()
   {
-    if (targetChannel==null)
-    { throw new IllegalStateException("Target '"+targetX+"' not bound");
-    }
-
+    assertTarget();
     T val=sourceBinding!=null?(T) sourceBinding:source.get();
     if (!targetChannel.set(val))
     { log.warning("Bound assignment failed");
@@ -106,11 +189,29 @@ public class BindingChannel<T>
     T val)
   throws AccessException
   { 
+    assertTarget();
+    if (targetChannel==null)
+    { 
+      throw new IllegalStateException
+        ("Target '"+targetX+"' not bound. The ':=' operator may not be used"
+        +" in this scenario"
+        );
+    }
     boolean set=targetChannel.set(val);
     source.set(val);
     return set;
   }
 
+  private void assertTarget()
+  {
+    if (targetChannel==null)
+    { 
+      throw new IllegalStateException
+        ("Target '"+targetX+"' not bound. The ':=' operator may not be used"
+        +" in this scenario"
+        );
+    }
+  }
   @Override
   public boolean isWritable()
   { return targetChannel.isWritable();
