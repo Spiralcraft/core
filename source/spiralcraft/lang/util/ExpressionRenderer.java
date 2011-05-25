@@ -41,6 +41,10 @@ public class ExpressionRenderer<T>
   private Expression<T> x;
   private Channel<T> channel;
   
+  public ExpressionRenderer()
+  {
+  }
+  
   public ExpressionRenderer(Expression<T> x)
   { this.x=x;
   }
