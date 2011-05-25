@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 2011 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -14,99 +14,59 @@
 //
 package spiralcraft.app.kit;
 
-import java.util.List;
-
+import spiralcraft.lang.Focus;
 import spiralcraft.app.Dispatcher;
-import spiralcraft.app.Message;
 import spiralcraft.app.MessageHandler;
 import spiralcraft.app.MessageHandlerChain;
+
+
+import spiralcraft.app.Message;
 import spiralcraft.common.ContextualException;
-import spiralcraft.lang.Focus;
 
 public class StandardMessageHandlerChain
   implements MessageHandlerChain
 {
-
-  private MessageHandler next;
-  private StandardMessageHandlerChain nextChain;
+ 
+  private MessageHandler nextHandler;
+  private MessageHandlerChain nextChain;
   
-  /**
-   * Create a terminal link
-   */
-  public StandardMessageHandlerChain()
-  { 
+  public StandardMessageHandlerChain(MessageHandler handler)
+  { this.nextHandler=handler;
   }
   
-  /**
-   * Create a chain composed of the handlers in the array starting with the
-   *   handler at the specified index.
-   * 
-   * @param handlers
-   * @param start
-   */
-  public StandardMessageHandlerChain(MessageHandler[] handlers,int start)
+  @Override
+  public void handleMessage(Dispatcher context,Message message)
   { 
-    if (start<handlers.length)
-    { 
-      next=handlers[start];
-      nextChain=new StandardMessageHandlerChain(handlers,start+1);
+    if (nextHandler!=null)
+    { nextHandler.handleMessage(context,message,nextChain);
     }
-  
   }
-  
-  /**
-   * Create a chain composed of the handlers in the specified list
-   */
-  public StandardMessageHandlerChain(List<MessageHandler> handlers)
-  { this(handlers.toArray(new MessageHandler[handlers.size()]),0);
-  }
-  
-  /**
-   * Add the specified handler to the end of the chain
-   * 
-   * @param handler
-   */
+
   @Override
   public void chain(MessageHandler handler)
-  { 
-    if (next!=null)
-    { nextChain.chain(handler);
+  {
+    if (nextHandler==null)
+    { nextHandler=handler;
+    }
+    else if (nextChain==null)
+    { nextChain=new StandardMessageHandlerChain(handler);
     }
     else
-    { 
-      next=handler;
-      nextChain=new StandardMessageHandlerChain();
+    { nextChain.chain(handler);
     }
   }
-  
-  /**
-   * <p>Handle the Message. This will be called twice- once before children are
-   *   messaged and once afterwards.
-   * </p>
-   * 
-   * @param dispatcher The Dispatcher that holds the Element's state
-   * @param message The message
-   */
-  @Override
-  public void handleMessage
-    (Dispatcher dispatcher
-    ,Message message
-    )
-  { 
-    if (next!=null)
-    { next.handleMessage(dispatcher,message,nextChain);
-    }
-  }
-  
+
   @Override
   public Focus<?> bind(Focus<?> focusChain)
     throws ContextualException
-  {
-    if (next!=null)
-    { return next.bind(focusChain);
+  { 
+    if (nextHandler!=null)
+    { focusChain=nextHandler.bind(focusChain);
     }
-    else
-    { return focusChain;
+    if (nextChain!=null)
+    { focusChain=nextChain.bind(focusChain);
     }
+    return focusChain;
   }
+
 }
