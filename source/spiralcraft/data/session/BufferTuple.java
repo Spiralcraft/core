@@ -25,6 +25,8 @@ import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.Key;
+import spiralcraft.data.ProjectionField;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.JournalTuple;
 import spiralcraft.data.Type;
@@ -34,6 +36,7 @@ import spiralcraft.data.UpdateConflictException;
 
 import spiralcraft.data.session.DataSession.DataSessionBranch;
 import spiralcraft.data.spi.ArrayTuple;
+import spiralcraft.data.spi.KeyIdentifier;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.util.StaticInstanceResolver;
 import spiralcraft.log.ClassLog;
@@ -136,12 +139,14 @@ public class BufferTuple
    * 
    * @param tuple
    */
-  public void updateOriginal(Tuple tuple)
+  @Override
+  public DeltaTuple updateOriginal(Tuple tuple)
   { 
     if (debug)
-    { log.fine("Got new original "+tuple);
+    { log.fine("Uncommitted new original "+tuple);
     }
     this.saveResult=tuple;
+    return this;
   }
   
   /**
@@ -692,6 +697,7 @@ public class BufferTuple
   { return dirty;
   }
 
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
   public void setId(
     Identifier id)
@@ -702,6 +708,17 @@ public class BufferTuple
     }
       
     this.id=id;
+    Key<?> primaryKey=getType().getScheme().getPrimaryKey();
+    if (primaryKey!=null && id instanceof KeyIdentifier)
+    { 
+      KeyIdentifier<?> keyId=(KeyIdentifier<?>) id;
+      int i=0;
+      for (ProjectionField field: primaryKey.fieldIterable())
+      { 
+        field.getSourceField().setValue(this,keyId.get(i++));
+      }
+    }
+
     if (baseExtent!=null)
     { baseExtent.setId(id);
     }
