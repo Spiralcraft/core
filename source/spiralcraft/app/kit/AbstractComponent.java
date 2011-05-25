@@ -108,6 +108,21 @@ public class AbstractComponent
   { return this.id;
   }
 
+
+    
+  protected MessageHandler createDefaultHandler()
+  { return new DefaultHandler();
+  }
+    
+  protected synchronized void addHandler(MessageHandler handler)
+  { 
+    if (this.handler==null)
+    { this.handler=new StandardMessageHandlerChain(handler);
+    }
+    else
+    { this.handler.chain(handler);
+    }
+  }
   
   /**
    * <p>Add a Peer Component
@@ -390,7 +405,7 @@ public class AbstractComponent
     
     if (handler!=null)
     {
-      handler.chain(new DefaultHandler());
+      handler.chain(createDefaultHandler());
       handler.bind(focusChain);
     }
     
