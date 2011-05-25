@@ -22,6 +22,7 @@ import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.FieldNotFoundException;
 import spiralcraft.data.Identifier;
+import spiralcraft.data.Key;
 import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.TypeMismatchException;
 import spiralcraft.data.DataComposite;
@@ -122,20 +123,28 @@ public abstract class AbstractTuple
   { throw new UnsupportedOperationException("Not an Aggregate");
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   public Identifier getId()
   { 
     if (id==null && getType()!=null)
     { 
-      id=new PojoIdentifier<Tuple>(this);
-      if (debug)
-      { log.fine("Created new PojoId for Tuple "+this);
+      Key<Tuple> primaryKey=(Key<Tuple>) getType().getPrimaryKey();
+      if (primaryKey!=null)
+      { setId((KeyIdentifier<Tuple>) primaryKey.getFunction().key(this));
+      }
+      else
+      { 
+        setId(new PojoIdentifier<Tuple>(this));
+        if (debug)
+        { log.fine("Created new PojoId for Tuple "+this);
+        }
       }
     }
     return id;
   }
     
-  public void setId(Identifier id)
+  void setId(Identifier id)
   { 
     if (debug)
     { log.fine("Setting id "+id+" for Tuple "+this);
