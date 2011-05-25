@@ -9,6 +9,14 @@ public abstract class SourcedChannel<Tinput,Toutput>
 
   protected final Channel<Tinput> source;
   
+  @SuppressWarnings("unchecked")
+  public SourcedChannel(Channel<Tinput> source)
+  { 
+    super((Reflector<Toutput>) source.getReflector());
+    this.source=source;
+    this.context=source.getContext();
+  }
+  
   public SourcedChannel(Reflector<Toutput> reflector,Channel<Tinput> source)
   { 
     super(reflector);
