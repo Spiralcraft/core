@@ -71,13 +71,25 @@ public interface DeltaTuple
   DeltaTuple getBaseExtent();
   
   /**
-   * Return a DeltaTuple that is based on the latest original
+   * Return a DeltaTuple that is based on the latest original, throwing an
+   *   exception if any changes conflict
    * 
    * @param latest
    * @return
    * @throws DataException If overlapping changes occur
    */
   DeltaTuple rebase(Tuple latest)
+    throws DataException;
+  
+  /**
+   * Return a DeltaTuple that is based on the latest original, ignoring any
+   *   conflicting changes
+   * 
+   * @param latest
+   * @return
+   * @throws DataException 
+   */
+  DeltaTuple updateOriginal(Tuple latest)
     throws DataException;
   
 }
