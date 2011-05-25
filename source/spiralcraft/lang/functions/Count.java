@@ -19,6 +19,8 @@ package spiralcraft.lang.functions;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.Accumulator;
 import spiralcraft.lang.spi.ViewState;
 
@@ -58,6 +60,10 @@ public class Count
     { super(source,focus);
     }
 
+    @Override
+    protected Reflector<Integer> resolveResultReflector()
+    { return BeanReflector.getInstance(Integer.class);
+    }
     
     @Override
     protected void update(ViewState<Integer> state)
