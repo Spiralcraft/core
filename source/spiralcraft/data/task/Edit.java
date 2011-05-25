@@ -16,6 +16,7 @@ package spiralcraft.data.task;
 
 
 import spiralcraft.command.Command;
+import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 //import spiralcraft.data.Type;
@@ -29,7 +30,6 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.task.Chain;
 import spiralcraft.task.Task;
 
@@ -52,11 +52,9 @@ public class Edit<Titem extends Tuple>
   private Expression<Titem> targetX;
   private Channel<BufferTuple> resultChannel;
   private Type<Titem> type;
-  private ThreadLocalChannel<BufferTuple> localChannel;
   private TupleEditor editor
     =new TupleEditor();
   private boolean autoSave;
-  private boolean autoCreate;
   
   { storeResults=true;
   }
@@ -68,7 +66,7 @@ public class Edit<Titem extends Tuple>
   public Edit(Type<Titem> type)
   { 
     this.type=type;
-    autoCreate=true;
+    editor.setAutoCreate(true);
   }
   
   public void setAutoSave(boolean autoSave)
@@ -76,7 +74,7 @@ public class Edit<Titem extends Tuple>
   }
   
   public void setAutoCreate(boolean autoCreate)
-  { this.autoCreate=autoCreate;
+  { editor.setAutoCreate(autoCreate);
   }
 
   /**
@@ -143,14 +141,9 @@ public class Edit<Titem extends Tuple>
 //    { type=((DataReflector) resultChannel.getReflector()).getType();
 //    }
     
-    localChannel
-      =new ThreadLocalChannel<BufferTuple>
-        (resultChannel.getReflector()
-        ,true
-        );
-    editor.setSource(localChannel);
-    editor.bind(focusChain);
-    return focusChain.chain(localChannel);
+
+    editor.setSource(resultChannel);
+    return editor.bind(focusChain);
   }
 
   
@@ -165,19 +158,11 @@ public class Edit<Titem extends Tuple>
         throws InterruptedException
       {
         
-        BufferTuple result=resultChannel.get();
         
-        localChannel.push(result);
+        editor.push();
         try
         {
-          if (autoCreate && result==null)
-          { 
-            Command<?,?,?> newCommand=editor.newCommand();
-            newCommand.execute();
-            if (newCommand.getException()!=null)
-            { addException(newCommand.getException());
-            }
-          }
+          editor.initBuffer();
           super.work();
           if (autoSave)
           { 
@@ -187,10 +172,13 @@ public class Edit<Titem extends Tuple>
             { addException(saveCommand.getException());
             }
           }
-          addResult(localChannel.get());
+          addResult(editor.getBuffer());
+        }
+        catch (DataException x)
+        { addException(x);
         }
         finally
-        { localChannel.pop();
+        { editor.pop();
         }
       }
     };

@@ -25,24 +25,32 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
 
+import spiralcraft.data.session.BufferChannel;
+import spiralcraft.data.session.BufferType;
 import spiralcraft.data.session.DataSession;
 import spiralcraft.data.session.Buffer;
 
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Context;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 
 
 public abstract class EditorBase<Tbuffer extends Buffer>
+  implements Context
 {
 
   private static final ClassLog log
     =ClassLog.getInstance(EditorBase.class);
 
   
-  protected Channel<Buffer> bufferChannel;
+  private Channel<Tbuffer> bufferChannel;
+  
+  protected ThreadLocalChannel<Tbuffer> localChannel;
+  
   protected Channel<? extends Tuple> source;
   
   private Type<?> type;
@@ -63,54 +71,14 @@ public abstract class EditorBase<Tbuffer extends Buffer>
 
 
   
-  protected abstract void save(boolean force)
-    throws DataException;
   
   public void setSource(Channel<? extends Tuple> source)
   { this.source=source;
   }
   
-  protected void setupSession(Focus<?> parentFocus)
-  { sessionChannel=DataSession.findChannel(parentFocus);
-  }
-  
-  protected boolean writeToModel(Tbuffer buffer)
-  { return bufferChannel.set(buffer);
-  }
-  
-  protected DataSession getDataSession()
-  { return sessionChannel.get();
-  }
-  
-  
   public Type<?> getType()
   { return type;
   }
-  
-  public void setupType()
-    throws BindException
-  {
-    Type<?> newType
-      =((DataReflector<?>) bufferChannel.getReflector()).getType();
-
-    if (type!=null)
-    { 
-      // Subtype expressed in config
-      if (!newType.isAssignableFrom(type))
-      { 
-        throw new BindException
-          ("target type "+newType.getURI()
-          +" is not assignable from configured type "+type.getURI()
-          );
-      
-      }
-    }
-    else
-    { type=newType;
-    }
-    
-  }
-
   
   /**
    * The Editor will create a new Buffer if the source provides a null
@@ -127,10 +95,6 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   public void setRetain(boolean val)
   { retain=val;
   }
-  
-
-  
-
   
   /**
    * New Assignments get executed when a buffer is new (ie. has no original) 
@@ -184,9 +148,112 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   { publishedAssignments=assignments;
   }
   
+  public void initBuffer()
+    throws DataException
+  {
+    if (autoCreate && localChannel.get()==null)
+    { 
+      Command<?,?,?> newCommand=newCommand();
+      newCommand.execute();
+      if (newCommand.getException()!=null)
+      { 
+        throw new DataException
+        ("Error initializing buffer",newCommand.getException());
+      }
+    }
+    ensureInitialized();
+  }
+  
+  /**
+   * <p>Bind the Editor into the focus chain
+   * </p>
+   */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @Override
+  public Focus<?> bind
+    (Focus<?> parentFocus)
+      throws BindException
+  { 
+    if (debug)
+    { log.fine("Editor.bind() "+parentFocus);
+    }
+    
+    if (source==null)
+    { 
+      source=(Channel<Tuple>) parentFocus.getSubject();
+      if (source==null)
+      {
+        log.fine
+          ("No source specified, and parent Focus has no subject: "+parentFocus);
+      }
+    }
+    
+    
+    if (source.getReflector() 
+          instanceof DataReflector
+        )
+    { 
+      DataReflector dataReflector=(DataReflector) source.getReflector();
+      
+      if ( dataReflector.getType() 
+            instanceof BufferType
+         ) 
+      { bufferChannel=(Channel<Tbuffer>) source;
+      }
+      else
+      {
+        if (debug)
+        { log.fine("Creating BufferChannel for "+source.getReflector());
+        }
+        bufferChannel=bindBuffer(parentFocus);
+      }
+      
+      setupType();
+    }
+    
+    if (bufferChannel==null)
+    { 
+      
+      throw new BindException
+        ("Not a DataReflector "
+          +parentFocus.getSubject().getReflector()
+        );
+          
+    }
+    
+    setupSession(parentFocus);
+    localChannel=new ThreadLocalChannel<Tbuffer>(bufferChannel,true);
+    focus=parentFocus.chain(localChannel);
+    bindExports(focus);
+    return focus;
+  }
+
+  
+
+  
+  @Override
+  public void push()
+  { 
+    localChannel.push();
+  }
+  
+
+  
+  
+  public Tbuffer getBuffer()
+  { return localChannel.get();
+  }
+
+  @Override
+  public void pop()
+  { localChannel.pop();
+  }
+  
+
+  
   public boolean isDirty()
   { 
-    Buffer buffer=bufferChannel.get();
+    Tbuffer buffer=localChannel.get();
     return buffer!=null && buffer.isDirty();
   }
                      
@@ -198,7 +265,7 @@ public abstract class EditorBase<Tbuffer extends Buffer>
       @Override
       public void run()
       { 
-        Buffer buffer=bufferChannel.get();
+        Tbuffer buffer=localChannel.get();
         if (buffer!=null)
         { buffer.revert();
         }
@@ -214,7 +281,7 @@ public abstract class EditorBase<Tbuffer extends Buffer>
       @Override
       public void run()
       { 
-        Buffer buffer=bufferChannel.get();
+        Tbuffer buffer=localChannel.get();
         if (buffer!=null)
         { 
           buffer.revert();
@@ -311,6 +378,9 @@ public abstract class EditorBase<Tbuffer extends Buffer>
     };
   }
   
+  
+  
+  
   /**
    * Create a new buffer
    */
@@ -325,9 +395,70 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   
   
 
+  protected void setupSession(Focus<?> parentFocus)
+  { sessionChannel=DataSession.findChannel(parentFocus);
+  }
+  
+  protected boolean writeToModel(Tbuffer buffer)
+  { 
+    localChannel.set(buffer);
+    return bufferChannel.set(buffer);
+  }
+  
+  protected DataSession getDataSession()
+  { return sessionChannel.get();
+  }
+  
+  
+  protected void setupType()
+    throws BindException
+  {
+    Type<?> newType
+      =((DataReflector<?>) bufferChannel.getReflector()).getType();
+
+    if (type!=null)
+    { 
+      // Subtype expressed in config
+      if (!newType.isAssignableFrom(type))
+      { 
+        throw new BindException
+          ("target type "+newType.getURI()
+          +" is not assignable from configured type "+type.getURI()
+          );
+      
+      }
+    }
+    else
+    { type=newType;
+    }
+    
+  }
+
+
+
+  
+
+  protected Channel<Tbuffer> bindBuffer(Focus<?> focus)
+    throws BindException
+  {
+    return new BufferChannel<Tbuffer>
+      (focus
+      ,source
+      );
+  }
+  
+  protected Focus<?> bindExports(Focus<?> focus)
+    throws BindException
+  { return focus;
+  }
   
 
 
+  protected abstract void ensureInitialized();
+
+
+  protected abstract void save(boolean force)
+    throws DataException;
 }
 
 
