@@ -59,6 +59,8 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
     this.type=type;
   }
   
+
+  
   @Override
   public void clear()
   { buffers.clear();
@@ -245,7 +247,18 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
     { return Math.max(original!=null?original.size():0,buffers.size());
     }
   }
-
+  
+  @Override
+  public boolean isEmpty()
+  {
+    if (buffers==null)
+    { return original!=null?original.isEmpty():true;
+    }
+    else
+    { return original!=null?original.isEmpty():true && buffers.isEmpty();
+    }
+  }
+  
   @Override
   public Aggregate<T> snapshot()
     throws DataException
@@ -342,7 +355,9 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
     if (buffers==null)
     { return;
     }
-    log.fine("Saving..."+this);
+    if (debug)
+    { log.fine("Saving..."+this);
+    }
     
     Transaction transaction
       =Transaction.getContextTransaction();

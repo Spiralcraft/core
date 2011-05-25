@@ -140,6 +140,28 @@ public class ListAggregate<T>
     { return list.size();
     }
   }
+  
+  @Override
+  public boolean isEmpty()
+  { 
+    if (list.isEmpty())
+    { return true;
+    }
+    else if (fillCommand!=null)
+    {
+      if (expectedSize>0 || !fetchable)
+      { return expectedSize<=0;
+      }
+      else
+      { 
+        fill();
+        return list.isEmpty();
+      }
+    }
+    else
+    { return true;
+    }
+  }
     
 
   protected void fillRest()

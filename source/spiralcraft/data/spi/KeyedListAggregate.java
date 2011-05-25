@@ -19,7 +19,6 @@ import spiralcraft.data.KeyTuple;
 import spiralcraft.data.Projection;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
-import spiralcraft.data.lang.DataReflector;
 import spiralcraft.lang.BindException;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -112,7 +111,11 @@ public class KeyedListAggregate<T>
   { return list.size();
   }
     
-
+  @Override
+  public boolean isEmpty()
+  { return list.isEmpty();
+  }
+  
   @Override
   public T get(int index)
   { return list.get(index);
@@ -211,6 +214,7 @@ public class KeyedListAggregate<T>
     
     private final KeyedList<T>.Index<KeyTuple,T> backingIndex;
     
+    @SuppressWarnings("unchecked")
     public ListIndex(Map<KeyTuple,List<T>> mapImpl,Projection<T> projection)
       throws DataException
     { 
@@ -220,7 +224,7 @@ public class KeyedListAggregate<T>
           =list.<KeyTuple>addMap
             (mapImpl
             ,new DataKeyFunction<T>
-              (DataReflector.<T>getInstance(getType().getContentType())
+              ((Type<T>) getType().getContentType()
               ,projection
               )
             );

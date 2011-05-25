@@ -50,6 +50,9 @@ public interface Aggregate<T>
   @Override
   int size();
  
+  /**
+   * @return true if this Aggregate is empty
+   */
   boolean isEmpty();
   
   /**
