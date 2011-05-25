@@ -141,16 +141,33 @@ public abstract class Accumulator<Tresult,Tsource>
     { return (Reflector<Tstate>) source.getReflector();
     }
     
+    /**
+     * <p>Return the running value of the computation to the client
+     * </p>
+     * 
+     * @param state
+     * @return
+     */
     protected abstract Tresult latest(ViewState<Tstate> state);
       
+    /**
+     * <p>Called to inform the implementation that the next data item is
+     *   available for reading.
+     * </p>
+     * 
+     * @param state
+     */
     protected abstract void update(ViewState<Tstate> state);
 
     /**
-     * <p>Called when the current subsequence ends. 
+     * <p>Called when the current subsequence ends to perform any additional
+     *   computation on intermediate results before returning a value to
+     *   the client.
      * </p>
      * 
      * <p>The default implementation does nothing, relying on the 
      *   update function to keep the running data up-to-date.
+     * </p>
      *   
      * @param state
      */
