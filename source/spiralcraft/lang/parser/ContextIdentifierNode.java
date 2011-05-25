@@ -82,6 +82,10 @@ public class ContextIdentifierNode
   { return _identifier;
   }
   
+  public boolean isRelative()
+  { return _source instanceof CurrentFocusNode;
+  }
+  
   @Override
   public Channel<?> bind(final Focus<?> focus)
     throws BindException
