@@ -14,8 +14,6 @@
 //
 package spiralcraft.app.kit;
 
-import spiralcraft.app.StateFrame;
-
 /**
  * <p>A State that holds an arbitrary value, and indicates whether
  *   the value is valid or not.
@@ -31,7 +29,6 @@ public class ValueState<Tvalue>
 
   private volatile Tvalue value;
   private boolean valid;
-  private volatile StateFrame lastFrame;
   
   public ValueState(int childCount,String id)
   { super(childCount,id);
@@ -73,13 +70,5 @@ public class ValueState<Tvalue>
   { return valid;
   }
 
-  public boolean frameChanged(StateFrame frame)
-  {
-    if (lastFrame!=frame)
-    { 
-      lastFrame=frame;
-      return true;
-    }
-    return false;
-  }
+
 }

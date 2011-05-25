@@ -139,6 +139,7 @@ public class StandardDispatcher
     State lastState=state;
     Component lastComponent=component;
     LinkedList<Integer> lastCrumbtrail=crumbtrail;
+    state.enterFrame(currentFrame);
     try
     {
       this.state=state;
@@ -164,6 +165,7 @@ public class StandardDispatcher
     }
     finally
     { 
+      state.exitFrame();
       this.state=lastState;
       this.component=lastComponent;
       this.crumbtrail=lastCrumbtrail;
@@ -280,7 +282,9 @@ public class StandardDispatcher
       reversePath.add(element);
     }
     if (this.state!=null)
-    { this.state=this.state.getChild(index);
+    { 
+      this.state=this.state.getChild(index);
+      this.state.enterFrame(currentFrame);
     }
     this.crumbtrail.add(index);
   }
@@ -290,7 +294,9 @@ public class StandardDispatcher
   { 
     this.crumbtrail.removeLast();
     if (this.state!=null)
-    { this.state=this.state.getParent();
+    { 
+      this.state.exitFrame();
+      this.state=this.state.getParent();
     }
     if (reversePath!=null && !reversePath.isEmpty())
     { path.add(reversePath.removeFirst());

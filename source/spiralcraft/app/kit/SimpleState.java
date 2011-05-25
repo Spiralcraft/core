@@ -15,6 +15,7 @@
 package spiralcraft.app.kit;
 
 import spiralcraft.app.State;
+import spiralcraft.app.StateFrame;
 
 public class SimpleState
   implements State
@@ -24,6 +25,8 @@ public class SimpleState
   private final State[] children;
   private int[] path;
   private final String componentId;
+  private boolean frameChanged;
+  private StateFrame lastFrame;
   
   public SimpleState(int childCount,String componentId)
   {     
@@ -154,7 +157,24 @@ public class SimpleState
   { return componentId;
   }
   
+  @Override
+  public void enterFrame(StateFrame frame)
+  {
+    if (lastFrame!=frame)
+    { lastFrame=frame;
+    }
+    frameChanged=true;
+  }
+  
+  @Override
+  public void exitFrame()
+  { frameChanged=false;
+  }
     
+  @Override
+  public boolean isNewFrame()
+  { return frameChanged;
+  }
 }
 
 
