@@ -17,6 +17,9 @@ package spiralcraft.task;
 import java.net.URI;
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.LifecycleException;
+import spiralcraft.common.namespace.PrefixedName;
+import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
@@ -35,10 +38,18 @@ public class Reference<Tresult>
 
   private URI targetTypeURI;
   private URI targetURI;
+  private URI referenceURI;
   
   private AbstractXmlObject<?,?> target;
   
   { addChainResult=true;
+  }
+  
+  
+
+  public void setReference(PrefixedName reference) 
+    throws UnresolvedPrefixException
+  { this.referenceURI=reference.resolve().toURIPath();
   }
   
   public void setTargetTypeURI(URI targetTypeURI)
@@ -74,12 +85,31 @@ public class Reference<Tresult>
   }
 
   @Override
+  public void start()
+    throws LifecycleException
+  {
+    target.start();
+    super.start();
+  }
+  
+  @Override
+  public void stop()
+    throws LifecycleException
+  {
+    target.stop();
+    super.stop();
+  }
+
+  
+  @Override
   public void bindChildren(
     Focus<?> focusChain)
     throws ContextualException
   {
-    target=AbstractXmlObject.create
-      (targetTypeURI,targetURI);
+    target
+      =referenceURI==null
+      ?AbstractXmlObject.create(targetTypeURI,targetURI)
+      :AbstractXmlObject.instantiate(referenceURI);
     try
     { focusChain=target.bind(focusChain);
     }
