@@ -38,6 +38,7 @@ import spiralcraft.log.ClassLog;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import java.net.URI;
 
@@ -70,7 +71,7 @@ public class DataSession
     }
   }
   
-  private HashMap<Identifier,Buffer> buffers;  
+  private LinkedHashMap<Identifier,Buffer> buffers;  
   private DataComposite data;
   private Type<? extends DataComposite> type;
   private Space space;
@@ -151,7 +152,7 @@ public class DataSession
     }
     
     if (buffers==null)
-    { buffers=new HashMap<Identifier,Buffer>();
+    { buffers=new LinkedHashMap<Identifier,Buffer>();
     }
     
     Identifier id=composite.getId();
@@ -188,13 +189,63 @@ public class DataSession
     
     
   }
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public synchronized <Tbuffer extends Buffer> Tbuffer 
+    bufferForId(Type<?> type,Identifier id,DataComposite original)
+    throws DataException
+  {
+    if (buffers==null)
+    { buffers=new LinkedHashMap<Identifier,Buffer>();
+    }
+    Buffer buffer=buffers.get(id);
+    if (buffer!=null)
+    { 
+      if (debug)
+      { log.fine("Using existing buffer "+buffer);
+      }
+      return (Tbuffer) buffer;
+    }   
+    
+    if (original!=null)
+    { 
+      if (original.isTuple())
+      { buffer=new BufferTuple(this,original.asTuple());
+      }
+      else if (original.isAggregate())
+      { buffer=new BufferAggregate(this,original.asAggregate());
+      }
+
+    }
+    else
+    {
+    
+      if (type.isAggregate())
+      { buffer=new BufferAggregate(this,type);
+      }
+      else
+      { buffer=new BufferTuple(this,type);
+      }
+    
+      if (id==null)
+      { id=new PojoIdentifier(buffer);
+      }
+      buffer.setId(id);
+    }
+    
+    buffers.put(buffer.getId(),buffer);
+    if (debug)
+    { log.fine("Created new buffer "+buffer);
+    }
+    return (Tbuffer) buffer;
+  }
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public synchronized <Tbuffer extends Buffer> Tbuffer newBuffer(Type<?> type)
     throws DataException
   {
     if (buffers==null)
-    { buffers=new HashMap<Identifier,Buffer>();
+    { buffers=new LinkedHashMap<Identifier,Buffer>();
     }
     Buffer buffer=null;
     if (type.isAggregate())
