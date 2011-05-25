@@ -1,0 +1,58 @@
+<task:Value
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:query="class:/spiralcraft/data/query/"
+  xmlns:dtask="class:/spiralcraft/data/task/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:dutil="class:/spiralcraft/data/util/"  
+  xmlns:dtest="class:/spiralcraft/data/test/"  
+  xmlns:std="class:/spiralcraft/data/types/standard/"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  xmlns:j="class:/java/lang/"
+  >
+  <value>
+    <dutil:SummarizerService>
+      <summaryType x="[@example:FactCount].type"/>
+      
+      <factType x="[@example:Fact].type"/>
+      
+      <summaryKeyBindings>factId
+      </summaryKeyBindings>
+      
+      <summaryDataBindings>count:=[*fn:Count]
+      </summaryDataBindings>
+
+      <idleDelayMs>100
+      </idleDelayMs>
+    </dutil:SummarizerService>
+  </value>
+  
+  <chain>
+   
+    <task:Sequence>
+      <scenarios>
+
+        <task:Eval>
+          <x>
+          [*dtask:Fetch{[*query:Scan{[@example:Fact].type}]}].()
+            {
+              .#{ [dutil:SummarizerService].accept(.)
+                }
+              ,.#{ [dutil:SummarizerService].accept(.)
+                }
+              ,.#{ [dutil:SummarizerService].accept(.)
+                }
+            }
+          </x>
+        </task:Eval>
+        <task:Eval>
+          <x>[dutil:SummarizerService].flush()
+          </x>
+        </task:Eval>
+      </scenarios>
+      
+      
+    </task:Sequence>
+  </chain>
+        
+</task:Value>

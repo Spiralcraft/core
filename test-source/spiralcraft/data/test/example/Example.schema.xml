@@ -49,6 +49,11 @@
     </meta:Entity>
 
     <meta:Entity>
+      <type><example:FactCount.type/>
+      </type>
+    </meta:Entity>
+    
+    <meta:Entity>
       <type><example:IntegerNode.type/>
       </type>
     </meta:Entity>

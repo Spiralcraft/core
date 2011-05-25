@@ -11,6 +11,7 @@
       <Any.list ref="Fact.data.xml"/>
       <Any.list ref="IntegerNode.data.xml"/>
       <Any.list ref="StringNode.data.xml"/>
+      <Any.list ref="FactCount.data.xml"/>
     
     </Any.list.list>
   </data>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:example="class:/spiralcraft/data/test/example"
+  >
+
+  <fields>
+    <meta:Field>
+
+      <name>factId
+      </name>
+
+      <type><String.type/>
+      </type>
+          
+    </meta:Field>
+        
+        
+    <meta:Field>
+
+      <name>count
+      </name>
+      
+      <description>The number of times the fact was encountered
+      </description>
+
+      <type>
+        <Integer.type/>
+      </type>
+
+    </meta:Field>
+        
+
+  </fields>
+      
+  <keys>
+    <meta:Key>
+
+      <fieldList>factId
+      </fieldList>
+      		
+      <primary>true
+      </primary>
+      		
+    </meta:Key>
+    
+  </keys>
+      
+</meta:Type>

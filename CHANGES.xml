@@ -15,6 +15,306 @@
     <detail>
       
       <scm:Change>
+        <revision>-dev3
+        </revision>
+        
+        <notes>
+          <scm:Note>New task.Value scenario to reference a directly configured
+            component.
+          </scm:Note>
+          <scm:Note>task.Reference can use single QName based URI to
+            resolve reference.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/task/
+        </path>
+        
+        <resources>
+          <URI>Reference.java
+          </URI>
+          <URI>Value.java
+          </URI>
+
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev3
+        </revision>
+        
+        <notes>
+          <scm:Note>Minor spiralcraft-lang fixes, enhancements and refactoring
+          </scm:Note>
+          <scm:Note>ContextualFunction internal API change from 
+            bindSource() to bindResult() for clarity
+          </scm:Note>
+          <scm:Note>Count fixed to always export Integer Reflector instead of
+            using source Reflector
+          </scm:Note>
+          <scm:Note>Binding Expression "x:=y" allowed as top level Expression 
+            to facilitate relevant configuration scenarios. BindingChannel
+            enhanced for usability.
+          </scm:Note>
+          <scm:Note>ContextIdentifierNode.isRelative() to indicate whether
+            the identifier is "standalone". 
+          </scm:Note>
+          <scm:Note>IterationProjector refactored into MapProjector and
+            ReduceProjector.
+          </scm:Note>
+          <scm:Note>AbstractChannel.bind(Expression[],focus) static convenience
+            method
+          </scm:Note>
+          <scm:Note>LangUtil.assertChannel() asserts that specified Channel
+            is available in the Focus chain
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/functions/Count.java
+          </URI>
+          <URI>lang/spi/ContextualFunction.java
+          </URI>
+          <URI>lang/spi/IterationProjector.java
+          </URI>
+          <URI>lang/spi/MapProjector.java
+          </URI>
+          <URI>lang/spi/ReduceProjector.java
+          </URI>
+          <URI>lang/spi/AbstractChannel.java
+          </URI>
+          <URI>lang/parser/ExpressionParser.java
+          </URI>
+          <URI>lang/parser/BindingNode.java
+          </URI>
+          <URI>lang/parser/BindingChannel.java
+          </URI>
+          <URI>lang/parser/ContextIdentifierNode.java
+          </URI>
+          <URI>lang/parser/MapReduceNode.java
+          </URI>
+          <URI>lang/util/LangUtil.java
+          </URI>
+          <URI>data/util/QueryFunction.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev3
+        </revision>
+        
+        <notes>
+          <scm:Note>New Summarizer component to bulk update data Entities
+            that represent reductions or summaries from batches of source
+            data.
+          </scm:Note>
+          <scm:Note>New SummarizerService component to batch incoming 
+            data for Summarizer received from arbitrary clients.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/util/
+        </path>
+        
+        <resources>
+          <URI>Summarizer.java
+          </URI>
+          <URI>SummarizerService.java
+          </URI>
+
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev3
+        </revision>
+        
+        <notes>
+          <scm:Note>EquiJoin now accepts Binding Expressions (x:=y) to 
+            facilitate configuration
+          </scm:Note>
+          <scm:Note>Convenience method BoundQuery fetchUnique() to execute
+            the Query and return a unique value.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/query/
+        </path>
+        
+        <resources>
+          <URI>BoundQuery.java
+          </URI>
+          <URI>EquiJoin.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev3
+        </revision>
+        
+        <notes>
+          <scm:Note>Editor now implements the Context pattern to simplify
+            access to its buffer in a variety of situations.
+          </scm:Note>
+          <scm:Note>TupleEditor accepts BindingChannels to use externally
+            bound data sources to populate data.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>editor/EditorBase.java
+          </URI>
+          <URI>editor/TupleEditor.java
+          </URI>
+          <URI>task/Edit.java
+          </URI>
+
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev3
+        </revision>
+        
+        <notes>
+          <scm:Note>New Aggregate.isEmpty() interface method
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>Aggregate.java
+          </URI>
+          <URI>session/BufferAggregate.java
+          </URI>
+          <URI>spi/KeyedListAggregate.java
+          </URI>
+          <URI>spi/ListAggregate.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev3
+        </revision>
+        
+        <notes>
+          <scm:Note>Enhancements to allow the use of Buffers to perform 
+            multiple operations against the same Entity during a single
+            Transaction.
+          </scm:Note>
+          <scm:Note>Enhancements of Identity API and design contract to
+            support the creation of pre-identified Buffers, the re-use of
+            Buffers, and associations between different forms of in-process
+            data for the same Entity.
+          </scm:Note>
+          <scm:Note>DeltaTuple provides a way to incorporate changes to 
+            underlying data using updateOriginal() method
+          </scm:Note>
+          <scm:Note>JournalTuple incorporates multiple Deltas with change
+            to prepareUpdate() API and contract.
+          </scm:Note>       
+          <scm:Note>XML store implementation freezes mutable Buffers before 
+            processing to account for possibility of modification during
+            transaction.
+          </scm:Note>
+          <scm:Note>XML store implementation accounts for multiple changes
+            to the same Entity during a single Transaction.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>DeltaTuple.java
+          </URI>
+          <URI>Identifier.java
+          </URI>
+          <URI>JournalTuple.java
+          </URI>
+          <URI>core/SchemeImpl.java
+          </URI>
+          <URI>session/DataSession.java
+          </URI>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>session/PrimaryKeyBufferChannel.java
+          </URI>
+          <URI>spi/AbstractTuple.java
+          </URI>
+          <URI>spi/ArrayDeltaTuple.java
+          </URI>
+          <URI>spi/ArrayJournalTuple.java
+          </URI>
+          <URI>spi/DataKeyFunction.java
+          </URI>
+          <URI>spi/KeyIdentifier.java
+          </URI>
+          <URI>spi/PojoIdentifier.java
+          </URI>
+          <URI>xml/XmlQueryable.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev3
+        </revision>
+        
+        <notes>
+          <scm:Note>Migrate additional functionality from spiralcraft-textgen
+            into the spiralcraft-app package.
+          </scm:Note>
+          <scm:Note>Move State Frame change detection into the State API and
+            the Dispatcher and out of individual components.
+          </scm:Note>
+          <scm:Note>New FrameHandler kit part runs code on StateFrame change
+          </scm:Note>
+          <scm:Note>Standardize on MessageHandlerChain implementation and
+            design contract from spiralcraft-textgen
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/app
+        </path>
+
+        <resources>
+          <URI>State.java
+          </URI>
+          <URI>kit/AbstractComponent.java
+          </URI>
+          <URI>kit/AbstractMessageHandler.java
+          </URI>
+          <URI>kit/ExpansionState.java
+          </URI>
+          <URI>kit/FrameHandler.java
+          </URI>
+          <URI>kit/SimpleState.java
+          </URI>
+          <URI>kit/StandardDispatcher.java
+          </URI>
+          <URI>kit/StandardMessageHandlerChain.java
+          </URI>
+          <URI>kit/ValueState.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      
+      <scm:Change>
         <revision>-dev2
         </revision>
         

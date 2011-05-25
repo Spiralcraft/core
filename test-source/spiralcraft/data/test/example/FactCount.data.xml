@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<example:FactCount.list xmlns:example="class:/spiralcraft/data/test/example/">
+  <example:FactCount tx="1306281700323" v="2">
+    <factId>1</factId>
+    <count>4</count>
+  </example:FactCount>
+  <example:FactCount tx="1306281700323" v="2">
+    <factId>2</factId>
+    <count>5</count>
+  </example:FactCount>
+  <example:FactCount tx="1306281700323" v="2">
+    <factId>3</factId>
+    <count>6</count>
+  </example:FactCount>
+  <example:FactCount tx="1306281700323" v="2">
+    <factId>4</factId>
+    <count>7</count>
+  </example:FactCount>
+</example:FactCount.list>
