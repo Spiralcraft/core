@@ -341,6 +341,11 @@ public abstract class Scenario<Tcontext,Tresult>
         );
     
     exportChain=bindExports(exportChain);
+    if (exportChain==null)
+    { 
+      throw new IllegalArgumentException
+        ("bindExports cannot return null in "+getClass().getName());
+    }
     bindChildren(exportChain);
     
     // 
