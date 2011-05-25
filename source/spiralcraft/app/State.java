@@ -139,7 +139,29 @@ public interface State
    */
   String getComponentId();
   
-    
+  /**
+   * Called by the dispatcher when a State that is within the target tree
+   *   of a message is about to be messaged.
+   * 
+   * @param frame
+   * @return
+   */
+  void enterFrame(StateFrame frame);
+  
+  /**
+   * Called by the dispatcher when a State that is within the target tree
+   *   of a message has completed the processing of a message.
+   */
+  void exitFrame();
+  
+  /**
+   * Indicates to components that the StateFrame has changed since the 
+   *   last time a message was received, and that any state data should be
+   *   refreshed.
+   * 
+   * @return
+   */
+  boolean isNewFrame();
 }
 
 
