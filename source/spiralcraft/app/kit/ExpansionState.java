@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import spiralcraft.app.State;
+import spiralcraft.app.StateFrame;
 
 public class ExpansionState<T>
   implements State
@@ -27,6 +28,8 @@ public class ExpansionState<T>
   private List<MementoState> children;
   private final String componentId;
   private final int grandchildCount;
+  private boolean frameChanged;
+  private StateFrame lastFrame;
 
   private boolean valid;
   private State parent;
@@ -202,6 +205,24 @@ public class ExpansionState<T>
   { return componentId;
   }
   
+  @Override
+  public void enterFrame(StateFrame frame)
+  {
+    if (lastFrame!=frame)
+    { lastFrame=frame;
+    }
+    frameChanged=true;
+  }
+  
+  @Override
+  public void exitFrame()
+  { frameChanged=false;
+  }
+    
+  @Override
+  public boolean isNewFrame()
+  { return frameChanged;
+  }
   class MementoState
     extends ValueState<T>
   {
