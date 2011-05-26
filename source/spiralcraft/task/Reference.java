@@ -18,7 +18,7 @@ import java.net.URI;
 
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
-import spiralcraft.common.namespace.PrefixedName;
+import spiralcraft.common.namespace.ContextualName;
 import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.lang.BindException;
@@ -47,9 +47,9 @@ public class Reference<Tresult>
   
   
 
-  public void setReference(PrefixedName reference) 
+  public void setReference(ContextualName reference) 
     throws UnresolvedPrefixException
-  { this.referenceURI=reference.resolve().toURIPath();
+  { this.referenceURI=reference.getQName().toURIPath();
   }
   
   public void setTargetTypeURI(URI targetTypeURI)
