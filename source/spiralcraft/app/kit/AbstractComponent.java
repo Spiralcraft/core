@@ -433,9 +433,19 @@ public class AbstractComponent
     }
     
     bindComplete(focusChain);
-    // XXX We shouldn't return anything that relies on a Context. Ideally,
-    //   we should return selfFocus only.
-    return focusChain;
+    
+    return bindReturn(focusChain);
+  }
+  
+  /**
+   * Override to return something other than selfFocus to this Component's
+   *   container
+   *   
+   * @param focus
+   * @return
+   */
+  protected Focus<?> bindReturn(Focus<?> focus)
+  { return selfFocus;
   }
   
   /**
