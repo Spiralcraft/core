@@ -302,6 +302,9 @@
           <scm:Note>Standardize on MessageHandlerChain implementation and
             design contract from spiralcraft-textgen
           </scm:Note>
+          <scm:Note>Return value of Component.bind() standardized to be
+            selfFocus. 
+          </scm:Note>
         </notes>
 
         <path>source/spiralcraft/app
