@@ -168,37 +168,41 @@ public class SummarizerService<Tsummary extends Tuple,Tfact extends Tuple>
       factBuffer.ensureCapacity(factQueue.size());
       factBuffer.addAll(factQueue);
       factQueue.clear();
+
     }
     
-    DataSession session=new DataSession();
-    session.setSpace(space);
-    sessionChannel.push(session);
-    try
+    if (!factBuffer.isEmpty())
     {
-    
-      summarizer.dataInitialize(summarizer.getFactType().getFieldSet());
+      DataSession session=new DataSession();
+      session.setSpace(space);
+      sessionChannel.push(session);
       try
       {
-        for (Tfact fact:factBuffer)
-        { summarizer.dataAvailable(fact);
+      
+        summarizer.dataInitialize(summarizer.getFactType().getFieldSet());
+        try
+        {
+          for (Tfact fact:factBuffer)
+          { summarizer.dataAvailable(fact);
+          }
         }
+        finally
+        { summarizer.dataFinalize();
+        }
+  
+        factBuffer.clear();
+      }
+      catch (DataException x)
+      { 
+        log.log
+          (Level.SEVERE
+          ,"Error updating summary "+summarizer.getSummaryType().getURI()
+          ,x
+          );
       }
       finally
-      { summarizer.dataFinalize();
+      { sessionChannel.pop();
       }
-
-      factBuffer.clear();
-    }
-    catch (DataException x)
-    { 
-      log.log
-        (Level.SEVERE
-        ,"Error updating summary "+summarizer.getSummaryType().getURI()
-        ,x
-        );
-    }
-    finally
-    { sessionChannel.pop();
     }
     
     synchronized(monitor)
@@ -238,5 +242,6 @@ public class SummarizerService<Tsummary extends Tuple,Tfact extends Tuple>
     space=LangUtil.assertInstance(Space.class,focusChain);
     return focusChain;
   }
+
 
 }
