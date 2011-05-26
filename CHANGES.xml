@@ -19,6 +19,22 @@
         </revision>
         
         <notes>
+          <scm:Note>ContextualName class resolves a QName on instantiation
+            to provide code context.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/common/namespace/ContextualName.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev3
+        </revision>
+        
+        <notes>
           <scm:Note>New task.Value scenario to reference a directly configured
             component.
           </scm:Note>
