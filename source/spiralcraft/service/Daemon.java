@@ -152,10 +152,16 @@ public class Daemon
     }
     
     handleEvents();
-    stop();
-    synchronized(_shutdownHook)
-    { _shutdownHook.notify();
+    try
+    {
+      stop();
     }
+    finally
+    {
+      _running=false;
+      _shutdownHook.finish();
+    }
+    
   }
   
   
@@ -198,7 +204,6 @@ public class Daemon
     catch (InterruptedException x)
     { x.printStackTrace();
     }
-    _running=false;
     try
     { Runtime.getRuntime().removeShutdownHook(_shutdownHook);
     }
@@ -217,19 +222,28 @@ public class Daemon
       terminate();
       synchronized(this)
       { 
-        log.log(spiralcraft.log.Level.INFO,"Waiting for stop...");
         try
         { 
           if (_running)
-          { wait(10000);
+          { 
+            log.log(spiralcraft.log.Level.INFO,"Waiting for stop...");
+            wait(10000);
+            log.log(spiralcraft.log.Level.INFO,"Done waiting for stop.");
           }
         }
         catch (InterruptedException x)
-        {
+        { log.log(spiralcraft.log.Level.INFO,"Timed out waiting for stop.");
         }
-        log.log(spiralcraft.log.Level.INFO,"Done waiting for stop.");
       }
     }
+    
+    public void finish()
+    { 
+      synchronized(this)
+      { notifyAll();
+      }
+    }
+    
   }
 
 }
