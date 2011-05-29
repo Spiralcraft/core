@@ -36,7 +36,7 @@ public class Loader
 {
   private static final ClassLog log
     =ClassLog.getInstance(Loader.class);
-  private static final Level debugLevel
+  private static final Level logLevel
     =ClassLog.getInitialDebugLevel(Loader.class,Level.INFO);
   
   private final ArrayList<Archive> archives=new ArrayList<Archive>();
@@ -109,17 +109,26 @@ public class Loader
   protected Class<?> loadClass(String formalName,boolean resolve)
     throws ClassNotFoundException
   {
+    if (logLevel.isTrace())
+    { log.trace(formalName);
+    }
     Class<?> clazz=findLoadedClass(formalName);
     if (clazz==null)
     { clazz=findClass(formalName,precedentArchives);
     }
-    if (clazz==null && getParent()!=null)
-    { clazz=getParent().loadClass(formalName);
+    if (clazz==null)
+    { 
+      if (getParent()!=null)
+      { clazz=getParent().loadClass(formalName);
+      }
+      else
+      { clazz=ClassLoader.getSystemClassLoader().loadClass(formalName);
+      }
     }
     if (clazz==null)
     { clazz=findClass(formalName);
     }
-    if (debug || debugLevel.isFine())
+    if (debug || logLevel.isFine())
     { log.fine( (clazz!=null?"FOUND":"FAIL")+":"+formalName );
     }
     if (resolve && clazz!=null)
@@ -187,14 +196,14 @@ public class Loader
       Archive.Entry entry=findEntry(path,archives);
       if (entry==null)
       { 
-        if (debug || debugLevel.isFine())
+        if (debug || logLevel.isFine())
         { log.fine( "FAIL:"+path );
         }
         return null;
       }
       else
       { 
-        if (debug || debugLevel.isFine())
+        if (debug || logLevel.isFine())
         { log.fine( "FOUND:"+path );
         }
         return entry.getResource();
@@ -223,9 +232,18 @@ public class Loader
   @Override
   public URL getResource(String path)
   {
+    if (logLevel.isTrace())
+    { log.trace(path);
+    }
     URL resource=findPrecedentResource(path);
-    if (resource==null && getParent()!=null)
-    { resource=getParent().getResource(path);
+    if (resource==null)
+    { 
+      if (getParent()!=null)
+      { resource=getParent().getResource(path);
+      }
+      else
+      { resource=ClassLoader.getSystemClassLoader().getResource(path);
+      }
     }
     if (resource==null)
     { resource=findResource(path);
@@ -240,6 +258,9 @@ public class Loader
   public Enumeration<URL> getResources(String path)
     throws IOException
   {
+    if (logLevel.isTrace())
+    { log.trace(path);
+    }
     LinkedList<URL> resources=new LinkedList<URL>();
     for (Archive archive: precedentArchives)
     {
@@ -264,6 +285,17 @@ public class Loader
         { resources.add(renum.nextElement());
         }
       }
+    }
+    else
+    {
+      Enumeration<URL> renum=ClassLoader.getSystemClassLoader().getResources(path);
+      if (renum!=null)
+      {
+        while (renum.hasMoreElements())
+        { resources.add(renum.nextElement());
+        }
+      }
+    
     }
         
     for (Archive archive: archives)
@@ -313,14 +345,25 @@ public class Loader
   @Override
   public InputStream getResourceAsStream(String path)
   {
-    InputStream in=findPrecedentStream(path);
-    if (in==null && getParent()!=null)
-    { in=getParent().getResourceAsStream(path);
+    if (logLevel.isTrace())
+    { log.trace(path);
     }
+    InputStream in=findPrecedentStream(path);
+    if (in==null)
+    { 
+      if (getParent()!=null)
+      { in=getParent().getResourceAsStream(path);
+      }
+      else
+      { in=ClassLoader.getSystemClassLoader().getResourceAsStream(path);
+      }
+      
+    }
+    
     if (in==null)
     { in=findStream(path);
     }
-    if (debug || debugLevel.isFine())
+    if (debug || logLevel.isFine())
     { log.fine( (in!=null?"FOUND":"FAIL")+":"+path );
     }
     
@@ -353,7 +396,7 @@ public class Loader
   public void start()
     throws LifecycleException
   {
-    if (debug && debugLevel.isTrace())
+    if (debug && logLevel.isTrace())
     { log.trace("starting...");
     }
     
@@ -361,7 +404,7 @@ public class Loader
     {
       for (Archive archive: archives)
       { 
-        if (debug && debugLevel.isTrace())
+        if (debug && logLevel.isTrace())
         { log.trace("Opening local archive "+archive);
         }
         archive.open();
@@ -369,7 +412,7 @@ public class Loader
     
       for (Archive archive: precedentArchives)
       { 
-        if (debug && debugLevel.isTrace())
+        if (debug && logLevel.isTrace())
         { log.trace("Opening precedent archive "+archive);
         }
         archive.open();
