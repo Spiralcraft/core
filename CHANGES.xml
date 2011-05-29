@@ -13,6 +13,37 @@
     </date>
     
     <detail>
+      <scm:Change>
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix Daemon shutdown hook logic to ensure that stop()
+            completes before exiting
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/service/Daemon.java
+        </path>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix ClassLoader contract violation which prevented some
+            JVM system services from being resolved
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/classloader/Loader.java
+        </path>
+        
+      </scm:Change>
       
       <scm:Change>
         <revision>-dev3
