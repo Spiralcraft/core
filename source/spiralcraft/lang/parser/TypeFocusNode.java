@@ -184,7 +184,7 @@ public class TypeFocusNode
     }
     else
     { throw new BindException
-        ("Type '"+uri+"' not found. "
+        ("Type '"+uri+"' not found. Searched TypeModels: "
           +ArrayUtil.format(TypeModel.getRegisteredModels(),",","")
         );
     }

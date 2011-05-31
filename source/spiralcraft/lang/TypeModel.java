@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.util.ClassLoaderLocal;
 
 /**
@@ -31,6 +32,8 @@ import spiralcraft.util.ClassLoaderLocal;
 public abstract class TypeModel
 {
   protected static final ClassLog clog=ClassLog.getInstance(TypeModel.class);
+  protected static final Level logLevel
+    =ClassLog.getInitialDebugLevel(TypeModel.class, Level.INFO);
   
   private static final ClassLoaderLocal<List<TypeModel>> registeredModels
     =new ClassLoaderLocal<List<TypeModel>>();
@@ -75,7 +78,11 @@ public abstract class TypeModel
       ret=new ArrayList<TypeModel>();
       registeredModels.setInstance(model.getClass().getClassLoader(),ret);      
     }
-//    clog.fine("Registering "+model);
+    if (logLevel.isDebug())
+    { 
+      clog.debug("Registering "+model
+        +" ("+model.getClass().getClassLoader()+") ");
+    }
     ret.add(model);
   }
   
