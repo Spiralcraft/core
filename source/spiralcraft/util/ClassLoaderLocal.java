@@ -119,14 +119,24 @@ public class ClassLoaderLocal<T>
   {
     LinkedList<T> list=new LinkedList<T>();
     ClassLoader loader=Thread.currentThread().getContextClassLoader();
+    boolean reachedSystem=false;
     while (loader!=null)
     { 
+      if (loader==ClassLoader.getSystemClassLoader())
+      { reachedSystem=true;
+      }
+      
       T instance=getInstance(loader);
       if (instance!=null)
       { list.add(instance);
       }
       loader=loader.getParent();
+      
+      if (loader==null && !reachedSystem)
+      { loader=ClassLoader.getSystemClassLoader();
+      }
     }
+    
     return list;
   }
   
