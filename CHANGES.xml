@@ -35,14 +35,25 @@
         
         <notes>
           <scm:Note>Fix ClassLoader contract violation which prevented some
-            JVM system services from being resolved
+            JVM system services from being resolved.
+          </scm:Note>
+          
+          <scm:Note>Fix ClassLoaderLocal to anticipate that the System 
+            ClassLoader is not necessarily reachable via 
+            ClassLoader.getParent()
           </scm:Note>
 
         </notes>
         
-        <path>source/spiralcraft/classloader/Loader.java
+        <path>source/spiralcraft/
         </path>
         
+        <resources>
+          <URI>classloader/Loader.java
+          </URI>
+          <URI>util/ClassLoaderLocal.java
+          </URI>
+        </resources>
       </scm:Change>
       
       <scm:Change>
