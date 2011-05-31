@@ -94,6 +94,10 @@ public class URIUtil
     ,String unencodedPath
     )
   {
+    if (unencodedPath.isEmpty())
+    { unencodedPath="/";    
+    }
+    
     try
     {
       return new URI
