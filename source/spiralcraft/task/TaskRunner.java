@@ -60,7 +60,7 @@ public class TaskRunner
 
   private Thread shutdownThread=new ShutdownHook();
   private URI serviceURI;
-  
+  private boolean printResult=false;
   
   
   {
@@ -115,7 +115,14 @@ public class TaskRunner
   { this.rootFocus=focus;
   }
   
-
+  /**
+   * Print the result to the ExecutionContext.out PrintWriter
+   * 
+   * @param printResult
+   */
+  public void setPrintResult(boolean printResult)
+  { this.printResult=printResult;
+  }
   
   
   public void loadScenario(URI uri)
@@ -262,7 +269,7 @@ public class TaskRunner
         command.execute();
         
         Object result=command.getResult();
-        if (result!=null)
+        if (result!=null && printResult)
         {
           PrintStream out=ExecutionContext.getInstance().out();
           out.println
