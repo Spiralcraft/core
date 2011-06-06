@@ -18,6 +18,34 @@
         </revision>
         
         <notes>
+          <scm:Note>Scenario.verbose only concerns printing output to a
+            contextual Appendable and does not concern the log.
+          </scm:Note>
+          <scm:Note>TaskRunner has printResult option to print the
+            command result to ExecutionContext.out, defaults to false.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>task/Scenario.java
+          </URI>
+          <URI>task/TaskRunner.java
+          </URI>
+          <URI>vfs/task/Copy.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev4
+        </revision>
+        
+        <notes>
           <scm:Note>Fix Daemon shutdown hook logic to ensure that stop()
             completes before exiting
           </scm:Note>
