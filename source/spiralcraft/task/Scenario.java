@@ -430,6 +430,12 @@ public abstract class Scenario<Tcontext,Tresult>
     }
   }
 
+  /**
+   * Indicate that the scenario should write data to the contextual
+   *   OutputStream, if any.
+   *   
+   * @param verbose
+   */
   public void setVerbose(boolean verbose)
   { this.verbose=verbose;
   }
@@ -438,8 +444,8 @@ public abstract class Scenario<Tcontext,Tresult>
   public void start()
     throws LifecycleException
   { 
-    if (verbose)
-    { log.log(Level.INFO,"Initializing");
+    if (debug)
+    { log.log(Level.DEBUG,"Initializing");
     }
   }
 
@@ -447,8 +453,8 @@ public abstract class Scenario<Tcontext,Tresult>
   public void stop()
     throws LifecycleException
   { 
-    if (verbose)
-    { log.log(Level.INFO,"Finalizing");
+    if (debug)
+    { log.log(Level.DEBUG,"Finalizing");
     }
   }
   
