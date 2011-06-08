@@ -411,8 +411,8 @@ public class BufferTuple
         else
         { 
           throw new TypeMismatchException
-            ("Type "+getType()+" has no base type compatible with "
-            +" wider type "+type
+            ("Type "+getType().getURI()+" has no base type compatible with "
+            +" wider type "+type.getURI()
             );
         }
       }
