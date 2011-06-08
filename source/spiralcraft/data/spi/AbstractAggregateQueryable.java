@@ -34,6 +34,7 @@ import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Scan;
+import spiralcraft.data.xml.XmlQueryable;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -42,6 +43,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.kit.ConstantChannel;
+import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.util.ArrayUtil;
 
@@ -59,6 +61,13 @@ import spiralcraft.util.ArrayUtil;
 public abstract class AbstractAggregateQueryable<T extends Tuple>
   implements Queryable<T>
 { 
+  
+  protected final ClassLog log
+    =ClassLog.getInstance(XmlQueryable.class);
+
+  protected Level logLevel
+    =ClassLog.getInitialDebugLevel(XmlQueryable.class,null);
+  
   protected abstract Aggregate<T> getAggregate()
     throws DataException;
   
@@ -134,6 +143,9 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
     { ret=q.solve(context, this);
     }
     ret.resolve();
+    if (logLevel.isDebug())
+    { log.debug(q.toString()+" bound to "+ret);
+    }
     return ret;
   }
   
@@ -277,6 +289,10 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       
       ArrayList<Expression<?>> lhsExpressions=ej.getLHSExpressions();
 
+      // TODO: Check keys here: This should really be 
+      //   getResultType().getProjection
+      //       (lhsExpressions.toArray(new Expression[0]))
+      
       projection
         =(Projection<T>) getResultType().getScheme().getProjection
           (lhsExpressions.toArray(new Expression[0]));
@@ -299,6 +315,11 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       debugTrace=debugLevel.canLog(Level.TRACE);
     }
     
+    
+    @Override
+    public String toString()
+    { return super.toString()+" projection="+projection.toString();
+    }
     
     @Override
     public SerialCursor<T> doExecute() throws DataException

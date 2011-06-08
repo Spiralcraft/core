@@ -314,6 +314,9 @@ public class SchemeImpl
     { field.resolve();
     }
     
+    for (ProjectionImpl<?> projection: projectionMap.values())
+    { projection.resolve();
+    }
   }
 
   
@@ -485,6 +488,9 @@ public class SchemeImpl
       
       projection=new ProjectionImpl<Tuple>(this,signature);
       projectionMap.put(signature,projection);
+      if (resolved)
+      { projection.resolve();
+      }
       return projection;
       
     }

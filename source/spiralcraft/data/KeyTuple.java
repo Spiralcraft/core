@@ -103,19 +103,48 @@ public class KeyTuple
     { return false;
     }
 
+    if (o.hashCode()!=hashCode())
+    { return false;
+    }
     
     if (o instanceof KeyTuple)
     { 
-      if (o.hashCode()!=hashCode())
+      KeyTuple ko=(KeyTuple) o;
+
+      if (!isComparableTo(ko))
       { return false;
       }
       else
-      { return ArrayUtil.arrayEquals(data,((KeyTuple) o).data);
+      { return ArrayUtil.arrayEquals(data,(ko).data);
       }
     }
     else
     { return AbstractTuple.tupleEquals(this,(Tuple) o);
     }
+  }
+
+  /**
+   * Provides an opportunity for a subclass to differentiate the key with
+   *   more specificity, e.g. by using the FieldSet
+   *    
+   * @param tuple
+   * @return
+   */
+  protected boolean isComparableTo(KeyTuple tuple)
+  { return true;
+  }
+  
+  /**
+   * Provides an opportunity for a subclass to differentiate the key with
+   *   more specificity, e.g. by using the FieldSet
+   *    
+   *    
+   * @param hashCode Apply an additional factor to the hashCode.
+   * 
+   * @return
+   */
+  protected int computeHashCode(int hashCode)
+  { return hashCode;
   }
   
   @Override

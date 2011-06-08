@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import spiralcraft.data.Field;
+import spiralcraft.data.KeyTuple;
 import spiralcraft.data.ProjectionField;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Projection;
@@ -31,6 +32,7 @@ import spiralcraft.data.lang.TupleReflector;
 import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Scan;
+import spiralcraft.data.spi.DataKeyFunction;
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
@@ -39,6 +41,8 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.KeyFunction;
 import spiralcraft.util.URIUtil;
 
 /**
@@ -73,6 +77,9 @@ public class ProjectionImpl<T>
   
   protected String projectionId="p"+(NEXT_ID++);
 
+  private DataKeyFunction<KeyTuple,T> function;
+  
+  private int hashCode;
 
   public ProjectionImpl()
   {
@@ -148,6 +155,10 @@ public class ProjectionImpl<T>
   { this.debug=debug;
   }
   
+  /**
+   * 
+   *@return the Type of the Projection itself, as opposed to the source type
+   */
   @Override
   public Type<?> getType()
   { return type;
@@ -186,10 +197,44 @@ public class ProjectionImpl<T>
   { return fields.size();
   }
 
-  public FieldSet getMasterFieldSet()
+  @Override
+  public FieldSet getSource()
   { return masterFieldSet;
   }
-
+  
+  
+  @Override
+  public int hashCode()
+  { 
+    if (resolved)
+    { return hashCode;
+    }
+    else
+      return (masterFieldSet.hashCode() * 31) 
+        + fields.hashCode();
+  }
+  
+  
+  @Override
+  public boolean equals(Object o)
+  { 
+    if (o==null)
+    { return false;
+    }
+    if (o==this)
+    { return true;
+    }
+    if (!(o instanceof ProjectionImpl))
+    { return false;
+    }
+    ProjectionImpl<?> pi=(ProjectionImpl<?>) o;
+    return (masterFieldSet==pi.masterFieldSet
+            && fields.equals(pi.fields)
+            );
+    
+  }
+  
+  
   @Override
   public Field<?>[] getSourceFields()
   { 
@@ -247,7 +292,23 @@ public class ProjectionImpl<T>
           (masterFieldSet.getType().getTypeResolver(),URIUtil.addPathSuffix(masterFieldSet.getType().getURI(),"-"+projectionId),this);
       this.type.link();
     }
+    
+    try
+    { function=resolveKeyFunction();
+    }
+    catch (BindException x)
+    { 
+      throw new DataException
+        ("Error binding projection "+getType().getURI()+" sig: "+ArrayUtil.format(getTargetExpressions(),",",""),x);
+    }
+
+    hashCode=hashCode();
     resolved=true;
+  }
+  
+  protected DataKeyFunction<KeyTuple,T> resolveKeyFunction()
+    throws BindException
+  { return null;
   }
   
   @Override
@@ -292,6 +353,33 @@ public class ProjectionImpl<T>
     return ej;
 
   }
+  
+  @Override
+  public KeyFunction<KeyTuple,T> getKeyFunction()
+  { 
+    if (function!=null)
+    { return function;
+    }
+    else
+    { 
+      try
+      { return new DataKeyFunction<KeyTuple,T>(this);
+      }
+      catch (BindException x)
+      { 
+        throw new 
+          UnsupportedOperationException
+            ("KeyFunction not supported for "+getType().getURI()+" sig: "
+            +ArrayUtil.format(getTargetExpressions(),",","")
+            ,x
+            );
+          
+      }
+    }
+      
+      
+  }
+  
   @Override
   public Channel<Tuple> bindChannel
     (Channel<T> source
@@ -398,7 +486,7 @@ public class ProjectionImpl<T>
   
   @Override
   public String toString()
-  { return contentsToString();
+  { return (type!=null?type.getURI()+" ":"")+contentsToString()+"  #"+hashCode;
   }
   
 }

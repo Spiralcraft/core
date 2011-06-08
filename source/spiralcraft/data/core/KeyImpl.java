@@ -31,7 +31,7 @@ import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Selection;
 import spiralcraft.data.query.Scan;
 import spiralcraft.data.spi.DataKeyFunction;
-
+import spiralcraft.data.spi.IdentifierFunction;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
@@ -65,7 +65,7 @@ public class KeyImpl<T extends DataComposite>
   private Query query;
   private Query foreignQuery;
   private String title;
-  private DataKeyFunction<T> function;
+  private KeyFunction<KeyTuple,T> identifierFunction;
   private StringConverter<?>[] stringConverters;
   private boolean resolved;
   private RelativeField<T> relativeField;
@@ -432,16 +432,23 @@ public class KeyImpl<T extends DataComposite>
     super.resolve();
     
     try
-    { function=new DataKeyFunction<T>(this);
+    { identifierFunction=new IdentifierFunction<T>(this);
     }
     catch (BindException x)
-    { throw new DataException("Error binding key "+getType().getURI());
+    { throw new DataException("Error resolving identifier function",x);
     }
   }
 
   @Override
-  public KeyFunction<KeyTuple,T> getFunction()
-  { return function;
+  public KeyFunction<KeyTuple,T> getIdentifierFunction()
+  { return identifierFunction;
+  }
+  
+  @Override
+  protected DataKeyFunction<KeyTuple,T> resolveKeyFunction()
+    throws BindException
+  { 
+    return new DataKeyFunction<KeyTuple,T>(this);
   }
   
   @Override

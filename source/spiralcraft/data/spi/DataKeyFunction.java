@@ -20,7 +20,6 @@ import spiralcraft.data.Projection;
 import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
-import spiralcraft.data.core.ProjectionImpl;
 import spiralcraft.data.lang.TupleReflector;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -30,22 +29,22 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.util.KeyFunction;
 
-public class DataKeyFunction<T>
-  implements KeyFunction<KeyTuple,T>
+public class DataKeyFunction<K extends KeyTuple,T>
+  implements KeyFunction<K,T>
 {
   
   private final ThreadLocalChannel<T> valueChannel;
   private final Channel<? extends Tuple> projectionChannel;
-  private final Type<T> masterType;
   
   @SuppressWarnings("unchecked")
-  public DataKeyFunction(ProjectionImpl<T> projection)
+  public DataKeyFunction(Projection<T> projection)
     throws BindException
-  { this((Type<T>) projection.getMasterFieldSet().getType(),projection);
+  { 
+    this((Type<T>) projection.getSource().getType(),projection);
   }
 
-  public DataKeyFunction
-    (Reflector<T> valueReflector,Projection<T> projection,Type<T> masterType)
+  private DataKeyFunction
+    (Reflector<T> valueReflector,Projection<T> projection)
     throws BindException
   {
     valueChannel=new ThreadLocalChannel<T>(valueReflector);
@@ -55,26 +54,20 @@ public class DataKeyFunction<T>
     valueChannel.setContext(new SimpleFocus<Void>(null));
     
     projectionChannel=projection.bindChannel(valueChannel,focus,null);
-    this.masterType=masterType;
+
   }
   
-  public DataKeyFunction(Type<T> masterType,Projection<T> projection)
+  private DataKeyFunction(Type<T> masterType,Projection<T> projection)
     throws BindException
-  { this(TupleReflector.<T>getInstance(masterType),projection,masterType);
+  { this(TupleReflector.<T>getInstance(masterType),projection);
   }
   
   @Override
-  public KeyTuple key(T value)
+  public K key(T value)
   {
     valueChannel.push(value);
     try
-    { 
-      if (masterType!=null)
-      { return new KeyIdentifier<T>(masterType,projectionChannel.get()); 
-      }
-      else
-      { return new KeyTuple(projectionChannel.get());
-      }
+    { return createKeyTuple(projectionChannel.get());
     }
     catch (DataException x)
     { throw new RuntimeDataException("Error generating retrieving key",x);
@@ -82,6 +75,12 @@ public class DataKeyFunction<T>
     finally
     { valueChannel.pop();
     }
+  }
+  
+  @SuppressWarnings("unchecked")
+  protected K createKeyTuple(Tuple projectionValue)
+    throws DataException
+  { return (K) new KeyTuple(projectionChannel.get());
   }
 
 

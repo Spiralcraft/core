@@ -19,6 +19,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.ChannelFactory;
+import spiralcraft.util.KeyFunction;
 
 /**
  * <p>A horizontal transformation of data in an arbitrary form into 
@@ -72,10 +73,22 @@ public interface Projection<T>
   Field<?>[] getSourceFields();
   
   /**
+   * 
+   * @return The source FieldSet from which this Projection is derived
+   */
+  FieldSet getSource();
+  
+  /**
    *@return an Iterable which provides access to 
    *   fields in order of their indexes
    */
   @Override
   Iterable<? extends ProjectionField<?>> fieldIterable();  
+  
+  /**
+   * @return A KeyFunction that maps values of the source type to KeyTuples
+   * @throws DataException 
+   */
+  KeyFunction<KeyTuple,T> getKeyFunction();
   
 }

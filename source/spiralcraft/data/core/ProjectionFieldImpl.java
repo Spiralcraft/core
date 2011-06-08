@@ -61,6 +61,55 @@ public class ProjectionFieldImpl<T>
   public Field<T> getSourceField()
   { return sourceField;
   }
+  
+  @Override
+  public String toString()
+  { return getURI()+":="+expression;
+  }
+  
+  @Override
+  public int hashCode()
+  { 
+    int hashCode=getName().hashCode()*31;
+    
+    if (expression!=null)
+    { return hashCode+expression.hashCode();
+    }
+    else if (sourceField!=null)
+    { return hashCode+sourceField.hashCode();
+    }
+    else
+    { return super.hashCode();
+    }
+  }
+  
+  @Override
+  public boolean equals(Object o)
+  {
+    if (o==null)
+    { return false;
+    }
+    if (o==this)
+    { return true;
+    }
+    if (!(o instanceof ProjectionFieldImpl))
+    { return false;
+    }
+    ProjectionFieldImpl<?> pfl=(ProjectionFieldImpl<?>) o;
+    
+    return getName().equals(pfl.getName())
+           &&
+           (expression==null
+           ?pfl.expression==null
+           :expression.equals(pfl.expression)
+           )
+           &&
+           (sourceField==null
+           ?pfl.sourceField==null
+           :sourceField.equals(pfl.sourceField)
+           );
+    
+  }
 
 }
 

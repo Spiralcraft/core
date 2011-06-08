@@ -73,7 +73,6 @@ import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.util.LangUtil;
-import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
 /**
@@ -90,11 +89,6 @@ public class XmlQueryable
   extends AbstractAggregateQueryable<Tuple>
   implements Contextual
 {
-  private final ClassLog log
-    =ClassLog.getInstance(XmlQueryable.class);
-  
-  private Level logLevel
-    =ClassLog.getInitialDebugLevel(XmlQueryable.class,null);
   
   private SimpleDateFormat dateFormat
     =new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");

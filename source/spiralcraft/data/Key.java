@@ -100,10 +100,11 @@ public interface Key<T>
   
   /**
    * 
-   * @return A KeyFunction that returns the projected key value for a
-   *   Tuple
+   * @return The function that will derive an Identifier from an instance
+   *   of the associated Type.
    */
-  public KeyFunction<KeyTuple,T> getFunction();
+  public KeyFunction<KeyTuple,T> getIdentifierFunction();
+  
   
   /**
    * 

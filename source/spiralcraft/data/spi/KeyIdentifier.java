@@ -17,13 +17,14 @@ package spiralcraft.data.spi;
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Identifier;
+import spiralcraft.data.Key;
 import spiralcraft.data.KeyTuple;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.lang.Channel;
 
 /**
- * <p>An Identifier composed from a candidate key of a Type
+ * <p>An Identifier composed from a candidate key of a Type or Type relation
  * </p>
  * 
  * @author mike
@@ -38,6 +39,16 @@ public class KeyIdentifier<T>
   private final Type<T> identifiedType;
   
 
+  /**
+   * Construct a KeyIdentifier that represents the primary key of the
+   *   specified type by reading data from the specified array of Channels
+   *   
+   * @param <T>
+   * @param type
+   * @param sources
+   * @return
+   * @throws DataException
+   */
   public static final <T> KeyIdentifier<T> read
     (Type<T> type,Channel<?>[] sources)
     throws DataException
@@ -47,10 +58,48 @@ public class KeyIdentifier<T>
     for (Channel<?> channel: sources)
     { data[i++]=channel.get();
     }
-    return new KeyIdentifier<T>(type,type.getPrimaryKey(),data,true);
+    return read(type,data,true);
   }
   
-  public KeyIdentifier
+  /**
+   * Construct a KeyIdentifier that represents the primary key of the
+   *   specified Type using the data in the specified array.
+   *   
+   * @param <T>
+   * @param type
+   * @param data
+   * @param useReference true, if the array is immutable
+   * @return
+   * @throws DataException
+   */
+  @SuppressWarnings("unchecked")
+  public static final <T> KeyIdentifier<T> read
+    (Type<T> type,Object[] data,boolean useReference)
+    throws DataException
+  {
+    Key<T> primaryKey=type.getPrimaryKey();
+    return new KeyIdentifier<T>
+      ((Type<T>) primaryKey.getSource().getType(),primaryKey,data,useReference);
+  }
+  
+  /**
+   * Construct a KeyIdentifier that represents a relation Key of the
+   *   specified type.
+   *   
+   * @param <T>
+   * @param type
+   * @param sources
+   * @return
+   * @throws DataException
+   */
+  public KeyIdentifier(Type<T> identifiedType,Tuple dataref) 
+    throws DataException
+  { 
+    super(dataref);
+    this.identifiedType=identifiedType;
+  }
+  
+  private KeyIdentifier
     (Type<T> identifiedType
     ,FieldSet fieldSet
     ,Object[] data
@@ -62,12 +111,7 @@ public class KeyIdentifier<T>
     this.identifiedType=identifiedType;
   }  
   
-  public KeyIdentifier(Type<T> identifiedType,Tuple dataref) 
-    throws DataException
-  { 
-    super(dataref);
-    this.identifiedType=identifiedType;
-  }
+
 
   @Override
   public Type<?> getIdentifiedType()
@@ -77,5 +121,25 @@ public class KeyIdentifier<T>
   @Override
   public boolean isPublic()
   { return true;
+  }
+  
+  @Override
+  public String toString()
+  { return identifiedType.getURI()+"#"+AbstractTuple.tupleToString(this);
+  }
+
+  @Override
+  protected boolean isComparableTo(KeyTuple tuple)
+  { 
+    return 
+        (tuple instanceof KeyIdentifier)
+        ?((KeyIdentifier<?>) tuple).identifiedType.equals(identifiedType)
+        :false;
+  }
+  
+  @Override
+  protected int computeHashCode(int hashCode)
+  { 
+    return hashCode ^ identifiedType.hashCode();
   }
 }

@@ -131,7 +131,7 @@ public abstract class AbstractTuple
     { 
       Key<Tuple> primaryKey=(Key<Tuple>) getType().getPrimaryKey();
       if (primaryKey!=null)
-      { setId((KeyIdentifier<Tuple>) primaryKey.getFunction().key(this));
+      { setId((KeyIdentifier<Tuple>) primaryKey.getIdentifierFunction().key(this));
       }
       else
       { 
@@ -196,8 +196,8 @@ public abstract class AbstractTuple
         else
         { 
           throw new TypeMismatchException
-            ("Type "+myType+" has no base type compatible with "
-            +" wider type "+type
+            ("Type "+myType.getURI()+" has no base type compatible with "
+            +" wider type "+type.getURI()
             );
         }
       }
