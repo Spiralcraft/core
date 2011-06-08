@@ -13,6 +13,91 @@
     </date>
     
     <detail>
+    
+      <scm:Change>
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Default log format now logs the exception stack trace 
+            whenever an exception is supplied to the logger.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/log/DefaultFormatter.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Projection defines the hashCode and equals contract to
+            base identity solely on the source type, field names, and
+            target expressions to support association with index structures.
+          </scm:Note>
+          <scm:Note>Projection and Key provide KeyFunctions use to create
+            index structures.
+          </scm:Note>
+          <scm:Note>KeyIdentifier supports a stricter form of identity than
+            KeyTuple which includes the identified type.
+          </scm:Note>
+          <scm:Note>Expressions define the hashCode and equals contract
+            to base identity on the structural syntax. This is partially
+            implemented to support basic Projection identity. Due to
+            whitespace and namespace resolution, many textual forms may 
+            result in the same syntax.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/Key.java
+          </URI>
+          <URI>data/KeyTuple.java
+          </URI>
+          <URI>data/Projection.java
+          </URI>
+          <URI>data/core/KeyImpl.java
+          </URI>
+          <URI>data/core/ProjectionFieldImpl.java
+          </URI>
+          <URI>data/core/SchemeImpl.java
+          </URI>
+          <URI>data/spi/AbstractAggregateQueryable.java
+          </URI>
+          <URI>data/spi/AbstractTuple.java
+          </URI>
+          <URI>data/spi/DataKeyFunction.java
+          </URI>
+          <URI>data/spi/IdentifierFunction.java
+          </URI>
+          <URI>data/spi/KeyedListAggregate.java
+          </URI>
+          <URI>data/spi/KeyIdentifier.java
+          </URI>
+          <URI>data/xml/XmlQueryable.java
+          </URI>
+          <URI>lang/Expression.java
+          </URI>
+          <URI>lang/parser/CurrentFocusNode.java
+          </URI>
+          <URI>lang/parser/LiteralNode.java
+          </URI>
+          <URI>lang/parser/Node.java
+          </URI>
+          <URI>lang/parser/ParentFocusNode.java
+          </URI>
+          <URI>lang/parser/ResolveNode.java
+          </URI>
+
+        </resources>
+      
+      </scm:Change>
+      
       <scm:Change>
         <revision>-dev4
         </revision>
