@@ -37,6 +37,8 @@ public abstract class Node
   protected final ClassLog log
     =ClassLog.getInstance(getClass());
   
+  protected int hashCode=super.hashCode();
+  
   /**
    * Stubbed bind method for unimplemented nodes.
    *
@@ -53,12 +55,41 @@ public abstract class Node
 
   public abstract Node copy(Object visitor);
   
+  
   /**
    * Obtain the immediate children of this Node within the syntax tree
    *
    * @return the Nodes that this Node directly depends on
    */
   public abstract Node[] getSources();
+  
+  protected boolean equalsNode(Node node)
+  { return false;
+  }
+  
+  @Override
+  public int hashCode()
+  { return hashCode;
+  }
+  
+  @Override
+  public boolean equals(Object o)
+  { 
+    if (o==null)
+    { return false;
+    }
+    if (o==this)
+    { return true;
+    }
+    if (o.getClass()!=getClass())
+    { return false;
+    }
+    if (hashCode!=o.hashCode())
+    { return false;
+    }
+    
+    return equalsNode((Node) o);
+  }
   
   /** 
    * <p>Recursively reconstruct the expression text that created this node.

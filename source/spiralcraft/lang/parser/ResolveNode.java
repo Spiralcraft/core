@@ -29,7 +29,10 @@ public class ResolveNode<T>
   { 
     _source=source;
     this.identifier=identifier;
+    this.hashCode=(source.hashCode() *31) + identifier.hashCode();
   }
+  
+
   
   @Override
   public Node[] getSources()
@@ -48,6 +51,13 @@ public class ResolveNode<T>
     }
   }
 
+  @Override
+  protected boolean equalsNode(Node node)
+  { 
+    ResolveNode<?> rn=(ResolveNode<?>) node;
+    return _source.equals(rn._source) && identifier.equals(rn.identifier);
+  }
+  
   @Override
   public String reconstruct()
   { return _source.reconstruct()+"."+identifier;

@@ -146,25 +146,14 @@ public class Expression<T>
   public static <X> Expression<X> literal(X value)
   { return new Expression<X>(new LiteralNode<X>(value));
   }
-  
-  /**
-   * <P>Create a new Expression by parsing an expression language String. This
-   *   constructor is used for facilities that depend on a 1-arg String
-   *   constructor to automatically create instances.
-   * 
-   * @param <X> The type of output the Expression will generate
-   * @param text The expression text
-   * @throws ParseException
-   * 
-   */
-  public <X> Expression(String text)
+
+  public Expression(String text)
     throws ParseException
   {
-    Expression<X> canonical=parse(text);
-    _root=canonical.getRootNode();
     this._text=text;
+    this._root=parse(text)._root;
   }
-
+  
   public Expression(Node root,String text)
   { 
     _root=root;
@@ -206,6 +195,28 @@ public class Expression<T>
   { return _root;
   }
   
+  @Override
+  public int hashCode()
+  { return _root.hashCode();
+  }
+  
+  @Override
+  public boolean equals(Object o)
+  {
+    if (o==null)
+    { return false;
+    }
+    if (o==this)
+    { return true;
+    }
+    if (!(o instanceof Expression))
+    { return false;
+    }
+    
+    Expression<?> expr=(Expression<?>) o;
+    return _root.equals(expr._root);
+  }
+  
   /**
    * Create a Channel by binding this Expression to a Focus. This method
    *   is intended to be used by Focus implementors.
@@ -231,7 +242,20 @@ public class Expression<T>
   
   @Override
   public String toString()
-  { return super.toString()+"["+_text+"]:"+_root.toString();
+  { 
+    boolean equiv=_root.reconstruct().equals(_text);
+    String dump=null;
+    if (!equiv)
+    { 
+      StringBuffer out=new StringBuffer();
+      dumpParseTree(out);
+      dump=out.toString();
+    }
+    
+    return super.toString()
+      +"["+_text+"]"+(!equiv?(" = ["+_root.reconstruct()+"]"):"")
+      +" #"+hashCode()
+      +(dump!=null?(" { "+dump+" }"):"");
   }
   
   public void dumpParseTree(StringBuffer out)

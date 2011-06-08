@@ -29,6 +29,7 @@ public class ParentFocusNode
     { throw new IllegalArgumentException("ParentFocusNode- child cannot be null");
     }
     _child=child;
+    this.hashCode=_child.hashCode*31;
   }
 
   @Override
@@ -83,6 +84,11 @@ public class ParentFocusNode
       prefix=prefix+"  ";
       _child.dumpTree(out,prefix);
     }
+  }
+  
+  @Override
+  protected boolean equalsNode(Node node)
+  { return _child.equals( ((ParentFocusNode) node)._child);
   }
   
 }

@@ -29,17 +29,30 @@ public class LiteralNode<X>
 
   @SuppressWarnings("unchecked") // Type check
   public LiteralNode(X value)
-  { _optic=new SimpleChannel<X>((Class<X>) value.getClass(),value,true);
+  { 
+    _optic=new SimpleChannel<X>((Class<X>) value.getClass(),value,true);
+    calcHashCode();
   }
 
   public LiteralNode(X value,Class<X> valueClass)
-  { _optic=new SimpleChannel<X>(valueClass,value,true);
+  { 
+    _optic=new SimpleChannel<X>(valueClass,value,true);
+    this.hashCode=_optic.get()!=null?_optic.get().hashCode():31;
+    calcHashCode();
   }
   
   LiteralNode(SimpleChannel<X> _optic)
-  { this._optic=_optic; 
+  { 
+    this._optic=_optic; 
+    calcHashCode();
   }
 
+  private int calcHashCode()
+  {
+    return (_optic.getContentType().hashCode()*31)
+      +(_optic.get()!=null?_optic.get().hashCode():0);
+  }
+  
   @Override
   public Node[] getSources()
   { return null;
@@ -83,7 +96,7 @@ public class LiteralNode<X>
       .append(_optic.getContentType()==String.class?"\"":"")
       .append(_optic.getContentType()==Expression.class?"`":"")
       .append(_optic.getContentType()==Character.class?"'":"")
-      .append(_optic.get().toString())
+      .append(_optic.get()!=null?_optic.get().toString():null)
       .append(_optic.getContentType()==Character.class?"'":"")
       .append(_optic.getContentType()==Expression.class?"`":"")
       .append(_optic.getContentType()==String.class?"\"":"")
@@ -98,6 +111,28 @@ public class LiteralNode<X>
 //    System.out.println("LiteralNode: Returning "+_optic.toString());
     return _optic;
   }
+  
+  @Override
+  public boolean equalsNode(Node node)
+  {
+    @SuppressWarnings("unchecked")
+    LiteralNode<X> ln=(LiteralNode<X>) node;
+    if (_optic.getContentType()!=ln._optic.getContentType())
+    { return false;
+    }
+    X val=_optic.get();
+    X other=ln._optic.get();
+    if (val==other)
+    { return true;
+    }
+    else if (val==null)
+    { return false;
+    }
+    else 
+    { return (val.equals(other));
+    }
+  }
  
+  
   
 }

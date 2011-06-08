@@ -27,10 +27,14 @@ public class CurrentFocusNode
   private String invoker;
   
   public CurrentFocusNode()
-  { }
+  { 
+    this.hashCode=31;
+  }
   
   public CurrentFocusNode(String invoker)
-  { this.invoker=invoker;
+  { 
+    this.invoker=invoker;
+    this.hashCode=31;
   }
   
   @Override
@@ -60,5 +64,10 @@ public class CurrentFocusNode
   @Override
   public String reconstruct()
   { return invoker!=null?invoker:" ";
+  }
+  
+  @Override
+  protected boolean equalsNode(Node other)
+  { return true;
   }
 }
