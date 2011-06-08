@@ -30,6 +30,9 @@ public class AutoListMap<K,T>
   { 
     super(impl);
     _keyFunction=function;
+    if (_keyFunction==null)
+    { throw new IllegalArgumentException("Key function cannot be null");
+    }
   }
   
   public void setValue(T value)
