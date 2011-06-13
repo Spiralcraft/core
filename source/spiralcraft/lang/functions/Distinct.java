@@ -91,11 +91,17 @@ public class Distinct<T>
     protected T[] latest(
       ViewState<LinkedHashSet<T>> state)
     { 
-      return  state.data.toArray
-        (
-          (T[]) Array.newInstance
-            (source.getReflector().getContentType(),state.data.size())
-        );
+      if (state.data!=null)
+      {
+        return  state.data.toArray
+          (
+            (T[]) Array.newInstance
+              (source.getReflector().getContentType(),state.data.size())
+          );
+      }
+      else
+      { return null;
+      }
     }
 
     @Override
