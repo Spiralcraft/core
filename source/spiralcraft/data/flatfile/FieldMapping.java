@@ -55,6 +55,12 @@ public class FieldMapping<T>
   { return this.encoder;
   }
   
+  /**
+   * The Expression bound to the file field. Data will be read from
+   *   and written to this expression.
+   * 
+   * @param expression
+   */
   public void setX(Expression<T> expression)
   { channel.setTarget(expression);
   }
