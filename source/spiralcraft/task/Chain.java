@@ -104,6 +104,15 @@ public class Chain<Tcontext,Tresult>
   { this.chain=chain;
   }
   
+  public void setSequence(Scenario<?,?>[] scenarios)
+  {
+    Sequence sequence=new Sequence();
+    chain(sequence);
+    for (Scenario<?,?> scenario: scenarios)
+    { sequence.addScenario(scenario);
+    }
+  }
+  
   public void setChain(Scenario<?,?>[] chain)
   {
     Scenario<?,?> last=this;
@@ -131,7 +140,6 @@ public class Chain<Tcontext,Tresult>
         }
         ((Sequence) last).addScenario(scenario);
       }
-      
     }
   }  
   
