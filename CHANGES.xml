@@ -3,6 +3,274 @@
   >
   <scm:Change>
   
+    <revision>0.4.15
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>
+    </date>
+    
+    <detail>
+    
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Consolidated VFS functions into their own package
+          </scm:Note>
+          <scm:Note>New "Find" function recurses through Resource tree
+          </scm:Note>
+          <scm:Note>New exclusionFilter property for Search simplifies 
+            path exclusion.
+          </scm:Note>
+          <scm:Note>Filter argument for Search.list() post-filters results.
+          </scm:Note>
+          <scm:Note>Added AnyFilter and NotFilter classes for logically 
+            combining functionality, ContainerFilter for screening files/dirs,
+            a result filter to store only selected resources in ListFilter,
+            and static methods to assist with filter construction.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs
+        </path>
+        
+        <resources>
+          <URI>functions/Find.java
+          </URI>
+          <URI>functions/IO.java
+          </URI>
+          <URI>functions/Resolve.java
+          </URI>
+          <URI>functions/IO.java
+          </URI>
+          <URI>functions/Resolve.java
+          </URI>
+          <URI>batch/Search.java
+          </URI>
+          <URI>task/Copy.java
+          </URI>
+          <URI>filters/AnyFilter.java
+          </URI>
+          <URI>filters/ContainerFilter.java
+          </URI>
+          <URI>filters/ListFilter.java
+          </URI>
+          <URI>filters/NotFilter.java
+          </URI>
+          <URI>filters/PatternFilter.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>StringUtil.explode() ignored capacity argument
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/util/string/StringUtil.java
+        </path>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Non-working ArrayUtil.prepend() fixed.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/util/ArrayUtil.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>ELaine Configurator utility can be constructed with a 
+            Channel for integration flexibility.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/lang/util/Configurator.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix asymmetry in Expression.reconstruct() when using
+            the dot-prefix. 
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/ExpressionParser.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>The ELaine function "Format" has been renamed to
+            StringCat, and now accepts a StringConverter.
+          </scm:Note>
+          <scm:Note>A new function "ToString" converts objects to/from strings
+            using the a StringConverter.
+          </scm:Note>
+          <scm:Note>A new function "Try" traps and logs runtime exceptions
+            from its source channel without interrupting processing.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/functions
+        </path>
+        
+        <resources>
+          <URI>Format.java
+          </URI>
+          <URI>StringCat.java
+          </URI>
+          <URI>ToString.java
+          </URI>
+          <URI>Try.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Flat file Scan task now accumulates results into an
+            Aggregate to be returned by a functor, and accepts a Resource
+            as a context argument
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/flatfile/Scan.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Specifying a type for a calculated field is optional if
+            it can be derived from the expression.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/core/CalculatedFieldImpl.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Updated TaskRunner to support command line context 
+            arguments for scenario to run.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/TaskRunner.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Abstract scenario "Chain" has property "sequence" which
+            does not create a chain of all the tasks, as opposed to the 
+            property "chain".
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/Chain.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Put CLI arguments processing code into its own package.
+          </scm:Note>
+          <scm:Note>Refactored to adapt for use with Command contexts.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>cli/Arguments.java
+          </URI>
+          <URI>cli/BeanArguments.java
+          </URI>
+          <URI>cli/CommandArguments.java
+          </URI>
+          <URI>cli/ReflectorArguments.java
+          </URI>
+          <URI>exec/Arguments.java
+          </URI>
+          <URI>exec/BeanArguments.java
+          </URI>
+          <URI>exec/Executor.java
+          </URI>
+          <URI>task/TaskRunner.java
+          </URI>
+          <URI>service/Daemon.java
+          </URI>
+          <URI>vfs/batch/Operation.java
+          </URI>
+          <URI>vfs/batch/PrependOperation.java
+          </URI>
+          <URI>vfs/batch/PrintOperation.java
+          </URI>
+          <URI>vfs/batch/Search.java
+          </URI>
+        </resources>
+      </scm:Change>
+    </detail>
+  </scm:Change>
+  
+  <scm:Change>
+  
     <revision>0.4.14
     </revision>
     

@@ -23,7 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 
-import spiralcraft.exec.Arguments;
+import spiralcraft.cli.Arguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;

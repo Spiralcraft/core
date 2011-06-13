@@ -20,7 +20,7 @@ import javax.xml.parsers.SAXParser;
 
 import org.xml.sax.SAXException;
 
-import spiralcraft.exec.Arguments;
+import spiralcraft.cli.Arguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.sax.ParseTree;
 import spiralcraft.sax.ParseTreeFactory;

@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang.test;
 
-import spiralcraft.exec.Arguments;
+import spiralcraft.cli.Arguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.lang.parser.ExpressionParser;
 import spiralcraft.lang.reflect.BeanReflector;

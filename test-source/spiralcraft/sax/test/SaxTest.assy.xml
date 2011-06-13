@@ -8,7 +8,7 @@
   xmlns:fn="class:/spiralcraft/lang/functions/"
   xmlns:util="class:/spiralcraft/util/"
   xmlns:sutil="class:/spiralcraft/util/string/"
-  xmlns:vfs="class:/spiralcraft/vfs/"
+  xmlns:vfsf="class:/spiralcraft/vfs/functions/"
   xmlns:vfsm="class:/spiralcraft/vfs/meta/"
   xmlns:vfsc="class:/spiralcraft/vfs/context/"
   xmlns:sax="class:/spiralcraft/sax/"
@@ -34,7 +34,7 @@
             ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment3.xmlf"}]            
             }}
             #{
-              .[*vfs:Resolve].[*vfs:IO]
+              .[*vfsf:Resolve].[*vfsf:IO]
               { [@sax:ParseTreeFactory].@fromFragment([@j:String].(.),null)
               }
               { 
@@ -73,7 +73,7 @@
             ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment3.xmlf"}]            
             }}
             #{
-              .[*vfs:Resolve].[*vfs:IO]
+              .[*vfsf:Resolve].[*vfsf:IO]
               { 
                 [@sax:SaxUtil].@ellipsizeFragment
                   ([@j:String].(.)
@@ -107,7 +107,7 @@
             ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment3.xmlf"}]            
             }}
             #{
-              .[*vfs:Resolve].[*vfs:IO]
+              .[*vfsf:Resolve].[*vfsf:IO]
               { 
                 [@sax:SaxUtil].@stripFragmentMarkup
                   ([@j:String].(.))

@@ -10,6 +10,7 @@
   xmlns:util="class:/spiralcraft/util/"
   xmlns:sutil="class:/spiralcraft/util/string/"
   xmlns:vfs="class:/spiralcraft/vfs/"
+  xmlns:vfsf="class:/spiralcraft/vfs/functions/"  
   xmlns="dynamic:/"
   >
   <name>spiralcraft.lang.test
@@ -595,7 +596,7 @@
           </name>
           
           <subjectX>
-            [@vfs:Resolver].@getInstance().resolve("in")
+            [*jn:URI{"in"}].[*vfsf:Resolve]
               .children{ .+ .$[ .children.[*fn:Concatenate] ] }
           </subjectX>
           
@@ -609,7 +610,7 @@
           </name>
           
           <subjectX>
-            [@vfs:Resolver].@getInstance().resolve("in")
+            [*jn:URI{"in"}].[*vfsf:Resolve]
               .[*fn:Tree{`.children`}]
               #{"\r\n---"+.URI}
           </subjectX>
@@ -624,7 +625,7 @@
           </name>
           
           <subjectX>
-            [@vfs:Resolver].@getInstance().resolve("in")
+            [*jn:URI{"in"}].[*vfsf:Resolve]
               {{ [#node]
                 resource:=..
                 ,depth:=0
@@ -652,8 +653,8 @@
             lineSet
               :=[@j:String]
               .([*jn:URI{"in/LoremIpsumList.txt"}]
-                .[*vfs:Resolve]
-                .[*vfs:IO]
+                .[*vfsf:Resolve]
+                .[*vfsf:IO]
               )
               .split("\r\n")
             ,root
@@ -705,15 +706,15 @@
                 +.lines
                   $[
                     ("\r\n         "+.)
-                    .[*fn:Format] 
+                    .[*fn:StringCat] 
                   ]
                 )
-                .[*fn:Format] 
+                .[*fn:StringCat] 
               ]
             +.reduce
               $[ 
                 ("\r\n   rln: "+.count+": "+.line)
-                .[*fn:Format] 
+                .[*fn:StringCat] 
               ]
             
           }
@@ -733,8 +734,8 @@
           <subjectX>
             [@j:String]
             .([*jn:URI{"in/LoremIpsumList.txt"}]
-              .[*vfs:Resolve]
-              .[*vfs:IO]
+              .[*vfsf:Resolve]
+              .[*vfsf:IO]
             )
             .split("\r\n")
             $[.split(" ")
@@ -759,8 +760,8 @@
           <subjectX>
             [@j:String]
             .([*jn:URI{"in/LoremIpsumList.txt"}]
-              .[*vfs:Resolve]
-              .[*vfs:IO]
+              .[*vfsf:Resolve]
+              .[*vfsf:IO]
             )
             .split("\r\n")
             $[.split(" ")
@@ -785,8 +786,8 @@
           <subjectX>
             [@j:String]
             .([*jn:URI{"in/LoremIpsumList.txt"}]
-              .[*vfs:Resolve]
-              .[*vfs:IO]
+              .[*vfsf:Resolve]
+              .[*vfsf:IO]
             )
             .split("\r\n")
             $[.split(" ")
@@ -819,8 +820,8 @@
           <subjectX>
             [@j:String]
             .([*jn:URI{"in/LoremIpsumList.txt"}]
-              .[*vfs:Resolve]
-              .[*vfs:IO]
+              .[*vfsf:Resolve]
+              .[*vfsf:IO]
             )
             .split("\r\n")
             $[.split(" ")

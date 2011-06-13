@@ -21,10 +21,10 @@ import java.net.URISyntaxException;
 import spiralcraft.builder.AssemblyLoader;
 import spiralcraft.builder.AssemblyClass;
 import spiralcraft.builder.Assembly;
+import spiralcraft.cli.Arguments;
 
 
 
-import spiralcraft.exec.Arguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
 
