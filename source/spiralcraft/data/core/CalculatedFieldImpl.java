@@ -18,8 +18,12 @@ import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Type;
 
+import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.lang.PrimitiveReflector;
 import spiralcraft.data.lang.TupleReflector;
+import spiralcraft.data.reflect.ReflectionType;
 
 import spiralcraft.lang.spi.ClosureChannel;
 import spiralcraft.lang.spi.ClosureFocus;
@@ -27,6 +31,7 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -81,13 +86,13 @@ public class CalculatedFieldImpl<T>
     }
     resolved=true;
     
-    super.resolve();
     try
     {
       threadLocalBinding
         =new ThreadLocalChannel<Tuple>(TupleReflector.getInstance(getFieldSet()));
       SimpleFocus<Tuple> focus=new SimpleFocus<Tuple>(threadLocalBinding);
       threadLocalBinding.setContext(focus);
+        
       expressionBinding=bindChannel(threadLocalBinding,focus,null);
     }
     catch (BindException x)
@@ -102,7 +107,49 @@ public class CalculatedFieldImpl<T>
           );
       }      
     }
+      
+
+    super.resolve();
     
+  }
+  
+  /**
+   * Called before resolve() when a definitive Type is needed.
+   *    
+   * @throws DataException
+   */
+
+  @SuppressWarnings({ "rawtypes", "unchecked"
+    })
+  @Override
+  protected Type<T> resolveType()
+    throws DataException
+  { 
+    if (expressionBinding!=null)
+    { 
+      Reflector<T> typeR=expressionBinding.getReflector();
+      if (typeR instanceof DataReflector)
+      { return ((DataReflector) typeR).getType();
+      }
+      else if (typeR instanceof PrimitiveReflector)
+      { return ((PrimitiveReflector) typeR).getType();
+      }
+      else
+      { return ReflectionType.canonicalType(typeR.getContentType());
+      }
+    }
+    else
+    { 
+      try
+      { bindChannel(threadLocalBinding,threadLocalBinding.getContext(),null);
+      }
+      catch (BindException x)
+      {
+        throw new DataException
+          ("No type specified and unable to infer type for "+getURI(),x);
+      }
+    }
+    return null;
   }
   
   @Override
