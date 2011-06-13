@@ -703,6 +703,33 @@ public class StructNode
       Expression<?>[] params)
       throws BindException
     {
+      Channel ret=this.resolveLocal(source,focus,name,params);
+      if (ret==null)
+      {
+        
+        // Delegate to source context
+        // Requires that Struct maintain a reference
+        //   to its source
+//        ret=((Channel) context.getSubject()).getReflector().resolve
+//          (context.getSubject()
+//          ,focus
+//          ,name
+//          ,params
+//          );
+//          
+      }
+      return ret;
+      
+    }
+      
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public <X> Channel<X> resolveLocal(
+      final Channel<Struct> source,
+      Focus<?> focus,
+      String name,
+      Expression<?>[] params)
+      throws BindException
+    {
       if (name.startsWith("@"))
       { return resolveMeta(source,focus,name,params);
       }
@@ -828,7 +855,14 @@ public class StructNode
 
       @Override
       protected Object retrieve()
-      { return source.get().data[index];
+      { 
+        Struct struct=source.get();
+        if (struct!=null)
+        { return struct.data[index];
+        }
+        else
+        { return null;
+        }
       }
 
       @Override
@@ -850,8 +884,15 @@ public class StructNode
         }
         else
         {        
-          source.get().data[index]=val;
-          return true;
+          Struct struct=source.get();
+          if (struct!=null)
+          { 
+            struct.data[index]=val;
+            return true;
+          }
+          else
+          { return false;
+          }
         }
       }
             
@@ -1171,3 +1212,4 @@ public class StructNode
   }
 
 }
+
