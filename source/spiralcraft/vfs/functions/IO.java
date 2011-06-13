@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.vfs;
+package spiralcraft.vfs.functions;
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
@@ -23,12 +23,14 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.SourcedChannel;
+import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.util.ByteArrayResource;
 
 import java.io.IOException;
 
 /**
- * A ChannelFactory for  VFS Resource resolution 
+ * A Channel factory which provides access the content of the input resource
+ *   as a byte array.
  * 
  * @author mike
  *

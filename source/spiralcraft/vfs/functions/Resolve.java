@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.vfs;
+package spiralcraft.vfs.functions;
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
@@ -24,6 +24,9 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.UnresolvableURIException;
 
 import java.net.URI;
 
