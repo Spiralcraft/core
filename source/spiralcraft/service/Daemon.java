@@ -16,9 +16,9 @@ package spiralcraft.service;
 
 
 
+import spiralcraft.cli.BeanArguments;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
-import spiralcraft.exec.BeanArguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
 import spiralcraft.exec.ExecutionException;
@@ -109,7 +109,7 @@ public class Daemon
   {
     try
     { 
-      new BeanArguments(this).process(args);
+      new BeanArguments<Daemon>(this).process(args);
       
       try
       { bind(new BeanFocus<Daemon>(this));
