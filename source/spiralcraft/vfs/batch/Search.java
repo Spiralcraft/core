@@ -14,7 +14,7 @@
 //
 package spiralcraft.vfs.batch;
 
-import spiralcraft.exec.Arguments;
+import spiralcraft.cli.Arguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
 
@@ -56,6 +56,7 @@ public class Search
   private Operation _operation;
   private Operation _currentOperation;
   private ResourceFilter expansionFilter;
+  private ResourceFilter exclusionFilter;
 
   /**
    * Execute a search specified by arguments
@@ -167,6 +168,10 @@ public class Search
             for (int i=children.length;i-->0;)
             { 
               Resource child=children[i];
+              if (exclusionFilter!=null && exclusionFilter.accept(child))
+              { continue;
+              }
+              
               boolean filterPass=false;
               if (child.asContainer()!=null)
               { 
@@ -232,7 +237,20 @@ public class Search
     setFilter(filter.getNext());
     return filter.getList();
   }
-  
+
+  /**
+   * Run a configured search and return a List of the results
+   */
+  public synchronized List<Resource> list(ResourceFilter resultFilter)
+  { 
+    
+    ListFilter filter=new ListFilter(_filter,resultFilter);
+    setFilter(filter);
+    run();
+    setFilter(filter.getNext());
+    return filter.getList();
+  }
+
   public void setRootURI(URI root)
   { _rootUri=root;
   }
@@ -243,6 +261,15 @@ public class Search
   
   public void setPattern(PathPattern pattern)
   { _pattern=pattern;
+  }
+  
+  /**
+   * A filter which excludes all resources where the filter returns true.
+   * 
+   * @param filter
+   */
+  public void setExclusionFilter(ResourceFilter filter)
+  { this.exclusionFilter=filter;
   }
   
   public void setContains(String contains)

@@ -255,16 +255,14 @@ public class Copy
           { patterns=new String[] {"**/CVS/**","**/.svn/**"};
           }
           
-          ExcludesFilter excludesFilter=null;
+          ResourceFilter excludesFilter=null;
           if (patterns!=null)
-          { excludesFilter=new ExcludesFilter(sourceResource.getURI(),patterns);
+          { excludesFilter=PatternFilter.any(patterns);
           } 
         
           Search search=new Search();
           if (excludesFilter!=null)
-          {
-            search.setExpansionFilter(excludesFilter);
-            search.setFilter(excludesFilter);
+          { search.setExclusionFilter(excludesFilter);
           }
           search.setRootResource(sourceResource);
           if (pattern!=null)
