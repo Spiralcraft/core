@@ -847,10 +847,11 @@ public class ExpressionParser
         return null;
       case '.':
         
-        FocusNode focusNode=new CurrentFocusNode(".");
+        FocusNode focusNode;
         switch (_tokenizer.lookahead.ttype)
         {
           case '.':
+            focusNode=new CurrentFocusNode(".");
             // String of '.' characters means traverse up Focus chain
             consumeToken();      
             Node fre=parseFocusRelativeExpression(focusNode);
@@ -859,6 +860,7 @@ public class ExpressionParser
             }
             return fre;
           case '[':
+            focusNode=new CurrentFocusNode(".");
             // This would normally be a ObjectLiteral, but we need a way
             //   to subscript the subject if it is an array, and we can already 
             //  run an ObjectLiteral against the subject without the '.'.
@@ -876,6 +878,7 @@ public class ExpressionParser
               return asub;
             }
           default:
+            focusNode=new CurrentFocusNode();
             Node dotExpr=parsePostfixDotExpression(focusNode);
             if (dotExpr!=null)
             { return dotExpr;
