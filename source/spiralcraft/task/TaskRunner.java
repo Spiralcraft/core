@@ -17,12 +17,13 @@ package spiralcraft.task;
 import java.io.PrintStream;
 import java.net.URI;
 
+import spiralcraft.cli.BeanArguments;
+import spiralcraft.cli.CommandArguments;
 import spiralcraft.command.Command;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.data.persist.AbstractXmlObject;
 
-import spiralcraft.exec.BeanArguments;
 import spiralcraft.exec.Executable;
 import spiralcraft.exec.ExecutionContext;
 import spiralcraft.exec.ExecutionException;
@@ -34,6 +35,7 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.service.ResourceContext;
 import spiralcraft.service.Service;
+import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringConverter;
 
 /**
@@ -61,6 +63,7 @@ public class TaskRunner
   private Thread shutdownThread=new ShutdownHook();
   private URI serviceURI;
   private boolean printResult=false;
+  private String[] contextArgs;
   
   
   {
@@ -160,7 +163,7 @@ public class TaskRunner
     }
     else
     { 
-      new BeanArguments(this)
+      new BeanArguments<TaskRunner>(this)
       {
         @Override
         public boolean processArgument(String arg)
@@ -172,7 +175,9 @@ public class TaskRunner
             configureScenario(remainingArguments());
           }
           catch (BindException x)
-          { throw new RuntimeException("Error loading scenario "+scenarioURI,x);
+          { 
+            throw new RuntimeException
+              ("Error loading scenario "+scenarioURI,x);
           }
           return true;          
         }
@@ -183,19 +188,29 @@ public class TaskRunner
   
   protected void configureScenario(String[] args)
   { 
-    new BeanArguments(chainLink)
+    new BeanArguments<Scenario<?,?>>(chainLink)
     {
       @Override
       public boolean processArgument(String arg)
       {
-        URI scenarioURI=URI.create(arg);
-        try
-        { 
-          loadScenario(scenarioURI);
-          configureScenario(remainingArguments());
+        if (arg.equals("+"))
+        { contextArgs=remainingArguments();
         }
-        catch (BindException x)
-        { throw new RuntimeException("Error loading scenario "+scenarioURI,x);
+        else if (arg.startsWith("+"))
+        { contextArgs=ArrayUtil.prepend(remainingArguments(),arg);
+        }
+        else
+        { 
+          URI scenarioURI=URI.create(arg);
+          try
+          { 
+            loadScenario(scenarioURI);
+            configureScenario(remainingArguments());
+          }
+          catch (BindException x)
+          { throw new RuntimeException("Error loading scenario "+scenarioURI,x);
+          }
+
         }
         return true;
       }
@@ -265,7 +280,15 @@ public class TaskRunner
         
       try
       { 
-        Command<?,?,?> command=scenario.command();
+        Command command=scenario.command();
+        if (contextArgs!=null)
+        { 
+//          log.fine("Context is "+command.getContext());
+          new CommandArguments
+            (scenario.getContextReflector(),command)
+              .process(contextArgs);
+//          log.fine("Context is "+command.getContext());
+        }
         command.execute();
         
         Object result=command.getResult();
