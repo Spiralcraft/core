@@ -21,6 +21,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.Accumulator;
 import spiralcraft.lang.spi.ViewState;
+import spiralcraft.util.string.StringConverter;
 
 /**
  * Concatenates the members of a set as strings
@@ -31,43 +32,65 @@ import spiralcraft.lang.spi.ViewState;
  * @param <Tstate>
  * @param <Tsource>
  */
-public class Format
-  extends Accumulator<String,Object>
+public class StringCat<T>
+  extends Accumulator<String,T>
 {
 
+
+  private StringConverter<T> converter;
+  
+  public StringCat()
+  {
+  }
+  
+  public StringCat(StringConverter<T> converter)
+  { this.converter=converter;
+  }
+  
   
   @Override
   protected Context<String> newContext(
-    Channel<Object> source,
+    Channel<T> source,
     Focus<?> focus)
     throws BindException
-  { return new FormatContext(source,focus);
+  { return new StringCatContext(source,focus);
   }
   
 
   
-  class FormatContext
+  class StringCatContext
     extends Context<String>
   {
     
-    public FormatContext
-     (Channel<Object> source
+    private StringConverter<T> converter=StringCat.this.converter;
+
+    public StringCatContext
+     (Channel<T> source
      ,Focus<?> focus
      )
       throws BindException
-    { super(source,focus);
+    { 
+      super(source,focus);
+      
+      if (converter==null)
+      { converter=source.getReflector().getStringConverter();
+      }     
     }
 
     
     @Override
     protected void update(ViewState<String> state)
     {
-      Object val=source.get();
+      T val=source.get();
 
       if (val!=null)
       {
         if (state.data==null)
         { state.data="";
+        }
+        
+        if (converter!=null)
+        { state.data=state.data+converter.toString(val);
         }
         else
         { state.data=state.data+val.toString();
