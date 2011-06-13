@@ -26,6 +26,16 @@ import spiralcraft.vfs.ResourceFilter;
 public class PatternFilter
   implements ResourceFilter
 {
+  public static final AnyFilter any(String ... patterns)
+  { 
+    PatternFilter[] filters=new PatternFilter[patterns.length];
+    int i=0;
+    for (String pattern : patterns)
+    { filters[i++]=new PatternFilter(pattern);
+    }
+    return new AnyFilter(filters);
+  }
+  
   private PathPattern _pattern;
 
   public PatternFilter(String expression)

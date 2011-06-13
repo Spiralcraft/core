@@ -23,8 +23,9 @@ import java.util.LinkedList;
 
 
 /**
- * A ResourceFilter which accepts all resources provided and stores
- *   them in a LinkedList.
+ * <p>A ResourceFilter which stores all resources accepted by the chained filter
+ *   in a LinkedList
+ * </p>
  */
 public class ListFilter
   implements ResourceFilter
@@ -33,13 +34,24 @@ public class ListFilter
     =new LinkedList<Resource>();
 
   private final ResourceFilter next;
+  private final ResourceFilter resultFilter;
   
   public ListFilter()
-  { next=null;
+  { 
+    next=null;
+    resultFilter=null;
   }
   
   public ListFilter(ResourceFilter next)
-  { this.next=next;
+  { 
+    this.next=next;
+    this.resultFilter=null;
+  }
+
+  public ListFilter(ResourceFilter next,ResourceFilter resultFilter)
+  { 
+    this.next=next;
+    this.resultFilter=resultFilter;
   }
 
   @Override
@@ -47,7 +59,9 @@ public class ListFilter
   { 
     if (next==null || next.accept(resource))
     {
-      _list.add(resource);
+      if (resultFilter==null || resultFilter.accept(resource))
+      { _list.add(resource);
+      }
       return true;
     }
     return false;
