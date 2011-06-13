@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.exec;
+package spiralcraft.cli;
 
 
 /**
@@ -70,7 +70,16 @@ public abstract class Arguments
   { return _args[_pos++];
   }
 
-  public String[] remainingArguments()
+  protected int getIndex()
+  { return _pos;
+  }
+  
+  /**
+   * Consumes and returns all remaining argiments
+   * 
+   * @return
+   */
+  protected String[] remainingArguments()
   {
     String[] ret=new String[_args.length-_pos];
     int i=0;

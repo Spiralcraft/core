@@ -14,6 +14,7 @@
 //
 package spiralcraft.exec;
 
+import spiralcraft.cli.Arguments;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Initializer;
 import spiralcraft.common.namespace.NamespaceContext;
