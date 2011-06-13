@@ -17,7 +17,7 @@ package spiralcraft.vfs.batch;
 import spiralcraft.vfs.Resource;
 
 
-import spiralcraft.exec.Arguments;
+import spiralcraft.cli.Arguments;
 import spiralcraft.exec.ExecutionContext;
 
 public class PrintOperation
