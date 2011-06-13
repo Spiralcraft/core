@@ -28,14 +28,19 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 
 
 /**
- * <p>Represents an Expression bound against a subcontext derived from another 
- *   Expression via a telescoped Focus-
+ * <p>Represents a list of Expressions bound to the output of a source
+ *   expression. The value of the last expression is the output of this 
+ *   construct.
  * </p> 
+ * 
+ * <p>The output of the source expression is available using the '.' (subject)
+ *   operator.
+ * </p>
  *   
  * <p>For example:
  * </p>
  * 
- * <code>expr1{ expr2 }</code>
+ * <code>exprSource{ expr1, expr2, ..., exprN }</code>
  *   
  * @author mike
  *
