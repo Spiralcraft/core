@@ -17,15 +17,20 @@ package spiralcraft.data.flatfile;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.io.record.InputStreamRecordIterator;
 import spiralcraft.io.record.RecordIterator;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.Level;
 import spiralcraft.task.Chain;
@@ -33,11 +38,12 @@ import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
 public class Scan
-  extends Chain<Void,Void>
+  extends Chain<Resource,Aggregate<Tuple>>
 {
 
   protected URI resourceURI;
   protected RecordFormat format;
+  protected Type<List<Tuple>> aggregateType;
   protected String recordSeparator="\r\n";
   
   protected ThreadLocalChannel<Tuple> resultChannel;
@@ -45,6 +51,16 @@ public class Scan
   private boolean skipBadRecords;
   private int bufferSize=4096;
   
+  { storeResults=true;
+  }
+  
+  public Scan()
+  {
+  }
+  
+  public Scan(RecordFormat format)
+  { this.format=format;
+  }
 
   public class ScanTask
     extends ChainTask
@@ -54,9 +70,15 @@ public class Scan
     protected void work()
       throws InterruptedException
     { 
+      Resource resource=null;
       try
       {
-        Resource resource=Resolver.getInstance().resolve(resourceURI);
+        resource=Scan.this.commandChannel.get().getContext();
+       
+        if (resource==null)
+        { resource=Resolver.getInstance().resolve(resourceURI);
+        }
+        
         
         RecordIterator iterator
           =new InputStreamRecordIterator
@@ -74,6 +96,12 @@ public class Scan
           }
           boolean done=false;
           int count=0;
+          EditableArrayListAggregate<Tuple> aggregate=null;
+          if (storeResults)
+          {
+            aggregate=new EditableArrayListAggregate<Tuple>
+              (aggregateType);
+          }
           while (!done)
           {
             ++count;
@@ -94,7 +122,7 @@ public class Scan
                 { cause=cause.getCause();
                 }
                 
-                log.log(Level.INFO,"Skipping bad record #"+count,x);
+                log.log(Level.INFO,"Skipping bad record #"+count+" : "+x.toString());
                 continue;
               }
               else
@@ -104,13 +132,19 @@ public class Scan
             
             resultChannel.push(cursor.getTuple());
             try
-            { super.work();
+            { 
+              super.work();
+              if (aggregate!=null)
+              { aggregate.add(resultChannel.get().snapshot());
+              }
             }
             finally
             { resultChannel.pop();
             }
           }
-
+          if (aggregate!=null)
+          { addResult(aggregate);
+          }
         }
         finally
         { cursor.close();
@@ -118,17 +152,23 @@ public class Scan
       }
       catch (DataException x)
       { 
+        ContextualException ex
+          =new ContextualException
+            ("Error scanning flatfile "+resource.getURI(),x);
         if (debug)
-        { log.log(Level.WARNING,"Threw",x);
+        { log.log(Level.WARNING,"Threw",ex);
         }
-        addException(x);
+        addException(ex);
       }
       catch (IOException x)
       { 
+        ContextualException ex
+          =new ContextualException
+            ("Error scanning flatfile "+resource.getURI(),x);
         if (debug)
-        { log.log(Level.WARNING,"Threw",x);
+        { log.log(Level.WARNING,"Threw",ex);
         }
-        addException(x);
+        addException(ex);
       }  
       
     }
@@ -171,17 +211,35 @@ public class Scan
   }
   
   @Override
-  public void bindChildren(
-    Focus<?> focusChain)
+  public Focus<?> bindImports(Focus<?> focusChain)
     throws ContextualException
   {
-    
+
+    this.contextReflector=BeanReflector.getInstance(Resource.class);
+    return super.bindImports(focusChain);
+  }
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public Focus<?> bindExports(Focus<?> focusChain)
+    throws ContextualException
+  { 
+    if (format==null)
+    { throw new ContextualException("Format is required");
+    }
     try
     { format.bind(focusChain);
     }
     catch (ContextualException x)
     { throw new BindException("Error binding record format '"+format+"'",x);
     }
+
+    
+    this.aggregateType
+      =Type.<Tuple>getAggregateType((Type<Tuple>) format.getType());
+    this.resultReflector
+      =DataReflector.<Aggregate<Tuple>>getInstance
+        (aggregateType);
     
     resultChannel
       =new ThreadLocalChannel<Tuple>
@@ -189,8 +247,11 @@ public class Scan
           (format.getType())
         );
     focusChain=focusChain.chain(resultChannel);
-    super.bindChildren(focusChain);
+    
+    return super.bindExports(focusChain);
   }
+  
+
 
 
 }
