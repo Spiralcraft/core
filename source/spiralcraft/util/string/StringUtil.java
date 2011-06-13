@@ -54,7 +54,7 @@ public class StringUtil
     }
     
     StringBuilder seg=new StringBuilder();
-    ArrayList<String> result=new ArrayList<String>(3);
+    ArrayList<String> result=new ArrayList<String>(capacity>=0?capacity:3);
     
     boolean inEscape=false;
     for (char chr:input.toCharArray())
