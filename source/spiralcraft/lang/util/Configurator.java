@@ -17,6 +17,7 @@ package spiralcraft.lang.util;
 import java.util.HashMap;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
@@ -42,7 +43,7 @@ public class Configurator<T>
     
   }
   
-  private final SimpleChannel<T> channel;
+  private final Channel<T> channel;
   private final Focus<T> focus;
   
   private HashMap<String,DictionaryBinding<?>> bindingMap
@@ -54,6 +55,12 @@ public class Configurator<T>
     this.focus=new SimpleFocus<T>(channel);
   }
  
+  public Configurator(Channel<T> source)
+  { 
+    this.channel=source;
+    this.focus=new SimpleFocus<T>(channel);
+  }
+  
   public void set(T target)
   { channel.set(target);
   }
