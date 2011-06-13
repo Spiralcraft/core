@@ -48,9 +48,15 @@ public class ArrayUtil
    */
   public static <T> T[] prepend(T[] array,T value)
   { 
-    array=expandBy(array,1);
-    Array.set(array,0,value);
-    return array;
+    @SuppressWarnings("unchecked")
+    T[] newArray = 
+      (T[]) Array.newInstance
+        (array.getClass().getComponentType()
+        , array.length+1
+        );
+    System.arraycopy(array, 0, newArray, 1, Array.getLength(array));
+    Array.set(newArray,0,value);
+    return newArray;
   }
 
   /** 
