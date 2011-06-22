@@ -976,8 +976,9 @@ public class XmlQueryable
     {
       if (tuple.isMutable())
       { 
-        bufferMap.put(tuple.getId(),tuple);
-        tuple=ArrayDeltaTuple.copy(tuple);
+        DeltaTuple newTuple=ArrayDeltaTuple.copy(tuple);
+        bufferMap.put(newTuple.getId(),tuple);
+        tuple=newTuple;
       }
       return tuple;
       
