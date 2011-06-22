@@ -54,6 +54,7 @@ public class Computation<I,R,P>
   
   protected final Channel<P> functionChannel;  
   protected final ViewCache viewCache;
+  @SuppressWarnings("unused")
   private boolean debug;
 
   
