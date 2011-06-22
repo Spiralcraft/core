@@ -17,28 +17,32 @@ package spiralcraft.data.flatfile;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Iterator;
 import java.util.List;
 
 import spiralcraft.common.ContextualException;
-import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
-import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.io.record.InputStreamRecordIterator;
 import spiralcraft.io.record.RecordIterator;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.IterationDecorator;
+import spiralcraft.lang.kit.Computation;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.Level;
 import spiralcraft.task.Chain;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.UnresolvableURIException;
 
-public class Scan
-  extends Chain<Resource,Aggregate<Tuple>>
+public class Scan<C,R>
+  extends Chain<Resource[],R>
 {
 
   protected URI resourceURI;
@@ -50,9 +54,12 @@ public class Scan
   protected int batchSize;
   private boolean skipBadRecords;
   private int bufferSize=4096;
-  
-  { storeResults=true;
-  }
+  private Expression<C> computeX;
+  private Binding<Boolean> filterX;
+  private Computation<Tuple,R,C> computation;
+  private IterationDecorator<?,Resource> resourceIter;
+  private int progressInterval;
+
   
   public Scan()
   {
@@ -62,24 +69,84 @@ public class Scan
   { this.format=format;
   }
 
+  public Scan(RecordFormat format,Expression<C> computeX)
+  { 
+    this.format=format;
+    this.computeX=computeX;
+  }
+  
+
   public class ScanTask
     extends ChainTask
   {
 
+    
     @Override
     protected void work()
       throws InterruptedException
-    { 
-      Resource resource=null;
+    {
+      if (computation!=null)
+      { computation.push();
+      }
+      
+      int count=0;
       try
       {
-        resource=Scan.this.commandChannel.get().getContext();
-       
-        if (resource==null)
-        { resource=Resolver.getInstance().resolve(resourceURI);
+        if (resourceURI==null && resourceIter!=null)
+        {
+          Iterator<Resource> it=resourceIter.iterator();
+          while (it.hasNext())
+          { 
+            Resource resource=it.next();
+            if (debug)
+            { log.fine("Scanning "+resource.getURI());
+            }
+            count+=workOne(resource);
+          }
+        }
+        else if (resourceURI!=null)
+        { 
+          try
+          { count+=workOne(Resolver.getInstance().resolve(resourceURI));
+          }
+          catch (UnresolvableURIException x)
+          {
+            ContextualException ex
+              =new ContextualException
+                ("Error scanning flatfile "+resourceURI,x);
+            if (debug)
+            { log.log(Level.WARNING,"Threw",ex);
+            }
+            addException(ex);
+          }
         }
         
+        if (computation!=null)
+        { 
+          computation.checkpoint();
+          addResult(computation.getResultChannel().get());
+        }  
         
+        if (progressInterval!=0)
+        { log.info("Completed scanning "+count+" records");
+        }
+      }
+      finally
+      { 
+        if (computation!=null)
+        { computation.pop();
+        }
+      }
+      
+    }
+    
+
+    protected int workOne(Resource resource)
+      throws InterruptedException
+    { 
+      int count=0;
+      try
+      {
         RecordIterator iterator
           =new InputStreamRecordIterator
             (new BufferedInputStream(resource.getInputStream(),bufferSize)
@@ -95,13 +162,7 @@ public class Scan
           { log.fine("Got "+cursor);
           }
           boolean done=false;
-          int count=0;
-          EditableArrayListAggregate<Tuple> aggregate=null;
-          if (storeResults)
-          {
-            aggregate=new EditableArrayListAggregate<Tuple>
-              (aggregateType);
-          }
+
           while (!done)
           {
             ++count;
@@ -130,21 +191,30 @@ public class Scan
               }
             }
             
-            resultChannel.push(cursor.getTuple());
+            resultChannel.push(cursor.getTuple().snapshot());
             try
             { 
-              super.work();
-              if (aggregate!=null)
-              { aggregate.add(resultChannel.get().snapshot());
+              if (filterX==null || Boolean.TRUE.equals(filterX.get()))
+              {
+                super.work();
+                if (computation!=null)
+                { computation.update();
+                }
               }
             }
             finally
             { resultChannel.pop();
             }
+            
+            if (progressInterval!=0 && count%progressInterval==0)
+            { log.info("Scanned "+count+" in "+resource.getURI());
+            }
           }
-          if (aggregate!=null)
-          { addResult(aggregate);
+          
+          if (progressInterval!=0)
+          { log.info("Scanned "+count+" in "+resource.getURI());
           }
+          
         }
         finally
         { cursor.close();
@@ -169,7 +239,8 @@ public class Scan
         { log.log(Level.WARNING,"Threw",ex);
         }
         addException(ex);
-      }  
+      }
+      return count;
       
     }
   }
@@ -192,7 +263,25 @@ public class Scan
   protected ScanTask task()
   { return new ScanTask();
   }
+  
+  /**
+   * Output a progress log message after every n'th record has been processed.
+   * 
+   * @param progressInterval
+   */
+  public void setProgressInterval(int progressInterval)
+  { this.progressInterval=progressInterval;
+  }
 
+  /**
+   * A computation to perform and return as a result
+   * 
+   * @param computeX
+   */
+  public void setComputeX(Expression<C> computeX)
+  { this.computeX=computeX;
+  }
+  
   public void setSkipBadRecords(boolean skipBadRecords)
   { this.skipBadRecords=skipBadRecords;
   }
@@ -206,6 +295,11 @@ public class Scan
   { this.format=format;
   }
   
+  public void setFilterX(Expression<Boolean> filterX)
+  { this.filterX=new Binding<Boolean>(filterX);
+  }
+  
+  
   public void setURI(URI uri)
   { this.resourceURI=uri;
   }
@@ -215,11 +309,11 @@ public class Scan
     throws ContextualException
   {
 
-    this.contextReflector=BeanReflector.getInstance(Resource.class);
+    this.contextReflector=BeanReflector.getInstance(Resource[].class);
     return super.bindImports(focusChain);
   }
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
   public Focus<?> bindExports(Focus<?> focusChain)
     throws ContextualException
@@ -234,19 +328,34 @@ public class Scan
     { throw new BindException("Error binding record format '"+format+"'",x);
     }
 
-    
-    this.aggregateType
-      =Type.<Tuple>getAggregateType((Type<Tuple>) format.getType());
-    this.resultReflector
-      =DataReflector.<Aggregate<Tuple>>getInstance
-        (aggregateType);
-    
+    resourceIter
+      =this.contextChannel
+        .<IterationDecorator>
+           decorate(IterationDecorator.class);
+         
     resultChannel
       =new ThreadLocalChannel<Tuple>
         (DataReflector.<Tuple>getInstance
           (format.getType())
         );
     focusChain=focusChain.chain(resultChannel);
+    
+    if (filterX!=null)
+    { filterX.bind(focusChain);
+    }
+    
+    if (computeX!=null)
+    { 
+      this.storeResults=true;
+      computation
+        =new Computation<Tuple,R,C>(resultChannel,focusChain,computeX);
+      if (debug)
+      { computation.setDebug(true);
+      }
+      this.resultReflector
+        =computation.getResultChannel().getReflector();
+      
+    }
     
     return super.bindExports(focusChain);
   }
