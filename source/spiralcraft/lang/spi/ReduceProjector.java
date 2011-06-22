@@ -41,8 +41,10 @@ import spiralcraft.util.lang.ClassUtil;
  * 
  * @author mike
  *
- * @param <I>
- * @param <P>
+ * @param <I> The type of the input item
+ * @param <P> The return type of the function
+ * @param <R> The type of the result
+ * @param <C> The type of the collection
  */
 public class ReduceProjector<I,P,R,C>
 {
