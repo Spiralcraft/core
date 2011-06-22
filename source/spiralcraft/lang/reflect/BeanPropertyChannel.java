@@ -55,13 +55,19 @@ class BeanPropertyChannel<T,S>
     }
     else
     { 
-      // Expensive, but may be required
-      _writeMethod
-        =translator.getSourceBeanInfo()
-          .getSpecificWriteMethod
-            (_property
-            ,translator.getReflector().getContentType()
-            );
+      if (!source.getReflector().getContentType().isArray())
+      {
+        // Expensive, but may be required
+        _writeMethod
+          =translator.getSourceBeanInfo()
+            .getSpecificWriteMethod
+              (_property
+              ,translator.getReflector().getContentType()
+              );
+      }
+      else
+      { _writeMethod=null;
+      }
     }
 
     _writeField
