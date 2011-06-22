@@ -405,6 +405,9 @@ public class StringUtil
    */
   public static String escape(String input,char escapeChar,String charsToEscape)
   {
+    if (input==null)
+    { return null;
+    }
     final StringBuilder out=new StringBuilder();
     for (char c:input.toCharArray())
     {
