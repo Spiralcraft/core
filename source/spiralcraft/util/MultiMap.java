@@ -40,9 +40,15 @@ public interface MultiMap<K,V>
   public void remove(K key,V value);
   
   /**
-   * Return a single value from the collection associated with the specified key
+   *@return the first value from the collection associated with the specified 
+   *  key, or null if there are no values associated with the key
    */
-  public V getOne(K key);
+  public V getFirst(K key);
   
+  /**
+   *@return the last value from the collection associated with the specified 
+   *   key, or null if there are no values associated with the key
+   */
+  public V getLast(K key);
   
 }

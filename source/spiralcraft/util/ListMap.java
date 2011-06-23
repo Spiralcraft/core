@@ -84,12 +84,12 @@ public class ListMap<K,T>
       }
     }
   }
-
+  
   /**
    * Return the first element of the array mapped to the specified key
    */
   @Override
-  public T getOne(K key)
+  public T getFirst(K key)
   { 
     List<T> list=get(key);
     if (list==null || list.size()==0)
@@ -116,6 +116,24 @@ public class ListMap<K,T>
       target.addAll(list);
     }
     return i;
+  }
+
+  /**
+   * Return the last element of the array mapped to the specified key
+   * 
+   * @param key
+   * @return
+   */
+  @Override
+  public T getLast(K key)
+  {
+    List<T> list=get(key);
+    if (list==null || list.size()==0)
+    { return null;
+    }
+    else
+    { return list.get(list.size()-1);
+    }
   }
 
 }

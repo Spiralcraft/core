@@ -154,8 +154,8 @@ public class KeyedList<T>
     { return _map.get(key);
     }
     
-    public Tdata getOne(Tkey key)
-    { return _map.getOne(key);
+    public Tdata getFirst(Tkey key)
+    { return _map.getFirst(key);
     }
     
     public Set<Tkey> keySet()
