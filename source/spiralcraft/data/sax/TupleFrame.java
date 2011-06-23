@@ -283,7 +283,7 @@ public class TupleFrame
               ("Could not get an Index to check for duplicates");
           }
           
-          if (index.getOne(new KeyTuple(primaryKeyChannel.get()))==null)
+          if (index.getFirst(new KeyTuple(primaryKeyChannel.get()))==null)
           { container.add(tuple);
           }
           else
