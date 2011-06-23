@@ -56,6 +56,11 @@ public interface Aggregate<T>
   boolean isEmpty();
   
   /**
+   * @return true if this Aggregate contains the specified value
+   */
+  boolean contains(T value);
+  
+  /**
    *
    * @param projection
    * @return The Index associated with the specified Projection, optionally
@@ -74,6 +79,6 @@ public interface Aggregate<T>
   {
     public Aggregate<T> get(KeyTuple key);
     
-    public T getOne(KeyTuple key);
+    public T getFirst(KeyTuple key);
   }
 }
