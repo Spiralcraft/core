@@ -98,6 +98,14 @@ public class ListAggregate<T>
   { this.debug=debug;
   }
   
+  @Override
+  public boolean contains(T value)
+  { 
+    if (fillCommand!=null)
+    { fillRest();
+    }
+    return list.contains(value);
+  }
   /**
    * <p>A command to run when the backing list runs out of entries
    * </p>
