@@ -344,15 +344,15 @@ public class DataSession
     implements Branch
   {
 
-    private ArrayList<BufferTuple> branchBuffers
-      =new ArrayList<BufferTuple>();
+    private ArrayList<Buffer> branchBuffers
+      =new ArrayList<Buffer>();
     
     private HashMap<Type<?>,DataConsumer<DeltaTuple>> updaterMap
       =new HashMap<Type<?>,DataConsumer<DeltaTuple>>();
     
     private State state=State.STARTED;
 
-    public void addBuffer(BufferTuple buffer)
+    public void addBuffer(Buffer buffer)
     { branchBuffers.add(buffer);
     }
     
@@ -381,15 +381,15 @@ public class DataSession
     public void prepare()
       throws TransactionException
     {
-      Iterator<BufferTuple> it=branchBuffers.iterator();
+      Iterator<Buffer> it=branchBuffers.iterator();
       while (it.hasNext())
       { 
-        BufferTuple tuple=it.next();
+        Buffer buffer=it.next();
         try
-        { tuple.prepare();
+        { buffer.prepare();
         }
         catch (DataException x)
-        { throw new TransactionException("Error preparing "+tuple,x);
+        { throw new TransactionException("Error preparing "+buffer,x);
         }
       }
       
@@ -413,7 +413,7 @@ public class DataSession
       throws TransactionException
     {
       // TODO Auto-generated method stub
-      Iterator<BufferTuple> it=branchBuffers.iterator();
+      Iterator<Buffer> it=branchBuffers.iterator();
       while (it.hasNext())
       { 
         it.next().rollback();
@@ -427,10 +427,10 @@ public class DataSession
     public void commit()
       throws TransactionException
     {
-      Iterator<BufferTuple> it=branchBuffers.iterator();
+      Iterator<Buffer> it=branchBuffers.iterator();
       while (it.hasNext())
       { 
-        BufferTuple buffer=it.next();
+        Buffer buffer=it.next();
         try
         { buffer.commit();
         }
@@ -450,7 +450,7 @@ public class DataSession
     {
       if (!branchBuffers.isEmpty())
       { 
-        Iterator<BufferTuple> it=branchBuffers.iterator();
+        Iterator<Buffer> it=branchBuffers.iterator();
         while (it.hasNext())
         { 
           it.next().rollback();
@@ -458,6 +458,8 @@ public class DataSession
         }
       }
       updaterMap.clear();
+      
+      buffers.clear();
 
     }
 

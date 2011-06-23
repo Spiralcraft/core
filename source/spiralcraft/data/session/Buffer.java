@@ -83,4 +83,12 @@ public abstract class Buffer
   public void setDebug(boolean debug)
   { this.debug=debug;
   }
+  
+  abstract void prepare()
+    throws DataException;
+  
+  abstract void commit()
+    throws DataException;
+  
+  abstract void rollback();
 }

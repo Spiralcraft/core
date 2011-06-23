@@ -26,7 +26,9 @@ import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.Identifier;
 
+import spiralcraft.data.session.DataSession.DataSessionBranch;
 import spiralcraft.data.spi.ListAggregate;
+import spiralcraft.data.spi.PojoIdentifier;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.log.ClassLog;
 
@@ -105,7 +107,11 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   
   @Override
   public Identifier getId()
-  { return id;
+  { 
+    if (id==null)
+    { id=new PojoIdentifier<BufferAggregate<T,Torig>>(this);
+    }
+    return id;
   }
   
   @Override
@@ -143,6 +149,18 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
     String indent)
     throws DataException
   { return "Buffer:["+original.toText(indent+"  ")+"\r\n]";
+  }
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public boolean contains(Buffer buffer)
+  { return 
+      buffers.contains(buffer)
+      || (buffer.getOriginal()!=null 
+          && original!=null
+          && original!=null
+          && original.contains((Torig) buffer.getOriginal())
+         );
   }
 
   @Override
@@ -368,6 +386,10 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
       for (Buffer buffer: this)
       { buffer.save();
       }
+      
+      DataSessionBranch branch
+        =session.getResourceManager().branch(transaction);
+      branch.addBuffer(this);      
     }
     else
     { 
@@ -379,6 +401,10 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
         { buffer.save();
         }
       
+        DataSessionBranch branch
+          =session.getResourceManager().branch(transaction);
+        branch.addBuffer(this);
+
         transaction.commit();
       }
       finally
@@ -403,6 +429,22 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   @Override
   public void touch()
   { touched=true;
+  }
+  
+  @Override
+  void prepare()
+  {
+  }
+  
+  @Override
+  void commit()
+  {
+    
+  }
+  
+  @Override
+  void rollback()
+  {
   }
   
 }

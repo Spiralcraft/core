@@ -863,7 +863,7 @@ public class BufferTuple
 
   }
 
-  
+  @Override
   void prepare()
     throws DataException
   {
@@ -873,6 +873,7 @@ public class BufferTuple
     
   }
   
+  @Override
   void rollback()
   {
 //    if (original instanceof JournalTuple)
@@ -880,6 +881,7 @@ public class BufferTuple
 //    }
   }
   
+  @Override
   void commit()
     throws DataException
   { 
