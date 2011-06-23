@@ -120,6 +120,10 @@ public class KeyedListAggregate<T>
   { return list.get(index);
   }
 
+  @Override
+  public boolean contains(T value)
+  { return list.contains(value);
+  }
 
   @Override
   @SuppressWarnings("unchecked")
@@ -234,8 +238,8 @@ public class KeyedListAggregate<T>
     }
 
     @Override
-    public T getOne(KeyTuple key)
-    { return backingIndex.getOne(key);
+    public T getFirst(KeyTuple key)
+    { return backingIndex.getFirst(key);
     }
   }
 }
