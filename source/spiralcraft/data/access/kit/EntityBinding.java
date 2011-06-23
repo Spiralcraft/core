@@ -12,8 +12,9 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.spi;
+package spiralcraft.data.access.kit;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.data.DeltaTuple;
@@ -21,6 +22,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.DeltaTrigger;
 import spiralcraft.data.access.Entity;
+import spiralcraft.data.access.EntityAccessor;
 import spiralcraft.data.access.Updater;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.transaction.TransactionException;
@@ -45,7 +47,7 @@ public class EntityBinding
 {
 
   private final Entity entity;
-  private Queryable<Tuple> queryable;
+  private EntityAccessor<Tuple> accessor;
   private Updater<DeltaTuple> updater;
   private boolean authoritative;
   
@@ -65,12 +67,12 @@ public class EntityBinding
   { return entity;
   }
   
-  public void setQueryable(Queryable<Tuple> queryable)
-  { this.queryable=queryable;
+  public void setAccessor(EntityAccessor<Tuple> queryable)
+  { this.accessor=queryable;
   }
   
   public Queryable<Tuple> getQueryable()
-  { return queryable;
+  { return accessor;
   }
   
   public void setUpdater(Updater<DeltaTuple> updater)
@@ -91,13 +93,14 @@ public class EntityBinding
   
   @Override
   public Focus<?> bind(Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
     focusChain=focusChain.chain(new SimpleChannel<EntityBinding>(this,true));
     focusChain.addFacet
       (focusChain.chain(new SimpleChannel<Entity>(entity,true)));
 
     Type.getDeltaType(entity.getType());
+    accessor.bind(focusChain);
     if (updater!=null)
     {
       Focus<?> updaterFocus=updater.bind(focusChain);

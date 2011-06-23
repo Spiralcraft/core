@@ -14,12 +14,13 @@
 //
 package spiralcraft.data.xml;
 
+import spiralcraft.data.access.EntityAccessor;
 import spiralcraft.data.access.SerialCursor;
+import spiralcraft.data.access.kit.AbstractStore;
 import spiralcraft.data.core.ProjectionImpl;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.spi.AbstractAggregateQueryable;
-import spiralcraft.data.spi.AbstractStore;
 import spiralcraft.data.spi.ArrayDeltaTuple;
 import spiralcraft.data.spi.ArrayJournalTuple;
 import spiralcraft.data.spi.EditableKeyedListAggregate;
@@ -40,11 +41,13 @@ import spiralcraft.data.Field;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.JournalTuple;
 import spiralcraft.data.Key;
+import spiralcraft.data.KeyTuple;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
+import spiralcraft.data.UniqueKeyViolationException;
 
-
+import spiralcraft.util.KeyFunction;
 import spiralcraft.util.Path;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
@@ -69,7 +72,6 @@ import java.io.IOException;
 import org.xml.sax.SAXException;
 
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.util.LangUtil;
@@ -87,7 +89,7 @@ import spiralcraft.log.Level;
  */
 public class XmlQueryable
   extends AbstractAggregateQueryable<Tuple>
-  implements Contextual
+  implements EntityAccessor<Tuple>
 {
   
   private SimpleDateFormat dateFormat
@@ -119,6 +121,11 @@ public class XmlQueryable
   private ThreadLocalChannel<Tuple> localData;
   private Focus<Tuple> localFocus;
   private BoundQuery<?,Tuple> originalQuery;
+  private ArrayList<BoundQuery<?,Tuple>> uniqueQueries
+    =new ArrayList<BoundQuery<?,Tuple>>();
+  private ArrayList<Key<?>> uniqueKeys
+    =new ArrayList<Key<?>>();  
+  
   private final Lock setLock=new ReentrantLock(true);
   private XmlStore store;
   
@@ -174,7 +181,8 @@ public class XmlQueryable
   public Focus<?> bind(Focus<?> focusChain)
     throws BindException
   {
-    this.store=LangUtil.findInstance(XmlStore.class,focusChain);
+    this.store=LangUtil.assertInstance(XmlStore.class,focusChain);
+
     localData=new ThreadLocalChannel<Tuple>
       (DataReflector.<Tuple>getInstance(getResultType()));
     localFocus=focusChain.chain(localData);
@@ -216,8 +224,32 @@ public class XmlQueryable
       
       
     }
+    
+  
     return focusChain;
 
+  }
+  
+  void bindDRI(Focus<?> context)
+    throws BindException
+  {
+    try
+    {
+    
+      for (Key<?> key: getResultType().getKeys())
+      {
+        if (key.isUnique() || key.isPrimary())
+        { 
+          // Create queries for unique keys and associate the Key 
+          //   with the query via a parallel list for error reporting.
+          uniqueQueries.add(store.query(key.getQuery(),localFocus));
+          uniqueKeys.add(key);
+        }
+      }
+    }
+    catch (DataException x)
+    { throw new BindException("Error binding DRI rules for "+type.getURI()); 
+    }  
   }
   
   protected void checkInit()
@@ -867,6 +899,13 @@ public class XmlQueryable
     
     private ArrayList<DeltaTuple> deltaList=new ArrayList<DeltaTuple>();
     
+    private EditableKeyedListAggregate<DeltaTuple> deltaKeyedList
+      =new EditableKeyedListAggregate<DeltaTuple>
+        (Type.getAggregateType(Type.getDeltaType(getResultType())));
+    
+    private HashMap<Identifier,DeltaTuple> deltaMap
+      =new HashMap<Identifier,DeltaTuple>();
+    
     private HashMap<Identifier,DeltaTuple> bufferMap
        =new HashMap<Identifier,DeltaTuple>();
     
@@ -880,9 +919,20 @@ public class XmlQueryable
     
     private long txId;
     
+    @SuppressWarnings("unchecked")
     XmlBranch()
       throws TransactionException
     { 
+      try
+      {
+        for (Key<?> key: uniqueKeys)
+        { deltaKeyedList.getIndex((Key<DeltaTuple>) key,true);
+        }
+      }
+      catch (DataException x)
+      { throw new TransactionException("Error creating delta indices",x);
+      }
+
       setLock.lock();
       // Don't allow reloads or updates during a transaction
       XmlQueryable.this.freeze();
@@ -925,6 +975,209 @@ public class XmlQueryable
       this.txId=storeBranch.getTxId();     
     }
 
+    private Aggregate<DeltaTuple> getUniqueDeltas(int indexNum,DeltaTuple tuple)
+      throws DataException
+    {       
+      @SuppressWarnings("unchecked")
+      Key<DeltaTuple> key=(Key<DeltaTuple>) uniqueKeys.get(indexNum);
+      Aggregate.Index<DeltaTuple> index
+        =deltaKeyedList.getIndex(key,true);
+    
+      Aggregate<DeltaTuple> results
+        =index.get(key.getKeyFunction().key(tuple));
+
+      return results;
+    }
+    
+    private boolean hasSameKey(int indexNum,Tuple t1,Tuple t2)
+    {
+      @SuppressWarnings("unchecked")
+      Key<Tuple> key=(Key<Tuple>) uniqueKeys.get(indexNum);
+      KeyFunction<KeyTuple,Tuple> fn=key.getKeyFunction();
+      return fn.key(t1).equals(fn.key(t2));
+    }
+    
+    /**
+     * Check data integrity constraints for an insert
+     * 
+     * @param tuple
+     * @throws DataException
+     */
+    private void checkInsertIntegrity(DeltaTuple tuple)
+      throws DataException
+    {      
+      // Check unique keys
+      localData.push(tuple);
+      try
+      {
+        int i=0;
+        for (BoundQuery<?,Tuple> query: uniqueQueries)
+        {
+          SerialCursor<Tuple> cursor=query.execute();
+          try
+          {
+            while (cursor.next())
+            { 
+              DeltaTuple txDelta=deltaMap.get(cursor.getTuple().getId());
+              if (txDelta==null || !txDelta.isDelete())
+              {
+                // Make sure the conflicting row hasn't been deleted in this
+                //   transaction.
+                if (logLevel.isFine())
+                { 
+                  log.fine
+                    ("Unique conflict on add: "+tuple+":"+uniqueKeys.get(i));
+                }
+                throw new UniqueKeyViolationException
+                  (tuple,uniqueKeys.get(i));
+              }
+            }
+          }
+          finally
+          { cursor.close();
+          }
+          
+          
+          // XXX This should be folded into the query's current transaction
+          //   visibility
+          Aggregate<DeltaTuple> uniqueDeltas
+            =getUniqueDeltas(i,tuple);
+          
+          if (uniqueDeltas!=null)
+          {
+            for (DeltaTuple txDelta: uniqueDeltas)
+            {
+              if (!txDelta.isDelete()
+                  && !(txDelta.getId().equals(tuple.getId())
+                       && txDelta.getOriginal()==null 
+                       // XXX Allow multiple "inserts" of same id to coalesce 
+                       //   for now
+                      )
+                 )
+              {
+                if (logLevel.isFine())
+                { 
+                  log.fine
+                    ("Unique conflict on add: "+tuple+" conflicts with "+txDelta+": "+uniqueKeys.get(i));
+                }
+                throw new UniqueKeyViolationException
+                  (tuple,uniqueKeys.get(i));
+              }
+            }
+          }
+          
+          i++;
+          
+        }
+      }
+      finally
+      { localData.pop();
+      }
+
+    }
+    
+    
+    
+    /**
+     * Check data integrity constraints for an update
+     * 
+     * @param tuple
+     * @throws DataException
+     */
+    private DeltaTuple checkUpdateIntegrity(DeltaTuple tuple)
+      throws DataException
+    {      
+      localData.push(tuple);
+      try
+      {
+        // Check unique keys
+        int i=0;
+        for (BoundQuery<?,Tuple> query: uniqueQueries)
+        {
+          SerialCursor<Tuple> cursor=query.execute();
+          try
+          {
+            while (cursor.next())
+            { 
+              Identifier storeId=cursor.getTuple().getId();
+              if (!storeId.equals(tuple.getId()))
+              {
+                DeltaTuple txDelta=deltaMap.get(storeId);
+                if (txDelta==null
+                    || (!txDelta.isDelete()
+                        && hasSameKey(i,tuple,txDelta)
+                       )
+                   )
+                {
+                  if (logLevel.isFine())
+                  { 
+                    log.fine("\r\n  existing="+cursor.getTuple()
+                      +"\r\n  new="+tuple.getOriginal()
+                      +"\r\n updated="+tuple
+                      );
+                  }
+                  throw new UniqueKeyViolationException
+                    (tuple,uniqueKeys.get(i));
+                }
+              }
+            }
+          }
+          finally
+          { cursor.close();
+          }
+          
+          // XXX This should be folded into the query's current transaction
+          //   visibility
+          Aggregate<DeltaTuple> uniqueDeltas
+            =getUniqueDeltas(i,tuple);
+        
+          if (uniqueDeltas!=null)
+          {
+            for (DeltaTuple txDelta: uniqueDeltas)
+            {
+              if (!txDelta.getId().equals(tuple.getId()) && !txDelta.isDelete())
+              {
+                if (logLevel.isFine())
+                { 
+                  log.fine("delta id = "+txDelta.getId()+"  id = "+tuple.getId());
+                  log.fine
+                    ("Unique conflict on update: "+tuple+" conflicts with "+txDelta+": "+uniqueKeys.get(i));
+                }
+                throw new UniqueKeyViolationException
+                  (tuple,uniqueKeys.get(i));
+              }
+            }
+          }
+                
+          
+          i++;
+          
+        }
+        return tuple;
+      }
+      finally
+      { localData.pop();
+      }
+    }
+    
+    private void addDelta(DeltaTuple tuple)
+    { 
+      DeltaTuple ot=deltaMap.get(tuple.getId());
+      if (ot!=null)
+      { deltaKeyedList.remove(ot);
+      }
+
+      deltaList.add(tuple);
+      deltaMap.put(tuple.getId(),tuple);
+      deltaKeyedList.add(tuple);
+    }
+    
+    private void removeDelta(DeltaTuple tuple)
+    { 
+      deltaKeyedList.remove(tuple);
+      deltaMap.remove(tuple.getId());
+      deltaList.remove(tuple);
+    }
     
     /**
      * Perform implementation specific insert logic
@@ -936,8 +1189,8 @@ public class XmlQueryable
     { 
 
       tuple=checkBuffer(tuple);
-      coalesce(tuple);
-      deltaList.add(tuple);
+      checkInsertIntegrity(tuple);
+      addDelta(tuple);
     }
     
     /**
@@ -949,9 +1202,9 @@ public class XmlQueryable
       throws DataException
     {
       tuple=checkBuffer(tuple);
-      coalesce(tuple);
+      checkUpdateIntegrity(tuple);
       tuple=lockOriginal(tuple);
-      deltaList.add(tuple);
+      addDelta(tuple);
     }
     
 
@@ -965,9 +1218,8 @@ public class XmlQueryable
       throws DataException
     {       
       tuple=checkBuffer(tuple);
-      coalesce(tuple);
       tuple=lockOriginal(tuple);
-      deltaList.add(tuple);
+      addDelta(tuple);
       
     }
 
@@ -1001,15 +1253,6 @@ public class XmlQueryable
       }
     }
     
-    /**
-     * Handle multiple operations applied to the same id
-     * 
-     * @param tuple
-     */
-    void coalesce(DeltaTuple tuple)
-    {
-
-    }
     
     /**
      * Lock the original while we update it
@@ -1029,6 +1272,7 @@ public class XmlQueryable
       
       
       DeltaTuple prepared=jt.prepareUpdate(tuple);  
+      
       
       // Original might be rebased
       preparedUpdates.add((JournalTuple) prepared.getOriginal());
@@ -1231,10 +1475,10 @@ public class XmlQueryable
       }
         
       for (DeltaTuple dt: rebaseList)
-      { deltaList.remove(dt);           
+      { removeDelta(dt);           
       }
       for (DeltaTuple dt: replaceList)
-      { deltaList.add(dt);           
+      { addDelta(dt);           
       }
         
       try

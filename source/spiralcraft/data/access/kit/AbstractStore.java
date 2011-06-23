@@ -1,5 +1,5 @@
 //
-//Copyright (c) 1998,2007 Michael Toth
+//Copyright (c) 1998,2011 Michael Toth
 //Spiralcraft Inc., All Rights Reserved
 //
 //This package is part of the Spiralcraft project and is licensed under
@@ -12,7 +12,7 @@
 //Unless otherwise agreed to in writing, this software is distributed on an
 //"AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.spi;
+package spiralcraft.data.access.kit;
 
 import java.io.IOException;
 import java.net.URI;
@@ -48,6 +48,9 @@ import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Scan;
+import spiralcraft.data.spi.ArrayDeltaTuple;
+import spiralcraft.data.spi.EditableArrayListAggregate;
+import spiralcraft.data.spi.ListAggregate;
 import spiralcraft.data.transaction.Branch;
 import spiralcraft.data.transaction.ResourceManager;
 import spiralcraft.data.transaction.Transaction;
@@ -235,6 +238,7 @@ public abstract class AbstractStore
       ret=query.solve(context,this);
     }
     ret.resolve();
+    
     if (debugLevel.isDebug())
     { log.debug("returning "+ret+" from query("+query+")");
     }
@@ -439,7 +443,7 @@ public abstract class AbstractStore
         baseQueryable.addExtent(subtype,queryable);
         
         targetBinding=createEntityBinding(new Entity(type));
-        targetBinding.setQueryable(baseQueryable);
+        targetBinding.setAccessor(baseQueryable);
         addStandardEntityBinding(targetBinding);
       }
       else if (!(targetBinding.getQueryable() instanceof BaseExtentQueryable<?>))
@@ -453,7 +457,7 @@ public abstract class AbstractStore
         baseQueryable.addExtent(type,targetBinding.getQueryable());
         baseQueryable.addExtent(subtype,queryable);
 
-        targetBinding.setQueryable(baseQueryable);
+        targetBinding.setAccessor(baseQueryable);
       }
       else
       {

@@ -240,7 +240,7 @@ public class ArrayDeltaTuple
       }
     }
     return new ArrayDeltaTuple
-      (newOriginal.getType().getScheme(),this,newOriginal);
+      (Type.getDeltaType(newOriginal.getType()).getScheme(),this,newOriginal);
   }
   
   void copyFrom(DeltaTuple updated)

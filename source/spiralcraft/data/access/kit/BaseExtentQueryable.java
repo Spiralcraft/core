@@ -12,7 +12,7 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.spi;
+package spiralcraft.data.access.kit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +24,7 @@ import java.util.Set;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
+import spiralcraft.data.access.EntityAccessor;
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Concatenation;
 import spiralcraft.data.query.Query;
@@ -45,7 +46,7 @@ import spiralcraft.log.Level;
  * 
  */
 public class BaseExtentQueryable<Ttuple extends Tuple>
-  implements Queryable<Ttuple>
+  implements EntityAccessor<Ttuple>
 {
   
   private static final ClassLog log
@@ -59,6 +60,11 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
   
   public BaseExtentQueryable(Type<?> type)
   { this.type=type;
+  }
+  
+  @Override
+  public Focus<?> bind(Focus<?> context)
+  { return context;
   }
   
   public void addExtent(Type<?> subtype,Queryable<Ttuple> extent)

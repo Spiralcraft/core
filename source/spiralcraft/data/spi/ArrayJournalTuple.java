@@ -210,7 +210,7 @@ public class ArrayJournalTuple
     { return latestVersion().update(delta);
     }
     else
-    { return null;
+    { return delta;
     }
     
   }

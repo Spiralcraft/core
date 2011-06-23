@@ -31,25 +31,23 @@ import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
-import spiralcraft.data.Key;
 import spiralcraft.data.Sequence;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
-import spiralcraft.data.UniqueKeyViolationException;
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.access.Snapshot;
 import spiralcraft.data.access.Updater;
 import spiralcraft.data.access.Entity;
+import spiralcraft.data.access.kit.AbstractStore;
+import spiralcraft.data.access.kit.EntityBinding;
 
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.sax.DataWriter;
 import spiralcraft.data.session.BufferType;
-import spiralcraft.data.spi.AbstractStore;
 import spiralcraft.data.spi.ArrayDeltaTuple;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.spi.EditableArrayTuple;
-import spiralcraft.data.spi.EntityBinding;
 import spiralcraft.data.spi.ResourceSequence;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.transaction.Transaction.Nesting;
@@ -160,7 +158,7 @@ public class XmlStore
           xmlQueryables.add(queryable);
           EntityBinding binding=createEntityBinding(entity);
           binding.setAuthoritative(true);
-          binding.setQueryable(queryable);
+          binding.setAccessor(queryable);
           binding.setUpdater(new XmlUpdater(queryable,binding));   
           if (entity.isDebug())
           { queryable.setLogLevel(Level.TRACE);
@@ -173,13 +171,10 @@ public class XmlStore
         }
       }
     }
-    
-    
+   
+
     focus=super.bind(focus);
 
-    for (XmlQueryable queryable:xmlQueryables)
-    { queryable.bind(focus);
-    }
     sequenceQueryable.bind(focus);
     if (subscriber!=null)
     { subscriber.bind(focus);
@@ -230,7 +225,7 @@ public class XmlStore
       Type<?> subtype=queryable.getResultType();
       EntityBinding entityBinding=createEntityBinding(new Entity(subtype));
       entityBinding.setAuthoritative(true);
-      entityBinding.setQueryable(queryable);
+      entityBinding.setAccessor(queryable);
       entityBinding.setUpdater(new XmlUpdater(queryable,entityBinding));
       addEntityBinding(entityBinding);
     }
@@ -546,15 +541,6 @@ public class XmlStore
     private XmlQueryable queryable;
     private EntityBinding entityBinding;
     
-
-    
-    private ArrayList<BoundQuery<?,Tuple>> uniqueQueries
-      =new ArrayList<BoundQuery<?,Tuple>>();
-    private ArrayList<Key<?>> uniqueKeys
-      =new ArrayList<Key<?>>();
-    
-    
-    
     public XmlUpdater
       (XmlQueryable queryable,EntityBinding binding
       )
@@ -570,30 +556,9 @@ public class XmlStore
     @Override
     public Focus<?> bind(Focus<?> context)
       throws BindException
-    {
-      Type<?> type=queryable.getResultType();
-      
+    { 
       context=super.bind(context);
-      
-      try
-      {
-      
-        for (Key<?> key: type.getKeys())
-        {
-          if (key.isUnique() || key.isPrimary())
-          { 
-            // Create queries for unique keys and associate the Key 
-            //   with the query via a parallel list for error reporting.
-            uniqueQueries.add(queryable.query(key.getQuery(),localFocus));
-            uniqueKeys.add(key);
-          }
-        }
-      }
-      catch (DataException x)
-      { throw new BindException("Error binding DRI rules for "+type.getURI()); 
-      }
-      
-      
+      queryable.bindDRI(context);
       return context;
     }
     
@@ -627,7 +592,6 @@ public class XmlStore
           if (tuple==null)
           { return;
           }
-          checkInsertIntegrity(tuple);
 
           joinTransaction().log(tuple);
           queryable.joinTransaction().insert(tuple);
@@ -640,7 +604,6 @@ public class XmlStore
           if (tuple==null)
           { return;
           }
-          tuple=checkUpdateIntegrity(tuple);
 
           joinTransaction().log(tuple);
           queryable.joinTransaction().update(tuple);
@@ -665,94 +628,11 @@ public class XmlStore
       }
     }
     
-    /**
-     * Check data integrity constraints for an insert
-     * 
-     * @param tuple
-     * @throws DataException
-     */
-    private void checkInsertIntegrity(DeltaTuple tuple)
-      throws DataException
-    {      
-      // Check unique keys
 
-      int i=0;
-      for (BoundQuery<?,Tuple> query: uniqueQueries)
-      {
-        SerialCursor<Tuple> cursor=query.execute();
-        try
-        {
-          if (cursor.next())
-          { 
-            if (debug)
-            { 
-              log.fine
-                ("Unique conflict on add: "+tuple+":"+uniqueKeys.get(i));
-            }
-            throw new UniqueKeyViolationException
-              (tuple,uniqueKeys.get(i));
-          }
-        }
-        finally
-        { cursor.close();
-        }
-        i++;
-        
-      }
-
-    }
     
 
     
-    /**
-     * Check data integrity constraints for an update
-     * 
-     * @param tuple
-     * @throws DataException
-     */
-    private DeltaTuple checkUpdateIntegrity(DeltaTuple tuple)
-      throws DataException
-    {      
-      // Check unique keys
-      int i=0;
-      for (BoundQuery<?,Tuple> query: uniqueQueries)
-      {
-        SerialCursor<Tuple> cursor=query.execute();
-        try
-        {
-          if (cursor.next())
-          { 
-            if (!cursor.getTuple().equals(tuple.getOriginal()))
-            {
-              Tuple newOriginal=queryable.getStoreVersion(tuple.getOriginal());
-              if (!cursor.getTuple().equals(newOriginal))
-              {
-                if (debug)
-                { 
-                  log.fine("\r\n  existing="+cursor.getTuple()
-                    +"\r\n  new="+tuple.getOriginal()
-                    +"\r\n updated="+tuple
-                    );
-                }
-                throw new UniqueKeyViolationException
-                  (tuple,uniqueKeys.get(i));
-              }
-              else
-              { 
-                // Deal with concurrent update- overwrite for now
-                tuple=tuple.rebase(newOriginal);
-              }
-            }
-          }
-        }
-        finally
-        { cursor.close();
-        }
-        i++;
-        
-      }
-      return tuple;
-    }
+
     
 
     
