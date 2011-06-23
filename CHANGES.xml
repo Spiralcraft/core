@@ -19,6 +19,118 @@
         </revision>
         
         <notes>
+          <scm:Note>Rename MultiMap.getOne() to MultiMap.getFirst() and
+            add getLast() method
+          </scm:Note>
+          <scm:Note>Add Aggregate.contains() method
+          </scm:Note>          
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>util/KeyedList.java
+          </URI>
+          <URI>util/ListMap.java
+          </URI>
+          <URI>util/MultiMap.java
+          </URI>
+          <URI>data/Aggregate.java
+          </URI>
+          <URI>data/sax/TupleFrame.java
+          </URI>
+          <URI>data/spi/KeyedListAggregate.java
+          </URI>
+          <URI>data/spi/ListAggregate.java
+          </URI>          
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Discard all buffers after transaction commit to ensure
+            that BufferAggregates are reconstructed properly
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/session/
+        </path>
+        
+        <resources>
+          <URI>Buffer.java
+          </URI>
+          <URI>BufferAggregate.java
+          </URI>
+          <URI>BufferTuple.java
+          </URI>
+          <URI>DataSession.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Factor the deltas in the current transaction into key 
+            uniqueness checks to permit deletion and re-insertion of the
+            same entity within a single transaction.
+          </scm:Note>
+          <scm:Note>Factored some access related kit components into new 
+            package spiralcraft.data.access.kit.
+          </scm:Note>
+          <scm:Note>Identifiers should always reference the master type 
+            (archetype) so buffers and deltas and standard tuples for the
+            same entity can be associated
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>access/EntityAccessor.java
+          </URI>
+          <URI>access/kit/AbstractStore.java
+          </URI>
+          <URI>access/kit/AbstractStoreQueryable.java
+          </URI>
+          <URI>access/kit/BaseExtentQueryable.java
+          </URI>
+          <URI>access/kit/EntityBinding.java
+          </URI>
+          <URI>spi/AbstractStore.java
+          </URI>
+          <URI>spi/ArrayDeltaTuple.java
+          </URI>
+          <URI>spi/ArrayJournalTuple.java
+          </URI>
+          <URI>spi/BaseExtentQueryable.java
+          </URI>
+          <URI>spi/EntityBinding.java
+          </URI>
+          <URI>spi/IdentifierFunction.java
+          </URI>
+          <URI>xml/XmlQueryable.java
+          </URI>
+          <URI>xml/XmlStore.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
           <scm:Note>Fix NPE in StringUtil.escape
           </scm:Note>
 
