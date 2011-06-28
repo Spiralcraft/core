@@ -52,7 +52,7 @@ public class MetaEmptyMember<T>
 }
 
 class CollectionEmptyChannel<T>
-extends SourcedChannel<T,Boolean>
+  extends SourcedChannel<T,Boolean>
 {
   private final IterationDecorator<T,?> decorator;
 
