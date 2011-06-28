@@ -36,8 +36,11 @@ public class QName
 
   
   /**
-   * Resolve a name in the form namespacePrefix+":"+localName using the
-   *   contextual PrefixResolver.
+   * Resolve a name in one of the following forms:
+   * 
+   *   1. localName
+   *   2. namespacePrefix+":"+localName using the contextual PrefixResolver.
+   *   3. {uri}localName fully qualified form
    * 
    * @param prefixedName
    * @return a QName
@@ -48,8 +51,11 @@ public class QName
   }
   
   /**
-   * Resolve a name in the form namespacePrefix+":"+localName using the
-   *   specified PrefixResolver.
+   * Resolve a name in one of the following forms:
+   * 
+   *   1. localName
+   *   2. namespacePrefix+":"+localName using the specified PrefixResolver.
+   *   3. {uri}localName fully qualified form
    * 
    * @param prefixedName
    * @return a QName
@@ -57,6 +63,10 @@ public class QName
   public static QName resolve(String prefixedName,PrefixResolver resolver)
     throws UnresolvedPrefixException
   { 
+    if (prefixedName.startsWith("{"))
+    { return new QName(prefixedName);
+    }
+        
     String[] pair=StringUtil.explode(prefixedName,':',(char) 0,2);
     switch (pair.length)
     {
