@@ -459,7 +459,9 @@ public class DataSession
       }
       updaterMap.clear();
       
-      buffers.clear();
+      if (buffers!=null)
+      { buffers.clear();
+      }
 
     }
 
