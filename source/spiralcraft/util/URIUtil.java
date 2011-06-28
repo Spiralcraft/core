@@ -50,6 +50,40 @@ public class URIUtil
       );
   }
   
+  
+  /**
+   * Creates a new URI, removing the specified pre-encoded String from the
+   *   end of the path string, if present
+   * 
+   * @param source
+   * @param rawSuffix
+   * @return
+   */
+  public static final URI removePathSuffix(URI source,String rawSuffix)
+  { 
+    String rawPath=source.getPath();
+    if (rawPath!=null && rawPath.endsWith(rawSuffix))
+    { 
+      rawPath=rawPath.substring(0,rawPath.length()-rawSuffix.length());
+      return URI.create
+          ( (source.getScheme()!=null?source.getScheme()+":":"")
+            +(source.getAuthority()!=null?"//"+source.getAuthority():"")
+            +rawPath
+            +(source.getRawQuery()!=null
+              ?"?"+source.getRawQuery()
+              :""
+              )
+            +(source.getRawFragment()!=null
+              ?"#"+source.getRawFragment()
+              :""
+             )
+          );
+    }
+    else
+    { return source;
+    }
+  }
+  
   /**
    * <p>Add a pre-encoded path segment to the specified URI
    * </p>
