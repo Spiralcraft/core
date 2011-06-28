@@ -30,6 +30,30 @@ public class ContextualName
   private final QName qName;
   private final PrefixedName pName;
   
+  public ContextualName(String prefixedName,PrefixResolver resolver)
+    throws UnresolvedPrefixException
+  {
+    NamespaceContext.push(resolver);
+    try
+    { 
+      if (prefixedName.startsWith("{"))
+      { 
+        pName=null;
+        qName=new QName(prefixedName);
+      }
+      else
+      {
+        pName=new PrefixedName(prefixedName);
+        qName=pName.resolve();
+      
+      }
+    }
+    finally
+    { NamespaceContext.pop();
+    }
+      
+  }
+
   public ContextualName(String prefixedName)
     throws UnresolvedPrefixException
   {
