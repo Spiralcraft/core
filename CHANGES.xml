@@ -19,6 +19,81 @@
         </revision>
         
         <notes>
+          <scm:Note>QName.resolve recognizes {uri}name format 
+          </scm:Note>         
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>common/namespace/QName.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>ContextualName supports constructor that uses a provided
+            PrefixResolver instead of the Contextual prefixResolver
+          </scm:Note>         
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>common/namespace/ContextualName.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>URIUtil.removePathSuffix removes specific suffix from
+            the URI path.
+          </scm:Note>         
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>util/URIUtil.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>New ReferencePool utility to pool and reduce instances of
+            duplicate immutable objects
+          </scm:Note>         
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>util/ReferencePool.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
           <scm:Note>Rename MultiMap.getOne() to MultiMap.getFirst() and
             add getLast() method
           </scm:Note>
