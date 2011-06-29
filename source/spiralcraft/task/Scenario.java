@@ -72,7 +72,7 @@ public abstract class Scenario<Tcontext,Tresult>
   protected ThreadLocalChannel<TaskCommand<Tcontext,Tresult>> commandChannel;
   protected ThreadLocalChannel<Tcontext> contextChannel; 
   
-  protected ClosureFocus<Scenario<Tcontext,Tresult>> closureFocus;
+  protected ClosureFocus<?> closureFocus;
   protected boolean importContext;
   
   protected boolean debug;
@@ -295,9 +295,18 @@ public abstract class Scenario<Tcontext,Tresult>
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Focus<?> bind(
-    Focus<?> focusChain)
+    Focus<?> context)
     throws ContextualException
   { 
+    Focus<?> focusChain=context;
+
+    focusChain=bindImports(focusChain);
+    
+    closureFocus
+      =new ClosureFocus
+        (focusChain);
+    
+    focusChain=closureFocus;
     
     if (contextX!=null)
     { 
@@ -314,31 +323,35 @@ public abstract class Scenario<Tcontext,Tresult>
         =new ThreadLocalChannel<Tcontext>(contextReflector,true);
 
     }
+
     
     if (importContext && contextChannel!=null)
     { focusChain=focusChain.chain(contextChannel);
     }
+
     
-    focusChain=bindImports(focusChain);
+    
+    
+//    if (focusChain==context)
+//    { focusChain=context.chain(context.getSubject());
+//    }
+//    focusChain.addFacet
+//      (focusChain.chain
+//        (new SimpleChannel(BeanReflector.getInstance(getClass()),this,true))
+//      );
+    
+    
+
+    
+    Focus<?> exportChain=bindCommand
+        (focusChain);
     
     Channel selfChannel
       =new SimpleChannel<Scenario<Tcontext,Tresult>>
         ((Reflector) reflect(),this,true);
-    
-    focusChain=focusChain.chain(selfChannel);
-    
-    
-    closureFocus
-      =new ClosureFocus<Scenario<Tcontext,Tresult>>
-        ((Focus<Scenario<Tcontext,Tresult>>) focusChain);
-    
 
-    
-    
-    Focus<?> exportChain=bindCommand
-        (closureFocus
-        ,(Reflector<TaskCommand<Tcontext,Tresult>>) getCommandReflector()
-        );
+    Focus selfFocus=focusChain.chain(selfChannel);
+    exportChain.addFacet(selfFocus);
     
     exportChain=bindExports(exportChain);
     if (exportChain==null)
@@ -349,7 +362,8 @@ public abstract class Scenario<Tcontext,Tresult>
     bindChildren(exportChain);
     
     // 
-    return focusChain;
+    
+    return context.chain(selfChannel);
       
   }
 
@@ -357,11 +371,10 @@ public abstract class Scenario<Tcontext,Tresult>
    * <p>Override to bind to the contextual Focus passed to this scenario and
    *   to publish any references to be used further down the chain. This is
    *   used for expressions that access the contextual Focus in a relative
-   *   manner to establish input data paths.
+   *   manner to establish data bindings for input and output
    * </p>
    * 
-   * <p>This is called after any context initializer is bound and before
-   *   the Scenario itself or any call specific expressions are bound.
+   * <p>This is called outside of the closure and any context initializer
    * </p>
    * 
    * @param importChain
@@ -370,6 +383,23 @@ public abstract class Scenario<Tcontext,Tresult>
   protected Focus<?> bindImports(Focus<?> importChain)
     throws ContextualException
   { return importChain;
+  }
+  
+  /**
+   * <p>Override to define a context (parameter block) 
+   *   and to publish any other references to be used further down the chain. 
+   * </p>
+   * 
+   * <p>This is called inside the closure and after any contextX initializer
+   *   is bound
+   * </p>
+   * 
+   * @param importChain
+   * @return
+   */
+  protected Focus<?> bindContext(Focus<?> contextChain)
+    throws ContextualException
+  { return contextChain;
   }
   
   /**
@@ -418,7 +448,7 @@ public abstract class Scenario<Tcontext,Tresult>
   }
   
   
-  ClosureFocus<Scenario<Tcontext,Tresult>>.Closure enclose()
+  ClosureFocus<?>.Closure enclose()
   { return closureFocus.enclose();
   }
   
@@ -468,6 +498,11 @@ public abstract class Scenario<Tcontext,Tresult>
   }
 
 
+  protected void bindInContext(Focus<?> focusChain)
+    throws BindException
+  {
+  
+  }
   
 
   /**
@@ -480,15 +515,9 @@ public abstract class Scenario<Tcontext,Tresult>
   private Focus<?> 
     bindCommand
       (Focus<?> focusChain
-      ,Reflector<TaskCommand<Tcontext,Tresult>> reflector
       )
     throws BindException
   {
-    commandChannel
-      =new ThreadLocalChannel<TaskCommand<Tcontext,Tresult>>
-        (reflector);
-    focusChain=focusChain.chain(commandChannel);
-    
     if (contextReflector!=null)
     { 
       // Make it easy for the bindings to get at the context
@@ -499,6 +528,19 @@ public abstract class Scenario<Tcontext,Tresult>
       }
       focusChain=focusChain.chain(contextChannel);
     }
+    
+    bindInContext(focusChain);
+    
+    @SuppressWarnings("unchecked")
+    Reflector<TaskCommand<Tcontext,Tresult>> reflector
+      =(Reflector<TaskCommand<Tcontext,Tresult>>) getCommandReflector();
+    
+    commandChannel
+      =new ThreadLocalChannel<TaskCommand<Tcontext,Tresult>>
+        (reflector);
+    focusChain.addFacet(focusChain.chain(commandChannel));
+    
+
     if (whenX!=null)
     { whenX.bind(focusChain);
     }

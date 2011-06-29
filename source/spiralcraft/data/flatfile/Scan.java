@@ -308,7 +308,11 @@ public class Scan<C,R>
   public Focus<?> bindImports(Focus<?> focusChain)
     throws ContextualException
   {
-
+    if (contextX!=null)
+    { 
+      throw new BindException
+        ("contextX not permitted for Scan. Context is a Resource[] ");
+    }
     this.contextReflector=BeanReflector.getInstance(Resource[].class);
     return super.bindImports(focusChain);
   }

@@ -20,7 +20,7 @@ public class Eval<Tcontext,Tresult>
 
   { 
     storeResults=true;
-    importContext=true;
+    // importContext=true;
   }
 
   private Binding<Tresult> x;
@@ -49,18 +49,18 @@ public class Eval<Tcontext,Tresult>
   { return new EvalTask();
   }
 
+  
+  /**
+   * 
+   */
   @Override
-  public Focus<?> bindImports(Focus<?> focus)
+  protected void bindInContext(Focus<?> focus)
     throws BindException
   { 
-
     x.bind(focus);
     resultReflector=x.getReflector();
     resultChannel=new ThreadLocalChannel<Tresult>(resultReflector);
     
-    // Don't return the contextFocus because it won't be inside the
-    //   closure.
-    return focus;
   }
   
   /**
@@ -68,6 +68,7 @@ public class Eval<Tcontext,Tresult>
    */
   @Override
   public Focus<?> bindExports(Focus<?> focus)
+    throws BindException
   { return focus.chain(resultChannel);
   }
  
