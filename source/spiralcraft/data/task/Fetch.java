@@ -14,10 +14,11 @@
 //
 package spiralcraft.data.task;
 
-import spiralcraft.data.Aggregate;
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
+import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.access.CursorAggregate;
@@ -39,17 +40,18 @@ import spiralcraft.task.Chain;
  *
  */
 public class Fetch<Tcontext>
-  extends Chain<Tcontext,Aggregate<Tuple>>
+  extends Chain<Tcontext,DataComposite>
 {
   
   protected Query query;
   protected BoundQuery<?,Tuple> boundQuery;
-  protected ThreadLocalChannel<Aggregate<Tuple>> resultChannel;
+  protected ThreadLocalChannel<DataComposite> resultChannel;
   protected Expression<Tuple> cursorX;
   @SuppressWarnings("rawtypes")
   protected CursorChannel cursorChannel;
   protected int batchSize;
   protected Queryable<?> queryable;
+  protected boolean single=false;
   
   { storeResults=true;
   }
@@ -72,6 +74,17 @@ public class Fetch<Tcontext>
   { 
     this.query=query;
     this.queryable=queryable;
+  }
+  
+  public Fetch(DataReflector<?> reflector,Expression<?>[] bindings)
+  { 
+    Type<?> resultType=reflector.getType();
+    Type<?> tupleType
+      =resultType.isAggregate()?resultType.getContentType():resultType;
+    if (resultType==tupleType)
+    { single=true;
+    }
+    this.query=new EquiJoin(tupleType,bindings);
   }
   
   public class FetchTask
@@ -104,13 +117,22 @@ public class Fetch<Tcontext>
             boolean done=false;
             while (!done)
             {
-              CursorAggregate<Tuple> result
+              CursorAggregate<Tuple> aggregate
                 =batchSize>0
                 ?new CursorAggregate<Tuple>(cursor,batchSize)
                 :new CursorAggregate<Tuple>(cursor)
                 ;
-              resultChannel.push(result);
+              
+              DataComposite result;
+              if (single)
+              { result=aggregate.size()>0?aggregate.get(0):null;
+              }
+              else
+              { result=aggregate;
+              }
         
+              resultChannel.push(result);
+              
               try
               { super.work();
               }
@@ -123,7 +145,7 @@ public class Fetch<Tcontext>
               { done=true;
               }
               else
-              { done=result.size()==0;
+              { done=single || aggregate.size()==0;
               }
  
             }
@@ -173,6 +195,7 @@ public class Fetch<Tcontext>
   { this.cursorX=cursorX;
   }
   
+  @SuppressWarnings({ "rawtypes", "unchecked"})
   @Override
   public Focus<?> bindImports(Focus<?> focusChain)
     throws BindException
@@ -188,7 +211,14 @@ public class Fetch<Tcontext>
     }
     Type<?> type=query.getType();
     if (type!=null)
-    { resultReflector=DataReflector.getInstance(Type.getAggregateType(type));
+    { 
+      resultReflector
+        =(DataReflector)
+          (single
+          ?DataReflector.getInstance(type)
+          :DataReflector.getInstance(Type.getAggregateType(type))
+          )
+          ;
     }
     return focusChain;
   }
@@ -232,10 +262,16 @@ public class Fetch<Tcontext>
       }
     }
     
+    Type<?> resultType
+      =single
+      ?boundQuery.getType()
+      :Type.getAggregateType(boundQuery.getType())
+      ;
+        
     if (resultReflector==null)
     { 
       resultReflector
-        =DataReflector.getInstance(Type.getAggregateType(boundQuery.getType()));
+        =DataReflector.getInstance(resultType);
     }
 
     if (cursorChannel!=null)
@@ -245,9 +281,9 @@ public class Fetch<Tcontext>
     }
     
     resultChannel
-      =new ThreadLocalChannel<Aggregate<Tuple>>
-        (DataReflector.<Aggregate<Tuple>>getInstance
-          (Type.getAggregateType(boundQuery.getType()))
+      =new ThreadLocalChannel<DataComposite>
+        ((DataReflector) DataReflector.getInstance
+          (resultType)
         );
         
 // Too late for this here
