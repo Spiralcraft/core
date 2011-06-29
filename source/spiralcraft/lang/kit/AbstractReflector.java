@@ -172,7 +172,16 @@ public abstract class AbstractReflector<T>
     Member member=metaMembers.get(name);
     if (member!=null)
     { channel=member.resolve(this,source,focus,params);
-    }   
+    }
+    else if (Reflector.class.isAssignableFrom(source.getContentType()))
+    { 
+      Channel staticChannel
+        =((Reflector<?>) source.get()).getStaticChannel(focus);
+      
+      // Check static channel for fluent syntax
+      channel=((Reflector<?>) source.get()).<X>resolve
+        (staticChannel,focus,name.substring(1),params);
+    }
     return (Channel<X>) channel;
   }
   
@@ -322,8 +331,16 @@ public abstract class AbstractReflector<T>
     }
   }
   
-
-  
+  @Override
+  public Channel<T> getStaticChannel(Focus<?> context)
+  { 
+    Channel<T> staticChannel
+      =new SimpleChannel<T>(this,null,true);
+    staticChannel.setContext(context);
+    
+    return staticChannel;
+  }
+    
   /**
    * <p>Generate a new Channel which resolves the name and the given parameter 
    *   expressions against the source Channel and the supplied Focus.

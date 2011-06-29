@@ -290,7 +290,6 @@ public class BeanReflector<T>
   private Type targetType;
   private URI uri;
   private MethodResolver methodResolver;
-  private volatile Channel<T> staticChannel;
   private final Reflector<T> boxedEquivalent;
   private boolean traceResolution=false;
   
@@ -468,14 +467,6 @@ public class BeanReflector<T>
   }
   
   
-  public synchronized <X> Channel<X> getStaticChannel()
-  { 
-    if (staticChannel==null)
-    { staticChannel=new SimpleChannel(this,null,true);
-    }
-    return (Channel<X>) staticChannel;
-  }
-  
   @Override
   public synchronized <X> Channel<X> 
     resolveMeta(Channel<T> source
@@ -487,8 +478,8 @@ public class BeanReflector<T>
   { 
     if (name.equals("@static"))
     { 
-      if (BeanReflector.class.isAssignableFrom(source.getContentType()))
-      { return ((BeanReflector<X>) source.get()).<X>getStaticChannel();
+      if (Reflector.class.isAssignableFrom(source.getContentType()))
+      { return (Channel<X>) ((Reflector<?>) source.get()).getStaticChannel(focus);
       }
       else
       { throw new BindException("@static not supported by "+source);
@@ -500,10 +491,10 @@ public class BeanReflector<T>
       if (ret!=null)
       { return ret;
       }
-      else if (BeanReflector.class.isAssignableFrom(source.getContentType()))
+      else if (Reflector.class.isAssignableFrom(source.getContentType()))
       { 
         // Check static channel for fluent syntax
-        return ((BeanReflector<?>) source.get()).getStaticChannel()
+        return ((Reflector<?>) source.get()).getStaticChannel(focus)
           .<X>resolve(focus,name.substring(1),params);
       }
       else

@@ -110,6 +110,12 @@ public interface Reflector<T>
    */
   public Channel<Reflector<T>> getSelfChannel();
   
+  /**
+   * A Channel that will resolve type-scoped (static) fields and methods
+   * 
+   * @return
+   */
+  public Channel<T> getStaticChannel(Focus<?> context);
   
   /**
    * <p>Generate a new Channel which resolves the name and the given parameter 
