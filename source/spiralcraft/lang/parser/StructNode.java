@@ -1045,6 +1045,10 @@ public class StructNode
 
     }    
     
+    @Override
+    public String toString()
+    { return super.toString()+": "+fields.keySet();
+    }
   }
   
   
