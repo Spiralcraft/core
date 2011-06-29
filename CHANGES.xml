@@ -13,7 +13,87 @@
     </date>
     
     <detail>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Improve design contract for Scenario by adding
+            bindContext() method for in-closure context setup, and move
+            bindImports() outside the closure 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>       
+          <URI>data/task/Eval.java
+          </URI>
+          <URI>data/task/Scenario.java
+          </URI>
+          <URI>data/flatfile/Scan.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>data Fetch task now has a Type,bindingX[] constructor
+            to set up a simple EquiJoin 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/query/EquiJoin.java
+          </URI>
+          <URI>data/task/Fetch.java
+          </URI>
+        </resources>
+      </scm:Change>
     
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Type scoped (static) methods on data Types are now 
+            supported.
+          </scm:Note>         
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/Method.java
+          </URI>
+          <URI>data/core/AbstractTaskMethod.java
+          </URI>
+          <URI>data/core/ExpressionMethod.java
+          </URI>
+          <URI>data/core/MethodImpl.java
+          </URI>
+          <URI>data/core/TaskMethod.java
+          </URI>
+          <URI>data/lang/TupleReflector.java
+          </URI>
+          <URI>lang/Reflector.java
+          </URI>       
+          <URI>lang/kit/AbstractReflector.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>                               
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev1
         </revision>
