@@ -112,6 +112,19 @@
               <testX>.score==10
               </testX>
             </test:Assertion>
+            
+            
+            <test:Assertion>
+              <name>Static fetch
+              </name>
+              
+              <subjectX>
+                [@example:Customer].@fetch(2)
+              </subjectX>
+            
+              <testX>.displayName.startsWith("Mary Second")
+              </testX>
+            </test:Assertion>            
           </chain>
         </task:Eval>
                 

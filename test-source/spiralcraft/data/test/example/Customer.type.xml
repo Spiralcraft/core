@@ -4,6 +4,8 @@
   xmlns:meta="class:/spiralcraft/data/types/meta/"
   xmlns:example="class:/spiralcraft/data/test/example"
   xmlns:j="class:/java/lang/"
+  
+  xmlns:dtask="class:/spiralcraft/data/task/"
   >
   <archetype><example:Contact.type/>
   </archetype>
@@ -165,6 +167,28 @@
       </contextX>
           
       <x>..score=..score+.score
+      </x>
+          
+    </meta:Method>
+    
+    <meta:Method>
+      <name>fetch</name>
+      
+      <static>true
+      </static>
+      
+      <parameterTypes>
+        <Integer.type/>
+      </parameterTypes>
+      
+      <returnType>
+        <example:Customer.type/>
+      </returnType>
+      
+      <contextX>{ id:[@j:Integer] }
+      </contextX>
+          
+      <x>[*dtask:Fetch{[@example:Customer],[{`id:=id`}]}].()
       </x>
           
     </meta:Method>
