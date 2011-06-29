@@ -75,4 +75,10 @@ public interface Method
    */
   Signature getSignature()
     throws BindException;
+  
+  /**
+   * Static methods are published in the meta namespace for the
+   *   type, e.g. [@myns:MyType].@myStaticMethod(p1,p2) 
+   */
+  boolean isStatic();
 }

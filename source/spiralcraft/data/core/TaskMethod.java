@@ -46,8 +46,9 @@ public class TaskMethod<T,C,R>
   
 
   
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
-  protected Focus<?> bindTask(
+  protected Focus<Scenario<C,R>> bindTask(
     Focus<?> context,
     Channel<?> source,
     Channel<?>[] params)
@@ -67,7 +68,7 @@ public class TaskMethod<T,C,R>
       AbstractXmlObject<Scenario<C,R>,?> scenarioContainer
         =AbstractXmlObject
           .<Scenario<C,R>>activate(null,scenarioURI, context);
-      return scenarioContainer.getFocus();
+      return (Focus) scenarioContainer.getFocus();
 
     }
     catch (ContextualException x)

@@ -22,6 +22,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.util.LangUtil;
 
 import spiralcraft.task.Eval;
+import spiralcraft.task.Scenario;
 
 /**
  * A method which evaluates an Expression in the context of a Tuple of a given 
@@ -48,8 +49,9 @@ public class ExpressionMethod<T,C,R>
   { this.contextX=contextX;
   }
   
+  @SuppressWarnings({ "unchecked", "rawtypes"})
   @Override
-  public Focus<?> bindTask(
+  public Focus<Scenario<C,R>> bindTask(
     Focus<?> context,
     Channel<?> source,
     Channel<?>[] params)
@@ -64,7 +66,8 @@ public class ExpressionMethod<T,C,R>
     
     Eval<C,R> eval=new Eval<C,R>(contextX,x);
     try
-    { return LangUtil.findFocus(Eval.class,eval.bind(context));
+    { return (Focus) 
+        LangUtil.findFocus(Eval.class,eval.bind(context));
     }
     catch (ContextualException x)
     { throw new BindException("Error binding ExpressionMethod ",x);

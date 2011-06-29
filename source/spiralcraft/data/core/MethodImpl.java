@@ -20,6 +20,7 @@ public abstract class MethodImpl
   
   private Type<?> dataType;
   protected Type<?> returnType;
+  protected boolean staticMethod;
   private String name;
   private Type<?>[] parameterTypes;
   private String qualifiedName;
@@ -71,6 +72,16 @@ public abstract class MethodImpl
 
   public void setReturnType(Type<?> type)
   { returnType=type;
+  }
+  
+  @Override
+  public boolean isStatic()
+  { return staticMethod;
+  }
+  
+  
+  public void setStatic(boolean staticMethod)
+  { this.staticMethod=staticMethod;
   }
   
 

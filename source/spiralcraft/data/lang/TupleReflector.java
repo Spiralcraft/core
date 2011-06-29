@@ -342,12 +342,22 @@ public class TupleReflector<T extends Tuple>
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private Channel bindMethods
-    (Type type,Channel source,Focus focus,String name,Expression[] params)
+    (Type type
+    ,Channel source
+    ,Focus focus
+    ,String name
+    ,Expression[] params
+    )
     throws BindException
   {
     if (params==null)
     { params=NULL_PARAMS;
     }
+    boolean staticMethod
+      =(source.isConstant() 
+       && source.get()==null
+       && source.getContext()==focus
+       );
     Channel[] paramChannels=new Channel[params.length];
     
     ArrayList<Channel> sigChannels=new ArrayList<Channel>();
@@ -389,6 +399,7 @@ public class TupleReflector<T extends Tuple>
       }
       if (method.getName().equals(name) 
             && method.getParameterTypes().length==sigChannels.size()
+            && method.isStatic()==staticMethod
             )
       {
         
@@ -492,7 +503,7 @@ public class TupleReflector<T extends Tuple>
 
   @Override
   /**
-   * Create a constuctor channel
+   * Create a constructor channel
    */
   public Channel<T> bindChannel(
     Focus<?> focus,

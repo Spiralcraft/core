@@ -77,13 +77,13 @@ public abstract class AbstractTaskMethod<T,C,R>
   }
   
   
-  protected abstract Focus<?> bindTask(
+  protected abstract Focus<Scenario<C,R>> bindTask(
     Focus<?> context,
     Channel<?> source,
     Channel<?>[] params)
     throws BindException;
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked" })
   @Override
   public Channel<?> bind(
     Channel<?> source,
