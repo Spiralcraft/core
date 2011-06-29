@@ -26,12 +26,13 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
 /**
- * <p>Provides a consistent snapshot of contextual data for an operation.
+ * <p>Provides a consistent snapshot of contextual Focus references over
+ *   a single execution of a task. 
  * </p>
  * 
- * <p>Captures and caches the current content of all Channels referenced from 
- *   down-chain components for an operation demarcated by the push() and
- *   pop() methods.
+ * <p>Captures and caches the value of any Focus chain channel referenced from 
+ *   down-chain components and child tasks for an operation demarcated by the 
+ *   push() and pop() methods.
  * </p>
  * 
  * <p>Useful for making ThreadLocal context available to other Threads, for 
