@@ -96,8 +96,10 @@ public interface Channel<T>
    * @param focus
    * @param metadataTypeURI
    * @return
+   * @throws BindException 
    */
-  <X> Channel<X> resolveMeta(Focus<?> focus,URI metadataTypeURI);
+  <X> Channel<X> resolveMeta(Focus<?> focus,URI metadataTypeURI) 
+    throws BindException;
   
   /**
    * Return the content of this view.
