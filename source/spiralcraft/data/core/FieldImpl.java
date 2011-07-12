@@ -32,6 +32,7 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.kit.ConstantChannel;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.log.ClassLog;
@@ -81,6 +82,7 @@ public class FieldImpl<T>
   
   protected Tuple defaultUIMetadata;
   protected Channel uiMetadataChannel;
+  protected Channel fieldMetadataChannel;
   
   protected boolean debug;
 
@@ -979,7 +981,8 @@ public class FieldImpl<T>
     }
     
     @Override
-    public <X> Channel<X> resolveMeta(Focus<?> focus,URI typeURI)
+    public synchronized <X> Channel<X> resolveMeta(Focus<?> focus,URI typeURI)
+      throws BindException
     {
       if (typeURI.equals(MetadataType.FIELD.uri))
       { 
@@ -992,6 +995,22 @@ public class FieldImpl<T>
               );
         }
         return uiMetadataChannel;
+      }
+      else if (spiralcraft.data.types.meta.MetadataType.FIELD.uri.equals(typeURI)
+            || BeanReflector.getInstance(FieldImpl.this.getClass())
+                .isAssignableTo(typeURI)
+          )
+      { 
+        if (fieldMetadataChannel==null)
+        { 
+          fieldMetadataChannel
+            =new ConstantChannel
+              (BeanReflector.getInstance(FieldImpl.this.getClass())
+              ,FieldImpl.this
+              );
+        }
+        return fieldMetadataChannel;
+          
       }
       return null;
     }

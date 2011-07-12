@@ -15,14 +15,19 @@
 package spiralcraft.data.core;
 
 
+import java.net.URI;
+
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 
+import spiralcraft.lang.kit.ConstantChannel;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.ClosureFocus;
+import spiralcraft.ui.MetadataType;
 import spiralcraft.util.string.StringUtil;
 
 import spiralcraft.data.DataComposite;
@@ -463,6 +468,37 @@ public class RelativeField<T extends DataComposite>
         );
      
     }
+    
+    @Override
+    public <X> Channel<X> resolveMeta(Focus<?> focus,URI typeURI)
+    {
+      if (typeURI.equals(MetadataType.FIELD.uri))
+      { 
+        if (uiMetadataChannel==null)
+        { 
+          uiMetadataChannel
+            =new ConstantChannel
+              (MetadataType.FIELD.reflector
+              ,defaultUIMetadata
+              );
+        }
+        return uiMetadataChannel;
+      }
+      else if (typeURI.equals(spiralcraft.data.types.meta.MetadataType.FIELD.uri))
+      { 
+        if (fieldMetadataChannel==null)
+        { 
+          fieldMetadataChannel
+            =new ConstantChannel
+              (BeanReflector.getInstance(getClass())
+              ,RelativeField.this
+              );
+        }
+        return fieldMetadataChannel;
+        
+      }
+      return null;
+    }    
     
    
   }
