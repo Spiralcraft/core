@@ -29,6 +29,7 @@ import java.util.HashMap;
 
 import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
+import spiralcraft.common.Declarable;
 import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
@@ -52,6 +53,7 @@ import spiralcraft.vfs.classpath.ClasspathResourceFactory;
  *   Assembly.
  */
 public class AssemblyClass
+  implements Declarable
 {
   
   private static final BeanInfoCache _BEAN_INFO_CACHE
@@ -129,6 +131,7 @@ public class AssemblyClass
   }
   
   
+  
   private final URI sourceURI;
   
 
@@ -173,6 +176,10 @@ public class AssemblyClass
   private boolean debug;
   private HashMap<String,String> context;
   private HashMap<String,String> localContext;
+  
+  private boolean declarable;
+  private Object declarationInfo;
+  
   /**
    * Construct a new AssemblyClass from a definition
    *
@@ -252,6 +259,22 @@ public class AssemblyClass
   { return prefixResolver;
   }
 
+  @Override
+  public void setDeclarationInfo(Object declarationInfo)
+  { this.declarationInfo=declarationInfo;
+  }
+  
+  @Override
+  public Object getDeclarationInfo()
+  { 
+    if (this.declarationInfo!=null)
+    { return this.declarationInfo;
+    }
+    else
+    { return this.sourceURI;
+    }
+  }
+  
   public void define(String contextName,String expansion)
   {
     if (context==null)
@@ -300,6 +323,16 @@ public class AssemblyClass
     if (context!=null)
     { ContextDictionary.popInstance();
     }
+  }
+
+  
+  /**
+   * 
+   * @return Whether the source info for this Assembly class should
+   *   be supplied to the target object through the Declarable interface
+   */
+  public boolean isDeclarable()
+  { return declarable;
   }
   
   @Override
@@ -1058,8 +1091,12 @@ public class AssemblyClass
       catch (IntrospectionException x)
       { throw newBuildException("Error introspecting "+_javaClass,x);
       }
+      
+      declarable=Declarable.class.isAssignableFrom(_javaClass);
     }
-    
+    else if (_baseAssemblyClass!=null)
+    { declarable=_baseAssemblyClass.isDeclarable();
+    }
   }
 
   private MappedBeanInfo getBeanInfo()

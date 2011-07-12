@@ -21,10 +21,10 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import spiralcraft.text.ParsePosition;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringUtil;
 
+import spiralcraft.common.Declarable;
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.lang.Expression;
@@ -43,6 +43,7 @@ import java.util.List;
  *   or modified in some way- eg. "connection.password"
  */
 public class PropertySpecifier
+  implements Declarable
 {
   private static final ClassLog log
     =ClassLog.getInstance(PropertySpecifier.class);
@@ -76,10 +77,10 @@ public class PropertySpecifier
   
   private Class<?> propertyType;
   
-  private ParsePosition position;
   private Level debugLevel=Level.INFO;
   
   private boolean contextualize=true;
+  private Object declarationInfo;
 
   public PropertySpecifier
     (AssemblyClass container
@@ -133,6 +134,17 @@ public class PropertySpecifier
     addAssemblyClass(content);
   }
   
+  
+  @Override
+  public void setDeclarationInfo(Object declarationInfo)
+  { this.declarationInfo=declarationInfo;
+  }
+  
+  @Override
+  public Object getDeclarationInfo()
+  { return this.declarationInfo;
+  }
+  
   /**
    * <p>Whether contextual String substitution should be performed on any 
    *   specified text at instantiation time.
@@ -167,10 +179,6 @@ public class PropertySpecifier
   
   public Level getDebugLevel()
   { return this.debugLevel;
-  }
-  
-  public void setParsePosition(ParsePosition position)
-  { this.position=position;
   }
   
   public PropertyDescriptor getPropertyDescriptor()
@@ -248,7 +256,7 @@ public class PropertySpecifier
       ArrayUtil.format(_container.getInnerPath(),"/",null)
       +"."
       +ArrayUtil.format(_specifier,".",null)
-      +(position!=null?" ("+position.toString()+") ":"")
+      +(declarationInfo!=null?" ("+declarationInfo.toString()+") ":"")
       +" in "
       +(_container.getSourceURI()!=null?
          _container.getSourceURI().toString():"(unknown source)");

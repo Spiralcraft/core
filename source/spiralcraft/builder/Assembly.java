@@ -24,6 +24,7 @@ import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
+import spiralcraft.common.Declarable;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.namespace.NamespaceContext;
@@ -170,6 +171,7 @@ public class Assembly<T>
         { instance=javaClass.newInstance();
         }
         focus.getSubject().set(instance);
+        updateDeclarable(instance);
       }
       catch (AccessException x)
       { throw _assemblyClass.newBuildException("Error publishing instance in Focus chain",x);
@@ -193,7 +195,9 @@ public class Assembly<T>
       try
       { 
         // Use a proxy to auto-implement the interface
-        focus.getSubject().set((T) new TupleDelegate(javaClass).get());
+        T instance=(T) new TupleDelegate(javaClass).get();
+        focus.getSubject().set(instance);
+        updateDeclarable(instance);
       }
       catch (AccessException x)
       { throw _assemblyClass.newBuildException("Error publishing instance in Focus chain",x);
@@ -206,6 +210,15 @@ public class Assembly<T>
       }
     }
     
+  }
+  
+  void updateDeclarable(T instance)
+  {
+    if (_assemblyClass.isDeclarable())
+    { 
+      ((Declarable) instance).setDeclarationInfo
+        (_assemblyClass.getDeclarationInfo());
+    }
   }
   
   void setInstanceSourceChannel(Channel<T> sourceChannel)

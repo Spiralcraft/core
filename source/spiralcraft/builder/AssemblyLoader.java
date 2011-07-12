@@ -358,6 +358,7 @@ public class AssemblyLoader
         
     assemblyClass.setDeclarationName(node.getQName());
     assemblyClass.setPrefixResolver(node.getPrefixResolver());
+    assemblyClass.setDeclarationInfo(node.getPosition());
 
     Attribute[] attribs
       =node.getAttributes();
@@ -460,9 +461,10 @@ public class AssemblyLoader
   private void readProperty(URI sourceUri,Element node,AssemblyClass containerClass)
     throws BuildException
   {
-    PropertySpecifier prop=new PropertySpecifier(containerClass,node.getLocalName());
+    PropertySpecifier prop
+      =new PropertySpecifier(containerClass,node.getLocalName());
+    prop.setDeclarationInfo(node.getPosition());
     prop.setPrefixResolver(node.getPrefixResolver());
-    prop.setParsePosition(node.getPosition());
     
     Attribute[] attribs = node.getAttributes();
     if (attribs!=null)
