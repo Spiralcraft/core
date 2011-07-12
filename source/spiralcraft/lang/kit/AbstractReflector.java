@@ -32,6 +32,7 @@ import spiralcraft.lang.kit.members.MetaLastMember;
 import spiralcraft.lang.kit.members.MetaListMember;
 import spiralcraft.lang.kit.members.MetaLogMember;
 import spiralcraft.lang.kit.members.MetaNilMember;
+import spiralcraft.lang.kit.members.MetaSelfMember;
 import spiralcraft.lang.kit.members.MetaSizeMember;
 import spiralcraft.lang.kit.members.MetaSubtypeMember;
 import spiralcraft.lang.kit.members.MetaTopMember;
@@ -114,6 +115,7 @@ public abstract class AbstractReflector<T>
         , new MetaSizeMember()
         , new MetaEmptyMember()
         , new MetaListMember()
+        , new MetaSelfMember()
         }
       );
 
