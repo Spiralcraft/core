@@ -14,6 +14,8 @@
 //
 package spiralcraft.lang.util;
 
+import java.net.URI;
+
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -80,6 +82,22 @@ public class LangUtil
     
     Focus<?> focus
       =context.findFocus(BeanReflector.getInstance(clazz).getTypeURI());
+    if (focus!=null)
+    { return (Channel<T>) focus.getSubject();
+    }
+    
+    return null;
+  }
+  
+  @SuppressWarnings("unchecked")
+  public static <T> Channel<T> findChannel(URI typeURI,Focus<?> context)
+  {
+    if (context==null)
+    { return null;
+    }
+    
+    Focus<?> focus
+      =context.findFocus(typeURI);
     if (focus!=null)
     { return (Channel<T>) focus.getSubject();
     }
