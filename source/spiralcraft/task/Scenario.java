@@ -18,6 +18,7 @@ import spiralcraft.command.AbstractCommandFactory;
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandFactory;
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.Declarable;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
@@ -65,6 +66,7 @@ public abstract class Scenario<Tcontext,Tresult>
   implements Lifecycle
     ,Contextual
     ,CommandFactory<Task,Tcontext,Tresult>
+    ,Declarable
 {
 
   protected ClassLog log=ClassLog.getInstance(getClass());
@@ -88,6 +90,9 @@ public abstract class Scenario<Tcontext,Tresult>
   protected Channel<Tcontext> contextInitChannel;
   
   protected Binding<Boolean> whenX;
+  
+  protected Object declarationInfo;
+  
   
   /**
    * 
@@ -148,6 +153,16 @@ public abstract class Scenario<Tcontext,Tresult>
 
   public Binding<Boolean> getWhenX()
   { return this.whenX;
+  }
+  
+  @Override
+  public void setDeclarationInfo(Object declarationInfo)
+  { this.declarationInfo=declarationInfo;
+  }
+  
+  @Override
+  public Object getDeclarationInfo()
+  { return declarationInfo;
   }
   
   protected TaskCommand<Tcontext,Tresult> createCommand
@@ -298,72 +313,79 @@ public abstract class Scenario<Tcontext,Tresult>
     Focus<?> context)
     throws ContextualException
   { 
-    Focus<?> focusChain=context;
-
-    focusChain=bindImports(focusChain);
-    
-    closureFocus
-      =new ClosureFocus
-        (focusChain);
-    
-    focusChain=closureFocus;
-    
-    if (contextX!=null)
-    { 
-      contextInitChannel=focusChain.bind(contextX);
-      if (contextReflector==null)
-      { contextReflector=contextInitChannel.getReflector();
+    try
+    {
+      Focus<?> focusChain=context;
+  
+      focusChain=bindImports(focusChain);
+      
+      closureFocus
+        =new ClosureFocus
+          (focusChain);
+      
+      focusChain=closureFocus;
+      
+      if (contextX!=null)
+      { 
+        contextInitChannel=focusChain.bind(contextX);
+        if (contextReflector==null)
+        { contextReflector=contextInitChannel.getReflector();
+        }
+        if (debug)
+        { log.fine("ContextReflector is "+contextReflector);
+        }
+  
+        // Allow imports to bind against context channel
+        contextChannel
+          =new ThreadLocalChannel<Tcontext>(contextReflector,true);
+  
       }
-      if (debug)
-      { log.fine("ContextReflector is "+contextReflector);
+  
+      
+      if (importContext && contextChannel!=null)
+      { focusChain=focusChain.chain(contextChannel);
       }
-
-      // Allow imports to bind against context channel
-      contextChannel
-        =new ThreadLocalChannel<Tcontext>(contextReflector,true);
-
+  
+      
+      
+      
+  //    if (focusChain==context)
+  //    { focusChain=context.chain(context.getSubject());
+  //    }
+  //    focusChain.addFacet
+  //      (focusChain.chain
+  //        (new SimpleChannel(BeanReflector.getInstance(getClass()),this,true))
+  //      );
+      
+      
+  
+      
+      Focus<?> exportChain=bindCommand
+          (focusChain);
+      
+      Channel selfChannel
+        =new SimpleChannel<Scenario<Tcontext,Tresult>>
+          ((Reflector) reflect(),this,true);
+  
+      Focus selfFocus=focusChain.chain(selfChannel);
+      exportChain.addFacet(selfFocus);
+      
+      exportChain=bindExports(exportChain);
+      if (exportChain==null)
+      { 
+        throw new IllegalArgumentException
+          ("bindExports cannot return null in "+getClass().getName());
+      }
+      bindChildren(exportChain);
+      
+      // 
+      
+      return context.chain(selfChannel);
+      
     }
-
-    
-    if (importContext && contextChannel!=null)
-    { focusChain=focusChain.chain(contextChannel);
+    catch (ContextualException x)
+    { throw new ContextualException("Could not bind scenario",declarationInfo,x);
     }
-
-    
-    
-    
-//    if (focusChain==context)
-//    { focusChain=context.chain(context.getSubject());
-//    }
-//    focusChain.addFacet
-//      (focusChain.chain
-//        (new SimpleChannel(BeanReflector.getInstance(getClass()),this,true))
-//      );
-    
-    
-
-    
-    Focus<?> exportChain=bindCommand
-        (focusChain);
-    
-    Channel selfChannel
-      =new SimpleChannel<Scenario<Tcontext,Tresult>>
-        ((Reflector) reflect(),this,true);
-
-    Focus selfFocus=focusChain.chain(selfChannel);
-    exportChain.addFacet(selfFocus);
-    
-    exportChain=bindExports(exportChain);
-    if (exportChain==null)
-    { 
-      throw new IllegalArgumentException
-        ("bindExports cannot return null in "+getClass().getName());
-    }
-    bindChildren(exportChain);
-    
-    // 
-    
-    return context.chain(selfChannel);
       
   }
 
