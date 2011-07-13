@@ -441,6 +441,27 @@ public abstract class Type<T>
   }
   
   /**
+   * <p>Return the Key defined with respect to the specified field vector.
+   * </p>
+   * 
+   * @param fieldNames
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public Key<T> findKey(String[] fieldNames)
+  {
+    Key<T> key=null;
+    if (getBaseType()!=null)
+    { key=getBaseType().findKey(fieldNames);
+    }
+    if (key==null)
+    { key=(Key<T>) getScheme().findKey(fieldNames);
+    }
+    return key;
+  }
+  
+  
+  /**
    * The Method with the specified name that best matches the
    *   specified parameters.
    * 

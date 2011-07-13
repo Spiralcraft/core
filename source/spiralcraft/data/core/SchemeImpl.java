@@ -28,6 +28,7 @@ import spiralcraft.data.Field;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeMismatchException;
 import spiralcraft.lang.Expression;
+import spiralcraft.util.ArrayUtil;
 
 /**
  * Core implementation of a Scheme
@@ -464,6 +465,18 @@ public class SchemeImpl
   @Override
   public Iterable<? extends Key<Tuple>> keyIterable()
   { return keys;
+  }
+  
+  @Override
+  public Key<?> findKey(String[] fieldNames)
+  { 
+    for (Key<?> key:keys)
+    {
+      if (ArrayUtil.arrayEquals(key.getFieldNames(),fieldNames))
+      { return key;
+      }
+    }
+    return null;
   }
 
   private ProjectionImpl<Tuple> createProjection(Expression<?>[] signature)

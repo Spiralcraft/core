@@ -91,5 +91,14 @@ public interface Scheme
    */
   int getKeyCount();
   
+  /**
+   * <p>Return the Key defined with respect to the specified field vector.
+   * </p>
+   * 
+   * @param fieldNames
+   * @return
+   */
+  Key<?> findKey(String[] fieldNames);
+  
   
 }
