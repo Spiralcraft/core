@@ -28,6 +28,8 @@ public interface Authorizer
   
   boolean hasPermission(AuthSession session,Permission permission);
   
+  boolean hasPermissions(AuthSession session,Permission[] permissions);
+
   Role[] getRegisteredRoles();
   
 }

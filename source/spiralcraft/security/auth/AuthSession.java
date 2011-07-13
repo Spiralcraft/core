@@ -271,6 +271,24 @@ public class AuthSession
   }
   
   /**
+   * Indicate whether the current Principal has all of the specified 
+   *   Permissions
+   * 
+   * @param permission
+   * @return
+   */
+  public boolean hasPermissions(Permission[] permissions)
+  { 
+    push();
+    try
+    { return authenticator.authorizer.hasPermissions(this,permissions);
+    }
+    finally
+    { pop();
+    }
+  }  
+  
+  /**
    * <p>Provide an opportunity for modules to update the authentication state
    *   based on the application context.
    * </p>
