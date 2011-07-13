@@ -79,6 +79,7 @@ public class ProxyChannel<T>
    */
   @Override
   public <X> Channel<X> resolveMeta(Focus<?> focus,URI metadataTypeURI)
+    throws BindException
   { return channel.resolveMeta(focus,metadataTypeURI);
   }
   

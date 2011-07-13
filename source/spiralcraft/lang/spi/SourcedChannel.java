@@ -1,6 +1,10 @@
 package spiralcraft.lang.spi;
 
+import java.net.URI;
+
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 
 public abstract class SourcedChannel<Tinput,Toutput>
@@ -41,6 +45,22 @@ public abstract class SourcedChannel<Tinput,Toutput>
   
   public Channel<Tinput> getSource()
   { return source;
+  }
+  
+  /**
+   * Resolve contextual metadata for this Channel from an appropriate provider
+   *   in the Channel graph
+   * 
+   * @param <X>
+   * @param focus
+   * @param metadataTypeURI
+   * @return
+   * @throws BindException 
+   */
+  @Override
+  public <X> Channel<X> resolveMeta(Focus<?> focus,URI metadataTypeURI) 
+    throws BindException
+  { return source.resolveMeta(focus,metadataTypeURI);
   }
   
   @Override

@@ -266,9 +266,11 @@ public abstract class AbstractChannel<T>
    * @param focus
    * @param metadataTypeURI
    * @return
+   * @throws BindException 
    */
   @Override
-  public <X> Channel<X> resolveMeta(Focus<?> focus,URI metadataTypeURI)
+  public <X> Channel<X> resolveMeta(Focus<?> focus,URI metadataTypeURI) 
+    throws BindException
   { return null;
   }
   
