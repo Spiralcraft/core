@@ -127,22 +127,22 @@ public class ExpressionParser
       ,_text
       );
   }
+
   
-  private void throwException(String message)
-    throws ParseException
-  {
-    throw new ParseException
+  private ParseException newException(String message)
+  { 
+    return new ParseException
       (message+": In '"+tokenString()+"' @line "+_tokenizer.lineno()
       ,_pos
       ,_progressBuffer.toString()
       ,_text
       );
   }
-  
-  private void throwException(String message,Exception cause)
-    throws ParseException
+
+
+  private ParseException newException(String message,Exception cause)
   {
-    throw new ParseException
+    return new ParseException
       (message+": In '"+tokenString()+"' @line "+_tokenizer.lineno()
       ,cause
       ,_pos
@@ -234,7 +234,7 @@ public class ExpressionParser
     if (_tokenizer.ttype==':' && _tokenizer.lookahead.ttype=='=')
     { 
       if (node==null)
-      { this.throwException("Missing left hand side of binding expression");
+      { throw newException("Missing left hand side of binding expression");
       }
       consumeToken();
       consumeToken();
@@ -267,7 +267,7 @@ public class ExpressionParser
     if (_tokenizer.ttype=='=')
     {
       if (node==null)
-      { this.throwException("Missing left hand side of assignment");
+      { throw newException("Missing left hand side of assignment");
       }
       consumeToken();
       node=node.assign(this.parseExpression());
@@ -289,12 +289,12 @@ public class ExpressionParser
       consumeToken();
       Node trueResult=this.parseConditionalExpression();
       if (trueResult==null)
-      { this.throwException("Missing conditional result expression");
+      { throw newException("Missing conditional result expression");
       }
       expect(':');
       Node falseResult=this.parseConditionalExpression();
       if (falseResult==null)
-      { this.throwException("Missing conditional result expression");
+      { throw newException("Missing conditional result expression");
       }
       node=node.onCondition(trueResult, falseResult);
     }
@@ -520,7 +520,7 @@ public class ExpressionParser
           break;
           
         default:
-          throwException("Expected '..' or '.!' and rest of Range expression");
+          throw newException("Expected '..' or '.!' and rest of Range expression");
       }
       
       
@@ -663,7 +663,7 @@ public class ExpressionParser
    * PostfixExpression -> 
    *   FocusExpression
    *   ( ArraySelectorExpression 
-   *   | "." ( DereferenceExpression | ObjectLiteralExpression)
+   *   | "." ( DereferenceExpression | ObjectLiteralExpression | ChannelMetaExpression)
    *   | "#" MapExpression
    *   | "$" ReduceExpression
    *   | "{" SubcontextExpression "}"
@@ -735,7 +735,13 @@ public class ExpressionParser
         return parseDereferenceExpression(primary);
       case '[':
         consumeToken();
-        return parseObjectLiteralExpression(primary);
+        switch (_tokenizer.lookahead.ttype)
+        {
+          case '*':
+            return parseObjectLiteralExpression(primary);
+          default:
+            return parseChannelMetaExpression(primary);
+        }
       default:
         // .. and .! are RangeExpression tokens, so just ignore
         return null;
@@ -788,7 +794,7 @@ public class ExpressionParser
 //    }
     
     if (ret==null)
-    { throwException("Expected selector expression");
+    { throw newException("Expected selector expression");
     }
     Node subscriptNode=primary.subscript(ret);
     expect(']');
@@ -861,21 +867,17 @@ public class ExpressionParser
             return fre;
           case '[':
             focusNode=new CurrentFocusNode(".");
-            // This would normally be a ObjectLiteral, but we need a way
-            //   to subscript the subject if it is an array, and we can already 
-            //  run an ObjectLiteral against the subject without the '.'.
 
             consumeToken();      
             if (_tokenizer.lookahead.ttype=='*')
             { return parseObjectLiteralExpression(focusNode);
             }
+            else if (_tokenizer.lookahead.ttype=='@')
+            { 
+              throw newException("Aspect dereference not supported yet");
+            }
             else
-            {
-              Node asub=parseArraySelectorExpression(focusNode);
-              if (debug)
-              { alert("parseFocusExpression():'..' "+asub.reconstruct());
-              }
-              return asub;
+            { return parseChannelMetaExpression(focusNode);
             }
           default:
             focusNode=new CurrentFocusNode();
@@ -949,13 +951,11 @@ public class ExpressionParser
             if (_tokenizer.lookahead.ttype=='*')
             { return parseObjectLiteralExpression(parentFocusNode);
             }
+            else if (_tokenizer.lookahead.ttype=='@')
+            { throw newException("Aspect dereference not supported yet");
+            }
             else
-            {
-              Node asub=parseArraySelectorExpression(parentFocusNode);
-              if (debug)
-              { alert("parseFocusExpression():'..' "+asub.reconstruct());
-              }
-              return asub;
+            { return parseChannelMetaExpression(focusNode);
             }
           default:
             Node dotExpr=parsePostfixDotExpression(parentFocusNode);
@@ -997,9 +997,24 @@ public class ExpressionParser
     { return new ObjectLiteralNode(source,typeString,params);
     }
     catch (UnresolvedPrefixException x)
-    { 
-      throwException("Unresolved prefix",x);
-      return null;
+    { throw newException("Unresolved prefix",x);
+    }
+  }
+  
+  @SuppressWarnings("rawtypes")
+  private Node parseChannelMetaExpression(Node source)
+    throws ParseException
+  {
+    expect('[');
+
+    String typeString=parseURIName("]");
+    expect(']');
+
+    try
+    { return new ChannelMetaNode(source,typeString);
+    }
+    catch (UnresolvedPrefixException x)
+    { throw newException("Unresolved prefix",x);
     }
   }
   
@@ -1099,7 +1114,7 @@ public class ExpressionParser
       case '\'':
         String str=_tokenizer.sval;
         if (str.length()!=1)
-        { throwException("Single quotes must contain a Character literal");
+        { throw newException("Single quotes must contain a Character literal");
         }
         node=new LiteralNode<Character>
           (Character.valueOf(str.charAt(0))
@@ -1191,7 +1206,7 @@ public class ExpressionParser
       {  struct.setTypeQName(parseURIName("]"));
       }
       catch (UnresolvedPrefixException x)
-      { throwException("Unresolved prefix",x);
+      { throw newException("Unresolved prefix",x);
       }
       
       expect(']');
@@ -1242,7 +1257,7 @@ public class ExpressionParser
         Node typeNode=parseFocusSpecifier();
         if (!(typeNode instanceof TypeFocusNode))
         { 
-          throwException
+          throw newException
             ("Expected a type literal here (eg. '[@mylib:mytype]' ).");
         }
         field.type=(TypeFocusNode) typeNode;
@@ -1467,7 +1482,7 @@ public class ExpressionParser
       }
     }
     catch (UnresolvedPrefixException x)
-    { throwException("Unresolved prefix",x);
+    { throw newException("Unresolved prefix",x);
     }
 
     return focusNode;
