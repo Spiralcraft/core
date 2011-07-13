@@ -5,6 +5,7 @@
   xmlns:test="class:/spiralcraft/test/"
   xmlns:example="class:/spiralcraft/data/test/example/"
   xmlns:std="class:/spiralcraft/data/types/standard/"
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
   >
   <chain>
  
@@ -124,7 +125,19 @@
             
               <testX>.displayName.startsWith("Mary Second")
               </testX>
-            </test:Assertion>            
+            </test:Assertion>           
+            
+            <test:Assertion>
+              <name>Field medatadata 1
+              </name>
+              
+              <subjectX>
+                [example:Customer].score.[meta:Field].name
+              </subjectX>
+            
+              <testX>.=="score"
+              </testX>
+            </test:Assertion>   
           </chain>
         </task:Eval>
                 

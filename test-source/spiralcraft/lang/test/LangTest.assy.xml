@@ -55,10 +55,10 @@
           <subjectX>[@j:Integer][{1,2,3}]
           </subjectX>
           
-          <testX>.length==3 &amp;&amp; 
-                .[0]==1 &amp;&amp; 
-                .[1]==2 &amp;&amp; 
-                .[2]==3
+          <testX>length==3 &amp;&amp; 
+                @[0]==1 &amp;&amp; 
+                @[1]==2 &amp;&amp; 
+                @[2]==3
           </testX>
           
         </test:Assertion>
@@ -265,7 +265,7 @@
                 $[.length()]
           </subjectX>
           
-          <testX>.[0]==3 &amp;&amp; .[1]==5
+          <testX>@[0]==3 &amp;&amp; @[1]==5
           </testX>
         </test:Assertion>   
         
@@ -293,9 +293,9 @@
           
           <testX>
             .length==3
-            &amp;&amp; .[0].len==3 
-            &amp;&amp; .[1].len==5
-            &amp;&amp; .[2].len==4
+            &amp;&amp; @[0].len==3 
+            &amp;&amp; @[1].len==5
+            &amp;&amp; @[2].len==4
           </testX>
         </test:Assertion>   
         
@@ -372,10 +372,10 @@
           </subjectX>
           
           <testX>
-                        .[0]=="two" 
-             &amp;&amp; .[1]=="three"
-             &amp;&amp; .[2]=="four"
-             &amp;&amp; .length==3
+                        @[0]=="two" 
+             &amp;&amp; @[1]=="three"
+             &amp;&amp; @[2]=="four"
+             &amp;&amp; length==3
           </testX>
           
         </test:Assertion>
@@ -389,11 +389,11 @@
           </subjectX>
           
           <testX>
-                         .[0]=="two" 
-             &amp;&amp; .[1]=="three"
-             &amp;&amp; .[2]=="four"
-             &amp;&amp; .[3]=="five"
-             &amp;&amp; .length==4
+                         @[0]=="two" 
+             &amp;&amp; @[1]=="three"
+             &amp;&amp; @[2]=="four"
+             &amp;&amp; @[3]=="five"
+             &amp;&amp; length==4
           </testX>
           
         </test:Assertion>
@@ -407,10 +407,10 @@
           </subjectX>
           
           <testX>
-                        .[0]=="two" 
-             &amp;&amp; .[1]=="three"
-             &amp;&amp; .[2]=="four"
-             &amp;&amp; .length==3
+                        @[0]=="two" 
+             &amp;&amp; @[1]=="three"
+             &amp;&amp; @[2]=="four"
+             &amp;&amp; length==3
           </testX>
           
         </test:Assertion>
@@ -424,10 +424,10 @@
           </subjectX>
           
           <testX>
-                        .[0]=="two" 
-             &amp;&amp; .[1]=="three"
-             &amp;&amp; .[2]=="four"
-             &amp;&amp; .length==3
+                        @[0]=="two" 
+             &amp;&amp; @[1]=="three"
+             &amp;&amp; @[2]=="four"
+             &amp;&amp; length==3
           </testX>
           
         </test:Assertion>
@@ -551,7 +551,7 @@
             [@ju:Date]{ [@ju:Date][{..(10000000000L),..(10000001000L)}] }
           </subjectX>
           
-          <testX>.[0].getTime() &lt; .[1].getTime()
+          <testX>@[0].getTime() &lt; @[1].getTime()
           </testX>
           
         </test:Assertion>        
@@ -565,7 +565,7 @@
             [*ju:Date]{ [@ju:Date][{..,..}] }
           </subjectX>
           
-          <testX>.[0].getTime() == .[1].getTime() &amp;&amp; .[0].getTime() > 0L
+          <testX>@[0].getTime() == @[1].getTime() &amp;&amp; @[0].getTime() > 0L
           </testX>
           
         </test:Assertion>        

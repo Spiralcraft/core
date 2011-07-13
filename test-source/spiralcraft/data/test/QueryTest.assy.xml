@@ -315,8 +315,8 @@
                   }
                 ].()
               </subjectX>
-              <testX>.[3].displayName=="New Customer"
-                &amp;&amp; .[3].id==100
+              <testX>@[3].displayName=="New Customer"
+                &amp;&amp; @[3].id==100
               </testX>
             </test:Assertion>
           
@@ -359,7 +359,7 @@
                   }
                 ].()#{.displayName}
               </subjectX>
-              <testX>.[1]=="Mary Second Edited"
+              <testX>@[1]=="Mary Second Edited"
               </testX>
             </test:Assertion>
           
@@ -392,8 +392,8 @@
                   }
                 ].()
               </subjectX>
-              <testX>.[4].displayName=="Another New Customer"
-                &amp;&amp; .[4].id==101
+              <testX>@[4].displayName=="Another New Customer"
+                &amp;&amp; @[4].id==101
               </testX>
             </test:Assertion>
           
@@ -434,8 +434,8 @@
                   }
                 ].()
               </subjectX>
-              <testX>.[3].displayName=="New Customer"
-                &amp;&amp; .[3].id==100
+              <testX>@[3].displayName=="New Customer"
+                &amp;&amp; @[3].id==100
               </testX>
             </test:Assertion>
           
@@ -544,7 +544,7 @@
             ].()$[.eyeColor]
           </subjectX>
           
-          <testX>.length==3 &amp;&amp; .[1]=="blue"
+          <testX>length==3 &amp;&amp; @[1]=="blue"
           </testX>
           
         </test:Assertion>

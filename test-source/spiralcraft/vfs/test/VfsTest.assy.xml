@@ -56,7 +56,7 @@
               #{.path}
           </subjectX>
           
-          <testX>.@size>10 &amp;&amp; .[.path=="out/data/store/Customer.data.xml"].@size==1
+          <testX>@size>10 &amp;&amp; @[.path=="out/data/store/Customer.data.xml"].@size==1
           </testX>
           
         </test:Assertion>

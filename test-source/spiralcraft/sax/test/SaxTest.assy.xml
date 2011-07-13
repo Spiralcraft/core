@@ -54,9 +54,9 @@
           </subjectX>
           
           <testX>
-            .[0].contains("...")
-            &amp;&amp; !.[1].contains("...")
-            &amp;&amp; .[2].contains("...")
+            @[0].contains("...")
+            &amp;&amp; !@[1].contains("...")
+            &amp;&amp; @[2].contains("...")
           </testX>
           
         </test:Assertion>
@@ -88,9 +88,9 @@
           </subjectX>
           
           <testX>
-            .[0].contains("...")
-            &amp;&amp; !.[1].contains("...")
-            &amp;&amp; .[2].contains("...")
+            @[0].contains("...")
+            &amp;&amp; !@[1].contains("...")
+            &amp;&amp; @[2].contains("...")
           </testX>
           
         </test:Assertion>        

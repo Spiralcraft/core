@@ -14,6 +14,201 @@
     
     <detail>
 
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Authorizer supports check for a set of permissions
+            using Authorizer.hasAllPermissions(Permission[] permissions)
+          </scm:Note>
+          <scm:Note>Added standard superUser role
+          </scm:Note>          
+        </notes>
+        
+        <path>source/spiralcraft/security/
+        </path>
+        
+        <resources>
+          <URI>auth/Authorizer.java
+          </URI>
+          <URI>auth/AuthSession.java
+          </URI>
+          <URI>auth/SuperUserRole.type.xml
+          </URI>
+          <URI>spi/AbstractAuthorizer.java
+          </URI>
+          <URI>spi/StandardRole.java
+          </URI>
+          <URI>spi/StandardRoles.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Type.findKey(String[] fieldNames)
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>Scheme.java
+          </URI>
+          <URI>Type.java
+          </URI>
+          <URI>core/SchemeImpl.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>LangUtil.findChannel(URI,Focus)
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/util/LangUtil.java
+        </path>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Fields provide a reference to their Field definition
+            through Channel metadata
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>       
+          <URI>core/Field.java
+          </URI>
+          <URI>core/RelativeField.java
+          </URI>
+          <URI>types/meta/MetadataType.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Channel.bindMeta throws BindException
+          </scm:Note>
+          <scm:Note>New language construct dereferences metadata:
+            x.[myns:MyMetadataType]
+          </scm:Note>
+          <scm:Note>New language construct denotes "self" to use when the
+            current Focus is on an array
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/
+        </path>
+        
+        <resources>       
+          <URI>Channel.java
+          </URI>
+          <URI>spi/AbstractChannel.java
+          </URI>
+          <URI>spi/ProxyChannel.java
+          </URI>
+          <URI>spi/SourcedChannel.java
+          </URI>
+          <URI>Channel.java
+          </URI>
+          <URI>core/RelativeField.java
+          </URI>
+          <URI>kit/AbstractReflector.java
+          </URI>
+          <URI>kit/MetaSelfMember.java
+          </URI>
+          <URI>types/meta/MetadataType.java
+          </URI>
+          <URI>parser/ChannelMetaNode.java
+          </URI>
+          <URI>parser/ExpressionParser.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Create an interface for composition layers to provide
+            declaration source code references to the components they create
+          </scm:Note>
+          <scm:Note>Track source code locations for spiralcraft.builder
+            constructs.
+          </scm:Note>
+          <scm:Note>Scenarios receive source code declaration info for error
+            reporting
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>       
+          <URI>common/Declarable.java
+          </URI>
+          <URI>builder/Assembly.java
+          </URI>
+          <URI>builder/AssemblyClass.java
+          </URI>
+          <URI>builder/AssemblyLoader.java
+          </URI>
+          <URI>builder/PropertySpecifier.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Improve design contract for Scenario by adding
+            bindContext() method for in-closure context setup, and move
+            bindImports() outside the closure 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>       
+          <URI>data/task/Eval.java
+          </URI>
+          <URI>data/task/Scenario.java
+          </URI>
+          <URI>data/flatfile/Scan.java
+          </URI>
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev1
         </revision>
