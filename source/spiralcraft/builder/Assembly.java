@@ -24,9 +24,9 @@ import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
-import spiralcraft.common.Declarable;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.common.declare.Declarable;
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.data.lang.TupleDelegate;

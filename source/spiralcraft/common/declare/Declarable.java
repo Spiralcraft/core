@@ -12,7 +12,9 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.common;
+package spiralcraft.common.declare;
+
+import java.net.URI;
 
 /**
  * Implemented by objects which can be declared in some external mechanism to
@@ -24,7 +26,7 @@ package spiralcraft.common;
 public interface Declarable
 {
 
-  void setDeclarationInfo(Object declarationInfo);
+  void setDeclarationInfo(URI declarationInfo);
   
-  Object getDeclarationInfo();
+  URI getDeclarationInfo();
 }

@@ -29,7 +29,7 @@ import java.util.HashMap;
 
 import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
-import spiralcraft.common.Declarable;
+import spiralcraft.common.declare.Declarable;
 import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
@@ -178,7 +178,7 @@ public class AssemblyClass
   private HashMap<String,String> localContext;
   
   private boolean declarable;
-  private Object declarationInfo;
+  private URI declarationInfo;
   
   /**
    * Construct a new AssemblyClass from a definition
@@ -260,12 +260,12 @@ public class AssemblyClass
   }
 
   @Override
-  public void setDeclarationInfo(Object declarationInfo)
+  public void setDeclarationInfo(URI declarationInfo)
   { this.declarationInfo=declarationInfo;
   }
   
   @Override
-  public Object getDeclarationInfo()
+  public URI getDeclarationInfo()
   { 
     if (this.declarationInfo!=null)
     { return this.declarationInfo;

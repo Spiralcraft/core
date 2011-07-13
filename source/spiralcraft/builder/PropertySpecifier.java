@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringUtil;
 
-import spiralcraft.common.Declarable;
+import spiralcraft.common.declare.Declarable;
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.lang.Expression;
@@ -80,7 +80,7 @@ public class PropertySpecifier
   private Level debugLevel=Level.INFO;
   
   private boolean contextualize=true;
-  private Object declarationInfo;
+  private URI declarationInfo;
 
   public PropertySpecifier
     (AssemblyClass container
@@ -136,12 +136,12 @@ public class PropertySpecifier
   
   
   @Override
-  public void setDeclarationInfo(Object declarationInfo)
+  public void setDeclarationInfo(URI declarationInfo)
   { this.declarationInfo=declarationInfo;
   }
   
   @Override
-  public Object getDeclarationInfo()
+  public URI getDeclarationInfo()
   { return this.declarationInfo;
   }
   

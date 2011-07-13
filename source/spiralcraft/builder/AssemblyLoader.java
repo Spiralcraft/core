@@ -358,7 +358,7 @@ public class AssemblyLoader
         
     assemblyClass.setDeclarationName(node.getQName());
     assemblyClass.setPrefixResolver(node.getPrefixResolver());
-    assemblyClass.setDeclarationInfo(node.getPosition());
+    assemblyClass.setDeclarationInfo(node.getPosition().toURI());
 
     Attribute[] attribs
       =node.getAttributes();
@@ -463,7 +463,7 @@ public class AssemblyLoader
   {
     PropertySpecifier prop
       =new PropertySpecifier(containerClass,node.getLocalName());
-    prop.setDeclarationInfo(node.getPosition());
+    prop.setDeclarationInfo(node.getPosition().toURI());
     prop.setPrefixResolver(node.getPrefixResolver());
     
     Attribute[] attribs = node.getAttributes();

@@ -16,6 +16,20 @@
 
 
       <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
+          <scm:Note>Fix NPE when no authentication sessions have been set up
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/security/auth/AuthSession.java
+        </path>
+
+      </scm:Change>
+      
+      <scm:Change>
         <revision>-dev1
         </revision>
         

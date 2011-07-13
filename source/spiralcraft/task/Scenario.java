@@ -14,13 +14,15 @@
 //
 package spiralcraft.task;
 
+import java.net.URI;
+
 import spiralcraft.command.AbstractCommandFactory;
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandFactory;
 import spiralcraft.common.ContextualException;
-import spiralcraft.common.Declarable;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.common.declare.Declarable;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
@@ -91,7 +93,7 @@ public abstract class Scenario<Tcontext,Tresult>
   
   protected Binding<Boolean> whenX;
   
-  protected Object declarationInfo;
+  protected URI declarationInfo;
   
   
   /**
@@ -156,12 +158,12 @@ public abstract class Scenario<Tcontext,Tresult>
   }
   
   @Override
-  public void setDeclarationInfo(Object declarationInfo)
+  public void setDeclarationInfo(URI declarationInfo)
   { this.declarationInfo=declarationInfo;
   }
   
   @Override
-  public Object getDeclarationInfo()
+  public URI getDeclarationInfo()
   { return declarationInfo;
   }
   

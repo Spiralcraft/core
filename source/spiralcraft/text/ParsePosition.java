@@ -15,6 +15,7 @@
 package spiralcraft.text;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Encapsulates information related to the position of a text parsing operation.
@@ -152,5 +153,28 @@ public class ParsePosition
   @Override
   public ParsePosition clone()
   { return new ParsePosition(line,column,index,context,contextURI);
+  }
+
+  /**
+   * A URI representation of the ParsePosition
+   * 
+   * @return
+   */
+  public URI toURI()
+  {
+    String fragment="#line="+line+";col="+column+";char="+index;
+    
+    if (contextURI!=null)
+    { return contextURI.resolve(fragment);
+    }
+    else
+    { 
+      try
+      { return new URI(null,null,null,fragment);
+      }
+      catch (URISyntaxException x)
+      { throw new RuntimeException(x);
+      }
+    }
   }
 }
