@@ -183,7 +183,7 @@
         </path>
         
         <resources>       
-          <URI>common/Declarable.java
+          <URI>common/declare/Declarable.java
           </URI>
           <URI>builder/Assembly.java
           </URI>
