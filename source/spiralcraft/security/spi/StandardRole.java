@@ -41,6 +41,8 @@ public class StandardRole
   
   private final URI id;
   private boolean debug;
+  private boolean superUser;
+  private boolean bound;
   
   public StandardRole(Tuple t)
     throws DataException
@@ -59,6 +61,7 @@ public class StandardRole
       log.fine("Granted in "+this+": "+grantedPermissions);
       log.fine("Denied in "+this+": "+deniedPermissions);
     }
+    bound=true;
     return focusChain;
   }
 
@@ -73,6 +76,17 @@ public class StandardRole
     return null;
   }
 
+  /**
+   * This role has superUser privileges
+   * 
+   * @param grantAll
+   */
+  public void setSuperUser(boolean superUser)
+  { 
+    assertUnbound();
+    this.superUser=superUser;
+  }
+  
   @Override
   public URI getId()
   { return id;
@@ -82,6 +96,7 @@ public class StandardRole
   public Vote vote(
     Permission permission)
   {
+
     
     List<Permission> deniedPermissionList
       =deniedPermissions.get(permission.getId());
@@ -89,6 +104,10 @@ public class StandardRole
         && implies(deniedPermissionList,permission)
        )
     { return Vote.DENY;
+    }
+    
+    if (superUser)
+    { return Vote.GRANT;
     }
     
     List<Permission> grantedPermissionList
@@ -138,4 +157,10 @@ public class StandardRole
   { return super.toString()+": "+id;
   }
 
+  private void assertUnbound()
+  { 
+    if (bound)
+    { throw new IllegalStateException("Role "+id+" already bound");
+    }
+  }
 }

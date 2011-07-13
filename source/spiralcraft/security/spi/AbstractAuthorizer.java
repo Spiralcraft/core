@@ -180,6 +180,45 @@ public abstract class AbstractAuthorizer
     
   }
   
+  /**
+   * <p>Indicate whether all specified permissions has been effectively granted
+   *   for this AuthSession, through either the Roles assigned to the
+   *   authenticated Principal, or through any Roles associated with 
+   *   the AuthSession itself.
+   * </p>
+   * 
+   * @param permission
+   * @return
+   */
+  @Override
+  public boolean hasPermissions(AuthSession session,Permission[] permissions)
+  { 
+    if (permissions==null)
+    { throw new IllegalArgumentException("Permissions is null");
+    }
+    Role[] roles;
+    Principal principal
+      =session.isAuthenticated()?session.getPrincipal():null;
+      
+    if (principal==null)
+    { roles=unauthenticatedRoles;
+    }
+    else
+    { 
+      roles=ArrayUtil.concat
+        (authenticatedRoles
+        ,getRolesForPrincipal(principal)
+        );
+    }
+    for (Permission permission: permissions)
+    { 
+      if (!vote(roles,permission))
+      { return false;
+      }
+    }
+    return true;
+  }
+  
   protected Role[] getRolesByIds(URI[] roleIds)
   {
     if (roleIds==null)

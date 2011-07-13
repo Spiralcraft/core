@@ -8,4 +8,9 @@
     </grantedPermissions>
   </secauth:SignedInRole>
     
+  <secauth:SuperUserRole>
+    <superUser>true
+    </superUser>
+  </secauth:SuperUserRole>
+
 </secauth:Role.array>
