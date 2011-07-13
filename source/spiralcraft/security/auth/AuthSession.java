@@ -419,6 +419,10 @@ public class AuthSession
   
   private void logoutModules()
   {
+    if (sessions==null)
+    { return;
+    }
+    
     push();
     try
     {
