@@ -198,16 +198,17 @@ public class EquiJoin
       if (binding.getRootNode() instanceof BindingNode)
       {
         BindingNode<?,?> bnode=(BindingNode<?,?>) binding.getRootNode();
-        if (bnode.getSource() instanceof ContextIdentifierNode)
+        if (bnode.getTarget() instanceof ContextIdentifierNode)
         {
-          ContextIdentifierNode inode=(ContextIdentifierNode) bnode.getSource();
-          lhsExpressions.add(new Expression<Object>(inode));
-          rhsExpressions.add(new Expression<Object>(bnode.getTarget()));
+          lhsExpressions.add(new Expression<Object>(bnode.getTarget()));
+          rhsExpressions.add(new Expression<Object>(bnode.getSource()));
         }
         else
         { 
           throw new IllegalArgumentException
-            ("Binding '"+binding.getText()+"' is not in the form:  field:=expression");
+            ("Binding '"+binding.getText()
+            +"' is not in the form:  field:=expression "
+            );
         }
       }
       else
