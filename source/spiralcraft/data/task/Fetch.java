@@ -21,6 +21,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
+import spiralcraft.data.query.Scan;
 import spiralcraft.data.access.CursorAggregate;
 import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.lang.CursorChannel;
@@ -74,6 +75,17 @@ public class Fetch<Tcontext>
   { 
     this.query=query;
     this.queryable=queryable;
+  }
+  
+  public Fetch(DataReflector<?> reflector)
+  { 
+    Type<?> resultType=reflector.getType();
+    Type<?> tupleType
+      =resultType.isAggregate()?resultType.getContentType():resultType;
+    if (resultType==tupleType)
+    { single=true;
+    }
+    this.query=new Scan(tupleType);
   }
   
   public Fetch(DataReflector<?> reflector,Expression<?>[] bindings)
