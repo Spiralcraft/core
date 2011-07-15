@@ -87,5 +87,11 @@ public class ContextResource
   }    
   
 
+  @Override
+  public String toString()
+  { 
+    return super.toString()
+      +"["+resolvedURI.toString()+"] -> ["+delegate.toString()+"]";
+  }
   
 }
