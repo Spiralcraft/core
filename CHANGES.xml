@@ -20,6 +20,43 @@
         </release>
         
         <notes>
+          <scm:Note>VFS ResourceFactories and Resolver support new
+            handlesScheme(String) method to determine whether a scheme
+            can be mapped to VFS resources.
+          </scm:Note>
+          <scm:Note>Added informative toString() method to ContextResource
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs
+        </path>
+        
+        <resources>
+          <URI>Resolver.java
+          </URI>
+          <URI>ResourceFactory.java
+          </URI>
+          <URI>classpath/ClasspathResourceFactory.java
+          </URI>
+          <URI>context/ContextResourceFactory.java
+          </URI>
+          <URI>context/ContextResource.java
+          </URI>
+          <URI>file/FileResourceFactory.java
+          </URI>
+          <URI>jar/JarResourceFactory.java
+          </URI>
+          <URI>url/URLResourceFactory.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
           <scm:Note>Fix NPE when no authentication sessions have been set up
           </scm:Note>
         </notes>
@@ -254,6 +291,9 @@
         <notes>
           <scm:Note>data Fetch task now has a Type,bindingX[] constructor
             to set up a simple EquiJoin 
+          </scm:Note>
+          <scm:Note>data Fetch task now has a Type constructor
+            to set up a Scan
           </scm:Note>
         </notes>
         
@@ -496,6 +536,8 @@
         
         <notes>
           <scm:Note>Fix NPE in StringUtil.escape
+          </scm:Note>
+          <scm:Note>Add trimStart and trimEnd functions to StringUtil
           </scm:Note>
 
         </notes>

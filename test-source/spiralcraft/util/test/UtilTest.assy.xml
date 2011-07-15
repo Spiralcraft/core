@@ -330,6 +330,37 @@
           </testX>
           
         </test:Assertion>
+        
+                
+        <test:Assertion>
+        
+          <name>trimStart
+          </name>
+          
+          <subjectX contextualize="false">
+            [@util:StringUtil].@trimStart("\r\n  hello  ")
+          </subjectX>
+          
+          <testX>
+            .=="hello  "
+          </testX>
+          
+        </test:Assertion>
+
+        <test:Assertion>
+        
+          <name>trimEnd
+          </name>
+          
+          <subjectX contextualize="false">
+            [@util:StringUtil].@trimEnd("  hello  \r\n")
+          </subjectX>
+          
+          <testX>
+            .=="  hello"
+          </testX>
+          
+        </test:Assertion>
 
       </scenarios>
       
