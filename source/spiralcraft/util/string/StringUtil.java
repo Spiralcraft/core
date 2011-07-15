@@ -466,6 +466,46 @@ public class StringUtil
   }
   
   /**
+   * Trim whitespace from the end of the string
+   * 
+   * @param input
+   * @return
+   */
+  public static String trimEnd(String input)
+  {
+    if (input==null)
+    { return null;
+    }
+    for (int i=input.length();i>0;i--)
+    {
+      if (input.charAt(i-1)>0x20)
+      { return input.substring(0,i);
+      }
+    }
+    return "";
+  }
+  
+  /**
+   * Trim whitespace from the start of the string
+   * 
+   * @param input
+   * @return
+   */
+  public static String trimStart(String input)
+  {
+    if (input==null)
+    { return null;
+    }
+    for (int i=0;i<input.length();i++)
+    {
+      if (input.charAt(i)>0x20)
+      { return input.substring(i,input.length());
+      }
+    }
+    return "";
+  }
+  
+  /**
    * Prints a string representation of a character's textual and integer
    *   value
    *   
