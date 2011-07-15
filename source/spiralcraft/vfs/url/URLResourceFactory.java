@@ -32,5 +32,14 @@ public class URLResourceFactory
   }
 
 
+  @Override
+  public boolean handlesScheme(String scheme)
+  { 
+    return scheme.equals("http")
+        || scheme.equals("https")
+        || scheme.equals("ftp")
+        || scheme.equals("file")
+        || scheme.equals("jar");
+  }
 
 }

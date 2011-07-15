@@ -21,7 +21,15 @@ import java.net.URI;
  */
 public interface ResourceFactory
 {
-  public Resource resolve(URI uri)
+  /**
+   * Whether this Factory will resolve resources for the specified scheme
+   * 
+   * @param scheme
+   * @return
+   */
+  boolean handlesScheme(String scheme);
+  
+  Resource resolve(URI uri)
     throws UnresolvableURIException;
 
 }

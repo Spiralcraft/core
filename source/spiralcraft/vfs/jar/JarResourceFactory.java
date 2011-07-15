@@ -38,6 +38,9 @@ public class JarResourceFactory
     }
   }
 
-
+  @Override
+  public boolean handlesScheme(String scheme)
+  { return scheme.equals("jar");
+  }
 
 }

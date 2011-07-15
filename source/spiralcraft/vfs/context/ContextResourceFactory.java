@@ -30,5 +30,9 @@ public class ContextResourceFactory
   { return ContextResourceMap.resolve(uri);
   }
 
-
+  
+  @Override
+  public boolean handlesScheme(String scheme)
+  { return scheme.equals("context");
+  }
 }

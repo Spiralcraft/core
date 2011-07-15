@@ -153,9 +153,10 @@ public class Resolver
   }
 
   /**
-   * <P> Obtain a Resource that provides access to the content identified by
+   * <p> Obtain a Resource that provides access to the content identified by
    *    the URI. If the URI is relative, it will be resolved against the
    *    user directory (Java VM working directory).
+   * </p>
    * 
    * 
    * @return A Resource with provides access to the content identified by 
@@ -167,9 +168,10 @@ public class Resolver
   }
 
   /**
-   * <P> Obtain a Resource that provides access to the content identified by
+   * <p> Obtain a Resource that provides access to the content identified by
    *    the URI. If the URI is relative, it will be resolved against the
    *    user directory (Java VM working directory).
+   * </p>
    * 
    * 
    * @return A Resource with provides access to the content identified by 
@@ -205,6 +207,35 @@ public class Resolver
     
     return factory.resolve(uri);
     
+  }
+  
+  /**
+   * Whether the specified URI scheme points to a resource
+   * 
+   * @param scheme
+   * @return
+   */
+  public boolean handlesScheme(String scheme)
+  {
+    if (scheme.equals("dynamic"))
+    { return false;
+    }
+    if (scheme.equals("urn"))
+    { return false;
+    }
+    if (_resourceFactories.get(scheme)!=null)
+    { return true;
+    }
+    if (_defaultFactory!=null)
+    { 
+      if (_defaultFactory.handlesScheme(scheme))
+      { return true;
+      }
+      else if (this!=getInstance())
+      { return getInstance().handlesScheme(scheme);
+      }
+    }
+    return false;
   }
   
   /**

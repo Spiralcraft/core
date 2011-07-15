@@ -31,6 +31,9 @@ public class FileResourceFactory
   { return new FileResource(uri);
   }
 
-
+  @Override
+  public boolean handlesScheme(String scheme)
+  { return scheme.equals("file");
+  }
 
 }

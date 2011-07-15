@@ -34,5 +34,10 @@ public class ClasspathResourceFactory
   { return new ClasspathResource(uri);
   }
 
-
+  @Override
+  public boolean handlesScheme(String scheme)
+  { 
+    return scheme.equals("class")
+        || scheme.equals("java");
+  }
 }
