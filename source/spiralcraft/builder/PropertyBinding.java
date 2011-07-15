@@ -501,10 +501,18 @@ public class PropertyBinding
             catch (ParseException x)
             { 
               throwBuildException
-              ("Error parsing properties in "+textData,x);
+                ("Error parsing properties in "+textData,x);
             }
 
             NamespaceContext.push(_specifier.getPrefixResolver());
+            if (_converter==null)
+            {
+              throwBuildException
+                ("Cannot construct a "
+                  +cd.getComponentReflector().getContentType().getName()
+                  +" from text"
+                );
+            }
             Object elementValue=_converter.fromString(textData);
             // log.fine("Collection value "+elementValue);
             try
