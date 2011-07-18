@@ -14,12 +14,8 @@
 //
 package spiralcraft.lang.parser;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
-import spiralcraft.lang.spi.Coercion;
 
 public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
   extends LogicalNode<T1,T2>
@@ -72,123 +68,14 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
     }
   }
   
-  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @SuppressWarnings("unchecked")
   @Override
   protected LogicalTranslator 
     newTranslator(final Reflector<T1> r1,final Reflector<T2> r2)
   { 
 
-    
-    return new LogicalTranslator()
+    return new RelationalTranslator(r1,r2)
     { 
-      private final Coercion<T2,T1> coercion;
-      
-      {
-        if (r1.getContentType()!=r2.getContentType())
-        {
-          if (Number.class.isAssignableFrom(r1.getContentType())
-              && Number.class.isAssignableFrom(r2.getContentType()))
-          {
-            if (r1.getContentType().equals(Float.class))
-            {
-              coercion=(Coercion) 
-                new Coercion<Number,Float>() 
-              {
-                @Override
-                public Float coerce(Number val)
-                { return val.floatValue();
-                }
-              };
-            }
-            else if (r1.getContentType().equals(Long.class))
-            {
-              coercion=(Coercion) 
-                new Coercion<Number,Long>() 
-              {
-                @Override
-                public Long coerce(Number val)
-                { return val.longValue();
-                }
-              };
-            }
-            else if (r1.getContentType().equals(Double.class))
-            {
-              coercion=(Coercion) 
-                new Coercion<Number,Double>() 
-              {
-                @Override
-                public Double coerce(Number val)
-                { return val.doubleValue();
-                }
-              };
-            }     
-            else if (r1.getContentType().equals(Integer.class))
-            {
-              coercion=(Coercion) 
-                new Coercion<Number,Integer>() 
-              {
-                @Override
-                public Integer coerce(Number val)
-                { return val.intValue();
-                }
-              };
-            }
-            else if (r1.getContentType().equals(Short.class))
-            {
-              coercion=(Coercion) 
-                new Coercion<Number,Short>() 
-              {
-                @Override
-                public Short coerce(Number val)
-                { return val.shortValue();
-                }
-              };
-            }     
-            else if (r1.getContentType().equals(Byte.class))
-            {
-              coercion=(Coercion) 
-                new Coercion<Number,Byte>() 
-              {
-                @Override
-                public Byte coerce(Number val)
-                { return val.byteValue();
-                }
-              };
-            }              
-            else if (r1.getContentType().equals(BigDecimal.class))
-            {
-              coercion=(Coercion) 
-                new Coercion<Number,BigDecimal>() 
-              {
-                @Override
-                public BigDecimal coerce(Number val)
-                { return BigDecimal.valueOf(val.doubleValue());
-                }
-              };
-            }              
-            else if (r1.getContentType().equals(BigInteger.class))
-            {
-              coercion=(Coercion) 
-                new Coercion<Number,BigInteger>() 
-              {
-                @Override
-                public BigInteger coerce(Number val)
-                { return BigInteger.valueOf(val.intValue());
-                }
-              };
-            }              
-            else
-            { coercion=null;
-            }
-          }
-          else
-          { coercion=null;
-          }
-        } 
-        else
-        { coercion=null;
-        }
-      }
       
       @Override
       public Boolean translateForGet(T1 val,Channel<?>[] mods)

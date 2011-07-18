@@ -14,6 +14,9 @@
 //
 package spiralcraft.lang.parser;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import spiralcraft.lang.Channel;
 
 import spiralcraft.lang.BindException;
@@ -21,6 +24,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Reflector;
 
+import spiralcraft.lang.spi.Coercion;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
 
@@ -145,5 +149,122 @@ public abstract class LogicalNode<T1,T2>
       // Not reversible
       throw new UnsupportedOperationException();
     }    
+  }
+  
+  abstract class RelationalTranslator
+    extends LogicalTranslator
+  {
+    protected final Coercion<T2,T1> coercion;
+    
+    @SuppressWarnings("unchecked")
+    protected RelationalTranslator(Reflector<T1> r1, Reflector<T2> r2)
+    {
+      if (r1.getContentType()!=r2.getContentType())
+      {
+        if (Number.class.isAssignableFrom(r1.getContentType())
+            && Number.class.isAssignableFrom(r2.getContentType()))
+        {
+          if (r1.getContentType().equals(Float.class))
+          {
+            coercion=(Coercion<T2,T1>) 
+              new Coercion<Number,Float>() 
+            {
+              @Override
+              public Float coerce(Number val)
+              { return val.floatValue();
+              }
+            };
+          }
+          else if (r1.getContentType().equals(Long.class))
+          {
+            coercion=(Coercion<T2,T1>) 
+              new Coercion<Number,Long>() 
+            {
+              @Override
+              public Long coerce(Number val)
+              { return val.longValue();
+              }
+            };
+          }
+          else if (r1.getContentType().equals(Double.class))
+          {
+            coercion=(Coercion<T2,T1>) 
+              new Coercion<Number,Double>() 
+            {
+              @Override
+              public Double coerce(Number val)
+              { return val.doubleValue();
+              }
+            };
+          }     
+          else if (r1.getContentType().equals(Integer.class))
+          {
+            coercion=(Coercion<T2,T1>) 
+              new Coercion<Number,Integer>() 
+            {
+              @Override
+              public Integer coerce(Number val)
+              { return val.intValue();
+              }
+            };
+          }
+          else if (r1.getContentType().equals(Short.class))
+          {
+            coercion=(Coercion<T2,T1>) 
+              new Coercion<Number,Short>() 
+            {
+              @Override
+              public Short coerce(Number val)
+              { return val.shortValue();
+              }
+            };
+          }     
+          else if (r1.getContentType().equals(Byte.class))
+          {
+            coercion=(Coercion<T2,T1>) 
+              new Coercion<Number,Byte>() 
+            {
+              @Override
+              public Byte coerce(Number val)
+              { return val.byteValue();
+              }
+            };
+          }              
+          else if (r1.getContentType().equals(BigDecimal.class))
+          {
+            coercion=(Coercion<T2,T1>) 
+              new Coercion<Number,BigDecimal>() 
+            {
+              @Override
+              public BigDecimal coerce(Number val)
+              { return BigDecimal.valueOf(val.doubleValue());
+              }
+            };
+          }              
+          else if (r1.getContentType().equals(BigInteger.class))
+          {
+            coercion=(Coercion<T2,T1>) 
+              new Coercion<Number,BigInteger>() 
+            {
+              @Override
+              public BigInteger coerce(Number val)
+              { return BigInteger.valueOf(val.intValue());
+              }
+            };
+          }              
+          else
+          { coercion=null;
+          }
+        }
+        else
+        { coercion=null;
+        }
+      } 
+      else
+      { coercion=null;
+      }
+    }
+    
+    
   }
 }

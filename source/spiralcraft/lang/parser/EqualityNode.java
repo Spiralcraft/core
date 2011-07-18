@@ -55,23 +55,66 @@ public class EqualityNode<X>
 
   @Override
   protected LogicalTranslator 
-    newTranslator(Reflector<X> r1,Reflector<X> r2)
+    newTranslator(final Reflector<X> r1,final Reflector<X> r2)
   { 
-    return new LogicalTranslator()
+    return new RelationalTranslator(r1,r2)
     {  
+      boolean number
+        =Number.class.isAssignableFrom(r1.getContentType())
+        && Number.class.isAssignableFrom(r2.getContentType());
       
+      
+      @SuppressWarnings("unchecked")
       @Override
       public Boolean translateForGet(X val,Channel<?>[] mods)
       { 
         Object mod=mods[0].get();
         //    log.fine("EqualityNode: "+val+" == "+mod);
         if (val==mod)
-        { return _negate?Boolean.FALSE:Boolean.TRUE;
+        { return toResult(true);
+        }
+        else if (val==null || mod==null)
+        { return toResult(false);
+        }
+        else if (number)
+        {
+          // Don't use .equals for numbers b/c of BigDecimal issues
+          if (coercion!=null)
+          { 
+            try
+            { 
+//              log.fine("Using coercion to compare number "
+//                +mod+" ("+mod.getClass()+") to "+val+"("+val.getClass()+")");
+              return toResult
+                  (((Comparable<X>) val)
+                    .compareTo(coercion.coerce((X) mod))==0
+                  );
+            }
+            catch (ClassCastException x)
+            { 
+              log.warning
+                ( val+" ("+val.getClass()+")"
+                  +" is not an "+r1.getContentType()
+                );
+              throw x;
+            }
+          }
+          else
+          { 
+            return toResult(((Comparable<X>) val).compareTo((X) mod)==0);
+          }
         }
         else if (val!=null && val.equals(mod))
-        { return _negate?Boolean.FALSE:Boolean.TRUE;
+        { return toResult(true);
         }
-        return _negate?Boolean.TRUE:Boolean.FALSE;
+        return toResult(false);
+      }
+      
+      private Boolean toResult(boolean value)
+      { 
+        return value
+            ?(_negate?Boolean.FALSE:Boolean.TRUE)
+            :(_negate?Boolean.TRUE:Boolean.FALSE);
       }
       
       /**
