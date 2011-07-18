@@ -938,6 +938,22 @@ public class FieldImpl<T>
       
       if (t!=null)
       { 
+        if (val!=null 
+            && type.isPrimitive()
+            && type.getNativeClass()!=val.getClass()
+            && !type.getNativeClass().isAssignableFrom(val.getClass())
+            )
+        { 
+          
+          AccessException ax=new AccessException
+            ("Type error setting field "+getURI()+" : expected value of "
+            +type.getNativeClass()+" but got "
+            +val.getClass()
+            );
+          log.log(Level.WARNING,"Type error",ax);
+          throw ax;
+        }
+        
         if (typeInspector!=null)
         {
           Violation<T>[] violations=typeInspector.inspect(val);
