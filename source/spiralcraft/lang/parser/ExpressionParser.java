@@ -1378,11 +1378,11 @@ public class ExpressionParser
       switch (typeIndicator)
       {
         case 'L':
-          return new LiteralNode<Long>(new Long(numberString),Long.class);
+          return new LiteralNode<Long>(Long.parseLong(numberString),Long.class);
         case 'D':
-          return new LiteralNode<Double>(new Double(numberString),Double.class);
+          return new LiteralNode<Double>(Double.valueOf(numberString),Double.class);
         case 'F':
-          return new LiteralNode<Float>(new Float(numberString),Float.class);
+          return new LiteralNode<Float>(Float.valueOf(numberString),Float.class);
         default:
           _tokenizer.pushBack();
           throwUnexpected();
@@ -1390,10 +1390,10 @@ public class ExpressionParser
       }
     }
     else if (numberString.indexOf(".")>-1)
-    { return new LiteralNode<Double>(new Double(numberString),Double.class);
+    { return new LiteralNode<Double>(Double.valueOf(numberString),Double.class);
     }
     else
-    { return new LiteralNode<Integer>(new Integer(numberString),Integer.class);
+    { return new LiteralNode<Integer>(Integer.parseInt(numberString),Integer.class);
     }
   }
   
