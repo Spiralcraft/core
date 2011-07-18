@@ -14,6 +14,54 @@
     
     <detail>
 
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
+          <scm:Note>Perform type check when primitive values are written
+            to a bound field.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/core/FieldImpl.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
+          <scm:Note>Fix issue where required type coercion was not performed
+            when a null value was encountered in an arithmetic operation
+          </scm:Note>
+          <scm:Note>Use type coercion and compare() to implement '==' 
+            operator for numeric types.
+          </scm:Note>
+          <scm:Note>Use valueOf() and parseXXX() methods to create Number
+            objects in ExpressionParser
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser
+        </path>
+        
+        <resources>
+          <URI>BinaryOpNode.java
+          </URI>
+          <URI>EqualityNode.java
+          </URI>
+          <URI>LogicalNode.java
+          </URI>
+          <URI>RelationalNode.java
+          </URI>
+          <URI>ExpressionParser.java
+          </URI>
+        </resources>
+
+      </scm:Change>
 
       <scm:Change>
         <release>-dev1
