@@ -399,6 +399,10 @@ class NumberBindingHelper
         translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
             
+          private Tret box(int prim)
+          { return (Tret) Integer.valueOf(prim);
+          }
+          
           @Override
           public Tret get(T1 val1,T2 val2)
           { 
@@ -406,24 +410,24 @@ class NumberBindingHelper
             Number n2= val2;
 
             if (val1==null)
-            { return val2;
+            { return val2!=null?box(val2.intValue()):null;
             }
             if (val2==null)
-            { return val1;
+            { return box(val1.intValue());
             }
             
             switch (oper)
             {
               case '+':
-                return (Tret) Integer.valueOf(n1.intValue()+n2.intValue());
+                return box(n1.intValue()+n2.intValue());
               case '-':
-                return (Tret) Integer.valueOf(n1.intValue()-n2.intValue());
+                return box(n1.intValue()-n2.intValue());
               case '*':
-                return (Tret) Integer.valueOf(n1.intValue()*n2.intValue());
+                return box(n1.intValue()*n2.intValue());
               case '/':
-                return (Tret) Integer.valueOf(n1.intValue()/n2.intValue());
+                return box(n1.intValue()/n2.intValue());
               case '%':
-                return (Tret) Integer.valueOf(n1.intValue()%n2.intValue());
+                return box(n1.intValue()%n2.intValue());
               default:
                 return null;                
             }
@@ -434,6 +438,9 @@ class NumberBindingHelper
       {
         translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
+          private Tret box(float prim)
+          { return (Tret) Float.valueOf(prim);
+          }
             
           @Override
           public Tret get(T1 val1,T2 val2)
@@ -442,24 +449,24 @@ class NumberBindingHelper
             Number n2=val2;
 
             if (val1==null)
-            { return val2;
+            { return val2!=null?box(val2.floatValue()):null;
             }
             if (val2==null)
-            { return val1;
+            { return box(val1.floatValue());
             }
             
             switch (oper)
             {
               case '+':
-                return (Tret) Float.valueOf(n1.floatValue()+n2.floatValue());
+                return box(n1.floatValue()+n2.floatValue());
               case '-':
-                return (Tret) Float.valueOf(n1.floatValue()-n2.floatValue());
+                return box(n1.floatValue()-n2.floatValue());
               case '*':
-                return (Tret) Float.valueOf(n1.floatValue()*n2.floatValue());
+                return box(n1.floatValue()*n2.floatValue());
               case '/':
-                return (Tret) Float.valueOf(n1.floatValue()/n2.floatValue());
+                return box(n1.floatValue()/n2.floatValue());
               case '%':
-                return (Tret) Float.valueOf(n1.floatValue()%n2.floatValue());
+                return box(n1.floatValue()%n2.floatValue());
               default:
                 return null;                
             }
@@ -470,6 +477,9 @@ class NumberBindingHelper
       {
         translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
+          private Tret box(long prim)
+          { return (Tret) Long.valueOf(prim);
+          }
             
           @Override
           public Tret get(T1 val1,T2 val2)
@@ -478,24 +488,24 @@ class NumberBindingHelper
             Number n2= val2;
 
             if (val1==null)
-            { return val2;
+            { return val2!=null?box(val2.longValue()):null;
             }
             if (val2==null)
-            { return val1;
+            { return box(val1.longValue());
             }
             
             switch (oper)
             {
               case '+':
-                return (Tret) Long.valueOf(n1.longValue()+n2.longValue());
+                return box(n1.longValue()+n2.longValue());
               case '-':
-                return (Tret) Long.valueOf(n1.longValue()-n2.longValue());
+                return box(n1.longValue()-n2.longValue());
               case '*':
-                return (Tret) Long.valueOf(n1.longValue()*n2.longValue());
+                return box(n1.longValue()*n2.longValue());
               case '/':
-                return (Tret) Long.valueOf(n1.longValue()/n2.longValue());
+                return box(n1.longValue()/n2.longValue());
               case '%':
-                return (Tret) Long.valueOf(n1.longValue()%n2.longValue());
+                return box(n1.longValue()%n2.longValue());
               default:
                 return null;                
             }
@@ -507,6 +517,10 @@ class NumberBindingHelper
         translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
             
+          private Tret box(double prim)
+          { return (Tret) Double.valueOf(prim);
+          }
+          
           @Override
           public Tret get(T1 val1,T2 val2)
           { 
@@ -514,24 +528,84 @@ class NumberBindingHelper
             Number n2= val2;
 
             if (val1==null)
-            { return val2;
+            { return val2!=null?box(val2.doubleValue()):null;
             }
             if (val2==null)
-            { return val1;
+            { return box(val1.doubleValue());
             }
             
             switch (oper)
             {
               case '+':
-                return (Tret) Double.valueOf(n1.doubleValue()+n2.doubleValue());
+                return box(n1.doubleValue()+n2.doubleValue());
               case '-':
-                return (Tret) Double.valueOf(n1.doubleValue()-n2.doubleValue());
+                return box(n1.doubleValue()-n2.doubleValue());
               case '*':
-                return (Tret) Double.valueOf(n1.doubleValue()*n2.doubleValue());
+                return box(n1.doubleValue()*n2.doubleValue());
               case '/':
-                return (Tret) Double.valueOf(n1.doubleValue()/n2.doubleValue());
+                return box(n1.doubleValue()/n2.doubleValue());
               case '%':
-                return (Tret) Double.valueOf(n1.doubleValue()%n2.doubleValue());
+                return box(n1.doubleValue()%n2.doubleValue());
+              default:
+                return null;                
+            }
+          }
+        };
+      }
+      else if (clazz==BigInteger.class)
+      {
+        translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
+        {
+            
+          private Tret box(Number prim)
+          { 
+            if (prim instanceof BigInteger)
+            { return (Tret) prim;
+            }
+            else
+            { return (Tret) new BigInteger(prim.toString());
+            }
+          }
+          
+          @Override
+          public Tret get(T1 val1,T2 val2)
+          { 
+
+            if (val1==null)
+            { return val2!=null?box(val2):null;
+            }
+            if (val2==null)
+            { return box(val1);
+            }
+
+            BigInteger num1;
+            BigInteger num2;
+            if (val1 instanceof BigInteger)
+            { num1=(BigInteger) val1;
+            }
+            else 
+            { num1=new BigInteger(val1.toString());
+            }
+            if (val2 instanceof BigInteger)
+            { num2=(BigInteger) val2;
+            }
+            else 
+            { num2=new BigInteger(val2.toString());
+            }
+
+            
+            switch (oper)
+            {
+              case '+':
+                return (Tret) num1.add(num2);
+              case '-':
+                return (Tret) num1.subtract(num2);
+              case '*':
+                return (Tret) num1.multiply(num2);
+              case '/':
+                return (Tret) num1.divide(num2);
+              case '%':
+                return (Tret) num1.remainder(num2);
               default:
                 return null;                
             }
@@ -543,15 +617,25 @@ class NumberBindingHelper
         translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
             
+          private Tret box(Number prim)
+          { 
+            if (prim instanceof BigDecimal)
+            { return (Tret) prim;
+            }
+            else
+            { return (Tret) new BigDecimal(prim.toString());
+            }
+          }
+          
           @Override
           public Tret get(T1 val1,T2 val2)
           { 
 
             if (val1==null)
-            { return val2;
+            { return val2!=null?box(val2):null;
             }
             if (val2==null)
-            { return val1;
+            { return box(val1);
             }
 
             BigDecimal num1;
@@ -746,6 +830,7 @@ abstract class NumericTranslator<Tret extends Number,T1 extends Tret,T2 extends 
   }
   
   protected abstract Tret get(T1 val1,T2 val2);
+  
   
   /**
    * 
