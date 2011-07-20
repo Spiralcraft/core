@@ -325,6 +325,30 @@ public class StringUtil
     return ret;
   }
   
+  /**
+   * Repeat the specified string the specified number of occurrences.
+   * 
+   * @param appendable
+   * @param string
+   * @param occurrences
+   * @return A StringBuilder containing the repeated string
+   */
+  public static Appendable repeat
+    (Appendable appendable,String string,int occurrences)
+    throws IOException
+  {
+    if (appendable==null)
+    { appendable=new StringBuilder();
+    }
+    if (string!=null)
+    {
+      for (int i=0;i<occurrences;i++)
+      { appendable.append(string);
+      }
+    }
+    return appendable;
+  }  
+  
   public static String escapeISOControl(String string)
   {
     StringBuilder ret=new StringBuilder();
