@@ -14,6 +14,7 @@
 //
 package spiralcraft.time;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -111,6 +112,10 @@ public class Calendar
   { return chronology.add(timeZone,locale,start,duration);
   }
   
+  public Date add(Date start,Duration duration)
+  { return add(Instant.fromDate(start),duration).toDate();
+  }
+  
   public TimeX add(TimeX start,TimeField field,int amount)
   { return chronology.add(timeZone,locale,start,field,amount);
   }
@@ -119,6 +124,10 @@ public class Calendar
   { return chronology.subtract(timeZone,locale,end,duration);
   }
   
+  public Date subtract(Date end,Duration duration)
+  { return subtract(Instant.fromDate(end),duration).toDate();
+  }
+
   public Duration subtract(Instant end,Instant start)
   { return chronology.subtract(timeZone,locale,end,start);
   }
