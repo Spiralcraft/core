@@ -166,7 +166,7 @@ public class Batch<I,R>
         {
           if (chain!=null && getException()!=null)
           { 
-            TaskCommand<I,R> command=((Chain<I,R>) chain).command();
+            TaskCommand<I,R> command=((Scenario<I,R>) chain).command();
             command.execute();
             (getResult()).add(command);
             if (command.getException()!=null)
