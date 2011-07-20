@@ -16,20 +16,24 @@ package spiralcraft.data.task;
 
 
 import spiralcraft.command.Command;
+import spiralcraft.common.ContextualException;
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
-import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 //import spiralcraft.data.Type;
+import spiralcraft.data.editor.AggregateEditor;
+import spiralcraft.data.editor.EditorBase;
 import spiralcraft.data.editor.TupleEditor;
 import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.session.Buffer;
 import spiralcraft.data.session.BufferChannel;
-import spiralcraft.data.session.BufferTuple;
 //import spiralcraft.data.lang.DataReflector;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.task.Chain;
 import spiralcraft.task.Task;
 
@@ -45,16 +49,17 @@ import spiralcraft.task.Task;
  * @author mike
  *
  */
-public class Edit<Titem extends Tuple>
-  extends Chain<Titem,BufferTuple>
+public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
+  extends Chain<Titem,Tbuffer>
 {
 
   private Expression<Titem> targetX;
-  private Channel<BufferTuple> resultChannel;
+  private Channel<Tbuffer> resultChannel;
   private Type<Titem> type;
-  private TupleEditor editor
-    =new TupleEditor();
+  private EditorBase<Tbuffer> editor;
   private boolean autoSave;
+  private boolean autoCreate;
+  private boolean autoKey;
   
   { storeResults=true;
   }
@@ -63,10 +68,18 @@ public class Edit<Titem extends Tuple>
   { 
   }
   
+  @SuppressWarnings("unchecked")
   public Edit(Type<Titem> type)
   { 
     this.type=type;
+    if (!type.isAggregate())
+    { editor=(EditorBase<Tbuffer>) new TupleEditor();
+    }
     editor.setAutoCreate(true);
+  }
+  
+  public void setType(Type<Titem> type)
+  { this.type=type;
   }
   
   public void setAutoSave(boolean autoSave)
@@ -74,14 +87,18 @@ public class Edit<Titem extends Tuple>
   }
   
   public void setAutoCreate(boolean autoCreate)
-  { editor.setAutoCreate(autoCreate);
+  { this.autoCreate=autoCreate;
+  }
+  
+  public void setAutoKey(boolean autoKey)
+  { this.autoKey=autoKey;
   }
 
   /**
    * 
    * @return The TupleEditor 
    */
-  public TupleEditor getEditor()
+  public EditorBase<Tbuffer> getEditor()
   { return editor;
   }
   
@@ -104,13 +121,13 @@ public class Edit<Titem extends Tuple>
     if (targetX!=null)
     { 
       resultChannel
-        =new BufferChannel<BufferTuple>(focusChain,focusChain.bind(targetX));
+        =new BufferChannel<Tbuffer>(focusChain,focusChain.bind(targetX));
 
     }
     else if (type!=null)
     { 
       resultChannel
-        =new BufferChannel<BufferTuple>
+        =new BufferChannel<Tbuffer>
           (focusChain
           ,DataReflector.<Titem>getInstance(type).createNilChannel()
           );
@@ -118,8 +135,8 @@ public class Edit<Titem extends Tuple>
     else
     {
       resultChannel
-        =new BufferChannel<BufferTuple>
-          (focusChain,(Channel<Tuple>) focusChain.getSubject());
+        =new BufferChannel<Tbuffer>
+          (focusChain,(Channel<Titem>) focusChain.getSubject());
       
       
     }
@@ -130,20 +147,36 @@ public class Edit<Titem extends Tuple>
   }
   
 
-//  @SuppressWarnings("unchecked") // Type query
+  @SuppressWarnings("unchecked") // Type query
   @Override
   public Focus<?> bindExports(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   {
     
-//    if (type==null && resultChannel!=null)
-//    { type=((DataReflector) resultChannel.getReflector()).getType();
-//    }
+    if (type==null && resultChannel!=null)
+    { type=((DataReflector<Titem>) resultChannel.getReflector()).getType();
+    }
     
+    if (editor==null)
+    {
+      if (type.isAggregate())
+      { editor=(EditorBase<Tbuffer>) new AggregateEditor();
+      }
+      else
+      { editor=(EditorBase<Tbuffer>) new TupleEditor();
+      }
+      editor.setAutoCreate(autoCreate);
+    }
 
+    editor.setAutoKey(autoKey);
     editor.setSource(resultChannel);
-    return editor.bind(focusChain);
+    editor.setDebug(this.debug);
+    focusChain=editor.bind(focusChain);
+
+    focusChain.addFacet
+      (focusChain.chain(new SimpleChannel<EditorBase<Tbuffer>>(editor,true)));
+    return focusChain;
   }
 
   

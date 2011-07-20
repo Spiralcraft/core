@@ -17,18 +17,26 @@ package spiralcraft.data.editor;
 
 import java.util.List;
 
+import spiralcraft.command.AbstractCommandFactory;
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
 import spiralcraft.command.CommandBlock;
+import spiralcraft.command.CommandFactory;
+import spiralcraft.common.ContextualException;
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Field;
+import spiralcraft.data.Key;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
+import spiralcraft.data.core.RelativeField;
 import spiralcraft.data.lang.DataReflector;
 
 import spiralcraft.data.session.BufferChannel;
 import spiralcraft.data.session.BufferType;
 import spiralcraft.data.session.DataSession;
 import spiralcraft.data.session.Buffer;
+import spiralcraft.data.types.meta.MetadataType;
 
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
@@ -36,7 +44,9 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Context;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.ArrayUtil;
 
 
 public abstract class EditorBase<Tbuffer extends Buffer>
@@ -51,7 +61,7 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   
   protected ThreadLocalChannel<Tbuffer> localChannel;
   
-  protected Channel<? extends Tuple> source;
+  protected Channel<? extends DataComposite> source;
   
   private Type<?> type;
   private Channel<DataSession> sessionChannel;
@@ -63,6 +73,13 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   protected Assignment<?>[] newAssignments;
   protected Assignment<?>[] publishedAssignments;
   
+
+
+  private Channel<Tuple> parentChannel;
+  private Channel<Tuple> parentKeyChannel;
+  private Channel<Tuple> localKeyChannel;
+  
+  protected boolean autoKey;
   protected boolean autoCreate;
   protected boolean retain;
   
@@ -70,9 +87,27 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   protected Focus<?> focus;
 
 
+  public final CommandFactory<Tbuffer,Void,Void> create
+    =new AbstractCommandFactory<Tbuffer,Void,Void>()
+  {
+
+    @Override
+    public Command<Tbuffer, Void, Void> command()
+    { return newCommand();
+    }
+  };
   
+  public final CommandFactory<Tbuffer,Void,Void> save
+    =new AbstractCommandFactory<Tbuffer,Void,Void>()
+  {
+
+    @Override
+    public Command<Tbuffer, Void, Void> command()
+    { return saveCommand();
+    }
+  };
   
-  public void setSource(Channel<? extends Tuple> source)
+  public void setSource(Channel<? extends DataComposite> source)
   { this.source=source;
   }
   
@@ -148,6 +183,15 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   { publishedAssignments=assignments;
   }
   
+  
+  public void setAutoKey(boolean autoKey)
+  { this.autoKey=autoKey;
+  }
+  
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
   public void initBuffer()
     throws DataException
   {
@@ -172,7 +216,7 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   @Override
   public Focus<?> bind
     (Focus<?> parentFocus)
-      throws BindException
+      throws ContextualException
   { 
     if (debug)
     { log.fine("Editor.bind() "+parentFocus);
@@ -361,6 +405,7 @@ public abstract class EditorBase<Tbuffer extends Buffer>
 
 
 
+  
   public Command<Tbuffer,Void,Void> newCommand()
   {
     return new CommandAdapter<Tbuffer,Void,Void>()
@@ -409,6 +454,13 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   { return sessionChannel.get();
   }
   
+  protected void applyKeyValues()
+  {
+    if (parentKeyChannel!=null && localKeyChannel!=null)
+    { 
+      localKeyChannel.set(parentKeyChannel.get());
+    }
+  }
   
   protected void setupType()
     throws BindException
@@ -448,11 +500,72 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   }
   
   protected Focus<?> bindExports(Focus<?> focus)
-    throws BindException
+    throws ContextualException
   { return focus;
   }
   
 
+  @SuppressWarnings("unchecked")
+  protected void bindKeys(Focus<?> focus)
+    throws ContextualException
+  {
+    if (!autoKey)
+    { return;
+    }
+    Channel<Tuple> source=(Channel<Tuple>) focus.getSubject();
+    // Get information about the relationship to auto-bind key values
+    Channel<Field<?>> fieldChannel
+      =source.<Field<?>>resolveMeta(focus,MetadataType.RELATIVE_FIELD.uri);
+    if (fieldChannel!=null)
+    { 
+      Field<?> field=fieldChannel.get();
+      if (debug)
+      { log.debug("Got field metadata for "+field.getURI());
+      }
+      if (field instanceof RelativeField)
+      {
+        if (debug)
+        { log.debug("Got key metadata for "+field.getURI());
+        }
+        RelativeField<?> rfield=(RelativeField<?>) field;
+        parentChannel=LangUtil.findChannel
+          (DataReflector.getInstance
+            (rfield.getScheme().getType())
+              .getTypeURI()
+          ,focus
+          );
+
+        Key<Tuple> parentKey=(Key<Tuple>) rfield.getKey();
+        parentKeyChannel
+          =parentKey.bindChannel(parentChannel,focus,null);
+            
+        Type<?> type=((DataReflector<?>) source.getReflector()).getType();
+        String[] localFieldNames=parentKey.getImportedKey().getFieldNames();
+        Key<Tuple> localKey=(Key<Tuple>) type.findKey(localFieldNames);
+        if (localKey==null)
+        { 
+          throw new ContextualException
+            ("Could not find key ["+ArrayUtil.format(localFieldNames,",","")
+             +"] in "+type.getURI()
+            );
+        }
+        localKeyChannel=localKey.bindChannel(source,focus,null);
+      }
+      else
+      {
+        if (debug)
+        { log.debug("No key metadata for "+field.getURI()+"("+field.getClass()+")");
+        }
+      }
+    }    
+    else
+    {
+      if (debug)
+      { log.debug("No field metadata: "+source.trace(null).toString());
+      }
+
+    }
+  }
 
   protected abstract void ensureInitialized();
 

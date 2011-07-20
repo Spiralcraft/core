@@ -15,10 +15,9 @@
 package spiralcraft.data.editor;
 
 
-
-
 import spiralcraft.command.Command;
 import spiralcraft.command.CommandAdapter;
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
@@ -228,6 +227,8 @@ public class TupleEditor
     { BindingChannel.apply(preSaveBindings);
     }
     
+    applyKeyValues();
+    
     if (buffer!=null && (buffer.isDirty() || force))
     {
       if (defaultSetters!=null)
@@ -340,7 +341,7 @@ public class TupleEditor
   @SuppressWarnings("unchecked")
   @Override
   protected Focus<?> bindExports(Focus<?> focus)
-    throws BindException
+    throws ContextualException
   {
     DataReflector<Buffer> reflector
      =(DataReflector<Buffer>) focus.getSubject().getReflector();
@@ -369,7 +370,8 @@ public class TupleEditor
 
     initialSetters=Assignment.bindArray(initialAssignments,focus);
     publishedSetters=Assignment.bindArray(publishedAssignments,focus);
-    return focus;
+    bindKeys(focus);
+    return super.bindExports(focus);
   }
 
 }
