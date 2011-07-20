@@ -45,6 +45,7 @@ import spiralcraft.rules.Violation;
 import spiralcraft.ui.MetadataType;
 
 import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.reflect.ReflectionType;
 
 import java.net.URI;
 import java.util.WeakHashMap;
@@ -727,6 +728,43 @@ public class FieldImpl<T>
     return binding;
   }
   
+  protected synchronized <X> Channel<X> resolveMeta(Focus<?> focus,URI typeURI)
+    throws BindException
+  {
+    if (typeURI.equals(MetadataType.FIELD.uri))
+    { 
+      if (uiMetadataChannel==null)
+      { 
+        uiMetadataChannel
+          =new ConstantChannel
+            (MetadataType.FIELD.reflector
+            ,defaultUIMetadata
+            );
+      }
+      return uiMetadataChannel;
+    }
+    else if (spiralcraft.data.types.meta.MetadataType.FIELD.uri.equals(typeURI)
+          || BeanReflector.getInstance(FieldImpl.this.getClass())
+              .isAssignableTo(typeURI)
+        )
+    { 
+      if (fieldMetadataChannel==null)
+      { 
+        fieldMetadataChannel
+          =new ConstantChannel
+            (BeanReflector.getInstance(FieldImpl.this.getClass())
+            ,FieldImpl.this
+            );
+      }
+      return fieldMetadataChannel;
+        
+    }
+    else if (ReflectionType.canonicalURI(getClass()).equals(typeURI))
+    { return fieldMetadataChannel;
+    }
+    return null;
+  }
+  
   public class FieldChannel
     extends SourcedChannel<Tuple,T>
   {
@@ -999,36 +1037,12 @@ public class FieldImpl<T>
     @Override
     public synchronized <X> Channel<X> resolveMeta(Focus<?> focus,URI typeURI)
       throws BindException
-    {
-      if (typeURI.equals(MetadataType.FIELD.uri))
-      { 
-        if (uiMetadataChannel==null)
-        { 
-          uiMetadataChannel
-            =new ConstantChannel
-              (MetadataType.FIELD.reflector
-              ,defaultUIMetadata
-              );
-        }
-        return uiMetadataChannel;
+    { 
+      Channel<X> meta=FieldImpl.this.resolveMeta(focus,typeURI);
+      if (meta!=null)
+      { return meta;
       }
-      else if (spiralcraft.data.types.meta.MetadataType.FIELD.uri.equals(typeURI)
-            || BeanReflector.getInstance(FieldImpl.this.getClass())
-                .isAssignableTo(typeURI)
-          )
-      { 
-        if (fieldMetadataChannel==null)
-        { 
-          fieldMetadataChannel
-            =new ConstantChannel
-              (BeanReflector.getInstance(FieldImpl.this.getClass())
-              ,FieldImpl.this
-              );
-        }
-        return fieldMetadataChannel;
-          
-      }
-      return null;
+      return super.resolveMeta(focus,typeURI);
     }
     
     @Override
