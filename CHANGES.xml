@@ -13,6 +13,179 @@
     </date>
     
     <detail>
+    
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
+          <scm:Note>Calendar provides convenience methods add() and 
+            subtract() that accept java.util.Dates instead of 
+            spiralcraft.time.Instances
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/time/Calendar.java
+        </path>
+        
+
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
+          <scm:Note>Duration is listed as @immutable, and is treated as
+            a data primitive as a result.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/time/Duration.java
+        </path>
+        
+
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
+          <scm:Note>New StringUtil.repeat() that uses an Appendable
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/util/string/StringUtil.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
+          <scm:Note>Provide a mechanism for obtaining the DAG in a tree
+            structure for debugging and analysis purposes via the
+            Channel.trace() method
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/Channel.java
+          </URI>
+          <URI>lang/reflect/BeanFieldChannel.java
+          </URI>
+          <URI>lang/reflect/BeanPropertyChannel.java
+          </URI>
+          <URI>lang/spi/AbstractChannel.java
+          </URI>
+          <URI>lang/spi/ProxyChannel.java
+          </URI>
+          <URI>lang/spi/SourcedChannel.java
+          </URI>
+          <URI>lang/spi/ThreadLocalChannel.java
+          </URI>
+          <URI>lang/spi/TranslatorChannel.java
+          </URI>
+          <URI>util/tree/LinkedTree.java
+          </URI>
+        </resources>
+      
+      
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
+          <scm:Note>Avoid unnecessary searches for Java methods where
+            resolved name is not a legal Java identifier (i.e. is an operator)
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/reflect/BeanReflector.java
+        </path>
+
+      </scm:Change>
+      
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
+          <scm:Note>Session task now has "transactional" property which
+            performs all sub-tasks within a Transaction.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/task/Session.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
+          <scm:Note>Edit task and Editors now handle aggregates and
+            auto-keying
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>editor/AggregateEditor.java
+          </URI>
+          <URI>editor/EditorBase.java
+          </URI>
+          <URI>editor/TupleEditor.java
+          </URI>
+          <URI>task/Edit.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
+          <scm:Note>Make it easier to use CommandFactory as a final field
+            in a Contextual object to expose actions to in-context 
+            logic.
+          </scm:Note>
+          <scm:Note>AbstractCommandFactory is now set up to expose
+            a result Reflector, and handles the logic for specializing
+            the Reflector for the provided Command object.
+          </scm:Note>          
+          <scm:Note>BeanFieldChannel will treat final fields from a constant
+            source as constant.
+          </scm:Note>          
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>command/AbstractCommandFactory.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+          <URI>reflect/BeanFieldChannel.java
+          </URI>
+        </resources>
+
+      </scm:Change>
 
       <scm:Change>
         <release>-dev1
@@ -197,7 +370,11 @@
         <resources>       
           <URI>core/Field.java
           </URI>
+          <URI>core/FieldImpl.java
+          </URI>
           <URI>core/RelativeField.java
+          </URI>
+          <URI>session/BufferField.java
           </URI>
           <URI>types/meta/MetadataType.java
           </URI>
@@ -292,6 +469,9 @@
           <scm:Note>Improve design contract for Scenario by adding
             bindContext() method for in-closure context setup, and move
             bindImports() outside the closure 
+          </scm:Note>
+          <scm:Note>Add "alias" property to Scenario so different scenarios
+            of the same type can be referenced with different context names 
           </scm:Note>
         </notes>
         
@@ -863,10 +1043,19 @@
             does not create a chain of all the tasks, as opposed to the 
             property "chain".
           </scm:Note>
+          <scm:Note>Member field "chain" is now more loosely typed
+          </scm:Note>
         </notes>
         
-        <path>source/spiralcraft/task/Chain.java
+        <path>source/spiralcraft/task/
         </path>
+        
+        <resources>
+          <URI>Chain.java
+          </URI>
+          <URI>Batch.java
+          </URI>
+        </resources>
         
       </scm:Change>
 

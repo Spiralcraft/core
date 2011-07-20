@@ -481,7 +481,47 @@
           <testX>
             .out==.in
           </testX>
-        </test:Assertion>         
+        </test:Assertion>
+                 
+        <test:Assertion>
+          <name>Instant add
+          </name>
+        
+          <subjectX>
+            { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            , cal:=[@st:Calendar].(.tz)
+            , ifmt:=[@st:SimpleInstantFormat].(.cal,"yyyy-MM-dd")
+            , dfmt:=[@st:StandardDurationFormat].()
+            , duration:=.dfmt.parse("1M") 
+            , startDate:=.ifmt.parse("2011-06-01")
+            , endDate:=.cal.add(.startDate,.duration)     
+            }
+          </subjectX>
+          
+          <testX>
+            .endDate==.ifmt.parse("2011-07-01")
+          </testX>
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>Date add
+          </name>
+        
+          <subjectX>
+            { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+            , cal:=[@st:Calendar].(.tz)
+            , ifmt:=[@jt:SimpleDateFormat].("yyyy-MM-dd")
+            , dfmt:=[@st:StandardDurationFormat].()
+            , duration:=.dfmt.parse("1M") 
+            , startDate:=.ifmt.parse("2011-06-01")
+            , endDate:=.cal.add(.startDate,.duration)     
+            }
+          </subjectX>
+          
+          <testX>
+            .endDate==.ifmt.parse("2011-07-01")
+          </testX>
+        </test:Assertion>                  
       </scenarios>
       
     </task:Sequence>
