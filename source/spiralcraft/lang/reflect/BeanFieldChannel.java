@@ -19,13 +19,15 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.spi.TranslatorChannel;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 class BeanFieldChannel<Tprop,Tbean>
   extends TranslatorChannel<Tprop,Tbean>
 {
 
   private final Field _field;
-
+  private final boolean _constant;
+  
   public BeanFieldChannel
     (Channel<Tbean> source
     ,BeanFieldTranslator<Tprop,Tbean> translator
@@ -33,13 +35,16 @@ class BeanFieldChannel<Tprop,Tbean>
   {
     super(source,translator,null);
     _field=translator.getField();
+    _constant 
+      = source.isConstant() && 
+        Modifier.isFinal(translator.getField().getModifiers());
   }
 
 
 
   @Override
   public boolean isConstant()
-  { return false;
+  { return _constant;
   }
 
   @Override
