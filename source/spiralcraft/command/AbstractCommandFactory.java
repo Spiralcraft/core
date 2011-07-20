@@ -16,9 +16,12 @@ package spiralcraft.command;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.ChannelFactory;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.lang.spi.GenericReflector;
 
 /**
@@ -39,6 +42,7 @@ public abstract class AbstractCommandFactory<Ttarget,Tcontext,Tresult>
   implements CommandFactory<Ttarget, Tcontext, Tresult>
 {
   protected Reflector<CommandFactory<Ttarget,Tcontext,Tresult>> reflector;
+
   
   public AbstractCommandFactory()
   {
@@ -55,11 +59,69 @@ public abstract class AbstractCommandFactory<Ttarget,Tcontext,Tresult>
     return true;
   }
 
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public Class<Command<Ttarget,Tcontext,Tresult>> getCommandClass()
+  { 
+    Class clazz=Command.class;
+    return clazz;
+  }
+  
+  protected Reflector<Tcontext> getContextReflector()
+  { return null;
+  }
+
+  protected Reflector<Tresult> getResultReflector()
+  { return null;
+  }
+  
   @Override
   public Reflector<? extends Command<Ttarget,Tcontext,Tresult>> 
     getCommandReflector()
       throws BindException
-  { return BeanReflector.getInstance(Command.class);
+  { 
+    Reflector<Command<Ttarget,Tcontext,Tresult>> commandReflector
+      =BeanReflector.<Command<Ttarget,Tcontext,Tresult>>getInstance
+        (getCommandClass());
+    
+    final Reflector<Tcontext> contextReflector=getContextReflector();
+    final Reflector<Tresult> resultReflector=getResultReflector();
+    
+    if (contextReflector!=null || resultReflector!=null)
+    {
+      GenericReflector<Command<Ttarget,Tcontext,Tresult>> gr
+        =new GenericReflector<Command<Ttarget,Tcontext,Tresult>>
+          (commandReflector.getTypeURI(),commandReflector);
+      if (contextReflector!=null)
+      { gr.enhance("context",null,contextReflector);
+      }
+      if (resultReflector!=null)
+      { 
+        gr.enhance
+          ("result"
+          ,null
+          ,new ChannelFactory<Tresult,Tresult>()
+          {
+  
+            @Override
+            public Channel<Tresult> bindChannel(
+              Channel<Tresult> source,
+              Focus<?> focus,
+              Expression<?>[] arguments)
+              throws BindException
+            {
+              return new AspectChannel<Tresult>
+                (resultReflector
+                ,source
+                );
+            }
+           
+           }
+         );
+      }
+      // gr.setDebug(true);
+      commandReflector=gr;
+    }
+    return commandReflector;    
   }
   
   @Override
