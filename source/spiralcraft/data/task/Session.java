@@ -20,6 +20,9 @@ import spiralcraft.data.DataComposite;
 import spiralcraft.data.Type;
 import spiralcraft.data.session.DataSessionFocus;
 import spiralcraft.data.session.DataSession;
+import spiralcraft.data.transaction.TransactionException;
+import spiralcraft.data.transaction.WorkException;
+import spiralcraft.data.transaction.WorkUnit;
 
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.Channel;
@@ -30,6 +33,8 @@ import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.task.Chain;
 import spiralcraft.task.Task;
+
+import spiralcraft.data.transaction.Transaction;
 
 /**
  * <p>Provides a stateful typed DataSession Context that can be shared between 
@@ -54,6 +59,7 @@ public class Session
   protected Expression<Type<? extends DataComposite>> typeX;
   protected Assignment<?>[] initialAssignments;
   protected Setter<?>[] initialSetters;
+  protected boolean transactional;
   
   public Session()
   {
@@ -71,6 +77,10 @@ public class Session
   { this.initialAssignments=initialAssignments;
   }
   
+  public void setTransactional(boolean transactional)
+  { this.transactional=transactional;
+  }
+  
   @Override
   protected Task task()
   {
@@ -79,6 +89,57 @@ public class Session
         
       @Override
       public void work()
+      {
+        if (transactional)
+        {
+          try
+          {
+            new WorkUnit<Void>()
+            { 
+              { 
+                this.setDebug(Session.this.debug);
+                this.setNesting(Transaction.Nesting.PROPOGATE);
+                this.setRequirement(Transaction.Requirement.REQUIRED);
+              }
+              
+              @Override
+              protected Void run()
+                throws WorkException
+              { 
+                try
+                {
+                  doWork();
+                  if (getException()!=null)
+                  { Transaction.getContextTransaction().rollbackOnComplete();
+                  }
+                  return null;
+                }
+                catch (InterruptedException x)
+                { throw new WorkException("Transaction task interrupted",x);
+                }
+                  
+              }
+      
+            }.work();
+          }
+          catch (TransactionException x)
+          { addException(x);
+          }  
+        }
+        else
+        {
+          try
+          { doWork();
+          }
+          catch (InterruptedException x)
+          { addException(x);
+          }
+        }
+        
+        
+      }
+      
+      private void doWork()
         throws InterruptedException
       {
         sessionChannel.push(null);
@@ -93,7 +154,7 @@ public class Session
   
   
   @Override
-  protected void bindChildren(
+  protected Focus<?> bindExports(
     Focus<?> focusChain)
     throws ContextualException
   {
@@ -108,7 +169,15 @@ public class Session
     dataSessionFocus
       =new DataSessionFocus(focusChain,sessionChannel,type);
     initialSetters=Assignment.bindArray(initialAssignments, dataSessionFocus);
-    super.bindChildren(dataSessionFocus);
+    if (type!=null)
+    { focusChain=dataSessionFocus;
+    }
+    else
+    {
+      focusChain=focusChain.chain(focusChain.getSubject());
+      focusChain.addFacet(dataSessionFocus);
+    }
+    return super.bindExports(focusChain);
   }
 
 }
