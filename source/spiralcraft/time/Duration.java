@@ -16,6 +16,8 @@ package spiralcraft.time;
 
 import java.math.BigDecimal;
 
+import spiralcraft.common.Immutable;
+
 /**
  * <p>A relative span of time, expressed in terms of Chronoms and optionally
  *   progressively finer Durations.
@@ -27,6 +29,7 @@ import java.math.BigDecimal;
  * @author mike
  *
  */
+@Immutable
 public class Duration
 {
   
