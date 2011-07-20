@@ -31,7 +31,8 @@ import spiralcraft.lang.Reflector;
  */
 public enum MetadataType
 {
-  FIELD(URI.create("class:/spiralcraft/data/types/meta/Field"));
+  FIELD(URI.create("class:/spiralcraft/data/types/meta/Field"))
+  ,RELATIVE_FIELD(URI.create("class:/spiralcraft/data/core/RelativeField"));
   
   public final URI uri;
   public final Type<Tuple> type;
