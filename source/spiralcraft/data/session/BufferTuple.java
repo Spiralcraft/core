@@ -456,21 +456,6 @@ public class BufferTuple
     }
   }
 
-  /**
-   * 
-   * @param index
-   * @return
-   */
-
-/*  
-  public Buffer getBuffer(int index)
-  { return (Buffer) data[index];
-  }
-  
-  public void setBuffer(int index,Buffer buffer)
-  { data[index]=buffer;
-  }
-*/
   @Override
   public FieldSet getFieldSet()
   { return type.getScheme();
