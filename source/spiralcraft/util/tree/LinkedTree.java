@@ -14,8 +14,11 @@
 //
 package spiralcraft.util.tree;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import spiralcraft.util.string.StringUtil;
 
 /**
  * A node of a doubly linked Tree 
@@ -37,6 +40,17 @@ public class LinkedTree<T>
   
   public LinkedTree(T object)
   { this.object=object;
+  }
+
+  public LinkedTree(T object,LinkedTree<T> ... children)
+  { 
+    this.object=object;
+    if (children!=null)
+    {
+      for (LinkedTree<T> child:children)
+      { addChild(child);
+      }
+    }
   }
   
   @Override
@@ -90,5 +104,29 @@ public class LinkedTree<T>
     return ret;
   }
   
+  @Override
+  public String toString()
+  { return render(null,0,".").toString();
+  }
+  
+  public Appendable render(Appendable buf,int depth,String prefix)
+  { 
+    if (buf==null)
+    { buf=new StringBuilder();
+    }
+    try
+    {
+      StringUtil.repeat(buf,prefix,depth);
+      buf.append(object.toString())
+        .append("\r\n");
+      for (LinkedTree<T> child:children)
+      { child.render(buf,depth+1,prefix);
+      }
+    }
+    catch (IOException x)
+    { throw new RuntimeException(x);
+    }
+    return buf;
+  }
   
 }

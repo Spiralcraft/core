@@ -15,11 +15,16 @@
 package spiralcraft.lang.spi;
 
 
+import java.net.URI;
+
 import spiralcraft.lang.AccessException;
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.tree.LinkedTree;
 
 
 /**
@@ -46,6 +51,7 @@ public class ThreadLocalChannel<T>
   private final ThreadLocal<ThreadReference<T>> threadLocal;
   private final boolean inheritable;
   private final Channel<T> sourceChannel;
+  private final Channel<?> origin;
   private final Exception initTrace
     =new Exception("ThreadLocal allocation stack:");
 
@@ -82,6 +88,21 @@ public class ThreadLocalChannel<T>
     { threadLocal=new ThreadLocal<ThreadReference<T>>();
     }
     sourceChannel=null;
+    origin=null;
+  }
+
+  public ThreadLocalChannel(final Reflector<T> reflector,boolean inheritable,Channel<?> origin)
+  { 
+    super(reflector);
+    this.inheritable=inheritable;
+    if (inheritable)
+    { threadLocal=new InheritableThreadLocalImpl();
+    }
+    else
+    { threadLocal=new ThreadLocal<ThreadReference<T>>();
+    }
+    sourceChannel=null;
+    this.origin=origin;
   }
 
   public ThreadLocalChannel(final Channel<T> sourceChannel,boolean inheritable)
@@ -95,6 +116,7 @@ public class ThreadLocalChannel<T>
     { threadLocal=new ThreadLocal<ThreadReference<T>>();
     }
     this.sourceChannel=sourceChannel;
+    this.origin=sourceChannel;
     this.context=sourceChannel.getContext();
   }
 
@@ -104,6 +126,7 @@ public class ThreadLocalChannel<T>
     threadLocal=new ThreadLocal<ThreadReference<T>>();    
     inheritable=false;
     this.sourceChannel=null;
+    this.origin=null;
 
   }
   
@@ -206,6 +229,39 @@ public class ThreadLocalChannel<T>
     { threadLocal.set(oldref);
     }
   }
+  
+  /**
+   * Resolve contextual metadata for this Channel from an appropriate provider
+   *   in the Channel graph
+   * 
+   * @param <X>
+   * @param focus
+   * @param metadataTypeURI
+   * @return
+   * @throws BindException 
+   */
+  @Override
+  public <X> Channel<X> resolveMeta(Focus<?> focus,URI metadataTypeURI) 
+    throws BindException
+  { 
+    Channel<X> meta=super.resolveMeta(focus,metadataTypeURI);
+    if (meta==null && origin!=null)
+    { meta=origin.resolveMeta(focus,metadataTypeURI);
+    }
+    return meta;
+  }
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public LinkedTree<Channel<?>> trace(Class<Channel<?>> stop)
+  { 
+    if (origin!=null)
+    { return new LinkedTree<Channel<?>>(this,origin.trace(stop));
+    }
+    else
+    { return new LinkedTree<Channel<?>>(this);
+    }
+  }  
   
   class ThreadReference<X>
   {

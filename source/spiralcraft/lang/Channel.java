@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2011 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -17,6 +17,8 @@ package spiralcraft.lang;
 import java.beans.PropertyChangeSupport;
 
 import java.net.URI;
+
+import spiralcraft.util.tree.LinkedTree;
 
 
 /**
@@ -201,4 +203,6 @@ public interface Channel<T>
    * Provide a data flow trace to the spiralcraft.log.ClassLogger log.
    */
   void setDebug(boolean debug);
+  
+  LinkedTree<Channel<?>> trace(Class<Channel<?>> stop);
 }

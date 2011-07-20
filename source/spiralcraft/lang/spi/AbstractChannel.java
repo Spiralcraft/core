@@ -22,6 +22,7 @@ import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Signature;
+import spiralcraft.util.tree.LinkedTree;
 
 import java.beans.PropertyChangeSupport;
 import java.net.URI;
@@ -290,7 +291,11 @@ public abstract class AbstractChannel<T>
   public String toString()
   { 
     return super.toString()
-      +":"+_reflector;
+      +": "+_reflector.getClass().getName()+": "+_reflector.getTypeURI();
   }
   
+  @Override
+  public LinkedTree<Channel<?>> trace(Class<Channel<?>> stop)
+  { return new LinkedTree<Channel<?>>(this);
+  }
 }

@@ -6,6 +6,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
+import spiralcraft.util.tree.LinkedTree;
 
 public abstract class SourcedChannel<Tinput,Toutput>
   extends AbstractChannel<Toutput>
@@ -62,14 +63,11 @@ public abstract class SourcedChannel<Tinput,Toutput>
     throws BindException
   { return source.resolveMeta(focus,metadataTypeURI);
   }
-  
+
+  @SuppressWarnings("unchecked")
   @Override
-  public String toString()
-  { 
-    return super.toString()
-      +":"+getReflector()
-      +"\r\n   <-- "
-      +(source!=null?source.toString():"(no source)");
+  public LinkedTree<Channel<?>> trace(Class<Channel<?>> stop)
+  { return new LinkedTree<Channel<?>>(this,source.trace(stop));
   }
 
 }

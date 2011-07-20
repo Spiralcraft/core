@@ -21,6 +21,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Decorator;
+import spiralcraft.util.tree.LinkedTree;
 
 import java.beans.PropertyChangeSupport;
 import java.net.URI;
@@ -52,6 +53,12 @@ public class ProxyChannel<T>
     
   }
   
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public LinkedTree<Channel<?>> trace(Class<Channel<?>> stop)
+  { return new LinkedTree<Channel<?>>(this,channel.trace(stop));
+  }
 
 
   @Override

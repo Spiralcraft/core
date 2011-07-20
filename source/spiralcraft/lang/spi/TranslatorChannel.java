@@ -23,6 +23,7 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Signature;
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.tree.LinkedTree;
 
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
@@ -163,6 +164,24 @@ public  class TranslatorChannel<T,S>
   { return source.isConstant();
   }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public LinkedTree<Channel<?>> trace(Class<Channel<?>> stop)
+  { 
+    
+    LinkedTree<Channel<?>>[] children
+      =new LinkedTree[ (_modifiers!=null?_modifiers.length:0)+1];
+    children[0]=source.trace(stop);
+    if (_modifiers!=null)
+    {
+      for (int i=0;i<_modifiers.length;i++)
+      { children[i+1]=_modifiers[i].trace(stop);
+      }
+    }
+    
+    return new LinkedTree<Channel<?>>(this,children);
+  }
+  
   /**
    * Override if value can be set
    */
