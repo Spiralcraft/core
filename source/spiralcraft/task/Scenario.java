@@ -23,21 +23,18 @@ import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.namespace.ContextualName;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
-import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.ClosureFocus;
-import spiralcraft.lang.spi.GenericReflector;
 import spiralcraft.lang.spi.SimpleChannel;
-import spiralcraft.lang.spi.AspectChannel;
 
-import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
 import spiralcraft.log.ClassLog;
@@ -86,6 +83,7 @@ public abstract class Scenario<Tcontext,Tresult>
   
   protected Reflector<Tcontext> contextReflector;
   protected Reflector<Tresult> resultReflector;
+  
   protected Expression<Reflector<Tresult>> resultReflectorX;
  
   protected Expression<Tcontext> contextX;
@@ -94,6 +92,9 @@ public abstract class Scenario<Tcontext,Tresult>
   protected Binding<Boolean> whenX;
   
   protected URI declarationInfo;
+  protected URI alias;
+  
+  
   
   
   /**
@@ -120,6 +121,9 @@ public abstract class Scenario<Tcontext,Tresult>
   	return command;
   }
   
+  public void setAlias(ContextualName alias)
+  { this.alias=alias.getQName().toURIPath();
+  }
   
   /**
    * Provide a Context expression which will be enclosed in the Focus chain
@@ -224,15 +228,20 @@ public abstract class Scenario<Tcontext,Tresult>
   }
   
 
-  @SuppressWarnings("rawtypes")
-  protected Class<TaskCommand> getCommandClass()
-  { return TaskCommand.class;
+  @Override
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public Class<Command<Task,Tcontext,Tresult>> getCommandClass()
+  { 
+    Class clazz=TaskCommand.class;
+    return clazz;
   }
   
+  @Override
   protected Reflector<Tcontext> getContextReflector()
   { return contextReflector;
   }
   
+  @Override
   protected Reflector<Tresult> getResultReflector()
   { return resultReflector;
   }
@@ -248,10 +257,6 @@ public abstract class Scenario<Tcontext,Tresult>
     getCommandReflector()
       throws BindException
   { 
-    Reflector<TaskCommand<Tcontext,Tresult>> commandReflector
-      =BeanReflector.<TaskCommand<Tcontext,Tresult>>getInstance
-        (getCommandClass());
-    
     if (resultReflectorX!=null)
     { 
       Focus<?> rf=closureFocus;
@@ -266,42 +271,8 @@ public abstract class Scenario<Tcontext,Tresult>
       }
     }
     
-    if (contextReflector!=null || resultReflector!=null)
-    {
-      GenericReflector<TaskCommand<Tcontext,Tresult>> gr
-        =new GenericReflector<TaskCommand<Tcontext,Tresult>>
-          (commandReflector.getTypeURI(),commandReflector);
-      if (contextReflector!=null)
-      { gr.enhance("context",null,contextReflector);
-      }
-      if (resultReflector!=null)
-      { 
-        gr.enhance
-          ("result"
-          ,null
-          ,new ChannelFactory<Tresult,Tresult>()
-          {
-
-            @Override
-            public Channel<Tresult> bindChannel(
-              Channel<Tresult> source,
-              Focus<?> focus,
-              Expression<?>[] arguments)
-              throws BindException
-            {
-              return new AspectChannel<Tresult>
-                (Scenario.this.getResultReflector()
-                ,source
-                );
-            }
-           
-           }
-         );
-      }
-      // gr.setDebug(true);
-      commandReflector=gr;
-    }
-    return commandReflector;
+    return super.getCommandReflector();
+    
   }
   
   /**
@@ -370,6 +341,10 @@ public abstract class Scenario<Tcontext,Tresult>
           ((Reflector) reflect(),this,true);
   
       Focus selfFocus=focusChain.chain(selfChannel);
+      
+      if (alias!=null)
+      { selfFocus.addAlias(alias);
+      }
       exportChain.addFacet(selfFocus);
       
       exportChain=bindExports(exportChain);
