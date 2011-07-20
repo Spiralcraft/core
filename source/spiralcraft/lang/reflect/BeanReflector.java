@@ -941,6 +941,10 @@ public class BeanReflector<T>
     { translator= (MethodTranslator<X,T>) methods.get(sig);
     }
 
+    if (!Character.isJavaIdentifierStart(name.charAt(0)))
+    { return null;
+    }
+    
     if (translator==null)
     {
       try
