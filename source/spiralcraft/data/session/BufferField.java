@@ -15,6 +15,8 @@
 package spiralcraft.data.session;
 
 
+import java.net.URI;
+
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -22,6 +24,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.tree.LinkedTree;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
@@ -29,7 +32,6 @@ import spiralcraft.data.Tuple;
 
 import spiralcraft.data.core.FieldImpl;
 import spiralcraft.data.lang.DataReflector;
-
 
 public class BufferField
   extends FieldImpl<Buffer>
@@ -70,10 +72,12 @@ public class BufferField
 
   }
   
+  
   class BufferFieldChannel
     extends SourcedChannel<Tuple,Buffer>
   {
     private Channel<? extends Buffer> bufferSource;
+    private Channel<? extends DataComposite> originalChannel;
     
     public BufferFieldChannel
       (Channel<? extends DataComposite> originalChannel
@@ -85,7 +89,7 @@ public class BufferField
       // Our Focus provides access to our containing buffer
 
       super(DataReflector.<Buffer>getInstance(getType()),source);
-
+      this.originalChannel=originalChannel;
 
           
       if (debug)
@@ -122,6 +126,25 @@ public class BufferField
       }
     }
 
+    
+    @Override
+    public synchronized <X> Channel<X> resolveMeta(Focus<?> focus,URI typeURI)
+      throws BindException
+    {       
+      if (debug)
+      { log.debug("Checking for metadata type "+typeURI.toString());
+      }
+      Channel<X> meta=BufferField.this.resolveMeta(focus,typeURI);
+      if (meta==null)
+      { meta=super.resolveMeta(focus,typeURI);
+      }
+      if (meta==null)
+      { meta=originalChannel.resolveMeta(focus,typeURI);
+      }
+      return meta;
+
+    }
+    
     @Override
     public Buffer retrieve()
     { 
@@ -173,6 +196,12 @@ public class BufferField
       { throw new AccessException("Error retrieving buffer",x);
       }
       
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public LinkedTree<Channel<?>> trace(Class<Channel<?>> stop)
+    { return new LinkedTree<Channel<?>>(this,originalChannel.trace(stop));
     }
 
   }
