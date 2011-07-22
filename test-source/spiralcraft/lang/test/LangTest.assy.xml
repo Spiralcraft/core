@@ -888,6 +888,19 @@
           <testX>.!=null
           </testX>
         
+        </test:Assertion>  
+        
+        <test:Assertion>
+          <name>Expression functor
+          </name>
+          
+          <subjectX>
+            `"first"+"last"`.()
+          </subjectX>
+          
+          <testX>.=="firstlast"
+          </testX>
+        
         </test:Assertion>                  
       </scenarios>
       

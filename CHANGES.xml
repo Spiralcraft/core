@@ -19,6 +19,42 @@
         </release>
         
         <notes>
+          <scm:Note>Structs can be frozen to make all fields constant if the
+            Struct source is constant
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/parser
+        </path>
+        
+        <resources>
+          <URI>Struct.java
+          </URI>
+          <URI>StructNode.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
+          <scm:Note>Expressions are now Functors
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/Expression.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
           <scm:Note>Calendar provides convenience methods add() and 
             subtract() that accept java.util.Dates instead of 
             spiralcraft.time.Instances
