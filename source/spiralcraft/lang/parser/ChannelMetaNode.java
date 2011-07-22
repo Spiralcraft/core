@@ -179,7 +179,7 @@ public class ChannelMetaNode<Tsource,Treturn>
     Channel sourceChannel=source.bind(focus);
     Channel ret=sourceChannel.resolveMeta(focus,uri);
     if (ret==null)
-    { throw new BindException("No metadata ["+uri+"] available from source: "+source);
+    { throw new BindException("No metadata ["+uri+"] available from source: "+sourceChannel);
     }
     return ret;
         
