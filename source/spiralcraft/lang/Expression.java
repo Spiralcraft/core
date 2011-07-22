@@ -45,6 +45,7 @@ import java.util.HashMap;
  *    of the dataflow sources it is bound to.
  */
 public class Expression<T>
+  implements Functor<T>
 {
   private static final ClassLog log=ClassLog.getInstance(Expression.class);
   
@@ -260,5 +261,17 @@ public class Expression<T>
   
   public void dumpParseTree(StringBuffer out)
   { _root.dumpTree(out,"\r\n");
+  }
+
+  @Override
+  public Channel<T> bindChannel(
+    Focus<?> focus,
+    Channel<?>[] arguments)
+    throws BindException
+  { 
+    if (arguments!=null && arguments.length!=0)
+    { throw new BindException("Expression functors don't accept arguments");
+    }
+    return focus.bind(this);
   }
 }
