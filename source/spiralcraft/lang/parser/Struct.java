@@ -15,6 +15,9 @@
 package spiralcraft.lang.parser;
 
 //import spiralcraft.log.ClassLog;
+import java.util.Iterator;
+
+import spiralcraft.lang.AccessException;
 import spiralcraft.util.ArrayUtil;
 
 /**
@@ -24,13 +27,15 @@ import spiralcraft.util.ArrayUtil;
  *
  */
 public class Struct
+  implements Iterable<Object>
 {
 //  private static final ClassLog log
 //    =ClassLog.getInstance(Struct.class);
   
-  public final Object[] data;
   public final StructNode.StructReflector reflector;
   public final Object baseExtent;
+  private final Object[] data;
+  private boolean frozen;
       
   public Struct(StructNode.StructReflector reflector,Object[] data,Object baseExtent)
   { 
@@ -45,7 +50,7 @@ public class Struct
     return ArrayUtil.arrayHashCode(data)
       +(baseExtent!=null?13*baseExtent.hashCode():0);
   }
-  
+
   @Override
   public boolean equals(Object o)
   { 
@@ -67,7 +72,38 @@ public class Struct
       return false;
     }
   }
+
+  public void freeze()
+  { frozen=true;
+  }
   
+  public boolean isFrozen()
+  { return frozen;
+  }
+  
+  @Override
+  public Iterator<Object> iterator()
+  { return ArrayUtil.iterator(data);
+  }
+  
+  public void set(int index,Object val)
+  {
+    if (!frozen)
+    { data[index]=val;
+    }
+    else
+    { throw new AccessException("Struct is frozen, cannot modify data");
+    }
+  }
+  
+  public int size()
+  { return data.length;
+  }
+  
+  public Object get(int index)
+  { return data[index];
+  }
+    
   @Override
   public String toString()
   { 

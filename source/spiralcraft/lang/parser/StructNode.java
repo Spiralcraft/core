@@ -40,7 +40,6 @@ import spiralcraft.lang.spi.SourcedChannel;
 //import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.util.ArrayUtil;
 
 public class StructNode
   extends Node
@@ -579,10 +578,10 @@ public class StructNode
       }
       else
       {
-        if (val.data.length>channels.length)
+        if (val.size()>channels.length)
         { 
           throw new AccessException
-            ("Supplied Struct is larger ("+val.data.length+")"
+            ("Supplied Struct is larger ("+val.size()+")"
             +" than the bound field list ("+channels.length+")"
             );
         }
@@ -592,8 +591,8 @@ public class StructNode
         { 
           if (channel.isWritable())
           {
-            if (i<val.data.length)
-            { channel.set(val.data[i]);
+            if (i<val.size())
+            { channel.set(val.size());
             }
             else
             { channel.set(null);
@@ -633,7 +632,7 @@ public class StructNode
           {
             @Override
             protected Iterator<Object> createIterator()
-            { return ArrayUtil.iterator(source.get().data);
+            { return source.get().iterator();
             }
           }; 
         }
@@ -840,6 +839,7 @@ public class StructNode
       private final Channel<Object> target;
       private final StructField field;
       private final int index;
+      private final boolean constant;
       
       public FieldChannel
         (final StructField field
@@ -851,6 +851,7 @@ public class StructNode
         this.field=field;
         this.target=target;
         this.index=field.index;
+        this.constant=source.isConstant() && source.get().isFrozen();
       }
 
       @Override
@@ -858,7 +859,7 @@ public class StructNode
       { 
         Struct struct=source.get();
         if (struct!=null)
-        { return struct.data[index];
+        { return struct.get(index);
         }
         else
         { return null;
@@ -887,7 +888,7 @@ public class StructNode
           Struct struct=source.get();
           if (struct!=null)
           { 
-            struct.data[index]=val;
+            struct.set(index,val);
             return true;
           }
           else
@@ -899,6 +900,11 @@ public class StructNode
       @Override
       public boolean isWritable()
       { return !field.passThrough || target.isWritable();
+      }
+      
+      @Override
+      public boolean isConstant()
+      { return constant;
       }
       
     }
