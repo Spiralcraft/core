@@ -84,8 +84,6 @@ public class DataAuthenticator
   private Expression<Boolean> credentialComparison;
   private Channel<Boolean> comparisonChannel;
   
-  protected volatile Principal principal;
-  protected volatile boolean authenticated;
   
   @SuppressWarnings("unchecked")
   public DataAuthenticator()
@@ -204,7 +202,9 @@ public class DataAuthenticator
   public class DataAuthSession
     extends AuthSession
   {
-    
+
+    protected volatile Principal principal;
+    protected volatile boolean authenticated;
     
     public DataAuthSession(Authenticator authenticator)
     { 
