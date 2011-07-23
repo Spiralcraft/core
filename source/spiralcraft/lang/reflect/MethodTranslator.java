@@ -93,12 +93,7 @@ class MethodTranslator<Tprop,Tbean>
 
         Object paramValue=channel.get();
         if (paramValue==null && parameterTypes[i].isPrimitive())
-        { 
-          throw new RuntimeException
-            ("Can't assign null to primitive parameter at index "+i
-            +": invoking method "+_method
-            +" on "+value
-            );
+        { return null;
         }
         paramValues[i++]=paramValue;
         
