@@ -19,6 +19,21 @@
         </release>
         
         <notes>
+          <scm:Note>Enable null pass-through when calling a Java method and
+            a primitive parameter is assigned a value of null.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/reflect/MethodTranslator.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev1
+        </release>
+        
+        <notes>
           <scm:Note>Enable null pass-through for time computation functions
           </scm:Note>
         </notes>
