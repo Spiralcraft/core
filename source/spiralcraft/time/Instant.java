@@ -41,7 +41,11 @@ public class Instant
 {
   
   public static final Instant fromDate(Date date)
-  { return new Instant(date.getTime());
+  { 
+    if (date==null)
+    { return null;
+    }
+    return new Instant(date.getTime());
   }
   
   protected final long offset;

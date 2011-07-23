@@ -113,7 +113,11 @@ public class Calendar
   }
   
   public Date add(Date start,Duration duration)
-  { return add(Instant.fromDate(start),duration).toDate();
+  { 
+    if (start==null || duration==null)
+    { return null;
+    }
+    return add(Instant.fromDate(start),duration).toDate();
   }
   
   public TimeX add(TimeX start,TimeField field,int amount)
@@ -125,7 +129,11 @@ public class Calendar
   }
   
   public Date subtract(Date end,Duration duration)
-  { return subtract(Instant.fromDate(end),duration).toDate();
+  { 
+    if (end==null || duration==null)
+    { return null;
+    }
+    return subtract(Instant.fromDate(end),duration).toDate();
   }
 
   public Duration subtract(Instant end,Instant start)

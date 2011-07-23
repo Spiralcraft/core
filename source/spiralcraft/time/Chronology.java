@@ -116,6 +116,12 @@ public enum Chronology
     ,Duration duration
     )
   { 
+    if (start==null)
+    { return null;
+    }
+    if (duration==null)
+    { return null;
+    }
     Calendar calendar=newCalendarImpl(timeZone,locale);
     calendar.setTimeInMillis(start.getOffsetMillis());
     Duration rest=duration;
