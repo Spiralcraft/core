@@ -29,6 +29,7 @@ public abstract class Buffer
     =URI.create("class:/spiralcraft/data/session/Buffer");
 
   protected boolean debug;
+  private Buffer parent;
   
   
   /**
@@ -39,6 +40,19 @@ public abstract class Buffer
    * @return Whether this Buffer should be Editable 
    */
   public abstract void setEditable(boolean val);
+  
+  /**
+   * Tracks the parent buffer to help keep state in sync
+   * 
+   * @param parent
+   */
+  void setParent(Buffer parent)
+  { this.parent=parent;
+  }
+  
+  Buffer getParent()
+  { return parent;
+  }
   
   /**
    * @return Whether this Buffer can be edited 

@@ -28,15 +28,18 @@ import spiralcraft.util.tree.LinkedTree;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 
 import spiralcraft.data.core.FieldImpl;
+import spiralcraft.data.core.RelativeField;
 import spiralcraft.data.lang.DataReflector;
 
 public class BufferField
   extends FieldImpl<Buffer>
 {
   protected final ClassLog log=ClassLog.getInstance(BufferField.class);
+  protected boolean child;
   
   
   @Override
@@ -48,14 +51,18 @@ public class BufferField
     // The Channel that provides the original field value
     Channel<DataComposite> originalChannel;
     
-    if (getArchetypeField()!=null)
+    Field<DataComposite> afield=getArchetypeField();
+    if (afield!=null)
     { 
       // Get the correct field behavior from the archetype
-      originalChannel=getArchetypeField().bindChannel(source,focus,args);
+      originalChannel=afield.bindChannel(source,focus,args);
       if (debug)
       { log.fine("Creating BufferFieldChannel for field " +getURI());
       }
       		
+      if (afield instanceof RelativeField)
+      { child=((RelativeField<?>) afield).isChild();
+      }
       return new BufferFieldChannel(originalChannel,source,focus);
       
     }
@@ -172,22 +179,45 @@ public class BufferField
         
         Buffer buffer=(Buffer) maybeBuffer;
         
-        if (buffer!=null 
-            && !buffer.isDirty() 
-            && buffer.getOriginal()!=null
-            )
+        if (buffer!=null)
         { 
-          // Don't re-reference non-dirty buffers of existing data
-          buffer=null;
-          store(null);
+          if (child)
+          {
+            if (parent!=buffer.getParent())
+            {
+              if (debug)
+              { log.fine("Not reusing buffer b/c parent changed "+buffer);
+              }
+              buffer=null;
+              store(null);
+            }
+          }
+          else
+          {
+            if (!buffer.isDirty() 
+               && buffer.getOriginal()!=null
+               )
+            {
+              // Don't re-reference non-dirty buffers of existing data
+              buffer=null;
+              store(null);
+            }
+          }
         }
         
         if (buffer==null)
         { 
           buffer=bufferSource.get();
+          if (debug)
+          { log.fine("Created new buffer "+buffer);
+          }
           
           if (buffer!=null && parent!=null)
-          { BufferField.this.setValue(parent,buffer);
+          { 
+            BufferField.this.setValue(parent,buffer);
+            if (child)
+            { buffer.setParent(parent);
+            }
           }
         }
         return buffer;
