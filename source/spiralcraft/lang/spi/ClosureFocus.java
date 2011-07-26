@@ -66,7 +66,8 @@ public class ClosureFocus<T>
   }
   
   public ClosureFocus(Focus<?> focusChain,Channel<T> subject)
-  { super(focusChain);
+  { 
+    super(focusChain);
 
     if (subject!=null)
     {
