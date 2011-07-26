@@ -41,6 +41,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.KeyFunction;
 import spiralcraft.util.URIUtil;
@@ -58,6 +59,11 @@ public class ProjectionImpl<T>
 {
   
   protected static int NEXT_ID=1;
+  
+
+  protected final ClassLog log
+    =ClassLog.getInstance(getClass());
+  
   protected final ArrayList<ProjectionFieldImpl<?>> fields
   =new ArrayList<ProjectionFieldImpl<?>>();
 
