@@ -15,6 +15,54 @@
     <detail>
     
       <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
+          <scm:Note>Associate buffers of child data directly with their
+            parent buffers
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>session/Buffer.java
+          </URI>
+          <URI>session/BufferField.java
+          </URI>
+          <URI>core/KeyImpl.java
+          </URI>
+          <URI>core/RelativeField.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
+          <scm:Note>Facilitate tracing origin of ThreadLocalChannel 
+            data.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/spi
+        </path>
+        
+        <resources>
+          <URI>ThreadLocalChannel.java
+          </URI>
+          <URI>LogChannel.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
         <release>-dev1
         </release>
         
