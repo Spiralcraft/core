@@ -61,6 +61,7 @@ public class RelativeField<T extends DataComposite>
   private String[] fieldNames;
   private String[] referencedFieldNames;
   private String referencedKeyName;
+  private boolean child;
   
   { this.setTransient(true);
   }
@@ -94,6 +95,20 @@ public class RelativeField<T extends DataComposite>
   
   public void setReferencedKeyName(String keyName)
   { referencedKeyName=keyName;
+  }
+  
+  public void setChild(boolean child)
+  { this.child=child;
+  }
+  
+  /**
+   * Whether the referenced data is part of a compound entity that is rooted
+   *   in this entity (i.e. the relationship is one to none or many)
+   * 
+   * @return
+   */
+  public boolean isChild()
+  { return child;
   }
   
   String[] getFieldNames()
@@ -194,6 +209,7 @@ public class RelativeField<T extends DataComposite>
     }
     else
     {
+      this.child=key.isChild();
       // This field was generated from the key
       setName(key.getName());
     
@@ -335,6 +351,7 @@ public class RelativeField<T extends DataComposite>
       this.keyChannel=keyChannel;
       this.closure=closure;
       this.context=closure;
+      this.debug=RelativeField.this.debug;
     }
     
     @Override
@@ -360,6 +377,12 @@ public class RelativeField<T extends DataComposite>
           }
           return null;
         }
+        else
+        { 
+          if (debug)
+          { log.fine("Key value for "+getURI()+" is "+keyVal);
+          }
+        }
 
         int count=keyVal.getFieldSet().getFieldCount();
         for (int i=0;i<count;i++)
@@ -373,7 +396,7 @@ public class RelativeField<T extends DataComposite>
                 log.fine
                 ("Key field '"
                   +keyVal.getFieldSet().getFieldByIndex(i).getName()
-                  +"' value is null for "+getURI()
+                  +"' value is null for "+getURI()+", returning null"
                 );
               }
 
@@ -402,6 +425,9 @@ public class RelativeField<T extends DataComposite>
               CursorAggregate aggregate
               =new CursorAggregate(cursor);
               //            log.fine(aggregate.toString());
+              if (debug)
+              { log.fine("RelativeField "+getURI()+" returning "+aggregate);
+              }
               return (T) aggregate;
             }
             finally
@@ -432,7 +458,9 @@ public class RelativeField<T extends DataComposite>
             finally
             { cursor.close();
             }
-            //          log.fine(val!=null?val.toString():"null");
+            if (debug)
+            { log.fine("RelativeField "+getURI()+" returning "+val);
+            }
             return (T) val;
           }
         }

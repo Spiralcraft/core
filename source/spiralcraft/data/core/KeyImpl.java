@@ -69,6 +69,7 @@ public class KeyImpl<T extends DataComposite>
   private StringConverter<?>[] stringConverters;
   private boolean resolved;
   private RelativeField<T> relativeField;
+  private boolean child;
   
   /**
    * Construct an unresolved KeyImpl which will be configured and resolved
@@ -102,6 +103,7 @@ public class KeyImpl<T extends DataComposite>
       importedKey.unique=!relativeField.getType().isAggregate();
     }
     this.fieldNames=relativeField.getFieldNames();
+    this.child=relativeField.isChild();
   }
   
   public KeyImpl(FieldSet fieldSet,String fieldList)
@@ -114,6 +116,13 @@ public class KeyImpl<T extends DataComposite>
   { return name;
   }
   
+  public void setChild(boolean child)
+  { this.child=child;
+  }
+  
+  public boolean isChild()
+  { return child;
+  }
   
   public void setName(String name)
   { this.name=name;
@@ -325,9 +334,15 @@ public class KeyImpl<T extends DataComposite>
         {
           if (foreignType.getPrimaryKey()==null)
           { 
+            if (!foreignType.isLinked())
+            { 
+              log.fine(foreignType.getURI()+" is not linked");
+              log.fine(foreignType.toString());
+            
+            }
             throw new DataException("Foreign type "+foreignType.getURI()
               +" for key "+getScheme().getType().getURI()+"#"+name+" does not "
-              +" contain a suitable key to reference and has no primary key");
+              +" contain a suitable key to reference and has no primary key ");
           }
           String[] fieldNames=foreignType.getPrimaryKey().getFieldNames();
           
