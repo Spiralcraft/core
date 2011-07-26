@@ -43,7 +43,7 @@ public class LogChannel<T>
     throws BindException
   { 
     super(source.getReflector(),source);
-    this.localSource=new ThreadLocalChannel<T>(source.getReflector());
+    this.localSource=new ThreadLocalChannel<T>(source.getReflector(),true,source);
     this.message=focus.telescope(localSource).bind(message);
     log.debug
       ("#"+id

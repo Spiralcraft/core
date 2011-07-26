@@ -263,6 +263,10 @@ public class ThreadLocalChannel<T>
     }
   }  
   
+  public Exception getInitTrace()
+  { return initTrace;
+  }
+  
   class ThreadReference<X>
   {
     public ThreadReference<X> prior;
