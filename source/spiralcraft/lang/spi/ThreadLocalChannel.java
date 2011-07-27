@@ -24,8 +24,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
-import spiralcraft.util.tree.LinkedTree;
-
 
 /**
  * <p>Provides for thread-safe expression evaluation by holding a fixed value
@@ -51,9 +49,9 @@ public class ThreadLocalChannel<T>
   private final ThreadLocal<ThreadReference<T>> threadLocal;
   private final boolean inheritable;
   private final Channel<T> sourceChannel;
-  private final Channel<?> origin;
   private final Exception initTrace
     =new Exception("ThreadLocal allocation stack:");
+  private final boolean writeThrough;
 
   class InheritableThreadLocalImpl
     extends InheritableThreadLocal<ThreadReference<T>>
@@ -89,6 +87,7 @@ public class ThreadLocalChannel<T>
     }
     sourceChannel=null;
     origin=null;
+    this.writeThrough=false;
   }
 
   public ThreadLocalChannel(final Reflector<T> reflector,boolean inheritable,Channel<?> origin)
@@ -103,6 +102,7 @@ public class ThreadLocalChannel<T>
     }
     sourceChannel=null;
     this.origin=origin;
+    this.writeThrough=false;
   }
 
   public ThreadLocalChannel(final Channel<T> sourceChannel,boolean inheritable)
@@ -118,7 +118,25 @@ public class ThreadLocalChannel<T>
     this.sourceChannel=sourceChannel;
     this.origin=sourceChannel;
     this.context=sourceChannel.getContext();
+    this.writeThrough=false;
   }
+  
+  public ThreadLocalChannel(final Channel<T> sourceChannel,boolean inheritable,boolean writeThrough)
+  { 
+    super(sourceChannel.getReflector());
+    this.inheritable=inheritable;
+    if (inheritable)
+    { threadLocal=new InheritableThreadLocalImpl();
+    }
+    else
+    { threadLocal=new ThreadLocal<ThreadReference<T>>();
+    }
+    this.sourceChannel=sourceChannel;
+    this.origin=sourceChannel;
+    this.context=sourceChannel.getContext();
+    this.writeThrough=writeThrough;
+  }
+  
 
   public ThreadLocalChannel(Reflector<T> reflector)
   { 
@@ -127,8 +145,10 @@ public class ThreadLocalChannel<T>
     inheritable=false;
     this.sourceChannel=null;
     this.origin=null;
+    this.writeThrough=false;
 
   }
+  
   
   public boolean isInheritable()
   { return inheritable;
@@ -165,8 +185,15 @@ public class ThreadLocalChannel<T>
     ThreadReference<T> r=threadLocal.get();
     if (r!=null)
     { 
-      r.object=val;
-      return true;
+      
+      if (!writeThrough || sourceChannel.set(val))
+      { 
+        r.object=val;
+        return true;
+      }
+      else
+      { return false;
+      }
     }
     else if (sourceChannel!=null)
     { return sourceChannel.set(val);
@@ -250,18 +277,6 @@ public class ThreadLocalChannel<T>
     }
     return meta;
   }
-  
-  @SuppressWarnings("unchecked")
-  @Override
-  public LinkedTree<Channel<?>> trace(Class<Channel<?>> stop)
-  { 
-    if (origin!=null)
-    { return new LinkedTree<Channel<?>>(this,origin.trace(stop));
-    }
-    else
-    { return new LinkedTree<Channel<?>>(this);
-    }
-  }  
   
   public Exception getInitTrace()
   { return initTrace;
