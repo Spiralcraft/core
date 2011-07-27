@@ -391,6 +391,7 @@ public class BufferTuple
     dirtyFlags.set(index);
     this.data[index]=data;
     dirty=true;
+    // log.fine("Set "+index+"="+data+" in "+this);
   }
 
   @Override
