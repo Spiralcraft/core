@@ -13,6 +13,21 @@
     </date>
     
     <detail>
+      <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
+          <scm:Note>Add writeThrough field to ThreadLocalChannel for
+            components that need to be transparent to bi-directional
+            flow.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/spi/ThreadLocalChannel.java
+        </path>
+        
+      </scm:Change>
     
       <scm:Change>
         <release>-dev2
@@ -45,18 +60,21 @@
         </release>
         
         <notes>
-          <scm:Note>Facilitate tracing origin of ThreadLocalChannel 
-            data.
+          <scm:Note>Facilitate tracing the origin of Channel data
           </scm:Note>
         </notes>
 
-        <path>source/spiralcraft/lang/spi
+        <path>source/spiralcraft/
         </path>
         
         <resources>
-          <URI>ThreadLocalChannel.java
+          <URI>lang/spi/AbstractChannel.java
           </URI>
-          <URI>LogChannel.java
+          <URI>lang/spi/ThreadLocalChannel.java
+          </URI>
+          <URI>lang/spi/LogChannel.java
+          </URI>
+          <URI>data/core/RelativeField.java
           </URI>
         </resources>
 
