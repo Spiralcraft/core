@@ -747,22 +747,25 @@ public class FieldImpl<T>
           || BeanReflector.getInstance(FieldImpl.this.getClass())
               .isAssignableTo(typeURI)
         )
-    { 
-      if (fieldMetadataChannel==null)
-      { 
-        fieldMetadataChannel
-          =new ConstantChannel
-            (BeanReflector.getInstance(FieldImpl.this.getClass())
-            ,FieldImpl.this
-            );
-      }
-      return fieldMetadataChannel;
-        
+    { return getFieldMetadataChannel();
     }
     else if (ReflectionType.canonicalURI(getClass()).equals(typeURI))
-    { return fieldMetadataChannel;
+    { return getFieldMetadataChannel();
     }
     return null;
+  }
+
+  private Channel getFieldMetadataChannel()
+  {
+    if (fieldMetadataChannel==null)
+    { 
+      fieldMetadataChannel
+        =new ConstantChannel
+          (BeanReflector.getInstance(FieldImpl.this.getClass())
+          ,FieldImpl.this
+          );
+    }
+    return fieldMetadataChannel;
   }
   
   public class FieldChannel
