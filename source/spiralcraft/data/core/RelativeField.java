@@ -352,6 +352,7 @@ public class RelativeField<T extends DataComposite>
       this.closure=closure;
       this.context=closure;
       this.debug=RelativeField.this.debug;
+      this.origin=keyChannel;
     }
     
     @Override
@@ -498,6 +499,7 @@ public class RelativeField<T extends DataComposite>
     public synchronized <X> Channel<X> resolveMeta(Focus<?> focus,URI typeURI)
       throws BindException
     { 
+      // log.fine("Resolving meta"+typeURI.toString());
       Channel<X> meta=RelativeField.this.resolveMeta(focus,typeURI);
       if (meta!=null)
       { return meta;

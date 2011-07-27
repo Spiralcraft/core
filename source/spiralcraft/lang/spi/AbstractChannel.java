@@ -72,6 +72,7 @@ public abstract class AbstractChannel<T>
   private WeakChannelCache _cache;
   protected boolean debug;
   protected Focus<?> context;
+  protected Channel<?> origin;
   
   
 
@@ -272,7 +273,13 @@ public abstract class AbstractChannel<T>
   @Override
   public <X> Channel<X> resolveMeta(Focus<?> focus,URI metadataTypeURI) 
     throws BindException
-  { return null;
+  { 
+    if (origin!=null)
+    { return origin.<X>resolveMeta(focus,metadataTypeURI);
+    }
+    else
+    { return null;
+    }
   }
   
   @Override
@@ -294,8 +301,16 @@ public abstract class AbstractChannel<T>
       +": "+_reflector.getClass().getName()+": "+_reflector.getTypeURI();
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   public LinkedTree<Channel<?>> trace(Class<Channel<?>> stop)
-  { return new LinkedTree<Channel<?>>(this);
+  { 
+    
+    if (origin==null || (stop!=null && stop.isAssignableFrom(getClass())))
+    { return new LinkedTree<Channel<?>>(this);
+    }
+    else
+    { return new LinkedTree<Channel<?>>(this,origin.trace(stop));
+    }
   }
 }
