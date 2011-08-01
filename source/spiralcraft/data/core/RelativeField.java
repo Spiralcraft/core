@@ -96,6 +96,27 @@ public class RelativeField<T extends DataComposite>
   public void setReferencedKeyName(String keyName)
   { referencedKeyName=keyName;
   }
+
+  @SuppressWarnings("rawtypes")
+  @Override
+  public void setArchetypeField(Field field)
+      throws DataException
+   {
+     super.setArchetypeField(field);
+     
+     if (field instanceof RelativeField)
+     { 
+       RelativeField rfield=(RelativeField) field;
+       
+       if (fieldNames==null)
+       { fieldNames=rfield.fieldNames;
+       }
+       if (referencedFieldNames==null)
+       { referencedFieldNames=rfield.referencedFieldNames;
+       }
+       child=rfield.child;
+     }
+   }
   
   public void setChild(boolean child)
   { this.child=child;
