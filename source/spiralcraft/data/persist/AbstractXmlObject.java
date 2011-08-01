@@ -44,6 +44,7 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.Context;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
+//import spiralcraft.log.ClassLog;
 
 
 import spiralcraft.util.thread.ContextFrame;
@@ -87,7 +88,10 @@ public abstract class AbstractXmlObject<Treferent,Tcontainer>
     ,Context
 {
 
-
+//
+//  private static final ClassLog log
+//    =ClassLog.getInstance(AbstractXmlObject.class);
+  
   public static final URI typeFromClass(Class<?> clazz)
   { return ReflectionType.canonicalURI(clazz);
   }
