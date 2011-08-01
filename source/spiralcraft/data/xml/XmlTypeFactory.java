@@ -257,10 +257,11 @@ public class XmlTypeFactory
           ("XmlTypeFactory error "+type+" != "+instanceResolver.getInstance());
         
       }
-      if (debug)
-      { log.fine("Linking "+type);
-      }
-      type.link();
+// XXX No premature linking      
+//      if (debug)
+//      { log.fine("Linking "+type);
+//      }
+//      type.link();
       return type;
     }
     catch (DataException x)

@@ -564,9 +564,12 @@ public abstract class DataHandlerBase
     public Object fromString(Type<?> type,String text)
       throws DataException,SAXException
     {
+      type.link();
       NamespaceContext.push(this);
       try
-      { return type.fromString(text);
+      { 
+        
+        return type.fromString(text);
       }
       catch (RuntimeException x)
       { 

@@ -77,13 +77,13 @@ public class BufferType<T extends Buffer>
    */
   @Override
   public void link()
-    throws DataException
   {
     if (linked)
     { return;
     }
     linked=true;
 
+    this.archetype.link();
     if (this.scheme==null)
     { this.scheme=new SchemeImpl();
     }
@@ -127,7 +127,12 @@ public class BufferType<T extends Buffer>
               // AutoBuffer 
               BufferField newField=new BufferField();
               newField.setName(field.getName());
-              newField.setType(getBufferType(field.getType()));
+              try
+              { newField.setType(getBufferType(field.getType()));
+              }
+              catch (DataException x)
+              { throw newLinkException(x);
+              }
               scheme.addField(newField);
 
             }

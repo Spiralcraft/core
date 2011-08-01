@@ -41,9 +41,7 @@ public class InstantType
   public synchronized  Instant fromString(String str)
     throws DataException
   { 
-    if (!linked)
-    { throw new DataException("Type "+getURI()+" not linked");
-    }
+    link();
     
     if (str!=null)
     { return converter.fromString(str);
@@ -57,6 +55,7 @@ public class InstantType
   @Override
   public synchronized String toString(Instant instant)
   { 
+    link();
     if (instant!=null)
     { return converter.toString(instant);
     }

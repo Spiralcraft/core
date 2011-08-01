@@ -26,6 +26,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.TypeMismatchException;
 import spiralcraft.data.FieldNotFoundException;
+import spiralcraft.data.TypeResolver;
 
 
 import spiralcraft.data.spi.EditableArrayTuple;
@@ -111,20 +112,29 @@ public class DataHandler
     
     }
     
+    /**
+     * Resolve a type without linking it
+     * 
+     * @param uri
+     * @param localName
+     * @return
+     * @throws DataException
+     */
     protected Type<?> resolveType(String uri,String localName)
       throws DataException
     {
       URI typeUri;
+      TypeResolver resolver=TypeResolver.getTypeResolver();
      
       if ( uri==null || uri.length()==0)
       { 
         
         // Default to standard types path
         typeUri=URI.create(STANDARD_PATH.concat(localName));
-        return Type.resolve(typeUri);
+        return resolver.resolve(typeUri,false);
       }
       else if (uri.equals(".") && resourceURI!=null)
-      { return Type.resolve(resourceURI.resolve(localName));
+      { return resolver.resolve(resourceURI.resolve(localName),false);
       }
       else
       { 
@@ -145,7 +155,7 @@ public class DataHandler
         }
 //      System.err.println("DataHandler resolving: "+typeUri.toString());
         try
-        { return Type.resolve(typeUri);
+        { return resolver.resolve(typeUri,false);
         }
         catch (TypeNotFoundException x)
         { 
@@ -284,6 +294,7 @@ public class DataHandler
       { this.type=type;
       }
       
+      this.type.link();
       scheme=this.type.getScheme();
       if (scheme!=null)
       { 
