@@ -106,7 +106,10 @@ public class ReflectionScheme
     throws DataException
   { 
     ReflectionField<?> field=new ReflectionField(resolver,beanInfo,prop);
-    field.resolveType();
+    
+    // XXX Causes circular reference and possible premature linkage of subtype 
+    // field.resolveType();
+    
     return field;
   }
   

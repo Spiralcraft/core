@@ -58,7 +58,6 @@ public abstract class PrimitiveTypeImpl<T>
   
   @Override
   public final synchronized void link()
-    throws DataException
   { 
     if (!linked)
     { 
@@ -74,6 +73,7 @@ public abstract class PrimitiveTypeImpl<T>
   @Override
   public String toString(T val)
   { 
+    link();
     if (val==null)
     { return null;
     }
@@ -95,6 +95,7 @@ public abstract class PrimitiveTypeImpl<T>
   public T fromString(String string)
     throws DataException
   { 
+    link();
     if (converter!=null)
     { return converter.fromString(string);
     }

@@ -427,6 +427,6 @@ public class ReflectionField<T>
     throws DataException
   { 
     URI uri=ReflectionType.canonicalURI(iface);
-    return resolver.resolve(uri);
+    return resolver.resolve(uri,false);
   }
 }

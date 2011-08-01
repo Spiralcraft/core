@@ -5,6 +5,7 @@ import java.net.URI;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.TypeResolver;
@@ -16,6 +17,7 @@ public class FieldSetType
 
   private static int seq=0;
   private FieldSet fieldSet;
+  private boolean linked;
   
   public FieldSetType(TypeResolver resolver,URI baseURI,FieldSet fieldSet)
   {
@@ -44,9 +46,18 @@ public class FieldSetType
   
   @Override
   public void link()
-    throws DataException
   {
-    getTypeResolver().register(getURI(),this);
+    if (linked)
+    { return;
+    }
+    linked=true;
+    
+    try
+    { getTypeResolver().register(getURI(),this);
+    }
+    catch (DataException x)
+    { throw new RuntimeDataException("Error linking "+getURI(),x);
+    }
     super.link();
   }
 }

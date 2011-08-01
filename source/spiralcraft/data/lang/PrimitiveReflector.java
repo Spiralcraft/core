@@ -70,6 +70,7 @@ public class PrimitiveReflector<T>
   { 
     super(type.getNativeClass());
     this.type=type;
+    this.type.link();
   }
   
   @Override

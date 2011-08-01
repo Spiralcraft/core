@@ -70,7 +70,9 @@ public class Scan
   public FieldSet getFieldSet()
   { 
     if (type!=null)
-    { return type.getScheme();
+    { 
+      type.link();
+      return type.getScheme();
     }
     else
     { return null;

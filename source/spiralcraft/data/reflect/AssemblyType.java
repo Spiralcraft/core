@@ -190,7 +190,6 @@ public class AssemblyType<T>
   @SuppressWarnings("unchecked")
   @Override
   public void link()
-    throws DataException
   {
     if (linked)
     { return;
@@ -221,6 +220,9 @@ public class AssemblyType<T>
       setScheme(new SchemeImpl());
       archetype.link();
       super.link();
+    }
+    catch (DataException x)
+    { throw newLinkException(x);
     }
     finally
     { popLink();

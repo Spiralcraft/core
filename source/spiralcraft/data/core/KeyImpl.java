@@ -104,6 +104,7 @@ public class KeyImpl<T extends DataComposite>
     }
     this.fieldNames=relativeField.getFieldNames();
     this.child=relativeField.isChild();
+    setScheme(relativeField.getScheme());
   }
   
   public KeyImpl(FieldSet fieldSet,String fieldList)
@@ -232,7 +233,10 @@ public class KeyImpl<T extends DataComposite>
   }
   
   public Query getForeignQuery()
-  { return foreignQuery;
+    throws DataException
+  { 
+    resolve();
+    return foreignQuery;
   }
   
   public void setFieldList(String fieldList)
@@ -283,6 +287,8 @@ public class KeyImpl<T extends DataComposite>
 
     if (foreignType!=null)
     { 
+      foreignType.link();
+    
       if (importedKey==null)
       {
 
@@ -415,7 +421,7 @@ public class KeyImpl<T extends DataComposite>
       if (foreignType==null)
       { 
         throw new DataException
-          ("Key with imported Key must also have a foreign Type");
+          ("Key with imported Key must also have a foreign Type: "+toString());
       }
 
 //      // Querying another type while resolving introduced a

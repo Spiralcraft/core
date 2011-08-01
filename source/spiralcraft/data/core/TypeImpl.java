@@ -19,10 +19,10 @@ import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Key;
 import spiralcraft.data.Method;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Scheme;
-import spiralcraft.data.TypeNotFoundException;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.lang.ToDataTranslator;
@@ -73,8 +73,7 @@ public class TypeImpl<T>
   protected boolean rulesResolved;
   protected Translator<?,T> externalizer;
   
-  private boolean linked;
-  
+  private boolean linked;  
   
   public TypeImpl(TypeResolver resolver,URI uri)
   { 
@@ -166,7 +165,7 @@ public class TypeImpl<T>
   public void setArchetype(Type<T> archetype)
   { 
     if (linked)
-    { throw new IllegalStateException("Type already linked");
+    { throw new IllegalStateException("Type "+getURI()+" already linked: "+this);
     }
     this.archetype=archetype;
   }
@@ -341,7 +340,6 @@ public class TypeImpl<T>
   @SuppressWarnings({ "unchecked", "rawtypes" }) // Dealing with rule
   @Override
   public void link()
-    throws DataException
   { 
     if (linked)
     { return;
@@ -349,9 +347,24 @@ public class TypeImpl<T>
     pushLink(getURI());
     try
     {
+
       linked=true;
+      
+      if (baseType!=null)
+      { baseType.link();
+      }
+      
+      if (archetype!=null)
+      { archetype.link();
+      }
+      
     
-      if (baseType!=null && scheme==null)
+      if ( scheme==null
+           && (baseType!=null 
+               || (archetype!=null && archetype.getScheme()!=null
+                  )
+              )
+         )
       { 
         // Null subtype scheme causes problems
         scheme=new SchemeImpl();
@@ -396,8 +409,8 @@ public class TypeImpl<T>
         }
       }
     }
-    catch (TypeNotFoundException x)
-    { throw new TypeNotFoundException("Unresolved dependency linking "+uri,x);
+    catch (Exception x)
+    { throw new RuntimeDataException("Error linking "+uri,x);
     }
     finally 
     { popLink();
@@ -481,17 +494,7 @@ public class TypeImpl<T>
   @Override
   public synchronized FieldSet getFieldSet()
   { 
-    if (!linked)
-    { 
-      throw new IllegalStateException
-        ("Call to getFieldSet() before type linked "+getURI());
-    }
-//    if (!linked && debug)
-//    { 
-//      log.log(Level.DEBUG,"Call to getFieldSet() before type linked "+getURI()
-//        ,new Exception("trace")
-//      );
-//    }
+    link();
     
     if (baseType==null && scheme!=null)
     { return scheme;
@@ -669,6 +672,7 @@ public class TypeImpl<T>
   public void setComparator(Comparator<T> comparator)
   { this.comparator=comparator;
   }
+
   
   @SuppressWarnings("unused")
   private void assertLinked()

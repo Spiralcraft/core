@@ -111,6 +111,7 @@ public class ReflectionType<T>
       ,java.awt.Font.class
       ,java.awt.Color.class
       );
+    
   }
   
   private final Class<?> reflectedClass;
@@ -166,6 +167,19 @@ public class ReflectionType<T>
         );
     }
   }
+  
+//  private static void mapMetaClass(Class<?> ... classes)
+//  {
+//    for (Class<?> clazz: classes)
+//    {
+//      CANONICAL_MAP.put
+//        (clazz
+//        ,URI.create("class:/spiralcraft/data/types/meta/"
+//                    .concat(clazz.getSimpleName())
+//                   )
+//        );
+//    }
+//  }  
   
   
   public static void registerCanonicalType(Class<?> clazz,URI typeURI)
@@ -409,7 +423,6 @@ public class ReflectionType<T>
   
   @Override
   public void link()
-    throws DataException
   {
     if (linked)
     { return;
@@ -418,7 +431,7 @@ public class ReflectionType<T>
     pushLink(getURI());
     try
     {
-            
+      
       if (aggregate)
       { 
         Class<?> contentClass;
@@ -455,6 +468,9 @@ public class ReflectionType<T>
     
       resolvePreferredConstructor();
       resolveDepersistMethod();
+    }
+    catch (Exception x)
+    { throw newLinkException(x);
     }
     finally
     { popLink();
@@ -715,6 +731,7 @@ public class ReflectionType<T>
   public T fromData(DataComposite val,InstanceResolver context)
     throws DataException
   {
+    link();
     if (val==null)
     { throw new DataException("fromData got null in "+getURI());
     }

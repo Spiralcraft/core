@@ -157,6 +157,10 @@ public class FieldImpl<T>
     archetypeField=field;
     this.index=archetypeField.getIndex();
     
+    if (archetypeField.getType()==null)
+    { throw new DataException(archetypeField.getURI()+" has no type");
+    }
+    
     if (!archetypeField.getType().isAssignableFrom(this.getType()))
     { 
       generateURI();
@@ -809,7 +813,15 @@ public class FieldImpl<T>
     protected T retrieve()
     {
       Tuple t;
-      Tuple subtypeTuple=source.get();
+
+      Tuple subtypeTuple;
+      try
+      { subtypeTuple=source.get();
+      }
+      catch (AccessException x)
+      { throw new AccessException("Error reading field "+getURI(),x);
+      }
+      
       if (subtypeTuple==null)
       { 
         // Defines x.f to be null if x is null

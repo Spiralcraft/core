@@ -153,6 +153,9 @@ public class AggregateReflector<T extends Aggregate<I>,I>
     )
     throws BindException
   {
+    if (getType()!=null)
+    { getType().link();
+    }
     if (name.startsWith("@"))
     { return this.<X>resolveMeta(source,focus,name,params);
     }

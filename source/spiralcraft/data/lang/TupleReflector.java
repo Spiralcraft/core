@@ -233,6 +233,7 @@ public class TupleReflector<T extends Tuple>
     )
     throws BindException
   {    
+    
     if (name.startsWith("@"))
     { return this.<X>resolveMeta(source,focus,name,params);
     }
@@ -255,6 +256,9 @@ public class TupleReflector<T extends Tuple>
     
     
     Type type=getType();
+    if (type!=null)
+    { type.link();
+    }
     Field field=null;
     
     

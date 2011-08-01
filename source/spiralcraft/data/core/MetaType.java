@@ -67,7 +67,7 @@ public class MetaType
 //    System.err.println
 //      ("New MetaType: "+uri+" of "+referencedTypeURI+"="+super.toString());
     
-    referencedType=resolver.resolve(referencedTypeURI);
+    referencedType=resolver.resolve(referencedTypeURI,false);
   }
   
   /**
@@ -114,7 +114,7 @@ public class MetaType
   public Type newSubtype(DataComposite composite,URI uri)
     throws DataException
   {
-    
+    referencedType.link();
     InstanceResolver instanceResolver
       =referencedType.getExtensionResolver
         (TypeResolver.getTypeResolver()
@@ -206,7 +206,7 @@ public class MetaType
         }
         
         Type type=super.fromData(composite,instanceResolver);
-        type.link();
+        // type.link();
         return type;
       }
       else
