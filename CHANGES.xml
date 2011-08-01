@@ -19,6 +19,35 @@
         </release>
         
         <notes>
+          <scm:Note>RelativeField inherits properties of RelativeField
+            archetype to enable inheritance of compound relational types
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/data/core/RelativeField.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
+          <scm:Note>Add standard Void data type for void method return
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/data/types/standard/VoidType.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
           <scm:Note>Selection now accepts a Type parameter to simplify
             declaration.
           </scm:Note>
@@ -196,6 +225,8 @@
           <URI>lang/kit/CoercionChannel.java
           </URI>
           <URI>lang/spi/Coercion.java
+          </URI>
+          <URI>lang/spi/AssignmntChannel.java
           </URI>
         </resources>
         
