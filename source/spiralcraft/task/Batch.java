@@ -27,7 +27,6 @@ import spiralcraft.lang.IterationCursor;
 import spiralcraft.lang.IterationDecorator;
 //import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.time.Scheduler;
 import spiralcraft.util.MultiException;
@@ -160,20 +159,6 @@ public class Batch<I,R>
         { collectResults=true;
         }
         
-        @Override
-        @SuppressWarnings("unchecked")
-        protected void onTaskCompletion()
-        {
-          if (chain!=null && getException()!=null)
-          { 
-            TaskCommand<I,R> command=((Scenario<I,R>) chain).command();
-            command.execute();
-            (getResult()).add(command);
-            if (command.getException()!=null)
-            { setException(command.getException());
-            }
-          }          
-        }
         
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
@@ -209,17 +194,16 @@ public class Batch<I,R>
             }
             
             if (completedCommand.getException()!=null)
-            { exceptionList.add(completedCommand.getException());
-            }
-            
-            if (debug)
-            {
+            { 
+              exceptionList.add(completedCommand.getException());
               log.log
-                (ClassLog.DEBUG,"Command resulted in Exception: "
+                (Level.WARNING,"Command resulted in Exception: "
                 +completedCommand.getException()
                 ,completedCommand.getException()
                 );
             }
+            
+            
           }
           if (exceptionList.size()>0)
           { 
@@ -252,7 +236,8 @@ public class Batch<I,R>
     
 //    focusChain=itemClosureFocus;
 
-    item=new ThreadLocalChannel(decorator.getComponentReflector());
+    item=new ThreadLocalChannel
+      (decorator.getComponentReflector(),true,sourceChannel);
     focusChain=focusChain.chain(item);
     
     super.bindChildren(focusChain);
