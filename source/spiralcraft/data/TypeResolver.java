@@ -198,10 +198,15 @@ public class TypeResolver
   { return resolve(ReflectionType.canonicalURI(clazz));
   }
   
-  @SuppressWarnings("unchecked") // Generic method but heterogeneous implementation
   public final <T> Type<T> resolve(URI typeUri)
     throws DataException
-  { 
+  { return resolve(typeUri,true);
+  }
+  
+  @SuppressWarnings("unchecked") // Generic method but heterogeneous implementation
+  public final <T> Type<T> resolve(URI typeUri,boolean link)
+    throws DataException
+  {
     
     if (typeUri==null)
     { return null;
@@ -222,7 +227,7 @@ public class TypeResolver
     }
     
     Type<T> type=null;
-    type=load(typeUri);
+    type=load(typeUri,link);
     
     if (type!=null)
     { 
@@ -232,6 +237,7 @@ public class TypeResolver
     else
     { throw new TypeNotFoundException(typeUri);
     }
+    
   }
   
   /**
@@ -247,7 +253,10 @@ public class TypeResolver
   public final Type<?> getMetaType()
   { 
     try
-    { return resolve(TYPE_TYPE_URI);
+    { 
+      Type<?> metaType=resolve(TYPE_TYPE_URI);
+      metaType.link();
+      return metaType;
     }
     catch (DataException x)
     { 
@@ -258,7 +267,7 @@ public class TypeResolver
 
   @SuppressWarnings({"unchecked","rawtypes"}) // Heterogenous ArrayType construction
   
-  private final Type loadArrayType(Type baseType,URI typeURI)
+  private final Type loadArrayType(Type baseType,URI typeURI,boolean link)
     throws DataException
   {
     Type<?> type=map.get(typeURI);
@@ -267,12 +276,12 @@ public class TypeResolver
     }
 
     type=new ArrayType(baseType,typeURI);
-    type=putMap(typeURI,type);
+    type=putMap(typeURI,type,link);
     return type;
   }
   
   @SuppressWarnings({ "unchecked", "rawtypes" }) // Heterogeneuous CollectionType construction
-  private final Type loadListType(Type baseType,URI typeURI)
+  private final Type loadListType(Type baseType,URI typeURI,boolean link)
     throws DataException
   {
     Type<?> type=map.get(typeURI);
@@ -287,12 +296,12 @@ public class TypeResolver
       ,typeURI
       ,ArrayList.class
       );
-    type=putMap(typeURI,type);
+    type=putMap(typeURI,type,link);
     return type;
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  private final Type<?> loadBufferType(Type<?> baseType,URI typeURI)
+  private final Type<?> loadBufferType(Type<?> baseType,URI typeURI,boolean link)
     throws DataException
   {
     Type<?> type=map.get(typeURI);
@@ -310,11 +319,11 @@ public class TypeResolver
     if (existingType!=null)
     { return existingType;
     }
-    type=putMap(typeURI,type);
+    type=putMap(typeURI,type,link);
     return type;
   } 
 
-  private final Type<?> loadDeltaType(Type<?> baseType,URI typeURI)
+  private final Type<?> loadDeltaType(Type<?> baseType,URI typeURI,boolean link)
     throws DataException
   {
     Type<?> type=map.get(typeURI);
@@ -332,12 +341,14 @@ public class TypeResolver
     if (existingType!=null)
     { return existingType;
     }
-    type=putMap(typeURI,type);
-    type.link();
+    type=putMap(typeURI,type,link);
+    if (link)
+    { type.link();
+    }
     return type;
   } 
   
-  private final Type<?> loadMetaType(Type<?> baseType,URI typeURI)
+  private final Type<?> loadMetaType(Type<?> baseType,URI typeURI,boolean link)
     throws DataException
   {
     if (debugLevel.canLog(Level.FINE))
@@ -355,19 +366,22 @@ public class TypeResolver
       ,baseType.getURI()
       ,baseType.getClass()
       );
-    type=putMap(typeURI,type);
+    type=putMap(typeURI,type,link);
     return type;
   }
 
   
   @SuppressWarnings({ "rawtypes" })
-  private final Type findLoadedType(URI typeUri)
+  private final Type findLoadedType(URI typeUri,boolean link)
     throws DataException
   {
     
     Type type=map.get(typeUri);
     if (type!=null)
     { 
+      if (link)
+      { type.link();
+      }
       // System.err.println("TypeResolver- using cached "+typeUri+" = "+type.getURI());
       return type;
     }
@@ -375,9 +389,9 @@ public class TypeResolver
     if (typeUri.getPath().endsWith(".array"))
     {
       URI baseTypeUri=desuffix(typeUri,".array");
-      Type baseType=findLoadedType(baseTypeUri);
+      Type baseType=findLoadedType(baseTypeUri,link);
       if (baseType!=null)
-      { return loadArrayType(baseType,typeUri);
+      { return loadArrayType(baseType,typeUri,link);
       }
     }
     else if (typeUri.getPath().endsWith(".list"))
@@ -385,9 +399,9 @@ public class TypeResolver
       URI baseTypeUri=desuffix(typeUri,".list");
 
       // Recurse to resolve baseType
-      Type baseType=findLoadedType(baseTypeUri);
+      Type baseType=findLoadedType(baseTypeUri,link);
       if (baseType!=null)
-      { return loadListType(baseType,typeUri);
+      { return loadListType(baseType,typeUri,link);
       }
     }
     else if (typeUri.getPath().endsWith(".type"))
@@ -395,9 +409,9 @@ public class TypeResolver
       URI baseTypeUri=desuffix(typeUri,".type");
 
       // Recurse to resolve baseType
-      Type baseType=findLoadedType(baseTypeUri);
+      Type baseType=findLoadedType(baseTypeUri,link);
       if (baseType!=null)
-      { return loadMetaType(baseType,typeUri);
+      { return loadMetaType(baseType,typeUri,link);
       }
     }
     else if (typeUri.getPath().endsWith(".buffer"))
@@ -405,9 +419,9 @@ public class TypeResolver
       URI baseTypeUri=desuffix(typeUri,".buffer");
 
       // Recurse to resolve baseType
-      Type baseType=findLoadedType(baseTypeUri);
+      Type baseType=findLoadedType(baseTypeUri,link);
       if (baseType!=null)
-      { return loadBufferType(baseType,typeUri);
+      { return loadBufferType(baseType,typeUri,link);
       }
     }
     else if (typeUri.getPath().endsWith(".delta"))
@@ -415,9 +429,9 @@ public class TypeResolver
       URI baseTypeUri=desuffix(typeUri,".delta");
 
       // Recurse to resolve baseType
-      Type baseType=findLoadedType(baseTypeUri);
+      Type baseType=findLoadedType(baseTypeUri,link);
       if (baseType!=null)
-      { return loadDeltaType(baseType,typeUri);
+      { return loadDeltaType(baseType,typeUri,link);
       }
     }    
     
@@ -460,7 +474,7 @@ public class TypeResolver
     }
   }
 
-  private synchronized Type<?> putMap(URI uri,Type<?> type)
+  private synchronized Type<?> putMap(URI uri,Type<?> type,boolean link)
     throws DataException
   {
     Type<?> existing=map.get(uri);
@@ -480,9 +494,12 @@ public class TypeResolver
       
       // Standard case
       map.put(uri,type);
-      type.link();
-      if (!type.isLinked())
-      { throw new DataException("Link failed silently for "+type);
+      if (link)
+      {
+        type.link();
+        if (!type.isLinked())
+        { throw new DataException("Link failed silently for "+type);
+        }
       }
     }
     return type;
@@ -493,7 +510,7 @@ public class TypeResolver
    *   type (ie. an ArrayType based on the type, or the type's Type)
    */
   @SuppressWarnings("rawtypes")
-  private final Type findTypeExtended(URI typeUri)
+  private final Type findTypeExtended(URI typeUri,boolean link)
     throws DataException
   {
     Type type=null;
@@ -503,9 +520,9 @@ public class TypeResolver
       URI baseTypeUri=desuffix(typeUri,".array");
 
       // Recurse to resolve baseType
-      Type baseType=findTypeExtended(baseTypeUri);
+      Type baseType=findTypeExtended(baseTypeUri,link);
       if (baseType!=null)
-      { return loadArrayType(baseType,typeUri);
+      { return loadArrayType(baseType,typeUri,link);
       }
     }
     else if (typeUri.getPath().endsWith(".list"))
@@ -513,9 +530,9 @@ public class TypeResolver
       URI baseTypeUri=desuffix(typeUri,".list");
 
       // Recurse to resolve baseType
-      Type baseType=findTypeExtended(baseTypeUri);
+      Type baseType=findTypeExtended(baseTypeUri,link);
       if (baseType!=null)
-      { return loadListType(baseType,typeUri);
+      { return loadListType(baseType,typeUri,link);
       }
     }
     else if (typeUri.getPath().endsWith(".buffer"))
@@ -523,9 +540,9 @@ public class TypeResolver
       URI baseTypeUri=desuffix(typeUri,".buffer");
 
       // Recurse to resolve baseType
-      Type baseType=findTypeExtended(baseTypeUri);
+      Type baseType=findTypeExtended(baseTypeUri,link);
       if (baseType!=null)
-      { return loadBufferType(baseType,typeUri);
+      { return loadBufferType(baseType,typeUri,link);
       }
     }
     else if (typeUri.getPath().endsWith(".delta"))
@@ -533,9 +550,9 @@ public class TypeResolver
       URI baseTypeUri=desuffix(typeUri,".delta");
 
       // Recurse to resolve baseType
-      Type baseType=findTypeExtended(baseTypeUri);
+      Type baseType=findTypeExtended(baseTypeUri,link);
       if (baseType!=null)
-      { return loadDeltaType(baseType,typeUri);
+      { return loadDeltaType(baseType,typeUri,link);
       }
     }    
     else if (typeUri.getPath().endsWith(".type"))
@@ -543,9 +560,9 @@ public class TypeResolver
       URI baseTypeUri=desuffix(typeUri,".type");
 
       // Recurse to resolve baseType
-      Type baseType=findTypeExtended(baseTypeUri);
+      Type baseType=findTypeExtended(baseTypeUri,link);
       if (baseType!=null)
-      { return loadMetaType(baseType,typeUri);
+      { return loadMetaType(baseType,typeUri,link);
       }
     }
     else
@@ -554,7 +571,7 @@ public class TypeResolver
       if (type!=null)
       { 
         // System.err.println("TypeResolver: Caching "+typeUri+" = "+type.getURI());
-        type=putMap(typeUri,type);
+        type=putMap(typeUri,type,link);
       }
       return type;
     }
@@ -566,10 +583,10 @@ public class TypeResolver
    *   within the specified namespace.
    */
   @SuppressWarnings("rawtypes")
-  synchronized final Type load(URI typeUri)
+  synchronized final Type load(URI typeUri,boolean link)
     throws DataException
   { 
-    Type<?> type=this.findLoadedType(typeUri);
+    Type<?> type=this.findLoadedType(typeUri,link);
     if (type!=null)
     { return type;
     }
@@ -582,10 +599,12 @@ public class TypeResolver
       if (debugLevel.canLog(Level.FINE))
       { log.fine(logMessage("Pre-Delegating "+typeUri));
       }
-      type=parent.load(typeUri);
+      type=parent.load(typeUri,link);
       if (type!=null)
       { 
-        type.link();
+        if (link)
+        { type.link();
+        }
         return type;
       }
     }
@@ -595,11 +614,13 @@ public class TypeResolver
     }
     
     
-    type=findTypeExtended(typeUri);
+    type=findTypeExtended(typeUri,link);
 
     if (type!=null)
     { 
-      type.link();
+      if (link)
+      { type.link();
+      }
       if (debugLevel.canLog(Level.FINE))
       { log.fine(logMessage("Finished loading "+typeUri));
       }
@@ -611,14 +632,24 @@ public class TypeResolver
       if (debugLevel.canLog(Level.FINE))
       { log.fine(logMessage("Post-Delegating "+typeUri));
       }
-      type=parent.load(typeUri);
+      type=parent.load(typeUri,link);
       if (type!=null)
       { 
-        type.link();
+        if (link)
+        { type.link();
+        }
         return type;
       }
     }
     return type;
+  }
+
+  public TypeResolver getParent()
+  { return parent;
+  }
+  
+  public Type<?>[] getLoadedTypes()
+  { return map.values().toArray(new Type<?>[map.values().size()]);
   }
 
   private String logMessage(String message)

@@ -44,6 +44,7 @@ public abstract class Type<T>
 {  
   private static final ClassLog log=ClassLog.getInstance(Type.class);
   private static final Level LOG_LEVEL
+//    =ClassLog.getInitialDebugLevel(Type.class,Level.FINE);
     =ClassLog.getInitialDebugLevel(Type.class,null);
   
   public static <X> Type<X> resolve(String uriString)
@@ -450,6 +451,7 @@ public abstract class Type<T>
   @SuppressWarnings("unchecked")
   public Key<T> findKey(String[] fieldNames)
   {
+    link();
     Key<T> key=null;
     if (getBaseType()!=null)
     { key=getBaseType().findKey(fieldNames);
@@ -634,9 +636,10 @@ public abstract class Type<T>
    * Called by the TypeResolver to allow the type to recursively resolve any
    *   referenced Types. This method has no effect after it is called once
    *   by the TypeResolver.
+   *   
+   * May throw a RuntimeDataException if linking failed
    */
-  public abstract void link()
-    throws DataException;
+  public abstract void link();
 
   /**
    * Indicate whether a Type is has been linked.
@@ -647,6 +650,8 @@ public abstract class Type<T>
   { return debug;
   }
 
-
+  protected RuntimeDataException newLinkException(Exception x)
+  { return new RuntimeDataException("Error linking "+getURI(),x);
+  }
   
 }

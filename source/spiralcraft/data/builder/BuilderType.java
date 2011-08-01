@@ -308,61 +308,33 @@ public class BuilderType
   
   @Override
   public void link()
-    throws DataException
   {
     if (linked)
     { return;
     }
     linked=true;
     
-    
-    AssemblyClass baseAssemblyClass=targetAssemblyClass.getBaseClass();
-    if (baseAssemblyClass!=null)
-    { 
-      archetype=
-        resolver.resolve
-          (canonicalURI(baseAssemblyClass)
-          );
-      
-    }
-    else
+    try
     {
-      
-      // 2009-03-28 mike
-      //
-      //   Handles ensuring that an AssemblyClass based on a subclass 
-      //     is type compatible with the AssemblyClass based on the 
-      //     superclass.
-      
-// This is foiled because we also need interface compatibility. Solving
-//   issue by checking native type in isAssignableFrom
-//
-//      Class<?> baseClass=targetAssemblyClass.getJavaClass().getSuperclass();
-//      if (baseClass!=null)
-//      { 
-//        try
-//        {
-//          archetype=
-//            canonicalType
-//              (AssemblyLoader.getInstance().findAssemblyClass(baseClass));
-//        }
-//        catch (BuildException x)
-//        { 
-//          throw new DataException
-//            ("Error resolving BuilderType for "+baseClass,x);
-//        }
-//      }
+      AssemblyClass baseAssemblyClass=targetAssemblyClass.getBaseClass();
+      if (baseAssemblyClass!=null)
+      { 
+        archetype=
+          resolver.resolve
+            (canonicalURI(baseAssemblyClass)
+            );
+        
+      }
+  
+      BuilderScheme scheme=new BuilderScheme(this,targetAssemblyClass);
+      scheme.addFields();
+      this.scheme=scheme;
+      super.link();
+      classField=scheme.getFieldByName("class");
     }
-
-    BuilderScheme scheme=new BuilderScheme(this,targetAssemblyClass);
-    scheme.addFields();
-    this.scheme=scheme;
-    super.link();
-    classField=scheme.getFieldByName("class");
-
-//    if (archetype!=null)
-//    { log.fine("Archetype of "+this.getURI()+" is "+archetype.getURI());
-//    }
+    catch (DataException x)
+    { throw newLinkException(x);
+    }
 
   }
 

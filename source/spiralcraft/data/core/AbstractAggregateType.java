@@ -16,6 +16,7 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 
 import spiralcraft.data.DataException;
@@ -232,38 +233,40 @@ public abstract class AbstractAggregateType<T,Tcontent>
   
   @Override
   public void link()
-    throws DataException
   { 
     if (linked)
     { return;
     }
     linked=true;
     
-    // XXX Uncommenting this may prematurely link types in the process of
-    //   loading. Make sure we don't try to reference any 'unlinked' part
-    //   of the contentType
-    // contentType.link();
+    contentType.link();
     
-    Type<?> contentArchetype=contentType.getArchetype();
-    if (contentArchetype!=null)
-    { 
-      archetype
-        =contentType.getTypeResolver().resolve
-          (URI.create(contentArchetype.getURI().toString()
-                      .concat(getAggregateQualifier())
-                     )
-          );
+    try
+    {
+      Type<?> contentArchetype=contentType.getArchetype();
+      if (contentArchetype!=null)
+      { 
+        archetype
+          =contentType.getTypeResolver().resolve
+            (URI.create(contentArchetype.getURI().toString()
+                        .concat(getAggregateQualifier())
+                       )
+            );
+      }
+      
+      Type<?> contentBaseType=contentType.getBaseType();
+      if (contentBaseType!=null)
+      { 
+        baseType
+          =contentType.getTypeResolver().resolve
+            (URI.create(contentBaseType.getURI().toString()
+                        .concat(getAggregateQualifier())
+                       )
+            );
+      }
     }
-    
-    Type<?> contentBaseType=contentType.getBaseType();
-    if (contentBaseType!=null)
-    { 
-      baseType
-        =contentType.getTypeResolver().resolve
-          (URI.create(contentBaseType.getURI().toString()
-                      .concat(getAggregateQualifier())
-                     )
-          );
+    catch (DataException x)
+    { throw new RuntimeDataException("Error linking "+getURI(),x);
     }
   }
 

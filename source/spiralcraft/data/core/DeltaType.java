@@ -18,6 +18,7 @@ package spiralcraft.data.core;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Key;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Field;
@@ -65,14 +66,14 @@ public class DeltaType
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
   public void link()
-    throws DataException
   {
     if (linked)
     { return;
     }
     linked=true;
     // log.fine("Linking DeltaType for "+archetype,new Exception());
-
+    this.archetype.link();
+    
     if (this.scheme==null)
     { this.scheme=new SchemeImpl();
     }
@@ -82,48 +83,53 @@ public class DeltaType
     if (this.archetype.getScheme()!=null && !isAggregate()) 
     { 
 
+      try
+      {
+        for (Field<?> field : this.archetype.getScheme().fieldIterable())
+        { 
+          if (field.getType()==null)
+          { 
+            log.fine("Field type is null "+field);
+            continue; 
+          }
+  
+          if (field.getName()==null)
+          { 
+            log.fine("Field name is null "+field+" of type "+field.getType());
+            continue;
+          }
+  
+          
+          Type<?> fieldType=field.getType();
       
-      for (Field<?> field : this.archetype.getScheme().fieldIterable())
-      { 
-        if (field.getType()==null)
-        { 
-          log.fine("Field type is null "+field);
-          continue; 
-        }
-
-        if (field.getName()==null)
-        { 
-          log.fine("Field name is null "+field+" of type "+field.getType());
-          continue;
-        }
-
-        
-        Type<?> fieldType=field.getType();
-    
-        
-        if (field.isTransient())
-        {
-          // Leave it alone
-        }
-        else if (fieldType.isPrimitive()
-            || (fieldType.isAggregate() && fieldType.getContentType().isPrimitive())
-            )
-        { 
-          // Leave it alone
-        }
-        else if (!(field instanceof RelativeField))
-        {
-          // Embedded Tuple
-          FieldImpl newField=new FieldImpl();
-          newField.setName(field.getName());
-          newField.setType(getDeltaType(fieldType));
-          newField.setArchetypeField(field);
-          scheme.addField(newField);
+          
+          if (field.isTransient())
+          {
+            // Leave it alone
+          }
+          else if (fieldType.isPrimitive()
+              || (fieldType.isAggregate() && fieldType.getContentType().isPrimitive())
+              )
+          { 
+            // Leave it alone
+          }
+          else if (!(field instanceof RelativeField))
+          {
+            // Embedded Tuple
+            FieldImpl newField=new FieldImpl();
+            newField.setName(field.getName());
+            newField.setType(getDeltaType(fieldType));
+            newField.setArchetypeField(field);
+            scheme.addField(newField);
+          }
+          
         }
         
+        copyPrimaryKey();
       }
-      
-      copyPrimaryKey();
+      catch (DataException x)
+      { throw new RuntimeDataException("Error linking "+getURI(),x);
+      }
     }
     else
     { 
