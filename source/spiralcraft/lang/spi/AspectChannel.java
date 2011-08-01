@@ -19,9 +19,9 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
 /**
- * <P>Exposes another aspect of a source object by using a different
+ * <p>Exposes another aspect of a source object by using a different
  *   Reflector.
- * </P>
+ * </p>
  * 
  * @author mike
  *
@@ -30,11 +30,8 @@ public class AspectChannel<T>
   extends SourcedChannel<T,T>
   implements Channel<T>
 {
-
-  
   public AspectChannel(Reflector<T> reflector,Channel<T> source)
-  { 
-    super(reflector,source);
+  { super(reflector,source);
   }
   
   @Override
