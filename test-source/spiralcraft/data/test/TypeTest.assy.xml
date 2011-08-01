@@ -6,6 +6,7 @@
   xmlns:example="class:/spiralcraft/data/test/example/"
   xmlns:std="class:/spiralcraft/data/types/standard/"
   xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
   >
   <chain>
  
@@ -138,6 +139,28 @@
               <testX>.=="score"
               </testX>
             </test:Assertion>   
+<!--
+            <task:Eval>
+            
+              <x>[@example:Customer].()
+              </x>
+              
+              <sequence>
+                <test:Assertion>
+                  <name>Odd name
+                  </name>
+                  
+                  <subjectX xmlns:ugly="s:/blah/blah/WEB-INF/">
+                    [ugly:Dummy].[*fn:Try]
+                  </subjectX>
+                
+                  <testX>true
+                  </testX>
+                </test:Assertion>   
+              </sequence>
+            
+            </task:Eval>
+-->            
           </chain>
         </task:Eval>
                 

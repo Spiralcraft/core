@@ -11,6 +11,7 @@
   xmlns:sutil="class:/spiralcraft/util/string/"
   xmlns:vfs="class:/spiralcraft/vfs/"
   xmlns:vfsf="class:/spiralcraft/vfs/functions/"  
+  xmlns:math="class:/java/math/"
   xmlns="dynamic:/"
   >
   <name>spiralcraft.lang.test
@@ -33,6 +34,7 @@
           </testX>
           
         </test:Assertion>
+        
           
         <test:Assertion>
         
@@ -901,7 +903,73 @@
           <testX>.=="firstlast"
           </testX>
         
-        </test:Assertion>                  
+        </test:Assertion>  
+        
+        <test:Assertion>
+          <name>Add and assign
+          </name>
+          
+          <subjectX>
+            { counter:=2.5
+            }
+            { .counter+=1.25
+              ,.counter+=1.75
+              ,.
+            }.counter
+            
+          </subjectX>
+          
+          <testX>.==5.5
+          </testX>
+        
+        </test:Assertion>     
+        
+        <test:Assertion>
+          <name>Subtract and assign
+          </name>
+          
+          <subjectX>
+            { counter:[@math:BigDecimal]=2.5
+            }
+            { .counter-=1.25
+              ,.counter-=1.75
+              ,.
+            }.counter
+            
+          </subjectX>
+          
+          <testX>.==-0.5
+          </testX>
+        
+        </test:Assertion>             
+        
+        <test:Assertion>
+          <name>Coercion
+          </name>
+          
+          <subjectX>
+            { test:[@math:BigDecimal]=0
+            }.test
+          </subjectX>
+          
+          <testX>.==0
+          </testX>
+        
+        </test:Assertion>                       
+
+        <test:Assertion>
+          <name>Coercion arithmetic
+          </name>
+          
+          <subjectX>
+            { test:[@math:BigDecimal]=0.51
+            }.test-0.01
+          </subjectX>
+          
+          <testX>.==0.50
+          </testX>
+        
+        </test:Assertion>   
       </scenarios>
       
     </task:Sequence>

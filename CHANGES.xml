@@ -13,6 +13,239 @@
     </date>
     
     <detail>
+    
+      <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
+          <scm:Note>Selection now accepts a Type parameter to simplify
+            declaration.
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/data/query/Selection.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
+          <scm:Note>Added experimental support for type adapters 
+            (data interfaces) using Projections
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/data/core/ProjectionImpl.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
+          <scm:Note>Avoid linking Types too early in the loading process
+            to prevent circular dependency issues.
+          </scm:Note>
+          <scm:Note>Make sure Keys and RelativeFields get required information
+            before they are referenced in the linking process
+            
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>Type.java
+          </URI>
+          <URI>TypeResolver.java
+          </URI>
+          <URI>builder/BuilderType.java
+          </URI>
+          <URI>core/AbstractAggregateType.java
+          </URI>
+          <URI>core/DeltaType.java
+          </URI>
+          <URI>core/FieldSetType.java
+          </URI>
+          <URI>core/KeyImpl.java
+          </URI>
+          <URI>core/MetaType.java
+          </URI>
+          <URI>core/PrimitiveTypeImpl.java
+          </URI>
+          <URI>core/RelativeField.java
+          </URI>
+          <URI>core/SchemeImpl.java
+          </URI>
+          <URI>core/TypeImpl.java
+          </URI>
+          <URI>lang/AggregateReflector.java
+          </URI>
+          <URI>lang/PrimitiveReflector.java
+          </URI>
+          <URI>lang/TupleReflector.java
+          </URI>
+          <URI>query/Scan.java
+          </URI>
+          <URI>reflect/AssemblyType.java
+          </URI>
+          <URI>reflect/ReflectionField.java
+          </URI>
+          <URI>reflect/ReflectionScheme.java
+          </URI>
+          <URI>reflect/ReflectionType.java
+          </URI>
+          <URI>sax/DataHandler.java
+          </URI>
+          <URI>sax/DataHandlerBase.java
+          </URI>
+          <URI>session/BufferType.java
+          </URI>
+          <URI>types/standard/InstantType.java
+          </URI>
+          <URI>xml/XmlTypeFactory.java.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
+          <scm:Note>The Sum of an empty set is 0, not null
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/functions/Sum.java
+        </path>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
+          <scm:Note>ELaine syntax now supports += (additive assignment)
+            and -= (subtractive assignment)
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/parser/
+        </path>
+        
+        <resources>
+          <URI>AssignmentNode.java
+          </URI>
+          <URI>ExpressionParser.java
+          </URI>
+          <URI>Node.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
+          <scm:Note>Batch task executes one to many times (regression bug
+            from earlier refactoring of task framework)
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/task/Batch.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
+          <scm:Note>Abstracted Coercion pattern (one-way type conversion for
+            semantically equivalent but not completely compatible types)
+            into a more common place to re-use wherever we need to for things
+            like numeric computations.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>common/Coercion.java
+          </URI>
+          <URI>util/lang/NumericCoercion.java
+          </URI>
+          <URI>lang/parser/StructNode.java
+          </URI>
+          <URI>lang/parser/LogicalNode.java
+          </URI>
+          <URI>lang/kit/CoercionChannel.java
+          </URI>
+          <URI>lang/spi/Coercion.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
+          <scm:Note>If FileArchive gets a bad path, it should return null
+            in the same manner as it does when there is a missing file instead
+            of throwing an exception and interrupting the search process.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/classloader/FileArchive.java
+        </path>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <release>-dev2
+        </release>
+        
+        <notes>
+          <scm:Note>Handle messages that should not advance the UI state frame
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/app/
+        </path>
+        
+        <resources>
+          <URI>Dispatcher.java
+          </URI>
+          <URI>InitializeMessage.java
+          </URI>
+          <URI>Message.java
+          </URI>
+          <URI>kit/ExpansionContainer.java
+          </URI>
+          <URI>kit/SimpleState.java
+          </URI>
+          <URI>kit/StandardDispatcher.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
       <scm:Change>
         <release>-dev2
         </release>

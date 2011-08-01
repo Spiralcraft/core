@@ -11,6 +11,7 @@
   xmlns:dtest="class:/spiralcraft/data/test/"
   xmlns:test="class:/spiralcraft/test/"
   xmlns:vfs="class:/spiralcraft/vfs/task/"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
   >
   
   <service>
@@ -76,104 +77,103 @@
       <name>spiralcraft-core:smoke
       </name>
       
-      <chain>
-        <task:Sequence>
-    
+      <sequence>
+            
+        <langtest:LangTest
+          xmlns:langtest="class:/spiralcraft/lang/test/"
+        />
+        
+        <utiltest:UtilTest
+          xmlns:utiltest="class:/spiralcraft/util/test/"
+        />
+        
+        <iotest:RecordIteratorTest>
+
+          <fileURI>in/io/RecordFile.small.log
+          </fileURI>
+      
+        </iotest:RecordIteratorTest>
+        
+        <vfs:Copy>
           
-          <scenarios>
-            
-            <langtest:LangTest
-              xmlns:langtest="class:/spiralcraft/lang/test/"
-            />
-            
-            <utiltest:UtilTest
-              xmlns:utiltest="class:/spiralcraft/util/test/"
-            />
-            
-            <iotest:RecordIteratorTest>
-    
-              <fileURI>in/io/RecordFile.small.log
-              </fileURI>
+          <verbose>false
+          </verbose>
           
-            </iotest:RecordIteratorTest>
+          <sourceResource>class:/spiralcraft/data/test/example
+          </sourceResource>
+          
+          <targetResource>out/copy/
+          </targetResource>
+        </vfs:Copy>
+        
+        <vfs:Copy>
+          
+          <verbose>false
+          </verbose>
+          
+          <sourceResource>in
+          </sourceResource>
+          
+          <targetResource>out/copy/
+          </targetResource>
+        </vfs:Copy>
+                    
+        <vfs:Copy>
+          
+          <verbose>false
+          </verbose>
+          
+          <sourceResource>../test-source
+          </sourceResource>
+          
+          <preserveTime>true
+          </preserveTime>
+          
+          <targetResource>out/copy/test/
+          </targetResource>
+          
+          <pattern>**
+          </pattern>
+          
+
+        </vfs:Copy>
+
+        <dtest:DataTest/>
+
+        <sectest:AuthTest
+          xmlns:sectest="class:/spiralcraft/security/test/"
+        />
+        
+        <tasktest:Smoke
+          xmlns:tasktest="class:/spiralcraft/task/test/"
+        />
+
+        <vfstest:VfsTest
+          xmlns:vfstest="class:/spiralcraft/vfs/test/"
+        />
+
+        <timetest:TimeTest
+          xmlns:timetest="class:/spiralcraft/time/test/"
+        />
+
+        <saxtest:SaxTest
+          xmlns:saxtest="class:/spiralcraft/sax/test/"
+        />
+        <texttest:TextTest
+          xmlns:texttest="class:/spiralcraft/text/test/"
+        />
+        <buildertest:SmokeTest
+          xmlns:buildertest="class:/spiralcraft/builder/test/"
+        />
+        
+        <task:Eval>
+        
+          <x>[@data:TypeResolver]
+               .@getTypeResolver().getLoadedTypes()[!.linked].@log("Unlinked type count: "+.@size)#{.@log("Unlinked type: "+.URI.toString())}
+          </x>
+        </task:Eval>
+      </sequence>
             
-            <vfs:Copy>
-              
-              <verbose>false
-              </verbose>
-              
-              <sourceResource>class:/spiralcraft/data/test/example
-              </sourceResource>
-              
-              <targetResource>out/copy/
-              </targetResource>
-            </vfs:Copy>
-            
-            <vfs:Copy>
-              
-              <verbose>false
-              </verbose>
-              
-              <sourceResource>in
-              </sourceResource>
-              
-              <targetResource>out/copy/
-              </targetResource>
-            </vfs:Copy>
-                        
-            <vfs:Copy>
-              
-              <verbose>false
-              </verbose>
-              
-              <sourceResource>../test-source
-              </sourceResource>
-              
-              <preserveTime>true
-              </preserveTime>
-              
-              <targetResource>out/copy/test/
-              </targetResource>
-              
-              <pattern>**
-              </pattern>
-              
-    
-            </vfs:Copy>
-    
-            <dtest:DataTest/>
-    
-            <sectest:AuthTest
-              xmlns:sectest="class:/spiralcraft/security/test/"
-            />
-            
-            <tasktest:Smoke
-              xmlns:tasktest="class:/spiralcraft/task/test/"
-            />
-    
-            <vfstest:VfsTest
-              xmlns:vfstest="class:/spiralcraft/vfs/test/"
-            />
-    
-            <timetest:TimeTest
-              xmlns:timetest="class:/spiralcraft/time/test/"
-            />
-    
-            <saxtest:SaxTest
-              xmlns:saxtest="class:/spiralcraft/sax/test/"
-            />
-            <texttest:TextTest
-              xmlns:texttest="class:/spiralcraft/text/test/"
-            />
-            <buildertest:SmokeTest
-              xmlns:buildertest="class:/spiralcraft/builder/test/"
-            />
-          </scenarios>
-        </task:Sequence>
-      
-      
-      </chain>
-      
       <throwFailure>true
       </throwFailure>
     </test:TestGroup>
