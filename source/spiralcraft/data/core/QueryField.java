@@ -81,7 +81,13 @@ public class QueryField
     throws DataException
   {    
     if (query!=null)
-    { query.resolve();
+    { 
+      try
+      { query.resolve();
+      }
+      catch (DataException x)
+      { throw new DataException("Error resolving query in field "+getURI()+": "+query,x);
+      }
     }
     else
     { throw new DataException("Missing query in field "+toString());
