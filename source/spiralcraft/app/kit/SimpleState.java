@@ -161,9 +161,11 @@ public class SimpleState
   public void enterFrame(StateFrame frame)
   {
     if (lastFrame!=frame)
-    { lastFrame=frame;
+    { 
+      lastFrame=frame;
+      frameChanged=true;
     }
-    frameChanged=true;
+    
   }
   
   @Override

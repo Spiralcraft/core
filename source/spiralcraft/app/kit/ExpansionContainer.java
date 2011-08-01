@@ -196,13 +196,13 @@ public class ExpansionContainer<C,T>
     if (path==null || path==iter.index)
     {
       pushElement(lastVal,childVal,cursor.getCurrent());
-      dispatcher.descend(iter.index);
+      dispatcher.descend(iter.index,message.isOutOfBand());
       try
       { messageChildren(dispatcher,message);
       }
       finally
       { 
-        dispatcher.ascend();
+        dispatcher.ascend(message.isOutOfBand());
         popElement();
       }
     }
@@ -280,7 +280,7 @@ public class ExpansionContainer<C,T>
           :null
         );
       
-      dispatcher.descend(iter.index);
+      dispatcher.descend(iter.index,message.isOutOfBand());
       try
       {
         // Run handlers for each element
@@ -288,7 +288,7 @@ public class ExpansionContainer<C,T>
       }
       finally
       { 
-        dispatcher.ascend();
+        dispatcher.ascend(message.isOutOfBand());
         popElement();
       }
     }

@@ -139,7 +139,10 @@ public class StandardDispatcher
     State lastState=state;
     Component lastComponent=component;
     LinkedList<Integer> lastCrumbtrail=crumbtrail;
-    state.enterFrame(currentFrame);
+    if (!message.isOutOfBand())
+    { state.enterFrame(currentFrame);
+    }
+    
     try
     {
       this.state=state;
@@ -165,7 +168,9 @@ public class StandardDispatcher
     }
     finally
     { 
-      state.exitFrame();
+      if (!message.isOutOfBand())
+      { state.exitFrame();
+      }
       this.state=lastState;
       this.component=lastComponent;
       this.crumbtrail=lastCrumbtrail;
@@ -269,7 +274,7 @@ public class StandardDispatcher
   }
   
   @Override
-  public final void descend(int index)
+  public final void descend(int index,boolean outOfBand)
   { 
     if (path!=null && !path.isEmpty())
     { 
@@ -284,18 +289,22 @@ public class StandardDispatcher
     if (this.state!=null)
     { 
       this.state=this.state.getChild(index);
-      this.state.enterFrame(currentFrame);
+      if (!outOfBand)
+      { this.state.enterFrame(currentFrame);
+      }
     }
     this.crumbtrail.add(index);
   }
   
   @Override
-  public final void ascend()
+  public final void ascend(boolean outOfBand)
   { 
     this.crumbtrail.removeLast();
     if (this.state!=null)
     { 
-      this.state.exitFrame();
+      if (!outOfBand)
+      { this.state.exitFrame();
+      }
       this.state=this.state.getParent();
     }
     if (reversePath!=null && !reversePath.isEmpty())
@@ -344,7 +353,7 @@ public class StandardDispatcher
       final Component lastComponent=this.component;
       final Path lastLocalPath=this.localPath;
       
-      descend(childIndex);
+      descend(childIndex,message.isOutOfBand());
       try
       { 
         this.component=childComponent;
@@ -352,7 +361,7 @@ public class StandardDispatcher
       }
       finally
       {
-        ascend();
+        ascend(message.isOutOfBand());
         this.state=lastState;
         this.component=lastComponent;
         this.localPath=lastLocalPath;

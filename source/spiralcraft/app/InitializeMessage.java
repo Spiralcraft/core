@@ -25,7 +25,9 @@ public class InitializeMessage
 {
   public static final Type TYPE=new Type();
   
-  { multicast=true;
+  { 
+    multicast=true;
+    outOfBand=true;
   }
   
   @Override

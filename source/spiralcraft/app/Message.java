@@ -24,9 +24,24 @@ package spiralcraft.app;
 public abstract class Message
 {
   protected boolean multicast;
+  protected boolean outOfBand;
   
+  /**
+   * Multicast messages will be sent to all descendants of their target
+   * 
+   * @return
+   */
   public boolean isMulticast()
   { return multicast;
+  } 
+
+  /**
+   * "Out Of Band" messages do not affect the state frame
+   * 
+   * @return
+   */
+  public boolean isOutOfBand()
+  { return outOfBand;
   } 
   
   public abstract Type getType();

@@ -71,13 +71,13 @@ public interface Dispatcher
    * Descend into a child state of the current state. The index must reference
    *   an existing child state. 
    */
-  void descend(int index);
+  void descend(int index,boolean outOfBand);
   
   /**
    * Ascend to the current state's parent state in the state tree. This method
    *   must always be called once for each successful call to descend().
    */
-  void ascend();
+  void ascend(boolean outOfBand);
   
   /** 
    * Relay a message to a child Component along a specific branch of the 
