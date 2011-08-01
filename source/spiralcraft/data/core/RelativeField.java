@@ -228,6 +228,11 @@ public class RelativeField<T extends DataComposite>
     if (key.getForeignQuery()!=null)
     { key.getForeignQuery().resolve();
     }
+    else
+    { 
+      throw new DataException
+        ("Error resolving "+getURI()+": foreign query is null from "+key);
+    }
     super.resolve();
   }
   
@@ -245,7 +250,12 @@ public class RelativeField<T extends DataComposite>
     )
     throws BindException
   { 
-    
+    try
+    { resolve();
+    }
+    catch (DataException x)
+    { throw new BindException("Error resolving field "+getURI(),x);
+    }
     // Use original binding context, never bind source expression in
     //   argument context
     Focus<?> context=source.getContext();
@@ -268,7 +278,19 @@ public class RelativeField<T extends DataComposite>
         (key.bindChannel(sourceFocus.getSubject(),sourceFocus,args));
 
     
-    Query query=key.getForeignQuery();
+    Query query;
+    try
+    { 
+      query=key.getForeignQuery();
+      if (query==null)
+      { throw new BindException("No foreign query for "+getURI());
+      }
+    }
+    catch (DataException x)
+    { throw new BindException("Error resolving field "+getURI(),x);
+    }
+    
+    
     if (debug)
     { log.fine("Foreign query is "+query);
     }
