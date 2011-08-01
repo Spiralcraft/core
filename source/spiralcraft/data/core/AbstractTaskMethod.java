@@ -192,6 +192,9 @@ public abstract class AbstractTaskMethod<T,C,R>
     @Override
     protected TaskCommand<C,R> retrieve()
     { 
+      // XXX: Must handle polymorphic method override by binding supertype
+      //   method to subtype
+      
       TaskCommand<C,R> command=source.get();
       contextChannel.push(command.getContext());
       try
