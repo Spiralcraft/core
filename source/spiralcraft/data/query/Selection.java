@@ -38,6 +38,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Type;
+import spiralcraft.data.TypeMismatchException;
 import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.data.access.SerialCursor;
 
@@ -60,6 +61,8 @@ public class Selection
   {
   }
   
+
+  
   public Selection(Type<?> type,Expression<Boolean> constraints)
   { 
     this.constraints=constraints;
@@ -67,13 +70,30 @@ public class Selection
   
   }
   
+  public void setType(Type<?> type)
+  { this.type=type;
+  }
+  
   @Override
   public void resolve()
     throws DataException
   { 
+    if (type!=null && (sources==null || sources.isEmpty()))
+    { setSource(new Scan(type));
+    }
     super.resolve();
     if (type==null)
     { type=sources.get(0).getType();
+    }
+    else
+    {
+      if (!type.isAssignableFrom(sources.get(0).type))
+      { 
+        throw new TypeMismatchException
+          ("Selection.type is not assignable from source type"
+          ,type,sources.get(0).type
+          );
+      }
     }
   }
   
