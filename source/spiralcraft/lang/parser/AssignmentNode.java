@@ -45,11 +45,20 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
 
   private final Node source;
   private final Node target;
+  private final Character op;
 
   public AssignmentNode(Node target,Node source)
   { 
     this.source=source;
     this.target=target;
+    this.op=null;
+  }
+  
+  public AssignmentNode(Node target,Node source,char op)
+  { 
+    this.source=source;
+    this.target=target;
+    this.op=op;
   }
 
   @Override
@@ -62,7 +71,7 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
   { 
     AssignmentNode<Ttarget,Tsource> copy
       =new AssignmentNode<Ttarget,Tsource>
-        (target.copy(visitor),source.copy(visitor));
+        (target.copy(visitor),source.copy(visitor),op);
     if (copy.target==target && copy.source==source)
     { return this;
     }
@@ -73,7 +82,7 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
   
   @Override
   public String reconstruct()
-  { return target.reconstruct()+" = "+source.reconstruct();
+  { return target.reconstruct()+" "+(op!=null?op:"")+"= "+source.reconstruct();
   }
   
   public Node getSource()
@@ -88,7 +97,18 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
   @SuppressWarnings({ "unchecked", "rawtypes" }) // Heterogeneous operation
   public Channel bind(final Focus focus)
     throws BindException
-  { return new AssignmentChannel(source.bind(focus),target.bind(focus));
+  { 
+    if (op==null)
+    {
+      return new AssignmentChannel(source.bind(focus),target.bind(focus));
+    }
+    else
+    { 
+      return new AssignmentChannel
+        (new BinaryOpNode(target,source,op).bind(focus)
+        ,target.bind(focus)
+        );
+    }
   }
 
   @Override
@@ -97,7 +117,11 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
     out.append(prefix).append("Assignment =");
     prefix=prefix+"  ";
     target.dumpTree(out,prefix);
-    out.append(prefix).append("=");
+    out.append(prefix);
+    if (op!=null)
+    { out.append(op);
+    }
+    out.append("=");
     source.dumpTree(out,prefix);
   }
 

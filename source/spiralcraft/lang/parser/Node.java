@@ -307,6 +307,16 @@ public abstract class Node
   }
 
   @SuppressWarnings("rawtypes")
+  public Node assignAdditive(Node source)
+  { return new AssignmentNode(this,source,'+');
+  }
+
+  @SuppressWarnings("rawtypes")
+  public Node assignSubtractive(Node source)
+  { return new AssignmentNode(this,source,'-');
+  }
+
+  @SuppressWarnings("rawtypes")
   public Node contains(Node source)
   { return new ContainsNode(this,source);
   }

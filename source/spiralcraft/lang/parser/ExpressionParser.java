@@ -272,6 +272,26 @@ public class ExpressionParser
       consumeToken();
       node=node.assign(this.parseExpression());
     }
+    else if (_tokenizer.ttype=='+' && _tokenizer.lookahead.ttype=='=')
+    {
+      if (node==null)
+      { throw newException("Missing left hand side of assignment");
+      }
+      consumeToken();
+      consumeToken();
+      node=node.assignAdditive(this.parseExpression());
+      
+    }
+    else if (_tokenizer.ttype=='-' && _tokenizer.lookahead.ttype=='=')
+    {
+      if (node==null)
+      { throw newException("Missing left hand side of assignment");
+      }
+      consumeToken();
+      consumeToken();
+      node=node.assignSubtractive(this.parseExpression());
+      
+    }
     return node;
   }
 
@@ -553,14 +573,30 @@ public class ExpressionParser
     switch (_tokenizer.ttype)
     {
       case '-':
-        consumeToken();
-        operation=firstOperand.minus(expectNode(parseMultiplicativeExpression()));
-        node=parseAdditiveExpressionRest(operation);
+        if (_tokenizer.lookahead.ttype!='='
+            && _tokenizer.lookahead.ttype!='-'
+            )
+        {
+          consumeToken();
+          operation=firstOperand.minus(expectNode(parseMultiplicativeExpression()));
+          node=parseAdditiveExpressionRest(operation);
+        }
+        else
+        { node=firstOperand;
+        }
         break;
       case '+':
-        consumeToken();
-        operation=firstOperand.plus(expectNode(parseMultiplicativeExpression()));
-        node=parseAdditiveExpressionRest(operation);
+        if (_tokenizer.lookahead.ttype!='='
+            && _tokenizer.lookahead.ttype!='+'
+            )
+        {
+          consumeToken();
+          operation=firstOperand.plus(expectNode(parseMultiplicativeExpression()));
+          node=parseAdditiveExpressionRest(operation);
+        }
+        else
+        { node=firstOperand;
+        }
         break;
       default:
         node=firstOperand;
