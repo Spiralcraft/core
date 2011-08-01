@@ -298,13 +298,7 @@ public class SchemeImpl
     resolveLocalKeys();
     
     for (FieldImpl<?> field: localFields)
-    { 
-      // XXX There may be fields in this list that were not made part of this
-      //   scheme because they were redundant of their Archetype field. Should
-      //   we always extend an Archetype field (in the above block) to avoid
-      //   this?
-      
-      field.resolve();
+    { field.resolve();
     }
     
     resolveRelativeKeys();
@@ -345,6 +339,7 @@ public class SchemeImpl
         { primaryKey=key;
         }
       }
+      key.setScheme(this);
     
     }
     if (primaryKey==null && archetypeScheme!=null)
@@ -358,9 +353,7 @@ public class SchemeImpl
     for (KeyImpl<Tuple> key:keys)
     {
       if (key.getForeignType()==null)
-      {
-        key.setScheme(this);
-        key.resolve();
+      { key.resolve();
       }
     }
   }
@@ -373,7 +366,6 @@ public class SchemeImpl
     {
       if (key.getForeignType()!=null)
       {
-        key.setScheme(this);
         key.resolve();
     
         if (key.getRelativeField()==null
