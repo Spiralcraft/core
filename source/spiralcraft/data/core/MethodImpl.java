@@ -52,6 +52,10 @@ public abstract class MethodImpl
   { this.name=name;
   }
 
+  public void setDebug(boolean debug)
+  { this.debug=debug;
+  }
+  
   @Override
   public Type<?>[] getParameterTypes()
   { 
