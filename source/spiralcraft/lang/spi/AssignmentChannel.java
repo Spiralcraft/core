@@ -1,9 +1,12 @@
 package spiralcraft.lang.spi;
 
+import spiralcraft.common.Coercion;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
+import spiralcraft.lang.kit.CoercionChannel;
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.lang.NumericCoercion;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class AssignmentChannel
@@ -13,6 +16,7 @@ public class AssignmentChannel
     =ClassLog.getInstance(AssignmentChannel.class);
   
   public final Channel targetChannel;
+  public final Channel translator;
 
   public AssignmentChannel
     (Channel sourceChannel,Channel targetChannel)
@@ -25,17 +29,36 @@ public class AssignmentChannel
           (sourceChannel.getReflector())
        )
     { 
-      throw new BindException
-        ("Cannot assign a "+sourceChannel.getReflector().getTypeURI()
-        +" to a location of type "+targetChannel.getReflector().getTypeURI()
-        );
-    }    
+      Coercion coercion
+        =NumericCoercion.instance(targetChannel.getContentType());
+    
+      if (coercion==null)
+      {
+        throw new BindException
+          ("Cannot assign a "+sourceChannel.getReflector().getTypeURI()
+          +" to a location of type "+targetChannel.getReflector().getTypeURI()
+          );
+      }
+      else
+      { 
+        translator
+          =new CoercionChannel
+            (targetChannel.getReflector()
+            ,sourceChannel
+            ,coercion
+            );
+        
+      }
+    }
+    else
+    { translator=sourceChannel;
+    }
   }
     
   @Override
   protected Object retrieve()
   {
-    Object val=source.get();
+    Object val=translator.get();
     if (!targetChannel.set(val))
     { log.warning("Assignment failed to "+targetChannel.toString());
     }
@@ -47,7 +70,7 @@ public class AssignmentChannel
     Object val)
     throws AccessException
   {
-    if (source.set(val))
+    if (translator.set(val))
     { 
       targetChannel.set(val);
       return true;
@@ -57,6 +80,6 @@ public class AssignmentChannel
       
   @Override
   public boolean isWritable()
-  { return source.isWritable() && targetChannel.isWritable();
+  { return translator.isWritable() && targetChannel.isWritable();
   }
 }
