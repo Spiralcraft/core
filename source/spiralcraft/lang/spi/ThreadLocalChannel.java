@@ -175,6 +175,7 @@ public class ThreadLocalChannel<T>
         ("ThreadLocal not initialized for "+getReflector().getTypeURI());
       log.log(Level.WARNING,x.getMessage(),x);
       log.log(Level.WARNING,"ThreadLocal initializer trace: ",initTrace);
+      log.log(Level.WARNING,"ThreadLocal channel trace: "+trace(null));
       throw x;
     }
   }
