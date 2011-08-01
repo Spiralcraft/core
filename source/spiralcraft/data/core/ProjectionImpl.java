@@ -28,6 +28,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
 import spiralcraft.data.lang.BoundTuple;
+import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.lang.TupleReflector;
 import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
@@ -40,6 +41,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
+import spiralcraft.lang.parser.BindingNode;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.util.ArrayUtil;
@@ -93,6 +95,7 @@ public class ProjectionImpl<T>
 
   }
   
+
   
   /**
    * <p>Create a projection that targets another FieldSet and simply subsets
@@ -135,6 +138,67 @@ public class ProjectionImpl<T>
     reflector=new TupleReflector<Tuple>(this,Tuple.class);
     
   }  
+  
+  /**
+   * Construct a projection which maps one data type to another
+   * 
+   * @param type
+   * @param expressions
+   * @throws DataException
+   */
+  @SuppressWarnings({ "unchecked", "rawtypes"})
+  public ProjectionImpl
+    (Type<?> resultType,Type<?> masterType,Expression<?>[] expressions
+    )
+    throws DataException
+  {    
+      this.masterFieldSet=masterType.getFieldSet();
+      HashMap<String,Expression> paramMap=new HashMap<String,Expression>();
+      for (Expression<?> param:expressions)
+      { 
+        if (!(param.getRootNode() instanceof BindingNode))
+        { throw new DataException("Expression must in the form field:=source");
+        }
+        BindingNode<?,?> node=(BindingNode<?,?>) param.getRootNode();
+        paramMap.put
+          (node.getSource().reconstruct()
+          ,new Expression(node.getTarget())
+          );
+        
+      }
+      
+      for (Field field: resultType.getFieldSet().fieldIterable())
+      {
+        Expression expression=paramMap.get(field.getName());
+        if (expression==null)
+        { throw new DataException(field.getURI()+" not implemented");
+        }
+            
+        ProjectionFieldImpl<?> adapterField
+          =makeField(expression);
+        adapterField.setIndex(fields.size());
+        adapterField.setName(field.getName());
+        adapterField.setArchetypeField(field);
+        fields.add(adapterField);
+        fieldMap.put(adapterField.getName(),adapterField);
+      }
+      
+      try
+      { 
+        reflector
+          =(TupleReflector<Tuple>) 
+            DataReflector.<Tuple>getInstance(resultType);
+      }
+      catch (BindException x)
+      { 
+        throw new DataException
+          ("Error binding aspect adapter for "
+            +resultType.getURI()+" to "+masterType.getURI()
+          ,x)
+          ;
+      }
+      
+  } 
   
   private <X> ProjectionFieldImpl<X> makeField(Expression<X> expression)
     throws DataException
