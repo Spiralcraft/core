@@ -92,14 +92,20 @@ public class FileArchive
   protected Entry loadEntry(String path)
     throws IOException
   {
-    FileResource fileResource
-      =(FileResource) Resolver.getInstance().resolve
-        (rootResource.getURI().resolve(path));
+    try
+    {
+      FileResource fileResource
+        =(FileResource) Resolver.getInstance().resolve
+          (rootResource.getURI().resolve(path));
     
-    if (fileResource.exists())
-    { return new FileEntry(fileResource);
+      if (fileResource.exists())
+      { return new FileEntry(fileResource);
+      }
+      else
+      { return null;
+      }
     }
-    else
+    catch (UnresolvableURIException x)
     { return null;
     }
   }
