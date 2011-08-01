@@ -56,6 +56,11 @@ public class Sum<T extends Number>
       return new SumContext<Integer>(source,focus)
       {
         @Override
+        protected Integer zero()
+        { return Integer.valueOf(0);
+        }
+
+        @Override
         protected Integer add(Integer v1,Integer v2)
         { return v1+v2;
         }
@@ -66,6 +71,11 @@ public class Sum<T extends Number>
     { 
       return new SumContext<Float>(source,focus)
       {
+        @Override
+        protected Float zero()
+        { return Float.valueOf(0);
+        }
+
         @Override
         protected Float add(Float v1,Float v2)
         { return v1+v2;
@@ -78,6 +88,11 @@ public class Sum<T extends Number>
       return new SumContext<Long>(source,focus)
       {
         @Override
+        protected Long zero()
+        { return Long.valueOf(0);
+        }
+
+        @Override
         protected Long add(Long v1,Long v2)
         { return v1+v2;
         }
@@ -88,6 +103,11 @@ public class Sum<T extends Number>
     { 
       return new SumContext<Double>(source,focus)
       {
+        @Override
+        protected Double zero()
+        { return Double.valueOf(0);
+        }
+
         @Override
         protected Double add(Double v1,Double v2)
         { return v1+v2;
@@ -100,6 +120,11 @@ public class Sum<T extends Number>
       return new SumContext<Short>(source,focus)
       {
         @Override
+        protected Short zero()
+        { return Short.valueOf((short) 0);
+        }
+        
+        @Override
         protected Short add(Short v1,Short v2)
         { return Integer.valueOf(v1+v2).shortValue();
         }
@@ -110,6 +135,11 @@ public class Sum<T extends Number>
     { 
       return new SumContext<Byte>(source,focus)
       {
+        @Override
+        protected Byte zero()
+        { return Byte.valueOf((byte) 0);
+        }
+        
         @Override
         protected Byte add(Byte v1,Byte v2)
         { return Integer.valueOf(v1+v2).byteValue();
@@ -122,6 +152,11 @@ public class Sum<T extends Number>
       return new SumContext<BigInteger>(source,focus)
       {
         @Override
+        protected BigInteger zero()
+        { return BigInteger.ZERO;
+        }
+        
+        @Override
         protected BigInteger add(BigInteger v1,BigInteger v2)
         { return v1.add(v2);
         }
@@ -132,6 +167,11 @@ public class Sum<T extends Number>
     { 
       return new SumContext<BigDecimal>(source,focus)
       {
+        @Override
+        protected BigDecimal zero()
+        { return BigDecimal.ZERO;
+        }
+        
         @Override
         protected BigDecimal add(BigDecimal v1,BigDecimal v2)
         { return v1.add(v2);
@@ -159,6 +199,8 @@ public class Sum<T extends Number>
 
     protected abstract Tstate add(Tstate v1,Tstate v2);
     
+    protected abstract Tstate zero();
+    
     @SuppressWarnings("unchecked")
     @Override
     protected void update(ViewState<Tstate> state)
@@ -180,7 +222,7 @@ public class Sum<T extends Number>
     @Override
     protected T latest(
       ViewState<Tstate> state)
-    { return (T) state.data;
+    { return (T) (state.data==null?zero():state.data);
     }
 
     @SuppressWarnings("unchecked")
