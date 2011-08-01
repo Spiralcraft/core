@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
+import spiralcraft.common.Coercion;
 import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.lang.AccessException;
@@ -32,6 +33,7 @@ import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
 import spiralcraft.lang.kit.AbstractReflector;
+import spiralcraft.lang.kit.CoercionChannel;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.AbstractFunctorChannel;
@@ -40,6 +42,7 @@ import spiralcraft.lang.spi.SourcedChannel;
 //import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.util.lang.NumericCoercion;
 
 public class StructNode
   extends Node
@@ -359,19 +362,32 @@ public class StructNode
           { 
             // Set up field with a different declared type
             Reflector type=(Reflector) field.type.bind(focus).get();
+            Coercion coercion=null;
+            
             if (!type.isAssignableFrom(channels[i].getReflector()))
             { 
-              throw new BindException
-                ("Type "+type.getTypeURI()
-                +" cannot be assigned from expression of type "
-                +channels[i].getReflector().getTypeURI()
-                );
+              // XXX There are other possibilities- may have to query
+              //   both reflectors
+              coercion
+                =NumericCoercion.instance(type.getContentType());
+              
+              if (coercion==null)
+              {
+                throw new BindException
+                  ("Type "+type.getTypeURI()
+                  +" cannot be assigned from expression of type "
+                  +channels[i].getReflector().getTypeURI()
+                  );
+              }
+              channels[i]
+                =new CoercionChannel(type,channels[i],coercion);
             }
-            channels[i]
-              = new AspectChannel
-                (type
-                ,channels[i]
-                );
+            else
+            {
+              channels[i]
+                =new AspectChannel(type,channels[i]);
+            }
+            
           }
         }
         else if (field.type!=null)
