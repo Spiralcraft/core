@@ -970,6 +970,19 @@
           </testX>
         
         </test:Assertion>   
+
+        <test:Assertion>
+          <name>Sum of empty set is 0
+          </name>
+          
+          <subjectX>[@math:BigDecimal][{}]$[ .[*fn:Sum] ]
+          </subjectX>
+          
+          <testX>.==0
+          </testX>
+        
+        </test:Assertion>   
+
       </scenarios>
       
     </task:Sequence>

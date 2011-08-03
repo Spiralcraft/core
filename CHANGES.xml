@@ -19,6 +19,20 @@
         </release>
         
         <notes>
+          <scm:Note>Fix scalar computations to compute result after checkpoint 
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi/ReduceProjector.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev3
+        </release>
+        
+        <notes>
           <scm:Note>AssignmentChannel now includes target channel in trace
             tree
           </scm:Note>
