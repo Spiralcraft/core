@@ -1,12 +1,16 @@
 package spiralcraft.lang.spi;
 
 import spiralcraft.common.Coercion;
+
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.kit.CoercionChannel;
+
 import spiralcraft.log.ClassLog;
+
 import spiralcraft.util.lang.NumericCoercion;
+import spiralcraft.util.tree.LinkedTree;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class AssignmentChannel
@@ -81,5 +85,21 @@ public class AssignmentChannel
   @Override
   public boolean isWritable()
   { return translator.isWritable() && targetChannel.isWritable();
+  }
+  
+  @Override
+  public LinkedTree trace(Class stop)
+  { 
+    if (stop!=null && stop.isAssignableFrom(getClass()))
+    { return new LinkedTree<Channel<?>>(this);
+    }
+    else
+    { 
+      return new LinkedTree<Channel<?>>
+        (this
+        ,source.trace(stop)
+        ,targetChannel.trace(stop)
+        );
+    }
   }
 }
