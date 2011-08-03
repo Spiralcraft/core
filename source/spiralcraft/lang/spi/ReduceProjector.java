@@ -371,7 +371,6 @@ public class ReduceProjector<I,P,R,C>
     @Override
     protected R retrieve()
     {
-      P output=null;
 
       IterationCursor<I> it=iterable.iterator();
       cursorChannel.push(it);
@@ -385,10 +384,10 @@ public class ReduceProjector<I,P,R,C>
           I item=it.next();
           channel.set(item);
           viewCache.touch();
-          output=functionChannel.get();
+          functionChannel.get();
         }
         viewCache.checkpoint();
-        return (R) output; 
+        return (R) functionChannel.get();
       }
       finally
       { 
