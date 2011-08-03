@@ -53,7 +53,7 @@ public abstract class Accumulator<Tresult,Tsource>
   implements ChannelFactory<Tresult,Tsource>
 {
 
-  private final ClassLog log
+  protected final ClassLog log
     =ClassLog.getInstance(getClass());
   
   protected abstract Context<?> newContext
