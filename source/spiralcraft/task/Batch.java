@@ -71,7 +71,7 @@ public class Batch<I,R>
   
   private Scheduler scheduler;
 
-  { this.addChainResult=true;
+  { this.addChainCommandAsResult=true;
   }
 
   

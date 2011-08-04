@@ -64,7 +64,7 @@ public class Sequence
     
     return new CommandTask()
     {
-      { addResult=true;
+      { addCommandAsResult=true;
       }
       
       @Override

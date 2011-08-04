@@ -42,7 +42,7 @@ public class Reference<Tresult>
   
   private AbstractXmlObject<?,?> target;
   
-  { addChainResult=true;
+  { addChainCommandAsResult=true;
   }
   
   

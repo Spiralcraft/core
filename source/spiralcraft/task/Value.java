@@ -40,7 +40,7 @@ public class Value<Tresult>
   private Context context;
   private Lifecycle lifecycle;
   
-  { addChainResult=true;
+  { addChainCommandAsResult=true;
   }
   
   public void setValue(Tresult value)

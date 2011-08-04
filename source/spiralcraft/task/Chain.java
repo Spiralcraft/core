@@ -46,13 +46,21 @@ public class Chain<Tcontext,Tresult>
 
   
   protected Scenario<?,?> chain;
-  protected boolean addChainResult=false;
+  protected boolean addChainCommandAsResult=false;
+  protected boolean addChainResult;
+  
+  public void setAddChainResult(boolean addChainResult)
+  { this.addChainResult=addChainResult;
+  }
+  
     
   protected class ChainTask
     extends CommandTask
   {
     
-    { addResult=addChainResult;
+    { 
+      addCommandAsResult=addChainCommandAsResult;
+      addCommandResult=addChainResult;
     }
     
     @Override
@@ -90,6 +98,9 @@ public class Chain<Tcontext,Tresult>
   { 
     if (chain!=null)
     { chain.bind(focusChain);
+    }
+    if (addChainResult)
+    { storeResults=true;
     }
   }
   

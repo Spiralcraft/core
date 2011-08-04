@@ -25,7 +25,8 @@ public abstract class CommandTask
 {
 
   protected TaskCommand<?,?> command;
-  protected boolean addResult;
+  protected boolean addCommandAsResult;
+  protected boolean addCommandResult;
   
   @Override
   protected void work()
@@ -35,7 +36,11 @@ public abstract class CommandTask
     if (command.getException()!=null)
     { addException(command.getException());
     }
-    if (addResult)
+
+    if (addCommandResult)
+    { addResult(command.getResult());
+    }
+    else if (addCommandAsResult)
     { addResult(command);
     }
   }

@@ -86,7 +86,7 @@ public class Fork
           =new CommandTask()
         {
           { 
-            addResult=true;
+            addCommandAsResult=true;
             command=tc.command();
           }
           
