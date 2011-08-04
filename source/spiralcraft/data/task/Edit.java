@@ -131,6 +131,7 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
           (focusChain
           ,DataReflector.<Titem>getInstance(type).createNilChannel()
           );
+      autoCreate=true;
     }
     else
     {
