@@ -139,6 +139,18 @@
               <testX>.=="score"
               </testX>
             </test:Assertion>   
+            
+            <test:Assertion>
+              <name>Data modification method with return
+              </name>
+              
+              <subjectX>
+                [example:Customer].addFact("This is a new fact")
+              </subjectX>
+            
+              <testX>.description=="This is a new fact"
+              </testX>
+            </test:Assertion>               
 <!--
             <task:Eval>
             

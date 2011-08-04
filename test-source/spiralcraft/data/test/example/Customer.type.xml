@@ -192,6 +192,20 @@
       </x>
           
     </meta:Method>
+    
+    <meta:TaskMethod>
+      <name>addFact
+      </name>
+      
+      <parameterTypes>
+        <String.type/>
+      </parameterTypes>
+      
+      <returnType>
+        <example:Fact.type/>
+      </returnType>
+      
+    </meta:TaskMethod>
   </methods>
 
 </meta:Type>
