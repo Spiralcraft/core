@@ -440,7 +440,9 @@ public class DataSession
         it.remove();
       }
       
-
+      if (buffers!=null)
+      { buffers.clear();
+      }
       
       state=State.COMMITTED;
     }
@@ -459,9 +461,7 @@ public class DataSession
       }
       updaterMap.clear();
       
-      if (buffers!=null)
-      { buffers.clear();
-      }
+
 
     }
 
