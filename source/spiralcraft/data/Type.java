@@ -316,6 +316,7 @@ public abstract class Type<T>
   @SuppressWarnings("unchecked") // Scheme is not genericized
   public Key<T> getPrimaryKey()
   { 
+    link();
     Key<T> key=null;
     if (getScheme()!=null)
     { key=(Key<T>) getScheme().getPrimaryKey();
