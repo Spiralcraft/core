@@ -60,41 +60,41 @@ assert("2<=1","",false);
 
 "Array ops";
 array=new String[] {"zero","one","two"};
-Evaluator.parseAndEvaluateObject(".[0]",array);
-Evaluator.parseAndEvaluateObject(".[1]",array);
-Evaluator.parseAndEvaluateObject(".[2]",array);
-Evaluator.parseAndEvaluateObject(".[3-1]",array);
-Evaluator.parseAndEvaluateObject(".[0+1]",array);
-Evaluator.parseAndEvaluateObject(".[5*0]",array);
+Evaluator.parseAndEvaluateObject("@[0]",array);
+Evaluator.parseAndEvaluateObject("@[1]",array);
+Evaluator.parseAndEvaluateObject("@[2]",array);
+Evaluator.parseAndEvaluateObject("@[3-1]",array);
+Evaluator.parseAndEvaluateObject("@[0+1]",array);
+Evaluator.parseAndEvaluateObject("@[5*0]",array);
 array=new String[][] {{"zero","one","two"},{"three","four","five"},{"six","seven","eight"}};
-Evaluator.parseAndEvaluateObject(".[0].length",array);
-Evaluator.parseAndEvaluateObject(".[1].length",array);
-Evaluator.parseAndEvaluateObject(".[2].length",array);
-Evaluator.parseAndEvaluateObject(".[0][0]",array);
-Evaluator.parseAndEvaluateObject(".[1][1]",array);
-Evaluator.parseAndEvaluateObject(".[2][2]",array);
-Evaluator.parseAndEvaluateObject(".[0][0].length()",array);
-Evaluator.parseAndEvaluateObject(".[1][1].length()",array);
-Evaluator.parseAndEvaluateObject(".[2][2].length()",array);
+Evaluator.parseAndEvaluateObject("@[0].length",array);
+Evaluator.parseAndEvaluateObject("@[1].length",array);
+Evaluator.parseAndEvaluateObject("@[2].length",array);
+Evaluator.parseAndEvaluateObject("@[0][0]",array);
+Evaluator.parseAndEvaluateObject("@[1][1]",array);
+Evaluator.parseAndEvaluateObject("@[2][2]",array);
+Evaluator.parseAndEvaluateObject("@[0][0].length()",array);
+Evaluator.parseAndEvaluateObject("@[1][1].length()",array);
+Evaluator.parseAndEvaluateObject("@[2][2].length()",array);
 "Array Selection";
 array=new String[] {"zero","one","two"};
-Evaluator.parseAndEvaluateObject(".[.startsWith(\"t\")][0]",array);
+Evaluator.parseAndEvaluateObject("@[.startsWith(\"t\")][0]",array);
 
 
 "Array Equals";
 array2=new String[] {"zero","one","two"};
 holder=new String[][] {array,array2};
-Evaluator.parseAndEvaluateObject(".[0].equals(.[1])",holder);
+Evaluator.parseAndEvaluateObject("@[0].equals(@[1])",holder);
 
 array=new byte[] {1,2,3};
 array2=new byte[] {1,2,3};
 holder=new byte[][] {array,array2};
-Evaluator.parseAndEvaluateObject(".[0].equals(.[1])",holder);
+Evaluator.parseAndEvaluateObject("@[0].equals(@[1])",holder);
 
 array=new byte[] {1,2,3};
 array2=new byte[] {1,2,4};
 holder=new byte[][] {array,array2};
-Evaluator.parseAndEvaluateObject(".[0].equals(.[1])",holder);
+Evaluator.parseAndEvaluateObject("@[0].equals(@[1])",holder);
 
 "==";
 Evaluator.parseAndEvaluateObject("1==1",new Object());
@@ -107,10 +107,10 @@ Evaluator.parseAndEvaluateObject("-.hashCode()==-.hashCode()",new Object());
 Evaluator.parseAndEvaluateObject(".concat(.)","test");
 
 "// Assignment operator";
-Expression.parse(".[0]=\"test\"").getRootNode().debugTree(System.err);
+Expression.parse("@[0]=\"test\"").getRootNode().debugTree(System.err);
 array=new String[1];
 array[0]="orig";
-Evaluator.parseAndEvaluateObject(".[0]=\"test\"",array);
+Evaluator.parseAndEvaluateObject("@[0]=\"test\"",array);
 array[0];
 
 "// Meta names";

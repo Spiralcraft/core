@@ -15,6 +15,35 @@
     <detail>
     
       <scm:Change>
+        <release>-dev5
+        </release>
+        
+        <notes>
+          <scm:Note>DataSession now clears buffers only after a successful 
+            commit, and not whenever a transaction fails. 
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/data/session/DataSession.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <release>-dev5
+        </release>
+        
+        <notes>
+          <scm:Note>Type.getPrimaryKey() now ensures that type is linked
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/data/Type.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <release>-dev4
         </release>
         
