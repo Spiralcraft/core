@@ -12,7 +12,7 @@ import spiralcraft.util.ArrayUtil;
 import spiralcraft.vfs.context.ContextResourceMap;
 
 /**
- * Provides 
+ * Publishes a set of Services into the focus chain.
  * 
  * @author mike
  *
