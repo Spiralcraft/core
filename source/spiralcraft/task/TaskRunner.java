@@ -31,6 +31,7 @@ import spiralcraft.exec.ExecutionException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.service.ResourceContext;
@@ -231,7 +232,14 @@ public class TaskRunner
   @Override
   public void bindComplete(Focus<?> focus)
     throws ContextualException
-  { scenario.bind(focus);
+  { 
+    Focus<?> serviceFocus=LangUtil.findFocus(Service.class,focus);
+    if (serviceFocus!=null)
+    { scenario.bind(serviceFocus);
+    }
+    else
+    { scenario.bind(focus);
+    }
   }
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
