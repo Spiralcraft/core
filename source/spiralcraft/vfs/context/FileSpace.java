@@ -14,13 +14,11 @@
 //
 package spiralcraft.vfs.context;
 
-import spiralcraft.app.kit.AbstractComponent;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.Context;
-import spiralcraft.service.Service;
+import spiralcraft.service.ContextService;
 
 /**
  * <p>Manages and provides access to a set of VFS Resources by publishing
@@ -34,8 +32,7 @@ import spiralcraft.service.Service;
  *
  */
 public class FileSpace
-  extends AbstractComponent
-  implements Service,Context
+  extends ContextService
 {
   
   protected Authority[] authorities;
@@ -92,12 +89,20 @@ public class FileSpace
   
   @Override
   public void push()
-  { map.push();
+  { 
+    map.push();
+    super.push();
+
   }
   
   @Override
   public void pop()
-  { map.pop();
+  { 
+    super.pop();
+    map.pop();
   }
+
+  
+  
   
 }
