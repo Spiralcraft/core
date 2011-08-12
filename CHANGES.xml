@@ -20,6 +20,23 @@
         </revision>
         
         <notes>
+          <scm:Note>LoginEntry only writes to the the authentication session
+            when update() is called.
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/security/auth/LoginEntry.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev1
+        </revision>
+        
+        <notes>
           <scm:Note>Fix NPE in HexCodec.decode
           </scm:Note>
           
