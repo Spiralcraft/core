@@ -3,6 +3,37 @@
   >
   <scm:Change>
   
+    <revision>0.4.15.1
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>
+    </date>
+    
+    <detail>
+    
+      <scm:Change>
+        
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix NPE in HexCodec.decode
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/codec/text/HexCodec.java
+        </path>
+        
+      </scm:Change>
+    </detail>
+  </scm:Change>
+  
+  <scm:Change>
+  
     <revision>0.4.15
     </revision>
     
