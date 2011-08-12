@@ -36,7 +36,8 @@ public class Loader
 {
   private static final ClassLog log
     =ClassLog.getInstance(Loader.class);
-  private static final Level logLevel
+
+  private Level logLevel
     =ClassLog.getInitialDebugLevel(Loader.class,Level.INFO);
   
   private final ArrayList<Archive> archives=new ArrayList<Archive>();
@@ -78,7 +79,15 @@ public class Loader
   }
   
   public void setDebug(boolean debug)
-  { this.debug=debug;
+  { 
+    this.debug=debug;
+    if (debug && !logLevel.isDebug())
+    { logLevel=Level.DEBUG;
+    }
+    
+    if (!debug && logLevel.isDebug())
+    { logLevel=Level.INFO;
+    }
   }
   
   /**
@@ -404,7 +413,7 @@ public class Loader
     {
       for (Archive archive: archives)
       { 
-        if (debug && logLevel.isTrace())
+        if (debug || logLevel.isDebug())
         { log.trace("Opening local archive "+archive);
         }
         archive.open();
@@ -412,7 +421,7 @@ public class Loader
     
       for (Archive archive: precedentArchives)
       { 
-        if (debug && logLevel.isTrace())
+        if (debug || logLevel.isDebug())
         { log.trace("Opening precedent archive "+archive);
         }
         archive.open();
