@@ -105,8 +105,8 @@ public class LoginEntry
   
   public void setSaltedDigest(byte[] digest)
   {
-    sessionChannel.get().addCredentials
-      (new Credential[] {new DigestCredential(digest)});
+//    sessionChannel.get().addCredentials
+//      (new Credential[] {new DigestCredential(digest)});
     this.digest=digest;
   }
   
@@ -116,8 +116,8 @@ public class LoginEntry
   
   public void setChallengeCredential(String challenge)
   { 
-    sessionChannel.get().addCredentials
-    (new Credential[] {new ChallengeCredential(challenge)});
+//    sessionChannel.get().addCredentials
+//    (new Credential[] {new ChallengeCredential(challenge)});
     this.challenge=challenge;
     
   }
