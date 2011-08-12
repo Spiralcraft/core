@@ -26,6 +26,10 @@ public class HexCodec
 
   public static final byte[] decodeHex(String input)
   {
+    if (input==null)
+    { return null;
+    }
+    
     int len = input.length();
     if ( (len/2) * 2 != len)
     { 
