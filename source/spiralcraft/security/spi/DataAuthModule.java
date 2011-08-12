@@ -38,7 +38,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.log.ClassLog;
 
 import java.net.URI;
 import java.security.Principal;
@@ -60,8 +59,6 @@ public class DataAuthModule
   extends AbstractAuthModule
 {
   
-  private static final ClassLog log
-    =ClassLog.getInstance(DataAuthModule.class);
   
   private Space space;
   private Queryable<?> providedSource;
@@ -80,7 +77,6 @@ public class DataAuthModule
 
   private TeleFocus<Tuple> comparisonFocus;
   private ThreadLocalChannel<Tuple> loginChannel;
-  private boolean debug;
   
   private Binding<?> refreshTriggerX;
   
@@ -490,6 +486,12 @@ public class DataAuthModule
                 }
               };
             }
+            if (debug)
+            { 
+              log.fine
+                ("successful login for "+principalId
+                );
+            }            
             authenticated=true;
             resetRefreshTrigger();
             return true;

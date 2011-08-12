@@ -6,6 +6,7 @@ import java.util.Map;
 import spiralcraft.common.ContextualException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.log.ClassLog;
 import spiralcraft.security.auth.AuthModule;
 import spiralcraft.security.auth.AuthSession;
 import spiralcraft.security.auth.Authenticator;
@@ -15,12 +16,16 @@ public abstract class AbstractAuthModule
   implements AuthModule
 {
 
+  protected final ClassLog log
+    =ClassLog.getInstance(getClass());
+  
   protected Focus<AuthSession> sessionFocus;
   protected Focus<Map<String,Credential<?>>> credentialFocus;
   protected Class<? extends Credential<?>>[] acceptedCredentials;
   protected Authenticator authenticator;
   protected boolean usesActiveCredentials;
   protected String name;
+  protected boolean debug;
   
 
   @Override
@@ -103,6 +108,9 @@ public abstract class AbstractAuthModule
       if (usesActiveCredentials)
       {
         principal=null;
+        if (debug)
+        { log.fine("Deauthenticating");
+        }
         authenticated=false;
       }
     }
@@ -115,6 +123,9 @@ public abstract class AbstractAuthModule
     public synchronized void logout()
     {
       principal=null;
+      if (debug)
+      { log.fine("Deauthenticating");
+      }      
       authenticated=false;
     }    
   }
