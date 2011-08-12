@@ -215,10 +215,7 @@ public class AuthSession
   public synchronized void addCredentials(Credential<?>[] credentials)
   { 
     if (debug)
-    { 
-      log.fine("Adding credentials "+Arrays.deepToString(credentials));
-      
-
+    { log.fine("Adding credentials "+Arrays.deepToString(credentials));
     }
     
 
