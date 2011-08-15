@@ -165,7 +165,7 @@
           
         </test:Assertion>    
         
-                <test:Assertion>
+        <test:Assertion>
         
           <name>pattern5
           </name>
@@ -178,7 +178,41 @@
           <testX>.
           </testX>
           
-        </test:Assertion>    
+        </test:Assertion> 
+        
+        <test:Assertion>
+          <name>Winpath drive letter
+          </name>
+        
+          <subjectX>
+            [*jnet:URI{"file:/C:/a/b/c/"}].resolve([*jnet:URI{"file:/D:/e/f/g/"}])
+          </subjectX>
+          <testX>true
+          </testX>
+        </test:Assertion>   
+
+        <test:Assertion>
+          <name>Builder dir
+          </name>
+        
+          <subjectX>
+            [*jnet:URI{"${spiralcraft.builder.dir}"}]
+          </subjectX>
+          <testX>.==[*jnet:URI{"/spiralcraft/vfs/test/"}]
+          </testX>
+        </test:Assertion>   
+
+        <test:Assertion>
+          <name>Builder uri
+          </name>
+        
+          <subjectX>
+            [*jnet:URI{"${spiralcraft.builder.dir.URI}"}]
+          </subjectX>
+          <testX>.==[*jnet:URI{"class:/spiralcraft/vfs/test/"}]
+          </testX>
+        </test:Assertion>   
+
       </scenarios>
     </task:Sequence>
   </chain>

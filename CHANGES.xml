@@ -20,6 +20,26 @@
         </revision>
         
         <notes>
+          <scm:Note>The "spiralcraft.builder.dir" contextual property and
+            related proprties are set to the actual URI of the resolved 
+            resource, instead of the URI used to resolve the resource, 
+            which may not be valid outside  of the context in which it was 
+            resolved.
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/builder/AssemblyClass.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev1
+        </revision>
+        
+        <notes>
           <scm:Note>LoginEntry only writes to the the authentication session
             when update() is called.
           </scm:Note>
