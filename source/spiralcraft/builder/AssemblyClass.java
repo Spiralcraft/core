@@ -220,12 +220,20 @@ public class AssemblyClass
     
     if (sourceUri!=null)
     { 
+      URI absURI=sourceUri;
+      try
+      { absURI=Resolver.getInstance().resolve(sourceUri).getURI();
+      }
+      catch (UnresolvableURIException x)
+      {
+      }
+      
       String relURI
-        =sourceUri.getPath()==null
+        =absURI.getPath()==null
         ?""
         :URIUtil.replaceUnencodedPath
-          (sourceUri
-          ,new Path(sourceUri.getPath(),'/').parentPath().format('/')
+          (absURI
+          ,new Path(absURI.getPath(),'/').parentPath().format('/')
           ).toString()
         ;
       
@@ -237,9 +245,9 @@ public class AssemblyClass
       }
       
       String relDir
-        =sourceUri.getPath()==null
+        =absURI.getPath()==null
         ?""
-        :new Path(sourceUri.getPath(),'/').parentPath().format('/')
+        :new Path(absURI.getPath(),'/').parentPath().format('/')
         ;
       
       if (relDir!=null)
@@ -248,6 +256,42 @@ public class AssemblyClass
       
 
       
+    }
+  }
+  
+  
+  
+  /**
+   * Construct a new AssemblyClass from a referenced base class
+   *
+   *@param sourceUri The URI of the resource which defines this AssemblyClass,
+   *   or null of the AssemblyClass is being defined programmatically.
+   *
+   *@param baseClass The base class 
+   *
+   *@param outerClass The AssemblyClass in which this AssemblyClass is being
+   *   defined, if any.
+   *
+   *@param loader The AssemblyLoader which loaded this AssemblyClass, if any
+   */
+  public AssemblyClass
+    (URI sourceUri
+    ,AssemblyClass baseClass
+    ,AssemblyClass outerClass
+    ,AssemblyLoader loader
+    )
+  { 
+    this.sourceURI=sourceUri;
+    _basePackage=null;
+    _baseName=null;
+    _containerURI=baseClass.getContainerURI();
+    _baseAssemblyClass=baseClass;
+    _outerClass=outerClass;
+    if (loader!=null)
+    { _loader=loader;
+    }
+    else
+    { _loader=AssemblyLoader.getInstance();
     }
   }
   
@@ -377,40 +421,7 @@ public class AssemblyClass
     { return null;
     }
   }
-  
-  /**
-   * Construct a new AssemblyClass from a referenced base class
-   *
-   *@param sourceUri The URI of the resource which defines this AssemblyClass,
-   *   or null of the AssemblyClass is being defined programmatically.
-   *
-   *@param baseClass The base class 
-   *
-   *@param outerClass The AssemblyClass in which this AssemblyClass is being
-   *   defined, if any.
-   *
-   *@param loader The AssemblyLoader which loaded this AssemblyClass, if any
-   */
-  public AssemblyClass
-    (URI sourceUri
-    ,AssemblyClass baseClass
-    ,AssemblyClass outerClass
-    ,AssemblyLoader loader
-    )
-  { 
-    this.sourceURI=sourceUri;
-    _basePackage=null;
-    _baseName=null;
-    _containerURI=baseClass.getContainerURI();
-    _baseAssemblyClass=baseClass;
-    _outerClass=outerClass;
-    if (loader!=null)
-    { _loader=loader;
-    }
-    else
-    { _loader=AssemblyLoader.getInstance();
-    }
-  }
+
 
   /**
    * Create a new inner AssemblyClass in this AssemblyClass which subclasses 
