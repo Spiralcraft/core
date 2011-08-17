@@ -160,7 +160,7 @@ public class ThreadLocalChannel<T>
   }
   
   @Override
-  public T retrieve()
+  protected T retrieve()
   { 
     ThreadReference<T> r=threadLocal.get();
     if (r!=null)
@@ -181,7 +181,7 @@ public class ThreadLocalChannel<T>
   }
 
   @Override
-  public boolean store(T val)
+  protected boolean store(T val)
   { 
     ThreadReference<T> r=threadLocal.get();
     if (r!=null)
