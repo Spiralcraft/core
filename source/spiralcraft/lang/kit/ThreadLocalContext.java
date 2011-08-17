@@ -40,7 +40,7 @@ public class ThreadLocalContext<T>
   }
   
   @Override
-  public Focus<?> bindImports(Focus<?> focusChain)
+  protected Focus<?> bindImports(Focus<?> focusChain)
     throws ContextualException
   { 
     local=new ThreadLocalChannel<T>(reflector,inheritable);
@@ -56,12 +56,12 @@ public class ThreadLocalContext<T>
   }
   
   @Override
-  public void pushLocal()
+  protected void pushLocal()
   { local.push();
   }
 
   @Override
-  public void popLocal()
+  protected void popLocal()
   { local.pop();
   }
 

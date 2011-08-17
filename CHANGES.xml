@@ -16,6 +16,32 @@
     
       <scm:Change>
         
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>New SelectorContext publishes a set of options and a
+            current selection based on a key function
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/lang/kit
+        </path>
+        
+        <resources>
+          <URI>Callable.java
+          </URI>
+          <URI>SelectorContext.java
+          </URI>
+          <URI>ThreadLocalContext.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
         <revision>-dev1
         </revision>
         
