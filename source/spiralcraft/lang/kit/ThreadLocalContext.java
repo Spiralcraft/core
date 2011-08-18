@@ -44,7 +44,7 @@ public class ThreadLocalContext<T>
     throws ContextualException
   { 
     local=new ThreadLocalChannel<T>(reflector,inheritable);
-    return super.bind(focusChain.chain(local));
+    return super.bindImports(focusChain.chain(local));
   }
 
   public void set(T val)
