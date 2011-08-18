@@ -716,11 +716,30 @@ public class BeanReflector<T>
   @Override
   public Reflector<?> disambiguate(Reflector<?> alternate)
   {
-    if (alternate==this || alternate.getTypeModel()!=getTypeModel())
+    if (alternate==this)
     { 
+
       // Force no override of BeanReflectors by other type models using
       //   class:/x/y/z URIs
       return this;
+    }
+    else if (alternate.getTypeModel()!=getTypeModel())
+    {
+      if (this.getContentType()!=alternate.getContentType()
+          && (this.getContentType().isAssignableFrom(alternate.getContentType())
+              || this.getContentType()==Object[].class
+              )
+          )
+      { 
+        // XXX: This condition will never happen, because we have a 
+        //   BeanReflector for every type. What we need is an runtime annotation
+        //   that specifies that a particular base class has an affinity
+        //   towards a particular TypeModel.
+        return alternate;
+      }
+      else
+      { return this;
+      }
     }
 //    else if (alternate instanceof BeanReflector)
 //    {

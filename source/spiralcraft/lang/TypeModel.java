@@ -63,6 +63,35 @@ public abstract class TypeModel
     return reflector;
   }
   
+  @SuppressWarnings("unchecked")
+  public static <T> Reflector<T> reflect(T object)
+  {
+    Reflector<T> reflector=null;
+    
+    // Search the type models for the type
+    for (TypeModel model : TypeModel.getRegisteredModels())
+    { 
+      try
+      {
+        if (reflector==null)
+        { reflector=model.typeOf(object);
+        }
+        else
+        {
+          Reflector<T> altReflector=model.typeOf(object);
+          if (altReflector!=null && altReflector!=reflector)
+          { 
+            reflector
+              =(Reflector<T>) reflector.disambiguate(altReflector);    
+          }
+        }
+      }
+      catch (BindException x)
+      { throw new RuntimeException(x);
+      }
+    }
+    return reflector;
+  }
   
   /** 
    * Register the Type model in the ClassLoader that loaded it
@@ -123,5 +152,8 @@ public abstract class TypeModel
    * @throws BindException if an error occurred resolving the type
    */
   public abstract <X> Reflector<X> findType(URI typeURI)
+    throws BindException;
+  
+  public abstract <X> Reflector<X> typeOf(X object)
     throws BindException;
 }

@@ -30,8 +30,23 @@ public class BeanTypeModel
     }
   }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public <X> Reflector<X> typeOf(X object)
+  { 
+    if (object==null)
+    { return (Reflector<X>) BeanReflector.getInstance(Void.TYPE);
+    }
+    else
+    { return BeanReflector.<X>getInstance(object.getClass());
+    }
+  }
+
+  
   @Override
   public String getModelId()
   { return "java";
   }
+  
+  
 }

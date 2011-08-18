@@ -15,6 +15,7 @@
 package spiralcraft.lang.spi;
 
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.TypeModel;
 import spiralcraft.lang.reflect.BeanReflector;
 
 
@@ -36,10 +37,10 @@ public class SimpleChannel<T>
    * <p>Publish an object's Bean interface
    * </p>
    */
-  @SuppressWarnings("unchecked") // does not return properly scoped class
   public SimpleChannel(T val,boolean isConstant)
   { 
-    super(BeanReflector.<T>getInstance((Class<T>) val.getClass()),isConstant);
+    // super(BeanReflector.<T>getInstance((Class<T>) val.getClass()),isConstant);    
+    super(TypeModel.reflect(val),isConstant);
     _object=val;
 
     // System.out.println("SimpleBinding- noclass:"+super.toString()+":["+val+"]");

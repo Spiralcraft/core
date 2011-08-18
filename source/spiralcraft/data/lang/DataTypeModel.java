@@ -2,6 +2,7 @@ package spiralcraft.data.lang;
 
 import java.net.URI;
 
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeNotFoundException;
@@ -35,8 +36,7 @@ public class DataTypeModel
     String scheme=typeURI.getScheme();
     
     if (scheme!=null && scheme.equals("data"))
-    { 
-      typeURI=URI.create(typeURI.getRawSchemeSpecificPart());
+    { typeURI=URI.create(typeURI.getRawSchemeSpecificPart());
     }
     
     Type<?> type=null;
@@ -57,6 +57,20 @@ public class DataTypeModel
     { return null;
     }
 
+  }
+
+  @Override
+  public <X> Reflector<X> typeOf(X object)
+    throws BindException
+  {
+    if (object==null)
+    { return null;
+    }
+    if (!(object instanceof DataComposite))
+    { return null;
+    }
+    return DataReflector.getInstance(((DataComposite) object).getType());
+        
   }
 
   @Override
