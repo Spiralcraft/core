@@ -20,6 +20,87 @@
         </revision>
         
         <notes>
+          <scm:Note>New NavContext selects from among many options by keying
+            off of a hierarchical path. Each nested NavContext instance is
+            keyed off a different path segment.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>ui/NavContext.java
+          </URI>
+          <URI>util/Path.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix NPEs when injecting arrays of raw data into bean typed
+            objects.
+          </scm:Note>
+          <scm:Note>Fix NPE in array selection when Boolean comparision returns
+            null 
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/core/ArrayType.java
+          </URI>
+          <URI>lang/spi/ArraySelectChannel.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>TypeModel.reflect(Object) find the best Reflector for
+            any object by querying all registered TypeModels. 
+          </scm:Note>
+          
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/TypeModel.java
+          </URI>
+          <URI>lang/spi/SimpleChannel.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>lang/reflect/BeanTypeModel.java
+          </URI>
+          <URI>data/lang/DataTypeModel.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
           <scm:Note>New SelectorContext publishes a set of options and a
             current selection based on a key function
           </scm:Note>
