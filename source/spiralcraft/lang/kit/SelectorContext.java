@@ -15,17 +15,20 @@
 package spiralcraft.lang.kit;
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationDecorator;
+import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.GenericReflector;
 import spiralcraft.lang.spi.SimpleChannel;
 
 /**
- * <p>Publishes a list of available options and a currently selected option based 
- *   on a key function.
+ * <p>Publishes a list of available options and a currently selected option 
+ *   based on a key function.
  * </p>
  * 
  * @author mike
@@ -42,7 +45,9 @@ public class SelectorContext<Toptions,Toption,Tkey>
   private GenericReflector<SelectorContext<?,?,?>> selfReflector;
   private Binding<Tkey> keyX;
   private Callable<Toption,Tkey> keyFunction;
-  private Binding<Toptions> optionsX;
+  private Expression<Toptions> optionsX;
+  private Channel<Toptions> optionsC;
+  private Reflector<Toptions> optionsType;
   private Binding<Toption> lookupX;
   private Binding<Tkey> selectedKeyX;
   private IterationDecorator<Toptions,Toption> optionsIter;
@@ -56,9 +61,30 @@ public class SelectorContext<Toptions,Toption,Tkey>
   }
   
   public void setOptionsX(Expression<Toptions> optionsX)
-  { this.optionsX=new Binding<Toptions>(optionsX);
+  { this.optionsX=optionsX;
   }
 
+  public void setOptions(Toptions options)
+  {
+    if (optionsType==null)
+    { this.optionsC=new SimpleChannel<Toptions>(options,true);
+    }
+    else
+    {
+      this.optionsC=new SimpleChannel<Toptions>
+        (optionsType
+        ,options
+        ,true
+        );
+    }
+    
+    log.fine("Got options: "+optionsC.getReflector()+" :options="+options);
+  }
+  
+  public void setOptionsType(Reflector<Toptions> optionsType)
+  { this.optionsType=optionsType;
+  }
+  
   public void setLookupX(Expression<Toption> lookupX)
   { this.lookupX=new Binding<Toption>(lookupX);
   }
@@ -67,11 +93,16 @@ public class SelectorContext<Toptions,Toption,Tkey>
   { this.selectedKeyX=new Binding<Tkey>(selectedKeyX);
   }
   
-  protected void computeSelection()
+  public Tkey keyOf(Toption option)
+  { return keyFunction.evaluate(option);
+  }
+  
+  protected void computeSelection(SelectorState state)
   {
-    SelectorState state=get();
-    state.options=optionsX.get();
-    state.selectedKey=selectedKeyX.get();
+    state.options=optionsC.get();
+    if (state.selectedKey==null && selectedKeyX!=null)
+    { state.selectedKey=selectedKeyX.get();
+    }
     
     if (lookupX!=null)
     { state.selectedOption=lookupX.get();
@@ -111,8 +142,13 @@ public class SelectorContext<Toptions,Toption,Tkey>
   {
     super.bindImports(chain);
     
-    optionsX.bind(chain);
-    optionsIter=optionsX.decorate(IterationDecorator.class);
+    if (optionsX!=null)
+    { optionsC=chain.bind(optionsX);
+    }
+    optionsIter=optionsC.decorate(IterationDecorator.class);
+    if (optionsIter==null)
+    { throw new BindException(optionsC.getReflector().getTypeURI()+" is not iterable");
+    }
     keyFunction
       =new Callable<Toption,Tkey>
         (chain
@@ -125,12 +161,19 @@ public class SelectorContext<Toptions,Toption,Tkey>
       =new GenericReflector<SelectorContext<?,?,?>>
         (BeanReflector.<SelectorContext<?,?,?>>getInstance(getClass()));
     selfReflector.enhance("selectedKey",keyX.getReflector());
-    selfReflector.enhance("options",optionsX.getReflector());
+    selfReflector.enhance
+      ("keyOf"
+      ,new Reflector<?>[] {optionsIter.getComponentReflector()}
+      ,keyX.getReflector()
+      );
+    selfReflector.enhance("options",optionsC.getReflector());
     selfReflector.enhance("selectedOption",optionsIter.getComponentReflector());
     chain=chain.chain
       (new SimpleChannel<SelectorContext<?,?,?>>(selfReflector,this,true));
 
-    selectedKeyX.bind(chain);
+    if (selectedKeyX!=null)
+    { selectedKeyX.bind(chain);
+    }
 
     if (lookupX!=null)
     { lookupX.bind(chain);
@@ -150,8 +193,9 @@ public class SelectorContext<Toptions,Toption,Tkey>
   protected void pushLocal()
   {
     super.pushLocal();
-    set(newSelectorState());
-    computeSelection();
+    SelectorState state=newSelectorState();
+    set(state);
+    computeSelection(state);
   }
   
   @Override
@@ -160,10 +204,10 @@ public class SelectorContext<Toptions,Toption,Tkey>
     super.popLocal();
   }
   
-  class SelectorState
+  protected class SelectorState
   {
-    Tkey selectedKey;
-    Toptions options;
-    Toption selectedOption;
+    public Tkey selectedKey;
+    public Toptions options;
+    public Toption selectedOption;
   }
 }
