@@ -62,7 +62,7 @@ public class ArraySelectChannel<X>
       for (int i=0;i<array.length;i++)
       {
         componentChannel.set(array[i]);
-        if (selector.get())
+        if (Boolean.TRUE.equals(selector.get()))
         { list.add(array[i]);
         }
       }
