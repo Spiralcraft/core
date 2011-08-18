@@ -56,6 +56,15 @@ public class Path
   }
 
   /**
+   * Construct a URI style path delimited by "/" chars.
+   * 
+   * @param source
+   */
+  public Path(String source)
+  { this(source,'/');
+  }
+  
+  /**
    * Construct a path made up of a set of tokens embedded in a String and
    *   separated by the specified delimiter
    */
