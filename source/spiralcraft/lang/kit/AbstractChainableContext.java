@@ -20,6 +20,7 @@ import spiralcraft.lang.ChainableContext;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Context;
 import spiralcraft.lang.Focus;
+import spiralcraft.log.ClassLog;
 
 /**
  * <p>Provides support for implementing ChainableContext
@@ -44,7 +45,9 @@ public class AbstractChainableContext
     { return (ChainableContext) chain;
     }
   }
-  
+
+  protected final ClassLog log=ClassLog.getInstance(getClass());
+
   private Contextual next;
   private boolean context;
   private boolean chainable;
