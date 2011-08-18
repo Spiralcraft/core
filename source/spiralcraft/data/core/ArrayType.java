@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.core;
 
+import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.EditableAggregate;
@@ -64,10 +65,19 @@ public class ArrayType<T>
   public T[] fromData(DataComposite data,InstanceResolver resolver)
     throws DataException
   { 
+    link();
     Aggregate<?> aggregate=data.asAggregate();
     
+    Class<T> elementClass=contentType.getNativeClass();
+    if (elementClass==null)
+    {
+      elementClass
+        =(Class<T>) (contentType.isAggregate()?Aggregate.class:Tuple.class);
+    }
+    
     Object array
-      =Array.newInstance(contentType.getNativeClass(),aggregate.size());
+      =Array.newInstance(elementClass,aggregate.size());
+    
     int index=0;
     for (Object val: aggregate)
     { 
