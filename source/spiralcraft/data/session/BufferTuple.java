@@ -71,14 +71,37 @@ public class BufferTuple
   
   private WeakReference<Object> behaviorRef;
   
+  /**
+   * Create a new buffer for editing the latest version of the specified
+   *   original
+   * @param session
+   * @param original
+   */
   public BufferTuple(DataSession session,Tuple original)
   { 
     this.session=session;
-    this.original=original;
     this.type=Type.getBufferType(original.getType());
-    this.id=original.getId();
-    if (original.getBaseExtent()!=null)
-    { baseExtent=new BufferTuple(session,original.getBaseExtent());
+    
+    if (original instanceof JournalTuple)
+    { 
+      JournalTuple jt=((JournalTuple) original).latestVersion();
+      if (!jt.isDeletedVersion())
+      { this.original=jt;
+      }
+    }
+    else
+    { this.original=original;
+    }
+    
+    if (this.original!=null)
+    {
+      this.id=this.original.getId();
+      if (this.original.getBaseExtent()!=null)
+      { baseExtent=new BufferTuple(session,this.original.getBaseExtent());
+      }
+    }
+    else if (type.getBaseType()!=null)
+    { baseExtent=new BufferTuple(session,type.getBaseType());
     }
   }
   
