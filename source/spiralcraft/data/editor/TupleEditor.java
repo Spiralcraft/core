@@ -221,7 +221,7 @@ public class TupleEditor
       }
     }
     
-    Buffer buffer=localChannel.get();
+    BufferTuple buffer=localChannel.get();
     
     if (buffer!=null && preSaveBindings!=null)
     { BindingChannel.apply(preSaveBindings);
@@ -258,6 +258,8 @@ public class TupleEditor
       
       buffer.save();
       
+      writeToModel(buffer);
+      
       if (publishedAssignments!=null)
       {
         if (debug)
@@ -266,7 +268,7 @@ public class TupleEditor
         for (Setter<?> setter: publishedSetters)
         { setter.set();
         }
-      }      
+      }
     }
     else
     { 

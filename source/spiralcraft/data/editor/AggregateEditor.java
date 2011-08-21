@@ -228,6 +228,7 @@ public class AggregateEditor
         { throw new DataException("Content required for "+getType());
         }
         aggregate.reset();
+        writeToModel(aggregate);
       }
       else
       { 

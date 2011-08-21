@@ -40,6 +40,8 @@ public class BufferChannel<Tbuffer extends Buffer>
   private static final ClassLog log=ClassLog.getInstance(BufferChannel.class);
   
   private Channel<DataSession> sessionChannel;
+  private final Type<?> sourceType;
+  private final boolean sourceIsBuffer;
 
 /*
   private Channel<Buffer> parentChannel;
@@ -79,6 +81,8 @@ public class BufferChannel<Tbuffer extends Buffer>
         )
       ,(Channel<DataComposite>) original
       );
+    sourceType=((DataReflector<?>) original.getReflector()).getType();
+    sourceIsBuffer=sourceType instanceof BufferType;
     if (debug)
     { log.fine("BufferChannel "+getReflector());
     }
@@ -107,6 +111,8 @@ public class BufferChannel<Tbuffer extends Buffer>
     super(DataReflector.<Tbuffer>getInstance(bufferType)
           ,(Channel<DataComposite>) originalChannel
           );
+    sourceType=((DataReflector<?>) originalChannel.getReflector()).getType();
+    sourceIsBuffer=sourceType instanceof BufferType;
     if (debug)
     { log.fine("BufferChannel "+getReflector());
     }
@@ -131,16 +137,18 @@ public class BufferChannel<Tbuffer extends Buffer>
 
   @Override
   public boolean isWritable()
-  { return false;
+  { return source.isWritable();
   }
   
   @Override
   public boolean store(Buffer val)
   { 
-    if (debug)
-    { log.fine("Not storing Buffer "+val);
+    if (sourceIsBuffer)
+    { return source.set(val);
     }
-    return false;
+    else
+    { return source.set(val.getOriginal());
+    }
   }
 
   @SuppressWarnings("unchecked")
