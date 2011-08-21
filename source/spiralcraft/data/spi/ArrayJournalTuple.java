@@ -193,6 +193,9 @@ public class ArrayJournalTuple
           if (this.delta==null)
           {
             ArrayJournalTuple nextVersion=null;
+            if (delta.getOriginal()!=this)
+            { delta=delta.rebase(this);
+            }
             if (!delta.isDelete())
             { nextVersion=freezeDelta(delta);
             }
@@ -207,7 +210,7 @@ public class ArrayJournalTuple
     JournalTuple latestVersion
       =latestVersion();
     if (latestVersion!=null)
-    { return latestVersion().update(delta);
+    { return latestVersion().prepareUpdate(delta);
     }
     else
     { return delta;
@@ -305,7 +308,8 @@ public class ArrayJournalTuple
   
   @Override
   public String toString()
-  { return super.toString()+" version="+version+", transaction="+transactionId;
+  { return super.toString()+" version="+version+", transaction="+transactionId
+     +(nextVersion!=null?"(nextVersion="+nextVersion.getVersion()+":"+nextVersion.getTransactionId()+")":" (latest version)");
   }
   
   class TransactionContext
