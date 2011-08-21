@@ -13,7 +13,71 @@
     </date>
     
     <detail>
+
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+
+          <scm:Note>Fix issue where ArrayJournalTuple was committed
+            prematurely if it received multiple deltas in a transaction 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/spi/ArrayJournalTuple.java
+        </path>
+                
+      </scm:Change>
     
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Editors try write the buffer back to the model
+            after a successful save to prevent known-stale copies of data
+            from being used.
+          </scm:Note>
+          <scm:Note>The result of buffering a deleted JournalTuple is a 
+            "new" entity of the same type.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>editor/TupleEditor.java
+          </URI>
+          <URI>editor/AggregateEditor.java
+          </URI>
+          <URI>session/BufferChannel.java
+          </URI>
+          <URI>session/BufferTuple.java
+          </URI>
+        
+        </resources>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Check for null before adding a Tuple to a CursorAggregate
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/access/CursorAggregate.java
+        </path>
+        
+      </scm:Change>
+
       <scm:Change>
         
         <revision>-dev2

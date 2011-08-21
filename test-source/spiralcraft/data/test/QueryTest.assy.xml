@@ -715,6 +715,75 @@
           </testX>
           
         </test:Assertion>
+        
+        <dtask:Session>
+        
+          <contextX>
+            { 
+              [#context]
+              orig:=
+                [*dtask:Fetch
+                  { [@example:Customer]
+                    , [{ `displayName:="Mary Second Edited"` }] 
+                  }
+                ].()
+            }
+          </contextX>
+          
+          
+          <sequence>
+            <test:Assertion>
+              <name>Precondition
+              </name>
+              <subjectX>
+                [context].orig
+              </subjectX>
+              <testX>.!=null
+              </testX>
+            </test:Assertion>
+            
+            <test:Stub>
+              <name>Edit once
+              </name>
+              <messageX>
+                [context].orig.[*dtask:Edit].()
+                  { .displayName="Mary Second Edited 2"
+                    ,.
+                  }.@tuple.save()
+              </messageX>
+            
+            </test:Stub>
+            
+            <test:Stub>
+              <name>Edit old copy
+              </name>
+              <messageX>
+                [context].orig.[*dtask:Edit].()
+                  { .displayName="Mary Second Edited 3"
+                    ,.
+                  }.@tuple.save()
+              </messageX>
+            
+            </test:Stub>            
+            
+            <test:Assertion>
+              <name>Check update result
+              </name>
+              <subjectX>
+                [*dtask:Fetch
+                  { [*query:Scan
+                      {[@example:Customer].type
+                      }
+                    ]
+                  }
+                ].()#{.displayName}
+              </subjectX>
+              <testX>@[1]=="Mary Second Edited 3"
+              </testX>
+            </test:Assertion>
+            
+          </sequence>
+        </dtask:Session>
 
       </scenarios>
       
