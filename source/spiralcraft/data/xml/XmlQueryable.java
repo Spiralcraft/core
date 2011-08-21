@@ -1273,6 +1273,10 @@ public class XmlQueryable
       
       DeltaTuple prepared=jt.prepareUpdate(tuple);  
       
+      if (logLevel.isDebug() && prepared!=tuple)
+      { log.fine("Rebase during prepare:\r\n  "+prepared+"  \r\n  was  "+tuple);
+      }
+      
       
       // Original might be rebased
       preparedUpdates.add((JournalTuple) prepared.getOriginal());
@@ -1389,10 +1393,10 @@ public class XmlQueryable
                  )
              
             { 
-              if (logLevel.isFine())
+              if (logLevel.isInfo())
               { 
-                log.fine
-                  ("Merging store changes for "+dt+" to rebase "
+                log.info
+                  ("Merging external store changes for "+dt+" to rebase "
                   +orig+" to "+storeVersion
                   );
               }

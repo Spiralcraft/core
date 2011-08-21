@@ -34,7 +34,6 @@ import spiralcraft.data.query.EquiJoin;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Scan;
-import spiralcraft.data.xml.XmlQueryable;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -63,10 +62,10 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
 { 
   
   protected final ClassLog log
-    =ClassLog.getInstance(XmlQueryable.class);
+    =ClassLog.getInstance(getClass());
 
   protected Level logLevel
-    =ClassLog.getInitialDebugLevel(XmlQueryable.class,null);
+    =ClassLog.getInitialDebugLevel(getClass(),null);
   
   protected abstract Aggregate<T> getAggregate()
     throws DataException;
