@@ -421,6 +421,47 @@ public class ArrayDeltaTuple
   }
 
   @Override
+  public String toString()
+  { 
+    StringBuffer buf=new StringBuffer();
+    buf.append(getClass().getName()
+      +"@"+System.identityHashCode(this)+":"+getType().getURI()+"["
+      );
+    Field<?>[] dirtyFields=getExtentDirtyFields();
+      
+    if (dirtyFields!=null)
+    {
+      boolean first=true;
+      for (Field<?> field : dirtyFields)
+      { 
+        if (first)
+        { first=false;
+        }
+        else
+        { buf.append(",");
+        }
+        try
+        { buf.append(field.getName()+"=["+field.getValue(this)+"]");
+        }
+        catch (DataException x)
+        { buf.append(field.getName()+"=!!!"+x);
+        }
+      }
+    
+    }
+    else
+    { buf.append(delete?"(DELETED)":"(clean)");
+    }
+    buf.append("] ");
+    buf.append(" original="+original);
+    
+    if (baseExtent!=null)
+    { buf.append("\r\n baseExtent="+baseExtent.toString());
+    }
+    return buf.toString();
+  }
+  
+  @Override
   public DeltaTuple getBaseExtent()
   { return (DeltaTuple) super.getBaseExtent();
   }
