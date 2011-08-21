@@ -43,11 +43,14 @@ public class CursorAggregate<Tt extends Tuple>
     while (cursor.next())
     { 
       Tt tuple=cursor.getTuple();
-      if (tuple.isVolatile())
-      { tuple=(Tt) tuple.snapshot();
-      }
+      if (tuple!=null)
+      {
+        if (tuple.isVolatile())
+        { tuple=(Tt) tuple.snapshot();
+        }
       
-      list.add(tuple);
+        list.add(tuple);
+      }
     }
     
   }
@@ -66,11 +69,14 @@ public class CursorAggregate<Tt extends Tuple>
     while (cursor.next() && count++<limit)
     { 
       Tt tuple=cursor.getTuple();
-      if (tuple.isVolatile())
-      { tuple=(Tt) tuple.snapshot();
-      }
+      if (tuple!=null)
+      {
+        if (tuple.isVolatile())
+        { tuple=(Tt) tuple.snapshot();
+        }
       
-      list.add(tuple);
+        list.add(tuple);
+      }
     }
     
   }
