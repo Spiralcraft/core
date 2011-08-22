@@ -32,6 +32,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 
@@ -286,6 +287,10 @@ public abstract class Scenario<Tcontext,Tresult>
     Focus<?> context)
     throws ContextualException
   { 
+    if (declarationInfo==null)
+    { declarationInfo=BeanReflector.getInstance(getClass()).getTypeURI();
+    }
+    
     try
     {
       Focus<?> focusChain=context;
