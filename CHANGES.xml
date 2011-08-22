@@ -21,6 +21,22 @@
         
         <notes>
 
+          <scm:Note>Setter now respects numeric coercion rules
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi/Setter.java
+        </path>
+                
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+
           <scm:Note>Fix issue where ArrayJournalTuple was committed
             prematurely if it received multiple deltas in a transaction 
           </scm:Note>
