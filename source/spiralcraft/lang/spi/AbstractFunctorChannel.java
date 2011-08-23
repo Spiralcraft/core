@@ -58,6 +58,14 @@ public abstract class AbstractFunctorChannel<Tresult>
     
   }
   
+  /**
+   * The result of a Functor call cannot be modified
+   */
+  @Override
+  public boolean isWritable()
+  { return false;
+  }
+  
   protected Focus<?> bindImports(Focus<?> focus)
     throws BindException
   { return focus;
