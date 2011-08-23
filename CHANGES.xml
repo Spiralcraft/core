@@ -13,6 +13,30 @@
     </date>
     
     <detail>
+    
+      <scm:Change>
+        
+        <revision>-dev3
+        </revision>
+        
+        <notes>
+
+          <scm:Note>Prevent Editor buffer write-back from throwing an
+            exception by checking whether target is writable and making sure
+            Functor channels have writable=false
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+                
+        <resources>
+          <URI>lang/spi/AbstractFunctorChannel.java
+          </URI>
+          <URI>data/session/BufferChannel.java
+          </URI>
+        </resources>
+      </scm:Change>    
 
       <scm:Change>
         
