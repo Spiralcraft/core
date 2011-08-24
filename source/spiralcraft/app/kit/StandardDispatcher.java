@@ -53,8 +53,6 @@ public class StandardDispatcher
   private LinkedList<Integer> path=new LinkedList<Integer>();
   private LinkedList<Integer> reversePath=new LinkedList<Integer>();
   private LinkedList<Integer> crumbtrail=new LinkedList<Integer>();
-  private LinkedList<String> keys=new LinkedList<String>();
-  private LinkedList<String> reverseKeys=new LinkedList<String>();
   
   private Path localPath;
   
@@ -133,7 +131,6 @@ public class StandardDispatcher
     ,Component component
     ,State state
     ,Integer[] path
-    ,String[] keys
     )
   { 
     State lastState=state;
@@ -156,14 +153,7 @@ public class StandardDispatcher
         { this.path.add(val);
         }
       }
-      if (keys!=null)
-      { 
-        this.keys=new LinkedList<String>();
-        this.reverseKeys.clear();
-        for (String val:keys)
-        { this.keys.add(val);
-        }
-      }
+
       component.message(this,message);
     }
     finally
@@ -247,19 +237,7 @@ public class StandardDispatcher
   
   
 
-  
-  public final String pushKey()
-  { 
-    if (keys!=null && !keys.isEmpty())
-    { 
-      String element=keys.removeFirst();
-      reverseKeys.add(element);
-      return element;
-    }
-    else
-    { return null;
-    }    
-  }
+
   
 
   @Override
