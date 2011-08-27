@@ -20,6 +20,7 @@ import spiralcraft.app.Component;
 import spiralcraft.app.Container;
 import spiralcraft.app.Dispatcher;
 import spiralcraft.app.Message;
+import spiralcraft.app.Parent;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
@@ -30,18 +31,22 @@ public class StandardContainer
   implements Container
 {
 
-  public StandardContainer()
-  {
-  }
-  
-  public StandardContainer(Component[] children)
-  { this.children=children;
-  }
+
   
   
   protected Component[] children;
   protected Level logLevel=Level.INFO;
+  protected final Parent parent;
 
+  public StandardContainer(Parent parent)
+  { this.parent=parent;
+  }
+  
+  public StandardContainer(Parent parent,Component[] children)
+  { 
+    this.parent=parent;
+    this.children=children;
+  }
   
   @Override
   public void bind(
@@ -75,19 +80,33 @@ public class StandardContainer
   
   protected Focus<?> bindChild(Focus<?> context,Component child) 
     throws ContextualException
-  { return child.bind(context);
+  { 
+    child.setParent(parent);
+    return child.bind(context);
   }
 
   @Override
   public Component getChild(
     int childNum)
-  { return children[childNum];
+  { 
+    if (children!=null)
+    { return children[childNum];
+    }
+    else
+    { throw new IndexOutOfBoundsException(childNum+" >= 0");
+    }
   }
 
 
   @Override
   public int getChildCount()
-  { return children.length;
+  { 
+    if (children!=null)
+    { return children.length;
+    }
+    else
+    { return 0;
+    }
   }
 
 
@@ -131,14 +150,17 @@ public class StandardContainer
   @Override
   public void relayMessage(Dispatcher dispatcher,Message message)
   { 
-    Integer index=dispatcher.getNextRoute();
-    if (index!=null)
-    { dispatcher.relayMessage(children[index],index,message);
-    }
-    else if (message.isMulticast())
-    { 
-      for (int i=0;i<children.length;i++)
-      { dispatcher.relayMessage(children[i],i,message);
+    if (children!=null)
+    {
+      Integer index=dispatcher.getNextRoute();
+      if (index!=null)
+      { dispatcher.relayMessage(children[index],index,message);
+      }
+      else if (message.isMulticast())
+      { 
+        for (int i=0;i<children.length;i++)
+        { dispatcher.relayMessage(children[i],i,message);
+        }
       }
     }
   }
