@@ -17,6 +17,7 @@ package spiralcraft.app.kit;
 import spiralcraft.app.Dispatcher;
 import spiralcraft.app.InitializeMessage;
 import spiralcraft.app.Message;
+import spiralcraft.app.Parent;
 import spiralcraft.common.ContextualException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -52,6 +53,9 @@ public class ExpansionContainer<C,T>
   private boolean initializeContent;
 
 
+  public ExpansionContainer(Parent parent)
+  { super(parent);
+  }
   
   /**
    * 

@@ -41,7 +41,7 @@ public class ContextService
   public void setServices(final Service[] services)
   {
     this.childContainer
-      =new StandardContainer()
+      =new StandardContainer(this)
     {
       { 
         children=new Component[services.length];
