@@ -13,7 +13,62 @@
     </date>
     
     <detail>
-    
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+           <scm:Note>Generate an alias for the context in an ExpressionMethod
+            (the default implementation of meta:Method) using the containing
+            type uri path and method name in the form typeURIpath+"_"+name so
+            the context can be accessed from within nested expressions.
+          </scm:Note>
+          <scm:Note>Scenario accepts a contextAliasURI to make the context
+            reachable in the focus chain
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/core/ExpressionMethod.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+        </resources>
+          
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+
+          <scm:Note>Encapsulate realm digest function in DigestFunction
+            interface for use by client code that needs to manipulate security
+            tokens.
+          </scm:Note>
+          <scm:Note>Add method to Login data type to secure password with
+            a passed DigestFunction
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/security/
+        </path>
+                
+        <resources>
+          <URI>Login.type.xml
+          </URI>
+          <URI>auth/AuthSession.java
+          </URI>
+          <URI>auth/DigestFunction.java
+          </URI>
+        </resources>
+      </scm:Change>    
+
       <scm:Change>
         
         <revision>-dev4
