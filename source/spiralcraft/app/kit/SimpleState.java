@@ -98,9 +98,16 @@ public class SimpleState
   public void setChild(int index,State child)
   { 
     children[index]=child;
-    int[] newPath=new int[path.length+1];
-    System.arraycopy(path,0,newPath,0,path.length);
-    newPath[path.length]=index;
+    int[] newPath;
+    if (path!=null)
+    { 
+      newPath=new int[path.length+1];
+      System.arraycopy(path,0,newPath,0,path.length);
+      newPath[path.length]=index;
+    }
+    else
+    { newPath=new int[] {index};
+    }
     child.link(this,newPath);
   }
   
