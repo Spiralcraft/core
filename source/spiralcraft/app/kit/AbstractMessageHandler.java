@@ -64,9 +64,6 @@ public abstract class AbstractMessageHandler
   { return (type==null || type==message.getType());
   }
   
-  @Override
-  public Message.Type getType()
-  { return type;
-  }
+
 
 }

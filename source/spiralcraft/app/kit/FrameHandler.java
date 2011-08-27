@@ -42,9 +42,6 @@ public abstract class FrameHandler
       ,MessageHandlerChain next
       );
   
-  @Override
-  public Message.Type getType()
-  { return null;
-  }
+
 
 }
