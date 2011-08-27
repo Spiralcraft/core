@@ -23,6 +23,7 @@ import spiralcraft.lang.util.LangUtil;
 
 import spiralcraft.task.Eval;
 import spiralcraft.task.Scenario;
+import spiralcraft.util.URIUtil;
 
 /**
  * A method which evaluates an Expression in the context of a Tuple of a given 
@@ -65,6 +66,8 @@ public class ExpressionMethod<T,C,R>
     }
     
     Eval<C,R> eval=new Eval<C,R>(contextX,x);
+    eval.setContextAliasURI
+      (URIUtil.addPathSuffix(this.getDataType().getURI(),"_"+this.getName()));
     try
     { return (Focus) 
         LangUtil.findFocus(Eval.class,eval.bind(context));

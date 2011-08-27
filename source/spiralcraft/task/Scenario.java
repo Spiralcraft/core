@@ -94,7 +94,7 @@ public abstract class Scenario<Tcontext,Tresult>
   
   protected URI declarationInfo;
   protected URI alias;
-  
+  protected URI contextAlias;
   
   
   
@@ -124,6 +124,10 @@ public abstract class Scenario<Tcontext,Tresult>
   
   public void setAlias(ContextualName alias)
   { this.alias=alias.getQName().toURIPath();
+  }
+  
+  public void setContextAliasURI(URI contextAliasURI)
+  { this.contextAlias=contextAliasURI;
   }
   
   /**
@@ -530,7 +534,15 @@ public abstract class Scenario<Tcontext,Tresult>
         contextChannel
           =new ThreadLocalChannel<Tcontext>(contextReflector);
       }
-      focusChain=focusChain.chain(contextChannel);
+
+      Focus<?> contextFocus=focusChain.chain(contextChannel);
+      if (contextAlias!=null)
+      { 
+        // Don't make the context the default subject if it has an alias
+        contextFocus.addAlias(contextAlias);
+      }
+      focusChain=contextFocus;
+        
     }
     
     bindInContext(focusChain);
