@@ -16,14 +16,12 @@ package spiralcraft.app.kit;
 
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
 import spiralcraft.app.Component;
 import spiralcraft.app.Container;
 import spiralcraft.app.Event;
-import spiralcraft.app.Message.Type;
 import spiralcraft.app.MessageHandler;
 import spiralcraft.app.MessageHandlerChain;
 import spiralcraft.app.Parent;
@@ -41,7 +39,6 @@ import spiralcraft.lang.kit.AbstractChainableContext;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
-import spiralcraft.util.ArrayUtil;
 
 /**
  * <p>Basic implementation of a component which uses a set of MessageHandlers
@@ -60,18 +57,19 @@ public class AbstractComponent
   
   protected MessageHandlerChain handler;
   
+  private MessageHandler[] messageHandlers;
+  
   protected Parent parent;
   protected boolean bound=false;
   protected Container childContainer;
   protected Focus<?> selfFocus;
   protected boolean acceptsChildren=true;
 
-  protected boolean exportSelf=true;  
   protected String id;
   protected Object key;
   
-  private Component[] peers;
-  private HashSet<Component> peerSet;
+  private PeerSet peerSet;
+  
   private Component[] contents;
   
   private LinkedList<Contextual> parentContextuals;
@@ -80,6 +78,7 @@ public class AbstractComponent
   
   private ChainableContext outerContext;
   
+  @Override
   public void setParent(Parent parent)
   { this.parent=parent;
   }
@@ -108,6 +107,25 @@ public class AbstractComponent
   { return this.id;
   }
 
+  /**
+   * <p>Message handlers provided via explicit configuration
+   * </p>
+   * 
+   * @return
+   */
+  public MessageHandler[] getMessageHandlers()
+  { return messageHandlers;
+  }
+  
+  /**
+   * <p>Provide additional message handlers to this Component
+   * </p>
+   * 
+   * @return
+   */
+  public void setMessageHandlers(MessageHandler[] messageHandlers)
+  { this.messageHandlers=messageHandlers;
+  }
 
     
   protected MessageHandler createDefaultHandler()
@@ -138,15 +156,33 @@ public class AbstractComponent
   { 
     if (peer!=null)
     {
-      if (this.peers==null)
+      if (this.peerSet==null)
       { 
-        this.peers=new Component[] {peer};
-        this.peerSet=new HashSet<Component>();
-      }
-      else 
-      { this.peers=ArrayUtil.append(this.peers,peer);
+        this.peerSet=new PeerSet();
       }
       this.peerSet.add(peer);
+    }
+  }
+  
+  /**
+   * <p>Add a Peer Component
+   * </p>
+   * 
+   * <p>A Peer is a child that has a specific role in this Component's function, 
+   *   as opposed to Contents, which are generically managed children.
+   * </p>
+   * 
+   * @param peer
+   */
+  protected void addPeer(Peering peering)
+  { 
+    if (peering!=null)
+    {
+      if (this.peerSet==null)
+      { 
+        this.peerSet=new PeerSet();
+      }
+      this.peerSet.add(peering);
     }
   }
   
@@ -164,12 +200,22 @@ public class AbstractComponent
   {
     if (peer!=null)
     {
-      if (this.peers!=null)
-      { 
-        this.peers=ArrayUtil.remove(this.peers,peer);
-        this.peerSet.remove(peer);
+      if (this.peerSet!=null)
+      { this.peerSet.remove(peer);
+
       }
     }
+  }
+  
+  protected Peering getPeering(Component peer)
+  {
+    if (peer!=null)
+    {
+      if (this.peerSet!=null)
+      { return this.peerSet.getPeering(peer);
+      }
+    }
+    return null;
   }
   
   /**
@@ -362,6 +408,9 @@ public class AbstractComponent
     throws ContextualException
   { 
     bound=true;
+    if (parent==this)
+    { throw new IllegalStateException("Recursive parent");
+    }
     
     Contextual self=new Contextual()
     {
@@ -393,15 +442,33 @@ public class AbstractComponent
   {
     bindContextuals(focusChain,parentContextuals);
       
-    Focus<?> context=focusChain;
+    Focus<?> parentContext=focusChain;
     if (selfFocus==null)
     { 
       selfFocus=focusChain.chain
         (new SimpleChannel<AbstractComponent>(AbstractComponent.this,true));
       bindContextuals(selfFocus,selfContextuals);
+      if (peerSet!=null)
+      { peerSet.bind(selfFocus);
+      }
     }
 
     focusChain=bindImports(focusChain);
+    
+    if (focusChain==parentContext)
+    { focusChain=focusChain.chain(focusChain.getSubject());
+    }
+    focusChain.addFacet(selfFocus);
+    
+    
+    addHandlers();
+    
+    if (messageHandlers!=null)
+    { 
+      for (MessageHandler messageHandler:messageHandlers)
+      { addHandler(messageHandler);
+      }
+    }
     
     if (handler!=null)
     {
@@ -410,20 +477,13 @@ public class AbstractComponent
     }
     
     focusChain=bindExports(focusChain);
-    if (exportSelf)
-    {
-      if (focusChain==context)
-      { focusChain=selfFocus;
-      }
-      else
-      { focusChain.addFacet(selfFocus);
-      }
-    }
+    
     bindContextuals(focusChain,exportContextuals);
 
     List<Component> children=composeChildren(focusChain);
     if (children!=null)
     { 
+
       childContainer
         =createChildContainer(children.toArray(new Component[children.size()]));
     }
@@ -456,16 +516,16 @@ public class AbstractComponent
    */
   protected List<Component> composeChildren(Focus<?> focusChain)
   {
-    if (peers==null && contents==null)
+    if (peerSet==null && contents==null)
     { return null;
     }
     
     ArrayList<Component> childList
       =new ArrayList<Component>
-        ( (peers!=null?peers.length:0) + (contents!=null?contents.length:0));
-    if (peers!=null)
+        ( (peerSet!=null?peerSet.size():0) + (contents!=null?contents.length:0));
+    if (peerSet!=null)
     { 
-      for (Component comp:peers)
+      for (Component comp:peerSet)
       { childList.add(comp);
       }
     }
@@ -489,7 +549,7 @@ public class AbstractComponent
    * @return
    */
   protected Container createChildContainer(Component[] children)
-  { return new StandardContainer(children);
+  { return new StandardContainer(this,children);
   }
   
   
@@ -516,6 +576,16 @@ public class AbstractComponent
   { return focusChain;
   }
 
+  /**
+   * <p>Override to add any additional handlers to the handler chain after
+   *   all configuration properties have been suppli and imports have been
+   *   bound.
+   * </p>
+   */
+  protected void addHandlers()
+  { 
+  }
+  
   protected Focus<?> bindExports(Focus<?> focusChain)
     throws ContextualException
   { return focusChain;
@@ -648,6 +718,30 @@ public class AbstractComponent
     
   }
   
+  public Component findAncestralChildOf(Component ancestor)
+  {
+    Parent parent=this;
+    
+    while (parent!=null)
+    {
+      if (parent.asComponent()!=null)
+      { 
+        Parent grandparent=parent.asComponent().getParent();
+        if (grandparent==ancestor)
+        { return parent.asComponent();
+        }
+        else
+        { parent=grandparent;
+        }
+      }
+      else
+      { parent=null;
+      }
+    }
+    return null;
+    
+  }
+  
   class DefaultHandler
     implements MessageHandler
   {
@@ -670,9 +764,5 @@ public class AbstractComponent
       }
     }
 
-    @Override
-    public Type getType()
-    { return null;
-    }
   }
 }
