@@ -99,6 +99,12 @@ public interface Component
    */
   Parent getParent();
   
+  /**
+   * Called when a component becomes a child of a Parent.
+   * 
+   * @param parent
+   */
+  void setParent(Parent parent);
 
   /**
    * The volume of log messages emitted from this component
@@ -106,5 +112,7 @@ public interface Component
    * @param debugLevel
    */
   void setLogLevel(Level logLevel);
+  
+  
 
 }
