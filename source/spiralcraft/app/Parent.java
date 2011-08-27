@@ -45,7 +45,7 @@ public interface Parent
    * @return The Component aspect of this context, for ascending the
    *   tree.
    */
-  public Component asComponent();
+  Component asComponent();
 
   
   /**
@@ -65,7 +65,7 @@ public interface Parent
    * 
    * @return The state depth of this Component.
    */
-  public int getStateDepth();  
+  int getStateDepth();  
   
   /**
    * Find a Component among this Component's ancestors/containers
@@ -75,7 +75,7 @@ public interface Parent
    * @return The Element with the specific class or interface, or null if
    *   none was found
    */
-  public <X> X findComponent(Class<X> clazz);
+  <X> X findComponent(Class<X> clazz);
   
   /**
    * Find a Component among this Component's ancestors/containers, but stop
@@ -86,6 +86,7 @@ public interface Parent
    * @return The Element with the specific class or interface, or null if
    *   none was found
    */
-  public <X> X findComponent(Class<X> clazz,Class<?> stop);
+  <X> X findComponent(Class<X> clazz,Class<?> stop);
+
   
 }
