@@ -16,6 +16,75 @@
     
       <scm:Change>
         
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Enhancements to achieve a functional standard 
+            implementation of the spiralcraft.app component model. 
+          </scm:Note>
+          <scm:Note>Removed unused getType() method from MessageHandler 
+            interface.
+          </scm:Note>
+          <scm:Note>Fix NPEs when no children are specified for a 
+            StandardContainer
+          </scm:Note>
+          <scm:Note>Interface methods to support child-to-parent references,
+            which are required for view composition
+          </scm:Note>
+          <scm:Note>PeerSet and Peering interface to manage relationship
+            between a parent and a specialized child.
+          </scm:Note>
+          <scm:Note>AbstractComponent supports insertion of 
+            arbitrary MessageHandlers during configuration.
+          </scm:Note>
+          <scm:Note>Added StateReferenceHandler to keep a thread-local 
+            reference to a Component's State
+          </scm:Note>
+          <scm:Note>Added TriggerHandler to trigger an expression on a
+            given Message.
+          </scm:Note>   
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+                
+        <resources>
+          <URI>app/Component.java
+          </URI>
+          <URI>app/Parent.java
+          </URI>
+          <URI>app/MessagHandler.java
+          </URI>
+          <URI>app/kit/AbstractComponent.java
+          </URI>
+          <URI>app/kit/AbstractMessagHandler.java
+          </URI>
+          <URI>app/kit/FrameHandler.java
+          </URI>
+          <URI>app/kit/StateReferenceHandler.java
+          </URI>
+          <URI>app/kit/TriggerHandler.java
+          </URI>
+          <URI>app/kit/StandardContainer.java
+          </URI>
+          <URI>app/kit/ExpansionContainer.java
+          </URI>
+          <URI>app/kit/Peering.java
+          </URI>
+          <URI>app/kit/PeerSet.java
+          </URI>
+          <URI>data/Space.java
+          </URI>
+          <URI>service/ContextService.java
+          </URI>
+          <URI>service/ResourceContext.java
+          </URI>
+        </resources>
+      </scm:Change>    
+
+      <scm:Change>
+        
         <revision>-dev3
         </revision>
         
