@@ -4,6 +4,7 @@
   xmlns:test="class:/spiralcraft/test/"
   xmlns:example="class:/spiralcraft/data/test/example/"
   xmlns:secauth="class:/spiralcraft/security/auth/"
+  xmlns:sec="class:/spiralcraft/security/"
   xmlns:sectest="class:/spiralcraft/security/test/"
   xmlns:codec="class:/spiralcraft/codec/text/"
   >
@@ -158,6 +159,21 @@
               </subjectX>
               <testX>
                 .=="bbb1f56bf069fc1ddee2d08231a9fcc092f63a597a63e32ad1ff047e69627b9d"
+              </testX>
+            </test:Assertion>
+            
+            <test:Assertion>
+              <name>securePassword
+              </name>
+              <subjectX>
+                [@sec:Login].(username:="userone",clearpass:="testOne")
+                  { 
+                    .securePassword([secauth:AuthSession].digestFunction)
+                    ,.digestpass
+                  }
+              </subjectX>
+              <testX>
+                .=="a6753cb0b7567c2ab79d64ce66e9b95512a30ba77f5c359b2241af7e4edf46e8"
               </testX>
             </test:Assertion>
 
