@@ -4,6 +4,9 @@
 <meta:Type
   xmlns:meta="class:/spiralcraft/data/types/meta"
   xmlns:security="class:/spiralcraft/security"
+  xmlns:codec="class:/spiralcraft/codec/text/"
+  xmlns:sec="class:/spiralcraft/security/"
+  xmlns:secauth="class:/spiralcraft/security/auth/"
   >
   
   <fields>
@@ -126,4 +129,32 @@
       
   </keys>
 
+  <methods>
+    <meta:Method>
+      <name>securePassword
+      </name>
+      
+      <parameterTypes>
+        <secauth:DigestFunction.type/>
+      </parameterTypes>
+      
+      <returnType><Void.type/>
+      </returnType>
+      
+      <contextX>
+        { 
+          digestFunction:[@secauth:DigestFunction]
+        }
+      </contextX>
+      
+      <x>
+        @{[sec:Login].digestpass
+            =[@codec:HexCodec].@encodeHex
+              (digestFunction.digest([sec:Login]{.searchname+.clearpass})
+              )
+          ,[sec:Login].clearpass=null
+        }
+      </x>
+    </meta:Method>
+  </methods>
 </meta:Type>

@@ -66,7 +66,16 @@ public class AuthSession
   protected AuthModule.Session primarySession;
   
   
-  
+  protected DigestFunction digestFunction
+    =new DigestFunction()
+  {
+
+    @Override
+    public byte[] digest(
+      String clearToken)
+    { return saltedDigest(clearToken);
+    }
+  };
   
   public AuthSession(Authenticator authenticator)
   { this.authenticator=authenticator;
@@ -96,7 +105,10 @@ public class AuthSession
     this.digestAlgorithm=digestAlgorithm;
   }
   
-  
+  public DigestFunction getDigestFunction()
+  { return digestFunction;
+  }
+
   /**
    * Returns the local identifier for the account as shared between
    *   authentication providers.
