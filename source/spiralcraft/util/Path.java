@@ -168,6 +168,17 @@ public class Path
   }
 
   /**
+   * Append the specified path to this one, always treating the specified
+   *   Path as a relative path.
+   * 
+   * @param path
+   * @return
+   */
+  public Path append(Path path)
+  { return append(path.elements(),path._container);
+  }
+  
+  /**
    * 
    * @return the last element in the path
    */

@@ -38,8 +38,11 @@ public class NavContext<Toptions,Toption>
   
   public Path resolve(Path relativePath)
   {
-    if (relativePath.isAbsolute() || parent==null)
+    if (relativePath.isAbsolute())
     { return relativePath;
+    }
+    else if (parent==null)
+    { return Path.ROOT_PATH.append(relativePath);
     }
     else 
     { return parent.getAbsoluteSelectedPath().append(relativePath.elements());
