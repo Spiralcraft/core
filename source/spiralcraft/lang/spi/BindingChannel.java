@@ -146,7 +146,8 @@ public class BindingChannel<T>
       }
       else
       {
-      
+        // XXX: Consider automatic type conversion here e.g. for unboxing 
+        //  primitive arrays
         throw new BindException
           ("Argument type mismatch: "
             +targetChannel.getReflector().getTypeURI()
