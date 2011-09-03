@@ -41,16 +41,8 @@ public class ContextService
   public void setServices(final Service[] services)
   {
     this.childContainer
-      =new StandardContainer(this)
-    {
-      { 
-        children=new Component[services.length];
-        int i=0;
-        for (Component service:services)
-        { children[i++]=service;
-        }
-      }
-      
+      =new StandardContainer(this,services)
+    {     
       
       @Override
       protected Focus<?> bindChild(Focus<?> context,Component service) 
@@ -58,7 +50,9 @@ public class ContextService
       { 
         Focus<?> ret=super.bindChild(context,service);
         if (service instanceof Service && ret!=context)
-        { context.addFacet(ret);
+        { 
+          context.addFacet(ret);
+          selfFocus.addFacet(ret);
         }
         if (service instanceof Context)
         { 
