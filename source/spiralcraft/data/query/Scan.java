@@ -89,7 +89,9 @@ public class Scan
     if (queryable==null)
     { 
       throw new DataException
-        ("No Queryable available for scan of type "+type.getURI()); 
+        ("No Queryable available for scan of type "+type.getURI()
+          +": "+focus.getFocusChain()
+        ); 
     }
     if (conditionX!=null)
     { return new BoundScan<Scan,T>(this,focus,queryable);
