@@ -20,6 +20,53 @@
         </revision>
         
         <notes>
+           <scm:Note>ContextService now adds contained services to its own
+             selfFocus so they are available to client code, now that
+             Components always return their selfFocus from bind()
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/service/ContextService.java
+        </path>
+
+      </scm:Change>
+      <scm:Change>
+        
+        <revision>-dev5
+        </revision>
+        
+        <notes>
+           <scm:Note>Include Focus chain in exception when Scan can't find
+             anything to query
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/query/Scan.java
+        </path>
+
+      </scm:Change>
+      <scm:Change>
+        
+        <revision>-dev5
+        </revision>
+        
+        <notes>
+           <scm:Note>Substitute contextProperties for dataURI attribute in
+             Assembly definition
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder/AssemblyLoader.java
+        </path>
+
+      </scm:Change>
+      
+      <scm:Change>
+        
+        <revision>-dev5
+        </revision>
+        
+        <notes>
            <scm:Note>Make sure NavContext generates an absolute path from root
           </scm:Note>
         </notes>
