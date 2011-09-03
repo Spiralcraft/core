@@ -17,6 +17,8 @@ package spiralcraft.builder;
 import java.net.URI;
 
 
+import spiralcraft.text.ParseException;
+import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.Path;
 import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.Resolver;
@@ -512,10 +514,19 @@ public class AssemblyLoader
         }
         else if (name=="dataURI")
         { 
-
+          String specURI;
+          try
+          { specURI=ContextDictionary.substitute(attribs[i].getValue());
+          }
+          catch (ParseException x)
+          { throw new BuildException
+              ("Error parsing "+attribs[i].getValue()+" in "+node.getURI());
+          }
+           
+          
           String uriStr
             =resolveNsUri
-              (attribs[i].getValue()
+              (specURI
               ,node.getPrefixResolver()
               ,sourceUri
               );
