@@ -16,6 +16,94 @@
     
       <scm:Change>
         
+        <revision>-dev6
+        </revision>
+        
+        <notes>
+          <scm:Note>Avoid creating a Path with an empty first element
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/Path.java
+        </path>
+
+      </scm:Change>
+    
+      <scm:Change>
+        
+        <revision>-dev6
+        </revision>
+        
+        <notes>
+          <scm:Note>Check for null path continuation
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/ui/NavContext.java
+        </path>
+
+      </scm:Change>
+          
+      <scm:Change>
+        
+        <revision>-dev6
+        </revision>
+        
+        <notes>
+           <scm:Note>Fix issue where multiple DataAuthentication providers'
+             DataSessions interfered with each other, resulting in 
+             "ThreadLocalChannel not initialized" error.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/security/spi
+        </path>
+        
+        <resources>
+          <URI>AbstractAuthModule.java
+          </URI>
+          <URI>DataAuthModule.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+          
+      <scm:Change>
+        
+        <revision>-dev6
+        </revision>
+        
+        <notes>
+           <scm:Note>When using repeated property specifiers to specify
+             a list of values, values should be appended to those specified 
+             in the base AssemblyClass
+             
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder/PropertySpecifier.java
+        </path>
+
+      </scm:Change>
+      
+      <scm:Change>
+        
+        <revision>-dev6
+        </revision>
+        
+        <notes>
+           <scm:Note>ThreadLocalChannel now logs push and pop events when
+             in debug mode
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi/ThreadLocalChannel.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        
         <revision>-dev5
         </revision>
         

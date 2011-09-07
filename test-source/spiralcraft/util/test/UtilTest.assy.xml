@@ -4,7 +4,8 @@
   xmlns:j="class:/java/lang/"
   xmlns:jm="class:/java/math/"
   xmlns:lang="class:/spiralcraft/lang"
-  xmlns:util="class:/spiralcraft/util/string/"
+  xmlns:sutil="class:/spiralcraft/util/string/"
+  xmlns:util="class:/spiralcraft/util/"
   xmlns:ct="class:/spiralcraft/codec/text/"
   >
   <name>spiralcraft.util.test
@@ -20,7 +21,7 @@
           <name>prepad
           </name>
           
-          <subjectX>[@util:StringUtil].@prepad("12345",'0',6)
+          <subjectX>[@sutil:StringUtil].@prepad("12345",'0',6)
           </subjectX>
           
           <testX>.=="012345"
@@ -242,7 +243,7 @@
           </name>
           
           <subjectX>
-            [@util:StringUtil].@implode
+            [@sutil:StringUtil].@implode
               (','
               ,'\\'
               ,[@j:String][{"x","y","z"}]
@@ -261,7 +262,7 @@
           </name>
           
           <subjectX>
-            [@util:StringUtil].@explode
+            [@sutil:StringUtil].@explode
               ("x,y,z"
               ,','
               ,'\\'
@@ -281,7 +282,7 @@
           </name>
           
           <subjectX contextualize="false">
-            [@util:StringUtil].@implode
+            [@sutil:StringUtil].@implode
               (','
               ,'\\'
               ,[@j:String][{ "1,2,3" , "4,5,\\6" , ",7,8,\\" }]
@@ -300,7 +301,7 @@
           </name>
           
           <subjectX contextualize="false">
-            [@util:StringUtil].@explode
+            [@sutil:StringUtil].@explode
               ("1\\,2\\,3,4\\,5\\,\\\\6,\\,7\\,8\\,\\\\"
               ,','
               ,'\\'
@@ -320,7 +321,7 @@
           </name>
           
           <subjectX contextualize="false">
-            [@util:StringUtil].@tokenizeOnWhitespace
+            [@sutil:StringUtil].@tokenizeOnWhitespace
               ("Hello  there, how\n are you\t today?"
               )
           </subjectX>
@@ -338,7 +339,7 @@
           </name>
           
           <subjectX contextualize="false">
-            [@util:StringUtil].@trimStart("\r\n  hello  ")
+            [@sutil:StringUtil].@trimStart("\r\n  hello  ")
           </subjectX>
           
           <testX>
@@ -353,7 +354,7 @@
           </name>
           
           <subjectX contextualize="false">
-            [@util:StringUtil].@trimEnd("  hello  \r\n")
+            [@sutil:StringUtil].@trimEnd("  hello  \r\n")
           </subjectX>
           
           <testX>
@@ -362,6 +363,50 @@
           
         </test:Assertion>
 
+        <test:Assertion>
+        
+          <name>path append
+          </name>
+          
+          <subjectX contextualize="false">
+            [@util:Path].("/a/b/c/").append([{"d"}])
+          </subjectX>
+          
+          <testX>
+            .==[@util:Path].("/a/b/c/d")
+          </testX>
+          
+        </test:Assertion>
+        
+        <test:Assertion>
+        
+          <name>path append
+          </name>
+          
+          <subjectX contextualize="false">
+            [@util:Path].("/a/b/c").append([{"d","e"}])
+          </subjectX>
+          
+          <testX>
+            .==[@util:Path].("/a/b/c/d/e")
+          </testX>
+          
+        </test:Assertion>
+        
+        <test:Assertion>
+        
+          <name>path append
+          </name>
+          
+          <subjectX contextualize="false">
+            [@util:Path].("/").append([{"a","b"}])
+          </subjectX>
+          
+          <testX>
+            .==[@util:Path].("/a/b")
+          </testX>
+          
+        </test:Assertion>
       </scenarios>
       
     </task:Sequence>
