@@ -242,6 +242,9 @@ public class ThreadLocalChannel<T>
     newref.object=val;
     newref.prior=oldref;
     threadLocal.set(newref);
+    if (debug)
+    { log.fine(toString()+": Pushed "+val);
+    }
   }
   
   /**
@@ -255,6 +258,9 @@ public class ThreadLocalChannel<T>
     }
     else
     { threadLocal.set(oldref);
+    }
+    if (debug)
+    { log.fine(toString()+": Popped ");
     }
   }
   
