@@ -853,46 +853,6 @@ public class AssemblyClass
     composeMembers(_compositeMembers,new HashMap<String,PropertySpecifier>());
   }
   
-
-  
-//  /**
-//   * 
-//   * @return The list of bean properties 
-//   * @throws BuildException
-//   */
-//  public List<String> getMemberNames()
-//    throws BuildException
-//  {
-//    ArrayList<String> names
-//      =new ArrayList<String>();
-//    for (PropertyDescriptor prop:beanInfo.getPropertyDescriptors())
-//    { names.add(prop.getName());
-//    }
-//    return names;
-//  }
-  
-//
-//  Make autodiscovery a switch
-//
-//  private LinkedList<PropertySpecifier> getBeanProperties()
-//    throws BuildException
-//  {
-//    if (_baseAssemblyClass==null)
-//    {
-//      // Add java members
-//      LinkedList<PropertySpecifier> props=new LinkedList<PropertySpecifier>();
-//      for (PropertyDescriptor prop:beanInfo.getPropertyDescriptors())
-//      { 
-//        
-//        PropertySpecifier specifier
-//          =new PropertySpecifier(this,prop);
-//        props.add(specifier);;
-//      }
-//      return props;
-//    }
-//
-//    return null;
-//  }
   
   /**
    * Compose the list of members, overriding members with the same target name
