@@ -62,7 +62,12 @@ public abstract class AbstractAuthModule
     
     sessionFocus=focusChain.<AuthSession>findFocus(AuthSession.FOCUS_URI);
     
-    credentialFocus=(Focus<Map<String,Credential<?>>>) focusChain;
+    // Chain the credential subject- credentialFocus is used as authModule
+    //   local focus- facets may be added
+    credentialFocus
+      =(Focus<Map<String,Credential<?>>>) 
+        focusChain.chain(focusChain.getSubject());
+    
     
     return focusChain;
   }

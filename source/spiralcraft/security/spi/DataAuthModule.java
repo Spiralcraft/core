@@ -223,15 +223,19 @@ public class DataAuthModule
   public Focus<?> bind(Focus<?> context)
     throws ContextualException
   { 
-    dataSessionChannel
-     =new ThreadLocalChannel<DataSession>
-       (BeanReflector.<DataSession>getInstance(DataSession.class));
     
     // superclass provides a credentialFocus member field which 
     //   provides values for the various accepted credentials,
     //   named according to the credential class simple name.
     super.bind(context);
 
+    dataSessionChannel
+      =new ThreadLocalChannel<DataSession>
+        (BeanReflector.<DataSession>getInstance(DataSession.class)
+        ,true
+        ,credentialFocus.getSubject()
+        );
+    // dataSessionChannel.setDebug(true);
     credentialFocus.addFacet(credentialFocus.chain(dataSessionChannel));
     
     
@@ -583,6 +587,11 @@ public class DataAuthModule
         else
         { return false;
         }
+      }
+      catch (RuntimeException x)
+      { 
+        throw new RuntimeException
+          ("DataAuthModule '"+getName()+"' associateLogin failed",x);
       }
       finally
       { pop();
