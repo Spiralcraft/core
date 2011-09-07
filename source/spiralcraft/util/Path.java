@@ -83,6 +83,12 @@ public class Path
     if (elements.size()>0 && elements.get(0).equals(""))
     { elements.remove(0);
     }
+    if (_container 
+        && elements.size()>0 
+        && elements.get(elements.size()-1).equals("")
+        )
+    { elements.remove(elements.size()-1);
+    }
     _elements=elements.toArray(new String[elements.size()]);
     _hashCode=computeHash();
   }
@@ -247,7 +253,10 @@ public class Path
       return new Path(newElements,_delimiter,false,_container);
     }
     else
-    { return new Path();
+    { 
+      return new Path();
+//      throw new IndexOutOfBoundsException
+//        ("Path length "+_elements.length+" <= "+startElement);
     }
   }
   
