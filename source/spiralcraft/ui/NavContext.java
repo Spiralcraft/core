@@ -75,12 +75,21 @@ public class NavContext<Toptions,Toption>
     else
     { 
       state.currentPath=parent.getNextPath();
-      state.absoluteSelectedPath
-        =parent.getAbsoluteSelectedPath().append(state.currentPath.firstElement());
+      if (state.currentPath!=null)
+      {
+        state.absoluteSelectedPath
+          =parent.getAbsoluteSelectedPath().append(state.currentPath.firstElement());
+      }
     }
-    state.nextPath=state.currentPath.subPath(1);
+    
+    if (state.currentPath!=null)
+    {
+      if (state.currentPath.size()>1)
+      { state.nextPath=state.currentPath.subPath(1);
+      }
+      state.selectedKey=state.currentPath.firstElement();
+    }
 
-    state.selectedKey=state.currentPath.firstElement();
     super.computeSelection(state);
   }
   
