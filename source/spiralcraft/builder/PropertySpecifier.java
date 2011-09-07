@@ -832,6 +832,9 @@ public class PropertySpecifier
   public List<String> getTextDataList()
   { 
     LinkedList<String> list=new LinkedList<String>();
+    if (this._baseMember!=null)
+    { list.addAll(_baseMember.getTextDataList());
+    }
     if (lastLocalInstance!=null)
     { list.addAll(lastLocalInstance.getTextDataList());
     }
