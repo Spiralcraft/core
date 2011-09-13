@@ -13,7 +13,102 @@
     </date>
     
     <detail>
-    
+
+      <scm:Change>
+        
+        <revision>-dev6
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix DataAuthorizer role mapping configuration by
+            adding roleMapPrincipalIdFieldName property
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/security/spi/DataAuthorizer.java
+        </path>
+
+      </scm:Change>
+      
+      <scm:Change>
+        
+        <revision>-dev6
+        </revision>
+        
+        <notes>
+          <scm:Note>Expanded use of text Encoder interface to make existing
+            encoders usable within various renderer components.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/util/ExpressionRenderer.java
+          </URI>
+          <URI>text/Codec.java
+          </URI>
+          <URI>text/Encoder.java
+          </URI>
+          <URI>text/NullEncoder.java
+          </URI>
+          <URI>text/html/TextAreaEncoder.java
+          </URI>
+          <URI>text/html/URLDataEncoder.java
+          </URI>
+          <URI>text/html/URLEncoder.java
+          </URI>
+          <URI>text/xml/AttributeEncoder.java
+          </URI>
+          <URI>text/xml/XmlEncoder.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>      
+        
+        <revision>-dev6
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix exception thrown after saving a pair of related 
+            buffers where the relative buffer is cast.
+          </scm:Note>
+          <scm:Note>Return false instead of throwing an exception when a 
+            RelativeField is written to.
+          </scm:Note>
+          <scm:Note>Casting now reflects isWritable() property of source
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/kit/members/MetaCastMember.java
+          </URI>
+          <URI>data/core/RelativeField.java
+          </URI>
+        </resources>
+      </scm:Change>
+          
+      <scm:Change>
+        
+        <revision>-dev6
+        </revision>
+        
+        <notes>
+          <scm:Note>FileSequence now accepts a Container Resource to 
+            allow for easier contextualization 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/io/FileSequence.java
+        </path>
+
+      </scm:Change>
+                
       <scm:Change>
         
         <revision>-dev6
