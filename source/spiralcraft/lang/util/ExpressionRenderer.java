@@ -21,6 +21,8 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.text.Encoder;
+import spiralcraft.text.NullEncoder;
 import spiralcraft.text.Renderer;
 import spiralcraft.util.string.StringConverter;
 
@@ -37,7 +39,10 @@ public class ExpressionRenderer<T>
   implements Renderer,Contextual
 {
 
+
+  
   private StringConverter<T> converter;
+  private Encoder encoder=NullEncoder.INSTANCE;
   private Expression<T> x;
   private Channel<T> channel;
   
@@ -55,6 +60,10 @@ public class ExpressionRenderer<T>
   
   public void setConverter(StringConverter<T> converter)
   { this.converter=converter;
+  }
+  
+  public void setEncoder(Encoder encoder)
+  { this.encoder=encoder;
   }
   
   @SuppressWarnings("unchecked")
@@ -79,13 +88,13 @@ public class ExpressionRenderer<T>
     throws IOException
   { 
     if (converter!=null)
-    { out.append(converter.toString(channel.get()));
+    { encoder.encode(converter.toString(channel.get()),out);
     }
     else
     {
       T val=channel.get();
       if (val!=null)
-      { out.append(val.toString());
+      { encoder.encode(val.toString(),out);
       }
     }
   }

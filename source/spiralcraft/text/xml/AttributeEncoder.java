@@ -29,11 +29,11 @@ public class AttributeEncoder
   private static final String LT_S="&lt;";
 
   @Override
-  public void encode(CharSequence in,Appendable out)
+  public Appendable encode(CharSequence in,Appendable out)
     throws IOException
   {
     if (in==null)
-    { return;
+    { return out;
     }
     for (int i=0;i<in.length();i++)
     { 
@@ -64,5 +64,7 @@ public class AttributeEncoder
       
       
     }
+
+    return out;
   }
 }

@@ -79,8 +79,8 @@ public class XmlEncoder
    * <p>Whitespace is preserved in data.
    * </p> 
    */
-  @Override
-  public void encode(CharSequence in,Appendable out)
+  @Override 
+  public Appendable encode(CharSequence in,Appendable out)
     throws IOException
   {
     for (int i=0;i<in.length();i++)
@@ -105,6 +105,7 @@ public class XmlEncoder
           break;
       }
     }
+    return out;
 
   }
   

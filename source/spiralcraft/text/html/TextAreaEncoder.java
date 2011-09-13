@@ -14,6 +14,9 @@
 //
 package spiralcraft.text.html;
 
+import java.io.IOException;
+import spiralcraft.text.Encoder;
+
 public class TextAreaEncoder
 {
 
@@ -27,7 +30,29 @@ public class TextAreaEncoder
   public static final String LT_S="&lt;";
   public static final String BR_S="<BR>";
 
-
+  public static final Encoder encoder()
+  { 
+    return new Encoder() 
+    {
+      
+  
+      @Override
+      public Appendable encode(
+        CharSequence in,
+        Appendable out)
+        throws IOException
+      {
+        if (out==null && in!=null)
+        { out=new StringBuilder(TextAreaEncoder.encode(in.toString()));
+        }
+        else if (in!=null)
+        { out.append(TextAreaEncoder.encode(in.toString()));
+        }
+        return out;
+      }
+    };
+  }
+  
   public static String encode(String s)
   {
   	if (s==null)

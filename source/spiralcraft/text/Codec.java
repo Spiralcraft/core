@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 2011 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -17,16 +17,22 @@ package spiralcraft.text;
 import java.io.IOException;
 
 /**
- * An interface to transform a chunk of text 
- *   to a specific encoding.
+ * Encodes and decodes text
+ * 
+ * @author mike
+ *
  */
-public interface Encoder
+public interface Codec
+  extends Encoder
 {
   /**
    * Encode the specified CharSequence to
    *   the specified Appendable.
    */
+  @Override
   Appendable encode(CharSequence in,Appendable out)
-    throws IOException;
+      throws IOException;
   
+  Appendable decode(CharSequence in,Appendable out)
+      throws IOException;
 }

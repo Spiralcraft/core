@@ -14,7 +14,10 @@
 //
 package spiralcraft.text.html;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
+
+import spiralcraft.text.Encoder;
 
 /**
  * Encodes a hierarchical path 
@@ -39,6 +42,27 @@ public class URLEncoder
   public static final String LT_S="&lt;";
   public static final String BR_S="<BR>";
 
+  public static final Encoder encoder()
+  { 
+    return new Encoder() 
+    {      
+      
+      @Override
+      public Appendable encode(
+        CharSequence in,
+        Appendable out)
+        throws IOException
+      {
+        if (out==null && in!=null)
+        { out=new StringBuilder(URLEncoder.encode(in.toString()));
+        }
+        else if (in!=null)
+        { out.append(URLEncoder.encode(in.toString()));
+        }
+        return out;
+      }
+    };
+  }
 
   /**
    * Translate an encoded URL path by removing "%nn" hex encoded 

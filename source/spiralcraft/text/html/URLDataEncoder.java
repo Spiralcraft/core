@@ -14,8 +14,10 @@
 //
 package spiralcraft.text.html;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 
+import spiralcraft.text.Codec;
 import spiralcraft.util.ByteBuffer;
 
 
@@ -42,6 +44,51 @@ public class URLDataEncoder
 {  
   private static final Charset UTF_8=Charset.forName("UTF-8");
   
+  public static final Codec codec()
+  { return codec("UTF-8");
+  }
+  
+  public static final Codec codec(final String charsetName)
+  { 
+    return new Codec() 
+    {
+  
+      private final Charset charset=Charset.forName(charsetName);
+      
+      
+      @Override
+      public Appendable decode(
+        CharSequence in,
+        Appendable out)
+        throws IOException
+      {
+        if (out==null && in!=null)
+        { out=new StringBuilder(URLDataEncoder.decode(in.toString(),charset));
+        }
+        else if (in!=null)
+        { out.append(URLDataEncoder.decode(in.toString(),charset));
+        }
+        return out;
+      }
+  
+      @Override
+      public Appendable encode(
+        CharSequence in,
+        Appendable out)
+        throws IOException
+      {
+        if (out==null && in!=null)
+        { out=new StringBuilder(URLDataEncoder.encode(in.toString(),charset));
+        }
+        else if (in!=null)
+        { out.append(URLDataEncoder.encode(in.toString(),charset));
+        }
+        return out;
+      }
+    };
+  }
+ 
+
   public static String encode(String plaintext)
   { return encode(plaintext,UTF_8);
   }
