@@ -118,6 +118,12 @@ class CastChannel<S,T extends S>
     throws AccessException
   { return source.set(val);
   }
+
+  @Override
+  public boolean isWritable()
+    throws AccessException
+  { return source.isWritable();
+  }
   
 
 }
