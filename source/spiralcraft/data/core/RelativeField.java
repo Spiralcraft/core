@@ -530,12 +530,7 @@ public class RelativeField<T extends DataComposite>
     { 
       // XXX: We may want to re-translate the stored value and update the
       //   key fields
-      
-      throw new AccessException
-        ("Can't store key reference: Referenced object to field value " +
-        		"translation not implemented"
-        );
-     
+      return false;     
     }
     
     @Override
