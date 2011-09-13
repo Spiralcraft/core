@@ -47,6 +47,7 @@ public class DataAuthorizer<TprincipalData,TprincipalId>
   private String principalNameFieldName;
   private String principalIdFieldName;
   private String roleIdFieldName;
+  private String roleMapPrincipalIdFieldName;
 
   
   private ThreadLocalChannel<String> principalNameChannel;
@@ -111,7 +112,7 @@ public class DataAuthorizer<TprincipalData,TprincipalId>
         =new RelationalMap<URI[],URI,TprincipalId[],TprincipalId>();
       roleIdMap.setType(principalRoleType);
       roleIdMap.setDownstreamFieldName(roleIdFieldName);
-      roleIdMap.setUpstreamFieldName(principalIdFieldName);
+      roleIdMap.setUpstreamFieldName(roleMapPrincipalIdFieldName);
       roleIdMap.bind(chain);
       
       roleIdsChannel
@@ -131,6 +132,10 @@ public class DataAuthorizer<TprincipalData,TprincipalId>
   
   public void setPrincipalRoleType(Type<?> principalRoleType)
   { this.principalRoleType=principalRoleType;
+  }
+  
+  public void setRoleMapPrincipalIdFieldName(String fieldName)
+  { this.roleMapPrincipalIdFieldName=fieldName;
   }
   
   public void setPrincipalType(Type<TprincipalData> principalType)
