@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import spiralcraft.log.ClassLog;
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.file.FileResource;
 
 /**
  * <p>Identifies a sequence of files closely related to each other where the
@@ -158,6 +160,17 @@ public abstract class FileSequence
   { return directory;
   }
   
+  public void setContainer(Resource container)
+  { 
+    FileResource resource
+      =container.unwrap(FileResource.class);
+    if (resource==null)
+    { 
+      throw new IllegalArgumentException
+        (container.getURI()+" does not refer to the local filesystem");
+    }
+    directory=resource.getFile().getAbsoluteFile();
+  }
 
   public abstract String getNextSequenceId();
   
