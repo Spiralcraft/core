@@ -160,7 +160,13 @@ public class TaskCommand<Tcontext,Tresult>
     if (closure!=null)
     { throw new IllegalStateException("Context already enclosed");
     }
-    closure=scenario.enclose();
+    scenario.pushCommand(this);
+    try
+    { closure=scenario.enclose();
+    }
+    finally
+    { scenario.popCommand();
+    }
   }
   
   /**
