@@ -3,6 +3,53 @@
   >
   <scm:Change>
   
+    <revision>0.4.16
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    <date>XXXX-XX-XX
+    </date>
+    
+    <detail>
+      <scm:Change>
+        
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Methods in data types only log an exception when
+            throwException=false
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/core/AbstractTaskMethod.java
+        </path>
+
+      </scm:Change>
+      
+      <scm:Change>
+        
+        <revision>-dev1
+        </revision>
+        
+        <notes>
+          <scm:Note>Make the invoking command object visible inside the
+            enclosed scope of the Scenario being executed. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/TaskCommand.java
+        </path>
+
+      </scm:Change>
+          
+    </detail>
+  </scm:Change>
+  
+  <scm:Change>
+  
     <revision>0.4.15.1
     </revision>
     
