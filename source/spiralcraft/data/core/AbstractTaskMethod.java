@@ -240,15 +240,19 @@ public abstract class AbstractTaskMethod<T,C,R>
       command.execute();
       if (command.getException()!=null)
       { 
-        log.log
-          (Level.WARNING
-          ,"Scenario threw exception: "+this,command.getException()
-          );
+
         if (throwException)
         {
           throw new AccessException
             ("Caught exception executing command",command.getException()
             );
+        }
+        else
+        {
+          log.log
+            (Level.WARNING
+            ,"Scenario threw exception: "+this,command.getException()
+            );        
         }
       }
       return command.getResult();
