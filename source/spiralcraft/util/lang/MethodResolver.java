@@ -23,6 +23,7 @@ package spiralcraft.util.lang;
 import java.lang.reflect.*;
 import java.util.*;
 
+//import spiralcraft.log.ClassLog;
 import spiralcraft.util.ArrayUtil;
 
 
@@ -36,6 +37,9 @@ import spiralcraft.util.ArrayUtil;
 
 public final class MethodResolver
 {
+//  private static final ClassLog log
+//    =ClassLog.getInstance(MethodResolver.class);
+  
   /**
    * The target class to look for methods and constructors in.
    */
@@ -122,7 +126,7 @@ public final class MethodResolver
     if (parameterTypes == null)
       parameterTypes = new Class<?>[0];
 
-    return (Constructor<?>) findMemberIn(constructorList, parameterTypes);
+    return (Constructor<?>) findMemberIn(constructorList, parameterTypes,false);
   }
 
   /**
@@ -130,7 +134,7 @@ public final class MethodResolver
    * fed to this method will be either all Constructor objects or all
    * Method objects.
    */
-  private Member findMemberIn(List<? extends Member> memberList, Class<?>[] parameterTypes)
+  private Member findMemberIn(List<? extends Member> memberList, Class<?>[] parameterTypes,boolean method)
   throws NoSuchMethodException {
     List<Member> matchingMembers = new ArrayList<Member>();
 
@@ -159,7 +163,7 @@ public final class MethodResolver
     if (matchingMembers.size() == 1)
       return matchingMembers.get(0);
 
-    return findMostSpecificMemberIn(matchingMembers);
+    return findMostSpecificMemberIn(matchingMembers,method);
   }
 
   /**
@@ -191,7 +195,7 @@ public final class MethodResolver
     if (parameterTypes == null)
       parameterTypes = new Class[0];
 
-    return (Method) findMemberIn(methodList, parameterTypes);
+    return (Method) findMemberIn(methodList, parameterTypes,true);
   }
 
   /**
@@ -201,7 +205,7 @@ public final class MethodResolver
    * @exception  NoSuchMethodException  if there is an ambiguity
    * as to which is most specific
    */
-  private Member findMostSpecificMemberIn(List<? extends Member> memberList)
+  private Member findMostSpecificMemberIn(List<? extends Member> memberList,boolean method)
   throws NoSuchMethodException {
     List<Member> mostSpecificMembers = new ArrayList<Member>();
 
@@ -222,7 +226,7 @@ public final class MethodResolver
         for (Member moreSpecificMember: mostSpecificMembers)
         {
 
-          if (! memberIsMoreSpecific(member, moreSpecificMember))
+          if (! memberIsMoreSpecific(member, moreSpecificMember,method))
           {
             /* Can't be more specific than the whole set.  Bail out, and
                mark whether member is less specific than the member
@@ -232,7 +236,7 @@ public final class MethodResolver
                enough yet to make that assessment. */
 
             moreSpecific = false;
-            lessSpecific = memberIsMoreSpecific(moreSpecificMember, member);
+            lessSpecific = memberIsMoreSpecific(moreSpecificMember, member,method);
             break;
           }
         }
@@ -258,6 +262,7 @@ public final class MethodResolver
         + clazz.getName()
         + " matching given args" ); 
     }
+
 
     return mostSpecificMembers.get(0);
   }
@@ -370,6 +375,7 @@ public final class MethodResolver
 
     for (int i = 0; i < methods.length; ++i) {
       Method m = methods[i];
+      
       String methodName = m.getName();
       Class<?>[] paramTypes = m.getParameterTypes();
 
@@ -397,10 +403,42 @@ public final class MethodResolver
    * false otherwise.  Specificity is determined according to the
    * procedure in the Java Language Specification, section 15.12.2.
    */
-  private boolean memberIsMoreSpecific(Member first, Member second) {
+  private boolean memberIsMoreSpecific(Member first, Member second,boolean method) {
     Class<?>[] firstParamTypes = parameterMap.get(first);
     Class<?>[] secondParamTypes =  parameterMap.get(second);
 
-    return ClassUtilities.compatibleClasses(secondParamTypes, firstParamTypes);
+    if (!method)
+    { return ClassUtilities.compatibleClasses(secondParamTypes, firstParamTypes);
+    }
+    else
+    {
+      if (ClassUtilities.compatibleClasses(secondParamTypes, firstParamTypes))
+      { 
+        if (Arrays.equals(secondParamTypes, firstParamTypes))
+        { 
+          // Check for a more specific co-variant return type
+          Class<?> firstReturn=((Method) first).getReturnType();
+          Class<?> secondReturn=((Method) second).getReturnType();
+          if (firstReturn!=secondReturn 
+              && firstReturn.isAssignableFrom(secondReturn)
+              )
+          { return false;
+          }
+          else
+          { return true;
+          }
+        }
+        else
+        { return true;
+        }
+      }
+      else
+      { return false;
+      }
+      
+    }
+
   }
+  
+
 }
