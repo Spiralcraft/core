@@ -205,4 +205,13 @@ public interface Channel<T>
   void setDebug(boolean debug);
   
   LinkedTree<Channel<?>> trace(Class<Channel<?>> stop);
+  
+  /**
+   * Assert that the content type Class of this channel can be assigned to the
+   *   specified contentType Class
+   * 
+   * @param contentType
+   */
+  void assertContentType(Class<? super T> contentType)
+    throws BindException;
 }

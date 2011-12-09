@@ -419,4 +419,17 @@ public  class TranslatorChannel<T,S>
     return out.toString();
     
   }
+
+  @Override
+  public void assertContentType(Class<? super T> contentType)
+    throws BindException
+  { 
+    if (!contentType.isAssignableFrom(getContentType()))
+    { 
+      throw new BindException
+        ("Type assertion failed: Channel type "+getContentType().getName()
+        +" is not assigenble to specified type "+contentType.getName()
+        );
+    }
+  }
 }

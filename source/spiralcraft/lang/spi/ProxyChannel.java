@@ -174,6 +174,13 @@ public class ProxyChannel<T>
   public void setContext(Focus<?> context)
   { channel.setContext(context);
   }
+
+  @Override
+  public void assertContentType(
+    Class<? super T> contentType)
+    throws BindException
+  { channel.assertContentType(contentType);
+  }
   
   
 }

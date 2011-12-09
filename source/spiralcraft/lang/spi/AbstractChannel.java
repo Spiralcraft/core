@@ -313,4 +313,17 @@ public abstract class AbstractChannel<T>
     { return new LinkedTree<Channel<?>>(this,origin.trace(stop));
     }
   }
+  
+  @Override
+  public void assertContentType(Class<? super T> contentType)
+    throws BindException
+  { 
+    if (!contentType.isAssignableFrom(getContentType()))
+    { 
+      throw new BindException
+        ("Type assertion failed: Channel type "+getContentType().getName()
+        +" is not assignable to specified type "+contentType.getName()
+        );
+    }
+  }
 }
