@@ -105,6 +105,8 @@ public class ExpressionParser
 
     syntax.quoteChar('\'');
     
+    syntax.eolIsSignificant(false);
+    
     _progressBuffer=new StringBuffer();
     _pos=0;
   }
@@ -205,6 +207,9 @@ public class ExpressionParser
     { 
       if (_tokenizer.ttype=='"')
       { _progressBuffer.append('"').append(_tokenizer.sval).append('"');
+      }
+      else if (_tokenizer.ttype=='\'')
+      { _progressBuffer.append('\'').append(_tokenizer.sval).append('\'');
       }
       else
       { _progressBuffer.append(_tokenizer.sval);
