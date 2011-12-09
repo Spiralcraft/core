@@ -51,12 +51,25 @@ public class ArrayListDecorator<I>
   { 
     try
     {
-      I[] array=source.get();
-      if (array!=null)
-      { return ArrayUtil.<I>iterator( array);
+      if (getComponentReflector().getContentType().isPrimitive())
+      {
+        Object array=source.get();
+        if (array!=null)
+        { return ArrayUtil.<I>primitiveArrayIterator( array);
+        }
+        else
+        { return null;
+        }
       }
       else
-      { return null;
+      {
+        I[] array=source.get();
+        if (array!=null)
+        { return ArrayUtil.<I>iterator( array);
+        }
+        else
+        { return null;
+        }
       }
     }
     catch (ClassCastException x)

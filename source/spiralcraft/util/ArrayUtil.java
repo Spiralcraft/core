@@ -542,6 +542,39 @@ public class ArrayUtil
     
   }
   
+  public static final <X> Iterator<X> primitiveArrayIterator(final Object array)
+  {
+    return new Iterator<X>()
+    {
+      private int index=0;
+      private final int length=Array.getLength(array);
+
+      @Override
+      public boolean hasNext()
+      { return index<length;
+      }
+      
+      @SuppressWarnings("unchecked")
+      @Override
+      public X next()
+      { 
+        if (index>=length)
+        { throw new NoSuchElementException();
+        }
+        return (X) Array.get(array,index++);
+      }
+      
+      @Override
+      public void remove()
+      { 
+        throw new UnsupportedOperationException
+          ("Can't remove from array");
+      }
+    };
+    
+  }
+  
+  
   public static final <T> Iterable<T> iterable(final T[] array)
   {
     return new Iterable<T>()
