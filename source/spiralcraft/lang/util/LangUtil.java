@@ -20,6 +20,8 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Functor;
+import spiralcraft.lang.Reflector;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.reflect.BeanReflector;
 
@@ -142,6 +144,28 @@ public class LangUtil
   public static <T> T eval(String expression)
     throws BindException
   { return new SimpleFocus<T>().bind(Expression.<T>create(expression)).get();
+  }
+  
+  /**
+   * Return the constructor channel for the type referenced by the Reflector
+   * 
+   * @param <T>
+   * @param reflector
+   * @param context
+   * @return
+   * @throws BindException
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> Channel<T> constructorFor
+    (Reflector<T> reflector,Focus<?> context)
+    throws BindException
+  { 
+    if (reflector instanceof Functor)
+    { return ((Functor<T>) reflector).bindChannel(context,new Channel[0]);
+    }
+    else
+    { return null;
+    }
   }
 
 
