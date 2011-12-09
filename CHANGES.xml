@@ -12,7 +12,191 @@
     <date>XXXX-XX-XX
     </date>
     
-    <detail>
+    <detail>      
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>VFS Query task simplifies URI based retrieval with
+            dynamic path segments and parameters, regardless of the content
+            type returned.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/task/Query.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Methods with co-variant return types now resolve properly.
+            When two methods have the same signature, the one with the
+            narrower return type is considered more specific.  
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/lang/MethodResolver.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Utility function to find a default no-arg constructor
+            for a Reflector-managed type.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/util/LangUtil.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Primitive arrays can now be iterated
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/spi/ArrayListDecorator.java
+          </URI>
+          <URI>util/ArrayUtil.java
+          </URI>
+        </resources>
+        
+      </scm:Change>    
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>ExpressionParser reports single quoted chars
+             in ParseException.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parse/ExpressionParser.java
+        </path>
+        
+      </scm:Change>    
+
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>FromString function converts Strings to objects of the
+            specified type based on a StringConverter.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/functions/FromString.java
+        </path>
+        
+      </scm:Change>    
+
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Provide a simple way for Java code to assert the content
+            type of a Channel.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang
+        </path>
+        
+        <resources>
+          <URI>Channel.java
+          </URI>
+          <URI>spi/AbstractChannel.java
+          </URI>
+          <URI>spi/ProxyChannel.java
+          </URI>
+          <URI>spi/TranslatorChannel.java
+          </URI>
+          
+        </resources>
+
+      </scm:Change>    
+    
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Provide for simplified handling of VFS remote exceptions by
+            implementing an io message package to decouple messages and 
+            message metadata from the underlying stream processing logic.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>io/message/Message.java
+          </URI>
+          <URI>io/message/Metadata.java
+          </URI>
+          <URI>io/message/DictionaryMetadata.java
+          </URI>
+          <URI>vfs/url/URLAccessException.java
+          </URI>
+          <URI>vfs/url/URLMessage.java
+          </URI>
+          <URI>vfs/url/URLResource.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+          
+      <scm:Change>
+        
+        <revision>-dev2
+        </revision>
+        
+        <notes>
+          <scm:Note>Factor common operations into AbstractNode class to
+            simplify implementation of specialized Node classes.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>util/tree/AbstractNode.java
+          </URI>
+          <URI>sax/Node.java
+          </URI>
+          
+        </resources>
+
+      </scm:Change>
+
       <scm:Change>
         
         <revision>-dev1

@@ -22,9 +22,9 @@ import org.xml.sax.SAXException;
 
 import spiralcraft.cli.Arguments;
 import spiralcraft.exec.Executable;
+import spiralcraft.sax.Node;
 import spiralcraft.sax.ParseTree;
 import spiralcraft.sax.ParseTreeFactory;
-import spiralcraft.sax.Node;
 import spiralcraft.sax.Element;
 
 import java.io.IOException;
