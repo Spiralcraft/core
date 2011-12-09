@@ -107,35 +107,58 @@ public class URLResource
     if (connection instanceof HttpURLConnection)
     {
       final HttpURLConnection httpConnection=(HttpURLConnection) connection;
-      InputStream source=httpConnection.getInputStream();
-
-      if (debugLevel.canLog(Level.FINE))
-      { source=new DebugInputStream(source);
-      }
-      
-      if (inputBufferLength>0)
-      { 
-        if (debugLevel.canLog(Level.DEBUG))
-        { log.debug("inputBufferLength="+inputBufferLength);
+      try
+      {
+        InputStream source=httpConnection.getInputStream();
+  
+        if (debugLevel.canLog(Level.FINE))
+        { source=new DebugInputStream(source);
         }
-        source=new BufferedInputStream(source,inputBufferLength);
-      }
-   
-          
-      return new InputStreamWrapper(source)
-      {        
-        @Override
-        public void close()
-          throws IOException
-        {
-          
-          super.close();
-          httpConnection.disconnect();
+        
+        if (inputBufferLength>0)
+        { 
           if (debugLevel.canLog(Level.DEBUG))
-          { log.fine("Disconnected "+_url);
+          { log.debug("inputBufferLength="+inputBufferLength);
           }
+          source=new BufferedInputStream(source,inputBufferLength);
         }
-      };
+     
+            
+        return new InputStreamWrapper(source)
+        {        
+          @Override
+          public void close()
+            throws IOException
+          {
+            
+            super.close();
+            httpConnection.disconnect();
+            if (debugLevel.canLog(Level.DEBUG))
+            { log.fine("Disconnected "+_url);
+            }
+          }
+        };
+      }
+      catch (IOException x)
+      {
+        InputStream errorStream
+          =httpConnection.getErrorStream();
+        if (errorStream!=null)
+        { 
+          throw new URLAccessException
+            ("Connection returned remote error"
+            ,x
+            ,new URLMessage
+              (errorStream
+              ,httpConnection.getContentLength()
+              ,connection.getHeaderFields()
+              )
+            );
+        }
+        else
+        { throw x;
+        }
+      }
       
     }
     else
