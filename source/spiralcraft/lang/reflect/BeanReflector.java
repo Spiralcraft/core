@@ -466,6 +466,33 @@ public class BeanReflector<T>
     return false;
   }
   
+  @Override
+  // XXX Experimental
+  public Reflector<?> getCommonType(Reflector<?> other)
+  {
+    Reflector<?> reflector=super.getCommonType(other);
+    if (reflector==null)
+    {
+      if (targetClass!=Object.class 
+          && targetClass.getSuperclass()!=null
+          && targetClass.getSuperclass()!=Object.class
+          )
+      { 
+        Reflector<?> superInstance=getInstance(targetClass.getSuperclass());
+        reflector=getCommonType(superInstance);
+        
+        Reflector otherCommonType=other.getCommonType(superInstance);
+        if (otherCommonType!=null && reflector!=null)
+        { 
+          if (otherCommonType.isAssignableFrom(reflector))
+          { reflector=otherCommonType;
+          }
+        }
+      }
+    }
+    return reflector;
+  }  
+  
   
   @Override
   public synchronized <X> Channel<X> 
