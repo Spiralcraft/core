@@ -81,6 +81,7 @@ public class DataAuthModule
   private Binding<?> refreshTriggerX;
   
   private Binding<?> onAssociate;
+  private Binding<?> beforeLogout;
   
   private ThreadLocalChannel<DataSession> dataSessionChannel;
     
@@ -209,6 +210,10 @@ public class DataAuthModule
   { this.onAssociate=onAssociate;
   }
   
+  public void setBeforeLogout(Binding<?> beforeLogout)
+  { this.beforeLogout=beforeLogout;
+  }
+  
   public void setRefreshTriggerX(Binding<?> refreshTriggerX)
   { this.refreshTriggerX=refreshTriggerX;
   }
@@ -314,6 +319,9 @@ public class DataAuthModule
     if (onAssociate!=null)
     { onAssociate.bind(credentialFocus);
     }
+    if (beforeLogout!=null)
+    { beforeLogout.bind(credentialFocus);
+    }
     return context;
   }
   
@@ -332,6 +340,18 @@ public class DataAuthModule
       dataSession=new DataSession();
       dataSession.setSpace(space);
       dataSession.setFocus(credentialFocus);
+    }
+    
+    @Override
+    public void logout()
+    {
+      if (authenticated)
+      {
+        if (beforeLogout!=null)
+        { beforeLogout.get();
+        }
+      }
+      super.logout();
     }
     
     @Override
