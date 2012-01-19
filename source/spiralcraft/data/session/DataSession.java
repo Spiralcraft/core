@@ -190,6 +190,27 @@ public class DataSession
     
   }
 
+  /**
+   * <p>Return or create an Buffer associated with the specified Identifier.</p>
+   * 
+   * <p>If no buffer is associated with the Identifier, create a new one from the
+   *   original DataComposite and associate it with the Identifier for
+   *   future retrieval.
+   * </p>
+   * 
+   * <p>Buffers will be cleared when a transaction involving this DataSession
+   *   is committed.
+   * </p>
+   * 
+   *   
+   * @param <Tbuffer>
+   * @param type
+   * @param id
+   * @param original
+   * @return The existing buffer for the id, or a new buffer if one was
+   *   created.
+   * @throws DataException
+   */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public synchronized <Tbuffer extends Buffer> Tbuffer 
     bufferForId(Type<?> type,Identifier id,DataComposite original)
