@@ -103,7 +103,8 @@ public class EquiJoin
   
   /**
    * <p>Construct an EquiJoin which returns entities of the specified type
-   *   where the expression "lhs == rhs" evaluates to true.
+   *   where the expression "lhs[i] == rhs[i]" evaluates to true for each index
+   *   "i" of lhs and rhs. The lengths of the lhs and rhs must be the same.
    * </p> 
    *   
    * 
