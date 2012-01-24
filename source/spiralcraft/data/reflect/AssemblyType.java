@@ -70,7 +70,7 @@ public class AssemblyType<T>
       throw new DataException
         ("Can't resolve canonical type for "+assemblyClass);
     }
-    return Type.resolve(assemblyClass.getContainerURI());
+    return Type.resolve(assemblyClass.getBaseURI());
   }
   
   
