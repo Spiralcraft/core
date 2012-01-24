@@ -14,7 +14,6 @@
 //
 package spiralcraft.lang.parser;
 
-import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
@@ -95,7 +94,7 @@ public class BindingNode<Ttarget,Tsource extends Ttarget>
     
   @Override
   @SuppressWarnings({ "unchecked", "rawtypes" }) // Heterogeneous operation
-  public Channel bind(final Focus focus)
+  public BindingChannel bind(final Focus focus)
     throws BindException
   { return new BindingChannel(focus,new Expression(source),new Expression(target));
   }
