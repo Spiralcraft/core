@@ -62,12 +62,32 @@ public class ParseTreeFactory
    *
    *@return The ParseTree
    */
+  public static ParseTree fromResource(Resource resource,URI locator)
+    throws SAXException,IOException
+  { 
+    InputStream in=resource.getInputStream();
+    try
+    { return fromInputStream(in,locator,null);
+    }
+    finally
+    { 
+      if (in!=null)
+      { in.close();
+      }
+    }
+  }
+
+  /**
+   * Load a ParseTree from a resource. 
+   *
+   *@return The ParseTree
+   */
   public static ParseTree fromResource(Resource resource)
     throws SAXException,IOException
   { 
     InputStream in=resource.getInputStream();
     try
-    { return fromInputStream(in);
+    { return fromInputStream(in,resource.getURI(),null);
     }
     finally
     { 
@@ -200,6 +220,15 @@ public class ParseTreeFactory
    */
   public static ParseTree fromInputStream(InputStream in,XmlFilter filter)
     throws SAXException,IOException
+  { return fromInputStream(in,null,filter);
+  }
+  
+  /**
+   * Load a parse tree from an InputStream.
+   *@return The ParseTree, or null if the supplied InputStream is null.
+   */
+  public static ParseTree fromInputStream(InputStream in,URI locator,XmlFilter filter)
+    throws SAXException,IOException
   {
     if (in==null)
     { return null;
@@ -220,6 +249,7 @@ public class ParseTreeFactory
       throw new IOException(x.toString());
     }
     ParseTree parseTree=new ParseTree();
+    parseTree.setDocumentURI(locator);
     ContentHandler handler=parseTree;
     if (filter!=null)
     { 

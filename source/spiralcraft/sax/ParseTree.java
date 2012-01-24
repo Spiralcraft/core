@@ -102,6 +102,10 @@ public class ParseTree
   {
   }
  
+  public void setDocumentURI(URI documentURI)
+  { position.setContextURI(documentURI);
+  }
+  
   @Override
   public void setDocumentLocator(Locator locator)
   { 
