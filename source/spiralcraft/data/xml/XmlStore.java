@@ -59,6 +59,7 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.Level;
 import spiralcraft.task.Scenario;
+import spiralcraft.util.URIUtil;
 import spiralcraft.util.string.StringUtil;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
@@ -205,7 +206,7 @@ public class XmlStore
   }
   
   public void setBaseResourceURI(URI uri)
-  { baseResourceURI=uri;
+  { baseResourceURI=URIUtil.ensureTrailingSlash(uri);
   }
 
   public void setMasterURI(URI masterURI)
