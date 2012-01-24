@@ -16,7 +16,9 @@ package spiralcraft.data.session;
 
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Key;
 import spiralcraft.data.Space;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
@@ -38,12 +40,13 @@ import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 
 /**
- * Returns a Buffer of a source by primary key
+ * Returns a Buffer of a source by primary key. The Channel source functions as
+ *   the parameter set for an Equijoin query.
  * 
  * @author mike
  *
  */
-public class PrimaryKeyBufferChannel<Tsource,Tbuffer extends Buffer>
+public class KeyBufferChannel<Tsource,Tbuffer extends Buffer>
   extends SourcedChannel<Tsource,Tbuffer>
 {
   private static final ClassLog log=ClassLog.getInstance(BufferChannel.class);
@@ -54,36 +57,45 @@ public class PrimaryKeyBufferChannel<Tsource,Tbuffer extends Buffer>
   private Channel<?>[] keyChannels;
   private ThreadLocalChannel<Tsource> paramChannel;
   private BoundQuery<?,Tuple> boundQuery;
+  private boolean unique;
 
 /*
   private Channel<Buffer> parentChannel;
 */
 
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-  public static final PrimaryKeyBufferChannel<?,? extends Buffer>
-    create(Type<?> originalType
-    ,Channel<?> sourceChannel
-    ,Expression<?>[] keyBindings
-    ,Focus<?> focus
-    )
-    throws ContextualException
-  {
-    return new PrimaryKeyBufferChannel
-      (originalType,sourceChannel,keyBindings,focus);
-  }
-  
-
-  
   /**
-   * Construct a BufferChannel
-   * 
-   * @param focus A focus, not necessarily on the originalChannel
+   * Construct a KeyBufferChannel which buffers a Tuple retrieved by
+   *   primary key.
    * 
    */
-  public PrimaryKeyBufferChannel
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public static final <Tsource,Tbuffer extends Buffer> 
+    KeyBufferChannel<Tsource,Tbuffer> create
+      (Type<?> originalType
+      ,Channel<?> sourceChannel
+      ,Expression<?>[] keyBindings
+      ,Focus<?> focus
+      )
+    throws ContextualException
+  {
+    Key<?> pkey=originalType.getPrimaryKey();
+    Expression<?>[] keyExpressions=pkey.getTargetExpressions();
+    return new KeyBufferChannel
+      (originalType,sourceChannel,keyExpressions,keyBindings,true,focus);
+  }
+
+  /**
+   * <p>Construct a KeyBufferChannel using an set of keyExpressions which
+   *   define the key of the set to buffer
+   * </p>
+   * 
+   */
+  public KeyBufferChannel
     (Type<?> originalType
     ,Channel<Tsource> paramChannel
+    ,Expression<?>[] keyExpressions
     ,Expression<?>[] keyBindings
+    ,boolean unique
     ,Focus<?> focus
     )
     throws ContextualException
@@ -94,6 +106,7 @@ public class PrimaryKeyBufferChannel<Tsource,Tbuffer extends Buffer>
     super(DataReflector.<Tbuffer>getInstance(Type.getBufferType(originalType))
           ,paramChannel
           );
+    this.unique=unique;
     this.originalType=originalType;
     this.bufferType=Type.getBufferType(originalType);
     if (debug)
@@ -159,9 +172,16 @@ public class PrimaryKeyBufferChannel<Tsource,Tbuffer extends Buffer>
     try
     {
       id=KeyIdentifier.read(originalType,keyChannels);
-      Tuple original=BoundQuery.<Tuple>fetchUnique(boundQuery);
+      DataComposite original;
+      if (unique)
+      { original=BoundQuery.<Tuple>fetchUnique(boundQuery);
+      }
+      else
+      { original=BoundQuery.<Tuple>fetch(boundQuery);
+      }
       @SuppressWarnings("unchecked")
-      Tbuffer buffer=(Tbuffer) sessionChannel.get().bufferForId(bufferType,id,original);
+      Tbuffer buffer
+        =(Tbuffer) sessionChannel.get().bufferForId(bufferType,id,original);
       return buffer;
     }
     catch (DataException x)

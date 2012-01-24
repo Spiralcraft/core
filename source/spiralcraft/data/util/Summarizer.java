@@ -23,7 +23,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.editor.TupleEditor;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.session.BufferTuple;
-import spiralcraft.data.session.PrimaryKeyBufferChannel;
+import spiralcraft.data.session.KeyBufferChannel;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.transaction.Transaction.Nesting;
 import spiralcraft.lang.Contextual;
@@ -55,7 +55,7 @@ public class Summarizer<T extends Tuple>
   
 
   private ThreadLocalChannel<T> fact;
-  private PrimaryKeyBufferChannel<T,BufferTuple> summaryBuffer;
+  private KeyBufferChannel<T,BufferTuple> summaryBuffer;
 
   private TupleEditor summaryEditor;
   private ViewCache viewCache;
@@ -99,12 +99,14 @@ public class Summarizer<T extends Tuple>
     viewCache=new ViewCache(focusChain);
     factFocus.addFacet(viewCache.bind(factFocus));
     
-    summaryBuffer=new PrimaryKeyBufferChannel<T,BufferTuple>
-      (summaryType 
-      ,fact
-      ,summaryKeyBindings
-      ,factFocus
-      );
+    summaryBuffer
+      =KeyBufferChannel.<T,BufferTuple>create
+        (summaryType 
+        ,fact
+        ,summaryKeyBindings
+        ,factFocus
+        );  
+        
         
     summaryEditor=new TupleEditor();
     summaryEditor.setSource(summaryBuffer);
