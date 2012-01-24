@@ -14,7 +14,9 @@
 //
 package spiralcraft.lang.kit;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Context;
+import spiralcraft.lang.Focus;
 
 /**
  * <p>Makes a non-chainable Context chainable. The Focus returned by the 
@@ -32,6 +34,12 @@ public class ChainableContextAdapter
   
   public ChainableContextAdapter(Context context)
   { this.delegate=context;
+  }
+  
+  @Override
+  protected Focus<?> bindImports(Focus<?> focus)
+    throws ContextualException
+  { return delegate.bind(super.bindImports(focus));
   }
   
   @Override
