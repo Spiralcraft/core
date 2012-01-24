@@ -23,15 +23,18 @@ import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.common.namespace.ContextualName;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
+import spiralcraft.lang.ChainableContext;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.kit.AbstractChainableContext;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.SimpleChannel;
@@ -87,12 +90,13 @@ public abstract class Scenario<Tcontext,Tresult>
   
   protected Expression<Reflector<Tresult>> resultReflectorX;
  
+  protected ChainableContext outerContext;
   protected Expression<Tcontext> contextX;
   protected Channel<Tcontext> contextInitChannel;
   
   protected Binding<Boolean> whenX;
   
-  protected URI declarationInfo;
+  protected DeclarationInfo declarationInfo;
   protected URI alias;
   protected URI contextAlias;
   
@@ -129,6 +133,22 @@ public abstract class Scenario<Tcontext,Tresult>
   public void setContextAliasURI(URI contextAliasURI)
   { this.contextAlias=contextAliasURI;
   }
+
+  /**
+   * Provide a set of Contextuals that can provide functionality to this
+   *   task and any subtasks
+   *   
+   * @param contextuals
+   */
+  public void setContextuals(Contextual[] contextuals)
+  { 
+    if (outerContext==null)
+    { outerContext=new AbstractChainableContext();
+    }
+    for (Contextual contextual: contextuals)
+    { outerContext.chain(contextual);
+    }
+  }
   
   /**
    * Provide a Context expression which will be enclosed in the Focus chain
@@ -140,7 +160,7 @@ public abstract class Scenario<Tcontext,Tresult>
   public void setContextX(Expression<Tcontext> contextX)
   { this.contextX=contextX;
   }
-  
+
   
   /**
    * Define the result type of the TaskCommand that runs this Scenario
@@ -167,12 +187,12 @@ public abstract class Scenario<Tcontext,Tresult>
   }
   
   @Override
-  public void setDeclarationInfo(URI declarationInfo)
+  public void setDeclarationInfo(DeclarationInfo declarationInfo)
   { this.declarationInfo=declarationInfo;
   }
   
   @Override
-  public URI getDeclarationInfo()
+  public DeclarationInfo getDeclarationInfo()
   { return declarationInfo;
   }
   
@@ -280,6 +300,15 @@ public abstract class Scenario<Tcontext,Tresult>
     
   }
   
+  private final Focus<?> bindOuterContext(Focus<?> focusChain)
+    throws ContextualException
+  {
+    if (outerContext!=null)
+    { return outerContext.bind(focusChain);
+    }
+    return focusChain;
+  }
+  
   /**
    * Implement Contextual.bind() by inserting self and command into Focus
    *   chain and calling bindChildren() to set up FocusChain for any contained
@@ -292,7 +321,12 @@ public abstract class Scenario<Tcontext,Tresult>
     throws ContextualException
   { 
     if (declarationInfo==null)
-    { declarationInfo=BeanReflector.getInstance(getClass()).getTypeURI();
+    { declarationInfo
+        =new DeclarationInfo
+          (null
+          ,BeanReflector.getInstance(getClass()).getTypeURI()
+          ,null
+          );
     }
     
     try
@@ -301,11 +335,14 @@ public abstract class Scenario<Tcontext,Tresult>
   
       focusChain=bindImports(focusChain);
       
+      
       closureFocus
         =new ClosureFocus
           (focusChain);
       
       focusChain=closureFocus;
+
+      focusChain=bindOuterContext(focusChain);
       
       if (contextX!=null)
       { 
@@ -328,7 +365,7 @@ public abstract class Scenario<Tcontext,Tresult>
       { focusChain=focusChain.chain(contextChannel);
       }
   
-      
+      focusChain=bindContext(focusChain);
       
       
   //    if (focusChain==context)
@@ -370,7 +407,7 @@ public abstract class Scenario<Tcontext,Tresult>
       
     }
     catch (ContextualException x)
-    { throw new ContextualException("Could not bind scenario",declarationInfo,x);
+    { throw new ContextualException("Could not bind scenario",declarationInfo.getLocation(),x);
     }
       
   }
@@ -438,6 +475,9 @@ public abstract class Scenario<Tcontext,Tresult>
       throw new IllegalStateException
         ("Scenario.bind() never called in "+getClass().getName());
     }
+    if (outerContext!=null)
+    { outerContext.push();
+    }
     commandChannel.push(command);
     if (contextReflector!=null)
     { contextChannel.push(command.getContext());
@@ -452,6 +492,9 @@ public abstract class Scenario<Tcontext,Tresult>
     commandChannel.pop();
     if (contextReflector!=null)
     { contextChannel.pop();
+    }
+    if (outerContext!=null)
+    { outerContext.pop();
     }
   }
   
