@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.sax;
 
+import spiralcraft.util.string.StringPool;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
@@ -49,6 +50,7 @@ public class DataReader
   private FrameHandler frameHandler;
   private ContentHandler traceHandler;
   private boolean contextAware;
+  private StringPool stringPool;
   
   /**
    * <p>Provide a DataConsumer to receive a stream of Tuples from the outermost
@@ -63,6 +65,10 @@ public class DataReader
   
   public void setContextAware(boolean val)
   { this.contextAware=val;
+  }
+  
+  public void setStringPool(StringPool stringPool)
+  { this.stringPool=stringPool;
   }
   
   /**
@@ -204,6 +210,10 @@ public class DataReader
 
     if (traceHandler!=null)
     { handler.setTraceHandler(traceHandler);
+    }
+    
+    if (stringPool!=null)
+    { handler.setStringPool(stringPool);
     }
     
     handler.setContextAware(contextAware);

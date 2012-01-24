@@ -42,6 +42,7 @@ import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.util.string.StringConverter;
+import spiralcraft.util.string.StringPool;
 
 /**
  * <p>Implements a mapping from a foreign XML data element to part of a
@@ -103,7 +104,7 @@ public abstract class AbstractFrameHandler
       { log.fine("Default namespace is not defined for value '"+value+"'");
       }
     }
-    return value;
+    return stringPool.get(value);
   }
   
   protected final ClassLog log
@@ -188,6 +189,8 @@ public abstract class AbstractFrameHandler
   private HashMap<String,Setter> elementSetterMap;
   
   private URI defaultURI;
+  
+  private StringPool stringPool;
 
   public void setDefaultURI(URI defaultURI)
   { 
@@ -217,6 +220,11 @@ public abstract class AbstractFrameHandler
   
   public void setDefaultAssignments(Assignment<?>[] defaultAssignments)
   { this.defaultAssignments=defaultAssignments;
+  }
+
+  @Override
+  public void setStringPool(StringPool stringPool)
+  { this.stringPool=stringPool;
   }
   
   protected boolean isHandlingText()
@@ -338,6 +346,9 @@ public abstract class AbstractFrameHandler
     throws BindException
   {
     bindCalled=true;
+    if (stringPool==null)
+    { stringPool=new StringPool();
+    }
     bindAttributes();
     bindAssignments();
     bindChildren();
@@ -441,7 +452,7 @@ public abstract class AbstractFrameHandler
       {
         binding.bind(focus);
         attributeMap.put
-          (binding.getAttribute()
+          (stringPool.get(binding.getAttribute())
           ,binding
           );
         if (debug)
@@ -489,11 +500,12 @@ public abstract class AbstractFrameHandler
       for (FrameHandler child:children)
       { 
         child.setParent(this);
+        child.setStringPool(stringPool);
         child.bind();
         try
         {
           String elementURI=transformNamespace(child.getElementURI(),child);
-          childMap.put(elementURI, child);
+          childMap.put(stringPool.get(elementURI), child);
           if (debug)
           { log.fine("Mapped child name "+elementURI+" to "+child);
           }
@@ -556,10 +568,10 @@ public abstract class AbstractFrameHandler
     
     for (int i=0;i<attributes.getLength();i++)
     {
-      String name=attributes.getLocalName(i);
-      String uri=attributes.getURI(i);
-      String fullName=combineName(uri,name);
-      String value=attributes.getValue(i);
+      String name=stringPool.get(attributes.getLocalName(i));
+      String uri=stringPool.get(attributes.getURI(i));
+      String fullName=stringPool.get(combineName(uri,name));
+      String value=stringPool.get(attributes.getValue(i));
       
       
       AttributeBinding<?> binding
@@ -700,7 +712,7 @@ public abstract class AbstractFrameHandler
         { textChannel.set(chars);
         }
         else
-        { textChannel.set(orig+chars);
+        { textChannel.set(stringPool.get(orig+chars));
         }
       }
     }

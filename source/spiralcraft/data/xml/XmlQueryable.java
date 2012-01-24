@@ -344,6 +344,7 @@ public class XmlQueryable
         }
 
         DataReader reader=new DataReader();
+        reader.setStringPool(store!=null?store.getStringPool():null);
         Aggregate<Tuple> orig
           =(Aggregate<Tuple>) reader.readFromResource
             (resource, type);

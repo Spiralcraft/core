@@ -60,6 +60,7 @@ import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.Level;
 import spiralcraft.task.Scenario;
 import spiralcraft.util.URIUtil;
+import spiralcraft.util.string.StringPool;
 import spiralcraft.util.string.StringUtil;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
@@ -121,6 +122,9 @@ public class XmlStore
       }
     );
   
+  private final StringPool stringPool
+    =new StringPool();
+  
   public XmlStore()
     throws DataException
   {
@@ -133,6 +137,10 @@ public class XmlStore
   @Override
   public URI getLocalResourceURI()
   { return baseResourceURI;
+  }
+  
+  StringPool getStringPool()
+  { return stringPool;
   }
   
   @Override

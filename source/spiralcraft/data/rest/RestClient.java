@@ -56,6 +56,7 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.sax.XmlWriter;
 
 import spiralcraft.text.html.URLDataEncoder;
+import spiralcraft.util.string.StringPool;
 
 import spiralcraft.vfs.url.URLResource;
 
@@ -88,6 +89,7 @@ public class RestClient
   private int timeoutSeconds;
   private DeclarationInfo declarationInfo;
   private GenericReflector<RestClient> reflector;
+  private StringPool stringPool=new StringPool();
   
 //  private Focus<Tuple> focus;
   private boolean debug;
@@ -212,6 +214,7 @@ public class RestClient
     Focus<?> focus=new SimpleFocus<Tuple>(parentFocus,localQueryChannel);
     
     handler.setFocus(focus);
+    handler.setStringPool(stringPool);
     handler.bind();
     bindAttributes(focus);
     bindAssignments(focus);
@@ -380,6 +383,7 @@ public class RestClient
       }
       DataReader dataReader=new DataReader();
       dataReader.setFrameHandler(handler);
+      dataReader.setStringPool(stringPool);
       
       ByteArrayOutputStream out=null;
       if (debug)

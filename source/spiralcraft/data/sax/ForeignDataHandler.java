@@ -105,7 +105,8 @@ public class ForeignDataHandler
       throws SAXException,
       DataException
     {
-      String fullName=AbstractFrameHandler.combineName(uri,localName);
+      String fullName
+        =stringPool.get(AbstractFrameHandler.combineName(uri,localName));
       
       FrameHandler childFrame
         =frameHandler.getChildMap().get(fullName);

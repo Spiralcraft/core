@@ -23,6 +23,7 @@ import spiralcraft.data.sax.ForeignDataHandler.HandledFrame;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ClosureFocus;
+import spiralcraft.util.string.StringPool;
 
 /**
  * <p>Creates an Aggregate and publishes it in the Focus chain so it can receive
@@ -147,5 +148,10 @@ public class RecursiveFrame
   @Override
   public void closingChild(FrameHandler child)
   { // We don't have children, so won't be called
+  }
+  
+  @Override
+  public void setStringPool(StringPool stringPool)
+  {
   }
 }

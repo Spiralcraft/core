@@ -36,6 +36,7 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.text.ParseException;
 import spiralcraft.text.ParsePosition;
 import spiralcraft.util.ContextDictionary;
+import spiralcraft.util.string.StringPool;
 
 /**
  * <p>Implements a SAX handler using a stack of Frames. A Frame is
@@ -65,6 +66,7 @@ public abstract class DataHandlerBase
   private boolean contextAware;
   private boolean allowMixedContentDefault;
   protected boolean debug;
+  protected StringPool stringPool;
   
   @Override
   public void setDocumentLocator(Locator locator)
@@ -78,6 +80,10 @@ public abstract class DataHandlerBase
   
   public void setContextAware(boolean contextAware)
   { this.contextAware=contextAware;
+  }
+  
+  public void setStringPool(StringPool stringPool)
+  { this.stringPool=stringPool;
   }
   
   public String formatPosition()
@@ -119,6 +125,10 @@ public abstract class DataHandlerBase
   public void startDocument()
     throws SAXException
   { 
+    if (stringPool==null)
+    { stringPool=new StringPool();
+    }
+
     if (traceHandler!=null)
     { traceHandler.startDocument();
     }
@@ -129,6 +139,7 @@ public abstract class DataHandlerBase
     catch (DataException x)
     { throw newSAXException("Error starting root frame", x);
     }
+    
   }
 
   /**
@@ -161,6 +172,10 @@ public abstract class DataHandlerBase
     )
     throws SAXException
   { 
+    uri=stringPool.get(uri);
+    localName=stringPool.get(localName);
+    qName=stringPool.get(qName);
+    
     if (traceHandler!=null)
     { traceHandler.startElement(uri,localName,qName,attributes);
     }
@@ -199,6 +214,9 @@ public abstract class DataHandlerBase
   public void startPrefixMapping(String prefix,String uri)
     throws SAXException
   { 
+    prefix=stringPool.get(prefix);
+    uri=stringPool.get(uri);
+    
     if (traceHandler!=null)
     { traceHandler.startPrefixMapping(prefix,uri);
     }
@@ -476,7 +494,7 @@ public abstract class DataHandlerBase
         { throw new DataException("Error substituting properties in "+ret,x);
         }
       }
-      return ret;
+      return stringPool.get(ret);
     
     }
 

@@ -22,6 +22,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ClosureFocus;
+import spiralcraft.util.string.StringPool;
 
 
 /**
@@ -145,4 +146,5 @@ public interface FrameHandler
    */
   ClosureFocus<?>.RecursionContext getRecursionContext(Focus<?> focusChain);
   
+  void setStringPool(StringPool stringPool);
 }
