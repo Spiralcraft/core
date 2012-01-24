@@ -242,5 +242,4 @@ public class KeyTuple
   { return AbstractTuple.tupleToText(this,indent);
   }
   
-  
 }
