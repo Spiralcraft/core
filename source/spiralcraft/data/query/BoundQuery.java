@@ -14,12 +14,14 @@
 //
 package spiralcraft.data.query;
 
+import spiralcraft.data.Aggregate;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 
+import spiralcraft.data.access.CursorAggregate;
 import spiralcraft.data.access.ScrollableCursor;
 import spiralcraft.data.access.SerialCursor;
 
@@ -73,6 +75,17 @@ public abstract class BoundQuery<Tq extends Query,Tt extends Tuple>
     }
   }
   
+  public static final <Tt extends Tuple> Aggregate<Tt> fetch(BoundQuery<?,Tt> query)
+    throws DataException
+  { 
+    SerialCursor<Tt> cursor=query.execute();
+    try
+    { return new CursorAggregate<Tt>(cursor);
+    }
+    finally
+    { cursor.close();
+    }
+  }  
   protected final ClassLog log
     =ClassLog.getInstance(getClass());
   protected Level debugLevel
