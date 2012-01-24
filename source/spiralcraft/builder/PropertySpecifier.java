@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringUtil;
 
-import spiralcraft.common.declare.Declarable;
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.lang.Expression;
@@ -43,7 +42,6 @@ import java.util.List;
  *   or modified in some way- eg. "connection.password"
  */
 public class PropertySpecifier
-  implements Declarable
 {
   private static final ClassLog log
     =ClassLog.getInstance(PropertySpecifier.class);
@@ -80,7 +78,7 @@ public class PropertySpecifier
   private Level debugLevel=Level.INFO;
   
   private boolean contextualize=true;
-  private URI declarationInfo;
+  private URI declarationLocation;
 
   public PropertySpecifier
     (AssemblyClass container
@@ -135,14 +133,12 @@ public class PropertySpecifier
   }
   
   
-  @Override
-  public void setDeclarationInfo(URI declarationInfo)
-  { this.declarationInfo=declarationInfo;
+  public void setDeclarationLocation(URI declarationLocation)
+  { this.declarationLocation=declarationLocation;
   }
   
-  @Override
-  public URI getDeclarationInfo()
-  { return this.declarationInfo;
+  public URI getDeclarationLocation()
+  { return this.declarationLocation;
   }
   
   /**
@@ -256,7 +252,7 @@ public class PropertySpecifier
       ArrayUtil.format(_container.getInnerPath(),"/",null)
       +"."
       +ArrayUtil.format(_specifier,".",null)
-      +(declarationInfo!=null?" ("+declarationInfo.toString()+") ":"")
+      +(declarationLocation!=null?" ("+declarationLocation.toString()+") ":"")
       +" in "
       +(_container.getSourceURI()!=null?
          _container.getSourceURI().toString():"(unknown source)");

@@ -30,6 +30,7 @@ import java.util.HashMap;
 import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
@@ -53,7 +54,6 @@ import spiralcraft.vfs.classpath.ClasspathResourceFactory;
  *   Assembly.
  */
 public class AssemblyClass
-  implements Declarable
 {
   
   private static final BeanInfoCache _BEAN_INFO_CACHE
@@ -142,7 +142,7 @@ public class AssemblyClass
   private final String _baseName;
   
   // The URI used to reference this AssemblyClass in the referencing container
-  private final URI _containerURI;
+  private final URI _baseURI;
   private String _id;  
   
   private PrefixResolver prefixResolver;
@@ -178,7 +178,8 @@ public class AssemblyClass
   private HashMap<String,String> localContext;
   
   private boolean declarable;
-  private URI declarationInfo;
+  private URI declarationLocation;
+  private DeclarationInfo declarationInfo;
   
   /**
    * Construct a new AssemblyClass from a definition
@@ -209,7 +210,7 @@ public class AssemblyClass
     this.sourceURI=sourceUri;
     _basePackage=URIUtil.ensureTrailingSlash(basePackage);
     _baseName=baseName;
-    _containerURI=_basePackage.resolve(baseName);
+    _baseURI=_basePackage.resolve(baseName);
     _outerClass=outerClass;
     if (loader!=null)
     { _loader=loader;
@@ -262,7 +263,8 @@ public class AssemblyClass
   
   
   /**
-   * Construct a new AssemblyClass from a referenced base class
+   * Construct a new AssemblyClass from a referenced base class (an inner
+   *   subclass)
    *
    *@param sourceUri The URI of the resource which defines this AssemblyClass,
    *   or null of the AssemblyClass is being defined programmatically.
@@ -284,7 +286,7 @@ public class AssemblyClass
     this.sourceURI=sourceUri;
     _basePackage=null;
     _baseName=null;
-    _containerURI=baseClass.getContainerURI();
+    _baseURI=baseClass.getBaseURI();
     _baseAssemblyClass=baseClass;
     _outerClass=outerClass;
     if (loader!=null)
@@ -303,16 +305,21 @@ public class AssemblyClass
   { return prefixResolver;
   }
 
-  @Override
-  public void setDeclarationInfo(URI declarationInfo)
-  { this.declarationInfo=declarationInfo;
+  public void setDeclarationLocation(URI declarationLocation)
+  { 
+    this.declarationLocation=declarationLocation;
+    if (declarationLocation.getPath()==null || declarationLocation.getPath().isEmpty())
+    { 
+      if (this._outerClass==null)
+      { this.declarationLocation=this._baseURI.resolve(declarationLocation);
+      }
+    }
   }
   
-  @Override
-  public URI getDeclarationInfo()
+  public URI getDeclarationLocation()
   { 
-    if (this.declarationInfo!=null)
-    { return this.declarationInfo;
+    if (this.declarationLocation!=null)
+    { return this.declarationLocation;
     }
     else
     { return this.sourceURI;
@@ -381,11 +388,11 @@ public class AssemblyClass
   
   @Override
   public String toString()
-  { return super.toString()+":"+sourceURI+":"+_containerURI;
+  { return super.toString()+":"+sourceURI+":"+_baseURI;
   }
 
-  public URI getContainerURI()
-  { return _containerURI;
+  public URI getBaseURI()
+  { return _baseURI;
   }
   
   /**
@@ -726,6 +733,10 @@ public class AssemblyClass
   { return _declarationName;
   }
   
+  public DeclarationInfo getDeclarationInfo()
+  { return declarationInfo;
+  }
+  
   public synchronized void resolve()
     throws BuildException
   { 
@@ -735,6 +746,15 @@ public class AssemblyClass
     { resolveExternalBaseClass();
     }
     resolveProperties();
+    declarationInfo=new DeclarationInfo
+      (_baseAssemblyClass!=null
+        ?_baseAssemblyClass.getDeclarationInfo()
+        :null
+      ,(_outerClass==null && sourceURI!=null)
+        ?URIUtil.removePathSuffix(sourceURI,".assy.xml")
+        :null
+      ,getDeclarationLocation()
+      );
     _resolved=true;
   }
   
@@ -754,14 +774,7 @@ public class AssemblyClass
       // If the source file URI matches an outer class, that works
       if (sourceURI!=null && sourceURI.relativize(uri)!=uri)
       { return true;
-      }
-// XXX: Redundant?
-//      else if (_basePackage!=null 
-//          && _baseName!=null 
-//          && uri.relativize(_basePackage).getPath().equals(_baseName)
-//          )
-//      { return true;
-//      }      
+      }  
       else if (_javaClass!=null)
       { 
         return uri.getScheme()!=null
@@ -773,7 +786,7 @@ public class AssemblyClass
     else
     {
       // For an inner class, we need to match the URI of the reference
-      URI containerURI=getContainerURI();
+      URI containerURI=getBaseURI();
       if (containerURI!=null 
           && containerURI.relativize(uri)!=uri
          )

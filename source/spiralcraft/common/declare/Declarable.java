@@ -14,11 +14,10 @@
 //
 package spiralcraft.common.declare;
 
-import java.net.URI;
 
 /**
  * Implemented by objects which can be declared in some external mechanism to
- *   maintain an association between the object and the declaration.
+ *   maintain an association between the object and the point of declaration.
  * 
  * @author mike
  *
@@ -26,7 +25,7 @@ import java.net.URI;
 public interface Declarable
 {
 
-  void setDeclarationInfo(URI declarationInfo);
+  void setDeclarationInfo(DeclarationInfo declarationInfo);
   
-  URI getDeclarationInfo();
+  DeclarationInfo getDeclarationInfo();
 }
