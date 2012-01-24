@@ -14,6 +14,8 @@
 //
 package spiralcraft.common;
 
+import java.util.ArrayList;
+
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
@@ -23,6 +25,19 @@ public final class Lifecycler
   private static final ClassLog log
     =ClassLog.getInstance(Lifecycler.class);
 
+  public static Lifecycle asLifecycle(Object[] lifecycle)
+  { 
+    ArrayList<Lifecycle> lifecycles=new ArrayList<Lifecycle>();
+    for (Object o : lifecycle)
+    { 
+      if (o instanceof Lifecycle)
+      { lifecycles.add((Lifecycle) o);
+      }
+    }
+    return group(lifecycles.toArray(new Lifecycle[lifecycles.size()]));
+    
+  }
+  
   public static Lifecycle group(final Lifecycle ... la)
   {
     return new Lifecycle()
