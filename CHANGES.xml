@@ -20,6 +20,45 @@
         </revision>
         
         <notes>
+          <scm:Note>Added string pooling functionality to XML processing
+            system.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>util/string/StringPool.java
+          </URI>
+          <URI>data/xml/XmlQueryable.java
+          </URI>
+          <URI>data/xml/XmlStore.java
+          </URI>
+          <URI>data/sax/AbstractFrameHandler.java
+          </URI>
+          <URI>data/sax/DataHandlerBase.java
+          </URI>
+          <URI>data/sax/DataReader.java
+          </URI>
+          <URI>data/sax/ForeignDataHandler.java
+          </URI>
+          <URI>data/sax/FrameHandler.java
+          </URI>
+          <URI>data/sax/RecursiveFrame.java
+          </URI>
+          <URI>data/rest/RestClient.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
           <scm:Note>Synchronize task updates local data from an external
             representation
           </scm:Note>
