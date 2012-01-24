@@ -13,6 +13,307 @@
     </date>
     
     <detail>      
+    
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Synchronize task updates local data from an external
+            representation
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/task/Synchronize.java
+        </path>
+        
+      </scm:Change>
+    
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>BufferTuple.updateFrom(Tuple source) copies non-null,
+            differently valued fields from the source to the buffer.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/session/BufferTuple.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Lifecycler.asLifecycle(Object[]) static method finds
+            Lifecycle objects in an arbitrary set
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/common/Lifecycler.java
+        </path>
+        
+      </scm:Change>
+    
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>PrimaryKeyBufferChannel is now called KeyBufferChannel,
+            and accepts alternate and non-unique key definitions.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>session/KeyBufferChannel.java
+          </URI>
+          <URI>session/PrimaryKeyBufferChannel.java
+          </URI>
+          <URI>util/Summarizer.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>XmlStore now ensures that the baseResourceURI is a
+            container (path ends in "/")
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/xml/XmlStore.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Make sets of BindingChannels easier to use via the
+            BindingSet class
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/
+        </path>
+        
+        <resources>
+          <URI>kit/BindingSet.java
+          </URI>
+          <URI>parser/BindingNode.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Reflect the document URI in the locations exposed by
+            the SAX ParseTree
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/sax
+        </path>
+        
+        <resources>
+          <URI>ParseTree.java
+          </URI>
+          <URI>ParseTreeFactory.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix formatting of text location URIs
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/text/ParsePosition.java
+        </path>
+        
+      </scm:Change>
+
+
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>ChainableContextAdapter now implements the bindImports
+            method
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/kit/ChainableContextAdapter.java
+        </path>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>All scenarios now support Contextual objects in the
+            "contexts" property.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/Scenario.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Make Batch respect the "whenX" property by not permitting
+            the override of TaskCommand.run
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task
+        </path>
+        
+        <resources>
+          <URI>Batch.java
+          </URI>
+          <URI>TaskCommand.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Make the RestClient more functional when used in 
+            Tasklets (Scenarios) by supporting the Declarable and 
+            Reflectable interfaces.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/rest/RestClient.java
+          </URI>
+        </resources>
+      </scm:Change>
+          
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Rename AssemblyClass.getContainerURI to assemblyClass
+            .getBaseURI - this method returns the canonical uri which resolves
+            the AssemblyClass.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/reflect/AssemblyType.java
+          </URI>
+          <URI>builder/AssemblyClass.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>BoundQuery.fetch() static method added to fetch query
+            data into an Aggregate while encapsulating cursor details
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/query/BoundQuery.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        
+        <revision>-dev4
+        </revision>
+        
+        <notes>
+          <scm:Note>Expanded the spiralcraft.common.declare package to
+            explicitly support both type declaration URIs and source code
+            locations to track the providence of an object through a
+            series of constructors/builders. This allows objects to use 
+            the names of the extended types that they instantiate for
+            integration and error reporting.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>common/declare/Declarable.java
+          </URI>
+          <URI>common/declare/DeclarationInfo.java
+          </URI>
+          <URI>builder/AssemblyClass.java
+          </URI>
+          <URI>builder/AssemblyLoader.java
+          </URI>
+          <URI>builder/PropertySpecifier.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+        
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         
         <revision>-dev3
