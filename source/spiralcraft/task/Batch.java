@@ -162,22 +162,8 @@ public class Batch<I,R>
         
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        public void run()
-        { 
-          super.run();
-//          itemClosureFocus.push();
-//          try
-//          { 
-            
-//            super.run();
-
-//          }
-//          finally
-//          { // itemClosureFocus.pop();
-//          }
-          
-
-          
+        protected void onTaskCompletion()
+        {           
           List<SubTask> subtasks=((MultiTask) task).getSubtasks();
           if (debug)
           { log.log(Level.TRACE,"Launching "+subtasks.size()+" subtasks");
@@ -189,20 +175,22 @@ public class Batch<I,R>
             TaskCommand completedCommand
               =subtask.getCompletedTaskCommand();
             
-            if (debug)
-            { log.log(Level.FINE,""+completedCommand.getResult());
-            }
-            
-            if (completedCommand.getException()!=null)
-            { 
-              exceptionList.add(completedCommand.getException());
-              log.log
-                (Level.WARNING,"Command resulted in Exception: "
-                +completedCommand.getException()
-                ,completedCommand.getException()
-                );
-            }
-            
+            if (completedCommand!=null)
+            {
+              if (debug)
+              { log.log(Level.FINE,""+completedCommand.getResult());
+              }
+              
+              if (completedCommand.getException()!=null)
+              { 
+                exceptionList.add(completedCommand.getException());
+                log.log
+                  (Level.WARNING,"Command resulted in Exception: "
+                  +completedCommand.getException()
+                  ,completedCommand.getException()
+                  );
+              }
+            } 
             
           }
           if (exceptionList.size()>0)

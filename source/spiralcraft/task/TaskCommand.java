@@ -69,7 +69,7 @@ public class TaskCommand<Tcontext,Tresult>
   }
   
   @Override
-  public void run()
+  public final void run()
   { 
     if (isCompleted())
     { 
@@ -135,6 +135,7 @@ public class TaskCommand<Tcontext,Tresult>
   protected void onTaskCompletion()
   {
   }
+
   
   @Override
   public void setResult(Tresult result)
