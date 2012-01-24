@@ -27,6 +27,12 @@ import spiralcraft.lang.Channel;
  * <p>An Identifier composed from a candidate key of a Type or Type relation
  * </p>
  * 
+ * <p>This KeyIdentifier will only equal another KeyIdentifier that
+ *   identifies the same type and is not comparable to KeyIdentifiers 
+ *   created from different types. It can therefore serve as a transparent
+ *   unique identifier within a heterogeneous collection.
+ * </p>
+ * 
  * @author mike
  *
  * @param <T>
