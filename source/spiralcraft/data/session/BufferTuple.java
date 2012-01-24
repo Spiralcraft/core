@@ -303,6 +303,47 @@ public class BufferTuple
     field.setValue(this,value);
   }
   
+  /**
+   * <p>Copy data from a source tuple of the same type where the source
+   *   field value is non-null and is different than the current value
+   * </p>
+   * 
+   * @param source
+   * @throws DataException
+   */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public void updateFrom(Tuple source)
+    throws DataException
+  {
+    if (getFieldSet()==source.getFieldSet()
+        || (getType()!=null && getType().hasArchetype(source.getType()))
+       )
+    {
+      for (Field field:this.type.getArchetype().getScheme().fieldIterable())
+      { 
+        if (!field.isTransient())
+        {
+          Object sourceVal=field.getValue(source);
+          if (sourceVal!=null)
+          {
+            Object currentVal=field.getValue(this);
+            if (!sourceVal.equals(currentVal))
+            { field.setValue(this,sourceVal);
+            }
+          }
+        }
+      }
+    }
+    else
+    {
+      if (debug)
+      { log.fine("Can't update "+this+" from "+source);
+      }
+    }
+    if (baseExtent!=null)
+    { baseExtent.updateFrom(source.getBaseExtent());
+    }
+  }
   
   @Override
   public void updateTo(
