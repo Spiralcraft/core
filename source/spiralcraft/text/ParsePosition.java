@@ -162,10 +162,10 @@ public class ParsePosition
    */
   public URI toURI()
   {
-    String fragment="#line="+line+";col="+column+";char="+index;
+    String fragment="line="+line+";col="+column+";char="+index;
     
     if (contextURI!=null)
-    { return contextURI.resolve(fragment);
+    { return contextURI.resolve("#"+fragment);
     }
     else
     { 
