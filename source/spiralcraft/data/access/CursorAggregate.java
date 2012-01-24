@@ -31,8 +31,12 @@ public class CursorAggregate<Tt extends Tuple>
 
   
   /**
-   * Construct the CursorAggregate by reading the specified cursor
+   * <p>Construct the CursorAggregate by reading the specified cursor
    *   in its entirety
+   * </p>
+   * 
+   * <p>It is the responsibility of the caller to close the cursor
+   * </p>
    */
   @SuppressWarnings("unchecked")
   public CursorAggregate(SerialCursor<Tt> cursor)
@@ -56,8 +60,12 @@ public class CursorAggregate<Tt extends Tuple>
   }
   
   /**
-   * Construct the CursorAggregate by reading a limited part of
+   * <p>Construct the CursorAggregate by reading a limited part of
    *   the specified cursor.
+   * </p>
+   *
+   * <p>It is the responsibility of the caller to close the cursor
+   * </p>
    */
   @SuppressWarnings("unchecked")
   public CursorAggregate(SerialCursor<Tt> cursor,int limit)

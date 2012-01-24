@@ -32,6 +32,7 @@ import spiralcraft.util.KeyFunction;
  *   FieldSet for each instance of the target type. 
  * </p>
  *  
+ * @param <T> The target (input) type that the projection is evaluated against 
  * @author mike
  */
 public interface Projection<T>
