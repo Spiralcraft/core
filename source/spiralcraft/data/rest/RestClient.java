@@ -22,6 +22,8 @@ import java.nio.charset.Charset;
 
 import org.xml.sax.SAXException;
 
+import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
@@ -40,9 +42,14 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.Context;
+import spiralcraft.lang.Reflectable;
+import spiralcraft.lang.Reflector;
 
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.GenericReflector;
+import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 
@@ -63,7 +70,7 @@ import spiralcraft.vfs.url.URLResource;
  *
  */
 public class RestClient
-  implements Context
+  implements Context,Declarable,Reflectable<RestClient>
 {
   private static final ClassLog log
     =ClassLog.getInstance(RestClient.class);
@@ -79,11 +86,14 @@ public class RestClient
   private Expression<Tuple> queryDataObject;
   private Channel<Tuple> queryDataChannel;
   private int timeoutSeconds;
+  private DeclarationInfo declarationInfo;
+  private GenericReflector<RestClient> reflector;
   
 //  private Focus<Tuple> focus;
   private boolean debug;
 
-  
+
+
   /**
    * <p>Provide the Handler which translates the query response
    * </p>
@@ -110,6 +120,10 @@ public class RestClient
   { return handler.getType();
   }
   
+  @Override
+  public Reflector<RestClient> reflect()
+  { return reflector;
+  }
   
   public void setDebug(boolean debug)
   { this.debug=debug;
@@ -201,6 +215,21 @@ public class RestClient
     handler.bind();
     bindAttributes(focus);
     bindAssignments(focus);
+    reflector
+      =new GenericReflector<RestClient>
+      (BeanReflector.<RestClient>getInstance(getClass()));
+    reflector.enhance
+      ("query"
+      ,new Reflector[]{localQueryChannel.getReflector()}
+      ,localQueryChannel.getReflector()
+      );
+    Focus<RestClient> selfFocus
+      =new SimpleFocus<RestClient>(new SimpleChannel<RestClient>(reflector,this,true));
+    if (declarationInfo!=null)
+    { selfFocus.addAlias(declarationInfo.getDeclaredType());
+    }
+    focus.addFacet(selfFocus);
+
     return focus;
   }
 
@@ -403,5 +432,14 @@ public class RestClient
   { localQueryChannel.pop();
   }
   
+  @Override
+  public void setDeclarationInfo(DeclarationInfo declarationInfo)
+  { this.declarationInfo=declarationInfo;
+  }
+  
+  @Override
+  public DeclarationInfo getDeclarationInfo()
+  { return declarationInfo;
+  }
   
 }
