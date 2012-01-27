@@ -24,6 +24,7 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -50,8 +51,9 @@ public class Resolve
     Expression<?>[] arguments)
     throws BindException
   {
+    
     return new TranslatorChannel<Resource,URI>
-      (source
+      (LangUtil.<URI>ensureType(source,URI.class,focus)
       ,new Translator<Resource,URI>()
         {
 

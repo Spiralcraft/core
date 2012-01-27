@@ -23,6 +23,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Functor;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.functions.FromString;
 import spiralcraft.lang.reflect.BeanReflector;
 
 public class LangUtil
@@ -168,5 +169,40 @@ public class LangUtil
     }
   }
 
+  /**
+   * <p>Return a Channel that provides data of the specified type, performing
+   *   a type conversion if required, and throwing an exception if a 
+   *   conversion cannot be made.
+   * </p>
+   * 
+   * @param <T>
+   * @param in
+   * @param type
+   * @return
+   * @throws BindException 
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> Channel<T> ensureType
+    (Channel<?> in,Class<T> type,Focus<?> context)
+    throws BindException
+  {
+    if (type.isAssignableFrom(in.getContentType()))
+    { return (Channel<T>) in;
+    }
+    else if (in.getContentType()==String.class)
+    { 
+      return new FromString<T>(type)
+        .bindChannel((Channel<String>) in,context,null);
+    }
+    else
+    { 
+      throw new BindException
+        ("Cannot convert from "+in.getReflector().getTypeURI()
+          +" ("+in.getContentType().getName()+")  to "
+          +" "+type.getName()
+          );
+    }
+  }
+  
 
 }

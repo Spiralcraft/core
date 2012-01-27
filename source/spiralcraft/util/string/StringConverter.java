@@ -30,6 +30,8 @@ import java.net.URI;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import spiralcraft.common.Coercion;
+
 /**
  * <p>Converts bidirectionally between a String and an object of a specific
  *    type in a consistent manner.
@@ -40,6 +42,7 @@ import java.lang.reflect.InvocationTargetException;
  * </p>
  */
 public abstract class StringConverter<T>
+  implements Coercion<String,T>
 {
 
   // TODO: Make weak so classes can be collected
@@ -220,6 +223,13 @@ public abstract class StringConverter<T>
    */
   public abstract T fromString(String val);
 
+  /**
+   * Implement the Coercion interface by calling fromString(input)
+   */
+  @Override
+  public final T coerce(String input)
+  { return fromString(input);
+  }
   
 }
 
