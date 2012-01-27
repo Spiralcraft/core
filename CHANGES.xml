@@ -16,6 +16,59 @@
     
       <scm:Change>
         
+        <revision>-dev5
+        </revision>
+        
+        <notes>
+          <scm:Note>Allow a URL Resource to retrieved as a URLMessage to
+            synchronously process the message content.
+          </scm:Note>
+          <scm:Note>Clean up URL connection when an IOException occurs that
+            reflects an HTTP error.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/url/
+        </path>
+        
+        <resources>
+          <URI>URLMessage.java
+          </URI>
+          <URI>URLResource.java
+          </URI>
+        </resources>
+        
+        
+      </scm:Change>
+
+      <scm:Change>
+        
+        <revision>-dev5
+        </revision>
+        
+        <notes>
+          <scm:Note>LangUtil.ensureType method to help contextual objects
+            enforce input types while providing an opportunity for 
+            automatic type conversion, particularly from Strings.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/util/LangUtil.java
+          </URI>
+          <URI>util/string/StringConverter.java
+          </URI>
+          <URI>vfs/functions/Resolve.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        
         <revision>-dev4
         </revision>
         
