@@ -145,15 +145,24 @@ public class URLResource
           =httpConnection.getErrorStream();
         if (errorStream!=null)
         { 
-          throw new URLAccessException
-            ("Connection returned remote error"
-            ,x
-            ,new URLMessage
-              (errorStream
-              ,httpConnection.getContentLength()
-              ,connection.getHeaderFields()
-              )
-            );
+          try
+          {
+            throw new URLAccessException
+              ("Connection returned remote error"
+              ,x
+              ,new URLMessage
+                (errorStream
+                ,httpConnection.getContentLength()
+                ,connection.getHeaderFields()
+                )
+              );
+          }
+          finally
+          { 
+            errorStream.close();
+            httpConnection.disconnect();
+          }
+          
         }
         else
         { throw x;
@@ -166,6 +175,35 @@ public class URLResource
     }
   }
 
+  public URLMessage getMessage()
+    throws IOException
+  { 
+    final URLConnection connection=_url.openConnection();
+    setupConnection(connection);
+    connection.setDoInput(true);
+    connection.connect();
+    
+    InputStream inputStream
+      =connection.getInputStream();
+    try
+    {
+      return new URLMessage
+        (inputStream
+        ,connection.getContentLength()
+        ,connection.getHeaderFields()
+        );
+    }
+    finally
+    { 
+      
+      inputStream.close();
+      if (connection instanceof HttpURLConnection)
+      { ((HttpURLConnection) connection).disconnect();
+      }
+    }
+    
+  }
+  
   private void dumpHeaders(String message,Map<String,List<String>> headers)
   {
     StringBuffer headerBuf=new StringBuffer();

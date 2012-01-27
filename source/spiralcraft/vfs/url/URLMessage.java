@@ -46,8 +46,18 @@ public class URLMessage
     throws IOException
   {
     this.metadata=new DictionaryMetadata(headers);
-    this.content
-      =new ByteArrayResource(StreamUtil.readBytes(contentStream,contentLength));
+    if (contentLength<0)
+    {  
+      this.content
+        =new ByteArrayResource
+           (StreamUtil.readBytes(contentStream,-1));
+    }
+    else
+    {
+      this.content
+        =new ByteArrayResource
+           (StreamUtil.readBytes(contentStream,contentLength));
+    }
   }
   
   @Override
@@ -59,6 +69,10 @@ public class URLMessage
   public InputStream getInputStream()
     throws IOException
   { return content.getInputStream();
+  }
+  
+  public Resource getContentBody()
+  { return content;
   }
   
   @Override
