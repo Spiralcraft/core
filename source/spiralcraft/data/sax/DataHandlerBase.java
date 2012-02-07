@@ -126,7 +126,7 @@ public abstract class DataHandlerBase
     throws SAXException
   { 
     if (stringPool==null)
-    { stringPool=new StringPool();
+    { stringPool=StringPool.INSTANCE;
     }
 
     if (traceHandler!=null)

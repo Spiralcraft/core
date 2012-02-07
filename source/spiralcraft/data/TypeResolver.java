@@ -24,6 +24,7 @@ import java.lang.ref.WeakReference;
 
 
 import spiralcraft.util.ClassLoaderLocal;
+import spiralcraft.util.string.StringPool;
 
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -113,7 +114,9 @@ public class TypeResolver
   public static final URI desuffix(URI uri,String suffix)
   { 
     String uriStr=uri.toString();
-    return URI.create(uriStr.substring(0,uriStr.length()-(suffix.length())));
+    return URI.create
+      (StringPool.INSTANCE.get
+        (uriStr.substring(0,uriStr.length()-(suffix.length()))));
   }
   
 
@@ -190,7 +193,8 @@ public class TypeResolver
   public final URI getPackageURI(URI typeURI)
   {
     String uriStr=typeURI.toString();
-    return URI.create(uriStr.substring(0,uriStr.lastIndexOf('/')+1));
+    return URI.create
+      (StringPool.INSTANCE.get(uriStr.substring(0,uriStr.lastIndexOf('/')+1)));
   }
   
   public final Type<?> resolveFromClass(Class<?> clazz)

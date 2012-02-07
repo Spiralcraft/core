@@ -123,7 +123,7 @@ public class XmlStore
     );
   
   private final StringPool stringPool
-    =new StringPool();
+    =StringPool.INSTANCE;
   
   public XmlStore()
     throws DataException

@@ -17,11 +17,13 @@ package spiralcraft.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import spiralcraft.util.string.StringPool;
 import spiralcraft.util.string.StringUtil;
 
 
 /**
- * An immutable sequence of Strings which represent elements in an abstract hierarchy.
+ * An immutable sequence of Strings which represent elements in an abstract 
+ *   hierarchy.
  */ 
 public class Path
   implements Iterable<String>
@@ -90,6 +92,9 @@ public class Path
     { elements.remove(elements.size()-1);
     }
     _elements=elements.toArray(new String[elements.size()]);
+    for (int i=0;i<_elements.length;i++)
+    { _elements[i]=StringPool.INSTANCE.get(_elements[i]);
+    }
     _hashCode=computeHash();
   }
   

@@ -347,7 +347,7 @@ public abstract class AbstractFrameHandler
   {
     bindCalled=true;
     if (stringPool==null)
-    { stringPool=new StringPool();
+    { stringPool=StringPool.INSTANCE;
     }
     bindAttributes();
     bindAssignments();

@@ -24,6 +24,7 @@ import org.xml.sax.ContentHandler;
 
 import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.text.ParsePosition;
+import spiralcraft.util.string.StringPool;
 
 
 /**
@@ -44,6 +45,7 @@ public class ParseTree
   private StandardPrefixResolver newPrefixResolver;
   private final ParsePosition position=new ParsePosition();
   private Locator locator;
+  private final StringPool stringPool=StringPool.INSTANCE;
   
   public static ParseTree createTree(Element root)
   { return new ParseTree(new Document(root));
@@ -85,6 +87,9 @@ public class ParseTree
   @Override
   public void startPrefixMapping(String prefix,String uri)
   { 
+    prefix=stringPool.get(prefix);
+    uri=stringPool.get(uri);
+    
     if (newPrefixResolver==null)
     { 
       newPrefixResolver
@@ -129,6 +134,10 @@ public class ParseTree
     )
     throws SAXException
   {
+    uri=stringPool.get(uri);
+    localName=stringPool.get(localName);
+    qName=stringPool.get(qName);
+    
     updatePosition();
     Element element=new Element(uri,localName,qName,attributes);
     _currentElement.addChild(element);

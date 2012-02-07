@@ -89,7 +89,7 @@ public class RestClient
   private int timeoutSeconds;
   private DeclarationInfo declarationInfo;
   private GenericReflector<RestClient> reflector;
-  private StringPool stringPool=new StringPool();
+  private StringPool stringPool=StringPool.INSTANCE;
   
 //  private Focus<Tuple> focus;
   private boolean debug;

@@ -17,6 +17,9 @@ package spiralcraft.util.string;
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
+//import spiralcraft.log.ClassLog;
+//import spiralcraft.log.Level;
+
 /**
  * <p>Pools immutable object instances to coalesce references to identical 
  *   objects into a single weak reference to reduce memory and increase 
@@ -33,29 +36,87 @@ import java.util.WeakHashMap;
 public class StringPool
 {
   
+  public static final StringPool INSTANCE
+    =new StringPool();
+
+//  private static final ClassLog log
+//    =ClassLog.getInstance(StringPool.class);
+//  private static final Level logLevel
+//    =ClassLog.getInitialDebugLevel(StringPool.class,Level.INFO);
+  
+  
   private WeakHashMap<String,WeakReference<String>> map
     =new WeakHashMap<String,WeakReference<String>>();
   
-  public synchronized String get(String value)
+ 
+  public String get(String value)
   { 
     if (value==null)
     { return null;
     }
     
-    WeakReference<String> ref=map.get(value);
-    if (ref!=null)
-    { 
-      String result=ref.get();
-      if (result!=null)
-      { return result;
-      }
+    if (value.length()==0)
+    { return "";
     }
     
-    map.put(value,new WeakReference<String>(new String(value)));
+    if (value.length()==1)
+    { return Character.toString(value.charAt(0)).intern();
+    }
+    
+    synchronized (map)
+    {
+      WeakReference<String> ref=map.get(value);
+      if (ref!=null)
+      { 
+        String result=ref.get();
+        if (result!=null)
+        { return result;
+        }
+      }
+      
+      value=new String(value);
+//      if (logLevel.isFine())
+//      { log.fine(value);
+//      }
+      map.put(value,new WeakReference<String>(value));
+    }
     return value;
   }
   
-  
+  public String intern(String value)
+  { 
+    if (value==null)
+    { return null;
+    }
+    
+    if (value.length()==0)
+    { return "";
+    }
+    
+    if (value.length()==1)
+    { return Character.toString(value.charAt(0)).intern();
+    }
+    
+    value=value.intern();
+    synchronized (map)
+    {
+      WeakReference<String> ref=map.get(value);
+      if (ref!=null)
+      { 
+        String result=ref.get();
+        if (result!=null)
+        { return result;
+        }
+      }
+      
+//      if (logLevel.isFine())
+//      { log.fine("Intern: "+value);
+//      }
+      map.put(value,new WeakReference<String>(value));
+    }
+    return value;
+    
+  }
   
 
 }

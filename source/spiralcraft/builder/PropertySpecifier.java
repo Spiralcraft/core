@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.string.StringPool;
 import spiralcraft.util.string.StringUtil;
 
 import spiralcraft.common.namespace.NamespaceContext;
@@ -48,7 +49,7 @@ public class PropertySpecifier
   
   private final AssemblyClass _container;
   private final String[] _specifier;
-  private StringBuffer _textContent;
+  private StringBuffer _textBuffer;
   private String _textData;
   private ArrayList<AssemblyClass> _contents;
   
@@ -431,15 +432,15 @@ public class PropertySpecifier
     throws BuildException
   { 
     
-    if (_textContent!=null)
+    if (_textBuffer!=null)
     { 
-      String trimmedText=_textContent.toString().trim();
+      String trimmedText=StringPool.INSTANCE.get(_textBuffer.toString().trim());
       if (trimmedText.length()>0 && _contents!=null)
       { throw new BuildException("Properties cannot contain both text data and Assembly definitions");
       }
 
       if (_literalWhitespace)
-      { _textData=_textContent.toString();  
+      { _textData=StringPool.INSTANCE.get(_textBuffer.toString());  
       }
       else if (trimmedText.length()>0)
       { _textData=trimmedText;
@@ -748,10 +749,14 @@ public class PropertySpecifier
   
   public void addCharacters(char[] characters)
   {
-    if (_textContent==null)
-    { _textContent=new StringBuffer(characters.length);
+    if (propertyType!=null)
+    { throw new IllegalStateException("Already resolved");
     }
-    _textContent.append(characters);
+    
+    if (_textBuffer==null)
+    { _textBuffer=new StringBuffer(characters.length);
+    }
+    _textBuffer.append(characters);
   }
 
   public List<AssemblyClass> getContents()

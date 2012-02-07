@@ -21,6 +21,7 @@ import spiralcraft.text.ParseException;
 import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.Path;
 import spiralcraft.util.URIUtil;
+import spiralcraft.util.string.StringPool;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
@@ -454,7 +455,9 @@ public class AssemblyLoader
         }
       }
       if (constructorBuff.length()>0)
-      { assemblyClass.setConstructor(constructorBuff.toString());
+      { 
+        assemblyClass.setConstructor
+          (StringPool.INSTANCE.get(constructorBuff.toString()));
       }
     }
     return assemblyClass;

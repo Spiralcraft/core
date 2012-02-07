@@ -23,6 +23,8 @@ import java.util.WeakHashMap;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 
+import spiralcraft.util.string.StringPool;
+
 /**
  * Cache of BeanInfo (MappedBeanInfo) derived from classes with a
  *   specific set of introspector flags.
@@ -110,7 +112,7 @@ public class BeanInfoCache
     }
     
     return URI.create
-      ("class:/"+clazz.getName().replace('.','/').replace('$','-')+suffix);
+      (StringPool.INSTANCE.get("class:/"+clazz.getName().replace('.','/').replace('$','-')+suffix));
   }
   
   /**
