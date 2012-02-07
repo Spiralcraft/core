@@ -15,6 +15,101 @@
     <detail>      
     
       <scm:Change>
+        <revision>-dev6
+        </revision>
+      
+        <notes>
+          <scm:Note>NavContext can be configured with a view resource
+            expression.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/ui/NavContext.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev6
+        </revision>
+        
+        <notes>
+          <scm:Note>Use the global StringPool in situations that are likely
+            to create many copies of the same string.
+          </scm:Note>
+        
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>beans/BeanInfoCache.java
+          </URI>
+          <URI>builder/AssemblyLoader.java
+          </URI>
+          <URI>builder/PropertySpecifier.java
+          </URI>
+          <URI>data/TypeResolver.java
+          </URI>
+          <URI>data/rest/RestClient.java
+          </URI>
+          <URI>data/sax/DataHandlerBase.java
+          </URI>
+          <URI>data/sax/AbstractFrameHandler.java
+          </URI>
+          <URI>data/xml/XmlStore.java
+          </URI>
+          <URI>lang/parser/ExpressionParser.java
+          </URI>
+          <URI>sax/ParseTree.java
+          </URI>
+          <URI>util/Path.java
+          </URI>
+          <URI>util/string/StringPool.java
+          </URI>
+        
+        </resources>
+      
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev6
+        </revision>
+      
+        <notes>
+          <scm:Note>Re-use literal nodes in expressions
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang
+        </path>
+
+        <resources>
+          <URI>parser/ExpressionParser.java
+          </URI>
+          <URI>parser/LiteralNode.java
+          </URI>
+          <URI>Expression.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev6
+        </revision>
+      
+        <notes>
+          <scm:Note>Allow for async IO in RotatingFileHandler
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/log/RotatingFileHandler.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         
         <revision>-dev5
         </revision>
