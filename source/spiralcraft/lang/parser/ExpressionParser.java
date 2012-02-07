@@ -17,6 +17,7 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.string.StringPool;
 
 import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.io.LookaheadStreamTokenizer;
@@ -43,6 +44,7 @@ public class ExpressionParser
   private LookaheadStreamTokenizer _tokenizer;
   private int _pos;
   private String _text;
+  private StringPool stringPool=StringPool.INSTANCE;
 
   public <X> Expression<X> parse(String text)
     throws ParseException
@@ -1128,17 +1130,17 @@ public class ExpressionParser
       case StreamTokenizer.TT_WORD:
         if (_tokenizer.sval.equals("true"))
         { 
-          node=new LiteralNode<Boolean>(Boolean.TRUE,Boolean.class);
+          node=LiteralNode.TRUE;
           consumeToken();
         }
         else if (_tokenizer.sval.equals("false"))
         { 
-          node=new LiteralNode<Boolean>(Boolean.FALSE,Boolean.class);
+          node=LiteralNode.FALSE;
           consumeToken();
         }
         else if (_tokenizer.sval.equals("null"))
         { 
-          node=new LiteralNode<Void>(null,Void.TYPE);
+          node=LiteralNode.NULL;
           consumeToken();
         }
         else if (Character.isDigit(_tokenizer.sval.charAt(0)))
@@ -1149,7 +1151,7 @@ public class ExpressionParser
         }
         break;
       case '"':
-        node=new LiteralNode<String>(_tokenizer.sval,String.class);
+        node=LiteralNode.get(stringPool.get(_tokenizer.sval));
         consumeToken();
         break;
       case '\'':
@@ -1157,10 +1159,7 @@ public class ExpressionParser
         if (str.length()!=1)
         { throw newException("Single quotes must contain a Character literal");
         }
-        node=new LiteralNode<Character>
-          (Character.valueOf(str.charAt(0))
-          ,Character.class
-          );
+        node=LiteralNode.get(Character.valueOf(str.charAt(0)));
         consumeToken();
         break;
       case '(': //        "(" expression ")" - recursive reference
@@ -1184,7 +1183,7 @@ public class ExpressionParser
     throws ParseException
   {
     expect('`');
-    Node node=new LiteralNode<Expression>(new Expression(parseBindingExpression()));
+    Node node=LiteralNode.get(new Expression(parseBindingExpression()));
     expect('`');
     return node;
   }
@@ -1288,7 +1287,7 @@ public class ExpressionParser
        )
     {
       // Named definition
-      field.name=_tokenizer.sval;
+      field.name=stringPool.get(_tokenizer.sval);
       consumeToken();
       expect(':');
       
@@ -1346,7 +1345,7 @@ public class ExpressionParser
       String name="";
       if (_tokenizer.ttype==StreamTokenizer.TT_WORD)
       { 
-        name=_tokenizer.sval;
+        name=stringPool.get(_tokenizer.sval);
         consumeToken();
       }
       if (_tokenizer.ttype=='(')
@@ -1381,7 +1380,7 @@ public class ExpressionParser
     }
     else
     { 
-      String name=_tokenizer.sval;
+      String name=stringPool.get(_tokenizer.sval);
       
       consumeToken();
       if (_tokenizer.ttype=='(')
@@ -1419,11 +1418,11 @@ public class ExpressionParser
       switch (typeIndicator)
       {
         case 'L':
-          return new LiteralNode<Long>(Long.parseLong(numberString),Long.class);
+          return LiteralNode.get(Long.parseLong(numberString));
         case 'D':
-          return new LiteralNode<Double>(Double.valueOf(numberString),Double.class);
+          return LiteralNode.get(Double.valueOf(numberString));
         case 'F':
-          return new LiteralNode<Float>(Float.valueOf(numberString),Float.class);
+          return LiteralNode.get(Float.valueOf(numberString));
         default:
           _tokenizer.pushBack();
           throwUnexpected();
@@ -1431,10 +1430,10 @@ public class ExpressionParser
       }
     }
     else if (numberString.indexOf(".")>-1)
-    { return new LiteralNode<Double>(Double.valueOf(numberString),Double.class);
+    { return LiteralNode.get(Double.valueOf(numberString));
     }
     else
-    { return new LiteralNode<Integer>(Integer.parseInt(numberString),Integer.class);
+    { return LiteralNode.get(Integer.parseInt(numberString));
     }
   }
   
@@ -1554,7 +1553,7 @@ public class ExpressionParser
     {
       case StreamTokenizer.TT_WORD:
       case StreamTokenizer.TT_NUMBER:
-        ret=_tokenizer.sval;
+        ret=stringPool.get(_tokenizer.sval);
         consumeToken();
         return ret;
         
