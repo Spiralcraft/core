@@ -14,6 +14,9 @@
 //
 package spiralcraft.lang.parser;
 
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
@@ -25,6 +28,49 @@ public class LiteralNode<X>
   extends Node
 {
 
+  public static final LiteralNode<Boolean> FALSE
+    =new LiteralNode<Boolean>(Boolean.FALSE,Boolean.class);
+  public static final LiteralNode<Boolean> TRUE
+    =new LiteralNode<Boolean>(Boolean.TRUE,Boolean.class);
+  public static final LiteralNode<Void> NULL
+    =new LiteralNode<Void>(null,Void.class);
+  
+  @SuppressWarnings("rawtypes")
+  public static final HashMap<Object,WeakReference<LiteralNode>> refs
+    =new HashMap<Object,WeakReference<LiteralNode>>();
+  
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public static final <X> LiteralNode<X> get(X object)
+  {
+ 
+    synchronized (refs)
+    {
+      LiteralNode<X> node;
+      WeakReference<LiteralNode> nodeRef=refs.get(object);
+      if (nodeRef!=null)
+      { 
+        node=(LiteralNode<X>) nodeRef.get();
+        if (node!=null)
+        { return node;
+        }
+        else
+        { 
+          node=new LiteralNode<X>(object);
+          refs.put(object,new WeakReference<LiteralNode>(node));
+        }
+      
+      }
+      else
+      {
+        node=new LiteralNode<X>(object);
+        refs.put(object,new WeakReference<LiteralNode>(node));
+      }
+      
+      return node;
+    }
+    
+  }
+  
   private final SimpleChannel<X> _optic;
 
   @SuppressWarnings("unchecked") // Type check

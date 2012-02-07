@@ -145,7 +145,7 @@ public class Expression<T>
    * @return
    */
   public static <X> Expression<X> literal(X value)
-  { return new Expression<X>(new LiteralNode<X>(value));
+  { return new Expression<X>(LiteralNode.<X>get(value));
   }
 
   public Expression(String text)
