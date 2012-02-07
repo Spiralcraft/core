@@ -14,6 +14,8 @@
 //
 package spiralcraft.ui;
 
+import java.net.URI;
+
 import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Expression;
@@ -30,6 +32,7 @@ public class NavContext<Toptions,Toption>
   protected String selectedPathSegment;
   protected String name;
   protected Binding<Path> pathX;
+  protected Binding<URI> viewResourceX;
   protected int level=0;
   
   public void setPathX(Expression<Path> pathX)
@@ -89,6 +92,10 @@ public class NavContext<Toptions,Toption>
       }
       state.selectedKey=state.currentPath.firstElement();
     }
+    
+    if (viewResourceX!=null)
+    { state.viewResource=viewResourceX.get();
+    }
 
     super.computeSelection(state);
   }
@@ -105,7 +112,13 @@ public class NavContext<Toptions,Toption>
     if (pathX!=null)
     { pathX.bind(chain);
     }
-    return super.bindImports(chain);
+    
+
+    Focus<?> selectedOptionFocus=super.bindImports(chain);
+    if (viewResourceX!=null)
+    { viewResourceX.bind(selectedOptionFocus);
+    }
+    return selectedOptionFocus;
   }
   
   public NavContext<?,?> forLevel(int level)
@@ -129,7 +142,16 @@ public class NavContext<Toptions,Toption>
   protected Path getNextPath()
   { return ((NavState) get()).nextPath;
   }
+
   
+  @SuppressWarnings("unchecked")
+  public URI getViewResourceURI()
+  { return ((NavState) get()).viewResource;
+  }
+  
+  public void setViewResourceX(Binding<URI> viewResourceX)
+  { this.viewResourceX=viewResourceX;
+  }
   
   protected class NavState
     extends SelectorState
@@ -137,6 +159,7 @@ public class NavContext<Toptions,Toption>
     Path currentPath;
     Path nextPath;
     Path absoluteSelectedPath;
+    URI viewResource;
   }
   
 }
