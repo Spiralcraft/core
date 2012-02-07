@@ -42,6 +42,10 @@ public class RotatingFileHandler
     
   }
   
+  public void setAsyncIO(boolean asyncIO)
+  { out.setAsyncIO(asyncIO);
+  }
+  
   public void setFormatter(Formatter formatter)
   { this.formatter=formatter;
   }
