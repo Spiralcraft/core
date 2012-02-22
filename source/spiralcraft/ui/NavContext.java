@@ -90,6 +90,9 @@ public class NavContext<Toptions,Toption>
       if (state.currentPath.size()>1)
       { state.nextPath=state.currentPath.subPath(1);
       }
+      else if (state.currentPath.isContainer())
+      { state.nextPath=Path.EMPTY_PATH;
+      }
       state.selectedKey=state.currentPath.firstElement();
     }
     
