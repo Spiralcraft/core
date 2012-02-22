@@ -394,6 +394,9 @@ public class Path
    */
   public String format(String separator)
   { 
+    if (size()==0 && _absolute && _container)
+    { return separator;
+    }
     return (_absolute?separator:"")
            +ArrayUtil.format(_elements,separator,null)
            +(_container?separator:"");
