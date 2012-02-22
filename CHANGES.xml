@@ -15,6 +15,35 @@
     <detail>      
     
       <scm:Change>
+        <revision>-dev7
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where a ROOT_PATH formats to "//" instead of "/"
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/Path.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev7
+        </revision>
+      
+        <notes>
+          <scm:Note>NavContext pathing model accounts for container paths
+            by using the EMPTY_PATH as the next path for a container
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/ui/NavContext.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev6
         </revision>
       

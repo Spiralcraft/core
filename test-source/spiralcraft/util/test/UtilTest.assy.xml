@@ -407,6 +407,20 @@
           </testX>
           
         </test:Assertion>
+        <test:Assertion>
+        
+          <name>path append
+          </name>
+          
+          <subjectX contextualize="false">
+            [@util:Path].("/").append([@util:Path].("/"))
+          </subjectX>
+          
+          <testX>
+            .==[@util:Path].("/")
+          </testX>
+          
+        </test:Assertion>
       </scenarios>
       
     </task:Sequence>
