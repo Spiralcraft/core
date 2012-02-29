@@ -15,6 +15,45 @@
     <detail>      
     
       <scm:Change>
+        <revision>-dev8
+        </revision>
+      
+        <notes>
+          <scm:Note>Routes to component states in the app component model
+            are now represented by a Sequence instead of an int[] 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>app/Dispatcher.java
+          </URI>
+          <URI>app/Message.java
+          </URI>
+          <URI>app/State.java
+          </URI>
+          <URI>app/StateFrame.java
+          </URI>
+          <URI>app/kit/AbstractMessageHandler.java
+          </URI>
+          <URI>app/kit/ExpansionState.java
+          </URI>
+          <URI>app/kit/SimpleState.java
+          </URI>
+          <URI>app/kit/StandardDispatcher.java
+          </URI>
+          <URI>util/ArrayUtil.java
+          </URI>
+          <URI>util/Sequence.java
+          </URI>
+        
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev7
         </revision>
       
