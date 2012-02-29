@@ -14,6 +14,8 @@
 //
 package spiralcraft.app;
 
+import spiralcraft.util.Sequence;
+
 /**
  * <p>Represents the state of a Component and its contents in association with 
  *   a specific context, such as a user or a particular source of data.
@@ -73,7 +75,7 @@ public interface State
    * 
    * @return The path from the root of the State tree to this state
    */
-  int[] getPath();  
+  Sequence<Integer> getPath();  
   
  
   /**
@@ -97,7 +99,7 @@ public interface State
    * @param parentState
    * @param path
    */
-  void link(State parentState,int[] path);
+  void link(State parentState,Sequence<Integer> path);
   
   /**
    * Replace the n'th child with the specified State tree

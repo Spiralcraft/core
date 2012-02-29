@@ -23,6 +23,8 @@ package spiralcraft.app;
  */
 public abstract class Message
 {
+  private static volatile int NEXT_TYPE_ID=0;
+  
   protected boolean multicast;
   protected boolean outOfBand;
   
@@ -47,5 +49,7 @@ public abstract class Message
   public abstract Type getType();
   
   public static class Type
-  { }
+  { 
+    public final int ID=NEXT_TYPE_ID++;
+  }
 }

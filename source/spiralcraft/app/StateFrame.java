@@ -36,4 +36,7 @@ public class StateFrame
   { return super.toString()+" #"+id;
   }
   
+  public String getId()
+  { return Integer.toString(id);
+  }
 }

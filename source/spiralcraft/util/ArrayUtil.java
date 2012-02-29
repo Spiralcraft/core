@@ -512,36 +512,13 @@ public class ArrayUtil
   }
   
   public static final <X> Iterator<X> iterator(final X[] array)
-  {
-    return new Iterator<X>()
-    {
-      private int index=0;
-      private final int length=array.length;
-
-      @Override
-      public boolean hasNext()
-      { return index<length;
-      }
-      
-      @Override
-      public X next()
-      { 
-        if (index>=length)
-        { throw new NoSuchElementException();
-        }
-        return array[index++];
-      }
-      
-      @Override
-      public void remove()
-      { 
-        throw new UnsupportedOperationException
-          ("Can't remove from array");
-      }
-    };
-    
+  { return new ArrayIterator<X>(array);
   }
   
+  public static final <X> Iterator<X> iterator(final X[] array,int start,int len)
+  { return new ArrayIterator<X>(array,start,len);
+  }
+
   public static final <X> Iterator<X> primitiveArrayIterator(final Object array)
   {
     return new Iterator<X>()
@@ -700,6 +677,47 @@ public class ArrayUtil
         )
       );
   }
+}
+
+class ArrayIterator<X>
+  implements Iterator<X>
+{
+  private final X[] array;
+  private int index=0;
+  private final int length;
+
+  ArrayIterator(X[] array)
+  { this(array,0,array.length);
+  }
+  
+  ArrayIterator(X[] array,int start,int len)
+  { 
+    this.array=array;
+    this.index=start;
+    this.length=len;
+  }
+  
+  @Override
+  public boolean hasNext()
+  { return index<length;
+  }
+  
+  @Override
+  public X next()
+  { 
+    if (index>=length)
+    { throw new NoSuchElementException();
+    }
+    return array[index++];
+  }
+  
+  @Override
+  public void remove()
+  { 
+    throw new UnsupportedOperationException
+      ("Can't remove from array");
+  }
+  
 }
 
 @Immutable

@@ -24,6 +24,7 @@ import spiralcraft.app.Parent;
 import spiralcraft.app.State;
 import spiralcraft.app.StateFrame;
 import spiralcraft.util.Path;
+import spiralcraft.util.Sequence;
 
 
 /**
@@ -114,6 +115,11 @@ public class StandardDispatcher
   { return state;
   }
 
+  @Override
+  public void dispatch(Message message,Sequence<Integer> path)
+  { dispatch(message,component,state,path);
+  }
+  
   /**
    * <p>Send a Message into the Component hierarchy rooted at the 
    *   specified Component, optionally associated with
@@ -126,11 +132,12 @@ public class StandardDispatcher
    * 
    * @param state
    */
+  @Override
   public void dispatch
     (Message message
     ,Component component
     ,State state
-    ,Integer[] path
+    ,Sequence<Integer> path
     )
   { 
     State lastState=state;

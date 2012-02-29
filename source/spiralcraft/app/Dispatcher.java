@@ -14,6 +14,8 @@
 //
 package spiralcraft.app;
 
+import spiralcraft.util.Sequence;
+
 
 
 
@@ -108,6 +110,39 @@ public interface Dispatcher
     ,State newParentState
     ,int routeSegment
     ,Message message
+    );
+  
+  
+  /**
+   * <p>Send a Message into the Component hierarchy rooted at the 
+   *   current Component, routed to the Component at the specified
+   *   path.
+   * </p>
+   * 
+   * @param state
+   */
+  void dispatch
+    (Message message
+    ,Sequence<Integer> path
+    );  
+  
+  /**
+   * <p>Send a Message into the Component hierarchy rooted at the 
+   *   specified Component, optionally associated with
+   *   the specified State, and routed to the Component at the specified
+   *   path.
+   * </p>
+   * 
+   * <p>Called once at the root of the hierarchy to dispatch a message
+   * </p>
+   * 
+   * @param state
+   */
+  void dispatch
+    (Message message
+    ,Component component
+    ,State state
+    ,Sequence<Integer> path
     );
   
   /**

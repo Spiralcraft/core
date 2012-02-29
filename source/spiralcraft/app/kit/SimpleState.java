@@ -16,6 +16,7 @@ package spiralcraft.app.kit;
 
 import spiralcraft.app.State;
 import spiralcraft.app.StateFrame;
+import spiralcraft.util.Sequence;
 
 public class SimpleState
   implements State
@@ -23,7 +24,7 @@ public class SimpleState
 
   private State parent;
   private final State[] children;
-  private int[] path;
+  private Sequence<Integer> path;
   private final String componentId;
   private boolean frameChanged;
   private StateFrame lastFrame;
@@ -48,7 +49,7 @@ public class SimpleState
 //  
   
   @Override
-  public void link(State parent,int[] path)
+  public void link(State parent,Sequence<Integer> path)
   { 
     if (this.parent!=null)
     { throw new IllegalStateException("Can't change parent from "+this.parent);
@@ -62,7 +63,7 @@ public class SimpleState
    * @return The path from the root of the ComponentState tree 
    */
   @Override
-  public int[] getPath()
+  public Sequence<Integer> getPath()
   { return path;
   }
   
@@ -98,15 +99,12 @@ public class SimpleState
   public void setChild(int index,State child)
   { 
     children[index]=child;
-    int[] newPath;
+    Sequence<Integer> newPath;
     if (path!=null)
-    { 
-      newPath=new int[path.length+1];
-      System.arraycopy(path,0,newPath,0,path.length);
-      newPath[path.length]=index;
+    { newPath=path.concat(new Integer[] {index});
     }
     else
-    { newPath=new int[] {index};
+    { newPath=new Sequence<Integer>(new Integer[] {index});
     }
     child.link(this,newPath);
   }

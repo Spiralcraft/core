@@ -20,6 +20,7 @@ import java.util.List;
 
 import spiralcraft.app.State;
 import spiralcraft.app.StateFrame;
+import spiralcraft.util.Sequence;
 
 public class ExpansionState<T>
   implements State
@@ -33,7 +34,7 @@ public class ExpansionState<T>
 
   private boolean valid;
   private State parent;
-  private int[] path;
+  private Sequence<Integer> path;
   
   public ExpansionState(String componentId,int grandchildCount)
   {     
@@ -44,7 +45,7 @@ public class ExpansionState<T>
   
   
   @Override
-  public void link(State parent,int[] path)
+  public void link(State parent,Sequence<Integer> path)
   { 
     if (this.parent!=null)
     { throw new IllegalStateException("Can't change parent from "+this.parent);
@@ -63,7 +64,7 @@ public class ExpansionState<T>
    * @return The path from the root of the ComponentState tree 
    */
   @Override
-  public int[] getPath()
+  public Sequence<Integer> getPath()
   { return path;
   }
   
@@ -114,10 +115,7 @@ public class ExpansionState<T>
     {
       ret=new MementoState(childKey);
       
-      int[] newPath=new int[path.length+1];
-      System.arraycopy(path,0,newPath,0,path.length);
-      newPath[path.length]=index;      
-      
+      Sequence<Integer> newPath=path.concat(new Integer[index]);      
       ret.link(this,newPath);
       
       

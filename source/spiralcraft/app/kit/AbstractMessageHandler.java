@@ -17,6 +17,8 @@ package spiralcraft.app.kit;
 import spiralcraft.app.Message;
 import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Focus;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.app.Dispatcher;
 import spiralcraft.app.MessageHandler;
 import spiralcraft.app.MessageHandlerChain;
@@ -31,6 +33,12 @@ public abstract class AbstractMessageHandler
   implements MessageHandler
 {
 
+  protected final ClassLog log
+    =ClassLog.getInstance(getClass());
+  protected final Level logLevel
+    =ClassLog.getInitialDebugLevel(getClass(),Level.INFO);
+  
+  
   protected Message.Type type;
   
   @Override
