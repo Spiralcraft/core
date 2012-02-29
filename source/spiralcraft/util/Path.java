@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2012 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -17,6 +17,7 @@ package spiralcraft.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import spiralcraft.common.Immutable;
 import spiralcraft.util.string.StringPool;
 import spiralcraft.util.string.StringUtil;
 
@@ -25,6 +26,7 @@ import spiralcraft.util.string.StringUtil;
  * An immutable sequence of Strings which represent elements in an abstract 
  *   hierarchy.
  */ 
+@Immutable
 public class Path
   implements Iterable<String>
 {
