@@ -15,12 +15,15 @@
 package spiralcraft.lang.kit;
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.ChainableContext;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Context;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 /**
  * <p>Provides support for implementing ChainableContext
@@ -30,7 +33,7 @@ import spiralcraft.log.ClassLog;
  *
  */
 public class AbstractChainableContext
-  implements ChainableContext
+  implements ChainableContext,Declarable
 {
 
   public static final ChainableContext createChain(Contextual chain)
@@ -47,10 +50,13 @@ public class AbstractChainableContext
   }
 
   protected final ClassLog log=ClassLog.getInstance(getClass());
+  protected Level logLevel
+    =ClassLog.getInitialDebugLevel(getClass(),Level.INFO);
 
   private Contextual next;
   private boolean context;
   private boolean chainable;
+  protected DeclarationInfo declarationInfo;
   
   public AbstractChainableContext()
   {
@@ -60,6 +66,10 @@ public class AbstractChainableContext
   public AbstractChainableContext(Context next)
     throws BindException
   { chain(next);
+  }
+  
+  public void setLogLevel(Level logLevel)
+  { this.logLevel=logLevel;
   }
   
   @Override
@@ -90,7 +100,7 @@ public class AbstractChainableContext
   
   /**
    * Override to bind any dependencies on external context used to
-   *   estabish the local context.
+   *   establish the local context.
    * 
    * @param focusChain
    * @return
@@ -164,6 +174,9 @@ public class AbstractChainableContext
         chain=new ChainableContextAdapter((Context) chain);
         context=true;
       }
+      else
+      { context=true;
+      }
       next=chain;
       chainable=true;
     }
@@ -193,6 +206,21 @@ public class AbstractChainableContext
     { next=last;
     }
     
+  }
+  
+  public Contextual getNext()
+  { return next;
+  }
+
+  @Override
+  public void setDeclarationInfo(
+    DeclarationInfo declarationInfo)
+  { this.declarationInfo=declarationInfo;
+  }
+
+  @Override
+  public DeclarationInfo getDeclarationInfo()
+  { return declarationInfo;
   }
 
 }
