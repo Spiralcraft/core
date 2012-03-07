@@ -125,6 +125,10 @@ public class ClassLog
   { log(DEBUG,message,null,1);
   }
   
+  public void config(String message)
+  { log(CONFIG,message,null,1);
+  }
+
   public void info(String message)
   { log(INFO,message,null,1);
   }
