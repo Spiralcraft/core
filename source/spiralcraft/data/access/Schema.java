@@ -32,6 +32,25 @@ public class Schema
     =new LinkedHashMap<Type<?>,Entity>();
   
   private Entity[] combinedEntities;
+  private String name;
+  
+  public void setName(String name)
+  { this.name=name;
+  }
+  
+  public String getName()
+  {
+    if (name!=null)
+    { return name;
+    }
+    else if (base!=null)
+    { return base.getName();
+    }
+    else
+    { return null;
+    }
+  }
+  
   
   /**
    * <p>Specify the set of Types that represent first class Entities.</p>

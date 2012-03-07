@@ -44,6 +44,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
 
 import spiralcraft.service.Service;
+import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ListMap;
 
 
@@ -122,6 +123,14 @@ public class Space
     return types;
   }
   
+  
+  public void addStore(Store store)
+  { 
+    if (this.bound)
+    { throw new IllegalStateException("Cannot add a store to a bound Space");
+    }
+    stores=ArrayUtil.append(stores,store);
+  }
  
   
   @Override

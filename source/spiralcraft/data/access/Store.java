@@ -51,6 +51,15 @@ public interface Store
   String getName();
   
   /**
+   * A name for the store within the containing Space (or containing store,
+   *   in some circumstances). Used by applications to distinguish between
+   *   multiple data sources.
+   * 
+   * @return
+   */
+  void setName(String name);
+  
+  /**
    * The Schema of this Store, which contains the data model metadata
    * 
    * @return
@@ -93,13 +102,21 @@ public interface Store
   boolean isAuthoritative(Type<?> type);
   
   /**
-   * <p>Return the URI of the local writable directory tree that will
-   *   hold persistent data
+   * <p>Return the URI of the local directory tree that holds persistent
+   *   data and/or configuration info.
    * </p>
    * 
    * @return
    */
   URI getLocalResourceURI();
+  
+  /**
+   * <p>Specify the URI of the local writable directory tree that holds
+   *   persistent data and/or configuration info
+   * </p>
+   * @param localResourceURI
+   */
+  void setLocalResourceURI(URI localResourceURI);
   
   /**
    * Take a snapshot of the changes to the datastore since transactionId

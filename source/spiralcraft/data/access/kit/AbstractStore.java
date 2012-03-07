@@ -137,6 +137,7 @@ public abstract class AbstractStore
   }
   
 
+  @Override
   public void setName(String name)
   { this.name=name;
   }

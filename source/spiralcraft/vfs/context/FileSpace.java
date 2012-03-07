@@ -19,6 +19,7 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
 import spiralcraft.lang.Focus;
 import spiralcraft.service.ContextService;
+import spiralcraft.util.ArrayUtil;
 
 /**
  * <p>Manages and provides access to a set of VFS Resources by publishing
@@ -35,7 +36,7 @@ public class FileSpace
   extends ContextService
 {
   
-  protected Authority[] authorities;
+  protected Authority[] authorities=new Authority[0];
   protected ContextResourceMap map
     =new ContextResourceMap();
   
@@ -44,6 +45,14 @@ public class FileSpace
   { this.authorities=authorities;
   }
 
+  public void addAuthority(Authority authority)
+  {
+    if (bound)
+    { throw new IllegalStateException("Already bound");
+    }
+    authorities=ArrayUtil.append(authorities,authority);
+  }
+  
   @Override
   public Focus<?> bindExports(Focus<?> focusChain)
     throws ContextualException

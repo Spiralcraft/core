@@ -139,6 +139,11 @@ public class XmlStore
   { return baseResourceURI;
   }
   
+  @Override
+  public void setLocalResourceURI(URI container)
+  { setBaseResourceURI(container);
+  }
+  
   StringPool getStringPool()
   { return stringPool;
   }
