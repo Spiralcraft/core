@@ -24,6 +24,8 @@ public class InitializeMessage
     extends Message
 {
   public static final Type TYPE=new Type();
+  public static final InitializeMessage INSTANCE
+    =new InitializeMessage();
   
   { 
     multicast=true;
