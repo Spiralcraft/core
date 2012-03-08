@@ -57,6 +57,11 @@ public class NavContext<Toptions,Toption>
   { return ((NavState) get()).absoluteSelectedPath;
   }
 
+  @SuppressWarnings("unchecked")
+  public Path getAbsoluteParentPath()
+  { return ((NavState) get()).absoluteParentPath;
+  }
+  
   @Override
   protected NavState newSelectorState()
   { return new NavState();
@@ -74,10 +79,13 @@ public class NavContext<Toptions,Toption>
       }
       state.absoluteSelectedPath
         =new Path(new String[]{state.currentPath.firstElement()},true);
+      state.absoluteParentPath
+        =Path.ROOT_PATH;
     }
     else
     { 
-      state.currentPath=parent.getNextPath();
+      state.absoluteParentPath=parent.getAbsoluteSelectedPath();
+      state.currentPath=parent.getUnresolvedPath();
       if (state.currentPath!=null)
       {
         state.absoluteSelectedPath
@@ -88,10 +96,10 @@ public class NavContext<Toptions,Toption>
     if (state.currentPath!=null)
     {
       if (state.currentPath.size()>1)
-      { state.nextPath=state.currentPath.subPath(1);
+      { state.unresolvedPath=state.currentPath.subPath(1);
       }
       else if (state.currentPath.isContainer())
-      { state.nextPath=Path.EMPTY_PATH;
+      { state.unresolvedPath=Path.EMPTY_PATH;
       }
       state.selectedKey=state.currentPath.firstElement();
     }
@@ -141,10 +149,19 @@ public class NavContext<Toptions,Toption>
     }
   }
   
+  /**
+   * <p>The path remaining after consuming the current segment as
+   *   the selected key
+   * </p>
+   * 
+   * @return
+   */
   @SuppressWarnings("unchecked")
-  protected Path getNextPath()
-  { return ((NavState) get()).nextPath;
+  public Path getUnresolvedPath()
+  { return ((NavState) get()).unresolvedPath;
   }
+  
+ 
 
   
   @SuppressWarnings("unchecked")
@@ -159,9 +176,13 @@ public class NavContext<Toptions,Toption>
   protected class NavState
     extends SelectorState
   { 
+    // parent.unresolvedPath -> currentPath
+    // currentPath -> selectedKey + unresolvedPath
+    
     Path currentPath;
-    Path nextPath;
+    Path unresolvedPath;
     Path absoluteSelectedPath;
+    Path absoluteParentPath;
     URI viewResource;
   }
   
