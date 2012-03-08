@@ -19,6 +19,118 @@
         </revision>
       
         <notes>
+          <scm:Note>Fixed PathTree.getPath() computation
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/tree/PathTree.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev8
+        </revision>
+      
+        <notes>
+          <scm:Note>NavContext provides the absolute parent path to support
+            the construction of relative links
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/ui/NavContext.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev8
+        </revision>
+      
+        <notes>
+          <scm:Note>Added missing method "config(message)" to ClassLog
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/log/ClassLog.java
+        </path>
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev8
+        </revision>
+      
+        <notes>
+          <scm:Note>AbstractChainableContext now properly pushes/pops the
+            next item in the chain when a ChainableContext is directly chained.
+          </scm:Note>
+          <scm:Note>Added logging functionality to AbstractChainableContext
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/kit/AbstractChainableContext.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev8
+        </revision>
+      
+        <notes>
+          <scm:Note>Integration mechanism uses PlaceContext and PluginContext
+            to encapsulate functionally coherent zones of an application
+            component model with respect to external plugin libraries and
+            resources such as data storage, etc.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>app/PlaceContext.java
+          </URI>
+          <URI>app/PluginContext.java
+          </URI>
+          <URI>data/Space.java
+          </URI>
+          <URI>data/access/Schema.java
+          </URI>
+          <URI>data/access/Store.java
+          </URI>
+          <URI>data/access/kit/AbstractStore.java
+          </URI>
+          <URI>data/xml/XmlStore.java
+          </URI>
+          <URI>vfs/context/Authority.java
+          </URI>
+          <URI>vfs/context/FileSpace.java
+          </URI>
+          <URI>vfs/context/Redirect.java
+          </URI>
+        </resources>
+        
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev8
+        </revision>
+      
+        <notes>
+          <scm:Note>Initialize message has a static instance 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/InitializeMessage.java
+        </path>
+        
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev8
+        </revision>
+      
+        <notes>
           <scm:Note>Routes to component states in the app component model
             are now represented by a Sequence instead of an int[] 
           </scm:Note>
