@@ -60,7 +60,9 @@ public class PathTree<T>
       node=node.getParent();
     }
     String[] pathArray=new String[stack.size()];
-    stack.toArray(pathArray);
+    for (int i=0;i<pathArray.length;i++)
+    { pathArray[i]=stack.pop();
+    }
     return new Path(pathArray,'/',true,!isLeaf());
   }
   
