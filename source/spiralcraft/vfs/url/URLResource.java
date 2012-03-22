@@ -297,6 +297,17 @@ public class URLResource
   @Override
   public void delete()
     throws IOException
-  { throw new IOException("URL Delete is not implemented");
+  { 
+    URLConnection connection=_url.openConnection();
+    if (!(connection instanceof HttpURLConnection))
+    { 
+      throw new UnsupportedOperationException
+        ("Deletion not supported on non-http URL");
+    }
+    setupConnection(connection);
+    connection.setDoInput(false);
+    connection.setDoOutput(false);
+    ((HttpURLConnection) connection).setRequestMethod("DELETE");
+    connection.connect();
   }
 }

@@ -47,6 +47,87 @@ public class Query<Tresult>
   extends Scenario<Void,Tresult>
 {
 
+  public enum OperationType
+  {
+    GET
+    ,PUT
+    ,DELETE
+    ;
+  }
+  
+  public interface Operation<Tresult>
+  {
+    abstract Tresult perform(URI uri,Resource resource)
+      throws IOException;
+  }
+  
+  public class GetOperation
+    implements Operation<Tresult>
+  { 
+    @Override
+    public Tresult perform(URI uri,Resource resource)
+      throws IOException
+    {
+      if (debug)
+      { log.fine("Opening "+uri);
+      }
+      InputStream in=resource.getInputStream();
+      if (preBuffer)
+      { 
+        ByteArrayOutputStream buffer=new ByteArrayOutputStream();
+        StreamUtil.copyRaw(in,buffer,64*1024);
+        buffer.flush();
+        in.close();
+        
+        byte[] bytes=buffer.toByteArray();
+        if (bytes.length==0 && ignoreEmpty)
+        { 
+          if (debug)
+          { log.fine("Closing (empty) "+uri);
+          }
+          return null;
+        }
+        in=new ByteArrayInputStream(buffer.toByteArray());
+      }
+  
+      try
+      { 
+        return readStream(in,uri);
+      }
+      finally
+      { 
+        in.close();
+        if (debug)
+        { log.fine("Closing "+uri);
+        }
+      }
+      
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected Tresult readStream(InputStream in,URI uri)
+      throws IOException
+    { return (Tresult) StreamUtil.readBytes(in);
+    }
+    
+  }
+  
+  public class DeleteOperation
+    implements Operation<Tresult>
+  {
+    @Override
+    public Tresult perform(URI uri,Resource resource)
+      throws IOException
+    {
+      if (debug)
+      { log.fine("Deleting "+uri);
+      }
+      resource.delete();
+      return null;
+    }     
+  }
+  
+  
   private static final int DEFAULT_TIMEOUT_SECONDS=10;
   protected DictionaryBinding<?>[] uriQueryBindings;
   private int timeoutSeconds;  
@@ -55,7 +136,8 @@ public class Query<Tresult>
   private boolean ignoreEmpty;
   protected Binding<URI> uriX;
   private Binding<String> pathX;
-  
+  private Operation<Tresult> operation;
+  private OperationType operationType=OperationType.GET;
 
   { storeResults=true;
   }
@@ -117,6 +199,15 @@ public class Query<Tresult>
   { return null;
   }
   
+  
+  public void setOperation(Operation<Tresult> operation)
+  { this.operation=operation;
+  }
+  
+  public void setOperationType(OperationType type)
+  { this.operationType=type;
+  }
+  
   @Override
   public Focus<?> bind(Focus<?> focusChain)
     throws ContextualException
@@ -129,7 +220,27 @@ public class Query<Tresult>
     }
     focusChain=super.bind(focusChain);
     
+    if (operation==null)
+    { operation=resolveOperation(operationType);
+    }
+    if (operation==null)
+    { throw new ContextualException("No operation specified");
+    }
     return focusChain;
+  }
+  
+  
+  protected Operation<Tresult> resolveOperation(OperationType type)
+  {
+    switch (type)
+    {
+      case GET:
+        return new GetOperation();
+      case DELETE:
+        return new DeleteOperation();
+    }
+    return null;
+
   }
   
   @Override
@@ -242,47 +353,10 @@ public class Query<Tresult>
   
   protected Tresult read(URI uri,Resource resource)
     throws IOException
-  {
-    if (debug)
-    { log.fine("Opening "+uri);
-    }
-    InputStream in=resource.getInputStream();
-    if (preBuffer)
-    { 
-      ByteArrayOutputStream buffer=new ByteArrayOutputStream();
-      StreamUtil.copyRaw(in,buffer,64*1024);
-      buffer.flush();
-      in.close();
-      
-      byte[] bytes=buffer.toByteArray();
-      if (bytes.length==0 && ignoreEmpty)
-      { 
-        if (debug)
-        { log.fine("Closing (empty) "+uri);
-        }
-        return null;
-      }
-      in=new ByteArrayInputStream(buffer.toByteArray());
-    }
-
-    try
-    { 
-      return readStream(in,uri);
-    }
-    finally
-    { 
-      in.close();
-      if (debug)
-      { log.fine("Closing "+uri);
-      }
-    }
+  { return operation.perform(uri,resource);
   }  
   
-  @SuppressWarnings("unchecked")
-  protected Tresult readStream(InputStream in,URI uri)
-    throws IOException
-  { return (Tresult) StreamUtil.readBytes(in);
-  }
+
 
   public class QueryTask
     extends AbstractTask
