@@ -760,7 +760,7 @@ public class XmlStore
             joinTransaction().log(dt);
             Transaction.getContextTransaction().commit();
           
-          
+            allocated=false;
           }
         }
         finally
@@ -785,6 +785,10 @@ public class XmlStore
           EditableTuple row=null;
           Tuple oldRow=null;
           
+          long newNext;
+          long newStop;
+          int newIncrement;
+          
           try
           {
             if (!result.next())
@@ -795,9 +799,9 @@ public class XmlStore
               row.set("nextValue",200L);
               row.set("increment",100);
   
-              next=100;
-              stop=200;
-              increment=100;
+              newNext=100;
+              newStop=200;
+              newIncrement=100;
   
             }
             else
@@ -805,10 +809,10 @@ public class XmlStore
               oldRow=result.getTuple().snapshot();
               row=new EditableArrayTuple(oldRow);
               
-              next=(Long) row.get("nextValue");
-              increment=(Integer) row.get("increment");
+              newNext=(Long) row.get("nextValue");
+              newIncrement=(Integer) row.get("increment");
             
-              stop=next+increment;
+              newStop=next+increment;
               row.set("nextValue",next+increment);            
             
             }
@@ -836,6 +840,10 @@ public class XmlStore
           joinTransaction().log(dt);
 
           Transaction.getContextTransaction().commit();
+          
+          next=newNext;
+          stop=newStop;
+          increment=newIncrement;
           allocated=true;
         }
         finally
@@ -851,7 +859,7 @@ public class XmlStore
     public synchronized Long next()
       throws DataException
     {
-      if (next==stop)
+      if (next==stop || !allocated)
       { allocate();
       }
       return next++;
