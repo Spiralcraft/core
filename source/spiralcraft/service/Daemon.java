@@ -16,6 +16,12 @@ package spiralcraft.service;
 
 
 
+import spiralcraft.app.DisposeMessage;
+import spiralcraft.app.InitializeMessage;
+import spiralcraft.app.State;
+import spiralcraft.app.StateFrame;
+import spiralcraft.app.kit.SimpleState;
+import spiralcraft.app.kit.StandardDispatcher;
 import spiralcraft.cli.BeanArguments;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
@@ -56,6 +62,7 @@ public class Daemon
   private Scenario<?,?> afterStart;
   
   private ShutdownHook _shutdownHook=new ShutdownHook();
+  private State rootState;
   
   public final CommandFactory<Void,Void,Void> terminate
     =new AbstractCommandFactory<Void,Void,Void>()
@@ -140,6 +147,10 @@ public class Daemon
     
     start();
     
+    rootState=new SimpleState(this.asContainer().getChildCount(),this.id);
+    new StandardDispatcher(true,new StateFrame())
+      .dispatch(InitializeMessage.INSTANCE,this,rootState,null);
+
     if (afterStart!=null)
     { 
       Command<?,?,?> command=afterStart.command();
@@ -152,6 +163,10 @@ public class Daemon
     }
     
     handleEvents();
+
+    new StandardDispatcher(true,new StateFrame())
+      .dispatch(DisposeMessage.INSTANCE,this,rootState,null);
+
     try
     {
       stop();
