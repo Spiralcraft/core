@@ -62,6 +62,10 @@ public class Sequence<T>
   { return len;
   }
   
+  public T get(Integer index)
+  { return data[index];
+  }
+  
   public T getFirst()
   { return data[start];
   }
@@ -140,6 +144,11 @@ public class Sequence<T>
       }
     }
     return buf.toString();
+  }
+  
+  @Override
+  public String toString()
+  { return "{"+format(",")+"}";
   }
   
 }
