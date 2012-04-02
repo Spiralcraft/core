@@ -14,8 +14,11 @@
 //
 package spiralcraft.lang.spi;
 
+
+import spiralcraft.lang.Reflectable;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TypeModel;
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.reflect.BeanReflector;
 
 
@@ -27,6 +30,23 @@ public class SimpleChannel<T>
   extends AbstractChannel<T>
 {
  
+  @SuppressWarnings("unchecked")
+  private static final <X> Reflector<X> reflect(X val)
+  {
+    try
+    {
+      if (val instanceof Reflectable)
+      { return ((Reflectable<X>) val).reflect();
+      }
+      else
+      { return TypeModel.<X>reflect(val);
+      }
+    }
+    catch (BindException x)
+    { throw new RuntimeException(x);
+    }
+  }
+
   private T _object;
   
   public SimpleChannel(Reflector<T> reflector)
@@ -40,7 +60,7 @@ public class SimpleChannel<T>
   public SimpleChannel(T val,boolean isConstant)
   { 
     // super(BeanReflector.<T>getInstance((Class<T>) val.getClass()),isConstant);    
-    super(TypeModel.reflect(val),isConstant);
+    super(isConstant?reflect(val):TypeModel.reflect(val),isConstant);
     _object=val;
 
     // System.out.println("SimpleBinding- noclass:"+super.toString()+":["+val+"]");
