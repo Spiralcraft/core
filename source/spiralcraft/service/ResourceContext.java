@@ -42,6 +42,9 @@ public class ResourceContext
       =new StandardContainer(this)
     {
       { 
+        log=ResourceContext.this.log;
+        logLevel=ResourceContext.this.logLevel;
+        
         children=new Component[services.length];
         int i=0;
         for (Component service:services)
