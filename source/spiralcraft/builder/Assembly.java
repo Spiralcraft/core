@@ -325,9 +325,10 @@ public class Assembly<T>
         +val.getClass()
         +" is not compatible with "
         +_assemblyClass.getJavaClass()
-        +_assemblyClass.getContainingProperty()!=null
+        +(_assemblyClass.getContainingProperty()!=null
           ?" ("+_assemblyClass.getContainingProperty()+")"
           :""
+         )
         );
     }
   }
