@@ -3,6 +3,174 @@
   >
   <scm:Change>
   
+    <revision>0.4.17
+    </revision>
+    
+    <authorId>miketoth
+    </authorId>
+    
+    
+    <detail> 
+    
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Sequence has get(int) method
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/Sequence.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Orientation is a common UI concept.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/ui/Orientation.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>SimpleChannel now queries Reflectable interface when
+            constructed with an object as a constant.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi/SimpleChannel.java
+        </path>
+      </scm:Change>
+            
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Public fields are now included in signatures of Java
+            classes.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/reflect/BeanReflector.java
+        </path>
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Daemon, as a root component, now manages its own state tree
+            and dispatches Initialize and Dispose messages on start/stop 
+            respectively.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/service/Daemon.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Updates to component model to support the efficient routing
+            of notifications to subscribed descendants from both in-tree and
+            external components.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app
+        </path>
+        
+        <resources>
+          <URI>Component.java
+          </URI>
+          <URI>Container.java
+          </URI>
+          <URI>DisposeMessage.java
+          </URI>
+          <URI>Parent.java
+          </URI>
+          <URI>Pipe.java
+          </URI>
+          <URI>State.java
+          </URI>
+          <URI>kit/AbstractComponent.java
+          </URI>
+          <URI>kit/AbstractMessageHandler.java
+          </URI>
+          <URI>kit/ExpansionState.java
+          </URI>
+          <URI>kit/SimpleState.java
+          </URI>
+          <URI>kit/StandardContainer.java
+          </URI>
+          <URI>kit/StandardPipe.java
+          </URI>
+          <URI>kit/TriggerHandler.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Allow extensions of the VFS Query task to provide
+            implementations of the standard operations GET, PUT and DELETE, as
+            well as pluggable operations where needed.
+          </scm:Note>
+          <scm:Note>Implemented delete() method in URLResource.java
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/
+        </path>
+        
+        <resources>
+          <URI>task/Query.java
+          </URI>
+          <URI>url/URLResource.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where sequence allocation failure due to
+            aborted transaction results in a block of values being
+            re-used.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/xml/XmlStore.java
+        </path>
+      </scm:Change>
+       
+    </detail>
+  </scm:Change>
+
+  <scm:Change>
+  
     <revision>0.4.16
     </revision>
     
