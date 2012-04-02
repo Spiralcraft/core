@@ -396,8 +396,24 @@ public class BeanReflector<T>
     Method[] methods=targetClass.getMethods();
     for (Method method:methods)
     { 
-      if (!Modifier.isStatic(method.getModifiers()))
+      if (!Modifier.isStatic(method.getModifiers()) 
+          && Modifier.isPublic(method.getModifiers())
+          )
       { signatures.add(methodSignature(method));
+      }
+    }
+    
+    Field[] fields=targetClass.getFields();
+    for (Field field: fields)
+    {
+      if (!Modifier.isStatic(field.getModifiers())
+          && Modifier.isPublic(field.getModifiers())
+         )
+      {
+        Channel out=getField(source,field.getName());
+        if (out!=null)
+        { signatures.add(new Signature(field.getName(),out.getReflector()));
+        }
       }
     }
     
