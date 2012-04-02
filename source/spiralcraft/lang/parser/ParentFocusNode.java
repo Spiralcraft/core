@@ -68,8 +68,6 @@ public class ParentFocusNode
     { 
       StringBuffer out=new StringBuffer();
       dumpTree(out,"");
-      log.fine(out.toString());
-      
       throw new BindException("Focus has no parent ("+focus.toString()+")");
     }
   }
