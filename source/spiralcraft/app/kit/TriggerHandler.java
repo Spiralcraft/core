@@ -4,11 +4,15 @@ import spiralcraft.app.Dispatcher;
 import spiralcraft.app.Message;
 import spiralcraft.app.MessageHandlerChain;
 import spiralcraft.app.MessageHandler;
+import spiralcraft.app.Parent;
 import spiralcraft.app.State;
 import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.util.LangUtil;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 /**
  * <p>Triggers the evaluation of an Expression when a message is
@@ -25,9 +29,16 @@ public class TriggerHandler<Tstate extends State>
   implements MessageHandler
 {
  
+  private static final ClassLog log
+    =ClassLog.getInstance(TriggerHandler.class);
+  
+//  private Level logLevel
+//    =ClassLog.getInitialDebugLevel(TriggerHandler.class,Level.INFO);
+  
   private Binding<?> x;
   private boolean post;
   private Message.Type type;
+  private boolean subscribe;
   
   public TriggerHandler(Message.Type messageType,Expression<?> x,boolean post)
   { 
@@ -48,6 +59,17 @@ public class TriggerHandler<Tstate extends State>
   { this.post=post;
   }
   
+  /**
+   * <p>Whether a subscription will be registered with ancestors for this 
+   *   message type.
+   * </p>
+   *   
+   * @param subscribe
+   */
+  public void setSubscribe(boolean subscribe)
+  { this.subscribe=subscribe;
+  }
+  
   public void setX(Expression<?> x)
   { this.x=new Binding(x);
   }
@@ -58,20 +80,41 @@ public class TriggerHandler<Tstate extends State>
     throws ContextualException
   { 
     x.bind(focusChain);
+    if (subscribe && type!=null)
+    { 
+      LangUtil.findInstance(Parent.class,focusChain)
+        .subscribe(new Message.Type[] {type});
+    }
     return focusChain;
   }
   
+  
+  private void eval()
+  {
+    try
+    { x.get();
+    }
+    catch (Exception x)
+    { log.log(Level.WARNING,"Error evaluating trigger",x);
+    }
+  }
   
   @Override
   public final void handleMessage
     (Dispatcher dispatcher,Message message,MessageHandlerChain next)
   {
-    if (!post && (type==null || message.getType()==type) )
-    { x.get();
+    if (!dispatcher.isTarget())
+    { next.handleMessage(dispatcher,message);
     }
-    next.handleMessage(dispatcher,message);
-    if (post && (type==null || message.getType()==type) )
-    { x.get();
+    else
+    {
+      if (!post && (type==null || message.getType()==type) )
+      { eval();
+      }
+      next.handleMessage(dispatcher,message);
+      if (post && (type==null || message.getType()==type) )
+      { eval();
+      }
     }
   }
 

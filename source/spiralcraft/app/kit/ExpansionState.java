@@ -207,9 +207,10 @@ public class ExpansionState<T>
   public void enterFrame(StateFrame frame)
   {
     if (lastFrame!=frame)
-    { lastFrame=frame;
+    { 
+      lastFrame=frame;
+      frameChanged=true;
     }
-    frameChanged=true;
   }
   
   @Override
@@ -221,6 +222,12 @@ public class ExpansionState<T>
   public boolean isNewFrame()
   { return frameChanged;
   }
+  
+  @Override
+  public StateFrame getFrame()
+  { return lastFrame;
+  }
+  
   class MementoState
     extends ValueState<T>
   {

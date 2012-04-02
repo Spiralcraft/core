@@ -157,6 +157,13 @@ public interface State
   void exitFrame();
   
   /**
+   * The most recent frame entered by the the state.
+   * 
+   * @return
+   */
+  StateFrame getFrame();
+  
+  /**
    * Indicates to components that the StateFrame has changed since the 
    *   last time a message was received, and that any state data should be
    *   refreshed.

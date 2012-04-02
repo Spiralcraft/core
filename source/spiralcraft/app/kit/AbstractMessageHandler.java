@@ -40,6 +40,15 @@ public abstract class AbstractMessageHandler
   
   
   protected Message.Type type;
+  protected boolean contextual;
+  
+  public AbstractMessageHandler()
+  {
+  }
+  
+  public AbstractMessageHandler(Message.Type type)
+  { this.type=type;
+  }
   
   @Override
   public Focus<?> bind(
@@ -69,7 +78,7 @@ public abstract class AbstractMessageHandler
   
   
   protected boolean shouldHandleMessage(Dispatcher dispatcher,Message message)
-  { return (type==null || type==message.getType());
+  { return ( (type==null || type==message.getType()) && (contextual || dispatcher.isTarget()));
   }
   
 

@@ -73,6 +73,14 @@ public interface Component
     );
   
   /**
+   * The message types which will be relayed to the component regardless
+   *   of path targeting or multicast status.
+   *   
+   * @param type
+   */
+  Message.Type[] getSubscribedTypes();
+  
+  /**
    * Create a new State which represents this Component's
    *   conversational state.
    * 
@@ -112,7 +120,5 @@ public interface Component
    * @param debugLevel
    */
   void setLogLevel(Level logLevel);
-  
-  
 
 }

@@ -16,11 +16,14 @@ package spiralcraft.app.kit;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import spiralcraft.app.Component;
 import spiralcraft.app.Container;
+import spiralcraft.app.Pipe;
 import spiralcraft.app.Event;
 import spiralcraft.app.MessageHandler;
 import spiralcraft.app.MessageHandlerChain;
@@ -78,6 +81,9 @@ public class AbstractComponent
   
   private ChainableContext outerContext;
   
+  private HashSet<Message.Type> subscriptions;
+  private HashSet<Message.Type> notifications;
+  
   @Override
   public void setParent(Parent parent)
   { this.parent=parent;
@@ -127,7 +133,90 @@ public class AbstractComponent
   { this.messageHandlers=messageHandlers;
   }
 
+  @Override
+  public Message.Type[] getSubscribedTypes()
+  { 
+    if (subscriptions!=null)
+    { return subscriptions.toArray(new Message.Type[subscriptions.size()]);
+    }
+    else
+    { return null;
+    }
+  }
+  
+  /**
+   * @see Parent.subscribe()
+   */
+  @Override
+  public void subscribe(Message.Type[] types)
+  {    
+    for (Message.Type type : types)
+    { 
+      // Don't create a subscription when this component generates 
+      //   the notifications.
+      if (notifications==null || !notifications.contains(type))
+      { 
+        if (subscriptions==null)
+        { subscriptions=new HashSet<Message.Type>();
+        }  
+        
+        subscriptions.add(type);
+      }
+    }
+  }
+  
+  /**
+   * Internal subscribe
+   * 
+   * @param types
+   */
+  protected void subscribe(Set<Message.Type> types)
+  {
+    if (types==null)
+    { return;
+    }
+    for (Message.Type type : types)
+    { 
+      // Don't create a subscription when this component generates 
+      //   the notifications.
+      if (notifications==null || !notifications.contains(type))
+      { 
+        if (subscriptions==null)
+        { subscriptions=new HashSet<Message.Type>();
+        }  
+        
+        subscriptions.add(type);
+      }
+    }
+  }
+  
+  /**
+   * Dispatch a new message to all children that subscribe to the message
+   *   type.
+   * 
+   * @param myState
+   * @param message
+   */
+  protected final void notify(State myState,Message message)
+  { 
+    new StandardDispatcher
+      (true,myState.getFrame()).dispatch(message,this,myState,null);
     
+  }
+  
+  /**
+   * Register a message type that this component's children can subscribe to
+   * 
+   * @param publishedType
+   */
+  protected void addPublishedType(Message.Type publishedType)
+  {
+    if (notifications==null)
+    { notifications=new HashSet<Message.Type>();
+    }
+    notifications.add(publishedType);
+  }
+  
   protected MessageHandler createDefaultHandler()
   { return new DefaultHandler();
   }
@@ -352,25 +441,42 @@ public class AbstractComponent
     ,Message message
     )
   { 
-    if (outerContext!=null)
-    { outerContext.push();
-    }
     try
     {
-      if (handler!=null)
-      { handler.handleMessage(dispatcher,message);
+      
+      if (logLevel.isFine())
+      { log.fine("entering: "+message);
       }
-      else if (childContainer!=null)
-      { childContainer.relayMessage(dispatcher,message);
-      }
-    }
-    finally
-    {
       if (outerContext!=null)
-      { outerContext.pop();
+      { outerContext.push();
       }
+      try
+      {
+        if (handler!=null)
+        { handler.handleMessage(dispatcher,message);
+        }
+        else if (childContainer!=null)
+        { childContainer.relayMessage(dispatcher,message);
+        }
+      }
+      finally
+      {
+        if (outerContext!=null)
+        { outerContext.pop();
+        }
+      }
+      if (logLevel.isFine())
+      { log.fine("exiting: "+message);
+      }
+
     }
-    
+    catch (RuntimeException x)
+    { throw new RuntimeException
+        ("Messaging "+getClass()+" #"+getId()+" "
+          +dispatcher.getState().getPath()
+        ,x
+        );
+    }
     
   }
 
@@ -399,7 +505,7 @@ public class AbstractComponent
    */
   @Override
   public State createState()
-  { return new SimpleState(-1,id);
+  { return new SimpleState(childContainer!=null?childContainer.getChildCount():-1,id);
   }
 
   @Override
@@ -489,7 +595,9 @@ public class AbstractComponent
     }
       
     if (childContainer!=null)
-    { childContainer.bind(focusChain);
+    { 
+      childContainer.bind(focusChain);
+      subscribe(childContainer.getSubscribedTypes());
     }
     
     bindComplete(focusChain);
@@ -549,7 +657,11 @@ public class AbstractComponent
    * @return
    */
   protected Container createChildContainer(Component[] children)
-  { return new StandardContainer(this,children);
+  { 
+    StandardContainer container=new StandardContainer(this,children);
+    container.setLog(log);
+    container.setLogLevel(logLevel);
+    return container;
   }
   
   
@@ -742,6 +854,40 @@ public class AbstractComponent
     
   }
   
+  protected int getChildCount()
+  { return childContainer!=null?childContainer.getChildCount():0;
+  }
+  
+  /**
+   * Get a Pipe to the specified state in this Component's state tree
+   * 
+   * @param state
+   * @return
+   */
+  protected Pipe getPipe(State state)
+  {
+    Component root=this;
+    Parent parent=this;
+    while (parent!=null)
+    { 
+      parent=root.getParent();
+      if (parent!=null)
+      { 
+        Component component=parent.asComponent();
+        if (component!=null)
+        { root=component;
+        }
+      }
+    }
+    
+    State rootState=state;
+    while (rootState.getParent()!=null)
+    { rootState=rootState.getParent();
+    }
+    
+    return new StandardPipe(root,rootState,state.getPath());
+  }
+    
   class DefaultHandler
     implements MessageHandler
   {

@@ -14,6 +14,8 @@
 //
 package spiralcraft.app;
 
+import java.util.Set;
+
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.lang.Focus;
@@ -67,4 +69,10 @@ public interface Container
    */
   void relayMessage(Dispatcher dispatcher,Message message);
   
+  /**
+   * The set of message types that should be propagated down the state tree.
+   * 
+   * @return
+   */
+  Set<Message.Type> getSubscribedTypes();
 }

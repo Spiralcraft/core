@@ -16,6 +16,10 @@ package spiralcraft.app.kit;
 
 
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import spiralcraft.app.Component;
 import spiralcraft.app.Container;
 import spiralcraft.app.Dispatcher;
@@ -26,6 +30,8 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.Level;
+import spiralcraft.log.Log;
+import spiralcraft.util.ListMap;
 
 public class StandardContainer
   implements Container
@@ -33,10 +39,12 @@ public class StandardContainer
 
 
   
-  
+  protected Log log;
   protected Component[] children;
   protected Level logLevel=Level.INFO;
   protected final Parent parent;
+  protected ListMap<Message.Type,Integer> childSubscriptions;
+  protected HashSet<Message.Type> subscribedTypes;
 
   public StandardContainer(Parent parent)
   { this.parent=parent;
@@ -48,6 +56,14 @@ public class StandardContainer
     this.children=children;
   }
   
+  public void setLog(Log log)
+  { this.log=log;
+  }
+
+  public void setLogLevel(Level level)
+  { this.logLevel=level;
+  }
+  
   @Override
   public void bind(
     Focus<?> focusChain)
@@ -55,6 +71,11 @@ public class StandardContainer
   { 
     resolveChildren(focusChain);
     bindChildren(focusChain);
+  }
+  
+  @Override
+  public Set<Message.Type> getSubscribedTypes()
+  { return subscribedTypes;
   }
   
   /**
@@ -72,10 +93,29 @@ public class StandardContainer
   { 
     if (children!=null)
     {
+      int index=0;
+      subscribedTypes=new HashSet<Message.Type>();
       for (Component child:children)
-      { bindChild(focusChain,child);
+      { 
+        bindChild(focusChain,child);
+        Message.Type[] types=child.getSubscribedTypes();
+        if (types!=null)
+        {
+          if (childSubscriptions==null)
+          { childSubscriptions=new ListMap<Message.Type,Integer>();
+          }
+          
+          for (Message.Type type : types)
+          { 
+            childSubscriptions.add(type,index);
+            subscribedTypes.add(type);
+          }
+        }
+        
+        index++;
       }
     }
+    
   }
   
   protected Focus<?> bindChild(Focus<?> context,Component child) 
@@ -154,13 +194,64 @@ public class StandardContainer
     {
       Integer index=dispatcher.getNextRoute();
       if (index!=null)
-      { dispatcher.relayMessage(children[index],index,message);
+      { 
+        if (logLevel.isFine())
+        { log.log(Level.FINE,"Relaying "+message+" to child #"+index);
+        }
+        
+        dispatcher.relayMessage(children[index],index,message);
       }
       else if (message.isMulticast())
       { 
+        if (logLevel.isFine())
+        { 
+          log.log
+            (Level.FINE
+            ,"Multicasting "+message+" to "+children.length+" children"
+            );
+        }
+        
         for (int i=0;i<children.length;i++)
         { dispatcher.relayMessage(children[i],i,message);
         }
+      }
+      else if (childSubscriptions!=null)
+      {
+        
+        List<Integer> subscribers=childSubscriptions.get(message.getType());
+        if (subscribers!=null)
+        { 
+          if (logLevel.isFine())
+          { 
+            log.log
+              (Level.FINE,"Sending "+message+" to subscribers "+subscribers);
+          }
+          
+          for (int i:subscribers)
+          { dispatcher.relayMessage(children[i],i,message);
+          }
+        }
+        else
+        {
+          if (logLevel.isFine())
+          { log.log(Level.FINE,"No subscribers for "+message);
+          }
+        }
+        
+      }
+      else
+      {
+        
+        if (logLevel.isFine())
+        { log.log(Level.FINE,"Branch complete for "+message);
+        }
+
+      }
+    }
+    else
+    { 
+      if (logLevel.isFine())
+      { log.log(Level.FINE,"No children to relay "+message);
       }
     }
   }

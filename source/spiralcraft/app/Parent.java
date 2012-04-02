@@ -23,7 +23,22 @@ package spiralcraft.app;
 public interface Parent
 {
 
+  /**
+   * Pass an event up the component hierarchy
+   * 
+   * @param dispatcher
+   * @param event
+   */
   void handleEvent(Dispatcher dispatcher,Event event);
+  
+  /**
+   * <p>Indicate that this parent should subscribe to and forward messages
+   *   of the specified types to descendants.
+   * </p>
+   *   
+   * @param subscription
+   */
+  void subscribe(Message.Type[] types);
   
   /**
    * <p>Find the distance from the calling descendant Component's immediate 
@@ -88,5 +103,4 @@ public interface Parent
    */
   <X> X findComponent(Class<X> clazz,Class<?> stop);
 
-  
 }

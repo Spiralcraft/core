@@ -177,6 +177,11 @@ public class SimpleState
   public void exitFrame()
   { frameChanged=false;
   }
+  
+  @Override
+  public StateFrame getFrame()
+  { return lastFrame;
+  }
     
   @Override
   public boolean isNewFrame()
