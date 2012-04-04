@@ -68,4 +68,15 @@ public class StandardPrefixResolver
     computedMappings.putAll(map);
     return computedMappings;
   }
+  
+  public Map<String,URI> getMappings()
+  { return map;
+  }
+  
+  public void setMappings(Map<String,URI> mappings)
+  { 
+    for (Map.Entry<String,URI> entry: map.entrySet())
+    { mapPrefix(entry.getKey(),entry.getValue());
+    }
+  }
 }
