@@ -17,6 +17,53 @@
         </revision>
       
         <notes>
+          <scm:Note>Provide a means for storing/retrieving prefix mappings in
+            bulk
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/common/namespace/StandardPrefixResolver.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Provide a component for managing UI preference data based
+            a PathTree
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>ui/PreferenceTree.java
+          </URI>
+          <URI>tree/AbstractNode.java
+          </URI>
+          <URI>tree/LinkedTree.java
+          </URI>
+          <URI>tree/PathTree.java
+          </URI>
+          <URI>tree/Tree.java
+          </URI>
+          <URI>sax/Characters.java
+          </URI>
+          <URI>sax/Element.java
+          </URI>
+          <URI>data/sax/DataWriter.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
           <scm:Note>Sequence has get(int) method
           </scm:Note>
         </notes>
