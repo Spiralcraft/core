@@ -760,8 +760,8 @@ public class XmlStore
             joinTransaction().log(dt);
             Transaction.getContextTransaction().commit();
           
-            allocated=false;
           }
+          allocated=false;
         }
         finally
         { Transaction.getContextTransaction().complete();
@@ -812,8 +812,8 @@ public class XmlStore
               newNext=(Long) row.get("nextValue");
               newIncrement=(Integer) row.get("increment");
             
-              newStop=next+increment;
-              row.set("nextValue",next+increment);            
+              newStop=newNext+increment;
+              row.set("nextValue",newNext+newIncrement);            
             
             }
           
