@@ -14,6 +14,7 @@
 //
 package spiralcraft.util.tree;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -68,6 +69,17 @@ public class PathTree<T>
   
   public PathTree<T> getChild(String name)
   { return childMap.get(name);
+  }
+
+  @Override
+  public PathTree<T> getRoot()
+  { 
+    if (parent==null)
+    { return this;
+    }
+    else
+    { return parent.getRoot();
+    }
   }
   
   @Override
@@ -154,6 +166,28 @@ public class PathTree<T>
   
   @Override
   public String toString()
-  { return super.toString()+":["+name+"]";
+  { return super.toString()+":["+name+": "+this.object+"]";
+  }
+  
+  public String format()
+  {
+    StringBuffer out=new StringBuffer();
+    format(out,"\r\n");
+    return out.toString();
+  }
+  
+  public void format(Appendable out,String prefix)
+  { 
+    try
+    {
+      out.append(prefix);
+      out.append(toString());
+      for (PathTree<T> child: children)
+      { child.format(out,prefix+" | ");
+      }
+    }
+    catch (IOException x)
+    { throw new RuntimeException(x);
+    }
   }
 }

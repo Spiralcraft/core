@@ -80,6 +80,18 @@ public abstract class AbstractNode<Nc extends AbstractNode<Nc,T>,T>
   { return _children;
   }
   
+  @Override
+  @SuppressWarnings("unchecked")
+  public Nc getRoot()
+  {
+    if (_parent==null)
+    { return (Nc) this;
+    }
+    else
+    { return _parent.getRoot();
+    }
+  }
+  
   public int getChildCount()
   { 
     if (_children!=null)

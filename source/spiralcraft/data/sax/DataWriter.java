@@ -42,6 +42,7 @@ import org.xml.sax.helpers.AttributesImpl;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 
 import java.net.URI;
 
@@ -116,7 +117,13 @@ public class DataWriter
     
   }
     
-  
+  public String writeToString(DataComposite data)
+    throws DataException
+  { 
+    StringWriter writer=new StringWriter();
+    writeToWriter(writer,data);
+    return writer.toString();
+  }
   
 }
 
@@ -691,7 +698,14 @@ class Context
     {
       Aggregate value=null;
       if (componentType.isPrimitive())
-      { value=(Aggregate) field.getType().toData(field.getValue(tuple));
+      { 
+        Object fieldValue=field.getValue(tuple);
+        if (fieldValue.getClass().isArray())
+        { value=(Aggregate) field.getType().toData(fieldValue);
+        }
+        else
+        { value=(Aggregate) fieldValue;
+        }
       }
       else
       { value=(Aggregate) field.getValue(tuple);

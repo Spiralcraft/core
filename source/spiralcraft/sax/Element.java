@@ -224,6 +224,20 @@ public class Element
   }
   
 
+  public Attribute getAttributeByQName(String qname)
+  {
+    if (_attributes==null)
+    { return null;
+    }
+    for (Attribute attribute:_attributes)
+    { 
+      if (attribute.getQName().equals(qname))
+      { return attribute;
+      }
+    }
+    return null;
+  }
+  
   /**
    * A concatenation of the character data in this element and in all
    *   descendant Elements

@@ -83,4 +83,10 @@ public interface Tree<Nc,T>
    * @return
    */
   public Nc[] getChildren();
+  
+  /**
+   * The root of the tree
+   * @return
+   */
+  public Nc getRoot();
 }

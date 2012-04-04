@@ -25,6 +25,10 @@ public class Characters
 {
   private char[] _characters;
 
+  public Characters(String characters)
+  { _characters=characters.toCharArray();
+  }
+  
   public Characters(char[] ch,int start,int length)
   { 
     _characters=new char[length];

@@ -105,6 +105,17 @@ public class LinkedTree<T>
   }
   
   @Override
+  public LinkedTree<T> getRoot()
+  { 
+    if (parent==null)
+    { return this;
+    }
+    else
+    { return parent.getRoot();
+    }
+  }
+  
+  @Override
   public String toString()
   { return render(null,0,".").toString();
   }
