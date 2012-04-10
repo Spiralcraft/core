@@ -234,7 +234,13 @@ public abstract class OutputAgent
       }
     }
     if (!shuttingDown)
-    { Runtime.getRuntime().removeShutdownHook(shutdownHook);
+    { 
+      try
+      { Runtime.getRuntime().removeShutdownHook(shutdownHook);
+      }
+      catch (IllegalStateException x)
+      { // Don't worry about this one
+      }
     }
     destroy();
   }
