@@ -36,7 +36,7 @@ import spiralcraft.command.CommandFactory;
 
 
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.reflect.BeanFocus;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.log.ClassLog;
 import spiralcraft.task.Scenario;
 
@@ -119,7 +119,7 @@ public class Daemon
       new BeanArguments<Daemon>(this).process(args);
       
       try
-      { bind(new BeanFocus<Daemon>(this));
+      { bind(new SimpleFocus<Void>());
       }
       catch (ContextualException x)
       { throw new ExecutionException("Error binding",x);
