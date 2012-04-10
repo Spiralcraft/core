@@ -64,8 +64,10 @@ public class DeclarationInfo
   }
   
   /**
-   * Indicate whether this Declarable instance is based on a declaration type 
-   *   identified by the specified URI.
+   * <p>Determine whether this Declarable instance is based on a declaration
+   *   type identified by the specified URI by examining all the declarations
+   *   associated with this Declarable
+   * </p>
    * 
    * @param typeURI
    * @return
