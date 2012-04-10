@@ -44,8 +44,8 @@ public class ClassLog
     getInitialDebugLevel(Class<?> subject,Level defaultLevel)
   { 
     String level=ContextDictionary.getInstance()
-      .find(subject.getName()+".debugLevel"
-            ,defaultLevel!=null?defaultLevel.getName():"OFF"
+      .find(subject.getName()+".logLevel"
+            ,defaultLevel!=null?defaultLevel.getName():"INFO"
             );
     
     Level lvl=Level.valueOf(level);
