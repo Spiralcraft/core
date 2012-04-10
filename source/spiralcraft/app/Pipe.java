@@ -29,4 +29,11 @@ public interface Pipe
    * @param message
    */
   void message(Message message);
+  
+  /**
+   * Send an asynchronous message to the referenced state
+   * 
+   * @param message
+   */
+  void messageAsync(Message message);
 }

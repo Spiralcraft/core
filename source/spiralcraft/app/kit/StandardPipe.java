@@ -21,6 +21,7 @@ import spiralcraft.app.Message;
 import spiralcraft.app.State;
 import spiralcraft.app.StateFrame;
 //import spiralcraft.log.ClassLog;
+import spiralcraft.time.Scheduler;
 import spiralcraft.util.Sequence;
 
 /**
@@ -52,6 +53,20 @@ public class StandardPipe
   { newDispatcher().dispatch(message,root,rootState,path);    
   }
 
+  @Override
+  public void messageAsync(final Message message)
+  {
+    Scheduler.instance().scheduleNow
+      (new Runnable()
+        { 
+          @Override
+          public void run()
+          { message(message);
+          }
+        }
+      );
+  }
+  
   protected Dispatcher newDispatcher()
   { return new StandardDispatcher(true,currentFrame());
   }
