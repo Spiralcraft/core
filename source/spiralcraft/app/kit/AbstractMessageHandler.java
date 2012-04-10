@@ -35,7 +35,7 @@ public abstract class AbstractMessageHandler
 
   protected final ClassLog log
     =ClassLog.getInstance(getClass());
-  protected final Level logLevel
+  protected Level logLevel
     =ClassLog.getInitialDebugLevel(getClass(),Level.INFO);
   
   
@@ -48,6 +48,10 @@ public abstract class AbstractMessageHandler
   
   public AbstractMessageHandler(Message.Type type)
   { this.type=type;
+  }
+  
+  public void setLogLevel(Level logLevel)
+  { this.logLevel=logLevel;
   }
   
   @Override
