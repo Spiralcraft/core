@@ -36,6 +36,16 @@ public class PatternFilter
     return new AnyFilter(filters);
   }
   
+  public static final AnyFilter any(Path prefix,String ... patterns)
+  { 
+    PatternFilter[] filters=new PatternFilter[patterns.length];
+    int i=0;
+    for (String pattern : patterns)
+    { filters[i++]=new PatternFilter(prefix,pattern);
+    }
+    return new AnyFilter(filters);
+  }
+  
   private PathPattern _pattern;
 
   public PatternFilter(String expression)

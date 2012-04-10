@@ -26,6 +26,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.task.AbstractTask;
 import spiralcraft.task.Scenario;
 import spiralcraft.task.Task;
+import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.Path;
 import spiralcraft.util.PathPattern;
 import spiralcraft.util.URIUtil;
@@ -255,9 +256,21 @@ public class Copy
           { patterns=new String[] {"**/CVS/**","**/.svn/**"};
           }
           
+          if (debug)
+          { 
+            if (patterns!=null)
+            { log.fine("Excluding: "+ArrayUtil.format(patterns,",","\""));
+            }
+            else
+            { log.fine("No excludes");
+            }
+          }
+          
           ResourceFilter excludesFilter=null;
           if (patterns!=null)
-          { excludesFilter=PatternFilter.any(patterns);
+          { 
+            excludesFilter=PatternFilter.any
+              (new Path(sourceResource.getURI().getPath(),'/'),patterns);
           } 
         
           Search search=new Search();
