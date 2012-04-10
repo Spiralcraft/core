@@ -15,6 +15,7 @@
 package spiralcraft.app.kit;
 
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -33,6 +34,8 @@ import spiralcraft.app.Dispatcher;
 import spiralcraft.app.State;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.ChainableContext;
 import spiralcraft.lang.Context;
@@ -52,15 +55,17 @@ import spiralcraft.log.Level;
  *
  */
 public class AbstractComponent
-  implements Component,Parent
+  implements Component,Parent,Declarable
 {
   protected final ClassLog log=ClassLog.getInstance(getClass());
-  protected Level logLevel=ClassLog.getInitialDebugLevel(getClass(),null);
+  protected Level logLevel=ClassLog.getInitialDebugLevel(getClass(),Level.INFO);
   protected Level normalLogLevel=logLevel;
   
   protected MessageHandlerChain handler;
+  protected Constructor<? extends State> stateConstructor;
   
   private MessageHandler[] messageHandlers;
+  private Context[] outerContexts;
   
   protected Parent parent;
   protected boolean bound=false;
@@ -83,6 +88,7 @@ public class AbstractComponent
   
   private HashSet<Message.Type> subscriptions;
   private HashSet<Message.Type> notifications;
+  private DeclarationInfo declarationInfo;
   
   @Override
   public void setParent(Parent parent)
@@ -133,6 +139,17 @@ public class AbstractComponent
   { this.messageHandlers=messageHandlers;
   }
 
+  /**
+   * <p>Specify a set of Contexts thataugment the environment in which
+   *   this component and its children operate.
+   * </p>
+   * @param contexts
+   */
+  public void setContext(Context[] contexts)
+  { this.outerContexts=contexts;
+  }
+  
+    
   @Override
   public Message.Type[] getSubscribedTypes()
   { 
@@ -505,7 +522,27 @@ public class AbstractComponent
    */
   @Override
   public State createState()
-  { return new SimpleState(childContainer!=null?childContainer.getChildCount():-1,id);
+  { 
+    if (stateConstructor!=null)
+    { 
+      try
+      {
+        return stateConstructor.newInstance
+          ( new Object[] 
+              {childContainer!=null?childContainer.getChildCount():-1,id} 
+          );
+      }
+      catch (Exception x)
+      { 
+        throw new RuntimeException
+          ("Error creating state "+getStateClass(),x);
+      }
+    }
+    else
+    { 
+      return new SimpleState
+        (childContainer!=null?childContainer.getChildCount():-1,id);
+    }
   }
 
   @Override
@@ -527,6 +564,13 @@ public class AbstractComponent
       }
     };
     
+    if (outerContexts!=null)
+    { 
+      for (Context context:outerContexts)
+      { chainOuterContext(context);
+      }
+    }
+    
     if (outerContext!=null)
     { 
       outerContext.seal(self);
@@ -538,6 +582,10 @@ public class AbstractComponent
     
   }
   
+  protected Class<? extends State> getStateClass()
+  { return SimpleState.class;
+  }
+  
   protected void bindComplete(Focus<?> focusChain)
     throws ContextualException
   {
@@ -547,7 +595,17 @@ public class AbstractComponent
     throws ContextualException
   {
     bindContextuals(focusChain,parentContextuals);
-      
+
+    try
+    {
+      stateConstructor
+        =getStateClass().getConstructor
+          (new Class[] {Integer.TYPE,String.class});
+    }
+    catch (NoSuchMethodException x)
+    {  
+    }    
+    
     Focus<?> parentContext=focusChain;
     if (selfFocus==null)
     { 
@@ -560,6 +618,8 @@ public class AbstractComponent
     }
 
     focusChain=bindImports(focusChain);
+    
+    
     
     if (focusChain==parentContext)
     { focusChain=focusChain.chain(focusChain.getSubject());
@@ -690,7 +750,7 @@ public class AbstractComponent
 
   /**
    * <p>Override to add any additional handlers to the handler chain after
-   *   all configuration properties have been suppli and imports have been
+   *   all configuration properties have been supplied and imports have been
    *   bound.
    * </p>
    */
@@ -910,5 +970,16 @@ public class AbstractComponent
       }
     }
 
+  }
+
+  @Override
+  public void setDeclarationInfo(
+    DeclarationInfo declarationInfo)
+  { this.declarationInfo=declarationInfo;
+  }
+
+  @Override
+  public DeclarationInfo getDeclarationInfo()
+  { return declarationInfo;
   }
 }
