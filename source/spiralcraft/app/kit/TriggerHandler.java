@@ -10,6 +10,8 @@ import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -31,6 +33,8 @@ public class TriggerHandler<Tstate extends State>
  
   private static final ClassLog log
     =ClassLog.getInstance(TriggerHandler.class);
+  private Level logLevel
+    =ClassLog.getInitialDebugLevel(TriggerHandler.class,Level.INFO);
   
 //  private Level logLevel
 //    =ClassLog.getInitialDebugLevel(TriggerHandler.class,Level.INFO);
@@ -39,6 +43,7 @@ public class TriggerHandler<Tstate extends State>
   private boolean post;
   private Message.Type type;
   private boolean subscribe;
+  private ThreadLocalChannel<Message> message;
   
   public TriggerHandler(Message.Type messageType,Expression<?> x,boolean post)
   { 
@@ -79,7 +84,24 @@ public class TriggerHandler<Tstate extends State>
     Focus<?> focusChain)
     throws ContextualException
   { 
-    x.bind(focusChain);
+    if (logLevel.isDebug())
+    { log.debug("Binding TriggerHandler for type:"+type);
+    }
+    Focus<?> messageChain=focusChain;
+    if (type!=null && type.typeClass!=null)
+    { 
+      message
+        =new ThreadLocalChannel
+          (BeanReflector.getInstance(type.typeClass)
+          ,true
+          ,focusChain.getSubject()
+          );
+      messageChain=messageChain.chain(message);
+      if (logLevel.isFine())
+      { log.fine("Bound message into focus chain "+type.typeClass);
+      }
+    }
+    x.bind(messageChain);
     if (subscribe && type!=null)
     { 
       LangUtil.findInstance(Parent.class,focusChain)
@@ -88,14 +110,26 @@ public class TriggerHandler<Tstate extends State>
     return focusChain;
   }
   
+  public void setLogLevel(Level logLevel)
+  { this.logLevel=logLevel;
+  }
   
-  private void eval()
+  private void eval(Message message)
   {
+    if (this.message!=null)
+    { this.message.push(message);
+    }
     try
     { x.get();
     }
     catch (Exception x)
     { log.log(Level.WARNING,"Error evaluating trigger",x);
+    }
+    finally
+    {
+      if (this.message!=null)
+      { this.message.pop();
+      }
     }
   }
   
@@ -109,11 +143,11 @@ public class TriggerHandler<Tstate extends State>
     else
     {
       if (!post && (type==null || message.getType()==type) )
-      { eval();
+      { eval(message);
       }
       next.handleMessage(dispatcher,message);
       if (post && (type==null || message.getType()==type) )
-      { eval();
+      { eval(message);
       }
     }
   }

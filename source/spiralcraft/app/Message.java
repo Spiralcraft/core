@@ -51,5 +51,20 @@ public abstract class Message
   public static class Type
   { 
     public final int ID=NEXT_TYPE_ID++;
+    public final Class<? extends Message> typeClass;
+    
+    public Type()
+    { typeClass=null;
+    }
+
+    public Type(Class<? extends Message> messageClass)
+    { typeClass=messageClass;
+    }
+    
+    @Override
+    public String toString()
+    { return super.toString()+(typeClass!=null?typeClass.toString():"");
+    }
+    
   }
 }
