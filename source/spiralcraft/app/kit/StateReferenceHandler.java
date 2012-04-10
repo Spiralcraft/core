@@ -62,6 +62,9 @@ public class StateReferenceHandler<Tstate extends State>
   { return reference.get();
   }
   
+  public Reflector<Tstate> getReflector()
+  { return reference.getReflector();
+  }
 
 
 }
