@@ -19,6 +19,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.common.namespace.PrefixResolver;
 
 import spiralcraft.lang.spi.SimpleChannel;
@@ -196,6 +198,18 @@ public abstract class BaseFocus<T>
 
     if (baseURI!=null && subject.getReflector().isAssignableTo(baseURI))
     { return true;
+    }
+    
+    if (baseURI!=null 
+        && subject!=null
+        && subject.isConstant() 
+        && Declarable.class.isAssignableFrom(subject.getContentType())
+        )
+    { 
+      DeclarationInfo info=((Declarable) subject.get()).getDeclarationInfo();
+      if (info!=null && info.instanceOf(baseURI))
+      { return true;
+      }
     }
     
     return false;
