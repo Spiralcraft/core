@@ -13,6 +13,7 @@
   xmlns:vfsf="class:/spiralcraft/vfs/functions/"  
   xmlns:math="class:/java/math/"
   xmlns="dynamic:/"
+  xmlns:app="class:/spiralcraft/app/"
   >
   <name>spiralcraft.lang.test
   </name>
@@ -982,8 +983,21 @@
           </testX>
         
         </test:Assertion>   
-
+        
+        <test:Assertion>
+          <name>Static field
+          </name>
+          
+          <subjectX>[@app:InitializeMessage].@TYPE
+          </subjectX>
+          
+          <testX>.!=null
+          </testX>
+        
+        </test:Assertion> 
       </scenarios>
+      
+      
       
     </task:Sequence>
   </chain>

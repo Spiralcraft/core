@@ -17,6 +17,74 @@
         </revision>
       
         <notes>
+          <scm:Note>Suppress the exception thrown by RemoveShutdownHook
+            when shutdown is in progress.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/io/OutputAgent.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>The focus resolution mechanism in spiralcraft.lang now
+            interrogates the DeclarationInfo of a constant Declarable object
+            for a URI match, allowing for the use of builder assembly URIs
+            for object resolution.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/BaseFocus.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>The contextual property for setting the static log level
+            of a class is now [classname]+".logLevel"
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/log/ClassLog.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
+          <scm:Note>Ensure that Copy exclusion filter accounts for fixed
+            path prefix.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs
+        </path>
+        
+        <resources>
+          <URI>task/Copy.java
+          </URI>
+          <URI>filters/PatternFilter.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev1
+        </revision>
+      
+        <notes>
           <scm:Note>Provide a means for storing/retrieving prefix mappings in
             bulk
           </scm:Note>
@@ -123,6 +191,10 @@
             and dispatches Initialize and Dispose messages on start/stop 
             respectively.
           </scm:Note>
+          <scm:Note>Daemon no longer makes itself the subject of the Focus
+            chain because it is an infrastructure component, and not part of any
+            application specific model.
+          </scm:Note>
         </notes>
         
         <path>source/spiralcraft/service/Daemon.java
@@ -137,6 +209,29 @@
           <scm:Note>Updates to component model to support the efficient routing
             of notifications to subscribed descendants from both in-tree and
             external components.
+          </scm:Note>
+          <scm:Note>The expression in a TriggerHandler now has access to the
+            message content. Message.Type now contains metadata to support
+            this.
+          </scm:Note>
+          <scm:Note>AbstractComponent and all subtypes are now Declarable
+            for straightforward resolution.
+          </scm:Note>
+          <scm:Note>AbstractComponent subtypes support automatic state creation
+            when the State is a public class and specified in the subtype. 
+          </scm:Note>
+          <scm:Note>Pipe supports the asynchronous sending of messages to 
+            ensure that operations are run on an appropriate thread.
+          </scm:Note>
+          <scm:Note>New AbstractModelComponent
+            creates an inheritance line for publishing application model
+            objects into a component tree. Initial subtype is a Session
+            component which retrieves a value at initialization time.
+          </scm:Note>
+          <scm:Note>New AbstractController component creates an inheritance
+            line for representing components which control the interaction
+            between contained view and a model components that need to access
+            stateful aspects of the controller. 
           </scm:Note>
         </notes>
         
@@ -156,7 +251,15 @@
           </URI>
           <URI>State.java
           </URI>
+          <URI>Message.java
+          </URI>
+          <URI>components/Session.java
+          </URI>
           <URI>kit/AbstractComponent.java
+          </URI>
+          <URI>kit/AbstractController.java
+          </URI>
+          <URI>kit/AbstractModelComponent.java
           </URI>
           <URI>kit/AbstractMessageHandler.java
           </URI>
@@ -167,6 +270,8 @@
           <URI>kit/StandardContainer.java
           </URI>
           <URI>kit/StandardPipe.java
+          </URI>
+          <URI>kit/StateReferenceHandler.java
           </URI>
           <URI>kit/TriggerHandler.java
           </URI>
