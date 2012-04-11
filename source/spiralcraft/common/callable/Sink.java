@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2011 Michael Toth
+// Copyright (c) 2012 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,19 +12,18 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.common;
+package spiralcraft.common.callable;
 
 /**
- * A one-argument functor pattern.
+ * <p>A single argument function that returns nothing and throws no
+ *   exception.
+ * </p>
  * 
  * @author mike
  *
  * @param <I>
- * @param <R>
- * @param <X>
  */
-public interface UnaryFunction<I,R,X extends Exception>
+public interface Sink<I>
 {
-  public R evaluate(I input) 
-    throws X;
+  void accept(I object);
 }

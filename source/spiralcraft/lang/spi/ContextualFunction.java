@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang.spi;
 
-import spiralcraft.common.UnaryFunction;
+import spiralcraft.common.callable.UnaryFunction;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Contextual;

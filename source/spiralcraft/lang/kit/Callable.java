@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang.kit;
 
-import spiralcraft.common.UnaryFunction;
+import spiralcraft.common.callable.UnaryFunction;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
