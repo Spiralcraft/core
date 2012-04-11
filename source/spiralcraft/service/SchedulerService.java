@@ -18,7 +18,6 @@ package spiralcraft.service;
 import spiralcraft.app.kit.AbstractComponent;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
-import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.CachedChannel;
@@ -51,7 +50,7 @@ public class SchedulerService<Tcontext>
    
   @Override
   protected Focus<?> bindImports(Focus<?> chain)
-    throws BindException
+    throws ContextualException
   { 
     if (contextX!=null)
     { 
@@ -60,7 +59,7 @@ public class SchedulerService<Tcontext>
       context=new CachedChannel<Tcontext>(contextX);
       chain=chain.chain(context);
     }
-    return chain;
+    return super.bindImports(chain);
   }
   
   @Override
@@ -74,7 +73,7 @@ public class SchedulerService<Tcontext>
       { scheduler.bind(chain);
       }
     }
-    return chain;
+    return super.bindExports(chain);
   }
   
   @Override
