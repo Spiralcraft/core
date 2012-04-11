@@ -56,7 +56,9 @@ public class UpdaterService<Tdata extends Tuple>
         
           try
           {
-            log.fine("Inserting "+dataBuffer.size()+" rows");
+            if (logLevel.isFine())
+            { log.fine("Inserting "+dataBuffer.size()+" rows");
+            }
             DataConsumer<DeltaTuple> updater
               =sessionChannel.get().getSpace().getUpdater(getDataType(),selfFocus);
            
@@ -65,7 +67,9 @@ public class UpdaterService<Tdata extends Tuple>
             {
               for (Tdata fact:dataBuffer)
               { 
-                log.fine("Inserting "+fact);
+                if (logLevel.isFine())
+                { log.fine("Inserting "+fact);
+                }
                 DeltaTuple tuple
                   =fact instanceof DeltaTuple
                    ?(DeltaTuple) fact
@@ -76,7 +80,9 @@ public class UpdaterService<Tdata extends Tuple>
             finally
             { updater.dataFinalize();
             }
-            log.fine("Inserted "+dataBuffer.size()+" rows");
+            if (logLevel.isFine())
+            { log.fine("Inserted "+dataBuffer.size()+" rows");
+            }
           }
           catch (DataException x)
           { 
