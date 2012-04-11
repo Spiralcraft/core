@@ -36,13 +36,15 @@ import spiralcraft.data.lang.TupleFocus;
 import spiralcraft.data.spi.ArrayDeltaTuple;
 
 /**
- * <P>Accepts Tuples from the caller, compares them with those found in
+ * <p>Accepts Tuples from the caller, compares them with those found in
  *   a Space, and generates DeltaTuples which reflect the difference and
  *   can be used to update the Space.
+ * </p>
  *   
- * <P>The DataSynchronizer is most useful when a Store must be kept in-sync
+ * <p>The DataSynchronizer is most useful when a Store must be kept in-sync
  *   with an externally maintained data source that does not provide an update
  *   log.
+ * </p>
  */
 @SuppressWarnings({ "unchecked", "rawtypes" }) // Chains are heterogeneous
 public class DataSynchronizer
