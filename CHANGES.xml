@@ -13,6 +13,66 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev2
+        </revision>
+      
+        <notes>
+          <scm:Note>Created an UpdaterService to batch incoming data and
+            insert it into a space periodically.
+          </scm:Note>
+          <scm:Note>Factored out kit class for generic data batching operations
+            and updated service infrastructure to facilitate integration of 
+            this kind of functionality.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/kit/AbstractBatchService.java
+          </URI>
+          <URI>data/util/SummarizerService.java
+          </URI>
+          <URI>data/util/UpdaterService.java
+          </URI>
+          <URI>service/SchedulerService.java
+          </URI>
+          <URI>service/ServiceGroup.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+      
+        <notes>
+          <scm:Note>Created spiralcraft.common.callable package for
+            single-method interfaces designed to be used as functor objects.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>common/callable/Sink.java
+          </URI>
+          <URI>common/callable/UnaryFunction.java
+          </URI>
+          <URI>common/UnaryFunction.java
+          </URI>
+          <URI>lang/kit/Callable.java
+          </URI>
+          <URI>lang/spi/ContextualFunction.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev1
         </revision>
       
