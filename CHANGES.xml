@@ -13,6 +13,27 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev3
+        </revision>
+      
+        <notes>
+          <scm:Note>Make sure that Expression registers a StringConverter now
+            that the constructor is missing
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang
+        </path>
+        
+        <resources>
+          <URI>Expression.java
+          </URI>
+          <URI>reflect/Initializer.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev2
         </revision>
       
