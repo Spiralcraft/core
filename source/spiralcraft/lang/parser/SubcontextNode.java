@@ -119,7 +119,7 @@ public class SubcontextNode<T,S>
     throws BindException
   {
    
-    Channel<S> sourceChannel=focus.<S>bind(new Expression<S>(_source,null));
+    Channel<S> sourceChannel=focus.<S>bind(Expression.<S>create(_source));
     
     if (sourceChannel instanceof FocusChannel)
     { focus=((FocusChannel) sourceChannel).getFocus();
@@ -132,7 +132,7 @@ public class SubcontextNode<T,S>
       Focus<S> subFocus=focus.telescope(sourceChannel);
       int i=0;
       for (Node node:_subcontextList)
-      { channels[i++]=subFocus.bind(new Expression(node));
+      { channels[i++]=subFocus.bind(Expression.<S>create(node));
       }
       return new SubcontextChannel(sourceChannel,null,channels);
       
@@ -146,7 +146,7 @@ public class SubcontextNode<T,S>
       Focus<S> subFocus=focus.telescope(sourceLocal);
       int i=0;
       for (Node node:_subcontextList)
-      { channels[i++]=subFocus.bind(new Expression(node));
+      { channels[i++]=subFocus.bind(Expression.create(node));
       }
       return new SubcontextChannel(sourceChannel,sourceLocal,channels);
     }

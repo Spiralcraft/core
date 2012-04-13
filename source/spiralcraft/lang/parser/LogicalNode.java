@@ -25,6 +25,8 @@ import spiralcraft.lang.Reflector;
 
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
+import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.lang.ClassUtil;
 import spiralcraft.util.lang.NumericCoercion;
 
 public abstract class LogicalNode<T1,T2>
@@ -37,6 +39,7 @@ public abstract class LogicalNode<T1,T2>
   { 
     _op1=op1;
     _op2=op2;
+    hashCode=computeHashCode();
   }
 
   @Override
@@ -52,8 +55,8 @@ public abstract class LogicalNode<T1,T2>
 
 
     
-    Channel<T1> op1Channel=focus.bind(new Expression<T1>(_op1,null));
-    Expression<T2> op2Expr=_op2!=null?new Expression<T2>(_op2,null):null;
+    Channel<T1> op1Channel=focus.bind(Expression.<T1>create(_op1,null));
+    Expression<T2> op2Expr=_op2!=null?Expression.<T2>create(_op2,null):null;
       
     // Give first operand a chance to implement the operator
     Channel<Boolean> resultChannel
@@ -112,6 +115,18 @@ public abstract class LogicalNode<T1,T2>
   { return copy._op1==_op1 && copy._op2==_op2;
   }
 
+  private int computeHashCode()
+  { return ArrayUtil.arrayHashCode(new Object[] {_op1,_op2});
+  }
+  
+  @Override
+  protected boolean equalsNode(Node node)
+  {
+    LogicalNode<?,?> mynode=(LogicalNode<?,?>) node;
+    return ClassUtil.equals(_op1,mynode._op1)
+      && ClassUtil.equals(_op1,mynode._op2);
+  }
+  
   @Override
   public void dumpTree(StringBuffer out,String prefix)
   {

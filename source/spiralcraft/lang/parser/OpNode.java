@@ -34,7 +34,7 @@ public class OpNode<T1,T2 extends T1>
     _op1=op1;
     _op2=op2;
     _op=new String(new char[]{op}).intern();
-    _params=new Expression[] {new Expression<T2>(_op2,null)};
+    _params=new Expression[] {Expression.<T2>create(_op2)};
   }
 
   @Override

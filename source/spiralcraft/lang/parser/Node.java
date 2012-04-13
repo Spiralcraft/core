@@ -64,7 +64,7 @@ public abstract class Node
   public abstract Node[] getSources();
   
   protected boolean equalsNode(Node node)
-  { return false;
+  { return node==this;
   }
   
   @Override

@@ -71,12 +71,12 @@ public class ContainsNode<T,C,I>
     throws BindException
   {
    
-    Channel<C> collection=focus.<C>bind(new Expression<C>(_source,null));
+    Channel<C> collection=focus.<C>bind(Expression.<C>create(_source));
     Channel<?> result=
       collection.resolve
         (focus
         , "?="
-        , new Expression[] {new Expression<I>(_compareItem,null)}
+        , new Expression[] {Expression.<I>create(_compareItem)}
         );
     if (result==null)
     { 

@@ -19,6 +19,8 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.spi.AssignmentChannel;
+import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.lang.ClassUtil;
 
 
 /**
@@ -52,6 +54,7 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
     this.source=source;
     this.target=target;
     this.op=null;
+    hashCode=computeHashCode();
   }
   
   public AssignmentNode(Node target,Node source,char op)
@@ -59,6 +62,7 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
     this.source=source;
     this.target=target;
     this.op=op;
+    hashCode=computeHashCode();
   }
 
   @Override
@@ -123,6 +127,19 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
     }
     out.append("=");
     source.dumpTree(out,prefix);
+  }
+  
+  private int computeHashCode()
+  { return ArrayUtil.arrayHashCode(new Object[] {source,target,op});
+  }
+  
+  @Override
+  protected boolean equalsNode(Node node)
+  { 
+    AssignmentNode<?,?> mynode=(AssignmentNode<?,?>) node;
+    return ClassUtil.equals(source,mynode.source)
+        && ClassUtil.equals(target,mynode.target)
+        && ClassUtil.equals(op,mynode.op);
   }
 
 

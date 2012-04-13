@@ -33,6 +33,7 @@ import spiralcraft.lang.spi.StringConcatTranslator;
 
 import spiralcraft.util.lang.ClassUtil;
 
+import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.IterableChain;
 
 import java.util.HashMap;
@@ -66,7 +67,7 @@ public class BinaryOpNode<T1 extends Comparable<T1>,T2>
     _op1=op1;
     _op2=op2;
     _op=op;
-//    System.out.println("NumericOpNoe init: "+op+" : "+op1+" : "+op2);
+    hashCode=computeHashCode();
   }
 
   @Override
@@ -98,8 +99,8 @@ public class BinaryOpNode<T1 extends Comparable<T1>,T2>
     throws BindException
   {
     
-    Channel<T1> op1=focus.<T1>bind(new Expression<T1>(_op1,null));
-    Channel<T2> op2=focus.<T2>bind(new Expression<T2>(_op2,null));
+    Channel<T1> op1=focus.<T1>bind(Expression.<T1>create(_op1));
+    Channel<T2> op2=focus.<T2>bind(Expression.<T2>create(_op2));
     
     if (String.class.isAssignableFrom(op1.getContentType()))
     { 
@@ -155,6 +156,20 @@ public class BinaryOpNode<T1 extends Comparable<T1>,T2>
     _op1.dumpTree(out,prefix);
     out.append(prefix).append(":");
     _op2.dumpTree(out,prefix);
+  }
+
+  
+  private int computeHashCode()
+  { return ArrayUtil.arrayHashCode(new Object[] {_op1,_op2,_op});
+  }
+  
+  @Override
+  protected boolean equalsNode(Node node)
+  { 
+    BinaryOpNode<?,?> mynode=(BinaryOpNode<?,?>) node;
+    return ClassUtil.equals(_op1,mynode._op1)
+        && ClassUtil.equals(_op2,mynode._op2)
+        && ClassUtil.equals(_op,mynode._op);
   }
 
 }
@@ -865,5 +880,6 @@ abstract class NumericTranslator<Tret extends Number,T1 extends Tret,T2 extends 
   public Reflector<Tret> getReflector()
   { return reflector;
   }
+  
   
 }

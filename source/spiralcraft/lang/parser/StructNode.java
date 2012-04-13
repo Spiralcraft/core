@@ -254,7 +254,7 @@ public class StructNode
     if (baseExtentNode!=null && fields.isEmpty())
     { 
       // simple reference case
-      return focus.bind(new Expression(baseExtentNode));
+      return focus.bind(Expression.create(baseExtentNode));
     }
     else
     { 
@@ -333,7 +333,7 @@ public class StructNode
       
       
       if (baseExtentNode!=null)
-      { baseChannel=focus.bind(new Expression(baseExtentNode));
+      { baseChannel=focus.bind(Expression.create(baseExtentNode));
       }
       else
       { baseChannel=null;

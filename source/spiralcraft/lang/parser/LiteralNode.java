@@ -77,27 +77,21 @@ public class LiteralNode<X>
   public LiteralNode(X value)
   { 
     _optic=new SimpleChannel<X>((Class<X>) value.getClass(),value,true);
-    calcHashCode();
+    this.hashCode=calcHashCode();
   }
 
   public LiteralNode(X value,Class<X> valueClass)
   { 
     _optic=new SimpleChannel<X>(valueClass,value,true);
-    this.hashCode=_optic.get()!=null?_optic.get().hashCode():31;
-    calcHashCode();
+    this.hashCode=calcHashCode();
   }
   
   LiteralNode(SimpleChannel<X> _optic)
   { 
     this._optic=_optic; 
-    calcHashCode();
+    this.hashCode=calcHashCode();
   }
 
-  private int calcHashCode()
-  {
-    return (_optic.getContentType().hashCode()*31)
-      +(_optic.get()!=null?_optic.get().hashCode():0);
-  }
   
   @Override
   public Node[] getSources()
@@ -157,9 +151,15 @@ public class LiteralNode<X>
 //    System.out.println("LiteralNode: Returning "+_optic.toString());
     return _optic;
   }
+
+  private int calcHashCode()
+  {
+    return (_optic.getContentType().hashCode()*31)
+      +(_optic.get()!=null?_optic.get().hashCode():0);
+  }
   
   @Override
-  public boolean equalsNode(Node node)
+  protected boolean equalsNode(Node node)
   {
     @SuppressWarnings("unchecked")
     LiteralNode<X> ln=(LiteralNode<X>) node;

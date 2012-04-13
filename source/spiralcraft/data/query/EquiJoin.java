@@ -201,8 +201,8 @@ public class EquiJoin
         BindingNode<?,?> bnode=(BindingNode<?,?>) binding.getRootNode();
         if (bnode.getTarget() instanceof ContextIdentifierNode)
         {
-          lhsExpressions.add(new Expression<Object>(bnode.getTarget()));
-          rhsExpressions.add(new Expression<Object>(bnode.getSource()));
+          lhsExpressions.add(Expression.<Object>create(bnode.getTarget()));
+          rhsExpressions.add(Expression.<Object>create(bnode.getSource()));
         }
         else
         { 
@@ -399,7 +399,7 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
         for (Expression lhsExpression : getQuery().getLHSExpressions() )
         { 
           Expression<Boolean> comparison
-            =new Expression<Boolean>
+            =Expression.<Boolean>create
               (lhsExpression.getRootNode()
                 .isEqual(rhsExpressions.get(i).getRootNode())
               ,lhsExpression.getText()+"=="+rhsExpressions.get(i).getText()

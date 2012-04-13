@@ -47,7 +47,7 @@ public class MethodCallNode
     _parameterNodes=new Node[parameterList.size()];
     parameterList.toArray(_parameterNodes);
     for (int i=0;i<_parameterNodes.length;i++)
-    { _parameters[i]=new Expression(_parameterNodes[i],null);
+    { _parameters[i]=Expression.create(_parameterNodes[i]);
     }
 
 //    System.out.println("MethodCallNode "+toString()+" init: resolving against "+_source);

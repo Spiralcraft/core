@@ -291,8 +291,8 @@ public class Selection
             
         if (validRhs!=null)
         {
-          lhsList.add(new Expression<Object>(lhsResolve));
-          rhsList.add(new Expression<Object>(validRhs));
+          lhsList.add(Expression.<Object>create(lhsResolve));
+          rhsList.add(Expression.<Object>create(validRhs));
           if (debugLevel.canLog(Level.DEBUG))
           { 
             log.debug
@@ -379,7 +379,7 @@ public class Selection
         { result=ej;
         }
         else
-        { result=new Selection(ej,new Expression<Boolean>(remainder));
+        { result=new Selection(ej,Expression.<Boolean>create(remainder));
         }
         
         result.setDebugLevel(debugLevel);

@@ -91,8 +91,16 @@ public class RangeNode<T>
     throws BindException
   {
     
-    final Channel<Number> endChannel=end!=null?focus.bind(new Expression(end)):null;
-    final Channel<Number> startChannel=start!=null?focus.bind(new Expression(start)):null;
+    final Channel<Number> endChannel
+      =end!=null
+      ?focus.bind(Expression.<Number>create(end))
+      :null
+      ;
+    final Channel<Number> startChannel
+      =start!=null
+      ?focus.bind(Expression.<Number>create(start))
+      :null
+      ;
     
     return new AbstractChannel(BeanReflector.getInstance(Range.class))
     {

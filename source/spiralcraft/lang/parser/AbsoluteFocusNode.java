@@ -19,6 +19,9 @@ import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.lang.ClassUtil;
+
 import java.net.URI;
 
 
@@ -60,7 +63,7 @@ public class AbsoluteFocusNode
       this.suffix=qname;
       this.uri=resolveQName(namespace,suffix);
     }
-
+    hashCode=computeHashCode();
   }
   
   public AbsoluteFocusNode(String suffix,String namespace,URI uri)
@@ -68,6 +71,7 @@ public class AbsoluteFocusNode
     this.suffix=suffix;
     this.namespace=namespace;
     this.uri=uri;
+    hashCode=computeHashCode();
   }
 
   @Override
@@ -183,7 +187,18 @@ public class AbsoluteFocusNode
   { return focus.getFocusChain().toString();
   }
 
-
+  private int computeHashCode()
+  { 
+    return ArrayUtil.arrayHashCode(new Object[] {suffix,namespace,uri});
+  }
   
+  @Override
+  protected boolean equalsNode(Node node)
+  {
+    AbsoluteFocusNode mynode=(AbsoluteFocusNode) node;
+    return ClassUtil.equals(suffix,mynode.suffix)
+      && ClassUtil.equals(namespace,mynode.namespace)
+      && ClassUtil.equals(uri,mynode.uri);
+  }
   
 }

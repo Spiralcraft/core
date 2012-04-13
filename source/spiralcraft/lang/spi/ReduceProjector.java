@@ -116,7 +116,7 @@ public class ReduceProjector<I,P,R,C>
         Focus<?> keyFocus=telefocus.telescope(new VoidChannel());
         
         Channel<?> fieldChan
-          =keyFocus.bind(new Expression(field.getSource()));
+          =keyFocus.bind(Expression.create(field.getSource()));
         
         if (viewCache.getSize()==lastSize)
         { keys.add(fieldChan);

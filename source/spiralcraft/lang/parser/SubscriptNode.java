@@ -84,7 +84,7 @@ public class SubscriptNode<T,C,I>
     { 
       Reflector<T> type=(Reflector<T>) _source.bind(focus).get();
       
-      Channel<?> iterChannel=focus.bind(new Expression(_selector));
+      Channel<?> iterChannel=focus.bind(Expression.create(_selector));
       
       
       
@@ -114,7 +114,7 @@ public class SubscriptNode<T,C,I>
     else if (_source==null)
     { 
       // Dynamic array literal
-      Channel<?> iterChannel=focus.bind(new Expression(_selector));
+      Channel<?> iterChannel=focus.bind(Expression.create(_selector));
       IterationDecorator<?,?> decorator
         =iterChannel.<IterationDecorator>decorate(IterationDecorator.class);
       Reflector<T> type=(Reflector<T>) decorator.getComponentReflector();
@@ -123,12 +123,12 @@ public class SubscriptNode<T,C,I>
     else
     {
     
-      Channel<C> collection=focus.<C>bind(new Expression<C>(_source,null));
+      Channel<C> collection=focus.<C>bind(Expression.<C>create(_source));
       Channel<?> result=
         collection.resolve
           (focus
           , "[]"
-          , new Expression[] {new Expression<I>(_selector,null)}
+          , new Expression[] {Expression.<I>create(_selector,null)}
           );
       
       if (result==null)

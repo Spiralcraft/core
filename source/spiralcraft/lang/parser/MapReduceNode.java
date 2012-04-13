@@ -79,8 +79,8 @@ public class MapReduceNode<T,C>
     throws BindException
   {
    
-    Channel<C> collection=focus.<C>bind(new Expression<C>(_source,null));
-    Expression<T> function=new Expression<T>(_function);
+    Channel<C> collection=focus.<C>bind(Expression.<C>create(_source));
+    Expression<T> function=Expression.<T>create(_function);
 
     if (_reduce)
     { return new ReduceProjector(collection,focus,function).result;

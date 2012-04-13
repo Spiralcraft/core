@@ -75,7 +75,7 @@ public class NumericNegateNode<T extends Number>
   public Channel<T> bind(Focus<?> focus)
     throws BindException
   {
-    Channel<T> sourceBinding=focus.<T>bind(new Expression<T>(_node,null));
+    Channel<T> sourceBinding=focus.<T>bind(Expression.<T>create(_node));
     if (!Number.class.isAssignableFrom(ClassUtil.boxedEquivalent(sourceBinding.getContentType())))
     { throw new BindException("Negation operator only applies to numbers, not "+sourceBinding.getContentType());
     }
@@ -175,7 +175,7 @@ public class NumericNegateNode<T extends Number>
     }
     
     return new TranslatorChannel<T,T>
-      (focus.<T>bind(new Expression<T>(_node,null))
+      (focus.<T>bind(Expression.<T>create(_node))
       ,(Translator<T,T>) translator
       ,null
       );

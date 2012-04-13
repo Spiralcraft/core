@@ -25,6 +25,7 @@ import java.net.URI;
 import spiralcraft.lang.TypeModel;
 import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.lang.ClassUtil;
 
 /**
  * An expression node which resolves a Focus from somewhere in the hierarchy
@@ -65,7 +66,7 @@ public class TypeFocusNode
       this.uri=resolveQName(namespace,suffix);
     }
     this.arrayDepth=arrayDepth;
-
+    hashCode=computeHashCode();
   }
 
   TypeFocusNode(String suffix,String namespace,URI uri,int arrayDepth)
@@ -74,6 +75,7 @@ public class TypeFocusNode
     this.namespace=namespace;
     this.uri=uri;
     this.arrayDepth=arrayDepth;
+    hashCode=computeHashCode();
   }
   
   @Override
@@ -194,6 +196,22 @@ public class TypeFocusNode
   { return new TypeFocusNode(suffix,namespace,uri,arrayDepth+1);
   }
 
+  private int computeHashCode()
+  { 
+    return (ArrayUtil.arrayHashCode(new Object[] {suffix,namespace,uri}) *31)
+      +arrayDepth;
+  }
+  
+  @Override
+  protected boolean equalsNode(Node node)
+  {
+    TypeFocusNode mynode=(TypeFocusNode) node;
+    return ClassUtil.equals(suffix,mynode.suffix)
+      && ClassUtil.equals(namespace,mynode.namespace)
+      && ClassUtil.equals(uri,mynode.uri)
+      && arrayDepth==mynode.arrayDepth;
+  }  
+  
   @Override
   public void dumpTree(StringBuffer out,String prefix)
   { 

@@ -190,7 +190,7 @@ public class DictionaryBinding<T>
       
       targetChannel
         =focus.bind
-          (new Expression
+          (Expression.<T>create
             ( ((AssignmentNode<T,T>)target.getRootNode()).getTarget())
           );
 
@@ -198,7 +198,7 @@ public class DictionaryBinding<T>
       converter
         =new ExpressionStringConverter
           (focus
-          ,new Expression
+          ,Expression.<T>create
             ( ((AssignmentNode<T,T>) target.getRootNode()).getSource()
             )
           ,targetChannel.getReflector()

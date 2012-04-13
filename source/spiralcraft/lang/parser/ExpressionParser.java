@@ -59,7 +59,7 @@ public class ExpressionParser
     if (_tokenizer.ttype!=StreamTokenizer.TT_EOF)
     { throwUnexpected();
     }
-    return new Expression<X>(ret,text);    
+    return Expression.create(ret,text);    
   }
 
   
@@ -1183,7 +1183,7 @@ public class ExpressionParser
     throws ParseException
   {
     expect('`');
-    Node node=LiteralNode.get(new Expression(parseBindingExpression()));
+    Node node=LiteralNode.get(Expression.create(parseBindingExpression()));
     expect('`');
     return node;
   }

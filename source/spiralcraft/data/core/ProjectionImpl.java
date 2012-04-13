@@ -162,7 +162,7 @@ public class ProjectionImpl<T>
         BindingNode<?,?> node=(BindingNode<?,?>) param.getRootNode();
         paramMap.put
           (node.getSource().reconstruct()
-          ,new Expression(node.getTarget())
+          ,Expression.create(node.getTarget())
           );
         
       }

@@ -32,7 +32,7 @@ public class ExpressionLiteralNode
   public ExpressionLiteralNode(Node expression)
   { 
     this.expression=expression;
-    _optic=new SimpleChannel<Expression<?>>(new Expression(expression),true);
+    _optic=new SimpleChannel<Expression<?>>(Expression.create(expression),true);
   }
   
   @Override

@@ -229,7 +229,7 @@ public class ObjectLiteralNode<Tobject,Treturn>
           int i=0;
           params=new Expression[paramNodes.size()];
           for (Node paramNode:paramNodes)
-          { params[i++]=new Expression(paramNode);
+          { params[i++]=Expression.create(paramNode);
           }
         }
         else
@@ -243,7 +243,7 @@ public class ObjectLiteralNode<Tobject,Treturn>
         
         Tobject object=constructorChannel.get();
         
-        Channel sourceChannel=focus.bind(new Expression(source));
+        Channel sourceChannel=focus.bind(Expression.create(source));
         Focus<?> sourceFocus=focus.chain(sourceChannel);
         
         Focus<?> innerFocus=focus;
@@ -278,7 +278,8 @@ public class ObjectLiteralNode<Tobject,Treturn>
           //   type.
           
           returnChannel=((ChannelFactory<Treturn,Tobject>) object)
-            .bindChannel(focus.bind(new Expression(source)), focus, null);
+            .bindChannel
+              (focus.bind(Expression.<Tobject>create(source)), focus, null);
         }
         else
         { 
