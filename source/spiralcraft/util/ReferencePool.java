@@ -17,6 +17,8 @@ package spiralcraft.util;
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
+import spiralcraft.common.callable.Sink;
+
 /**
  * <p>Pools immutable object instances to coalesce references to identical 
  *   objects into a single weak reference to reduce memory and increase 
@@ -36,6 +38,17 @@ public class ReferencePool<T>
   private WeakHashMap<T,WeakReference<T>> map
     =new WeakHashMap<T,WeakReference<T>>();
   
+  private Sink<T> matchSink;
+  private Sink<T> addSink;
+  
+  public void setMatchSink(Sink<T> matchSink)
+  { this.matchSink=matchSink;
+  }
+  
+  public void setAddSink(Sink<T> addSink)
+  { this.addSink=addSink;
+  }
+
   public synchronized T get(T value)
   { 
     WeakReference<T> ref=map.get(value);
@@ -43,15 +56,19 @@ public class ReferencePool<T>
     { 
       T result=ref.get();
       if (result!=null)
-      { return result;
+      { 
+        if (matchSink!=null)
+        { matchSink.accept(result);
+        }
+        return result;
       }
     }
     
     map.put(value,new WeakReference<T>(value));
+    if (addSink!=null)
+    { addSink.accept(value);
+    }
     return value;
-  }
-  
-  
-  
+  }  
 
 }
