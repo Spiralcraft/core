@@ -305,9 +305,10 @@ public class URLResource
         ("Deletion not supported on non-http URL");
     }
     setupConnection(connection);
-    connection.setDoInput(false);
+    connection.setDoInput(true);
     connection.setDoOutput(false);
     ((HttpURLConnection) connection).setRequestMethod("DELETE");
     connection.connect();
+    connection.getInputStream().close();
   }
 }
