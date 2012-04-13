@@ -299,4 +299,7 @@ public abstract class ClassUtil
     return null;
   }
 
+  public static final boolean equals(Object a,Object b)
+  { return (a==b || (a!=null && a.equals(b)));
+  }
 }
