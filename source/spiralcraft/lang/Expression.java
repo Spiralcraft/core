@@ -14,15 +14,15 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.common.namespace.PrefixResolver;
+import spiralcraft.common.callable.Sink;
 import spiralcraft.lang.parser.LiteralNode;
 import spiralcraft.lang.parser.Node;
 
 import spiralcraft.lang.parser.ExpressionParser;
-import spiralcraft.log.ClassLog;
+import spiralcraft.util.ReferencePool;
+import spiralcraft.util.string.StringConverter;
 
 import java.net.URI;
-import java.util.HashMap;
 
 /**
  * <P>An Expression is a series of keywords, constants and operators that
@@ -47,14 +47,43 @@ import java.util.HashMap;
 public class Expression<T>
   implements Functor<T>
 {
-  private static final ClassLog log=ClassLog.getInstance(Expression.class);
-  
-  // XXX Make this weak- remove Expressions not referenced
-  private static final HashMap<String,Expression<?>> _CACHE
-    =new HashMap<String,Expression<?>>();
+  // private static final ClassLog log=ClassLog.getInstance(Expression.class);
 
-  private Node _root;
-  private String _text;
+  private static final ReferencePool<Expression<?>> POOL
+    =new ReferencePool<Expression<?>>();
+
+  static
+  { 
+//    POOL.setMatchSink
+//      (new Sink<Expression<?>>() 
+//        { 
+//          private final ClassLog log=ClassLog.getInstance(Expression.class);
+//          @Override
+//          public void accept(Expression<?> x)
+//          { log.fine("Matched "+x);
+//          }
+//        }
+//      );
+    
+    StringConverter.registerInstance(Expression.class,new Converter());
+  }
+  
+  static class Converter
+    extends StringConverter<Expression<?>>
+  {
+    
+    @Override
+    public Expression<?> fromString(
+      String val)
+    { return create(val);
+    } 
+   
+  }
+  
+  private final Node _root;
+  private final String _text;
+  private final int hashCode;
+  
   
   /**
    * Parse an Expression, throwing a runtime expression on failure
@@ -125,16 +154,9 @@ public class Expression<T>
   public static <X> Expression<X> parse(String text)
     throws ParseException
   { 
-    synchronized (_CACHE)
-    { 
-      Expression<X> ret=(Expression<X>) _CACHE.get(text);
-      if (ret==null)
-      { 
-        ret=new ExpressionParser().<X>parse(text);
-        _CACHE.put(text,ret);
-      }
-      return ret;
-    }
+    Expression<X> expr=new ExpressionParser().<X>parse(text);
+    return (Expression<X>) POOL.get(expr);
+    
   }
   
   /**
@@ -144,18 +166,24 @@ public class Expression<T>
    * @param value
    * @return
    */
+  @SuppressWarnings("unchecked")
   public static <X> Expression<X> literal(X value)
-  { return new Expression<X>(LiteralNode.<X>get(value));
-  }
-
-  public Expression(String text)
-    throws ParseException
-  {
-    this._text=text;
-    this._root=parse(text)._root;
+  { 
+    return (Expression<X>) POOL.get
+      (new Expression<X>(LiteralNode.<X>get(value)));
   }
   
-  public Expression(Node root,String text)
+  @SuppressWarnings("unchecked")
+  public static <X> Expression<X> create(Node root,String text)
+  { return (Expression<X>) POOL.get(new Expression<X>(root,text));
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <X> Expression<X> create(Node root)
+  { return (Expression<X>) POOL.get(new Expression<X>(root));
+  }
+
+  private Expression(Node root,String text)
   { 
     _root=root;
     if (text==null)
@@ -164,25 +192,14 @@ public class Expression<T>
     else
     { this._text=text;
     }
+    hashCode=computeHash();
   }
   
-  public Expression(Node root)
+  private Expression(Node root)
   { 
     _root=root;
     _text=root.reconstruct();
-  }
-  
-  public Expression<T> resolveNamespaces(PrefixResolver resolver)
-  { 
-    Node copy=_root.copy(resolver);
-    if (copy!=_root)
-    { 
-      log.fine("Copied "+_root.reconstruct()+" to "+copy.reconstruct());
-      return new Expression<T>(copy);
-    }
-    else
-    { return this;
-    }
+    hashCode=computeHash();
   }
 
   public String getText()
@@ -196,9 +213,10 @@ public class Expression<T>
   { return _root;
   }
   
+  
   @Override
   public int hashCode()
-  { return _root.hashCode();
+  { return hashCode;
   }
   
   @Override
@@ -214,9 +232,9 @@ public class Expression<T>
     { return false;
     }
     
-    Expression<?> expr=(Expression<?>) o;
-    return _root.equals(expr._root);
+    return _root.equals( ((Expression<?>) o)._root);
   }
+
   
   /**
    * Create a Channel by binding this Expression to a Focus. This method
@@ -226,7 +244,7 @@ public class Expression<T>
    *   re-use Channels defined by the same Expression.
    */
   @SuppressWarnings("unchecked") // Nodes are not generic
-  public Channel<T> bind(Focus<?> focus)
+  Channel<T> bind(Focus<?> focus)
     throws BindException
   { 
     if (_root==null)
@@ -240,6 +258,9 @@ public class Expression<T>
     }
   }
 
+  private int computeHash()
+  { return _root.hashCode()*31+(_text!=null?_text.hashCode():0);
+  }
   
   @Override
   public String toString()
