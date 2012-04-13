@@ -14,7 +14,7 @@
 //
 package spiralcraft.lang;
 
-import spiralcraft.common.callable.Sink;
+//import spiralcraft.common.callable.Sink;
 import spiralcraft.lang.parser.LiteralNode;
 import spiralcraft.lang.parser.Node;
 
