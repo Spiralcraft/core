@@ -14,8 +14,10 @@
 //
 package spiralcraft.lang.reflect;
 
+import spiralcraft.lang.Expression;
+
 /**
- * <p>Loads the BeanTypeModel
+ * <p>Loads the BeanTypeModel, inits the Expression class.
  * </p>
  * 
  * @author mike
@@ -24,6 +26,8 @@ package spiralcraft.lang.reflect;
 public class Initializer
   implements spiralcraft.common.Initializer
 {
-  { BeanTypeModel.getInstance();
+  { 
+    BeanTypeModel.getInstance();
+    Expression.init();
   }
 }

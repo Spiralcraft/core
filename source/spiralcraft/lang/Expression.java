@@ -80,6 +80,13 @@ public class Expression<T>
    
   }
   
+  /** 
+   * Tickle the static initializer
+   */
+  public static final void init()
+  {
+  }
+  
   private final Node _root;
   private final String _text;
   private final int hashCode;
