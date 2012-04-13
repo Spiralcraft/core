@@ -17,6 +17,148 @@
         </revision>
       
         <notes>
+          <scm:Note>ClassUtil now has an equals(a,b) method to reduce
+            null check verbosity
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/lang/ClassUtil.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+      
+        <notes>
+          <scm:Note>ReferencePool now accepts Sinks to allow clients to be
+            alerted when items are matched and created.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/ReferencePool.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+      
+        <notes>
+          <scm:Note>Fixed overly optimistic Expression caching issue which
+            prevented namespace definition changes from being recognized.
+          </scm:Note>
+          <scm:Note>Expressions are now constructed using static methods and 
+            cached using a ReferencePool instead of by using their textual 
+            representation as a key.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>lang/Expression.java
+          </URI>
+          <URI>lang/kit/Computation.java
+          </URI>
+          <URI>lang/parser/AbsoluteFocusNode.java
+          </URI>
+          <URI>lang/parser/AssignmentNode.java
+          </URI>
+          <URI>lang/parser/BinaryOpNode.java
+          </URI>
+          <URI>lang/parser/BindingNode.java
+          </URI>
+          <URI>lang/parser/ContainsNode.java
+          </URI>
+          <URI>lang/parser/ExpressionLiteralNode.java
+          </URI>
+          <URI>lang/parser/ExpressionParser.java
+          </URI>
+          <URI>lang/parser/LiteralNode.java
+          </URI>
+          <URI>lang/parser/LogicalNode.java
+          </URI>
+          <URI>lang/parser/MapReduceNode.java
+          </URI>
+          <URI>lang/parser/MethodCallNode.java
+          </URI>
+          <URI>lang/parser/Node.java
+          </URI>
+          <URI>lang/parser/NumericNegateNode.java
+          </URI>
+          <URI>lang/parser/ObjectLiteralNode.java
+          </URI>
+          <URI>lang/parser/OpNode.java
+          </URI>
+          <URI>lang/parser/RangeNode.java
+          </URI>
+          <URI>lang/parser/StructNode.java
+          </URI>
+          <URI>lang/parser/SubcontextNode.java
+          </URI>
+          <URI>lang/parser/SubscriptNode.java
+          </URI>
+          <URI>lang/parser/TypeFocusNode.java
+          </URI>
+          <URI>lang/spi/ReduceProjector.java
+          </URI>
+          <URI>lang/util/DictionaryBinding.java
+          </URI>
+          <URI>data/query/EquiJoin.java
+          </URI>
+          <URI>data/query/Selection.java
+          </URI>
+          <URI>data/core/ProjectionImpl.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+      
+        <notes>
+          <scm:Note>Expanded utilities for for debugging IO streams, including
+            a byte[] to String converter that replaces all non-7-bit
+            characters with a "?" symbol.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>io/DebugInputStream.java
+          </URI>
+          <URI>io/DebugOutputStream.java
+          </URI>
+          <URI>io/TappedOutputStream.java
+          </URI>
+          <URI>util/string/ByteArrayTo7BitAscii.java
+          </URI>
+        </resources>
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix URLResource.delete()
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/url/URLResource.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev2
+        </revision>
+      
+        <notes>
           <scm:Note>Created an UpdaterService to batch incoming data and
             insert it into a space periodically.
           </scm:Note>

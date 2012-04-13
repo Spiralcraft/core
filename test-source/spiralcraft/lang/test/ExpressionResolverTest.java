@@ -103,7 +103,7 @@ public class ExpressionResolverTest
 
       time=System.currentTimeMillis();
 
-      Channel<Object> channel=expression.bind(focus);
+      Channel<Object> channel=focus.bind(expression);
 
       log.log(Level.INFO,"Bind time "+(System.currentTimeMillis()-time));
 
@@ -111,7 +111,7 @@ public class ExpressionResolverTest
       {
         time=System.currentTimeMillis();      
         for (int i=0;i<_bindRepeats;i++)
-        { expression.bind(focus);
+        { focus.bind(expression);
         }
         log.log(Level.INFO,_bindRepeats+" repeats bind time "+(System.currentTimeMillis()-time));
       }
