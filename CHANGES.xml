@@ -13,6 +13,89 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev4
+        </revision>
+      
+        <notes>
+          <scm:Note>A new IfBound language function provides a way to
+            conditionally bind an expression. If the expression fails to bind,
+            the function will bind to a null value of the optionally supplied
+            type and will not otherwise abort the binding process.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/functions/IfBound.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev4
+        </revision>
+      
+        <notes>
+          <scm:Note>A new DynamicHandler class provides a way to add
+            MessageHandlers during the binding of descendant components. This
+            is used in webui to add Script emitters in the page head for 
+            scripts required by Components in the Page's body.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>app/kit/DynamicHandler.java
+          </URI>
+          <URI>util/tree/Order.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev4
+        </revision>
+      
+        <notes>
+          <scm:Note>The Component interface now exposes the getId() property,
+            which provides a standard way to refer to one of a Component's
+            children. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app
+        </path>
+        
+        <resources>
+          <URI>Component.java
+          </URI>
+          <URI>kit/AbstractComponent.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev4
+        </revision>
+      
+        <notes>
+          <scm:Note>Move the Scaffold interface to spiralcraft.app, now
+            that the textgen/webui and the gui models are converging.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>app/Scaffold.java
+          </URI>
+          <URI>scaffold/Scaffold.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev3
         </revision>
       
