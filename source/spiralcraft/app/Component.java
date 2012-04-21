@@ -121,4 +121,11 @@ public interface Component
    */
   void setLogLevel(Level logLevel);
 
+  /**
+   * Uniquely identifies this Component within the set of this Component's
+   *   siblings
+   *  
+   * @return This Component's identifier
+   */
+  String getId();
 }

@@ -115,6 +115,7 @@ public class AbstractComponent
    * 
    * @return
    */
+  @Override
   public String getId()
   { return this.id;
   }
