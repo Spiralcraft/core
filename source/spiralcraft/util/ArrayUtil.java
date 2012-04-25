@@ -94,6 +94,30 @@ public class ArrayUtil
   }  
   
   /**
+   * Concatenate 2 arrays of the specified array type.
+   * Always return a non-null value.
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> T[] concat(Class<T[]> arrayClass,T[] array1,T[] array2)
+  { 
+    if (array1==null)
+    { 
+      return array2!=null
+        ?array2
+        :(T[]) Array.newInstance(arrayClass.getComponentType(),0);
+    }
+    else if (array2==null)
+    { return array1;
+    }
+    
+    int appendPoint=Array.getLength(array1);
+    int appendElements=Array.getLength(array2);
+    array1=expandBy(array1,appendElements);
+    System.arraycopy(array2, 0, array1, appendPoint, appendElements);
+    return array1;
+  }   
+  
+  /**
    * Append an array to an array. If one of the arrays is null, return
    *   the non-null array. If both arrays are null, return null.
    */
