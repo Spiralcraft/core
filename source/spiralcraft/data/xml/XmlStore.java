@@ -761,6 +761,7 @@ public class XmlStore
             Transaction.getContextTransaction().commit();
           
           }
+          stop=next;
           allocated=false;
         }
         finally
@@ -859,10 +860,13 @@ public class XmlStore
     public synchronized Long next()
       throws DataException
     {
-      if (next==stop || !allocated)
-      { allocate();
+      synchronized (sequenceQueryable)
+      {
+        if (next>=stop || !allocated)
+        { allocate();
+        }
+        return next++;
       }
-      return next++;
     }
   }
   
