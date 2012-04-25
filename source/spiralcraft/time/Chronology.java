@@ -49,6 +49,7 @@ public enum Chronology
   };
   
 
+  @SuppressWarnings("unused")
   private static final ClassLog log
     =ClassLog.getInstance(Chronology.class);
   
@@ -240,7 +241,7 @@ public enum Chronology
       
       while (startMs>endMs)
       { 
-        log.fine("Overshot by "+(startMs-endMs));
+        // log.fine("Overshot by "+(startMs-endMs));
         int calUnits=Long.valueOf(calDuration.getCount()).intValue();
 
         // Back off until we clear the overshoot
@@ -322,7 +323,7 @@ public enum Chronology
       if (destCalendar.isSet(destField.calendarField))
       {
         int value=destCalendar.get(destField.calendarField);
-        log.fine("Rebasing "+destField.label+" to "+value);
+        // log.fine("Rebasing "+destField.label+" to "+value);
         calendar.set(destField.calendarField,value);
       }
     }
@@ -335,12 +336,12 @@ public enum Chronology
       if (destCalendar.isSet(field.calendarField))
       {
         int value=destCalendar.get(field.calendarField);
-        log.fine("Rebasing tweener "+field.label+" to "+value);
+        // log.fine("Rebasing tweener "+field.label+" to "+value);
         calendar.set(field.calendarField,value);
       }
       else
       {
-        log.fine(" tweener "+field.label+" is not set");
+        // log.fine(" tweener "+field.label+" is not set");
         
       }
     }
@@ -445,7 +446,7 @@ public enum Chronology
       next=new Instant(calendar.getTimeInMillis());
       calendarField=field.calendarField;
       stopMillis=stop.getOffsetMillis();
-      log.fine("Iterating "+calendar);
+      // log.fine("Iterating "+calendar);
     }
       
       
@@ -465,7 +466,7 @@ public enum Chronology
       
       calendar.add(calendarField,interval);
       long millis=calendar.getTimeInMillis();
-      log.fine("Calendar time is "+millis);
+      // log.fine("Calendar time is "+millis);
       
       if ( (interval<0 && millis<=stopMillis)
            || (interval>0 && millis>=stopMillis)
