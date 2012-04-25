@@ -317,10 +317,27 @@ public class AssemblyType<T>
         );
     
         
-    // Configure using builder assemblyClass
-    constructorChannel
-      =new BuilderChannel(focus,constructorChannel,assemblyClass);
+    if (assemblyClass.getInstanceX()!=null)
+    { 
+      if (indexedParamList.size()==0)
+      { constructorChannel=new BuilderChannel(focus,null,assemblyClass);
+      }
+      else
+      { 
+        throw new BindException
+          (assemblyClass.getDeclarationInfo().getDeclaredType()
+          +" is already preconstructed and cannot accept constructor arguments"
+          );
+      }
         
+    }
+    else
+    {
+      // Configure using builder assemblyClass
+      constructorChannel
+        =new BuilderChannel(focus,constructorChannel,assemblyClass);
+    }
+    
     // Apply additional named parameters
     if (namedParamList.size()>0)
     { 

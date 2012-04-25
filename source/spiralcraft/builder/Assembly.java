@@ -19,6 +19,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.ParseException;
 
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.SimpleChannel;
@@ -81,7 +82,6 @@ public class Assembly<T>
   private boolean resolved=false;
   private final AssemblyFocus<T> focus;
   private boolean factoryMode=false;
-  private Expression<T> instanceSource;
   private Channel<T> instanceSourceChannel;
   
   
@@ -137,6 +137,7 @@ public class Assembly<T>
       if (instance!=null)
       {
         focus.getSubject().set(instance);
+        updateDeclarable(instance);
         return;
       }
       else
@@ -272,15 +273,31 @@ public class Assembly<T>
     { throw new BuildException("Already bound properties");
     }
     bound=true;
-    if (instanceSource!=null)
-    { 
+    String instanceX= _assemblyClass.getInstanceX();
+    if (instanceX!=null)
+    {
       try
-      { instanceSourceChannel=focus.getParentFocus().bind(instanceSource);
+      { 
+        NamespaceContext.push(_assemblyClass.getPrefixResolver());
+        try
+        {
+          Expression instanceSource=Expression.parse(instanceX);
+          instanceSourceChannel=focus.getParentFocus().bind(instanceSource);
+         
+        }
+        finally
+        { NamespaceContext.pop();
+        }
+      }
+      catch (ParseException x)
+      { 
+        throw _assemblyClass.newBuildException
+          ("Error parsing constructor expression 'x'",x);
       }
       catch (BindException x)
       { 
         throw _assemblyClass.newBuildException
-          ("Error binding to instance source "+instanceSource,x);
+          ("Error binding to instance source "+instanceX,x);
       }
     }
     _propertyBindings=_assemblyClass.bindProperties(this);

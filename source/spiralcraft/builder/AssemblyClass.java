@@ -167,6 +167,7 @@ public class AssemblyClass
   private HashMap<String,PropertySpecifier> _memberMap;
   private boolean _resolved;
   private String _constructorText;
+  private String instanceX;
   private PropertySpecifier _containingProperty;
   private boolean _resolving;
   private MappedBeanInfo beanInfo;
@@ -341,6 +342,7 @@ public class AssemblyClass
     }
     localContext.put(contextName,expansion);
   }
+
   
   public void pushContext()
   { 
@@ -429,6 +431,24 @@ public class AssemblyClass
     }
   }
 
+  
+  public void setInstanceX(String instanceX)
+  { this.instanceX=instanceX;
+  }
+  
+  public String getInstanceX()
+  {
+    if (instanceX!=null)
+    { return instanceX;
+    }
+    else if (_baseAssemblyClass!=null)
+    { return _baseAssemblyClass.getInstanceX();
+    }
+    else
+    { return null;
+    }
+  }
+  
 
   /**
    * Create a new inner AssemblyClass in this AssemblyClass which subclasses 

@@ -409,6 +409,9 @@ public class AssemblyLoader
           { assemblyClass.defineLocal(substName,substValue);
           }
         }
+        else if (name=="x")
+        { assemblyClass.setInstanceX(attribs[i].getValue());
+        }
         else
         { 
           throw new BuildException
