@@ -90,13 +90,4 @@ public interface Container
   Resource createLink(String name,Resource resource)
     throws UnresolvableURIException;
   
-  /**
-   * <p>Return the Resource aspect of this Container
-   * </p>
-   * 
-   * @return The resource which represents this Container (eg. a directory)
-   * @deprecated Containers are resources
-   */
-  @Deprecated
-  Resource asResource();
 }

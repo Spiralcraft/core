@@ -72,11 +72,6 @@ public class FileResource
     _file=new File(uri);
   }
 
-  @Override
-  @Deprecated
-  public Resource asResource()
-  { return this;
-  }
   
   public File getFile()
   { return _file;
@@ -151,7 +146,14 @@ public class FileResource
   @Override
   public Resource getParent()
     throws IOException
-  { return new FileResource(_file.getParentFile());
+  { 
+    File file=_file.getParentFile();
+    if (file!=null)
+    { return new FileResource(file);
+    }
+    else
+    { return null;
+    }
   }
 
   @Override

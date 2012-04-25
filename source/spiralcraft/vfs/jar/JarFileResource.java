@@ -59,12 +59,6 @@ public class JarFileResource
     this.file=new File(URI.create(uriParts[0]));
     this.path=new Path(uriParts[1].substring(1),'/');
   }
-
-  @Override
-  @Deprecated
-  public Resource asResource()
-  { return this;
-  }
   
   
   @Override
