@@ -17,6 +17,8 @@ package spiralcraft.util;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import spiralcraft.log.ClassLog;
+
 /**
  * Utility class to manipulate URIs
  * 
@@ -25,6 +27,8 @@ import java.net.URISyntaxException;
  */
 public class URIUtil
 {
+  private static final ClassLog log
+    =ClassLog.getInstance(URIUtil.class);
 
   /**
    * Creates a new URI, adding the specified pre-encoded String to the
@@ -100,6 +104,29 @@ public class URIUtil
     }
   }
   
+  /**
+   * <p>Add a pre-encoded path segment to the specified URI
+   * </p>
+   * 
+   * @return
+   */
+  public static final URI addUnencodedPathSegment(URI in,String segment)
+  {
+    if (in.getPath().endsWith("/"))
+    { 
+      try
+      { return in.resolve(new URI(null,segment,null));
+      }
+      catch (URISyntaxException x)
+      { throw new IllegalArgumentException
+          ("Path segment '"+segment+"' cannot be encoded",x);
+      }
+    }
+    else
+    { return replaceUnencodedPath(in,in.getPath()+"/"+segment);
+    }
+  }
+
   /**
    * <p>Ensures that the URI path has a trailing slash. If it does,
    *   simply return the original URI, otherwise rewrite the URI
@@ -221,6 +248,44 @@ public class URIUtil
     { throw new IllegalArgumentException(x);
     }
       
+  }
+  
+  public static final URI toParentPath(URI input)
+  { 
+    log.fine(""+input);
+    URI ret;
+    try
+    {
+      if (input==null)
+      { ret=null;
+      }
+      else if (input.getPath()!=null 
+              && !input.getPath().isEmpty()
+              && !input.getPath().equals("/")
+              )
+      {  
+        ret= 
+          new URI
+            (input.getScheme()
+            ,input.getAuthority()
+            ,new Path(input.getPath(),'/').parentPath().format('/')
+            ,input.getQuery()
+            ,input.getFragment()
+            );
+      }
+      else
+      { ret=null;
+      }
+    }
+    catch (URISyntaxException x)
+    { throw new IllegalArgumentException(x);
+    }
+    log.fine(input+" -> "+ret);
+    return ret;
+  }
+  
+  public static final String unencodedLocalName(URI input)
+  { return new Path(input.getPath()).lastElement();
   }
   
   
