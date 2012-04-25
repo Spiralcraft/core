@@ -28,6 +28,7 @@ import spiralcraft.vfs.context.ContextResourceFactory;
 import spiralcraft.vfs.file.FileResourceFactory;
 import spiralcraft.vfs.url.URLResourceFactory;
 import spiralcraft.vfs.jar.JarResourceFactory;
+import spiralcraft.vfs.ovl.OverlayResourceFactory;
 
 /**
  * <P>Resolves URIs into Resources. Each supported URI scheme is mapped to a 
@@ -91,6 +92,8 @@ public class Resolver
           ("context",new ContextResourceFactory());
         _INSTANCE.registerResourceFactory
           ("jar",new JarResourceFactory());
+        _INSTANCE.registerResourceFactory
+          ("ovl",new OverlayResourceFactory());
       }
       catch (AlreadyRegisteredException x)
       { 
