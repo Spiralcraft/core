@@ -1,0 +1,4 @@
+<test:Plain
+  xmlns:test="class:/spiralcraft/builder/test/"
+  x='[@test:Plain].(.title:="constructedFromExpression").@log(.title)'
+/>

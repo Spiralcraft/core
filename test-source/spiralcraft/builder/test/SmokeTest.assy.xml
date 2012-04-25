@@ -40,6 +40,20 @@
           </testX>
           
         </test:Assertion>
+        
+        <test:Assertion>
+        
+          <name>Expression constructor
+          </name>
+          
+          <subjectX>[@btest:ConstructedWidget].().title
+          </subjectX>
+          
+          <testX>.=="constructedFromExpression"
+          </testX>
+          
+        </test:Assertion>
+        
       </scenarios>
       
     </task:Sequence>

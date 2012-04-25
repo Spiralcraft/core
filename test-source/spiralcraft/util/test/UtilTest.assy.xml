@@ -424,6 +424,21 @@
         
         <test:Assertion>
         
+          <name>parent path
+          </name>
+
+          <subjectX contextualize="false">
+            [@util:Path].("/spiralcraft",'/').parentPath()
+          </subjectX>
+          
+          <testX>
+            .==[@util:Path].("/")
+          </testX>
+          
+        </test:Assertion>        
+        
+        <test:Assertion>
+        
           <name>Sequence
           </name>
           

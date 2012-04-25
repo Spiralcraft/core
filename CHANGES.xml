@@ -11,7 +11,138 @@
     
     
     <detail> 
+
+      <scm:Change>
+        <revision>-dev5
+        </revision>
+      
+        <notes>
+          <scm:Note>Create new experimental OverlayResource to implement
+            VFS directory inheritance hierarchies.
+          </scm:Note>
+          <scm:Note>Removed deprecated Container.asResource() method
+          </scm:Note>
+          <scm:Note>Implement delete(), renameTo() and getParent() in
+            AbstractResource
+          </scm:Note>
+          <scm:Note>New NullResource for use as a stub
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs
+        </path>
+        
+        <resources>
+          <URI>Container.java
+          </URI>
+          <URI>Resolver.java
+          </URI>
+          <URI>classpath/ClasspathResource.java
+          </URI>
+          <URI>ovl/OverlayContext.java
+          </URI>
+          <URI>ovl/OverlayResource.java
+          </URI>
+          <URI>ovl/OverlayResourceFactory.java
+          </URI>
+          <URI>file/FileResource.java
+          </URI>
+          <URI>jar/JarFileResource.java
+          </URI>
+          <URI>spi/AbstractResource.java
+          </URI>
+          <URI>util/NullResource.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev5
+        </revision>
+      
+        <notes>
+          <scm:Note>New concat method in ArrayUtil.java
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/ArrayUtil.java
+        </path>
+        
+      </scm:Change>
     
+      <scm:Change>
+        <revision>-dev5
+        </revision>
+      
+        <notes>
+          <scm:Note>New methods addUnencodedPathSegment and toParentPath
+            in URIUtil
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/URIUtil.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev5
+        </revision>
+      
+        <notes>
+          <scm:Note>Path.getParent() now returns null for a root or empty
+            path.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/Path.java
+        </path>
+        
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev5
+        </revision>
+      
+        <notes>
+          <scm:Note>Add more synchronization to XmlStore.XmlSequence to
+            ensure that no values are changed during allocation or deallocation
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/xml/XmlStore.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev5
+        </revision>
+      
+        <notes>
+          <scm:Note>An Assembly object can now be constructed via an 
+            an expression in the "x" attribute of the assembly tag.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>builder/Assembly.java
+          </URI>
+          <URI>builder/AssemblyClass.java
+          </URI>
+          <URI>builder/AssemblyLoader.java
+          </URI>
+          <URI>data/reflect/AssemblyType.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev4
         </revision>
