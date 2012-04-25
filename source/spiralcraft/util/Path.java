@@ -227,8 +227,11 @@ public class Path
       System.arraycopy(_elements,0,newElements,0,newElements.length);
       return new Path(newElements,_delimiter,_absolute,true);
     }
+    else if (_absolute && _elements.length==1)
+    { return new Path(EMPTY_PATH._elements,_delimiter,_absolute,_container);
+    }
     else
-    { return new Path();
+    { return null;
     }
   }
   
