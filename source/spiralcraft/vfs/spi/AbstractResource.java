@@ -22,7 +22,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import spiralcraft.util.Path;
+import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.Container;
+import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.ResourceFilter;
 import spiralcraft.vfs.StreamUtil;
@@ -84,12 +86,19 @@ public abstract class AbstractResource
   }
 
   /**
-   * Doesn't know about parents
+   * Return the parent directory by examining the URI
    */
   @Override
   public Resource getParent()
     throws IOException
-  { return null;
+  { 
+    URI parentURI=URIUtil.toParentPath(getURI());
+    if (parentURI!=null)
+    { return Resolver.getInstance().resolve(parentURI);
+    }
+    else
+    { return null;
+    }
   }
 
   /**
@@ -165,6 +174,19 @@ public abstract class AbstractResource
     }
     return buffer.toArray(new Resource[buffer.size()]);
   }  
+  
+  @Override
+  public void renameTo(URI uri)
+    throws IOException
+  { throw new IOException(getClass().getName()+" does not support renaming");
+  }  
+  
+  @Override
+  public void delete()
+    throws IOException
+  { throw new IOException(getClass().getName()+" does not support deletion");
+  }
+  
   
   @Override
   public Container ensureContainer()
