@@ -111,15 +111,6 @@ public class ContextResourceMap
   }
   
 
-  private void setParent(ContextResourceMap parent)
-  {
-    if (this.parent==null)
-    { this.parent=parent;
-    }
-    else
-    { throw new IllegalStateException("Cannot change parent of "+this);
-    }
-  }
   
   public static ContextResourceMap get()
   { return threadStack.get();
@@ -144,6 +135,15 @@ public class ContextResourceMap
   private final int id=ID++;
 
 
+  private void setParent(ContextResourceMap parent)
+  {
+    if (this.parent==null)
+    { this.parent=parent;
+    }
+    else
+    { throw new IllegalStateException("Cannot change parent of "+this);
+    }
+  }
   
   public void putDefault(URI uri)
   { put("",uri);
