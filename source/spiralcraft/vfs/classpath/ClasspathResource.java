@@ -55,13 +55,15 @@ public class ClasspathResource
         return new URI
           (uri.getScheme()
           ,null
-          ,uri.getPath().substring(0,uri.getPath().length()-1)
+          ,uri.getPath().length()>1
+            ?uri.getPath().substring(0,uri.getPath().length()-1)
+            :"/"
           ,null
           ,null
           );
       }
       catch (URISyntaxException x)
-      { throw new IllegalArgumentException("Failed to parse URI "+uri);
+      { throw new IllegalArgumentException("Failed to parse URI "+uri,x);
       }
     }
     else
@@ -219,12 +221,7 @@ public class ClasspathResource
     return new ClasspathResource
       (child);
   }
-  
-  @Override
-  @Deprecated
-  public Resource asResource()
-  { return this;
-  }
+
 
   @Override
   public Resource createLink(
