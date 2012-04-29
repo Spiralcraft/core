@@ -28,6 +28,7 @@ import spiralcraft.time.Scheduler;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.Path;
+import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.context.ContextResourceMap;
 
 import spiralcraft.lang.BindException;
@@ -177,7 +178,7 @@ public class Executor
     ContextResourceMap contextResourceMap
       =new ContextResourceMap()
       {{
-        putDefault(context.focusURI());
+        putDefault(context.focusURI());        
       }};
       
       
@@ -215,6 +216,42 @@ public class Executor
         { throw new ExecutionException("Error starting log handler "+logHandler);
         }
       }
+      
+      // Resolve the config authority where we reference the assembly package
+      //   that defines the executable
+      String configDir=properties.find("spiralcraft.config.uri");
+      if (configDir==null)
+      { 
+        configDir="config";
+        if (properties.find("spiralcraft.config.id")!=null)
+        { configDir=configDir+"."+properties.find("spiralcraft.config.id");
+        }
+      }
+      
+      URI configURI=URI.create(configDir);
+      if (!configURI.isAbsolute())
+      {
+        contextResourceMap.put
+          ("config"
+          ,URIUtil.ensureTrailingSlash
+            (URIUtil.addPathSegment
+              (contextResourceMap.get("")
+              ,configURI.getPath()
+              )
+            )
+          );
+        
+      }
+      else
+      { 
+        contextResourceMap.put
+          ("config"
+          ,URIUtil.ensureTrailingSlash(configURI)
+          );
+
+      }
+          
+      
       
       Scheduler.push(new Scheduler());
       schedulerCreated=true;
