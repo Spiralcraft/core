@@ -89,6 +89,7 @@ public class Order
       (focusA,focusB);
   }
 
+  @SuppressWarnings("rawtypes")
   public class OrderChannel
     extends AbstractChannel<Integer>
   {

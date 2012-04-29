@@ -160,7 +160,7 @@ public class DeltaType
   }
 
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked","rawtypes"})
   private void copyPrimaryKey()
     throws DataException
   {

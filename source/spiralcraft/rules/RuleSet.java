@@ -117,6 +117,7 @@ public class RuleSet<Tcontext,Tvalue>
     
   }
   
+  @SafeVarargs
   public void addRules(Rule<Tcontext,Tvalue> ... rules)
   {
     for (Rule<Tcontext,Tvalue> rule : rules)

@@ -60,7 +60,7 @@ public class Inspector<Tcontext,Tsubject>
         (new Channel[ruleChannels.size()]);
   }
   
-  @SuppressWarnings("unchecked") // Generic array creation
+  @SuppressWarnings({"unchecked","rawtypes"}) // Generic array creation
   public Violation<Tsubject>[] inspect(Tsubject subject)
   {
     subjectChannel.push(subject);

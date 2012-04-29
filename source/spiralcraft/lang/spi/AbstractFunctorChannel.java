@@ -50,7 +50,7 @@ public abstract class AbstractFunctorChannel<Tresult>
     throws BindException
   {
 
-    bindings=new Channel[arguments.length];
+    bindings=new Channel<?>[arguments.length];
     this.focus=bindImports(focus);
     setContext(this.focus);
     this.bindings=arguments;

@@ -370,7 +370,7 @@ public class KeyImpl<T extends DataComposite>
         ("Key in "+getType().getURI()+" has no fields");
     }
     
-    stringConverters=new StringConverter[fieldNames.length];
+    stringConverters=new StringConverter<?>[fieldNames.length];
     int i=0;
     for (String fieldName: fieldNames)
     { 

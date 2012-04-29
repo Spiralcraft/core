@@ -601,7 +601,7 @@ public class AbstractComponent
     {
       stateConstructor
         =getStateClass().getConstructor
-          (new Class[] {Integer.TYPE,String.class});
+          (new Class<?>[] {Integer.TYPE,String.class});
     }
     catch (NoSuchMethodException x)
     {  

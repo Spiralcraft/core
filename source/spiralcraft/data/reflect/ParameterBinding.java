@@ -36,8 +36,8 @@ public class ParameterBinding
     throws DataException
   {
     this.fieldSet=fieldSet;
-    signature=new Class[fieldNames.length];
-    fields=new Field[fieldNames.length];
+    signature=new Class<?>[fieldNames.length];
+    fields=new Field<?>[fieldNames.length];
     int i=0;
     for (String fieldName: fieldNames)
     {

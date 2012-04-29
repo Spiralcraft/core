@@ -103,7 +103,7 @@ public class BindingChannel<T>
   
   public static final Channel<?>[] sources(BindingChannel<?>[] channels)
   { 
-    Channel<?>[] sources=new Channel[channels.length];
+    Channel<?>[] sources=new Channel<?>[channels.length];
     int i=0;
     for (BindingChannel<?> channel:channels)
     { sources[i++]=channel.getSource();

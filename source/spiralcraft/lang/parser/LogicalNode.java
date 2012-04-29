@@ -64,7 +64,7 @@ public abstract class LogicalNode<T1,T2>
         (op1Channel
         ,focus
         ,getSymbol()
-        , op2Expr!=null?new Expression[] {op2Expr}:null
+        , op2Expr!=null?new Expression<?>[] {op2Expr}:null
         );
     
     if (resultChannel==null)
@@ -75,10 +75,10 @@ public abstract class LogicalNode<T1,T2>
       if (op2Expr!=null)
       { 
         op2Channel=focus.bind(op2Expr);
-        params=new Channel[] {op2Channel};
+        params=new Channel<?>[] {op2Channel};
       }
       else
-      { params=new Channel[] {};
+      { params=new Channel<?>[] {};
       }
       
       resultChannel

@@ -706,7 +706,7 @@ public class BufferTuple
       
       FieldSet fieldSet=getFieldSet();
       int j=0;
-      Field<?>[] fields=new Field[dirtyFlags.cardinality()];
+      Field<?>[] fields=new Field<?>[dirtyFlags.cardinality()];
       for(int i=dirtyFlags.nextSetBit(0); i>=0; i=dirtyFlags.nextSetBit(i+1)) 
       { fields[j++]=fieldSet.getFieldByIndex(i);
       }

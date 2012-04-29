@@ -57,7 +57,7 @@ public class TupleReflector<T extends Tuple>
   
   private static boolean debug=false;
   
-  private static final Expression<?>[] NULL_PARAMS = new Expression[0];
+  private static final Expression<?>[] NULL_PARAMS = new Expression<?>[0];
   
   private final FieldSet untypedFieldSet;
   
@@ -545,7 +545,7 @@ public class TupleReflector<T extends Tuple>
         
       
     Channel<?>[] indexedParams
-      =indexedParamList.toArray(new Channel[indexedParamList.size()]);      
+      =indexedParamList.toArray(new Channel<?>[indexedParamList.size()]);      
 
     if (indexedParams.length>0)
     { 

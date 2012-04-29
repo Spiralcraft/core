@@ -343,7 +343,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
           
         
     Channel<?>[] indexedParams
-      =indexedParamList.toArray(new Channel[indexedParamList.size()]);      
+      =indexedParamList.toArray(new Channel<?>[indexedParamList.size()]);      
 
     Channel<T> constructorChannel;
     if (indexedParams.length==0)

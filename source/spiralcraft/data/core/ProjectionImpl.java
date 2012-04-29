@@ -308,7 +308,7 @@ public class ProjectionImpl<T>
   @Override
   public Field<?>[] getSourceFields()
   { 
-    Field<?>[] sourceFields=new Field[fields.size()];
+    Field<?>[] sourceFields=new Field<?>[fields.size()];
     int i=0;
     for (ProjectionField<?> field: fields)
     { sourceFields[i++]=field.getSourceField();
@@ -384,7 +384,7 @@ public class ProjectionImpl<T>
   @Override
   public Expression<?>[] getTargetExpressions()
   {
-    Expression<?>[] ret=new Expression[getFieldCount()];
+    Expression<?>[] ret=new Expression<?>[getFieldCount()];
     for (int i=0;i<ret.length;i++)
     { ret[i]=this.getFieldByIndex(i).getExpression();
     }
@@ -484,7 +484,7 @@ public class ProjectionImpl<T>
 //      { bindings[i++]=mapping.bind(focus);
 //      }
 
-      Channel<?>[] bindings=new Channel[fields.size()];
+      Channel<?>[] bindings=new Channel<?>[fields.size()];
       int i=0;
       for (ProjectionFieldImpl<?> field : fields)
       { bindings[i++]=focus.bind(field.getExpression()); 

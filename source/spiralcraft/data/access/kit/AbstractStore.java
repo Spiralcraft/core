@@ -218,7 +218,7 @@ public abstract class AbstractStore
   @Override
   public Type<?>[] getTypes()
   {
-    Type<?>[] types=new Type[entities.size()];
+    Type<?>[] types=new Type<?>[entities.size()];
     int i=0;
     for (EntityBinding entity: entities.values())
     { types[i++]=entity.getEntity().getType();
@@ -265,7 +265,7 @@ public abstract class AbstractStore
     
     HashSet<Type<?>> typeSet=new HashSet<Type<?>>();
     query.getAccessTypes(typeSet);
-    Type<?>[] types=typeSet.toArray(new Type[typeSet.size()]);
+    Type<?>[] types=typeSet.toArray(new Type<?>[typeSet.size()]);
     
     if (services!=null)
     {

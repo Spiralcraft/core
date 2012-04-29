@@ -63,7 +63,6 @@ import java.math.BigInteger;
 import java.math.BigDecimal;
 
 
-
 /**
  * A Type based on a Java class. The Scheme is defined
  *   by reflection.
@@ -378,7 +377,7 @@ public class ReflectionType<T>
   public InstanceResolver getExtensionResolver(TypeResolver resolver,URI uri)
   {
     return new ConstructorInstanceResolver
-      (new Class[] {TypeResolver.class,URI.class,Class.class}
+      (new Class<?>[] {TypeResolver.class,URI.class,Class.class}
       ,new Object[] {resolver,uri,nativeClass}
       );
   }
@@ -809,7 +808,7 @@ public class ReflectionType<T>
   
   @SuppressWarnings("rawtypes")
   @Override
-  public DataComposite toData(Object val)
+  public DataComposite toData(T val)
     throws DataException
   {
     if (cycleDetectorLocal.get().detectOrPush(val))
@@ -887,6 +886,6 @@ public class ReflectionType<T>
 
 //    log.fine(getURI().toString()+":"+immutable+":"+tupleConstructor);
     return super.isDataEncodable();
-  }
+  }  
   
 }

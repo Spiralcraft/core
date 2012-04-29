@@ -195,7 +195,7 @@ public class MappedBeanInfo
       =ClassUtil.getMethod
         (getBeanDescriptor().getBeanClass()
         ,searchMethod
-        ,new Class[] {type}
+        ,new Class<?>[] {type}
         );
       
     if (altWriteMethod!=null)
@@ -340,7 +340,7 @@ public class MappedBeanInfo
       {
         Method altReadMethod
           =getBeanDescriptor().getBeanClass()
-            .getMethod(readMethod.getName(), new Class[0]);
+            .getMethod(readMethod.getName(), new Class<?>[0]);
         if (altReadMethod!=null)
         { readMethod=altReadMethod;
         }

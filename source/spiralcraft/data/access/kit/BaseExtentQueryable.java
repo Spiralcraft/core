@@ -127,7 +127,7 @@ public class BaseExtentQueryable<Ttuple extends Tuple>
 
   @Override
   public Type<?>[] getTypes()
-  { return new Type[] {type};
+  { return new Type<?>[] {type};
   }
   
   

@@ -196,7 +196,7 @@ public class Space
         }
       }
     }
-    types=set.toArray(new Type[set.size()]);
+    types=set.toArray(new Type<?>[set.size()]);
     
   }
   

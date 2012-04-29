@@ -97,8 +97,8 @@ public class EquiJoin
   public EquiJoin(Type<?> type,Expression<?> lhs,Expression<?> rhs)
   {
     setSource(new Scan(type));
-    setLHSExpressions(new Expression[] {lhs});
-    setRHSExpressions(new Expression[] {rhs});
+    setLHSExpressions(new Expression<?>[] {lhs});
+    setRHSExpressions(new Expression<?>[] {rhs});
   }
   
   /**

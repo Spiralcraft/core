@@ -485,7 +485,7 @@ public class Pool<T>
     }
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked","rawtypes"})
   private void discardOverdue()
   {
 
