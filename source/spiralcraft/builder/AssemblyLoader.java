@@ -22,13 +22,17 @@ import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.Path;
 import spiralcraft.util.URIUtil;
 import spiralcraft.util.string.StringPool;
+import spiralcraft.vfs.Package;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.context.ContextResourceMap;
 
 import java.io.IOException;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.SimpleFocus;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.sax.Node;
@@ -51,6 +55,8 @@ import java.util.HashMap;
 public class AssemblyLoader
 {
   private static final ClassLog log=ClassLog.getInstance(AssemblyLoader.class);
+  private static final Level logLevel
+    =ClassLog.getInitialDebugLevel(AssemblyLoader.class,Level.INFO);
   
   private static final AssemblyLoader _INSTANCE=new AssemblyLoader();
   
@@ -121,16 +127,29 @@ public class AssemblyLoader
     if (_classCache.get(classUri)!=null)
     { return true;
     }
+    else if (_classCache.containsKey(classUri))
+    { return false;
+    }
     
     
     try
     {
       URI resourceURI=URIUtil.addPathSuffix(classUri,".assy.xml");
-      Resource resource=Resolver.getInstance().resolve(resourceURI);
-    
-      if (resource!=null && resource.exists())
-      { return true;
+      
+      try
+      { 
+        Resource resource=searchForPackageResource(resourceURI);
+        if (resource!=null && resource.exists())
+        { return true;
+        }
+        else
+        { _classCache.put(classUri,null);
+        }
       }
+      catch (ContextualException x)
+      { log.log(Level.WARNING,"Attempt to access "+resourceURI+" failed",x);
+      }
+    
     }
     catch (IOException x)
     { return false;
@@ -157,6 +176,36 @@ public class AssemblyLoader
     return false;
    
   }
+  
+  public Resource searchForPackageResource(URI resourceURI) 
+    throws IOException,ContextualException
+  {
+    Resource resource=Resolver.getInstance().resolve(resourceURI);
+    if (resource.exists())
+    { return resource;
+    }
+    
+    Resource container=resource.getParent();
+    if (container!=null)
+    {
+      Package pkg=Package.fromContainer(container);
+        
+      if (pkg!=null)
+      {    
+        if (logLevel.isFine())
+        { log.fine("Checking package for "+resource.getURI());
+        }
+        return pkg.searchForBaseResource(resource);
+      }
+      else
+      { return null;
+      }
+    }
+    else
+    { return null;
+    }
+  }
+  
   
   /**
    * Retrieve the AssemblyClass identified by the specified URI. The URI
@@ -220,74 +269,101 @@ public class AssemblyLoader
   public synchronized AssemblyClass findAssemblyDefinition(URI resourceUri)
     throws BuildException
   { 
-    AssemblyClass ret=_cache.get(resourceUri);
-    if (ret==null)
-    { 
-      ret=loadAssemblyDefinition(resourceUri);
-
-    }
-    return ret;
-  }
-
-  /** 
-   * Load an AssemblyClass from the XML document obtained from the
-   *   specified resource.
-   */
-  public AssemblyClass loadAssemblyDefinition(Resource resource)
-    throws BuildException
-  {
-    ParseTree parseTree=null;
-
-    
     try
-    { 
-      if (!resource.exists())
-      { return null;
-      }
-      parseTree=ParseTreeFactory.fromResource(resource);
-    }
-    catch (SAXException x)
-    { throw new BuildException("Error parsing "+resource.toString(),x);
+    {
+      Resource resource=Resolver.getInstance().resolve(resourceUri);
+    
+      AssemblyClass ret=_cache.get(resource.getURI());
+      if (ret==null && !_cache.containsKey(resource.getURI()))
+      { ret=loadAssemblyDefinition(resource);
+      } 
+      return ret;
     }
     catch (IOException x)
-    { throw new BuildException("Error reading "+resource.toString(),x);
+    { throw new BuildException("Error resolving "+resourceUri,x);
     }
-
-    if (parseTree==null)
-    { return null;
-    }
-    else 
-    { return loadAssemblyDefinition(resource.getURI(),parseTree);
-    }
-    
   }
+
+//  /** 
+//   * Load an AssemblyClass from the XML document obtained from the
+//   *   specified resource.
+//   */
+//  private AssemblyClass loadAssemblyDefinition(Resource resource)
+//    throws BuildException
+//  {
+//    ParseTree parseTree=null;
+//
+//    try
+//    { 
+//      if (!resource.exists())
+//      { return null;
+//      }
+//      parseTree=ParseTreeFactory.fromResource(resource);
+//    }
+//    catch (SAXException x)
+//    { throw new BuildException("Error parsing "+resource.toString(),x);
+//    }
+//    catch (IOException x)
+//    { throw new BuildException("Error reading "+resource.toString(),x);
+//    }
+//
+//    if (parseTree==null)
+//    { return null;
+//    }
+//    else 
+//    { return loadAssemblyDefinition(resource.getURI(),parseTree);
+//    }
+//    
+//  }
   
   /** 
    * Load an AssemblyClass defined by the XML document obtained
    *   from the specified resource.
    */
-  private AssemblyClass loadAssemblyDefinition(URI resourceUri)
+  private AssemblyClass loadAssemblyDefinition(Resource resolvedResource)
     throws BuildException
   {
     // Note: This is coded specifically because we may want to
     //   preserve the originally supplied resourceURI, even though
     //   the loaded resource may have a different canonical URI.
     
+    URI resourceUri=resolvedResource.getURI();
+//    URI resolvedUri=resolvedResource.getResolvedURI();
     if (!resourceUri.isAbsolute())
     { throw new BuildException("The assembly URI '"+resourceUri+"' is not absolute and cannot be resolved");
     }
     
-    ParseTree parseTree=null;
-    
+    Resource resource;
     try
     { 
-      Resource resource=Resolver.getInstance().resolve(resourceUri);
+      resource=searchForPackageResource(resourceUri);
       
-      if (!resource.exists())
+      if (resource==null || !resource.exists())
       { return null;
       }
       
-      parseTree=ParseTreeFactory.fromURI(resourceUri);
+      if (!resourceUri.equals(resource.getURI()))
+      { 
+        if (logLevel.isFine())
+        { log.fine("Subclassing "+resource.getURI()+" as "+resourceUri);
+        }
+        AssemblyClass ret
+          =new AssemblyClass
+            (resourceUri
+            ,findAssemblyClass(URIUtil.removePathSuffix(resource.getURI(),".assy.xml"))
+            ,null
+            ,this
+            );
+        _cache.put(resourceUri,ret);
+        ret.resolve();
+        return ret;
+      }
+      
+      return loadAssemblyDefinition(resource.getURI());
+    
+    }
+    catch (ContextualException x)
+    { throw new BuildException("Error parsing "+resourceUri.toString(),x);
     }
     catch (SAXException x)
     { throw new BuildException("Error parsing "+resourceUri.toString(),x);
@@ -296,25 +372,45 @@ public class AssemblyLoader
     { throw new BuildException("Error reading "+resourceUri.toString(),x);
     }
     
-    if (parseTree==null)
-    { return null;
-    }
-    else 
-    { return loadAssemblyDefinition(resourceUri,parseTree);
-    }
   }
 
   private AssemblyClass loadAssemblyDefinition
     (URI resourceUri
-    ,ParseTree parseTree
     )
-    throws BuildException
+    throws BuildException,SAXException,IOException,ContextualException
   {
-    Element root=parseTree.getDocument().getRootElement();
-    AssemblyClass assemblyClass=readAssemblyClass(resourceUri,root,null);
-    _cache.put(resourceUri,assemblyClass);
-    assemblyClass.resolve();
-    return assemblyClass;
+    ContextResourceMap map=new ContextResourceMap();
+    
+    URI packageDir=URIUtil.toParentPath(resourceUri);
+    map.put("package",packageDir);
+    Package pkg
+      =Package.fromContainer
+        (Resolver.getInstance().resolve(packageDir));
+    if (pkg!=null && pkg.getBase()!=null)
+    { map.put("package-base",pkg.getBase());
+    } 
+    else
+    { map.put("package-base",URI.create("null:/"));
+    }
+    map.bind(new SimpleFocus<Void>(null));
+    map.push();
+    try
+    {
+      ParseTree parseTree=ParseTreeFactory.fromURI(resourceUri);
+
+      if (parseTree==null)
+      { return null;
+      }
+    
+      Element root=parseTree.getDocument().getRootElement();
+      AssemblyClass assemblyClass=readAssemblyClass(resourceUri,root,null);
+      _cache.put(resourceUri,assemblyClass);
+      assemblyClass.resolve();
+      return assemblyClass;
+    }
+    finally
+    { map.pop();
+    }
   }
   
   /**
@@ -536,7 +632,12 @@ public class AssemblyLoader
               ,node.getPrefixResolver()
               ,sourceUri
               );
-          prop.setDataURI(URI.create(uriStr));
+          try
+          { prop.setDataURI(Resolver.getInstance().resolve(URI.create(uriStr)).getURI());
+          }
+          catch (IOException x)
+          { throw new BuildException("Error resolving data uri "+uriStr);
+          }
         }
         else if (name=="debugLevel")
         { 
