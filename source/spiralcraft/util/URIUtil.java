@@ -27,6 +27,7 @@ import spiralcraft.log.ClassLog;
  */
 public class URIUtil
 {
+  @SuppressWarnings("unused")
   private static final ClassLog log
     =ClassLog.getInstance(URIUtil.class);
 
@@ -252,7 +253,7 @@ public class URIUtil
   
   public static final URI toParentPath(URI input)
   { 
-    log.fine(""+input);
+    // log.fine(""+input);
     URI ret;
     try
     {
@@ -280,12 +281,32 @@ public class URIUtil
     catch (URISyntaxException x)
     { throw new IllegalArgumentException(x);
     }
-    log.fine(input+" -> "+ret);
+    // log.fine(input+" -> "+ret);
     return ret;
   }
   
   public static final String unencodedLocalName(URI input)
   { return new Path(input.getPath()).lastElement();
+  }
+
+
+  public static URI replaceScheme(
+    URI uri,
+    String scheme)
+  {
+    try
+    {
+      return new URI
+        (scheme
+        ,uri.getAuthority()
+        ,uri.getPath()
+        ,uri.getQuery()
+        ,uri.getFragment()
+        );
+    }
+    catch (URISyntaxException x)
+    { throw new IllegalArgumentException(x);
+    }
   }
   
   
