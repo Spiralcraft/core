@@ -382,4 +382,9 @@ public abstract class AbstractResource
     }
     return null;
   }
+  
+  @Override
+  public boolean isContextual()
+  { return false;
+  }
 }

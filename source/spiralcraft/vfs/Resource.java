@@ -30,12 +30,12 @@ public interface Resource
    *   may be different than the URI used to resolve the resource, which may
    *   be relative to some application specific context.
    */
-  public URI getURI();
+  URI getURI();
 
   /**
    * Return the URI that was used to resolve this Resource
    */
-  public URI getResolvedURI();
+  URI getResolvedURI();
 
   /**
 	 * Read the resource data.
@@ -43,7 +43,7 @@ public interface Resource
    *@return An InputStream, or null if the resource can't be read.
    *@throws IOException if there was an unexpected problem reading.
 	 */	
-	public InputStream getInputStream()
+	InputStream getInputStream()
 		throws IOException;
 
 
@@ -52,7 +52,7 @@ public interface Resource
    *   of the actual validity or status of the specific URI.
    *@return true if this type of resource supports reading
    */
-  public boolean supportsRead();
+  boolean supportsRead();
 
 	/**
 	 * Write to the resource
@@ -61,7 +61,7 @@ public interface Resource
    *@throws IOException if there was an unexpected problem opening a stream for
    *        writing.
 	 */	
-  public OutputStream getOutputStream()
+  OutputStream getOutputStream()
     throws IOException;
 
   /**
@@ -69,7 +69,7 @@ public interface Resource
    *   of the actual validity or status of the specific URI.
    *@return true if this type of resource supports writing
    */
-  public boolean supportsWrite();
+  boolean supportsWrite();
 
   /**
    * <p>Return the children of this resource, if any. A Resource may only
@@ -82,7 +82,7 @@ public interface Resource
    * 
    * @return
    */
-  public Resource[] getChildren()
+  Resource[] getChildren()
     throws IOException;
   
   
@@ -91,7 +91,7 @@ public interface Resource
    *   if that aspect applies to the specific Resource (ie.
    *   the resource is a directory)
    */
-  public Container asContainer();
+  Container asContainer();
 
   /**
    * Return the Container aspect of this Resource,
@@ -102,34 +102,34 @@ public interface Resource
    *@throws IOException if for some reason the Container aspect
    *  is not applicable or incomatible with this specific resource
    */
-  public Container ensureContainer()
+  Container ensureContainer()
     throws IOException;
   
   /**
    * @return the enclosing or containing Resource of the canonical
    *   underlying Resource.
    */
-  public Resource getParent()
+  Resource getParent()
     throws IOException;
   
   /**
    * 
    * @return The name of this resource with respect to its parent
    */
-  public String getLocalName();
+  String getLocalName();
   
   /**
    * Indicate whether the resource exists (ie. operations against
    *   it are likely to succeed barring any other problems)
    */
-  public boolean exists()
+  boolean exists()
     throws IOException;
   
   /**
    * @return The long integer representation of the time this resource was
    *   last modified.
    */
-  public long getLastModified()
+  long getLastModified()
     throws IOException;
 
   /**
@@ -139,26 +139,26 @@ public interface Resource
    * @return true of the operation succeeded, false otherwise
    * @throws IOException
    */
-  public boolean setLastModified(long lastModified)
+  boolean setLastModified(long lastModified)
     throws IOException;
   
   /**
    * @return The size in bytes of this resource, or 0 if not known.
    */
-  public long getSize()
+  long getSize()
     throws IOException;
   
   /**
    * Copy this resource from the source resource in the
    *   most efficient way possible.
    */
-  public void copyFrom(Resource source)
+  void copyFrom(Resource source)
     throws IOException;
   
   /**
    * Renames the resource if appropriate and efficient.
    */
-  public void renameTo(URI uri)
+  void renameTo(URI uri)
     throws IOException;
 
   /**
@@ -170,7 +170,7 @@ public interface Resource
    * 
    * @param targetResource
    */
-  public void copyTo(Resource targetResource)
+  void copyTo(Resource targetResource)
     throws IOException;  
   
   /**
@@ -182,7 +182,7 @@ public interface Resource
    * 
    * @param targetResource
    */
-  public void moveTo(Resource targetResource)
+  void moveTo(Resource targetResource)
     throws IOException;
   
   /**
@@ -190,13 +190,13 @@ public interface Resource
    *
    * @throws IOException
    */
-  public void delete()
+  void delete()
     throws IOException;
   
   /**
    * Write the InputStream to the resource
    */
-  public long write(InputStream in)
+  long write(InputStream in)
     throws IOException;
   
   /**
@@ -206,5 +206,13 @@ public interface Resource
    * @param clazz
    * @return
    */
-  public <T extends Resource> T unwrap(Class<T> clazz);
+  <T extends Resource> T unwrap(Class<T> clazz);
+  
+  /**
+   * <p>Indicates that this resource has been resolved using a URI that is
+   *   valid only within a specific application context. 
+   * </p>
+   * @return
+   */
+  boolean isContextual();
 }

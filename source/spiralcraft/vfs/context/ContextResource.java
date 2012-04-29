@@ -86,6 +86,10 @@ public class ContextResource
   { return delegate;
   }    
   
+  @Override
+  public boolean isContextual()
+  { return true;
+  }
 
   @Override
   public String toString()
