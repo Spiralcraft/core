@@ -1260,7 +1260,7 @@ public class AssemblyClass
       }
       
     }
-    _singletons=new Class[singletons.size()];
+    _singletons=new Class<?>[singletons.size()];
     singletons.toArray(_singletons);
   }
   
