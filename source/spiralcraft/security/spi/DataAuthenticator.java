@@ -85,10 +85,10 @@ public class DataAuthenticator
   private Channel<Boolean> comparisonChannel;
   
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked","rawtypes"})
   public DataAuthenticator()
     throws DataException
-  {
+  { 
 
       setAcceptedCredentials
         (new Class[] 

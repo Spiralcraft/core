@@ -54,7 +54,7 @@ public class Sequence
     scenarios
       =scenarios!=null
         ?ArrayUtil.append(scenarios, scenario)
-        :new Scenario[] {scenario}
+        :new Scenario<?,?>[] {scenario}
         ;
   }
   

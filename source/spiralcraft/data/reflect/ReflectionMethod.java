@@ -133,7 +133,7 @@ public class ReflectionMethod
     {
       Type<?> returnType=findType(method.getReturnType());
       Class<?>[] formalTypes=method.getParameterTypes();
-      Type<?>[] parameterTypes=new Type[formalTypes.length];
+      Type<?>[] parameterTypes=new Type<?>[formalTypes.length];
     
       for (int i=0;i<formalTypes.length;i++)
       { parameterTypes[i]=findType(formalTypes[i]);

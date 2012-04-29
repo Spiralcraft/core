@@ -116,7 +116,7 @@ public abstract class AbstractNode<Nc extends AbstractNode<Nc,T>,T>
   /**
    * Returns a new copy of the list of child nodes
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked","rawtypes"})
   @Override
   public Nc[] getChildren()
   { 

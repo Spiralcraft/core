@@ -162,7 +162,7 @@ public class LangUtil
     throws BindException
   { 
     if (reflector instanceof Functor)
-    { return ((Functor<T>) reflector).bindChannel(context,new Channel[0]);
+    { return ((Functor<T>) reflector).bindChannel(context,new Channel<?>[0]);
     }
     else
     { return null;

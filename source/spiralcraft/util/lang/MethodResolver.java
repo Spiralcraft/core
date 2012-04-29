@@ -193,7 +193,7 @@ public final class MethodResolver
         "no method named " + clazz.getName() + "." + methodName);
 
     if (parameterTypes == null)
-      parameterTypes = new Class[0];
+      parameterTypes = new Class<?>[0];
 
     return (Method) findMemberIn(methodList, parameterTypes,true);
   }
@@ -279,13 +279,13 @@ public final class MethodResolver
     Class<?>[] argTypes = null;
 
     if (args != null) {
-      argTypes = new Class[args.length];
+      argTypes = new Class<?>[args.length];
 
       for (int i = 0; i < args.length; ++i)
         argTypes[i] = (args[i] == null) ? Void.TYPE : args[i].getClass();
     }
     else
-      argTypes = new Class[0];
+      argTypes = new Class<?>[0];
 
     return argTypes;
   }
@@ -338,14 +338,14 @@ public final class MethodResolver
     Class<?>[] types = null;
 
     if (classNames != null) {
-      types = new Class[classNames.length];
+      types = new Class<?>[classNames.length];
 
       for (int i = 0; i < classNames.length; ++i)
         types[i] =
           ClassUtilities.classForNameOrPrimitive(classNames[i], loader);
     }
     else
-      types = new Class[0];
+      types = new Class<?>[0];
 
     return types;
   }

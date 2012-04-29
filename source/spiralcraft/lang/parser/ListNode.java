@@ -84,7 +84,7 @@ public class ListNode<T>
   
 
   @Override
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked","rawtypes"})
   public Channel<?> bind(final Focus<?> focus)
     throws BindException
   { 

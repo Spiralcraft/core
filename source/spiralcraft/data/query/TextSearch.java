@@ -166,7 +166,7 @@ class TextSearchBinding<Tq extends TextSearch,T extends Tuple,Ts extends Tuple>
   }
 
   @Override
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked","rawtypes"})
   public void resolve() throws DataException
   { 
     if (!resolved)

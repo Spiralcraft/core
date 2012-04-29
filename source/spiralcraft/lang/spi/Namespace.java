@@ -32,7 +32,7 @@ public class Namespace
   public Namespace(NamespaceReflector reflector)
   { 
     this.reflector=reflector;
-    this.data=new Channel[reflector.getAttributeCount()];
+    this.data=new Channel<?>[reflector.getAttributeCount()];
   }
   
   Channel<?> getChannel(int index)

@@ -102,7 +102,7 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
 
   @Override
   public Type<?>[] getTypes()
-  { return new Type[] {getResultType()};
+  { return new Type<?>[] {getResultType()};
   }
   
   
@@ -294,7 +294,7 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       
       projection
         =(Projection<T>) getResultType().getScheme().getProjection
-          (lhsExpressions.toArray(new Expression[0]));
+          (lhsExpressions.toArray(new Expression<?>[0]));
 
       ArrayList<Expression<?>> rhsExpressions=ej.getRHSExpressions();
       parameters=new Channel<?>[rhsExpressions.size()];

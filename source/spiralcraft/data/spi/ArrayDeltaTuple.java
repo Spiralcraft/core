@@ -353,7 +353,7 @@ public class ArrayDeltaTuple
       { fields.add(fieldSet.getFieldByIndex(i));
       }
     }
-    Field<?>[] ret=new Field[fields.size()];
+    Field<?>[] ret=new Field<?>[fields.size()];
     fields.toArray(ret);
     return ret;
   }

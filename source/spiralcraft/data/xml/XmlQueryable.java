@@ -356,7 +356,7 @@ public class XmlQueryable
           add(nt);
         }
         if (store!=null)
-        { store.onReload(new Type[] {getResultType()});
+        { store.onReload(new Type<?>[] {getResultType()});
         }
         if (newTransaction!=null)
         { newTransaction.commit();

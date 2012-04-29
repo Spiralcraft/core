@@ -369,7 +369,7 @@ public class AggregateReflector<T extends Aggregate<I>,I>
         =new GatherChannel<T>
           (constructorChannel
           ,namedParamList.toArray
-            (new BindingChannel[namedParamList.size()])
+            (new BindingChannel<?>[namedParamList.size()])
           );
     }
         

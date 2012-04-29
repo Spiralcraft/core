@@ -76,7 +76,7 @@ public class ContainsNode<T,C,I>
       collection.resolve
         (focus
         , "?="
-        , new Expression[] {Expression.<I>create(_compareItem)}
+        , new Expression<?>[] {Expression.<I>create(_compareItem)}
         );
     if (result==null)
     { 

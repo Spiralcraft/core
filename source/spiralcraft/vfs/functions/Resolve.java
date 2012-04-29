@@ -87,7 +87,7 @@ public class Resolve
           { return source.getURI();
           }
         }
-      ,new Channel[0]
+      ,new Channel<?>[0]
       );
   }
 

@@ -270,7 +270,7 @@ public class StructNode
     
 
     
-    private final Channel<?>[] channels=new Channel[fields.size()];
+    private final Channel<?>[] channels=new Channel<?>[fields.size()];
     
     private final StructField[] fieldArray
       =fields.values().toArray(new StructField[fields.size()]);
@@ -1139,7 +1139,7 @@ public class StructNode
 //      this.closure=new ClosureFocus(focus);
       this.reflector=(StructReflector) source.getReflector();
 
-      Channel<?>[] boundParams=new Channel[params.length];
+      Channel<?>[] boundParams=new Channel<?>[params.length];
       int i=0;
       for (Expression<?> x : params)
       { 

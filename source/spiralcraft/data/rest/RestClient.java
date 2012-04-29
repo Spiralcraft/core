@@ -223,7 +223,7 @@ public class RestClient
       (BeanReflector.<RestClient>getInstance(getClass()));
     reflector.enhance
       ("query"
-      ,new Reflector[]{localQueryChannel.getReflector()}
+      ,new Reflector<?>[]{localQueryChannel.getReflector()}
       ,localQueryChannel.getReflector()
       );
     Focus<RestClient> selfFocus

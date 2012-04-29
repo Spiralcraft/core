@@ -164,7 +164,7 @@ public  class TranslatorChannel<T,S>
   { return source.isConstant();
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked","rawtypes"})
   @Override
   public LinkedTree<Channel<?>> trace(Class<Channel<?>> stop)
   { 

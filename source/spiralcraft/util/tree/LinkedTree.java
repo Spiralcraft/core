@@ -96,7 +96,7 @@ public class LinkedTree<T>
   }
   
   @Override
-  @SuppressWarnings("unchecked") // Array creation
+  @SuppressWarnings({"unchecked","rawtypes"}) // Array creation
   public LinkedTree<T>[] getChildren()
   { 
     LinkedTree<T>[] ret=new LinkedTree[children.size()];

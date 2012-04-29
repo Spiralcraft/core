@@ -476,7 +476,7 @@ public class XmlStore
       }
       
       if (!types.isEmpty())
-      { onReload(types.toArray(new Type[types.size()]));
+      { onReload(types.toArray(new Type<?>[types.size()]));
       }
       
       transaction.commit();

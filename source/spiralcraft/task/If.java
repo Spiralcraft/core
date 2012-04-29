@@ -44,7 +44,7 @@ public class If
   public If(Binding<Boolean> x,Scenario<?,?> chain)
   { 
     this.x=x;
-    setChain(new Scenario[] {chain});
+    setChain(new Scenario<?,?>[] {chain});
   }
     
   @Override

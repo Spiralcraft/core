@@ -330,7 +330,7 @@ class StringBindingHelper
       return new TranslatorChannel<String,String>
         (op1
         ,_stringConcatTranslator
-        ,new Channel[] {op2}
+        ,new Channel<?>[] {op2}
         );
     }
     else

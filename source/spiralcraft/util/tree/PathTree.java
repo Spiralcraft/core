@@ -151,7 +151,7 @@ public class PathTree<T>
   }
   
   @Override
-  @SuppressWarnings("unchecked") // Array creation
+  @SuppressWarnings({"unchecked","rawtypes"}) // Array creation
   public PathTree<T>[] getChildren()
   { 
     PathTree<T>[] ret=new PathTree[children.size()];
