@@ -197,14 +197,7 @@ public class ClasspathResource
   @Override
   public boolean exists()
     throws IOException
-  {
-    InputStream in=_classLoader.getResourceAsStream(_path);
-    if (in!=null)
-    { 
-      in.close();
-      return true;
-    }
-    return false; 
+  { return _classLoader.getResource(_path) !=null;
   }
   
   @Override
