@@ -14,13 +14,17 @@
 //
 package spiralcraft.data;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import org.xml.sax.SAXException;
+
 import spiralcraft.data.core.DeltaType;
+import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.session.Buffer;
 import spiralcraft.data.session.BufferType;
 // import spiralcraft.log.ClassLogger;
@@ -35,6 +39,7 @@ import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringConverter;
 import spiralcraft.util.string.StringUtil;
 import spiralcraft.util.thread.ThreadLocalStack;
+import spiralcraft.vfs.Resource;
 
 
 /**
@@ -526,7 +531,7 @@ public abstract class Type<T>
   public InstanceResolver getExtensionResolver(TypeResolver resolver,URI uri)
   {
     return new ConstructorInstanceResolver
-      (new Class[] {TypeResolver.class,URI.class}
+      (new Class<?>[] {TypeResolver.class,URI.class}
       ,new Object[] {resolver,uri}
       );
   }
@@ -651,6 +656,35 @@ public abstract class Type<T>
   { return debug;
   }
 
+  @SuppressWarnings("unchecked")
+  public T fromXmlResource(Resource resource)
+    throws DataException
+  {
+    try
+    {
+      if (isPrimitive())
+      { return (T) new DataReader().readFromResource(resource,this);
+      }
+      else
+      { 
+        DataComposite data
+          =(DataComposite) new DataReader()
+            .readFromResource
+              (resource
+              ,this
+              );
+        return (T) data.getType().fromData(data,null);
+      }
+    }
+    catch (SAXException x)
+    { throw new DataException("Error reading data from "+resource.getURI(),x);
+    }
+    catch (IOException x)
+    { throw new DataException("Error reading data from "+resource.getURI(),x);
+    }
+  }  
+  
+  
   protected RuntimeDataException newLinkException(Exception x)
   { return new RuntimeDataException("Error linking "+getURI(),x);
   }

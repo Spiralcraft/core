@@ -40,6 +40,7 @@ import spiralcraft.lang.Functor;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.BindingChannel;
 import spiralcraft.lang.spi.GatherChannel;
+import spiralcraft.util.URIUtil;
 
 /**
  * A Type defined by Java object managed by an AssemblyClass.
@@ -70,7 +71,18 @@ public class AssemblyType<T>
       throw new DataException
         ("Can't resolve canonical type for "+assemblyClass);
     }
-    return Type.resolve(assemblyClass.getBaseURI());
+    
+    // baseURI might not be resolvable in-context
+    
+    URI sourceURI=assemblyClass.getSourceURI();
+    if (sourceURI!=null)
+    { 
+      sourceURI=URIUtil.removePathSuffix(sourceURI,".assy.xml");
+      return Type.resolve(sourceURI);
+    }
+    else
+    { return Type.resolve(assemblyClass.getBaseURI());
+    }
   }
   
   
