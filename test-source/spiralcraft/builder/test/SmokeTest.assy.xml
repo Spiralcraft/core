@@ -53,7 +53,36 @@
           </testX>
           
         </test:Assertion>
+
+        <test:Assertion
+          xmlns:btovl="class:/spiralcraft/builder/test/ovl"
+          >
         
+          <name>Package
+          </name>
+          
+          <subjectX>[@btovl:MyWidget].().title
+          </subjectX>
+          
+          <testX>.=="My Widget"
+          </testX>
+          
+        </test:Assertion>
+        
+        <test:Assertion
+          xmlns:btovl="class:/spiralcraft/builder/test/ovl"
+          >
+        
+          <name>Package 2
+          </name>
+          
+          <subjectX>[@btovl:OvlWidget].().title
+          </subjectX>
+          
+          <testX>.=="Overlay Widget"
+          </testX>
+          
+        </test:Assertion>
       </scenarios>
       
     </task:Sequence>

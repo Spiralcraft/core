@@ -13,6 +13,113 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev6
+        </revision>
+      
+        <notes>
+          <scm:Note>Type.fromXMLResource(Resource resource) method provides
+            a convenient way to instantiate an object from an XML resource
+            in the canonical format.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>Type.java
+          </URI>
+          <URI>reflect/AssemblyType.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev6
+        </revision>
+      
+        <notes>
+          <scm:Note>Executor now adds context://config to the environment
+            using the spiralcraft.config.id and/or the spiralcraft.config.uri 
+            property.           
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/exec/Executor.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev6
+        </revision>
+      
+        <notes>
+          <scm:Note>New URIUtil.replaceScheme() method
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/URIUtil.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev6
+        </revision>
+      
+        <notes>
+          <scm:Note>spiralcraft.builder now uses the Package mechanism to 
+            locate assy.xml resources.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder/AssemblyLoader.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev6
+        </revision>
+      
+        <notes>
+          <scm:Note>Standardized on a new Package mechanism to provide
+            directory metadata to VFS clients, including an initial
+            implementation of VFS overlays.
+          </scm:Note>
+          <scm:Note>Fixed ClasspathResource.exists() to call 
+            ClassLoader.getResource()
+          </scm:Note>
+          <scm:Note>Added isContextual() method to Resource interface
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs
+        </path>
+        
+        <resources>
+          <URI>Package.java
+          </URI>
+          <URI>Resolver.java
+          </URI>
+          <URI>Resource.java
+          </URI>
+          <URI>classpath/ClasspathResource.java
+          </URI>
+          <URI>context/ContextResource.java
+          </URI>
+          <URI>spi/AbstractResource.java
+          </URI>
+          <URI>ovl/OverlayContext.java
+          </URI>
+          <URI>ovl/OverlayResource.java
+          </URI>
+          <URI>ovl/OverlayResourceFactory.java
+          </URI>
+          <URI>util/NullResource.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev5
         </revision>
       
