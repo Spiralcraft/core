@@ -14,6 +14,7 @@
 //
 package spiralcraft.vfs.ovl;
 
+import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.ResourceFactory;
@@ -36,7 +37,9 @@ public class OverlayResourceFactory
         (Resolver.getInstance().resolve(uri.getSchemeSpecificPart()));
     }
     else
-    { return OverlayContext.resolve(uri);
+    { 
+      uri=URIUtil.replaceScheme(uri,"context");
+      return OverlayResource.wrap(Resolver.getInstance().resolve(uri));
     }
   }
 

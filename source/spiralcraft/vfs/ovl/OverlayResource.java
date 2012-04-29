@@ -21,13 +21,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.Properties;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.log.ClassLog;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.Container;
-import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Package;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.ResourceFilter;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -52,6 +52,7 @@ public class OverlayResource
   implements Resource,Container
 { 
 
+  @SuppressWarnings("unused")
   private static final ClassLog log=
       ClassLog.getInstance(OverlayResource.class);
     
@@ -63,55 +64,23 @@ public class OverlayResource
     { return overlay;
     }
     
-    Container container=overlay.asContainer();
-    if (container!=null)
+    try
     {
-      Resource child;
-      try
-      { child=container.getChild(".sc-ovl");
-      }
-      catch (UnresolvableURIException x)
-      { throw new RuntimeException(x);
-      }
-      
-      try
-      {  
-        Resource base;
-        if (child.exists())
-        {
-          Properties props=new Properties();
-          props.load(child.getInputStream());
-          String baseURIStr=props.getProperty("base");
-          if (baseURIStr!=null)
-          {
-            URI baseURI=URI.create(baseURIStr);
-            if (!baseURI.isAbsolute())
-            { baseURI=child.getURI().resolve(baseURI);
-            }
-            log.fine("Base is "+baseURI);
-            base=wrap(Resolver.getInstance().resolve(baseURI));
-          
-            return new OverlayResource
-              (overlay.getURI()
-              ,overlay
-              ,base
-              );
-          }
-          return overlay;
-        }
-        else
-        { return overlay;
-        }
-        
-      }
-      catch (IOException x)
+      Package pkg=Package.fromContainer(overlay.getParent());
+      if (pkg!=null)
       { 
-        throw new IllegalArgumentException
-          ("Error reading overlay resource "+child.getURI().toString(),x);
+        return new OverlayResource
+          (overlay.getURI(),overlay,pkg.baseResource(overlay));
+      }
+      else
+      { return overlay;
       }
     }
-    else
-    { return overlay;
+    catch (ContextualException x)
+    { throw new RuntimeException("Error reading package",x);
+    }
+    catch (IOException x)
+    { throw new RuntimeException("Error reading package",x);
     }
   }
 
@@ -434,6 +403,11 @@ public class OverlayResource
     { ret=base.unwrap(clazz);
     }
     return ret;
+  }
+  
+  @Override
+  public boolean isContextual()
+  { return overlay.isContextual();
   }
   
 }

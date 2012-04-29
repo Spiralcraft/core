@@ -27,6 +27,7 @@ import spiralcraft.vfs.classpath.ClasspathResourceFactory;
 import spiralcraft.vfs.context.ContextResourceFactory;
 import spiralcraft.vfs.file.FileResourceFactory;
 import spiralcraft.vfs.url.URLResourceFactory;
+import spiralcraft.vfs.util.NullResource;
 import spiralcraft.vfs.jar.JarResourceFactory;
 import spiralcraft.vfs.ovl.OverlayResourceFactory;
 
@@ -94,6 +95,8 @@ public class Resolver
           ("jar",new JarResourceFactory());
         _INSTANCE.registerResourceFactory
           ("ovl",new OverlayResourceFactory());
+        _INSTANCE.registerResourceFactory
+          ("null",new NullResource.Factory());
       }
       catch (AlreadyRegisteredException x)
       { 

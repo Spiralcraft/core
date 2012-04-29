@@ -16,12 +16,31 @@ package spiralcraft.vfs.util;
 
 import java.net.URI;
 
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.ResourceFactory;
+import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.vfs.spi.AbstractResource;
 
 public class NullResource
   extends AbstractResource
 {
+  public static class Factory
+    implements ResourceFactory
+  {
+    @Override
+    public boolean handlesScheme(
+      String scheme)
+    { return scheme.equals("null");
+    }
 
+    @Override
+    public Resource resolve(
+      URI uri)
+      throws UnresolvableURIException
+    { return new NullResource();
+    } 
+  }
+  
   public NullResource()
   { super(URI.create("null:/"));
   }
