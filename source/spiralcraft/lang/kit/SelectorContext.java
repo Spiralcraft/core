@@ -78,7 +78,9 @@ public class SelectorContext<Toptions,Toption,Tkey>
         );
     }
     
-    log.fine("Got options: "+optionsC.getReflector()+" :options="+options);
+    if (logLevel.isConfig())
+    { log.fine("Got options: "+optionsC.getReflector()+" :options="+options);
+    }
   }
   
   public void setOptionsType(Reflector<Toptions> optionsType)
