@@ -17,6 +17,20 @@
         </revision>
       
         <notes>
+          <scm:Note>Fix NPE when getting a child of the root path
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/classpath/ClasspathResource.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev6
+        </revision>
+      
+        <notes>
           <scm:Note>Type.fromXMLResource(Resource resource) method provides
             a convenient way to instantiate an object from an XML resource
             in the canonical format.
