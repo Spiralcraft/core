@@ -81,8 +81,14 @@ public class ClasspathResource
   public ClasspathResource(URI uri)
   { 
     super(stripTrailingSlash(uri),uri);
-    _path=getURI().getPath().substring(1);
-    _classLoader=Thread.currentThread().getContextClassLoader();
+    if (getURI().getPath().length()>0)
+    {
+      _path=getURI().getPath().substring(1);
+      _classLoader=Thread.currentThread().getContextClassLoader();
+    }
+    else
+    { throw new IllegalArgumentException("Invalid URI "+uri);
+    }
   }
 
   @Override
@@ -210,9 +216,18 @@ public class ClasspathResource
   @Override
   public ClasspathResource getChild(String name)
   { 
-    URI child=URI.create(getURI().getScheme()+":/"+_path+"/"+name);
-    return new ClasspathResource
-      (child);
+    if (_path.length()>0)
+    {
+      URI child=URI.create(getURI().getScheme()+":/"+_path+"/"+name);
+      return new ClasspathResource
+        (child);
+    }
+    else
+    {
+      URI child=URI.create(getURI().getScheme()+":/"+name);
+      return new ClasspathResource
+        (child);
+    }
   }
 
 
