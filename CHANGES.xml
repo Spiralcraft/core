@@ -13,6 +13,21 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev7
+        </revision>
+      
+        <notes>
+          <scm:Note>Utility method for creating a set of Archives from 
+            a library resource
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/classloader/Archive.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev6
         </revision>
       
