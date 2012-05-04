@@ -17,8 +17,12 @@ package spiralcraft.classloader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.file.FileResource;
 
 /**
  * Represents an archive of classes and/or resources, such as a jar file or 
@@ -30,6 +34,40 @@ import java.util.HashSet;
 public abstract class Archive
 {
 
+  public static final Archive[] fromLibrary(Resource resource)
+    throws IOException
+  { 
+    ArrayList<Archive> archives=new ArrayList<Archive>();
+    if (resource.asContainer()!=null)
+    { 
+      Resource[] children=resource.asContainer().getChildren();
+      for (Resource child: children)
+      {
+        Archive archive=fromResource(child);
+        if (archive!=null)
+        { archives.add(archive);
+        }
+      }
+      
+    }
+    return archives.toArray(new Archive[archives.size()]);
+  }
+  
+  public static final Archive fromResource(Resource resource)
+  { 
+    if (resource.unwrap(FileResource.class) !=null)
+    {
+      if (resource.getURI().getPath().endsWith(".jar"))
+      { return new JarArchive(resource.unwrap(FileResource.class));
+      }
+      else if (resource.asContainer()!=null)
+      { return new FileArchive(resource.unwrap(FileResource.class));
+      }
+    }
+    return null;
+  }
+  
+  
   private final HashMap<String,Entry> entries
     =new HashMap<String,Entry>();
   
