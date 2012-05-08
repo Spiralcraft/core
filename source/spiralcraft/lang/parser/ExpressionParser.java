@@ -17,8 +17,10 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.string.StringPool;
 
+import spiralcraft.common.declare.DeclarationContext;
 import spiralcraft.common.namespace.UnresolvedPrefixException;
 import spiralcraft.io.LookaheadStreamTokenizer;
 
@@ -45,7 +47,14 @@ public class ExpressionParser
   private int _pos;
   private String _text;
   private StringPool stringPool=StringPool.INSTANCE;
-
+  private boolean strictDeprecation
+    =Boolean.valueOf
+      (ContextDictionary.getInstance().find
+        ("spiralcraft.lang.strictDeprecation"
+        ,"false"
+        )
+      );
+  
   public <X> Expression<X> parse(String text)
     throws ParseException
   { 
@@ -876,13 +885,19 @@ public class ExpressionParser
         
         if (_tokenizer.ttype==StreamTokenizer.TT_WORD)
         { 
-          log.warning
-            ("Deprecated expression syntax '"
-            +focusSpec.reconstruct()+" "+_tokenizer.sval
-            +"'. Use '"
-            +focusSpec.reconstruct()+"."+_tokenizer.sval
-            +"' instead."
-            );
+          if (strictDeprecation)
+          { throwUnexpected("Not expecting an identifier");
+          }
+          else
+          {
+            log.warning
+              ("Deprecated expression syntax '"
+              +focusSpec.reconstruct()+" "+_tokenizer.sval
+              +"'. Use '"
+              +focusSpec.reconstruct()+"."+_tokenizer.sval
+              +"' instead."
+              );
+          }
           return parseDereferenceExpression(focusSpec);
         }
         else
@@ -1261,7 +1276,16 @@ public class ExpressionParser
          )
       {
         // DEPRECATED!
-        log.warning("Deprecated syntax- struct name must preceed struct definition: "+this._pos);
+        if (strictDeprecation)
+        { throwUnexpected("Struct name must preceed definition");
+        }
+        else
+        {
+          log.warning
+            ("Deprecated syntax- struct name must preceed struct definition: "
+            +" in: ["+this._text+"]: "+DeclarationContext.printDeclarationStack()
+            );
+        }
         // Publish as specified URI 
         expect('[');
         expect('#');
