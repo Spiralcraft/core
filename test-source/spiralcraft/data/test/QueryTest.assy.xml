@@ -719,8 +719,8 @@
         <dtask:Session>
         
           <contextX>
+            [#context]
             { 
-              [#context]
               orig:=
                 [*dtask:Fetch
                   { [@example:Customer]

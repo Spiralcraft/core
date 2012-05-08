@@ -18,6 +18,49 @@
         </revision>
       
         <notes>
+          <scm:Note>Make sure that the DeclarationContext is pushed when
+            Expressions are parsed by spiralcraft.builder to provide 
+            traceback info.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>builder/PropertyBinding.java
+          </URI>
+          <URI>builder/PropertySpecifier.java
+          </URI>
+          <URI>common/declare/DeclarationContext.java
+          </URI>
+        </resources>
+        
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev7
+        </revision>
+      
+        <notes>
+          <scm:Note>Add "spiralcraft.lang.strictDeprecation" contextual
+            property to throw an exception when a deprecated feature is
+            used.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/ExpressionParser.java
+        </path>
+        
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev7
+        </revision>
+      
+        <notes>
           <scm:Note>Implement map literals using a struct that composed 
             anonymous members, where each member is a pair (a struct with
             2 anonymous members).

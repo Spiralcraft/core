@@ -19,6 +19,7 @@
     <devtask
       codebase=".."
         exec="--log log/spiralcraft --consoleLog
+          -Dspiralcraft.lang.strictDeprecation=true
          SmokeRunner
          "
     />

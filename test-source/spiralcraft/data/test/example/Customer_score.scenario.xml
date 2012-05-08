@@ -4,7 +4,7 @@
   xmlns:j="class:/java/lang/"
   xmlns="default:/"
   >
-  <contextX>{ [#in] _0:[@j:Integer] }
+  <contextX>[#in] { _0:[@j:Integer] }
   </contextX>
   
   <messageX>[example:Customer].score=[example:Customer].score+[in]._0

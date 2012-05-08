@@ -5,7 +5,7 @@
   xmlns:dtask="class:/spiralcraft/data/task/"
   xmlns="default:/"
   >
-  <contextX>{ [#in] description:[@j:String] }
+  <contextX>[#in] { description:[@j:String] }
   </contextX>
   
   <addChainResult>true
