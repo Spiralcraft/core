@@ -867,6 +867,9 @@ public class ExpressionParser
       else if (_tokenizer.lookahead.ttype=='{')
       { return parseArrayLiteralExpression(new CurrentFocusNode());
       }
+      else if (_tokenizer.lookahead.ttype=='#')
+      { return parseNamedStruct();
+      }
       else
       { 
         FocusNode focusSpec=parseFocusSpecifier();
@@ -1066,7 +1069,7 @@ public class ExpressionParser
     throws ParseException
   {
     expect('[');
-    StructNode struct=parseStruct();
+    Node struct=parseStruct(null);
     expect(']');
     return new SubscriptNode(null,struct);
       
@@ -1168,7 +1171,7 @@ public class ExpressionParser
         expect(')');
         break;
       case '{':
-        node=parseStruct();
+        node=parseStruct(null);
         break;
       case '`':
         node=parseExpressionLiteral();
@@ -1225,9 +1228,25 @@ public class ExpressionParser
   
   
   /**
-   * StructDefinition -> "{" StructField ( "," StructField ...)* "}"
+   * NamedStruct -> "[#" uri "]" Struct
+   *  
+   * @return
+   * @throws ParseException
    */
-  private StructNode parseStruct()
+  private Node parseNamedStruct()
+    throws ParseException
+  {
+    expect('[');
+    expect('#');
+    String typeQName=parseURIName("]");
+    expect(']');
+    return parseStruct(typeQName);
+  }
+  
+  /**
+   * Struct -> "{" StructField ( "," StructField ...)* "}"
+   */
+  private Node parseStruct(String typeQName)
     throws ParseException
   {
     StructNode struct=new StructNode();
@@ -1235,21 +1254,31 @@ public class ExpressionParser
     
     expect('{');
     
-    if (_tokenizer.ttype=='['
-        && _tokenizer.lookahead.ttype=='#'
-       )
+    if (typeQName==null)
     {
-      // Publish as specified URI 
-      expect('[');
-      expect('#');
-      try
-      {  struct.setTypeQName(parseURIName("]"));
+      if (_tokenizer.ttype=='['
+          && _tokenizer.lookahead.ttype=='#'
+         )
+      {
+        // DEPRECATED!
+        log.warning("Deprecated syntax- struct name must preceed struct definition: "+this._pos);
+        // Publish as specified URI 
+        expect('[');
+        expect('#');
+        typeQName=parseURIName("]");
+        
+        expect(']');
       }
-      catch (UnresolvedPrefixException x)
-      { throw newException("Unresolved prefix",x);
+    }
+    
+    try
+    { 
+      if (typeQName!=null)
+      { struct.setTypeQName(typeQName);
       }
-      
-      expect(']');
+    }
+    catch (UnresolvedPrefixException x)
+    { throw newException("Unresolved prefix",x);
     }
     
     if (_tokenizer.ttype!='}')
