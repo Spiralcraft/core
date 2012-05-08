@@ -30,13 +30,20 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.IterationDecorator;
+import spiralcraft.lang.MapDecorator;
+import spiralcraft.lang.Range;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
+import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.kit.AbstractReflector;
 import spiralcraft.lang.kit.CoercionChannel;
+import spiralcraft.lang.kit.MapLookupChannel;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.AbstractFunctorChannel;
+import spiralcraft.lang.spi.ArrayIndexChannel;
+import spiralcraft.lang.spi.ArrayRangeChannel;
+import spiralcraft.lang.spi.ArraySelectChannel;
 import spiralcraft.lang.spi.AspectChannel;
 import spiralcraft.lang.spi.SourcedChannel;
 //import spiralcraft.lang.spi.ClosureFocus;
@@ -283,6 +290,12 @@ public class StructNode
     private final Channel<Object> baseChannel;
     
     private final Reflector<Object> iterableItemReflector;
+    private final Reflector<Object> mapKeyReflector;
+    private final Reflector<Object> mapValueReflector;
+    private boolean map=true;
+    private final boolean pair;
+    private boolean anonymous=true;
+    
     
     
     private Focus<?> context;
@@ -333,7 +346,9 @@ public class StructNode
       
       
       if (baseExtentNode!=null)
-      { baseChannel=focus.bind(Expression.create(baseExtentNode));
+      { 
+        baseChannel=focus.bind(Expression.create(baseExtentNode));
+        anonymous=false;
       }
       else
       { baseChannel=null;
@@ -346,6 +361,8 @@ public class StructNode
       // log.fine(" "+sourceChannel.getReflector());
       
       Reflector iterableItemReflector=null;
+      Reflector mapKeyReflector=null;
+      Reflector mapValueReflector=null;
       
       int i=0;
       for (StructField field: fieldArray)
@@ -403,28 +420,76 @@ public class StructNode
             );
         }
         
-        if (iterableItemReflector==null)
-        { iterableItemReflector=channels[i].getReflector();
+        if (!field.anonymous)
+        { anonymous=false;
+        }
+        
+        iterableItemReflector
+          =commonType(iterableItemReflector,channels[i].getReflector());        
+        
+        if (channels[i].getReflector() instanceof StructReflector)
+        { 
+          StructReflector entryReflector
+            =(StructReflector) channels[i].getReflector();
+          if (entryReflector.pair)
+          {
+            mapKeyReflector
+              =commonType
+                (mapKeyReflector
+                ,entryReflector.channels[0].getReflector()
+                );
+            
+            mapValueReflector
+              =commonType
+                (mapValueReflector
+                ,entryReflector.channels[1].getReflector()
+                );
+            
+            
+          }
+          else
+          { map=false;
+          }
         }
         else
-        { 
-          iterableItemReflector
-            =iterableItemReflector.getCommonType
-              (channels[i].getReflector());
+        { map=false;
         }
+        
         field.linked=true;
         
         i++;
       }
       
-      if (iterableItemReflector!=null)
-      { this.iterableItemReflector=iterableItemReflector;
-      }
-      else
-      { this.iterableItemReflector=BeanReflector.getInstance(Void.class);
-      }
+      pair= anonymous && fieldArray.length==2;
+      
+      this.iterableItemReflector
+        =iterableItemReflector!=null
+        ?iterableItemReflector
+        :BeanReflector.getInstance(Void.class);
+      this.mapKeyReflector
+        =mapKeyReflector!=null
+        ?mapKeyReflector
+        :BeanReflector.getInstance(Void.class);
+      this.mapValueReflector
+        =mapValueReflector!=null
+        ?mapValueReflector
+        :BeanReflector.getInstance(Void.class);
+
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private Reflector commonType(Reflector rcurrent,Reflector rnew)
+    {
+      if (rcurrent==null)
+      { return rnew;
+      }
+      else if (rnew==null)
+      { return rcurrent;
+      }
+      else
+      { return rcurrent.getCommonType(rnew);
+      }
+    }
     
     /**
      * <p>Determine if a value described by the specified Reflector
@@ -652,6 +717,98 @@ public class StructNode
             }
           }; 
         }
+        else if (decoratorInterface.isAssignableFrom(MapDecorator.class))
+        {
+          if (map)
+          {
+            return (D) new MapDecorator<Struct,Object,Object>
+              (source,mapKeyReflector,mapValueReflector)
+            {
+
+              @Override
+              public boolean put(
+                Struct map,
+                Object key,
+                Object value)
+              {
+                // This is not a writable map, but we may reconsider this
+                return false;
+              }
+
+              @Override
+              public Object get(
+                Struct map,
+                Object key)
+              { 
+                for (Object o: map)
+                {
+                  Struct pair=(Struct) o;
+                  Object pairKey=pair.get(0);
+                  if (key==pairKey 
+                      || (key!=null && key.equals(pairKey))
+                     )
+                  { return pair.get(1);
+                  }
+                }
+                return null;
+              }
+
+              @Override
+              public Iterator<Object> keys(final Struct map)
+              { 
+                return new Iterator<Object>()
+                {
+                  @SuppressWarnings("rawtypes")
+                  final Iterator<Struct> pairs
+                    =(Iterator<Struct>) (Iterator) map.iterator();
+
+                  @Override
+                  public boolean hasNext()
+                  { return pairs.hasNext();
+                  }
+
+                  @Override
+                  public Object next()
+                  { return pairs.next().get(0);
+                  }
+
+                  @Override
+                  public void remove()
+                  { return;
+                  }
+                };
+                
+              }
+
+              @Override
+              public Iterator<Object> values(final Struct map)
+              { 
+                return new Iterator<Object>()
+                {
+                  @SuppressWarnings("rawtypes")
+                  final Iterator<Struct> pairs
+                    =(Iterator<Struct>) (Iterator) map.iterator();
+
+                  @Override
+                  public boolean hasNext()
+                  { return pairs.hasNext();
+                  }
+
+                  @Override
+                  public Object next()
+                  { return pairs.next().get(0);
+                  }
+
+                  @Override
+                  public void remove()
+                  { return;
+                  }
+                };
+              }
+
+            }; 
+          }
+        }
       }
       return null;
     }
@@ -767,6 +924,9 @@ public class StructNode
         }
       }
        
+      if (name.equals("[]") && map)
+      { return (Channel<X>) subscript(source,focus,params[0]);
+      }
           
       if (params==null)
       {
@@ -829,6 +989,80 @@ public class StructNode
       }
       return null;
     }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private Channel<?> subscript
+      (Channel<Struct> source
+      ,Focus<?> focus
+      ,Expression<?> subscript
+      )
+      throws BindException
+    {
+      
+      
+      ThreadLocalChannel<?> componentChannel
+        =new ThreadLocalChannel(mapValueReflector);
+      
+      TeleFocus teleFocus=new TeleFocus(focus,componentChannel);
+      
+      Channel<?> subscriptChannel=teleFocus.bind(subscript);
+      
+      Class subscriptClass=subscriptChannel.getContentType();
+      
+      if (Integer.class.isAssignableFrom(subscriptClass)
+          || Short.class.isAssignableFrom(subscriptClass)
+          || Byte.class.isAssignableFrom(subscriptClass)
+          )
+      {
+        return new ArrayIndexChannel
+          (mapValueReflector
+          ,source
+          ,(Channel<Number>) subscriptChannel
+          );
+  //      return new TranslatorChannel
+  //        (source
+  //        ,new ArrayIndexTranslator(componentReflector)
+  //        ,new Channel[] {subscriptChannel}
+  //        );
+      }
+      else if 
+        (Boolean.class.isAssignableFrom(subscriptClass)
+        || boolean.class.isAssignableFrom(subscriptClass)
+        )
+      {
+        return new ArraySelectChannel
+          (source
+           ,componentChannel
+           ,subscriptChannel
+           );
+      }
+      else if (Range.class.isAssignableFrom(subscriptClass))
+      { 
+        return new ArrayRangeChannel
+          (source
+          ,mapValueReflector
+          ,subscriptChannel
+          );
+      }
+      else if (mapKeyReflector.isAssignableFrom
+                (subscriptChannel.getReflector())
+              )
+      { 
+        return new MapLookupChannel
+          (source.decorate(MapDecorator.class)
+          ,subscriptChannel
+          );
+      }
+      else
+      {
+        throw new BindException
+          ("Don't know how to apply the [lookup("
+          +subscriptChannel.getContentType().getName()
+          +")] operator to a Struct"
+          );
+      }
+    }
+    
     
     class BaseExtentChannel
       extends SourcedChannel<Struct,Object>
