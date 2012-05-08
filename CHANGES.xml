@@ -12,6 +12,47 @@
     
     <detail> 
 
+
+      <scm:Change>
+        <revision>-dev7
+        </revision>
+      
+        <notes>
+          <scm:Note>Implement map literals using a struct that composed 
+            anonymous members, where each member is a pair (a struct with
+            2 anonymous members).
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang
+        </path>
+        
+        <resources>
+          <URI>MapDecorator.java
+          </URI>
+          <URI>kit/MapLookupChannel.java
+          </URI>
+          <URI>parser/StructNode.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev7
+        </revision>
+      
+        <notes>
+          <scm:Note>Changed named struct syntax to put name declaration
+            before struct definition instead of inside it
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/ExpressionParser.java
+        </path>
+        
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev7
         </revision>

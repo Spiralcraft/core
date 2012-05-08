@@ -490,12 +490,14 @@
           
           <subjectX>
             "hello"
-              {{[#test:MyTuple]
+              {[#test:MyTuple]
+                {
                   x:[@j:String]
                   , y:[@j:Integer]
                   ,.x=..
                   ,.y=.x.length() 
-              }}
+                }
+              }
           </subjectX>
           
           <testX>x=="hello" &amp;&amp; y==5
@@ -629,11 +631,14 @@
           
           <subjectX>
             [*jn:URI{"in"}].[*vfsf:Resolve]
-              {{ [#node]
-                resource:=..
-                ,depth:=0
-                ,size:=0L
-              }}
+              {
+                [#node]
+                { 
+                  resource:=..
+                  ,depth:=0
+                  ,size:=0L
+                }
+              }
               .[*fn:Tree
                 {`.resource.children#{..(resource:=.,depth:=..depth+1,size:=.size)}`
                 }
@@ -651,8 +656,9 @@
           </name>
           
           <subjectX>
+          [#nn]
           {
-            [#nn]
+            
             lineSet
               :=[@j:String]
               .([*jn:URI{"in/LoremIpsumList.txt"}]
@@ -995,6 +1001,27 @@
           </testX>
         
         </test:Assertion> 
+        
+        <test:Assertion>
+          <name>Map
+          </name>
+          
+          <subjectX>
+          {
+             { "one","uno" }
+            ,{ "two","dos" }
+            ,{ "three","tres" }
+            ,{ "four","quatro" }
+            ,{ "five","cinco" }
+            ,{ "six","ses" }
+          }["four"]
+          </subjectX>
+          
+          <testX>.=="quatro"
+          </testX>
+        
+        </test:Assertion> 
+        
       </scenarios>
       
       
