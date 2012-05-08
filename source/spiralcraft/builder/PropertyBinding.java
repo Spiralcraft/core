@@ -19,6 +19,7 @@ import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.string.StringConverter;
 
+import spiralcraft.common.declare.DeclarationContext;
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.data.persist.AbstractXmlObject;
 import spiralcraft.lang.Channel;
@@ -504,7 +505,6 @@ public class PropertyBinding
                 ("Error parsing properties in "+textData,x);
             }
 
-            NamespaceContext.push(_specifier.getPrefixResolver());
             if (_converter==null)
             {
               throwBuildException
@@ -513,13 +513,18 @@ public class PropertyBinding
                   +" from text"
                 );
             }
-            Object elementValue=_converter.fromString(textData);
+            NamespaceContext.push(_specifier.getPrefixResolver());
+            DeclarationContext.push(_specifier.getDeclarationLocation());
             // log.fine("Collection value "+elementValue);
             try
-            { value=cd.add(value,elementValue);
+            { 
+              Object elementValue=_converter.fromString(textData);
+              value=cd.add(value,elementValue);
             }
             finally
-            { NamespaceContext.pop();
+            { 
+              DeclarationContext.pop();
+              NamespaceContext.pop();
             }
           }
         }
@@ -550,6 +555,7 @@ public class PropertyBinding
   private void applyExpression()
     throws BuildException
   {
+    DeclarationContext.push(_specifier.getDeclarationLocation());
     try
     {
       Channel sourceChannel=_focus.bind(_specifier.getSourceExpression());
@@ -568,6 +574,9 @@ public class PropertyBinding
     { 
       throwBuildException
         ("Error binding "+_specifier.getSourceExpression().getText(),x);
+    }
+    finally
+    { DeclarationContext.pop();
     }
       
     

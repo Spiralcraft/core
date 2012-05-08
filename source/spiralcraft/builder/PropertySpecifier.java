@@ -25,6 +25,7 @@ import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.string.StringPool;
 import spiralcraft.util.string.StringUtil;
 
+import spiralcraft.common.declare.DeclarationContext;
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.lang.Expression;
@@ -458,6 +459,7 @@ public class PropertySpecifier
       }
 
       NamespaceContext.push(prefixResolver);
+      DeclarationContext.push(declarationLocation);
       try
       { 
         _sourceExpression=Expression.parse(_expression);
@@ -466,7 +468,9 @@ public class PropertySpecifier
       { throw new BuildException("Error parsing expression: "+_expression,x);
       }
       finally
-      { NamespaceContext.pop();
+      { 
+        DeclarationContext.pop();
+        NamespaceContext.pop();
       }
     }
     

@@ -16,6 +16,7 @@ package spiralcraft.common.declare;
 
 import java.net.URI;
 
+import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.thread.ThreadLocalStack;
 
 /**
@@ -38,11 +39,17 @@ public class DeclarationContext
   private static final ThreadLocalStack<URI> stack
     =new ThreadLocalStack<URI>();
   
-  /**
-   * @return The currently active set of prefix mappings
-   */
-  public static Object getDeclarationInfo()
+
+  public static URI getDeclarationInfo()
   { return stack.get();
+  }
+  
+  public static URI[] getDeclarationStack()
+  { return stack.contents(new URI[stack.size()]);
+  }
+  
+  public static String printDeclarationStack()
+  { return ArrayUtil.format(stack.contents(new URI[stack.size()]),"\r\n   ","");
   }
   
   /**
