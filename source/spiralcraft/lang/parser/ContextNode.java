@@ -19,7 +19,8 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
 /**
- * <P>A Node which binds to the Context of the provided Focus
+ * <p>A Node which binds to the Context of the provided Focus
+ * </p>
  * 
  */
 public class ContextNode
