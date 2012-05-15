@@ -187,6 +187,12 @@ public class XmlStore
     }
    
 
+    if (baseResourceURI==null)
+    { baseResourceURI=defaultLocalResourceURI();
+    }
+    if (baseResourceURI==null)
+    { throw new ContextualException("No baseResourceURI configured",getDeclarationInfo());
+    }
     focus=super.bind(focus);
 
     sequenceQueryable.bind(focus);
