@@ -27,6 +27,8 @@ import java.util.Set;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
+import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
@@ -62,6 +64,8 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
 
 /**
  * <p>Starting point for building a new type of Store.
@@ -75,7 +79,7 @@ import spiralcraft.log.Level;
  *
  */
 public abstract class AbstractStore
-  implements Store
+  implements Store,Declarable
 {
   
   protected final ClassLog log=ClassLog.getInstance(getClass());
@@ -112,6 +116,7 @@ public abstract class AbstractStore
   private long minOpenTx;
   
   private boolean pub=true;
+  private DeclarationInfo declarationInfo;
   
   protected ResourceManager<? extends StoreBranch> resourceManager
     =new ResourceManager<StoreBranch>()
@@ -342,6 +347,16 @@ public abstract class AbstractStore
     }
   }
   
+  @Override
+  public void setDeclarationInfo(
+    DeclarationInfo declarationInfo)
+  { this.declarationInfo=declarationInfo;
+  }
+
+  @Override
+  public DeclarationInfo getDeclarationInfo()
+  { return declarationInfo;
+  }
   
   @Override
   public void start()
@@ -601,6 +616,42 @@ public abstract class AbstractStore
       { service.onReload(types);
       }
     }    
+  }
+  
+  protected URI defaultLocalResourceURI()
+    throws ContextualException
+  {
+    String name=this.getName();
+    if (name==null && schema!=null)
+    { name=schema.getName();
+    }
+    else
+    { name="default";
+    }
+    
+    Resource dataResource=null;
+    try
+    {
+      dataResource
+        =Resolver.getInstance().resolve("context://data");
+      if (dataResource.exists())
+      { return dataResource.asContainer().ensureChildContainer(name+".store").getURI();
+      }
+      else
+      { 
+        throw new ContextualException
+          ("Data context does not exist: "+dataResource.getURI(),this.getDeclarationInfo());
+      }
+    }
+    catch (IOException x)
+    { 
+      throw new ContextualException
+        ("Data context does not exist: "
+          +(dataResource!=null?dataResource.getURI():"context://data")
+        ,this.getDeclarationInfo()
+        ,x
+        );
+    }
   }
   
   public class StoreBranch
