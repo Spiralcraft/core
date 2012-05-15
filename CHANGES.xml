@@ -14,6 +14,32 @@
 
 
       <scm:Change>
+        <revision>-dev8
+        </revision>
+      
+        <notes>
+          <scm:Note>Attempt to provide a sensible default for baseResourceURI
+            and force a bind failure if the attempt was not successful.
+          </scm:Note>
+          <scm:Note>AbstractStore is now Declarable, to assist in exception
+            reporting.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>access/kit/AbstractStore.java
+          </URI>
+          <URI>xml/XmlStore.java
+          </URI>
+        </resources>
+        
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev7
         </revision>
       
