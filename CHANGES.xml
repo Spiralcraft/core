@@ -12,6 +12,56 @@
     
     <detail> 
 
+      <scm:Change>
+        <revision>-dev9
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix NPE in OverlayResource.getChild()
+          </scm:Note>
+        </notes>
+      
+         <path>source/spiralcraft/vfs/ovl/OverlayResource.java
+         </path>
+         
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev9
+        </revision>
+        
+        <notes>
+          <scm:Note>Path.asContainer() method adds a trailing delimiter to
+            a path if required
+          </scm:Note>
+        </notes>
+      
+         <path>source/spiralcraft/util/Path.java
+         </path>
+         
+      </scm:Change>
+
+     
+      <scm:Change>
+        <revision>-dev9
+        </revision>
+        
+        <notes>
+          <scm:Note>Build type conversion option into Binding to facilitate
+            type coercions in safe scenarios
+          </scm:Note>
+        </notes>
+      
+         <path>source/spiralcraft/lang
+         </path>
+         
+         <resources>
+           <URI>Binding.java
+           </URI>
+           <URI>spi/ProxyChannel.java
+           </URI>
+         </resources>
+      </scm:Change>
 
       <scm:Change>
         <revision>-dev8
