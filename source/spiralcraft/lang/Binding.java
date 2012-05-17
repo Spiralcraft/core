@@ -15,6 +15,7 @@
 package spiralcraft.lang;
 
 import spiralcraft.lang.spi.ProxyChannel;
+import spiralcraft.lang.util.LangUtil;
 
 /**
  * <p>A bindable Expression that contextualizes the behavior of a component.
@@ -35,6 +36,7 @@ public class Binding<T>
 {
 
   private final Expression<T> expression;
+  private Class<T> targetType;
   
   public Binding(Expression<T> expression)
   { this.expression=expression;
@@ -64,18 +66,33 @@ public class Binding<T>
   { return expression!=null?expression.getText():null;
   }
   
+  public void setTargetType(Class<T> targetType)
+  { 
+    if (this.targetType!=null && this.targetType!=targetType)
+    { throw new IllegalStateException("Cannot change targetType");
+    }
+    this.targetType=targetType;
+  }
+  
   @Override
   public Focus<?> bind(Focus<?> focus)
     throws BindException
   { 
     if (expression==null && channel!=null)
     { 
+      if (targetType!=null)
+      { channel=LangUtil.ensureType(channel,targetType,focus);
+      }
       // Pre-bound
       return focus.chain(channel);
     }
     
     if (channel==null)
-    { channel=focus.bind(expression);
+    { 
+      channel=focus.bind(expression);
+      if (targetType!=null)
+      { channel=LangUtil.ensureType(channel,targetType,focus);
+      }
     }
     return focus.chain(channel);
   }

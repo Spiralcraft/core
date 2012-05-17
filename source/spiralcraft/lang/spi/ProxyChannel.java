@@ -134,7 +134,7 @@ public class ProxyChannel<T>
   
   @Override
   public String toString()
-  { return super.toString()+":"+channel.toString();
+  { return super.toString()+":"+(channel!=null?channel.toString():"(not bound)");
   }
   
   @Override
