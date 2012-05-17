@@ -416,4 +416,24 @@ public class Path
   public String toString()
   { return format(new String(new char[] {_delimiter}));
   }
+  
+  /**
+   * <p>Return this path as a container path (i.e. with a trailing delimiter).
+   * </p>
+   * 
+   * <p>If this path is already a container, return this path.
+   * </p>
+   *  
+   * @return
+   */
+  public Path asContainer()
+  { 
+    if (_container)
+    { return this;
+    }
+    else
+    { return new Path(_elements,_delimiter,_absolute,true);
+    }
+  }
+  
 }
