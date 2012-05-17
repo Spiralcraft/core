@@ -208,17 +208,37 @@ public class OverlayResource
   @Override
   public Resource getChild(String name)
   { 
+      
     try
     {
-      return new OverlayResource
-        (URIUtil.addUnencodedPathSegment(uri,name)
-        ,overlay.asContainer().getChild(name)
-        ,base.asContainer().getChild(name)
-        );
+      Resource overlayChild
+        =overlay.asContainer()!=null?overlay.asContainer().getChild(name):null;
+      Resource baseChild
+        =base.asContainer()!=null?base.asContainer().getChild(name):null;
+      if (overlayChild!=null)
+      {
+        if (baseChild!=null)
+        {
+          return new OverlayResource
+            (URIUtil.addUnencodedPathSegment(uri,name)
+            ,overlayChild
+            ,baseChild
+           );
+        }
+        else
+        { return overlayChild;
+        }
+      }
+      else
+      { return baseChild;
+      }
+
+    
     }
     catch (UnresolvableURIException x)
     { throw new IllegalArgumentException("Invalid name "+name,x);
     }
+    
   }
   
   @Override
@@ -245,8 +265,8 @@ public class OverlayResource
   {
     return ArrayUtil.concat
       (Resource[].class
-      ,overlay.asContainer().listChildren()
-      ,base.asContainer().listChildren()
+      ,overlay.asContainer()!=null?overlay.asContainer().listChildren():null
+      ,base.asContainer()!=null?base.asContainer().listChildren():null
       );
   }
 
