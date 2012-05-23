@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Collection;
 
 import spiralcraft.common.Lifecycle;
+import spiralcraft.common.callable.Sink;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
@@ -68,6 +69,8 @@ public class Pool<T>
   private int _overdueDiscardsCount;
   private int _addsCount;
   private int _removesCount;
+  private Sink<T> onCheckout;
+  private Sink<T> onCheckin;
 
 
   /**
@@ -186,6 +189,14 @@ public class Pool<T>
       while (!_available.isEmpty())
       { _factory.discardResource( popAvailable().resource );
       }
+      if (!_out.isEmpty())
+      {
+        log.warning("Discarding "+_out.size()+" checked out entries");
+        for (Reference<T> ref:_out.values())
+        { _factory.discardResource(ref.resource);
+        }
+        _out.clear();
+      }
     }
   }
 
@@ -197,6 +208,14 @@ public class Pool<T>
   { return _available.size();
   }
 
+  public void setOnCheckout(Sink<T> onCheckout)
+  { this.onCheckout=onCheckout;
+  }
+
+  public void setOnCheckin(Sink<T> onCheckin)
+  { this.onCheckin=onCheckin;
+  }
+  
   /**
    * Checkout an object from the pool of
    *   available object.
@@ -205,6 +224,7 @@ public class Pool<T>
     throws InterruptedException
   {
     long lastUse=Clock.instance().approxTimeMillis();
+    T ret=null;
     synchronized (_monitor)
     {
       _lastUse=lastUse;
@@ -245,16 +265,28 @@ public class Pool<T>
         ref.checkOutTime=Clock.instance().approxTimeMillis();
         putOut(ref);
         _checkOutsCount++;
+
         if (debugLevel.isFine())
         { log.fine("Checkout complete");
         }
-        return ref.resource;
+        ret=ref.resource;
       }
       else
       { throw new InterruptedException("Pool is stopping");
       }
 
     }
+    
+    if (onCheckout!=null)
+    { 
+      try
+      { onCheckout.accept(ret);
+      }
+      catch (Exception x)
+      { log.log(Level.WARNING,"Error running onCheckout",x);
+      }
+    }
+    return ret;
   }
 
   private void waitOnMonitor()
@@ -281,6 +313,17 @@ public class Pool<T>
    */
   public void checkin(T resource)
   {
+    
+    if (onCheckin!=null)
+    { 
+      try
+      { onCheckin.accept(resource);
+      }
+      catch (Exception x)
+      { log.log(Level.WARNING,"Error running onCheckin",x);
+      }
+    }
+    
     _lastUse=Clock.instance().approxTimeMillis();
     _checkInsCount++;
     synchronized (_monitor)
@@ -301,6 +344,7 @@ public class Pool<T>
       }
     }
 
+    
   }
 
 
