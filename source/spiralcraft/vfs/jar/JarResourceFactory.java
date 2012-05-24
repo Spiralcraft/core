@@ -30,7 +30,7 @@ public class JarResourceFactory
   public Resource resolve(URI uri)
     throws UnresolvableURIException
   { 
-    if (URI.create(uri.getSchemeSpecificPart()).getScheme().equals("file"))
+    if (URI.create(uri.getRawSchemeSpecificPart()).getScheme().equals("file"))
     { return new JarFileResource(uri);
     }
     else
