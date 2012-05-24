@@ -36,15 +36,19 @@
             on the classpath is located on a path that contains characters
             invalid for a URI. 
           </scm:Note>
+          <scm:Note>Fix miscellaneous improper URI encoding bugs
+          </scm:Note>
         </notes>
       
-         <path>source/spiralcraft/vfs/jar/
+         <path>source/spiralcraft
          </path>
          
          <resources>
-           <URI>JarResourceFactory.java
+           <URI>vfs/jar/JarResourceFactory.java
            </URI>
-           <URI>JarFileResourceFactory.java
+           <URI>vfs/jar/JarFileResourceFactory.java
+           </URI>
+           <URI>util/URIUtil.java
            </URI>
          </resources>
          
