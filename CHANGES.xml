@@ -17,6 +17,21 @@
         </revision>
         
         <notes>
+          <scm:Note>Add sanity check to Package resolution when specified
+            search resource exists but is not a container
+          </scm:Note>
+        </notes>
+      
+         <path>source/spiralcraft/vfs/Package.java
+         </path>
+                  
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev10
+        </revision>
+        
+        <notes>
           <scm:Note>Fix exception when searching for resources when a jar
             on the classpath is located on a path that contains characters
             invalid for a URI. 
