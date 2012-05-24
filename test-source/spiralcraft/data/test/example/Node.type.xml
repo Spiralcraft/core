@@ -14,7 +14,7 @@
 
     </meta:SequenceField>
 
-    <meta:Field>
+    <meta:RelativeField>
       
       <name>parentNode
       </name>
@@ -23,9 +23,9 @@
         <example:Node.type/>
       </type>
 
-    </meta:Field>
+    </meta:RelativeField>
 
-    <meta:Field>
+    <meta:RelativeField>
           
       <name>children
       </name>
@@ -34,7 +34,7 @@
        	<example:Node.list.type/>
       </type>
 
-    </meta:Field>
+    </meta:RelativeField>
   </fields>
   
   <keys>

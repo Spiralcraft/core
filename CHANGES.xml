@@ -13,6 +13,39 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev10
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix exception when searching for resources when a jar
+            on the classpath is located on a path that contains characters
+            invalid for a URI. 
+          </scm:Note>
+        </notes>
+      
+         <path>source/spiralcraft/vfs/jar/JarResourceFactory.java
+         </path>
+         
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev10
+        </revision>
+        
+        <notes>
+          <scm:Note>Add onCheckout and onCheckin sinks to allow the application
+            to perform actions on the checked-out/checked-in resource 
+            before it is given to the client / made available in the pool
+            respectively
+          </scm:Note>
+        </notes>
+      
+         <path>source/spiralcraft/pool/Pool.java
+         </path>
+         
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev9
         </revision>
         
