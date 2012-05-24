@@ -63,26 +63,33 @@ public class Package
         }
         else
         {
-          Resource resource=container.asContainer().getChild("package.xml");
-          if (staticLogLevel.isFine())
-          { log.fine("Checked for "+resource);
-          }
-          if (resource.exists())
-          { 
-            ret=ReflectionType.canonicalType(Package.class)
-              .fromXmlResource(resource);
-            ret.uri=container.getURI();
-            if (!ret.base.isAbsolute())
-            { ret.base=URIUtil.ensureTrailingSlash(ret.uri).resolve(ret.base);
+          Container dir=container.asContainer();
+          if (dir!=null)
+          {
+            Resource packageXml=dir.getChild("package.xml");
+            if (staticLogLevel.isFine())
+            { log.fine("Checked for "+packageXml);
             }
-            ret.base=URIUtil.ensureTrailingSlash
-              (Resolver.getInstance().resolve(ret.base).getURI());
-            if (staticLogLevel.isConfig())
-            { log.fine("Loaded package "+ret.uri+" base="+ret.base);
+            if (packageXml.exists())
+            { 
+              ret=ReflectionType.canonicalType(Package.class)
+                .fromXmlResource(packageXml);
+              ret.uri=container.getURI();
+              if (!ret.base.isAbsolute())
+              { ret.base=URIUtil.ensureTrailingSlash(ret.uri).resolve(ret.base);
+              }
+              ret.base=URIUtil.ensureTrailingSlash
+                (Resolver.getInstance().resolve(ret.base).getURI());
+              if (staticLogLevel.isConfig())
+              { log.fine("Loaded package "+ret.uri+" base="+ret.base);
+              }
+            }
+            else
+            { ret=fromContainer(container.getParent());
             }
           }
           else
-          { ret=fromContainer(container.getParent());
+          { log.warning("Resource "+container.getURI()+" is not a container");
           }
         }
         map.put(container.getURI(),ret);
