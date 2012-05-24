@@ -23,8 +23,15 @@
           </scm:Note>
         </notes>
       
-         <path>source/spiralcraft/vfs/jar/JarResourceFactory.java
+         <path>source/spiralcraft/vfs/jar/
          </path>
+         
+         <resources>
+           <URI>JarResourceFactory.java
+           </URI>
+           <URI>JarFileResourceFactory.java
+           </URI>
+         </resources>
          
       </scm:Change>
 
