@@ -66,7 +66,7 @@ public class URIUtil
    */
   public static final URI removePathSuffix(URI source,String rawSuffix)
   { 
-    String rawPath=source.getPath();
+    String rawPath=source.getRawPath();
     if (rawPath!=null && rawPath.endsWith(rawSuffix))
     { 
       rawPath=rawPath.substring(0,rawPath.length()-rawSuffix.length());
