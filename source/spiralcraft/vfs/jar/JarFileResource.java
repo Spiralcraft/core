@@ -54,7 +54,7 @@ public class JarFileResource
   public JarFileResource(URI uri)
   { 
     super(uri);
-    String[] uriParts=uri.getSchemeSpecificPart().split("!");
+    String[] uriParts=uri.getRawSchemeSpecificPart().split("!");
     
     this.file=new File(URI.create(uriParts[0]));
     this.path=new Path(uriParts[1].substring(1),'/');
