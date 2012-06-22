@@ -23,12 +23,17 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
 import spiralcraft.data.Space;
 import spiralcraft.data.access.Store;
+import spiralcraft.data.reflect.ReflectionType;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.kit.AbstractChainableContext;
 import spiralcraft.lang.util.LangUtil;
+import spiralcraft.meta.Version;
+import spiralcraft.security.auth.Authenticator;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.context.Authority;
 import spiralcraft.vfs.context.ContextResourceMap;
 import spiralcraft.vfs.context.FileSpace;
@@ -47,6 +52,7 @@ public class PlaceContext
 {
   
   private String id;
+  private Version version;
   private Space space;
   private FileSpace fileSpace;
   private Container dataContainer;
@@ -54,7 +60,20 @@ public class PlaceContext
   private Authority[] authorities;
   private ContextResourceMap vfsMappings
     =new ContextResourceMap();
+  private PlaceStatus status;
+  private Binding<Void> preInitialize;
+  private Binding<Void> preUpgrade;
+  private Binding<Void> postInitialize;
+  private Binding<Void> postUpgrade;
+  private Authenticator authenticator;
   
+  public void setId(String id)
+  { this.id=id;
+  }
+  
+  public String getId()
+  { return id;
+  }
   
   public void setPlugins(PluginContext[] plugins)
   { this.pluginContexts=plugins;
@@ -64,6 +83,38 @@ public class PlaceContext
   { this.authorities=authorities;
   }
   
+  public void setAuthenticator(Authenticator authenticator)
+  { this.authenticator=authenticator;
+  }
+  
+  public void setVersion(Version version)
+  { this.version=version;
+  }
+  
+  public Version getVersion()
+  { return version;
+  }
+  
+  public PlaceStatus getStatus()
+  { return status;
+  }
+  
+  public void setPreInitialize(Binding<Void> preInitialize)
+  { this.preInitialize=preInitialize;
+  }
+
+  public void setPreUpgrade(Binding<Void> preUpgrade)
+  { this.preUpgrade=preUpgrade;
+  }
+  
+  public void setPostInitialize(Binding<Void> postInitialize)
+  { this.postInitialize=postInitialize;
+  }
+
+  public void setPostUpgrade(Binding<Void> postUpgrade)
+  { this.postUpgrade=postUpgrade;
+  }
+
   @Override
   protected Focus<?> bindImports(Focus<?> chain)
     throws ContextualException
@@ -117,17 +168,43 @@ public class PlaceContext
       { chainPlugin(pluginContext);
       }
 
-        
-      fileSpace=new FileSpace();
-      chain(fileSpace);
-
-      space=new Space();
-      chain(space);
       
+    }
+
+    space=new Space();
+    chain(space);
+    
+    if (authenticator!=null)
+    { chain(authenticator);
+    }
+    
+    fileSpace=new FileSpace();
+    chain(fileSpace);
+    
+    
+    
+    return chain.chain(LangUtil.constantChannel(this));
+  }
+
+  @Override
+  protected Focus<?> bindExports(Focus<?> chain)
+    throws ContextualException
+  { 
+    if (preInitialize!=null)
+    { preInitialize.bind(chain);
+    }
+    if (preUpgrade!=null)
+    { preUpgrade.bind(chain);
+    }
+    if (postInitialize!=null)
+    { postInitialize.bind(chain);
+    }
+    if (postUpgrade!=null)
+    { postUpgrade.bind(chain);
     }
     return chain;
   }
-
+  
   void registerStore(Store store)
   { space.addStore(store);
   }
@@ -154,13 +231,130 @@ public class PlaceContext
   }
   
 
+  private void resolveStatus()
+    throws IOException,ContextualException
+  {
+    Resource statusXml=dataContainer.getChild("place.status.xml");
+    if (statusXml.exists())
+    { 
+      status=
+        ReflectionType.canonicalType(PlaceStatus.class)
+          .fromXmlResource(statusXml);
+
+      if (!status.getId().equals(id))
+      { 
+        throw new ContextualException
+          ("Starting place id "+id+": Data in "+dataContainer.getURI()
+          +" is for a different place id "+status.getId()
+          );
+      }
+      if (status.getVersion().compareTo(version)>0)
+      {
+        throw new ContextualException
+          ("Starting place id "+id+": Data in "+dataContainer.getURI()
+          +" is for a more recent version ("+status.getVersion()
+          +") than the running version ("+version+")"
+          );
+      
+      }
+    }
+    
+  }
+
+  private void preCheckStatus()
+  {
+    if (status!=null)
+    {
+      if (status.getVersion().compareTo(version)<0)
+      {
+        log.info
+          ("Upgrading place "+id+" version "+status.getVersion()
+          +" to version "+version
+          );
+        if (preUpgrade!=null)
+        { preUpgrade.get();
+        }
+      }
+    }
+    else
+    {
+      log.info
+        ("Initializing place "+id+" version "+version);
+      if (preInitialize!=null)
+      { preInitialize.get();
+      }
+    }
+  }
+  
+  private void postCheckStatus()
+  {
+    if (status!=null)
+    {
+      if (status.getVersion().compareTo(version)<0)
+      {
+        log.info
+          ("Completing upgrade of place "+id+" version "+status.getVersion()
+          +" to version "+version
+          );
+        if (postUpgrade!=null)
+        { postUpgrade.get();
+        }
+        status.setVersion(version);
+      }
+    }
+    else
+    {
+      log.info
+        ("Completing initialization of place "+id+" version "+version);
+      if (postInitialize!=null)
+      { postInitialize.get();
+      }
+      status=new PlaceStatus();
+      status.setId(id);
+      status.setVersion(version);
+    }
+  }
+  
+  private void writeStatus()
+    throws IOException,ContextualException
+  {
+    Resource statusXml=dataContainer.getChild("place.status.xml");
+
+    ReflectionType.canonicalType(PlaceStatus.class)
+      .toXmlResource(statusXml,status);
+  }
+  
   @Override
   public void start()
     throws LifecycleException
   { 
+    try
+    { resolveStatus();
+    }
+    catch (ContextualException x)
+    { throw new LifecycleException("Error starting place "+id,x);
+    }
+    catch (IOException x)
+    { throw new LifecycleException("Error starting place "+id,x);
+    }
+    
+    preCheckStatus();
+
     Lifecycler.start(authorities);
     fileSpace.start();
+
     space.start();
+    
+    postCheckStatus();
+    try
+    { writeStatus();
+    }
+    catch (ContextualException x)
+    { throw new LifecycleException("Error starting place "+id,x);
+    }
+    catch (IOException x)
+    { throw new LifecycleException("Error starting place "+id,x);
+    }
   }
 
   @Override
