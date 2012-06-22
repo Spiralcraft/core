@@ -36,6 +36,16 @@ public class Redirect
   private URI virtualURI;
   private URI baseURI;
   
+  public Redirect()
+  {
+  }
+  
+  public Redirect(URI virtualURI,URI baseURI)
+  {
+    this.virtualURI=virtualURI;
+    this.baseURI=baseURI;
+  }
+  
   
   @Override
   public URI getVirtualURI()

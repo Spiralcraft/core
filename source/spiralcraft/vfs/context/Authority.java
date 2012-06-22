@@ -41,7 +41,7 @@ public class Authority
   {
   }
   
-  Authority(String name,URI root)
+  public Authority(String name,URI root)
   { 
     this.authorityName=name;
     this.defaultRoot=root;
@@ -92,10 +92,19 @@ public class Authority
     }
   }
   
-  void mapPath(String path,Graft graft)
+  /**
+   * Map a path to a graft
+   * 
+   * @param path
+   * @param graft
+   */
+  public void mapPath(String path,Graft graft)
   { 
     if (pathMap==null)
     { pathMap=new HashMap<String,Graft>();
+    }
+    if (path.startsWith("/"))
+    { path=path.substring(1);
     }
     pathMap.put(path,graft);
     
