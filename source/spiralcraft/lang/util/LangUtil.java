@@ -25,6 +25,7 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.functions.FromString;
 import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.SimpleChannel;
 
 public class LangUtil
 {
@@ -119,6 +120,10 @@ public class LangUtil
         ("Could not find a provider of class "+clazz+" in context.");
     }
     return ret;
+  }
+  
+  public static <T> Channel<T> constantChannel(T value)
+  { return new SimpleChannel<T>(value,true);
   }
   
   @SuppressWarnings("unchecked")

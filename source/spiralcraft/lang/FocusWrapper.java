@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import spiralcraft.common.namespace.PrefixResolver;
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 
 
 /**
@@ -128,7 +128,7 @@ public abstract class FocusWrapper<Tfocus>
   public Channel<Focus<Tfocus>> getSelfChannel()
   {
     if (selfChannel==null)
-    { selfChannel=new SimpleChannel<Focus<Tfocus>>(this,true);
+    { selfChannel=LangUtil.constantChannel((Focus<Tfocus>) this);
     }
     return selfChannel;
   }

@@ -41,6 +41,7 @@ import spiralcraft.lang.kit.members.MetaTypeMember;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.util.string.StringConverter;
 
 import java.net.URI;
@@ -328,7 +329,7 @@ public abstract class AbstractReflector<T>
     if (selfChannel==null)
     {
       selfChannel
-        =new SimpleChannel<Reflector<T>>(this,true);
+        =LangUtil.constantChannel((Reflector<T>) this);
 
     }
   }

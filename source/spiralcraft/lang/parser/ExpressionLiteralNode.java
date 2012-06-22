@@ -19,20 +19,20 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 
-public class ExpressionLiteralNode
+public class ExpressionLiteralNode<T>
   extends Node
 {
 
   private final Node expression;
-  private final SimpleChannel<Expression<?>> _optic;
+  private final Channel<Expression<T>> _optic;
 
   @SuppressWarnings("rawtypes")
   public ExpressionLiteralNode(Node expression)
   { 
     this.expression=expression;
-    _optic=new SimpleChannel<Expression<?>>(Expression.create(expression),true);
+    _optic=LangUtil.constantChannel(Expression.<T>create(expression));
   }
   
   @Override
@@ -45,7 +45,7 @@ public class ExpressionLiteralNode
   { 
     Node copy=expression.copy(visitor);
     if (copy!=expression)
-    { return new ExpressionLiteralNode(expression);
+    { return new ExpressionLiteralNode<T>(expression);
     }
     
     return this;
@@ -66,7 +66,7 @@ public class ExpressionLiteralNode
   }
 
   @Override
-  public synchronized Channel<Expression<?>> bind(final Focus<?> focus)
+  public synchronized Channel<Expression<T>> bind(final Focus<?> focus)
     throws BindException
   { return _optic;
   }

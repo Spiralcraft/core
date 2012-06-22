@@ -56,7 +56,7 @@ import spiralcraft.data.types.standard.AnyType;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.Level;
 import spiralcraft.task.Scenario;
 import spiralcraft.util.URIUtil;
@@ -680,7 +680,7 @@ public class XmlStore
     public XmlSequence (URI uri)
     { 
       this.uri=uri;
-      uriFocus=new SimpleFocus<URI>(new SimpleChannel<URI>(uri,true));
+      uriFocus=new SimpleFocus<URI>(LangUtil.constantChannel(uri));
     }
 
     @Override

@@ -36,7 +36,7 @@ import spiralcraft.lang.Channel;
 
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 
 
 import java.lang.reflect.InvocationHandler;
@@ -214,7 +214,7 @@ public class TupleDelegate<T>
           { 
             
             params[i]=ReflectionType.canonicalType(clazz);
-            paramChannels[i]=new SimpleChannel(args[i],true);
+            paramChannels[i]=LangUtil.constantChannel(args[i]);
             i++;
           }
         

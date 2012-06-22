@@ -23,6 +23,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.util.LangUtil;
 
 /**
  * <p>Referenced by upstream channels that wish to store state for the duration 
@@ -65,7 +66,7 @@ public class ViewCache
     throws BindException
   {
     focusChain
-      =focusChain.chain(new SimpleChannel<ViewCache>(this,true));
+      =focusChain.chain(LangUtil.constantChannel(this));
     
     return focusChain;
   }

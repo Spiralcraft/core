@@ -42,7 +42,7 @@ import spiralcraft.lang.Context;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.kit.AbstractChainableContext;
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
@@ -611,7 +611,7 @@ public class AbstractComponent
     if (selfFocus==null)
     { 
       selfFocus=focusChain.chain
-        (new SimpleChannel<AbstractComponent>(AbstractComponent.this,true));
+        (LangUtil.constantChannel(AbstractComponent.this));
       bindContextuals(selfFocus,selfContextuals);
       if (peerSet!=null)
       { peerSet.bind(selfFocus);

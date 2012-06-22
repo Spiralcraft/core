@@ -25,6 +25,7 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.GenericReflector;
 import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 
 /**
  * <p>Publishes a list of available options and a currently selected option 
@@ -67,7 +68,7 @@ public class SelectorContext<Toptions,Toption,Tkey>
   public void setOptions(Toptions options)
   {
     if (optionsType==null)
-    { this.optionsC=new SimpleChannel<Toptions>(options,true);
+    { this.optionsC=LangUtil.constantChannel(options);
     }
     else
     {

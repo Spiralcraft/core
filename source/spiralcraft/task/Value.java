@@ -20,7 +20,7 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.Context;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 
 /**
  * Integrates an arbitrary component into the Scenario chain
@@ -116,7 +116,7 @@ public class Value<Tresult>
     { focusChain=contextual.bind(focusChain);
     }
     else
-    { focusChain=focusChain.chain(new SimpleChannel<Tresult>(value,true));
+    { focusChain=focusChain.chain(LangUtil.constantChannel(value));
     }
     super.bindChildren(focusChain);
   }

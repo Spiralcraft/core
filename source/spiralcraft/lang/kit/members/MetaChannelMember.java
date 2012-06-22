@@ -20,7 +20,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.kit.Member;
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 
 /**
  * Returns a reference to the Channel object that implements the subject
@@ -47,7 +47,7 @@ public class MetaChannelMember<T>
     if (channel==null)
     { 
       channel
-        =new SimpleChannel<Channel<T>>(source,true);
+        =LangUtil.constantChannel(source);
       source.cache(name,channel);
     }
     return channel;

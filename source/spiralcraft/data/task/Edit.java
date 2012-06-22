@@ -33,7 +33,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.task.Chain;
 import spiralcraft.task.Task;
 
@@ -176,7 +176,7 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
     focusChain=editor.bind(focusChain);
 
     focusChain.addFacet
-      (focusChain.chain(new SimpleChannel<EditorBase<Tbuffer>>(editor,true)));
+      (focusChain.chain(LangUtil.constantChannel(editor)));
     return focusChain;
   }
 

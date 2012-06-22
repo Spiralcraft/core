@@ -18,7 +18,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 
 /**
  * Exposes metadata to expressions. Allows a binding to expose a metadata
@@ -82,7 +82,7 @@ public class MetaNode<T extends Channel<?>>
     
     Channel<T> ret=sourceOptic.resolve(focus,"@",null);
     if (ret==null)
-    { return new SimpleChannel<T>((T) sourceOptic,true);
+    { return LangUtil.constantChannel((T) sourceOptic);
     }
     return ret;
   }

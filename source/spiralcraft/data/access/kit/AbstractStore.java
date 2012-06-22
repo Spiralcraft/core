@@ -61,7 +61,7 @@ import spiralcraft.data.transaction.Transaction.State;
 import spiralcraft.data.types.standard.AnyType;
 
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.vfs.Resolver;
@@ -108,7 +108,7 @@ public abstract class AbstractStore
   private StoreService[] services;
   
   private String name;
-  private Focus<Store> focus;
+  private Focus<AbstractStore> focus;
   private Sequence txIdSequence;
   
   private final LinkedHashSet<Long> txInProgress
@@ -316,7 +316,7 @@ public abstract class AbstractStore
   public Focus<?> bind(Focus<?> focusChain)
     throws ContextualException
   { 
-    focus=focusChain.chain(new SimpleChannel<Store>(this,true));
+    focus=focusChain.chain(LangUtil.constantChannel(this));
     
     bindServices(focus);
     

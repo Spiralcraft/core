@@ -23,7 +23,7 @@ import spiralcraft.common.declare.Declarable;
 import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.common.namespace.PrefixResolver;
 
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.util.URIUtil;
 
 
@@ -298,6 +298,9 @@ public abstract class BaseFocus<T>
     if (aliases==null)
     { aliases=new LinkedList<URI>();
     }
+    else if (aliases.contains(alias))
+    { return;
+    }
     aliases.add(alias);
   }
   
@@ -306,7 +309,7 @@ public abstract class BaseFocus<T>
   public Channel<Focus<T>> getSelfChannel()
   { 
     if (selfChannel==null)
-    { selfChannel=new SimpleChannel<Focus<T>>(this,true);
+    { selfChannel=LangUtil.constantChannel((Focus<T>) this);
     }
     return selfChannel;
   }

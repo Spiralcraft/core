@@ -29,7 +29,7 @@ import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.util.ArrayUtil;
 
 /**
@@ -95,9 +95,9 @@ public class EntityBinding
   public Focus<?> bind(Focus<?> focusChain)
     throws ContextualException
   { 
-    focusChain=focusChain.chain(new SimpleChannel<EntityBinding>(this,true));
+    focusChain=focusChain.chain(LangUtil.constantChannel(this));
     focusChain.addFacet
-      (focusChain.chain(new SimpleChannel<Entity>(entity,true)));
+      (focusChain.chain(LangUtil.constantChannel(entity)));
 
     Type.getDeltaType(entity.getType());
     accessor.bind(focusChain);

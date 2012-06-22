@@ -21,12 +21,12 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 import spiralcraft.lang.util.DictionaryBinding;
+import spiralcraft.lang.util.LangUtil;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
-import spiralcraft.lang.spi.SimpleChannel;
 
 import spiralcraft.text.Renderer;
 import spiralcraft.text.Wrapper;
@@ -208,7 +208,7 @@ public abstract class ElementRenderer
     throws BindException
   { 
     Focus<?> focus
-      =focusChain.chain(new SimpleChannel<ElementRenderer>(this,true));
+      =focusChain.chain(LangUtil.constantChannel(this));
     if (attributes!=null)
     { 
       for (DictionaryBinding<?> binding:attributes)
