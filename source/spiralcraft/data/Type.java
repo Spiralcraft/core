@@ -25,6 +25,7 @@ import org.xml.sax.SAXException;
 
 import spiralcraft.data.core.DeltaType;
 import spiralcraft.data.sax.DataReader;
+import spiralcraft.data.sax.DataWriter;
 import spiralcraft.data.session.Buffer;
 import spiralcraft.data.session.BufferType;
 // import spiralcraft.log.ClassLogger;
@@ -684,6 +685,17 @@ public abstract class Type<T>
     }
   }  
   
+  public void toXmlResource(Resource resource,T object)
+    throws DataException
+  {
+    try
+    { new DataWriter().writeToResource(resource,toData(object));
+    }
+    catch (IOException x)
+    { throw new DataException("Error writing data to "+resource.getURI(),x);
+    }
+    
+  }
   
   protected RuntimeDataException newLinkException(Exception x)
   { return new RuntimeDataException("Error linking "+getURI(),x);
