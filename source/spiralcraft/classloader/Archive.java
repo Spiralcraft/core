@@ -61,8 +61,19 @@ public abstract class Archive
       { return new JarArchive(resource.unwrap(FileResource.class));
       }
       else if (resource.asContainer()!=null)
-      { return new FileArchive(resource.unwrap(FileResource.class));
+      { return new ResourceArchive(resource.unwrap(FileResource.class));
       }
+    }
+    else
+    {
+      if (resource.getURI().getPath().endsWith(".jar"))
+      { 
+        return new JarArchive(resource.unwrap(FileResource.class));
+      }
+      else if (resource.asContainer()!=null)
+      { return new ResourceArchive(resource);
+      }
+      
     }
     return null;
   }

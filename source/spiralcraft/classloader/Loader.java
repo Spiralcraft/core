@@ -67,12 +67,21 @@ public class Loader
           { addArchive(new JarArchive(fileResource));
           }
           else
-          { addArchive(new FileArchive(fileResource));
+          { addArchive(new ResourceArchive(fileResource));
           }
         }
         else
-        { throw new UnsupportedOperationException
-            ("Only FileResources are supported at this time"); 
+        { 
+          if (resource.asContainer()!=null)
+          { addArchive(new ResourceArchive(resource));
+          }
+          else
+          {          
+            throw new UnsupportedOperationException
+              ("Resource "+resource.getURI()
+                +" is not recognized as a class archive by this classloader"
+              ); 
+          }
         }
       }
     }
