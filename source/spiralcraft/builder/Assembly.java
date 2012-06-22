@@ -564,7 +564,21 @@ public class Assembly<T>
     implements Focus<tFocus>
   {
     public AssemblyFocus(Focus<?> parentFocus)
-    { super(parentFocus);
+    { 
+      super(parentFocus);
+      AssemblyClass assemblyClass
+        =_assemblyClass;
+      while (assemblyClass.getBaseClass()!=null)
+      { 
+        if (assemblyClass.getDeclarationInfo()!=null)
+        { 
+          URI declaredType=assemblyClass.getDeclarationInfo().getDeclaredType();
+          if (declaredType!=null)
+          { addAlias(declaredType);
+          }
+        }
+        assemblyClass=assemblyClass.getBaseClass();
+      }
     }
     
     @Override
