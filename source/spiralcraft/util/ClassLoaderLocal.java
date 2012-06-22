@@ -140,4 +140,34 @@ public class ClassLoaderLocal<T>
     return list;
   }
   
+  /**
+   * 
+   * @return The instance for the nearest ancestor classloader that has a
+   *   non-null instance
+   */
+  public T getNearestInstance()
+  { 
+    ClassLoader loader=Thread.currentThread().getContextClassLoader();
+    boolean reachedSystem=false;
+    while (loader!=null)
+    { 
+      if (loader==ClassLoader.getSystemClassLoader())
+      { reachedSystem=true;
+      }
+      
+      T instance=getInstance(loader);
+      if (instance!=null)
+      { return instance;
+      }
+      loader=loader.getParent();
+      
+      if (loader==null && !reachedSystem)
+      { loader=ClassLoader.getSystemClassLoader();
+      }
+    }
+    return null;
+    
+  }
+  
+  
 }
