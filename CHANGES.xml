@@ -11,6 +11,311 @@
     
     
     <detail> 
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Allow for programmatic mapping of VFS contextual mount 
+            points
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/vfs/context
+        </path>
+        
+        <resources>
+          <URI>Authority.java
+          </URI>
+          <URI>Redirect.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Added Resource.resolve(Path) and Resource.getURL()
+          </scm:Note>
+          <scm:Note>Fix NPEs in some corner-case path computation logic 
+            in JarFileResource
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/vfs
+        </path>
+        
+        <resources>
+          <URI>Resource.java
+          </URI>
+          <URI>classpath/ClasspathResource.java
+          </URI>
+          <URI>jar/JarFileResource.java
+          </URI>
+          <URI>ovl/OverlayResource.java
+          </URI>
+          <URI>spi/AbstractResource.java
+          </URI>
+          <URI>util/ResourceWrapper.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Path.subPath(0) returns non-absolute identity path
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/util/Path.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Authenticator and AuthSession are now set up for use
+            outside a specialized UI container (e.g. inside a PlaceContext)
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/security/auth
+        </path>
+        
+        <resources>
+          <URI>Authenticator.java
+          </URI>
+          <URI>AuthSession.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Integrate bundles into the executable environment.
+          </scm:Note>
+          <scm:Note>Define context://run to point to the working directory
+            of the VM process or Executable isolate.
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/exec/Executor.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Type.toXMLResource(Resource resource,data) method provides
+            a convenient way to persist an object to an XML resource
+            in the canonical format.
+          </scm:Note>
+          <scm:Note>Fix ReflectionScheme so that the "class" property is 
+            transient.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>Type.java
+          </URI>
+          <URI>reflect/ReflectionScheme.java
+          </URI>
+        </resources>
+      </scm:Change>
+      
+      
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Make sure that the CommandScheduler uses the thread
+            context classloader it was instantiated with
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/command/CommandScheduler.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>New "bundle" packaging mechanism provides
+            a more direct system for managing sets of resources that are
+            integrated into various parts of an application.            
+          </scm:Note>
+          <scm:Note>added ClassLoaderLocal.getNearestInstance() method for when
+            the associated objects are sparsely allocated
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>bundle/Bundle.java
+          </URI>
+          <URI>bundle/BundleClassLoader.java
+          </URI>
+          <URI>bundle/BundleException.java
+          </URI>
+          <URI>bundle/Library.java
+          </URI>
+          <URI>bundle/Package.java
+          </URI>
+          <URI>vfs/Resolver.java
+          </URI>
+          <URI>vfs/bundle/BundleResource.java
+          </URI>
+          <URI>vfs/bundle/BundleResourceFactory.java
+          </URI>
+          <URI>util/ClassLoaderLocal.java
+          </URI>
+        </resources>
+        
+      </scm:Change> 
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Update classloader components to deal with loading from
+            arbitrary VFS resources  
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/classloader
+        </path>
+        
+        <resources>
+          <URI>Archive.java
+          </URI>
+          <URI>FileArchive.java
+          </URI>
+          <URI>Loader.java
+          </URI>
+          <URI>ResourceArchive.java
+          </URI>
+        </resources>
+        
+      </scm:Change> 
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Assembly now adds all supertype URIs as focus aliases so 
+            they can be inspected by debugging code.
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/builder/Assembly.java
+        </path>
+        
+      </scm:Change> 
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Enhancements to PlaceContext to detect a new installation
+            or an upgrade and provide hooks for application code to handle
+            these scenarios.
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>app/PlaceContext.java
+          </URI>
+          <URI>app/PlaceStatus.java
+          </URI>
+          <URI>lang/kit/AbstractChainableContext.java
+          </URI>
+          <URI>meta/Version.java
+          </URI>
+        </resources>
+      </scm:Change> 
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Add LangUtil.constantChannel to simplify the creation
+            of a constant channel for a component
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/
+        </path>
+       
+        <resources>
+          <URI>app/kit/AbstractComponent.java
+          </URI>
+          <URI>data/access/kit/AbstractStore.java
+          </URI>
+          <URI>data/access/kit/EntityBinding.java
+          </URI>
+          <URI>data/lang/TupleDelegate.java
+          </URI>
+          <URI>data/task/Edit.java
+          </URI>
+          <URI>data/xml/XmlStore.java
+          </URI>
+          <URI>lang/BaseFocus.java
+          </URI>
+          <URI>lang/FocusWrapper.java
+          </URI>
+          <URI>lang/kit/AbstractReflector.java
+          </URI>
+          <URI>lang/kit/SelectorContext.java
+          </URI>
+          <URI>lang/kit/members/MetaChannelMember.java
+          </URI>
+          <URI>lang/parser/ExpressionLiteralNode.java
+          </URI>
+          <URI>lang/parser/MetaNode.java
+          </URI>
+          <URI>lang/spi/ViewCache.java
+          </URI>
+          <URI>lang/util/LangUtil.java
+          </URI>
+          <URI>sax/ElementRenderer.java
+          </URI>
+          <URI>task/Value.java
+          </URI>
+          <URI>vfs/context/Mirror.java
+          </URI>
+        </resources>
+                  
+      </scm:Change>
 
       <scm:Change>
         <revision>-dev10
