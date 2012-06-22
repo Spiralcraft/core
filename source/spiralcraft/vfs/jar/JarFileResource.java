@@ -15,6 +15,7 @@
 package spiralcraft.vfs.jar;
 
 import spiralcraft.io.InputStreamWrapper;
+//import spiralcraft.log.ClassLog;
 import spiralcraft.util.Path;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resource;
@@ -39,15 +40,24 @@ public class JarFileResource
   extends AbstractResource
   implements Container
 {
+//  private static final ClassLog log
+//    =ClassLog.getInstance(JarFileResource.class);
+      
   private File file;
   private Path path;
   private Resource[] _contents;
 
   public JarFileResource(File jarFile,Path path)
   { 
-    super(URI.create("jar:"+jarFile.toURI()+"!/"+path));
+    super
+      (URI.create
+        ("jar:"
+        +jarFile.toURI()+"!"
+        +(path.isAbsolute()?path:("/"+path))  
+        )
+      );
     this.file=jarFile;
-    this.path=path;
+    this.path=path.subPath(0);
     
   }
   
@@ -60,6 +70,16 @@ public class JarFileResource
     this.path=new Path(uriParts[1].substring(1),'/');
   }
   
+  @Override
+  public Resource resolve(Path childPath)
+  { 
+    if (childPath.isAbsolute())
+    { return new JarFileResource(file,childPath);
+    }
+    else
+    { return new JarFileResource(file,path.append(childPath));
+    }
+  }
   
   @Override
   public InputStream getInputStream()
@@ -135,7 +155,13 @@ public class JarFileResource
   
   @Override
   public Resource getParent()
-  { return new JarFileResource(file,path.parentPath());
+  { 
+    if (path.parentPath()!=null)
+    { return new JarFileResource(file,path.parentPath());
+    }
+    else
+    { return null;
+    }
   }
 
   @Override
@@ -207,7 +233,16 @@ public class JarFileResource
       Enumeration<JarEntry> entries=jar.entries();
       String pathString=path.format("/");
       if (!pathString.endsWith("/"))
-      { pathString=pathString+"/";
+      { 
+        if (pathString.length()>0)
+        { pathString=pathString+"/";
+        }
+      }
+      else
+      { 
+        if (pathString.length()==1)
+        { pathString="";
+        }
       }
       List<Resource> children=new ArrayList<Resource>();
       while (entries.hasMoreElements())
@@ -220,6 +255,7 @@ public class JarFileResource
           int slash=entry.getName().indexOf('/',pathString.length());
           if (slash<0 || slash==entry.getName().length()-1)
           { 
+            //log.fine("Added "+entry.getName());
             // Only add immediate children
             children.add
               (new JarFileResource(file,new Path(entry.getName(),'/')));
