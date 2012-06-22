@@ -123,6 +123,19 @@ public class AbstractChainableContext
     throws ContextualException
   { return focusChain;
   }
+
+  /**
+   * Override to bind any dependencies on the last chain in the context. The
+   *   Focus returned will be returned by the bind() method for the chain.
+   * 
+   * @param focusChain
+   * @return
+   * @throws BindException
+   */
+  protected Focus<?> bindExports(Focus<?> focusChain)
+    throws ContextualException
+  { return focusChain;
+  }
   
   @Override
   public final Focus<?> bind(
@@ -135,11 +148,9 @@ public class AbstractChainableContext
     { 
       focusChain=bindPeers(focusChain);
       if (next!=null)
-      { return next.bind(focusChain);
+      { focusChain=next.bind(focusChain);
       }
-      else
-      { return focusChain;
-      }
+      return bindExports(focusChain);
     }
     finally
     { popLocal();
