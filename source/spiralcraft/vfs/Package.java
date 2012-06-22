@@ -39,7 +39,14 @@ public class Package
   private static CycleDetector<Package> cycleDetector
     =new CycleDetector<Package>();
   
-  
+  /**
+   * Search for the closest containing package in the specified container
+   *   or any of its ancestors.
+   * 
+   * @param container
+   * @return
+   * @throws ContextualException
+   */
   public static final synchronized Package fromContainer(Resource container)
     throws ContextualException
   {
@@ -131,10 +138,12 @@ public class Package
     { return null;
     }
     
-    URI baseURI=base.resolve(uri.relativize(overlayResource.getURI()));
+    URI relativeURI=uri.relativize(overlayResource.getURI());
+    
+    URI baseURI=base.resolve(relativeURI);
     if (logLevel.isFine())
     { 
-      log.fine("Package in "+uri+" based "+overlayResource.getURI()
+      log.fine("Package in "+uri+" (base="+base+") based "+relativeURI+" (from "+overlayResource.getURI()+")"
         +" to "+baseURI);
     }
     if (baseURI!=null)
