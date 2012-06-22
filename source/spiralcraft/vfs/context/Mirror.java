@@ -27,7 +27,7 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.task.Scenario;
@@ -224,7 +224,7 @@ public class Mirror
     Focus<?> focusChain)
     throws ContextualException
   { 
-    focusChain=focusChain.chain(new SimpleChannel<Mirror>(this,true));
+    focusChain=focusChain.chain(LangUtil.constantChannel(this));
     if (subscriber!=null)
     { subscriber.bind(focusChain);
     }
