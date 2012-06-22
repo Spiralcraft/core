@@ -14,10 +14,7 @@
 //
 package spiralcraft.security.auth;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 
 import java.util.ArrayList;
@@ -55,7 +52,6 @@ public class AuthSession
   
   protected boolean debug;
 
-  protected String digestAlgorithm="SHA-256";
 
   
   protected final HashMap<String,Object> attributes
@@ -66,16 +62,7 @@ public class AuthSession
   protected AuthModule.Session primarySession;
   
   
-  protected DigestFunction digestFunction
-    =new DigestFunction()
-  {
 
-    @Override
-    public byte[] digest(
-      String clearToken)
-    { return saltedDigest(clearToken);
-    }
-  };
   
   public AuthSession(Authenticator authenticator)
   { this.authenticator=authenticator;
@@ -97,16 +84,8 @@ public class AuthSession
 
   }
   
-  public void setDigestAlgorithm(String digestAlgorithm)
-    throws NoSuchAlgorithmException
-  {
-
-    MessageDigest.getInstance(digestAlgorithm);
-    this.digestAlgorithm=digestAlgorithm;
-  }
-  
   public DigestFunction getDigestFunction()
-  { return digestFunction;
+  { return authenticator.getDigestFunction();
   }
 
   /**
@@ -472,20 +451,7 @@ public class AuthSession
    * @return
    */
   public byte[] saltedDigest(String input)
-  {
-    String realmName=authenticator.getRealmName();
-    if (realmName!=null)
-    {
-      return digest(realmName+input);
-    }
-    else
-    { 
-      log.warning
-        ("Security risk: A permanent Authenticator realmName should"
-        +" be specified BEFORE generating token digests."
-        );
-      return digest(input);
-    }
+  { return authenticator.saltedDigest(input);
   }    
   
   /**
@@ -497,28 +463,11 @@ public class AuthSession
   public String getRealmName()
   { return authenticator.getRealmName();
   }
-  
-  /**
-   * <p>Creates a SHA-256 digest of the specified string.
-   * </p>
-   * 
-   * @param input
-   * @return
-   */
+
   public byte[] digest(String input)
-  {
-    try
-    { 
-      return MessageDigest.getInstance(digestAlgorithm).digest
-        (input.getBytes("UTF-8"));
-    }
-    catch (NoSuchAlgorithmException x)
-    { throw new RuntimeException(digestAlgorithm+" not supported",x);
-    }
-    catch (UnsupportedEncodingException x)
-    { throw new RuntimeException("UTF-8 not supported",x);
-    }
+  { return authenticator.digest(input);
   }
+  
     
   /**
    * <p>Associate arbitrary application state with this LoginSession

@@ -14,13 +14,17 @@
 //
 package spiralcraft.security.auth;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
 import spiralcraft.common.ContextualException;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.SimpleFocus;
@@ -28,6 +32,7 @@ import spiralcraft.lang.reflect.BeanFocus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.GenericReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.log.ClassLog;
 
 //import spiralcraft.log.ClassLog;
 
@@ -44,6 +49,9 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 public class Authenticator
   implements Contextual
 {
+  private final ClassLog log
+    =ClassLog.getInstance(Authenticator.class);
+  
   public static final URI FOCUS_URI
     =BeanReflector.getInstance(Authenticator.class).getTypeURI();
 
@@ -51,6 +59,7 @@ public class Authenticator
 //    =ClassLog.getInstance(Authenticator.class);
   
   protected String realmName;
+  protected Binding<String> realmNameX;
   protected ThreadLocalChannel<AuthSession> sessionChannel;
 
   protected GenericReflector<AuthSession> sessionReflector;
@@ -66,8 +75,20 @@ public class Authenticator
 
   protected HashMap<String,Integer> moduleMap;
   
-  
+  protected String digestAlgorithm="SHA-256";
+
   protected Authorizer authorizer;
+  
+  protected DigestFunction digestFunction
+    =new DigestFunction()
+  {
+
+    @Override
+    public byte[] digest(
+      String clearToken)
+    { return saltedDigest(clearToken);
+    }
+  };
   
   /**
    * @return The name of the realm this Authenticator will be serving.
@@ -95,6 +116,19 @@ public class Authenticator
     this.realmName=realmName;
   }
   
+  public void setRealmNameX(Binding<String> realmNameX)
+  { this.realmNameX=realmNameX;
+  }
+
+  public void setDigestAlgorithm(String digestAlgorithm)
+    throws NoSuchAlgorithmException
+  {
+
+    MessageDigest.getInstance(digestAlgorithm);
+    this.digestAlgorithm=digestAlgorithm;
+  }
+  
+  
   /**
    * <P>Create a new AuthSession, which represents a login session in the
    *   realm of the Authenticator.
@@ -119,10 +153,71 @@ public class Authenticator
   { this.authorizer=authorizer;
   }
   
-
+  public DigestFunction getDigestFunction()
+  { return digestFunction;
+  }
 
   public void setDebug(boolean debug)
   { this.debug=debug;
+  }
+
+  /**
+   * <p>Compute a message digest which includes the specified input 
+   *   token (eg. a password in some form) for later comparison as an 
+   *   authentication step. 
+   * </p>
+   * 
+   * <p>The configured property digestAlgorithm is used. SHA-256 is
+   *   the default algorithm.
+   * </p>
+   * 
+   * <p>The realm name is used as a prepended salt at the current time to
+   *   ensure uniqueness across realms
+   * </p>
+   *    
+   * <p>The digest may be used as part of an authentication "ticket"
+   * </p>
+   * 
+   * @param clearPass
+   * @return
+   */
+  public byte[] saltedDigest(String input)
+  {
+    String realmName=getRealmName();
+    if (realmName!=null)
+    {
+      return digest(realmName+input);
+    }
+    else
+    { 
+      log.warning
+        ("Security risk: A permanent Authenticator realmName should"
+        +" be specified BEFORE generating token digests."
+        );
+      return digest(input);
+    }
+  }   
+  
+  /**
+   * <p>Creates a SHA-256 digest of the specified string.
+   * </p>
+   * 
+   * @param input
+   * @return
+   */
+  public byte[] digest(String input)
+  {
+    try
+    { 
+      return MessageDigest.getInstance(digestAlgorithm).digest
+        (input.getBytes("UTF-8"));
+    }
+    catch (NoSuchAlgorithmException x)
+    { throw new RuntimeException(digestAlgorithm+" not supported",x);
+    }
+    catch (UnsupportedEncodingException x)
+    { throw new RuntimeException("UTF-8 not supported",x);
+    }
   }
   
   /**
@@ -139,6 +234,11 @@ public class Authenticator
     throws ContextualException
   { 
     
+    if (realmNameX!=null)
+    {
+      realmNameX.bind(context);
+      setRealmName(realmNameX.get());
+    }
     this.sessionReflector
       =new GenericReflector<AuthSession>
         (BeanReflector.<AuthSession>getInstance(AuthSession.class));
