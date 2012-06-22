@@ -50,6 +50,8 @@ public class CommandScheduler
   private boolean debug;
   private boolean delay;
   protected ContextResourceMap resourceMap;
+  protected ClassLoader contextClassLoader
+    =Thread.currentThread().getContextClassLoader();
   
   /**
    * Construct a default CommandScheduler for external configuration
@@ -104,6 +106,9 @@ public class CommandScheduler
       if (resourceMap!=null)
       { resourceMap.push();
       }
+      ClassLoader lastClassLoader
+        =Thread.currentThread().getContextClassLoader();
+      Thread.currentThread().setContextClassLoader(contextClassLoader);
       try
       {
         Command command=factory.command();
@@ -125,6 +130,7 @@ public class CommandScheduler
       }
       finally
       {
+        Thread.currentThread().setContextClassLoader(lastClassLoader);
         if (resourceMap!=null)
         { resourceMap.pop();
         }
