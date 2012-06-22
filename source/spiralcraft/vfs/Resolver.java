@@ -23,6 +23,7 @@ import java.io.File;
 
 import spiralcraft.exec.ExecutionContext;
 import spiralcraft.util.string.StringConverter;
+import spiralcraft.vfs.bundle.BundleResourceFactory;
 import spiralcraft.vfs.classpath.ClasspathResourceFactory;
 import spiralcraft.vfs.context.ContextResourceFactory;
 import spiralcraft.vfs.file.FileResourceFactory;
@@ -95,6 +96,8 @@ public class Resolver
           ("jar",new JarResourceFactory());
         _INSTANCE.registerResourceFactory
           ("ovl",new OverlayResourceFactory());
+        _INSTANCE.registerResourceFactory
+          ("bundle",new BundleResourceFactory());
         _INSTANCE.registerResourceFactory
           ("null",new NullResource.Factory());
       }
