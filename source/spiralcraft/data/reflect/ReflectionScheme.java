@@ -127,6 +127,10 @@ public class ReflectionScheme
         ReflectionField<?> field=generateField(beanInfo,prop);
         fieldList.add(field);
         
+        if ("class".equals(field.getName()))
+        { field.setTransient(true);
+        }
+        
       }
     }
 
