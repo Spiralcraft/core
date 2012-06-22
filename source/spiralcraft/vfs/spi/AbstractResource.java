@@ -14,7 +14,9 @@
 //
 package spiralcraft.vfs.spi;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 
 import java.io.IOException;
@@ -47,6 +49,22 @@ public abstract class AbstractResource
   { 
     _uri=uri;
     _resolvedURI=_uri;
+  }
+  
+  @Override
+  public Resource resolve(Path path)
+    throws UnresolvableURIException
+  {
+    if (path.isAbsolute())
+    { 
+      return Resolver.getInstance().resolve
+        (URIUtil.replaceUnencodedPath(_uri,path.format('/')));
+    }
+    else
+    {
+      return Resolver.getInstance()
+        .resolve(URIUtil.addPathSegment(_uri,path.format('/')));
+    }
   }
   
   @Override
@@ -178,20 +196,20 @@ public abstract class AbstractResource
   @Override
   public void renameTo(URI uri)
     throws IOException
-  { throw new IOException(getClass().getName()+" does not support renaming");
+  { throw new IOException(getClass().getName()+" does not support renaming ("+getURI()+")");
   }  
   
   @Override
   public void delete()
     throws IOException
-  { throw new IOException(getClass().getName()+" does not support deletion");
+  { throw new IOException(getClass().getName()+" does not support deletion ("+getURI()+")");
   }
   
   
   @Override
   public Container ensureContainer()
     throws IOException
-  { throw new IOException(getClass().getName()+" does not support containership");
+  { throw new IOException(getClass().getName()+" does not support containership ("+getURI()+")");
   }
   
   /**
@@ -386,5 +404,16 @@ public abstract class AbstractResource
   @Override
   public boolean isContextual()
   { return false;
+  }
+  
+  @Override
+  public URL getURL()
+  { 
+    try
+    { return getURI().toURL();
+    }
+    catch (MalformedURLException x)
+    { throw new RuntimeException(x);
+    }
   }
 }

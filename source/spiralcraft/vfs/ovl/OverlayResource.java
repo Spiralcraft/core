@@ -21,13 +21,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URL;
 
 import spiralcraft.common.ContextualException;
 import spiralcraft.log.ClassLog;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.Path;
 import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Package;
+import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.ResourceFilter;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -99,6 +102,23 @@ public class OverlayResource
     this.overlay=overlay;
     this.base=base;
   }
+
+  @Override
+  public Resource resolve(Path path)
+    throws UnresolvableURIException
+  {
+    if (path.isAbsolute())
+    { 
+      return Resolver.getInstance().resolve
+        (URIUtil.replaceUnencodedPath(uri,path.format('/')));
+    }
+    else
+    {
+      return Resolver.getInstance()
+        .resolve(URIUtil.addPathSegment(uri,path.format('/')));
+    }
+  }
+
   
   @Override
   public URI getURI()
@@ -430,4 +450,18 @@ public class OverlayResource
   { return overlay.isContextual();
   }
   
+  @Override
+  public URL getURL()
+  { 
+    try
+    {
+      if (overlay.exists())
+      { return overlay.getURL();
+      }
+    }
+    catch (IOException x)
+    {
+    }
+    return base.getURL();
+  }
 }

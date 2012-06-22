@@ -262,4 +262,9 @@ public class ClasspathResource
     throws IOException
   { return null;
   }
+  
+  @Override
+  public URL getURL()
+  { return _classLoader.getResource(_path);
+  }
 }

@@ -19,9 +19,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.net.URI;
+import java.net.URL;
 
+import spiralcraft.util.Path;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.UnresolvableURIException;
 
 /**
  * Provides a means to modify the behavior of another Resource.
@@ -35,6 +38,12 @@ public abstract class ResourceWrapper
 {
 
   protected abstract Resource getDelegate();
+  
+  @Override
+  public Resource resolve(Path path)
+    throws UnresolvableURIException
+  { return getDelegate().resolve(path);
+  }
   
   @Override
   public Container asContainer()
@@ -157,5 +166,10 @@ public abstract class ResourceWrapper
     { return (T) this;
     }
     return getDelegate().unwrap(clazz);
+  }
+  
+  @Override
+  public URL getURL()
+  { return getDelegate().getURL();
   }
 }

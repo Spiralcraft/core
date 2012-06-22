@@ -20,6 +20,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import java.net.URL;
+
+import spiralcraft.util.Path;
+
 /**
  * Represents a streaming resource that can be accessed with a URI
  */
@@ -37,6 +41,25 @@ public interface Resource
    */
   URI getResolvedURI();
 
+  /**
+   * <p>Resolve the specified path against this resource.
+   * </p>
+   * 
+   * <p>If the specified path is
+   *   absolute, it will be resolved within the same scheme and authority of 
+   *   this Resource's URI.
+   * </p>
+   * 
+   * <p>If the path is relative, it will be appended to
+   *   the path of this Resource's URI.
+   * </p>
+   * 
+   * @param path
+   * @return
+   */
+  Resource resolve(Path path)
+    throws UnresolvableURIException;
+  
   /**
 	 * Read the resource data.
    *
@@ -215,4 +238,16 @@ public interface Resource
    * @return
    */
   boolean isContextual();
+  
+  /**
+   * <p>Provide a URL for this resource, if possible, that is compatible
+   *   with the URLStreamHandlers installed in the current JVM runtime.
+   * </p>
+   * 
+   * <p>Not all VFS resources can be accessed directly by URL.
+   * </p>
+   * 
+   * @return
+   */
+  URL getURL();
 }
