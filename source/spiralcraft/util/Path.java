@@ -256,7 +256,16 @@ public class Path
    */
   public Path subPath(int startElement)
   { 
-    if (_elements.length>startElement)
+    if (startElement==0)
+    { 
+      if (_absolute)
+      { return new Path(_elements,_delimiter,false,_container);
+      }
+      else
+      { return this;
+      }
+    }
+    else if (_elements.length>startElement)
     { 
       String[] newElements=new String[_elements.length-startElement];
       System.arraycopy(_elements,startElement,newElements,0,newElements.length);
@@ -281,6 +290,9 @@ public class Path
     if (prefix.isAbsolute() != isAbsolute())
     { return false;
     }
+    if (_elements.length<prefix.size())
+    { return false;
+    }
     int i=0;
     for (String element:prefix.elements())
     { 
@@ -291,18 +303,25 @@ public class Path
     return true;
   }
   
-  public Path relativize(Path suffixed)
+  /**
+   * Return the sub-path of childPath that can be appended to this path
+   *   in order to re-create childPath.
+   * 
+   * @param childPath
+   * @return
+   */
+  public Path relativize(Path childPath)
   { 
-    if (suffixed.isAbsolute() != isAbsolute())
+    if (childPath.isAbsolute() != isAbsolute())
     { return null;
     }
     
     
     int i=0;
-    for (String element:suffixed.elements())
+    for (String element:childPath.elements())
     { 
       if (i==_elements.length)
-      { return suffixed.subPath(i);
+      { return childPath.subPath(i);
       }
       else if (!_elements[i++].equals(element))
       { return null;
