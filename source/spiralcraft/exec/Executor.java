@@ -14,6 +14,7 @@
 //
 package spiralcraft.exec;
 
+import spiralcraft.bundle.Library;
 import spiralcraft.cli.Arguments;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Initializer;
@@ -29,6 +30,11 @@ import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.Path;
 import spiralcraft.util.URIUtil;
+
+import spiralcraft.vfs.Container;
+import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
+import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.vfs.context.ContextResourceMap;
 
 import spiralcraft.lang.BindException;
@@ -178,7 +184,8 @@ public class Executor
     ContextResourceMap contextResourceMap
       =new ContextResourceMap()
       {{
-        putDefault(context.focusURI());        
+        putDefault(context.focusURI());
+        put("run",context.focusURI());
       }};
       
       
@@ -194,6 +201,7 @@ public class Executor
     
     boolean logStarted=false;
     boolean schedulerCreated=false;
+    Library library=null;
     try
     { 
       
@@ -217,41 +225,12 @@ public class Executor
         }
       }
       
-      // Resolve the config authority where we reference the assembly package
-      //   that defines the executable
-      String configDir=properties.find("spiralcraft.config.uri");
-      if (configDir==null)
-      { 
-        configDir="config";
-        if (properties.find("spiralcraft.config.id")!=null)
-        { configDir=configDir+"."+properties.find("spiralcraft.config.id");
-        }
-      }
+      resolveContextConfig(contextResourceMap);
       
-      URI configURI=URI.create(configDir);
-      if (!configURI.isAbsolute())
-      {
-        contextResourceMap.put
-          ("config"
-          ,URIUtil.ensureTrailingSlash
-            (URIUtil.addPathSegment
-              (contextResourceMap.get("")
-              ,configURI.getPath()
-              )
-            )
-          );
-        
+      library=resolveLibrary();
+      if (library!=null)
+      { Library.set(library);
       }
-      else
-      { 
-        contextResourceMap.put
-          ("config"
-          ,URIUtil.ensureTrailingSlash(configURI)
-          );
-
-      }
-          
-      
       
       Scheduler.push(new Scheduler());
       schedulerCreated=true;
@@ -283,7 +262,6 @@ public class Executor
         instanceURI=uri;
       }
         
-      Executable executable=resolveExecutable(); 
       
       try
       {
@@ -299,6 +277,8 @@ public class Executor
               }
             );
         }
+        
+        Executable executable=resolveExecutable(); 
         executable.execute(arguments);
         if (persistOnCompletion && instanceURI!=null)
         { wrapper.save();
@@ -336,9 +316,11 @@ public class Executor
         
         
       }
+      
       if (schedulerCreated)
       { Scheduler.pop();
       }
+     
       NamespaceContext.pop();
       contextResourceMap.pop();
       ContextDictionary.popInstance();
@@ -346,6 +328,74 @@ public class Executor
     }
   }
 
+
+  /**
+   * Resolve the config authority where we reference the assembly package
+   *  that defines the executable
+   * 
+   * @param contextResourceMap
+   */
+  private void resolveContextConfig(ContextResourceMap contextResourceMap)
+  {
+    String configDir=properties.find("spiralcraft.config.uri");
+    if (configDir==null)
+    { 
+      configDir="config";
+      if (properties.find("spiralcraft.config.id")!=null)
+      { configDir=configDir+"."+properties.find("spiralcraft.config.id");
+      }
+    }
+    
+    URI configURI=URI.create(configDir);
+    if (!configURI.isAbsolute())
+    {
+      contextResourceMap.put
+        ("config"
+        ,URIUtil.ensureTrailingSlash
+          (URIUtil.addPathSegment
+            (contextResourceMap.get("")
+            ,configURI.getPath()
+            )
+          )
+        );
+      
+    }
+    else
+    { 
+      contextResourceMap.put
+        ("config"
+        ,URIUtil.ensureTrailingSlash(configURI)
+        );
+
+    }
+          
+    
+  }
+  
+  /**
+   * Map the contents of all packages contained in context:/packages into
+   *   the contextResourceMap
+   * 
+   * @param contextResourceMap
+   */
+  private Library resolveLibrary()
+  {
+    try
+    {
+      Resource libraryResource
+        =Resolver.getInstance().resolve("context:/packages");
+      Container container=libraryResource.asContainer();
+      if (container!=null)
+      { return new Library(container);
+      }
+    }
+    catch (UnresolvableURIException x)
+    { x.printStackTrace();
+    }
+    return null;
+  }
+  
+  
   private Executable resolveExecutable()
     throws PersistenceException
   {
