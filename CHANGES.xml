@@ -16,6 +16,20 @@
         </revision>
         
         <notes>
+          <scm:Note>Add findById static method to Login type
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/security/Login.type.xml
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
           <scm:Note>Allow for programmatic mapping of VFS contextual mount 
             points
           </scm:Note>
