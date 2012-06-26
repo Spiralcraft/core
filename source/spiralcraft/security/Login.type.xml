@@ -7,6 +7,8 @@
   xmlns:codec="class:/spiralcraft/codec/text/"
   xmlns:sec="class:/spiralcraft/security/"
   xmlns:secauth="class:/spiralcraft/security/auth/"
+  xmlns:j="class:/java/lang/"
+  xmlns:dtask="class:/spiralcraft/data/task/"
   >
   
   <fields>
@@ -130,6 +132,28 @@
   </keys>
 
   <methods>
+    <meta:Method>
+      <name>findById</name>
+      
+      <static>true
+      </static>
+      
+      <parameterTypes>
+        <String.type/>
+      </parameterTypes>
+      
+      <returnType>
+        <sec:Login.type/>
+      </returnType>
+      
+      <contextX>{ id:[@j:String] }
+      </contextX>
+          
+      <x>[*dtask:Fetch{[@sec:Login],[{`principalId:=id`}]}].()
+      </x>
+          
+    </meta:Method>
+    
     <meta:Method>
       <name>securePassword
       </name>
