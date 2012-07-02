@@ -16,6 +16,36 @@
         </revision>
         
         <notes>
+          <scm:Note>VFS Query task Operations now provide an overridable
+            method to retrieve the content of the resource
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/vfs/task/Query.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Add LangUtil methods findInstance, assertInstance,
+            findChannel, assertChannel that accept URIs
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/lang/util/LangUtil.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
           <scm:Note>ByteArrayResource.copyOf(InputStream)
           </scm:Note>
         </notes>
