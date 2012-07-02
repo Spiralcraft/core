@@ -54,6 +54,31 @@ public class LangUtil
     
     return null;
   }
+
+  /**
+   * Find the nearest instance of the specified URI in the context or null,
+   *   if it is not present.
+   * 
+   * @param <T>
+   * @param clazz
+   * @param context
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> T findInstance(URI uri,Focus<?> context)
+  {
+    if (context==null)
+    { return null;
+    }
+    
+    Focus<?> focus
+      =context.findFocus(uri);
+    if (focus!=null && focus.getSubject()!=null)
+    { return (T) focus.getSubject().get();
+    }
+    
+    return null;
+  }
   
   /**
    * Find the nearest instance of the specified class in the context or 
@@ -76,6 +101,26 @@ public class LangUtil
     return ret;
   }
   
+  /**
+   * Find the nearest instance of the specified URI in the context or 
+   *   throw a BindException.
+   *   
+   * @param <T>
+   * @param clazz
+   * @param context
+   * @return
+   */
+  public static <T> T assertInstance(URI uri,Focus<?> context)
+    throws BindException
+  {
+    T ret=findInstance(uri,context);
+    if (ret==null)
+    { 
+      throw new BindException
+        ("Could not find an instance of "+uri+" in context.");
+    }
+    return ret;
+  }
   
   @SuppressWarnings("unchecked")
   public static <T> Channel<T> findChannel(Class<T> clazz,Focus<?> context)
@@ -122,6 +167,19 @@ public class LangUtil
     return ret;
   }
   
+  public static <T> Channel<T> assertChannel
+    (URI uri, Focus<?> focusChain)
+    throws BindException
+  {
+    Channel<T> ret=findChannel(uri,focusChain);
+    if (ret==null)
+    {
+      throw new BindException
+        ("Could not find a provider of "+uri+" in context.");
+    }
+    return ret;
+  }
+
   public static <T> Channel<T> constantChannel(T value)
   { return new SimpleChannel<T>(value,true);
   }
