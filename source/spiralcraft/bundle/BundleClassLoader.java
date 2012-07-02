@@ -63,7 +63,9 @@ public class BundleClassLoader
             ,".jar"
             );
           jarFile.deleteOnExit();
-          addPrecedentArchive(new JarArchive(new FileResource(jarFile)));
+          FileResource jarFileResource=new FileResource(jarFile);
+          jarFileResource.copyFrom(res);
+          addPrecedentArchive(new JarArchive(jarFileResource));
         }
       }
     }
