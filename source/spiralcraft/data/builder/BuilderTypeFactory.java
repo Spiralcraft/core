@@ -65,16 +65,24 @@ public class BuilderTypeFactory
     else
     { 
       String childName=path.lastElement();
-      String parentPath=path.parentPath().format("/");
       URI parentUri;
-      if (parentPath.length()>0)
-      { 
-        parentUri=URI.create
-          (uriString+BuilderType.INNER_PATH_SEPARATOR+parentPath+".assy");
+      if (path.parentPath()!=null)
+      {
+        String parentPath=path.parentPath().format("/");
+        if (parentPath.length()>0)
+        { 
+          parentUri=URI.create
+            (uriString+BuilderType.INNER_PATH_SEPARATOR+parentPath+".assy");
+        }
+        else
+        { parentUri=URI.create(uriString+".assy");
+        }
+        
       }
       else
       { parentUri=URI.create(uriString+".assy");
       }
+      
       BuilderType parentType=(BuilderType) resolver.<Assembly<?>>resolve(parentUri);
       
       return new BuilderType
