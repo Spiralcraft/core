@@ -49,6 +49,9 @@ public class BundleResource
   { 
     this.uri=uri;
     Library library=Library.get();
+    if (library==null)
+    { throw new UnresolvableURIException(uri,"No package library available");
+    }
     String authority=uri.getAuthority();
     if (authority==null || authority.isEmpty())
     { 

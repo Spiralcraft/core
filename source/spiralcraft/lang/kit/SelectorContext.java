@@ -148,6 +148,13 @@ public class SelectorContext<Toptions,Toption,Tkey>
     if (optionsX!=null)
     { optionsC=chain.bind(optionsX);
     }
+    if (optionsC==null)
+    { 
+      throw new BindException
+        ("This object must be configured with a source of options via"
+        +" the 'options' or 'optionsX' properties"
+        );
+    }
     optionsIter=optionsC.decorate(IterationDecorator.class);
     if (optionsIter==null)
     { throw new BindException(optionsC.getReflector().getTypeURI()+" is not iterable");
