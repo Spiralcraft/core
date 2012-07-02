@@ -22,6 +22,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import spiralcraft.vfs.file.FileResource;
+import spiralcraft.vfs.util.ByteArrayResource;
 
 /**
  * An archive contained in a Jar file
@@ -50,17 +51,30 @@ public class JarArchive
   
   @Override
   protected Entry loadEntry(String path)
+    throws IOException
   {
+    JarFile jarFile=this.jarFile;
     if (jarFile==null)
-    { return null;
+    { 
+      jarFile
+        =new JarFile(resource.getFile(),false,JarFile.OPEN_READ);      
     }
     
-    JarEntry jarEntry=jarFile.getJarEntry(path);
-    if (jarEntry!=null)
-    { return new JarFileEntry(jarEntry);
+    try
+    {
+      JarEntry jarEntry=jarFile.getJarEntry(path);
+      if (jarEntry!=null)
+      { return new JarFileEntry(jarEntry);
+      }
+      else
+      { return null;
+      }
     }
-    else
-    { return null;
+    finally
+    { 
+      if (jarFile!=this.jarFile)
+      { jarFile.close();
+      }
     }
   }
 
@@ -103,6 +117,13 @@ public class JarArchive
     public byte[] getData()
       throws IOException
     {
+      JarFile jarFile=JarArchive.this.jarFile;
+      if (jarFile==null)
+      { 
+        jarFile
+          =new JarFile(resource.getFile(),false,JarFile.OPEN_READ);
+      }
+
       BufferedInputStream in=null;
       try
       {
@@ -124,7 +145,13 @@ public class JarArchive
           { }
         }
         throw x;
-      }      
+      }     
+      finally
+      {
+        if (jarFile!=JarArchive.this.jarFile)
+        { jarFile.close();
+        }
+      }
     }
 
     @Override
@@ -136,7 +163,32 @@ public class JarArchive
     @Override
     public InputStream getResourceAsStream()
       throws IOException
-    { return jarFile.getInputStream(jarEntry);
+    { 
+      JarFile jarFile=JarArchive.this.jarFile;
+      if (jarFile==null)
+      { 
+        jarFile
+          =new JarFile(resource.getFile(),false,JarFile.OPEN_READ);
+      }
+      try
+      { 
+        InputStream in=jarFile.getInputStream(jarEntry);
+        if (jarFile!=JarArchive.this.jarFile)
+        {
+          return ByteArrayResource
+            .copyOf(jarFile.getInputStream(jarEntry))
+            .getInputStream();
+        }
+        else
+        { return in;
+        }
+      }
+      finally
+      { 
+        if (jarFile!=JarArchive.this.jarFile)
+        { jarFile.close();
+        }
+      }
     }
     
   }
