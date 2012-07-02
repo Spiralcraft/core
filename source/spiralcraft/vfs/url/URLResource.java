@@ -311,4 +311,15 @@ public class URLResource
     connection.connect();
     connection.getInputStream().close();
   }
+  
+  /**
+   * Open a URLConnection to the URL that backs this resource
+   * 
+   * @return
+   * @throws IOException
+   */
+  public URLConnection openConnection() 
+    throws IOException
+  { return _url.openConnection();
+  }
 }
