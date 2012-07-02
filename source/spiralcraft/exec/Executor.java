@@ -91,6 +91,7 @@ public class Executor
   private EventHandler consoleHandler;
   private boolean consoleLog;
   private URI altContextURI;
+  private URI configURI;
   
   protected ExecutionContext context
     =ExecutionContext.getInstance();
@@ -337,16 +338,19 @@ public class Executor
    */
   private void resolveContextConfig(ContextResourceMap contextResourceMap)
   {
-    String configDir=properties.find("spiralcraft.config.uri");
-    if (configDir==null)
-    { 
-      configDir="config";
-      if (properties.find("spiralcraft.config.id")!=null)
-      { configDir=configDir+"."+properties.find("spiralcraft.config.id");
+    if (configURI==null)
+    {
+      String configDir=properties.find("spiralcraft.config.uri");
+      if (configDir==null)
+      { 
+        configDir="config";
+        if (properties.find("spiralcraft.config.id")!=null)
+        { configDir=configDir+"."+properties.find("spiralcraft.config.id");
+        }
       }
+      configURI=URI.create(configDir);
     }
     
-    URI configURI=URI.create(configDir);
     if (!configURI.isAbsolute())
     {
       contextResourceMap.put
@@ -491,6 +495,9 @@ public class Executor
             ContextResourceMap.get().putDefault(contextUri);
             altContextURI=contextUri;
           }
+          else if (option.equals("-config"))
+          { configURI=URI.create(nextArgument());
+          }
           else if (option.equals("-persist"))
           { 
             instanceURI=URI.create(nextArgument());
@@ -498,6 +505,11 @@ public class Executor
           }
           else 
           { 
+            ExecutionContext.getInstance().err()
+              .println("Unrecognized Executor option '-"+option+"'");
+            ExecutionContext.getInstance().err()
+              .println("Valid options: -D,--log,--consoleLog,--context,--config");
+            
             throw new IllegalArgumentException
               ("Unrecognized Executor option '-"+option+"'"    
               );
