@@ -142,9 +142,15 @@ public class AssemblyLoader
         if (resource!=null && resource.exists())
         { return true;
         }
-        else
-        { _classCache.put(classUri,null);
+
+        URI classResourceURI=URIUtil.addPathSuffix(classUri,".class");
+        resource=searchForPackageResource(classResourceURI);
+        if (resource!=null && resource.exists())
+        { return true;
         }
+        
+        // Cache negative result
+        _classCache.put(classUri,null);
       }
       catch (ContextualException x)
       { log.log(Level.WARNING,"Attempt to access "+resourceURI+" failed",x);
@@ -227,9 +233,26 @@ public class AssemblyLoader
       }
     }
     
-    
     if (ret==null)
     { 
+      // Search for a .class resource through the package inheritance mechanism
+      try
+      {
+        Resource classResource=searchForPackageResource
+          (URI.create(classUri.toString()+".class"));
+        if (classResource!=null)
+        { classUri=URIUtil.removePathSuffix(classResource.getURI(),".class");
+        }
+      }
+      catch (ContextualException x)
+      { log.log(Level.WARNING,"Error resolving "+classUri,x);
+      }
+      catch (IOException x)
+      { log.log(Level.WARNING,"Error resolving "+classUri,x);
+      }
+      
+      // Convert the class URI to a package and class name
+      
       Path path=new Path(classUri.getPath(),'/');
       
       URI packageUri
