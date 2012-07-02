@@ -16,6 +16,78 @@
         </revision>
         
         <notes>
+          <scm:Note>ByteArrayResource.copyOf(InputStream)
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/vfs/util/ByteArrayResource.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>URLResource now exposes openConnection
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/vfs/url/URLResource.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Executor now accepts a --config argument to specify
+            the context://config location
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/exec/Executor.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Fix NPE due to Path.parent returning null
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/data/builder/BuilderTypeFactory.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Make sure that AssemblyLoader can also locate
+            raw Java classes using the package inheritance mechanism
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/builder/AssemblyLoader.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
           <scm:Note>Add findById static method to Login type
           </scm:Note>
         </notes>
@@ -218,6 +290,14 @@
           <scm:Note>Update classloader components to deal with loading from
             arbitrary VFS resources  
           </scm:Note>
+          <scm:Note>Intercept ClassNotFound exception from the parent 
+            ClassLoader in order to properly load local non-precedent
+            resources.
+          </scm:Note>
+          <scm:Note>Make sure that the Loader works even when it is not
+            'started', even if this is inefficient (jars must be re-opened on
+            every call)
+          </scm:Note>
         </notes>
       
         <path>source/spiralcraft/classloader
@@ -231,6 +311,8 @@
           <URI>Loader.java
           </URI>
           <URI>ResourceArchive.java
+          </URI>
+          <URI>JarArchive.java
           </URI>
         </resources>
         
