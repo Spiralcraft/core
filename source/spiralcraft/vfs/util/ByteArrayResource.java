@@ -22,12 +22,25 @@ import java.io.OutputStream;
 
 import java.net.URI;
 
+import spiralcraft.vfs.StreamUtil;
 import spiralcraft.vfs.spi.AbstractResource;
 
 public class ByteArrayResource
   extends AbstractResource
 {
   private static int NEXT_ID=0;
+
+  public static ByteArrayResource copyOf(InputStream inputStream) 
+    throws IOException
+  {
+    try
+    { return new ByteArrayResource(StreamUtil.readBytes(inputStream));
+    }
+    finally
+    { inputStream.close();
+    }
+  }
+  
   private byte[] _bytes;
   
   
@@ -95,5 +108,7 @@ public class ByteArrayResource
 
   public byte[] getBackingStore()
   { return _bytes;
+  
   }
+
 }
