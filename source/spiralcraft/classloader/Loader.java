@@ -39,6 +39,7 @@ public class Loader
 
   private Level logLevel
     =ClassLog.getInitialDebugLevel(Loader.class,Level.INFO);
+//    =Level.FINE;
   
   private final ArrayList<Archive> archives=new ArrayList<Archive>();
   private final ArrayList<Archive> precedentArchives=new ArrayList<Archive>();
@@ -64,16 +65,28 @@ public class Loader
         if (fileResource!=null)
         {
           if (fileResource.asContainer()==null)
-          { addArchive(new JarArchive(fileResource));
+          { 
+            if (logLevel.isFine())
+            { log.fine("Adding jar classpath "+fileResource.getURI());
+            }
+            addArchive(new JarArchive(fileResource));
           }
           else
-          { addArchive(new ResourceArchive(fileResource));
+          { 
+            if (logLevel.isFine())
+            { log.fine("Adding file classpath "+fileResource.getURI());
+            }
+            addArchive(new ResourceArchive(fileResource));
           }
         }
         else
         { 
           if (resource.asContainer()!=null)
-          { addArchive(new ResourceArchive(resource));
+          { 
+            if (logLevel.isFine())
+            { log.fine("Adding resource classpath "+resource.getURI());
+            }
+            addArchive(new ResourceArchive(resource));
           }
           else
           {          
@@ -97,6 +110,10 @@ public class Loader
     if (!debug && logLevel.isDebug())
     { logLevel=Level.INFO;
     }
+  }
+  
+  public void setLogLevel(Level level)
+  { this.logLevel=level;
   }
   
   /**
@@ -136,11 +153,17 @@ public class Loader
     }
     if (clazz==null)
     { 
-      if (getParent()!=null)
-      { clazz=getParent().loadClass(formalName);
+      try
+      {
+        if (getParent()!=null)
+        { clazz=getParent().loadClass(formalName);
+        }
+        else
+        { clazz=ClassLoader.getSystemClassLoader().loadClass(formalName);
+        }
       }
-      else
-      { clazz=ClassLoader.getSystemClassLoader().loadClass(formalName);
+      catch (ClassNotFoundException x)
+      {
       }
     }
     if (clazz==null)
@@ -405,6 +428,13 @@ public class Loader
         { log.fine("Found entry "+entry.toString()+" in "+archive.toString());
         }
         return entry;
+      }
+      else
+      { 
+        if (logLevel.isFine())
+        { log.fine("Path "+path+" not found in "+archive.toString());
+        }
+        
       }
     }
     return null;
