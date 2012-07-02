@@ -55,15 +55,31 @@ public class Query<Tresult>
     ;
   }
   
-  public interface Operation<Tresult>
+  public abstract class Operation
   {
     abstract Tresult perform(URI uri,Resource resource)
       throws IOException;
+    
+    /**
+     * Override to specify an alternate means of accessing the specified 
+     *    resource
+     *   
+     * @param resource
+     * @return
+     * @throws IOException
+     */
+    protected InputStream accessResource(Resource resource)
+      throws IOException
+    { return resource.getInputStream();
+    }
+   
   }
   
   public class GetOperation
-    implements Operation<Tresult>
+    extends Operation
   { 
+    
+    
     @Override
     public Tresult perform(URI uri,Resource resource)
       throws IOException
@@ -71,7 +87,7 @@ public class Query<Tresult>
       if (debug)
       { log.fine("Opening "+uri);
       }
-      InputStream in=resource.getInputStream();
+      InputStream in=accessResource(resource);
       if (preBuffer)
       { 
         ByteArrayOutputStream buffer=new ByteArrayOutputStream();
@@ -113,7 +129,7 @@ public class Query<Tresult>
   }
   
   public class DeleteOperation
-    implements Operation<Tresult>
+    extends Operation
   {
     @Override
     public Tresult perform(URI uri,Resource resource)
@@ -136,7 +152,7 @@ public class Query<Tresult>
   private boolean ignoreEmpty;
   protected Binding<URI> uriX;
   private Binding<String> pathX;
-  private Operation<Tresult> operation;
+  private Operation operation;
   private OperationType operationType=OperationType.GET;
 
   { storeResults=true;
@@ -200,7 +216,7 @@ public class Query<Tresult>
   }
   
   
-  public void setOperation(Operation<Tresult> operation)
+  public void setOperation(Operation operation)
   { this.operation=operation;
   }
   
@@ -230,7 +246,7 @@ public class Query<Tresult>
   }
   
   
-  protected Operation<Tresult> resolveOperation(OperationType type)
+  protected Operation resolveOperation(OperationType type)
   {
     switch (type)
     {
@@ -356,6 +372,7 @@ public class Query<Tresult>
   { return operation.perform(uri,resource);
   }  
   
+
 
 
   public class QueryTask
