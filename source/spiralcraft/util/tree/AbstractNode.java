@@ -24,7 +24,7 @@ import spiralcraft.util.EmptyIterator;
 import spiralcraft.util.tree.Tree;
 
 /**
- * Represents a portion of an XML document
+ * A node in a tree
  */
 public abstract class AbstractNode<Nc extends AbstractNode<Nc,T>,T>
   implements Tree<Nc,T>
