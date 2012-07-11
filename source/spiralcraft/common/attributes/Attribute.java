@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010 Michael Toth
+// Copyright (c) 1998,2012 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,20 +12,10 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.access;
+package spiralcraft.common.attributes;
 
-/**
- * <p>Associates extension-specific information with a Schema, an Entity,
- *   or an EntityField.
- * </p>
- *   
- * 
- * @author mike
- *
- */
-public class SchemaAttribute
-  extends SchemaMetaObject<SchemaAttribute>
+public class Attribute
+  extends AbstractAttributeContext<Attribute>
 {
-  
-  
+
 }

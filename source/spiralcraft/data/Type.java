@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.xml.sax.SAXException;
 
+import spiralcraft.common.attributes.Attribute;
+import spiralcraft.common.attributes.AttributeSet;
 import spiralcraft.data.core.DeltaType;
 import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.sax.DataWriter;
@@ -215,6 +217,7 @@ public abstract class Type<T>
 //  protected RuleSet<Type<T>,T> ruleSet;
   protected boolean debug;
   protected Translator<?,T> externalizer;
+  protected AttributeSet attributes;
   
   /**
    * The TypeResolver which instantiated this particular Type.
@@ -656,7 +659,19 @@ public abstract class Type<T>
   public boolean getDebug()
   { return debug;
   }
+  
+  public void setAttributes(Attribute[] attributes)
+  { this.attributes=new AttributeSet(attributes);
+  }
 
+  public Attribute getAttribute(Class<?> clazz)
+  { 
+    if (this.attributes!=null)
+    { return attributes.getAttribute(clazz);
+    }
+    return null;
+  }
+  
   @SuppressWarnings("unchecked")
   public T fromXmlResource(Resource resource)
     throws DataException

@@ -14,7 +14,8 @@
 //
 package spiralcraft.data.access;
 
-import spiralcraft.data.DataException;
+import spiralcraft.common.ContextualException;
+import spiralcraft.common.attributes.AbstractAttributeContext;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldNotFoundException;
 
@@ -26,7 +27,7 @@ import spiralcraft.data.FieldNotFoundException;
  *
  */
 public class EntityField
-  extends SchemaMetaObject<EntityField>
+  extends AbstractAttributeContext<EntityField>
 {
 
   private String name;
@@ -62,7 +63,7 @@ public class EntityField
   
   @Override
   public void resolve()
-    throws DataException
+    throws ContextualException
   { 
     super.resolve();
     if (getTypeField()==null)

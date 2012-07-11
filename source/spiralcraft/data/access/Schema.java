@@ -17,7 +17,8 @@ package spiralcraft.data.access;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import spiralcraft.data.DataException;
+import spiralcraft.common.ContextualException;
+import spiralcraft.common.attributes.AbstractAttributeContext;
 import spiralcraft.data.Type;
 
 
@@ -26,7 +27,7 @@ import spiralcraft.data.Type;
  *   which provides access to the data.
  */
 public class Schema
-  extends SchemaMetaObject<Schema>
+  extends AbstractAttributeContext<Schema>
 {
   private final LinkedHashMap<Type<?>,Entity> entities
     =new LinkedHashMap<Type<?>,Entity>();
@@ -110,13 +111,13 @@ public class Schema
   
   @Override
   public void resolve()
-    throws DataException
+    throws ContextualException
   { 
     ArrayList<Entity> allEntities
       =new ArrayList<Entity>();
-    if (base!=null)
+    if (getBase()!=null)
     {
-      base.resolve();
+      resolveBase();
       for (Entity entity: base.getEntities())
       { 
         Entity extension=entities.get(entity.getType());
@@ -137,7 +138,7 @@ public class Schema
 
     for (Entity entity:entities.values())
     { 
-      if (entity.base==null)
+      if (entity.getBase()==null)
       { 
         // Add remaining entities at the end
         allEntities.add(entity);

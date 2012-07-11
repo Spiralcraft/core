@@ -17,7 +17,8 @@ package spiralcraft.data.access;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import spiralcraft.data.DataException;
+import spiralcraft.common.ContextualException;
+import spiralcraft.common.attributes.AbstractAttributeContext;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.DeltaTrigger;
 import spiralcraft.log.Level;
@@ -33,7 +34,7 @@ import spiralcraft.util.ArrayUtil;
  *
  */
 public class Entity
-  extends SchemaMetaObject<Entity>
+  extends AbstractAttributeContext<Entity>
 {
   private Type<?> type;
   private String name;
@@ -189,8 +190,8 @@ public class Entity
   }
   
   @Override
-  void resolve()
-    throws DataException
+  protected void resolve()
+    throws ContextualException
   {
     ArrayList<EntityField> allFields=new ArrayList<EntityField>();
     if (base!=null)
@@ -219,7 +220,7 @@ public class Entity
     
     for (EntityField field:fields.values())
     { 
-      if (field.base==null)
+      if (field.getBase()==null)
       { allFields.add(field);
       }
       field.setEntity(this);

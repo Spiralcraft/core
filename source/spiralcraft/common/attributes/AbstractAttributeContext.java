@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2009 Michael Toth
+// Copyright (c) 1998,2012 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,38 +12,43 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.access;
+package spiralcraft.common.attributes;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import spiralcraft.data.DataException;
+import spiralcraft.common.ContextualException;
+
 
 /**
- * <p>Base for objects that represent extensible Schema components- Schema, 
- *   Entity, EntityField, and SchemaAttribute.
+ * <p>Base for objects used to contain Attributes
  * </p>
  * 
- * <p>Provides support for multiple layers of inheritance to allow
- *   customization for progressively specific implementation scenarios. 
+ * <p>Allows for the construction of lightweight, inheritable structures
+ *   that allow the loose association of strongly typed data with arbitrary
+ *   objects.
  * </p>
  * 
  * @author mike
  *
  * @param <T>
  */
-public abstract class SchemaMetaObject<T extends SchemaMetaObject<?>>
+public abstract class AbstractAttributeContext<T extends AbstractAttributeContext<?>>
 {
   protected T base;
 
-  private final LinkedHashMap<Class<?>,SchemaAttribute> definedAttributes
-    =new LinkedHashMap<Class<?>,SchemaAttribute>();
+  private final LinkedHashMap<Class<?>,Attribute> definedAttributes
+    =new LinkedHashMap<Class<?>,Attribute>();
   
-  private SchemaAttribute[] combinedAttributes;
+  private Attribute[] combinedAttributes;
   
   
   public void setExtends(T base)
   { this.base=base;
+  }
+  
+  public T getBase()
+  { return base;
   }
   
   
@@ -51,7 +56,7 @@ public abstract class SchemaMetaObject<T extends SchemaMetaObject<?>>
    * 
    * @return the Entities associated with this Schema
    */
-  public SchemaAttribute[] getAttributes()
+  public Attribute[] getAttributes()
   { 
     return combinedAttributes;
     
@@ -61,16 +66,16 @@ public abstract class SchemaMetaObject<T extends SchemaMetaObject<?>>
    * 
    * @param entities The Entities associated with this Schema
    */
-  public void setAttributes(SchemaAttribute[] attributes)
+  public void setAttributes(Attribute[] attributes)
   { 
     this.definedAttributes.clear();
-    for (SchemaAttribute attribute:attributes)
+    for (Attribute attribute:attributes)
     { this.definedAttributes.put(attribute.getClass(),attribute);
     }
   }
   
   @SuppressWarnings("unchecked")
-  public <A extends SchemaAttribute> A getAttribute(Class<?> clazz)
+  public <A extends Attribute> A getAttribute(Class<?> clazz)
   { 
     A ret=(A) definedAttributes.get(clazz);
     if (ret==null && base!=null)
@@ -79,24 +84,32 @@ public abstract class SchemaMetaObject<T extends SchemaMetaObject<?>>
     return ret;
   }
   
-  protected SchemaAttribute[] getInheritedAttributes()
+  protected Attribute[] getInheritedAttributes()
   {
     if (base!=null)
     { return base.getAttributes();
     }
     else
-    { return new SchemaAttribute[0];
+    { return new Attribute[0];
     }
   }
   
-  void resolve()
-    throws DataException
+  protected void resolveBase()
+    throws ContextualException
+  { 
+    if (base!=null)
+    { base.resolve();
+    }
+  }
+  
+  protected void resolve()
+    throws ContextualException
   {
-    ArrayList<SchemaAttribute> allAttributes=new ArrayList<SchemaAttribute>();
+    ArrayList<Attribute> allAttributes=new ArrayList<Attribute>();
 
-    for (SchemaAttribute attribute:getInheritedAttributes())
+    for (Attribute attribute:getInheritedAttributes())
     { 
-      SchemaAttribute extendedAttribute=definedAttributes.get(attribute.getClass());
+      Attribute extendedAttribute=definedAttributes.get(attribute.getClass());
       if (extendedAttribute!=null)
       { 
         // Add the extended attribute in the same position the base would
@@ -116,7 +129,7 @@ public abstract class SchemaMetaObject<T extends SchemaMetaObject<?>>
     
     // Add the rest of the newly defined attributes that don't override
     //   anything.
-    for (SchemaAttribute attribute:definedAttributes.values())
+    for (Attribute attribute:definedAttributes.values())
     { 
       if (attribute.base==null)
       { allAttributes.add(attribute);
@@ -124,7 +137,7 @@ public abstract class SchemaMetaObject<T extends SchemaMetaObject<?>>
       attribute.resolve();
     }
     this.combinedAttributes
-      =allAttributes.toArray(new SchemaAttribute[allAttributes.size()]);
+      =allAttributes.toArray(new Attribute[allAttributes.size()]);
 
   }
 }
