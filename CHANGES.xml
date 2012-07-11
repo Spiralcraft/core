@@ -16,6 +16,77 @@
         </revision>
         
         <notes>
+          <scm:Note>Enhanced the system for importing foreign XML formats
+            to support a default mechanism for linking elements of the
+            data tree via the FrameHandler.captureChildObject property
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/data/sax
+        </path>
+        
+        <resources>
+          <URI>AbstractFrameHandler.java
+          </URI>
+          <URI>AggregateFrame.java
+          </URI>
+          <URI>AggregateFrameHandler.java
+          </URI>
+          <URI>ForeignDataHandler.java
+          </URI>
+          <URI>FrameHandler.java
+          </URI>
+          <URI>RecursiveFrame.java
+          </URI>
+          <URI>RootFrame.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Moved the data.access inheritable attributes system to a 
+            common package for use by any subsystem.
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>common/attributes/AbstractAttributeContext.java
+          </URI>
+          <URI>common/attributes/Attribute.java
+          </URI>
+          <URI>common/attributes/AttributeSet.java
+          </URI>
+          <URI>data/Type.java
+          </URI>
+          <URI>data/access/Entity.java
+          </URI>
+          <URI>data/access/EntityField.java
+          </URI>
+          <URI>data/access/IndexableText.java
+          </URI>
+          <URI>data/access/Schema.java
+          </URI>
+          <URI>data/access/SchemaAttribute.java
+          </URI>
+          <URI>data/access/SchemaMetaObject.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
           <scm:Note>VFS Query task Operations now provide an overridable
             method to retrieve the content of the resource
           </scm:Note>
