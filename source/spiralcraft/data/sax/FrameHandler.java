@@ -147,4 +147,25 @@ public interface FrameHandler
   ClosureFocus<?>.RecursionContext getRecursionContext(Focus<?> focusChain);
   
   void setStringPool(StringPool stringPool);
+  
+  /**
+   * <p>Whether this frame should capture the object created by its child 
+   *   frame when the child frame closes.
+   * </p>
+   * 
+   * @param captureChildObject
+   */
+  void setCaptureChildObject(boolean captureChildObject);
+
+  boolean getCaptureChildObject();
+  
+  /**
+   * <p>Called when a child frame has completed
+   * </p>
+   *  
+   * @param childObject
+   * @param myFrame
+   */
+  public void capturedChildObject
+    (Object childObject,ForeignDataHandler.HandledFrame myFrame);
 }

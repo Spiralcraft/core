@@ -81,8 +81,11 @@ public class ForeignDataHandler
     protected void endChild(
       Frame child)
       throws SAXException
-    {
+    { 
       
+      if (frameHandler!=null && frameHandler.getCaptureChildObject())
+      { frameHandler.capturedChildObject(child.getObject(),this);
+      }
     }
 
     public void setObject(Object object)
@@ -91,9 +94,7 @@ public class ForeignDataHandler
     
     @Override
     public Object getObject()
-    {
-      // TODO Auto-generated method stub
-      return object;
+    { return object;
     }
 
     @Override

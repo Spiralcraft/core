@@ -1,7 +1,7 @@
 package spiralcraft.data.sax;
 
-public class AggregateFrameHandler
-  extends AggregateFrame
+public class AggregateFrameHandler<Tcomponent>
+  extends AggregateFrame<Tcomponent>
 {
 
   public AggregateFrameHandler()

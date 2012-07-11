@@ -187,6 +187,10 @@ public class RootFrame<T>
     
   }
   
-  
+  @Override
+  public void capturedChildObject
+    (Object childObject,ForeignDataHandler.HandledFrame myFrame)
+  { myFrame.setObject(childObject);
+  }   
   
 }

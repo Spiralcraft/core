@@ -191,6 +191,7 @@ public abstract class AbstractFrameHandler
   private URI defaultURI;
   
   private StringPool stringPool;
+  private boolean captureChildObject;
 
   public void setDefaultURI(URI defaultURI)
   { 
@@ -504,6 +505,9 @@ public abstract class AbstractFrameHandler
         child.bind();
         try
         {
+          if (child.getElementURI()==null)
+          { throw new BindException("Element URI must be specified for "+child);
+          }
           String elementURI=transformNamespace(child.getElementURI(),child);
           childMap.put(stringPool.get(elementURI), child);
           if (debug)
@@ -766,6 +770,29 @@ public abstract class AbstractFrameHandler
   { return allowMixedContent;
   }
 
+  /**
+   * <p>Whether this frame should capture the object created by its child 
+   *   frame when the child frame closes.
+   * </p>
+   * 
+   * @param captureChildObject
+   */
+  @Override
+  public void setCaptureChildObject(boolean captureChildObject)
+  { this.captureChildObject=captureChildObject;
+  }
+
+  @Override
+  public boolean getCaptureChildObject()
+  { return captureChildObject;
+  }
+  
+  @Override
+  public void capturedChildObject
+    (Object childObject,ForeignDataHandler.HandledFrame myFrame)
+  {
+  }
+  
   class FrameChannel<T>
     extends AbstractChannel<T>
   {

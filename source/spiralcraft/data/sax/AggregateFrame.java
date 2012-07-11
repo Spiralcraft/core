@@ -35,14 +35,14 @@ import spiralcraft.lang.SimpleFocus;
  * @author mike
  *
  */
-public class AggregateFrame
+public class AggregateFrame<Tcomponent>
   extends AbstractFrameHandler
 {
 
   private Type<?> type;
-  private Channel<EditableAggregate<?>> channel;
-  private Expression<Aggregate<?>> assignment;
-  private Channel<Aggregate<?>> assignmentChannel;
+  private Channel<EditableAggregate<Tcomponent>> channel;
+  private Expression<Aggregate<Tcomponent>> assignment;
+  private Channel<Aggregate<Tcomponent>> assignmentChannel;
   
   public void setType(Type<?> type)
   { this.type=type;
@@ -59,8 +59,8 @@ public class AggregateFrame
         +getElementURI()+" requires a type"
         );
     }
-    channel=new FrameChannel<EditableAggregate<?>>
-      (DataReflector.<EditableAggregate<?>>getInstance(type));
+    channel=new FrameChannel<EditableAggregate<Tcomponent>>
+      (DataReflector.<EditableAggregate<Tcomponent>>getInstance(type));
     
     // These must bind to the parent focus, which is our own focus
     //   before we bind and extend the Focus chain.
@@ -70,7 +70,7 @@ public class AggregateFrame
     { assignmentChannel=parentFocus.bind(assignment);
     }
     
-    setFocus(new SimpleFocus<EditableAggregate<?>>(parentFocus,channel));
+    setFocus(new SimpleFocus<EditableAggregate<Tcomponent>>(parentFocus,channel));
     super.bind();
   }
 
@@ -82,7 +82,7 @@ public class AggregateFrame
    * 
    * @param container
    */
-  public void setAssignment(Expression<Aggregate<?>> assignment)
+  public void setAssignment(Expression<Aggregate<Tcomponent>> assignment)
   { this.assignment=assignment;
   }
   
@@ -90,19 +90,19 @@ public class AggregateFrame
   protected void openData()
     throws DataException
   {
-    EditableAggregate<?> aggregate=null;
+    EditableAggregate<Tcomponent> aggregate=null;
     if (assignmentChannel!=null)
-    { aggregate=(EditableAggregate<?>) assignmentChannel.get();
+    { aggregate=(EditableAggregate<Tcomponent>) assignmentChannel.get();
     }
     
     if (aggregate==null)
     {    
       DataFactory<?> factory=getFrame().getDataHandler().getDataFactory();
       if (factory!=null)
-      { aggregate=factory.<EditableAggregate<?>>create(type);
+      { aggregate=factory.<EditableAggregate<Tcomponent>>create(type);
       }
       else
-      { aggregate=new EditableArrayListAggregate<Object>(type);
+      { aggregate=new EditableArrayListAggregate<Tcomponent>(type);
       }
     }
     channel.set(aggregate);
@@ -126,6 +126,17 @@ public class AggregateFrame
 
   }
   
-
+  @SuppressWarnings("unchecked")
+  @Override
+  public void capturedChildObject
+    (Object childObject,ForeignDataHandler.HandledFrame myFrame)
+  { 
+    if (debug)
+    { log.fine("Captured: "+childObject);
+    }
+    if (childObject!=null)
+    { channel.get().add((Tcomponent) childObject);
+    }
+  } 
   
 }

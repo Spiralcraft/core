@@ -41,6 +41,7 @@ public class RecursiveFrame
   private FrameHandler parent;
   private String frameId;
   private ClosureFocus<?>.RecursionContext recursionContext;
+  private boolean captureChildObject;
   
   public void setFrameId(String frameId)
   { this.frameId=frameId;
@@ -154,4 +155,27 @@ public class RecursiveFrame
   public void setStringPool(StringPool stringPool)
   {
   }
+  
+  /**
+   * <p>Whether this frame should capture the object created by its child 
+   *   frame when the child frame closes.
+   * </p>
+   * 
+   * @param captureChildObject
+   */
+  @Override
+  public void setCaptureChildObject(boolean captureChildObject)
+  { this.captureChildObject=captureChildObject;
+  }
+
+  @Override
+  public boolean getCaptureChildObject()
+  { return captureChildObject;
+  }  
+  
+  @Override
+  public void capturedChildObject
+    (Object childObject,ForeignDataHandler.HandledFrame myFrame)
+  { myFrame.setObject(childObject);
+  }  
 }
