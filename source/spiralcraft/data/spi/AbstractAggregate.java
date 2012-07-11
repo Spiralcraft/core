@@ -135,7 +135,7 @@ public abstract class AbstractAggregate<T>
       if (o instanceof DataComposite)
       { builder.append(((DataComposite) o).toText(indent+"  "));
       }
-      else
+      else if (o!=null)
       { builder.append(o.toString());
       }
       
