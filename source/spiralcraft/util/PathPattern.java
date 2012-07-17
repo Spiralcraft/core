@@ -91,7 +91,7 @@ public class PathPattern
   
   @Override
   public String toString()
-  { return (prefix!=null?prefix:"")+patternString;
+  { return (prefix!=null?(prefix+patternString):patternString);
   }
   
   public boolean matches(Path path)
