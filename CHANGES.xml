@@ -11,6 +11,46 @@
     
     
     <detail> 
+    
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Promote URI based application path mechanism to core
+            component model from webui. 
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/app
+        </path>
+        
+        <resources>
+          <URI>PathContext.java
+          </URI>
+          <URI>PathContextMapping.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>When updating data that has unique constraints but no
+            primary key (and thus no consistent Tuple identity), fix issue 
+            where unique constraint fails erroneously by adding a system 
+            identity comparison.
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/data/xml/XmlQueryable.java
+        </path>
+        
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev11
         </revision>
