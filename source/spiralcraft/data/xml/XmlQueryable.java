@@ -1101,7 +1101,11 @@ public class XmlQueryable
             while (cursor.next())
             { 
               Identifier storeId=cursor.getTuple().getId();
-              if (!storeId.equals(tuple.getId()))
+              if (!storeId.equals(tuple.getId()) 
+                  && cursor.getTuple()!=tuple.getOriginal() 
+                    // latter case is to avoid error when updating a tuple w/o
+                    //   a primary key (id is based on POJO)
+                  )
               {
                 DeltaTuple txDelta=deltaMap.get(storeId);
                 if (txDelta==null
@@ -1112,9 +1116,9 @@ public class XmlQueryable
                 {
                   if (logLevel.isFine())
                   { 
-                    log.fine("\r\n  existing="+cursor.getTuple()
-                      +"\r\n  new="+tuple.getOriginal()
-                      +"\r\n updated="+tuple
+                    log.fine("\r\n  existing="+cursor.getTuple()+" id="+cursor.getTuple().getId()
+                      +"\r\n  new="+tuple.getOriginal()+" id="+(tuple.getOriginal()!=null?tuple.getOriginal().getId():"?")
+                      +"\r\n updated="+tuple+" id="+tuple.getId()
                       );
                   }
                   throw new UniqueKeyViolationException
