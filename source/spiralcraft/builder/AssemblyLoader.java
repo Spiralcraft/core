@@ -405,6 +405,9 @@ public class AssemblyLoader
     ContextResourceMap map=new ContextResourceMap();
     
     URI packageDir=URIUtil.toParentPath(resourceUri);
+    if (packageDir==null)
+    { throw new BuildException("Package for "+resourceUri+" is null");
+    }
     map.put("package",packageDir);
     Package pkg
       =Package.fromContainer

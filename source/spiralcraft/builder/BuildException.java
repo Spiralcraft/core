@@ -14,11 +14,15 @@
 //
 package spiralcraft.builder;
 
+import java.net.URI;
+
+import spiralcraft.common.ContextualException;
+
 /**
  * General exception thrown when builder encounters a problem at some point.
  */
 public class BuildException
-  extends Exception
+  extends ContextualException
 {
 
   private static final long serialVersionUID = 1;
@@ -29,5 +33,12 @@ public class BuildException
 
   public BuildException(String message,Throwable nested)
   { super(message,nested);
+  }
+
+  public BuildException(
+    String message,
+    URI declarationLocation,
+    Exception x)
+  { super(message,declarationLocation,x);
   }
 }

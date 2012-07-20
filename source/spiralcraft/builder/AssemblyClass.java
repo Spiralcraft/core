@@ -763,7 +763,18 @@ public class AssemblyClass
     _resolving=true;
     assertUnresolved();
     if (_baseAssemblyClass==null)
-    { resolveExternalBaseClass();
+    { 
+      try
+      { resolveExternalBaseClass();
+      }
+      catch (Exception x)
+      { 
+        throw new BuildException
+          ("Error resolving base AssemblyClass"
+          ,getDeclarationLocation()
+          ,x
+          );
+      }
     }
     resolveProperties();
     declarationInfo=new DeclarationInfo
@@ -1000,7 +1011,16 @@ public class AssemblyClass
       else
       {
         
-        _baseAssemblyClass=_loader.findAssemblyDefinition(baseResource);
+        try
+        { _baseAssemblyClass=_loader.findAssemblyDefinition(baseResource);
+        }
+        catch (Exception x)
+        { 
+          throw new BuildException("Error finding assembly definition "
+                      +baseResource+"(in package ["+_basePackage+"])"
+                      ,x
+                      );
+        }
 
         URI canonicalBaseUri=null;
         try

@@ -658,7 +658,13 @@ public class PropertySpecifier
       for (AssemblyClass assemblyClass:_contents)
       { 
         if (!assemblyClass.isResolved())
-        { assemblyClass.resolve();
+        { 
+          try
+          { assemblyClass.resolve();
+          }
+          catch (Exception x)
+          { throw new BuildException("Error resolving property",declarationLocation,x);
+          }
         }
       }
     }
