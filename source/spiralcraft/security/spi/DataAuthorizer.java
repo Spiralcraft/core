@@ -196,9 +196,17 @@ public class DataAuthorizer<TprincipalData,TprincipalId>
           ArrayList<URI> roleIdList=new ArrayList<URI>();
           for (Binding<URI> binding:roleBindings)
           {
-            URI roleId=binding.get();
-            if (roleId!=null)
-            { roleIdList.add(roleId);
+            try
+            { 
+              URI roleId=binding.get();
+              if (roleId!=null)
+              { roleIdList.add(roleId);
+              }
+            }
+            catch (RuntimeException x)
+            { 
+              throw new RuntimeException
+                ("Error accessing roleBinding "+binding,x);
             }
           
           }
