@@ -54,7 +54,10 @@ public class Library
     else
     { 
       throw new IllegalStateException
-        ("Library for this classloader already set");
+        ("Library for this classloader ("
+          +Thread.currentThread().getContextClassLoader()+") already set to "
+          +instance.getContextInstance()+". Cannot change it to "+library
+          );
     }
   }
     
@@ -178,6 +181,11 @@ public class Library
     }
     
     
+  }
+  
+  @Override
+  public String toString()
+  { return super.toString()+"[container="+container.getURI()+"]";
   }
 
 }
