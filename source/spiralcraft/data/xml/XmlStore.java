@@ -28,24 +28,23 @@ import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
-import spiralcraft.data.EditableTuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.FieldSet;
 import spiralcraft.data.Sequence;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
-import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.access.Snapshot;
 import spiralcraft.data.access.Updater;
 import spiralcraft.data.access.Entity;
 import spiralcraft.data.access.kit.AbstractStore;
+import spiralcraft.data.access.kit.AbstractStoreSequence;
 import spiralcraft.data.access.kit.EntityBinding;
 
 import spiralcraft.data.query.BoundQuery;
+import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.sax.DataWriter;
 import spiralcraft.data.session.BufferType;
-import spiralcraft.data.spi.ArrayDeltaTuple;
 import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.ResourceSequence;
@@ -55,8 +54,6 @@ import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.data.types.standard.AnyType;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
-import spiralcraft.lang.SimpleFocus;
-import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.Level;
 import spiralcraft.task.Scenario;
 import spiralcraft.util.URIUtil;
@@ -666,213 +663,38 @@ public class XmlStore
   }
   
   class XmlSequence
-    implements Sequence
+    extends AbstractStoreSequence
   {
 
-    private int increment;
-    private volatile long next;
-    private volatile long stop;
-    private BoundQuery<?,Tuple> boundQuery;
-    private Focus<URI> uriFocus;
-    private URI uri;
-    private volatile boolean allocated=false;
     
     public XmlSequence (URI uri)
-    { 
-      this.uri=uri;
-      uriFocus=new SimpleFocus<URI>(LangUtil.constantChannel(uri));
+    { super(XmlStore.this,uri,sequenceQueryable);
     }
 
     @Override
-    public void start()
-      throws LifecycleException
-    {
-      try
-      {
-        boundQuery
-          =sequenceQueryable.query(sequenceQuery,uriFocus);
-        if (boundQuery==null)
-        { 
-          throw new LifecycleException
-            ("Got null for sequence query "+sequenceQuery);
-        }
-      }
-      catch (DataException x)
-      { 
-        throw new LifecycleException
-          ("Error binding sequence query for "+uri,x);
-      }
+    protected BoundQuery<?,Tuple> bindQuery(Query sequenceQuery)
+      throws DataException
+    { return sequenceQueryable.query(sequenceQuery,uriFocus);
     }
     
     @Override
-    public void stop()
-      throws LifecycleException
+    protected void updateInTx(DeltaTuple dt)
+      throws TransactionException,DataException
     {
-      try
-      {
-        if (allocated)
-        { deallocate();
-        }
-      }
-      catch (DataException x)
-      { 
-        throw new LifecycleException
-          ("Error deallocating sequence "+uri,x);
-      }
+      StoreBranch tx=joinTransaction();
+      sequenceQueryable.joinTransaction().setStoreBranch(tx);
+      sequenceQueryable.joinTransaction().update(dt);
+      joinTransaction().log(dt);
     }
-
-    public void deallocate()
-      throws DataException
-    {
-      synchronized(sequenceQueryable)
-      {
-        Transaction.startContextTransaction(Nesting.ISOLATE);
-        try
-        {
-          SerialCursor<Tuple> result=boundQuery.execute();
-          EditableTuple row=null;
-          Tuple oldRow=null;
-          
-          try
-          {
-            if (!result.next())
-            {
-            }
-            else
-            {
-              oldRow=result.getTuple().snapshot();
-              row=new EditableArrayTuple(oldRow);
-              row.set("nextValue",next);
-            }
-            if (result.next())
-            {
-              throw new DataException
-                ("Cardinality violation in Sequence store- non unique URI "+uri); 
-            }
-          }
-          finally
-          { result.close();
-          }
-          
-  
-          if (oldRow!=null && row!=null)
-          {
-          
-            StoreBranch tx=joinTransaction();
-            sequenceQueryable.joinTransaction().setStoreBranch(tx);
-            
-            DeltaTuple dt=new ArrayDeltaTuple(oldRow,row);
-            sequenceQueryable.joinTransaction().update(dt);
-            joinTransaction().log(dt);
-            Transaction.getContextTransaction().commit();
-          
-          }
-          stop=next;
-          allocated=false;
-        }
-        finally
-        { Transaction.getContextTransaction().complete();
-        }
-        
-      }
-
-    }
-    
-    public void allocate()
-      throws DataException
-    {
-      synchronized(sequenceQueryable)
-      {
-
-        Transaction.startContextTransaction(Nesting.ISOLATE);
-        try
-        {
-          SerialCursor<Tuple> result=boundQuery.execute();
-  
-          EditableTuple row=null;
-          Tuple oldRow=null;
-          
-          long newNext;
-          long newStop;
-          int newIncrement;
-          
-          try
-          {
-            if (!result.next())
-            {
-              row=new EditableArrayTuple(sequenceType);
-              
-              row.set("uri",uri);
-              row.set("nextValue",200L);
-              row.set("increment",100);
-  
-              newNext=100;
-              newStop=200;
-              newIncrement=100;
-  
-            }
-            else
-            {
-              oldRow=result.getTuple().snapshot();
-              row=new EditableArrayTuple(oldRow);
-              
-              newNext=(Long) row.get("nextValue");
-              newIncrement=(Integer) row.get("increment");
-            
-              newStop=newNext+increment;
-              row.set("nextValue",newNext+newIncrement);            
-            
-            }
-          
-            if (result.next())
-            {
-              throw new DataException
-                ("Cardinality violation in Sequence store- non unique URI "+uri); 
-            }
-          }
-          finally
-          { result.close();
-          }
-        
-
-          StoreBranch tx=joinTransaction();
-          sequenceQueryable.joinTransaction().setStoreBranch(tx);
-          DeltaTuple dt=new ArrayDeltaTuple(oldRow,row);
-          if (oldRow!=null)
-          { sequenceQueryable.joinTransaction().update(dt);   
-          }
-          else
-          { sequenceQueryable.joinTransaction().insert(dt);   
-          }
-          joinTransaction().log(dt);
-
-          Transaction.getContextTransaction().commit();
-          
-          next=newNext;
-          stop=newStop;
-          increment=newIncrement;
-          allocated=true;
-        }
-        finally
-        { Transaction.getContextTransaction().complete();
-        }
-        
-      }
-    }
-    
-    
     
     @Override
-    public synchronized Long next()
-      throws DataException
+    protected void insertInTx(DeltaTuple dt)
+      throws TransactionException,DataException
     {
-      synchronized (sequenceQueryable)
-      {
-        if (next>=stop || !allocated)
-        { allocate();
-        }
-        return next++;
-      }
+      StoreBranch tx=joinTransaction();
+      sequenceQueryable.joinTransaction().setStoreBranch(tx);
+      sequenceQueryable.joinTransaction().insert(dt);      
+      joinTransaction().log(dt);    
     }
   }
   
