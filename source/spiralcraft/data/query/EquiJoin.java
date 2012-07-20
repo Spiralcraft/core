@@ -22,6 +22,8 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.parser.BindingNode;
 import spiralcraft.lang.parser.ContextIdentifierNode;
+import spiralcraft.lang.parser.CurrentFocusNode;
+import spiralcraft.lang.parser.ResolveNode;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
@@ -398,6 +400,18 @@ class EquiJoinBinding<Tq extends EquiJoin,Tt extends Tuple>
         filter=new Channel[rhsExpressions.size()];
         for (Expression lhsExpression : getQuery().getLHSExpressions() )
         { 
+          if (lhsExpression.getRootNode() instanceof ContextIdentifierNode)
+          { 
+            lhsExpression
+              =Expression.create
+                (new ResolveNode
+                  (new CurrentFocusNode()
+                  ,((ContextIdentifierNode) lhsExpression.getRootNode())
+                    .getIdentifier()
+                  )
+                );
+          }
+
           Expression<Boolean> comparison
             =Expression.<Boolean>create
               (lhsExpression.getRootNode()
