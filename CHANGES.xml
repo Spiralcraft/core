@@ -12,6 +12,51 @@
     
     <detail> 
     
+      
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>OverlayRedirect is a Graft that provides support for
+            directory overlays (default/fallback dir contents)
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/context/OverlayRedirect.java
+        </path>
+      </scm:Change>
+      
+      
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>Enhancements to Store abstraction to re-use some XmlStore
+            functionality for the SqlStore
+          </scm:Note>
+          <scm:Note>Abstracted Sequence logic to AbstractStoreSequence
+          </scm:Note>
+          <scm:Note>Fix bug in default binding for EquiJoin when created
+            with the "field:=expr" syntax
+          </scm:Note>
+        </notes>
+      
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>access/kit/AbstractStoreSequence.java
+          </URI>
+          <URI>xml/XmlStore.java
+          </URI>
+          <URI>query/EquiJoin.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev11
         </revision>
@@ -217,11 +262,24 @@
           <scm:Note>Make sure that AssemblyLoader can also locate
             raw Java classes using the package inheritance mechanism
           </scm:Note>
+          <scm:Note>Add additional exception handling to builder to
+            trace .assy.xml file composition.
+          </scm:Note>
         </notes>
       
-        <path>source/spiralcraft/builder/AssemblyLoader.java
+        <path>source/spiralcraft/builder
         </path>
         
+        <resources>
+          <URI>AssemblyLoader.java
+          </URI>
+          <URI>AssemblyClass.java
+          </URI>
+          <URI>BuildException.java
+          </URI>
+          <URI>PropertySpecifier.java
+          </URI>
+        </resources>
       </scm:Change>
 
       <scm:Change>

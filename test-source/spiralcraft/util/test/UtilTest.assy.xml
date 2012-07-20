@@ -3,6 +3,7 @@
   xmlns:test="class:/spiralcraft/test/"
   xmlns:j="class:/java/lang/"
   xmlns:jm="class:/java/math/"
+  xmlns:jnet="class:/java/net/"
   xmlns:lang="class:/spiralcraft/lang"
   xmlns:sutil="class:/spiralcraft/util/string/"
   xmlns:util="class:/spiralcraft/util/"
@@ -436,8 +437,38 @@
           </testX>
           
         </test:Assertion>        
+
+        <test:Assertion>
+        
+          <name>parent path 2
+          </name>
+
+          <subjectX contextualize="false">
+            [@util:Path].("/spiralcraft",'/').parentPath().format('/')
+          </subjectX>
+          
+          <testX>
+            .=="/"
+          </testX>
+          
+        </test:Assertion>        
         
         <test:Assertion>
+        
+          <name>parent path 3
+          </name>
+
+          <subjectX contextualize="false">
+            [@util:URIUtil].@toParentPath([@jnet:URI].("http://www.example.com/spiralcraft"))
+          </subjectX>
+          
+          <testX>
+            .==[@jnet:URI].("http://www.example.com/")
+          </testX>
+          
+        </test:Assertion>        
+ 
+         <test:Assertion>
         
           <name>Sequence
           </name>
