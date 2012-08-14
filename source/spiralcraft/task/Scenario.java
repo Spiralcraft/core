@@ -262,7 +262,7 @@ public abstract class Scenario<Tcontext,Tresult>
   }
   
   @Override
-  protected Reflector<Tcontext> getContextReflector()
+  public Reflector<Tcontext> getContextReflector()
   { return contextReflector;
   }
   
