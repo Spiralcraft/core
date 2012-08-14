@@ -27,11 +27,15 @@ import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
+import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.types.standard.AnyType;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
+import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.sax.XmlWriter;
 import spiralcraft.task.AbstractTask;
 import spiralcraft.task.Scenario;
@@ -59,8 +63,10 @@ public class ParseXml<Tresult>
 
   private RootFrame<Tresult> handler;
   protected Binding<URI> uriX;
+  protected Channel<Resource> resourceChannel;
   protected boolean preBuffer;
   protected boolean ignoreEmpty;
+  protected boolean useContextualResource;
   
   public ParseXml()
   {
@@ -70,9 +76,27 @@ public class ParseXml<Tresult>
     throws BindException
   { 
     setType(type);
-    setUriX(new Binding<URI>(uriX));
+    Binding<URI> uriBinding=new Binding<URI>(uriX);
+    uriBinding.setTargetType(URI.class);
+    setUriX(uriBinding);
   }
   
+  public ParseXml(Reflector<Tresult> reflector,Expression<URI> uriX)
+    throws ContextualException
+  { this(ReflectionType.canonicalType(reflector.getContentType()),uriX);
+  }
+  
+  public ParseXml(Reflector<Tresult> reflector)
+    throws ContextualException
+  { this(ReflectionType.canonicalType(reflector.getContentType()));
+  }
+
+  public ParseXml(Type<Tresult> type) 
+    throws ContextualException
+  {
+    setType(type);
+    useContextualResource=true;
+  }
   
   protected Type<Tresult> type;
   { storeResults=true;
@@ -108,7 +132,7 @@ public class ParseXml<Tresult>
    * <p>Ignores an empty input document
    * </p>
    * 
-   * <p>When set to true, will pre-buffer the document
+   * <p>When set to true, will also pre-buffer the document
    * </p>
    * 
    * @param ignoreEmpty
@@ -160,6 +184,9 @@ public class ParseXml<Tresult>
         resultReflector=DataReflector.getInstance(handler.getType());
       }
     }
+    if (useContextualResource)
+    { resourceChannel=LangUtil.assertChannel(Resource.class,focus);
+    }
     return focus;
   }
   
@@ -178,7 +205,15 @@ public class ParseXml<Tresult>
   protected Tresult read(URI uri)
     throws IOException,UnresolvableURIException,DataException,SAXException
   { 
-    Resource resource=Resolver.getInstance().resolve(uri);
+    Resource resource;
+    if (uri==null && resourceChannel!=null)
+    { 
+      resource=resourceChannel.get();
+      uri=resource.getURI();
+    }
+    else
+    { resource=Resolver.getInstance().resolve(uri);
+    }
     return read(uri,resource);
   }
   
@@ -273,11 +308,14 @@ public class ParseXml<Tresult>
       try
       { 
         URI uri=null;
-        if (uriX!=null)
-        { uri=uriX.get();
-        }
-        if (uri==null)
-        { uri=getDefaultURI();
+        if (!useContextualResource)
+        {
+          if (uriX!=null)
+          { uri=uriX.get();
+          }
+          if (uri==null)
+          { uri=getDefaultURI();
+          }
         }
         Tresult result=read(uri);
         if (type!=null)
