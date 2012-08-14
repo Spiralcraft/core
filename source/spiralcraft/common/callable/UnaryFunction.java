@@ -15,7 +15,8 @@
 package spiralcraft.common.callable;
 
 /**
- * A one-argument functor pattern.
+ * <p>A one-argument functor pattern.
+ * </p>
  * 
  * @author mike
  *
