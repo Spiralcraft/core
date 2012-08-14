@@ -603,9 +603,7 @@ public class AssemblyLoader
       {
         String name=attribs[i].getLocalName().intern();
         if (name=="x")
-        { 
-        	// TODO: Consider using "x" for this, as a convention
-        	prop.setExpression(attribs[i].getValue());
+        { prop.setExpression(attribs[i].getValue());
         }
         else if (name=="expression")
         { 
@@ -676,7 +674,9 @@ public class AssemblyLoader
         else
         { 
           throw new BuildException
-            ("Unknown attribute '"+name+"' in "+sourceUri);
+            ("Unknown attribute '"+name+"' in "+sourceUri+"."
+            +" Allowed attributes are (x,whitespace,persistent,dynamic,"
+            +"collection,export,uri,dataURI,debugLevel,contextualize)");
             
         }
       }
