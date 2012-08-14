@@ -61,4 +61,6 @@ public interface CommandFactory<Ttarget,Tcontext,Tresult>
   Reflector<? extends Command<Ttarget,Tcontext,Tresult>> getCommandReflector()
     throws BindException;
   
+  Reflector<Tcontext> getContextReflector();
+  
 }

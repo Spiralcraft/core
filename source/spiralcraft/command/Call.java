@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 2012 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -14,33 +14,25 @@
 //
 package spiralcraft.command;
 
-
 /**
- * <p>Manages the execution of commands for a user or machine
- *   interface session.
- * </p>
- * 
- * <p>Provides a single point for the serialization and tracking of
- *   user actions expressed as commands.
- * </p>
- * 
- * <p>XXX Incomplete
+ * <p>A request for an invocation of a Command
  * </p>
  * 
  * @author mike
- * 
+ *
  */
-public interface CommandProcessor
+public abstract class Call<Tcontext,Tresult>
 {
-
+  public final String verb;
+  public final Tcontext context;
   
-  /**
-   * <p>Execute the command.
-   * </p>
-   * 
-   * 
-   * @param command
-   */
-  void executeCommand(Command<?,?,?> command);
- 
+  public Call(String verb,Tcontext context)
+  { 
+    this.verb=verb;
+    this.context=context;
+  }
+  
+  public abstract void setResult(Tresult result);
+  
+  public abstract void setException(Exception exception);
 }

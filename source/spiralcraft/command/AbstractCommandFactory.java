@@ -66,7 +66,8 @@ public abstract class AbstractCommandFactory<Ttarget,Tcontext,Tresult>
     return clazz;
   }
   
-  protected Reflector<Tcontext> getContextReflector()
+  @Override
+  public Reflector<Tcontext> getContextReflector()
   { return null;
   }
 
