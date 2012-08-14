@@ -16,10 +16,13 @@ package spiralcraft.app.kit;
 
 
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import spiralcraft.app.CallContext;
+import spiralcraft.app.CallMessage;
 import spiralcraft.app.Component;
 import spiralcraft.app.Container;
 import spiralcraft.app.Dispatcher;
@@ -29,6 +32,7 @@ import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.Level;
 import spiralcraft.log.Log;
 import spiralcraft.util.ListMap;
@@ -45,6 +49,8 @@ public class StandardContainer
   protected final Parent parent;
   protected ListMap<Message.Type,Integer> childSubscriptions;
   protected HashSet<Message.Type> subscribedTypes;
+  protected HashMap<String,Integer> idMap;
+  protected CallContext callContext;
 
   public StandardContainer(Parent parent)
   { this.parent=parent;
@@ -69,6 +75,7 @@ public class StandardContainer
     Focus<?> focusChain)
     throws ContextualException
   { 
+    callContext=LangUtil.findInstance(CallContext.class,focusChain);
     resolveChildren(focusChain);
     bindChildren(focusChain);
   }
@@ -98,6 +105,14 @@ public class StandardContainer
       for (Component child:children)
       { 
         bindChild(focusChain,child);
+        String id=child.getId();
+        if (id!=null)
+        { 
+          if (idMap==null)
+          { idMap=new HashMap<String,Integer>();
+          }
+          idMap.put(id,index);
+        }
         Message.Type[] types=child.getSubscribedTypes();
         if (types!=null)
         {
@@ -173,6 +188,48 @@ public class StandardContainer
 
  
   /**
+   * Resolve the state index that corresponds to the next path element in the
+   *   call path.
+   * 
+   * @param dispatcher
+   * @return
+   */
+  protected Integer resolveCallIndex(Dispatcher dispatcher)
+  { 
+    if (callContext!=null)
+    { 
+      String key=callContext.getNextSegment();
+      if (key!=null)
+      { 
+        Integer id=idMap.get(key);
+        if (id==null)
+        { 
+          throw new RuntimeException
+            (new ContextualException
+              ("Call path segment '"+key+"' not found"
+              ,parent.asComponent().getDeclarationInfo()
+              )
+            );
+        }
+        return id;
+      }
+      else
+      { 
+        if (logLevel.isFine())
+        { log.log(Level.FINE,"Path segment for call is null");
+        }
+      }
+    }
+    else
+    { 
+      if (logLevel.isFine())
+      { log.log(Level.FINE,"No callContext for call");
+      }
+    }
+    return null;
+  }
+  
+  /**
    * <p>Relay a message to the appropriate children
    *   as indicated by the message path.
    * </p>
@@ -200,6 +257,23 @@ public class StandardContainer
         }
         
         dispatcher.relayMessage(children[index],index,message);
+      }
+      else if (message.getType()==CallMessage.TYPE 
+               && (index=resolveCallIndex(dispatcher))!=null
+              )
+      { 
+        if (logLevel.isFine())
+        { log.log(Level.FINE,"Relaying Call "+message+" to child #"+index);
+        }
+        
+        callContext.descend();
+        try
+        { dispatcher.relayMessage(children[index],index,message);
+        }
+        finally
+        { callContext.ascend();
+        }
+        
       }
       else if (message.isMulticast())
       { 
