@@ -54,4 +54,8 @@ public abstract class AbstractController<Tstate extends State>
   { this.notify(stateReference.get(),message);
   }
   
+  protected Tstate getState()
+  { return stateReference.get();
+  }
+  
 }
