@@ -17,8 +17,10 @@ package spiralcraft.app;
 
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
+import spiralcraft.common.declare.Declarable;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflectable;
 import spiralcraft.log.Level;
 
 /**
@@ -35,7 +37,7 @@ import spiralcraft.log.Level;
  *
  */
 public interface Component
-  extends Contextual,Lifecycle
+  extends Contextual,Lifecycle,Reflectable<Component>,Declarable
 {
   
   /**

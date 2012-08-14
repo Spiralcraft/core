@@ -41,7 +41,10 @@ import spiralcraft.lang.ChainableContext;
 import spiralcraft.lang.Context;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
 import spiralcraft.lang.kit.AbstractChainableContext;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.GenericReflector;
 import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -70,6 +73,11 @@ public class AbstractComponent
   protected Parent parent;
   protected boolean bound=false;
   protected Container childContainer;
+  
+  protected final GenericReflector<Component> reflector
+    =new GenericReflector<Component>
+      (BeanReflector.<Component>getInstance(getClass()));
+  
   protected Focus<?> selfFocus;
   protected boolean acceptsChildren=true;
 
@@ -89,6 +97,8 @@ public class AbstractComponent
   private HashSet<Message.Type> subscriptions;
   private HashSet<Message.Type> notifications;
   private DeclarationInfo declarationInfo;
+  protected boolean createEmptyContainer;
+  
   
   @Override
   public void setParent(Parent parent)
@@ -141,7 +151,7 @@ public class AbstractComponent
   }
 
   /**
-   * <p>Specify a set of Contexts thataugment the environment in which
+   * <p>Specify a set of Contexts that augment the environment in which
    *   this component and its children operate.
    * </p>
    * @param contexts
@@ -454,6 +464,11 @@ public class AbstractComponent
   }
 
   @Override
+  public Reflector<Component> reflect()
+  { return reflector;
+  }
+  
+  @Override
   public void message
     (Dispatcher dispatcher
     ,Message message
@@ -528,6 +543,9 @@ public class AbstractComponent
     { 
       try
       {
+        if (logLevel.isFine())
+        { log.fine("Constructing state using "+stateConstructor);
+        }
         return stateConstructor.newInstance
           ( new Object[] 
               {childContainer!=null?childContainer.getChildCount():-1,id} 
@@ -541,6 +559,9 @@ public class AbstractComponent
     }
     else
     { 
+      if (logLevel.isFine())
+      { log.fine("Creating new SimpleState");
+      }
       return new SimpleState
         (childContainer!=null?childContainer.getChildCount():-1,id);
     }
@@ -685,7 +706,7 @@ public class AbstractComponent
    */
   protected List<Component> composeChildren(Focus<?> focusChain)
   {
-    if (peerSet==null && contents==null)
+    if (peerSet==null && contents==null && !createEmptyContainer)
     { return null;
     }
     
@@ -983,4 +1004,5 @@ public class AbstractComponent
   public DeclarationInfo getDeclarationInfo()
   { return declarationInfo;
   }
+
 }
