@@ -115,6 +115,16 @@ public class Chain<Tcontext,Tresult>
   { this.chain=chain;
   }
   
+  /**
+   * Wrap a single task. Allows for the result to be returned if 
+   *   addChainResult=true
+   * 
+   * @param chain
+   */
+  public void setChain(Scenario<?,?> chain)
+  { this.chain=chain;
+  }
+  
   public void setSequence(Scenario<?,?>[] scenarios)
   {
     Sequence sequence=new Sequence();
@@ -124,35 +134,7 @@ public class Chain<Tcontext,Tresult>
     }
   }
   
-  public void setChain(Scenario<?,?>[] chain)
-  {
-    Scenario<?,?> last=this;
-    for (Scenario<?,?> scenario:chain)
-    { 
-      if (scenario instanceof Chain<?,?>)
-      {
-        if (last instanceof Chain<?,?>)
-        {
-          ((Chain<?,?>) last).chain(scenario);
-        }
-        else
-        {
-          ((Sequence) last).addScenario(scenario);
-        }
-        last=scenario;
-      }
-      else
-      {
-        if (last instanceof Chain<?,?>)
-        {
-          Sequence sequence=new Sequence();
-          ((Chain<?,?>) last).chain(sequence);
-          last=sequence;
-        }
-        ((Sequence) last).addScenario(scenario);
-      }
-    }
-  }  
+ 
   
   @Override
   public void start()

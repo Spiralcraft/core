@@ -86,7 +86,7 @@ public class Collect<Titem>
   }
   
   public Collect(Scenario<?,?>[] chain)
-  { setChain(chain);
+  { setSequence(chain);
   }
   
   /**

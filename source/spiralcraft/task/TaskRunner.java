@@ -104,7 +104,7 @@ public class TaskRunner
   { 
 
     Chain<?,?> chainScenario=new Chain();
-    chainScenario.setChain(chain);
+    chainScenario.setSequence(chain);
     scenario=chainScenario;
     chainLink=chain[chain.length-1];
   
