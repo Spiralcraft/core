@@ -249,7 +249,11 @@ public class PathContext
   }
   
   /**
-   * The path relative to the container (servlet) context
+   * <p>The path relative to the container context
+   * </p>
+   * 
+   * <p>This is set by the container before this PathContext is initialized
+   * </p>
    * 
    * @param path
    */

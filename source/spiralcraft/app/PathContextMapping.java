@@ -21,7 +21,7 @@ import spiralcraft.util.PathPattern;
 import spiralcraft.util.URIUtil;
 
 /**
- * Maps a Filter to a URL path segment
+ * Maps a path segment to a URI
  * 
  * @author mike
  *
