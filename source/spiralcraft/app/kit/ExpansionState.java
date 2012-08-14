@@ -36,7 +36,7 @@ public class ExpansionState<T>
   private State parent;
   private Sequence<Integer> path;
   
-  public ExpansionState(String componentId,int grandchildCount)
+  public ExpansionState(int grandchildCount,String componentId)
   {     
     children=new ArrayList<MementoState>();
     this.componentId=componentId;

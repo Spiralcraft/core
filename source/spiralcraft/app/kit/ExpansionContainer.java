@@ -14,18 +14,22 @@
 //
 package spiralcraft.app.kit;
 
+import spiralcraft.app.CallMessage;
+import spiralcraft.app.Component;
 import spiralcraft.app.Dispatcher;
 import spiralcraft.app.InitializeMessage;
 import spiralcraft.app.Message;
 import spiralcraft.app.Parent;
 import spiralcraft.common.ContextualException;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.util.LookaroundIterator;
 
 public class ExpansionContainer<C,T>
@@ -45,6 +49,7 @@ public class ExpansionContainer<C,T>
   private ThreadLocalChannel<T> valueChannel;
   private ThreadLocalChannel<T> lookaheadChannel;
   private ThreadLocalChannel<T> lookbehindChannel;
+  private Binding<?> keyBinding;
   
   private ThreadLocalChannel<Iteration> iterationLocal
     =new ThreadLocalChannel<Iteration>
@@ -55,6 +60,14 @@ public class ExpansionContainer<C,T>
 
   public ExpansionContainer(Parent parent)
   { super(parent);
+  }
+  
+  public ExpansionContainer(Parent parent,Component[] children)
+  { super(parent,children);
+  }
+  
+  public void setKeyBinding(Binding<?> keyBinding)
+  { this.keyBinding=keyBinding;
   }
   
   /**
@@ -116,6 +129,9 @@ public class ExpansionContainer<C,T>
     ,Message message
     )
   {
+    if (logLevel.isFine())
+    { log.fine("Relay message..."+message);
+    }
     ExpansionState<T> state=(ExpansionState<T>) dispatcher.getState();
 
     Integer index=dispatcher.getNextRoute();
@@ -232,31 +248,55 @@ public class ExpansionContainer<C,T>
     iterationLocal.push(iter);
     try
     {
-      if (path!=null)
-      {
-      }
-      else
-      {
-        if (logLevel.isDebug())
-        { log.debug(toString()+": retraversing...");
-        }      
+      if (logLevel.isDebug())
+      { log.debug(toString()+": retraversing...");
+      }      
         
-        LookaroundIterator<ExpansionState<T>.MementoState> cursor 
-          = new LookaroundIterator<ExpansionState<T>.MementoState>
-            (state.iterator());
+      LookaroundIterator<ExpansionState<T>.MementoState> cursor 
+        = new LookaroundIterator<ExpansionState<T>.MementoState>
+          (state.iterator());
 
-        while (cursor.hasNext())
-        { messageRetraverseChild(dispatcher,message,cursor,iter,path);
-        }
+      while (cursor.hasNext())
+      { messageRetraverseChild(dispatcher,message,cursor,iter,path);
+      }
       
-        if (logLevel.isDebug())
-        { log.debug(toString()+": retraversed "+iter.index+" elements");
-        }
+      if (logLevel.isDebug())
+      { log.debug(toString()+": retraversed "+iter.index+" elements");
       }
     }
     finally
     { iterationLocal.pop();
     }
+  }
+  
+  private boolean isCallPath(Dispatcher dispatcher,int index)
+  {
+    if (callContext!=null)
+    { 
+      String key=callContext.getNextSegment();
+      if (key!=null)
+      { 
+        if (keyBinding!=null)
+        { return key.equals(keyBinding.get());
+        }
+        else
+        { return key.equals(Integer.toString(index));
+        }
+      }
+      else
+      { 
+        if (logLevel.isFine())
+        { log.log(Level.FINE,"Path segment for call is null");
+        }
+      }
+    }
+    else
+    { 
+      if (logLevel.isFine())
+      { log.log(Level.FINE,"No callContext for call");
+      }
+    }
+    return false;
   }
   
   private void messageRetraverseChild
@@ -274,7 +314,16 @@ public class ExpansionContainer<C,T>
       
     ValueState<T> childState=cursor.next();
     iter.hasNext=cursor.hasNext();
-    if (path==null || path==iter.index)
+    boolean callPath=false;
+    if ( (path==null && message.isMulticast())
+          || (path!=null && path==iter.index )
+          || (message.getType()==CallMessage.TYPE
+              && (callPath=isCallPath(dispatcher,iter.index))
+             )
+          || (subscribedTypes!=null 
+               && subscribedTypes.contains(message.getType())
+             )
+         )
     {
       pushElement
         (lastVal
@@ -285,6 +334,9 @@ public class ExpansionContainer<C,T>
         );
       
       dispatcher.descend(iter.index,message.isOutOfBand());
+      if (callPath)
+      { callContext.descend();
+      }
       try
       {
         // Run handlers for each element
@@ -292,6 +344,9 @@ public class ExpansionContainer<C,T>
       }
       finally
       { 
+        if (callPath)
+        { callContext.ascend();
+        }
         dispatcher.ascend(message.isOutOfBand());
         popElement();
       }
@@ -350,7 +405,10 @@ public class ExpansionContainer<C,T>
     if (decorator==null)
     { 
       throw new BindException
-        ("Cannot iterate through a "+target.getContentType().getName());
+        ("Cannot iterate through a "
+          +target.getContentType().getName()
+          +" ("+target.getReflector().getTypeURI()+")"
+        );
     }
     
     {
@@ -358,6 +416,9 @@ public class ExpansionContainer<C,T>
         =new ThreadLocalChannel<T>(decorator.getComponentReflector());
     
       currentFocus=parentFocus.chain(valueChannel);
+      if (keyBinding!=null)
+      { keyBinding.bind(currentFocus);
+      }
 
     }
     
