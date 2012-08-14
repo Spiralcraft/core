@@ -14,6 +14,7 @@
 //
 package spiralcraft.util;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -434,6 +435,10 @@ public class Path
   @Override
   public String toString()
   { return format(new String(new char[] {_delimiter}));
+  }
+  
+  public URI toURI()
+  { return URI.create(URIUtil.encodeURIPath(format("/")));
   }
   
   /**
