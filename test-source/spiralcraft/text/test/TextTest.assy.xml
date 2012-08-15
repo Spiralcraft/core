@@ -17,93 +17,87 @@
   <name>spiralcraft.text.test
   </name>
   
-  <chain>
- 
-    <task:Sequence>
-      <scenarios>
+  <sequence>
+
+    <test:Assertion>
     
-        <test:Assertion>
-        
-          <name>MessageFormat
-          </name>
-          
-          <subjectX>
-            [@jio:StringWriter].()
-               { [*text:MessageFormat{"One plus one is {|1+1|}."}].render(.)
-               , .
-               }
-               .toString()
-            
-          </subjectX>
-          
-          <testX>
-            .=="One plus one is 2."
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>Stock URLEncoder.encode
-          </name>
-          
-          <subjectX>
-            [@jn:URLEncoder].@encode("This is an encoder test &#x00A9;&#x2211;","UTF-8")
-          </subjectX>
-          
-          <testX>
-            .=="This+is+an+encoder+test+%C2%A9%E2%88%91"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>URLDataEncoder.encode
-          </name>
-          
-          <subjectX>
-            [@html:URLDataEncoder].@encode("This is an encoder test &#x00A9;&#x2211;")
-          </subjectX>
-          
-          <testX>
-            .=="This+is+an+encoder+test+%C2%A9%E2%88%91"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>Stock URLDecoder.decode
-          </name>
-          
-          <subjectX>
-            [@jn:URLDecoder].@decode("This+is+an+encoder+test+%C2%A9%E2%88%91","UTF-8")
-          </subjectX>
-          
-          <testX>
-            .=="This is an encoder test &#x00A9;&#x2211;"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>URLDataEncoder.encode
-          </name>
-          
-          <subjectX>
-            [@html:URLDataEncoder].@decode("This+is+an+encoder+test+%C2%A9%E2%88%91")
-          </subjectX>
-          
-          <testX>
-            .=="This is an encoder test &#x00A9;&#x2211;"
-          </testX>
-          
-        </test:Assertion>                
-      </scenarios>
+      <name>MessageFormat
+      </name>
       
-    </task:Sequence>
-  </chain>
+      <subjectX>
+        [@jio:StringWriter].()
+           { [*text:MessageFormat{"One plus one is {|1+1|}."}].render(.)
+           , .
+           }
+           .toString()
+        
+      </subjectX>
+      
+      <testX>
+        .=="One plus one is 2."
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>Stock URLEncoder.encode
+      </name>
+      
+      <subjectX>
+        [@jn:URLEncoder].@encode("This is an encoder test &#x00A9;&#x2211;","UTF-8")
+      </subjectX>
+      
+      <testX>
+        .=="This+is+an+encoder+test+%C2%A9%E2%88%91"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>URLDataEncoder.encode
+      </name>
+      
+      <subjectX>
+        [@html:URLDataEncoder].@encode("This is an encoder test &#x00A9;&#x2211;")
+      </subjectX>
+      
+      <testX>
+        .=="This+is+an+encoder+test+%C2%A9%E2%88%91"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>Stock URLDecoder.decode
+      </name>
+      
+      <subjectX>
+        [@jn:URLDecoder].@decode("This+is+an+encoder+test+%C2%A9%E2%88%91","UTF-8")
+      </subjectX>
+      
+      <testX>
+        .=="This is an encoder test &#x00A9;&#x2211;"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>URLDataEncoder.encode
+      </name>
+      
+      <subjectX>
+        [@html:URLDataEncoder].@decode("This+is+an+encoder+test+%C2%A9%E2%88%91")
+      </subjectX>
+      
+      <testX>
+        .=="This is an encoder test &#x00A9;&#x2211;"
+      </testX>
+      
+    </test:Assertion>             
+  </sequence>
         
 </test:TestGroup>

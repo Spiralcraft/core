@@ -1,4 +1,4 @@
-<task:Chain
+<task:Sequence
   xmlns:task="class:/spiralcraft/task/"
   xmlns:query="class:/spiralcraft/data/query/"
   xmlns:data="class:/spiralcraft/data/"
@@ -13,49 +13,47 @@
   xmlns:fn="class:/spiralcraft/lang/functions/"
   xmlns:time="class:/spiralcraft/time/"
   >
-  <chain>
  
-    <task:Sequence>
-      <scenarios>
-    
-        <dtask:Fetch>
-          
-          <query>
-            <query:Scan>
-              <type x="[@example:Customer].type"/>
-            </query:Scan>
-          </query>
-          
-          <chain>
-            <test:Stub>
-              <name>Scan
-              </name>
-              <messageX>""+[example:Customer.list].@size()+" results"
-              </messageX>
-              <conditionX>[example:Customer.list].@size()==3
-              </conditionX>
-            </test:Stub>
-          </chain>
-        </dtask:Fetch>
+  <scenarios>
 
+    <dtask:Fetch>
+      
+      <query>
+        <query:Scan>
+          <type x="[@example:Customer].type"/>
+        </query:Scan>
+      </query>
+      
+      <sequence>
+        <test:Stub>
+          <name>Scan
+          </name>
+          <messageX>""+[example:Customer.list].@size()+" results"
+          </messageX>
+          <conditionX>[example:Customer.list].@size()==3
+          </conditionX>
+        </test:Stub>
+      </sequence>
+    </dtask:Fetch>
+
+    <dtask:Fetch>
+      
+      <query>
+        <query:Scan>
+          <type x="[@example:Customer].type"/>
+        </query:Scan>
+      </query>
+      
+      <sequence>
         <dtask:Fetch>
-          
           <query>
-            <query:Scan>
-              <type x="[@example:Customer].type"/>
-            </query:Scan>
+            <query:ReferenceQuery>
+              <reference>[example:Customer.list]
+              </reference>
+            </query:ReferenceQuery>
           </query>
           
-          <chain>
-            <dtask:Fetch>
-              <query>
-                <query:ReferenceQuery>
-                  <reference>[example:Customer.list]
-                  </reference>
-                </query:ReferenceQuery>
-              </query>
-            </dtask:Fetch>
-            
+          <sequence>
             <test:Stub>
               <name>ReferenceQuery
               </name>
@@ -64,730 +62,730 @@
               <conditionX>[example:Customer.list].@size()==3
               </conditionX>
             </test:Stub>
-            
-          </chain>
-        </dtask:Fetch>
-
-        <dtask:Fetch>
-          
-          <query>
-            <query:SetFilter>
-              <filterSetX>[@j:String][{"Nomatch One","Mary Second","Nomatch Two"}]
-              </filterSetX>
-              
-              <searchX>.displayName
-              </searchX>
-              
-              <excludeMatch>false
-              </excludeMatch>
-              
-              <source>
-                <query:Scan>
-                  <type x="[@example:Customer].type"/>
-                </query:Scan>
-              </source>
-              
-            </query:SetFilter>
-          </query>
-          
-          <chain>
-            <test:Stub>
-              <name>SetFilter
-              </name>
-              <messageX>""+[example:Customer.list].@size()+" results"
-              </messageX>
-              <conditionX>[example:Customer.list].@size()==1
-              </conditionX>
-            </test:Stub>
-          </chain>
-        </dtask:Fetch>
-
-        <dtask:Fetch>
-          
-          <query>
-            <query:SetFilter>
-              <filterSetX>[@j:String][{"Nomatch One","Mary Second","Nomatch Two"}]
-              </filterSetX>
-              
-              <searchX>.displayName
-              </searchX>
-              
-              <excludeMatch>true
-              </excludeMatch>
-              
-              <source>
-                <query:Scan>
-                  <type x="[@example:Customer].type"/>
-                </query:Scan>
-              </source>
-              
-            </query:SetFilter>
-          </query>
-          
-          <chain>
-            <test:Stub>
-              <name>SetFilter (neg)
-              </name>
-              <messageX>""+[example:Customer.list].@size()+" results"
-              </messageX>
-              <conditionX>[example:Customer.list].@size()==2
-              </conditionX>
-            </test:Stub>
-          </chain>
+          </sequence>
         </dtask:Fetch>
         
-        <dtask:Fetch>
-          
-          <query>
-            <query:Join>
-              
-              <parentQuery>
-                <query:Scan>
-                  <type x="[@example:Customer].type"/>
-                </query:Scan>
-              </parentQuery>
-              
-              <childQuery>
-              
-                <query:Selection>
-                  <constraints>.principalId==id.toString()
-                  </constraints>
-                  
-                  <source>
-                    <query:Scan>
-                      <type x="[@sec:Login].type"/>
-                    </query:Scan>
-                  </source>
-                  
-                </query:Selection>
-                
-              </childQuery>
-
-            </query:Join>
-          </query>
-          
-          <chain>
-            <test:Stub>
-              <name>Join
-              </name>
-              <messageX>""+[sec:Login.list].@size()+" results"
-              </messageX>
-              <conditionX>[sec:Login.list].@size()==2
-              </conditionX>
-            </test:Stub>
-          </chain>
-        </dtask:Fetch>
         
-        <dtask:Fetch>
-          
-          <query>
-            <query:Projection>
-              
-              <source>
-                <query:Scan>
-                  <type x="[@example:Customer].type"/>
-                </query:Scan>
-              </source>
-              
-              <x>.address
-              </x>
+      </sequence>
+    </dtask:Fetch>
 
-            </query:Projection>
-          </query>
-          
-          <chain>
-            <test:Assertion>
-              <name>Projection Query (1-1)
-              </name>
-              <subjectX>[example:Address.list]
-              </subjectX>
-              <testX>.@size()==3
-              </testX>
-            </test:Assertion>
-          </chain>
-        </dtask:Fetch>
-
-        <dtask:Fetch>
-          
-          <query>
-            <query:Projection>
-              
-              <source>
-                <query:Scan>
-                  <type x="[@example:Customer].type"/>
-                </query:Scan>
-              </source>
-              
-              <x>.facts
-              </x>
-
-            </query:Projection>
-          </query>
-          
-          <chain>
-            <test:Assertion>
-              <name>Projection Query (1-m)
-              </name>
-              <subjectX>[example:Fact.list]
-              </subjectX>
-              <testX>.@size()==6
-              </testX>
-            </test:Assertion>
-          </chain>
-        </dtask:Fetch>
-
-        <test:Assertion>
-          <name>Expression Scan
-          </name>
-          <subjectX>[*dtask:Fetch
-                      { [*query:Scan
-                          {[@example:Customer].type
-                          }
-                        ]
-                      }
-                    ].()
-          </subjectX>
-          <testX>@size()==3
-          </testX>
-        </test:Assertion>
-
-        <test:Assertion>
-          <name>Expression Select
-          </name>
-          <subjectX>[*dtask:Fetch
-                      { [*query:Selection
-                          { [*query:Scan
-                                {[@example:Customer].type
-                                }
-                            ]
-                            ,`.displayName=="Mary Second"`
-                          }
-                        ]
-                      }
-                    ].()
-          </subjectX>
-          <testX>@size()==1
-          </testX>
-        </test:Assertion>
-
-        <test:Assertion>
-          <name>Text Search
-          </name>
-          <subjectX>[*dtask:Fetch
-                      { [*query:TextSearch
-                          { [*query:Scan
-                                {[@example:Customer].type
-                                }
-                            ]
-                            ,`"spiralcraft third"`
-                          }
-                        ]
-                      }
-                    ].()
-          </subjectX>
-          <testX>@size()==2
-          </testX>
-        </test:Assertion>
-        
-        <dtask:Session>
-          <chain>
-            <test:Stub>
-              <name>Expression Insert
-              </name>
-              <messageX>
-                [@example:Customer.buffer]
-                  .(displayName:="New Customer"
-                    ,lastContact:=[@time:Instant].()
-                  ).@tuple.save()
-              </messageX>
-              <conditionX>true
-              </conditionX>
-            </test:Stub>
-            <test:Assertion>
-              <name>Check update result
-              </name>
-              <subjectX>
-                [*dtask:Fetch
-                  { [*query:Scan
-                      {[@example:Customer].type
-                      }
-                    ]
-                  }
-                ].()
-              </subjectX>
-              <testX>@[3].displayName=="New Customer"
-                &amp;&amp; @[3].id==100
-              </testX>
-            </test:Assertion>
-          
-          </chain>
-        </dtask:Session>
-
-        <dtask:Session>
-          <chain>
-            <test:Stub>
-              <name>Expression Update
-              </name>
-              <messageX>
-                [*dtask:Fetch
-                  { [*query:Selection
-                      { [*query:Scan{ [@example:Customer].type }]
-                      , `.displayName=="Mary Second"`
-                      }
-                    ]
-                  }
-                ].().@top
-                .[*dtask:Edit].()
-                { .displayName="Mary Second Edited"
-                  , .lastContact=[@time:Instant].()
-                  , .notes=.notes+"\r\n edited &#x2122;"
-                  ,.
-                }.@tuple.save()
-              </messageX>
-              <conditionX>true
-              </conditionX>
-            </test:Stub>
-            <test:Assertion>
-              <name>Check update result
-              </name>
-              <subjectX>
-                [*dtask:Fetch
-                  { [*query:Scan
-                      {[@example:Customer].type
-                      }
-                    ]
-                  }
-                ].()#{.displayName}
-              </subjectX>
-              <testX>@[1]=="Mary Second Edited"
-              </testX>
-            </test:Assertion>
-          
-          </chain>
-        </dtask:Session>
-        
-        <dtask:Session>
-          <chain>
-            <test:Stub>
-              <name>Expression Insert
-              </name>
-              <messageX>
-                [@example:Customer.buffer]
-                  .(displayName:="Another New Customer"
-                    ,lastContact:=[@time:Instant].()
-                  ).@tuple.save()
-              </messageX>
-              <conditionX>true
-              </conditionX>
-            </test:Stub>
-            <test:Assertion>
-              <name>Check update result
-              </name>
-              <subjectX>
-                [*dtask:Fetch
-                  { [*query:Scan
-                      {[@example:Customer].type
-                      }
-                    ]
-                  }
-                ].()
-              </subjectX>
-              <testX>@[4].displayName=="Another New Customer"
-                &amp;&amp; @[4].id==101
-              </testX>
-            </test:Assertion>
-          
-          </chain>
-        </dtask:Session>
-        
-        <dtask:Session>
-          <chain>
-            <test:Stub>
-              <name>Expression Delete
-              </name>
-              <messageX>
-                [*dtask:Fetch
-                  { [*query:Selection
-                      { [*query:Scan{ [@example:Customer].type }]
-                      , `.displayName=="Another New Customer"`
-                      }
-                    ]
-                  }
-                ].().@top
-                .[*dtask:Edit].()
-                { .@tuple.delete()
-                , .@tuple.save()
-                }
-              </messageX>
-              <conditionX>true
-              </conditionX>
-            </test:Stub>
-            <test:Assertion>
-              <name>Check delete result
-              </name>
-              <subjectX>
-                [*dtask:Fetch
-                  { [*query:Scan
-                      {[@example:Customer].type
-                      }
-                    ]
-                  }
-                ].()
-              </subjectX>
-              <testX>@[3].displayName=="New Customer"
-                &amp;&amp; @[3].id==100
-              </testX>
-            </test:Assertion>
-          
-          </chain>
-        </dtask:Session>
-
-        <dtask:Session>
-          <chain>
-            <test:Stub>
-              <name>BaseTyped Update
-              </name>
-              <messageX>
-                [*dtask:Fetch
-                  { [*query:Selection
-                      { [*query:Scan{ [@example:StringNode].type }]
-                      , `.nodeId=="6"`
-                      }
-                    ]
-                  }
-                ].().@top
-                .[*dtask:Edit].()
-                { .value="edited value"
-                , .@tuple.save()
-                }
-              </messageX>
-              <conditionX>true
-              </conditionX>
-            </test:Stub>
-            <test:Assertion>
-              <name>Check Update result
-              </name>
-              <subjectX>
-                [*dtask:Fetch
-                  { [*query:Selection
-                      {[@example:StringNode].type
-                      ,`.nodeId=="6"`
-                      }
-                    ]
-                  }
-                ].()
-              </subjectX>
-              <testX>.@top.value=="edited value"
-                &amp;&amp; @top.nodeId=="6"
-              </testX>
-            </test:Assertion>
-          
-          </chain>
-        </dtask:Session>
-        <test:Assertion>
-          <name>Snapshot
-          </name>
-          <subjectX>
-            [data:Space].getStore("local").snapshot(0L)
-          </subjectX>
-          <testX>
-            .data[0].@cast([@data:Aggregate]).size()==4 
-            &amp;&amp; 
-            .data[1].@cast([@data:Aggregate]).size()==5
-          </testX>
-        </test:Assertion>
-
-        <test:Assertion>
-          <name>ParseXML
-          </name>
-          <subjectX>
-            [*sax:ParseXml
-              { uriX:=[@jnet:URI].@create
-                  ("class:/spiralcraft/data/test/example/Customer.data.xml")
-              , type:=[@example:Customer.list].type
-              }
-            ].()
-          </subjectX>
-          <testX>
-            .@size()==3
-          </testX>
-        </test:Assertion>
-
-        <test:Assertion>
-          <name>Store update
-          </name>
-          <subjectX>
-            [data:Space].getStore("slave").update
-              ([data:Space].getStore("local").snapshot(0L))
-          </subjectX>
-          <testX>
-            [data:Space].getStore("slave").snapshot(0L)
-            {
-              .data[0].@cast([@data:Aggregate]).size()==4 
-              &amp;&amp; 
-              .data[1].@cast([@data:Aggregate]).size()==5
-            }
-          </testX>
-          
-        </test:Assertion>
+    <dtask:Fetch>
       
+      <query>
+        <query:SetFilter>
+          <filterSetX>[@j:String][{"Nomatch One","Mary Second","Nomatch Two"}]
+          </filterSetX>
+          
+          <searchX>.displayName
+          </searchX>
+          
+          <excludeMatch>false
+          </excludeMatch>
+          
+          <source>
+            <query:Scan>
+              <type x="[@example:Customer].type"/>
+            </query:Scan>
+          </source>
+          
+        </query:SetFilter>
+      </query>
+      
+      <sequence>
+        <test:Stub>
+          <name>SetFilter
+          </name>
+          <messageX>""+[example:Customer.list].@size()+" results"
+          </messageX>
+          <conditionX>[example:Customer.list].@size()==1
+          </conditionX>
+        </test:Stub>
+      </sequence>
+    </dtask:Fetch>
+
+    <dtask:Fetch>
+      
+      <query>
+        <query:SetFilter>
+          <filterSetX>[@j:String][{"Nomatch One","Mary Second","Nomatch Two"}]
+          </filterSetX>
+          
+          <searchX>.displayName
+          </searchX>
+          
+          <excludeMatch>true
+          </excludeMatch>
+          
+          <source>
+            <query:Scan>
+              <type x="[@example:Customer].type"/>
+            </query:Scan>
+          </source>
+          
+        </query:SetFilter>
+      </query>
+      
+      <sequence>
+        <test:Stub>
+          <name>SetFilter (neg)
+          </name>
+          <messageX>""+[example:Customer.list].@size()+" results"
+          </messageX>
+          <conditionX>[example:Customer.list].@size()==2
+          </conditionX>
+        </test:Stub>
+      </sequence>
+    </dtask:Fetch>
+    
+    <dtask:Fetch>
+      
+      <query>
+        <query:Join>
+          
+          <parentQuery>
+            <query:Scan>
+              <type x="[@example:Customer].type"/>
+            </query:Scan>
+          </parentQuery>
+          
+          <childQuery>
+          
+            <query:Selection>
+              <constraints>.principalId==id.toString()
+              </constraints>
+              
+              <source>
+                <query:Scan>
+                  <type x="[@sec:Login].type"/>
+                </query:Scan>
+              </source>
+              
+            </query:Selection>
+            
+          </childQuery>
+
+        </query:Join>
+      </query>
+      
+      <sequence>
+        <test:Stub>
+          <name>Join
+          </name>
+          <messageX>""+[sec:Login.list].@size()+" results"
+          </messageX>
+          <conditionX>[sec:Login.list].@size()==2
+          </conditionX>
+        </test:Stub>
+      </sequence>
+    </dtask:Fetch>
+    
+    <dtask:Fetch>
+      
+      <query>
+        <query:Projection>
+          
+          <source>
+            <query:Scan>
+              <type x="[@example:Customer].type"/>
+            </query:Scan>
+          </source>
+          
+          <x>.address
+          </x>
+
+        </query:Projection>
+      </query>
+      
+      <sequence>
         <test:Assertion>
-          <name>Reduce facts 1
+          <name>Projection Query (1-1)
+          </name>
+          <subjectX>[example:Address.list]
+          </subjectX>
+          <testX>.@size()==3
+          </testX>
+        </test:Assertion>
+      </sequence>
+    </dtask:Fetch>
+
+    <dtask:Fetch>
+      
+      <query>
+        <query:Projection>
+          
+          <source>
+            <query:Scan>
+              <type x="[@example:Customer].type"/>
+            </query:Scan>
+          </source>
+          
+          <x>.facts
+          </x>
+
+        </query:Projection>
+      </query>
+      
+      <sequence>
+        <test:Assertion>
+          <name>Projection Query (1-m)
+          </name>
+          <subjectX>[example:Fact.list]
+          </subjectX>
+          <testX>.@size()==6
+          </testX>
+        </test:Assertion>
+      </sequence>
+    </dtask:Fetch>
+
+    <test:Assertion>
+      <name>Expression Scan
+      </name>
+      <subjectX>[*dtask:Fetch
+                  { [*query:Scan
+                      {[@example:Customer].type
+                      }
+                    ]
+                  }
+                ].()
+      </subjectX>
+      <testX>@size()==3
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Expression Select
+      </name>
+      <subjectX>[*dtask:Fetch
+                  { [*query:Selection
+                      { [*query:Scan
+                            {[@example:Customer].type
+                            }
+                        ]
+                        ,`.displayName=="Mary Second"`
+                      }
+                    ]
+                  }
+                ].()
+      </subjectX>
+      <testX>@size()==1
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Text Search
+      </name>
+      <subjectX>[*dtask:Fetch
+                  { [*query:TextSearch
+                      { [*query:Scan
+                            {[@example:Customer].type
+                            }
+                        ]
+                        ,`"spiralcraft third"`
+                      }
+                    ]
+                  }
+                ].()
+      </subjectX>
+      <testX>@size()==2
+      </testX>
+    </test:Assertion>
+    
+    <dtask:Session>
+      <sequence>
+        <test:Stub>
+          <name>Expression Insert
+          </name>
+          <messageX>
+            [@example:Customer.buffer]
+              .(displayName:="New Customer"
+                ,lastContact:=[@time:Instant].()
+              ).@tuple.save()
+          </messageX>
+          <conditionX>true
+          </conditionX>
+        </test:Stub>
+        <test:Assertion>
+          <name>Check update result
           </name>
           <subjectX>
             [*dtask:Fetch
               { [*query:Scan
-                  {[@example:Fact].type
-                  }
-                ]
-              }
-            ].()$[.eyeColor]
-          </subjectX>
-          
-          <testX>length==3 &amp;&amp; @[1]=="blue"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-          <name>Collect disjoint facts 1
-          </name>
-          <subjectX>
-            [*dtask:Fetch
-              {
-                [*query:Selection
-                  {[@example:Fact].type
-                  ,`.active`
-                  }
-                ]
-              }
-            ].()
-            +
-            [*dtask:Fetch
-              {
-                [*query:Selection
-                  {[@example:Fact].type
-                  ,`.numUnits &gt; 4`
+                  {[@example:Customer].type
                   }
                 ]
               }
             ].()
           </subjectX>
-          
-          <testX>@size()==8
+          <testX>@[3].displayName=="New Customer"
+            &amp;&amp; @[3].id==100
           </testX>
-          
         </test:Assertion>
+      
+      </sequence>
+    </dtask:Session>
 
-        <test:Assertion>
-          <name>Collect disjoint fact projections
+    <dtask:Session>
+      <sequence>
+        <test:Stub>
+          <name>Expression Update
           </name>
-          <subjectX>
+          <messageX>
             [*dtask:Fetch
-              {
-                [*query:Selection
-                  {[@example:Fact].type
-                  ,`.active`
+              { [*query:Selection
+                  { [*query:Scan{ [@example:Customer].type }]
+                  , `.displayName=="Mary Second"`
                   }
                 ]
               }
-            ].()#{{ score:=1, fact:=.. }}
-            +
+            ].().@top
+            .[*dtask:Edit].()
+            { .displayName="Mary Second Edited"
+              , .lastContact=[@time:Instant].()
+              , .notes=.notes+"\r\n edited &#x2122;"
+              ,.
+            }.@tuple.save()
+          </messageX>
+          <conditionX>true
+          </conditionX>
+        </test:Stub>
+        <test:Assertion>
+          <name>Check update result
+          </name>
+          <subjectX>
             [*dtask:Fetch
-              {
-                [*query:Selection
-                  {[@example:Fact].type
-                  ,`.numUnits &gt; 4`
+              { [*query:Scan
+                  {[@example:Customer].type
                   }
                 ]
               }
-            ].()#{{ score:=2, fact:=.. }}
+            ].()#{.displayName}
           </subjectX>
-          
-          <testX>.length==8
+          <testX>@[1]=="Mary Second Edited"
           </testX>
-          
         </test:Assertion>
-
+      
+      </sequence>
+    </dtask:Session>
+    
+    <dtask:Session>
+      <sequence>
+        <test:Stub>
+          <name>Expression Insert
+          </name>
+          <messageX>
+            [@example:Customer.buffer]
+              .(displayName:="Another New Customer"
+                ,lastContact:=[@time:Instant].()
+              ).@tuple.save()
+          </messageX>
+          <conditionX>true
+          </conditionX>
+        </test:Stub>
         <test:Assertion>
-          <name>Reduce disjoint fact projections 
+          <name>Check update result
           </name>
           <subjectX>
-            (
-              [*dtask:Fetch
-                {
-                  [*query:Selection
-                    {[@example:Fact].type
-                    ,`.active`
-                    }
-                  ]
-                }
-              ].()#{{  fact:=.., score:=2.5F }}
-              +
-              [*dtask:Fetch
-                {
-                  [*query:Projection
-                    {
-                      [*query:Selection
-                        {[@example:Customer].type
-                        ,`.score &gt; 21`
-                        }
-                      ]
-                      ,`.facts`
-                    }
-                  ]
-                
-                }
-              ].()#{{ fact:=.., score:=20.0F }}
-              
-            )
-            $[{ fact:=..fact, score:=..score.[*fn:Sum] }]
-            #{ [@example:Fact].(factId:=.fact.factId, score:=.score) }
-            
+            [*dtask:Fetch
+              { [*query:Scan
+                  {[@example:Customer].type
+                  }
+                ]
+              }
+            ].()
           </subjectX>
-          
-          <testX>.length==5
+          <testX>@[4].displayName=="Another New Customer"
+            &amp;&amp; @[4].id==101
           </testX>
-          
         </test:Assertion>
-
-        <test:Assertion>
-          <name>Heterogeneous query of abstract base type
+      
+      </sequence>
+    </dtask:Session>
+    
+    <dtask:Session>
+      <sequence>
+        <test:Stub>
+          <name>Expression Delete
           </name>
-          
+          <messageX>
+            [*dtask:Fetch
+              { [*query:Selection
+                  { [*query:Scan{ [@example:Customer].type }]
+                  , `.displayName=="Another New Customer"`
+                  }
+                ]
+              }
+            ].().@top
+            .[*dtask:Edit].()
+            { .@tuple.delete()
+            , .@tuple.save()
+            }
+          </messageX>
+          <conditionX>true
+          </conditionX>
+        </test:Stub>
+        <test:Assertion>
+          <name>Check delete result
+          </name>
           <subjectX>
-              [*dtask:Fetch
-                {
-                  [*query:Scan
-                    {[@example:Node].type
-                    }
-                  ]
-                }
-              ].()
+            [*dtask:Fetch
+              { [*query:Scan
+                  {[@example:Customer].type
+                  }
+                ]
+              }
+            ].()
           </subjectX>
-          
-          <testX>.@size()==6
+          <testX>@[3].displayName=="New Customer"
+            &amp;&amp; @[3].id==100
           </testX>
-          
         </test:Assertion>
+      
+      </sequence>
+    </dtask:Session>
 
-        <test:Assertion>
-          <name>RelationalMap downstream
+    <dtask:Session>
+      <sequence>
+        <test:Stub>
+          <name>BaseTyped Update
           </name>
-          
+          <messageX>
+            [*dtask:Fetch
+              { [*query:Selection
+                  { [*query:Scan{ [@example:StringNode].type }]
+                  , `.nodeId=="6"`
+                  }
+                ]
+              }
+            ].().@top
+            .[*dtask:Edit].()
+            { .value="edited value"
+            , .@tuple.save()
+            }
+          </messageX>
+          <conditionX>true
+          </conditionX>
+        </test:Stub>
+        <test:Assertion>
+          <name>Check Update result
+          </name>
           <subjectX>
-            [@j:Integer][{1,2,3}]
-              .[*dutil:RelationalMap
-                {
-                  [@example:Customer].type
-                  ,"id"
-                  ,"displayName"
+            [*dtask:Fetch
+              { [*query:Selection
+                  {[@example:StringNode].type
+                  ,`.nodeId=="6"`
+                  }
+                ]
+              }
+            ].()
+          </subjectX>
+          <testX>.@top.value=="edited value"
+            &amp;&amp; @top.nodeId=="6"
+          </testX>
+        </test:Assertion>
+      
+      </sequence>
+    </dtask:Session>
+    <test:Assertion>
+      <name>Snapshot
+      </name>
+      <subjectX>
+        [data:Space].getStore("local").snapshot(0L)
+      </subjectX>
+      <testX>
+        .data[0].@cast([@data:Aggregate]).size()==4 
+        &amp;&amp; 
+        .data[1].@cast([@data:Aggregate]).size()==5
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>ParseXML
+      </name>
+      <subjectX>
+        [*sax:ParseXml
+          { uriX:=[@jnet:URI].@create
+              ("class:/spiralcraft/data/test/example/Customer.data.xml")
+          , type:=[@example:Customer.list].type
+          }
+        ].()
+      </subjectX>
+      <testX>
+        .@size()==3
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Store update
+      </name>
+      <subjectX>
+        [data:Space].getStore("slave").update
+          ([data:Space].getStore("local").snapshot(0L))
+      </subjectX>
+      <testX>
+        [data:Space].getStore("slave").snapshot(0L)
+        {
+          .data[0].@cast([@data:Aggregate]).size()==4 
+          &amp;&amp; 
+          .data[1].@cast([@data:Aggregate]).size()==5
+        }
+      </testX>
+      
+    </test:Assertion>
+  
+    <test:Assertion>
+      <name>Reduce facts 1
+      </name>
+      <subjectX>
+        [*dtask:Fetch
+          { [*query:Scan
+              {[@example:Fact].type
+              }
+            ]
+          }
+        ].()$[.eyeColor]
+      </subjectX>
+      
+      <testX>length==3 &amp;&amp; @[1]=="blue"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Collect disjoint facts 1
+      </name>
+      <subjectX>
+        [*dtask:Fetch
+          {
+            [*query:Selection
+              {[@example:Fact].type
+              ,`.active`
+              }
+            ]
+          }
+        ].()
+        +
+        [*dtask:Fetch
+          {
+            [*query:Selection
+              {[@example:Fact].type
+              ,`.numUnits &gt; 4`
+              }
+            ]
+          }
+        ].()
+      </subjectX>
+      
+      <testX>@size()==8
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Collect disjoint fact projections
+      </name>
+      <subjectX>
+        [*dtask:Fetch
+          {
+            [*query:Selection
+              {[@example:Fact].type
+              ,`.active`
+              }
+            ]
+          }
+        ].()#{{ score:=1, fact:=.. }}
+        +
+        [*dtask:Fetch
+          {
+            [*query:Selection
+              {[@example:Fact].type
+              ,`.numUnits &gt; 4`
+              }
+            ]
+          }
+        ].()#{{ score:=2, fact:=.. }}
+      </subjectX>
+      
+      <testX>.length==8
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Reduce disjoint fact projections 
+      </name>
+      <subjectX>
+        (
+          [*dtask:Fetch
+            {
+              [*query:Selection
+                {[@example:Fact].type
+                ,`.active`
                 }
               ]
-          </subjectX>
-          
-          <testX>.equals([@j:String][{"Johnny First","Mary Second Edited","Tommy Third"}])
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-          <name>RelationalMap upstream
-          </name>
-          
-          <subjectX>
-            { x:=[@j:Integer][{}]
             }
-            {.x.[*dutil:RelationalMap
-                  {
-                    [@example:Customer].type
-                    ,"id"
-                    ,"displayName"
-                    ,debug:=true
+          ].()#{{  fact:=.., score:=2.5F }}
+          +
+          [*dtask:Fetch
+            {
+              [*query:Projection
+                {
+                  [*query:Selection
+                    {[@example:Customer].type
+                    ,`.score &gt; 21`
+                    }
+                  ]
+                  ,`.facts`
+                }
+              ]
+            
+            }
+          ].()#{{ fact:=.., score:=20.0F }}
+          
+        )
+        $[{ fact:=..fact, score:=..score.[*fn:Sum] }]
+        #{ [@example:Fact].(factId:=.fact.factId, score:=.score) }
+        
+      </subjectX>
+      
+      <testX>.length==5
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Heterogeneous query of abstract base type
+      </name>
+      
+      <subjectX>
+          [*dtask:Fetch
+            {
+              [*query:Scan
+                {[@example:Node].type
+                }
+              ]
+            }
+          ].()
+      </subjectX>
+      
+      <testX>.@size()==6
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>RelationalMap downstream
+      </name>
+      
+      <subjectX>
+        [@j:Integer][{1,2,3}]
+          .[*dutil:RelationalMap
+            {
+              [@example:Customer].type
+              ,"id"
+              ,"displayName"
+            }
+          ]
+      </subjectX>
+      
+      <testX>.equals([@j:String][{"Johnny First","Mary Second Edited","Tommy Third"}])
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>RelationalMap upstream
+      </name>
+      
+      <subjectX>
+        { x:=[@j:Integer][{}]
+        }
+        {.x.[*dutil:RelationalMap
+              {
+                [@example:Customer].type
+                ,"id"
+                ,"displayName"
+                ,debug:=true
+              }
+            ]
+          =[@j:String][{"Johnny First","Mary Second Edited","Tommy Third"}]
+        ,.x
+        }
+      </subjectX>
+      
+      <testX>.equals([@j:Integer][{1,2,3}])
+      </testX>
+      
+    </test:Assertion>
+    
+    <dtask:Session>
+    
+      <contextX>
+        [#context]
+        { 
+          orig:=
+            [*dtask:Fetch
+              { [@example:Customer]
+                , [{ `displayName:="Mary Second Edited"` }] 
+              }
+            ].()
+        }
+      </contextX>
+      
+      
+      <sequence>
+        <test:Assertion>
+          <name>Precondition
+          </name>
+          <subjectX>
+            [context].orig
+          </subjectX>
+          <testX>.!=null
+          </testX>
+        </test:Assertion>
+        
+        <test:Stub>
+          <name>Edit once
+          </name>
+          <messageX>
+            [context].orig.[*dtask:Edit].()
+              { .displayName="Mary Second Edited 2"
+                ,.
+              }.@tuple.save()
+          </messageX>
+        
+        </test:Stub>
+        
+        <test:Stub>
+          <name>Edit old copy
+          </name>
+          <messageX>
+            [context].orig.[*dtask:Edit].()
+              { .displayName="Mary Second Edited 3"
+                ,.
+              }.@tuple.save()
+          </messageX>
+        
+        </test:Stub>            
+        
+        <test:Assertion>
+          <name>Check update result
+          </name>
+          <subjectX>
+            [*dtask:Fetch
+              { [*query:Scan
+                  {[@example:Customer].type
                   }
                 ]
-              =[@j:String][{"Johnny First","Mary Second Edited","Tommy Third"}]
-            ,.x
-            }
+              }
+            ].()#{.displayName}
           </subjectX>
-          
-          <testX>.equals([@j:Integer][{1,2,3}])
+          <testX>@[1]=="Mary Second Edited 3"
           </testX>
-          
         </test:Assertion>
         
-        <dtask:Session>
-        
-          <contextX>
-            [#context]
-            { 
-              orig:=
-                [*dtask:Fetch
-                  { [@example:Customer]
-                    , [{ `displayName:="Mary Second Edited"` }] 
-                  }
-                ].()
-            }
-          </contextX>
-          
-          
-          <sequence>
-            <test:Assertion>
-              <name>Precondition
-              </name>
-              <subjectX>
-                [context].orig
-              </subjectX>
-              <testX>.!=null
-              </testX>
-            </test:Assertion>
-            
-            <test:Stub>
-              <name>Edit once
-              </name>
-              <messageX>
-                [context].orig.[*dtask:Edit].()
-                  { .displayName="Mary Second Edited 2"
-                    ,.
-                  }.@tuple.save()
-              </messageX>
-            
-            </test:Stub>
-            
-            <test:Stub>
-              <name>Edit old copy
-              </name>
-              <messageX>
-                [context].orig.[*dtask:Edit].()
-                  { .displayName="Mary Second Edited 3"
-                    ,.
-                  }.@tuple.save()
-              </messageX>
-            
-            </test:Stub>            
-            
-            <test:Assertion>
-              <name>Check update result
-              </name>
-              <subjectX>
-                [*dtask:Fetch
-                  { [*query:Scan
-                      {[@example:Customer].type
-                      }
-                    ]
-                  }
-                ].()#{.displayName}
-              </subjectX>
-              <testX>@[1]=="Mary Second Edited 3"
-              </testX>
-            </test:Assertion>
-            
-          </sequence>
-        </dtask:Session>
+      </sequence>
+    </dtask:Session>
 
-      </scenarios>
-      
-    </task:Sequence>
-  </chain>
-        
-</task:Chain>
+  </scenarios>
+  
+</task:Sequence>

@@ -11,8 +11,228 @@
     
     
     <detail> 
-    
-      
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+
+        <notes>
+          <scm:Note>Add StreamPump and StreamEvent functionality to IO package
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/io
+        </path>
+        
+        <resources>
+          <URI>StreamEvent.java
+          </URI>
+          <URI>StreamListener.java
+          </URI>
+          <URI>StreamListenerSupport.java
+          </URI>
+          <URI>StreamPump.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+
+        <notes>
+          <scm:Note>Bind to Void instead of throwing an exception to permit
+            certain valid operations
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser
+        </path>
+        
+        <resources>
+          <URI>ContextNode.java
+          </URI>
+          <URI>FocusNode.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+
+        <notes>
+          <scm:Note>Factored Application (root Component) functionality out
+            of Daemon (Executable interface).
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/service
+        </path>
+        
+        <resources>
+          <URI>Application.java
+          </URI>
+          <URI>Daemon.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+
+        <notes>
+          <scm:Note>Generic KeyValue class for map-related functionality
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/KeyValue.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+
+        <notes>
+          <scm:Note>Generic Listener framework, in util package for now. 
+            Incomplete/Experimental
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/listener
+        </path>
+        
+        <resources>
+          <URI>Listener.java
+          </URI>
+          <URI>ListenerSupport.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+
+        <notes>
+          <scm:Note>URIUtil.encodeURIPath(String path) encodes a path string
+            to a value that conforms to the path syntax of a hierachical URI
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/URIUtil.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+
+        <notes>
+          <scm:Note>The experimental automatic Task chain nesting functionality
+            has been deprecated due to poor cost/benefit.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/task/Collect.java
+          </URI>
+          <URI>task/Chain.java
+          </URI>
+          <URI>task/If.java
+          </URI>
+          <URI>task/TaskRunner.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+
+        <notes>
+          <scm:Note>ParseXML can be used to read from a contextual resource
+             when constructed with single Type or Reflector argument
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/sax/ParseXml.java
+        </path>
+      </scm:Change>
+        
+        
+
+      <scm:Change>
+        <revision>-dev11
+        </revision>
+        
+        <notes>
+          <scm:Note>All Components are Declarable and Reflectable
+          </scm:Note>
+          <scm:Note>AbstractController.getState() hides mechanics of 
+            StateReferenceHandler thread local
+          </scm:Note>
+          <scm:Note>Support path based Call mechanism into component
+            hierarchy to provide external API.
+          </scm:Note>
+          <scm:Note>Added infrastructure to organize CommandFactories into a 
+            CallInterface that processes Calls.
+          </scm:Note>
+          <scm:Note>Fix and enhance support for expansion/set based components
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>app/Component.java
+          </URI>
+          <URI>app/kit/AbstractComponent.java
+          </URI>
+          <URI>app/kit/AbstractController.java
+          </URI>
+          <URI>app/CallContext.java
+          </URI>
+          <URI>app/CallMessage.java
+          </URI>
+          <URI>app/kit/CallHandler.java
+          </URI>
+          <URI>app/kit/StandardContainer.java
+          </URI>
+          <URI>app/components/SetManager.java
+          </URI>
+          <URI>app/kit/AbstractExpansionController.java
+          </URI>
+          <URI>app/kit/ExpansionContainer.java
+          </URI>
+          <URI>app/kit/ExpansionState.java
+          </URI>
+          <URI>command/AbstractCommandFactory.java
+          </URI>
+          <URI>command/Call.java
+          </URI>
+          <URI>command/CallInterface.java
+          </URI>
+          <URI>command/CommandFactory.java
+          </URI>
+          <URI>command/CommandProcessor.java
+          </URI>
+          <URI>command/SimpleCall.java
+          </URI>
+          <URI>command/SimpleCommandFactory.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev11
         </revision>
@@ -265,6 +485,10 @@
           <scm:Note>Add additional exception handling to builder to
             trace .assy.xml file composition.
           </scm:Note>
+          <scm:Note>Use 'x' attribute (instead of 'expression' attribute) in
+            PropertySpecifier XML to provide
+            a bind-time expression for the property
+          </scm:Note>
         </notes>
       
         <path>source/spiralcraft/builder
@@ -356,6 +580,8 @@
         
         <notes>
           <scm:Note>Path.subPath(0) returns non-absolute identity path
+          </scm:Note>
+          <scm:Note>Path.toURI() encodes a path into a URI
           </scm:Note>
         </notes>
       

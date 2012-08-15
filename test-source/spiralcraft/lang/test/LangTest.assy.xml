@@ -18,1015 +18,1004 @@
   <name>spiralcraft.lang.test
   </name>
   
-  <chain>
- 
-    <task:Sequence>
-      <scenarios>
+  <sequence>
     
-        <test:Assertion>
-        
-          <name>add
-          </name>
-          
-          <subjectX>1+1
-          </subjectX>
-          
-          <testX>.==2
-          </testX>
-          
-        </test:Assertion>
-        
-          
-        <test:Assertion>
-        
-          <name>Number method
-          </name>
-          
-          <subjectX>(1+1).floatValue()
-          </subjectX>
-          
-          <testX>.==2.0.floatValue()
-          </testX>
-          
-        </test:Assertion>
+    <test:Assertion>
+    
+      <name>add
+      </name>
+      
+      <subjectX>1+1
+      </subjectX>
+      
+      <testX>.==2
+      </testX>
+      
+    </test:Assertion>
+    
+      
+    <test:Assertion>
+    
+      <name>Number method
+      </name>
+      
+      <subjectX>(1+1).floatValue()
+      </subjectX>
+      
+      <testX>.==2.0.floatValue()
+      </testX>
+      
+    </test:Assertion>
 
-        <test:Assertion>
-        
-          <name>array construct- Integer
-          </name>
-          
-          <subjectX>[@j:Integer][{1,2,3}]
-          </subjectX>
-          
-          <testX>length==3 &amp;&amp; 
-                @[0]==1 &amp;&amp; 
-                @[1]==2 &amp;&amp; 
-                @[2]==3
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion>
-        
-          <name>array equals- Integer
-          </name>
-          
-          <subjectX>[@j:Integer][{1,2,3}] == [@j:Integer][{1,2,3}]
-          </subjectX>
-          
-          <testX>.
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion>
-        
-          <name>dynamic array equals- Integer
-          </name>
-          
-          <subjectX>[{1,2,3}]
-          </subjectX>
-          
-          <testX>.==[@j:Integer][{1,2,3}]
-          </testX>
-          
-        </test:Assertion>
+    <test:Assertion>
+    
+      <name>array construct- Integer
+      </name>
+      
+      <subjectX>[@j:Integer][{1,2,3}]
+      </subjectX>
+      
+      <testX>length==3 &amp;&amp; 
+            @[0]==1 &amp;&amp; 
+            @[1]==2 &amp;&amp; 
+            @[2]==3
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
+      <name>array equals- Integer
+      </name>
+      
+      <subjectX>[@j:Integer][{1,2,3}] == [@j:Integer][{1,2,3}]
+      </subjectX>
+      
+      <testX>.
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
+      <name>dynamic array equals- Integer
+      </name>
+      
+      <subjectX>[{1,2,3}]
+      </subjectX>
+      
+      <testX>.==[@j:Integer][{1,2,3}]
+      </testX>
+      
+    </test:Assertion>
 
-        <test:Assertion>
-        
-          <name>array equals- Integer- negative
-          </name>
-          
-          <subjectX>[@j:Integer][{1,2,3}] == [@j:Integer][{1,2,4}]
-          </subjectX>
-          
-          <testX>!.
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion>
-        
-          <name>array not equals- Integer
-          </name>
-          
-          <subjectX>[@j:Integer][{1,2,3}] != [@j:Integer][{1,2,4}]
-          </subjectX>
-          
-          <testX>.
-          </testX>
-          
-        </test:Assertion>
+    <test:Assertion>
+    
+      <name>array equals- Integer- negative
+      </name>
+      
+      <subjectX>[@j:Integer][{1,2,3}] == [@j:Integer][{1,2,4}]
+      </subjectX>
+      
+      <testX>!.
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
+      <name>array not equals- Integer
+      </name>
+      
+      <subjectX>[@j:Integer][{1,2,3}] != [@j:Integer][{1,2,4}]
+      </subjectX>
+      
+      <testX>.
+      </testX>
+      
+    </test:Assertion>
 
-        <test:Assertion>
-        
-          <name>array not equals- Integer- negative
-          </name>
-          
-          <subjectX>[@j:Integer][{1,2,3}] != [@j:Integer][{1,2,3}]
-          </subjectX>
-          
-          <testX>!.
-          </testX>
-          
-        </test:Assertion>
+    <test:Assertion>
+    
+      <name>array not equals- Integer- negative
+      </name>
+      
+      <subjectX>[@j:Integer][{1,2,3}] != [@j:Integer][{1,2,3}]
+      </subjectX>
+      
+      <testX>!.
+      </testX>
+      
+    </test:Assertion>
 
-        <test:Assertion>
-        
-          <name>dynamic array equals- String
-          </name>
-          
-          <subjectX>[{"one","two","three"}] 
-          </subjectX>
-          
-          <testX>.== [@j:String][{"one","two","three"}]
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion>
-        
-          <name>contains
-          </name>
-          
-          <subjectX>[@j:Integer][{1,2,3}] ?= 2
-          </subjectX>
-          
-          <testX>.
-          </testX>
-          
-        </test:Assertion>
-          
+    <test:Assertion>
+    
+      <name>dynamic array equals- String
+      </name>
+      
+      <subjectX>[{"one","two","three"}] 
+      </subjectX>
+      
+      <testX>.== [@j:String][{"one","two","three"}]
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
+      <name>contains
+      </name>
+      
+      <subjectX>[@j:Integer][{1,2,3}] ?= 2
+      </subjectX>
+      
+      <testX>.
+      </testX>
+      
+    </test:Assertion>
+      
 
-        <test:Assertion>
-        
-          <name>contains (neg)
-          </name>
-          
-          <subjectX>[@j:Integer][{1,2,3}] ?= 4
-          </subjectX>
-          
-          <testX>!.
-          </testX>
-          
-        </test:Assertion>
+    <test:Assertion>
+    
+      <name>contains (neg)
+      </name>
+      
+      <subjectX>[@j:Integer][{1,2,3}] ?= 4
+      </subjectX>
+      
+      <testX>!.
+      </testX>
+      
+    </test:Assertion>
 
 
-        <test:Assertion>
-        
-          <name>array @top
-          </name>
-          
-          <subjectX>[@j:Integer][{1,2,3}].@top
-          </subjectX>
-          
-          <testX>.==1
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion>
-        
-          <name>array @top null
-          </name>
-          
-          <subjectX>[@j:Integer][{}].@top
-          </subjectX>
-          
-          <testX>.==null
-          </testX>
-          
-        </test:Assertion>
+    <test:Assertion>
+    
+      <name>array @top
+      </name>
+      
+      <subjectX>[@j:Integer][{1,2,3}].@top
+      </subjectX>
+      
+      <testX>.==1
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
+      <name>array @top null
+      </name>
+      
+      <subjectX>[@j:Integer][{}].@top
+      </subjectX>
+      
+      <testX>.==null
+      </testX>
+      
+    </test:Assertion>
 
-        <test:Assertion>
-        
-          <name>array map
-          </name>
-          
-          <subjectX>
-               [@j:String][{"one","two","three"}]#{.length()}
-                  .equals( [@:class:/java/lang/Integer][{3,3,5}] )
-          </subjectX>
-          
-          <testX>true
-          </testX>
-          
-        </test:Assertion>
-   
-        <test:Assertion>
-        
-          <name>array tuple map 1
-          </name>
-          
-          <subjectX>
-            [@j:String][{"one","two","three"}]
-                #{{x:=..length(),y:=..hashCode()}}.@top.x
-          </subjectX>
-          
-          <testX>.==3
-          </testX>
-          
-        </test:Assertion>
+    <test:Assertion>
+    
+      <name>array map
+      </name>
+      
+      <subjectX>
+           [@j:String][{"one","two","three"}]#{.length()}
+              .equals( [@:class:/java/lang/Integer][{3,3,5}] )
+      </subjectX>
+      
+      <testX>true
+      </testX>
+      
+    </test:Assertion>
 
-        
-        <test:Assertion>
-        
-          <name>array tuple map 2
-          </name>
-          
-          <subjectX>
-            [@j:String][{"one","two","three"}]
-                #{{x:=..length(),y:=..hashCode()}}[2].x
-          </subjectX>
-          
-          <testX>.==5
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion>
-        
-          <name>Index in map 
-          </name>
-          
-          <subjectX>
-            [@j:String][{"one","two","three"}]
-                #{[lang:IterationCursor].index}
-          </subjectX>
-          
-          <testX>.==[@j:Integer][{0,1,2}]
-          </testX>
-          
-        </test:Assertion>      
-        
-        <test:Assertion>
-          <name>array reduce 1
-          </name>
-          
-          <subjectX>
-            [@j:String][{"one","two","three"}]
-                $[.length()]
-          </subjectX>
-          
-          <testX>@[0]==3 &amp;&amp; @[1]==5
-          </testX>
-        </test:Assertion>   
-        
-        <test:Assertion>
-          <name>array reduce 2
-          </name>
-          
-          <subjectX>
-            [@j:String][{"one","two","three","two","one","four","four"}]
-                $[.]
-          </subjectX>
-          
-          <testX>.length==4
-          </testX>
-        </test:Assertion>   
-        
-        <test:Assertion>
-          <name>array tuple reduce
-          </name>
-          
-          <subjectX>
-            [@j:String][{"one","two","three","two","one","four","four"}]
-                $[{len:=..length()}]
-          </subjectX>
-          
-          <testX>
-            .length==3
-            &amp;&amp; @[0].len==3 
-            &amp;&amp; @[1].len==5
-            &amp;&amp; @[2].len==4
-          </testX>
-        </test:Assertion>   
-        
-        <test:Assertion>
-          <name>array reduce Sum
-          </name>
-          
-          <subjectX>
-            [@j:String][{"one","two","three","two","one","four","four"}]
-                $[ .length().[*fn:Sum] ]
-          </subjectX>
-          
-          <testX>.==25
-          </testX>
-        </test:Assertion>   
+    <test:Assertion>
+    
+      <name>array tuple map 1
+      </name>
+      
+      <subjectX>
+        [@j:String][{"one","two","three"}]
+            #{{x:=..length(),y:=..hashCode()}}.@top.x
+      </subjectX>
+      
+      <testX>.==3
+      </testX>
+      
+    </test:Assertion>
 
-        <test:Assertion>
-          <name>inductive string concatenation
-          </name>
-          
-          <subjectX>
-            [@j:String][{"one","two","three","two","one","four","four"}]
-                $[ .[*fn:Induce{`.+..`}] 
-                ]
-          </subjectX>
-          
-          <testX>.=="onetwothreetwoonefourfour"
-          </testX>
-        </test:Assertion>  
-        
-        <test:Assertion>
-          <name>array reduce summary Tuple
-          </name>
-          
-          <subjectX>
-            [@j:String][{"one","two","three","two","one","four","four"}]
-                $[{
-                  totalLen:=..length().[*fn:Sum] 
-                  ,count:=..[*fn:Count]
-                  ,items:=..[*fn:Distinct]
-                }]
-          </subjectX>
-          
-          <testX>.totalLen==25
-            &amp;&amp; .count==7 
-            &amp;&amp; .items.length==4
-          </testX>
-        </test:Assertion>   
+    
+    <test:Assertion>
+    
+      <name>array tuple map 2
+      </name>
+      
+      <subjectX>
+        [@j:String][{"one","two","three"}]
+            #{{x:=..length(),y:=..hashCode()}}[2].x
+      </subjectX>
+      
+      <testX>.==5
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
+      <name>Index in map 
+      </name>
+      
+      <subjectX>
+        [@j:String][{"one","two","three"}]
+            #{[lang:IterationCursor].index}
+      </subjectX>
+      
+      <testX>.==[@j:Integer][{0,1,2}]
+      </testX>
+      
+    </test:Assertion>      
+    
+    <test:Assertion>
+      <name>array reduce 1
+      </name>
+      
+      <subjectX>
+        [@j:String][{"one","two","three"}]
+            $[.length()]
+      </subjectX>
+      
+      <testX>@[0]==3 &amp;&amp; @[1]==5
+      </testX>
+    </test:Assertion>   
+    
+    <test:Assertion>
+      <name>array reduce 2
+      </name>
+      
+      <subjectX>
+        [@j:String][{"one","two","three","two","one","four","four"}]
+            $[.]
+      </subjectX>
+      
+      <testX>.length==4
+      </testX>
+    </test:Assertion>   
+    
+    <test:Assertion>
+      <name>array tuple reduce
+      </name>
+      
+      <subjectX>
+        [@j:String][{"one","two","three","two","one","four","four"}]
+            $[{len:=..length()}]
+      </subjectX>
+      
+      <testX>
+        .length==3
+        &amp;&amp; @[0].len==3 
+        &amp;&amp; @[1].len==5
+        &amp;&amp; @[2].len==4
+      </testX>
+    </test:Assertion>   
+    
+    <test:Assertion>
+      <name>array reduce Sum
+      </name>
+      
+      <subjectX>
+        [@j:String][{"one","two","three","two","one","four","four"}]
+            $[ .length().[*fn:Sum] ]
+      </subjectX>
+      
+      <testX>.==25
+      </testX>
+    </test:Assertion>   
 
-        <test:Assertion>
-          <name>array reduce group Tuple
-          </name>
-          
-          <subjectX>
-            [@j:String][{"one","two","three","two","one","four","four"}]
-                $[{
-                  item:=..
-                  ,totalLen:=..length().[*fn:Sum] 
-                  ,count:=..[*fn:Count]
-                }]
-          </subjectX>
-          
-          <testX>.length==4
-          </testX>
-        </test:Assertion>   
+    <test:Assertion>
+      <name>inductive string concatenation
+      </name>
+      
+      <subjectX>
+        [@j:String][{"one","two","three","two","one","four","four"}]
+            $[ .[*fn:Induce{`.+..`}] 
+            ]
+      </subjectX>
+      
+      <testX>.=="onetwothreetwoonefourfour"
+      </testX>
+    </test:Assertion>  
+    
+    <test:Assertion>
+      <name>array reduce summary Tuple
+      </name>
+      
+      <subjectX>
+        [@j:String][{"one","two","three","two","one","four","four"}]
+            $[{
+              totalLen:=..length().[*fn:Sum] 
+              ,count:=..[*fn:Count]
+              ,items:=..[*fn:Distinct]
+            }]
+      </subjectX>
+      
+      <testX>.totalLen==25
+        &amp;&amp; .count==7 
+        &amp;&amp; .items.length==4
+      </testX>
+    </test:Assertion>   
 
-             
-        <test:Assertion>
-        
-          <name>array inclusive range 1
-          </name>
-          
-          <subjectX>[@j:String][{"one","two","three","four","five"}][1..3]
-          </subjectX>
-          
-          <testX>
-                        @[0]=="two" 
-             &amp;&amp; @[1]=="three"
-             &amp;&amp; @[2]=="four"
-             &amp;&amp; length==3
-          </testX>
-          
-        </test:Assertion>
+    <test:Assertion>
+      <name>array reduce group Tuple
+      </name>
+      
+      <subjectX>
+        [@j:String][{"one","two","three","two","one","four","four"}]
+            $[{
+              item:=..
+              ,totalLen:=..length().[*fn:Sum] 
+              ,count:=..[*fn:Count]
+            }]
+      </subjectX>
+      
+      <testX>.length==4
+      </testX>
+    </test:Assertion>   
 
-        <test:Assertion>
-        
-          <name>array inclusive range 2
-          </name>
-          
-          <subjectX>[@j:String][{"one","two","three","four","five"}][1..10]
-          </subjectX>
-          
-          <testX>
-                         @[0]=="two" 
-             &amp;&amp; @[1]=="three"
-             &amp;&amp; @[2]=="four"
-             &amp;&amp; @[3]=="five"
-             &amp;&amp; length==4
-          </testX>
-          
-        </test:Assertion>
+         
+    <test:Assertion>
+    
+      <name>array inclusive range 1
+      </name>
+      
+      <subjectX>[@j:String][{"one","two","three","four","five"}][1..3]
+      </subjectX>
+      
+      <testX>
+                    @[0]=="two" 
+         &amp;&amp; @[1]=="three"
+         &amp;&amp; @[2]=="four"
+         &amp;&amp; length==3
+      </testX>
+      
+    </test:Assertion>
 
-        <test:Assertion>
-        
-          <name>array exclusive range 1
-          </name>
-          
-          <subjectX>[@j:String][{"one","two","three","four","five"}][1..3]
-          </subjectX>
-          
-          <testX>
-                        @[0]=="two" 
-             &amp;&amp; @[1]=="three"
-             &amp;&amp; @[2]=="four"
-             &amp;&amp; length==3
-          </testX>
-          
-        </test:Assertion>
+    <test:Assertion>
+    
+      <name>array inclusive range 2
+      </name>
+      
+      <subjectX>[@j:String][{"one","two","three","four","five"}][1..10]
+      </subjectX>
+      
+      <testX>
+                     @[0]=="two" 
+         &amp;&amp; @[1]=="three"
+         &amp;&amp; @[2]=="four"
+         &amp;&amp; @[3]=="five"
+         &amp;&amp; length==4
+      </testX>
+      
+    </test:Assertion>
 
-        <test:Assertion>
-        
-          <name>array exclusive range 2
-          </name>
-          
-          <subjectX>[@j:String][{"one","two","three","four","five"}][1.!4]
-          </subjectX>
-          
-          <testX>
-                        @[0]=="two" 
-             &amp;&amp; @[1]=="three"
-             &amp;&amp; @[2]=="four"
-             &amp;&amp; length==3
-          </testX>
-          
-        </test:Assertion>
+    <test:Assertion>
+    
+      <name>array exclusive range 1
+      </name>
+      
+      <subjectX>[@j:String][{"one","two","three","four","five"}][1..3]
+      </subjectX>
+      
+      <testX>
+                    @[0]=="two" 
+         &amp;&amp; @[1]=="three"
+         &amp;&amp; @[2]=="four"
+         &amp;&amp; length==3
+      </testX>
+      
+    </test:Assertion>
 
-<!-- 
--->
-        <test:Assertion>
-        
-          <name>tuple projection 1
-          </name>
-          
-          <subjectX>
-            "one"
-              {{x:=..length(),y:=..hashCode(),z:[@j:Integer],r:=.z=.x*3}}
-                {{m:=..r,n:=..z}}
-                  {{x:=..m*..n}}.x
-          </subjectX>
-          
-          <testX>.==81
-          </testX>
-          
-        </test:Assertion>
-<!--
--->
-        <test:Assertion>
-        
-          <name>Identity projection
-          </name>
-          
-          <subjectX>
-            "one"{.}
-          </subjectX>
-          
-          <testX>.=="one"
-          </testX>
-          
-        </test:Assertion>
+    <test:Assertion>
+    
+      <name>array exclusive range 2
+      </name>
+      
+      <subjectX>[@j:String][{"one","two","three","four","five"}][1.!4]
+      </subjectX>
+      
+      <testX>
+                    @[0]=="two" 
+         &amp;&amp; @[1]=="three"
+         &amp;&amp; @[2]=="four"
+         &amp;&amp; length==3
+      </testX>
+      
+    </test:Assertion>
 
-        <test:Assertion>
-        
-          <name>Extended identity projection
-          </name>
-          
-          <subjectX>
-            "one"{{x:=.., y:=.x.length()}}
-          </subjectX>
-          
-          <testX>.x=="one" &amp;&amp; .y==3
-          </testX>
-          
-        </test:Assertion>
+    <test:Assertion>
+    
+      <name>tuple projection 1
+      </name>
+      
+      <subjectX>
+        "one"
+          {{x:=..length(),y:=..hashCode(),z:[@j:Integer],r:=.z=.x*3}}
+            {{m:=..r,n:=..z}}
+              {{x:=..m*..n}}.x
+      </subjectX>
+      
+      <testX>.==81
+      </testX>
+      
+    </test:Assertion>
 
-        <test:Assertion>
-        
-          <name>Tuple and assignments
-          </name>
-          
-          <subjectX>
-            "hello"
-              {[#test:MyTuple]
-                {
-                  x:[@j:String]
-                  , y:[@j:Integer]
-                  ,.x=..
-                  ,.y=.x.length() 
-                }
-              }
-          </subjectX>
-          
-          <testX>x=="hello" &amp;&amp; y==5
-          </testX>
-          
-        </test:Assertion>                
-        
-        <test:Assertion>
-        
-          <name>Log channel
-          </name>
-          
-          <subjectX>
-            "one".@log("Testing LogChannel- result is ["+.+"]")
-          </subjectX>
-          
-          <testX>.=="one"
-          </testX>
-          
-        </test:Assertion>        
+    <test:Assertion>
+    
+      <name>Identity projection
+      </name>
+      
+      <subjectX>
+        "one"{.}
+      </subjectX>
+      
+      <testX>.=="one"
+      </testX>
+      
+    </test:Assertion>
 
-        <test:Assertion>
-        
-          <name>Tune channel
-          </name>
-          
-          <subjectX>
-            "one".@tune("Testing TuneChannel- result is ["+.+"]")
-          </subjectX>
-          
-          <testX>.=="one"
-          </testX>
-          
-        </test:Assertion>        
+    <test:Assertion>
+    
+      <name>Extended identity projection
+      </name>
+      
+      <subjectX>
+        "one"{{x:=.., y:=.x.length()}}
+      </subjectX>
+      
+      <testX>.x=="one" &amp;&amp; .y==3
+      </testX>
+      
+    </test:Assertion>
 
-        <test:Assertion>
-        
-          <name>New date
-          </name>
-          
-          <subjectX>
-            [@ju:Date].()
-          </subjectX>
-          
-          <testX>.!=null
-          </testX>
-          
-        </test:Assertion>        
+    <test:Assertion>
+    
+      <name>Tuple and assignments
+      </name>
+      
+      <subjectX>
+        "hello"
+          {[#test:MyTuple]
+            {
+              x:[@j:String]
+              , y:[@j:Integer]
+              ,.x=..
+              ,.y=.x.length() 
+            }
+          }
+      </subjectX>
+      
+      <testX>x=="hello" &amp;&amp; y==5
+      </testX>
+      
+    </test:Assertion>                
+    
+    <test:Assertion>
+    
+      <name>Log channel
+      </name>
+      
+      <subjectX>
+        "one".@log("Testing LogChannel- result is ["+.+"]")
+      </subjectX>
+      
+      <testX>.=="one"
+      </testX>
+      
+    </test:Assertion>        
 
-        <test:Assertion>
-        
-          <name>New dates as functor calls from an array literal
-          </name>
-          
-          <subjectX>
-            [@ju:Date]{ [@ju:Date][{..(10000000000L),..(10000001000L)}] }
-          </subjectX>
-          
-          <testX>@[0].getTime() &lt; @[1].getTime()
-          </testX>
-          
-        </test:Assertion>        
+    <test:Assertion>
+    
+      <name>Tune channel
+      </name>
+      
+      <subjectX>
+        "one".@tune("Testing TuneChannel- result is ["+.+"]")
+      </subjectX>
+      
+      <testX>.=="one"
+      </testX>
+      
+    </test:Assertion>        
 
-        <test:Assertion>
-        
-          <name>Same dates, as an array literal reference
-          </name>
-          
-          <subjectX>
-            [*ju:Date]{ [@ju:Date][{..,..}] }
-          </subjectX>
-          
-          <testX>@[0].getTime() == @[1].getTime() &amp;&amp; @[0].getTime() > 0L
-          </testX>
-          
-        </test:Assertion>        
+    <test:Assertion>
+    
+      <name>New date
+      </name>
+      
+      <subjectX>
+        [@ju:Date].()
+      </subjectX>
+      
+      <testX>.!=null
+      </testX>
+      
+    </test:Assertion>        
 
-        <test:Assertion>
-        
-          <name>Debug task in expression
-          </name>
-          
-          <subjectX>
-            [*ju:Date]
+    <test:Assertion>
+    
+      <name>New dates as functor calls from an array literal
+      </name>
+      
+      <subjectX>
+        [@ju:Date]{ [@ju:Date][{..(10000000000L),..(10000001000L)}] }
+      </subjectX>
+      
+      <testX>@[0].getTime() &lt; @[1].getTime()
+      </testX>
+      
+    </test:Assertion>        
+
+    <test:Assertion>
+    
+      <name>Same dates, as an array literal reference
+      </name>
+      
+      <subjectX>
+        [*ju:Date]{ [@ju:Date][{..,..}] }
+      </subjectX>
+      
+      <testX>@[0].getTime() == @[1].getTime() &amp;&amp; @[0].getTime() > 0L
+      </testX>
+      
+    </test:Assertion>        
+
+    <test:Assertion>
+    
+      <name>Debug task in expression
+      </name>
+      
+      <subjectX>
+        [*ju:Date]
+        { 
+          [*task:Debug
+            {messageX:=[ju:Date].class.name
+            ,debug:=true
+            }
+          ].()
+        }
+      </subjectX>
+      
+      <testX>.=="java.util.Date"
+      </testX>
+      
+    </test:Assertion>        
+
+    <test:Assertion>
+      <name>vfs fixed depth traversal
+      </name>
+      
+      <subjectX>
+        [*jn:URI{"in"}].[*vfsf:Resolve]
+          .children{ .+ .$[ .children.[*fn:Concatenate] ] }
+      </subjectX>
+      
+      <testX>true
+      </testX>
+    
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>vfs tree
+      </name>
+      
+      <subjectX>
+        [*jn:URI{"in"}].[*vfsf:Resolve]
+          .[*fn:Tree{`.children`}]
+          #{"\r\n---"+.URI}
+      </subjectX>
+      
+      <testX>true
+      </testX>
+    
+    </test:Assertion>
+    
+    <test:Assertion>
+      <name>vfs decorated tree
+      </name>
+      
+      <subjectX>
+        [*jn:URI{"in"}].[*vfsf:Resolve]
+          {
+            [#node]
             { 
-              [*task:Debug
-                {messageX:=[ju:Date].class.name
-                ,debug:=true
-                }
-              ].()
+              resource:=..
+              ,depth:=0
+              ,size:=0L
             }
-          </subjectX>
-          
-          <testX>.=="java.util.Date"
-          </testX>
-          
-        </test:Assertion>        
-
-        <test:Assertion>
-          <name>vfs fixed depth traversal
-          </name>
-          
-          <subjectX>
-            [*jn:URI{"in"}].[*vfsf:Resolve]
-              .children{ .+ .$[ .children.[*fn:Concatenate] ] }
-          </subjectX>
-          
-          <testX>true
-          </testX>
+          }
+          .[*fn:Tree
+            {`.resource.children#{..(resource:=.,depth:=..depth+1,size:=.size)}`
+            }
+          ]
+          #{"\r\n"+[@sutil:StringUtil].@repeat("  ",.depth)+.depth+": "+.resource.URI+" "+.size}
+      </subjectX>
+      
+      <testX>@size>=3
+      </testX>
+    
+    </test:Assertion>        
+    
+    <test:Assertion>
+      <name>Lexical similarity measure
+      </name>
+      
+      <subjectX>
+      [#nn]
+      {
         
-        </test:Assertion>
-
-        <test:Assertion>
-          <name>vfs tree
-          </name>
-          
-          <subjectX>
-            [*jn:URI{"in"}].[*vfsf:Resolve]
-              .[*fn:Tree{`.children`}]
-              #{"\r\n---"+.URI}
-          </subjectX>
-          
-          <testX>true
-          </testX>
-        
-        </test:Assertion>
-        
-        <test:Assertion>
-          <name>vfs decorated tree
-          </name>
-          
-          <subjectX>
-            [*jn:URI{"in"}].[*vfsf:Resolve]
-              {
-                [#node]
-                { 
-                  resource:=..
-                  ,depth:=0
-                  ,size:=0L
-                }
+        lineSet
+          :=[@j:String]
+          .([*jn:URI{"in/LoremIpsumList.txt"}]
+            .[*vfsf:Resolve]
+            .[*vfsf:IO]
+          )
+          .split("\r\n")
+        ,root
+          :=.lineSet[0]
+        ,friendNormal
+          :~[*task:Eval
+              {`[@j:String].@nil`
+              ,`.replace(",","")
+                .replace(".","")
+                .replace("*","")
+                .trim()
+                 .toLowerCase()
+                `
               }
-              .[*fn:Tree
-                {`.resource.children#{..(resource:=.,depth:=..depth+1,size:=.size)}`
-                }
-              ]
-              #{"\r\n"+[@sutil:StringUtil].@repeat("  ",.depth)+.depth+": "+.resource.URI+" "+.size}
-          </subjectX>
-          
-          <testX>@size>=3
-          </testX>
-        
-        </test:Assertion>        
-        
-        <test:Assertion>
-          <name>Lexical similarity measure
-          </name>
-          
-          <subjectX>
-          [#nn]
-          {
-            
-            lineSet
-              :=[@j:String]
-              .([*jn:URI{"in/LoremIpsumList.txt"}]
-                .[*vfsf:Resolve]
-                .[*vfsf:IO]
-              )
-              .split("\r\n")
-            ,root
-              :=.lineSet[0]
-            ,friendNormal
-              :~[*task:Eval
-                  {`[@j:String].@nil`
-                  ,`.replace(",","")
-                    .replace(".","")
-                    .replace("*","")
-                    .trim()
-                     .toLowerCase()
-                    `
-                  }
-                ]
-            ,friendFn
-              :~[*task:Eval
-                  {`[@j:String].@nil`
-                  ,`.split(" ")#{[nn].friendNormal.(.)}[!.empty]`
-                  }
-                ]
-            ,friends
-              :=.friendFn.(.root)
-            ,map
-              :=.friends
-              #{
-                { word:=..
-                , lines:=...lineSet[ [nn].friendFn.(.) ?= ..word ]
-                }
+            ]
+        ,friendFn
+          :~[*task:Eval
+              {`[@j:String].@nil`
+              ,`.split(" ")#{[nn].friendNormal.(.)}[!.empty]`
               }
-            ,reduce
-              :=.map
-              $[ .lines.[*fn:Concatenate]
-              ]
+            ]
+        ,friends
+          :=.friendFn.(.root)
+        ,map
+          :=.friends
+          #{
+            { word:=..
+            , lines:=...lineSet[ [nn].friendFn.(.) ?= ..word ]
+            }
+          }
+        ,reduce
+          :=.map
+          $[ .lines.[*fn:Concatenate]
+          ]
+          $[
+            { line:=..
+            , count:=..[*fn:Count]
+            }
+          ]
+          
+      }
+      {
+        "\r\n  root="+.root
+        +"\r\n  friends="+[@ju:Arrays].@deepToString(.friends)
+        +"\r\n  map="
+        +.map
+          $[ 
+            ("\r\n   "+.word
+            +.lines
               $[
-                { line:=..
-                , count:=..[*fn:Count]
-                }
-              ]
-              
-          }
-          {
-            "\r\n  root="+.root
-            +"\r\n  friends="+[@ju:Arrays].@deepToString(.friends)
-            +"\r\n  map="
-            +.map
-              $[ 
-                ("\r\n   "+.word
-                +.lines
-                  $[
-                    ("\r\n         "+.)
-                    .[*fn:StringCat] 
-                  ]
-                )
+                ("\r\n         "+.)
                 .[*fn:StringCat] 
               ]
-            +.reduce
-              $[ 
-                ("\r\n   rln: "+.count+": "+.line)
-                .[*fn:StringCat] 
-              ]
-            
+            )
+            .[*fn:StringCat] 
+          ]
+        +.reduce
+          $[ 
+            ("\r\n   rln: "+.count+": "+.line)
+            .[*fn:StringCat] 
+          ]
+        
+      }
+      
+      
+      </subjectX>
+      
+      <testX>true
+      </testX>
+    
+    </test:Assertion>  
+
+    <test:Assertion>
+      <name>Sort 1
+      </name>
+      
+      <subjectX>
+        [@j:String]
+        .([*jn:URI{"in/LoremIpsumList.txt"}]
+          .[*vfsf:Resolve]
+          .[*vfsf:IO]
+        )
+        .split("\r\n")
+        $[.split(" ")
+          #{.trim()}
+          [.length()>0]
+          .[*fn:Concatenate]
+          $[.[*fn:Distinct]
+          ]
+        ]
+        .[*fn:Sort]
+      </subjectX>
+      
+      <testX>true
+      </testX>
+    
+    </test:Assertion>  
+    
+    <test:Assertion>
+      <name>Sort 2
+      </name>
+      
+      <subjectX>
+        [@j:String]
+        .([*jn:URI{"in/LoremIpsumList.txt"}]
+          .[*vfsf:Resolve]
+          .[*vfsf:IO]
+        )
+        .split("\r\n")
+        $[.split(" ")
+          #{.trim()}
+          [.length()>0]              
+          .[*fn:Concatenate]
+        ]
+        $[.[*fn:Distinct]
+        ]
+        .[*fn:Sort{true}]
+      </subjectX>
+      
+      <testX>true
+      </testX>
+    
+    </test:Assertion>          
+
+    <test:Assertion>
+      <name>Sort 3
+      </name>
+      
+      <subjectX>
+        [@j:String]
+        .([*jn:URI{"in/LoremIpsumList.txt"}]
+          .[*vfsf:Resolve]
+          .[*vfsf:IO]
+        )
+        .split("\r\n")
+        $[.split(" ")
+          #{.trim()}
+          [.length()>0]              
+          .[*fn:Concatenate]
+        ]
+        $[.[*fn:Distinct]
+        ]
+        .[*fn:Sort
+          { [*fn:Ordering
+              {`.length()`
+              ,false
+              ,[*fn:Ordering]
+              }
+            ]
           }
-          
-          
-          </subjectX>
-          
-          <testX>true
-          </testX>
-        
-        </test:Assertion>  
-
-        <test:Assertion>
-          <name>Sort 1
-          </name>
-          
-          <subjectX>
-            [@j:String]
-            .([*jn:URI{"in/LoremIpsumList.txt"}]
-              .[*vfsf:Resolve]
-              .[*vfsf:IO]
-            )
-            .split("\r\n")
-            $[.split(" ")
-              #{.trim()}
-              [.length()>0]
-              .[*fn:Concatenate]
-              $[.[*fn:Distinct]
-              ]
-            ]
-            .[*fn:Sort]
-          </subjectX>
-          
-          <testX>true
-          </testX>
-        
-        </test:Assertion>  
-        
-        <test:Assertion>
-          <name>Sort 2
-          </name>
-          
-          <subjectX>
-            [@j:String]
-            .([*jn:URI{"in/LoremIpsumList.txt"}]
-              .[*vfsf:Resolve]
-              .[*vfsf:IO]
-            )
-            .split("\r\n")
-            $[.split(" ")
-              #{.trim()}
-              [.length()>0]              
-              .[*fn:Concatenate]
-            ]
-            $[.[*fn:Distinct]
-            ]
-            .[*fn:Sort{true}]
-          </subjectX>
-          
-          <testX>true
-          </testX>
-        
-        </test:Assertion>          
-
-        <test:Assertion>
-          <name>Sort 3
-          </name>
-          
-          <subjectX>
-            [@j:String]
-            .([*jn:URI{"in/LoremIpsumList.txt"}]
-              .[*vfsf:Resolve]
-              .[*vfsf:IO]
-            )
-            .split("\r\n")
-            $[.split(" ")
-              #{.trim()}
-              [.length()>0]              
-              .[*fn:Concatenate]
-            ]
-            $[.[*fn:Distinct]
-            ]
-            .[*fn:Sort
-              { [*fn:Ordering
-                  {`.length()`
-                  ,false
-                  ,[*fn:Ordering]
+        ]
+      </subjectX>
+      
+      <testX>true
+      </testX>
+    
+    </test:Assertion>    
+    
+    <test:Assertion>
+      <name>Sort 4
+      </name>
+      
+      <subjectX>
+        [@j:String]
+        .([*jn:URI{"in/LoremIpsumList.txt"}]
+          .[*vfsf:Resolve]
+          .[*vfsf:IO]
+        )
+        .split("\r\n")
+        $[.split(" ")
+          #{.trim()}
+          [.length()>0]              
+          .[*fn:Concatenate]
+        ]
+        $[.[*fn:Distinct]
+        ]
+        .[*fn:Sort
+          { [*fn:Ordering
+              {`.length()`
+              ,false
+              , [*fn:Ordering
+                  { comparator:=[@jt:Collator].@getInstance()
                   }
                 ]
               }
             ]
-          </subjectX>
-          
-          <testX>true
-          </testX>
+          }
+        ]
+      </subjectX>
+      
+      <testX>true
+      </testX>
+    
+    </test:Assertion>    
+    
+    <test:Assertion>
+      <name>Broken literal
+      </name>
+      
+      <subjectX>
+        "hello\
+        there"
+      </subjectX>
+      
+      <testX>true
+      </testX>
+    
+    </test:Assertion>  
+    
+    <test:Assertion>
+      <name>Split
+      </name>
+      
+      <subjectX>
+        "2&amp;".split("&amp;")
+      </subjectX>
+      
+      <testX>true
+      </testX>
+    
+    </test:Assertion>  
+    
+    <test:Assertion>
+      <name>Null arg constructor
+      </name>
+      
+      <subjectX>
+        [@jn:URI].(null,"test",null)
+      </subjectX>
+      
+      <testX>.!=null
+      </testX>
+    
+    </test:Assertion>  
+    
+    <test:Assertion>
+      <name>Expression functor
+      </name>
+      
+      <subjectX>
+        `"first"+"last"`.()
+      </subjectX>
+      
+      <testX>.=="firstlast"
+      </testX>
+    
+    </test:Assertion>  
+    
+    <test:Assertion>
+      <name>Add and assign
+      </name>
+      
+      <subjectX>
+        { counter:=2.5
+        }
+        { .counter+=1.25
+          ,.counter+=1.75
+          ,.
+        }.counter
         
-        </test:Assertion>    
+      </subjectX>
+      
+      <testX>.==5.5
+      </testX>
+    
+    </test:Assertion>     
+    
+    <test:Assertion>
+      <name>Subtract and assign
+      </name>
+      
+      <subjectX>
+        { counter:[@math:BigDecimal]=2.5
+        }
+        { .counter-=1.25
+          ,.counter-=1.75
+          ,.
+        }.counter
         
-        <test:Assertion>
-          <name>Sort 4
-          </name>
-          
-          <subjectX>
-            [@j:String]
-            .([*jn:URI{"in/LoremIpsumList.txt"}]
-              .[*vfsf:Resolve]
-              .[*vfsf:IO]
-            )
-            .split("\r\n")
-            $[.split(" ")
-              #{.trim()}
-              [.length()>0]              
-              .[*fn:Concatenate]
-            ]
-            $[.[*fn:Distinct]
-            ]
-            .[*fn:Sort
-              { [*fn:Ordering
-                  {`.length()`
-                  ,false
-                  , [*fn:Ordering
-                      { comparator:=[@jt:Collator].@getInstance()
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          </subjectX>
-          
-          <testX>true
-          </testX>
-        
-        </test:Assertion>    
-        
-        <test:Assertion>
-          <name>Broken literal
-          </name>
-          
-          <subjectX>
-            "hello\
-            there"
-          </subjectX>
-          
-          <testX>true
-          </testX>
-        
-        </test:Assertion>  
-        
-        <test:Assertion>
-          <name>Split
-          </name>
-          
-          <subjectX>
-            "2&amp;".split("&amp;")
-          </subjectX>
-          
-          <testX>true
-          </testX>
-        
-        </test:Assertion>  
-        
-        <test:Assertion>
-          <name>Null arg constructor
-          </name>
-          
-          <subjectX>
-            [@jn:URI].(null,"test",null)
-          </subjectX>
-          
-          <testX>.!=null
-          </testX>
-        
-        </test:Assertion>  
-        
-        <test:Assertion>
-          <name>Expression functor
-          </name>
-          
-          <subjectX>
-            `"first"+"last"`.()
-          </subjectX>
-          
-          <testX>.=="firstlast"
-          </testX>
-        
-        </test:Assertion>  
-        
-        <test:Assertion>
-          <name>Add and assign
-          </name>
-          
-          <subjectX>
-            { counter:=2.5
-            }
-            { .counter+=1.25
-              ,.counter+=1.75
-              ,.
-            }.counter
-            
-          </subjectX>
-          
-          <testX>.==5.5
-          </testX>
-        
-        </test:Assertion>     
-        
-        <test:Assertion>
-          <name>Subtract and assign
-          </name>
-          
-          <subjectX>
-            { counter:[@math:BigDecimal]=2.5
-            }
-            { .counter-=1.25
-              ,.counter-=1.75
-              ,.
-            }.counter
-            
-          </subjectX>
-          
-          <testX>.==-0.5
-          </testX>
-        
-        </test:Assertion>             
-        
-        <test:Assertion>
-          <name>Coercion
-          </name>
-          
-          <subjectX>
-            { test:[@math:BigDecimal]=0
-            }.test
-          </subjectX>
-          
-          <testX>.==0
-          </testX>
-        
-        </test:Assertion>                       
+      </subjectX>
+      
+      <testX>.==-0.5
+      </testX>
+    
+    </test:Assertion>             
+    
+    <test:Assertion>
+      <name>Coercion
+      </name>
+      
+      <subjectX>
+        { test:[@math:BigDecimal]=0
+        }.test
+      </subjectX>
+      
+      <testX>.==0
+      </testX>
+    
+    </test:Assertion>                       
 
-        <test:Assertion>
-          <name>Coercion arithmetic
-          </name>
-          
-          <subjectX>
-            { test:[@math:BigDecimal]=0.51
-            }.test-0.01
-          </subjectX>
-          
-          <testX>.==0.50
-          </testX>
-        
-        </test:Assertion>   
+    <test:Assertion>
+      <name>Coercion arithmetic
+      </name>
+      
+      <subjectX>
+        { test:[@math:BigDecimal]=0.51
+        }.test-0.01
+      </subjectX>
+      
+      <testX>.==0.50
+      </testX>
+    
+    </test:Assertion>   
 
-        <test:Assertion>
-          <name>Sum of empty set is 0
-          </name>
-          
-          <subjectX>[@math:BigDecimal][{}]$[ .[*fn:Sum] ]
-          </subjectX>
-          
-          <testX>.==0
-          </testX>
-        
-        </test:Assertion>   
-        
-        <test:Assertion>
-          <name>Static field
-          </name>
-          
-          <subjectX>[@app:InitializeMessage].@TYPE
-          </subjectX>
-          
-          <testX>.!=null
-          </testX>
-        
-        </test:Assertion> 
-        
-        <test:Assertion>
-          <name>Map
-          </name>
-          
-          <subjectX>
-          {
-             { "one","uno" }
-            ,{ "two","dos" }
-            ,{ "three","tres" }
-            ,{ "four","quatro" }
-            ,{ "five","cinco" }
-            ,{ "six","ses" }
-          }["four"]
-          </subjectX>
-          
-          <testX>.=="quatro"
-          </testX>
-        
-        </test:Assertion> 
-        
-      </scenarios>
+    <test:Assertion>
+      <name>Sum of empty set is 0
+      </name>
       
+      <subjectX>[@math:BigDecimal][{}]$[ .[*fn:Sum] ]
+      </subjectX>
       
+      <testX>.==0
+      </testX>
+    
+    </test:Assertion>   
+    
+    <test:Assertion>
+      <name>Static field
+      </name>
       
-    </task:Sequence>
-  </chain>
+      <subjectX>[@app:InitializeMessage].@TYPE
+      </subjectX>
+      
+      <testX>.!=null
+      </testX>
+    
+    </test:Assertion> 
+    
+    <test:Assertion>
+      <name>Map
+      </name>
+      
+      <subjectX>
+      {
+         { "one","uno" }
+        ,{ "two","dos" }
+        ,{ "three","tres" }
+        ,{ "four","quatro" }
+        ,{ "five","cinco" }
+        ,{ "six","ses" }
+      }["four"]
+      </subjectX>
+      
+      <testX>.=="quatro"
+      </testX>
+    
+    </test:Assertion> 
+
+  </sequence>
         
 </test:TestGroup>

@@ -40,6 +40,17 @@
     />
   </target>
 
+  <target name="appTest" description="App test">
+    <delete file="log/spiralcraft-app.log" failonerror="false"/>
+    <devgui
+      codebase=".."
+        launchArgs="--gui"
+        exec="--log log/spiralcraft-app --consoleLog
+         context:/appTest/AppTest
+         "
+    />
+  </target>
+
   <target name="clean">
     <delete dir="out" verbose="true" quiet="true"/>
     <mkdir dir="out"/>

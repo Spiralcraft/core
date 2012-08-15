@@ -12,494 +12,488 @@
   <name>spiralcraft.util.test
   </name>
   
-  <chain>
- 
-    <task:Sequence>
-      <scenarios>
+  <sequence>
+
+    <test:Assertion>
     
-        <test:Assertion>
-        
-          <name>prepad
-          </name>
-          
-          <subjectX>[@sutil:StringUtil].@prepad("12345",'0',6)
-          </subjectX>
-          
-          <testX>.=="012345"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>hexEncode1
-          </name>
-          
-          <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("32767").toByteArray())
-          </subjectX>
-          
-          <testX>.=="7fff"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>hexEncode2
-          </name>
-          
-          <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("65535").toByteArray())
-          </subjectX>
-          
-          <testX>.=="00ffff"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>hexEncode3
-          </name>
-          
-          <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("0").toByteArray())
-          </subjectX>
-          
-          <testX>.=="00"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>hexEncode4
-          </name>
-          
-          <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("-1").toByteArray())
-          </subjectX>
-          
-          <testX>.=="ff"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>hexEncode5
-          </name>
-          
-          <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("-256").toByteArray())
-          </subjectX>
-          
-          <testX>.=="ff00"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>hexEncode6
-          </name>
-          
-          <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("255").toByteArray())
-          </subjectX>
-          
-          <testX>.=="00ff"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>hexEncode7
-          </name>
-          
-          <subjectX>
-            [@ct:HexCodec].@encodeHex
-              ([@:class:/byte]
-                [{(255).byteValue()
-                }]
-              )
-          </subjectX>
-          
-          <testX>.=="ff"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>hexEncode8
-          </name>
-          
-          <subjectX>
-            [@ct:HexCodec].@encodeHex
-              ([@:class:/byte]
-                [{(127).byteValue()
-                }]
-              )
-          </subjectX>
-          
-          <testX>.=="7f"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>hexEncode9
-          </name>
-          
-          <subjectX>
-            [@ct:HexCodec].@encodeHex
-              ([@:class:/byte]
-                [{(128).byteValue()
-                }]
-              )
-          </subjectX>
-          
-          <testX>.=="80"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>hexDecode1
-          </name>
-          
-          <subjectX>
-            [@ct:HexCodec].@decodeHex("ff")
-          </subjectX>
-          
-          <testX>
-            .equals
-              ([@:class:/byte]
-                [{(255).byteValue()
-                }]
-              )
-          
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>hexDecode2
-          </name>
-          
-          <subjectX>
-            [@ct:HexCodec].@decodeHex("ff00ff")
-          </subjectX>
-          
-          <testX>
-            .equals
-              ([@:class:/byte]
-                [{(255).byteValue()
-                ,(0).byteValue()
-                ,(255).byteValue()
-                }]
-              )
-          
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>hexCodec1
-          </name>
-          
-          <subjectX>
-            [@ct:HexCodec].@encodeHex([@ct:HexCodec].@decodeHex("ff00ff"))
-          </subjectX>
-          
-          <testX>
-            .=="ff00ff"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>hexCodec2
-          </name>
-          
-          <subjectX>
-            [@ct:HexCodec].@encodeHex
-              ([@ct:HexCodec].@decodeHex
-                ("fabcd0f0c3345df04b3206341e6f4c0b5d945abcdefbaf67849aaabbbc"
-                )
-              )
-          </subjectX>
-          
-          <testX>
-            .=="fabcd0f0c3345df04b3206341e6f4c0b5d945abcdefbaf67849aaabbbc"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>implode1
-          </name>
-          
-          <subjectX>
-            [@sutil:StringUtil].@implode
-              (','
-              ,'\\'
-              ,[@j:String][{"x","y","z"}]
-              )
-          </subjectX>
-          
-          <testX>
-            .=="x,y,z"
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion>
-        
-          <name>explode1
-          </name>
-          
-          <subjectX>
-            [@sutil:StringUtil].@explode
-              ("x,y,z"
-              ,','
-              ,'\\'
-              ,3
-              )
-          </subjectX>
-          
-          <testX>
-            .==[@j:String][{"x","y","z"}]
-          </testX>
-          
-        </test:Assertion>        
-
-        <test:Assertion>
-        
-          <name>implode2
-          </name>
-          
-          <subjectX contextualize="false">
-            [@sutil:StringUtil].@implode
-              (','
-              ,'\\'
-              ,[@j:String][{ "1,2,3" , "4,5,\\6" , ",7,8,\\" }]
-              )
-          </subjectX>
-          
-          <testX contextualize="false">
-            .=="1\\,2\\,3,4\\,5\\,\\\\6,\\,7\\,8\\,\\\\"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>explode2
-          </name>
-          
-          <subjectX contextualize="false">
-            [@sutil:StringUtil].@explode
-              ("1\\,2\\,3,4\\,5\\,\\\\6,\\,7\\,8\\,\\\\"
-              ,','
-              ,'\\'
-              ,3
-              )
-          </subjectX>
-          
-          <testX contextualize="false">
-            .==[@j:String][{ "1,2,3" , "4,5,\\6" , ",7,8,\\" }]
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion>
-        
-          <name>tokenizeOnWhitespace
-          </name>
-          
-          <subjectX contextualize="false">
-            [@sutil:StringUtil].@tokenizeOnWhitespace
-              ("Hello  there, how\n are you\t today?"
-              )
-          </subjectX>
-          
-          <testX contextualize="false">
-            .==[{ "Hello", "there,", "how", "are", "you", "today?"}]
-          </testX>
-          
-        </test:Assertion>
-        
-                
-        <test:Assertion>
-        
-          <name>trimStart
-          </name>
-          
-          <subjectX contextualize="false">
-            [@sutil:StringUtil].@trimStart("\r\n  hello  ")
-          </subjectX>
-          
-          <testX>
-            .=="hello  "
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>trimEnd
-          </name>
-          
-          <subjectX contextualize="false">
-            [@sutil:StringUtil].@trimEnd("  hello  \r\n")
-          </subjectX>
-          
-          <testX>
-            .=="  hello"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>path append
-          </name>
-          
-          <subjectX contextualize="false">
-            [@util:Path].("/a/b/c/").append([{"d"}])
-          </subjectX>
-          
-          <testX>
-            .==[@util:Path].("/a/b/c/d")
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion>
-        
-          <name>path append
-          </name>
-          
-          <subjectX contextualize="false">
-            [@util:Path].("/a/b/c").append([{"d","e"}])
-          </subjectX>
-          
-          <testX>
-            .==[@util:Path].("/a/b/c/d/e")
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion>
-        
-          <name>path append
-          </name>
-          
-          <subjectX contextualize="false">
-            [@util:Path].("/").append([{"a","b"}])
-          </subjectX>
-          
-          <testX>
-            .==[@util:Path].("/a/b")
-          </testX>
-          
-        </test:Assertion>
-        <test:Assertion>
-        
-          <name>path append
-          </name>
-          
-          <subjectX contextualize="false">
-            [@util:Path].("/").append([@util:Path].("/"))
-          </subjectX>
-          
-          <testX>
-            .==[@util:Path].("/")
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion>
-        
-          <name>parent path
-          </name>
-
-          <subjectX contextualize="false">
-            [@util:Path].("/spiralcraft",'/').parentPath()
-          </subjectX>
-          
-          <testX>
-            .==[@util:Path].("/")
-          </testX>
-          
-        </test:Assertion>        
-
-        <test:Assertion>
-        
-          <name>parent path 2
-          </name>
-
-          <subjectX contextualize="false">
-            [@util:Path].("/spiralcraft",'/').parentPath().format('/')
-          </subjectX>
-          
-          <testX>
-            .=="/"
-          </testX>
-          
-        </test:Assertion>        
-        
-        <test:Assertion>
-        
-          <name>parent path 3
-          </name>
-
-          <subjectX contextualize="false">
-            [@util:URIUtil].@toParentPath([@jnet:URI].("http://www.example.com/spiralcraft"))
-          </subjectX>
-          
-          <testX>
-            .==[@jnet:URI].("http://www.example.com/")
-          </testX>
-          
-        </test:Assertion>        
- 
-         <test:Assertion>
-        
-          <name>Sequence
-          </name>
-          
-          <subjectX contextualize="false">
-            [@util:Sequence].([{1,2,3,4,5}]).format(".")
-          </subjectX>
-          
-          <testX>
-            .=="1.2.3.4.5"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>Sequence append
-          </name>
-          
-          <subjectX contextualize="false">
-            [@util:Sequence].([{1,2,3,4,5}]).concat([{6,7}]).format(".")
-          </subjectX>
-          
-          <testX>
-            .=="1.2.3.4.5.6.7"
-          </testX>
-          
-        </test:Assertion>
-      </scenarios>
+      <name>prepad
+      </name>
       
-    </task:Sequence>
-  </chain>
+      <subjectX>[@sutil:StringUtil].@prepad("12345",'0',6)
+      </subjectX>
+      
+      <testX>.=="012345"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>hexEncode1
+      </name>
+      
+      <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("32767").toByteArray())
+      </subjectX>
+      
+      <testX>.=="7fff"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>hexEncode2
+      </name>
+      
+      <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("65535").toByteArray())
+      </subjectX>
+      
+      <testX>.=="00ffff"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>hexEncode3
+      </name>
+      
+      <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("0").toByteArray())
+      </subjectX>
+      
+      <testX>.=="00"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>hexEncode4
+      </name>
+      
+      <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("-1").toByteArray())
+      </subjectX>
+      
+      <testX>.=="ff"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>hexEncode5
+      </name>
+      
+      <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("-256").toByteArray())
+      </subjectX>
+      
+      <testX>.=="ff00"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>hexEncode6
+      </name>
+      
+      <subjectX>[@ct:HexCodec].@encodeHex([@jm:BigInteger].("255").toByteArray())
+      </subjectX>
+      
+      <testX>.=="00ff"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>hexEncode7
+      </name>
+      
+      <subjectX>
+        [@ct:HexCodec].@encodeHex
+          ([@:class:/byte]
+            [{(255).byteValue()
+            }]
+          )
+      </subjectX>
+      
+      <testX>.=="ff"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>hexEncode8
+      </name>
+      
+      <subjectX>
+        [@ct:HexCodec].@encodeHex
+          ([@:class:/byte]
+            [{(127).byteValue()
+            }]
+          )
+      </subjectX>
+      
+      <testX>.=="7f"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>hexEncode9
+      </name>
+      
+      <subjectX>
+        [@ct:HexCodec].@encodeHex
+          ([@:class:/byte]
+            [{(128).byteValue()
+            }]
+          )
+      </subjectX>
+      
+      <testX>.=="80"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>hexDecode1
+      </name>
+      
+      <subjectX>
+        [@ct:HexCodec].@decodeHex("ff")
+      </subjectX>
+      
+      <testX>
+        .equals
+          ([@:class:/byte]
+            [{(255).byteValue()
+            }]
+          )
+      
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>hexDecode2
+      </name>
+      
+      <subjectX>
+        [@ct:HexCodec].@decodeHex("ff00ff")
+      </subjectX>
+      
+      <testX>
+        .equals
+          ([@:class:/byte]
+            [{(255).byteValue()
+            ,(0).byteValue()
+            ,(255).byteValue()
+            }]
+          )
+      
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>hexCodec1
+      </name>
+      
+      <subjectX>
+        [@ct:HexCodec].@encodeHex([@ct:HexCodec].@decodeHex("ff00ff"))
+      </subjectX>
+      
+      <testX>
+        .=="ff00ff"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>hexCodec2
+      </name>
+      
+      <subjectX>
+        [@ct:HexCodec].@encodeHex
+          ([@ct:HexCodec].@decodeHex
+            ("fabcd0f0c3345df04b3206341e6f4c0b5d945abcdefbaf67849aaabbbc"
+            )
+          )
+      </subjectX>
+      
+      <testX>
+        .=="fabcd0f0c3345df04b3206341e6f4c0b5d945abcdefbaf67849aaabbbc"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>implode1
+      </name>
+      
+      <subjectX>
+        [@sutil:StringUtil].@implode
+          (','
+          ,'\\'
+          ,[@j:String][{"x","y","z"}]
+          )
+      </subjectX>
+      
+      <testX>
+        .=="x,y,z"
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
+      <name>explode1
+      </name>
+      
+      <subjectX>
+        [@sutil:StringUtil].@explode
+          ("x,y,z"
+          ,','
+          ,'\\'
+          ,3
+          )
+      </subjectX>
+      
+      <testX>
+        .==[@j:String][{"x","y","z"}]
+      </testX>
+      
+    </test:Assertion>        
+
+    <test:Assertion>
+    
+      <name>implode2
+      </name>
+      
+      <subjectX contextualize="false">
+        [@sutil:StringUtil].@implode
+          (','
+          ,'\\'
+          ,[@j:String][{ "1,2,3" , "4,5,\\6" , ",7,8,\\" }]
+          )
+      </subjectX>
+      
+      <testX contextualize="false">
+        .=="1\\,2\\,3,4\\,5\\,\\\\6,\\,7\\,8\\,\\\\"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>explode2
+      </name>
+      
+      <subjectX contextualize="false">
+        [@sutil:StringUtil].@explode
+          ("1\\,2\\,3,4\\,5\\,\\\\6,\\,7\\,8\\,\\\\"
+          ,','
+          ,'\\'
+          ,3
+          )
+      </subjectX>
+      
+      <testX contextualize="false">
+        .==[@j:String][{ "1,2,3" , "4,5,\\6" , ",7,8,\\" }]
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
+      <name>tokenizeOnWhitespace
+      </name>
+      
+      <subjectX contextualize="false">
+        [@sutil:StringUtil].@tokenizeOnWhitespace
+          ("Hello  there, how\n are you\t today?"
+          )
+      </subjectX>
+      
+      <testX contextualize="false">
+        .==[{ "Hello", "there,", "how", "are", "you", "today?"}]
+      </testX>
+      
+    </test:Assertion>
+    
+            
+    <test:Assertion>
+    
+      <name>trimStart
+      </name>
+      
+      <subjectX contextualize="false">
+        [@sutil:StringUtil].@trimStart("\r\n  hello  ")
+      </subjectX>
+      
+      <testX>
+        .=="hello  "
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>trimEnd
+      </name>
+      
+      <subjectX contextualize="false">
+        [@sutil:StringUtil].@trimEnd("  hello  \r\n")
+      </subjectX>
+      
+      <testX>
+        .=="  hello"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>path append
+      </name>
+      
+      <subjectX contextualize="false">
+        [@util:Path].("/a/b/c/").append([{"d"}])
+      </subjectX>
+      
+      <testX>
+        .==[@util:Path].("/a/b/c/d")
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
+      <name>path append
+      </name>
+      
+      <subjectX contextualize="false">
+        [@util:Path].("/a/b/c").append([{"d","e"}])
+      </subjectX>
+      
+      <testX>
+        .==[@util:Path].("/a/b/c/d/e")
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
+      <name>path append
+      </name>
+      
+      <subjectX contextualize="false">
+        [@util:Path].("/").append([{"a","b"}])
+      </subjectX>
+      
+      <testX>
+        .==[@util:Path].("/a/b")
+      </testX>
+      
+    </test:Assertion>
+    <test:Assertion>
+    
+      <name>path append
+      </name>
+      
+      <subjectX contextualize="false">
+        [@util:Path].("/").append([@util:Path].("/"))
+      </subjectX>
+      
+      <testX>
+        .==[@util:Path].("/")
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
+      <name>parent path
+      </name>
+
+      <subjectX contextualize="false">
+        [@util:Path].("/spiralcraft",'/').parentPath()
+      </subjectX>
+      
+      <testX>
+        .==[@util:Path].("/")
+      </testX>
+      
+    </test:Assertion>        
+
+    <test:Assertion>
+    
+      <name>parent path 2
+      </name>
+
+      <subjectX contextualize="false">
+        [@util:Path].("/spiralcraft",'/').parentPath().format('/')
+      </subjectX>
+      
+      <testX>
+        .=="/"
+      </testX>
+      
+    </test:Assertion>        
+    
+    <test:Assertion>
+    
+      <name>parent path 3
+      </name>
+
+      <subjectX contextualize="false">
+        [@util:URIUtil].@toParentPath([@jnet:URI].("http://www.example.com/spiralcraft"))
+      </subjectX>
+      
+      <testX>
+        .==[@jnet:URI].("http://www.example.com/")
+      </testX>
+      
+    </test:Assertion>        
+
+     <test:Assertion>
+    
+      <name>Sequence
+      </name>
+      
+      <subjectX contextualize="false">
+        [@util:Sequence].([{1,2,3,4,5}]).format(".")
+      </subjectX>
+      
+      <testX>
+        .=="1.2.3.4.5"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>Sequence append
+      </name>
+      
+      <subjectX contextualize="false">
+        [@util:Sequence].([{1,2,3,4,5}]).concat([{6,7}]).format(".")
+      </subjectX>
+      
+      <testX>
+        .=="1.2.3.4.5.6.7"
+      </testX>
+      
+    </test:Assertion>
+  </sequence>
         
 </test:TestGroup>

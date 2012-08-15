@@ -17,113 +17,108 @@
   <name>spiralcraft.sax.test
   </name>
   
-  <chain>
- 
-    <task:Sequence>
-      <scenarios>
+  <sequence>
     
-        <test:Assertion>
-        
-          <name>resource entry
-          </name>
+    <test:Assertion>
+    
+      <name>resource entry
+      </name>
+      
+      <subjectX>
+        [@jnet:URI]
+        {{[*jnet:URI{"class:/spiralcraft/sax/test/fragment1.xmlf"}]
+        ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment2.xmlf"}]
+        ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment3.xmlf"}]            
+        }}
+        #{
+          .[*vfsf:Resolve].[*vfsf:IO]
+          { [@sax:ParseTreeFactory].@fromFragment([@j:String].(.),null)
+          }
+          { 
+            [@sax:SaxUtil].@ellipsize
+              (.document.getChild(0)
+              ,140
+              ,120
+              ,"..."
+              ,[@ju:Locale].@US
+              )
+            ,.
+          }
+          { [@sax:ParseTreeFactory].@toFragment(.)
+          }
+        }
           
-          <subjectX>
-            [@jnet:URI]
-            {{[*jnet:URI{"class:/spiralcraft/sax/test/fragment1.xmlf"}]
-            ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment2.xmlf"}]
-            ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment3.xmlf"}]            
-            }}
-            #{
-              .[*vfsf:Resolve].[*vfsf:IO]
-              { [@sax:ParseTreeFactory].@fromFragment([@j:String].(.),null)
-              }
-              { 
-                [@sax:SaxUtil].@ellipsize
-                  (.document.getChild(0)
-                  ,140
-                  ,120
-                  ,"..."
-                  ,[@ju:Locale].@US
-                  )
-                ,.
-              }
-              { [@sax:ParseTreeFactory].@toFragment(.)
-              }
-            }
-              
-          </subjectX>
+      </subjectX>
+      
+      <testX>
+        @[0].contains("...")
+        &amp;&amp; !@[1].contains("...")
+        &amp;&amp; @[2].contains("...")
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
+      <name>resource entry
+      </name>
+      
+      <subjectX>
+        [@jnet:URI]
+        {{[*jnet:URI{"class:/spiralcraft/sax/test/fragment1.xmlf"}]
+        ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment2.xmlf"}]
+        ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment3.xmlf"}]            
+        }}
+        #{
+          .[*vfsf:Resolve].[*vfsf:IO]
+          { 
+            [@sax:SaxUtil].@ellipsizeFragment
+              ([@j:String].(.)
+              ,140
+              ,120
+              ,"..."
+              ,[@ju:Locale].@US
+              )
+          }
+        }
           
-          <testX>
-            @[0].contains("...")
-            &amp;&amp; !@[1].contains("...")
-            &amp;&amp; @[2].contains("...")
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion>
-        
-          <name>resource entry
-          </name>
-          
-          <subjectX>
-            [@jnet:URI]
-            {{[*jnet:URI{"class:/spiralcraft/sax/test/fragment1.xmlf"}]
-            ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment2.xmlf"}]
-            ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment3.xmlf"}]            
-            }}
-            #{
-              .[*vfsf:Resolve].[*vfsf:IO]
-              { 
-                [@sax:SaxUtil].@ellipsizeFragment
-                  ([@j:String].(.)
-                  ,140
-                  ,120
-                  ,"..."
-                  ,[@ju:Locale].@US
-                  )
-              }
-            }
-              
-          </subjectX>
-          
-          <testX>
-            @[0].contains("...")
-            &amp;&amp; !@[1].contains("...")
-            &amp;&amp; @[2].contains("...")
-          </testX>
-          
-        </test:Assertion>        
+      </subjectX>
+      
+      <testX>
+        @[0].contains("...")
+        &amp;&amp; !@[1].contains("...")
+        &amp;&amp; @[2].contains("...")
+      </testX>
+      
+    </test:Assertion>        
 
-        <test:Assertion>
-        
-          <name>strip fragment markup
-          </name>
+    <test:Assertion>
+    
+      <name>strip fragment markup
+      </name>
+      
+      <subjectX>
+        [@jnet:URI]
+        {{[*jnet:URI{"class:/spiralcraft/sax/test/fragment1.xmlf"}]
+        ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment2.xmlf"}]
+        ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment3.xmlf"}]            
+        }}
+        #{
+          .[*vfsf:Resolve].[*vfsf:IO]
+          { 
+            [@sax:SaxUtil].@stripFragmentMarkup
+              ([@j:String].(.))
+          }
+        }
+        #{.length()
+        }
           
-          <subjectX>
-            [@jnet:URI]
-            {{[*jnet:URI{"class:/spiralcraft/sax/test/fragment1.xmlf"}]
-            ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment2.xmlf"}]
-            ,[*jnet:URI{"class:/spiralcraft/sax/test/fragment3.xmlf"}]            
-            }}
-            #{
-              .[*vfsf:Resolve].[*vfsf:IO]
-              { 
-                [@sax:SaxUtil].@stripFragmentMarkup
-                  ([@j:String].(.))
-              }
-            }
-            #{.length()
-            }
-              
-          </subjectX>
-          
-          <testX>.==[@j:Integer][{1799,129,255}]
-          </testX>
-          
-        </test:Assertion>        
+      </subjectX>
+      
+      <testX>.==[@j:Integer][{1799,129,255}]
+      </testX>
+      
+    </test:Assertion>        
 
-      </scenarios>
-    </task:Sequence>
-  </chain>
+  </sequence>
 </test:TestGroup>

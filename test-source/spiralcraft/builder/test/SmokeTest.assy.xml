@@ -10,82 +10,75 @@
   <name>spiralcraft.builder.test
   </name>
   
-  <chain>
- 
-    <task:Sequence>
-      <scenarios>
+  <sequence>
     
-        <test:Assertion>
-        
-          <name>Collection inheritance and aggregation
-          </name>
-          
-          <subjectX>[@btest:ExtendedWidget2].().children
-          </subjectX>
-          
-          <testX>.@size==9
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion>
-        
-          <name>Collection inheritance and aggregation- single case
-          </name>
-          
-          <subjectX>[@btest:XBarWidget].().children
-          </subjectX>
-          
-          <testX>.@size==2
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion>
-        
-          <name>Expression constructor
-          </name>
-          
-          <subjectX>[@btest:ConstructedWidget].().title
-          </subjectX>
-          
-          <testX>.=="constructedFromExpression"
-          </testX>
-          
-        </test:Assertion>
-
-        <test:Assertion
-          xmlns:btovl="class:/spiralcraft/builder/test/ovl"
-          >
-        
-          <name>Package
-          </name>
-          
-          <subjectX>[@btovl:MyWidget].().title
-          </subjectX>
-          
-          <testX>.=="My Widget"
-          </testX>
-          
-        </test:Assertion>
-        
-        <test:Assertion
-          xmlns:btovl="class:/spiralcraft/builder/test/ovl"
-          >
-        
-          <name>Package 2
-          </name>
-          
-          <subjectX>[@btovl:OvlWidget].().title
-          </subjectX>
-          
-          <testX>.=="Overlay Widget"
-          </testX>
-          
-        </test:Assertion>
-      </scenarios>
+    <test:Assertion>
+    
+      <name>Collection inheritance and aggregation
+      </name>
       
-    </task:Sequence>
-  </chain>
-        
+      <subjectX>[@btest:ExtendedWidget2].().children
+      </subjectX>
+      
+      <testX>.@size==9
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion>
+    
+      <name>Collection inheritance and aggregation- single case
+      </name>
+      
+      <subjectX>[@btest:XBarWidget].().children
+      </subjectX>
+      
+      <testX>.@size==2
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion>
+    
+      <name>Expression constructor
+      </name>
+      
+      <subjectX>[@btest:ConstructedWidget].().title
+      </subjectX>
+      
+      <testX>.=="constructedFromExpression"
+      </testX>
+      
+    </test:Assertion>
+
+    <test:Assertion
+      xmlns:btovl="class:/spiralcraft/builder/test/ovl"
+      >
+    
+      <name>Package
+      </name>
+      
+      <subjectX>[@btovl:MyWidget].().title
+      </subjectX>
+      
+      <testX>.=="My Widget"
+      </testX>
+      
+    </test:Assertion>
+    
+    <test:Assertion
+      xmlns:btovl="class:/spiralcraft/builder/test/ovl"
+      >
+    
+      <name>Package 2
+      </name>
+      
+      <subjectX>[@btovl:OvlWidget].().title
+      </subjectX>
+      
+      <testX>.=="Overlay Widget"
+      </testX>
+      
+    </test:Assertion>
+  </sequence>
 </test:TestGroup>

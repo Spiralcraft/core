@@ -27,32 +27,25 @@
     </dutil:SummarizerService>
   </value>
   
-  <chain>
-   
-    <task:Sequence>
-      <scenarios>
+  <sequence>
 
-        <task:Eval>
-          <x>
-          [*dtask:Fetch{[*query:Scan{[@example:Fact].type}]}].()
-            {
-              .#{ [dutil:SummarizerService].accept(.)
-                }
-              ,.#{ [dutil:SummarizerService].accept(.)
-                }
-              ,.#{ [dutil:SummarizerService].accept(.)
-                }
+    <task:Eval>
+      <x>
+      [*dtask:Fetch{[*query:Scan{[@example:Fact].type}]}].()
+        {
+          .#{ [dutil:SummarizerService].accept(.)
             }
-          </x>
-        </task:Eval>
-        <task:Eval>
-          <x>[dutil:SummarizerService].flush()
-          </x>
-        </task:Eval>
-      </scenarios>
-      
-      
-    </task:Sequence>
-  </chain>
+          ,.#{ [dutil:SummarizerService].accept(.)
+            }
+          ,.#{ [dutil:SummarizerService].accept(.)
+            }
+        }
+      </x>
+    </task:Eval>
+    <task:Eval>
+      <x>[dutil:SummarizerService].flush()
+      </x>
+    </task:Eval>
+  </sequence>
         
 </task:Value>

@@ -1,4 +1,4 @@
-<task:Chain
+<task:Sequence
   xmlns:task="class:/spiralcraft/task/"
   xmlns:query="class:/spiralcraft/data/query/"
   xmlns:dtask="class:/spiralcraft/data/task/"
@@ -8,177 +8,173 @@
   xmlns:meta="class:/spiralcraft/data/types/meta/"
   xmlns:fn="class:/spiralcraft/lang/functions/"
   >
-  <chain>
  
-    <task:Sequence>
-      <scenarios>
-    
-        <test:Stub>
-          <name>shortDate
-          </name>
-          <messageX>[@example:USDate].type.@cast([@std:DateType]).fromString("12/28/2010")
-          </messageX>
-          <conditionX>[@example:USDate].type.@cast([@std:DateType])
-                        .fromString("12/28/2010").toString()
-                        { .startsWith("Tue Dec 28 00:00:00")
-                          &amp;&amp; .endsWith("2010")
-                        }
-          </conditionX>
-        </test:Stub>
 
+  <scenarios>
+
+    <test:Stub>
+      <name>shortDate
+      </name>
+      <messageX>[@example:USDate].type.@cast([@std:DateType]).fromString("12/28/2010")
+      </messageX>
+      <conditionX>[@example:USDate].type.@cast([@std:DateType])
+                    .fromString("12/28/2010").toString()
+                    { .startsWith("Tue Dec 28 00:00:00")
+                      &amp;&amp; .endsWith("2010")
+                    }
+      </conditionX>
+    </test:Stub>
+
+    <task:Eval>
+      <x>[@example:Customer].(score:=20.216F)
+      </x>
+      
+      <sequence>
+      
+        
+        <test:Assertion>
+          <name>scenario method pre-test
+          </name>
+          <subjectX>[example:Customer].score
+          </subjectX>
+          <testX>.==20.216F
+          </testX>
+        </test:Assertion>
+
+        <task:Exec>
+          <commandX>[example:Customer].score1().@tune("TaskMethod 1")
+          </commandX>
+        </task:Exec>
+
+        <test:Assertion>
+          <name>scenario method post-test
+          </name>
+          <subjectX>[example:Customer].score
+          </subjectX>
+          <testX>.==21.216F
+          </testX>
+        </test:Assertion>
+        
+        <task:Exec>
+          <commandX>[example:Customer].score1().@tune("TaskMethod 2")
+          </commandX>
+        </task:Exec>
+
+        <test:Assertion>
+          <name>scenario method post-test
+          </name>
+          <subjectX>[example:Customer].score
+          </subjectX>
+          <testX>.==22.216F
+          </testX>
+        </test:Assertion>
+        
+        <task:Exec>
+          <commandX>[example:Customer].score(10).@tune("TaskMethod 3")
+          </commandX>
+        </task:Exec>
+                    
+        <test:Assertion>
+          <name>parameterized scenario method post-test
+          </name>
+          <subjectX>[example:Customer].score
+          </subjectX>
+          <testX>.==32.216F
+          </testX>
+        </test:Assertion>
+
+
+        <test:Assertion>
+          <name>calculated field
+          </name>
+          <subjectX>[example:Customer].computedScore
+          </subjectX>
+          <testX>.==322.16F
+          </testX>
+        </test:Assertion>
+                    
+        <test:Assertion>
+          <name>parameterized expression method
+          </name>
+          <subjectX>[example:Customer].score2(10).@tune("TaskMethod 4")
+          </subjectX>
+          <testX>.==42.216F
+          </testX>
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>Tuple instantiation
+          </name>
+          
+          <subjectX>
+            [@example:Customer].(id:=12345){{cust:=.., .cust.score(10).execute() }}.cust
+          </subjectX>
+        
+          <testX>.score==10
+          </testX>
+        </test:Assertion>
+        
+        
+        <test:Assertion>
+          <name>Static fetch
+          </name>
+          
+          <subjectX>
+            [@example:Customer].@fetch(2)
+          </subjectX>
+        
+          <testX>.displayName.startsWith("Mary Second")
+          </testX>
+        </test:Assertion>           
+        
+        <test:Assertion>
+          <name>Field medatadata 1
+          </name>
+          
+          <subjectX>
+            [example:Customer].score.[meta:Field].name
+          </subjectX>
+        
+          <testX>.=="score"
+          </testX>
+        </test:Assertion>   
+        
+        <test:Assertion>
+          <name>Data modification method with return
+          </name>
+          
+          <subjectX>
+            [example:Customer].addFact("This is a new fact")
+          </subjectX>
+        
+          <testX>.description=="This is a new fact"
+          </testX>
+        </test:Assertion>               
+<!--
         <task:Eval>
-          <x>[@example:Customer].(score:=20.216F)
+        
+          <x>[@example:Customer].()
           </x>
           
-          <chain>
-          
-            
+          <sequence>
             <test:Assertion>
-              <name>scenario method pre-test
-              </name>
-              <subjectX>[example:Customer].score
-              </subjectX>
-              <testX>.==20.216F
-              </testX>
-            </test:Assertion>
-
-            <task:Exec>
-              <commandX>[example:Customer].score1().@tune("TaskMethod 1")
-              </commandX>
-            </task:Exec>
-
-            <test:Assertion>
-              <name>scenario method post-test
-              </name>
-              <subjectX>[example:Customer].score
-              </subjectX>
-              <testX>.==21.216F
-              </testX>
-            </test:Assertion>
-            
-            <task:Exec>
-              <commandX>[example:Customer].score1().@tune("TaskMethod 2")
-              </commandX>
-            </task:Exec>
-
-            <test:Assertion>
-              <name>scenario method post-test
-              </name>
-              <subjectX>[example:Customer].score
-              </subjectX>
-              <testX>.==22.216F
-              </testX>
-            </test:Assertion>
-            
-            <task:Exec>
-              <commandX>[example:Customer].score(10).@tune("TaskMethod 3")
-              </commandX>
-            </task:Exec>
-                        
-            <test:Assertion>
-              <name>parameterized scenario method post-test
-              </name>
-              <subjectX>[example:Customer].score
-              </subjectX>
-              <testX>.==32.216F
-              </testX>
-            </test:Assertion>
- 
- 
-            <test:Assertion>
-              <name>calculated field
-              </name>
-              <subjectX>[example:Customer].computedScore
-              </subjectX>
-              <testX>.==322.16F
-              </testX>
-            </test:Assertion>
-                        
-            <test:Assertion>
-              <name>parameterized expression method
-              </name>
-              <subjectX>[example:Customer].score2(10).@tune("TaskMethod 4")
-              </subjectX>
-              <testX>.==42.216F
-              </testX>
-            </test:Assertion>
-            
-            <test:Assertion>
-              <name>Tuple instantiation
+              <name>Odd name
               </name>
               
-              <subjectX>
-                [@example:Customer].(id:=12345){{cust:=.., .cust.score(10).execute() }}.cust
+              <subjectX xmlns:ugly="s:/blah/blah/WEB-INF/">
+                [ugly:Dummy].[*fn:Try]
               </subjectX>
             
-              <testX>.score==10
-              </testX>
-            </test:Assertion>
-            
-            
-            <test:Assertion>
-              <name>Static fetch
-              </name>
-              
-              <subjectX>
-                [@example:Customer].@fetch(2)
-              </subjectX>
-            
-              <testX>.displayName.startsWith("Mary Second")
-              </testX>
-            </test:Assertion>           
-            
-            <test:Assertion>
-              <name>Field medatadata 1
-              </name>
-              
-              <subjectX>
-                [example:Customer].score.[meta:Field].name
-              </subjectX>
-            
-              <testX>.=="score"
+              <testX>true
               </testX>
             </test:Assertion>   
-            
-            <test:Assertion>
-              <name>Data modification method with return
-              </name>
-              
-              <subjectX>
-                [example:Customer].addFact("This is a new fact")
-              </subjectX>
-            
-              <testX>.description=="This is a new fact"
-              </testX>
-            </test:Assertion>               
-<!--
-            <task:Eval>
-            
-              <x>[@example:Customer].()
-              </x>
-              
-              <sequence>
-                <test:Assertion>
-                  <name>Odd name
-                  </name>
-                  
-                  <subjectX xmlns:ugly="s:/blah/blah/WEB-INF/">
-                    [ugly:Dummy].[*fn:Try]
-                  </subjectX>
-                
-                  <testX>true
-                  </testX>
-                </test:Assertion>   
-              </sequence>
-            
-            </task:Eval>
--->            
-          </chain>
-        </task:Eval>
-                
-      </scenarios>
-      
-    </task:Sequence>
-  </chain>
+          </sequence>
         
-</task:Chain>
+        </task:Eval>
+-->            
+      </sequence>
+    </task:Eval>
+            
+  </scenarios>
+  
+</task:Sequence>

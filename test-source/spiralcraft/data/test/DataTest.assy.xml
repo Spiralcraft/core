@@ -5,17 +5,12 @@
   <name>spiralcraft.data.test
   </name>
   
-  <chain>
- 
-    <task:Sequence>
-      <scenarios>
-        <DataBatchTest/>
-        <QueryTest/>
-        <TypeTest/>
-        <SummaryTest/>
-      </scenarios>
-      
-    </task:Sequence>
-  </chain>
+  <sequence>
+
+    <DataBatchTest/>
+    <QueryTest/>
+    <TypeTest/>
+    <SummaryTest/>
+  </sequence>
         
 </test:TestGroup>

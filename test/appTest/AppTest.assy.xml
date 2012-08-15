@@ -1,0 +1,76 @@
+<service:Daemon
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:io="class:/spiralcraft/io/"
+  xmlns:iotest="class:/spiralcraft/io/test/"
+  xmlns:service="class:/spiralcraft/service/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:dxml="class:/spiralcraft/data/xml/"
+  xmlns:data="class:/spiralcraft/data/"
+  xmlns:da="class:/spiralcraft/data/access/"
+  xmlns:query="class:/spiralcraft/data/query/"
+  xmlns:dtest="class:/spiralcraft/data/test/"
+  xmlns:test="class:/spiralcraft/test/"
+  xmlns:vfs="class:/spiralcraft/vfs/task/"
+  xmlns:fn="class:/spiralcraft/lang/functions/"
+  xmlns:appTest="class:/spiralcraft/app/test/"
+  xmlns:app="class:/spiralcraft/app/"
+  xmlns:sax="class:/spiralcraft/data/sax/"
+  xmlns:util="class:/spiralcraft/util/"
+  xmlns:j="class:/java/lang/"
+  >
+  
+  <logLevel>INFO
+  </logLevel>
+  
+  <services>
+    <service:SchedulerService>
+      <schedulers>
+        <task:TaskScheduler>
+          <period>2000
+          </period>
+          <scenario>
+            <task:Sequence>
+              <scenarios>
+                <task:Eval>
+                  <x>[service:Application].call("timers/1","start",null)
+                  </x>
+                </task:Eval>
+                <task:Eval>
+                  <x>[@j:Thread].@currentThread().sleep(1000)
+                  </x>
+                </task:Eval>
+                <task:Eval>
+                  <x>[service:Application].call("timers/1","stop",null)
+                  </x>
+                </task:Eval>
+              
+              </scenarios>
+            </task:Sequence>
+          </scenario>
+
+           
+        </task:TaskScheduler>
+        
+        
+      </schedulers>
+      
+
+    </service:SchedulerService>
+    
+    <appTest:DynamicTimerService>
+      <id>timers
+      </id>
+      <setX>[*sax:ParseXml{[@example:Index.list].type,`"context:/appTest/index.data.xml"`}].()
+      </setX>
+      <logLevel>INFO
+      </logLevel>
+      <contents>
+        <appTest:Timer>
+          <logLevel>INFO
+          </logLevel>
+        </appTest:Timer>
+      </contents>
+    </appTest:DynamicTimerService>
+    
+  </services>
+</service:Daemon>

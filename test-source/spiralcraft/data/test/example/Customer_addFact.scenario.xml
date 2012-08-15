@@ -19,7 +19,7 @@
       <type><example:Fact.type/>
       </type>
     
-      <chain>
+      <sequence>
         <task:Eval>
           <x>
           @{
@@ -28,7 +28,7 @@
           }
           </x>
         </task:Eval>
-      </chain>
+      </sequence>
     </dtask:Edit>
   
   </chain>
