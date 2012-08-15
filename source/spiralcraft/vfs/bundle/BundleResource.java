@@ -173,4 +173,21 @@ public class BundleResource
   { return getURI().toString();
   }
  
+  @Override
+  public Container asContainer()
+  { return bundleResource.asContainer()!=null?this:null;
+  }
+  
+  @Override
+  public Resource getParent()
+    throws IOException
+  { 
+    Resource parent=bundleResource.getParent();
+    if (parent!=null)
+    { return new BundleResource(URIUtil.toParentPath(uri),parent);
+    }
+    else
+    { return null;
+    }
+  }
 }
