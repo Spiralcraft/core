@@ -82,11 +82,7 @@ public class ContextNode
     }
     
     if (ret==null)
-    {
-      throw new BindException
-        ("Focus does not have a Subject or a Context:"
-        + specifiedFocus.toString()
-        );
+    { ret=LiteralNode.NULL.bind(focus);
     }
     return ret;  
   }
