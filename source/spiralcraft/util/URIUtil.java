@@ -18,6 +18,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import spiralcraft.log.ClassLog;
+import spiralcraft.text.html.URLEncoder;
 
 /**
  * Utility class to manipulate URIs
@@ -309,5 +310,8 @@ public class URIUtil
     }
   }
   
+  public static String encodeURIPath(String path)
+  { return URLEncoder.encode(path);
+  }
   
 }
