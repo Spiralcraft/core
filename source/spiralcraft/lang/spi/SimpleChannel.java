@@ -36,7 +36,13 @@ public class SimpleChannel<T>
     try
     {
       if (val instanceof Reflectable)
-      { return ((Reflectable<X>) val).reflect();
+      { 
+        try
+        { return ((Reflectable<X>) val).reflect();
+        }
+        catch (Error x)
+        { throw new Error("Error reflecting "+val,x);
+        }
       }
       else
       { return TypeModel.<X>reflect(val);
