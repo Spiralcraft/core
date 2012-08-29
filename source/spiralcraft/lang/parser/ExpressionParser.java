@@ -1253,9 +1253,20 @@ public class ExpressionParser
   {
     expect('[');
     expect('#');
-    String typeQName=parseURIName("]");
-    expect(']');
-    return parseStruct(typeQName);
+    String typeQName=parseURIName("]{");
+    if (_tokenizer.ttype=='{')
+    {
+      Node context=parseStruct(null);
+      expect(']');
+      return new FunctionNode
+        (typeQName,context,parseSubcontextExpression(context));
+      
+    }
+    else
+    {
+      expect(']');
+      return parseStruct(typeQName);
+    }
   }
   
   /**
