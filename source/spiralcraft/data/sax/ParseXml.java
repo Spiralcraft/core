@@ -81,14 +81,29 @@ public class ParseXml<Tresult>
     setUriX(uriBinding);
   }
   
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public ParseXml(Reflector<Tresult> reflector,Expression<URI> uriX)
     throws ContextualException
-  { this(ReflectionType.canonicalType(reflector.getContentType()),uriX);
+  { 
+    this
+      ((reflector instanceof DataReflector)
+        ?((DataReflector) reflector).getType()
+        :ReflectionType.canonicalType(reflector.getContentType()
+        )
+      ,uriX
+      );
   }
   
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public ParseXml(Reflector<Tresult> reflector)
     throws ContextualException
-  { this(ReflectionType.canonicalType(reflector.getContentType()));
+  { 
+    this
+      ((reflector instanceof DataReflector)
+        ?((DataReflector) reflector).getType()
+        :ReflectionType.canonicalType(reflector.getContentType()
+        )
+      );
   }
 
   public ParseXml(Type<Tresult> type) 
