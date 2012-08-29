@@ -15,6 +15,7 @@
 package spiralcraft.app.kit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,12 +23,13 @@ import spiralcraft.app.State;
 import spiralcraft.app.StateFrame;
 import spiralcraft.util.Sequence;
 
-public class ExpansionState<T>
+public class ExpansionState<C,T>
   implements State
 {
 
+  private C collection;
   private List<MementoState> children;
-  private final String componentId;
+  private final String localId;
   private final int grandchildCount;
   private boolean frameChanged;
   private StateFrame lastFrame;
@@ -35,11 +37,12 @@ public class ExpansionState<T>
   private boolean valid;
   private State parent;
   private Sequence<Integer> path;
+  private HashMap<String,MementoState> childIdMap;
   
-  public ExpansionState(int grandchildCount,String componentId)
+  public ExpansionState(int grandchildCount,String localId)
   {     
     children=new ArrayList<MementoState>();
-    this.componentId=componentId;
+    this.localId=localId;
     this.grandchildCount=grandchildCount;
   }
   
@@ -81,14 +84,15 @@ public class ExpansionState<T>
   { return valid;
   }
   
-//  /**
-//   * 
-//   * @return The index of this State within its parent State
-//   */
-//  @Override
-//  public int getPathIndex()
-//  { return path[path.length-1];
-//  }
+  public C getCollection()
+  { return collection;
+  }
+  
+  void startRefresh(C collection)
+  { 
+    this.collection=collection;
+    children.clear();
+  }
   
   @Override
   public State getParent()
@@ -100,44 +104,52 @@ public class ExpansionState<T>
   { return children.get(index);
   }
   
+  public MementoState findChild(String id)
+  { return childIdMap!=null?childIdMap.get(id):null;
+  }
+  
+  public void unmapChild(MementoState child)
+  { 
+    if (childIdMap!=null)
+    { childIdMap.remove(child.getLocalId());
+    }
+  }
+    
   public void trim(int index)
   { children=children.subList(0,index);
   }
     
-  public MementoState ensureChild(int index,T childData,String childKey)
+  public MementoState createChild(int index,T childData,String childKey)
   { 
-    MementoState ret=null;
-    if (index<children.size())
-    { ret=children.get(index);
+    MementoState ret=new MementoState(childKey);
+    ret.setValue(childData);
+    if (childIdMap==null)
+    { childIdMap=new HashMap<String,MementoState>();
     }
-    
-    if (ret==null)
-    {
-      ret=new MementoState(childKey);
-      
-      Sequence<Integer> newPath=path.concat(new Integer[index]);      
-      ret.link(this,newPath);
-      
-      
-      ret.setValue(childData);
-      int i=children.size()-index;
-      while (i-->1)
-      { children.add(null);
-      }
-      if (index<children.size())
-      { children.set(index,ret);
-      }
-      else
-      { children.add(ret);
-      }
-    }
-    
+    childIdMap.put(childKey,ret);
+    moveChild(index,ret);
     return ret;
     
   }
   
-    
   
+  void moveChild(int index,MementoState child)
+  {
+    Sequence<Integer> newPath=path.concat(new Integer[index]);      
+    child.link(this,newPath);
+      
+    int i=children.size()-index;
+    while (i-->1)
+    { children.add(null);
+    }
+    if (index<children.size())
+    { children.set(index,child);
+    }
+    else
+    { children.add(child);
+    }
+  }
+    
   @Override
   public void setChild(int index,State child)
   { 
@@ -199,8 +211,8 @@ public class ExpansionState<T>
 
 
   @Override
-  public String getComponentId()
-  { return componentId;
+  public String getLocalId()
+  { return localId;
   }
   
   @Override
@@ -226,6 +238,10 @@ public class ExpansionState<T>
   @Override
   public StateFrame getFrame()
   { return lastFrame;
+  }
+  
+  List<MementoState> getChildren()
+  { return children;
   }
   
   class MementoState

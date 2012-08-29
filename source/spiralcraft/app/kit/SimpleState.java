@@ -25,11 +25,11 @@ public class SimpleState
   private State parent;
   private final State[] children;
   private Sequence<Integer> path;
-  private final String componentId;
+  private final String localId;
   private boolean frameChanged;
   private StateFrame lastFrame;
   
-  public SimpleState(int childCount,String componentId)
+  public SimpleState(int childCount,String localId)
   {     
     if (childCount>0)
     { children=new State[childCount];
@@ -37,7 +37,7 @@ public class SimpleState
     else
     { children=null;
     }
-    this.componentId=componentId;
+    this.localId=localId;
     
   }
   
@@ -51,7 +51,7 @@ public class SimpleState
   @Override
   public void link(State parent,Sequence<Integer> path)
   { 
-    if (this.parent!=null)
+    if (this.parent!=null && this.parent!=parent)
     { throw new IllegalStateException("Can't change parent from "+this.parent);
     }
     this.parent=parent;
@@ -158,8 +158,8 @@ public class SimpleState
 
 
   @Override
-  public String getComponentId()
-  { return componentId;
+  public String getLocalId()
+  { return localId;
   }
   
   @Override

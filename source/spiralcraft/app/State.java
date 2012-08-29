@@ -134,12 +134,15 @@ public interface State
   State getAncestor(int distance);
   
   /**
-   * The id of the Component that this state belongs to, relative to the
-   *   containing component.
+   * The id of this state that differentiates it from its siblings and 
+   *   associates it with an item in the generating context. This usually
+   *   corresponds to either the id of the component this state belongs to,
+   *   or a generated key from the collection item associated with this
+   *   state.
    *   
    * @return
    */
-  String getComponentId();
+  String getLocalId();
   
   /**
    * Called by the dispatcher when a State that is within the target tree

@@ -48,6 +48,7 @@ import spiralcraft.lang.spi.GenericReflector;
 import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.ArrayUtil;
 
 /**
  * <p>Basic implementation of a component which uses a set of MessageHandlers
@@ -160,6 +161,9 @@ public class AbstractComponent
   { this.outerContexts=contexts;
   }
   
+  protected void addContext(Context context)
+  { this.outerContexts=ArrayUtil.append(this.outerContexts,context,Context.class);
+  }
     
   @Override
   public Message.Type[] getSubscribedTypes()

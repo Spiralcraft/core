@@ -28,7 +28,7 @@ import spiralcraft.lang.Focus;
  */
 public class 
   AbstractExpansionController<C,T>
-  extends AbstractController<ExpansionState<T>>
+  extends AbstractController<ExpansionState<C,T>>
 {
   // If no children, we still want to run the expansion logic
   { createEmptyContainer=true;
@@ -70,6 +70,7 @@ public class
   
   @SuppressWarnings("unchecked")
   protected Channel<C> resolveCollection(Focus<?> chain)
+    throws ContextualException
   { return (Channel<C>) chain.getSubject();
   }
   
