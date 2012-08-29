@@ -92,6 +92,7 @@ public class Executor
   private boolean consoleLog;
   private URI altContextURI;
   private URI configURI;
+  private URI dataURI;
   
   protected ExecutionContext context
     =ExecutionContext.getInstance();
@@ -227,6 +228,7 @@ public class Executor
       }
       
       resolveContextConfig(contextResourceMap);
+      resolveDataLocation(contextResourceMap);
       
       library=resolveLibrary();
       if (library!=null)
@@ -377,6 +379,49 @@ public class Executor
   }
   
   /**
+   * Resolve the default data location for data that will be operated on
+   *   by this Executable
+   * 
+   * @param contextResourceMap
+   */
+  private void resolveDataLocation(ContextResourceMap contextResourceMap)
+  {
+    
+    if (dataURI==null)
+    {
+      String dataDir=properties.find("spiralcraft.data.location");
+      if (dataDir==null)
+      { dataDir="data";
+      }
+      dataURI=URI.create(dataDir);
+    }
+    
+    if (!dataURI.isAbsolute())
+    {
+      contextResourceMap.put
+        ("data"
+        ,URIUtil.ensureTrailingSlash
+          (URIUtil.addPathSegment
+            (contextResourceMap.get("")
+            ,dataURI.getPath()
+            )
+          )
+        );
+      
+    }
+    else
+    { 
+      contextResourceMap.put
+        ("data"
+        ,URIUtil.ensureTrailingSlash(dataURI)
+        );
+
+    }
+          
+    
+  }
+  
+  /**
    * Map the contents of all packages contained in context:/packages into
    *   the contextResourceMap
    * 
@@ -497,6 +542,9 @@ public class Executor
           }
           else if (option.equals("-config"))
           { configURI=URI.create(nextArgument());
+          }
+          else if (option.equals("-data"))
+          { dataURI=URI.create(nextArgument());
           }
           else if (option.equals("-persist"))
           { 
