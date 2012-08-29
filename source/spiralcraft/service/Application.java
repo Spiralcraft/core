@@ -20,6 +20,7 @@ import spiralcraft.app.CallContext;
 import spiralcraft.app.CallMessage;
 import spiralcraft.app.DisposeMessage;
 import spiralcraft.app.InitializeMessage;
+import spiralcraft.app.PlaceContext;
 import spiralcraft.app.State;
 import spiralcraft.app.StateFrame;
 import spiralcraft.app.kit.SimpleState;
@@ -60,8 +61,10 @@ public class Application
   private ShutdownHook _shutdownHook=new ShutdownHook();
   private State rootState;
   private CallContext callContext=new CallContext();
+  private PlaceContext placeContext;
   
-  { this.chainOuterContext(callContext);
+  { 
+    this.chainOuterContext(callContext);
   }
   
   public final CommandFactory<Void,Void,Void> terminate
@@ -89,6 +92,11 @@ public class Application
   };
 
 
+  public void setPlaceContext(PlaceContext placeContext)
+  { 
+    this.placeContext=placeContext;
+    addContext(placeContext);
+  }
 
   public void setAfterStart(Scenario<?,?> afterStart)
   { this.afterStart=afterStart;
@@ -109,6 +117,27 @@ public class Application
   }
   
 
+  @Override
+  public void start()
+    throws LifecycleException
+  {
+    if (placeContext!=null)
+    { placeContext.start();
+    }
+    super.start();
+  }
+  
+  @Override
+  public void stop()
+    throws LifecycleException
+  {
+    super.stop();
+    if (placeContext!=null)
+    { placeContext.stop();
+    }
+    
+  }
+  
   @Override
   public void run() 
   {
