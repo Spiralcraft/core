@@ -741,6 +741,13 @@ public class ReflectionType<T>
         ("Type is already represented as a Tuple");
     }
 
+    if (!val.isTuple())
+    { 
+      throw new DataException
+        ("Expected a Tuple, not a "+val.getType()
+        +" as data for type "+getURI()
+        );
+    }
     Tuple tuple=val.asTuple();
     
     if (tupleConstructor!=null && context==null)
