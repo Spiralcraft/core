@@ -33,6 +33,8 @@ public class SetManager<C,T>
 {
 
   private Binding<C> setX;
+  private Binding<String> idX;
+//  private Binding<Boolean> changedX;
   
   /**
    * Create the container for child components. Defaults to creating a
@@ -46,6 +48,8 @@ public class SetManager<C,T>
   { 
     ExpansionContainer<C,T> container=super.createChildContainer(children);
     container.setInitializeContent(true);
+    container.setIdX(idX);
+//    container.setChangedX(changedX);
     return container;
   }
   
@@ -56,8 +60,17 @@ public class SetManager<C,T>
     addParentContextual(this.setX);
   }
   
+  public void setIdX(Binding<String> idX)
+  { this.idX=idX;
+  }
+
+//  public void setChangedX(Binding<Boolean> changedX)
+//  { this.changedX=changedX;
+//  }
+ 
   @Override
   protected Channel<C> resolveCollection(Focus<?> chain)
   { return setX;
   }
+
 }
