@@ -202,6 +202,21 @@ public class AbstractChainableContext
   }
   
   @Override
+  public void insertNext(ChainableContext insert)
+  {
+    if (insert==null)
+    { 
+      throw new IllegalArgumentException
+        ("Contextual to insertNext cannot be null");
+    }
+
+    if (next!=null)
+    { insert.chain(next);
+    }
+    next=insert; 
+  }
+    
+  @Override
   public void seal(Contextual last)
   {
     if (next!=null)

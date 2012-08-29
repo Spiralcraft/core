@@ -20,7 +20,8 @@ public interface ChainableContext
 
   
   /**
-   * <p>Specify the Contextual to bind into the scope of this context. The
+   * <p>Specify the Contextual to bind into the scope of this context, to the
+   *   end of any existing chain. The
    *   bind() method will return the Focus<?> returned from the specified
    *   Contextual.bind(Focus) method.
    * </p>
@@ -47,6 +48,14 @@ public interface ChainableContext
    *   specified context is a ChainableContext.
    */
   ChainableContext chain(Contextual chain);
+  
+  /**
+   * <p>Insert a ChainableContext into the Chain immediately after this 
+   *   ChainableContext
+   * </p>
+   * @param chain
+   */
+  void insertNext(ChainableContext chain);
   
   /**
    * <p>Provide the last item to chain and prevent further chaining of this
