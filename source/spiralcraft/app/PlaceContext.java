@@ -22,9 +22,11 @@ import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
 import spiralcraft.data.Space;
+import spiralcraft.data.access.Schema;
 import spiralcraft.data.access.Store;
 import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.lang.Binding;
+import spiralcraft.lang.ChainableContext;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.kit.AbstractChainableContext;
 import spiralcraft.lang.util.LangUtil;
@@ -54,6 +56,7 @@ public class PlaceContext
   private String id;
   private Version version;
   private Space space;
+  private Store[] localStores;
   private FileSpace fileSpace;
   private Container dataContainer;
   private PluginContext[] pluginContexts;
@@ -115,6 +118,10 @@ public class PlaceContext
   { this.postUpgrade=postUpgrade;
   }
 
+  public void setStores(Store[] stores)
+  { this.localStores=stores;
+  }
+  
   @Override
   protected Focus<?> bindImports(Focus<?> chain)
     throws ContextualException
@@ -160,7 +167,7 @@ public class PlaceContext
       }
     }    
 
-    chain(vfsMappings);
+    ChainableContext localChain=vfsMappings;
     
     if (pluginContexts!=null)
     {
@@ -172,20 +179,60 @@ public class PlaceContext
     }
 
     space=new Space();
-    chain(space);
+    if (localStores!=null)
+    { 
+      for (Store store:localStores)
+      { registerLocalStore(store);
+      }
+    }
+    localChain.chain(space);
     
     if (authenticator!=null)
-    { chain(authenticator);
+    { localChain.chain(authenticator);
     }
     
     fileSpace=new FileSpace();
-    chain(fileSpace);
+    localChain.chain(fileSpace);
     
-    
+    insertNext(localChain);
     
     return chain.chain(LangUtil.constantChannel(this));
   }
 
+  private void registerLocalStore(Store store)
+    throws ContextualException
+  { 
+    String name;
+    Schema schema=store.getSchema();
+    if (schema!=null)
+    { name=schema.getName();
+    }
+    else 
+    { name=store.getName();
+    }
+    if (name==null)
+    {
+      throw new ContextualException
+        ("Cannot register nameless Store for place "+id); 
+    }
+    try
+    {
+      store.setLocalResourceURI
+        (dataContainer.ensureChildContainer(name+".store").getURI());
+    }
+    catch (IOException x)
+    { 
+      throw new ContextualException
+        ("Error allocating data container for store "
+          +name+" in place "+id
+        ,x
+        );
+    }
+    store.setName(name);
+    registerStore(store);
+    
+  }
+  
   @Override
   protected Focus<?> bindExports(Focus<?> chain)
     throws ContextualException
