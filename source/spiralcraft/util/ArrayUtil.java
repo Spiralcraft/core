@@ -33,6 +33,20 @@ import spiralcraft.common.Immutable;
 public class ArrayUtil
 {
 
+  @SuppressWarnings("unchecked")
+  public static <T> T[] append(T[] array,T value,Class<T> componentType)
+  { 
+    if (array==null)
+    { 
+      array=(T[]) Array.newInstance(componentType,1);
+      array[0]=value;
+      return array;
+    }
+    else
+    { return append(array,value);
+    }
+  }
+  
   /**
    * Append a value to an array
    */
