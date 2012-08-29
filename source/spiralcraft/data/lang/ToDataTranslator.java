@@ -75,7 +75,7 @@ public class ToDataTranslator<T>
     { return type.toData(source);
     }
     catch (DataException x)
-    { throw new AccessException("Error externalizing "+source);
+    { throw new AccessException("Error externalizing "+source,x);
     }
   }
 
@@ -88,7 +88,7 @@ public class ToDataTranslator<T>
     { return type.fromData(source,null);
     }
     catch (DataException x)
-    { throw new AccessException("Error internalizing "+source);
+    { throw new AccessException("Error internalizing "+source,x);
     }
   } 
   
