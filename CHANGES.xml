@@ -15,6 +15,21 @@
       <scm:Change>
         <revision>-dev11
         </revision>
+      
+        <notes>
+          <scm:Note>New append method in ArrayUtil.java that accepts a 
+            component type and creates a new array if it doesn't exist.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/ArrayUtil.java
+        </path>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev11
+        </revision>
 
         <notes>
           <scm:Note>Add StreamPump and StreamEvent functionality to IO package
@@ -64,6 +79,8 @@
         <notes>
           <scm:Note>Factored Application (root Component) functionality out
             of Daemon (Executable interface).
+          </scm:Note>
+          <scm:Note>An Application can now have a PlaceContext
           </scm:Note>
         </notes>
         
@@ -194,6 +211,8 @@
         <resources>
           <URI>app/Component.java
           </URI>
+          <URI>app/State.java
+          </URI>
           <URI>app/kit/AbstractComponent.java
           </URI>
           <URI>app/kit/AbstractController.java
@@ -213,6 +232,10 @@
           <URI>app/kit/ExpansionContainer.java
           </URI>
           <URI>app/kit/ExpansionState.java
+          </URI>
+          <URI>app/kit/SimpleState.java
+          </URI>
+          <URI>app/kit/ThreadLocalHandler.java
           </URI>
           <URI>command/AbstractCommandFactory.java
           </URI>
@@ -452,6 +475,9 @@
         <notes>
           <scm:Note>Executor now accepts a --config argument to specify
             the context://config location
+          </scm:Note>
+          <scm:Note>Executor now defines context://data and accepts a --data
+            argument to specify the context://data location
           </scm:Note>
         </notes>
       
@@ -767,6 +793,11 @@
             or an upgrade and provide hooks for application code to handle
             these scenarios.
           </scm:Note>
+          <scm:Note>Allow Stores to be added directly to a PlaceContext
+          </scm:Note>
+          <scm:Note>ChainableContext now supports inserting a chain
+            immediately after a link using insertNext(ChainableContext)
+          </scm:Note>
         </notes>
       
         <path>source/spiralcraft
@@ -776,6 +807,8 @@
           <URI>app/PlaceContext.java
           </URI>
           <URI>app/PlaceStatus.java
+          </URI>
+          <URI>lang/ChainableContext.java
           </URI>
           <URI>lang/kit/AbstractChainableContext.java
           </URI>
