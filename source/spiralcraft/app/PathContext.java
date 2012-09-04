@@ -56,6 +56,10 @@ public class PathContext
   { return absolutePath;
   }
   
+  public String getAbsolutePathString()
+  { return absolutePathString;
+  }
+  
   /**
    * The URI that contains the base content resources (publicly accessible
    *   files) for this path.
