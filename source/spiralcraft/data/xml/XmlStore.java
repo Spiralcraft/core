@@ -177,7 +177,8 @@ public class XmlStore
           addEntityBinding(binding);
         
           if (debugLevel.isDebug())
-          { log.debug("Added XmlQueryable from schema");
+          { log.debug
+              ("Added XmlQueryable from schema for "+entity.getType().getURI());
           }
         }
       }

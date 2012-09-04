@@ -210,6 +210,9 @@ public abstract class AbstractStore
   { this.debugLevel=debugLevel;
   }
   
+  public void setLogLevel(Level logLevel)
+  { this.debugLevel=logLevel;
+  }
 
   @Override
   public Sequence getSequence(URI uri)
@@ -461,6 +464,12 @@ public abstract class AbstractStore
         targetBinding=createEntityBinding(new Entity(type));
         targetBinding.setAccessor(baseQueryable);
         addStandardEntityBinding(targetBinding);
+        if (debugLevel.isDebug())
+        { 
+          log.fine("Added new abstract queryable for "
+                  +type.getURI()+" with extent for "+subtype.getURI()
+                  );
+        }
       }
       else if (!(targetBinding.getQueryable() instanceof BaseExtentQueryable<?>))
       {
@@ -474,12 +483,26 @@ public abstract class AbstractStore
         baseQueryable.addExtent(subtype,queryable);
 
         targetBinding.setAccessor(baseQueryable);
+        if (debugLevel.isDebug())
+        { 
+          log.fine("Added new abstract queryable for "
+                  +type.getURI()+" with extent for "+subtype.getURI()
+                  +" and for concrete instances"
+                  );
+        }
       }
       else
       {
 
         ((BaseExtentQueryable<Tuple>) targetBinding.getQueryable())
           .addExtent(subtype, queryable);
+        if (debugLevel.isDebug())
+        { 
+          log.fine("Added new extent to abstract queryable "
+                  +type.getURI()+" for "+subtype.getURI()
+                  );
+        }
+        
       }
       type=type.getBaseType();
       
