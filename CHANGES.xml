@@ -13,6 +13,51 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev12
+        </revision>
+      
+        <notes>
+          <scm:Note>PathContext exposes the String form of its path
+            for efficient comparison.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/PathContext.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev12
+        </revision>
+      
+        <notes>
+          <scm:Note>ResourceCharSequence now accepts a Resource instead of
+            a URI b/c URI resolution is a higher level concern.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/text/io/ResourceCharSequence.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev12
+        </revision>
+      
+        <notes>
+          <scm:Note>Package now has static methods to search for existing
+            resources.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/Package.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev11
         </revision>
       
