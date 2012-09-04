@@ -39,6 +39,47 @@ public class Package
   private static CycleDetector<Package> cycleDetector
     =new CycleDetector<Package>();
   
+  
+  public static final Resource findResource(String uri)
+    throws IOException
+  { return findResource(URI.create(uri));
+  }
+  
+  public static final Resource findResource(URI uri)
+    throws IOException
+  { return findResource(Resolver.getInstance().resolve(uri));
+  }
+  
+  public static final Resource findResource(Resource overlay)
+    throws IOException
+  { 
+    if (!overlay.exists())
+    { 
+      Package pkg=null;
+      try
+      {
+        pkg = Package.fromContainer
+          (overlay.getParent());
+      }
+      catch (ContextualException x)
+      { 
+        log.log
+          (Level.WARNING
+          ,"Error resolving package in "+overlay.getParent().getURI()
+          ,x
+          );
+      }
+      if (pkg!=null)
+      { overlay=pkg.searchForBaseResource(overlay);
+      }
+      else
+      { overlay=null;
+      }
+    }  
+      
+    return overlay;
+  }
+  
   /**
    * Search for the closest containing package in the specified container
    *   or any of its ancestors.
