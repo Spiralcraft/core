@@ -17,9 +17,6 @@ package spiralcraft.text.io;
 import java.io.InputStream;
 import java.io.IOException;
 
-import java.net.URI;
-
-import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
 /**
@@ -33,16 +30,20 @@ import spiralcraft.vfs.Resource;
 public class ResourceCharSequence
   extends InputStreamCharSequence
 {
-  public ResourceCharSequence(URI resourceURI)
+  public ResourceCharSequence(Resource resource)
     throws IOException
   { 
-    Resource resource=Resolver.getInstance().resolve(resourceURI);
     InputStream in=resource.getInputStream();
-    if (in==null)
-    { throw new IOException("Could not read "+resourceURI);
+    try
+    {
+      if (in==null)
+      { throw new IOException("Could not read "+resource.getURI());
+      }
+      load(in);
     }
-    load(in);
-    in.close();
+    finally
+    { in.close();
+    }
   }
   
   
