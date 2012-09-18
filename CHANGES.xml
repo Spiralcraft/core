@@ -13,6 +13,35 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev13
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix problem where chain would seal when using insertNext()
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/kit/AbstractChainableContext.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev13
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix NPE when a subtype has no extra fields
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/core/UnifiedFieldSet.java
+        </path>
+        
+      </scm:Change>
+
+
+      <scm:Change>
         <revision>-dev12
         </revision>
       
