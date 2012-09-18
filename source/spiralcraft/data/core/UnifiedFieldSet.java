@@ -67,11 +67,20 @@ public class UnifiedFieldSet
       { 
         if (base!=null)
         { 
-          return 
-            new IteratorChain<Field<?>>
-              ((Iterator<Field<?>>) base.fieldIterable().iterator()
-              ,(Iterator<Field<?>>) type.getScheme().fieldIterable().iterator()
-              );
+          if (type.getScheme()==null)
+          { return (Iterator<Field<?>>) base.fieldIterable().iterator();
+          }
+          else if (base.fieldIterable()==null)
+          { return (Iterator<Field<?>>) type.getScheme().fieldIterable().iterator();
+          }
+          else
+          {
+            return 
+              new IteratorChain<Field<?>>
+                ((Iterator<Field<?>>) base.fieldIterable().iterator()
+                ,(Iterator<Field<?>>) type.getScheme().fieldIterable().iterator()
+                );
+          }
         }
         else
         { 
