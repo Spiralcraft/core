@@ -214,6 +214,7 @@ public class AbstractChainableContext
     { insert.chain(next);
     }
     next=insert; 
+    chainable=true;
   }
     
   @Override
