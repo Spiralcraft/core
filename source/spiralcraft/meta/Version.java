@@ -191,7 +191,7 @@ public class Version
     StringBuilder str
       =new StringBuilder();
     while (!pc.isEof() 
-            && Character.isAlphabetic(pc.getCurrentChar())
+            && Character.isLetter(pc.getCurrentChar())
           )
     { 
       str.append(pc.getCurrentChar());
