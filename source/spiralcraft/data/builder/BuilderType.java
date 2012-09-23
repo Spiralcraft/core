@@ -225,10 +225,10 @@ public class BuilderType
         return ReflectionType.canonicalType(javaClass);
       }
     
-      boolean array=false;
-      if (javaClass.isArray())
+      int arrayDepth=0;
+      while (javaClass.isArray())
       { 
-        array=true;
+        arrayDepth++;
         javaClass=javaClass.getComponentType();
       }
 
@@ -237,14 +237,15 @@ public class BuilderType
       if (assemblyClass==null)
       { throw new DataException("No AssemblyClass associated with "+javaClass);
       }
-      if (!array)
-      { return canonicalType(assemblyClass);
+      
+      Type<?> ret=canonicalType(assemblyClass);
+      while (arrayDepth>0)
+      {
+        ret=Type.getArrayType(ret);
+        arrayDepth--;
       }
-      else
-      { 
-        return Type.getArrayType
-          (canonicalType(assemblyClass));
-      } 
+      return ret;
+      
     }
     catch (BuildException x)
     { throw new DataException("Error finding AssemblyClass for "+javaClass,x);
