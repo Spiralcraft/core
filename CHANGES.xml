@@ -13,6 +13,49 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev15
+        </revision>
+      
+        <notes>
+          <scm:Note>Don't crash when asked to load a Builder Type for 
+            multidimensional arrays.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/builder/BuilderType.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev15
+        </revision>
+      
+        <notes>
+          <scm:Note>Expose DeclarationInfo.base for Focus aliasing
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/common/declare/DeclarationInfo.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev14
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix problem using jdk1.7 api for 1.6 target
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/meta/Version.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev13
         </revision>
       
