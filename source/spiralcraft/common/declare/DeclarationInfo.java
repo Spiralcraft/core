@@ -63,6 +63,10 @@ public class DeclarationInfo
     }
   }
   
+  public DeclarationInfo getBase()
+  { return base;
+  }
+  
   /**
    * <p>Determine whether this Declarable instance is based on a declaration
    *   type identified by the specified URI by examining all the declarations
