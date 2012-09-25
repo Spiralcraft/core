@@ -41,4 +41,12 @@ public class BuildException
     Exception x)
   { super(message,declarationLocation,x);
   }
+
+  public BuildException(
+    String message,
+    URI declarationLocation
+    )
+  { super(message,declarationLocation);
+  }
+
 }

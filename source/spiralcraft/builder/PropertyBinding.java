@@ -106,7 +106,17 @@ public class PropertyBinding
       // Give the containing object an opportunity to construct a default instance
       //   to use as the source object, instead of having the sub-assembly construct
       //   one.
-      defaultVal=_target.get();
+      try
+      { defaultVal=_target.get();
+      }
+      catch (RuntimeException x)
+      { 
+        throw new BuildException
+          ("Error resolving default value for "+_specifier.getTargetName()
+          ,_specifier.getDeclarationLocation()
+          );
+      }
+      
       existingTargetValueUsed=defaultVal!=null;
     }
     
