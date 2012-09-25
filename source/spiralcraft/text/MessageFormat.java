@@ -50,6 +50,20 @@ public class MessageFormat
   private static final ClassLog log
     =ClassLog.getInstance(MessageFormat.class);
   
+  public static final MessageFormat create(String template)
+  { 
+    try
+    {
+      return new MessageFormat(template);
+    }
+    catch (MarkupException x)
+    { throw new RuntimeException(x);
+    }
+    catch (spiralcraft.text.ParseException x)
+    { throw new RuntimeException(x);
+    }
+  }
+  
   private List<AbstractRenderer> renderers
     =new LinkedList<AbstractRenderer>();
   private String template;
