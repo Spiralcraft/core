@@ -693,16 +693,23 @@ public class ArrayUtil
     return result;
   }
 
+  /**
+   * Compute the intersection between two arrays
+   * 
+   * @param a
+   * @param b
+   * @return A new array containing the intersection
+   */
   @SuppressWarnings("unchecked")
-  public static <T> T[] intersection(T[] sorted1,T[] sorted2)
+  public static <T> T[] intersection(T[] a,T[] b)
   {
     HashSet<T> set1=new HashSet<T>();
-    for (T t:sorted1)
+    for (T t:a)
     { set1.add(t);
     }
     
     ArrayList<T> ret=new ArrayList<T>();
-    for (T t:sorted2)
+    for (T t:b)
     { 
       if (set1.contains(t))
       { ret.add(t);
@@ -710,10 +717,74 @@ public class ArrayUtil
     }
     return ret.toArray
       ((T[]) Array.newInstance
-        (sorted1.getClass().getComponentType()
+        (a.getClass().getComponentType()
         ,ret.size()
         )
       );
+  }
+  
+  /**
+   * Compute the difference between two arrays
+   * 
+   * @param a
+   * @param b
+   * @return A new array containing the elements in 'a' not contained in
+   *   'b'
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> T[] difference(T[] a,T[] b)
+  {
+    HashSet<T> set1=new HashSet<T>();
+    for (T t:a)
+    { set1.add(t);
+    }
+    
+    for (T t:b)
+    { set1.remove(t);
+    }
+    
+    return set1.toArray
+      ((T[]) Array.newInstance
+        (a.getClass().getComponentType()
+        ,set1.size()
+        )
+      );
+  }
+  
+  /**
+   * Compute the symmetric difference between two arrays
+   * 
+   * @param a
+   * @param b
+   * @return A new array containing the elements contained in either 'a' or 
+   *   'b' but not contained in both
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> T[] symmetricDifference(T[] a,T[] b)
+  { 
+    HashSet<T> set1=new HashSet<T>();
+    for (T t:a)
+    { set1.add(t);
+    }
+    
+    HashSet<T> removed=new HashSet<T>();
+    for (T t:b)
+    { 
+      if (!set1.remove(t) && !removed.contains(t))
+      { set1.add(t);
+      }
+      else
+      { removed.add(t);
+      }
+    }
+    
+    return set1.toArray
+      ((T[]) Array.newInstance
+        (a.getClass().getComponentType()
+        ,set1.size()
+        )
+      );
+    
   }
 }
 
