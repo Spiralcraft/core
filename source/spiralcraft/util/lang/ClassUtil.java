@@ -279,7 +279,7 @@ public abstract class ClassUtil
         return Array.newInstance(componentClass, 0).getClass();
       }
       else {
-        return null;
+        return Object[].class;
       }
     }
     else {
