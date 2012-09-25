@@ -13,6 +13,70 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev16
+        </revision>
+      
+        <notes>
+          <scm:Note>A generic array type should always resolve to
+            Object[].class when no runtime type information is available.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/lang/ClassUtil.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev16
+        </revision>
+      
+        <notes>
+          <scm:Note>ArrayUtil.difference(), ArrayUtil.symmetricDifference()
+            set operations for arrays
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/ArrayUtil.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev16
+        </revision>
+      
+        <notes>
+          <scm:Note>MessageFormat.create() for safe creation of
+            MessageFormat in code
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/text/MessageFormat.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev16
+        </revision>
+      
+        <notes>
+          <scm:Note>Catch a RuntimeException and convert to a BuildException
+            when resolving a PropertyBinding
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder/
+        </path>
+        
+        <resources>
+          <URI>BuildException.java
+          </URI>
+          <URI>PropertyBinding.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev15
         </revision>
       
