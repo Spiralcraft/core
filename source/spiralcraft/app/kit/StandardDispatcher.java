@@ -376,6 +376,17 @@ public class StandardDispatcher
   }
   
   @Override
+  public Sequence<Integer> getForwardPath()
+  { 
+    if (path.isEmpty())
+    { return null;
+    }
+    else 
+    { return new Sequence<Integer>(path.toArray(new Integer[path.size()]));
+    }
+  }
+  
+  @Override
   public boolean isTarget()
   { return path==null || path.isEmpty();
   }

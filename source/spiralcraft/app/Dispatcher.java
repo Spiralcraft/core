@@ -167,4 +167,10 @@ public interface Dispatcher
    * @return
    */
   String getContextInfo();
+  
+  /**
+   * 
+   * @return The path from the current state to the target state.
+   */
+  Sequence<Integer> getForwardPath();
 }
