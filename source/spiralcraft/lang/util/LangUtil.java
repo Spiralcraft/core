@@ -113,7 +113,7 @@ public class LangUtil
   public static <T> T assertInstance(URI uri,Focus<?> context)
     throws BindException
   {
-    T ret=findInstance(uri,context);
+    T ret=LangUtil.<T>findInstance(uri,context);
     if (ret==null)
     { 
       throw new BindException
