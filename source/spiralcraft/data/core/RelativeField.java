@@ -448,8 +448,17 @@ public class RelativeField<T extends DataComposite>
             }
           }
           catch (DataException x)
-          { throw new AccessException("Error reading key value for "+getURI());
+          { throw new AccessException("Error reading key value for "+getURI(),x);
           }
+          catch (AccessException x)
+          { 
+            throw new AccessException
+              ("Error reading key value for "+getURI()+" closure subject="
+                +closure.getSubject()+"["+closure.getSubject().get()+"]"
+              ,x
+              );
+          }
+          
         }
 
 
