@@ -17,6 +17,50 @@
         </revision>
       
         <notes>
+          <scm:Note>Fix compilation error due to unbounded type parameter
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/util/LangUtil.java
+        </path>
+       
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev17
+        </revision>
+      
+        <notes>
+          <scm:Note>ClosureFocus always pins its subject last, after the 
+            all its scope elements have been pinned.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi/ClosureFocus.java
+        </path>
+       
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev17
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue in FieldBinding vtable mechanism which caused
+            subtype to bind to the wrong input.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/core/FieldImpl.java
+        </path>
+       
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev17
+        </revision>
+      
+        <notes>
           <scm:Note>Better exception reporting for ChainableContext
             implementations.
           </scm:Note>
