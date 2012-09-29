@@ -37,7 +37,6 @@ public abstract class ThreadLocalHandler<T>
   { return focusChain;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public final void handleMessage
     (Dispatcher dispatcher,Message message,MessageHandlerChain next)
