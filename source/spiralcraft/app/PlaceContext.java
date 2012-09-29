@@ -172,7 +172,7 @@ public class PlaceContext
     if (pluginContexts!=null)
     {
       for (PluginContext pluginContext : pluginContexts)
-      { chainPlugin(pluginContext);
+      { chainPlugin(localChain,pluginContext);
       }
 
       
@@ -270,11 +270,11 @@ public class PlaceContext
   { return dataContainer.ensureChildContainer(pluginId+".plugin");
   }
   
-  private void chainPlugin(PluginContext pluginContext)
+  private void chainPlugin(ChainableContext localChain,PluginContext pluginContext)
     throws ContextualException
   {
     pluginContext.setPlaceContext(this);
-    chain(pluginContext);
+    localChain.chain(pluginContext);
   }
   
 
@@ -375,6 +375,9 @@ public class PlaceContext
   public void start()
     throws LifecycleException
   { 
+    if (logLevel.isDebug())
+    { log.fine("Starting place "+id);
+    }
     try
     { resolveStatus();
     }
@@ -402,15 +405,27 @@ public class PlaceContext
     catch (IOException x)
     { throw new LifecycleException("Error starting place "+id,x);
     }
+    if (logLevel.isDebug())
+    { log.fine("Done starting place "+id);
+    }
   }
 
   @Override
   public void stop()
     throws LifecycleException
   { 
+    if (logLevel.isDebug())
+    { log.fine("Stopping place "+id);
+    }
+    
     space.stop();
     fileSpace.stop();
     Lifecycler.stop(authorities);
+    
+    if (logLevel.isDebug())
+    { log.fine("Done stopping place "+id);
+    }
+    
   }
 
   @Override
