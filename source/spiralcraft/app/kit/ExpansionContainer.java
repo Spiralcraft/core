@@ -33,18 +33,12 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.util.LookaroundIterator;
 
 public class ExpansionContainer<C,T>
   extends StandardContainer
-{
-
-
-  private static final ClassLog log
-    =ClassLog.getInstance(ExpansionContainer.class);
-  
+{ 
   
   private Focus<T> looknowFocus;
   protected Focus<T> lookaheadFocus;
@@ -143,7 +137,7 @@ public class ExpansionContainer<C,T>
     )
   {
     if (logLevel.isFine())
-    { log.fine("Relay message..."+message);
+    { log.log(Level.FINE,"Relay message..."+message);
     }
     ExpansionState<C,T> state=(ExpansionState<C,T>) dispatcher.getState();
 
@@ -191,6 +185,9 @@ public class ExpansionContainer<C,T>
         while (it.hasNext())
         {
           T item=it.next();
+          if (logLevel.isFine())
+          { log.log(Level.FINE,"Pre-refresh "+item);
+          }
           newData.add(item);
           if (idX!=null)
           {
@@ -213,6 +210,11 @@ public class ExpansionContainer<C,T>
         { 
           if (!preserve.contains(existingChild.getLocalId()))
           {
+            if (logLevel.isFine())
+            { 
+              log.log(Level.FINE,"Unmapping "+existingChild
+                +" ("+existingChild.getLocalId()+")");
+            }
             if (initializeContent)
             { 
               routeOutboundMessage
@@ -222,6 +224,7 @@ public class ExpansionContainer<C,T>
                 ,false
                 );
             }
+            
             state.unmapChild(existingChild);
             
           }
@@ -240,7 +243,7 @@ public class ExpansionContainer<C,T>
       try
       {
         if (logLevel.isDebug())
-        { log.debug(toString()+": refreshing...");
+        { log.log(Level.DEBUG,"refreshing...");
         }      
       
         LookaroundIterator<T> cursor 
@@ -253,7 +256,7 @@ public class ExpansionContainer<C,T>
         state.setValid(true);
 
         if (logLevel.isDebug())
-        { log.debug(toString()+": refreshed "+iter.index+" elements");
+        { log.log(Level.DEBUG,"refreshed "+iter.index+" elements");
         }
         
         
@@ -286,7 +289,9 @@ public class ExpansionContainer<C,T>
     pushElement(lastVal,childVal,cursor.getCurrent());
     try
     {
-    
+      if (logLevel.isFine())
+      { log.log(Level.FINE,"Refreshing "+childVal);
+      }
       if (state!=null)
       { 
         String id=(idX!=null?idX.get():Integer.toString(iter.index));
@@ -295,7 +300,7 @@ public class ExpansionContainer<C,T>
         if (childState==null)
         { 
           state.createChild(iter.index,childVal,id);
-          if (initializeContent)
+          if (initializeContent && message.getType()!=InitializeMessage.TYPE)
           { 
             routeOutboundMessage
               (dispatcher,InitializeMessage.INSTANCE,iter.index,false);
@@ -351,7 +356,7 @@ public class ExpansionContainer<C,T>
     try
     {
       if (logLevel.isDebug())
-      { log.debug(toString()+": retraversing...");
+      { log.log(Level.DEBUG,"retraversing...");
       }      
         
       LookaroundIterator<ExpansionState<C,T>.MementoState> cursor 
@@ -363,7 +368,7 @@ public class ExpansionContainer<C,T>
       }
       
       if (logLevel.isDebug())
-      { log.debug(toString()+": retraversed "+iter.index+" elements");
+      { log.log(Level.DEBUG,"retraversed "+iter.index+" elements");
       }
     }
     finally
@@ -555,7 +560,7 @@ public class ExpansionContainer<C,T>
     }
     
     if (logLevel.isDebug())
-    { log.debug("Iterator exposes "+valueChannel);
+    { log.log(Level.DEBUG,"Iterator exposes "+valueChannel);
     }
     super.bind(looknowFocus);
   }
