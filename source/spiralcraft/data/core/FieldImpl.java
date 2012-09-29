@@ -821,6 +821,11 @@ public class FieldImpl<T>
       catch (AccessException x)
       { throw new AccessException("Error reading field "+getURI(),x);
       }
+      catch (ClassCastException x)
+      { 
+        throw new AccessException
+          ("Error reading field "+getURI()+" from source "+source+" got ["+source.get()+"]",x);
+      }
       
       if (subtypeTuple==null)
       { 
@@ -921,14 +926,14 @@ public class FieldImpl<T>
               try
               { 
                 Channel<? extends Tuple> subSource
-                  =focus.getSubject().getCached("_"+subtype.getURI());
+                  =source.getCached("_"+subtype.getURI());
                 if (subSource==null)
                 { 
                   Reflector subtypeReflector=DataReflector.getInstance(subtype);
                   subSource
                     =new AspectChannel
-                      (subtypeReflector,focus.getSubject());
-                  focus.getSubject().cache("_"+subtype.getURI(),subSource);
+                      (subtypeReflector,source);
+                  source.cache("_"+subtype.getURI(),subSource);
                 }
                   		
                 
