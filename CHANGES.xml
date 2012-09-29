@@ -13,6 +13,97 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev17
+        </revision>
+      
+        <notes>
+          <scm:Note>Better exception reporting for ChainableContext
+            implementations.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/kit
+        </path>
+        
+        <resources>
+          <URI>AbstractChainableContext.java
+          </URI>
+          <URI>ChainableContextAdapter.java
+          </URI>
+          <URI>ChainableContextualAdapter.java
+          </URI>
+        </resources>
+       
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev17
+        </revision>
+      
+        <notes>
+          <scm:Note>Base component for DynamicProxyComponent which manages
+            a child component within the State lifecycle.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/kit/DynamicProxyComponent.java
+        </path>
+       
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev17
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where Initialize message was sent twice- once
+            by relay, and once for pre-initialization.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/kit/ExpansionContainer.java
+        </path>
+       
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev17
+        </revision>
+      
+        <notes>
+          <scm:Note>Dispatcher.getForwardPath() interface method to 
+            pull remainder path for re-dispatch.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app
+        </path>
+       
+        <resources>
+          <URI>Dispatcher.java
+          </URI>
+          <URI>kit/StandardDispatcher.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev17
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where plugins were chained in the wrong sequence
+            with respect to the Place data space.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/PlaceContext.java
+        </path>
+       
+      </scm:Change>
+      
+      
+      <scm:Change>
         <revision>-dev16
         </revision>
       
