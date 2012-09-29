@@ -40,7 +40,6 @@ public class CallHandler
     return super.bind(focusChain);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public final void doHandler
     (Dispatcher dispatcher,Message message,MessageHandlerChain next)
