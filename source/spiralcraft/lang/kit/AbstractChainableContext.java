@@ -152,6 +152,22 @@ public class AbstractChainableContext
       }
       return bindExports(focusChain);
     }
+    catch (ContextualException x)
+    { 
+      if (getDeclarationInfo()!=null)
+      { 
+        throw new ContextualException
+          ("Error binding "+toString()
+          ,getDeclarationInfo().getLocation()!=null
+          ?getDeclarationInfo().getLocation()
+          :getDeclarationInfo().getDeclaredType()
+          ,x
+          );
+      }  
+      else
+      { throw new ContextualException("Error binding "+toString(),x);
+      }
+    }
     finally
     { popLocal();
     }

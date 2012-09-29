@@ -15,6 +15,8 @@
 package spiralcraft.lang.kit;
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.lang.Context;
 import spiralcraft.lang.Focus;
 
@@ -52,5 +54,20 @@ public class ChainableContextAdapter
   { delegate.pop();
   }
   
+  @Override
+  public String toString()
+  { return super.toString()+":"+delegate.toString();
+  }
+  
+  @Override
+  public DeclarationInfo getDeclarationInfo()
+  { 
+    if (declarationInfo==null && delegate instanceof Declarable)
+    { return ((Declarable) delegate).getDeclarationInfo();
+    }
+    else
+    { return super.getDeclarationInfo();
+    }
+  }
 
 }
