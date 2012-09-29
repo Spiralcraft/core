@@ -18,6 +18,7 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BaseFocus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
@@ -76,7 +77,6 @@ public class ClosureFocus<T>
         // Create an entry for the subject so we can enclose it as well
         subjectFocus=new EnclosedFocus<T>(subject);
         setSubject(subjectFocus.getSubject());
-        foci.put(URI.create("."),subjectFocus);
       }
       else
       { setSubject(subject);
@@ -128,6 +128,9 @@ public class ClosureFocus<T>
     for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
     { entry.getValue().push();
     }
+    if (subjectFocus!=null)
+    { subjectFocus.push();
+    }
   }
   
   /**
@@ -137,6 +140,9 @@ public class ClosureFocus<T>
   @SuppressWarnings("rawtypes")
   public void pop()
   {
+    if (subjectFocus!=null)
+    { subjectFocus.pop();
+    }
     for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
     { entry.getValue().pop();
     }
@@ -178,9 +184,12 @@ public class ClosureFocus<T>
     public RecursionContext(Focus<?> focusChain)
     {
       int i=0;
-      downChannels=new Channel<?>[foci.size()];
+      downChannels=new Channel<?>[foci.size()+(subjectFocus!=null?1:0)];
       for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
       { downChannels[i++]=focusChain.findFocus(entry.getKey()).getSubject();
+      }
+      if (subjectFocus!=null)
+      { downChannels[i++]=focusChain.getSubject();
       }
     }
 
@@ -191,11 +200,17 @@ public class ClosureFocus<T>
       for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
       { entry.getValue().push(downChannels[i++].get());
       }       
+      if (subjectFocus!=null)
+      { ((EnclosedFocus) subjectFocus).push(downChannels[i++].get());
+      }
     }
     
     @SuppressWarnings("rawtypes")
     public void pop()
     {
+      if (subjectFocus!=null)
+      { subjectFocus.pop();
+      }
       for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
       { entry.getValue().pop();
       }       
@@ -208,6 +223,7 @@ public class ClosureFocus<T>
   public class Closure
   {
     private final Object[] values;
+    private final T subjectValue;
     
     @SuppressWarnings("rawtypes")
     Closure()
@@ -217,6 +233,7 @@ public class ClosureFocus<T>
       for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
       { values[i++]=entry.getValue().pull();
       }       
+      subjectValue=subjectFocus!=null?subjectFocus.pull():null;
     }
     
     /**
@@ -230,6 +247,9 @@ public class ClosureFocus<T>
       for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
       { entry.getValue().push(values[i++]);
       }  
+      if (subjectFocus!=null)
+      { subjectFocus.push(subjectValue);
+      }
     }
     
     /**
@@ -238,6 +258,9 @@ public class ClosureFocus<T>
     @SuppressWarnings("rawtypes")
     public void pop()
     {
+      if (subjectFocus!=null)
+      { subjectFocus.pop();
+      }
       for (Entry<URI, EnclosedFocus> entry : foci.entrySet())
       { entry.getValue().pop();
       }  
@@ -264,7 +287,14 @@ public class ClosureFocus<T>
     }
     
     void push()
-    { ((ThreadLocalChannel<Y>) getSubject()).push();
+    { 
+      try
+      {
+        ((ThreadLocalChannel<Y>) getSubject()).push();
+      }
+      catch (AccessException x)
+      { throw new AccessException("Error resolving value of "+sourceChannel,x);
+      }
     }
     
     void push(Y val)
