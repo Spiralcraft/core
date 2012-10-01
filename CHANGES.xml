@@ -13,6 +13,30 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev18
+        </revision>
+      
+        <notes>
+          <scm:Note>Added Switch component
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app
+        </path>
+        
+        <resources>
+          <URI>DispatchFilter.java
+          </URI>
+          <URI>components/Switch.java
+          </URI>
+          <URI>kit/StandardContainer.java
+          </URI>
+        </resources>
+       
+      </scm:Change>
+
+
+      <scm:Change>
         <revision>-dev17
         </revision>
       

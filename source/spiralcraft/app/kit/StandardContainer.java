@@ -25,6 +25,7 @@ import spiralcraft.app.CallContext;
 import spiralcraft.app.CallMessage;
 import spiralcraft.app.Component;
 import spiralcraft.app.Container;
+import spiralcraft.app.DispatchFilter;
 import spiralcraft.app.Dispatcher;
 import spiralcraft.app.Message;
 import spiralcraft.app.Parent;
@@ -51,6 +52,7 @@ public class StandardContainer
   protected HashSet<Message.Type> subscribedTypes;
   protected HashMap<String,Integer> idMap;
   protected CallContext callContext;
+  protected DispatchFilter dispatchFilter;
 
   public StandardContainer(Parent parent)
   { this.parent=parent;
@@ -83,6 +85,10 @@ public class StandardContainer
   @Override
   public Set<Message.Type> getSubscribedTypes()
   { return subscribedTypes;
+  }
+  
+  public void setDispatchFilter(DispatchFilter filter)
+  { this.dispatchFilter=filter;
   }
   
   /**
@@ -286,7 +292,13 @@ public class StandardContainer
         }
         
         for (int i=0;i<children.length;i++)
-        { dispatcher.relayMessage(children[i],i,message);
+        { 
+          if (dispatchFilter==null 
+              || dispatchFilter.applies
+                (dispatcher, message, i , children[i])
+             )
+          { dispatcher.relayMessage(children[i],i,message);
+          }
         }
       }
       else if (childSubscriptions!=null)
@@ -302,7 +314,13 @@ public class StandardContainer
           }
           
           for (int i:subscribers)
-          { dispatcher.relayMessage(children[i],i,message);
+          { 
+            if (dispatchFilter==null 
+                || dispatchFilter.applies
+                  (dispatcher, message, i , children[i])
+               )
+            { dispatcher.relayMessage(children[i],i,message);
+            }
           }
         }
         else
