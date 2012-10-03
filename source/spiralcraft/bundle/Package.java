@@ -35,6 +35,8 @@ public class Package
 {
   private static final ClassLog log
     =ClassLog.getInstance(Package.class);
+  private static Level logLevel
+    =ClassLog.getInitialDebugLevel(Package.class,Level.INFO);
   
   private final Resource resource;
   private Properties properties;
@@ -73,7 +75,9 @@ public class Package
       throw new BundleException
         ("No package name defined for package root "+resource.getURI());
     }
-    log.fine("Loaded package '"+name+"' from "+resource.getURI());
+    if (logLevel.isDebug())
+    { log.fine("Loaded package '"+name+"' from "+resource.getURI());
+    }
   }
  
   public String getName()

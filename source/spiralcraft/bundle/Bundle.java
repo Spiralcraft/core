@@ -17,6 +17,7 @@ package spiralcraft.bundle;
 import java.net.URI;
 
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.vfs.Container;
 
 /**
@@ -29,6 +30,8 @@ public class Bundle
 {
   private static final ClassLog log
     =ClassLog.getInstance(Bundle.class);
+  private static Level logLevel
+    =ClassLog.getInitialDebugLevel(Bundle.class,Level.INFO);
   
   private final Container container;
   private final Package pkg;
@@ -48,11 +51,14 @@ public class Bundle
     
     this.bundleURI=URI.create("bundle://"+this.authorityName+"/");
     
-    log.fine
-      ("Loaded bundle "
-      +authorityName+" at "
-      +container.getURI()
-      );
+    if (logLevel.isDebug())
+    {
+      log.debug
+        ("Loaded bundle "
+        +authorityName+" at "
+       +container.getURI()
+        );
+    }
     
   }
   
