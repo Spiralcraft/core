@@ -23,14 +23,10 @@ public interface DispatchFilter
    *
    * @param context The MessageContext 
    * @param message The message
-   * @param childNumber The sequence number of the child
-   * @param child The child component
    */
-  boolean applies
+  boolean[] childMask
     (Dispatcher context
     ,Message message
-    ,int childNumber
-    ,Component child
     );
   
   

@@ -62,11 +62,8 @@ public class Switch<T>
     StringConverter<T> converter=x.getReflector().getStringConverter();
     for (int i=0;i<children.length;i++)
     {
-      if (false)
-      {
-       
-        
-        // Use specific case constant here if Component is a Case
+      if (children[i] instanceof Case)
+      { constants[i]=((Case<T>) children[i]).getConstant();
       }
       else
       { 

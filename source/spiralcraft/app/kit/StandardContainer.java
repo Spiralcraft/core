@@ -291,11 +291,15 @@ public class StandardContainer
             );
         }
         
+        boolean[] childMask
+          =dispatchFilter==null
+          ?null
+          :dispatchFilter.childMask(dispatcher,message)
+          ;
         for (int i=0;i<children.length;i++)
         { 
-          if (dispatchFilter==null 
-              || dispatchFilter.applies
-                (dispatcher, message, i , children[i])
+          if (childMask==null 
+              || childMask[i]
              )
           { dispatcher.relayMessage(children[i],i,message);
           }
@@ -312,12 +316,17 @@ public class StandardContainer
             log.log
               (Level.FINE,"Sending "+message+" to subscribers "+subscribers);
           }
+
+          boolean[] childMask
+            =dispatchFilter==null
+            ?null
+            :dispatchFilter.childMask(dispatcher,message)
+            ;
           
           for (int i:subscribers)
           { 
-            if (dispatchFilter==null 
-                || dispatchFilter.applies
-                  (dispatcher, message, i , children[i])
+            if (childMask==null 
+                || childMask[i]
                )
             { dispatcher.relayMessage(children[i],i,message);
             }
