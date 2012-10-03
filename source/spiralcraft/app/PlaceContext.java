@@ -202,13 +202,10 @@ public class PlaceContext
   private void registerLocalStore(Store store)
     throws ContextualException
   { 
-    String name;
+    String name=store.getName();
     Schema schema=store.getSchema();
-    if (schema!=null)
+    if (name==null && schema!=null)
     { name=schema.getName();
-    }
-    else 
-    { name=store.getName();
     }
     if (name==null)
     {
