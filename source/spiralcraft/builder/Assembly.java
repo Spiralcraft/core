@@ -215,7 +215,9 @@ public class Assembly<T>
   
   void updateDeclarable(T instance)
   {
-    if (_assemblyClass.isDeclarable())
+    if (_assemblyClass.isDeclarable() 
+        && _assemblyClass.getDeclarationInfo()!=null
+        )
     { 
       ((Declarable) instance).setDeclarationInfo
         (_assemblyClass.getDeclarationInfo());

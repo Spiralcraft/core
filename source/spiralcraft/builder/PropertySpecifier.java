@@ -633,8 +633,15 @@ public class PropertySpecifier
           }
           // When we recurse, make sure we are dealing with a local class,
           //  not a base class
-          targetAssemblyClass=localContainer.ensureLocalClass
+          AssemblyClass localTargetAssemblyClass=localContainer.ensureLocalClass
             (pathElement,targetAssemblyClass);
+          if (targetAssemblyClass!=localTargetAssemblyClass)
+          {
+            localTargetAssemblyClass.setDeclarationLocation
+              (this.getDeclarationLocation());
+            targetAssemblyClass=localTargetAssemblyClass;
+          }
+          
           
         }
       

@@ -308,11 +308,16 @@ public class AssemblyClass
 
   public void setDeclarationLocation(URI declarationLocation)
   { 
-    this.declarationLocation=declarationLocation;
-    if (declarationLocation.getPath()==null || declarationLocation.getPath().isEmpty())
-    { 
-      if (this._outerClass==null)
-      { this.declarationLocation=this._baseURI.resolve(declarationLocation);
+    if (declarationLocation!=null)
+    {
+      this.declarationLocation=declarationLocation;
+      if (declarationLocation.getPath()==null 
+          || declarationLocation.getPath().isEmpty()
+          )
+      { 
+        if (this._outerClass==null)
+        { this.declarationLocation=this._baseURI.resolve(declarationLocation);
+        }
       }
     }
   }
@@ -385,7 +390,11 @@ public class AssemblyClass
    *   be supplied to the target object through the Declarable interface
    */
   public boolean isDeclarable()
-  { return declarable;
+  { 
+    if (!_resolved)
+    { throw new IllegalStateException("Not resolved");
+    }
+    return declarable;
   }
   
   @Override
@@ -776,6 +785,7 @@ public class AssemblyClass
           );
       }
     }
+    resolveDeclarable();
     resolveProperties();
     declarationInfo=new DeclarationInfo
       (_baseAssemblyClass!=null
@@ -1115,13 +1125,19 @@ public class AssemblyClass
       catch (IntrospectionException x)
       { throw newBuildException("Error introspecting "+_javaClass,x);
       }
-      
-      declarable=Declarable.class.isAssignableFrom(_javaClass);
+    }
+  }
+  
+  private void resolveDeclarable()
+  {
+    if (_javaClass!=null)
+    { declarable=Declarable.class.isAssignableFrom(_javaClass);
     }
     else if (_baseAssemblyClass!=null)
     { declarable=_baseAssemblyClass.isDeclarable();
     }
   }
+  
 
   private MappedBeanInfo getBeanInfo()
   { 
