@@ -70,6 +70,8 @@
           </URI>
           <URI>components/Switch.java
           </URI>
+          <URI>components/Case.java
+          </URI>
           <URI>kit/StandardContainer.java
           </URI>
         </resources>
