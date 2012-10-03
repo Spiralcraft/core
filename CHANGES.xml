@@ -17,6 +17,47 @@
         </revision>
       
         <notes>
+          <scm:Note>The data directory name for a local store will is now based 
+            on the store name. If null, the schema name will be used. This
+            was reversed before.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/PlaceContext.java
+        </path>
+       
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev18
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix problems where Declarables weren't getting 
+            their DeclarationInfo in some circumstances when declared as
+            inner assemblies.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/builder
+        </path>
+        
+        <resources>
+          <URI>Assembly.java
+          </URI>
+          <URI>AssemblyClass.java
+          </URI>
+          <URI>PropertySpecifier.java
+          </URI>
+        </resources>
+       
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev18
+        </revision>
+      
+        <notes>
           <scm:Note>Added Switch component
           </scm:Note>
         </notes>
