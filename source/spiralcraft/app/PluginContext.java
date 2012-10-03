@@ -25,6 +25,7 @@ import spiralcraft.lang.kit.AbstractChainableContext;
 import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.context.Authority;
 import spiralcraft.vfs.context.ContextResourceMap;
 
@@ -88,19 +89,25 @@ public class PluginContext
     
     try
     { 
-      codeContainer
-        =Resolver.getInstance().resolve(URIUtil.trimToPath(declarationInfo.getLocation()))
-          .getParent().asContainer();
-      if (logLevel.isConfig())
-      { 
-        log.config
-          ("CodeContainer for plugin "+pluginId+" is "+codeContainer.getURI());
+      if (declarationInfo!=null)
+      {
+        Resource codeResource=Resolver.getInstance().resolve
+            (URIUtil.trimToPath(declarationInfo.getLocation()));
+        
+        
+        codeContainer=codeResource.getParent().asContainer();
+        
+        if (logLevel.isConfig())
+        { 
+          log.config
+            ("CodeContainer for plugin "+pluginId+" is "+codeContainer.getURI());
+        }
       }
     }
     catch (IOException x)
     { 
       throw new ContextualException
-        ("Error allocating data container for plugin "+pluginId,x);
+        ("Error allocating code container for plugin "+pluginId,x);
     }
     vfsMappings.put(pluginId+".code",codeContainer.getURI());
     chain(vfsMappings);
