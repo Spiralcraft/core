@@ -45,6 +45,8 @@ public class Loader
   private final ArrayList<Archive> precedentArchives=new ArrayList<Archive>();
   private boolean started;
   private boolean debug;
+  private ClassLoader contextClassLoader
+    =Thread.currentThread().getContextClassLoader();
   
   public Loader()
   {
@@ -199,6 +201,17 @@ public class Loader
     return clazz;
   }
   
+  private ClassLoader pushClassLoader()
+  { 
+    ClassLoader oldCl=Thread.currentThread().getContextClassLoader();
+    Thread.currentThread().setContextClassLoader(contextClassLoader);
+    return oldCl;
+  }
+  
+  private void popClassLoader(ClassLoader oldCl)
+  { Thread.currentThread().setContextClassLoader(oldCl);
+  }
+  
   /**
    * Find a class by formal name (a.b.name), within the normal delegation
    *   model (ie. throw an ClassNotFoundException if not found).
@@ -210,6 +223,7 @@ public class Loader
    */
   private Class<?> findClass(String formalName,ArrayList<Archive> archives)
   { 
+    ClassLoader oldCl=pushClassLoader();
     try
     {
       String path = formalName.replace('.', '/')+".class";
@@ -227,11 +241,15 @@ public class Loader
     { 
       x.printStackTrace();
       return null;
-    }    
+    }
+    finally
+    { popClassLoader(oldCl);
+    }
   }
 
   private URL findResource(String path,ArrayList<Archive> archives)
   {
+    ClassLoader oldCl=pushClassLoader();
     try
     {
       Archive.Entry entry=findEntry(path,archives);
@@ -254,6 +272,9 @@ public class Loader
     { 
       x.printStackTrace();
       return null;
+    }
+    finally
+    { popClassLoader(oldCl);
     }
   }
 
@@ -299,61 +320,68 @@ public class Loader
   public Enumeration<URL> getResources(String path)
     throws IOException
   {
-    if (logLevel.isTrace())
-    { log.trace(path);
-    }
-    LinkedList<URL> resources=new LinkedList<URL>();
-    for (Archive archive: precedentArchives)
+    ClassLoader oldCl=pushClassLoader();
+    try
     {
-      try
+      if (logLevel.isTrace())
+      { log.trace(path);
+      }
+      LinkedList<URL> resources=new LinkedList<URL>();
+      for (Archive archive: precedentArchives)
       {
-        Archive.Entry entry=archive.getEntry(path);
-        if (entry!=null)
-        { resources.add(entry.getResource());
+        try
+        {
+          Archive.Entry entry=archive.getEntry(path);
+          if (entry!=null)
+          { resources.add(entry.getResource());
+          }
+        }
+        catch (IOException x)
+        { x.printStackTrace();
         }
       }
-      catch (IOException x)
-      { x.printStackTrace();
-      }
-    }
-    
-    if (getParent()!=null)
-    {
-      Enumeration<URL> renum=getParent().getResources(path);
-      if (renum!=null)
+      
+      if (getParent()!=null)
       {
-        while (renum.hasMoreElements())
-        { resources.add(renum.nextElement());
+        Enumeration<URL> renum=getParent().getResources(path);
+        if (renum!=null)
+        {
+          while (renum.hasMoreElements())
+          { resources.add(renum.nextElement());
+          }
         }
       }
-    }
-    else
-    {
-      Enumeration<URL> renum=ClassLoader.getSystemClassLoader().getResources(path);
-      if (renum!=null)
+      else
       {
-        while (renum.hasMoreElements())
-        { resources.add(renum.nextElement());
+        Enumeration<URL> renum=ClassLoader.getSystemClassLoader().getResources(path);
+        if (renum!=null)
+        {
+          while (renum.hasMoreElements())
+          { resources.add(renum.nextElement());
+          }
+        }
+      
+      }
+          
+      for (Archive archive: archives)
+      {
+        try
+        {
+          Archive.Entry entry=archive.getEntry(path);
+          if (entry!=null)
+          { resources.add(entry.getResource());
+          }
+        }
+        catch (IOException x)
+        { x.printStackTrace();
         }
       }
-    
+      
+      return new IteratorEnumeration<URL>(resources.iterator());
     }
-        
-    for (Archive archive: archives)
-    {
-      try
-      {
-        Archive.Entry entry=archive.getEntry(path);
-        if (entry!=null)
-        { resources.add(entry.getResource());
-        }
-      }
-      catch (IOException x)
-      { x.printStackTrace();
-      }
+    finally
+    { popClassLoader(oldCl);
     }
-    
-    return new IteratorEnumeration<URL>(resources.iterator());
   }
   
   private InputStream findStream(String path,ArrayList<Archive> archives)
@@ -386,29 +414,36 @@ public class Loader
   @Override
   public InputStream getResourceAsStream(String path)
   {
-    if (logLevel.isTrace())
-    { log.trace(path);
-    }
-    InputStream in=findPrecedentStream(path);
-    if (in==null)
-    { 
-      if (getParent()!=null)
-      { in=getParent().getResourceAsStream(path);
+    ClassLoader cl=pushClassLoader();
+    try
+    {
+      if (logLevel.isTrace())
+      { log.trace(path);
       }
-      else
-      { in=ClassLoader.getSystemClassLoader().getResourceAsStream(path);
+      InputStream in=findPrecedentStream(path);
+      if (in==null)
+      { 
+        if (getParent()!=null)
+        { in=getParent().getResourceAsStream(path);
+        }
+        else
+        { in=ClassLoader.getSystemClassLoader().getResourceAsStream(path);
+        }
+        
       }
       
+      if (in==null)
+      { in=findStream(path);
+      }
+      if (debug || logLevel.isFine())
+      { log.fine( (in!=null?"FOUND":"FAIL")+":"+path );
+      }
+      
+      return in;
     }
-    
-    if (in==null)
-    { in=findStream(path);
+    finally
+    { popClassLoader(cl);
     }
-    if (debug || logLevel.isFine())
-    { log.fine( (in!=null?"FOUND":"FAIL")+":"+path );
-    }
-    
-    return in;
     
   } 
   
