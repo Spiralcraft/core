@@ -159,8 +159,7 @@ public class MapProjector<I,P,R,C>
     }
 
     @Override
-    protected boolean store(
-      R val)
+    protected boolean store(R val)
     throws AccessException
     { return false;
     }
