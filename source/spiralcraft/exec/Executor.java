@@ -84,6 +84,7 @@ public class Executor
   private URI uri;
   private URI typeURI;
   private URI instanceURI;
+  private URI codeURI;
   private boolean persistOnCompletion;
   private AbstractXmlObject<Executable,?> wrapper;
   private int argCounter=-1;
@@ -229,6 +230,7 @@ public class Executor
       
       resolveContextConfig(contextResourceMap);
       resolveDataLocation(contextResourceMap);
+      resolveCodeLocation(contextResourceMap);
       
       library=resolveLibrary();
       if (library!=null)
@@ -371,6 +373,48 @@ public class Executor
       contextResourceMap.put
         ("config"
         ,URIUtil.ensureTrailingSlash(configURI)
+        );
+
+    }
+          
+    
+  }
+
+  /**
+   * Resolve the default code location for components of this executable
+   * 
+   * @param contextResourceMap
+   */
+  private void resolveCodeLocation(ContextResourceMap contextResourceMap)
+  {
+    
+    if (codeURI==null)
+    {
+      String codeDir=properties.find("spiralcraft.code.location");
+      if (codeDir==null)
+      { codeDir=".";
+      }
+      codeURI=URI.create(codeDir);
+    }
+    
+    if (!codeURI.isAbsolute())
+    {
+      contextResourceMap.put
+        ("code"
+        ,URIUtil.ensureTrailingSlash
+          (URIUtil.addPathSegment
+            (contextResourceMap.get("")
+            ,codeURI.getPath()
+            )
+          )
+        );
+      
+    }
+    else
+    { 
+      contextResourceMap.put
+        ("code"
+        ,URIUtil.ensureTrailingSlash(codeURI)
         );
 
     }
