@@ -135,13 +135,12 @@ public class PluginContext
   private void registerStore(Store store)
     throws ContextualException
   { 
-    String name;
+    String name=store.getName();
     Schema schema=store.getSchema();
-    if (schema!=null)
-    { name=schema.getName();
-    }
-    else 
-    { name=store.getName();
+    if (name==null && schema!=null)
+    { 
+      name=schema.getName();
+      store.setName(name);
     }
     if (name==null)
     {
