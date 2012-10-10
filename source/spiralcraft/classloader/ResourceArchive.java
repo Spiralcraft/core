@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+//import spiralcraft.log.ClassLog;
+//import spiralcraft.log.Level;
 import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -35,12 +37,20 @@ public class ResourceArchive
   extends Archive
 {
   
+//  private static final ClassLog log=ClassLog.getInstance(ResourceArchive.class);
+  
   private Resource rootResource;
 
   
   public ResourceArchive(Resource resource)
   { 
     
+//    try
+//    { log.fine("Created "+resource.getURI()+" exists="+resource.exists());
+//    }
+//    catch (IOException x)
+//    { log.log(Level.WARNING,"Error accessing "+resource.getURI(),x);
+//    }
     if (resource.getURI().getRawPath()!=null
         && !resource.getURI().getRawPath().endsWith("/")
         )
@@ -94,7 +104,7 @@ public class ResourceArchive
       Resource resource
         =Resolver.getInstance().resolve
           (rootResource.getURI().resolve(path));
-    
+//      log.fine("Checked "+resource.getURI()+"="+resource.exists());
       if (resource.exists())
       { return new ResourceEntry(resource);
       }
@@ -103,8 +113,16 @@ public class ResourceArchive
       }
     }
     catch (UnresolvableURIException x)
-    { return null;
+    { 
+//      log.log(Level.FINE,"Unresolvable "+rootResource.getURI()+" "+path,x);
+      return null;
     }
+    catch (IOException x)
+    {
+//      log.log(Level.FINE,"IOException "+rootResource.getURI()+" "+path,x);
+      throw x;
+    }
+
   }
 
   public class ResourceEntry
