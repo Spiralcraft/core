@@ -42,6 +42,11 @@ public class Internalize<T,D>
   implements ChannelFactory<T,D>
 {
 
+  public static final <T,D> Channel<T> apply(Channel<D> source,Focus<?> focus)
+    throws BindException
+  { return new Internalize<T,D>().bindChannel(source,focus,null);
+  }
+  
   private Type<T> type;
   
   public void setType(Type<T> type)

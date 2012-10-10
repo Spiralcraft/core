@@ -40,6 +40,11 @@ public class Externalize<D,T>
   implements ChannelFactory<D,T>
 {
 
+  public static final <D,T> Channel<D> apply(Channel<T> source,Focus<?> focus)
+    throws BindException
+  { return new Externalize<D,T>().bindChannel(source,focus,null);
+  }
+  
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public Channel<D> bindChannel(
