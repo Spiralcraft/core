@@ -17,6 +17,7 @@ package spiralcraft.task;
 import java.io.PrintStream;
 import java.net.URI;
 
+import spiralcraft.app.PlaceContext;
 import spiralcraft.cli.BeanArguments;
 import spiralcraft.cli.CommandArguments;
 import spiralcraft.command.Command;
@@ -65,11 +66,24 @@ public class TaskRunner
   private URI serviceURI;
   private boolean printResult=false;
   private String[] contextArgs;
+  private PlaceContext placeContext;
   
   
   {
     Runtime.getRuntime().addShutdownHook(shutdownThread);
   }
+  
+  /**
+   * The PlaceContext in which the tasks will be run
+   * 
+   * @param placeContext
+   */
+  public void setPlaceContext(PlaceContext placeContext)
+  { 
+    this.placeContext=placeContext;
+    addContext(placeContext);
+  }
+
   
   /**
    * Log various messages during operation
@@ -277,8 +291,10 @@ public class TaskRunner
     push();
     try
     {
+      if (placeContext!=null)
+      { placeContext.start();
+      }
       start();
-      
       scenario.start();
       
       StringConverter converter
@@ -329,8 +345,10 @@ public class TaskRunner
       { log.log(Level.SEVERE,"Uncaught exception running "+scenario,x);
       }
       scenario.stop();
-      
       stop();
+      if (placeContext!=null)
+      { placeContext.stop();
+      }
     }   
     catch (LifecycleException x)
     { 

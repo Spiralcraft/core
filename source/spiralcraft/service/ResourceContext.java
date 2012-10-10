@@ -9,6 +9,7 @@ import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Context;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.context.ContextResourceMap;
 
 /**
@@ -23,7 +24,7 @@ public class ResourceContext
 
 
   
-  ContextResourceMap resourceMap
+  protected ContextResourceMap resourceMap
     =new ContextResourceMap();
   { chainOuterContext(resourceMap);
   }
@@ -31,9 +32,13 @@ public class ResourceContext
   Context[] threadContextuals
     =new Context[0];
   
-  
   public void setResourceContextURI(URI resourceContextURI)
   { resourceMap.putDefault(resourceContextURI);
+  }
+  
+    
+  public void setCodeURI(URI codeURI)
+  { resourceMap.put("code",URIUtil.ensureTrailingSlash(codeURI));
   }
   
   public void setServices(final Service[] services)
