@@ -26,7 +26,22 @@ public class EnumToString<T extends Enum<T>>
   
   @Override
   public T fromString(String val)
-  { return Enum.valueOf(enumType,val);
+  { 
+    try
+    { return Enum.valueOf(enumType,val);
+    }
+    catch (IllegalArgumentException x)
+    {
+      StringBuilder list=new StringBuilder();
+      for (T enm : enumType.getEnumConstants())
+      { 
+        if (list.length()>0)
+        { list.append(",");
+        }
+        list.append(enm.name());
+      }
+      throw new IllegalArgumentException(x.getMessage()+". Valid constants are ["+list+"]");
+    }
   }
   
   @Override
