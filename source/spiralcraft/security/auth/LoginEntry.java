@@ -39,6 +39,7 @@ import spiralcraft.security.auth.ChallengeCredential;
 public class LoginEntry
 {
   private Channel<AuthSession> sessionChannel;
+  private AuthSession session;
   
   private volatile String name;
   private volatile String password;
@@ -49,6 +50,14 @@ public class LoginEntry
   
   public LoginEntry(Channel<AuthSession> sessionChannel)
   { this.sessionChannel=sessionChannel;
+  }
+  
+  public LoginEntry(AuthSession session)
+  { 
+    if (session==null)
+    { throw new IllegalArgumentException("AuthSession cannot be null");
+    }
+    this.session=session;
   }
   
   public void reset()
@@ -62,7 +71,7 @@ public class LoginEntry
   
   public void update()
   { 
-    AuthSession session=sessionChannel.get();
+    AuthSession session=(this.session==null?sessionChannel.get():this.session);
     session.clearCredentials();
     
     ArrayList<Credential<?>> credentials

@@ -180,5 +180,57 @@
         }
       </x>
     </meta:Method>
+    
+    <meta:Method>
+      <name>register
+      </name>
+      
+      <static>true
+      </static>
+      
+      <parameterTypes>
+        <secauth:DigestFunction.type/>
+        <String.type/>
+        <String.type/>
+      </parameterTypes>
+
+      <returnType><sec:Login.type/>
+      </returnType>
+      
+      <contextX>
+        [#register] { 
+          digestFunction:[@secauth:DigestFunction]
+          ,username:[@j:String]
+          ,cleartextPassword:[@j:String]
+        }
+      </contextX>
+      
+      <x>[*dtask:Edit{[@sec:Login].type}].()
+        { .username=[register].username
+          ,.clearpass=[register].cleartextPassword
+          ,.securePassword([register].digestFunction)
+          ,.@tuple.save()
+          ,.
+        }
+      </x>
+    </meta:Method>
+    
+    <meta:Method>
+      <name>login
+      </name>
+      
+      <returnType><Void.type/>
+      </returnType>
+      
+      <x>
+        [@secauth:LoginEntry].([secauth:AuthSession])
+        {
+          .username=[sec:Login].username
+          ,.saltedDigest=[@codec:HexCodec].@decodeHex([sec:Login].digestpass)
+          ,.update()
+          ,[secauth:AuthSession].authenticate()
+        }
+      </x>
+    </meta:Method>
   </methods>
 </meta:Type>
