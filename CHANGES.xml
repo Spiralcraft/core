@@ -13,6 +13,43 @@
     <detail> 
 
       <scm:Change>
+        <revision>-dev20
+        </revision>
+      
+        <notes>
+          <scm:Note>When a EnumToString receives an incorrect string, include
+            the list of correct strings in the exception.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/util/string/EnumToString.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev20
+        </revision>
+      
+        <notes>
+          <scm:Note>Add support via static methods on Login.type for
+            registration and automatic login.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/security
+        </path>
+        
+        <resources>
+          <URI>Login.type.xml
+          </URI>
+          <URI>auth/LoginEntry.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev19
         </revision>
       
