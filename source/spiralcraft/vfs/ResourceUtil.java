@@ -41,6 +41,9 @@ public class ResourceUtil
     (Container container,Resource input,String baseName)
     throws IOException
   {          
+    if (container==null)
+    { throw new IllegalArgumentException("Container cannot be null");
+    }
     Resource targetResource=container.getChild(baseName);
     while (targetResource.exists())
     {
