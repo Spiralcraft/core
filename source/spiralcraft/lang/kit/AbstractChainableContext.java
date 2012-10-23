@@ -75,6 +75,9 @@ public class AbstractChainableContext
   @Override
   public final void push()
   { 
+//    if (logLevel.isFine())
+//    { log.fine("Pushing "+this+" (next is "+next+")");
+//    }
     pushLocal();
     if (context)
     { ((Context) next).push();
@@ -88,6 +91,9 @@ public class AbstractChainableContext
     { ((Context) next).pop();
     }
     popLocal();
+//    if (logLevel.isFine())
+//    { log.fine("Popped "+this);
+//    }
   }
 
   protected void pushLocal()
@@ -192,20 +198,14 @@ public class AbstractChainableContext
     else
     { 
       if (!(chain instanceof Context))
-      { 
-        chain=new ChainableContextualAdapter(chain);
-        context=false;
+      { chain=new ChainableContextualAdapter(chain);
       }
       else if (!(chain instanceof ChainableContext))
-      { 
-        chain=new ChainableContextAdapter((Context) chain);
-        context=true;
-      }
-      else
-      { context=true;
+      { chain=new ChainableContextAdapter((Context) chain);
       }
       next=chain;
       chainable=true;
+      context=true;
     }
     
     if (chain instanceof ChainableContext)
@@ -231,6 +231,7 @@ public class AbstractChainableContext
     }
     next=insert; 
     chainable=true;
+    context=true;
   }
     
   @Override
@@ -246,7 +247,11 @@ public class AbstractChainableContext
       }
     }
     else
-    { next=last;
+    { 
+      next=last;
+      if (next instanceof Context)
+      { context=true;
+      }
     }
     
   }
