@@ -99,6 +99,9 @@ public class FileSpace
   @Override
   public void push()
   { 
+    if (logLevel.isFine())
+    { log.fine("Pushing FileSpace "+toString());
+    }
     map.push();
     super.push();
 
@@ -109,6 +112,9 @@ public class FileSpace
   { 
     super.pop();
     map.pop();
+    if (logLevel.isFine())
+    { log.fine("Popping FileSpace "+toString());
+    }
   }
 
   
