@@ -335,14 +335,18 @@ public class StructNode
       }
       
     
-      
-      if (typeURI!=null && focus.findFocus(typeURI)!=null)
-      { 
-        throw new BindException
-          ("Type URI "+typeURI
-          +" has already been defined and cannot be duplicated"
-          );
-      }
+
+//
+// Struct labels are focus-chain related only- we're not defining a type, so
+//   this check is overly restrictive
+//
+//      if (typeURI!=null && focus.findFocus(typeURI)!=null)
+//      { 
+//        throw new BindException
+//          ("Type URI "+typeURI
+//          +" has already been defined and cannot be duplicated"
+//          );
+//      }
       
       
       if (baseExtentNode!=null)
