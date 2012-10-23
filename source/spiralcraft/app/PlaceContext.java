@@ -61,6 +61,7 @@ public class PlaceContext
   private Container dataContainer;
   private PluginContext[] pluginContexts;
   private Authority[] authorities;
+  private Authority[] exportMounts;
   private ContextResourceMap vfsMappings
     =new ContextResourceMap();
   private PlaceStatus status;
@@ -84,6 +85,10 @@ public class PlaceContext
 
   public void setMounts(Authority[] authorities)
   { this.authorities=authorities;
+  }
+
+  public void setExportMounts(Authority[] authorities)
+  { this.exportMounts=authorities;
   }
   
   public void setAuthenticator(Authenticator authenticator)
@@ -168,6 +173,7 @@ public class PlaceContext
     }    
 
     ChainableContext localChain=vfsMappings;
+    vfsMappings.setLogLevel(logLevel);
     
     if (pluginContexts!=null)
     {
@@ -192,6 +198,13 @@ public class PlaceContext
     }
     
     fileSpace=new FileSpace();
+    fileSpace.setLogLevel(logLevel);
+    if (exportMounts!=null)
+    {
+      for (Authority authority:exportMounts)
+      { fileSpace.addAuthority(authority);
+      }
+    }
     localChain.chain(fileSpace);
     
     insertNext(localChain);
@@ -425,6 +438,22 @@ public class PlaceContext
     
   }
 
+  @Override
+  protected void pushLocal()
+  { 
+    if (logLevel.isFine())
+    { log.fine("Pushing PlaceContext "+getId()+": "+getDeclarationInfo());
+    }
+  }
+  
+  @Override
+  protected void popLocal()
+  { 
+    if (logLevel.isFine())
+    { log.fine("Popping PlaceContext "+getId()+": "+getDeclarationInfo());
+    }
+  }
+  
   @Override
   public String toString()
   {
