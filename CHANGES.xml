@@ -11,6 +11,65 @@
     
     
     <detail> 
+      <scm:Change>
+        <revision>-dev21
+        </revision>
+      
+        <notes>
+          <scm:Note>Add meaningful exception to ResourceUtil.addCopy when
+            container is null
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/vfs/ResourceUtil.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev21
+        </revision>
+      
+        <notes>
+          <scm:Note>Struct labels no longer need to be globally unique. This
+            means that namespacing any exported labels is now very important.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/parser/StructNode.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev21
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix bug in AbstractChainableContext which interrupted
+            the push/pop chain when there was a non-Context in the chain.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/kit/AbstractChainableContext.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev21
+        </revision>
+      
+        <notes>
+          <scm:Note>Add exportMounts to PlaceContext to make VFS paths
+            available to children without affecting the internal mappings.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/app/PlaceContext.java
+        </path>
+        
+      </scm:Change>
 
       <scm:Change>
         <revision>-dev20
