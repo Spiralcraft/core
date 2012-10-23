@@ -137,6 +137,9 @@ public class ContextResourceMap
 
   private void setParent(ContextResourceMap parent)
   {
+    if (parent==this)
+    { throw new IllegalArgumentException("Parent cannot be self");
+    }
     if (this.parent==null)
     { this.parent=parent;
     }
@@ -294,7 +297,8 @@ public class ContextResourceMap
     Focus<?> focusChain)
     throws BindException
   { 
-    setParent(ContextResourceMap.get());
+    ContextResourceMap parent=ContextResourceMap.get();
+    setParent(parent);
     return focusChain;
   }
 }
