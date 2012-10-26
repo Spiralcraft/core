@@ -12,6 +12,57 @@
     
     <detail> 
       <scm:Change>
+        <revision>-dev22
+        </revision>
+      
+        <notes>
+          <scm:Note>Log data load timing when over 1 second.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/xml/XmlQueryable.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev22
+        </revision>
+      
+        <notes>
+          <scm:Note>Added a constructor which accepts a data type and an
+            array of equijoin expressions.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/task/Fetch.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev22
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix bug which threw an exception when concrete base types
+            are used.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/access/kit
+        </path>
+        
+        <resources>
+          <URI>AbstractStore.java
+          </URI>
+          <URI>EntityBinding.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev21
         </revision>
       
