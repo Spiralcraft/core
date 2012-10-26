@@ -47,6 +47,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
 import spiralcraft.data.UniqueKeyViolationException;
 
+import spiralcraft.time.Clock;
 import spiralcraft.util.KeyFunction;
 import spiralcraft.util.Path;
 import spiralcraft.vfs.Container;
@@ -233,6 +234,9 @@ public class XmlQueryable
   void bindDRI(Focus<?> context)
     throws BindException
   {
+    if (this.store==null)
+    { throw new BindException("Not bound: "+type.getURI()+"  "+toString());
+    }
     try
     {
     
@@ -345,9 +349,20 @@ public class XmlQueryable
 
         DataReader reader=new DataReader();
         reader.setStringPool(store!=null?store.getStringPool():null);
+        
+        long startTime=Clock.instance().approxTimeMillis();
         Aggregate<Tuple> orig
           =(Aggregate<Tuple>) reader.readFromResource
             (resource, type);
+        long finishTime=Clock.instance().approxTimeMillis();
+        if (finishTime-startTime>1000)
+        {
+          log.info
+            ("Resource loaded "+orig.size()
+            +" tuples in "+( (finishTime-startTime) /(float) 1000)
+            +" seconds from "+resource.getURI()
+            );
+        }
 
         aggregate=new EditableKeyedListAggregate<Tuple>(orig.getType());
         for (Tuple t: orig)
