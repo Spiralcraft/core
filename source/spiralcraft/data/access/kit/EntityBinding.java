@@ -50,6 +50,7 @@ public class EntityBinding
   private EntityAccessor<Tuple> accessor;
   private Updater<DeltaTuple> updater;
   private boolean authoritative;
+  private EntityAccessor<Tuple> concreteAccessor;
   
   
   private DeltaTrigger[] beforeInsert=new DeltaTrigger[0];
@@ -69,6 +70,14 @@ public class EntityBinding
   
   public void setAccessor(EntityAccessor<Tuple> queryable)
   { this.accessor=queryable;
+  }
+  
+  EntityAccessor<Tuple> getAccessor()
+  { return accessor;
+  }
+  
+  public void setConcreteAccessor(EntityAccessor<Tuple> queryable)
+  { this.concreteAccessor=queryable;
   }
   
   public Queryable<Tuple> getQueryable()
@@ -101,6 +110,9 @@ public class EntityBinding
 
     Type.getDeltaType(entity.getType());
     accessor.bind(focusChain);
+    if (concreteAccessor!=null)
+    { concreteAccessor.bind(focusChain);
+    }
     if (updater!=null)
     {
       Focus<?> updaterFocus=updater.bind(focusChain);

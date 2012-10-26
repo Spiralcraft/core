@@ -482,6 +482,7 @@ public abstract class AbstractStore
         baseQueryable.addExtent(type,targetBinding.getQueryable());
         baseQueryable.addExtent(subtype,queryable);
 
+        targetBinding.setConcreteAccessor(targetBinding.getAccessor());
         targetBinding.setAccessor(baseQueryable);
         if (debugLevel.isDebug())
         { 
