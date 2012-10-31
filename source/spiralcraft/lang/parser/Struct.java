@@ -18,6 +18,7 @@ package spiralcraft.lang.parser;
 import java.util.Iterator;
 
 import spiralcraft.lang.AccessException;
+import spiralcraft.lang.Reflector;
 import spiralcraft.util.ArrayUtil;
 
 /**
@@ -44,6 +45,10 @@ public class Struct
     this.baseExtent=baseExtent;
   }
       
+  public Reflector<Struct> getReflector()
+  { return reflector;
+  }
+  
   @Override
   public int hashCode()
   { 

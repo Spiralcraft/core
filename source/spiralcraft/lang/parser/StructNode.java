@@ -29,6 +29,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Functor;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.MapDecorator;
 import spiralcraft.lang.Range;
@@ -273,6 +274,7 @@ public class StructNode
   
   public class StructReflector
     extends AbstractReflector<Struct>
+    implements Functor<Struct>
   {
     
 
@@ -619,6 +621,49 @@ public class StructNode
       return ret;
     }
     
+    @Override
+    public LinkedList<Signature> getProperties(Channel<?> source)
+      throws BindException
+    {
+      LinkedList<Signature> ret=super.getProperties(source);
+      
+
+      if (baseChannel!=null)
+      { ret.addFirst(new Signature("@super",baseChannel.getReflector()));
+      }
+      for (StructField field:fieldArray)
+      { 
+        if (channels[field.index]!=null)
+        {
+          ret.add
+            (new Signature
+              (field.name,channels[field.index].getReflector()));
+        }
+      }
+      
+      if (baseChannel!=null)
+      {
+        LinkedList<Signature> baseSigs
+          =baseChannel.getReflector().getSignatures(baseChannel);
+        for (Signature sig:baseSigs)
+        { 
+          boolean found=false;
+          for (Signature retsig:ret)
+          { 
+            if (retsig.hides(sig))
+            { 
+              found=true;
+              break;
+            } 
+          }
+          if (!found)
+          { ret.add(sig);
+          }
+        }
+      }      
+      return ret;
+    }
+    
     public StructField[] getFields()
     { return fieldArray;
     }
@@ -897,7 +942,17 @@ public class StructNode
       return ret;
       
     }
-      
+    
+    @Override
+    public Channel<Struct> bindChannel(Focus<?> focus,Channel<?>[] params)
+      throws BindException
+    { 
+      if (params.length>0)
+      { throw new BindException("Struct constructor does not accept parameters");
+      }
+      return new StructChannel(this,focus);
+    }
+    
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <X> Channel<X> resolveLocal(
       final Channel<Struct> source,
