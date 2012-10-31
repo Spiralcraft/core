@@ -41,6 +41,7 @@ public class Assertion
   protected Channel<Object> subjectChannel;
   protected Expression<Boolean> testX;
   protected Channel<Boolean> testChannel;
+  protected String textLiteral;
   
   protected ThreadLocalChannel<Object> compareChannel;
 
@@ -102,7 +103,8 @@ public class Assertion
             String message
               ="Result of ["+subjectX.getText()+"] is ["
                 +Assertion.this.toString(compareChannel.get())+"] "
-                +", testing ["+testX.getText()+"]";
+                +", testing "
+                +(testX!=null?("["+testX.getText()+"]"):("text literal ["+textLiteral+"]"));
           
             result=new TestResult
                (name
@@ -140,6 +142,15 @@ public class Assertion
       }
     };    
   }
+  
+  public void setTextLiteral(String textLiteral)
+  { this.textLiteral=textLiteral;
+  }
+  
+  public String getTextLiteral()
+  { return textLiteral;
+  }
+  
   
   public String toString(Object o)
   {
@@ -184,9 +195,27 @@ public class Assertion
             ,x);
         }
       }
-      else
+      else if (textLiteral!=null)
+      { 
+        try
+        { testChannel
+            =focusChain.bind
+              (Expression.<Boolean>create
+                (".==[:class:/spiralcraft/test/Assertion].textLiteral")
+              );
+        }
+        catch (BindException x)
+        { 
+          throw new BindException
+            ("Error binding text literal comparison in assertion '"+name+"'"
+            ,x);
+        }
+      }
+      else 
       { throw new BindException
-          ("Test expression cannot be null in assertion '"+name+"'");
+          ("Test expression (testX) and textLiteral cannot both null in "
+          +" assertion '"+name+"'"
+          );
       }
     }
     else
