@@ -16,9 +16,12 @@ package spiralcraft.util.string;
 
 //import spiralcraft.log.ClassLog;
 import spiralcraft.text.Filter;
+import spiralcraft.text.LookaheadParserContext;
+import spiralcraft.text.ParseException;
 import spiralcraft.text.Renderer;
 //import spiralcraft.util.ArrayUtil;
 
+import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.io.IOException;
@@ -545,6 +548,56 @@ public class StringUtil
     else
     { return "("+hex+")";
     }
+  }
+  
+  public static void convertLineEndings
+    (Reader reader,Appendable appendable,String newEnding)
+    throws IOException
+  {
+    LookaheadParserContext ctxt;
+    try
+    {
+      ctxt = new LookaheadParserContext(reader);
+      while (!ctxt.isEof())
+      { 
+        char current=ctxt.getCurrentChar();
+        switch (current)
+        {
+          case '\r':
+            appendable.append(newEnding);
+            ctxt.advance();
+            if (ctxt.getCurrentChar()=='\n')
+            { ctxt.advance();
+            }
+            break;
+          case '\n':
+            appendable.append(newEnding);
+            ctxt.advance();
+            break;
+          default:
+            appendable.append(current);
+            ctxt.advance();
+        }
+      }
+    }
+    catch (ParseException x)
+    { throw new IOException(x);
+    }
+  }
+  
+  
+  public static String convertLineEndings(String input,String newEnding)
+  {
+    try
+    {
+      StringBuilder buf=new StringBuilder();
+      convertLineEndings(new StringReader(input),buf,newEnding);
+      return buf.toString();
+    }
+    catch (IOException x)
+    { throw new RuntimeException(x);
+    }
+    
   }
   
 }
