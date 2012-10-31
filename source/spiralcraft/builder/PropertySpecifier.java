@@ -61,6 +61,7 @@ public class PropertySpecifier
   private int _targetSequence=-1;
   private Expression<?> _sourceExpression;
   private boolean _literalWhitespace;
+  private boolean _normalizeEOL;
   private String _expression;
   private boolean _persistent;
   private boolean _dynamic;
@@ -328,6 +329,14 @@ public class PropertySpecifier
   { _literalWhitespace=val;
   }
 
+  /** 
+   * Indicate that line endings should be normalized to CRLF
+   * 
+   *@param val true if line endings should be normalized
+   */
+  public void setNormalizeEOL(boolean val)
+  { _normalizeEOL=val;
+  }
 
   /**
    * Specify the expression that will be bound and evaluated at build-time when the
@@ -445,6 +454,10 @@ public class PropertySpecifier
       }
       else if (trimmedText.length()>0)
       { _textData=trimmedText;
+      }
+      
+      if (_normalizeEOL)
+      { _textData=StringUtil.convertLineEndings(_textData,"\r\n");
       }
     }
 
