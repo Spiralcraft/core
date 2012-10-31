@@ -77,6 +77,16 @@ public interface Reflector<T>
     throws BindException;
   
   /**
+   * @return The set of property signatures published by this reflector.
+   * 
+   * @param source
+   * @return
+   * @throws BindException
+   */
+  public LinkedList<Signature> getProperties(Channel<?> source)
+    throws BindException;
+  
+  /**
    * Determine the most specific type of a value
    * 
    * @param val 

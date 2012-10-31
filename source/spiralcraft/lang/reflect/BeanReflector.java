@@ -420,6 +420,45 @@ public class BeanReflector<T>
     return signatures;
   }
   
+  @Override
+  public LinkedList<Signature> getProperties(Channel source)
+    throws BindException
+  { 
+    
+    if (boxedEquivalent!=null)
+    { return new LinkedList<Signature>();
+    }
+    
+    LinkedList signatures=super.getProperties(source);
+
+    PropertyDescriptor[] props=beanInfo.getAllProperties();
+    for (PropertyDescriptor prop:props)
+    { 
+      Channel out=getProperty(source,prop.getName());
+      if (out==null)
+      { out=getField(source,prop.getName());
+      }
+      if (out!=null)
+      { signatures.add(new Signature(prop.getName(),out.getReflector()));
+      }
+    }
+    
+    Field[] fields=targetClass.getFields();
+    for (Field field: fields)
+    {
+      if (!Modifier.isStatic(field.getModifiers())
+          && Modifier.isPublic(field.getModifiers())
+         )
+      {
+        Channel out=getField(source,field.getName());
+        if (out!=null)
+        { signatures.add(new Signature(field.getName(),out.getReflector()));
+        }
+      }
+    }
+    
+    return signatures;
+  }
   
   
   @Override

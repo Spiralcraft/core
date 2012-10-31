@@ -344,6 +344,24 @@ public class TupleReflector<T extends Tuple>
     return signatures;
   }
   
+  @Override
+  public LinkedList<Signature> getProperties(Channel<?> source)
+    throws BindException
+  { 
+    LinkedList<Signature> signatures=super.getProperties(source);
+    
+    
+    for (Field<?> field : getFieldSet().fieldIterable())
+    { 
+      signatures.addFirst
+        (new Signature
+          (field.getName(),DataReflector.getInstance(field.getType())
+          )
+        );
+    }
+    return signatures;
+  }
+  
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private Channel bindMethods
     (Type type

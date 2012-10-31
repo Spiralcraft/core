@@ -231,30 +231,51 @@ public abstract class AbstractReflector<T>
   public LinkedList<Signature> getSignatures(Channel<?> source)
     throws BindException
   { 
-    LinkedList<Signature> ret=new LinkedList<Signature>();
-    ret.addFirst
-      (new Signature("@type",BeanReflector.getInstance(getClass())));
-    ret.addFirst
-      (new Signature("@subtype",BeanReflector.getInstance(source.getReflector().getClass())));
-    ret.addFirst
-      (new Signature("@channel",BeanReflector.getInstance(source.getClass())));
-    ret.addFirst
-      (new Signature("@focus",BeanReflector.getInstance(Focus.class)));
-    ret.addFirst
-      (new Signature("@cast",source.getReflector(),BeanReflector.getInstance(Reflector.class)));
-    ret.addFirst
-      (new Signature("@nil",this));
-    
-    IterationDecorator iter
-      =source.<IterationDecorator>decorate(IterationDecorator.class);
-    if (iter!=null)
-    { ret.addFirst(new Signature("@top",iter.getComponentReflector()));
+    LinkedList<Signature> ret;
+    if (base==null)
+    {
+      ret=new LinkedList<Signature>();
+      ret.addFirst
+        (new Signature("@type",BeanReflector.getInstance(getClass())));
+      ret.addFirst
+        (new Signature("@subtype",BeanReflector.getInstance(source.getReflector().getClass())));
+      ret.addFirst
+        (new Signature("@channel",BeanReflector.getInstance(source.getClass())));
+      ret.addFirst
+        (new Signature("@focus",BeanReflector.getInstance(Focus.class)));
+      ret.addFirst
+        (new Signature("@cast",source.getReflector(),BeanReflector.getInstance(Reflector.class)));
+      ret.addFirst
+        (new Signature("@nil",this));
+      
+      IterationDecorator iter
+        =source.<IterationDecorator>decorate(IterationDecorator.class);
+      if (iter!=null)
+      { ret.addFirst(new Signature("@top",iter.getComponentReflector()));
+      }
+      
+      ret.addFirst
+        (new Signature("@log",BeanReflector.getInstance(Object.class)));
+      ret.addFirst
+        (new Signature("@tune",BeanReflector.getInstance(Object.class)));
     }
-    
-    ret.addFirst
-      (new Signature("@log",BeanReflector.getInstance(Object.class)));
-    ret.addFirst
-      (new Signature("@tune",BeanReflector.getInstance(Object.class)));
+    else
+    { ret=base.getSignatures(source);
+    }
+    return ret;
+  }
+  
+  @Override
+  public LinkedList<Signature> getProperties(Channel<?> source)
+    throws BindException
+  {
+    LinkedList<Signature> ret;
+    if (base==null)
+    { ret=new LinkedList<Signature>();
+    }
+    else
+    { ret=base.getProperties(source);
+    }
     return ret;
   }
   
