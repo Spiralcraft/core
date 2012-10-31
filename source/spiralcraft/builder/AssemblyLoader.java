@@ -485,6 +485,8 @@ public class AssemblyLoader
     assemblyClass.setPrefixResolver(node.getPrefixResolver());
     assemblyClass.setDeclarationLocation(node.getPosition().toURI());
 
+    boolean whitespace=false;
+    
     Attribute[] attribs
       =node.getAttributes();
     if (attribs!=null)
@@ -534,6 +536,9 @@ public class AssemblyLoader
         else if (name=="x")
         { assemblyClass.setInstanceX(attribs[i].getValue());
         }
+        else if (name=="whitespace")
+        { whitespace=Boolean.valueOf(attribs[i].getValue());
+        }
         else
         { 
           throw new BuildException
@@ -564,7 +569,10 @@ public class AssemblyLoader
         else if (child instanceof Characters)
         { 
           String characterString
-            =new String(((Characters) child).getCharacters()).trim();
+            =new String(((Characters) child).getCharacters());
+          if (!whitespace)
+          { characterString=characterString.trim();
+          }
           if (characterString.length()>0)
           {
             if (readProperties)
@@ -615,6 +623,9 @@ public class AssemblyLoader
         }
         else if (name=="whitespace")
         { prop.setLiteralWhitespace(readBoolean(attribs[i]));
+        }
+        else if (name=="normalizeEOL")
+        { prop.setNormalizeEOL(readBoolean(attribs[i]));
         }
         else if (name=="persistent")
         { prop.setPersistent(readBoolean(attribs[i]));
