@@ -11,6 +11,103 @@
     
     
     <detail> 
+    
+      <scm:Change>
+        <revision>-dev23
+        </revision>
+      
+        <notes>
+          <scm:Note>Assertions can now compare output to a textLiteral
+            property for testing code that generates small amounts of text.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/test/Assertion.java
+        </path>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev23
+        </revision>
+      
+        <notes>
+          <scm:Note>Struct provides access to its Reflector
+          </scm:Note>
+          <scm:Note>StructReflector is now a Functor that constructs its
+            struct.
+          </scm:Note>
+        
+        </notes>
+
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/parser/Struct.java
+          </URI>
+          <URI>lang/parser/StructNode.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev23
+        </revision>
+      
+        <notes>
+          <scm:Note>Reflector.getProperties() provides signatures for
+            property members.
+          </scm:Note>
+        
+        </notes>
+
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/Reflector.java
+          </URI>
+          <URI>data/lang/TupleReflector.java
+          </URI>
+          <URI>lang/kit/AbstractReflector.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev23
+        </revision>
+      
+        <notes>
+          <scm:Note>Builder xml attribute to normalize line endings to
+            CRLF.
+          </scm:Note>
+          <scm:Note>Allow preservation of whitespace via "whitespace" xml
+            attribute when reading object constructor values.
+          </scm:Note>
+          <scm:Note>StringUtil.convertLineEndings()
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>builder/AssemblyLoader.java
+          </URI>
+          <URI>builder/PropertySpecifier.java
+          </URI>
+          <URI>util/string/StringUtil.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev22
         </revision>
