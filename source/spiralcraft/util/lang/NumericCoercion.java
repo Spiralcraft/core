@@ -35,7 +35,7 @@ public abstract class NumericCoercion<T>
       {
         @Override
         public Float coerce(Number val)
-        { return val.floatValue();
+        { return val==null?null:val.floatValue();
         }
       };
     }
@@ -46,7 +46,7 @@ public abstract class NumericCoercion<T>
       {
         @Override
         public Long coerce(Number val)
-        { return val.longValue();
+        { return val==null?null:val.longValue();
         }
       };
     }
@@ -57,7 +57,7 @@ public abstract class NumericCoercion<T>
       {
         @Override
         public Double coerce(Number val)
-        { return val.doubleValue();
+        { return val==null?null:val.doubleValue();
         }
       };
     }     
@@ -68,7 +68,7 @@ public abstract class NumericCoercion<T>
       {
         @Override
         public Integer coerce(Number val)
-        { return val.intValue();
+        { return val==null?null:val.intValue();
         }
       };
     }
@@ -79,7 +79,7 @@ public abstract class NumericCoercion<T>
       {
         @Override
         public Short coerce(Number val)
-        { return val.shortValue();
+        { return val==null?null:val.shortValue();
         }
       };
     }     
@@ -90,7 +90,7 @@ public abstract class NumericCoercion<T>
       {
         @Override
         public Byte coerce(Number val)
-        { return val.byteValue();
+        { return val==null?null:val.byteValue();
         }
       };
     }              
@@ -101,7 +101,7 @@ public abstract class NumericCoercion<T>
       {
         @Override
         public BigDecimal coerce(Number val)
-        { return BigDecimal.valueOf(val.doubleValue());
+        { return val==null?null:BigDecimal.valueOf(val.doubleValue());
         }
       };
     }              
@@ -112,10 +112,11 @@ public abstract class NumericCoercion<T>
       {
         @Override
         public BigInteger coerce(Number val)
-        { return BigInteger.valueOf(val.intValue());
+        { return val==null?null:BigInteger.valueOf(val.intValue());
         }
       };
     }  
+    
     return coercion;
   }
 }
