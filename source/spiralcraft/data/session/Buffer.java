@@ -94,6 +94,14 @@ public abstract class Buffer
   public abstract void save()
     throws DataException;
   
+  /**
+   * Indicate that the contents of this aggregate should be deleted when 
+   *   it is saved.
+   * @throws DataException
+   */
+  public abstract void delete()
+    throws DataException;
+  
   public void setDebug(boolean debug)
   { this.debug=debug;
   }

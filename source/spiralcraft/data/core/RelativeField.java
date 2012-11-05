@@ -29,6 +29,7 @@ import spiralcraft.util.string.StringUtil;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
+import spiralcraft.data.DeletionConstraint;
 import spiralcraft.data.Field;
 import spiralcraft.data.Key;
 import spiralcraft.data.Tuple;
@@ -62,6 +63,7 @@ public class RelativeField<T extends DataComposite>
   private String[] referencedFieldNames;
   private String referencedKeyName;
   private boolean child;
+  private DeletionConstraint deletionConstraint;
   
   { this.setTransient(true);
   }
@@ -122,6 +124,14 @@ public class RelativeField<T extends DataComposite>
   { this.child=child;
   }
   
+  public void setDeletionConstraint(DeletionConstraint deletionConstraint)
+  { this.deletionConstraint=deletionConstraint;
+  }
+  
+  public DeletionConstraint getDeletionConstraint()
+  { return deletionConstraint;
+  }
+  
   /**
    * Whether the referenced data is part of a compound entity that is rooted
    *   in this entity (i.e. the relationship is one to none or many)
@@ -143,6 +153,8 @@ public class RelativeField<T extends DataComposite>
   String getReferencedKeyName()
   { return referencedKeyName;
   }
+  
+  
   
   @SuppressWarnings({ "unchecked", "rawtypes" }) // Key.getForeignType() is not generic
   @Override

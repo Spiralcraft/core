@@ -17,17 +17,23 @@ package spiralcraft.data.access.kit;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.data.DataComposite;
+import spiralcraft.data.DeletionConstraint;
 import spiralcraft.data.DeltaTuple;
+import spiralcraft.data.Field;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
+import spiralcraft.data.access.DeleteCascadeTrigger;
 import spiralcraft.data.access.DeltaTrigger;
 import spiralcraft.data.access.Entity;
 import spiralcraft.data.access.EntityAccessor;
 import spiralcraft.data.access.Updater;
+import spiralcraft.data.core.RelativeField;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Contextual;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.util.LangUtil;
 import spiralcraft.util.ArrayUtil;
@@ -117,40 +123,38 @@ public class EntityBinding
     {
       Focus<?> updaterFocus=updater.bind(focusChain);
     
-    
+      for (Field<?> field : entity.getType().getFieldSet().fieldIterable())
+      { 
+        if (field instanceof RelativeField)
+        { 
+          DeletionConstraint constraint
+            =((RelativeField<?>) field).getDeletionConstraint();
+          if (constraint!=null)
+          {
+            switch ( constraint )
+            {
+              case RESTRICT:
+                break;
+              case CASCADE:
+                bindDeltaTrigger
+                  (new DeleteCascadeTrigger
+                    (Expression.<DataComposite>create(field.getName()))
+                  ,updaterFocus
+                  );
+                break;
+              case NULLIFY:
+                break;
+            }
+          }
+          
+        }
+      }
     
       DeltaTrigger[] tupleTriggers=entity.getDeltaTriggers();
       if (tupleTriggers!=null)
       {
         for (DeltaTrigger trigger : tupleTriggers)
-        { 
-          trigger.bind(updaterFocus);
-        
-          switch (trigger.getWhen())
-          {
-            case BEFORE:
-              if (trigger.isForInsert())
-              { beforeInsert=ArrayUtil.append(beforeInsert,trigger);
-              }
-              if (trigger.isForUpdate())
-              { beforeUpdate=ArrayUtil.append(beforeUpdate,trigger);
-              }
-              if (trigger.isForDelete())
-              { beforeDelete=ArrayUtil.append(beforeDelete,trigger);
-              }
-              break;
-            case AFTER:
-              if (trigger.isForInsert())
-              { afterInsert=ArrayUtil.append(afterInsert,trigger);
-              }
-              if (trigger.isForUpdate())
-              { afterUpdate=ArrayUtil.append(afterUpdate,trigger);
-              }
-              if (trigger.isForDelete())
-              { afterDelete=ArrayUtil.append(afterDelete,trigger);
-              }
-              break;
-          }
+        { bindDeltaTrigger(trigger,updaterFocus);
         }
       }
       
@@ -164,6 +168,37 @@ public class EntityBinding
     return focusChain;
   }
 
+  private void bindDeltaTrigger(DeltaTrigger trigger,Focus<?> updaterFocus)
+    throws BindException
+  {
+    trigger.bind(updaterFocus);
+        
+    switch (trigger.getWhen())
+    {
+      case BEFORE:
+        if (trigger.isForInsert())
+        { beforeInsert=ArrayUtil.append(beforeInsert,trigger);
+        }
+        if (trigger.isForUpdate())
+        { beforeUpdate=ArrayUtil.append(beforeUpdate,trigger);
+        }
+        if (trigger.isForDelete())
+        { beforeDelete=ArrayUtil.append(beforeDelete,trigger);
+        }
+        break;
+      case AFTER:
+        if (trigger.isForInsert())
+        { afterInsert=ArrayUtil.append(afterInsert,trigger);
+        }
+        if (trigger.isForUpdate())
+        { afterUpdate=ArrayUtil.append(afterUpdate,trigger);
+        }
+        if (trigger.isForDelete())
+        { afterDelete=ArrayUtil.append(afterDelete,trigger);
+        }
+        break;
+    }
+  }
   
   @Override
   public void start()
