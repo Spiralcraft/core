@@ -38,8 +38,12 @@ import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Concatenation;
 import spiralcraft.data.query.ConcatenationBinding;
+import spiralcraft.data.session.DataSession;
 
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 
 import spiralcraft.log.ClassLog;
 
@@ -74,6 +78,7 @@ public class Space
     { return spaceFocus.getSubject().get();
     }
   }
+  
 
   private Store[] stores=new Store[0];
   
@@ -85,6 +90,7 @@ public class Space
   private HashMap<String,Store> storeMap
     =new HashMap<String,Store>();
   
+  private ThreadLocalChannel<DataSession> dataSessionChannel;
   
   public void setStores(Store[] stores)
   { 
@@ -164,6 +170,15 @@ public class Space
   public Focus<?> bindImports(Focus<?> focusChain)
     throws ContextualException
   { 
+    
+    dataSessionChannel
+      =new ThreadLocalChannel<DataSession>
+        (BeanReflector.<DataSession>getInstance(DataSession.class)
+        ,true
+        );
+    
+    selfFocus.addFacet
+      (new SimpleFocus<DataSession>(selfFocus,dataSessionChannel));
     for (Store store: stores)
     { 
       store.bind(selfFocus);
@@ -301,13 +316,13 @@ public class Space
    *   this Space. 
    */
   public DataConsumer<DeltaTuple> 
-    getUpdater(Type<?> type,Focus<?> focus)
+    getUpdater(Type<?> type)
     throws DataException
   {
     Store store=getAuthoritativeStore(type);
     
     if (store!=null)
-    { return store.getUpdater(type,focus);
+    { return store.getUpdater(type);
     }
     else
     { 
@@ -389,5 +404,13 @@ public class Space
   public Date getNowTime()
   { return new Date();
   }
-
+  
+  public void pushDataSession(DataSession session)
+  { dataSessionChannel.push(session);
+  }
+  
+  public void popDataSession()
+  { dataSessionChannel.pop();
+  }
+  
 }
