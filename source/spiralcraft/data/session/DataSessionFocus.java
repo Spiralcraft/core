@@ -200,10 +200,7 @@ public class DataSessionFocus
     if (spaceChannel!=null)
     { dataSession.setSpace(spaceChannel.get());
     }
-    
-    // Note: The Focus is only used to bind the Updaters for 
-    //   this session
-    dataSession.setFocus(this);
+
     if (debug)
     { dataSession.setDebug(true);
     }

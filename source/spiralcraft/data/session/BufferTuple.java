@@ -18,7 +18,6 @@ import java.lang.ref.WeakReference;
 import java.util.BitSet;
 
 import spiralcraft.data.DataComposite;
-import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DeltaTuple;
@@ -34,13 +33,10 @@ import spiralcraft.data.Identifier;
 import spiralcraft.data.TypeMismatchException;
 import spiralcraft.data.UpdateConflictException;
 
-import spiralcraft.data.session.DataSession.DataSessionBranch;
 import spiralcraft.data.spi.ArrayTuple;
 import spiralcraft.data.spi.KeyIdentifier;
-import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.util.StaticInstanceResolver;
 import spiralcraft.log.ClassLog;
-import spiralcraft.log.Level;
 import spiralcraft.util.ArrayUtil;
 
 /**
@@ -208,6 +204,7 @@ public class BufferTuple
   /**
    * Indicate that the tuple should be deleted on commit.
    */
+  @Override
   public void delete()
   { 
     this.delete=true;
@@ -816,101 +813,7 @@ public class BufferTuple
    */
   public void save()
     throws DataException
-  {
-    if (!isDirty() || (isDelete() && original==null))
-    { return;
-    }
-    
-    Transaction transaction
-      =Transaction.getContextTransaction();
-    
-    if (transaction!=null)
-    {
-      if (debug)
-      { log.fine("Saving "+toString());
-      }
-
-      
-      DataSessionBranch branch
-        =session.getResourceManager().branch(transaction);
-      branch.addBuffer(this);
-      
-      
-      DataConsumer<DeltaTuple> updater
-        =branch.getUpdater(getType().getArchetype());
-      if (updater!=null)
-      { 
-        boolean ok=false;
-        try
-        { 
-          updater.dataAvailable(this);
-          ok=true;
-        }
-        finally
-        { 
-          if (!ok)
-          { transaction.rollbackOnComplete();
-          }
-        }
-      }
-      else
-      { log.fine("No updater in Space for Type "+getType());
-      }
-    }
-    else
-    { 
-      if (debug)
-      { log.fine("Saving "+toString());
-      }
-      transaction=
-        Transaction.startContextTransaction(Transaction.Nesting.ISOLATE);
-      try
-      {
-        
-        DataSessionBranch branch
-          =session.getResourceManager().branch(transaction);
-        branch.addBuffer(this);
-        
-        boolean ok=false;
-        try
-        {
-          DataConsumer<DeltaTuple> updater=branch.getUpdater(getType().getArchetype());
-          if (updater!=null)
-          { 
-            updater.dataAvailable(this);
-            transaction.commit();
-          }
-          else
-          { log.fine("No updater in Space for Type "+getType());
-          }
-          if (debug)
-          { log.fine("Finished commit of "+this);
-          }
-          ok=true;
-        }
-        finally
-        {
-          if (!ok)
-          { transaction.rollback();
-          }
-        }
-      }
-      catch (DataException x)
-      { 
-        log.log(Level.FINE,"RE",x);
-        throw x;
-      }
-      catch (RuntimeException x)
-      { 
-        log.log(Level.FINE,"RE",x);
-        throw x;
-      }
-      finally
-      {
-        transaction.complete();
-      }
-    }
-
+  { session.writeTuple(this);
   }
 
   @Override

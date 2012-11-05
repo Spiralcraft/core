@@ -26,16 +26,15 @@ import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.Identifier;
 
-import spiralcraft.data.session.DataSession.DataSessionBranch;
 import spiralcraft.data.spi.ListAggregate;
 import spiralcraft.data.spi.PojoIdentifier;
-import spiralcraft.data.transaction.Transaction;
 import spiralcraft.log.ClassLog;
 
 public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   extends Buffer
   implements EditableAggregate<T>
 { 
+  @SuppressWarnings("unused")
   private final ClassLog log=ClassLog.getInstance(BufferAggregate.class);
 
   
@@ -373,44 +372,15 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
     if (buffers==null)
     { return;
     }
-    if (debug)
-    { log.fine("Saving..."+this);
-    }
-    
-    Transaction transaction
-      =Transaction.getContextTransaction();
+    session.writeAggregate(this);
+  }
   
-    if (transaction!=null)
-    {
-      
-      for (Buffer buffer: this)
-      { buffer.save();
-      }
-      
-      DataSessionBranch branch
-        =session.getResourceManager().branch(transaction);
-      branch.addBuffer(this);      
-    }
-    else
-    { 
-      transaction=
-        Transaction.startContextTransaction(Transaction.Nesting.ISOLATE);
-      try
-      {
-        for (Buffer buffer: this)
-        { buffer.save();
-        }
-      
-        DataSessionBranch branch
-          =session.getResourceManager().branch(transaction);
-        branch.addBuffer(this);
-
-        transaction.commit();
-      }
-      finally
-      {
-        transaction.complete();
-      }
+  @Override
+  public void delete()
+    throws DataException
+  {
+    for (Buffer buffer:this)
+    { buffer.delete();
     }
   }
 

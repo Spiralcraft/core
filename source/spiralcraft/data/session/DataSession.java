@@ -24,20 +24,15 @@ import spiralcraft.data.Space;
 import spiralcraft.data.Type;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.PojoIdentifier;
-import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.transaction.ResourceManager;
-import spiralcraft.data.transaction.Branch;
+import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.transaction.TransactionException;
-import spiralcraft.data.transaction.Transaction.State;
 import spiralcraft.data.util.DebugDataConsumer;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import java.net.URI;
@@ -75,26 +70,14 @@ public class DataSession
   private DataComposite data;
   private Type<? extends DataComposite> type;
   private Space space;
-  private ResourceManager<DataSessionBranch> resourceManager
-    =new DataSessionResourceManager();
-  private Focus<?> focus;
-  private boolean debug;
+  private DataSessionResourceManager resourceManager
+    =new DataSessionResourceManager(this);
+  boolean debug;
+  
   
   public void setType(Type<? extends DataComposite> type)
   { this.type=type;
   }
-
-  /**
-   * <p>Note that the supplied Focus is only used to bind the Updaters
-   *   for this session.
-   * </p>
-   * 
-   * @param focus
-   */
-  public void setFocus(Focus<?> focus)
-  { this.focus=focus;
-  }
-
   
   /**
    * The Space which the DataSession queries and updates
@@ -102,7 +85,8 @@ public class DataSession
    * @param store
    */
   public void setSpace(Space space)
-  { this.space=space;
+  { 
+    this.space=space;
   }
   
   public Space getSpace()
@@ -129,10 +113,6 @@ public class DataSession
    */
   public void setDebug(boolean debug)
   { this.debug=debug;
-  }
-  
-  public ResourceManager<DataSessionBranch> getResourceManager()
-  { return resourceManager;
   }
   
   /**
@@ -348,160 +328,214 @@ public class DataSession
    
   }
   
-  class DataSessionResourceManager
-    extends ResourceManager<DataSessionBranch>
-  {
-
-    @Override
-    public DataSessionBranch createBranch(
-      Transaction transaction)
-      throws TransactionException
-    { return new DataSessionBranch();
+  void clearBuffers()
+  { 
+    if (buffers!=null)
+    { buffers.clear();
     }
-    
   }
-
-  class DataSessionBranch
-    implements Branch
-  {
-
-    private ArrayList<Buffer> branchBuffers
-      =new ArrayList<Buffer>();
-    
-    private HashMap<Type<?>,DataConsumer<DeltaTuple>> updaterMap
-      =new HashMap<Type<?>,DataConsumer<DeltaTuple>>();
-    
-    private State state=State.STARTED;
-
-    public void addBuffer(Buffer buffer)
-    { branchBuffers.add(buffer);
+  
+  void writeTuple(BufferTuple t)
+    throws DataException
+  { 
+    space.pushDataSession(this);
+    try
+    { writeTupleInContext(t);
+    }
+    finally
+    { space.popDataSession();
+    }    
+  }
+  
+  private void writeTupleInContext(BufferTuple t)
+    throws DataException
+  { 
+    if (!t.isDirty() || (t.isDelete() && t.getOriginal()==null))
+    { return;
     }
     
-    public  DataConsumer<DeltaTuple> getUpdater(Type<?> type)
-      throws DataException
+    Transaction transaction
+      =Transaction.getContextTransaction();
+    
+    if (transaction!=null)
     {
+      if (debug)
+      { log.fine("Saving "+t);
+      }
+
+      DataSessionBranch branch
+        =resourceManager.branch(transaction);
+      branch.addBuffer(t);
+      
       
       DataConsumer<DeltaTuple> updater
-        =updaterMap.get(type);
-      if (updater==null)
+        =branch.getUpdater(t.getType().getArchetype());
+      if (updater!=null)
       { 
-        updater=space.getUpdater(type,focus);
-        if (updater!=null)
+        boolean ok=false;
+        try
         { 
-          updaterMap.put(type,updater);
-          if (DataSession.this.debug)
-          { updater.setDebug(true);
+          updater.dataAvailable(t);
+          ok=true;
+        }
+        finally
+        { 
+          if (!ok)
+          { transaction.rollbackOnComplete();
           }
-          updater.dataInitialize(type.getFieldSet());
         }
       }
-      return updater;
+      else
+      { log.fine("No updater in Space for Type "+getType());
+      }
     }
-    
-    @Override
-    public void prepare()
-      throws TransactionException
-    {
-      Iterator<Buffer> it=branchBuffers.iterator();
-      while (it.hasNext())
-      { 
-        Buffer buffer=it.next();
-        try
-        { buffer.prepare();
-        }
-        catch (DataException x)
-        { throw new TransactionException("Error preparing "+buffer,x);
-        }
+    else
+    { 
+      if (debug)
+      { log.fine("Saving "+toString());
       }
-      
-      for (DataConsumer<DeltaTuple> updater : updaterMap.values())
-      { 
-        try
-        { updater.dataFinalize();
-        }
-        catch (DataException x)
-        { throw new TransactionException("Error finalizing updator "+updater,x);
-        }
+      transaction=
+        Transaction.startContextTransaction(Transaction.Nesting.ISOLATE);
+      try
+      {
         
-      }      
-      state=State.PREPARED;
-      
-      
-    }
-
-    @Override
-    public void rollback()
-      throws TransactionException
-    {
-      // TODO Auto-generated method stub
-      Iterator<Buffer> it=branchBuffers.iterator();
-      while (it.hasNext())
-      { 
-        it.next().rollback();
-        it.remove();
+        DataSessionBranch branch
+          =resourceManager.branch(transaction);
+        branch.addBuffer(t);
+        
+        boolean ok=false;
+        try
+        {
+          DataConsumer<DeltaTuple> updater=branch.getUpdater(t.getType().getArchetype());
+          if (updater!=null)
+          { 
+            updater.dataAvailable(t);
+            transaction.commit();
+          }
+          else
+          { log.fine("No updater in Space for Type "+getType());
+          }
+          if (debug)
+          { log.fine("Finished commit of "+this);
+          }
+          ok=true;
+        }
+        finally
+        {
+          if (!ok)
+          { transaction.rollback();
+          }
+        }
       }
-      state=State.ABORTED;
-      
+      catch (DataException x)
+      { 
+        log.log(Level.FINE,"RE",x);
+        throw x;
+      }
+      catch (RuntimeException x)
+      { 
+        log.log(Level.FINE,"RE",x);
+        throw x;
+      }
+      finally
+      {
+        transaction.complete();
+      }
     }
     
-    @Override
-    public void commit()
-      throws TransactionException
-    {
-      Iterator<Buffer> it=branchBuffers.iterator();
-      while (it.hasNext())
-      { 
-        Buffer buffer=it.next();
-        try
-        { buffer.commit();
-        }
-        catch (DataException x)
-        { throw new TransactionException("Error committing "+buffer,x);
-        }
-        it.remove();
-      }
-      
-      if (buffers!=null)
-      { buffers.clear();
-      }
-      
-      state=State.COMMITTED;
-    }
-
-    @Override
-    public void complete()
-    {
-      if (!branchBuffers.isEmpty())
-      { 
-        Iterator<Buffer> it=branchBuffers.iterator();
-        while (it.hasNext())
-        { 
-          it.next().rollback();
-          it.remove();
-        }
-      }
-      updaterMap.clear();
-      
-
-
-    }
-
-    @Override
-    public State getState()
-    { return state;
-    }
-
-    @Override
-    public boolean is2PC()
-    { return true;
-    }
-
-
   }
   
+  public void writeAggregate
+    (BufferAggregate<? extends Buffer,? extends DataComposite> a)
+    throws DataException
+  { 
+    space.pushDataSession(this);
+    try
+    { writeAggregateInContext(a);
+    }
+    finally
+    { space.popDataSession();
+    }
+  }
   
+  public void writeAggregateInContext
+    (BufferAggregate<? extends Buffer,? extends DataComposite> a)
+    throws DataException
+  {
+    if (debug)
+    { log.fine("Saving..."+a);
+    }
+    
+    Transaction transaction
+      =Transaction.getContextTransaction();
   
+    if (transaction!=null)
+    {
+      
+      for (Buffer buffer: a)
+      { 
+        if (buffer.isTuple())
+        { writeTupleInContext(buffer.asTuple());
+        }
+        else
+        { writeAggregateInContext(buffer.asAggregate());
+        }
+      }
+      
+      
+      DataSessionBranch branch
+        =resourceManager.branch(transaction);
+      branch.addBuffer(a);      
+    }
+    else
+    { 
+      transaction=
+        Transaction.startContextTransaction(Transaction.Nesting.ISOLATE);
+      try
+      {
+        for (Buffer buffer: a)
+        { 
+          if (buffer.isTuple())
+          { writeTupleInContext(buffer.asTuple());
+          }
+          else
+          { writeAggregateInContext(buffer.asAggregate());
+          }
+        }
+      
+        DataSessionBranch branch
+          =resourceManager.branch(transaction);
+        branch.addBuffer(a);
+
+        transaction.commit();
+      }
+      finally
+      {
+        transaction.complete();
+      }
+    }
+  }
 }  
+  
+class DataSessionResourceManager
+    extends ResourceManager<DataSessionBranch>
+{
+
+  private final DataSession session;
+  
+  public DataSessionResourceManager(DataSession session)
+  { this.session=session;
+  }
+  
+  @Override
+  public DataSessionBranch createBranch(
+    Transaction transaction)
+    throws TransactionException
+  { return new DataSessionBranch(session);
+  }
+    
+}  
+      
   
   
   
