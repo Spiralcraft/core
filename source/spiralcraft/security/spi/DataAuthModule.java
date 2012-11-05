@@ -339,7 +339,6 @@ public class DataAuthModule
     { 
       dataSession=new DataSession();
       dataSession.setSpace(space);
-      dataSession.setFocus(credentialFocus);
     }
     
     @Override

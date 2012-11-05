@@ -26,7 +26,6 @@ import spiralcraft.data.Type;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Tuple;
 import spiralcraft.lang.Contextual;
-import spiralcraft.lang.Focus;
 
 
 /**
@@ -73,7 +72,7 @@ public interface Store
    * @return A DataConsumer which is used to push one or more updates into
    *   this Store
    */
-  DataConsumer<DeltaTuple> getUpdater(Type<?> type,Focus<?> focus)
+  DataConsumer<DeltaTuple> getUpdater(Type<?> type)
     throws DataException;
 
   /**

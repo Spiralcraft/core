@@ -251,8 +251,7 @@ public class XmlStore
 
   
   @Override
-  public DataConsumer<DeltaTuple> getUpdater(
-    Type<?> type,Focus<?> focus)
+  public DataConsumer<DeltaTuple> getUpdater(Type<?> type)
     throws DataException
   {
     
@@ -658,7 +657,7 @@ public class XmlStore
     public void dataFinalize()
       throws DataException
     { 
-             
+      super.dataFinalize();         
 
     }
   }

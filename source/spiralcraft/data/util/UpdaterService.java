@@ -60,7 +60,7 @@ public class UpdaterService<Tdata extends Tuple>
             { log.fine("Inserting "+dataBuffer.size()+" rows");
             }
             DataConsumer<DeltaTuple> updater
-              =sessionChannel.get().getSpace().getUpdater(getDataType(),selfFocus);
+              =sessionChannel.get().getSpace().getUpdater(getDataType());
            
             updater.dataInitialize(getDataType().getFieldSet());
             try
