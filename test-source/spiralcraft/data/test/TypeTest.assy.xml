@@ -150,6 +150,21 @@
           <testX>.description=="This is a new fact"
           </testX>
         </test:Assertion>               
+
+        <test:Assertion>
+          <name>Array concat test
+          </name>
+          
+          <subjectX>
+            ([*dtask:Fetch{[@example:IntegerNode.list]}].()#{.}
+            +[*dtask:Fetch{[@example:StringNode.list]}].()#{.}
+            )#{.nodeId}
+          </subjectX>
+        
+          <testX>.==[{"1","2","3","4","5","6"}]
+          </testX>
+        </test:Assertion>               
+
 <!--
         <task:Eval>
         

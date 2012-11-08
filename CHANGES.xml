@@ -12,6 +12,21 @@
     
     <detail> 
       <scm:Change>
+        <revision>-dev26
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where array concatenation didn't find common
+            base type for spiralcraft.data types.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/lang/DataReflector.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev25
         </revision>
       
