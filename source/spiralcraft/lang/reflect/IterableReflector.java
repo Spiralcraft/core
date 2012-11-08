@@ -370,7 +370,9 @@ public class IterableReflector<I>
   
   @Override
   public String toString()
-  { return super.toString()+":"+targetClass.getName();
+  { 
+    return super.toString()+":"+targetClass.getName()
+      +"[component="+componentReflector.getTypeURI()+"]";
   }
 
   @Override

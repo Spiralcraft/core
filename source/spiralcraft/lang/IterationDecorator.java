@@ -71,5 +71,10 @@ public abstract class IterationDecorator<T,I>
   }
   
   
-  
+  @Override
+  public String toString()
+  { return super.toString()
+      +":[source="+source.getReflector().getTypeURI()
+      +", component="+componentReflector.getTypeURI()+"]";
+  }
 }

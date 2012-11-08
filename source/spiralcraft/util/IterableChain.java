@@ -38,6 +38,12 @@ public class IterableChain<T>
   { return new ChainIterator();
   }
 
+  @Override
+  public String toString()
+  { 
+    return super.toString()+":["+ArrayUtil.format(chain,",","")+"]";
+  }
+  
   class ChainIterator
     implements Iterator<T>
   {
