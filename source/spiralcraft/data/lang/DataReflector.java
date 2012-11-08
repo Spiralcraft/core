@@ -331,4 +331,46 @@ public abstract class DataReflector<T extends DataComposite>
       return alternate.disambiguate(this);
     }
   }  
+  
+  @Override
+  public Reflector<?> getCommonType(Reflector<?> other)
+  {
+    if (other==this)
+    { return this;
+    }
+    
+    if (other instanceof DataReflector)
+    {
+     
+      Type<?> otherType=((DataReflector<?>) other).getType();
+      if (type.isAssignableFrom(otherType))
+      { return this;
+      }
+      else if (otherType.isAssignableFrom(type))
+      { return other;
+      }
+      else if (type.getBaseType()!=null)
+      { 
+        try
+        {
+          return DataReflector.getInstance(type.getBaseType())
+            .getCommonType(other);
+        }
+        catch (BindException x)
+        { 
+          throw new RuntimeException
+            ("Error getting DataReflector for type "
+             +type.getBaseType().getURI(),x
+            );
+        }
+      }
+      else
+      { return super.getCommonType(other);
+      }
+    }
+    else
+    { return super.getCommonType(other);
+    }
+      
+  }  
 }
