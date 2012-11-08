@@ -153,6 +153,28 @@
       </x>
           
     </meta:Method>
+
+    <meta:Method>
+      <name>findByName</name>
+      
+      <static>true
+      </static>
+      
+      <parameterTypes>
+        <String.type/>
+      </parameterTypes>
+      
+      <returnType>
+        <sec:Login.type/>
+      </returnType>
+      
+      <contextX>{ name:[@j:String] }
+      </contextX>
+          
+      <x>[*dtask:Fetch{[@sec:Login],[{`username:=name`}]}].()
+      </x>
+          
+    </meta:Method>
     
     <meta:Method>
       <name>securePassword
