@@ -12,6 +12,53 @@
     
     <detail> 
       <scm:Change>
+        <revision>-dev27
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix bugs in delete pathway when multiple deletes for
+             the same tuple are received in the same transaction.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>spi/ArrayDeltaTuple.java
+          </URI>
+          <URI>spi/ArrayJournalTuple.java
+          </URI>
+          <URI>xml/XmlQueryable.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev27
+        </revision>
+      
+        <notes>
+          <scm:Note>Component message tracing support
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/app
+        </path>
+        
+        <resources>
+          <URI>components/Trace.java
+          </URI>
+          <URI>kit/TraceHandler.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev26
         </revision>
       
