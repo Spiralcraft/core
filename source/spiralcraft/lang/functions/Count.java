@@ -84,7 +84,7 @@ public class Count
     @Override
     protected Integer latest(
       ViewState<Integer> state)
-    { return state.data;
+    { return state.data==null?0:state.data;
     }
 
     @Override
