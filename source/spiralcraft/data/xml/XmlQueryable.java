@@ -1297,9 +1297,14 @@ public class XmlQueryable
       { log.fine("Rebase during prepare:\r\n  "+prepared+"  \r\n  was  "+tuple);
       }
       
-      
-      // Original might be rebased
-      preparedUpdates.add((JournalTuple) prepared.getOriginal());
+      if (prepared.getOriginal()!=null)
+      {
+        // Original might be rebased
+        preparedUpdates.add((JournalTuple) prepared.getOriginal());
+      }
+      else
+      { throw new DataException("Original is null for "+tuple);
+      }
 
 //      if (jt!= prepared.getOriginal() )
 //      { log.fine("Added updated original "+prepared.getOriginal());
@@ -1434,8 +1439,14 @@ public class XmlQueryable
               if (storeVersion!=null)
               {  
                 storeVersion.prepareUpdate(dt);
-                // Original might be rebased
-                preparedUpdates.add((JournalTuple) dt.getOriginal());
+                if (dt.getOriginal()!=null)
+                {
+                  // Original might be rebased
+                  preparedUpdates.add((JournalTuple) dt.getOriginal());
+                }
+                else
+                { throw new DataException("Original is null: "+dt);
+                }
               }
               
             }

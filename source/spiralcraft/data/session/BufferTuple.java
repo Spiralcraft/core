@@ -81,7 +81,7 @@ public class BufferTuple
     if (original instanceof JournalTuple)
     { 
       JournalTuple jt=((JournalTuple) original).latestVersion();
-      if (!jt.isDeletedVersion())
+      if (jt!=null && !jt.isDeletedVersion())
       { this.original=jt;
       }
     }

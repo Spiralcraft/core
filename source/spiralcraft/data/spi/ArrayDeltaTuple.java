@@ -213,7 +213,7 @@ public class ArrayDeltaTuple
   { 
     if (newOriginal==null)
     { 
-      if (original!=null)
+      if (original!=null && !delete)
       { throw new UpdateConflictException(this,null);
       }
       else

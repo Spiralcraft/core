@@ -29,7 +29,10 @@ public class ArrayJournalTuple
   private final long version;
   private final long transactionId;
   private volatile JournalTuple nextVersion;
+  
+  // Set when a transaction is committed
   private volatile DeltaTuple delta;
+  
   private volatile TransactionContext transactionContext;
    
   
@@ -158,6 +161,9 @@ public class ArrayJournalTuple
             {
               if (this.delta==null)
               {
+                // This transaction hasn't completed yet but this tuple has
+                //   already been modified
+                
                 if (transactionContext.transactionId==transactionId())
                 { 
                   // Multiple updates in the same transaction
@@ -167,10 +173,25 @@ public class ArrayJournalTuple
                     // log.fine("Rebased "+delta);
                     transactionContext.forward=true;
                   }
-                  return transactionContext.nextVersion.prepareUpdate(delta);
+                  
+                  if (transactionContext.nextVersion!=null)
+                  { return transactionContext.nextVersion.prepareUpdate(delta);
+                  }
+                  else
+                  { 
+                    // The last edit was a delete
+                    if (!delta.isDelete())
+                    { 
+                      // Right now we only support stacking deletes
+                      throw new DataException
+                        ("Can't apply update- already deleted: "+id);
+                    }
+                  }
                 }
                 else
                 {
+                  // There's another transaction trying to modify this tuple
+                  
                   try
                   { 
                     log.log(Level.FINE,"Transaction "+transactionId()
