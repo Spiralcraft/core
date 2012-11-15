@@ -64,7 +64,9 @@ public class SubcontextNode<T,S>
   public Node[] getSources()
   { 
     ArrayList<Node> ret=new ArrayList<Node>();
-    ret.add(_source);
+    if (_source!=null)
+    { ret.add(_source);
+    }
     ret.addAll(_subcontextList);
     return ret.toArray(new Node[ret.size()]);
   }  
@@ -83,7 +85,7 @@ public class SubcontextNode<T,S>
       }
     }
     SubcontextNode<T,S> copy
-      =new SubcontextNode<T,S>(_source.copy(visitor),nodes);
+      =new SubcontextNode<T,S>((_source!=null?_source.copy(visitor):null),nodes);
     if (!dirty && copy._source==_source )
     { return this;
     }
@@ -97,7 +99,10 @@ public class SubcontextNode<T,S>
   public String reconstruct()
   { 
     StringBuilder ret=new StringBuilder();
-    ret.append(_source.reconstruct()+" { ");
+    if (_source!=null)
+    { ret.append(_source.reconstruct());
+    }
+    ret.append(" { ");
     boolean first=true;
     for (Node node : _subcontextList)
     {
@@ -119,7 +124,11 @@ public class SubcontextNode<T,S>
     throws BindException
   {
    
-    Channel<S> sourceChannel=focus.<S>bind(Expression.<S>create(_source));
+    Channel<S> sourceChannel
+      =_source!=null
+      ?focus.<S>bind(Expression.<S>create(_source))
+      :(Channel<S>) focus.getSubject()
+      ;
     
     if (sourceChannel instanceof FocusChannel)
     { focus=((FocusChannel) sourceChannel).getFocus();
@@ -127,7 +136,16 @@ public class SubcontextNode<T,S>
     
     Channel<?>[] channels=new Channel<?>[_subcontextList.size()];
     
-    if (sourceChannel.isConstant())
+    if (_source==null)
+    {
+      int i=0;
+      for (Node node:_subcontextList)
+      { channels[i++]=focus.bind(Expression.<S>create(node));
+      }
+      return new SubcontextChannel(sourceChannel,null,channels);
+      
+    }
+    else if (sourceChannel.isConstant())
     {
       Focus<S> subFocus=focus.telescope(sourceChannel);
       int i=0;

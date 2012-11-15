@@ -1,5 +1,19 @@
 package spiralcraft.lang.parser;
 
+import spiralcraft.common.ContextualException;
+import spiralcraft.lang.AccessException;
+import spiralcraft.lang.BindException;
+import spiralcraft.lang.Channel;
+import spiralcraft.lang.Expression;
+import spiralcraft.lang.Focus;
+import spiralcraft.lang.Functor;
+import spiralcraft.lang.Reflector;
+import spiralcraft.lang.kit.ConstantChannel;
+import spiralcraft.lang.spi.AbstractChannel;
+import spiralcraft.lang.spi.FocusChannel;
+import spiralcraft.task.Eval;
+import spiralcraft.task.Scenario;
+
 public class FunctionNode
   extends Node
 {
@@ -7,6 +21,7 @@ public class FunctionNode
   private final Node body;
   private String typeQName;
   
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public FunctionNode(String typeQName,Node context,Node body)
   { 
     this.context=context;
@@ -36,6 +51,26 @@ public class FunctionNode
   public String reconstruct()
   { return "[#"+typeQName+context.reconstruct()+"]"+body.reconstruct();
   }
+  
+  @SuppressWarnings({ "unchecked", "rawtypes"
+    })
+  @Override
+  public Channel<?> bind(Focus<?> focus)
+    throws BindException
+  {
+    try
+    {
+      Scenario functor
+        =new Eval(Expression.create(context),Expression.create(body));
+      Focus<?> functorFocus=functor.bind(focus);
+      Channel<?> ret=new ConstantChannel(functor.reflect(),functor);
+      ret.setContext(functorFocus);
+      return new FocusChannel(ret,functorFocus);
+    }
+    catch (ContextualException x)
+    { throw new BindException("Error binding function",x); 
+    }
+  }
 
   @Override
   public void dumpTree(
@@ -50,3 +85,31 @@ public class FunctionNode
   }
 
 }
+
+class FunctionChannel<T>
+  extends AbstractChannel<Functor<T>>
+{
+  public FunctionChannel(Reflector<Functor<T>> reflector)
+  { 
+    
+    super(reflector);
+  }
+
+  @Override
+  protected Functor<T> retrieve()
+  {
+    
+    
+    return null;
+  }
+
+  @Override
+  protected boolean store(
+    Functor<T> val)
+    throws AccessException
+  {
+    
+    return false;
+  }
+}
+

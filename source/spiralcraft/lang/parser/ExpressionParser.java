@@ -814,7 +814,11 @@ public class ExpressionParser
     if (subexpressionList==null)
     { throwUnexpected("Subcontext expression list cannot be empty");
     }
-    Node ret=primary.subcontext(subexpressionList);
+    Node ret
+      =primary!=null
+      ?primary.subcontext(subexpressionList)
+      :new SubcontextNode<Object,Object>(null,subexpressionList)
+      ;
     expect('}');
     return ret;
   }
@@ -1256,10 +1260,13 @@ public class ExpressionParser
     String typeQName=parseURIName("]{");
     if (_tokenizer.ttype=='{')
     {
-      Node context=parseStruct(null);
+      expect('{');
+      Node context=parseExpression();
+      expect('}');
       expect(']');
+      
       return new FunctionNode
-        (typeQName,context,parseSubcontextExpression(context));
+        (typeQName,context,parseSubcontextExpression(null));
       
     }
     else
