@@ -646,6 +646,85 @@
     </test:Assertion>        
     
     <test:Assertion>
+      <name>Lexical similarity measure with functions
+      </name>
+      
+      <subjectX>
+      [#nn]
+      {
+        
+        lineSet
+          :=[@j:String]
+          .([*jn:URI{"in/LoremIpsumList.txt"}]
+            .[*vfsf:Resolve]
+            .[*vfsf:IO]
+          )
+          .split("\r\n")
+        ,root
+          :=.lineSet[0]
+        ,friendNormal
+          :~[#{[@j:String].@nil}]
+              { .replace(",","")
+                .replace(".","")
+                .replace("*","")
+                .trim()
+                 .toLowerCase()
+              }
+        ,friendFn
+          :~[#{[@j:String].@nil}]
+              {.split(" ")#{[nn].friendNormal.(.)}[!.empty]}
+        ,friends
+          :=.friendFn.(.root)
+        ,map
+          :=.friends
+          #{
+            { word:=..
+            , lines:=...lineSet[ [nn].friendFn.(.) ?= ..word ]
+            }
+          }
+        ,reduce
+          :=.map
+          $[ .lines.[*fn:Concatenate]
+          ]
+          $[
+            { line:=..
+            , count:=..[*fn:Count]
+            }
+          ]
+          
+      }
+      {
+        "\r\n  root="+.root
+        +"\r\n  friends="+[@ju:Arrays].@deepToString(.friends)
+        +"\r\n  map="
+        +.map
+          $[ 
+            ("\r\n   "+.word
+            +.lines
+              $[
+                ("\r\n         "+.)
+                .[*fn:StringCat] 
+              ]
+            )
+            .[*fn:StringCat] 
+          ]
+        +.reduce
+          $[ 
+            ("\r\n   rln: "+.count+": "+.line)
+            .[*fn:StringCat] 
+          ]
+        
+      }
+      
+      
+      </subjectX>
+      
+      <testX>true
+      </testX>
+    
+    </test:Assertion>  
+
+    <test:Assertion>
       <name>Lexical similarity measure
       </name>
       
@@ -1015,6 +1094,38 @@
       </testX>
     
     </test:Assertion> 
+    
+    <test:Assertion>
+      <name>Eval
+      </name>
+      
+      <subjectX>
+      {
+        value:=10
+        ,add:~[*task:Eval{`[@j:Integer].@nil`,`..value+.`}]
+      }.add(5)
+      </subjectX>
+      
+      <testX>.==15
+      </testX>
+    
+    </test:Assertion>     
+
+    <test:Assertion>
+      <name>Function
+      </name>
+      
+      <subjectX>
+      {
+        value:=10
+        ,add:~[#{[@j:Integer].@nil}]{..value+.}
+      }.add(5)
+      </subjectX>
+      
+      <testX>.==15
+      </testX>
+    
+    </test:Assertion>     
 
   </sequence>
         

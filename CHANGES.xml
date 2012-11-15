@@ -12,6 +12,29 @@
     
     <detail> 
       <scm:Change>
+        <revision>-dev28
+        </revision>
+      
+        <notes>
+          <scm:Note>Complete implementation of Function Literal syntax
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/parser
+        </path>
+        
+        <resources>
+          <URI>ExpressionParser.java
+          </URI>
+          <URI>FunctionNode.java
+          </URI>
+          <URI>SubcontextNode.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev27
         </revision>
       
