@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.parser;
 
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Reflector;
 
@@ -72,6 +73,7 @@ public class RelationalNode<T1 extends Comparable<T1>,T2 extends T1>
   @Override
   protected LogicalTranslator 
     newTranslator(final Reflector<T1> r1,final Reflector<T2> r2)
+      throws BindException
   { 
 
     return new RelationalTranslator(r1,r2)

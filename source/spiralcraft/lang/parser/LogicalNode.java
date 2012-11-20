@@ -146,7 +146,8 @@ public abstract class LogicalNode<T1,T2>
   }
   
   protected abstract LogicalTranslator 
-    newTranslator(Reflector<T1> r1,Reflector<T2> r2);
+    newTranslator(Reflector<T1> r1,Reflector<T2> r2)
+      throws BindException;
   
   abstract class LogicalTranslator
     implements Translator<Boolean,T1>
@@ -172,6 +173,7 @@ public abstract class LogicalNode<T1,T2>
     
     @SuppressWarnings("unchecked")
     protected RelationalTranslator(Reflector<T1> r1, Reflector<T2> r2)
+      throws BindException
     {
       if (r1.getContentType()!=r2.getContentType())
       {
@@ -188,6 +190,13 @@ public abstract class LogicalNode<T1,T2>
       else
       { coercion=null;
       }
+      
+      checkTypes();
+    }
+    
+    protected void checkTypes()
+      throws BindException
+    {
     }
     
     

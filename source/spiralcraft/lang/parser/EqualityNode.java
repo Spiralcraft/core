@@ -15,6 +15,7 @@
 package spiralcraft.lang.parser;
 
 
+import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 //import spiralcraft.log.ClassLogger;
 import spiralcraft.lang.Reflector;
@@ -56,13 +57,30 @@ public class EqualityNode<X>
   @Override
   protected LogicalTranslator 
     newTranslator(final Reflector<X> r1,final Reflector<X> r2)
+      throws BindException
   { 
+    
     return new RelationalTranslator(r1,r2)
     {  
       boolean number
         =Number.class.isAssignableFrom(r1.getContentType())
         && Number.class.isAssignableFrom(r2.getContentType());
       
+      @Override
+      protected void checkTypes()
+        throws BindException
+      { 
+        if (coercion==null 
+            && r1!=r2
+            && !r1.isAssignableFrom(r2)
+            && !r2.isAssignableFrom(r1)
+            )
+        { throw new BindException
+            ("Incompatible types: "+r1.getTypeURI()
+            +" cannot be compared to "+r2.getTypeURI()
+            );
+        }
+      }
       
       @SuppressWarnings("unchecked")
       @Override
