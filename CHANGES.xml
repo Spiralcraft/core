@@ -12,6 +12,35 @@
     
     <detail> 
       <scm:Change>
+        <revision>-dev29
+        </revision>
+      
+        <notes>
+          <scm:Note>Throw exception for "==" operator when operand types are
+            not derived from one another and would silently return false
+          </scm:Note>
+          <scm:Note>Throw exception when the parameters for an index search
+            query are of incompatible types to the indexed fields.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/spi/AbstractAggregateQueryable.java
+          </URI>
+          <URI>lang/parser/EqualityNode.java
+          </URI>
+          <URI>lang/parser/LogicalNode.java
+          </URI>
+          <URI>lang/parser/RelationalNode.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev28
         </revision>
       
