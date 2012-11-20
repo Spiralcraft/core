@@ -39,6 +39,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.Reflector;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.kit.ConstantChannel;
@@ -302,13 +303,33 @@ public abstract class AbstractAggregateQueryable<T extends Tuple>
       for (Expression<?> expr : rhsExpressions)
       { 
         try
-        { parameters[i++]=focus.bind(expr);
+        { parameters[i]=focus.bind(expr);
         }
         catch (BindException x)
         { 
           throw new DataException
             ("Error binding EquiJoin parameter expression "+expr,x);
         }
+        
+        Reflector<?> paramReflector=parameters[i].getReflector();
+        Reflector<?> fieldReflector
+          =projection.getFieldByIndex(i).getContentReflector();
+        if (paramReflector!=fieldReflector
+            && paramReflector!=null
+            && fieldReflector!=null
+            && !paramReflector.isAssignableFrom(fieldReflector)
+            && !fieldReflector.isAssignableFrom(paramReflector)
+            )
+        { 
+          throw new DataException
+            ("Types are not comparable: "
+              +expr.toString()+"("+paramReflector.getTypeURI()+")"
+              +" cannot be compared to "
+              +projection.getFieldByIndex(i).getURI()
+              +"("+fieldReflector.getTypeURI()+")"
+            );
+        }
+        i++;
       }
       
       debugTrace=debugLevel.canLog(Level.TRACE);
