@@ -151,6 +151,20 @@ public class ArrayReflector<I>
   { return uri;
   }
 
+  public Reflector<I> getComponentReflector()
+  { return componentReflector;
+  }
+  
+  public Reflector<?> getRootComponentReflector()
+  {
+    if (componentReflector instanceof ArrayReflector)
+    { return ((ArrayReflector) componentReflector).getRootComponentReflector();
+    }
+    else
+    { return componentReflector;
+    }
+  }
+  
   @Override
   public Reflector<?> disambiguate(Reflector<?> alternate)
   {
@@ -357,7 +371,7 @@ public class ArrayReflector<I>
   
   @Override
   public String toString()
-  { return super.toString()+":"+targetClass.getName();
+  { return super.toString()+":"+targetClass.getName()+"["+componentReflector+"]";
   }
 
   @Override
