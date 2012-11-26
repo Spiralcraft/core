@@ -12,6 +12,21 @@
     
     <detail> 
       <scm:Change>
+        <revision>-dev30
+        </revision>
+      
+        <notes>
+          <scm:Note>ArrayReflector.getComponentReflector and 
+            .getRootComponentReflector() provide helpful info for 
+            meta-operations involving array data.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/reflect/ArrayReflector.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
         <revision>-dev29
         </revision>
       
