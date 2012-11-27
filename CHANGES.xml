@@ -12,6 +12,19 @@
     
     <detail> 
       <scm:Change>
+        <revision>-dev31
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix "not linked" exception when binding EntityFields
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/core/TypeImpl.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev30
         </revision>
       
