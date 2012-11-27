@@ -475,7 +475,9 @@ public class TypeImpl<T>
   public <X> Field<X> getField(String name)
   {
     if (!linked)
-    { throw new IllegalStateException("Type not linked: "+this);
+    { 
+      link();
+      //throw new IllegalStateException("Type not linked: "+this);
     }
     Field<X> field=null;
     if (getScheme()!=null)
