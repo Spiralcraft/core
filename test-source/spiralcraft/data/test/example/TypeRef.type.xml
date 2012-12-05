@@ -1,0 +1,50 @@
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:example="class:/spiralcraft/data/test/example"
+  >
+  <fields>
+    <meta:SequenceField>
+      
+      <name>id
+      </name>
+          
+      <type>
+        <String.type/>
+      </type>
+
+    </meta:SequenceField>
+
+    <meta:Field>
+          
+      <name>label
+      </name>
+         
+      <type>
+       	<String.type/>
+      </type>
+
+    </meta:Field>
+
+    <meta:Field>
+          
+      <name>type
+      </name>
+         
+      <type>
+        <meta:Type.type/>
+      </type>
+
+    </meta:Field>    
+  </fields>
+  
+  <keys>
+    <meta:Key>
+      <fieldList>id
+      </fieldList>
+      
+      <primary>true
+      </primary>
+    </meta:Key>
+  </keys>
+
+</meta:Type>

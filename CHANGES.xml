@@ -12,6 +12,44 @@
     
     <detail> 
       <scm:Change>
+        <revision>-dev32
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where Channel.isWritable() erroneously returned 
+            false for Channels that directly referenced a public field, even 
+            though set() functioned properly.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/core/TypeImpl.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev32
+        </revision>
+      
+        <notes>
+          <scm:Note>Add support for scaffolding to components to allow generic
+            components to be used in any scaffolding model.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/app
+        </path>
+        
+        <resources>
+          <URI>Component.java
+          </URI>
+          <URI>kit/AbstractComponent.java
+          </URI>
+          <URI>kit/StandardContainer.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev31
         </revision>
       

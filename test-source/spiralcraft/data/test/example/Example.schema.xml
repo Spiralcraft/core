@@ -62,5 +62,11 @@
       <type><example:StringNode.type/>
       </type>
     </meta:Entity>
+    
+    <meta:Entity>
+      <type><example:TypeRef.type/>
+      </type>
+    </meta:Entity>
+    
   </entities>
 </meta:Schema>
