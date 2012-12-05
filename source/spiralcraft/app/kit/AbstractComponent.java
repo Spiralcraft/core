@@ -31,6 +31,7 @@ import spiralcraft.app.MessageHandlerChain;
 import spiralcraft.app.Parent;
 import spiralcraft.app.Message;
 import spiralcraft.app.Dispatcher;
+import spiralcraft.app.Scaffold;
 import spiralcraft.app.State;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
@@ -100,6 +101,8 @@ public class AbstractComponent
   private DeclarationInfo declarationInfo;
   protected boolean createEmptyContainer;
   
+  private Scaffold<?> scaffold;
+  
   
   @Override
   public void setParent(Parent parent)
@@ -109,6 +112,11 @@ public class AbstractComponent
   @Override
   public Parent getParent()
   { return parent;
+  }
+  
+  @Override
+  public void setScaffold(Scaffold<?> scaffold)
+  { this.scaffold=scaffold;
   }
   
   /**
@@ -673,11 +681,19 @@ public class AbstractComponent
     bindContextuals(focusChain,exportContextuals);
 
     List<Component> children=composeChildren(focusChain);
-    if (children!=null)
-    { 
 
+    @SuppressWarnings("unchecked")
+    List<Scaffold<?>> extChildren
+      =(List<Scaffold<?>>) (scaffold!=null?scaffold.getChildren():null);
+    
+    if (children!=null || (extChildren!=null && !extChildren.isEmpty()))
+    { 
       childContainer
-        =createChildContainer(children.toArray(new Component[children.size()]));
+        =createChildContainer
+          (children!=null
+            ?children.toArray(new Component[children.size()])
+            :new Component[0]
+          );
     }
       
     if (childContainer!=null)
@@ -742,11 +758,14 @@ public class AbstractComponent
    * @param children
    * @return
    */
+  @SuppressWarnings("unchecked")
   protected Container createChildContainer(Component[] children)
   { 
     StandardContainer container=new StandardContainer(this,children);
     container.setLog(log);
     container.setLogLevel(logLevel);
+    container.setChildScaffold
+      ( (List<Scaffold<?>>) (scaffold!=null?scaffold.getChildren():null));
     return container;
   }
   

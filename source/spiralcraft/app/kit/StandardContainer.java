@@ -29,6 +29,7 @@ import spiralcraft.app.DispatchFilter;
 import spiralcraft.app.Dispatcher;
 import spiralcraft.app.Message;
 import spiralcraft.app.Parent;
+import spiralcraft.app.Scaffold;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
@@ -36,6 +37,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.Level;
 import spiralcraft.log.Log;
+import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ListMap;
 
 public class StandardContainer
@@ -53,6 +55,7 @@ public class StandardContainer
   protected HashMap<String,Integer> idMap;
   protected CallContext callContext;
   protected DispatchFilter dispatchFilter;
+  protected List<Scaffold<?>> extChildren;
 
   public StandardContainer(Parent parent)
   { this.parent=parent;
@@ -70,6 +73,10 @@ public class StandardContainer
 
   public void setLogLevel(Level level)
   { this.logLevel=level;
+  }
+  
+  public void setChildScaffold(List<Scaffold<?>> extChildren)
+  { this.extChildren=extChildren;
   }
   
   @Override
@@ -104,36 +111,59 @@ public class StandardContainer
   protected final void bindChildren(Focus<?> focusChain)
     throws ContextualException
   { 
-    if (children!=null)
+    if (children!=null || (extChildren!=null && !extChildren.isEmpty()))
     {
       int index=0;
       subscribedTypes=new HashSet<Message.Type>();
-      for (Component child:children)
-      { 
-        bindChild(focusChain,child);
-        String id=child.getId();
-        if (id!=null)
+
+      if (children!=null)
+      {
+        for (Component child:children)
         { 
-          if (idMap==null)
-          { idMap=new HashMap<String,Integer>();
-          }
-          idMap.put(id,index);
+          bindChild(focusChain,child);
+          linkChild(child,index);
+          index++;
         }
-        Message.Type[] types=child.getSubscribedTypes();
-        if (types!=null)
-        {
-          if (childSubscriptions==null)
-          { childSubscriptions=new ListMap<Message.Type,Integer>();
-          }
-          
-          for (Message.Type type : types)
-          { 
-            childSubscriptions.add(type,index);
-            subscribedTypes.add(type);
-          }
-        }
+      }
+      
+      if (extChildren!=null && !extChildren.isEmpty())
+      { 
+        children=ArrayUtil.expandBy
+          (children!=null?children:new Component[0],extChildren.size());
         
-        index++;
+        for (Scaffold<?> childScaffold:extChildren)
+        { 
+          Component child=childScaffold.bind(focusChain,parent);
+          children[index]=child;
+          linkChild(child,index);
+          index++;
+        }
+      }
+    }
+    
+  }
+  
+  protected void linkChild(Component child,int index)
+  {
+    String id=child.getId();
+    if (id!=null)
+    {  
+      if (idMap==null)
+      { idMap=new HashMap<String,Integer>();
+      }
+      idMap.put(id,index);
+    }
+    Message.Type[] types=child.getSubscribedTypes();
+    if (types!=null)
+    {
+      if (childSubscriptions==null)
+      { childSubscriptions=new ListMap<Message.Type,Integer>();
+      }
+    
+      for (Message.Type type : types)
+      { 
+        childSubscriptions.add(type,index);
+        subscribedTypes.add(type);
       }
     }
     

@@ -130,4 +130,12 @@ public interface Component
    * @return This Component's identifier
    */
   String getId();
+  
+  /**
+   * Provide a reference to the scaffold that defines this component within
+   *   the context of some external structural framework
+   * 
+   * @param scaffold
+   */
+  void setScaffold(Scaffold<?> scaffold);
 }
