@@ -27,6 +27,7 @@ class BeanFieldChannel<Tprop,Tbean>
 
   private final Field _field;
   private final boolean _constant;
+  private boolean _writable;
   
   public BeanFieldChannel
     (Channel<Tbean> source
@@ -37,7 +38,10 @@ class BeanFieldChannel<Tprop,Tbean>
     _field=translator.getField();
     _constant 
       = source.isConstant() && 
-        Modifier.isFinal(translator.getField().getModifiers());
+        Modifier.isFinal(_field.getModifiers());
+    _writable
+      =Modifier.isPublic(_field.getModifiers())
+        && !Modifier.isFinal(_field.getModifiers());
   }
 
 
@@ -47,6 +51,11 @@ class BeanFieldChannel<Tprop,Tbean>
   { return _constant;
   }
 
+  @Override
+  public boolean isWritable()
+  { return _writable;
+  }
+  
   @Override
   public synchronized boolean set(Object val)
     throws AccessException
