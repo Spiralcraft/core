@@ -1141,6 +1141,19 @@
     
     </test:Assertion>     
 
+    <test:Assertion>
+      <name>Array to string in concat
+      </name>
+      
+      <subjectX>
+        ""+[{1,2,3}]
+      </subjectX>
+      
+      <testX>.=="1,2,3"
+      </testX>
+    
+    </test:Assertion>     
+
   </sequence>
         
 </test:TestGroup>

@@ -16,6 +16,42 @@
         </revision>
       
         <notes>
+          <scm:Note>String concatenation and channel logging now use standard 
+            StringConverters instead of plain Object.toString()
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang
+        </path>
+        
+        <resources>
+          <URI>kit/members/MetaLogMember.java
+          </URI>
+          <URI>parser/BinaryOpNode.java
+          </URI>
+          <URI>spi/LogChannel.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev32
+        </revision>
+      
+        <notes>
+          <scm:Note>PlaceContext can now contain Services
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/app/PlaceContext.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev32
+        </revision>
+      
+        <notes>
           <scm:Note>Fix issue where Channel.isWritable() erroneously returned 
             false for Channels that directly referenced a public field, even 
             though set() functioned properly.
