@@ -16,6 +16,20 @@
         </revision>
       
         <notes>
+          <scm:Note>The second operand of a conditional expression can now
+            be an assignment expression
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/parser/ExpressionParser.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev32
+        </revision>
+      
+        <notes>
           <scm:Note>String concatenation and channel logging now use standard 
             StringConverters instead of plain Object.toString()
           </scm:Note>
