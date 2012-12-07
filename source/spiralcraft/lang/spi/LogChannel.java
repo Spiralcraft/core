@@ -19,6 +19,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.functions.ToString;
 import spiralcraft.log.ClassLog;
 
 /**
@@ -35,16 +36,25 @@ public class LogChannel<T>
   private static final ClassLog log=ClassLog.getInstance(LogChannel.class);
   private static volatile int nextId=1;
   
-  private final Channel<?> message;
+  private final Channel<String> message;
   private final ThreadLocalChannel<T> localSource;
   private final int id=nextId++;
   
+  @SuppressWarnings("unchecked")
   public LogChannel(Channel<T> source,Focus<?> focus,Expression<?> message)
     throws BindException
   { 
     super(source.getReflector(),source);
     this.localSource=new ThreadLocalChannel<T>(source.getReflector(),true,source);
-    this.message=focus.telescope(localSource).bind(message);
+    this.message
+      =new ToString<T>
+        (source.getReflector().getStringConverter())
+          .bindChannel
+            ((Channel<T>) focus.telescope(localSource).bind(message)
+            ,focus
+            ,null
+            );
+    
     log.debug
       ("#"+id
         +": channeling "+source.toString()

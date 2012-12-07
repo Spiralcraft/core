@@ -24,6 +24,7 @@ import spiralcraft.lang.IterationDecorator;
 
 import spiralcraft.lang.Reflector;
 
+import spiralcraft.lang.functions.ToString;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.reflect.IterableReflector;
 import spiralcraft.lang.spi.AbstractChannel;
@@ -32,6 +33,7 @@ import spiralcraft.lang.spi.TranslatorChannel;
 import spiralcraft.lang.spi.StringConcatTranslator;
 
 import spiralcraft.util.lang.ClassUtil;
+import spiralcraft.util.string.StringConverter;
 
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.IterableChain;
@@ -321,16 +323,35 @@ class StringBindingHelper
       (BeanReflector.<String>getInstance(String.class)
       );
   
-  public static final Channel<String> 
-    bindString(Channel<String> op1,Channel<?> op2,char operator)
+  @SuppressWarnings("unchecked")
+  public  static final <S> Channel<String> 
+    bindString(Channel<String> op1,Channel<S> op2,char operator)
     throws BindException
   {
     if (operator=='+')
     {
+      Channel<String> stringOp2;
+      if (op2.getReflector().getContentType()==String.class)
+      { stringOp2=(Channel<String>) op2;
+      }
+      else
+      { 
+        StringConverter<S> converter=op2.getReflector().getStringConverter();
+        if (converter==null)
+        { 
+          converter
+            =StringConverter.getInstance(op2.getReflector().getContentType());
+        }
+        if (converter==null)
+        { converter=(StringConverter<S>) StringConverter.getOneWayInstance();
+        }
+        stringOp2=new ToString<S>(converter).bindChannel(op2,null,null);
+      }
+      
       return new TranslatorChannel<String,String>
         (op1
         ,_stringConcatTranslator
-        ,new Channel<?>[] {op2}
+        ,new Channel<?>[] {stringOp2}
         );
     }
     else

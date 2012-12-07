@@ -14,7 +14,6 @@
 //
 package spiralcraft.lang.kit.members;
 
-import java.net.URI;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -42,10 +41,7 @@ public class MetaLogMember<T>
     Focus<?> focus,
     Expression<?>[] arguments)
     throws BindException
-  { 
-    assertRequiresSingleArgument
-      (arguments,URI.create("class:/java/lang/String"));
-    return new LogChannel<T>(source,focus,arguments[0]);
+  { return new LogChannel<T>(source,focus,arguments[0]);
   }
 
 }
