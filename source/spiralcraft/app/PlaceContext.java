@@ -32,6 +32,8 @@ import spiralcraft.lang.kit.AbstractChainableContext;
 import spiralcraft.lang.util.LangUtil;
 import spiralcraft.meta.Version;
 import spiralcraft.security.auth.Authenticator;
+import spiralcraft.service.Service;
+import spiralcraft.service.ServiceGroup;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
@@ -57,6 +59,7 @@ public class PlaceContext
   private Version version;
   private Space space;
   private Store[] localStores;
+  private ServiceGroup serviceGroup;
   private FileSpace fileSpace;
   private Container dataContainer;
   private PluginContext[] pluginContexts;
@@ -93,6 +96,12 @@ public class PlaceContext
   
   public void setAuthenticator(Authenticator authenticator)
   { this.authenticator=authenticator;
+  }
+  
+  public void setServices(Service[] services)
+  { 
+    this.serviceGroup=new ServiceGroup();
+    serviceGroup.setServices(services);
   }
   
   public void setVersion(Version version)
@@ -206,6 +215,10 @@ public class PlaceContext
       }
     }
     localChain.chain(fileSpace);
+    
+    if (serviceGroup!=null)
+    { localChain.chain(serviceGroup);
+    }
     
     insertNext(localChain);
     
@@ -405,6 +418,10 @@ public class PlaceContext
 
     space.start();
     
+    if (serviceGroup!=null)
+    { serviceGroup.start();
+    }
+    
     postCheckStatus();
     try
     { writeStatus();
@@ -428,6 +445,9 @@ public class PlaceContext
     { log.fine("Stopping place "+id);
     }
     
+    if (serviceGroup!=null)
+    { serviceGroup.stop();
+    }
     space.stop();
     fileSpace.stop();
     Lifecycler.stop(authorities);
