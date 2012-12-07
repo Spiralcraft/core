@@ -314,7 +314,7 @@ public class ExpressionParser
 
   /**
    * ConditionalExpression -> LogicalOrExpression 
-   *                          ( "?" conditionalExpression ":" conditionalExpression )
+   *                          ( "?" assignmentExpression ":" conditionalExpression )
    */
   private Node parseConditionalExpression()
     throws ParseException
@@ -323,7 +323,7 @@ public class ExpressionParser
     if (_tokenizer.ttype=='?' && _tokenizer.lookahead.ttype!='=')
     { 
       consumeToken();
-      Node trueResult=this.parseConditionalExpression();
+      Node trueResult=this.parseAssignmentExpression();
       if (trueResult==null)
       { throw newException("Missing conditional result expression");
       }
