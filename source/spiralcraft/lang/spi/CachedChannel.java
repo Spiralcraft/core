@@ -20,6 +20,15 @@ import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Channel;
 import spiralcraft.time.Clock;
 
+/**
+ * Provides a stable reference to a snapshot of a source value. The snapshot
+ *   will be updated when it is explicitly marked stale or when 
+ *   "refresh" is called.
+ * 
+ * @author mike
+ *
+ * @param <T>
+ */
 public class CachedChannel<T>
   extends SourcedChannel<T,T>
 {
