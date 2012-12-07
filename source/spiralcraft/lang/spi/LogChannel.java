@@ -46,11 +46,15 @@ public class LogChannel<T>
   { 
     super(source.getReflector(),source);
     this.localSource=new ThreadLocalChannel<T>(source.getReflector(),true,source);
+    
+    Channel<Object> messageObject
+      =focus.telescope(localSource).bind((Expression<Object>) message);
+    
     this.message
-      =new ToString<T>
-        (source.getReflector().getStringConverter())
+      =new ToString<Object>
+        (messageObject.getReflector().getStringConverter())
           .bindChannel
-            ((Channel<T>) focus.telescope(localSource).bind(message)
+            (messageObject
             ,focus
             ,null
             );
