@@ -10,7 +10,76 @@
     </authorId>
     
     
+
     <detail> 
+      <scm:Change>
+        <revision>-dev33
+        </revision>
+      
+        <notes>
+          <scm:Note>Added onCreate, onInit, preSave and onSave hooks to the
+            data Editor system and the Edit tasklet.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>editor/EditorBase.java
+          </URI>
+          <URI>editor/TupleEditor.java
+          </URI>
+          <URI>task/Edit.java
+          </URI>
+        </resources>
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev33
+        </revision>
+      
+        <notes>
+          <scm:Note>The ToString lang function will always fall back to using
+            the one-way StringConverter which uses Object.toString() in the
+            absence of a more suitable Converter.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/functions/ToString.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev33
+        </revision>
+      
+        <notes>
+          <scm:Note>XML data reader optimizations
+          </scm:Note>
+          <scm:Note>TypeImpl.getField(String name) optimization
+          </scm:Note>
+          <scm:Note>Speed up character processing in DataHandler
+          </scm:Note>
+          <scm:Note>Speed up Tuple.widen(Type) by inlining baseExtent
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>core/TypeImpl.java
+          </URI>
+          <URI>sax/DataHandler.java
+          </URI>
+          <URI>sax/DataHandlerBase.java
+          </URI>
+          <URI>spi/AbstractTuple.java
+          </URI>
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev32
         </revision>
