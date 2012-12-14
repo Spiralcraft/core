@@ -189,7 +189,6 @@ public abstract class AbstractTuple
       }
       else
       {
-        Tuple baseExtent=resolveBaseExtent();
         if (baseExtent!=null)
         { return baseExtent.widen(type);
         }
