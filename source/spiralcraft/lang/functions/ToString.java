@@ -61,7 +61,9 @@ public class ToString<T>
   {
 
     private StringConverter<T> converter=ToString.this.converter;
+    private final boolean readonly;
     
+    @SuppressWarnings("unchecked")
     public ToStringChannel(Channel<T> source) 
        throws BindException
     { 
@@ -70,10 +72,22 @@ public class ToString<T>
       { converter=source.getReflector().getStringConverter();
       }
       if (converter==null)
-      { 
-        throw new BindException
-          ("No StringConverter for "+source.getReflector().getTypeURI());
+      { converter=StringConverter.getInstance(source.getContentType());
       }
+      
+      if (converter==null)
+      { 
+        converter=(StringConverter<T>) StringConverter.getOneWayInstance();
+        readonly=true;
+      }
+      else
+      { readonly=false;
+      }
+    }
+    
+    @Override
+    public boolean isWritable()
+    { return !readonly && source.isWritable();
     }
     
     @Override
