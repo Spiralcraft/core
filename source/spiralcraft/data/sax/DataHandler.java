@@ -375,7 +375,8 @@ public class DataHandler
     {
       URI ref=null;
       
-      for (int i=0;i<attributes.getLength();i++)
+      final int len=attributes.getLength();
+      for (int i=0;i<len;i++)
       {
         if (handleStandardAttribute(attributes,i))
         {

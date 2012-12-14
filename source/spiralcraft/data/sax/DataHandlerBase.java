@@ -282,6 +282,7 @@ public abstract class DataHandlerBase
     protected String qName;
     protected final StringBuilder chars
       =new StringBuilder();
+    protected boolean hasCharacterContent;
 
     private Frame parentFrame;
     private boolean hasElements;
@@ -312,7 +313,7 @@ public abstract class DataHandlerBase
       )
       throws SAXException,DataException
     { 
-      if (allowMixedContent || getCharacters().length()==0)
+      if (allowMixedContent || !hasCharacterContent)
       { 
         hasElements=true;
         newChild(uri,localName,qName,attributes).start(qName);
@@ -355,7 +356,12 @@ public abstract class DataHandlerBase
       throws SAXException
     { 
       if (!hasElements)
-      { chars.append(ch,start,length);
+      { 
+        chars.append(ch,start,length);
+        
+        if (!hasCharacterContent)
+        { checkCharsForContent(ch,start,length);
+        }
       }
       else
       { 
@@ -376,12 +382,34 @@ public abstract class DataHandlerBase
             +formatPosition()+" (frame="+toString()
             );
         }
+        
+        if (!hasCharacterContent)
+        { checkCharsForContent(ch,start,length);
+        }
       }
     }
     
     // End SAX Api
     
 
+    private void checkCharsForContent(char[] ch,int  start,int length)
+    {
+      if (preserveWhitespace)
+      { hasCharacterContent=true;
+      }
+      else
+      {
+        for (int i=start;i<start+length;i++)
+        { 
+          if (!Character.isWhitespace(ch[i]))
+          { 
+            hasCharacterContent=true;
+            break;
+          }
+        }
+      }
+    }
+    
     // Begin override API
 
     /**
@@ -475,7 +503,7 @@ public abstract class DataHandlerBase
       }
     }
     
-    protected String getCharacters()
+    protected final String getCharacters()
       throws DataException
     { 
       String ret;
@@ -582,12 +610,9 @@ public abstract class DataHandlerBase
     public Object fromString(Type<?> type,String text)
       throws DataException,SAXException
     {
-      type.link();
       NamespaceContext.push(this);
       try
-      { 
-        
-        return type.fromString(text);
+      { return type.fromString(text);
       }
       catch (RuntimeException x)
       { 
