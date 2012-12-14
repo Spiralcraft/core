@@ -30,6 +30,7 @@ import spiralcraft.data.session.BufferChannel;
 //import spiralcraft.data.lang.DataReflector;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -60,6 +61,10 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   private boolean autoSave;
   private boolean autoCreate;
   private boolean autoKey;
+  private Binding<?> onCreate;
+  private Binding<?> onInit;
+  private Binding<?> onSave;
+  private Binding<?> preSave;
   
   { storeResults=true;
   }
@@ -94,6 +99,22 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   { this.autoKey=autoKey;
   }
 
+  public void setOnCreate(Binding<?> onCreate)
+  { this.onCreate=onCreate;
+  }
+
+  public void setOnInit(Binding<?> onInit)
+  { this.onInit=onInit;
+  }
+
+  public void setOnSave(Binding<?> onSave)
+  { this.onSave=onSave;
+  }
+
+  public void setPreSave(Binding<?> preSave)
+  { this.preSave=preSave;
+  }
+  
   /**
    * 
    * @return The TupleEditor 
@@ -173,6 +194,18 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
     editor.setAutoKey(autoKey);
     editor.setSource(resultChannel);
     editor.setDebug(this.debug);
+    if (onCreate!=null)
+    { editor.setOnCreate(onCreate);
+    }
+    if (onInit!=null)
+    { editor.setOnInit(onInit);
+    }
+    if (onSave!=null)
+    { editor.setOnSave(onSave);
+    }
+    if (preSave!=null)
+    { editor.setPreSave(preSave);
+    }
     focusChain=editor.bind(focusChain);
 
     focusChain.addFacet

@@ -183,6 +183,9 @@ public class TupleEditor
           BindingChannel.apply(newBindings);
         }
         
+        if (onCreate!=null && buffer.getOriginal()==null)
+        { onCreate.get();
+        }
         
         if (initialSetters!=null)
         {
@@ -192,6 +195,10 @@ public class TupleEditor
 
           for (Setter<?> setter : initialSetters)
           { setter.set();
+          }
+          
+          if (onInit!=null)
+          { onInit.get();
           }
         }
       }
@@ -226,8 +233,13 @@ public class TupleEditor
     if (buffer!=null && preSaveBindings!=null)
     { BindingChannel.apply(preSaveBindings);
     }
+
+    if (preSave!=null)
+    { preSave.get();
+    }
     
     applyKeyValues();
+    
     
     if (buffer!=null && (buffer.isDirty() || force))
     {
@@ -255,7 +267,6 @@ public class TupleEditor
         }
       }
       
-      
       buffer.save();
       
       writeToModel(buffer);
@@ -269,6 +280,11 @@ public class TupleEditor
         { setter.set();
         }
       }
+      
+      if (onSave!=null)
+      { onSave.get();
+      }
+      
     }
     else
     { 
@@ -369,9 +385,24 @@ public class TupleEditor
     newSetters=Assignment.bindArray(newAssignments,focus);
     BindingChannel.bindTarget(newBindings,focus);
     BindingChannel.bindTarget(preSaveBindings,focus);
+    
+    
 
     initialSetters=Assignment.bindArray(initialAssignments,focus);
     publishedSetters=Assignment.bindArray(publishedAssignments,focus);
+    
+    if (onCreate!=null)
+    { onCreate.bind(focus);
+    }
+    if (onInit!=null)
+    { onInit.bind(focus);
+    }
+    if (onSave!=null)
+    { onSave.bind(focus);
+    }
+    if (preSave!=null)
+    { preSave.bind(focus);
+    }
     bindKeys(focus);
     return super.bindExports(focus);
   }

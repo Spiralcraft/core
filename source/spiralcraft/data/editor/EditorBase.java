@@ -40,6 +40,7 @@ import spiralcraft.data.types.meta.MetadataType;
 
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Context;
 import spiralcraft.lang.Focus;
@@ -73,7 +74,10 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   protected Assignment<?>[] newAssignments;
   protected Assignment<?>[] publishedAssignments;
   
-
+  protected Binding<?> onCreate;
+  protected Binding<?> onInit;
+  protected Binding<?> preSave;
+  protected Binding<?> onSave;
 
   private Channel<Tuple> parentChannel;
   private Channel<Tuple> parentKeyChannel;
@@ -188,6 +192,22 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   { this.autoKey=autoKey;
   }
   
+  public void setOnCreate(Binding<?> onCreate)
+  { this.onCreate=onCreate;
+  }
+
+  public void setOnInit(Binding<?> onInit)
+  { this.onInit=onInit;
+  }
+  
+  public void setOnSave(Binding<?> onSave)
+  { this.onSave=onSave;
+  }
+
+  public void setPreSave(Binding<?> preSave)
+  { this.preSave=preSave;
+  }
+
   public void setDebug(boolean debug)
   { this.debug=debug;
   }
