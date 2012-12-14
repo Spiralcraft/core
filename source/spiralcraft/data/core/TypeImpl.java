@@ -31,6 +31,7 @@ import spiralcraft.data.util.InstanceResolver;
 
 import java.net.URI;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import spiralcraft.lang.spi.Translator;
@@ -72,6 +73,8 @@ public class TypeImpl<T>
   
   protected boolean rulesResolved;
   protected Translator<?,T> externalizer;
+  
+  private HashMap<String,Field<?>> linkedFieldMap;
   
   private boolean linked;  
   
@@ -408,6 +411,9 @@ public class TypeImpl<T>
         { ((MethodImpl) method).resolve();
         }
       }
+      
+      optimizeMemberLookup();
+
     }
     catch (Exception x)
     { throw new RuntimeDataException("Error linking "+uri,x);
@@ -419,7 +425,26 @@ public class TypeImpl<T>
 
     
   }
+
+  protected void optimizeMemberLookup()
+  {
+    linkedFieldMap=new HashMap<String,Field<?>>();
     
+    if (baseType!=null)
+    { 
+      for (Field<?> field: baseType.getFieldSet().fieldIterable())
+      { linkedFieldMap.put(field.getName(),field);
+      }
+    }
+      
+    if (scheme!=null)
+    {
+      for (Field<?> field : scheme.fieldIterable())
+      { linkedFieldMap.put(field.getName(),field);
+      }
+    }
+  }
+  
   /**
    * @return The Scheme which describes the structure of this type, or null if
    *   this type is not a complex type. 
@@ -471,14 +496,15 @@ public class TypeImpl<T>
    * @param name
    * @return
    */
+  @SuppressWarnings("unchecked")
   @Override
   public <X> Field<X> getField(String name)
   {
-    if (!linked)
-    { 
-      link();
-      //throw new IllegalStateException("Type not linked: "+this);
+    link();
+    if (linkedFieldMap!=null)
+    { return (Field<X>) linkedFieldMap.get(name);
     }
+    
     Field<X> field=null;
     if (getScheme()!=null)
     { field=getScheme().<X>getFieldByName(name);
