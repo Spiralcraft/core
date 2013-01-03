@@ -77,8 +77,11 @@ public class NavContext<Toptions,Toption>
       if (pathX!=null)
       { state.currentPath=pathX.get();
       }
+      String firstElement=state.currentPath.firstElement();
       state.absoluteSelectedPath
-        =new Path(new String[]{state.currentPath.firstElement()},true);
+        =!(firstElement==null || firstElement.isEmpty())
+          ?new Path(new String[]{firstElement},true)
+          :Path.ROOT_PATH;
       state.absoluteParentPath
         =Path.ROOT_PATH;
     }
@@ -88,8 +91,13 @@ public class NavContext<Toptions,Toption>
       state.currentPath=parent.getUnresolvedPath();
       if (state.currentPath!=null)
       {
+        String firstElement=state.currentPath.firstElement();
         state.absoluteSelectedPath
-          =parent.getAbsoluteSelectedPath().append(state.currentPath.firstElement());
+          =!(firstElement==null || firstElement.isEmpty())
+            ?parent.getAbsoluteSelectedPath().append(firstElement)
+            :parent.getAbsoluteSelectedPath().asContainer()
+            ;
+            
       }
     }
     

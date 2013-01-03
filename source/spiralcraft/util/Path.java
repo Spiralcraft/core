@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import spiralcraft.common.Immutable;
+//import spiralcraft.log.ClassLog;
 import spiralcraft.util.string.StringPool;
 import spiralcraft.util.string.StringUtil;
 
@@ -31,6 +32,10 @@ import spiralcraft.util.string.StringUtil;
 public class Path
   implements Iterable<String>
 {
+//  private static final ClassLog log
+//    =ClassLog.getInstance(Path.class);
+  
+  public static final String[] EMPTY_ELEMENTS=new String[0];
   public static final Path EMPTY_PATH=new Path("",'/');
   public static final Path ROOT_PATH=new Path("/",'/');
   
@@ -56,7 +61,7 @@ public class Path
    */
   public Path()
   { 
-    _elements=new String[0];
+    _elements=EMPTY_ELEMENTS;
     _hashCode=0;
   }
 
@@ -85,10 +90,10 @@ public class Path
     
     ArrayList<String> elements=new ArrayList<String>();
     StringUtil.tokenize(source,Character.toString(delimiter),elements,false);
-    if (elements.size()>0 && elements.get(0).equals(""))
+    while (elements.size()>0 && elements.get(0).equals(""))
     { elements.remove(0);
     }
-    if (_container 
+    while (_container 
         && elements.size()>0 
         && elements.get(elements.size()-1).equals("")
         )
@@ -111,7 +116,7 @@ public class Path
   public Path(String[] elements,char delimiter,boolean absolute,boolean container)
   { 
     _absolute=absolute;
-    _elements=elements;
+    _elements=elements!=null?elements:EMPTY_ELEMENTS;
     _delimiter=delimiter;
     _container=container;
     _hashCode=computeHash();
@@ -123,7 +128,7 @@ public class Path
   public Path(String[] elements,boolean absolute)
   { 
     _absolute=absolute;
-    _elements=elements;
+    _elements=elements!=null?elements:EMPTY_ELEMENTS;
     _delimiter='/';
     _container=false;
     _hashCode=computeHash();
@@ -229,7 +234,7 @@ public class Path
       return new Path(newElements,_delimiter,_absolute,true);
     }
     else if (_absolute && _elements.length==1)
-    { return new Path(EMPTY_PATH._elements,_delimiter,_absolute,_container);
+    { return new Path(EMPTY_ELEMENTS,_delimiter,_absolute,true);
     }
     else
     { return null;
@@ -382,15 +387,29 @@ public class Path
   @Override
   public boolean equals(Object o)
   { 
+
     if (!(o instanceof Path))
     { return false;
     }
     Path path=(Path) o;
+//    log.fine("Path.equals: "+this.toString()+this._elements.length
+//        +" ? "+path.toString()+path.elements().length);
 
     if (path.isAbsolute()!=_absolute)
     { return false;
     }
-    return ArrayUtil.arrayEquals(_elements,path.elements());
+    else if (path.isContainer()!=_container)
+    { return false;
+    }
+    else if (_elements==path.elements())
+    { return true;
+    }
+    
+    boolean ret=ArrayUtil.arrayEquals(_elements,path.elements());
+//    if (ret==false)
+//    { log.fine("Path.equals: "+this.toString()+"!="+o.toString());
+//    }
+    return ret;
   }
   
   /**
