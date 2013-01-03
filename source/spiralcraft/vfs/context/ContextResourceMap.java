@@ -24,6 +24,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.kit.AbstractChainableContext;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.thread.CycleDetector;
 import spiralcraft.util.thread.ThreadLocalStack;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -69,7 +70,9 @@ public class ContextResourceMap
 //    =new InheritableThreadLocal<ContextResourceMap>();
   
   private static volatile int ID;
-
+  private static final CycleDetector<CycleRef> cycleDetector
+    =new CycleDetector<CycleRef>();
+  
   static 
   { new ContextResourceMap().push();
   }
@@ -228,62 +231,72 @@ public class ContextResourceMap
   private Resource doResolve(URI contextURI)
     throws UnresolvableURIException
   {
-    if (contextURI.getPath().length()==0)
-    { throw new UnresolvableURIException(contextURI,"URI has no path");
+    if (cycleDetector.detectOrPush(new CycleRef(this,contextURI)))
+    { throw new UnresolvableURIException(contextURI,"Cyclic contextual definition");
     }
-    String path=contextURI.getPath().substring(1);
-    String authorityName=contextURI.getAuthority();
-    if (authorityName!=null && !contextURI.isAbsolute())
-    { throw new UnresolvableURIException(contextURI,"Absolute URI has no scheme");
-    }
-    Authority authority;
-
-    if (authorityName!=null)
-    { 
-      authority=map.get(authorityName);
-      if (authority==null && parent==null)
-      { return null;
-//        throw new UnresolvableURIException
-//        (contextURI
-//          ,"Unknown context authority '"+authorityName+"' for "+contextURI
-//          +": "+id+" mappings="+map
-//        );
-      }
-    }
-    else
-    { 
-      authority=map.get("");
-      if (authority==null && parent==null)
-      { return null;
-//        throw new UnresolvableURIException
-//        (contextURI,"No default context authority for "+contextURI
-//          +": "+id+" mappings="+map
-//        );
-      }
-    }
-
-    if (authority==null)
-    { return parent.doResolve(contextURI);
-    }
-
-
-    Resource ret=authority.resolve(path);
-
-    if (ret==null && parent!=null)
-    { ret=parent.doResolve(contextURI);
-    }
-    else
+    
+    try
     {
-      if (debugLevel.canLog(Level.TRACE))
-      { 
-        log.trace
-        (ContextResourceMap.getMapId()
-          +": Resolved "+(ret!=null?ret.getURI():null)
-          +" from authority ["+authorityName+"] for "+path
-        );
+      if (contextURI.getPath().length()==0)
+      { throw new UnresolvableURIException(contextURI,"URI has no path");
       }
+      String path=contextURI.getPath().substring(1);
+      String authorityName=contextURI.getAuthority();
+      if (authorityName!=null && !contextURI.isAbsolute())
+      { throw new UnresolvableURIException(contextURI,"Absolute URI has no scheme");
+      }
+      Authority authority;
+  
+      if (authorityName!=null)
+      { 
+        authority=map.get(authorityName);
+        if (authority==null && parent==null)
+        { return null;
+  //        throw new UnresolvableURIException
+  //        (contextURI
+  //          ,"Unknown context authority '"+authorityName+"' for "+contextURI
+  //          +": "+id+" mappings="+map
+  //        );
+        }
+      }
+      else
+      { 
+        authority=map.get("");
+        if (authority==null && parent==null)
+        { return null;
+  //        throw new UnresolvableURIException
+  //        (contextURI,"No default context authority for "+contextURI
+  //          +": "+id+" mappings="+map
+  //        );
+        }
+      }
+  
+      if (authority==null)
+      { return parent.doResolve(contextURI);
+      }
+  
+  
+      Resource ret=authority.resolve(path);
+  
+      if (ret==null && parent!=null)
+      { ret=parent.doResolve(contextURI);
+      }
+      else
+      {
+        if (debugLevel.canLog(Level.TRACE))
+        { 
+          log.trace
+          (ContextResourceMap.getMapId()
+            +": Resolved "+(ret!=null?ret.getURI():null)
+            +" from authority ["+authorityName+"] for "+path
+          );
+        }
+      }
+      return ret;
     }
-    return ret;
+    finally
+    { cycleDetector.pop();
+    }
   }  
   
   @Override
@@ -301,7 +314,34 @@ public class ContextResourceMap
     setParent(parent);
     return focusChain;
   }
+  
 }
 
+class CycleRef
+{
+  private final URI uri;
+  private final ContextResourceMap map;
+  private int hash;
+   
+  public CycleRef(ContextResourceMap map,URI uri)
+  { 
+    this.map=map;
+    this.uri=uri;
+    this.hash=uri.hashCode()*37+map.hashCode();
+  }
+    
+  @Override
+  public int hashCode()
+  { return hash;
+  }
+    
+  @Override
+  public boolean equals(Object other)
+  { 
+      
+    return uri.equals( ((CycleRef) other).uri)
+      && map==(((CycleRef) other).map);
+  }
+}
 
 
