@@ -31,10 +31,22 @@ import spiralcraft.lang.Focus;
 public class SetManager<C,T>
   extends AbstractExpansionController<C,T>
 {
+  
 
   private Binding<C> setX;
   private Binding<String> idX;
 //  private Binding<Boolean> changedX;
+  
+  
+  public SetManager()
+  {
+  }
+  
+  public SetManager(Binding<C> setX,Binding<String> idX)
+  { 
+    setSetX(setX);
+    setIdX(idX);
+  }
   
   /**
    * Create the container for child components. Defaults to creating a

@@ -46,8 +46,16 @@ public class ValueState<Tvalue>
    */
   public void setValue(Tvalue value)
   { 
+    Tvalue oldValue=this.value;
     this.value=value;
     this.valid=true;
+    if (this.value!=oldValue)
+    { onValueChanged(value,oldValue);
+    }
+  }
+  
+  protected void onValueChanged(Tvalue value,Tvalue oldValue)
+  {
   }
   
   /**

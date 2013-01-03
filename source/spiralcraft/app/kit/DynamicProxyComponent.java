@@ -36,7 +36,7 @@ public class DynamicProxyComponent
   extends AbstractComponent
 {
 
-  class Handler
+  class ActivationHandler
     extends AbstractMessageHandler
   {
 
@@ -107,16 +107,45 @@ public class DynamicProxyComponent
       }
     }
   }
+  
+  class ContextHandler
+    extends AbstractMessageHandler  
+  {
+    @Override
+    protected void doHandler(
+      Dispatcher dispatcher,
+      Message message,
+      MessageHandlerChain next)
+    {
+      pushContext(dispatcher);
+      try
+      { next.handleMessage(dispatcher,message);
+      }
+      finally
+      { popContext(dispatcher);
+      }
+    }
+    
+  }
 
   protected Component createComponent(Dispatcher dispatcher)
   { return null;
+  }
+  
+  protected void pushContext(Dispatcher dispatcher)
+  {
+  }
+  
+  protected void popContext(Dispatcher dispatcher)
+  {
   }
   
   @Override
   protected void addHandlers()
   { 
     super.addHandlers();
-    addHandler(new Handler());
+    addHandler(new ContextHandler());
+    addHandler(new ActivationHandler());
   }
   
   @Override
