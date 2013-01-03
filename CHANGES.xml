@@ -13,6 +13,65 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev34
+        </revision>
+      
+        <notes>
+          <scm:Note>Detect cycles when resolving resources
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/vfs/context/ContextResourceMap.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev34
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issues related to the creation of empty path elements.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>ui/NavContext.java
+          </URI>
+          <URI>util/Path.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev34
+        </revision>
+      
+        <notes>
+          <scm:Note>Work on infrastructure to support data-driven component
+            models.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/app
+        </path>
+        
+        <resources>
+          <URI>components/SetManager.java
+          </URI>
+          <URI>kit/DynamicProxyComponent.java
+          </URI>
+          <URI>kit/TupleState.java
+          </URI>
+          <URI>kit/ValueState.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev33
         </revision>
       

@@ -465,7 +465,23 @@
       
     </test:Assertion>        
 
-     <test:Assertion>
+    <test:Assertion>
+    
+      <name>path equals
+      </name>
+
+      <subjectX contextualize="false">
+        [@util:Path].([{[@j:String].("a"),[@j:String].("b")}],'/',true,true)
+          ==[@util:Path].([{[@j:String].("a"),[@j:String].("b")}],'/',true,true)
+      </subjectX>
+      
+      <testX>
+        .
+      </testX>
+      
+    </test:Assertion>        
+
+    <test:Assertion>
     
       <name>Sequence
       </name>
