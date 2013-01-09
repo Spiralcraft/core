@@ -160,7 +160,7 @@
       </parameterTypes>
       
       <returnType>
-        <Integer.type/>
+        <Float.type/>
       </returnType>
       
       <contextX>{ score:[@j:Integer] }

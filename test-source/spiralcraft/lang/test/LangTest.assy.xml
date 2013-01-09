@@ -1152,7 +1152,18 @@
       <testX>.=="1,2,3"
       </testX>
     
-    </test:Assertion>     
+    </test:Assertion>
+    
+    <test:Assertion>
+      <name>Null is comparable to everything
+      </name>
+      <subjectX>
+        [@langtest:Bar].()
+      </subjectX>
+      
+      <testX>.!=null
+      </testX>
+    </test:Assertion>
 
   </sequence>
         

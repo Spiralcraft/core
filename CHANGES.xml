@@ -13,6 +13,36 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev35
+        </revision>
+      
+        <notes>
+          <scm:Note>Check actual type of method implementations against declared
+            return type.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/lang/TupleReflector.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev35
+        </revision>
+      
+        <notes>
+          <scm:Note>Make sure that "x==null" comparisons do not throw a
+            "types are not comparable" exception.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/parser/EqualityNode.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev34
         </revision>
       
