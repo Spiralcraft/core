@@ -81,4 +81,5 @@ public interface Method
    *   type, e.g. [@myns:MyType].@myStaticMethod(p1,p2) 
    */
   boolean isStatic();
+  
 }
