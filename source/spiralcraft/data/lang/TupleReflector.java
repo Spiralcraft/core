@@ -32,6 +32,7 @@ import spiralcraft.lang.spi.GatherChannel;
 import spiralcraft.lang.Assignment;
 
 import spiralcraft.log.ClassLog;
+import spiralcraft.task.TaskCommand;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.FieldSet;
@@ -484,7 +485,22 @@ public class TupleReflector<T extends Tuple>
               ("Found match for "+name
                +": return type is "+method.getReturnType());
           }
-          return method.bind(source, paramChannels);
+          Channel boundMethod=method.bind(source, paramChannels);
+          if (method.getReturnType().getNativeClass()==TaskCommand.class // Method as a functor
+              || 
+                DataReflector.getInstance(method.getReturnType())
+                .isAssignableFrom(boundMethod.getReflector())
+             )
+          { return boundMethod;
+          }
+          else
+          { 
+            throw new BindException
+              ("Returned type "+boundMethod.getReflector().getTypeURI()
+                +" is not compatible with the declared method type "
+                +method.getReturnType().getURI()
+              );
+          }
           // Matching method- note: 
           // XXX Method resolution is first declared to match, not best fit
         }
