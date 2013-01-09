@@ -72,6 +72,7 @@ public class EqualityNode<X>
       { 
         if (coercion==null 
             && r1!=r2
+            && _op2!=LiteralNode.NULL
             && !r1.isAssignableFrom(r2)
             && !r2.isAssignableFrom(r1)
             )
