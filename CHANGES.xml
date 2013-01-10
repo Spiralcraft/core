@@ -22,8 +22,19 @@
           </scm:Note>
         </notes>
 
-        <path>source/spiralcraft/data/lang/TupleReflector.java
+        <path>source/spiralcraft/
         </path>
+        
+        <resources>
+          <URI>data/Method.java
+          </URI>
+          <URI>data/lang/TupleReflector.java
+          </URI>
+          <URI>data/core/MethodImpl.java
+          </URI>
+          <URI>security/Login.type.xml
+          </URI>
+        </resources>
         
       </scm:Change>
 
