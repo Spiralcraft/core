@@ -241,7 +241,7 @@
       <name>login
       </name>
       
-      <returnType><Void.type/>
+      <returnType><Boolean.type/>
       </returnType>
       
       <x>
