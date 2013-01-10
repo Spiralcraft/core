@@ -15,6 +15,8 @@
 package spiralcraft.data;
 
 
+import java.net.URI;
+
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Signature;
@@ -48,6 +50,12 @@ public interface Method
    * @return
    */
   String getName();
+  
+  /**
+   * @return This method's URI, which is this method's name in the context of
+   *   the Type that it belongs to. 
+   */
+  URI getURI();
   
   /**
    * The Types of the parameters accepted by this method.
