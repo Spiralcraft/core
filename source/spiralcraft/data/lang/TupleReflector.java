@@ -487,7 +487,8 @@ public class TupleReflector<T extends Tuple>
           }
           Channel boundMethod=method.bind(source, paramChannels);
           if (method.getReturnType().getNativeClass()==TaskCommand.class // Method as a functor
-              || 
+              || method.getReturnType().getNativeClass()==Void.class // Ignore result
+              ||
                 DataReflector.getInstance(method.getReturnType())
                 .isAssignableFrom(boundMethod.getReflector())
              )
@@ -496,7 +497,7 @@ public class TupleReflector<T extends Tuple>
           else
           { 
             throw new BindException
-              ("Returned type "+boundMethod.getReflector().getTypeURI()
+              (method.getURI()+": Returned type "+boundMethod.getReflector().getTypeURI()
                 +" is not compatible with the declared method type "
                 +method.getReturnType().getURI()
               );
