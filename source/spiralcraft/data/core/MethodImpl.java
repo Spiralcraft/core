@@ -1,5 +1,7 @@
 package spiralcraft.data.core;
 
+import java.net.URI;
+
 import spiralcraft.data.DataException;
 import spiralcraft.data.Method;
 import spiralcraft.data.Type;
@@ -25,10 +27,14 @@ public abstract class MethodImpl
   private Type<?>[] parameterTypes;
   private String qualifiedName;
   private boolean locked;
+  private URI uri;
   
   protected boolean debug;
   
-  
+  @Override
+  public URI getURI()
+  { return uri;
+  }
   
   @Override
   public Type<?> getDataType()
@@ -127,8 +133,10 @@ public abstract class MethodImpl
     if (!locked)
     { lock();
     }
+    
     subclassResolve();
     qualifiedName=getDataType().getURI()+"!"+name;
+    uri=URI.create(qualifiedName);
   }
   
   protected void subclassResolve()
