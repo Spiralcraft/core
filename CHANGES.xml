@@ -17,6 +17,20 @@
         </revision>
       
         <notes>
+          <scm:Note>Fix regression resulting in members not found when
+            a Type references its own subtypes (re-entrant linking)
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/core/TypeImpl.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev34
+        </revision>
+      
+        <notes>
           <scm:Note>Check actual type of method implementations against declared
             return type.
           </scm:Note>
@@ -39,7 +53,7 @@
       </scm:Change>
 
       <scm:Change>
-        <revision>-dev35
+        <revision>-dev34
         </revision>
       
         <notes>
