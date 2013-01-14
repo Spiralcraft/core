@@ -432,6 +432,9 @@ public class TypeImpl<T>
     
     if (baseType!=null)
     { 
+      
+      // Note- the baseType might not be completely linked here due
+      //   to circular references so this may not be complete
       for (Field<?> field: baseType.getFieldSet().fieldIterable())
       { linkedFieldMap.put(field.getName(),field);
       }
@@ -501,16 +504,36 @@ public class TypeImpl<T>
   public <X> Field<X> getField(String name)
   {
     link();
+
+    Field<X> field=null;
     if (linkedFieldMap!=null)
-    { return (Field<X>) linkedFieldMap.get(name);
+    { 
+      synchronized (linkedFieldMap)
+      { field=(Field<X>) linkedFieldMap.get(name);
+      }
+      if (field!=null)
+      { return field;
+      }
+      
     }
     
-    Field<X> field=null;
-    if (getScheme()!=null)
-    { field=getScheme().<X>getFieldByName(name);
+    if (field==null)
+    {
+      if (getScheme()!=null)
+      { field=getScheme().<X>getFieldByName(name);
+      }
+      if (field==null && getBaseType()!=null)
+      { field=getBaseType().<X>getField(name);
+      }
     }
-    if (field==null && getBaseType()!=null)
-    { field=getBaseType().<X>getField(name);
+    
+    if (field!=null && linkedFieldMap!=null)
+    { 
+      // When linkedFieldMap was created, the baseType might not have
+      //   finished linking.
+      synchronized (linkedFieldMap)
+      { linkedFieldMap.put(name,field);
+      }
     }
     return field;
   }
