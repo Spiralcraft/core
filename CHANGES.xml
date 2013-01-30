@@ -17,6 +17,20 @@
         </revision>
       
         <notes>
+          <scm:Note>Added a new constructor to Fetch task to simplify 
+            arbitrary selects
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/task/Fetch.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev37
+        </revision>
+      
+        <notes>
           <scm:Note>Add metadata query to Field api
           </scm:Note>
           <scm:Note>Fix metadata query to delegate to field archetype chain
