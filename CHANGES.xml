@@ -13,6 +13,32 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev37
+        </revision>
+      
+        <notes>
+          <scm:Note>Add metadata query to Field api
+          </scm:Note>
+          <scm:Note>Fix metadata query to delegate to field archetype chain
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>Field.java
+          </URI>
+          <URI>core/FieldImpl.java
+          </URI>
+          <URI>core/RelativeField.java
+          </URI>
+          <URI>session/BufferField.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev36
         </revision>
       
