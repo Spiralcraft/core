@@ -27,6 +27,7 @@ import spiralcraft.lang.spi.AbstractChannel;
 import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.util.string.StringUtil;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeletionConstraint;
@@ -559,11 +560,17 @@ public class RelativeField<T extends DataComposite>
       throws BindException
     { 
       // log.fine("Resolving meta"+typeURI.toString());
-      Channel<X> meta=RelativeField.this.resolveMeta(focus,typeURI);
-      if (meta!=null)
-      { return meta;
+      try
+      {
+        Channel<X> meta=RelativeField.this.resolveMeta(typeURI);
+        if (meta!=null)
+        { return meta;
+        }
+        return super.resolveMeta(focus,typeURI);
       }
-      return super.resolveMeta(focus,typeURI);
+      catch (ContextualException x)
+      { throw new BindException("Error resolving metadata "+typeURI,x);
+      }      
     }
     
     

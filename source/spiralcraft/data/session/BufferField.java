@@ -26,6 +26,7 @@ import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.util.tree.LinkedTree;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Field;
@@ -141,14 +142,20 @@ public class BufferField
       if (debug)
       { log.debug("Checking for metadata type "+typeURI.toString());
       }
-      Channel<X> meta=BufferField.this.resolveMeta(focus,typeURI);
-      if (meta==null)
-      { meta=super.resolveMeta(focus,typeURI);
+      try
+      {
+        Channel<X> meta=BufferField.this.resolveMeta(typeURI);
+        if (meta==null)
+        { meta=super.resolveMeta(focus,typeURI);
+        }
+        if (meta==null)
+        { meta=originalChannel.resolveMeta(focus,typeURI);
+        }
+        return meta;
       }
-      if (meta==null)
-      { meta=originalChannel.resolveMeta(focus,typeURI);
+      catch (ContextualException x)
+      { throw new BindException("Error resolving metadata "+typeURI,x);
       }
-      return meta;
 
     }
     

@@ -14,6 +14,7 @@
 //
 package spiralcraft.data.core;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Scheme;
@@ -732,8 +733,9 @@ public class FieldImpl<T>
     return binding;
   }
   
-  protected synchronized <X> Channel<X> resolveMeta(Focus<?> focus,URI typeURI)
-    throws BindException
+  @Override
+  public synchronized <X> Channel<X> resolveMeta(URI typeURI)
+    throws ContextualException
   {
     if (typeURI.equals(MetadataType.FIELD.uri))
     { 
@@ -756,6 +758,10 @@ public class FieldImpl<T>
     else if (ReflectionType.canonicalURI(getClass()).equals(typeURI))
     { return getFieldMetadataChannel();
     }
+    else if (archetypeField!=null)
+    { return archetypeField.resolveMeta(typeURI);
+    }
+
     return null;
   }
 
@@ -1058,11 +1064,17 @@ public class FieldImpl<T>
     public synchronized <X> Channel<X> resolveMeta(Focus<?> focus,URI typeURI)
       throws BindException
     { 
-      Channel<X> meta=FieldImpl.this.resolveMeta(focus,typeURI);
-      if (meta!=null)
-      { return meta;
+      try
+      {
+        Channel<X> meta=FieldImpl.this.resolveMeta(typeURI);
+        if (meta!=null)
+        { return meta;
+        }
+        return super.resolveMeta(focus,typeURI);
       }
-      return super.resolveMeta(focus,typeURI);
+      catch (ContextualException x)
+      { throw new BindException("Error resolving metadata "+typeURI,x);
+      }
     }
     
     @Override

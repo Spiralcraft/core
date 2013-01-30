@@ -16,6 +16,7 @@ package spiralcraft.data;
 
 import java.net.URI;
 
+import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -68,7 +69,7 @@ public interface Field<T>
   String getDescription();
   
   /**
-   * The Type of the Field
+   * The Type data contained in this Field
    */
   Type<T> getType();
   
@@ -166,4 +167,14 @@ public interface Field<T>
    */
   boolean isDirty(DeltaTuple dt)
     throws DataException;
+  
+  /**
+   * Find the Field definition from within the set that this Field
+   *   is derived from. 
+   * 
+   * @param metadataType
+   * @return
+   */
+  <X> Channel<X> resolveMeta(URI typeURI)
+    throws ContextualException;
 }
