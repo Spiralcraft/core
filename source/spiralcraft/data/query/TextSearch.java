@@ -15,6 +15,7 @@
 package spiralcraft.data.query;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,6 +50,8 @@ public class TextSearch
   
   private String[] fields;
   private Expression<String> queryStringX;
+  private boolean matchAll=false;
+  private int limit;
   
   public TextSearch()
   { 
@@ -82,6 +85,21 @@ public class TextSearch
   { this.queryStringX=queryStringX;
   }
   
+  public void setMatchAll(boolean matchAll)
+  { this.matchAll=matchAll;
+  }
+  
+  public boolean getMatchAll()
+  { return matchAll;
+  }
+  
+  public void setLimit(int limit)
+  { this.limit=limit;
+  }
+  
+  public int getLimit()
+  { return limit;
+  }
   
   @Override
   public void resolve()
@@ -147,6 +165,8 @@ class TextSearchBinding<Tq extends TextSearch,T extends Tuple,Ts extends Tuple>
   private boolean resolved;
   private Channel<String>[] fieldBindings;
   private Channel<String> queryString;
+  private boolean matchAll;
+  private int limit;
   
   public TextSearchBinding
     (Tq query
@@ -163,6 +183,8 @@ class TextSearchBinding<Tq extends TextSearch,T extends Tuple,Ts extends Tuple>
     { throw new DataException("Error binding query string",x);
     }
     this.debugLevel=query.debugLevel;
+    this.matchAll=query.getMatchAll();
+    this.limit=query.getLimit();
   }
 
   @Override
@@ -257,6 +279,11 @@ class TextSearchBinding<Tq extends TextSearch,T extends Tuple,Ts extends Tuple>
       if (queryString!=null)
       { keywords=queryString.toLowerCase().split(" ");
       }
+
+      BitSet flags=null;
+      if (matchAll)
+      { flags=new BitSet(keywords.length);
+      }
       
       while (source.next())
       { 
@@ -268,7 +295,7 @@ class TextSearchBinding<Tq extends TextSearch,T extends Tuple,Ts extends Tuple>
         }
         sourceChannel.push(tuple);
         try
-        { score(tuple);
+        { score(tuple,flags);
         }
         finally
         { sourceChannel.pop();
@@ -278,15 +305,22 @@ class TextSearchBinding<Tq extends TextSearch,T extends Tuple,Ts extends Tuple>
       Collections.sort(result);
       
       data=new LinkedList<T>();
+      int count=0;
       for (TextSearchResult entry:result)
-      { data.add((T) entry.getData());
+      { 
+        if (limit==0 || count<limit)
+        { data.add((T) entry.getData());
+        }
+        count++;
       }
     }
 
-    private void score(Tuple t)
+    private void score(Tuple t,BitSet flags)
       throws DataException
     { 
-      
+      if (flags!=null)
+      { flags.clear();
+      }
       int matches=0;
       
       if (keywords!=null)
@@ -300,17 +334,23 @@ class TextSearchBinding<Tq extends TextSearch,T extends Tuple,Ts extends Tuple>
             text=text.toLowerCase();
           
             // bare bones matcher
+            int i=0;
             for (String keyword:keywords)
             { 
               if (text.contains(keyword))
-              { matches++;
+              { 
+                matches++;
+                if (matchAll)
+                { flags.set(i);
+                }
               }
+              i++;
             }
           }
         }
       }
       
-      if (matches>0)
+      if (matches>0 && (!matchAll || flags.cardinality()==flags.length()))
       { 
         TextSearchResult entry=new TextSearchResult();
         entry.data=t;
