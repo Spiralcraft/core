@@ -18,9 +18,11 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.kit.CoercionChannel;
 import spiralcraft.lang.spi.AssignmentChannel;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.lang.ClassUtil;
+import spiralcraft.util.string.StringConverter;
 
 
 /**
@@ -105,6 +107,26 @@ public class AssignmentNode<Ttarget,Tsource extends Ttarget>
     if (op==null)
     {
       return new AssignmentChannel(source.bind(focus),target.bind(focus));
+    }
+    else if (op=='$')
+    {
+      Channel sourceChan=source.bind(focus);
+      if (sourceChan.getContentType()!=String.class)
+      { throw new BindException("Assignment source must be a String");
+      }
+      Channel targetChan=target.bind(focus);
+      if (targetChan.getContentType()!=String.class)
+      { 
+        StringConverter converter
+          =StringConverter.getInstance(targetChan.getContentType());
+        if (converter==null)
+        { throw new BindException
+            ("Unknown string conversion for type "+targetChan.getContentType());
+        }
+        targetChan=new CoercionChannel
+            (targetChan.getReflector(),(Channel<String>) source,converter);
+      }
+      return new AssignmentChannel(sourceChan,targetChan);
     }
     else
     { 

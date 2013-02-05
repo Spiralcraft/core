@@ -22,6 +22,7 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.string.StringConverter;
 
 /**
  * <p>Assigns the value of an expression bound to a "source" context
@@ -115,7 +116,7 @@ public class BindingChannel<T>
   private final Expression<T> targetX;
   private Channel<T> targetChannel;
   private Binding<T> sourceBinding;
-
+  private StringConverter<T> converter;
 
   public BindingChannel
     (Focus<?> focus,Expression<T> sourceX,Expression<T> targetX)
@@ -171,15 +172,33 @@ public class BindingChannel<T>
       }
       else
       {
-        // XXX: Consider automatic type conversion here e.g. for unboxing 
-        //  primitive arrays
-        throw new BindException
-          ("Argument type mismatch: "
-            +targetChannel.getReflector().getTypeURI()
-            +" ("+targetChannel.getContentType().getName()+")"
-            +" is not assignable from `"+sourceX+"` "+source.getReflector().getTypeURI()
-            +" ("+source.getContentType().getName()+")"
-          );
+        if (source.getContentType()==String.class)
+        { 
+          converter=StringConverter.getInstance(targetChannel.getContentType());
+          if (converter==null)
+          {
+            throw new BindException
+              ("Argument type mismatch: "
+                +targetChannel.getReflector().getTypeURI()
+                +" ("+targetChannel.getContentType().getName()+")"
+                +" cannot be automatically converted from a string"
+              );
+          }
+        }
+        else
+        {
+        
+        
+          // XXX: Consider automatic type conversion here e.g. for unboxing 
+          //  primitive arrays
+          throw new BindException
+            ("Argument type mismatch: "
+              +targetChannel.getReflector().getTypeURI()
+              +" ("+targetChannel.getContentType().getName()+")"
+              +" is not assignable from `"+sourceX+"` "+source.getReflector().getTypeURI()
+              +" ("+source.getContentType().getName()+")"
+            );
+        }
       }
     }
   }
@@ -203,7 +222,13 @@ public class BindingChannel<T>
   protected T retrieve()
   {
     assertTarget();
-    T val=sourceBinding!=null?(T) sourceBinding:source.get();
+    T val;
+    if (converter!=null)
+    { val=converter.fromString((String) source.get());
+    }
+    else
+    { val=sourceBinding!=null?(T) sourceBinding:source.get();
+    }
     if (!targetChannel.set(val))
     { log.warning("Bound assignment failed");
     }

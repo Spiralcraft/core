@@ -308,6 +308,15 @@ public class ExpressionParser
       node=node.assignSubtractive(this.parseExpression());
       
     }
+    else if (_tokenizer.ttype=='$' && _tokenizer.lookahead.ttype=='=')
+    {
+      if (node==null)
+      { throw newException("Missing left hand side of assignment");
+      }
+      consumeToken();
+      consumeToken();
+      node=node.assignCoercive(this.parseExpression());
+    }
     return node;
   }
 
