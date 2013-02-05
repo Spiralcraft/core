@@ -17,6 +17,45 @@
         </revision>
       
         <notes>
+          <scm:Note>Added automatic string conversion to binding expressions
+            and to assignments via the "$=" operator.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang
+        </path>
+        
+        <resources>
+          <URI>parser/AssignmentNode.java
+          </URI>
+          <URI>parser/ExpressionParser.java
+          </URI>
+          <URI>parser/Node.java
+          </URI>
+          <URI>spi/BindingChannel.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev37
+        </revision>
+      
+        <notes>
+          <scm:Note>TextSearch query now supports "limit" and "matchAll" 
+            properties
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/query/TextSearch.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev37
+        </revision>
+      
+        <notes>
           <scm:Note>Added a new constructor to Fetch task to simplify 
             arbitrary selects
           </scm:Note>
