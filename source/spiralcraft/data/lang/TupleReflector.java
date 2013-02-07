@@ -498,8 +498,10 @@ public class TupleReflector<T extends Tuple>
           { 
             throw new BindException
               (method.getURI()+": Returned type "+boundMethod.getReflector().getTypeURI()
-                +" is not compatible with the declared method type "
+                +" ("+boundMethod.getReflector()
+                +") is not compatible with the declared method type "
                 +method.getReturnType().getURI()
+                +" ("+DataReflector.getInstance(method.getReturnType())+")"
               );
           }
           // Matching method- note: 
