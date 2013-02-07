@@ -19,7 +19,6 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.spi.BindingChannel;
 
-
 /**
  * <p>Indicates that the location specified by a target expression should
  *   receive the value of the source channel at some processing point.
@@ -80,7 +79,7 @@ public class BindingNode<Ttarget,Tsource extends Ttarget>
   
   @Override
   public String reconstruct()
-  { return target.reconstruct()+" := "+source.reconstruct();
+  { return target.reconstruct()+" := "+(source!=null?source.reconstruct():"");
   }
   
   public Node getSource()
