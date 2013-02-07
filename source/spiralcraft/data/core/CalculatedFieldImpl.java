@@ -229,10 +229,7 @@ public class CalculatedFieldImpl<T>
     //   argument context
     Focus<?> context=source.getContext();
     if (context==null)
-    { 
-      throw new BindException
-        ("No context for "+this.getURI()+" "+source);
-      // context=argFocus;
+    { context=new SimpleFocus(source);
     }
 
     if (!context.isContext(source))
