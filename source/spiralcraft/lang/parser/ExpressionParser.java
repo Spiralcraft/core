@@ -250,11 +250,15 @@ public class ExpressionParser
     if (_tokenizer.ttype==':' && _tokenizer.lookahead.ttype=='=')
     { 
       if (node==null)
-      { throw newException("Missing left hand side of binding expression");
+      { throw newException("Missing left hand side of ':=' (binding) expression");
       }
       consumeToken();
       consumeToken();
-      node=node.bindFrom(parseExpression());
+      Node source=parseExpression();
+      if (source==null)
+      { throw newException("Missing right hand side of ':=' (binding) expression");
+      } 
+      node=node.bindFrom(source);
     }
     return node;
   }
