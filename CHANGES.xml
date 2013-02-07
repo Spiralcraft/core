@@ -13,6 +13,62 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev38
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where CalculatedField throws a bind
+            exception when referenced in a method
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/core/CalculatedFieldImpl.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev38
+        </revision>
+      
+        <notes>
+          <scm:Note>Add reflector info to error message for method
+            return type incompatibility
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/lang/TupleReflector.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev38
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix NPE when generating parse error for missing RHS
+            of Binding Expression
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/parser/ExpressionParser.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev38
+        </revision>
+      
+        <notes>
+          <scm:Note>Added a word tokenizer utility to the text package
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/text/WordTokenizer.java
+        </path>
+      </scm:Change>
+
+
+      <scm:Change>
         <revision>-dev37
         </revision>
       

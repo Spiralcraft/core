@@ -98,6 +98,59 @@
       </testX>
       
     </test:Assertion>             
+    
+    <test:Assertion>
+    
+      <name>Word tokenizer 1
+      </name>
+      
+      <subjectX>
+        [*text:WordTokenizer].tokenize("This is a \"dumb\" word-tokenizer 4u- that's not (*)#&amp;$&amp;!-up.")
+      </subjectX>
+      
+      <testX>
+        .==[{"This","is","a","dumb","word","tokenizer","4u","that","s","not","up"}]
+      </testX>
+      
+    </test:Assertion>             
+    
+    <test:Assertion>
+    
+      <name>Word tokenizer 2
+      </name>
+      
+      <subjectX>
+        [*text:WordTokenizer{ignoreQuotes:=true,includeQuotes:=true}]
+          .tokenize("This is a \"dumb\" word-tokenizer 4u- that's not (*)#&amp;$&amp;!-up.")
+      </subjectX>
+      
+      <testX>
+        .==[{"This","is","a","\"dumb\"","word","tokenizer","4u","that's","not","up"}]
+      </testX>
+      
+    </test:Assertion>             
+
+    <test:Assertion>
+    
+      <name>Word tokenizer 3
+      </name>
+      
+      <subjectX>
+        [*text:WordTokenizer
+          {ignoreQuotes:=true
+          ,includeQuotes:=true
+          ,includeWhitespace:=true
+          ,includePunctuation:=true
+          }
+        ].tokenize("This is a \"dumb\" word-tokenizer 4u- that's not (*)#&amp;$&amp;!-up.")
+      </subjectX>
+      
+      <testX>
+        .==[{"This"," ","is"," ","a"," ","\"dumb\""," ","word","-","tokenizer"," ","4u","-"," ","that's"," ","not"," "
+            ,"(","*",")","#","&amp;","$","&amp;","!","-","up","."}]
+      </testX>
+      
+    </test:Assertion>             
   </sequence>
         
 </test:TestGroup>
