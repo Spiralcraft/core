@@ -30,6 +30,7 @@ import spiralcraft.exec.ExecutionContext;
 import spiralcraft.exec.ExecutionException;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Context;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.util.LangUtil;
@@ -71,6 +72,15 @@ public class TaskRunner
   
   {
     Runtime.getRuntime().addShutdownHook(shutdownThread);
+  }
+  
+  /**
+   * A Context in which the tasks will be run
+   * 
+   * @param context
+   */
+  public void setRootContext(Context context)
+  { addContext(context);
   }
   
   /**
@@ -248,11 +258,18 @@ public class TaskRunner
     throws ContextualException
   { 
     Focus<?> serviceFocus=LangUtil.findFocus(Service.class,focus);
-    if (serviceFocus!=null)
-    { scenario.bind(serviceFocus);
+    push();
+    try
+    { 
+      if (serviceFocus!=null)
+      { scenario.bind(serviceFocus);
+      }
+      else
+      { scenario.bind(focus);
+      }
     }
-    else
-    { scenario.bind(focus);
+    finally
+    { pop();
     }
   }
   
