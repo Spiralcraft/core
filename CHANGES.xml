@@ -13,6 +13,21 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev39
+        </revision>
+      
+        <notes>
+          <scm:Note>TaskRunner can now be configured to run tasks in any
+            Context, since a PlaceContext often depends on a more general
+            environment.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/task/TaskRunner.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev38
         </revision>
       
