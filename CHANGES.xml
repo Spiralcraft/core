@@ -13,6 +13,20 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev40
+        </revision>
+      
+        <notes>
+          <scm:Note>OnMessage component simplifies the triggering of an
+            expression for specific messages.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/app/components/OnMessage.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev39
         </revision>
       
