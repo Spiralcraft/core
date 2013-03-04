@@ -596,6 +596,13 @@ public class AbstractComponent
         throws ContextualException
       { return bindInternal(focusChain);
       }
+      
+      @Override
+      public String toString()
+      { 
+        return super.toString()
+          +": Inner context of "+AbstractComponent.this.getClass().getName();
+      }
     };
     
     if (outerContexts!=null)
