@@ -303,7 +303,11 @@ public class ReflectionType<T>
     catch (NoSuchMethodException x)
     { }
     try
-    { defaultConstructor=clazz.getConstructor();
+    { 
+      defaultConstructor=clazz.getConstructor();
+      if (!Modifier.isPublic(defaultConstructor.getModifiers()))
+      { defaultConstructor=null;
+      }
     }
     catch (NoSuchMethodException x)
     { }
@@ -356,7 +360,11 @@ public class ReflectionType<T>
     { }
     
     try
-    { defaultConstructor=clazz.getConstructor();
+    { 
+      defaultConstructor=clazz.getConstructor();
+      if (!Modifier.isPublic(defaultConstructor.getModifiers()))
+      { defaultConstructor=null;
+      }
     }
     catch (NoSuchMethodException x)
     { }
