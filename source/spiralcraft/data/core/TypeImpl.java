@@ -347,6 +347,8 @@ public class TypeImpl<T>
     if (linked)
     { return;
     }
+    
+    // log.log(Level.FINE,"Linking "+getURI()+" "+linkStack(),new Exception());
     pushLink(getURI());
     try
     {
@@ -454,6 +456,13 @@ public class TypeImpl<T>
    */
   @Override
   public Scheme getScheme()
+  { 
+    link();
+    return scheme;
+  }
+  
+  @Override
+  protected Scheme scheme()
   { return scheme;
   }
   

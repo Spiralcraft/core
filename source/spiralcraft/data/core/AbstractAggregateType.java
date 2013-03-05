@@ -177,6 +177,11 @@ public abstract class AbstractAggregateType<T,Tcontent>
   { return contentType.getScheme();
   }
   
+  @Override
+  protected Scheme scheme()
+  { return contentType.getScheme();
+  }
+  
   /**
    * @return Fields here and in Base types.
    * 
