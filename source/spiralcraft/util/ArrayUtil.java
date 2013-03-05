@@ -33,6 +33,44 @@ import spiralcraft.common.Immutable;
 public class ArrayUtil
 {
 
+  /**
+   * Return the array class that holds the specific component type.
+   * 
+   * @param compClass
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> Class<T[]> arrayClass(Class<T> compClass)
+  {
+    ClassLoader loader=compClass.getClassLoader();
+    if (loader==null)
+    { loader=Thread.currentThread().getContextClassLoader();
+    }
+    if (loader==null)
+    { loader=ClassLoader.getSystemClassLoader();
+    }
+    if (loader==null)
+    { throw new IllegalStateException("No classloader available");
+    }
+    try
+    { 
+      return (Class<T[]>) Class.forName
+        ("[L"+compClass.getName()+";",true,loader);
+    }
+    catch (ClassNotFoundException x)
+    { throw new IllegalArgumentException(x);
+    }
+  }
+  
+  /**
+   * Append a value to an array, creating a new array if the supplied array is
+   *   null
+   * 
+   * @param array
+   * @param value
+   * @param componentType
+   * @return
+   */
   @SuppressWarnings("unchecked")
   public static <T> T[] append(T[] array,T value,Class<T> componentType)
   { 
