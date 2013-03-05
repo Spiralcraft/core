@@ -527,10 +527,22 @@ public class AssemblyLoader
             =eqpos<assignment.length()-1?assignment.substring(eqpos+1):"";
             
           if (name=="define")
-          { assemblyClass.define(substName,substValue);
+          { 
+            assemblyClass.define(substName,substValue);
+            log.warning
+              ("Deprecated attribute syntax 'define'. "
+              +" Use 'context.myprop' instead. "
+              +node.getPosition()
+              );
           }
           else
-          { assemblyClass.defineLocal(substName,substValue);
+          { 
+            assemblyClass.defineLocal(substName,substValue);
+            log.warning
+              ("Deprecated attribute syntax 'defineLocal'. "
+              +"Use 'this.myprop' instead. "
+              +node.getPosition()
+              );
           }
         }
         else if (name=="x")
@@ -538,6 +550,16 @@ public class AssemblyLoader
         }
         else if (name=="whitespace")
         { whitespace=Boolean.valueOf(attribs[i].getValue());
+        }
+        else if (name.startsWith("context."))
+        {
+          String prop=name.substring(8);
+          assemblyClass.define(prop,attribs[i].getValue());
+        }
+        else if (name.startsWith("this."))
+        {
+          String prop=name.substring(5);
+          assemblyClass.defineLocal(prop,attribs[i].getValue());
         }
         else
         { 
