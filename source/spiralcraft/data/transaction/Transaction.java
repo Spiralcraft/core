@@ -245,7 +245,8 @@ public class Transaction
           }
           else
           { throw new TransactionException
-              ("Transaction already contains an non-2PC branch");
+              ("Transaction already contains an non-2PC branch "
+                +llrBranch+", cannot create one for "+manager);
           }
         }
       }
