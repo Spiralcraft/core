@@ -170,7 +170,12 @@ public class ArrayDeltaTuple
 //          +sourceField+"(#"+sourceField.getIndex()+") from "+updated+" to "+this
 //          +" with value ["+val+"]"
 //          );
-        extent.data[sourceField.getIndex()]=val;
+        if (val instanceof Buffer)
+        { log.warning("Ignoring "+sourceField.getURI()+" buffer value "+val);
+        }
+        else
+        {  extent.data[sourceField.getIndex()]=val;
+        }
         
       }
     }
@@ -293,8 +298,8 @@ public class ArrayDeltaTuple
           Object value=field.getValue(this);
           if (value instanceof Buffer)
           { 
-            // XXX Follow content update-to
             
+            // XXX Follow content update-to
           }
           else
           { copyFieldTo(field,dest);
