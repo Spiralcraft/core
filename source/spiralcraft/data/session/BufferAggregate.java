@@ -49,6 +49,13 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   public BufferAggregate(DataSession session,Aggregate<Torig> original)
     throws DataException
   { 
+    if (original.getType().getCoreType().isPrimitive())
+    { 
+      throw new IllegalArgumentException
+        ("Can't buffer an Aggregate of primitive type "
+          +original.getType().getContentType().getURI()
+        );
+    }
     this.session=session;
     this.original=original.snapshot();
     this.type=Type.getBufferType(original.getType());
@@ -56,6 +63,13 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   
   public BufferAggregate(DataSession session,Type<?> type)
   { 
+    if (type.getCoreType().isPrimitive())
+    { 
+      throw new IllegalArgumentException
+        ("Can't buffer an Aggregate of primitive type "
+          +type.getContentType().getURI()
+        );
+    }
     this.session=session;
     this.type=type;
   }

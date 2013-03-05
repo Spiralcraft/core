@@ -54,6 +54,12 @@ public class BufferType<T extends Buffer>
     
     super(resolver,typeURI);
     // log.fine("Buffer type for "+archetype);
+    
+    if (archetype.isPrimitive())
+    { 
+      throw new IllegalArgumentException
+        ("Cannot buffer primitive type "+archetype.getURI());
+    }
     this.archetype=archetype;
     if (archetype.getBaseType()!=null)
     { this.baseType=(Type<T>) getBufferType(archetype.getBaseType());

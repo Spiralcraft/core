@@ -146,7 +146,13 @@ public class DataSession
       { buffer=new BufferTuple(this,composite.asTuple());
       }
       else if (composite.isAggregate())
-      { buffer=new BufferAggregate(this,composite.asAggregate());
+      { 
+        if (composite.getType().getCoreType().isPrimitive())
+        { 
+          throw new DataException
+            ("Cannot buffer primitive type "+composite.getType());
+        }
+        buffer=new BufferAggregate(this,composite.asAggregate());
       }
       else
       { 
