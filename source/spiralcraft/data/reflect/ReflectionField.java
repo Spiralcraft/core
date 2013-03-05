@@ -226,8 +226,8 @@ public class ReflectionField<T>
     throws DataException
   {
     Type<?> type=getType();
-    
-    if (value instanceof DataComposite)
+    boolean composite=value instanceof DataComposite;
+    if (composite)
     { type=((DataComposite) value).getType();
     }
     
@@ -243,7 +243,10 @@ public class ReflectionField<T>
         try
         {
           if (type.isPrimitive()
-              || (type.isAggregate() && type.getContentType().isPrimitive())
+              || (type.isAggregate() 
+                  && type.getContentType().isPrimitive() 
+                  && !composite
+                  )
              )
           { 
             if (writeMethod!=null)
