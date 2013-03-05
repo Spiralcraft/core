@@ -104,6 +104,11 @@ public abstract class Type<T>
       if (type instanceof BufferType)
       { return (Type<Buffer>) type;
       }
+      
+      if (type.getCoreType().isPrimitive())
+      { throw new IllegalArgumentException
+          ("Cannot buffer a primitive type "+type.getURI());
+      }
 //      log.fine
 //        ("Buffer Type for "+type+" is "
 //        +resolve(type.getURI().toString()+".buffer")
@@ -429,7 +434,7 @@ public abstract class Type<T>
     }
     
     Key<T>[] localKeys=null;
-    if (getScheme()!=null)
+    if (scheme()!=null)
     { 
       localKeys
         =(Key<T>[]) ArrayUtil.toArray(Key.class,getScheme().keyIterable());
@@ -716,4 +721,8 @@ public abstract class Type<T>
   { return new RuntimeDataException("Error linking "+getURI(),x);
   }
   
+  /**
+   * @return This type's scheme, without linking the type as a side effect
+   */
+  protected abstract Scheme scheme();
 }
