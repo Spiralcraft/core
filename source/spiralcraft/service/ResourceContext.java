@@ -40,6 +40,10 @@ public class ResourceContext
   public void setCodeURI(URI codeURI)
   { resourceMap.put("code",URIUtil.ensureTrailingSlash(codeURI));
   }
+
+  public void setDataURI(URI dataURI)
+  { resourceMap.put("data",URIUtil.ensureTrailingSlash(dataURI));
+  }
   
   public void setServices(final Service[] services)
   {
