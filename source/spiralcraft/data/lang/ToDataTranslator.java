@@ -84,6 +84,9 @@ public class ToDataTranslator<T>
     DataComposite source,
     Channel<?>[] modifiers)
   { 
+    if (source==null)
+    { return null;
+    }
     try
     { return type.fromData(source,null);
     }
