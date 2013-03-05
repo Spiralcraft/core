@@ -2,60 +2,55 @@
   xmlns:meta="class:/spiralcraft/data/types/meta/"
   xmlns:example="class:/spiralcraft/data/test/example"
   >
-  
-  <scheme>
-    <meta:Scheme>
-    
-      <fields>
-        <meta:Field>
-          
-          <name>address1
-          </name>
-          
-          <type>
-           	<String.type>
 
-          		<maxLength>256
-          		</maxLength>
-          	
-          	</String.type>
-          </type>
-          
-        </meta:Field>
+  <fields>
+    <meta:Field>
+      
+      <name>address1
+      </name>
+      
+      <type>
+         <String.type>
+
+          <maxLength>256
+          </maxLength>
         
-        <meta:Field>
+        </String.type>
+      </type>
+      
+    </meta:Field>
+    
+    <meta:Field>
 
-          <name>address2
-          </name>
-          
-          <type>
-           	<String.type>
+      <name>address2
+      </name>
+      
+      <type>
+         <String.type>
 
-          		<maxLength>256
-          		</maxLength>
-          	
-          	</String.type>
-          </type>
+          <maxLength>256
+          </maxLength>
+        
+        </String.type>
+      </type>
 
-        </meta:Field>
+    </meta:Field>
 
-        <meta:Field>
-          
-          <name>city
-          </name>
+    <meta:Field>
+      
+      <name>city
+      </name>
 
-          <type>
-           	<String.type>
+      <type>
+         <String.type>
 
-          		<maxLength>128
-          		</maxLength>
-          	
-          	</String.type>
-          </type>
+          <maxLength>128
+          </maxLength>
+        
+        </String.type>
+      </type>
 
-        </meta:Field>
+    </meta:Field>
 
-      </fields>
-    </meta:Scheme>
-  </scheme>
+  </fields>
 </meta:Type>

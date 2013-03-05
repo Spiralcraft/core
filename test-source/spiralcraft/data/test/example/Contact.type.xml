@@ -2,47 +2,43 @@
   xmlns:meta="class:/spiralcraft/data/types/meta/"
   xmlns:example="class:/spiralcraft/data/test/example"
   >
-  <scheme>
-    <meta:Scheme>
-      <fields>
-        <meta:Field>
-          
-          <name>displayName
-          </name>
-          
-          <type>
-            <String.type>
+  <fields>
+    <meta:Field>
+      
+      <name>displayName
+      </name>
+      
+      <type>
+        <String.type>
 
-              <maxLength>128
-              </maxLength>
-            
-            </String.type>
-          </type>
-
-        </meta:Field>
-
+          <maxLength>128
+          </maxLength>
         
-        <meta:Field>
+        </String.type>
+      </type>
 
-          <name>address
-          </name>
+    </meta:Field>
 
-          <type>
-            <example:Address.type/>
-          </type>
+    
+    <meta:Field>
 
-        </meta:Field>
-        
-        <meta:Field>
-          <name>phone
-          </name>
-          
-          <type>
-            <example:Phone.type/>
-          </type>
-        </meta:Field>
-      </fields>
-    </meta:Scheme>
-  </scheme>
+      <name>address
+      </name>
+
+      <type>
+        <example:Address.type/>
+      </type>
+
+    </meta:Field>
+    
+    <meta:Field>
+      <name>phone
+      </name>
+      
+      <type>
+        <example:Phone.type/>
+      </type>
+    </meta:Field>
+  </fields>
 
 </meta:Type>

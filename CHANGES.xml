@@ -13,6 +13,227 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev41
+        </revision>
+      
+        <notes>
+          <scm:Note>ArrayUtil.arrayClass() method to obtain array class for
+            a given component type without creating an array.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/util/ArrayUtil.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev41
+        </revision>
+      
+        <notes>
+          <scm:Note>Add "data" context authority as configuration property
+            to ResourceContext
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/service/ResourceContext.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev41
+        </revision>
+      
+        <notes>
+          <scm:Note>Add info to "not found" exception in LangUtil findFocus
+            operations.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/util/LangUtil.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev41
+        </revision>
+      
+        <notes>
+          <scm:Note>Add info to "duplicate LLR" exception in Transaction
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/transaction/Transaction.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev41
+        </revision>
+      
+        <notes>
+          <scm:Note>Add @internalize() built-in method to Tuple based objects.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/lang/TupleReflector.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev41
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix NPE
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/lang/ToDataTranslator.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev41
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix onInit expression not firing b/c it was in the
+            wrong conditional.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/editor/TupleEditor.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev41
+        </revision>
+      
+        <notes>
+          <scm:Note>Enhancements and fixes for persisting fields that
+            contain arrays and lists and embedded data.
+          </scm:Note>
+          <scm:Note>Arrays and lists of primitives cannot be buffered as they
+            cannot be partially updated.
+          </scm:Note>
+          <scm:Note>Auto-link type when getScheme() is called. Provide scheme()
+            internal method to prevent premature linking.
+          </scm:Note>
+          <scm:Note>When externalizing a collection, leave primitive elements
+            and other non-convertable elements in place.
+          </scm:Note>
+          <scm:Note>Provide a way for Tuple implementations to delegate
+            the creation of embedded data instances to themselves.
+          </scm:Note>
+          <scm:Note>Prevent copying of Buffers into ArrayDeltaTuples.
+          </scm:Note>
+          <scm:Note>Refine the auto-buffering policy implemented in
+            BufferTuple.set()
+          </scm:Note>
+          <scm:Note>DataWriter now uses dynamic polymorphic resolution when 
+            writing the contents of aggregates to XML.
+          </scm:Note>
+          <scm:Note>Internalization of reflection based data types now properly
+            converts aggregates to collections or arrays.
+          </scm:Note>
+          <scm:Note>Do not register a default constructor if it is not public
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/Type.java
+          </URI>
+          <URI>data/core/TypeImpl.java
+          </URI>
+          <URI>data/core/AbstractAggregateType.java
+          </URI>
+          <URI>data/core/AbstractCollectionType.java
+          </URI>
+          <URI>data/lang/BoundTuple.java
+          </URI>
+          <URI>data/reflect/ReflectionField.java
+          </URI>
+          <URI>data/reflect/ReflectionType.java
+          </URI>
+          <URI>data/session/DataSession.java
+          </URI>
+          <URI>data/session/BufferAggregate.java
+          </URI>
+          <URI>data/session/BufferTuple.java
+          </URI>
+          <URI>data/session/BufferType.java
+          </URI>
+          <URI>data/spi/AbstractTuple.java
+          </URI>
+          <URI>data/spi/ArrayTuple.java
+          </URI>
+          <URI>data/spi/ArrayJournalTuple.java
+          </URI>
+          <URI>data/spi/ArrayDeltaTuple.java
+          </URI>
+
+        </resources>
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev41
+        </revision>
+      
+        <notes>
+          <scm:Note>New mechanism for specifying contextual properties in
+            spiralcraft.builder modules using the this.foo.bar and 
+            context.foo.bar attributes. The old mechanism did not account for
+            multiple properties and was more verbose.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/builder/AssemblyLoader.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev41
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where PluginContext tried to chain contextual
+            after chain was sealed.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/app/PluginContext.java
+        </path>
+      </scm:Change>
+
+
+
+      <scm:Change>
+        <revision>-dev41
+        </revision>
+      
+        <notes>
+          <scm:Note>Add imports, exports and task scheduling to PlaceContext
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>app/PlaceContext.java
+          </URI>
+          <URI>lang/kit/BindingContext.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev40
         </revision>
       
