@@ -20,6 +20,7 @@ import java.io.IOException;
 import spiralcraft.common.ContextualException;
 import spiralcraft.data.access.Schema;
 import spiralcraft.data.access.Store;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.kit.AbstractChainableContext;
 import spiralcraft.util.URIUtil;
@@ -70,6 +71,15 @@ public class PluginContext
   }
 
   @Override
+  public void seal(Contextual last)
+  {
+    if (vfsMappings!=null)
+    { insertNext(vfsMappings);
+    }
+    super.seal(last);
+  }
+    
+  @Override
   protected Focus<?> bindImports(Focus<?> chain)
     throws ContextualException
   { 
@@ -110,7 +120,9 @@ public class PluginContext
         ("Error allocating code container for plugin "+pluginId,x);
     }
     vfsMappings.put(pluginId+".code",codeContainer.getURI());
-    chain(vfsMappings);
+
+    // Don't do any chaining in the bind phase. Must use seal() for this
+    //    chain(vfsMappings);
     
     if (stores!=null)
     {
