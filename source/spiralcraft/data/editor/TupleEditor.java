@@ -197,10 +197,12 @@ public class TupleEditor
           { setter.set();
           }
           
-          if (onInit!=null)
-          { onInit.get();
-          }
         }
+
+        if (onInit!=null)
+        { onInit.get();
+        }
+        
       }
     }
 
