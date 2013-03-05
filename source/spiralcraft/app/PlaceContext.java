@@ -27,13 +27,17 @@ import spiralcraft.data.access.Store;
 import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.ChainableContext;
+import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.kit.AbstractChainableContext;
+import spiralcraft.lang.kit.BindingContext;
 import spiralcraft.lang.util.LangUtil;
 import spiralcraft.meta.Version;
 import spiralcraft.security.auth.Authenticator;
+import spiralcraft.service.SchedulerService;
 import spiralcraft.service.Service;
 import spiralcraft.service.ServiceGroup;
+import spiralcraft.task.TaskScheduler;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
@@ -68,11 +72,14 @@ public class PlaceContext
   private ContextResourceMap vfsMappings
     =new ContextResourceMap();
   private PlaceStatus status;
+  private SchedulerService<Void> schedulerService;
   private Binding<Void> preInitialize;
   private Binding<Void> preUpgrade;
   private Binding<Void> postInitialize;
   private Binding<Void> postUpgrade;
   private Authenticator authenticator;
+  private Binding<?>[] imports;
+  private Binding<?>[] exports;
   
   public void setId(String id)
   { this.id=id;
@@ -80,6 +87,14 @@ public class PlaceContext
   
   public String getId()
   { return id;
+  }
+  
+  public void setImports(Binding<?>[] imports)
+  { this.imports=imports;
+  }
+
+  public void setExports(Binding<?>[] exports)
+  { this.exports=exports;
   }
   
   public void setPlugins(PluginContext[] plugins)
@@ -97,10 +112,17 @@ public class PlaceContext
   public void setAuthenticator(Authenticator authenticator)
   { this.authenticator=authenticator;
   }
+
+  public void setSchedulers(TaskScheduler[] schedulers)
+  { 
+    schedulerService=new SchedulerService<Void>();
+    schedulerService.setSchedulers(schedulers);
+  
+  }
   
   public void setServices(Service[] services)
   { 
-    this.serviceGroup=new ServiceGroup();
+    serviceGroup=new ServiceGroup();
     serviceGroup.setServices(services);
   }
   
@@ -184,6 +206,15 @@ public class PlaceContext
     ChainableContext localChain=vfsMappings;
     vfsMappings.setLogLevel(logLevel);
     
+    if (imports!=null)
+    {
+      for (Binding<?> binding:imports)
+      { 
+        binding.bind(chain);
+        chain.addFacet(chain.chain(binding));
+      }
+    }
+    
     if (pluginContexts!=null)
     {
       for (PluginContext pluginContext : pluginContexts)
@@ -220,10 +251,18 @@ public class PlaceContext
     { localChain.chain(serviceGroup);
     }
     
+    if (schedulerService!=null)
+    { localChain.chain(schedulerService);
+    }
+    
     insertNext(localChain);
     
-    return chain.chain(LangUtil.constantChannel(this));
+    chain=chain.chain(LangUtil.constantChannel(this));
+    
+    return chain;
   }
+  
+
 
   private void registerLocalStore(Store store)
     throws ContextualException
@@ -257,9 +296,27 @@ public class PlaceContext
   }
   
   @Override
+  public void seal(Contextual last)
+  {
+    if (exports!=null)
+    { chain(new BindingContext(exports));
+    }
+    super.seal(last);
+  }
+  
+  @Override
   protected Focus<?> bindExports(Focus<?> chain)
     throws ContextualException
   { 
+    if (exports!=null)
+    { 
+      for (Binding<?> binding:exports)
+      { 
+        log.fine("Binding export "+binding);
+        binding.bind(chain);
+        chain.addFacet(chain.chain(binding));
+      }
+    }
     if (preInitialize!=null)
     { preInitialize.bind(chain);
     }
@@ -311,14 +368,15 @@ public class PlaceContext
         ReflectionType.canonicalType(PlaceStatus.class)
           .fromXmlResource(statusXml);
 
-      if (!status.getId().equals(id))
+      
+      if (status.getId()!=null && !status.getId().equals(id))
       { 
         throw new ContextualException
           ("Starting place id "+id+": Data in "+dataContainer.getURI()
           +" is for a different place id "+status.getId()
           );
       }
-      if (status.getVersion().compareTo(version)>0)
+      if (status.getVersion()!=null && status.getVersion().compareTo(version)>0)
       {
         throw new ContextualException
           ("Starting place id "+id+": Data in "+dataContainer.getURI()
@@ -335,7 +393,11 @@ public class PlaceContext
   {
     if (status!=null)
     {
-      if (status.getVersion().compareTo(version)<0)
+      if ( version!=null &&
+            (status.getVersion()==null 
+              || status.getVersion().compareTo(version)<0
+            )
+          )
       {
         log.info
           ("Upgrading place "+id+" version "+status.getVersion()
@@ -422,6 +484,10 @@ public class PlaceContext
     { serviceGroup.start();
     }
     
+    if (schedulerService!=null)
+    { schedulerService.start();
+    }
+    
     postCheckStatus();
     try
     { writeStatus();
@@ -443,6 +509,10 @@ public class PlaceContext
   { 
     if (logLevel.isDebug())
     { log.fine("Stopping place "+id);
+    }
+    
+    if (schedulerService!=null)
+    { schedulerService.stop();
     }
     
     if (serviceGroup!=null)
