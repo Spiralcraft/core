@@ -162,7 +162,9 @@ public class LangUtil
     if (ret==null)
     {
       throw new BindException
-        ("Could not find a provider of class "+clazz+" in context.");
+        ("Could not find a provider of class "+clazz+" in context. "
+          +focusChain.getFocusChain()
+        );
     }
     return ret;
   }
@@ -175,7 +177,9 @@ public class LangUtil
     if (ret==null)
     {
       throw new BindException
-        ("Could not find a provider of "+uri+" in context.");
+        ("Could not find a provider of "+uri+" in context. "
+          +focusChain.getFocusChain()
+        );
     }
     return ret;
   }
