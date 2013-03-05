@@ -23,6 +23,7 @@ import spiralcraft.data.Aggregate;
 import spiralcraft.data.Field;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
+import spiralcraft.data.reflect.ReflectionType;
 
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.EmptyIterator;
@@ -617,14 +618,20 @@ class Context
         }
         else
         { 
-          if (componentType.isDataEncodable())
+          Type objectType=componentType;
+          
+          if (objectType.getNativeClass()!=object.getClass())
+          { objectType=ReflectionType.canonicalType(object.getClass());
+          }
+          
+          if (objectType.isDataEncodable())
           { 
             DataComposite data
-              =componentType.toData(object);
+              =objectType.toData(object);
             pushCompositeFrame(data);
           }
           else
-          { currentFrame=new PrimitiveFrame(componentType,object,false);
+          { currentFrame=new PrimitiveFrame(objectType,object,false);
           }
         }
         
@@ -732,14 +739,20 @@ class Context
         }
         else
         { 
-          if (componentType.isDataEncodable())
+          Type objectType=componentType;
+          
+          if (objectType.getNativeClass()!=item.getClass())
+          { objectType=ReflectionType.canonicalType(item.getClass());
+          }
+          
+          if (objectType.isDataEncodable())
           { 
             DataComposite data
-              =componentType.toData(item);
+              =objectType.toData(item);
             pushCompositeFrame(data);
           }
           else
-          { currentFrame=new PrimitiveFrame(componentType,item,false);
+          { currentFrame=new PrimitiveFrame(objectType,item,false);
           }
           
         }
