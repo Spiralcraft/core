@@ -315,7 +315,17 @@ public class ArrayJournalTuple
     
   }
   
-  
+  @Override
+  public AbstractTuple copyTupleField(Tuple tuple)
+    throws DataException
+  { 
+    if (tuple instanceof DeltaTuple)
+    { return ArrayTuple.freezeDelta((DeltaTuple) tuple);
+    }
+    else
+    { return new ArrayTuple(tuple);
+    }
+  }
 
   @Override
   public long getTransactionId()

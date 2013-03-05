@@ -120,6 +120,7 @@ public class ArrayTuple
     { baseExtent=createDeltaBaseExtent(delta.getBaseExtent());
     }
   }  
+  
   private Object[] copyData(Tuple original)
     throws DataException
   {
@@ -132,7 +133,7 @@ public class ArrayTuple
       { 
         Tuple originalTuple=(Tuple) originalValue;
         if (originalTuple.isMutable() && !isMutable())
-        { data[field.getIndex()]=new ArrayTuple(originalTuple);
+        { data[field.getIndex()]=copyTupleField(originalTuple);
         }
         else
         { data[field.getIndex()]=originalValue;
@@ -200,4 +201,10 @@ public class ArrayTuple
     throws DataException
   { return ArrayTuple.freezeDelta(tuple);
   }  
+  
+  @Override
+  protected AbstractTuple copyTupleField(Tuple fieldValue)
+    throws DataException
+  { return new ArrayTuple(fieldValue);
+  }
 }

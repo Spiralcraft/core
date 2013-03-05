@@ -408,6 +408,8 @@ public abstract class AbstractTuple
       .setValue(dest,field.getValue(this));
   }
   
+  protected abstract AbstractTuple copyTupleField(Tuple fieldValue)
+    throws DataException;
 
   
   public static String tupleToText(Tuple tuple,String indent)
