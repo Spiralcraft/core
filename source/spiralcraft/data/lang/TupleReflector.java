@@ -41,6 +41,7 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Field;
 import spiralcraft.data.Type;
 import spiralcraft.data.reflect.ReflectionType;
+import spiralcraft.data.task.Internalize;
 
 
 /**
@@ -203,7 +204,7 @@ public class TupleReflector<T extends Tuple>
     if (channel!=null)
     { return channel;
     }
-    if (name.equals("@tuple"))
+    if (name.equals("@tuple") && params==null)
     { 
       // Provide access to 
       Channel binding=source.getCached("_tuple");
@@ -216,6 +217,9 @@ public class TupleReflector<T extends Tuple>
         source.cache("_tuple",binding);
       }
       return binding;
+    }
+    else if (name.equals("@internalize") && params!=null && params.length==0)
+    { return Internalize.apply(source,focus);
     }
     return null;
   }
