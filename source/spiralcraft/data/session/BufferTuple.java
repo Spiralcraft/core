@@ -17,6 +17,7 @@ package spiralcraft.data.session;
 import java.lang.ref.WeakReference;
 import java.util.BitSet;
 
+import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.EditableTuple;
@@ -366,10 +367,10 @@ public class BufferTuple
           { 
             // Don't do anything
             // XXX Need option to cascade. Buffer.getParent()==this?
-            if (debug)
-            {
+//            if (debug)
+//            {
               log.fine("Ignoring dirty buffer field "+field.getURI());
-            }
+//            }
           }
           else
           { 
@@ -423,20 +424,86 @@ public class BufferTuple
       Field<?> field=getFieldSet().getFieldByIndex(index);
       Type<?> fieldType=field.getType();
 
-      if ( (fieldType.isPrimitive()
-            && (!(fieldType.getNativeClass().isAssignableFrom(data.getClass())))
-           )
-           || 
-           ( !fieldType.isPrimitive()
-           && !(data instanceof Buffer)
-           )
-        )
+      if (fieldType.isPrimitive())
       {
-        throw new DataException
-          ("Cannot update field "+field.getURI()
-          +"("+field.getType().getNativeClass()
-          +") with data "+data
-          );
+        // Primitive fields
+        if (!(fieldType.getNativeClass().isAssignableFrom(data.getClass())))
+        {
+          throw new DataException
+            ("Incompatible value type for field "+field.getURI()
+            +"("+field.getType().getNativeClass().getName()
+            +") cannot be assigned value type "+data.getClass().getName()+" ["+data+"]"
+            );
+        }
+      }
+      else if (fieldType.isAggregate() 
+                && fieldType.getNativeClass()!=null
+                && fieldType.getNativeClass().isArray()
+                && fieldType.getContentType().isPrimitive()
+              )
+      {
+        if (data instanceof Aggregate)
+        {
+          Type<?> agType=((Aggregate<?>) data).getType();
+          if (!fieldType.getNativeClass().getComponentType()
+               .isAssignableFrom(agType.getContentType().getNativeClass())
+             )
+          {
+            throw new DataException
+              ("Incompatible value type for field "+field.getURI()
+              +"(aggregate of "+field.getType().getNativeClass().getComponentType().getName()
+              +") cannot be assigned aggregate of "
+                +((Aggregate<?>) data).getType().getContentType().getNativeClass()
+                  .getName()+" ["+data+"]"
+              );
+          }
+        }
+        else if (data.getClass().isArray())
+        {
+          if (!fieldType.getNativeClass().getComponentType()
+               .isAssignableFrom(data.getClass().getComponentType())
+             )
+          {
+            throw new DataException
+              ("Incompatible value type for field "+field.getURI()
+              +"("+field.getType().getNativeClass().getName()
+              +") cannot be assigned value type "+data.getClass().getName()+" ["+data+"]"
+              );
+          }
+          
+        }
+        else
+        { 
+            throw new DataException
+              ("Incompatible value type for field "+field.getURI()
+              +"("+field.getType().getNativeClass().getName()
+              +") cannot be assigned value type "+data.getClass().getName()+" ["+data+"]"
+              );
+        }
+
+      }
+      else if (fieldType.isAggregate()
+               && fieldType.getContentType().isPrimitive()
+              )
+      { 
+        // XXX: no buffers yet for aggregates of primitives (but there should be)
+      }
+      else if (!(data instanceof Buffer)
+              )
+      {
+        if (data instanceof DataComposite)
+        {
+          Buffer buffer=session.buffer((DataComposite) data);
+          data=buffer;
+        }
+        else
+        {
+          throw new DataException
+            ("Cannot set buffered field "+field.getURI()
+            +"("+field.getType().getNativeClass().getName()
+            +") with unbuffered data "+data
+            );
+        }
       }
     }
     
