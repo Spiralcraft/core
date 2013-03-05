@@ -437,7 +437,7 @@ public abstract class Type<T>
     if (scheme()!=null)
     { 
       localKeys
-        =(Key<T>[]) ArrayUtil.toArray(Key.class,getScheme().keyIterable());
+        =(Key<T>[]) ArrayUtil.toArray(Key.class,scheme().keyIterable());
     }
     
     if (localKeys==null && baseKeys==null)
