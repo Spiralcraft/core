@@ -18,6 +18,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import spiralcraft.log.ClassLog;
+import spiralcraft.text.html.URLDataEncoder;
 import spiralcraft.text.html.URLEncoder;
 
 /**
@@ -178,6 +179,7 @@ public class URIUtil
     }
     
   }
+  
   /**
    * Replace the query part of the specified URI with the 
    *   specified pre-encoded query string
@@ -252,6 +254,13 @@ public class URIUtil
       
   }
   
+  /**
+   * Return the URI with the last element of the path removed and the path
+   *   ending in a slash
+   * 
+   * @param input
+   * @return
+   */
   public static final URI toParentPath(URI input)
   { 
     // log.fine(""+input);
@@ -286,11 +295,24 @@ public class URIUtil
     return ret;
   }
   
+  /**
+   * Return the last element of the path in the specified URI
+   * 
+   * @param input
+   * @return
+   */
   public static final String unencodedLocalName(URI input)
   { return new Path(input.getPath()).lastElement();
   }
 
 
+  /**
+   * Replace the scheme of a URI with the specified scheme
+   * 
+   * @param uri
+   * @param scheme
+   * @return
+   */
   public static URI replaceScheme(
     URI uri,
     String scheme)
@@ -310,8 +332,64 @@ public class URIUtil
     }
   }
   
+  /**
+   * Encode a string representing a path into a format suitable for inclusion 
+   *   in the path portion of a URI. All valid path characters are preserved.
+   *   
+   * @param path
+   * @return
+   */
   public static String encodeURIPath(String path)
   { return URLEncoder.encode(path);
+  }
+  
+  /**
+   * Encode a string into an application/x-www-form-urlencoded format suitable
+   *   for a parameter value in the query portion of a URI
+   */
+  public static String encodeParameterData(String data)
+  { return URLDataEncoder.encode(data);
+  }
+  
+  /**
+   * Encode a named parameter value into an 
+   *   application/x-www-form-urlencoded format suitable for the query portion 
+   *   of a URI
+   */
+  public static String encodeParameter(String parameter,String data)
+  { return parameter+"="+URLDataEncoder.encode(data);
+  }
+
+  /**
+   * Encode a named array of parameter values into an 
+   *   application/x-www-form-urlencoded
+   *   format suitable for the query portion of a URI
+   *   
+   * @param parameter
+   * @param data
+   * @return
+   */
+  public static String encodeParameter(String parameter,String[] data)
+  { 
+    if (data==null)
+    { return "";
+    }
+    else
+    {
+      StringBuilder builder=new StringBuilder();
+      for (String str:data)
+      {
+        if (builder.length()>0)
+        { builder.append("&");
+        }
+        builder
+          .append(parameter)
+          .append("=")
+          .append(URLDataEncoder.encode(str))
+          ;
+      }
+      return builder.toString();
+    }
   }
   
 }
