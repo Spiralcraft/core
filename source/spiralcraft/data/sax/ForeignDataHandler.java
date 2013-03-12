@@ -107,7 +107,7 @@ public class ForeignDataHandler
       DataException
     {
       String fullName
-        =stringPool.get(AbstractFrameHandler.combineName(uri,localName));
+        =stringCache.get(AbstractFrameHandler.combineName(uri,localName));
       
       FrameHandler childFrame
         =frameHandler.getChildMap().get(fullName);

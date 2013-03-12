@@ -34,6 +34,7 @@ import spiralcraft.data.spi.EditableArrayListAggregate;
 import spiralcraft.log.ClassLog;
 import spiralcraft.text.ParseException;
 import spiralcraft.util.ContextDictionary;
+import spiralcraft.util.URIResolvePool;
 
 
 import org.xml.sax.SAXException;
@@ -55,6 +56,8 @@ public class DataHandler
   private static final ClassLog log=ClassLog.getInstance(DataHandler.class);
   private static final String STANDARD_PATH
     ="class:/spiralcraft/data/types/standard/";
+  
+  private URIResolvePool uriPool=URIResolvePool.getInstance();
   
   /**
    * Construct a new DataReader which expects to read the specified
@@ -125,12 +128,12 @@ public class DataHandler
     {
       URI typeUri;
       TypeResolver resolver=TypeResolver.getTypeResolver();
-     
+      
       if ( uri==null || uri.length()==0)
       { 
         
         // Default to standard types path
-        typeUri=URI.create(STANDARD_PATH.concat(localName));
+        typeUri=uriPool.get(STANDARD_PATH,localName);
         return resolver.resolve(typeUri,false);
       }
       else if (uri.equals(".") && resourceURI!=null)
@@ -138,12 +141,7 @@ public class DataHandler
       }
       else
       { 
-        if (uri.endsWith("/"))
-        { typeUri=URI.create(uri.concat(localName));
-        }
-        else
-        { typeUri=URI.create(uri.concat("/").concat(localName));
-        }
+        typeUri=uriPool.get(uri,localName);
         if (!typeUri.isAbsolute() && resourceURI!=null)
         { 
 //        System.err.println

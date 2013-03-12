@@ -67,6 +67,7 @@ public abstract class DataHandlerBase
   private boolean allowMixedContentDefault;
   protected boolean debug;
   protected StringPool stringPool;
+  protected StringPool.ThreadCache stringCache;
   
   @Override
   public void setDocumentLocator(Locator locator)
@@ -128,7 +129,8 @@ public abstract class DataHandlerBase
     if (stringPool==null)
     { stringPool=StringPool.INSTANCE;
     }
-
+    stringCache=stringPool.threadCache();
+    
     if (traceHandler!=null)
     { traceHandler.startDocument();
     }
@@ -172,9 +174,9 @@ public abstract class DataHandlerBase
     )
     throws SAXException
   { 
-    uri=stringPool.get(uri);
-    localName=stringPool.get(localName);
-    qName=stringPool.get(qName);
+    uri=stringCache.get(uri);
+    localName=stringCache.get(localName);
+    qName=stringCache.get(qName);
     
     if (traceHandler!=null)
     { traceHandler.startElement(uri,localName,qName,attributes);
@@ -214,8 +216,8 @@ public abstract class DataHandlerBase
   public void startPrefixMapping(String prefix,String uri)
     throws SAXException
   { 
-    prefix=stringPool.get(prefix);
-    uri=stringPool.get(uri);
+    prefix=stringCache.get(prefix);
+    uri=stringCache.get(uri);
     
     if (traceHandler!=null)
     { traceHandler.startPrefixMapping(prefix,uri);
@@ -374,7 +376,9 @@ public abstract class DataHandlerBase
           );
         }
         
-        if (!allowMixedContent && new String(ch,start,length).trim().length()>0)
+        final boolean isWhitespace=isWhitespace(ch,start,length);
+        
+        if (!allowMixedContent && !isWhitespace)
         {
           throw new DataSAXException
             ("Element '"+qName+"' already contains other elements."
@@ -384,13 +388,27 @@ public abstract class DataHandlerBase
         }
         
         if (!hasCharacterContent)
-        { checkCharsForContent(ch,start,length);
+        { 
+          if (preserveWhitespace || !isWhitespace)
+          { hasCharacterContent=true;
+          }
         }
       }
     }
     
     // End SAX Api
     
+    
+    private boolean isWhitespace(char[] ch,int start,int length)
+    {
+      for (int i=start;i<start+length;i++)
+      { 
+        if (!Character.isWhitespace(ch[i]))
+        { return false;
+        }
+      }
+      return true;
+    }
 
     private void checkCharsForContent(char[] ch,int  start,int length)
     {
@@ -522,7 +540,7 @@ public abstract class DataHandlerBase
         { throw new DataException("Error substituting properties in "+ret,x);
         }
       }
-      return stringPool.get(ret);
+      return stringCache.get(ret);
     
     }
 

@@ -15,6 +15,7 @@
 package spiralcraft.util.string;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.WeakHashMap;
 
 //import spiralcraft.log.ClassLog;
@@ -38,6 +39,38 @@ public class StringPool
   
   public static final StringPool INSTANCE
     =new StringPool();
+  
+
+  /**
+   * Offloads lookups from the synchronized pool for use by a single thread 
+   *   doing work of some finite duration. The thread cache is a strong cache,
+   *   and should be discarded after use to free memory.
+   * 
+   * @author mike
+   *
+   */
+  public static class ThreadCache
+  {
+    private final StringPool pool;
+    private HashMap<String,String> cache
+      =new HashMap<String,String>();
+    
+    public ThreadCache(StringPool pool)
+    { this.pool=pool;
+    }
+    
+    public String get(String value)
+    {
+      String ret=cache.get(value);
+      if (ret==null)
+      { 
+        ret=pool.get(value);
+        cache.put(ret,ret);
+      }
+      return ret;
+    }
+    
+  }  
 
 //  private static final ClassLog log
 //    =ClassLog.getInstance(StringPool.class);
@@ -118,5 +151,7 @@ public class StringPool
     
   }
   
-
+  public ThreadCache threadCache()
+  { return new ThreadCache(this);
+  }
 }
