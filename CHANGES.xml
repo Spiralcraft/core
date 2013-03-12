@@ -13,6 +13,88 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev42
+        </revision>
+      
+        <notes>
+          <scm:Note>Add query string encoding functions to URIUtil
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/util/URIUtil.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev42
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix NPE in URLDataEncoder when passing null
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/text/html/URLDataEncoder.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev42
+        </revision>
+      
+        <notes>
+          <scm:Note>Add a constructor argument to StringCat which adds a
+            separator in-between substrings.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/functions/StringCat.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev42
+        </revision>
+      
+        <notes>
+          <scm:Note>Improve performance of XML data reader by reducing 
+            use of "instanceof" in copyData()
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/spi/ArrayTuple.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev42
+        </revision>
+      
+        <notes>
+          <scm:Note>Improve performance of XML data reader by intermediating
+            a thread local string cache in front of the global StringPool and
+            by caching type URIs resolved from qnames.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/sax/DataHandler.java
+          </URI>
+          <URI>data/sax/DataHandlerBase.java
+          </URI>
+          <URI>data/sax/ForeignDataHandler.java
+          </URI>
+          <URI>util/URIResolvePool.java
+          </URI>
+          <URI>util/string/StringPool.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev41
         </revision>
       
