@@ -38,6 +38,7 @@ public class StringCat<T>
 
 
   private StringConverter<T> converter;
+  private String separator;
   
   public StringCat()
   {
@@ -47,7 +48,16 @@ public class StringCat<T>
   { this.converter=converter;
   }
   
+  public StringCat(String separator)
+  { this.separator=separator;
+  }
   
+  public StringCat(StringConverter<T> converter,String separator)
+  { 
+    this.converter=converter;
+    this.separator=separator;
+  }
+
   @Override
   protected Context<String> newContext(
     Channel<T> source,
@@ -89,12 +99,13 @@ public class StringCat<T>
         { state.data="";
         }
         
-        if (converter!=null)
-        { state.data=state.data+converter.toString(val);
+        String tail=converter!=null?converter.toString(val):val.toString();
+        
+        if (separator!=null && !state.data.isEmpty())
+        { tail=separator+tail;
         }
-        else
-        { state.data=state.data+val.toString();
-        }
+        
+        state.data=state.data+tail;
       }
     }
 
