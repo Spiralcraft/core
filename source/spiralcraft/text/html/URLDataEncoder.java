@@ -95,6 +95,9 @@ public class URLDataEncoder
   
   public static String encode(String plaintext,Charset encoding)
   {
+    if (plaintext==null)
+    { return null;
+    }
     StringBuilder encoded = new StringBuilder();
     char[] chars = plaintext.toCharArray();
     for (int i=0; i<chars.length; i++)
@@ -141,6 +144,9 @@ public class URLDataEncoder
    */
   public static String decode(String encodedText,Charset encoding)
   {
+    if (encodedText==null)
+    { return null;
+    }
     // System.out.println("encoded Text: "+encodedText);
     ByteBuffer decoded = new ByteBuffer();
     char[] chars = encodedText.toCharArray();
