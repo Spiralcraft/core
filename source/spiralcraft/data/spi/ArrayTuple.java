@@ -15,6 +15,7 @@
 package spiralcraft.data.spi;
 
 import spiralcraft.data.Aggregate;
+import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Tuple;
@@ -129,26 +130,30 @@ public class ArrayTuple
     for (Field<?> field : fieldSet.fieldIterable())
     { 
       Object originalValue=original.get(field.getIndex());
-      if (originalValue instanceof Tuple)
-      { 
-        Tuple originalTuple=(Tuple) originalValue;
-        if (originalTuple.isMutable() && !isMutable())
-        { data[field.getIndex()]=copyTupleField(originalTuple);
-        }
-        else
-        { data[field.getIndex()]=originalValue;
-        }
-      }
-      else if (originalValue instanceof Aggregate<?>)
+      if (originalValue instanceof DataComposite)
       {
-        Aggregate<?> originalAggregate=(Aggregate<?>) originalValue;
-        if (originalAggregate.isMutable() &&!isMutable())
-        { data[field.getIndex()]=originalAggregate.snapshot();
+        DataComposite originalComposite=(DataComposite) originalValue;
+        if (originalComposite.isTuple())
+        { 
+          Tuple originalTuple=originalComposite.asTuple();
+          if (originalTuple.isMutable() && !isMutable())
+          { data[field.getIndex()]=copyTupleField(originalTuple);
+          }
+          else
+          { data[field.getIndex()]=originalValue;
+          }
         }
-        else
-        { data[field.getIndex()]=originalValue;
+        else if (originalComposite.isAggregate())
+        {
+          Aggregate<?> originalAggregate=originalComposite.asAggregate();
+          if (originalAggregate.isMutable() &&!isMutable())
+          { data[field.getIndex()]=originalAggregate.snapshot();
+          }
+          else
+          { data[field.getIndex()]=originalValue;
+          }
+  
         }
-
       }
       else
       { data[field.getIndex()]=originalValue;
