@@ -13,6 +13,45 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev43
+        </revision>
+      
+        <notes>
+          <scm:Note>New DerivativeCache utility keeps track of objects
+            derived from VFS resources and expires them when the underlying
+            resource changes. 
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/vfs/watcher/DerivativeCache.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev43
+        </revision>
+      
+        <notes>
+          <scm:Note>Load a new version of an AssemblyClass when its underlying
+            resource or that of any dependencies have changed.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/builder
+        </path>
+        
+        <resources>
+          <URI>AssemblyClass.java
+          </URI>
+          <URI>AssemblyLoader.java
+          </URI>
+          <URI>PropertySpecifier.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev42
         </revision>
       
