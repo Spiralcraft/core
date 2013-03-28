@@ -17,6 +17,7 @@ package spiralcraft.builder;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URI;
 
@@ -34,6 +35,7 @@ import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.text.ParseException;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ContextDictionary;
@@ -42,6 +44,7 @@ import spiralcraft.util.URIUtil;
 import spiralcraft.util.lang.ClassUtil;
 
 import spiralcraft.vfs.Resolver;
+import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.vfs.classpath.ClasspathResourceFactory;
 
@@ -61,7 +64,9 @@ public class AssemblyClass
   
   private static final ClassLog log
     =ClassLog.getInstance(AssemblyClass.class);
-
+  private static final Level defaultLogLevel
+    =ClassLog.getInitialDebugLevel(AssemblyClass.class,Level.INFO);
+  
   private static final HashSet<String> langClassNames
     =new HashSet<String>();
 
@@ -130,9 +135,11 @@ public class AssemblyClass
   { return path.replace("/",".").replace("-","$");
   }
   
-  
+  private Level logLevel=defaultLogLevel;
   
   private final URI sourceURI;
+  private final Resource resource;
+  private final long resourceTimestamp;
   
 
   // _basePackage and _baseName are used
@@ -185,9 +192,13 @@ public class AssemblyClass
   /**
    * Construct a new AssemblyClass from a definition
    *
-   *@param sourceUri The URI of the resource which defines this AssemblyClass,
-   *   or null of the AssemblyClass is being defined programmatically.
+   *@param sourceUri The well known URI of the virtual resource in which this
+   *   AssemblyClass is defined, or null of the AssemblyClass is being defined 
+   *   programmatically.
    *
+   *@param resource The physical resource in which this AssemblyClass is 
+   *  defined.
+   *  
    *@param basePackage The package which contains the base AssemblyClass or 
    *   Java class from which this AssemblyClass is derived
    *
@@ -202,13 +213,35 @@ public class AssemblyClass
    */
   public AssemblyClass
     (URI sourceUri
+    ,Resource resource
     ,URI basePackage
     ,String baseName
     ,AssemblyClass outerClass
     ,AssemblyLoader loader
     )
   { 
+    if (logLevel.isFine() && outerClass==null && sourceUri!=null)
+    { 
+      log.fine
+        ("Loading AssemblyClass "+sourceUri+" -> "+basePackage
+        +"{"+baseName+"}"
+        );
+    }
+    
     this.sourceURI=sourceUri;
+    this.resource=resource;
+    
+    try
+    { 
+      this.resourceTimestamp
+        =(resource!=null && outerClass==null)
+        ?resource.getLastModified()
+        :0;
+    }
+    catch (IOException x)
+    { throw new RuntimeException(x);
+    }
+    
     _basePackage=URIUtil.ensureTrailingSlash(basePackage);
     _baseName=baseName;
     _baseURI=_basePackage.resolve(baseName);
@@ -270,6 +303,9 @@ public class AssemblyClass
    *@param sourceUri The URI of the resource which defines this AssemblyClass,
    *   or null of the AssemblyClass is being defined programmatically.
    *
+   *@param resource The physical resource from which this AssemblyClass
+   *  definition was read.
+   *
    *@param baseClass The base class 
    *
    *@param outerClass The AssemblyClass in which this AssemblyClass is being
@@ -279,12 +315,25 @@ public class AssemblyClass
    */
   public AssemblyClass
     (URI sourceUri
+    ,Resource resource
     ,AssemblyClass baseClass
     ,AssemblyClass outerClass
     ,AssemblyLoader loader
     )
   { 
     this.sourceURI=sourceUri;
+    this.resource=resource;
+    try
+    { 
+      this.resourceTimestamp
+        =(resource!=null && outerClass==null)
+        ?resource.getLastModified()
+        :0;
+    }
+    catch (IOException x)
+    { throw new RuntimeException(x);
+    }
+    
     _basePackage=null;
     _baseName=null;
     _baseURI=baseClass.getBaseURI();
@@ -306,6 +355,44 @@ public class AssemblyClass
   { return prefixResolver;
   }
 
+  public boolean isStale()
+  {
+    if (_outerClass==null && resource!=null)
+    {
+      try
+      {
+        if (logLevel.isFine())
+        { log.fine("Checking "+resource.getURI());
+        }
+        if (resource.getLastModified()>resourceTimestamp)
+        { return true;
+        }
+      }
+      catch (IOException x)
+      { 
+        log.log(Level.WARNING,"Error checking "+resource.getURI(),x);
+        return true;
+      }
+    }
+    
+    
+    if (_propertySpecifiers!=null)
+    {
+      for (PropertySpecifier prop:_propertySpecifiers)
+      { 
+        if (prop.isStale())
+        { return true;
+        }    
+      }
+    }
+    
+    if (_baseAssemblyClass!=null && _baseAssemblyClass.isStale())
+    { return true;
+    }
+    
+    return false;
+  }
+  
   public void setDeclarationLocation(URI declarationLocation)
   { 
     if (declarationLocation!=null)
@@ -464,7 +551,7 @@ public class AssemblyClass
    *   the specified baseClass.
    */
   AssemblyClass innerSubclass(AssemblyClass baseClass)
-  { return new AssemblyClass(sourceURI,baseClass,this,_loader);
+  { return new AssemblyClass(sourceURI,resource,baseClass,this,_loader);
   }
 
   public void setId(String id)

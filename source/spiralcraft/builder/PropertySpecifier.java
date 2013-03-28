@@ -145,6 +145,23 @@ public class PropertySpecifier
   }
   
   /**
+   * Return whether any referenced resources or assemblies have been modified
+   *   since they were last read.
+   *   
+   * @return
+   */
+  public boolean isStale()
+  {
+    for (AssemblyClass ac:_contents)
+    { 
+      if (ac.isStale())
+      { return true;
+      }
+    }
+    return false;
+  }
+  
+  /**
    * <p>Whether contextual String substitution should be performed on any 
    *   specified text at instantiation time.
    * </p>

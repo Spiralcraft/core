@@ -223,6 +223,10 @@ public class AssemblyLoader
     throws BuildException
   {
     AssemblyClass ret=_classCache.get(classUri);
+    if (ret!=null && ret.isStale())
+    { ret=null;
+    }
+    
     if (ret==null)
     {
       ret=findAssemblyDefinition
@@ -269,6 +273,7 @@ public class AssemblyLoader
       
       ret=new AssemblyClass
         (null
+        ,null
         ,packageUri
         ,className
         ,null
@@ -297,6 +302,10 @@ public class AssemblyLoader
       Resource resource=Resolver.getInstance().resolve(resourceUri);
     
       AssemblyClass ret=_cache.get(resource.getURI());
+      if (ret!=null && ret.isStale())
+      { _cache.remove(resource.getURI());
+      }
+      
       if (ret==null && !_cache.containsKey(resource.getURI()))
       { ret=loadAssemblyDefinition(resource);
       } 
@@ -373,6 +382,7 @@ public class AssemblyLoader
         AssemblyClass ret
           =new AssemblyClass
             (resourceUri
+            ,resource
             ,findAssemblyClass(URIUtil.removePathSuffix(resource.getURI(),".assy.xml"))
             ,null
             ,this
@@ -382,7 +392,7 @@ public class AssemblyLoader
         return ret;
       }
       
-      return loadAssemblyDefinition(resource.getURI());
+      return loadAssemblyDefinition(resource.getURI(),resource);
     
     }
     catch (ContextualException x)
@@ -399,6 +409,7 @@ public class AssemblyLoader
 
   private AssemblyClass loadAssemblyDefinition
     (URI resourceUri
+    ,Resource resource
     )
     throws BuildException,SAXException,IOException,ContextualException
   {
@@ -429,7 +440,7 @@ public class AssemblyLoader
       }
     
       Element root=parseTree.getDocument().getRootElement();
-      AssemblyClass assemblyClass=readAssemblyClass(resourceUri,root,null);
+      AssemblyClass assemblyClass=readAssemblyClass(resourceUri,resource,root,null);
       _cache.put(resourceUri,assemblyClass);
       assemblyClass.resolve();
       return assemblyClass;
@@ -450,6 +461,7 @@ public class AssemblyLoader
    */
   private AssemblyClass readAssemblyClass
     (URI sourceUri
+    ,Resource resource
     ,Element node
     ,AssemblyClass containerClass
     )
@@ -475,6 +487,7 @@ public class AssemblyLoader
     AssemblyClass assemblyClass
       =new AssemblyClass
         (sourceUri
+        ,resource
         ,baseUri
         ,node.getLocalName()
         ,containerClass
@@ -585,7 +598,7 @@ public class AssemblyLoader
               +" and property specifiers"
               );
           }    
-          readProperty(sourceUri,(Element) child,assemblyClass);
+          readProperty(sourceUri,resource,(Element) child,assemblyClass);
           readProperties=true;
         }
         else if (child instanceof Characters)
@@ -618,7 +631,7 @@ public class AssemblyLoader
     return assemblyClass;
   }
 
-  private void readProperty(URI sourceUri,Element node,AssemblyClass containerClass)
+  private void readProperty(URI sourceUri,Resource resource,Element node,AssemblyClass containerClass)
     throws BuildException
   {
     PropertySpecifier prop
@@ -721,7 +734,9 @@ public class AssemblyLoader
       for (Node child:node)
       {
         if (child instanceof Element)
-        { prop.addAssemblyClass(readAssemblyClass(sourceUri,(Element) child,containerClass));
+        { 
+          prop.addAssemblyClass
+            (readAssemblyClass(sourceUri,resource,(Element) child,containerClass));
         }
         else if (child instanceof Characters)
         { prop.addCharacters( ((Characters) child).getCharacters());
