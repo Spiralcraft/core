@@ -177,6 +177,28 @@
     </meta:Method>
     
     <meta:Method>
+      <name>findBySearchName</name>
+      
+      <static>true
+      </static>
+      
+      <parameterTypes>
+        <String.type/>
+      </parameterTypes>
+      
+      <returnType>
+        <sec:Login.type/>
+      </returnType>
+      
+      <contextX>{ name:[@j:String] }
+      </contextX>
+          
+      <x>[*dtask:Fetch{[@sec:Login],[{`searchname:=name.toLowerCase()`}]}].()
+      </x>
+          
+    </meta:Method>    
+    
+    <meta:Method>
       <name>securePassword
       </name>
       
