@@ -153,6 +153,19 @@ public class Instant
     
   }
     
+  public Instant add(Duration duration)
+  { 
+    if (this.resolution==Chronom.MILLISECOND)
+    { return new Instant(this.offset+duration.getStandardMilliseconds());
+    }
+    else 
+    { return new Instant
+         (this.getOffsetMillis()+duration.getStandardMilliseconds()
+         );
+    }
+  }
+  
+  
   /**
    * The offset of this instant with respect to the epoch of the associated
    *   Calendar.
