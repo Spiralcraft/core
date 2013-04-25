@@ -167,7 +167,7 @@
         [#create] { 
           principalId:[@j:String]
           ,duration:[@st:Duration]
-          ,code:=[@util:RandomUtil].@generateSecureString(32)
+          ,code:=[@util:Random].@secureInstance().generateString(32)
         }
       </contextX>
       
