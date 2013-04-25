@@ -14,6 +14,40 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev45
+        </revision>
+      
+        <notes>
+          <scm:Note>Standardize on using an internal identifier (defaults to
+            to Login.principalId) for linking logins to application specific 
+            identities to provide flexibility in the application username 
+            policies.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/security/auth
+        </path>
+        
+        <resources>
+          <URI>AuthModule.java
+          </URI>
+          <URI>AuthPrincipal.java
+          </URI>
+          <URI>AuthSession.java
+          </URI>
+          <URI>TestAuthenticator.java
+          </URI>
+          <URI>spi/AbstractAuthModule.java
+          </URI>
+          <URI>spi/DataAuthModule.java
+          </URI>
+          <URI>spi/DataAuthenticator.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev44
         </revision>
       

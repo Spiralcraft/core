@@ -15,7 +15,6 @@
 package spiralcraft.security.auth;
 
 import java.net.URI;
-import java.security.Principal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,7 +74,7 @@ public class AuthSession
    *   will be returned.
    * </p>
    */
-  public synchronized Principal getPrincipal()
+  public synchronized AuthPrincipal getPrincipal()
   { 
     if (primarySession!=null)
     { return primarySession.getPrincipal();

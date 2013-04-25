@@ -1,6 +1,5 @@
 package spiralcraft.security.spi;
 
-import java.security.Principal;
 import java.util.Map;
 
 import spiralcraft.common.ContextualException;
@@ -8,6 +7,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
 import spiralcraft.security.auth.AuthModule;
+import spiralcraft.security.auth.AuthPrincipal;
 import spiralcraft.security.auth.AuthSession;
 import spiralcraft.security.auth.Authenticator;
 import spiralcraft.security.auth.Credential;
@@ -84,7 +84,7 @@ public abstract class AbstractAuthModule
   public abstract class AbstractSession
     implements Session
   {
-    protected Principal principal;
+    protected AuthPrincipal principal;
     protected boolean authenticated;
     protected AuthSession authSession
       =sessionFocus.getSubject().get();
@@ -98,7 +98,7 @@ public abstract class AbstractAuthModule
     }
     
     @Override
-    public Principal getPrincipal()
+    public AuthPrincipal getPrincipal()
     { return principal;
     }
     

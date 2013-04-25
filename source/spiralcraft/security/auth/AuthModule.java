@@ -14,8 +14,6 @@
 //
 package spiralcraft.security.auth;
 
-import java.security.Principal;
-
 import spiralcraft.lang.Contextual;
 
 /**
@@ -59,6 +57,6 @@ public interface AuthModule
     
     public void credentialsChanged();
     
-    public Principal getPrincipal();
+    public AuthPrincipal getPrincipal();
   }
 }

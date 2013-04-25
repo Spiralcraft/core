@@ -14,6 +14,7 @@
 //
 package spiralcraft.security.spi;
 
+import spiralcraft.security.auth.AuthPrincipal;
 import spiralcraft.security.auth.Authenticator;
 import spiralcraft.security.auth.AuthSession;
 import spiralcraft.security.auth.DigestCredential;
@@ -45,7 +46,6 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 
 import java.net.URI;
-import java.security.Principal;
 
 /**
  * <p>Authenticates with a spiralcraft.data.query.Queryable for the 
@@ -78,6 +78,7 @@ public class DataAuthenticator
   private BoundQuery<?,?> boundQuery;
   private Channel<String> usernameCredentialChannel;
   private Channel<String> usernameChannel;
+  private Channel<String> idChannel;
   
   private TeleFocus<Tuple> comparisonFocus;
   private ThreadLocalChannel<Tuple> loginChannel;
@@ -194,6 +195,9 @@ public class DataAuthenticator
     comparisonChannel=comparisonFocus.bind(credentialComparison);
     usernameChannel
       =comparisonFocus.bind(Expression.<String>create(".username"));
+    idChannel
+      =comparisonFocus.bind(Expression.<String>create(".principalId"));
+    
     
     return context;
   }
@@ -203,7 +207,7 @@ public class DataAuthenticator
     extends AuthSession
   {
 
-    protected volatile Principal principal;
+    protected volatile AuthPrincipal principal;
     protected volatile boolean authenticated;
     
     public DataAuthSession(Authenticator authenticator)
@@ -238,6 +242,7 @@ public class DataAuthenticator
       {
         
         String username=null;
+        String id=null;
         Tuple loginEntry=queryLoginEntry();
 
         if (loginEntry!=null)
@@ -256,7 +261,9 @@ public class DataAuthenticator
             { log.fine("Token comparison returned "+result);
             }
             if (valid)
-            { username=usernameChannel.get();
+            { 
+              id=idChannel.get();
+              username=usernameChannel.get();
             }
           }
           finally
@@ -278,9 +285,15 @@ public class DataAuthenticator
                )
             {
               final String name=username;
+              final String userId=id;
               principal
-                =new Principal()
+                =new AuthPrincipal()
               {
+                
+                @Override
+                public String getId()
+                { return userId;
+                }
                 
                 @Override
                 public String getName()
@@ -374,7 +387,7 @@ public class DataAuthenticator
      *   will be returned.
      */
     @Override
-    public synchronized Principal getPrincipal()
+    public synchronized AuthPrincipal getPrincipal()
     { return principal;
     }
   

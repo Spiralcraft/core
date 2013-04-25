@@ -38,9 +38,9 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.security.auth.AuthPrincipal;
 
 import java.net.URI;
-import java.security.Principal;
 
 /**
  * <p>Authenticates with a spiralcraft.data.query.Queryable for the 
@@ -70,6 +70,7 @@ public class DataAuthModule
   private CredentialValidator[] validators; 
   
   private Binding<String> principalIdX;
+  private Binding<String> principalNameX;
   private Binding<String> accountIdX;
   
 
@@ -97,7 +98,8 @@ public class DataAuthModule
 
       
   
-    principalIdX=new Binding(Expression.create(".username"));
+    principalIdX=new Binding(Expression.create(".principalId"));
+    principalNameX=new Binding(Expression.create(".username"));
     accountIdX=new Binding(Expression.create(".principalId"));
 
   }
@@ -105,6 +107,25 @@ public class DataAuthModule
   /** 
    * <p>The Expression which provides the "user id" from the successfully
    *   authenticated account entry. This "user id" is  provided to the
+   *   application via Principal.getId().
+   * </p>
+   * 
+   * <p>The Expression is bound against
+   *   a Focus which exposes the successfully authenticated account of 
+   *   accountDataType as the subject, and the active credential set as the
+   *   context.  
+   * </p>
+   * 
+   * <p>This defaults to the expression ".principalId"
+   * </p>
+   */
+  public void setPrincipalIdX(Binding<String> principalIdX)
+  { this.principalIdX=principalIdX;
+  }
+  
+  /** 
+   * <p>The Expression which provides the "username" from the successfully
+   *   authenticated account entry. This "username" is  provided to the
    *   application via Principal.getName().
    * </p>
    * 
@@ -117,9 +138,9 @@ public class DataAuthModule
    * <p>This defaults to the expression ".username"
    * </p>
    */
-  public void setPrincipalIdX(Binding<String> principalIdX)
-  { this.principalIdX=principalIdX;
-  }
+  public void setPrincipalNameX(Binding<String> principalNameX)
+  { this.principalNameX=principalNameX;
+  }  
   
   /**
    * <p>The Expression which determines whether the provided credentials
@@ -314,6 +335,7 @@ public class DataAuthModule
       }
     }
     principalIdX.bind(comparisonFocus);
+    principalNameX.bind(comparisonFocus);
     accountIdX.bind(comparisonFocus);
     
     if (onAssociate!=null)
@@ -424,6 +446,7 @@ public class DataAuthModule
       {
         
         String principalId=null;
+        String principalName=null;
         Tuple loginEntry=queryLoginEntry();
 
         if (loginEntry!=null)
@@ -472,7 +495,9 @@ public class DataAuthModule
             }
             
             if (valid)
-            { principalId=principalIdX.get();
+            { 
+              principalId=principalIdX.get();
+              principalName=principalNameX.get();
             }
           }
           finally
@@ -490,24 +515,11 @@ public class DataAuthModule
           
           
             if (principal==null
-                || !principal.getName().equals(principalId)
+                || !principal.getId().equals(principalId)
                )
             {
-              final String name=principalId;
               principal
-                =new Principal()
-              {
-                
-                @Override
-                public String getName()
-                { return name;
-                }
-            
-                @Override
-                public String toString()
-                { return super.toString()+":"+name;
-                }
-              };
+                =new DataPrincipal(principalId,principalName,loginEntry);
             }
             if (debug)
             { 
@@ -672,13 +684,15 @@ public class DataAuthModule
   
   
 class DataPrincipal
-  implements Principal
+  implements AuthPrincipal
 {
+  private final String id;
   private final String name;
   private final Tuple data;
   
-  public DataPrincipal(String name,Tuple data)
+  public DataPrincipal(String id,String name,Tuple data)
   {
+    this.id=id;
     this.name=name;
     this.data=data;
   }
@@ -687,13 +701,18 @@ class DataPrincipal
   public String getName()
   { return name;
   }
-          
+     
+  @Override
+  public String getId()
+  { return id;
+  }
+  
   public Tuple getData()
   { return data;
   }
   
   @Override
   public String toString()
-  { return super.toString()+":"+name;
+  { return super.toString()+":"+id+":"+name;
   }
 }
