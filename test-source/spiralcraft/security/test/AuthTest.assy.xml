@@ -7,6 +7,8 @@
   xmlns:sec="class:/spiralcraft/security/"
   xmlns:sectest="class:/spiralcraft/security/test/"
   xmlns:codec="class:/spiralcraft/codec/text/"
+  xmlns:st="class:/spiralcraft/time/"
+  xmlns:dtask="class:/spiralcraft/data/task/"
   >
   <targetTypeURI>class:/spiralcraft/security/test/Authenticator
   </targetTypeURI>
@@ -174,6 +176,46 @@
           </testX>
         </test:Assertion>
 
+        <dtask:Session>
+          <transactional>true
+          </transactional>
+          <sequence>
+          
+            <test:Assertion>
+              <name>ticket.create
+              </name>
+              
+              <subjectX>
+                [@sec:Ticket].@create
+                  ("1"
+                  ,[@st:Chronom].@MINUTE.times(5)
+                  ,code:="fooBarBaz123xyz"
+                  )
+              </subjectX>
+              <testX>.code!=null
+              </testX>
+            </test:Assertion>
+          </sequence>
+        </dtask:Session>
+        
+        <dtask:Session>
+          <transactional>true
+          </transactional>
+          <sequence>
+          
+            <test:Assertion>
+              <name>ticket.validate
+              </name>
+              
+              <subjectX>
+                [@sec:Ticket].@findByCode("fooBarBaz123xyz")
+              </subjectX>
+              <testX>.valid &amp;&amp; .login!=null
+              </testX>
+            </test:Assertion>
+          </sequence>
+        </dtask:Session>
+        
       </sequence>  
         
         

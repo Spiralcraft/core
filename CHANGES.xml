@@ -12,6 +12,106 @@
     
 
     <detail> 
+    
+      <scm:Change>
+        <revision>-dev44
+        </revision>
+      
+        <notes>
+          <scm:Note>Make sure that spiralcraft.lang reflection types can be 
+            found even when aliased through "context" URIs that resolve
+            through VFS Packages.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/reflect/BeanTypeModel.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev44
+        </revision>
+      
+        <notes>
+          <scm:Note>Instant.add(Duration) performs a millisecond based
+            computation without using a calendar.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/time/Instant.java
+        </path>
+        
+      </scm:Change>
+          
+      
+      <scm:Change>
+        <revision>-dev44
+        </revision>
+      
+        <notes>
+          <scm:Note>Login.findBySearchName() finds an account by the
+            case insensitive user name
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/security/Login.type.xml
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev44
+        </revision>
+      
+        <notes>
+          <scm:Note>Duration is a standard spiralcraft.data type
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/types/standard/DurationType.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev44
+        </revision>
+      
+        <notes>
+          <scm:Note>Refactor RandomUtil->Random to provide for pluggable
+            random number generator and default secure and standard 
+            generators.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/util
+        </path>
+        
+        <resources>
+          <URI>RandomUtil.java
+          </URI>
+          <URI>Random.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev44
+        </revision>
+      
+        <notes>
+          <scm:Note>Secure Ticket objects for multi-factor authentication, lost
+            passwords, session persistence, etc.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/security/Ticket.type.xml
+        </path>
+        
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev43
         </revision>
