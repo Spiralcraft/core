@@ -14,6 +14,8 @@
 //
 package spiralcraft.util;
 
+import spiralcraft.util.string.ByteArrayToHex;
+
 /**
  * A growable byte[]
  */
@@ -31,6 +33,16 @@ public final class ByteBuffer
   { _array=new byte[initialCapacity];
   }
 
+  public ByteBuffer(byte[] array)
+  { _array=array;
+  }
+
+  public ByteBuffer(byte[] array,int start)
+  { 
+    _array=array;
+    _length=start;
+  }
+  
 	public final void append(byte b)
   {
 		if (_length>=_array.length)
@@ -55,7 +67,24 @@ public final class ByteBuffer
     System.arraycopy(b,start,_array,_length,len);
     _length+=len;
   }
+  
+  public final void write(long l)
+  { 
+    ensureCapacity(_length+8);
+    for (int i = 0; i < 8; ++i) {
+      _array[_length+i] = (byte) (l >> (8 - i - 1 << 3));
+    }
+    _length+=8;
+  }
 
+  public final void write(int l)
+  { 
+    ensureCapacity(_length+4);
+    for (int i = 0; i < 4; ++i) {
+      _array[_length+i] = (byte) (l >> (4 - i - 1 << 3));
+    }
+    _length+=4;
+  }  
 
 	private final void ensureCapacity(int capacity)
 	{
@@ -122,5 +151,10 @@ public final class ByteBuffer
    */
   public void toArray(byte[] target)
   { System.arraycopy(_array,0,target,0,Math.min(_array.length,target.length));
+  }
+  
+  @Override
+  public String toString()
+  { return ByteArrayToHex.instance().toString(toByteArray());
   }
 }
