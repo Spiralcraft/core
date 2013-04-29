@@ -18,6 +18,78 @@
         </revision>
       
         <notes>
+          <scm:Note>Pool now supports deferred checkin where the background
+            thread will recycle the resource instead of the application thread
+          </scm:Note>
+          <scm:Note>Removed excessive "Waiting for pool"/"Waited 0 for pool"
+            log messages
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/pool/Pool.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev45
+        </revision>
+      
+        <notes>
+          <scm:Note>Keep static instance for ByteArrayToHex
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/util/string/ByteArrayToHex.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev45
+        </revision>
+      
+        <notes>
+          <scm:Note>New ByteBuffer constructors to wrap an existing array and 
+            start writing at a specified point.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/util/ByteBuffer.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev45
+        </revision>
+      
+        <notes>
+          <scm:Note>Support for coordination of XA resources in transactions
+          </scm:Note>
+          <scm:Note>Fix issue where propogated subtransaction commits cause
+            main transaction rollback on commit.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/transaction
+        </path>
+        
+        <resources>
+          <URI>Branch.java
+          </URI>
+          <URI>Transaction.java
+          </URI>
+          <URI>XidImpl.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev45
+        </revision>
+      
+        <notes>
           <scm:Note>Standardize on using an internal identifier (defaults to
             to Login.principalId) for linking logins to application specific 
             identities to provide flexibility in the application username 
