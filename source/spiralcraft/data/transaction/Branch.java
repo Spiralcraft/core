@@ -51,5 +51,6 @@ public interface Branch
   /**
    * Deallocate any resources consumed by the branch
    */
-  void complete();
+  void complete()
+    throws TransactionException;
 }
