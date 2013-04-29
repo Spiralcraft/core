@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.transaction.xa.Xid;
+
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.util.RollingIterable;
@@ -105,7 +107,7 @@ public class Transaction
     =new ArrayList<Transaction>();
   
   private boolean debug;
-  
+  private volatile long nextBranchNo=1;
   
   /**
    * Create a new Transaction nested in the given Transaction 
@@ -131,6 +133,20 @@ public class Transaction
   public long getId()
   { return id;
   }
+  
+  private synchronized long nextBranchNo()
+  { return nextBranchNo++;
+  }
+  
+  /**
+   * Create a new branch Xid for this transaction
+   * 
+   * @return
+   */
+  public Xid nextXid()
+  { return new XidImpl(id,nextBranchNo());
+  }
+
   
   public Transaction subTransaction()
   {
@@ -366,21 +382,27 @@ public class Transaction
 
         for (Transaction transaction : subtransactions)
         { 
-          if (debug)
+          // Commit any uncommitted substransactions
+          if (transaction.getState()==State.STARTED
+               || transaction.getState()==State.PREPARED
+             )
           {
-            log.fine
-            ("Transaction #"+getId()
-              +" committing subtransaction #"+transaction.getId()
-            );
-          }
-          transaction.commitLocal();
-          if (transaction.getState()!=State.COMMITTED)
-          { 
-            rollback();
-            throw new TransactionException
-            ("Transaction Aborted after Partial Commit: subtransaction "
-              +transaction+" failed to commit"
-            );
+            if (debug)
+            {
+              log.fine
+              ("Transaction #"+getId()
+                +" committing subtransaction #"+transaction.getId()
+              );
+            }
+            transaction.commitLocal();
+            if (transaction.getState()!=State.COMMITTED)
+            { 
+              rollback();
+              throw new TransactionException
+              ("Transaction Aborted after Partial Commit: subtransaction "
+                +transaction+" failed to commit"
+              );
+            }
           }
         }
 
@@ -427,22 +449,26 @@ public class Transaction
 
         for (Transaction transaction : subtransactions)
         { 
-          if (debug)
+          // Automatically finalize any open subtransactions 
+          if (transaction.getState()==State.STARTED)
           {
-            log.fine
-            ("Transaction #"+getId()
-              +" preparing subtransaction #"+transaction.getId()
-            );
-          }
-
-          transaction.prepare();
-          if (transaction.getState()!=State.PREPARED)
-          { 
-            rollback();
-            throw new TransactionException
-            ("Transaction Aborted: subtransaction "+transaction
-              +" failed to prepare"
-            );
+            if (debug)
+            {
+              log.fine
+              ("Transaction #"+getId()
+                +" preparing subtransaction #"+transaction.getId()
+              );
+            }
+            transaction.prepare();
+            
+            if (transaction.getState()!=State.PREPARED)
+            { 
+              rollback();
+              throw new TransactionException
+              ("Transaction Aborted: subtransaction "+transaction
+                +" failed to prepare"
+              );
+            }
           }
         }
 
@@ -581,11 +607,31 @@ public class Transaction
     { 
       if (transaction.getState()!=State.COMPLETED)
       { 
-        TRANSACTION_LOCAL.set(parent);
-        throw new IllegalStateException
-          ("Transaction "+transaction+" must complete before this"
-          +" transaction "+this+" can complete"
-           );
+        // Auto-complete sub-transactions
+        if (debug)
+        {
+          log.fine
+          ("Transaction #"+getId()
+            +" completing subtransaction #"+transaction.getId()
+            +" in state "+transaction.getState()
+          );
+        }
+        try
+        { transaction.complete();
+        }
+        catch (Exception x)
+        { 
+          log.log
+            (Level.WARNING
+            ,"Caught exception in subtransaction "+transaction.getId()
+            +" rollback"
+            ,x);
+        }       
+//        TRANSACTION_LOCAL.set(parent);
+//        throw new IllegalStateException
+//          ("Transaction "+transaction+" must complete before this"
+//          +" transaction "+this+" can complete"
+//           );
       }
     }
  
