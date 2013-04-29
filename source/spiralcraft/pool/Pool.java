@@ -17,6 +17,7 @@ package spiralcraft.pool;
 import java.util.Stack;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,8 +37,9 @@ public class Pool<T>
 
   private static int NEXT_ID=0;
   protected final ClassLog log=ClassLog.getInstance(getClass());
-  protected Level debugLevel
+  protected Level logLevel
     =ClassLog.getInitialDebugLevel(getClass(),null);
+  protected boolean fastCheckin;
   
   private int _overdueSeconds=600;
   private ResourceFactory<T> _factory;
@@ -72,7 +74,12 @@ public class Pool<T>
   private Sink<T> onCheckout;
   private Sink<T> onCheckin;
 
+  private final LinkedList<T> returnQueue
+    =new LinkedList<T>();
 
+  private final HashSet<Ticket> waiters
+    =new HashSet<Ticket>();
+  
   /**
    * Conserve resources by not discarding them when demand drops,
    *   in order to promote maximum reuse.
@@ -186,6 +193,7 @@ public class Pool<T>
     {
       _started=false;
       _keeper.stop();
+      clearReturnQueue();
       while (!_available.isEmpty())
       { _factory.discardResource( popAvailable().resource );
       }
@@ -193,7 +201,9 @@ public class Pool<T>
       {
         log.warning("Discarding "+_out.size()+" checked out entries");
         for (Reference<T> ref:_out.values())
-        { _factory.discardResource(ref.resource);
+        { 
+          log.log(Level.WARNING,"Leaked allocation "+ref.resource.toString(),ref.checkOutStack);
+          _factory.discardResource(ref.resource);
         }
         _out.clear();
       }
@@ -230,11 +240,11 @@ public class Pool<T>
       _lastUse=lastUse;
       if (!_started)
       { 
-        if (debugLevel.isDebug())
+        if (logLevel.isDebug())
         { log.debug("Waiting for pool to start");
         }
         waitOnMonitor();
-        if (debugLevel.isDebug())
+        if (logLevel.isDebug())
         { log.debug("Notified that pool started");
         }
       }
@@ -244,14 +254,24 @@ public class Pool<T>
         _keeper.wake();
         if (_available.isEmpty())
         {
+          Ticket ticket=null;
           try
           { 
             _waitsCount++;
             _waitingCount++;
-            log.info("Waiting for pool");
-            long time=System.currentTimeMillis();
+            ticket=new Ticket();
+            waiters.add(ticket);
             waitOnMonitor();
-            log.info("Waited "+(System.currentTimeMillis()-time)+" for pool");
+            waiters.remove(ticket);
+            long waitTime=System.currentTimeMillis()-ticket.timestamp;
+            if (waitTime>10)
+            { log.info("Waited "+waitTime+" ms for pool");
+            }
+          }
+          catch (InterruptedException x)
+          { 
+            waiters.remove(ticket);
+            throw x;
           }
           finally
           { _waitingCount--;
@@ -263,10 +283,11 @@ public class Pool<T>
       {
         Reference<T> ref=popAvailable();
         ref.checkOutTime=Clock.instance().approxTimeMillis();
+        ref.checkOutStack=new Exception();
         putOut(ref);
         _checkOutsCount++;
 
-        if (debugLevel.isFine())
+        if (logLevel.isFine())
         { log.fine("Checkout complete");
         }
         ret=ref.resource;
@@ -307,11 +328,25 @@ public class Pool<T>
     }
     
   }
+  
+  public void checkin(T resource)
+  { 
+    if (fastCheckin)
+    { 
+      synchronized(returnQueue)
+      { returnQueue.add(resource);
+      }
+    }
+    else
+    { doCheckin(resource);
+    }
+  }
+  
   /**
    * Return a checked out object to the pool
    *   of available objects.
    */
-  public void checkin(T resource)
+  private void doCheckin(T resource)
   {
     
     if (onCheckin!=null)
@@ -331,6 +366,7 @@ public class Pool<T>
       Reference<T> ref=removeOut(resource);
       if (ref!=null)
       {
+        ref.checkOutStack=null;
         if (_started)
         { pushAvailable(ref);
         }
@@ -369,6 +405,27 @@ public class Pool<T>
   //
   //////////////////////////////////////////////////////////////////
 
+  private void clearReturnQueue()
+  {
+    if (fastCheckin)
+    {
+      while (true)
+      {
+        T resource;
+        synchronized (returnQueue)
+        {
+          if (returnQueue.isEmpty())
+          { break;
+          }
+        
+          resource=returnQueue.removeFirst();
+          
+        }
+        doCheckin(resource);
+      }
+    }
+  }
+  
   class Keeper
     implements Runnable
   {
@@ -386,9 +443,10 @@ public class Pool<T>
       }
     }
 
+    
     public void work()
     {
-
+      clearReturnQueue();
       if (_factory!=null)
       {
         _numTimes++;
@@ -594,7 +652,7 @@ public class Pool<T>
       }
       _addsCount++;
 
-      if (debugLevel.isDebug())
+      if (logLevel.isDebug())
       { log.fine("Added resource "+ref.resource.getClass().getName());
       }
     }
@@ -643,4 +701,11 @@ class Reference<X>
 {
   public X resource;
   public long checkOutTime;
+  public volatile Throwable checkOutStack;
+}
+
+class Ticket
+{
+  public final Thread thread=Thread.currentThread();
+  public final long timestamp=System.currentTimeMillis();
 }
