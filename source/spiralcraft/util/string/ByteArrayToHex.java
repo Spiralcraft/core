@@ -25,6 +25,13 @@ import spiralcraft.codec.text.HexCodec;
 public class ByteArrayToHex
   extends StringConverter<byte[]>
 {
+  private static final ByteArrayToHex INSTANCE
+    =new ByteArrayToHex();
+  
+  public static final ByteArrayToHex instance()
+  { return INSTANCE;
+  }
+    
   @Override
   public byte[] fromString(String val)
   { 
