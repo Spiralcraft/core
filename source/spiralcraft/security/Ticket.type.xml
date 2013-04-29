@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Standard username/password database -->
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta"
+  xmlns:security="class:/spiralcraft/security"
+  xmlns:codec="class:/spiralcraft/codec/text/"
+  xmlns:sec="class:/spiralcraft/security/"
+  xmlns:secauth="class:/spiralcraft/security/auth/"
+  xmlns:j="class:/java/lang/"
+  xmlns:dtask="class:/spiralcraft/data/task/"
+  xmlns:st="class:/spiralcraft/time/"
+  xmlns:util="class:/spiralcraft/util/"
+  >
+  
+  <fields>
+  
+
+    <meta:Field>
+      
+      <name>code
+      </name>
+      
+      <type>
+        <String.type/>
+      </type>
+
+    </meta:Field>
+
+    <meta:Field>
+      
+      <name>principalId
+      </name>
+      
+      <type>
+        <String.type/>
+      </type>
+
+    </meta:Field>
+
+    <meta:Field>
+      <name>contextId
+      </name>
+      
+      <type><String.type/>
+      </type>
+    </meta:Field>
+
+    <meta:Field>
+      
+      <name>createTime
+      </name>
+      
+      <type><Instant.type/>
+      </type>
+      
+      <defaultExpression>[@st:Instant].()
+      </defaultExpression>
+
+    </meta:Field>
+
+    <meta:Field>
+      <name>expireTime
+      </name>
+       
+      <type><Instant.type/>
+      </type>
+
+    </meta:Field>
+
+    <meta:Field>
+      
+      <name>period
+      </name>
+      
+      <type><Duration.type/>
+      </type>
+
+    </meta:Field>
+    
+    <meta:Field>
+      <name>revoked
+      </name>
+    
+      <type><Boolean.type/>
+      </type>
+    </meta:Field>
+    
+    <meta:RelativeField>
+      <name>login
+      </name>
+      
+      <type><sec:Login.type/>
+      </type>
+      
+      <fieldList>principalId
+      </fieldList>
+    </meta:RelativeField>
+    
+    <meta:CalculatedField>
+      <name>valid
+      </name>
+      <expression>.revoked!=true &amp;&amp; expireTime > [@st:Instant].()
+      </expression>
+    </meta:CalculatedField>
+  </fields>
+  
+  <keys>
+    <meta:Key>
+      <primary>true
+      </primary>
+      
+      <fieldList>code
+      </fieldList>
+    
+    </meta:Key>
+
+    <meta:Key>
+
+      <fieldList>principalId
+      </fieldList>
+    </meta:Key>
+    
+      
+  </keys>
+
+  <methods>
+
+    <meta:Method>
+      <name>findByCode</name>
+      
+      <static>true
+      </static>
+      
+      <parameterTypes>
+        <String.type/>
+      </parameterTypes>
+      
+      <returnType>
+        <sec:Ticket.type/>
+      </returnType>
+      
+      <contextX>{ code:[@j:String] }
+      </contextX>
+          
+      <x>[*dtask:Fetch{[@sec:Ticket],[{`code:=code`}]}].()
+      </x>
+          
+    </meta:Method>
+    
+    <meta:Method>
+      <name>create
+      </name>
+      
+      <static>true
+      </static>
+      
+      <parameterTypes>
+        <String.type/>
+        <Duration.type/>
+      </parameterTypes>
+
+      <returnType><sec:Ticket.type/>
+      </returnType>
+      
+      <contextX>
+        [#create] { 
+          principalId:[@j:String]
+          ,duration:[@st:Duration]
+          ,code:=[@util:Random].@secureInstance().generateString(32)
+        }
+      </contextX>
+      
+      <x>[*dtask:Edit{[@sec:Ticket].type}].()
+        { .principalId=[create].principalId
+          ,.period=[create].duration
+          ,.expireTime=[@st:Instant].().add([create].duration)
+          ,.code=[create].code
+          ,.@tuple.save()
+          ,.
+        }
+      </x>
+    </meta:Method>
+
+    
+  </methods>
+</meta:Type>

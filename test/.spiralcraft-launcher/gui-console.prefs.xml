@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<Node name="">
+
+  <Node name="frame">
+
+    <Entry key="width">
+
+      <Value>1233
+      </Value>
+    </Entry>
+
+    <Entry key="height">
+
+      <Value>829
+      </Value>
+    </Entry>
+
+    <Entry key="x">
+
+      <Value>678
+      </Value>
+    </Entry>
+
+    <Entry key="y">
+
+      <Value>-1121
+      </Value>
+    </Entry>
+  </Node>
+</Node>

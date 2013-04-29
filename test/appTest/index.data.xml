@@ -1,0 +1,16 @@
+<example:Index.list
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  >
+  <example:Index>
+    <id>one
+    </id>
+  </example:Index>
+  <example:Index>
+    <id>two
+    </id>
+  </example:Index>
+  <example:Index>
+    <id>three
+    </id>
+  </example:Index>
+</example:Index.list>

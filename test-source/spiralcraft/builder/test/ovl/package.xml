@@ -1,0 +1,6 @@
+<vfs:Package
+  xmlns:vfs="class:/spiralcraft/vfs/"
+  >
+  <base>class:/spiralcraft/builder/test
+  </base>
+</vfs:Package>

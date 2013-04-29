@@ -1,0 +1,7 @@
+<testovl:MyWidget
+  xmlns:testovl="class:/spiralcraft/builder/test/ovl"
+  xmlns:jtext="class:/java/text/"
+  >
+
+  <title>Overlay Widget</title>
+</testovl:MyWidget>
