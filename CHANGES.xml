@@ -14,6 +14,30 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev46
+        </revision>
+      
+        <notes>
+          <scm:Note>isNew() method on buffer to determine whether the entity
+            has ever been persisted
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/session
+        </path>
+        
+        <resources>
+          <URI>Buffer.java
+          </URI>
+          <URI>BufferTuple.java
+          </URI>
+          <URI>BufferAggregate.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev45
         </revision>
       
