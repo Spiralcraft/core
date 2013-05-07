@@ -380,6 +380,11 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   }
 
   @Override
+  public boolean isNew()
+  { return original==null;
+  }
+  
+  @Override
   public void save()
     throws DataException
   {

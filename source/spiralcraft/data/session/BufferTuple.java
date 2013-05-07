@@ -801,6 +801,11 @@ public class BufferTuple
   }
 
   @Override
+  public boolean isNew()
+  { return original==null;
+  }
+  
+  @Override
   public boolean isDelete()
   { return delete;
   }

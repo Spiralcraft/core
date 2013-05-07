@@ -63,6 +63,8 @@ public abstract class Buffer
   
   public abstract boolean isDirty();
   
+  public abstract boolean isNew();
+  
   /**
    * Provide a permanent id for newly created buffers before they are
    *   persisted beyond the data session.
