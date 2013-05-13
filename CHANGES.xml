@@ -18,6 +18,32 @@
         </revision>
       
         <notes>
+          <scm:Note>Consolidated binary pattern matcher functionality and added
+            a PatternReplacingInputStream class
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/io
+        </path>
+        
+        <resources>
+          <URI>KmpMatcher.java
+          </URI>
+          <URI>PatternReplacingInputStream.java
+          </URI>
+          <URI>FileRecordIterator.java
+          </URI>
+          <URI>InputStreamRecordIterator.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev46
+        </revision>
+      
+        <notes>
           <scm:Note>isNew() method on buffer to determine whether the entity
             has ever been persisted
           </scm:Note>
