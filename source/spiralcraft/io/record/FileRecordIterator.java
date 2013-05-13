@@ -17,9 +17,9 @@ package spiralcraft.io.record;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import spiralcraft.io.KmpMatcher;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ByteBuffer;
+import spiralcraft.util.BytePatternMatcher;
 
 /**
  * <p>Provides a record based interface into a RandomAccessFile that is
@@ -44,8 +44,8 @@ public class FileRecordIterator
   private final ByteBuffer tempBuffer=new ByteBuffer();
   private final byte[] delimiter;
   private int recordPointer=-1;
-  private final KmpMatcher forwardMatcher;
-  private final KmpMatcher reverseMatcher;
+  private final BytePatternMatcher forwardMatcher;
+  private final BytePatternMatcher reverseMatcher;
   private byte[] fileBuffer=new byte[1024];
   private byte[] recordBuffer;
   
@@ -55,8 +55,8 @@ public class FileRecordIterator
   {
     this.file=file;
     this.delimiter=delimiter;
-    forwardMatcher=new KmpMatcher(delimiter);
-    reverseMatcher=new KmpMatcher((byte[]) ArrayUtil.reverse(delimiter));
+    forwardMatcher=new BytePatternMatcher(delimiter);
+    reverseMatcher=new BytePatternMatcher((byte[]) ArrayUtil.reverse(delimiter));
     file.seek(0);
   }
   

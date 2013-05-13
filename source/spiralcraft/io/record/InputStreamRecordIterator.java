@@ -17,8 +17,8 @@ package spiralcraft.io.record;
 import java.io.IOException;
 import java.io.InputStream;
 
-import spiralcraft.io.KmpMatcher;
 import spiralcraft.util.ByteBuffer;
+import spiralcraft.util.BytePatternMatcher;
 
 /**
  * <p>Provides a record based interface into an InputStream that is
@@ -43,7 +43,7 @@ public class InputStreamRecordIterator
   private final byte[] delimiter;
   private final ByteBuffer tempBuffer=new ByteBuffer();
   private int recordPointer=-1;
-  private final KmpMatcher forwardMatcher;
+  private final BytePatternMatcher forwardMatcher;
   private byte[] recordBuffer;
   private boolean eof;
   
@@ -52,7 +52,7 @@ public class InputStreamRecordIterator
   {
     this.in=in;
     this.delimiter=delimiter;
-    forwardMatcher=new KmpMatcher(delimiter);
+    forwardMatcher=new BytePatternMatcher(delimiter);
   }
   
   @Override
