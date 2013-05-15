@@ -20,6 +20,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.util.string.StringConverter;
 
@@ -67,7 +68,7 @@ public class ToString<T>
     public ToStringChannel(Channel<T> source) 
        throws BindException
     { 
-      super(source);
+      super(BeanReflector.<String>getInstance(String.class),source);
       if (converter==null)
       { converter=source.getReflector().getStringConverter();
       }
