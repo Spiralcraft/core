@@ -161,5 +161,14 @@ public class KeyedList<T>
     public Set<Tkey> keySet()
     { return _map.keySet();
     }
+    
+    public boolean containsKey(Tkey key)
+    { 
+      List<Tdata> list=get(key);
+      if (list!=null && !list.isEmpty())
+      { return true;
+      }
+      return false;
+    }
   }
 }
