@@ -264,9 +264,6 @@ public class FileResource
           ))
       { super.moveTo(target);
       }
-      else
-      { this.delete();
-      }
     }
     else
     { 
@@ -276,15 +273,17 @@ public class FileResource
           ))
       { super.moveTo(target);
       }
-      else
-      { this.delete();
-      }
     }
     
   }      
   
   @Override
   public void delete()
-  { _file.delete();
+    throws IOException
+  { 
+    if (!_file.delete())
+    { throw new IOException("Could not delete "+_file);
+    }
   }
+  
 }
