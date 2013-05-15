@@ -158,5 +158,23 @@ public class ResourceUtil
     }
     return ret;
   }
+  
+  /**
+   * Recursively delete a container tree
+   * 
+   * @param resource
+   */
+  public static void deleteRecursive(Resource resource)
+    throws IOException
+  {
+    Container container=resource.asContainer();
+    if (container!=null)
+    {
+      for (Resource child: container.listChildren())
+      { deleteRecursive(child);
+      }
+    }
+    resource.delete();
+  }
 }
 
