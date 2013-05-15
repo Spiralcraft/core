@@ -18,6 +18,90 @@
         </revision>
       
         <notes>
+          <scm:Note>FileResource.delete() throws an exception on failure
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/vfs/file/FileResource.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev46
+        </revision>
+      
+        <notes>
+          <scm:Note>Tasks to create and delete containers (directories)
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/vfs
+        </path>
+                
+        <resources>
+          <URI>ResourceUtil.java
+          </URI>
+          <URI>task/Delete.java
+          </URI>
+          <URI>task/MakeDir.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev46
+        </revision>
+      
+        <notes>
+          <scm:Note>Utility functions to write ASCII text to resources/streams
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/vfs
+        </path>
+                
+        <resources>
+          <URI>ResourceUtil.java
+          </URI>
+          <URI>StreamUtil.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev46
+        </revision>
+      
+        <notes>
+          <scm:Note>KeyedList.containsKey() method
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/util/KeyedList.java
+        </path>
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev46
+        </revision>
+      
+        <notes>
+          <scm:Note>ToString now reports its reflector type properly as a
+            String
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/functions/ToString.java
+        </path>
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev46
+        </revision>
+      
+        <notes>
           <scm:Note>Consolidated binary pattern matcher functionality and added
             a PatternReplacingInputStream class
           </scm:Note>
