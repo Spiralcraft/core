@@ -15,6 +15,13 @@
 package spiralcraft.vfs;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import spiralcraft.exec.ExecutionContext;
+import spiralcraft.text.html.URLEncoder;
 
 
 /**
@@ -91,6 +98,65 @@ public class ResourceUtil
     }
     prefix+="("+num+")";
     return prefix+suffix;
+  }
+  
+  public static void writeAsciiString(Resource resource,String content)
+    throws IOException
+  {
+    if (resource==null)
+    { throw new IllegalArgumentException("Resource cannot be null");
+    }
+    OutputStream out=resource.getOutputStream();
+    try
+    { 
+      StreamUtil.writeAsciiString(out,content);
+      out.flush();
+    }
+    finally
+    { out.close();
+    }
+  }
+  
+  public static String readAsciiString(Resource resource)
+    throws IOException
+  {
+    if (resource==null)
+    { throw new IllegalArgumentException("Resource cannot be null");
+    }
+    InputStream in=resource.getInputStream();
+    try
+    {
+      return StreamUtil.readAsciiString(in,-1);
+    }
+    finally
+    { in.close();
+    }
+    
+  }
+  
+  /**
+   * Resolve a resource relative to the Execution Context default path using an 
+   *   unescaped path
+   * 
+   * @param scheme
+   * @param path
+   * @return The resource
+   * @throws UnresolvableURIException
+   * @throws URISyntaxException
+   */
+  public static Resource resolveInExecutionContext(String path)
+    throws UnresolvableURIException,URISyntaxException
+  { 
+    URI uri=ExecutionContext.getInstance().canonicalize
+        (URI.create(URLEncoder.encode(path)));
+        
+    Resource ret=Resolver.getInstance().resolve(uri);
+    if (ret==null)
+    { 
+      throw new UnresolvableURIException
+        (uri,"Could not resolve uri canonicalized from path "+path);
+    }
+    return ret;
   }
 }
 

@@ -142,6 +142,17 @@ public class StreamUtil
     return new String(chars);
   }
   
+  public static void writeAsciiString(OutputStream out,String content)
+    throws IOException
+  { 
+    byte[] bytes=new byte[content.length()];
+    for (int i=0;i<content.length();i++)
+    { bytes[i]=(byte) content.charAt(i);
+    }
+    out.write(bytes);
+  }
+  
+  
   /**
    * Read buffers of text, stopping cleanly as line endings are
    *   encountered or the buffer fills up.
