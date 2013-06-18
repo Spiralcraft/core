@@ -111,10 +111,33 @@ public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
   { this.entityType=entityType;
   }
   
+  /**
+   * <p>Specify a field name if the data coming from the source represents field 
+   *   value(s). When get() is issued, the set of source tuple(s) will be derived
+   *   executing a join query against the field values from the source.
+   * </p>
+   *   
+   * <p>If not specified, the data from the source is assumed to be the source
+   *   tuple(s) themselves
+   * </p>
+   * @param fieldName
+   */
   public void setUpstreamFieldName(String fieldName)
   { this.upstreamFieldName=fieldName;
   }
 
+  /**
+   * <p>Specify a field name if the data that is output by get() represents
+   *   field value(s) of the source tuple(s). When set() is called with the
+   *   set of field value(s), the source tuple(s) will be found by executing
+   *   a join query against those values.
+   * </p>
+   *   
+   * <p>If not specified, the data from the source is assumed to be the source
+   *   tuple<s> themselves
+   * </p>
+   * @param fieldName
+   */
   public void setDownstreamFieldName(String fieldName)
   { this.downstreamFieldName=fieldName;
   }

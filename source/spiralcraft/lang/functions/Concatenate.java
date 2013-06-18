@@ -26,7 +26,7 @@ import spiralcraft.lang.spi.Accumulator;
 import spiralcraft.lang.spi.ViewState;
 
 /**
- * <p>Collects a set of the distinct values in the sequence
+ * <p>Concatenates the values in a sequence of collections
  * </p>
  * 
  * @author mike
