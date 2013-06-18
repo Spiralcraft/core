@@ -134,7 +134,9 @@ public class Copy
   }
   
   public void setSourceUriX(Binding<URI> sourceUriX)
-  { this.sourceUriX=sourceUriX;
+  { 
+    sourceUriX.setTargetType(URI.class);
+    this.sourceUriX=sourceUriX;
   }
   
   public void setSourceResource(Resource sourceResource)
@@ -143,7 +145,9 @@ public class Copy
   }
   
   public void setTargetUriX(Binding<URI> targetUriX)
-  { this.targetUriX=targetUriX;
+  { 
+    targetUriX.setTargetType(URI.class);
+    this.targetUriX=targetUriX;
   }
 
   public void setTargetResource(Resource targetResource)
