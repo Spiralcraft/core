@@ -16,21 +16,34 @@ package spiralcraft.lang.spi;
 
 import spiralcraft.lang.Channel;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 public class WeakChannelCache
 {
-  // XXX Make weak?
-  private HashMap<Object,Channel<?>> _map
-    =new HashMap<Object,Channel<?>>();
+  private HashMap<Object,WeakReference<Channel<?>>> _map
+    =new HashMap<Object,WeakReference<Channel<?>>>();
   
   @SuppressWarnings("unchecked") // Map has heterogeneous types
   public synchronized <X> Channel<X> get(Object key)
-  { return (Channel<X>) _map.get(key);
+  { 
+    WeakReference<Channel<?>> ref=_map.get(key);
+    if (ref!=null)
+    {
+      @SuppressWarnings("rawtypes")
+      Channel chan=ref.get();
+      if (chan==null)
+      { _map.remove(key);
+      }
+      else
+      { return chan;
+      }
+    }
+    return null;
   }
   
   public synchronized void put(Object key,Channel<?> value)
-  { _map.put(key,value);
+  { _map.put(key,new WeakReference<Channel<?>>(value));
   }
 }
 
