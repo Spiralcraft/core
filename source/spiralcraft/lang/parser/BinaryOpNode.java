@@ -33,6 +33,7 @@ import spiralcraft.lang.spi.TranslatorChannel;
 import spiralcraft.lang.spi.StringConcatTranslator;
 
 import spiralcraft.util.lang.ClassUtil;
+import spiralcraft.util.string.ArrayToString;
 import spiralcraft.util.string.StringConverter;
 
 import spiralcraft.util.ArrayUtil;
@@ -323,7 +324,7 @@ class StringBindingHelper
       (BeanReflector.<String>getInstance(String.class)
       );
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public  static final <S> Channel<String> 
     bindString(Channel<String> op1,Channel<S> op2,char operator)
     throws BindException
@@ -341,6 +342,11 @@ class StringBindingHelper
         { 
           converter
             =StringConverter.getInstance(op2.getReflector().getContentType());
+        }
+        if (converter==null && op2.getReflector().getContentType().isArray())
+        { 
+          converter
+            =new ArrayToString(op2.getReflector().getContentType().getComponentType());
         }
         if (converter==null)
         { converter=(StringConverter<S>) StringConverter.getOneWayInstance();

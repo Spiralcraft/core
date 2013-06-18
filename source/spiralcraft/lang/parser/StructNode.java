@@ -668,6 +668,10 @@ public class StructNode
     { return fieldArray;
     }
     
+    public Channel<?> getChannel(StructField field)
+    { return channels[field.index];
+    }
+    
     public Struct newStruct()
     { 
       Object[] data=new Object[channels.length];

@@ -49,6 +49,8 @@ import java.net.URI;
 
 import spiralcraft.log.ClassLog;
 //import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.string.ArrayToString;
+import spiralcraft.util.string.StringConverter;
 
 /**
  * A Reflector which exposes an Array of an extended type.
@@ -403,6 +405,22 @@ public class ArrayReflector<I>
     }
     
   }
+  
+  @Override
+  public StringConverter<I[]> getStringConverter()
+  {
+    if (componentReflector.getStringConverter()!=null)
+    { 
+      return new ArrayToString
+        (componentReflector.getStringConverter()
+        ,componentReflector.getContentType()
+        );
+    }
+    else
+    { return null;
+    }
+  }
+  
   
 }
 

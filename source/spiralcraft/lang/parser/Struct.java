@@ -20,6 +20,7 @@ import java.util.Iterator;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.string.StringConverter;
 
 /**
  * Holds named data elements defined by a Struct expression
@@ -109,6 +110,7 @@ public class Struct
   { return data[index];
   }
     
+  @SuppressWarnings("unchecked")
   @Override
   public String toString()
   { 
@@ -126,7 +128,16 @@ public class Struct
       if (i>0)
       { buf.append(" , ");
       }
-      buf.append(field.name+"=["+data[i]+"]");
+      
+      @SuppressWarnings("rawtypes")
+      StringConverter converter
+        =reflector.getChannel(field).getReflector().getStringConverter();
+      if (converter!=null)
+      { buf.append(field.name+"=["+converter.toString(data[i])+"]");
+      }
+      else
+      { buf.append(field.name+"=["+ data[i]+"]");
+      }
       i++;
     }
     buf.append(" }");
