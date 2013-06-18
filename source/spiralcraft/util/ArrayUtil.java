@@ -24,9 +24,6 @@ import java.util.TreeSet;
 import java.util.Collection;
 import java.util.Iterator;
 
-import spiralcraft.common.Immutable;
-
-
 /**
  * Static methods for array manipulation
  */
@@ -672,7 +669,7 @@ public class ArrayUtil
     return ret;
   }
   
-  public static final Object asKey(final Object[] array)
+  public static final ArrayKey asKey(final Object[] array)
   { return new ArrayKey(array);
   }
 
@@ -865,38 +862,4 @@ class ArrayIterator<X>
       ("Can't remove from array");
   }
   
-}
-
-@Immutable
-class ArrayKey
-{
-  private final Object[] array;
-  private final int hashCode;
-  
-  
-  public ArrayKey(Object[] array)
-  { 
-    this.array=new Object[array.length];
-    System.arraycopy(array,0,this.array,0,array.length);
-    
-    this.hashCode=ArrayUtil.arrayHashCode(array);
-  }
-
-  @Override
-  public int hashCode()
-  { return hashCode;
-  }
-  
-  @Override
-  public boolean equals(Object obj)
-  { 
-    return obj instanceof ArrayKey 
-      && ArrayUtil.arrayEquals(array,((ArrayKey) obj).array);
-  }
-  
-  @Override
-  public String toString()
-  { return super.toString()+": ["+ArrayUtil.format(array,",","[","]")+"]";
-  }
-
 }
