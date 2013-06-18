@@ -14,6 +14,120 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev47
+        </revision>
+      
+        <notes>
+          <scm:Note>Enhance spiralcraft.lang syntax by using focus selector
+            to resolve this "[.]" and context "[]" in order to permit
+            application of all postfix operations.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/parser
+        </path>
+        
+        <resources>
+          <URI>ContextNode.java
+          </URI>
+          <URI>ExpressionParser.java
+          </URI>
+          <URI>FunctionNode.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev47
+        </revision>
+      
+        <notes>
+          <scm:Note>Allow for String input to source and target bindings 
+            by coercing to URI types.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/vfs/task/Copy.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev47
+        </revision>
+      
+        <notes>
+          <scm:Note>Provide acyclic string conversion for arrays 
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft
+        </path>
+        
+        <resource>
+          <URI>lang/parser/BinaryOpNode.java
+          </URI>
+          <URI>lang/parser/Struct.java
+          </URI>
+          <URI>lang/parser/StructNode.java
+          </URI>
+          <URI>lang/reflect/ArrayReflector.java
+          </URI>
+          <URI>util/string/ArrayToString.java
+          </URI>
+        </resource>
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev47
+        </revision>
+      
+        <notes>
+          <scm:Note>New Collect function accumulates the result of
+            a reduction.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/functions/Collect.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev47
+        </revision>
+      
+        <notes>
+          <scm:Note>Improve reusability and garbage collection for segments 
+            of the data flow graph.
+          </scm:Note>
+          <scm:Note>Simplify the use of compound hash keys based on arrays.
+          </scm:Note>
+          <scm:Note>Make sure that cached bindings are garbage collected
+            once they are no longer used.
+          </scm:Note>
+          <scm:Note>Make sure that data projections are re-used when the
+            field signature is identical.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/core/SchemeImpl.java
+          </URI>
+          <URI>lang/spi/WeakChannelCache.java
+          </URI>
+          <URI>util/ArrayKey.java
+          </URI>
+          <URI>util/ArrayUtil.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev46
         </revision>
       

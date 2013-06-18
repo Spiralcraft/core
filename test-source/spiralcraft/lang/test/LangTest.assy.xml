@@ -57,13 +57,32 @@
       </subjectX>
       
       <testX>length==3 &amp;&amp; 
-            @[0]==1 &amp;&amp; 
-            @[1]==2 &amp;&amp; 
-            @[2]==3
+            [][0]==1 &amp;&amp; 
+            [][1]==2 &amp;&amp; 
+            [][2]==3
       </testX>
       
     </test:Assertion>
     
+    <test:Assertion>
+    
+      <name>this array ref
+      </name>
+      
+      <subjectX>[@j:Integer][{1,2,3}]
+      </subjectX>
+      
+      <testX>
+        []{
+          .length==3 &amp;&amp; 
+          [.][0]==1 &amp;&amp; 
+          [.][1]==2 &amp;&amp; 
+          [.][2]==3
+        }
+      </testX>
+      
+    </test:Assertion>
+
     <test:Assertion>
     
       <name>array equals- Integer
@@ -656,7 +675,7 @@
         
         lineSet
           :=[@j:String]
-          .([*jn:URI{"in/LoremIpsumList.txt"}]
+          .([*jn:URI{"in/LoremIpsumList.txt.bin"}]
             .[*vfsf:Resolve]
             .[*vfsf:IO]
           )
@@ -735,7 +754,7 @@
         
         lineSet
           :=[@j:String]
-          .([*jn:URI{"in/LoremIpsumList.txt"}]
+          .([*jn:URI{"in/LoremIpsumList.txt.bin"}]
             .[*vfsf:Resolve]
             .[*vfsf:IO]
           )
@@ -816,7 +835,7 @@
       
       <subjectX>
         [@j:String]
-        .([*jn:URI{"in/LoremIpsumList.txt"}]
+        .([*jn:URI{"in/LoremIpsumList.txt.bin"}]
           .[*vfsf:Resolve]
           .[*vfsf:IO]
         )
@@ -842,7 +861,7 @@
       
       <subjectX>
         [@j:String]
-        .([*jn:URI{"in/LoremIpsumList.txt"}]
+        .([*jn:URI{"in/LoremIpsumList.txt.bin"}]
           .[*vfsf:Resolve]
           .[*vfsf:IO]
         )
@@ -868,7 +887,7 @@
       
       <subjectX>
         [@j:String]
-        .([*jn:URI{"in/LoremIpsumList.txt"}]
+        .([*jn:URI{"in/LoremIpsumList.txt.bin"}]
           .[*vfsf:Resolve]
           .[*vfsf:IO]
         )
@@ -902,7 +921,7 @@
       
       <subjectX>
         [@j:String]
-        .([*jn:URI{"in/LoremIpsumList.txt"}]
+        .([*jn:URI{"in/LoremIpsumList.txt.bin"}]
           .[*vfsf:Resolve]
           .[*vfsf:IO]
         )
