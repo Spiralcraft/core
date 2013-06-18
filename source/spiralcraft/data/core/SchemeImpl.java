@@ -28,6 +28,7 @@ import spiralcraft.data.Field;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeMismatchException;
 import spiralcraft.lang.Expression;
+import spiralcraft.util.ArrayKey;
 import spiralcraft.util.ArrayUtil;
 
 /**
@@ -57,8 +58,8 @@ public class SchemeImpl
 //    =new HashMap<String,KeyImpl>();
   
   
-  protected final HashMap<Expression<?>[],ProjectionImpl<Tuple>> projectionMap
-    =new HashMap<Expression<?>[],ProjectionImpl<Tuple>>();
+  protected final HashMap<ArrayKey,ProjectionImpl<Tuple>> projectionMap
+    =new HashMap<ArrayKey,ProjectionImpl<Tuple>>();
     
   @Override
   public Type<?> getType()
@@ -474,10 +475,12 @@ public class SchemeImpl
   private ProjectionImpl<Tuple> createProjection(Expression<?>[] signature)
     throws DataException
   {
+    ArrayKey sigKey=ArrayUtil.asKey(signature);
     synchronized (projectionMap)
     {
     
-      ProjectionImpl<Tuple> projection=projectionMap.get(signature);
+      
+      ProjectionImpl<Tuple> projection=projectionMap.get(sigKey);
       if (projection!=null)
       { return projection;
       }
@@ -486,13 +489,13 @@ public class SchemeImpl
       { 
         if (Arrays.deepEquals(key.getTargetExpressions(),signature))
         { 
-          projectionMap.put(key.getTargetExpressions(),key);
+          projectionMap.put(ArrayUtil.asKey(key.getTargetExpressions()),key);
           return key;
         }
       }
       
       projection=new ProjectionImpl<Tuple>(this,signature);
-      projectionMap.put(signature,projection);
+      projectionMap.put(sigKey,projection);
       if (resolved)
       { projection.resolve();
       }
@@ -506,7 +509,7 @@ public class SchemeImpl
   public Projection<Tuple> getProjection(Expression<?>[] signature)
     throws DataException
   {
-    Projection<Tuple> projection=projectionMap.get(signature);
+    Projection<Tuple> projection=projectionMap.get(ArrayUtil.asKey(signature));
     if (projection!=null)
     { return projection;
     }
