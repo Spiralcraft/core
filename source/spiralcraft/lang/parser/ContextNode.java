@@ -33,6 +33,10 @@ public class ContextNode
   { _source=source;
   }
   
+  public ContextNode()
+  { _source=null;
+  }
+  
   @Override
   public Node copy(Object visitor)
   { 
@@ -53,7 +57,7 @@ public class ContextNode
 
   @Override
   public String reconstruct()
-  { return _source!=null?_source.reconstruct()+" ":"";
+  { return _source!=null?_source.reconstruct()+" ":"[]";
   }
   
   public FocusNode getSource()

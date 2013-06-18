@@ -896,6 +896,27 @@ public class ExpressionParser
       else if (_tokenizer.lookahead.ttype=='#')
       { return parseNamedStruct();
       }
+      else if (_tokenizer.lookahead.ttype==']')
+      { 
+        consumeToken();
+        consumeToken();
+        // "[]" = 'this'
+        return new ContextNode();
+        
+      }
+      else if (_tokenizer.lookahead.ttype=='.')
+      { 
+        consumeToken();
+        consumeToken();
+        FocusNode focusSpec=new CurrentFocusNode();
+        while (_tokenizer.ttype=='.')
+        { 
+          consumeToken();
+          focusSpec=new ParentFocusNode(focusSpec);
+        }
+        expect(']');
+        return focusSpec;
+      }
       else
       { 
         FocusNode focusSpec=parseFocusSpecifier();
@@ -1270,7 +1291,10 @@ public class ExpressionParser
   {
     expect('[');
     expect('#');
-    String typeQName=parseURIName("]{");
+    String typeQName="";
+    if (_tokenizer.ttype!='{')
+    { typeQName=parseURIName("]{");
+    }
     if (_tokenizer.ttype=='{')
     {
       expect('{');

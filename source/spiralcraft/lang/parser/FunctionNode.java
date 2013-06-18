@@ -24,6 +24,7 @@ public class FunctionNode
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public FunctionNode(String typeQName,Node context,Node body)
   { 
+    this.typeQName=typeQName;
     this.context=context;
     this.body=body;
   }
