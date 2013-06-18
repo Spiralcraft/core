@@ -16,6 +16,8 @@ package spiralcraft.util.string;
 
 import java.lang.reflect.Array;
 
+import spiralcraft.util.thread.CycleDetector;
+
 /**
  * <p>Translates a homogenous array of objects to a delimited list and back. 
  * </p>
@@ -27,6 +29,9 @@ import java.lang.reflect.Array;
 public final class ArrayToString<Tdata>
   extends StringConverter<Tdata[]>
 {
+  private static final CycleDetector<Class<?>> cycleDetector
+    =new CycleDetector<Class<?>>();
+  
   private final StringConverter<Tdata> converter;
   private final Class<Tdata> componentClass;
   private final char escapeChar;
@@ -40,11 +45,35 @@ public final class ArrayToString<Tdata>
    *   
    * @param componentClass
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public ArrayToString(Class<Tdata> componentClass)
   { 
-    this.converter
-      =(StringConverter<Tdata>) StringConverter.getInstance(componentClass);
+    if (componentClass.isArray())
+    { 
+      if (cycleDetector.detectOrPush(componentClass))
+      { 
+        // Terminate an infinite loop
+        this.converter
+          =(StringConverter<Tdata>) StringConverter.getOneWayInstance();
+      }
+      else
+      { 
+        try
+        { this.converter=new ArrayToString(componentClass.getComponentType());
+        }
+        finally
+        { cycleDetector.pop();
+        }
+      }
+    }
+    else
+    {
+      StringConverter converter
+        =(StringConverter<Tdata>) StringConverter.getInstance(componentClass);
+      this.converter
+        =converter!=null?converter:StringConverter.getOneWayInstance();
+    }
+    
     this.componentClass=componentClass;
     this.escapeChar='\\';
     this.delimiter=',';
