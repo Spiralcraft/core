@@ -17,6 +17,7 @@ package spiralcraft.lang.parser;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.ParseException;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.string.StringPool;
 
@@ -76,6 +77,21 @@ public class ExpressionParser
   {
     
     _tokenizer=new LookaheadStreamTokenizer(new StringReader(expression));
+    normalSyntax();
+    _progressBuffer=new StringBuffer();
+    _pos=0;
+  }
+  
+  private void singleLineCommentSyntax()
+  {
+    StreamTokenizer syntax=_tokenizer.lookahead;
+    
+    syntax.resetSyntax();
+    syntax.eolIsSignificant(true);
+  }
+  
+  private void normalSyntax()
+  {
     StreamTokenizer syntax=_tokenizer.lookahead;
     
     syntax.resetSyntax();
@@ -118,8 +134,6 @@ public class ExpressionParser
     
     syntax.eolIsSignificant(false);
     
-    _progressBuffer=new StringBuffer();
-    _pos=0;
   }
   
    
@@ -195,8 +209,14 @@ public class ExpressionParser
     else if (_tokenizer.ttype==StreamTokenizer.TT_EOF)
     { return "EOF";
     }
+    else if (_tokenizer.ttype=='\r')
+    { return "CR";
+    }
+    else if (_tokenizer.ttype=='\n')
+    { return "LF";
+    }
     else if (Character.isISOControl(_tokenizer.ttype))
-    { return Integer.toHexString(_tokenizer.ttype);
+    { return "#0x"+Integer.toHexString(_tokenizer.ttype);
     }
     else
     { return Character.toString((char) _tokenizer.ttype);
@@ -205,15 +225,22 @@ public class ExpressionParser
   
   private boolean consumeToken()
   { 
-
-    try
-    { _tokenizer.nextToken();
-    }
-    catch (IOException x)
+    nextToken();
+    
+    if (_tokenizer.ttype=='/' 
+        && _tokenizer.lookahead.ttype=='/'
+        )
     { 
-      // Should never happen reading String
-      x.printStackTrace();
+      parseSingleLineComment();     
     }
+    else
+    { updateProgress();
+    }
+    return _tokenizer.ttype!=StreamTokenizer.TT_EOF;
+  }
+
+  private void updateProgress()
+  {
     if (_tokenizer.sval!=null)
     { 
       if (_tokenizer.ttype=='"')
@@ -226,6 +253,7 @@ public class ExpressionParser
       { _progressBuffer.append(_tokenizer.sval);
       }
       _pos+=_tokenizer.sval.length();
+      
     }
     else
     { 
@@ -235,9 +263,43 @@ public class ExpressionParser
         _pos++;
       }
     }
-    return _tokenizer.ttype!=StreamTokenizer.TT_EOF;
   }
-
+  
+  private void parseSingleLineComment()
+  {
+    singleLineCommentSyntax();
+    
+    
+    nextToken();
+    _progressBuffer.append("//");
+    _pos+=2;
+        
+    while (_tokenizer.lookahead.ttype!=StreamTokenizer.TT_EOF
+          && _tokenizer.lookahead.ttype!=StreamTokenizer.TT_EOL
+          )
+    {
+      nextToken();
+      updateProgress();
+    }
+    normalSyntax();
+    nextToken();
+    if (_tokenizer.ttype=='\r' || _tokenizer.ttype=='\n')
+    { consumeToken();
+    }
+    return;
+  }
+  
+  
+  private void nextToken()
+  { 
+    try
+    { _tokenizer.nextToken();
+    }
+    catch (IOException x)
+    { log.log(Level.WARNING,"Error reading expression token",x);
+    }
+  }
+  
   /**
    * BindingExpression -> Expression ( ":=" Expression)
    * 
