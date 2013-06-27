@@ -18,6 +18,59 @@
         </revision>
       
         <notes>
+          <scm:Note>Add numeric type coercion to BindingChannel to support
+            parameter coercion
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/spi/BindingChannel
+        </path>
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev48
+        </revision>
+      
+        <notes>
+          <scm:Note>Enhance spiralcraft.lang expression syntax to support
+            struct-based type declarations
+          </scm:Note>
+          <scm:Note>Struct type constructor functor now accepts parameters
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/parser
+        </path>
+        
+        <resources>
+          <URI>ExpressionParser.java</URI>
+          <URI>TypeFocusNode.java</URI>
+          <URI>StructNode.java</URI>
+        </resources>
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev48
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix hashCode computation for Tuples to account for base
+            extent
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/spi/ArrayTuple.java
+        </path>
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev48
+        </revision>
+      
+        <notes>
           <scm:Note>Provide more informative exception when an
             ArrayStoreException is thrown from a "Map" ('#{ ... }') operation
           </scm:Note>

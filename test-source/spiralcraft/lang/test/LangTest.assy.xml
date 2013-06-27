@@ -1205,6 +1205,45 @@
       <testX>.!=null
       </testX>
     </test:Assertion>
+
+    <test:Assertion>
+      <name>TypeDef
+      </name>
+      <subjectX>
+        [@{ x:[@j:Double]=0, y:[@j:Double]=0 }].(1024,768)
+      </subjectX>
+      
+      <testX>.x==1024 &amp;&amp; .y==768
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>TypeDefAsMember
+      </name>
+      <subjectX>
+        { 
+          coordT:=[@{ x:[@j:Double]=0.0, y:[@j:Double]=0.0 }]
+          ,test:=.coordT(1024,768)
+        }
+      </subjectX>
+      
+      <testX>test.x==1024 &amp;&amp; test.y==768
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>NamedTypeDefAsMember
+      </name>
+      <subjectX>
+        { 
+          coordT:=[@mytype{ x:[@j:Double]=0.0, y:[@j:Double]=0.0 }]
+          ,test:=.coordT(1024,768)
+        }
+      </subjectX>
+      
+      <testX>test.x==1024 &amp;&amp; test.y==768 &amp;&amp; test.@type.typeURI.toString()=="dynamic:/mytype"
+      </testX>
+    </test:Assertion>
   </sequence>
         
 </test:TestGroup>
