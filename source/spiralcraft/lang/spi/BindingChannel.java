@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.spi;
 
+import spiralcraft.common.Coercion;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
@@ -21,7 +22,10 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.functions.FromString;
+import spiralcraft.lang.kit.CoercionChannel;
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.lang.NumericCoercion;
 import spiralcraft.util.string.StringConverter;
 
 /**
@@ -117,6 +121,8 @@ public class BindingChannel<T>
   private Channel<T> targetChannel;
   private Binding<T> sourceBinding;
   private StringConverter<T> converter;
+  private Coercion<?,T> coercion;
+  private Channel<T> filteredSource;
 
   public BindingChannel
     (Focus<?> focus,Expression<T> sourceX,Expression<T> targetX)
@@ -144,6 +150,8 @@ public class BindingChannel<T>
   { return super.getReflector();
   }
 
+  @SuppressWarnings({ "rawtypes", "unchecked"
+    })
   public void bindTarget(Focus<?> targetFocus)
     throws BindException
   { 
@@ -184,11 +192,29 @@ public class BindingChannel<T>
                 +" cannot be automatically converted from a string"
               );
           }
+          filteredSource
+            =new FromString<T>(targetChannel.getReflector(),converter)
+              .bindChannel((Channel<String>) source,targetFocus,null);
+        }
+        else if (Number.class.isAssignableFrom(source.getContentType()))
+        {
+          coercion
+            =(Coercion<?,T>) NumericCoercion.instance(targetChannel.getContentType());
+    
+          if (coercion==null)
+          {
+            throw new BindException
+              ("Cannot assign a "+source.getReflector().getTypeURI()
+              +" to a location of type "+targetChannel.getReflector().getTypeURI()
+              );
+          }
+          
+          filteredSource
+            =new CoercionChannel(targetChannel.getReflector(),source,coercion);
+
         }
         else
         {
-        
-        
           // XXX: Consider automatic type conversion here e.g. for unboxing 
           //  primitive arrays
           throw new BindException
@@ -201,6 +227,9 @@ public class BindingChannel<T>
         }
       }
     }
+    else
+    { filteredSource=source;
+    }
   }
 
   public Channel<T> getTarget()
@@ -212,7 +241,7 @@ public class BindingChannel<T>
   public boolean applyReverse()
   { 
     assertTarget();
-    return source.set(targetChannel.get());
+    return filteredSource.set(targetChannel.get());
   }
   
 
@@ -223,12 +252,7 @@ public class BindingChannel<T>
   {
     assertTarget();
     T val;
-    if (converter!=null)
-    { val=converter.fromString((String) source.get());
-    }
-    else
-    { val=sourceBinding!=null?(T) sourceBinding:source.get();
-    }
+    val=sourceBinding!=null?(T) sourceBinding:filteredSource.get();
     if (!targetChannel.set(val))
     { log.warning("Bound assignment failed");
     }
@@ -242,7 +266,7 @@ public class BindingChannel<T>
   { 
     assertTarget();
     boolean set=targetChannel.set(val);
-    source.set(val);
+    filteredSource.set(val);
     return set;
   }
 
