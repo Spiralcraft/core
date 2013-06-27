@@ -42,8 +42,9 @@ public class TypeFocusNode
   private final String namespace;
   private URI uri;
   private final int arrayDepth;
+  private final Node argBlock;
 
-  public TypeFocusNode(String qname,int arrayDepth)
+  public TypeFocusNode(String qname,int arrayDepth,Node argBlock)
     throws UnresolvedPrefixException
   { 
     int colonPos=qname.indexOf(':');
@@ -57,45 +58,57 @@ public class TypeFocusNode
     {
       this.namespace=qname.substring(0,colonPos);
       this.suffix=qname.substring(colonPos+1);
-      this.uri=resolveQName(namespace,suffix);
+      if (!this.suffix.isEmpty())
+      { this.uri=resolveQName(namespace,suffix);
+      }
     }
     else
     { 
       this.namespace=null;
       this.suffix=qname;
-      this.uri=resolveQName(namespace,suffix);
+      if (!this.suffix.isEmpty())
+      { this.uri=resolveQName(namespace,suffix);
+      }
     }
     this.arrayDepth=arrayDepth;
+    this.argBlock=argBlock;
     hashCode=computeHashCode();
   }
 
-  TypeFocusNode(String suffix,String namespace,URI uri,int arrayDepth)
+  TypeFocusNode(String suffix,String namespace,URI uri,int arrayDepth,Node argBlock)
   { 
     this.suffix=suffix;
     this.namespace=namespace;
     this.uri=uri;
     this.arrayDepth=arrayDepth;
+    this.argBlock=argBlock;
     hashCode=computeHashCode();
   }
   
   @Override
   public Node[] getSources()
-  { return null;
+  { 
+    if (argBlock!=null)
+    { return new Node[] {argBlock};
+    }
+    return null;
   }
   
   @Override
   public Node copy(Object visitor)
   { 
     URI uri=null;
-    if (visitor instanceof PrefixResolver && suffix!=null)
+    if (visitor instanceof PrefixResolver && suffix!=null && !suffix.isEmpty())
     { uri=resolveQName(namespace,suffix,(PrefixResolver) visitor);
     }
     
+    Node argBlockCopy=argBlock.copy(visitor);
+    
     if (uri!=null)
-    { return new TypeFocusNode(null,null,uri,arrayDepth);
+    { return new TypeFocusNode(null,null,uri,arrayDepth,argBlockCopy);
     }
     else
-    { return new TypeFocusNode(suffix,namespace,this.uri,arrayDepth);
+    { return new TypeFocusNode(suffix,namespace,this.uri,arrayDepth,argBlockCopy);
     }
   } 
   
@@ -104,13 +117,15 @@ public class TypeFocusNode
   { 
     String txt;
     if (namespace!=null)
-    { txt="[@"+namespace+":"+suffix+"]";
+    { txt
+        ="[@"+namespace+":"+suffix+(argBlock!=null?argBlock.reconstruct():"")
+        +"]";
     }
     else if (uri!=null)
-    { txt="[@:"+uri+"]";
+    { txt="[@:"+uri+(argBlock!=null?argBlock.reconstruct():"")+"]";
     }
     else
-    { txt="[@"+suffix+"]";
+    { txt="[@"+suffix+(argBlock!=null?argBlock.reconstruct():"")+"]";
     }
     for (int i=0;i<arrayDepth;i++)
     { txt=txt+"[]";
@@ -125,10 +140,8 @@ public class TypeFocusNode
     if (uri==null)
     {
       PrefixResolver resolver=focus.getNamespaceResolver();
-      if (resolver!=null)
-      {
-        uri=resolveQName(namespace,suffix,resolver);
-        
+      if (resolver!=null && suffix!=null && !suffix.isEmpty())
+      { uri=resolveQName(namespace,suffix,resolver);
       }
       else if (namespace!=null)
       { 
@@ -136,8 +149,9 @@ public class TypeFocusNode
           ("No NamespaceResolver for namespace '"+namespace+"' in \r\n"
             +focus.getFocusChain().toString());
       }
-      else
+      else if (argBlock==null)
       {
+        
         throw new BindException
           ("No NamespaceResolver to provide default namespace for '"
             +suffix+"' in \r\n"
@@ -145,7 +159,7 @@ public class TypeFocusNode
 
       }
 
-      if (uri==null)
+      if (uri==null && argBlock==null)
       { 
         if (namespace!=null)
         {
@@ -167,8 +181,17 @@ public class TypeFocusNode
     }
     
     
-    Reflector<?> reflector=TypeModel.searchType(uri);
-    
+    Reflector<?> reflector=null;
+    if (argBlock==null && uri!=null)
+    { reflector=TypeModel.searchType(uri);
+    }
+    else if (argBlock!=null)
+    { 
+      reflector=argBlock.bind(focus).getReflector();
+      if (reflector==null)
+      { throw new BindException("Arg block has no reflector");
+      }
+    }
     
     
     Focus<?> newFocus=null;
@@ -193,13 +216,13 @@ public class TypeFocusNode
   }
   
   public TypeFocusNode arrayType()
-  { return new TypeFocusNode(suffix,namespace,uri,arrayDepth+1);
+  { return new TypeFocusNode(suffix,namespace,uri,arrayDepth+1,argBlock);
   }
 
   private int computeHashCode()
   { 
     return (ArrayUtil.arrayHashCode(new Object[] {suffix,namespace,uri}) *31)
-      +arrayDepth;
+      +arrayDepth+(argBlock!=null?argBlock.hashCode():0);
   }
   
   @Override
@@ -209,7 +232,8 @@ public class TypeFocusNode
     return ClassUtil.equals(suffix,mynode.suffix)
       && ClassUtil.equals(namespace,mynode.namespace)
       && ClassUtil.equals(uri,mynode.uri)
-      && arrayDepth==mynode.arrayDepth;
+      && arrayDepth==mynode.arrayDepth
+      && ClassUtil.equals(argBlock,mynode.argBlock);
   }  
   
   @Override
@@ -220,6 +244,11 @@ public class TypeFocusNode
     out.append(prefix).append("namespace="+(namespace!=null?namespace:"(default)"));
     if (suffix!=null)
     { out.append(prefix).append("name="+suffix);
+    }
+    if (argBlock!=null)
+    { 
+      out.append(prefix).append("args=");
+      argBlock.dumpTree(out,prefix+2);
     }
     for (int i=0;i<arrayDepth;i++)
     { out.append("[]");

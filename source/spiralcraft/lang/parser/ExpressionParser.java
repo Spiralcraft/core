@@ -1656,7 +1656,7 @@ public class ExpressionParser
 
 
   /**
-   * FocusSpecifier -> '[' ('@') URI ']'
+   * FocusSpecifier -> '[' ('@') URI (typeArgs)']'
    */
   private FocusNode parseFocusSpecifier()
     throws ParseException
@@ -1665,9 +1665,8 @@ public class ExpressionParser
     
     expect('[');
 
-    String focusString=parseURIName("]");
+    String focusString=parseURIName("]{");
 
-    expect(']');
 
     
     FocusNode focusNode=null;
@@ -1678,7 +1677,13 @@ public class ExpressionParser
     
       if (prefix=='@')
       { 
-        TypeFocusNode typeFocusNode=new TypeFocusNode(focusString.substring(1),0);
+        Node typeArgBlock=null;
+        if (_tokenizer.ttype=='{')
+        { typeArgBlock=parseStruct(focusString.substring(1));
+        }
+        expect(']');
+        TypeFocusNode typeFocusNode
+          =new TypeFocusNode(focusString.substring(1),0,typeArgBlock);
         while (_tokenizer.ttype=='[' && _tokenizer.lookahead.ttype==']')
         {
           consumeToken();
@@ -1688,7 +1693,9 @@ public class ExpressionParser
         focusNode=typeFocusNode;
       }
       else 
-      { focusNode=new AbsoluteFocusNode(focusString);
+      { 
+        expect(']');
+        focusNode=new AbsoluteFocusNode(focusString);
       }
     }
     catch (UnresolvedPrefixException x)
