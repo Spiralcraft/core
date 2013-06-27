@@ -108,7 +108,29 @@ public class MapProjector<I,P,R,C>
     { pclass=ClassUtil.boxedEquivalent(pclass);
     }
     return (R) 
-      output.toArray((Object[]) Array.newInstance(pclass,output.size()));
+      copyToArray((Object[]) Array.newInstance(pclass,output.size()),output);
+    
+  }
+  
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private R copyToArray(Object[] array,ArrayList<P> output)
+  { 
+    int i=0;
+    for (P item : output)
+    { 
+      try
+      { array[i++]=item;
+      }
+      catch (ArrayStoreException x)
+      { 
+        throw new AccessException
+          ("Error adding "+item+" to array of "
+            +functionChannel.getReflector().getTypeURI()
+          ,x
+          );
+      }
+    }
+    return (R) array;
   }
   
   @SuppressWarnings("unchecked")
