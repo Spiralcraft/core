@@ -107,8 +107,7 @@ public class MapProjector<I,P,R,C>
     if (pclass.isPrimitive())
     { pclass=ClassUtil.boxedEquivalent(pclass);
     }
-    return (R) 
-      copyToArray((Object[]) Array.newInstance(pclass,output.size()),output);
+    return copyToArray((Object[]) Array.newInstance(pclass,output.size()),output);
     
   }
   
