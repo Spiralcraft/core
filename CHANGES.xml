@@ -14,6 +14,41 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev48
+        </revision>
+      
+        <notes>
+          <scm:Note>Provide more informative exception when an
+            ArrayStoreException is thrown from a "Map" ('#{ ... }') operation
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/spi/MapProjector.java
+        </path>
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev48
+        </revision>
+      
+        <notes>
+          <scm:Note>Enhance spiralcraft.lang syntax to use single line comments
+            beginning with "//"
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/lang/parser
+        </path>
+        
+        <resources>
+          <URI>ExpressionParser.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev47
         </revision>
       
