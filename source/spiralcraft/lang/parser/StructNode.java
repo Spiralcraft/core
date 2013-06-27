@@ -102,7 +102,7 @@ public class StructNode
       copy.setTypeNamespace(typeNamespace);
       copy.setTypeName(typeName);
     }
-    else if (visitor instanceof PrefixResolver && typeName!=null)
+    else if (visitor instanceof PrefixResolver && typeName!=null && !typeName.isEmpty())
     {
       URI uri=resolveQName(typeNamespace,typeName,(PrefixResolver) visitor);
       if (uri!=null)
@@ -226,7 +226,7 @@ public class StructNode
       this.typeName=qname.substring(colonPos+1);
       this.typeURI=resolveQName(typeNamespace,typeName);
     }
-    else
+    else if (!qname.isEmpty())
     { 
       this.typeNamespace=null;
       this.typeName=qname;
@@ -951,10 +951,15 @@ public class StructNode
     public Channel<Struct> bindChannel(Focus<?> focus,Channel<?>[] params)
       throws BindException
     { 
-      if (params.length>0)
-      { throw new BindException("Struct constructor does not accept parameters");
+      if (params.length==0)
+      { 
+        return new StructChannel(this,focus);
       }
-      return new StructChannel(this,focus);
+      else
+      {
+        return new FunctorChannel(new StructChannel(this,focus),focus,params);
+      }
+      
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -1446,6 +1451,21 @@ public class StructNode
       
       local=new ThreadLocalChannel<Struct>(reflector);
       bind(focus,boundParams);
+    }
+    
+    protected FunctorChannel
+      (Channel<Struct> source
+      ,Focus<?> focus
+      ,Channel<?>[] boundParams
+      )
+      throws BindException
+    {
+      super(source.getReflector());
+//      this.closure=new ClosureFocus(focus);
+      this.reflector=(StructReflector) source.getReflector();     
+      local=new ThreadLocalChannel<Struct>(reflector);
+      bind(focus,boundParams);
+      
     }
     
     /**
