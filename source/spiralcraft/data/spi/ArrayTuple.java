@@ -173,7 +173,13 @@ public class ArrayTuple
   
   @Override
   public int hashCode()
-  { return ArrayUtil.arrayHashCode(data);
+  { 
+    if (baseExtent!=null)
+    { return ArrayUtil.arrayHashCode(data)*37 + baseExtent.hashCode();
+    }
+    else
+    { return ArrayUtil.arrayHashCode(data);
+    }
   }
 
   @Override
