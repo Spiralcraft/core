@@ -36,6 +36,7 @@ import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.util.LangUtil;
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.ArrayUtil;
 
 /**
@@ -52,6 +53,9 @@ public class EntityBinding
   implements Contextual,Lifecycle
 {
 
+  @SuppressWarnings("unused")
+  private final ClassLog log
+    =ClassLog.getInstance(getClass());
   private final Entity entity;
   private EntityAccessor<Tuple> accessor;
   private Updater<DeltaTuple> updater;
