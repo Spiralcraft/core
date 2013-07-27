@@ -22,7 +22,7 @@ public class ArrayDeltaTuple
 {
   private final BitSet dirtyFlags;
 
-  private final Tuple original;
+  private Tuple original;
   
   private boolean delete;
   private boolean dirty;
@@ -69,8 +69,15 @@ public class ArrayDeltaTuple
       ?Type.getDeltaType(original.getFieldSet().getType()).getScheme()
       :Type.getDeltaType(updated.getFieldSet().getType()).getScheme()
       );
+    this.dirtyFlags=new BitSet(fieldSet.getFieldCount());
     
-    dirtyFlags=new BitSet(fieldSet.getFieldCount());
+    initDelta(original,updated);
+  }
+  
+  private void initDelta(Tuple original,Tuple updated)
+    throws DataException
+  {
+  
     this.original=original;
     
     if (updated==null)
@@ -108,6 +115,15 @@ public class ArrayDeltaTuple
         }
       }
     }
+
+    if (baseExtent!=null)
+    { 
+      ((ArrayDeltaTuple) baseExtent).initDelta
+        (original!=null?original.getBaseExtent():null
+        ,updated!=null?updated.getBaseExtent():null
+        );
+    }
+    
   }
   
   /**
@@ -319,7 +335,7 @@ public class ArrayDeltaTuple
     {
       if (updatedValue instanceof Tuple)
       { 
-        System.err.println("ArrayDeltaTuple: "+originalValue+" -> "+updatedValue);
+        log.fine("ArrayDeltaTuple: "+originalValue+" -> "+updatedValue);
         return new ArrayDeltaTuple((Tuple) originalValue, (Tuple) updatedValue);
       }
       else if (updatedValue instanceof Aggregate<?>)
