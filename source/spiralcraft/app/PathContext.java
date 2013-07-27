@@ -335,12 +335,14 @@ public class PathContext
   public void start()
     throws LifecycleException
   { 
+    log.info("Starting "+this);
     if (baseContext!=null)
     { baseContext.start();
     }
     if (placeContext!=null)
     { placeContext.start();
     }
+    log.info("Started "+this);
     
   }
 
@@ -348,12 +350,14 @@ public class PathContext
   public void stop()
     throws LifecycleException
   {
+    log.info("Stopping "+this);
     if (placeContext!=null)
     { placeContext.stop();
     }
     if (baseContext!=null)
     { baseContext.stop();
     }
+    log.info("Stopped "+this);
   }
 
   @Override
