@@ -14,6 +14,125 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev49
+        </revision>
+      
+        <notes>
+          <scm:Note>New vfs Session class provides a way for resources to
+            be cleaned up after an operation.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/vfs/Session.java
+        </path>
+        
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev49
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix NPE in URIType.fromString()
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/types/standard/URIType.java
+        </path>
+        
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev49
+        </revision>
+      
+        <notes>
+          <scm:Note>The data Edit task now has a typeX property to set the
+            type using an expression
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/task/Edit.java
+        </path>
+        
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev49
+        </revision>
+      
+        <notes>
+          <scm:Note>Refactor delta computation to fix issues when a
+            DeltaTuple is computed from two standard Tuples
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/spi/ArrayDeltaTuple.java
+        </path>
+        
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev49
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix bug in Sequence where we read past the end of the 
+            cursor and caused SqlStore to throw an exception 
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/access/kit/AbstractStoreSequence.java
+        </path>
+        
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev49
+        </revision>
+      
+        <notes>
+          <scm:Note>Provide a canonical way to get a data reference to a Type
+            via Type.getReference()
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/Type.java
+        </path>
+        
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev49
+        </revision>
+      
+        <notes>
+          <scm:Note>TaskRunner will now start/stop the rootContext if it is
+            a LifeCycle
+          </scm:Note>
+          <scm:Note>Add start/stop logging to PathContext
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>app/PathContext.java
+          </URI>
+          <URI>task/TaskRunner.java
+          </URI>
+        </resources>
+                
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev48
         </revision>
       
