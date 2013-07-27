@@ -26,10 +26,12 @@ import org.xml.sax.SAXException;
 import spiralcraft.common.attributes.Attribute;
 import spiralcraft.common.attributes.AttributeSet;
 import spiralcraft.data.core.DeltaType;
+import spiralcraft.data.core.MetaType;
 import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.sax.DataWriter;
 import spiralcraft.data.session.Buffer;
 import spiralcraft.data.session.BufferType;
+import spiralcraft.data.spi.ArrayTuple;
 // import spiralcraft.log.ClassLogger;
 import spiralcraft.data.util.ConstructorInstanceResolver;
 import spiralcraft.data.util.InstanceResolver;
@@ -725,4 +727,19 @@ public abstract class Type<T>
    * @return This type's scheme, without linking the type as a side effect
    */
   protected abstract Scheme scheme();
+  
+  /**
+   * Return a reference to this type that can be persisted
+   * 
+   * @return
+   */
+  public Tuple getReference()
+  {
+    try
+    { return new ArrayTuple(new MetaType(this).getFieldSet());
+    }
+    catch (DataException x)
+    { throw new RuntimeException(x);
+    }
+  }
 }
