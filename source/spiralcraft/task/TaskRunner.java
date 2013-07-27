@@ -22,6 +22,7 @@ import spiralcraft.cli.BeanArguments;
 import spiralcraft.cli.CommandArguments;
 import spiralcraft.command.Command;
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.data.persist.AbstractXmlObject;
 
@@ -68,6 +69,7 @@ public class TaskRunner
   private boolean printResult=false;
   private String[] contextArgs;
   private PlaceContext placeContext;
+  private Lifecycle rootContext;
   
   
   {
@@ -80,7 +82,11 @@ public class TaskRunner
    * @param context
    */
   public void setRootContext(Context context)
-  { addContext(context);
+  { 
+    if (context instanceof Lifecycle)
+    { rootContext=(Lifecycle) context;
+    }
+    addContext(context);
   }
   
   /**
@@ -308,6 +314,9 @@ public class TaskRunner
     push();
     try
     {
+      if (rootContext!=null)
+      { rootContext.start();
+      }
       if (placeContext!=null)
       { placeContext.start();
       }
@@ -365,6 +374,9 @@ public class TaskRunner
       stop();
       if (placeContext!=null)
       { placeContext.stop();
+      }
+      if (rootContext!=null)
+      { rootContext.stop();
       }
     }   
     catch (LifecycleException x)
