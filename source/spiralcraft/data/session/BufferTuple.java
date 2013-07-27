@@ -924,7 +924,8 @@ public class BufferTuple
       { // writeThrough();
       }
       else if (original!=null)
-      { log.fine("Original is not writable "+original);
+      { 
+        // log.fine("Original is not writable "+original);
       }
     }
     
