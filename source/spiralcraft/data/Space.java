@@ -375,7 +375,13 @@ public class Space
           ,uri.getPath()
           ,uri.getQuery()
           ,null);
-      
+      //
+      // We may have to explicitly mark something as being an authoritative
+      //   store for an abstract base type with subtypes in multiple stores
+      // 
+      // XXX: The default is to get the sequence from store being updated,
+      //   so this method is only used to resolve a "global" sequence
+      //   which is not yet fully implemented anyway
       Store store=getAuthoritativeStore(Type.resolve(typeURI));
       
       if (store!=null)

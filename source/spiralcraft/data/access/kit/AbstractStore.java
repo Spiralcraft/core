@@ -595,7 +595,11 @@ public abstract class AbstractStore
           (field.getURI()
           ,createSequence(field)
           );
-          addAuthoritativeType(subtype);
+          // // Can't do this here- just because the sequence is in the subtype
+          // //   doesn't mean we can write to an abstract subtype. This will
+          // //   break updates if an abstract entity is concrete in a different
+          // //   store.
+          // addAuthoritativeType(subtype);
         }
       }
     }
