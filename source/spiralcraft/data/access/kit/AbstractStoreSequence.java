@@ -110,11 +110,12 @@ public abstract class AbstractStoreSequence
             oldRow=result.getTuple().snapshot();
             row=new EditableArrayTuple(oldRow);
             row.set("nextValue",next);
-          }
-          if (result.next())
-          {
-            throw new DataException
-              ("Cardinality violation in Sequence store- non unique URI "+uri); 
+            if (result.next())
+            {
+              throw new DataException
+                ("Cardinality violation in Sequence store- non unique URI "+uri); 
+            }
+            
           }
         }
         finally
@@ -183,13 +184,13 @@ public abstract class AbstractStoreSequence
             newStop=newNext+increment;
             row.set("nextValue",newNext+newIncrement);            
           
+            if (result.next())
+            {
+              throw new DataException
+                ("Cardinality violation in Sequence store- non unique URI "+uri); 
+            }
           }
         
-          if (result.next())
-          {
-            throw new DataException
-              ("Cardinality violation in Sequence store- non unique URI "+uri); 
-          }
         }
         finally
         { result.close();
