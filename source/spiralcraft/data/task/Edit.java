@@ -55,6 +55,7 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
 {
 
   private Expression<Titem> targetX;
+  private Binding<Type<?>> typeX;
   private Channel<Tbuffer> resultChannel;
   private Type<Titem> type;
   private EditorBase<Tbuffer> editor;
@@ -85,6 +86,10 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   
   public void setType(Type<Titem> type)
   { this.type=type;
+  }
+  
+  public void setTypeX(Binding<Type<?>> typeX)
+  { this.typeX=typeX;
   }
   
   public void setAutoSave(boolean autoSave)
@@ -139,6 +144,15 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   public Focus<?> bindImports(Focus<?> focusChain)
     throws BindException
   {
+    if (typeX!=null)
+    { 
+      typeX.bind(focusChain);
+      if (!typeX.isConstant())
+      { throw new BindException("typeX must be constant");
+      }
+      type=(Type<Titem>) typeX.get();
+    }
+    
     if (targetX!=null)
     { 
       resultChannel
