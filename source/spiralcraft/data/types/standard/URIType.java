@@ -29,6 +29,6 @@ public class URIType
   
   @Override
   public URI fromString(String str)
-  { return URI.create(str);
+  { return str!=null?URI.create(str):null;
   }
 }
