@@ -18,6 +18,22 @@
         </revision>
       
         <notes>
+          <scm:Note>Added spiralcraft.text.xml.AttributeEncoder.encode(String)
+            method for convenience.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/text/xml/AttributeEncoder.java
+        </path>
+        
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev49
+        </revision>
+      
+        <notes>
           <scm:Note>New vfs Session class provides a way for resources to
             be cleaned up after an operation.
           </scm:Note>
