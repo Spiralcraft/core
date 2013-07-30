@@ -28,6 +28,13 @@ public class AttributeEncoder
   private static final char LT_C='<';
   private static final String LT_S="&lt;";
 
+  public String encode(CharSequence in)
+    throws IOException
+  {
+    StringBuilder builder=new StringBuilder();
+    return encode(in,builder).toString();
+  } 
+  
   @Override
   public Appendable encode(CharSequence in,Appendable out)
     throws IOException
