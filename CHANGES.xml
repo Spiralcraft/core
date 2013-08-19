@@ -12,7 +12,204 @@
     
 
     <detail> 
+      <scm:Change>
+        <revision>-dev50
+        </revision>
+      
+        <notes>
+          <scm:Note>Add a data caching and normalization mechanism for use by
+            Stores.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>access/cache/CacheEntry.java
+          </URI>
+          <URI>access/cache/CacheIndex.java
+          </URI>
+          <URI>access/cache/EntityCache.java
+          </URI>
+          <URI>access/cache/KeyedDataProvider.java
+          </URI>
+          <URI>access/cache/ReferenceSet.java
+          </URI>
+          <URI>spi/EditableArrayListAggregate.java
+          </URI>
+          <URI>spi/EditableListAggregate.java
+          </URI>
+        </resources>
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev50
+        </revision>
+      
+        <notes>
+          <scm:Note>Make query.factor() public so Stores can make finer query 
+            path optimization decisions.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/query
+        </path>
+        
+        <resources>
+          <URI>Join.java
+          </URI>
+          <URI>Query.java
+          </URI>
+          <URI>Selection.java
+          </URI>
+        </resources>
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev50
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issues that prevented the re-use of Projection
+            instances
+          </scm:Note>
+          <scm:Note>Implement hashCode/equals in key parser nodes so 
+            projection expressions can be used as hash keys
+          </scm:Note>
+          <scm:Note>Normalize the representation of key signatures in
+            equijoin queries.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/Scheme.java
+          </URI>
+          <URI>data/core/SchemeImpl.java
+          </URI>
+          <URI>data/core/ProjectionImpl.java
+          </URI>
+          <URI>data/query/EquiJoin.java
+          </URI>
+          <URI>lang/parser/ResolveNode.java
+          </URI>
+          <URI>lang/parser/ContextIdentifierNode.java
+          </URI>
+          <URI>lang/parser/CurrentFocusNode.java
+          </URI>
+          <URI>lang/parser/ResolveNode.java
+          </URI>
+        </resources>
+                
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev50
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issues that prevented the re-use of Projection
+            instances
+          </scm:Note>
+          <scm:Note>Implement hashCode/equals in key parser nodes so 
+            projection expressions can be used as hash keys
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/Scheme.java
+          </URI>
+          <URI>data/core/SchemeImpl.java
+          </URI>
+          <URI>data/core/ProjectionImpl.java
+          </URI>
+          <URI>lang/parser/ContextIdentifierNode.java
+          </URI>
+          <URI>lang/parser/CurrentFocusNode.java
+          </URI>
+          <URI>lang/parser/ResolveNode.java
+          </URI>
+        </resources>
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev50
+        </revision>
+      
+        <notes>
+          <scm:Note>Added timeReads property to Field for performance tuning
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data/core/FieldImpl.java
+        </path>
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev50
+        </revision>
+      
+        <notes>
+          <scm:Note>BlockTimer utility simplifies the timing of code blocks.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/util/thread/BlockTimer.java
+        </path>
+                
+      </scm:Change>
     
+      <scm:Change>
+        <revision>-dev50
+        </revision>
+      
+        <notes>
+          <scm:Note>Add "bypass" property to AssemblyClass to improve
+             configurability.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/builder
+        </path>
+        
+        <resources>
+          <URI>AssemblyClass.java
+          </URI>
+          <URI>AssemblyLoader.java
+          </URI>
+          <URI>PropertyBinding.java
+          </URI>
+        </resources>
+        
+                
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev50
+        </revision>
+      
+        <notes>
+          <scm:Note>Output component declaration info (source code location)
+            in TraceHandler log messages.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/app/kit/TraceHandler.java
+        </path>
+        
+                
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev49
         </revision>
