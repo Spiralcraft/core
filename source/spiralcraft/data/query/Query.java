@@ -398,7 +398,7 @@ public abstract class Query
    * 
    * @return The resulting composite Query
    */
-  protected Query factor()
+  public Query factor()
   { return null;
   }
 

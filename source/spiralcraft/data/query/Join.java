@@ -136,7 +136,7 @@ public class Join
    *   the Query cannot be factored.
    */
   @Override
-  protected Query factor()
+  public Query factor()
   { 
     if (debugLevel.canLog(Level.DEBUG))
     { log.debug("factor()");

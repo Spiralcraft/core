@@ -228,7 +228,7 @@ public class Selection
         
   }
   
-  public Node factorPositiveEqualityNode
+  private Node factorPositiveEqualityNode
     (EqualityNode<?> equalityNode
     ,List<Expression<?>> lhsList
     ,List<Expression<?>> rhsList)
@@ -347,7 +347,7 @@ public class Selection
    *   the Query cannot be factored.
    */
   @Override
-  protected Query factor()
+  public Query factor()
   { 
     if (debugLevel.canLog(Level.DEBUG))
     { log.debug("factor()");
@@ -370,8 +370,10 @@ public class Selection
       else
       {
         EquiJoin ej=new EquiJoin();
-        ej.setLHSExpressions(lhsExpressions.toArray(new Expression<?>[0]));
-        ej.setRHSExpressions(rhsExpressions.toArray(new Expression<?>[0]));
+        ej.setLHSExpressions(lhsExpressions.toArray
+          (new Expression<?>[lhsExpressions.size()]));
+        ej.setRHSExpressions
+          (rhsExpressions.toArray(new Expression<?>[rhsExpressions.size()]));
         ej.setSource(getSources().get(0));
         
         Query result;
