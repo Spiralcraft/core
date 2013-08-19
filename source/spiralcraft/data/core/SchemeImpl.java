@@ -28,6 +28,8 @@ import spiralcraft.data.Field;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeMismatchException;
 import spiralcraft.lang.Expression;
+import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 import spiralcraft.util.ArrayKey;
 import spiralcraft.util.ArrayUtil;
 
@@ -37,6 +39,10 @@ import spiralcraft.util.ArrayUtil;
 public class SchemeImpl
   implements Scheme
 {
+  private final ClassLog log=ClassLog.getInstance(SchemeImpl.class);
+  private Level logLevel
+    =ClassLog.getInitialDebugLevel(SchemeImpl.class,Level.INFO);
+  
   protected Type<?> type;
   protected Key<Tuple> primaryKey;
   private boolean resolved;
@@ -472,6 +478,18 @@ public class SchemeImpl
     return null;
   }
 
+  @Override
+  public Key<?> findKey(Expression<?>[] signature)
+  {
+    for (KeyImpl<Tuple> key : keys)
+    { 
+      if (Arrays.deepEquals(key.getTargetExpressions(),signature))
+      { return key;
+      }
+    }
+    return null;
+  }
+  
   private ProjectionImpl<Tuple> createProjection(Expression<?>[] signature)
     throws DataException
   {
@@ -485,13 +503,25 @@ public class SchemeImpl
       { return projection;
       }
 
-      for (KeyImpl<Tuple> key : keys)
+      
+      for (Key<?> key : getType().getKeys())
       { 
+        @SuppressWarnings("unchecked")
+        KeyImpl<Tuple> keyImpl=(KeyImpl<Tuple>) key;
         if (Arrays.deepEquals(key.getTargetExpressions(),signature))
         { 
-          projectionMap.put(ArrayUtil.asKey(key.getTargetExpressions()),key);
-          return key;
+          projectionMap.put(ArrayUtil.asKey(key.getTargetExpressions()),keyImpl);
+          return keyImpl;
         }
+      }
+      
+      
+      if (logLevel.isDebug())
+      {
+        log.debug
+          ("Creating new projection for: "+getType().getURI()+"#"
+            +ArrayUtil.format(signature,",","")
+          );
       }
       
       projection=new ProjectionImpl<Tuple>(this,signature);
@@ -513,7 +543,6 @@ public class SchemeImpl
     if (projection!=null)
     { return projection;
     }
-    
     
     
     

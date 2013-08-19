@@ -100,5 +100,12 @@ public interface Scheme
    */
   Key<?> findKey(String[] fieldNames);
   
-  
+  /**
+   * <p>Return the Key defined with respect to the specified expression vector.
+   * </p>
+   * 
+   * @param signature
+   * @return
+   */
+  Key<?> findKey(Expression<?>[] signature);
 }

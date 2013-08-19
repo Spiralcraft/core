@@ -327,7 +327,7 @@ public class ProjectionImpl<T>
     field.setIndex(fields.size());
     field.setType(masterField.getType());
     field.setName(name);
-    field.setExpression(Expression.create("."+masterField.getName()));
+    field.setExpression(Expression.create(masterField.getName()));
     field.setSourceField(masterField);
     fields.add(field);
     fieldMap.put(field.getName(),field);
