@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 2013 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,26 +12,21 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.spi;
+package spiralcraft.data.access.cache;
 
-import java.util.ArrayList;
-
-import spiralcraft.data.Aggregate;
-
-import spiralcraft.data.Type;
+import spiralcraft.data.DataException;
+import spiralcraft.data.KeyTuple;
+import spiralcraft.data.Tuple;
+import spiralcraft.data.access.SerialCursor;
 
 /**
- * Holds a aggregation of objects of a common type in an array list
+ * Returns a cursor of data that corresponds to the values of a given key
+ * 
+ * @author mike
+ *
  */
-public class EditableArrayListAggregate<T>
-  extends EditableListAggregate<T>
+public interface KeyedDataProvider
 {
-  public EditableArrayListAggregate(Type<?> type)
-  { super(type,new ArrayList<T>());
-  }
-  
-  public EditableArrayListAggregate(Aggregate<T> original)
-  { super(original,new ArrayList<T>(original.size()));
-  }
-  
+  public SerialCursor<Tuple> fetch(KeyTuple tuple)
+    throws DataException;
 }

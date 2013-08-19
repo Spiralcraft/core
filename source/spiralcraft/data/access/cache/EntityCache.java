@@ -1,0 +1,117 @@
+//
+// Copyright (c) 2013 Michael Toth
+// Spiralcraft Inc., All Rights Reserved
+//
+// This package is part of the Spiralcraft project and is licensed under
+// a multiple-license framework.
+//
+// You may not use this file except in compliance with the terms found in the
+// SPIRALCRAFT-LICENSE.txt file at the top of this distribution, or available
+// at http://www.spiralcraft.org/licensing/SPIRALCRAFT-LICENSE.txt.
+//
+// Unless otherwise agreed to in writing, this software is distributed on an
+// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+//
+package spiralcraft.data.access.cache;
+
+import java.util.HashMap;
+
+import spiralcraft.data.DataException;
+import spiralcraft.data.DeltaTuple;
+import spiralcraft.data.Projection;
+import spiralcraft.data.Tuple;
+import spiralcraft.data.Type;
+import spiralcraft.data.spi.ArrayJournalTuple;
+import spiralcraft.log.ClassLog;
+
+
+
+/**
+ * <p>Caches keyed DataComposites queried from external sources
+ * </p>
+ * 
+ * <p>An EntityCache manages a CacheIndex for each key in the Entity
+ * </p>
+ * 
+ * @author mike
+ *
+ */
+public class EntityCache
+{
+  private final ClassLog log=ClassLog.getInstance(getClass());
+  private final HashMap<Projection<?>,CacheIndex> indices
+    =new HashMap<Projection<?>,CacheIndex>();
+  private final Type<?> type;
+  private final Type<?> aggregateType;
+  private final ReferenceSet primary;
+  
+  Object monitor=new Object();
+
+  @SuppressWarnings("unchecked")
+  public EntityCache(Type<?> t) 
+    throws DataException
+  { 
+    this.type=t;
+    this.aggregateType=Type.getAggregateType(t);
+    this.primary=new ReferenceSet(this);
+  }
+  
+  Type<?> getAggregateType()
+  { return aggregateType;
+  }
+  
+  Type<?> getType()
+  { return type;
+  }
+  
+  public CacheIndex getIndex(Projection<Tuple> key)
+    throws DataException
+  { 
+    synchronized (monitor)
+    {
+      CacheIndex ret=indices.get(key);
+      if (ret==null)
+      { 
+        log.fine("Creating cache index for "+key);
+        ret
+          =new CacheIndex
+            (this,key,primary);
+        indices.put(key,ret);
+      }
+      return ret;
+    }
+  }
+  
+  public void update(DeltaTuple delta)
+    throws DataException
+  {
+    synchronized (monitor)
+    {
+      
+      if (delta.getOriginal()==null)
+      { 
+        ArrayJournalTuple tuple=primary.insert(delta);
+        for (CacheIndex index:indices.values())
+        { index.inserted(tuple);
+        }
+      }
+      else if (delta.isDelete())
+      { 
+        ArrayJournalTuple normal=(ArrayJournalTuple) delta.getOriginal();
+        primary.delete(normal);
+        for (CacheIndex index:indices.values())
+        { index.deleted((ArrayJournalTuple) delta.getOriginal());
+        }
+      }
+      else
+      { 
+        ArrayJournalTuple updated=primary.update(delta);
+        for (CacheIndex index:indices.values())
+        { index.updated((ArrayJournalTuple) delta.getOriginal(),updated);
+        }
+      }
+      
+    }
+  }
+
+}
