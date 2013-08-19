@@ -44,6 +44,7 @@ import spiralcraft.rules.RuleException;
 import spiralcraft.rules.RuleSet;
 import spiralcraft.rules.Violation;
 import spiralcraft.ui.MetadataType;
+import spiralcraft.util.thread.BlockTimer;
 
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.reflect.ReflectionType;
@@ -87,6 +88,7 @@ public class FieldImpl<T>
   protected Channel fieldMetadataChannel;
   
   protected boolean debug;
+  protected boolean timeReads=false;
 
   private Reflector contentReflector;
   
@@ -547,9 +549,28 @@ public class FieldImpl<T>
     
     if (t!=null)
     { 
-      T val=getValueImpl(t);
-      // System.err.println("FieldImpl "+getURI()+": getValue()="+val);
-      return val;
+      
+      try
+      {
+        if (timeReads)
+        { BlockTimer.instance().push();
+        }
+        T val=getValueImpl(t);
+        // System.err.println("FieldImpl "+getURI()+": getValue()="+val);
+        return val;
+      }
+      finally
+      {
+        if (timeReads)
+        { 
+          log.fine
+            ("Read "+getURI()+": "
+              +BlockTimer.instance().elapsedTimeFormatted()
+            );
+          BlockTimer.instance().pop();
+        }
+      }
+      
     }
 
     throw new IllegalArgumentException
@@ -706,6 +727,10 @@ public class FieldImpl<T>
    */
   public void setDebug(boolean debug)
   { this.debug=debug;
+  }
+  
+  public void setTimeReads(boolean timeReads)
+  { this.timeReads=timeReads;
   }
   
   /**
