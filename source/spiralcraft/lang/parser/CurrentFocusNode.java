@@ -63,7 +63,7 @@ public class CurrentFocusNode
   
   @Override
   public String reconstruct()
-  { return invoker!=null?invoker:" ";
+  { return invoker!=null?invoker:"";
   }
   
   @Override

@@ -48,6 +48,8 @@ public class ContextIdentifierNode
   { 
     _source=source;
     _identifier=identifier;
+    this.hashCode=(source.hashCode() *31) + identifier.hashCode();
+    
   }
 
   @Override
@@ -84,6 +86,13 @@ public class ContextIdentifierNode
   
   public boolean isRelative()
   { return _source instanceof CurrentFocusNode;
+  }
+  
+  @Override
+  protected boolean equalsNode(Node node)
+  { 
+    ContextIdentifierNode cin=(ContextIdentifierNode) node;
+    return _source.equals(cin._source) && _identifier.equals(cin._identifier);
   }
   
   @Override
