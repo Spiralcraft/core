@@ -123,13 +123,12 @@ public class EquiJoin
   
   /**
    * <p>Construct an EquiJoin which returns entities of the specified type
-   *   where the expression "lhs == rhs" evaluates to true.
+   *   that correspond to key defined by the bound expressions
    * </p> 
    *   
    * 
    * @param type
-   * @param lhs An expression, normally in the form ".field"
-   * @param rhs An expression, normally referencing the parent context
+   * @param bindings An array of expressions in the form "field := value"
    */
   public EquiJoin(Type<?> type,Expression<?>[] bindings)
   {
@@ -259,7 +258,7 @@ public class EquiJoin
       try
       { 
         text=assignment.substring(0,eqPos);
-        lhsExpressions.add(Expression.parse(text));
+        lhsExpressions.add(normalizeLHS(Expression.parse(text)));
         text=assignment.substring(eqPos+1);
         rhsExpressions.add(Expression.parse(text));
       }
@@ -268,6 +267,18 @@ public class EquiJoin
       }
     }
     
+  }
+  
+  private Expression<?> normalizeLHS(Expression<?> expr)
+  {
+    if (expr.getRootNode() instanceof ResolveNode)
+    {
+      ResolveNode<?> resolver=(ResolveNode<?>) expr.getRootNode();
+      if (resolver.getSource() instanceof CurrentFocusNode)
+      { return Expression.create(resolver.getIdentifierName());
+      }
+    }
+    return expr;
   }
   
   
@@ -323,6 +334,7 @@ public class EquiJoin
     this.lhsExpressions=new ArrayList<Expression<?>>(lhsExpressions.length);
     for (Expression<?> expr :lhsExpressions)
     { 
+      expr=normalizeLHS(expr);
       if (debugLevel.canLog(Level.DEBUG))
       { log.debug("Equijoin: lhs+="+expr.toString());
       }
