@@ -574,6 +574,9 @@ public class AssemblyLoader
           String prop=name.substring(5);
           assemblyClass.defineLocal(prop,attribs[i].getValue());
         }
+        else if (name.equals("bypass"))
+        { assemblyClass.setBypass(Boolean.valueOf(attribs[i].getValue()));
+        }
         else
         { 
           throw new BuildException

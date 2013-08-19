@@ -256,20 +256,24 @@ public class PropertyBinding
     if (contents!=null)
     { 
       boolean factoryMode=_container.isFactoryMode();
+      ArrayList<Assembly> instances=new ArrayList<Assembly>(contents.size());
       _contents=new Assembly[contents.size()];
       
-      int i=0;
       for (AssemblyClass assemblyClass : contents)
       { 
         Assembly assembly=assemblyClass.newInstance
           (_container.getFocus(),factoryMode);
+        if (assembly==null)
+        { continue;
+        }
         
         if (_specifier.getExport())
         { exportSingletons(assembly);
         }
-        _contents[i++]=assembly;
+        instances.add(assembly);
       }
       
+      _contents=instances.toArray(new Assembly[instances.size()]);
       for (Assembly assembly:_contents)
       { 
         if (!assembly.isBound())

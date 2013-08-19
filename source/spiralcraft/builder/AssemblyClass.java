@@ -188,6 +188,7 @@ public class AssemblyClass
   private boolean declarable;
   private URI declarationLocation;
   private DeclarationInfo declarationInfo;
+  private boolean bypass;
   
   /**
    * Construct a new AssemblyClass from a definition
@@ -435,6 +436,13 @@ public class AssemblyClass
     localContext.put(contextName,expansion);
   }
 
+  public void setBypass(boolean bypass)
+  { this.bypass=bypass;
+  }
+  
+  public boolean getBypass()
+  { return bypass;
+  }
   
   public void pushContext()
   { 
@@ -1425,6 +1433,9 @@ public class AssemblyClass
   Assembly<?> newInstance(Focus parentFocus,boolean factoryMode)
     throws BuildException
   {
+    if (bypass)
+    { return null;
+    }
     if (_singleton)
     { 
       synchronized (this)
@@ -1484,6 +1495,9 @@ public class AssemblyClass
     throws BuildException
   { 
     Assembly<?> assembly=newInstance(parentFocus,false);
+    if (assembly==null)
+    { return null;
+    }
     if (!assembly.isBound())
     { assembly.bind();
     }
@@ -1502,6 +1516,10 @@ public class AssemblyClass
     throws BuildException
   { 
     Assembly<T> assembly=(Assembly<T>) newInstance(parentFocus,false);
+    if (assembly==null)
+    { return null;
+    }
+    
     if (!assembly.isBound())
     { assembly.bind();
     }
@@ -1529,6 +1547,9 @@ public class AssemblyClass
     throws BuildException
   {
     Assembly<?> assembly=newInstance(parentFocus,true);
+    if (assembly==null)
+    { return null;
+    }
     
     if (!assembly.isBound())
     { assembly.bind();
