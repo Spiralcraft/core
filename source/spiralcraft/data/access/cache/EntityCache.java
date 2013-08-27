@@ -22,6 +22,11 @@ import spiralcraft.data.Projection;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.spi.ArrayJournalTuple;
+import spiralcraft.data.transaction.Transaction;
+import spiralcraft.data.transaction.Transaction.Nesting;
+import spiralcraft.data.transaction.Transaction.Requirement;
+import spiralcraft.data.transaction.WorkException;
+import spiralcraft.data.transaction.WorkUnit;
 import spiralcraft.log.ClassLog;
 
 
@@ -39,12 +44,14 @@ import spiralcraft.log.ClassLog;
 public class EntityCache
 {
   private final ClassLog log=ClassLog.getInstance(getClass());
-  private final HashMap<Projection<?>,CacheIndex> indices
-    =new HashMap<Projection<?>,CacheIndex>();
   private final Type<?> type;
   private final Type<?> aggregateType;
-  private final ReferenceSet primary;
+  private final CacheResourceManager resourceManager
+    =new CacheResourceManager(this);
   
+  final PrimarySet primary;
+  final HashMap<Projection<?>,CacheIndex> indices
+    =new HashMap<Projection<?>,CacheIndex>();
   Object monitor=new Object();
 
   @SuppressWarnings("unchecked")
@@ -53,7 +60,7 @@ public class EntityCache
   { 
     this.type=t;
     this.aggregateType=Type.getAggregateType(t);
-    this.primary=new ReferenceSet(this);
+    this.primary=new PrimarySet(this);
   }
   
   Type<?> getAggregateType()
@@ -81,37 +88,36 @@ public class EntityCache
       return ret;
     }
   }
+
   
-  public void update(DeltaTuple delta)
+  public ArrayJournalTuple update(final DeltaTuple delta)
     throws DataException
   {
-    synchronized (monitor)
+    return new WorkUnit<ArrayJournalTuple>
+      (Requirement.REQUIRED,Nesting.PROPOGATE)
     {
-      
-      if (delta.getOriginal()==null)
-      { 
-        ArrayJournalTuple tuple=primary.insert(delta);
-        for (CacheIndex index:indices.values())
-        { index.inserted(tuple);
+
+      @Override
+      protected ArrayJournalTuple run()
+        throws WorkException
+      {
+        try
+        {
+          return resourceManager.branch(Transaction.getContextTransaction())
+            .update(delta);
         }
-      }
-      else if (delta.isDelete())
-      { 
-        ArrayJournalTuple normal=(ArrayJournalTuple) delta.getOriginal();
-        primary.delete(normal);
-        for (CacheIndex index:indices.values())
-        { index.deleted((ArrayJournalTuple) delta.getOriginal());
+        catch (DataException x)
+        { throw new WorkException("Error updating cache",x);
         }
-      }
-      else
-      { 
-        ArrayJournalTuple updated=primary.update(delta);
-        for (CacheIndex index:indices.values())
-        { index.updated((ArrayJournalTuple) delta.getOriginal(),updated);
-        }
+        
       }
       
-    }
+    }.work();
+    
+    
   }
 
+  CacheBranch getBranch()
+  { return resourceManager.getBranch();
+  }
 }

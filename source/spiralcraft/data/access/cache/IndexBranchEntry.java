@@ -14,32 +14,30 @@
 //
 package spiralcraft.data.access.cache;
 
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
 import java.util.LinkedList;
 import java.util.List;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
-import spiralcraft.data.EditableAggregate;
 import spiralcraft.data.spi.ArrayJournalTuple;
 import spiralcraft.data.spi.EditableListAggregate;
 
 /**
- * <p>Holds the set of Tuples that match a given key value.
+ * <p>Holds the set of Tuples that match a given key value within the
+ *   context of a transaction-in-progress
  * </p>
  * 
  * @author mike
  *
  */
 //XXX: Upgrade from using SoftReferences to something more predictable
-public class CacheEntry
+public class IndexBranchEntry
 {
 
-  private final CacheIndex index;
-  private volatile Reference<EditableListAggregate<ArrayJournalTuple>> ref;
+  private final IndexBranch index;
+  private EditableListAggregate<ArrayJournalTuple> data;
   
-  CacheEntry(CacheIndex index)
+  IndexBranchEntry(IndexBranch index)
   { this.index=index;
   }
   
@@ -50,14 +48,7 @@ public class CacheEntry
    * @param newValue
    */
   void updated(ArrayJournalTuple oldValue,ArrayJournalTuple newValue)
-  {
-    if (ref==null)
-    { 
-      // Not yet initialized
-      return;
-    }
-    
-    EditableAggregate<ArrayJournalTuple> data=ref.get();
+  {    
     if (data==null)
     { 
       // This reference has expired
@@ -69,12 +60,6 @@ public class CacheEntry
   
   void movedOut(ArrayJournalTuple oldValue)
   {
-    if (ref==null)
-    { 
-      // Not yet initialized
-      return;
-    }
-    EditableAggregate<ArrayJournalTuple> data=ref.get();
     if (data==null)
     { 
       // This reference has expired
@@ -85,12 +70,6 @@ public class CacheEntry
 
   void movedIn(ArrayJournalTuple newValue)
   {
-    if (ref==null)
-    { 
-      // Not yet initialized
-      return;
-    }
-    EditableAggregate<ArrayJournalTuple> data=ref.get();
     if (data==null)
     { 
       // This reference has expired
@@ -109,13 +88,12 @@ public class CacheEntry
   Aggregate<ArrayJournalTuple> fetched(List<ArrayJournalTuple> cursor)
     throws DataException
   { 
-    EditableListAggregate<ArrayJournalTuple> data
+    data
       =new EditableListAggregate<ArrayJournalTuple>
         (index.getAggregateType()
         ,new LinkedList<ArrayJournalTuple>()
         );
     data.addAll(cursor.iterator());
-    ref=new SoftReference<EditableListAggregate<ArrayJournalTuple>>(data);
     return data.snapshot();
   }
   
@@ -125,10 +103,6 @@ public class CacheEntry
   Aggregate<ArrayJournalTuple> get()
     throws DataException
   { 
-    if (ref==null)
-    { return null;
-    }
-    Aggregate<ArrayJournalTuple> data=ref.get();
     if (data==null)
     { return null;
     }

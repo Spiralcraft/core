@@ -36,41 +36,40 @@ import spiralcraft.util.KeyFunction;
  * @author mike
  *
  */
-public class CacheIndex
+public class IndexBranch
 {
+  final Projection<Tuple> key;
+
   private final ClassLog log=ClassLog.getInstance(getClass());
   private Level logLevel=ClassLog.getInitialDebugLevel(getClass(),Level.INFO);
-  private final EntityCache cache;
-  private final Projection<Tuple> key;
+  private final CacheBranch cacheBranch;
   private final KeyFunction<KeyTuple,Tuple> keyFunction;
-  private final HashMap<KeyTuple,IndexEntry> map
-    =new HashMap<KeyTuple,IndexEntry>();
-  private final PrimarySet primary;
+  private final HashMap<KeyTuple,IndexBranchEntry> map
+    =new HashMap<KeyTuple,IndexBranchEntry>();
 
-  public CacheIndex(EntityCache cache,Projection<Tuple> key,PrimarySet primary)
+  public IndexBranch(CacheBranch cacheBranch,Projection<Tuple> key)
   { 
-    this.cache=cache;
+    this.cacheBranch=cacheBranch;
     this.key=key;
     this.keyFunction=key.getKeyFunction();
-    this.primary=primary;
   }
   
   Type<?> getAggregateType()
-  { return cache.getAggregateType();
+  { return cacheBranch.cache.getAggregateType();
   }
   
   
-  private IndexEntry entry(KeyTuple keyTuple)
+  private IndexBranchEntry entry(KeyTuple keyTuple)
   {
     synchronized (map)
     { 
-      IndexEntry entry=map.get(keyTuple);
+      IndexBranchEntry entry=map.get(keyTuple);
       if (entry==null)
       { 
         if (logLevel.isFine())
         { log.fine("New cache entry for "+key.getType().getURI()+" "+keyTuple);
         }
-        entry=new IndexEntry(this);
+        entry=new IndexBranchEntry(this);
         map.put(keyTuple,entry);
       }
       return entry;
@@ -88,14 +87,9 @@ public class CacheIndex
   public SerialCursor<ArrayJournalTuple> fetch(KeyTuple keyTuple,KeyedDataProvider backing)
     throws DataException
   {
-    CacheBranch branch=cache.getBranch();
-    if (branch!=null)
-    { return branch.fetch(key,keyTuple,backing);
-    }
-    
     try
     {
-      IndexEntry entry=entry(keyTuple);
+      IndexBranchEntry entry=entry(keyTuple);
       synchronized (entry)
       {
         Aggregate<ArrayJournalTuple> data=entry.get();
@@ -111,16 +105,14 @@ public class CacheIndex
             while (cursor.next())
             {
               Tuple tuple=cursor.getTuple();
-              ArrayJournalTuple normal;
-              if (primary!=null)
-              { normal=primary.cache(tuple);
+              ArrayJournalTuple normal=cacheBranch.cache(tuple);
+              if (normal!=null)
+              { list.add(normal);
               }
-              else
-              { normal=new ArrayJournalTuple(tuple);
-              }
-              list.add(normal);
             }
+            log.fine("Got "+list+" from store");
             data=entry.fetched(list);
+            log.fine("Normalized to "+data);
           }
           finally
           { cursor.close();
@@ -131,6 +123,7 @@ public class CacheIndex
           if (logLevel.isFine())
           { log.fine("Cache hit for "+key.getType().getURI()+" "+keyTuple);
           }
+          log.fine("Got "+data+" from cache");
         }
         return new ListCursor<ArrayJournalTuple>(data);
       }
@@ -145,7 +138,7 @@ public class CacheIndex
   void inserted(ArrayJournalTuple newValue)
   {
     KeyTuple newKey=keyFunction.key(newValue);
-    IndexEntry entry=entry(newKey);
+    IndexBranchEntry entry=entry(newKey);
     entry.movedIn(newValue);
     
   }
@@ -153,8 +146,9 @@ public class CacheIndex
   void deleted(ArrayJournalTuple oldValue)
   {
     KeyTuple newKey=keyFunction.key(oldValue);
-    IndexEntry entry=entry(newKey);
+    IndexBranchEntry entry=entry(newKey);
     entry.movedOut(oldValue);
+    log.fine("Moving out "+oldValue);
     
   }
   
@@ -164,14 +158,14 @@ public class CacheIndex
     KeyTuple newKey=keyFunction.key(newValue);
     if (oldKey.equals(newKey))
     { 
-      IndexEntry entry=map.get(oldKey);
+      IndexBranchEntry entry=map.get(oldKey);
       if (entry!=null)
       { entry.updated(oldValue,newValue);
       }
     }
     else
     {
-      IndexEntry entry=map.get(oldKey);
+      IndexBranchEntry entry=map.get(oldKey);
       if (entry!=null)
       { entry.movedOut(oldValue);
       }
