@@ -421,6 +421,12 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   }
   
   @Override
+  void joinTransaction()
+  {
+  }
+
+  
+  @Override
   void prepare()
   {
   }
@@ -435,7 +441,7 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   void rollback()
   {
   }
-  
+
 }
 
 

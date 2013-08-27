@@ -108,6 +108,8 @@ public abstract class Buffer
   { this.debug=debug;
   }
   
+  abstract void joinTransaction();
+  
   abstract void prepare()
     throws DataException;
   

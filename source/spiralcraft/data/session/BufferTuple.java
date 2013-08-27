@@ -53,6 +53,7 @@ public class BufferTuple
   
   private DataSession session;
   private Tuple original;
+  private Tuple undoOriginal;
   private Identifier id;
   private Type<?> type;
   private BufferTuple baseExtent;
@@ -67,6 +68,7 @@ public class BufferTuple
   private Tuple saveResult;
   
   private WeakReference<Object> behaviorRef;
+  private boolean inTransaction;
   
   /**
    * Create a new buffer for editing the latest version of the specified
@@ -155,7 +157,7 @@ public class BufferTuple
   }
   
   /**
-   * Queue the result of the transaction to be the new original
+   * Queue the result of the save operation to be the new original
    * 
    * @param tuple
    */
@@ -166,6 +168,9 @@ public class BufferTuple
     { log.fine("Uncommitted new original "+tuple);
     }
     this.saveResult=tuple;
+    if (inTransaction)
+    { setOriginal(tuple);
+    }
     return this;
   }
   
@@ -885,9 +890,24 @@ public class BufferTuple
    */
   public void save()
     throws DataException
-  { session.writeTuple(this);
+  { 
+    if (debug)
+    { log.fine("Saving "+this);
+    }
+    session.writeTuple(this);
   }
 
+  @Override
+  void joinTransaction()
+  {
+    if (!inTransaction)
+    { 
+      inTransaction=true;
+      undoOriginal=original;
+      saveResult=null;
+    }
+  }
+  
   @Override
   void prepare()
     throws DataException
@@ -901,9 +921,16 @@ public class BufferTuple
   @Override
   void rollback()
   {
-//    if (original instanceof JournalTuple)
-//    { ((JournalTuple) original).rollback();
-//    }
+    if (!inTransaction)
+    { log.warning("Rollback but not in transaction "+this);
+    }
+    setOriginal(undoOriginal);
+    undoOriginal=null;
+    saveResult=null;
+    inTransaction=false;
+    if (debug)
+    { log.fine("Rolled back "+this);
+    }
   }
   
   @Override
@@ -913,33 +940,24 @@ public class BufferTuple
     if (debug)
     { log.fine("Committing "+this);
     }
-    if (original!=null)
-    {
-      if (original instanceof JournalTuple)
-      { 
-//        ((JournalTuple) original).commit();
-//        reset();
-      }
-      else if (original instanceof EditableTuple)
-      { // writeThrough();
-      }
-      else if (original!=null)
-      { 
-        // log.fine("Original is not writable "+original);
-      }
+    if (!inTransaction)
+    { log.warning("Commit but not in transaction "+this);
     }
     
+    inTransaction=false;
     if (saveResult!=null)
     { 
       if (debug)
       { log.fine("Got new original "+saveResult.dumpData());
       }
       setOriginal(saveResult);
-      reset();
       
     }
+    reset();
     saveResult=null;
-      
+    if (debug)
+    { log.fine("Committed "+this);
+    }
   }
 
   void setOriginal(Tuple original)

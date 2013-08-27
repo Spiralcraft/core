@@ -450,7 +450,10 @@ public class ArrayDeltaTuple
       );
     Field<?>[] dirtyFields=getExtentDirtyFields();
       
-    if (dirtyFields!=null)
+    if (delete)
+    { buf.append("(DELETED)");
+    }
+    else if (dirtyFields!=null)
     {
       boolean first=true;
       for (Field<?> field : dirtyFields)
@@ -471,7 +474,7 @@ public class ArrayDeltaTuple
     
     }
     else
-    { buf.append(delete?"(DELETED)":"(clean)");
+    { buf.append("(clean)");
     }
     buf.append("] ");
     buf.append(" original="+original);

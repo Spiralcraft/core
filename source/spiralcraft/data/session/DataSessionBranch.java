@@ -1,8 +1,8 @@
 package spiralcraft.data.session;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 
 import spiralcraft.data.DataConsumer;
 import spiralcraft.data.DataException;
@@ -16,8 +16,8 @@ public class DataSessionBranch
   implements Branch
 {
 
-  private ArrayList<Buffer> branchBuffers
-    =new ArrayList<Buffer>();
+  private LinkedHashSet<Buffer> branchBuffers
+    =new LinkedHashSet<Buffer>();
   
   private HashMap<Type<?>,DataConsumer<DeltaTuple>> updaterMap
     =new HashMap<Type<?>,DataConsumer<DeltaTuple>>();
@@ -31,7 +31,9 @@ public class DataSessionBranch
   }
   
   public void addBuffer(Buffer buffer)
-  { branchBuffers.add(buffer);
+  { 
+    branchBuffers.add(buffer);
+    buffer.joinTransaction();
   }
   
   public  DataConsumer<DeltaTuple> getUpdater(Type<?> type)
