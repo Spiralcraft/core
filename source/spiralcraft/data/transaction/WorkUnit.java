@@ -36,6 +36,16 @@ public abstract class WorkUnit<Tresult>
   private boolean newTransaction;
   private boolean debug;
 
+  public WorkUnit()
+  {
+  }
+  
+  public WorkUnit(Transaction.Requirement requirement,Transaction.Nesting nesting)
+  {
+    this.requirement=requirement;
+    this.nesting=nesting;
+  }
+  
   public void setDebug(boolean debug)
   { this.debug=debug;
   }
