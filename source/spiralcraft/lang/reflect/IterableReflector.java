@@ -184,7 +184,7 @@ public class IterableReflector<I>
   public boolean isAssignableTo(URI typeURI)
   { 
     String uriString=typeURI.toString();
-    if (!uriString.endsWith(".array"))
+    if (!uriString.endsWith(".iterable"))
     { return false;
     }
     URI baseURI=URI.create(uriString.substring(0,uriString.length()-6));
