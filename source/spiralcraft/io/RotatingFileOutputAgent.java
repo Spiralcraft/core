@@ -129,6 +129,8 @@ public class RotatingFileOutputAgent
   protected void output(byte[] bytes)
     throws IOException
   { 
+    // TODO: Make sure we're not shutting down or we'll throw an NPE when
+    //   _file disappears
     _file.write(bytes);
     _file.getFD().sync();
     if (periodChanged() || _file.length()>=_maxLengthKB*1024)
@@ -140,6 +142,7 @@ public class RotatingFileOutputAgent
         lastRotate=Clock.instance().approxTimeMillis();
         log.info(getLogPrefix()+": Rotating output file");
         _file.close();
+        
         try
         {
           fileSequence.rotate();
