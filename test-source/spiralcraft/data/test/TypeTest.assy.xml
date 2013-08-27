@@ -165,6 +165,38 @@
           </testX>
         </test:Assertion>               
 
+        <test:Assertion>
+          <name>Array concat in struct
+          </name>
+          
+          <subjectX>
+            { combined:=
+              [*dtask:Fetch{[@example:IntegerNode.list]}].()#{.}
+              +[*dtask:Fetch{[@example:StringNode.list]}].()#{.}
+              +[*dtask:Fetch{[@example:IntegerNode.list]}].()#{.}
+            }.combined#{.nodeId}
+          </subjectX>
+        
+          <testX>.==[{"1","2","3","4","5","6","1","2","3"}]
+          </testX>
+        </test:Assertion>               
+
+        <test:Assertion>
+          <name>Conditional Array concat
+          </name>
+          
+          <subjectX>
+            true
+              ?([*dtask:Fetch{[@example:IntegerNode.list]}].()
+                 +[*dtask:Fetch{[@example:StringNode.list]}].()
+               )#{.}
+              :[*dtask:Fetch{[@example:Node.list]}].()#{.}
+          </subjectX>
+        
+          <testX>.#{.nodeId}==[{"1","2","3","4","5","6"}]
+          </testX>
+        </test:Assertion>               
+
 <!--
         <task:Eval>
         

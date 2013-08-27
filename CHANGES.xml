@@ -13,6 +13,73 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev51
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where iterable concatenation operator result would 
+            erroneously claim it can be assigned to an array, causing a
+            runtime exception.
+          </scm:Note>
+        </notes>
+        <path>source/spiralcraft/lang/reflect/IterableReflector.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev51
+        </revision>
+      
+        <notes>
+          <scm:Note>Add transactional semantics to caching system
+          </scm:Note>
+          <scm:Note>Add support for multiple edits per transaction in 
+            dataSession/buffering system 
+          </scm:Note>
+          <scm:Note>Add new constructor to transaction WorkUnit to simplify
+            use.
+          </scm:Note>
+        </notes>
+
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>access/cache/CacheBranch.java
+          </URI>
+          <URI>access/cache/CacheEntry.java
+          </URI>
+          <URI>access/cache/CacheIndex.java
+          </URI>
+          <URI>access/cache/CacheResourceManager.java
+          </URI>
+          <URI>access/cache/EntityCache.java
+          </URI>
+          <URI>access/cache/IndexBranch.java
+          </URI>
+          <URI>access/cache/IndexBranchEntry.java
+          </URI>
+          <URI>access/cache/PrimarySet.java
+          </URI>
+          <URI>access/cache/ReferenceSet.java
+          </URI>
+          <URI>session/Buffer.java
+          </URI>
+          <URI>session/BufferAggregate.java
+          </URI>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>session/DataSessionBranch.java
+          </URI>
+          <URI>spi/ArrayDeltaTuple.java
+          </URI>
+          <URI>transaction/WorkUnit.java
+          </URI>
+        </resources>
+                
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev50
         </revision>
       
