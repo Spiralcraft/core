@@ -13,6 +13,39 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev52
+        </revision>
+      
+        <notes>
+          <scm:Note>Implement mechanism for global sequences, allowing schemas
+            to declare when a sequence is imported or exported.
+          </scm:Note>
+        </notes>
+        <path>source/spiralcraft/data
+        </path>
+        <resources>
+          <URI>Sequence.java
+          </URI>
+          <URI>Space.java
+          </URI>
+          <URI>access/Entity.java
+          </URI>
+          <URI>access/ExportSequence.java
+          </URI>
+          <URI>access/ImportSequence.java
+          </URI>
+          <URI>access/kit/AbstractStore.java
+          </URI>
+          <URI>access/kit/AbstractStoreSequence.java
+          </URI>
+          <URI>spi/ResourceSequence.java
+          </URI>
+          <URI>data/xml/XmlStore.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev51
         </revision>
       
