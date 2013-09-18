@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2005 Michael Toth
+// Copyright (c) 1998,2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,19 +12,12 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data;
+package spiralcraft.data.access;
 
+import spiralcraft.common.attributes.Attribute;
 
-/**
- * <p>Issues a sequence of Longs from a longer scoped source, primarily for 
- *   the generation of keys.
- * </p>
- * 
- * @author mike
- *
- */
-public interface Sequence
+public class ImportSequence
+  extends Attribute
 {
-  public Long next()
-    throws DataException;
+
 }

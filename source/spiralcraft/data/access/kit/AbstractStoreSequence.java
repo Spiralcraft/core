@@ -2,6 +2,7 @@ package spiralcraft.data.access.kit;
 
 import java.net.URI;
 
+import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
@@ -21,7 +22,7 @@ import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.util.LangUtil;
 
 public abstract class AbstractStoreSequence
-  implements Sequence
+  implements Sequence,Lifecycle
 {
 
   private int increment;

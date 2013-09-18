@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
 
+import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Sequence;
@@ -22,7 +23,7 @@ import spiralcraft.vfs.UnresolvableURIException;
  *
  */
 public class ResourceSequence
-  implements Sequence
+  implements Sequence,Lifecycle
 {
 
   private static final Charset ASCII=Charset.forName("ASCII");

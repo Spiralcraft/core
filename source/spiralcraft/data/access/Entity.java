@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.attributes.AbstractAttributeContext;
+import spiralcraft.data.Field;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.DeltaTrigger;
 import spiralcraft.log.Level;
@@ -48,7 +49,7 @@ public class Entity
   private Schema schema;
   
   private Level logLevel=Level.INFO;
-  private boolean isAbstract;
+  private Boolean isAbstract;
   
   public Entity()
   {
@@ -82,7 +83,12 @@ public class Entity
   }
   
   public boolean isAbstract()
-  { return isAbstract;
+  { 
+    return isAbstract!=null
+            ?isAbstract
+            :base!=null
+            ?base.isAbstract()
+            :false;
   }
   
   /**
@@ -229,5 +235,9 @@ public class Entity
     }
     this.allFields=allFields.toArray(new EntityField[allFields.size()]);
     super.resolve();
+  }
+
+  public EntityField getField(Field<?> field)
+  { return fields.get(field.getName());
   }  
 }

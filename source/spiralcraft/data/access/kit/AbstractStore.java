@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.Lifecycle;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
 import spiralcraft.common.declare.Declarable;
@@ -40,6 +41,8 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 
 import spiralcraft.data.access.Entity;
+import spiralcraft.data.access.ExportSequence;
+import spiralcraft.data.access.ImportSequence;
 import spiralcraft.data.access.Schema;
 import spiralcraft.data.access.Store;
 import spiralcraft.data.access.StoreService;
@@ -85,6 +88,7 @@ public abstract class AbstractStore
   protected final ClassLog log=ClassLog.getInstance(getClass());
   protected Level debugLevel=ClassLog.getInitialDebugLevel(getClass(),null);
 
+  private Space space;
   private boolean started;
 
   protected final Type<?> sequenceType;  
@@ -192,11 +196,7 @@ public abstract class AbstractStore
   { this.services=services; 
   }
   
-  
-//  @Override
-//  public Space getSpace()
-//  { return space;
-//  }
+
 
   @Override
   public boolean containsType(
@@ -216,11 +216,18 @@ public abstract class AbstractStore
 
   @Override
   public Sequence getSequence(URI uri)
+    throws DataException
   {
-    return sequences!=null
+    Sequence sequence
+      =sequences!=null
       ?sequences.get(uri)
       :null
       ;
+      
+    if (sequence==null)
+    { sequence=space.getSequence(uri);
+    }
+    return sequence;
   }  
 
   @Override
@@ -315,6 +322,10 @@ public abstract class AbstractStore
   }  
   
   
+  protected void preBind(Focus<?> focusChain)
+  { space=LangUtil.findInstance(Space.class,focusChain);
+  }
+  
   @Override
   public Focus<?> bind(Focus<?> focusChain)
     throws ContextualException
@@ -369,7 +380,10 @@ public abstract class AbstractStore
     if (sequences!=null)
     {
       for (Sequence sequence : sequences.values())
-      { sequence.start();
+      { 
+        if (sequence instanceof Lifecycle)
+        { ((Lifecycle) sequence).start();
+        }
       }
     }
     
@@ -399,7 +413,10 @@ public abstract class AbstractStore
     if (sequences!=null)
     {
       for (Sequence sequence : sequences.values())
-      { sequence.stop();
+      { 
+        if (sequence instanceof Lifecycle)
+        { ((Lifecycle) sequence).stop();
+        }
       }
     }
 
@@ -515,13 +532,13 @@ public abstract class AbstractStore
   /**
 
    * 
-   * @param binding
+   * @param ing
    */
   private void addStandardEntityBinding(EntityBinding binding)
   { 
     Type<?> type=binding.getEntity().getType();
     entities.put(type,binding);
-    addSequences(type);
+    addSequences(binding,type);
     if (binding.isAuthoritative())
     { addAuthoritativeType(type);
     }
@@ -577,7 +594,7 @@ public abstract class AbstractStore
     }
   }
   
-  private void addSequences(Type<?> subtype)
+  private void addSequences(EntityBinding binding,Type<?> subtype)
   {
     if (subtype.getScheme()!=null)
     {
@@ -591,10 +608,18 @@ public abstract class AbstractStore
           if (debugLevel.isDebug())
           { log.fine("added sequence "+field.getURI());
           }
-          sequences.put
-          (field.getURI()
-          ,createSequence(field)
-          );
+          
+          if (binding.getEntity().getAttribute(ImportSequence.class) ==null)
+          {
+            sequences.put
+              (field.getURI()
+              ,createSequence(field)
+              );
+            if (binding.getEntity().getAttribute(ExportSequence.class) !=null)
+            { space.exportSequence(field.getURI(),sequences.get(field.getURI()));
+            }
+          }
+          
           // // Can't do this here- just because the sequence is in the subtype
           // //   doesn't mean we can write to an abstract subtype. This will
           // //   break updates if an abstract entity is concrete in a different

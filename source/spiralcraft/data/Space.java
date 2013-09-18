@@ -80,6 +80,9 @@ public class Space
   }
   
 
+  private final HashMap<URI,Sequence> globalSequences
+    =new HashMap<URI,Sequence>();
+  
   private Store[] stores=new Store[0];
   
   private Type<?>[] types;
@@ -138,6 +141,9 @@ public class Space
     stores=ArrayUtil.append(stores,store);
   }
  
+  public void exportSequence(URI uri,Sequence sequence)
+  { globalSequences.put(uri,sequence);
+  }
   
   @Override
   public BoundQuery<?,Tuple> getAll(Type<?> type)
@@ -365,6 +371,11 @@ public class Space
   public Sequence getSequence(URI uri)
     throws DataException
   {
+    Sequence sequence=globalSequences.get(uri);
+    if (sequence!=null)
+    { return sequence;
+    }
+    
     try
     { 
       // Strip fragment, which is field name
