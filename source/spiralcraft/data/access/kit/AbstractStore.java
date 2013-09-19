@@ -478,7 +478,11 @@ public abstract class AbstractStore
         baseQueryable=new BaseExtentQueryable<Tuple>(type);
         baseQueryable.addExtent(subtype,queryable);
         
-        targetBinding=createEntityBinding(new Entity(type));
+        Entity schemaEntity=schema.getEntity(type);
+        if (schemaEntity==null)
+        { schemaEntity=new Entity(type);
+        }
+        targetBinding=createEntityBinding(schemaEntity);
         targetBinding.setAccessor(baseQueryable);
         addStandardEntityBinding(targetBinding);
         if (debugLevel.isDebug())
@@ -619,7 +623,6 @@ public abstract class AbstractStore
             { space.exportSequence(field.getURI(),sequences.get(field.getURI()));
             }
           }
-          
           // // Can't do this here- just because the sequence is in the subtype
           // //   doesn't mean we can write to an abstract subtype. This will
           // //   break updates if an abstract entity is concrete in a different
