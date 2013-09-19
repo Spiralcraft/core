@@ -13,6 +13,19 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev53
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where Entity declarations for abstract types
+            were not picked up during Store initialization
+          </scm:Note>
+        </notes>
+        <path>source/spiralcraft/data/access/kit/AbstractStore.java
+        </path>
+      </scm:Change>
+      
+      <scm:Change>
         <revision>-dev52
         </revision>
       
