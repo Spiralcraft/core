@@ -13,6 +13,19 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev54
+        </revision>
+      
+        <notes>
+          <scm:Note>The "not" operator (!x) now returns true when its input
+            is null or false. For a more explicit check, use "x==false"
+          </scm:Note>
+        </notes>
+        <path>source/spiralcraft/lang/parser/LogicalNegateNode.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev53
         </revision>
       
