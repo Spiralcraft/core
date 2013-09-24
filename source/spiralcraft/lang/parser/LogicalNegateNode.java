@@ -52,10 +52,11 @@ public class LogicalNegateNode
       @Override
       public Boolean translateForGet(Boolean val,Channel<?>[] mods)
       { 
-        if (val==null)
-        { return null;
-        }
-        else if (val)
+        // A "!" (not) operator returns true for null and false
+        //
+        // For a more explicit test, use "x==false"
+        //
+        if (val==null || val)
         { return Boolean.FALSE;
         }
         else
