@@ -140,8 +140,12 @@ public class DataSession
     { id=new PojoIdentifier(composite);
     }
     Buffer buffer=buffers.get(id);
-    if (buffer==null)
+    if (buffer==null || buffer.getOriginal()!=composite)
     { 
+      if (debug && buffer!=null)
+      { log.debug("Replacing stale buffer for "+composite);
+      }
+      
       if (composite.isTuple())
       { buffer=new BufferTuple(this,composite.asTuple());
       }
@@ -170,7 +174,7 @@ public class DataSession
       { log.fine("Using existing buffer "+buffer);
       }
     }
-        
+    
     return buffer;
     
     
