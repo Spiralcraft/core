@@ -13,6 +13,30 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev55
+        </revision>
+      
+        <notes>
+          <scm:Note>Make sure DataSession doesn't return stale buffers, which
+            can happen when data is edited in more than one DataSession
+            instance.
+          </scm:Note>
+          <scm:Note>Enhance the default presentation of UpdateConflictException
+          </scm:Note>
+        </notes>
+        <path>source/spiralcraft/data
+        </path>
+        <resources>
+          <URI>UpdateConflictException.java
+          </URI>
+          <URI>spi/ArrayDeltaTuple.java
+          </URI>
+          <URI>session/DataSession.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev54
         </revision>
       
