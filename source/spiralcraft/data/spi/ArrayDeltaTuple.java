@@ -257,7 +257,10 @@ public class ArrayDeltaTuple
       }
       
       if (conflicts.size()>0)
-      { throw new UpdateConflictException(this,incoming);
+      { 
+        throw new UpdateConflictException
+          (this,incoming,conflicts.toArray(new Field<?>[conflicts.size()])
+          );
       }
     }
     return new ArrayDeltaTuple

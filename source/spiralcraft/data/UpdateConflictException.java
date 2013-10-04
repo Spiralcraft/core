@@ -21,10 +21,47 @@ package spiralcraft.data;
 public class UpdateConflictException
   extends DataException
 {
+  static String formatConflict(Field<?>[] fields,DeltaTuple requested,DeltaTuple existing)
+  {
+    
+    StringBuilder buf=new StringBuilder();
+    for (Field<?> field:fields)
+    { 
+      if (buf.length()>0)
+      { buf.append(",");
+      }
+      buf.append(field.getName());
+      
+      try
+      { 
+        buf
+          .append("({")
+          .append(requested!=null?field.getValue(requested):"")
+          .append ("} != {")
+          .append(existing!=null?field.getValue(existing):"")
+          .append("})");
+      }
+      catch (DataException x)
+      {
+      }
+    }
+    return buf.toString();
+  }
+  
   private static final long serialVersionUID=1;
   
   // private BufferTuple buffer;
   // private JournalTuple journal;
+  public UpdateConflictException
+    (DeltaTuple requested, DeltaTuple existing,Field<?>[] conflictingFields)
+  { 
+    super("Update Conflict in "+requested.getType().getArchetype().getURI()
+      +", fields ["+formatConflict(conflictingFields,requested,existing)+"]"
+      );
+    // this.buffer=buffer;
+    // this.journal=journal;
+    // XXX Generate message for conflict
+  }
   
   public UpdateConflictException
     (DeltaTuple requested, DeltaTuple existing)
