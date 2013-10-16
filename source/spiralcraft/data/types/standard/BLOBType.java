@@ -21,6 +21,7 @@ import spiralcraft.data.core.PrimitiveTypeImpl;
 
 import java.net.URI;
 
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -45,7 +46,7 @@ public class BLOBType
     { return null;
     }
     try
-    { return Resolver.getInstance().resolve(URI.create(str));
+    { return Resolver.getInstance().resolve(URIPool.create(str));
     }
     catch (UnresolvableURIException x)
     { throw new DataException("Error referencing BLOB",x);

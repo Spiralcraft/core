@@ -17,6 +17,7 @@ package spiralcraft.text;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+
 /**
  * Encapsulates information related to the position of a text parsing operation.
  */

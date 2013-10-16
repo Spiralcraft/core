@@ -26,6 +26,7 @@ import spiralcraft.data.lang.ToStringTranslator;
 
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.rules.RuleSet;
+import spiralcraft.util.refpool.URIPool;
 
 import java.net.URI;
 import java.util.Comparator;
@@ -121,7 +122,7 @@ public abstract class AbstractAggregateType<T,Tcontent>
   public Type<?> getMetaType()
   { 
     try
-    { return getTypeResolver().resolve(URI.create(uri.toString().concat(".type")));
+    { return getTypeResolver().resolve(URIPool.create(uri.toString().concat(".type")));
     }
     catch (DataException x)
     { throw new RuntimeException(x);
@@ -253,7 +254,7 @@ public abstract class AbstractAggregateType<T,Tcontent>
       { 
         archetype
           =contentType.getTypeResolver().resolve
-            (URI.create(contentArchetype.getURI().toString()
+            (URIPool.create(contentArchetype.getURI().toString()
                         .concat(getAggregateQualifier())
                        )
             );
@@ -264,7 +265,7 @@ public abstract class AbstractAggregateType<T,Tcontent>
       { 
         baseType
           =contentType.getTypeResolver().resolve
-            (URI.create(contentBaseType.getURI().toString()
+            (URIPool.create(contentBaseType.getURI().toString()
                         .concat(getAggregateQualifier())
                        )
             );

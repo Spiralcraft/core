@@ -20,6 +20,7 @@ import java.util.Iterator;
 
 import spiralcraft.common.Immutable;
 //import spiralcraft.log.ClassLog;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringPool;
 import spiralcraft.util.string.StringUtil;
 
@@ -457,7 +458,7 @@ public class Path
   }
   
   public URI toURI()
-  { return URI.create(URIUtil.encodeURIPath(format("/")));
+  { return URIPool.create(URIUtil.encodeURIPath(format("/")));
   }
   
   /**

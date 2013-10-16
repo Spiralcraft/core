@@ -28,6 +28,7 @@ import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.EmptyIterator;
 import spiralcraft.util.IteratorChain;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringUtil;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -135,7 +136,7 @@ class Context
     =new AttributesImpl();
 
   private static final URI STANDARD_NAMESPACE_URI
-    =URI.create("class:/spiralcraft/data/types/standard/");
+    =URIPool.create("class:/spiralcraft/data/types/standard/");
 
   private final XmlWriter writer;
   private Frame currentFrame; 

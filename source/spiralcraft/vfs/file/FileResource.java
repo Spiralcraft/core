@@ -14,6 +14,7 @@
 //
 package spiralcraft.vfs.file;
 
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -40,10 +41,12 @@ public class FileResource
   { 
     try
     {
-      return new URI
-        (null
-        ,file.getPath().replace(File.separatorChar,'/')
-        ,null
+      return URIPool.get
+        (new URI
+          (null
+          ,file.getPath().replace(File.separatorChar,'/')
+          ,null
+          )
         );
     }
     catch (URISyntaxException x)

@@ -21,6 +21,7 @@ import spiralcraft.text.ParseException;
 import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.Path;
 import spiralcraft.util.URIUtil;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringPool;
 import spiralcraft.vfs.Package;
 import spiralcraft.vfs.Resolver;
@@ -106,7 +107,7 @@ public class AssemblyLoader
     throws BuildException
   {
     return findAssemblyClass
-      (URI.create
+      (URIPool.create
         ("class:/"
         +javaClass.getName()
           .replace('.','/')
@@ -230,7 +231,7 @@ public class AssemblyLoader
     if (ret==null)
     {
       ret=findAssemblyDefinition
-        (URI.create(classUri.toString()+".assy.xml"));
+        (URIPool.create(classUri.toString()+".assy.xml"));
         
       if (ret!=null)
       { _classCache.put(classUri,ret);
@@ -243,7 +244,7 @@ public class AssemblyLoader
       try
       {
         Resource classResource=searchForPackageResource
-          (URI.create(classUri.toString()+".class"));
+          (URIPool.create(classUri.toString()+".class"));
         if (classResource!=null)
         { classUri=URIUtil.removePathSuffix(classResource.getURI(),".class");
         }
@@ -260,7 +261,7 @@ public class AssemblyLoader
       Path path=new Path(classUri.getPath(),'/');
       
       URI packageUri
-        =classUri.resolve(URI.create(path.parentPath().format("/")));
+        =URIPool.get(classUri.resolve(URIPool.create(path.parentPath().format("/"))));
       String className
         =packageUri.relativize(classUri).toString();
       
@@ -427,7 +428,7 @@ public class AssemblyLoader
     { map.put("package-base",pkg.getBase());
     } 
     else
-    { map.put("package-base",URI.create("null:/"));
+    { map.put("package-base",URIPool.create("null:/"));
     }
     map.bind(new SimpleFocus<Void>(null));
     map.push();
@@ -706,7 +707,7 @@ public class AssemblyLoader
               ,sourceUri
               );
           try
-          { prop.setDataURI(Resolver.getInstance().resolve(URI.create(uriStr)).getURI());
+          { prop.setDataURI(Resolver.getInstance().resolve(URIPool.create(uriStr)).getURI());
           }
           catch (IOException x)
           { throw new BuildException("Error resolving data uri "+uriStr);

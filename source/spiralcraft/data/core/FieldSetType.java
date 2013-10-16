@@ -9,6 +9,7 @@ import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Scheme;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.TypeResolver;
+import spiralcraft.util.refpool.URIPool;
 
 
 public class FieldSetType
@@ -23,7 +24,7 @@ public class FieldSetType
   {
     
     super(resolver
-        ,URI.create(baseURI+"-"+seq++)
+        ,URIPool.create(baseURI+"-"+seq++)
         );
     this.fieldSet=fieldSet;
 

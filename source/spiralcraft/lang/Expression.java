@@ -19,7 +19,7 @@ import spiralcraft.lang.parser.LiteralNode;
 import spiralcraft.lang.parser.Node;
 
 import spiralcraft.lang.parser.ExpressionParser;
-import spiralcraft.util.ReferencePool;
+import spiralcraft.util.refpool.ReferencePool;
 import spiralcraft.util.string.StringConverter;
 
 import java.net.URI;

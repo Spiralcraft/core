@@ -31,6 +31,7 @@ import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.task.Scenario;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -159,7 +160,7 @@ public class Mirror
     
     URI path=entry.getPath();
     if (path==null)
-    { path=URI.create("");
+    { path=URIPool.create("");
     }
     boolean container=entry.isContainer();
     long lastModified=entry.getLastModified();
@@ -180,7 +181,7 @@ public class Mirror
       URI absRemoteURI
         =remoteURI.isAbsolute()
         ?remoteURI
-        :URI.create("context:/").resolve(remoteURI)
+        :URIPool.get(URIPool.create("context:/").resolve(remoteURI))
         ;
       Resource remoteResource
         =resolver.resolve(absRemoteURI.resolve(path));

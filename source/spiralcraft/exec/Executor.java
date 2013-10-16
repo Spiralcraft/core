@@ -30,6 +30,7 @@ import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ContextDictionary;
 import spiralcraft.util.Path;
 import spiralcraft.util.URIUtil;
+import spiralcraft.util.refpool.URIPool;
 
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
@@ -195,7 +196,7 @@ public class Executor
     contextResourceMap.push();
     
 
-    prefixResolver.mapPrefix("",URI.create("dynamic:/"));
+    prefixResolver.mapPrefix("",URIPool.create("dynamic:/"));
     NamespaceContext.push(prefixResolver);
     
     for (Initializer loader: ServiceLoader.load(Initializer.class))
@@ -352,7 +353,7 @@ public class Executor
         { configDir=configDir+"."+properties.find("spiralcraft.config.id");
         }
       }
-      configURI=URI.create(configDir);
+      configURI=URIPool.create(configDir);
     }
     
     if (!configURI.isAbsolute())
@@ -394,7 +395,7 @@ public class Executor
       if (codeDir==null)
       { codeDir=".";
       }
-      codeURI=URI.create(codeDir);
+      codeURI=URIPool.create(codeDir);
     }
     
     if (!codeURI.isAbsolute())
@@ -437,7 +438,7 @@ public class Executor
       if (dataDir==null)
       { dataDir="data";
       }
-      dataURI=URI.create(dataDir);
+      dataURI=URIPool.create(dataDir);
     }
     
     if (!dataURI.isAbsolute())
@@ -534,7 +535,7 @@ public class Executor
       { 
         if (argCounter==-1)
         { 
-          uri=URI.create(argument);
+          uri=URIPool.create(argument);
           argCounter++;
         }
         else
@@ -577,7 +578,7 @@ public class Executor
           }
           else if (option.equals("-context"))
           { 
-            URI contextUri=URI.create(nextArgument());
+            URI contextUri=URIPool.create(nextArgument());
             if (!contextUri.isAbsolute())
             { contextUri=ExecutionContext.getInstance().canonicalize(contextUri);
             }
@@ -585,14 +586,14 @@ public class Executor
             altContextURI=contextUri;
           }
           else if (option.equals("-config"))
-          { configURI=URI.create(nextArgument());
+          { configURI=URIPool.create(nextArgument());
           }
           else if (option.equals("-data"))
-          { dataURI=URI.create(nextArgument());
+          { dataURI=URIPool.create(nextArgument());
           }
           else if (option.equals("-persist"))
           { 
-            instanceURI=URI.create(nextArgument());
+            instanceURI=URIPool.create(nextArgument());
             persistOnCompletion=true;
           }
           else 

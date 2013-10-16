@@ -12,6 +12,7 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.TypeModel;
 //import spiralcraft.log.ClassLog;
 // import spiralcraft.log.Level;
+import spiralcraft.util.refpool.URIPool;
 
 public class DataTypeModel
   extends TypeModel
@@ -36,7 +37,7 @@ public class DataTypeModel
     String scheme=typeURI.getScheme();
     
     if (scheme!=null && scheme.equals("data"))
-    { typeURI=URI.create(typeURI.getRawSchemeSpecificPart());
+    { typeURI=URIPool.create(typeURI.getRawSchemeSpecificPart());
     }
     
     Type<?> type=null;

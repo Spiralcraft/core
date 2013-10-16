@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.List;
 
 import spiralcraft.util.Path;
+import spiralcraft.util.refpool.URIPool;
 
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.TypeFactory;
@@ -71,16 +72,16 @@ public class BuilderTypeFactory
         String parentPath=path.parentPath().format("/");
         if (parentPath.length()>0)
         { 
-          parentUri=URI.create
+          parentUri=URIPool.create
             (uriString+BuilderType.INNER_PATH_SEPARATOR+parentPath+".assy");
         }
         else
-        { parentUri=URI.create(uriString+".assy");
+        { parentUri=URIPool.create(uriString+".assy");
         }
         
       }
       else
-      { parentUri=URI.create(uriString+".assy");
+      { parentUri=URIPool.create(uriString+".assy");
       }
       
       BuilderType parentType=(BuilderType) resolver.<Assembly<?>>resolve(parentUri);

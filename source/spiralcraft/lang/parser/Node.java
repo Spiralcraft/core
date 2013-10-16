@@ -23,6 +23,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.refpool.URIPool;
 
 import java.net.URI;
 import java.util.List;
@@ -147,13 +148,13 @@ public abstract class Node
         }
         // Don't use URI.resolve() here because scheme-nested URIs get mangled
         uriStr=uriStr+suffix;
-        uri=URI.create(uriStr);
+        uri=URIPool.create(uriStr);
       }
       else if (suffix!=null 
               && (prefix==null || prefix.isEmpty()) 
               )
       {
-        uri=URI.create(suffix);
+        uri=URIPool.create(suffix);
       }
     
     }

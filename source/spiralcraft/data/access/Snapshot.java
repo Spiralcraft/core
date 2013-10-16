@@ -20,11 +20,12 @@ import spiralcraft.data.Aggregate;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
+import spiralcraft.util.refpool.URIPool;
 
 public interface Snapshot
 {
   public static final URI TYPE_URI
-    =URI.create("class:/spiralcraft/data/access/snapshot");
+    =URIPool.create("class:/spiralcraft/data/access/snapshot");
   
   public static final Type<Snapshot> TYPE
     =TypeResolver.getTypeResolver().resolveSafeFromClass(Snapshot.class);

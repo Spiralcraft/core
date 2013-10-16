@@ -12,6 +12,7 @@ import spiralcraft.lang.Contextual;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -138,7 +139,7 @@ public class Authority
           try
           {
             return pathMap.get(mappedPath)
-              .resolve(new URI(null,path.substring(mappedPath.length()),null));
+              .resolve(URIPool.get( new URI(null,path.substring(mappedPath.length()),null)));
           }
           catch (URISyntaxException x)
           { throw new IllegalArgumentException
@@ -161,7 +162,7 @@ public class Authority
       {
         URI pathURI;
         try
-        { pathURI=new URI(null,path,null);
+        { pathURI=URIPool.get(new URI(null,path,null));
         }
         catch (URISyntaxException x)
         { throw new UnresolvableURIException(path,"Invalid syntax in URI",x);
@@ -176,12 +177,14 @@ public class Authority
         }
         
         return new ContextResource
-          (new URI
-            ("context"
-            ,(authorityName!=null?"//"+authorityName:"")+"/"+path
-            ,null
+          (URIPool.get
+            (new URI
+              ("context"
+              ,(authorityName!=null?"//"+authorityName:"")+"/"+path
+              ,null
+              )
             )
-          ,Resolver.getInstance().resolve(defaultRoot.resolve(pathURI))
+          ,Resolver.getInstance().resolve(URIPool.get(defaultRoot.resolve(pathURI)))
           );
             
       }

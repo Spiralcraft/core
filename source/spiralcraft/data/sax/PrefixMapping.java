@@ -16,6 +16,8 @@ package spiralcraft.data.sax;
 
 import java.net.URI;
 
+import spiralcraft.util.refpool.URIPool;
+
 /**
  * Maps a namespace prefix to a URI
  * 
@@ -35,7 +37,7 @@ public class PrefixMapping
   { 
     String[] prefixValue=shortHand.split("=");
     prefix=prefixValue[0];
-    uri=URI.create(prefixValue[1]);
+    uri=URIPool.create(prefixValue[1]);
     if (prefixValue.length>2)
     { throw new IllegalArgumentException("Too many '=' in "+shortHand);
     }

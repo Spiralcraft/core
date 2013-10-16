@@ -24,6 +24,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.kit.AbstractChainableContext;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.thread.CycleDetector;
 import spiralcraft.util.thread.ThreadLocalStack;
 import spiralcraft.vfs.Resource;
@@ -38,7 +39,7 @@ import spiralcraft.vfs.UnresolvableURIException;
  *   
  * <P><CODE><PRE>
  *   ContextResourceMap map = new ContextResourceMap();
- *   URI myURI = URI.create("file:/home/myhome/somedir");
+ *   URI myURI = URIPool.create("file:/home/myhome/somedir");
  *   map.put("mycontext",myuri);
  *   </PRE></CODE>
  *   
@@ -219,10 +220,10 @@ public class ContextResourceMap
     for (String name:map.keySet())
     { 
       if (name.equals(""))
-      { set.add(URI.create("context:/"));
+      { set.add(URIPool.create("context:/"));
       }
       else
-      { set.add(URI.create("context://"+name));
+      { set.add(URIPool.create("context://"+name));
       }
     }
     return set;

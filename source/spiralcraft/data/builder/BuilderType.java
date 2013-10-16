@@ -28,6 +28,7 @@ import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.lang.Focus;
+import spiralcraft.util.refpool.URIPool;
 
 
 import spiralcraft.builder.AssemblyLoader;
@@ -53,10 +54,10 @@ public class BuilderType
 {
   public static final char INNER_PATH_SEPARATOR='_';
   public static final URI GENERIC_BUILDER_TYPE_URI
-    =URI.create("class:/spiralcraft/builder/Object.assy");
+    =URIPool.create("class:/spiralcraft/builder/Object.assy");
     
   public static final URI GENERIC_BUILDER_ARRAY_TYPE_URI
-    =URI.create("class:/spiralcraft/builder/Object.assy.array");
+    =URIPool.create("class:/spiralcraft/builder/Object.assy.array");
   
   private final AssemblyClass targetAssemblyClass;
   private boolean linked;
@@ -136,10 +137,10 @@ public class BuilderType
           assemblyClass=assemblyClass.getDefiningClass();
         }
         if (path.length()>0)
-        { return URI.create(baseUri.toString()+INNER_PATH_SEPARATOR+path+".assy");
+        { return URIPool.create(baseUri.toString()+INNER_PATH_SEPARATOR+path+".assy");
         }
         else
-        { return URI.create(baseUri.toString()+".assy");
+        { return URIPool.create(baseUri.toString()+".assy");
         }
       }
       else if (assemblyClass.getBaseClass()==null
@@ -155,7 +156,7 @@ public class BuilderType
           {
             // Don't use ReflectionType alternates map.
             return 
-              URI.create
+              URIPool.create
                 ("class:/"
                   +AssemblyClass.classNameToPath
                     (assemblyClass.getJavaClass().getName())
@@ -165,7 +166,7 @@ public class BuilderType
           else
           { 
             return
-              URI.create
+              URIPool.create
                 ("class:/"
                   +AssemblyClass.classNameToPath
                   (assemblyClass.getJavaClass().getName())

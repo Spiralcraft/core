@@ -40,6 +40,7 @@ import spiralcraft.log.Level;
 import spiralcraft.rules.Rule;
 import spiralcraft.rules.RuleSet;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.refpool.URIPool;
 
 /**
  * Core implementation of a Type
@@ -309,7 +310,7 @@ public class TypeImpl<T>
   public Type<?> getMetaType()
   { 
     try
-    { return resolver.resolve(URI.create(uri.toString().concat(".type")));
+    { return resolver.resolve(URIPool.create(uri.toString().concat(".type")));
     }
     catch (DataException x)
     { throw new RuntimeException(x);

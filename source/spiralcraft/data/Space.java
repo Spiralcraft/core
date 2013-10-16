@@ -50,6 +50,7 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.service.Service;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ListMap;
+import spiralcraft.util.refpool.URIPool;
 
 
 /**
@@ -64,7 +65,7 @@ public class Space
   implements Queryable<Tuple>,Service
 {
   public static final URI SPACE_URI 
-    = URI.create("class:/spiralcraft/data/Space");
+    = URIPool.create("class:/spiralcraft/data/Space");
   public static final ClassLog log
     =ClassLog.getInstance(Space.class);
   
@@ -380,12 +381,14 @@ public class Space
     { 
       // Strip fragment, which is field name
       URI typeURI
-        =new URI
-          (uri.getScheme()
-          ,uri.getAuthority()
-          ,uri.getPath()
-          ,uri.getQuery()
-          ,null);
+        =URIPool.get
+          (new URI
+            (uri.getScheme()
+            ,uri.getAuthority()
+            ,uri.getPath()
+            ,uri.getQuery()
+            ,null)
+          );
       //
       // We may have to explicitly mark something as being an authoritative
       //   store for an abstract base type with subtypes in multiple stores

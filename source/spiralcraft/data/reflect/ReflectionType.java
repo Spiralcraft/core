@@ -40,6 +40,7 @@ import spiralcraft.log.Level;
 import spiralcraft.util.CycleDetector;
 
 import spiralcraft.util.lang.ClassUtil;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringConverter;
 
 import java.lang.reflect.Constructor;
@@ -147,7 +148,7 @@ public class ReflectionType<T>
     {
       CANONICAL_MAP.put
         (clazz
-        ,URI.create("class:/spiralcraft/data/types/standard/"
+        ,URIPool.create("class:/spiralcraft/data/types/standard/"
                     .concat(clazz.getSimpleName())
                    )
         );
@@ -160,7 +161,7 @@ public class ReflectionType<T>
     {
       CANONICAL_MAP.put
         (clazz
-        ,URI.create("class:/spiralcraft/data/types/system/"
+        ,URIPool.create("class:/spiralcraft/data/types/system/"
                     .concat(clazz.getName().replace(".","/"))
                    )
         );
@@ -173,7 +174,7 @@ public class ReflectionType<T>
 //    {
 //      CANONICAL_MAP.put
 //        (clazz
-//        ,URI.create("class:/spiralcraft/data/types/meta/"
+//        ,URIPool.create("class:/spiralcraft/data/types/meta/"
 //                    .concat(clazz.getSimpleName())
 //                   )
 //        );
@@ -203,7 +204,7 @@ public class ReflectionType<T>
   public static URI canonicalURI(Class<?> iface)
   {
     if (iface==void.class)
-    { return URI.create("class:/java/lang/Void");
+    { return URIPool.create("class:/java/lang/Void");
     }
     
     Class<?> oiface=iface;
@@ -269,7 +270,7 @@ public class ReflectionType<T>
 
     uriBuilder.append(arraySuffix.toString());    
     
-    return URI.create(uriBuilder.toString());
+    return URIPool.create(uriBuilder.toString());
 
   }
   

@@ -22,6 +22,7 @@ import java.util.Stack;
 import java.io.File;
 
 import spiralcraft.exec.ExecutionContext;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringConverter;
 import spiralcraft.vfs.bundle.BundleResourceFactory;
 import spiralcraft.vfs.classpath.ClasspathResourceFactory;
@@ -136,7 +137,7 @@ public class Resolver
           {
             return Resolver.getInstance()
               .resolve(ExecutionContext.getInstance()
-                 .canonicalize(URI.create(val))
+                 .canonicalize(URIPool.create(val))
                  );
           }
           catch (Exception x)
@@ -173,7 +174,7 @@ public class Resolver
    */
   public Resource resolve(String uri)
     throws UnresolvableURIException
-  { return resolve(URI.create(uri));
+  { return resolve(URIPool.create(uri));
   }
 
   /**

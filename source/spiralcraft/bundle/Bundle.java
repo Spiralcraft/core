@@ -18,6 +18,7 @@ import java.net.URI;
 
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Container;
 
 /**
@@ -49,7 +50,7 @@ public class Bundle
     this.authorityName
       =pkg.getName()+"."+container.getLocalName();
     
-    this.bundleURI=URI.create("bundle://"+this.authorityName+"/");
+    this.bundleURI=URIPool.create("bundle://"+this.authorityName+"/");
     
     if (logLevel.isDebug())
     {

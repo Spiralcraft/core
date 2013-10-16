@@ -17,6 +17,7 @@ package spiralcraft.data.session;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.DataException;
+import spiralcraft.util.refpool.URIPool;
 
 
 
@@ -26,7 +27,7 @@ public abstract class Buffer
   implements DataComposite
 {
   public static final URI FOCUS_URI
-    =URI.create("class:/spiralcraft/data/session/Buffer");
+    =URIPool.create("class:/spiralcraft/data/session/Buffer");
 
   protected boolean debug;
   private Buffer parent;

@@ -24,6 +24,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.task.Scenario;
+import spiralcraft.util.refpool.URIPool;
 
 /**
  * Allows Task scenarios to implement data methods
@@ -58,7 +59,7 @@ public class TaskMethod<T,C,R>
     if (scenarioURI==null)
     { 
       scenarioURI
-        =URI.create
+        =URIPool.create
           (getDataType().getURI().toString()+"_"+getName()+".scenario.xml");
     }
     

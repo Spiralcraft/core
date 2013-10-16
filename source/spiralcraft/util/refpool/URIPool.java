@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 2010 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -12,24 +12,20 @@
 // Unless otherwise agreed to in writing, this software is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 //
-package spiralcraft.data.types.standard;
-
-import spiralcraft.data.TypeResolver;
-
-import spiralcraft.data.core.PrimitiveTypeImpl;
-import spiralcraft.util.refpool.URIPool;
+package spiralcraft.util.refpool;
 
 import java.net.URI;
 
-public class URIType
-  extends PrimitiveTypeImpl<URI>
+public class URIPool
 {
-  public URIType(TypeResolver resolver,URI uri)
-  { super(resolver,uri,URI.class);
+  private static final ReferencePool<URI> pool
+    =ReferencePool.getInstance(URI.class);
+  
+  public static final URI create(String str)
+  { return pool.get(URI.create(str));
   }
   
-  @Override
-  public URI fromString(String str)
-  { return str!=null?URIPool.create(str):null;
+  public static final URI get(URI uri)
+  { return pool.get(uri);
   }
 }

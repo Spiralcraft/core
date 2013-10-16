@@ -26,6 +26,7 @@ import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.util.ConstructorInstanceResolver;
 import spiralcraft.data.util.InstanceResolver;
 import spiralcraft.data.util.StaticInstanceResolver;
+import spiralcraft.util.refpool.URIPool;
 
 import java.net.URI;
 
@@ -81,7 +82,7 @@ public class MetaType
   { 
     super
       (referencedType.getTypeResolver()
-      ,URI.create(referencedType.getURI().toString()+".type")
+      ,URIPool.create(referencedType.getURI().toString()+".type")
       ,(Class) referencedType.getClass()
       ,(Class) referencedType.getClass()
       );
@@ -92,7 +93,7 @@ public class MetaType
   @Override
   public Type<?> fromString(String val)
     throws DataException
-  { return Type.resolve(URI.create(val));
+  { return Type.resolve(URIPool.create(val));
   }
   
   @Override
@@ -192,7 +193,7 @@ public class MetaType
         
         // Create an anonymous subtype
         // TODO: clean up and consolidate with newSubtype()
-        final URI uri=URI.create(getURI().toString().concat("-"+(anonRefId++)));
+        final URI uri=URIPool.create(getURI().toString().concat("-"+(anonRefId++)));
         
         
         instanceResolver

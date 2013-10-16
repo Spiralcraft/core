@@ -14,7 +14,6 @@
 //
 package spiralcraft.lang.kit.members;
 
-import java.net.URI;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -23,6 +22,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.kit.Member;
 import spiralcraft.lang.spi.TuneChannel;
+import spiralcraft.util.refpool.URIPool;
 
 /**
  * Returns 
@@ -44,7 +44,7 @@ public class MetaTuneMember<T>
     throws BindException
   { 
     assertRequiresSingleArgument
-      (arguments,URI.create("class:/java/lang/String"));
+      (arguments,URIPool.create("class:/java/lang/String"));
     return new TuneChannel<T>(source,focus,arguments[0]);
   }
 

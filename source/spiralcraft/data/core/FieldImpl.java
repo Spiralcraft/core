@@ -44,6 +44,7 @@ import spiralcraft.rules.RuleException;
 import spiralcraft.rules.RuleSet;
 import spiralcraft.rules.Violation;
 import spiralcraft.ui.MetadataType;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.thread.BlockTimer;
 
 import spiralcraft.data.lang.DataReflector;
@@ -108,12 +109,12 @@ public class FieldImpl<T>
 //    if (scheme.getType()!=null)
 //    { 
 //      this.uri
-//        =URI.create(scheme.getType().getURI().toString()+"#"+getName());
+//        =URIPool.create(scheme.getType().getURI().toString()+"#"+getName());
 //    }
 //    else
 //    {
 //      this.uri
-//        =URI.create("untyped#"+getName());
+//        =URIPool.create("untyped#"+getName());
 //      
 //    }
   }
@@ -127,7 +128,7 @@ public class FieldImpl<T>
     else
     { 
       this.fieldSet=fieldSet;
-//      this.uri=URI.create("untyped#"+getName());
+//      this.uri=URIPool.create("untyped#"+getName());
     }
     
   }
@@ -659,11 +660,11 @@ public class FieldImpl<T>
   private URI createURI()
   {
     if (fieldSet.getType()==null)
-    { return URI.create("untyped#"+getName());
+    { return URIPool.create("untyped#"+getName());
     }
     else
     { return
-        URI.create(fieldSet.getType().getURI().toString()+"#"+getName());
+        URIPool.create(fieldSet.getType().getURI().toString()+"#"+getName());
 
     }
     

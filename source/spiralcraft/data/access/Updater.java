@@ -47,6 +47,7 @@ import spiralcraft.rules.Inspector;
 import spiralcraft.rules.RuleException;
 import spiralcraft.rules.RuleSet;
 import spiralcraft.rules.Violation;
+import spiralcraft.util.refpool.URIPool;
 
 
 
@@ -80,7 +81,7 @@ public class Updater<T extends Tuple>
     =ClassLog.getInstance(Updater.class);
 
   private static final URI dataURI
-    =URI.create("class:/spiralcraft/data/");
+    =URIPool.create("class:/spiralcraft/data/");
 
   private Focus<?> context;
   private Store store;

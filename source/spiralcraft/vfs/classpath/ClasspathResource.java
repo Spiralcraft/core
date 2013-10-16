@@ -15,6 +15,7 @@
 package spiralcraft.vfs.classpath;
 
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -52,14 +53,16 @@ public class ClasspathResource
     { 
       try
       {
-        return new URI
-          (uri.getScheme()
-          ,null
-          ,uri.getPath().length()>1
-            ?uri.getPath().substring(0,uri.getPath().length()-1)
-            :"/"
-          ,null
-          ,null
+        return URIPool.get
+          (new URI
+            (uri.getScheme()
+            ,null
+            ,uri.getPath().length()>1
+              ?uri.getPath().substring(0,uri.getPath().length()-1)
+              :"/"
+            ,null
+            ,null
+            )
           );
       }
       catch (URISyntaxException x)
@@ -218,13 +221,13 @@ public class ClasspathResource
   { 
     if (_path.length()>0)
     {
-      URI child=URI.create(getURI().getScheme()+":/"+_path+"/"+name);
+      URI child=URIPool.create(getURI().getScheme()+":/"+_path+"/"+name);
       return new ClasspathResource
         (child);
     }
     else
     {
-      URI child=URI.create(getURI().getScheme()+":/"+name);
+      URI child=URIPool.create(getURI().getScheme()+":/"+name);
       return new ClasspathResource
         (child);
     }

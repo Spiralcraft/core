@@ -31,6 +31,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import spiralcraft.common.Coercion;
+import spiralcraft.util.refpool.URIPool;
 
 /**
  * <p>Converts bidirectionally between a String and an object of a specific
@@ -370,7 +371,7 @@ final class CharacterToString
 {
   @Override
   public Character fromString(String val)
-  { return (val!=null && val.length()==1)?new Character(val.charAt(0)):null;
+  { return (val!=null && val.length()==1)?Character.valueOf(val.charAt(0)):null;
   }
 }
 
@@ -403,18 +404,98 @@ final class ByteToString
 final class BigDecimalToString
   extends StringConverter<BigDecimal>
 {
+  static BigDecimal[] common
+    ={BigDecimal.ZERO
+     ,BigDecimal.ONE
+     ,BigDecimal.valueOf(2)
+     ,BigDecimal.valueOf(3)
+     ,BigDecimal.valueOf(4)
+     ,BigDecimal.valueOf(5)
+     ,BigDecimal.valueOf(6)
+     ,BigDecimal.valueOf(7)
+     ,BigDecimal.valueOf(8)
+     ,BigDecimal.valueOf(9)
+     ,BigDecimal.TEN
+     };
+      
+  
   @Override
   public BigDecimal fromString(String val)
-  { return (val!=null && !val.isEmpty())?new BigDecimal(val):null;
+  { 
+    if (val==null || val.isEmpty())
+    { return null;
+    }
+    
+    if (val.length()<4)
+    { 
+      double dval=Double.parseDouble(val);
+      if (dval % 1 == 0)
+      { 
+        int i=(int) dval;
+        if (i>=0 && i<=10)
+        { return common[i];
+        }
+      }
+      return BigDecimal.valueOf(dval);
+    }
+    else
+    { 
+      BigDecimal ret=new BigDecimal(val);
+      if (ret.compareTo(BigDecimal.ZERO)==0)
+      { return BigDecimal.ZERO;
+      }
+      if (ret.equals(BigDecimal.ONE))
+      { return BigDecimal.ONE;
+      }
+      return ret;
+    }
   }
 }
 
 final class BigIntegerToString
   extends StringConverter<BigInteger>
 {
+  static BigInteger[] common
+    ={BigInteger.ZERO
+     ,BigInteger.ONE
+     ,BigInteger.valueOf(2)
+     ,BigInteger.valueOf(3)
+     ,BigInteger.valueOf(4)
+     ,BigInteger.valueOf(5)
+     ,BigInteger.valueOf(6)
+     ,BigInteger.valueOf(7)
+     ,BigInteger.valueOf(8)
+     ,BigInteger.valueOf(9)
+     ,BigInteger.TEN
+     };
+
   @Override
   public BigInteger fromString(String val)
-  { return (val!=null && !val.isEmpty())?new BigInteger(val):null;
+  { 
+    if (val==null || val.isEmpty())
+    { return null;
+    }
+
+    if (val.length()<4)
+    { 
+      long lval=Long.parseLong(val);
+      if (lval>=0 && lval<=10)
+      { return common[(int) lval];
+      }
+      return BigInteger.valueOf(lval);
+    }
+    else
+    {
+      BigInteger ret=new BigInteger(val);
+      if (ret.equals(BigInteger.ONE))
+      { return BigInteger.ONE;
+      }
+      else if (ret.equals(BigInteger.ZERO))
+      { return BigInteger.ZERO;
+      }
+      return ret;
+    }
+    
   }
 }
 
@@ -536,7 +617,7 @@ final class URIToString
 
   @Override
   public URI fromString(String val)
-  { return URI.create(val);
+  { return URIPool.create(val);
   }
 }
 

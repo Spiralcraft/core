@@ -16,6 +16,7 @@ package spiralcraft.vfs.util;
 
 import java.net.URI;
 
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.ResourceFactory;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -42,7 +43,7 @@ public class NullResource
   }
   
   public NullResource()
-  { super(URI.create("null:/"));
+  { super(URIPool.create("null:/"));
   }
 
 }

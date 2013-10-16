@@ -392,7 +392,13 @@ class NumberBindingHelper
   
   private static HashMap<Class<?>,NumericTranslator<?,?,?>> _translatorMapModulus
     =new HashMap<Class<?>,NumericTranslator<?,?,?>>();
+  
+  private static StringConverter<BigDecimal> bigDecimalConverter
+    = StringConverter.getInstance(BigDecimal.class);
 
+  private static StringConverter<BigInteger> bigIntegerConverter
+    = StringConverter.getInstance(BigInteger.class);
+  
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public static final <Tret extends Number,T1 extends Tret,T2 extends Tret> Channel<Tret> 
     bindNumber(Channel<T1> op1,Channel<T2> op2,char operator)
@@ -605,7 +611,7 @@ class NumberBindingHelper
             { return (Tret) prim;
             }
             else
-            { return (Tret) new BigInteger(prim.toString());
+            { return (Tret) bigIntegerConverter.fromString(prim.toString());
             }
           }
           
@@ -626,13 +632,13 @@ class NumberBindingHelper
             { num1=(BigInteger) val1;
             }
             else 
-            { num1=new BigInteger(val1.toString());
+            { num1=bigIntegerConverter.fromString(val1.toString());
             }
             if (val2 instanceof BigInteger)
             { num2=(BigInteger) val2;
             }
             else 
-            { num2=new BigInteger(val2.toString());
+            { num2=bigIntegerConverter.fromString(val2.toString());
             }
 
             
@@ -665,7 +671,7 @@ class NumberBindingHelper
             { return (Tret) prim;
             }
             else
-            { return (Tret) new BigDecimal(prim.toString());
+            { return (Tret) bigDecimalConverter.fromString(prim.toString());
             }
           }
           
@@ -686,13 +692,13 @@ class NumberBindingHelper
             { num1=(BigDecimal) val1;
             }
             else 
-            { num1=new BigDecimal(val1.toString());
+            { num1=bigDecimalConverter.fromString(val1.toString());
             }
             if (val2 instanceof BigDecimal)
             { num2=(BigDecimal) val2;
             }
             else 
-            { num2=new BigDecimal(val2.toString());
+            { num2=bigDecimalConverter.fromString(val2.toString());
             }
 
             

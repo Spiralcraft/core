@@ -18,6 +18,7 @@ import java.net.URI;
 
 import spiralcraft.common.Immutable;
 import spiralcraft.util.URIUtil;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringUtil;
 
 /**
@@ -98,7 +99,7 @@ public class QName
     if (canonicalForm.startsWith("{"))
     { 
       int endBracket=canonicalForm.indexOf('}');
-      namespaceURI=URI.create(canonicalForm.substring(1,endBracket));
+      namespaceURI=URIPool.create(canonicalForm.substring(1,endBracket));
       localName=canonicalForm.substring(endBracket+1);
     }
     else
@@ -147,7 +148,7 @@ public class QName
   public URI toURIPath()
   {
     if (namespaceURI==null)
-    { return URI.create(localName);
+    { return URIPool.create(localName);
     }
     else
     { return URIUtil.addPathSegment(namespaceURI,localName);

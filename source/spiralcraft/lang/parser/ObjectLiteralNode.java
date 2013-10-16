@@ -33,6 +33,7 @@ import java.util.List;
 import spiralcraft.lang.TypeModel;
 import spiralcraft.lang.spi.FocusChannel;
 import spiralcraft.lang.spi.SimpleChannel;
+import spiralcraft.util.refpool.URIPool;
 
 /**
  * Creates a single instance of the type referenced by the specified URI for
@@ -62,7 +63,7 @@ public class ObjectLiteralNode<Tobject,Treturn>
     int colonPos=qname.indexOf(':');
     if (colonPos==0)
     { 
-      this.uri=URI.create(qname.substring(1));
+      this.uri=URIPool.create(qname.substring(1));
       this.namespace=null;
       this.suffix=null;
     }

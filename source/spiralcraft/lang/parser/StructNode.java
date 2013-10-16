@@ -51,6 +51,7 @@ import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.util.lang.NumericCoercion;
+import spiralcraft.util.refpool.URIPool;
 
 public class StructNode
   extends Node
@@ -216,7 +217,7 @@ public class StructNode
     int colonPos=qname.indexOf(':');
     if (colonPos==0)
     { 
-      this.typeURI=URI.create(qname.substring(1));
+      this.typeURI=URIPool.create(qname.substring(1));
       this.typeNamespace=null;
       this.typeName=null;
     }
@@ -326,7 +327,7 @@ public class StructNode
         }
         else
         { 
-          typeURI=URI.create
+          typeURI=URIPool.create
             ("temp:spiralcraft.lang.parser.StructNode-"
             +Integer.toHexString(System.identityHashCode(this))
             );

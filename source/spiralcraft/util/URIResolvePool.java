@@ -3,6 +3,8 @@ package spiralcraft.util;
 import java.net.URI;
 import java.util.HashMap;
 
+import spiralcraft.util.refpool.URIPool;
+
 public class URIResolvePool
 {
 
@@ -56,6 +58,6 @@ public class URIResolvePool
   }
   
   private URI makeURI(String prefix,String local)
-  { return URI.create(prefix+local);
+  { return URIPool.create(prefix+local);
   }
 }

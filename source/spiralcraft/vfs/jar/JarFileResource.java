@@ -17,6 +17,7 @@ package spiralcraft.vfs.jar;
 import spiralcraft.io.InputStreamWrapper;
 //import spiralcraft.log.ClassLog;
 import spiralcraft.util.Path;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
@@ -50,7 +51,7 @@ public class JarFileResource
   public JarFileResource(File jarFile,Path path)
   { 
     super
-      (URI.create
+      (URIPool.create
         ("jar:"
         +jarFile.toURI()+"!"
         +(path.isAbsolute()?path:("/"+path))  
@@ -66,7 +67,7 @@ public class JarFileResource
     super(uri);
     String[] uriParts=uri.getRawSchemeSpecificPart().split("!");
     
-    this.file=new File(URI.create(uriParts[0]));
+    this.file=new File(URIPool.create(uriParts[0]));
     this.path=new Path(uriParts[1].substring(1),'/');
   }
   

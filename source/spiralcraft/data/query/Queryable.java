@@ -22,6 +22,7 @@ import spiralcraft.data.Tuple;
 
 
 import spiralcraft.lang.Focus;
+import spiralcraft.util.refpool.URIPool;
 
 
 /**
@@ -37,7 +38,7 @@ import spiralcraft.lang.Focus;
  */
 public interface Queryable<Ttuple extends Tuple>
 {
-  URI QUERYABLE_URI = URI.create("class:/spiralcraft/data/query/Queryable");
+  URI QUERYABLE_URI = URIPool.create("class:/spiralcraft/data/query/Queryable");
   
   /**
    * @return An array of all the Types supported by this Queryable

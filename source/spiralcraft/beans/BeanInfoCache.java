@@ -23,6 +23,7 @@ import java.util.WeakHashMap;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringPool;
 
 /**
@@ -111,7 +112,7 @@ public class BeanInfoCache
       clazz=clazz.getComponentType();
     }
     
-    return URI.create
+    return URIPool.create
       (StringPool.INSTANCE.get("class:/"+clazz.getName().replace('.','/').replace('$','-')+suffix));
   }
   

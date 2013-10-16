@@ -40,6 +40,7 @@ import spiralcraft.log.Level;
 import spiralcraft.service.ResourceContext;
 import spiralcraft.service.Service;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringConverter;
 
 /**
@@ -199,7 +200,7 @@ public class TaskRunner
         @Override
         public boolean processArgument(String arg)
         {
-          URI scenarioURI=URI.create(arg);
+          URI scenarioURI=URIPool.create(arg);
           try
           { 
             loadScenario(scenarioURI);
@@ -232,7 +233,7 @@ public class TaskRunner
         }
         else
         { 
-          URI scenarioURI=URI.create(arg);
+          URI scenarioURI=URIPool.create(arg);
           try
           { 
             loadScenario(scenarioURI);

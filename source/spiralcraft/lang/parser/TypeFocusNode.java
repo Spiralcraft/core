@@ -26,6 +26,7 @@ import spiralcraft.lang.TypeModel;
 import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.lang.ClassUtil;
+import spiralcraft.util.refpool.URIPool;
 
 /**
  * An expression node which resolves a Focus from somewhere in the hierarchy
@@ -50,7 +51,7 @@ public class TypeFocusNode
     int colonPos=qname.indexOf(':');
     if (colonPos==0)
     { 
-      this.uri=URI.create(qname.substring(1));
+      this.uri=URIPool.create(qname.substring(1));
       this.namespace=null;
       this.suffix=null;
     }

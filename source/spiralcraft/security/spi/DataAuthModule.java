@@ -39,8 +39,8 @@ import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.security.auth.AuthPrincipal;
+import spiralcraft.util.refpool.URIPool;
 
-import java.net.URI;
 
 /**
  * <p>Authenticates with a spiralcraft.data.query.Queryable for the 
@@ -94,7 +94,7 @@ public class DataAuthModule
   {
     // Default values for basic username/password authentication
     accountDataType
-      =Type.resolve(URI.create("class:/spiralcraft/security/Login"));
+      =Type.resolve(URIPool.create("class:/spiralcraft/security/Login"));
 
       
   

@@ -50,6 +50,7 @@ import spiralcraft.data.UniqueKeyViolationException;
 import spiralcraft.time.Clock;
 import spiralcraft.util.KeyFunction;
 import spiralcraft.util.Path;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -630,7 +631,7 @@ public class XmlQueryable
     Resource tempResource;
 
     tempResource=Resolver.getInstance().resolve
-      (URI.create
+      (URIPool.create
         (this.resource.getURI().toString()
           +(tempSuffix!=null?tempSuffix:"")
         )
@@ -679,7 +680,7 @@ public class XmlQueryable
   {
     Resource tempResource
       =Resolver.getInstance().resolve
-        (URI.create(this.resource.getURI().toString()+tempSuffix));
+        (URIPool.create(this.resource.getURI().toString()+tempSuffix));
 
     URI backupURI=null;
     int seq=0;
@@ -689,7 +690,7 @@ public class XmlQueryable
               || Resolver.getInstance().resolve(backupURI).exists()
             )
       {
-        backupURI=URI.create
+        backupURI=URIPool.create
             (resource.getURI().toString()
             +"."+dateFormat.format
               (new Date())
@@ -799,7 +800,7 @@ public class XmlQueryable
   {
     Resource tempResource
       =Resolver.getInstance().resolve
-        (URI.create(this.resource.getURI().toString()+tempSuffix));
+        (URIPool.create(this.resource.getURI().toString()+tempSuffix));
     tempResource.delete();
   }
   

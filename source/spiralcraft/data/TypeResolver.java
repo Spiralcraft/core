@@ -24,6 +24,7 @@ import java.lang.ref.WeakReference;
 
 
 import spiralcraft.util.ClassLoaderLocal;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringPool;
 
 import spiralcraft.vfs.Resolver;
@@ -78,7 +79,7 @@ public class TypeResolver
     =new ClassLoaderLocal<TypeResolver>();
     
   private static final URI TYPE_TYPE_URI 
-    =URI.create("class:/spiralcraft/data/Type");
+    =URIPool.create("class:/spiralcraft/data/Type");
   
   protected final TypeResolver parent;
   private final HashMap<URI,Type<?>> map=new HashMap<URI,Type<?>>();
@@ -114,7 +115,7 @@ public class TypeResolver
   public static final URI desuffix(URI uri,String suffix)
   { 
     String uriStr=uri.toString();
-    return URI.create
+    return URIPool.create
       (StringPool.INSTANCE.get
         (uriStr.substring(0,uriStr.length()-(suffix.length()))));
   }
@@ -193,7 +194,7 @@ public class TypeResolver
   public final URI getPackageURI(URI typeURI)
   {
     String uriStr=typeURI.toString();
-    return URI.create
+    return URIPool.create
       (StringPool.INSTANCE.get(uriStr.substring(0,uriStr.lastIndexOf('/')+1)));
   }
   

@@ -22,6 +22,8 @@ import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.lang.Reflector;
 
+import spiralcraft.util.refpool.URIPool;
+
 /**
  * <p>An enumeration of data model related metadata types for channels
  * </p>
@@ -31,8 +33,8 @@ import spiralcraft.lang.Reflector;
  */
 public enum MetadataType
 {
-  FIELD(URI.create("class:/spiralcraft/data/types/meta/Field"))
-  ,RELATIVE_FIELD(URI.create("class:/spiralcraft/data/core/RelativeField"));
+  FIELD(URIPool.create("class:/spiralcraft/data/types/meta/Field"))
+  ,RELATIVE_FIELD(URIPool.create("class:/spiralcraft/data/core/RelativeField"));
   
   public final URI uri;
   public final Type<Tuple> type;

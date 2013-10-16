@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Iterator;
 
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.refpool.URIPool;
 
 /**
  * <p>Represents the state of the authentication process from a client's
@@ -41,7 +42,7 @@ public class AuthSession
     =ClassLog.getInstance(AuthSession.class);
   
   public static final URI FOCUS_URI
-    =URI.create("class:/spiralcraft/security/auth/AuthSession");
+    =URIPool.create("class:/spiralcraft/security/auth/AuthSession");
 
   protected final ArrayList<Credential<?>> credentialList
     =new ArrayList<Credential<?>>();

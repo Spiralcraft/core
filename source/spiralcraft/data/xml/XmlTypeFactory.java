@@ -44,6 +44,7 @@ import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.UnresolvableURIException;
 
 import spiralcraft.util.CycleDetector;
+import spiralcraft.util.refpool.URIPool;
 
 public class XmlTypeFactory
   implements TypeFactory
@@ -89,7 +90,7 @@ public class XmlTypeFactory
   private boolean typeExists(URI uri)
     throws DataException
   { 
-    URI resourceUri=URI.create(uri.toString()+".type.xml");
+    URI resourceUri=URIPool.create(uri.toString()+".type.xml");
     Resource resource=null;
     
     try
@@ -225,7 +226,7 @@ public class XmlTypeFactory
 //      System.err.println("XmlTypeFactory: Loading "+uri);
       Tuple tuple
         =(Tuple) dataReader
-          .readFromURI(URI.create(uri.toString()+".type.xml")
+          .readFromURI(URIPool.create(uri.toString()+".type.xml")
                       ,resolver.getMetaType()
                       );
           

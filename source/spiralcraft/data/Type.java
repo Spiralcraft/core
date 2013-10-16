@@ -41,6 +41,7 @@ import spiralcraft.log.Level;
 //import spiralcraft.log.ClassLog;
 import spiralcraft.rules.RuleSet;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringConverter;
 import spiralcraft.util.string.StringUtil;
 import spiralcraft.util.thread.ThreadLocalStack;
@@ -59,7 +60,7 @@ public abstract class Type<T>
   
   public static <X> Type<X> resolve(String uriString)
     throws DataException
-  { return TypeResolver.getTypeResolver().<X>resolve(URI.create(uriString));
+  { return TypeResolver.getTypeResolver().<X>resolve(URIPool.create(uriString));
   }
 
   public static <X> Type<X> resolve(URI uri)
@@ -72,7 +73,7 @@ public abstract class Type<T>
     try
     { 
       return type.getTypeResolver().<List<X>>resolve
-        (URI.create(type.getURI().toString()+".array"));
+        (URIPool.create(type.getURI().toString()+".array"));
     }
     catch (DataException x)
     { throw new RuntimeException(x);
@@ -84,7 +85,7 @@ public abstract class Type<T>
     try
     { 
       return type.getTypeResolver().<List<X>>resolve
-        (URI.create(type.getURI().toString()+".list"));
+        (URIPool.create(type.getURI().toString()+".list"));
     }
     catch (DataException x)
     { throw new RuntimeException(x);
@@ -116,7 +117,7 @@ public abstract class Type<T>
 //        +resolve(type.getURI().toString()+".buffer")
 //        );
       return type.getTypeResolver().<Buffer>resolve
-        (URI.create(type.getURI().toString()+".buffer"));
+        (URIPool.create(type.getURI().toString()+".buffer"));
       
     }
     catch (DataException x)
@@ -143,7 +144,7 @@ public abstract class Type<T>
 //        +resolve(type.getURI().toString()+".buffer")
 //        );
       return type.getTypeResolver().<DeltaTuple>resolve
-        (URI.create(type.getURI().toString()+".delta"));
+        (URIPool.create(type.getURI().toString()+".delta"));
       
     }
     catch (DataException x)

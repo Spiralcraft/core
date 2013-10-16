@@ -57,6 +57,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.log.Level;
 import spiralcraft.task.Scenario;
 import spiralcraft.util.URIUtil;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringPool;
 import spiralcraft.util.string.StringUtil;
 import spiralcraft.vfs.Container;
@@ -126,7 +127,7 @@ public class XmlStore
     throws DataException
   {
     sequenceQueryable.setResultType(sequenceType);
-    sequenceQueryable.setResourceURI(URI.create("Sequence.xml"));
+    sequenceQueryable.setResourceURI(URIPool.create("Sequence.xml"));
     sequenceQueryable.setAutoCreate(true);
 
   }
@@ -165,7 +166,7 @@ public class XmlStore
         {
           XmlQueryable queryable=new XmlQueryable();
           queryable.setResultType(entity.getType());
-          queryable.setResourceURI(URI.create(entity.getName()+".data.xml"));
+          queryable.setResourceURI(URIPool.create(entity.getName()+".data.xml"));
           queryable.setAutoCreate(true);
           xmlQueryables.add(queryable);
           EntityBinding binding=createEntityBinding(entity);

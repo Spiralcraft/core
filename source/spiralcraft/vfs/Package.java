@@ -11,6 +11,7 @@ import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.util.URIUtil;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.thread.CycleDetector;
 
 /**
@@ -42,7 +43,7 @@ public class Package
   
   public static final Resource findResource(String uri)
     throws IOException
-  { return findResource(URI.create(uri));
+  { return findResource(URIPool.create(uri));
   }
   
   public static final Resource findResource(URI uri)

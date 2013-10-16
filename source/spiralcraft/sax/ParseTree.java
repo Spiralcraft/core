@@ -24,6 +24,7 @@ import org.xml.sax.ContentHandler;
 
 import spiralcraft.common.namespace.StandardPrefixResolver;
 import spiralcraft.text.ParsePosition;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringPool;
 
 
@@ -99,7 +100,7 @@ public class ParseTree
           :null
           );
     }
-    newPrefixResolver.mapPrefix(prefix,URI.create(uri)); 
+    newPrefixResolver.mapPrefix(prefix,URIPool.create(uri)); 
   }
   
   @Override

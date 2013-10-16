@@ -2,11 +2,11 @@ package spiralcraft.bundle;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 
 import spiralcraft.classloader.JarArchive;
 import spiralcraft.classloader.Loader;
 import spiralcraft.classloader.ResourceArchive;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.bundle.BundleResource;
@@ -32,7 +32,7 @@ public class BundleClassLoader
     {
       Resource classResource
         =new BundleResource
-            (URI.create("bundle://"+classBundle+"/"));
+            (URIPool.create("bundle://"+classBundle+"/"));
       
       addPrecedentArchive
         (new ResourceArchive
@@ -46,7 +46,7 @@ public class BundleClassLoader
       
       Container libResource
         =new BundleResource
-            (URI.create("bundle://"+jarBundle+"/"))
+            (URIPool.create("bundle://"+jarBundle+"/"))
         .asContainer();
       if (libResource==null)
       { throw new IOException("Bundle '"+jarBundle+"' not found");

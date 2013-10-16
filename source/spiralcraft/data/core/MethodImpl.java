@@ -11,6 +11,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.refpool.URIPool;
 
 public abstract class MethodImpl
   implements Method
@@ -136,7 +137,7 @@ public abstract class MethodImpl
     
     subclassResolve();
     qualifiedName=getDataType().getURI()+"!"+name;
-    uri=URI.create(qualifiedName);
+    uri=URIPool.create(qualifiedName);
   }
   
   protected void subclassResolve()

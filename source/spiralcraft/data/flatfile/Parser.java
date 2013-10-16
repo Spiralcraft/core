@@ -33,6 +33,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.log.ClassLog;
+import spiralcraft.util.refpool.URIPool;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataConsumer;
@@ -372,15 +373,15 @@ public class Parser
       }
       URI typeUri;
       if (type==null)
-      { typeUri=URI.create("class:/spiralcraft/data/types/standard/String");
+      { typeUri=URIPool.create("class:/spiralcraft/data/types/standard/String");
       }
       else
       { 
-        typeUri=URI.create(type);
+        typeUri=URIPool.create(type);
         if (!typeUri.isAbsolute())
         { 
           typeUri
-            =URI.create("class:/spiralcraft/data/types/standard/").resolve(typeUri);
+            =URIPool.create("class:/spiralcraft/data/types/standard/").resolve(typeUri);
         }
       }
 

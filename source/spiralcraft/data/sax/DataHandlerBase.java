@@ -36,6 +36,7 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.text.ParseException;
 import spiralcraft.text.ParsePosition;
 import spiralcraft.util.ContextDictionary;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.string.StringPool;
 
 /**
@@ -555,7 +556,7 @@ public abstract class DataHandlerBase
       if (ret==null && parentFrame!=null)
       { return parentFrame.resolvePrefix(prefix);
       }
-      return ret!=null?URI.create(ret):null;
+      return ret!=null?URIPool.create(ret):null;
     }
     
     @Override
@@ -572,7 +573,7 @@ public abstract class DataHandlerBase
       if (prefixMappings!=null)
       { 
         for (String key:prefixMappings.keySet())
-        { computedMappings.put(key,URI.create(prefixMappings.get(key)));
+        { computedMappings.put(key,URIPool.create(prefixMappings.get(key)));
         }
       }
       return computedMappings;
@@ -588,7 +589,7 @@ public abstract class DataHandlerBase
     public URI resolveRef(String ref)
     {
       if (ref.startsWith(":"))
-      { return URI.create(ref.substring(1));
+      { return URIPool.create(ref.substring(1));
       }
       else
       {
@@ -605,7 +606,7 @@ public abstract class DataHandlerBase
               +" use the ':' prefix- ie. ref=\":"+ref+"\""
               );
               	
-            return URI.create(ref);
+            return URIPool.create(ref);
           }
           else
           { 
@@ -613,13 +614,13 @@ public abstract class DataHandlerBase
             if (!baseStr.endsWith("/"))
             { 
               baseStr=baseStr+"/";
-              base=URI.create(baseStr);
+              base=URIPool.create(baseStr);
             }
-            return base.resolve(URI.create(ref.substring(colonPos+1)));
+            return base.resolve(URIPool.create(ref.substring(colonPos+1)));
           }
         }
         else
-        { return URI.create(ref);
+        { return URIPool.create(ref);
         }
       }
     }

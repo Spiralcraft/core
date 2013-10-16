@@ -20,6 +20,8 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 
 import spiralcraft.lang.BindException;
+import spiralcraft.util.refpool.URIPool;
+
 import java.net.URI;
 
 /**
@@ -48,7 +50,7 @@ public class ChannelMetaNode<Tsource,Treturn>
     int colonPos=qname.indexOf(':');
     if (colonPos==0)
     { 
-      this.uri=URI.create(qname.substring(1));
+      this.uri=URIPool.create(qname.substring(1));
       this.namespace=null;
       this.suffix=null;
     }

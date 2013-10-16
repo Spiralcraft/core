@@ -32,6 +32,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Focus;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.refpool.URIPool;
 
 import java.util.LinkedHashMap;
 
@@ -46,7 +47,7 @@ import java.net.URI;
 public class DataSession
 {
   public static final URI FOCUS_URI
-    =URI.create("class:/spiralcraft/data/session/DataSession");
+    =URIPool.create("class:/spiralcraft/data/session/DataSession");
   public static final ClassLog log=ClassLog.getInstance(DataSession.class);
   
   /**

@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import spiralcraft.log.ClassLog;
 import spiralcraft.text.html.URLDataEncoder;
 import spiralcraft.text.html.URLEncoder;
+import spiralcraft.util.refpool.URIPool;
 
 /**
  * Utility class to manipulate URIs
@@ -43,7 +44,7 @@ public class URIUtil
    */
   public static final URI addPathSuffix(URI source,String rawSuffix)
   { 
-    return URI.create
+    return URIPool.create
       (trimToPath(source).toString()
         +rawSuffix
         +(source.getRawQuery()!=null
@@ -72,7 +73,7 @@ public class URIUtil
     if (rawPath!=null && rawPath.endsWith(rawSuffix))
     { 
       rawPath=rawPath.substring(0,rawPath.length()-rawSuffix.length());
-      return URI.create
+      return URIPool.create
           ( (source.getScheme()!=null?source.getScheme()+":":"")
             +(source.getAuthority()!=null?"//"+source.getAuthority():"")
             +rawPath
@@ -118,7 +119,7 @@ public class URIUtil
     if (in.getPath().endsWith("/"))
     { 
       try
-      { return in.resolve(new URI(null,segment,null));
+      { return URIPool.get(in.resolve(new URI(null,segment,null)));
       }
       catch (URISyntaxException x)
       { throw new IllegalArgumentException
@@ -164,12 +165,14 @@ public class URIUtil
     
     try
     {
-      return new URI
-        (source.getScheme()
-        ,source.getAuthority()
-        ,unencodedPath
-        ,source.getQuery()
-        ,source.getFragment()
+      return URIPool.get
+        (new URI
+          (source.getScheme()
+          ,source.getAuthority()
+          ,unencodedPath
+          ,source.getQuery()
+          ,source.getFragment()
+          )
         );
     }
     catch (URISyntaxException x)
@@ -191,7 +194,7 @@ public class URIUtil
     ,String rawQuery
     )
   {
-    return URI.create
+    return URIPool.create
       (trimToPath(source).toString()
         +"?"
         +rawQuery
@@ -219,14 +222,15 @@ public class URIUtil
       {  
         if (input.getQuery()!=null || input.getFragment()!=null)
         {
-          return 
-            new URI
+          return URIPool.get
+            (new URI
               (input.getScheme()
               ,input.getAuthority()
               ,input.getPath()
               ,null
               ,null
-              );
+              )
+            );
         }
         else
         { return input;
@@ -237,10 +241,12 @@ public class URIUtil
         if (input.getFragment()!=null)
         {
           return
-            new URI
-              (input.getScheme()
-              ,input.getSchemeSpecificPart()
-              ,null
+            URIPool.get
+              (new URI
+                (input.getScheme()
+                ,input.getSchemeSpecificPart()
+                ,null
+                )
               );
         }
         else
@@ -275,14 +281,15 @@ public class URIUtil
               && !input.getPath().equals("/")
               )
       {  
-        ret= 
-          new URI
+        ret=URIPool.get
+          (new URI
             (input.getScheme()
             ,input.getAuthority()
             ,new Path(input.getPath(),'/').parentPath().format('/')
             ,input.getQuery()
             ,input.getFragment()
-            );
+            )
+          );
       }
       else
       { ret=null;
@@ -319,12 +326,14 @@ public class URIUtil
   {
     try
     {
-      return new URI
-        (scheme
-        ,uri.getAuthority()
-        ,uri.getPath()
-        ,uri.getQuery()
-        ,uri.getFragment()
+      return URIPool.get
+        (new URI
+          (scheme
+          ,uri.getAuthority()
+          ,uri.getPath()
+          ,uri.getQuery()
+          ,uri.getFragment()
+          )
         );
     }
     catch (URISyntaxException x)

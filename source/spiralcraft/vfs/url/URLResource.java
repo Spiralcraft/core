@@ -35,6 +35,8 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import spiralcraft.util.refpool.URIPool;
+
 public class URLResource
   extends AbstractResource
 {
@@ -53,7 +55,7 @@ public class URLResource
 
   public URLResource(URL url)
   { 
-    super(URI.create(url.toString()));
+    super(URIPool.create(url.toString()));
     _url=url;
   }
   

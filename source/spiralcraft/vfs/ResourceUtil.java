@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 
 import spiralcraft.exec.ExecutionContext;
 import spiralcraft.text.html.URLEncoder;
+import spiralcraft.util.refpool.URIPool;
 
 
 /**
@@ -148,7 +149,7 @@ public class ResourceUtil
     throws UnresolvableURIException,URISyntaxException
   { 
     URI uri=ExecutionContext.getInstance().canonicalize
-        (URI.create(URLEncoder.encode(path)));
+        (URIPool.create(URLEncoder.encode(path)));
         
     Resource ret=Resolver.getInstance().resolve(uri);
     if (ret==null)

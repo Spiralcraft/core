@@ -67,6 +67,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 
@@ -342,7 +343,7 @@ public abstract class AbstractStore
     { binding.bind(focus);
     }
 
-    sequences.put(URI.create("_TXID"),txIdSequence);
+    sequences.put(URIPool.create("_TXID"),txIdSequence);
     return focus;
   }
   

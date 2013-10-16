@@ -20,6 +20,7 @@ import spiralcraft.security.auth.AuthSession;
 import spiralcraft.security.auth.DigestCredential;
 import spiralcraft.security.auth.UsernameCredential;
 import spiralcraft.security.auth.PasswordCleartextCredential;
+import spiralcraft.util.refpool.URIPool;
 
 import spiralcraft.common.ContextualException;
 import spiralcraft.data.access.SerialCursor;
@@ -45,7 +46,6 @@ import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.ClassLog;
 
-import java.net.URI;
 
 /**
  * <p>Authenticates with a spiralcraft.data.query.Queryable for the 
@@ -101,7 +101,7 @@ public class DataAuthenticator
       
       // Default values for basic username/password authentication
       loginDataType
-        =Type.resolve(URI.create("class:/spiralcraft/security/Login"));
+        =Type.resolve(URIPool.create("class:/spiralcraft/security/Login"));
 
       loginQuery=new Selection
         (new Scan(loginDataType)

@@ -14,7 +14,6 @@
 //
 package spiralcraft.test;
 
-import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,6 +26,7 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.log.Level;
 import spiralcraft.task.Chain;
 import spiralcraft.task.Task;
+import spiralcraft.util.refpool.URIPool;
 
 /**
  * Provides for the generation of a TestResult inside another arbitrary
@@ -43,7 +43,7 @@ public class TestGroup
   { 
   
     Focus<TestGroup> testFocus
-      =focus.<TestGroup>findFocus(URI.create("class:/spiralcraft/test/TestGroup"));
+      =focus.<TestGroup>findFocus(URIPool.create("class:/spiralcraft/test/TestGroup"));
     if (testFocus==null)
     { return null;
     }

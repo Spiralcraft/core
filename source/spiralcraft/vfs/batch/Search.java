@@ -20,6 +20,7 @@ import spiralcraft.exec.ExecutionContext;
 
 import spiralcraft.util.Path;
 import spiralcraft.util.PathPattern;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -309,7 +310,7 @@ public class Search
   public void setRoot(String root)
   { 
     try
-    { setRootURI(new URI(root));
+    { setRootURI(URIPool.get(new URI(root)));
     }
     catch (URISyntaxException x)
     { throw new IllegalArgumentException(root);

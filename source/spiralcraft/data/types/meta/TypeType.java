@@ -27,6 +27,7 @@ import spiralcraft.data.core.TypeImpl;
 
 import spiralcraft.data.reflect.ReflectionType;
 import spiralcraft.data.spi.EditableArrayTuple;
+import spiralcraft.util.refpool.URIPool;
 
 import java.net.URI;
 
@@ -43,11 +44,11 @@ public class TypeType
   
   { 
     ReflectionType.registerCanonicalType
-      (TypeImpl.class,URI.create("class:/spiralcraft/data/types/meta/Type"));
+      (TypeImpl.class,URIPool.create("class:/spiralcraft/data/types/meta/Type"));
     ReflectionType.registerCanonicalType
-      (FieldImpl.class,URI.create("class:/spiralcraft/data/types/meta/Field"));
+      (FieldImpl.class,URIPool.create("class:/spiralcraft/data/types/meta/Field"));
     ReflectionType.registerCanonicalType
-      (SchemeImpl.class,URI.create("class:/spiralcraft/data/types/meta/Scheme"));
+      (SchemeImpl.class,URIPool.create("class:/spiralcraft/data/types/meta/Scheme"));
     
   }
   
@@ -93,7 +94,7 @@ public class TypeType
 //   */
 //  public TypeImpl fromString(String val)
 //    throws DataException
-//  { return (TypeImpl) getTypeResolver().resolve(URI.create(val));
+//  { return (TypeImpl) getTypeResolver().resolve(URIPool.create(val));
 //  }
   
 //  public String toString(TypeImpl val)

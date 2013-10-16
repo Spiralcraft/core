@@ -39,7 +39,7 @@ public class BufferType<T extends Buffer>
 //    throws DataException
 //  {
 //    return (BufferType) Type.resolve
-//      (URI.create
+//      (URIPool.create
 //         (bufferedType.getURI().toString().concat(".buffer"))
 //      ); 
 //    

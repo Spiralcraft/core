@@ -20,6 +20,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.core.TypeImpl;
+import spiralcraft.util.refpool.URIPool;
 
 /**
  * An uninstantiable formal Type used to indicate that data of any Type
@@ -33,7 +34,7 @@ public class AnyType
 {
 
   public static final URI TYPE_URI
-    =URI.create("class:/spiralcraft/data/types/standard/Any");
+    =URIPool.create("class:/spiralcraft/data/types/standard/Any");
   
   public static final Type<?> resolve()
   { 

@@ -14,7 +14,6 @@
 //
 package spiralcraft.lang.kit.members;
 
-import java.net.URI;
 
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
@@ -24,6 +23,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.kit.Member;
 import spiralcraft.lang.spi.SourcedChannel;
+import spiralcraft.util.refpool.URIPool;
 
 /**
  * Returns 
@@ -45,7 +45,7 @@ public class MetaCastMember<T,X extends T>
     throws BindException
   { 
     assertRequiresSingleArgument
-      (arguments,URI.create("class:/spiralcraft/data/Type"));
+      (arguments,URIPool.create("class:/spiralcraft/data/Type"));
     
     Channel<X> channel=null;
     @SuppressWarnings("unchecked")

@@ -17,6 +17,7 @@ package spiralcraft.vfs.batch;
 import java.net.URI;
 
 import spiralcraft.cli.Arguments;
+import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
 import spiralcraft.vfs.StreamUtil;
@@ -88,7 +89,7 @@ public class PrependOperation
   { 
     if (option.equals("content"))
     { 
-      _contentUri=URI.create(args.nextArgument());
+      _contentUri=URIPool.create(args.nextArgument());
       if (!_contentUri.isAbsolute())
       {  
         // XXX Get user context

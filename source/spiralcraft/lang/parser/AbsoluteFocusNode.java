@@ -21,6 +21,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.BindException;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.lang.ClassUtil;
+import spiralcraft.util.refpool.URIPool;
 
 import java.net.URI;
 
@@ -47,7 +48,7 @@ public class AbsoluteFocusNode
     int colonPos=qname.indexOf(':');
     if (colonPos==0)
     { 
-      this.uri=URI.create(qname.substring(1));
+      this.uri=URIPool.create(qname.substring(1));
       this.namespace=null;
       this.suffix=null;
     }

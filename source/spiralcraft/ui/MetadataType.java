@@ -22,6 +22,8 @@ import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.lang.Reflector;
 
+import spiralcraft.util.refpool.URIPool;
+
 /**
  * An enumeration of UI related metadata types
  * 
@@ -30,7 +32,7 @@ import spiralcraft.lang.Reflector;
  */
 public enum MetadataType
 {
-  FIELD(URI.create("class:/spiralcraft/ui/FieldMetadata"))
+  FIELD(URIPool.create("class:/spiralcraft/ui/FieldMetadata"))
   ;
   
   public final URI uri;
