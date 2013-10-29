@@ -66,6 +66,11 @@ public class QueryField
   }
   
   @Override
+  public boolean isDerived()
+  { return true;
+  }
+  
+  @Override
   public boolean isFunctionalEquivalent(Field<?> field)
   { 
     return

@@ -327,7 +327,11 @@ public class FieldImpl<T>
   { return tranzient;
   }
   
-
+  @Override
+  public boolean isDerived()
+  { return false;
+  }
+  
   public void setTransient(boolean tranzient)
   { this.tranzient=tranzient;
   }

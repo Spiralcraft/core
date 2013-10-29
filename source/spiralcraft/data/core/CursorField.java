@@ -42,6 +42,10 @@ public class CursorField<T>
   { 
   }
  
+  @Override
+  public boolean isDerived()
+  { return true;
+  }
   
   @Override
   @SuppressWarnings({ "unchecked", "rawtypes" })

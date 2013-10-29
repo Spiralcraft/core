@@ -64,6 +64,11 @@ public class CalculatedFieldImpl<T>
   { return expression;
   }
   
+  @Override
+  public boolean isDerived()
+  { return true;
+  }
+  
   @SuppressWarnings("unchecked")
   @Override
   public boolean isFunctionalEquivalent(Field<?> field)

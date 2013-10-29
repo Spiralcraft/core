@@ -135,6 +135,13 @@ public interface Field<T>
   
   /**
    * 
+   * @return Indicates that the field is derived from a computation and not
+   *   directly modified.
+   */
+  boolean isDerived();
+  
+  /**
+   * 
    * @return The spiralcraft.lang.Reflector that provides type metadata for 
    *   the field value.
    *     
