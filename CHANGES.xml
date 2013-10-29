@@ -13,6 +13,47 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev57
+        </revision>
+      
+        <notes>
+          <scm:Note>Added VFS Scan task for directory traversal based
+            operations
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/task/Scan.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev57
+        </revision>
+      
+        <notes>
+          <scm:Note>Added Field.derived property so storage engines know to
+            store non-transient derived fields on every update
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>Field.java
+          </URI>
+          <URI>core/FieldImpl.java
+          </URI>
+          <URI>core/CalculatedField.java
+          </URI>
+          <URI>core/QueryField.java
+          </URI>
+          <URI>core/CursorField.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev56
         </revision>
       

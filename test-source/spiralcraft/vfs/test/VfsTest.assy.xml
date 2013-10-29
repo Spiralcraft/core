@@ -12,6 +12,7 @@
   xmlns:vfsm="class:/spiralcraft/vfs/meta/"
   xmlns:vfsc="class:/spiralcraft/vfs/context/"
   xmlns:vfst="class:/spiralcraft/vfs/test/"
+  xmlns:vfstask="class:/spiralcraft/vfs/task/"
   xmlns:vfilt="class:/spiralcraft/vfs/filters/"  
   xmlns="dynamic:/"
   >
@@ -211,6 +212,19 @@
       </testX>
     </test:Assertion>   
 
+    <test:Assertion>
+      <name>Scan
+      </name>
+    
+      <subjectX>
+        [*vfstask:Scan
+          {rootURI:=[*jnet:URI{"."}]
+          }
+        ].()
+      </subjectX>
+      <testX>true
+      </testX>
+    </test:Assertion>   
 
   </sequence>
 </test:TestGroup>
