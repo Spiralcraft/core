@@ -46,6 +46,7 @@ public class PathContext
   private PlaceContext placeContext;
   private Binding<URI> codeX;
   protected PathContextMapping[] pathMappings;
+  private Boolean publishContent;
       
   /**
    * The path from the context root
@@ -100,6 +101,9 @@ public class PathContext
   { this.placeContext=placeContext;
   }
 
+  public void setPublishContent(boolean publishContent)
+  { this.publishContent=publishContent;
+  }
   
   public void setCodeX(Binding<URI> codeX)
   { 
@@ -142,13 +146,33 @@ public class PathContext
     throws IOException
   { 
   
+    if (Boolean.FALSE.equals(publishContent))
+    { return null;
+    }
+    else if (publishContent==null)
+    {
+      if (baseContext!=null)
+      { return baseContext.resolveContent(relativePath);
+      }
+      else
+      { return null;
+      }
+    }
+    
     Resource ret=null;
     if (contentResource!=null)
     { 
       ret=Resolver.getInstance().resolve
         (contentResource.getURI().resolve(relativePath));
       if (ret!=null && ret.exists())
-      { return ret;
+      { 
+        if (logLevel.isFine())
+        { 
+          log.fine("Resolved content '"+relativePath
+            +"' in contentResource "+contentResource.getURI()
+            );
+        }
+        return ret;
       }
       else
       { ret=null;
@@ -160,7 +184,14 @@ public class PathContext
       ret=Resolver.getInstance().resolve
         (contentBaseURI.resolve(relativePath));
       if (ret!=null && ret.exists())
-      { return ret;
+      { 
+        if (logLevel.isFine())
+        { 
+          log.fine("Resolved content '"+relativePath
+            +"' in contentBaseURI  "+contentBaseURI
+            );
+        }
+        return ret;
       }
       else
       { ret=null;
