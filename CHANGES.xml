@@ -17,6 +17,20 @@
         </revision>
       
         <notes>
+          <scm:Note>Added PathContext.publishContent property to ensure
+            that resolveContent only works when explicitly permitted
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/PathContext.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev57
+        </revision>
+      
+        <notes>
           <scm:Note>Added VFS Scan task for directory traversal based
             operations
           </scm:Note>
