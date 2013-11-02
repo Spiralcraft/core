@@ -144,19 +144,7 @@ public class URLEncoder
         { encoded.append(c);
         }
         else
-        {
-          byte[] bytes
-            =Character.toString(c).getBytes(UTF_8);
-          for (byte b:bytes)
-          {
-            encoded.append('%');
-            String hex=(Integer.toHexString(b & 0xFF)).toUpperCase();
-            if (hex.length()==1)       
-            { encoded.append("0");
-            }
-            encoded.append(hex);
-          
-          }          
+        { percentEncode(c,encoded);
         }
       }
 
@@ -164,6 +152,21 @@ public class URLEncoder
     return encoded.toString();
   }
 
+  public static void percentEncode(char c,StringBuffer encoded)
+  {
+    byte[] bytes
+      =Character.toString(c).getBytes(UTF_8);
+    for (byte b:bytes)
+    {
+      encoded.append('%');
+      String hex=(Integer.toHexString(b & 0xFF)).toUpperCase();
+      if (hex.length()==1)       
+      { encoded.append("0");
+      }
+      encoded.append(hex);
+    }      
+  }
+  
   public static String encodeForTextArea(String s)
   {
   	if (s==null)
