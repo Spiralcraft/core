@@ -112,7 +112,7 @@ public class Authority
   }
   
   /**
-   *  Resolve a relative path
+   *  Resolve a relative path. The path is already URI encoded
    */
   Resource resolve(String path)
     throws UnresolvableURIException
