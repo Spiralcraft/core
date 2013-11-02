@@ -241,7 +241,7 @@ public class ContextResourceMap
       if (contextURI.getPath().length()==0)
       { throw new UnresolvableURIException(contextURI,"URI has no path");
       }
-      String path=contextURI.getPath().substring(1);
+      String path=contextURI.getRawPath().substring(1);
       String authorityName=contextURI.getAuthority();
       if (authorityName!=null && !contextURI.isAbsolute())
       { throw new UnresolvableURIException(contextURI,"Absolute URI has no scheme");
