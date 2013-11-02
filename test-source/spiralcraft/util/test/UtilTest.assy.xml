@@ -510,6 +510,17 @@
       </testX>
       
     </test:Assertion>
+    
+    <test:Assertion>
+      <name>encode URL query mark
+      </name>
+    
+      <subjectX>
+        [@util:URIUtil].@encodeURIPath("/x/y/z?a=b&amp;c=d")
+      </subjectX>
+      <testX>true
+      </testX>
+    </test:Assertion>      
   </sequence>
         
 </test:TestGroup>

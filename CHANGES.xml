@@ -17,6 +17,44 @@
         </revision>
       
         <notes>
+          <scm:Note>Fix premature decoding of URIs when using the "context"
+            VFS scheme.
+          </scm:Note>
+          <scm:Note>If the FileResource URI has a query component, construct
+            the File pathname using the decoded path + '?' + decoded query.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs
+        </path>
+        
+        <resources>
+          <URI>context/ContextResourceMap.java
+          </URI>
+          <URI>file/FileResource.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev57
+        </revision>
+      
+        <notes>
+          <scm:Note>Added PathContext.publishContent property to ensure
+            that resolveContent only works when explicitly permitted
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/PathContext.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev57
+        </revision>
+      
+        <notes>
           <scm:Note>Added PathContext.publishContent property to ensure
             that resolveContent only works when explicitly permitted
           </scm:Note>
