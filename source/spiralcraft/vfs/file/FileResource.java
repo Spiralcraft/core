@@ -72,7 +72,18 @@ public class FileResource
   public FileResource(URI uri)
   { 
     super(uri,uri);
-    _file=new File(uri);
+    try
+    { _file=new File(uri);
+    }
+    catch (IllegalArgumentException x)
+    { 
+      StringBuilder path=new StringBuilder();
+      path.append(uri.getPath());
+      if (uri.getQuery()!=null)
+      { path.append("?").append(uri.getQuery());
+      }
+      _file=new File(path.toString());
+    }
   }
 
   
