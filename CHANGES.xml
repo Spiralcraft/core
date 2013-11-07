@@ -17,6 +17,53 @@
         </revision>
       
         <notes>
+          <scm:Note>Added Sequence.resultX property to return a value
+            on completion.
+          </scm:Note>
+          <scm:Note>Added Sequence.sequence property to specify contained
+            tasks.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/Sequence.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev57
+        </revision>
+      
+        <notes>
+          <scm:Note>new Log task to simplify logging messages
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/Log.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev57
+        </revision>
+      
+        <notes>
+          <scm:Note>New Session.isolate property to specify that the 
+            session should create a new isolated transaction.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/task/Session.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev57
+        </revision>
+      
+        <notes>
           <scm:Note>Fix premature decoding of URIs when using the "context"
             VFS scheme.
           </scm:Note>
