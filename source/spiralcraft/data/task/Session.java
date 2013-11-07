@@ -60,6 +60,7 @@ public class Session
   protected Assignment<?>[] initialAssignments;
   protected Setter<?>[] initialSetters;
   protected boolean transactional;
+  protected boolean isolate;
   
   public Session()
   {
@@ -67,6 +68,17 @@ public class Session
   
   public void setType(Type<? extends DataComposite> type)
   { this.type=type;
+  }
+  
+  /**
+   * This session creates a new transaction isolated from the currently
+   *   running transaction, if any. Defaults to false- the transaction
+   *   will be propagated by default.
+   *   
+   * @param isolate
+   */
+  public void setIsolate(boolean isolate)
+  { this.isolate=isolate;
   }
   
   public void setTypeX(Expression<Type<? extends DataComposite>> typeX)
@@ -98,7 +110,11 @@ public class Session
             { 
               { 
                 this.setDebug(Session.this.debug);
-                this.setNesting(Transaction.Nesting.PROPOGATE);
+                this.setNesting
+                  (isolate
+                    ?Transaction.Nesting.ISOLATE
+                    :Transaction.Nesting.PROPOGATE
+                  );
                 this.setRequirement(Transaction.Requirement.REQUIRED);
               }
               
