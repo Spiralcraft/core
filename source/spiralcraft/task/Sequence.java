@@ -20,6 +20,7 @@ import java.util.List;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 import spiralcraft.util.ArrayUtil;
 
@@ -41,6 +42,7 @@ public class Sequence
 
   
   protected Scenario<?,?>[] scenarios;
+  protected Binding<?> resultX;
 
   { importContext=false;
   }
@@ -58,13 +60,21 @@ public class Sequence
         ;
   }
   
+  public void setResultX(Binding<?> resultX)
+  { this.resultX=resultX;
+  }
+  
+  public void setSequence(Scenario<?,?>[] scenarios)
+  { this.scenarios=scenarios;
+  }
+  
   @Override
   protected Task task()
   {
     
     return new CommandTask()
     {
-      { addCommandAsResult=true;
+      { addCommandAsResult=(resultX!=null);
       }
       
       @Override
@@ -79,6 +89,9 @@ public class Sequence
             command=scenario.command();
             super.work();
           }
+        }
+        if (resultX!=null)
+        { addResult(resultX.get());
         }
       }
     };
@@ -113,6 +126,10 @@ public class Sequence
       for (Scenario<?,?> scenario: scenarios)
       { scenario.bind(focusChain);
       }
+    }
+
+    if (resultX!=null)
+    { resultX.bind(focusChain);
     }
     super.bindChildren(focusChain);
   }
