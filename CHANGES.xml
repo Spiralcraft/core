@@ -17,6 +17,44 @@
         </revision>
       
         <notes>
+          <scm:Note>Support programmatic override of field definitions in
+            structs when defined programmatically.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/StructNode.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev57
+        </revision>
+      
+        <notes>
+          <scm:Note>Provide access to enum constants using [@type].@name syntax
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang
+        </path>
+        
+        <resources>
+          <URI>Reflector.java
+          </URI>
+          <URI>kit/AbstractReflector.java
+          </URI>
+          <URI>reflect/BeanReflector.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev57
+        </revision>
+      
+        <notes>
           <scm:Note>Added Sequence.resultX property to return a value
             on completion.
           </scm:Note>
@@ -25,8 +63,15 @@
           </scm:Note>
         </notes>
         
-        <path>source/spiralcraft/task/Sequence.java
+        <path>source/spiralcraft/task
         </path>
+        
+        <resources>
+          <URI>Sequence.java
+          </URI>
+          <URI>Chain.java
+          </URI>
+        </resources>
         
       </scm:Change>
 
