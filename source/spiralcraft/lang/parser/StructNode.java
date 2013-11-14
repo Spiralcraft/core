@@ -1132,7 +1132,24 @@ public class StructNode
       }
     }
     
-    
+    /**
+     * Override a field by associating a different channel with the field
+     *   name
+     *   
+     * @param name
+     * @param channel
+     */
+    public void override(String name,Channel<?> channel)
+    { 
+      final StructField field=fields.get(name);
+      if (field==null)
+      { 
+        throw new IllegalArgumentException
+          ("No field named "+name+" in struct "+this);
+      }
+      channels[field.index]=channel;
+    }
+      
     class BaseExtentChannel
       extends SourcedChannel<Struct,Object>
     {
