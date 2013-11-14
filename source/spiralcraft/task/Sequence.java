@@ -15,7 +15,6 @@
 package spiralcraft.task;
 
 
-import java.util.List;
 
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
@@ -36,13 +35,13 @@ import spiralcraft.util.ArrayUtil;
  *
  * @param <Tresult>
  */
-public class Sequence
-  extends Scenario<Void,List<?>>
+public class Sequence<Tresult>
+  extends Scenario<Void,Tresult>
 {
 
   
   protected Scenario<?,?>[] scenarios;
-  protected Binding<?> resultX;
+  protected Binding<Tresult> resultX;
 
   { importContext=false;
   }
@@ -60,8 +59,10 @@ public class Sequence
         ;
   }
   
-  public void setResultX(Binding<?> resultX)
-  { this.resultX=resultX;
+  public void setResultX(Binding<Tresult> resultX)
+  { 
+    this.resultX=resultX;
+    this.storeResults=true;
   }
   
   public void setSequence(Scenario<?,?>[] scenarios)
@@ -74,7 +75,7 @@ public class Sequence
     
     return new CommandTask()
     {
-      { addCommandAsResult=(resultX!=null);
+      { addCommandAsResult=(resultX==null);
       }
       
       @Override
@@ -91,7 +92,8 @@ public class Sequence
           }
         }
         if (resultX!=null)
-        { addResult(resultX.get());
+        { 
+          addResult(resultX.get());
         }
       }
     };
@@ -129,8 +131,11 @@ public class Sequence
     }
 
     if (resultX!=null)
-    { resultX.bind(focusChain);
+    { 
+      resultX.bind(focusChain);
+      resultReflector=resultX.getReflector();
     }
+    
     super.bindChildren(focusChain);
   }
 
