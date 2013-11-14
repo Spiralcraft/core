@@ -127,7 +127,7 @@ public class Chain<Tcontext,Tresult>
   
   public void setSequence(Scenario<?,?>[] scenarios)
   {
-    Sequence sequence=new Sequence();
+    Sequence<?> sequence=new Sequence<Object>();
     chain(sequence);
     for (Scenario<?,?> scenario: scenarios)
     { sequence.addScenario(scenario);
