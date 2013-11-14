@@ -248,4 +248,12 @@ public interface Reflector<T>
    */
   public boolean isFunctor();
   
+  /**
+   * Return a Channel that references an enumerated constant of the reflected
+   *   type
+   * 
+   * @param name
+   * @return
+   */
+  public Channel<T> getEnum(String name);
 }

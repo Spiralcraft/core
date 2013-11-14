@@ -286,6 +286,8 @@ public class BeanReflector<T>
   private HashMap<String,BeanFieldTranslator<?,T>> fields;
   private HashMap<String,MethodTranslator<?,T>> methods;
   private HashMap<String,ConstructorTranslator<T>> constructors;
+  private HashMap<String,Channel<T>> enums;
+  
   private Class<T> targetClass;
   private Type targetType;
   private URI uri;
@@ -366,8 +368,28 @@ public class BeanReflector<T>
     { boxedEquivalent=null;
     }
 
+    if (clazz.isEnum())
+    {
+      enums=new HashMap<String,Channel<T>>();
+      for (T enumValue:clazz.getEnumConstants())
+      { 
+        enums.put
+          ( ((Enum) enumValue).name()
+          , new SimpleChannel<T>(this,enumValue,true)
+          );
+      }
+    }
   }
 
+  @Override
+  public Channel<T> getEnum(String name)
+  {
+    if (enums==null)
+    { return null;
+    }
+    return enums.get(name);
+  }
+  
   @Override
   public LinkedList<Signature> getSignatures(Channel source)
     throws BindException

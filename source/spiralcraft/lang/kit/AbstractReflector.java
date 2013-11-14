@@ -178,12 +178,19 @@ public abstract class AbstractReflector<T>
     }
     else if (Reflector.class.isAssignableFrom(source.getContentType()))
     { 
-      Channel staticChannel
-        =((Reflector<?>) source.get()).getStaticChannel(focus);
+      Reflector<?> reflector=(Reflector<?>) source.get();
+      channel=reflector.getEnum(name.substring(1));
       
-      // Check static channel for fluent syntax
-      channel=((Reflector<?>) source.get()).<X>resolve
-        (staticChannel,focus,name.substring(1),params);
+      if (channel==null)
+      {
+      
+        Channel staticChannel
+          =reflector.getStaticChannel(focus);
+      
+        // Check static channel for fluent syntax
+        channel=reflector.<X>resolve
+          (staticChannel,focus,name.substring(1),params);
+      }
     }
     return (Channel<X>) channel;
   }
@@ -515,7 +522,10 @@ public abstract class AbstractReflector<T>
   { return functor || (base!=null && base.isFunctor());
   }
   
-
+  @Override
+  public Channel<T> getEnum(String name)
+  { return null;
+  }
   
 }
 
