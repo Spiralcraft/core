@@ -81,7 +81,9 @@ public abstract class StringConverter<T>
     _MAP.put(byte[].class,new ByteArrayToHex());
     
     _MAP.put(spiralcraft.time.Instant.class,new InstantToString());
-    _MAP.put(spiralcraft.time.Duration.class,new DurationToString());    
+    _MAP.put(spiralcraft.time.Duration.class,new DurationToString());  
+    
+    _MAP.put(Void.class,new VoidToString());
   }
 
   /**
@@ -234,6 +236,17 @@ public abstract class StringConverter<T>
   
 }
 
+final class VoidToString
+  extends StringConverter<Void>
+{
+
+  @Override
+  public Void fromString(
+    String val)
+  { return null;
+  }
+}
+
 final class ConstructFromString<T>
   extends StringConverter<T>
 {
@@ -303,32 +316,6 @@ final class IntToString
   }
 }
 
-final class BooleanToString
-  extends StringConverter<Boolean>
-{
-  @Override
-  public String toString(Boolean val)
-  { return val!=null?val.toString():null;
-  }
-
-  @Override
-  public Boolean fromString(String val)
-  { 
-    if (val==null)
-    { return null;
-    }
-    val=val.trim();
-    if (val.equals("true"))
-    { return Boolean.TRUE;
-    }
-    else if (val.equals("false"))
-    { return Boolean.FALSE;
-    }
-    else
-    { throw new IllegalArgumentException("["+val+"]");
-    }
-  }
-}
 
 final class FloatToString
   extends StringConverter<Float>
