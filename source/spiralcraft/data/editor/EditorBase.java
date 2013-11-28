@@ -590,7 +590,7 @@ public abstract class EditorBase<Tbuffer extends Buffer>
   protected abstract void ensureInitialized();
 
 
-  protected abstract void save(boolean force)
+  public abstract void save(boolean force)
     throws DataException;
 }
 

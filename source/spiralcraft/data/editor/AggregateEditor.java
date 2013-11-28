@@ -174,8 +174,13 @@ public class AggregateEditor
   { this.preSaveBindings=bindings;
   }
   
+  /**
+   * Write the data to the store.
+   * 
+   * The editor must be in-context when this method is called
+   */
   @Override
-  protected void save(boolean force)
+  public void save(boolean force)
     throws DataException
   {
     BufferAggregate<BufferTuple,Tuple> aggregate=localChannel.get();

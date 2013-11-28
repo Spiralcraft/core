@@ -15,7 +15,6 @@
 package spiralcraft.data.task;
 
 
-import spiralcraft.command.Command;
 import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
@@ -66,6 +65,7 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   private Binding<?> onInit;
   private Binding<?> onSave;
   private Binding<?> preSave;
+  private boolean forceSave;
   
   { storeResults=true;
   }
@@ -118,6 +118,14 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
 
   public void setPreSave(Binding<?> preSave)
   { this.preSave=preSave;
+  }
+  
+  public void setForceSave(boolean forceSave)
+  { 
+    this.forceSave=forceSave;
+    if (this.forceSave)
+    { this.autoSave=true;
+    }
   }
   
   /**
@@ -247,10 +255,11 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
           super.work();
           if (autoSave)
           { 
-            Command<?,?,?> saveCommand=editor.saveCommand();
-            saveCommand.execute();
-            if (saveCommand.getException()!=null)
-            { addException(saveCommand.getException());
+            try
+            { editor.save(forceSave);
+            }
+            catch (DataException x)
+            { addException(x);
             }
           }
           addResult(editor.getBuffer());
