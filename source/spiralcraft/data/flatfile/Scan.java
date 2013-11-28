@@ -59,6 +59,7 @@ public class Scan<C,R>
   private Computation<Tuple,R,C> computation;
   private IterationDecorator<?,Resource> resourceIter;
   private int progressInterval;
+  private int skipHeaderLines=0;
 
   
   public Scan()
@@ -153,6 +154,13 @@ public class Scan<C,R>
             ,recordSeparator.getBytes()
             );
             
+        for (int i=0;i<skipHeaderLines;i++)
+        { 
+          if (!iterator.isEOF())
+          { iterator.next();
+          }
+        }
+        
         RecordCursor cursor
           =new RecordCursor(iterator,format);
         
@@ -286,11 +294,11 @@ public class Scan<C,R>
   { this.skipBadRecords=skipBadRecords;
   }
   
-  /**
-   * The Query to run
-   * 
-   * @param query
-   */
+  public void setSkipHeaderLines(int skipHeaderLines)
+  { this.skipHeaderLines=skipHeaderLines;
+  }
+  
+
   public void setFormat(RecordFormat format)
   { this.format=format;
   }
