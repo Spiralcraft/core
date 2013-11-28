@@ -254,6 +254,9 @@ public abstract class AbstractStore
     { 
       ret=query.solve(context,this);
     }
+    if (ret==null)
+    { throw new DataException("Could not solve query "+query);
+    }
     ret.resolve();
     
     if (debugLevel.isDebug())
