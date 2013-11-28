@@ -297,8 +297,8 @@ public class OverlayResource
   {
     return ArrayUtil.concat
       (Resource[].class
-      ,overlay.asContainer().listChildren(filter)
-      ,base.asContainer().listChildren(filter)
+      ,overlay.asContainer()!=null?overlay.asContainer().listChildren(filter):null
+      ,base.asContainer()!=null?base.asContainer().listChildren(filter):null
       );
   }
 
@@ -308,8 +308,8 @@ public class OverlayResource
   {
     return ArrayUtil.concat
       (Resource[].class
-      ,overlay.asContainer().listLinks()
-      ,base.asContainer().listLinks()
+      ,overlay.asContainer()!=null?overlay.asContainer().listLinks():null
+      ,base.asContainer()!=null?base.asContainer().listLinks():null
       );
   }
 
