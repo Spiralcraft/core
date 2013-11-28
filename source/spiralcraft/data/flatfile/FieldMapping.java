@@ -39,6 +39,15 @@ public class FieldMapping<T>
   private FieldEncoder encoder=new FieldEncoder();
   private boolean optional;
   
+  public FieldMapping()
+  {
+  }
+  
+  public FieldMapping(Expression<T> x)
+  { channel.setTarget(x);
+  }
+
+  
   public void setOptional(boolean optional)
   { this.optional=optional;
   }

@@ -1,0 +1,5 @@
+<ff:DelimitedRecordFormat
+  xmlns:ff="class:/spiralcraft/data/flatfile/"
+  >
+  <fieldSeparator whitespace="true">&#09;</fieldSeparator>
+</ff:DelimitedRecordFormat>

@@ -27,6 +27,7 @@ import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.lang.TupleReflector;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
@@ -41,18 +42,27 @@ public class DelimitedRecordFormat
   private FieldMapping<?>[] fields;
   private Channel<Tuple> channel;
   private Type<?> type;
+  private Binding<Type<?>> typeX;
   private FieldSet fieldSet;
-  private String charset;
+  private Charset charset=Charset.forName("UTF-8");
   private boolean trim;
   
   public void setCharset(String charsetName)
-  { 
-    this.charset=charsetName;
-    Charset.forName(charsetName);
+  { this.charset=Charset.forName(charsetName);
   }
     
   public void setFields(FieldMapping<?>[] fields)
   { this.fields=fields;
+  }
+  
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public void setMappings(Expression[] exprs)
+  {
+    this.fields=new FieldMapping<?>[exprs.length];
+    int i=0;
+    for (Expression<?> x:exprs)
+    { this.fields[i++]=new FieldMapping(x);
+    }
   }
   
   public void setFieldSeparator(String separator)
@@ -63,6 +73,9 @@ public class DelimitedRecordFormat
   { this.type=type;
   }
   
+  public void setTypeX(Binding<Type<?>> typeX)
+  { this.typeX=typeX;
+  }
   
   public void setFieldSet(FieldSet fieldSet)
   { this.fieldSet=fieldSet;
@@ -174,7 +187,11 @@ public class DelimitedRecordFormat
   public Focus<?> bind(Focus<?> focusChain)
     throws BindException
   {
-    
+    if (typeX!=null)
+    { 
+      typeX.bind(focusChain);
+      type=typeX.get();
+    }
     if (type!=null)
     { channel=new SimpleChannel<Tuple>(DataReflector.<Tuple>getInstance(type));
     }
