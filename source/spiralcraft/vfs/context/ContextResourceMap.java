@@ -238,7 +238,7 @@ public class ContextResourceMap
     
     try
     {
-      if (contextURI.getPath().length()==0)
+      if (contextURI.getRawPath().length()==0)
       { throw new UnresolvableURIException(contextURI,"URI has no path");
       }
       String path=contextURI.getRawPath().substring(1);

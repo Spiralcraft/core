@@ -1,8 +1,8 @@
 package spiralcraft.vfs.context;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.List;
 
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.Lifecycle;
@@ -12,6 +12,9 @@ import spiralcraft.lang.Contextual;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.util.ArrayUtil;
+import spiralcraft.util.ListMap;
+import spiralcraft.util.Path;
+import spiralcraft.util.URIUtil;
 import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -34,6 +37,7 @@ public class Authority
   private Graft[] grafts=new Graft[0];
   
   private HashMap<String,Graft> pathMap;
+  private ListMap<String,Graft> childMap;
   
   private Level debugLevel=Level.INFO;
   
@@ -86,7 +90,7 @@ public class Authority
   public Graft getGraft(String relativePath)
   { 
     if (pathMap!=null)
-    { return pathMap.get(relativePath);
+    { return pathMap.get(URIUtil.encodeURIPath(relativePath));
     }
     else
     { return null;
@@ -102,36 +106,69 @@ public class Authority
   public void mapPath(String path,Graft graft)
   { 
     if (pathMap==null)
-    { pathMap=new HashMap<String,Graft>();
+    { 
+      pathMap=new HashMap<String,Graft>();
+      childMap=new ListMap<String,Graft>();
     }
     if (path.startsWith("/"))
     { path=path.substring(1);
     }
-    pathMap.put(path,graft);
+    pathMap.put(URIUtil.encodeURIPath(path),graft);
+    Path parentPath=new Path(path).parentPath();
+    String pathStr=null;
+    if (parentPath!=null)
+    { pathStr=parentPath.toString();
+    }   
+    else
+    { pathStr="";
+    }
+    // log.fine("Added graft in "+pathStr+" for "+graft);
     
+    childMap.add(pathStr,graft);
+    
+  }
+  
+  /**
+   * Return all grafts contained in the specified parent path
+   * 
+   * @param parentPath
+   * @return
+   */
+  public Graft[] getGrafts(String parentPath)
+  {
+    if (childMap!=null)
+    { 
+      List<Graft> grafts=childMap.get(parentPath);
+      return grafts!=null
+          ?grafts.toArray(new Graft[grafts.size()])
+          :null;
+    }
+    else
+    { return null;
+    }
   }
   
   /**
    *  Resolve a relative path. The path is already URI encoded
    */
-  Resource resolve(String path)
+  Resource resolve(String rawPath)
     throws UnresolvableURIException
   {
     if (debugLevel.canLog(Level.FINE))
-    { log.fine("Resolving "+path);
+    { log.fine("Resolving "+rawPath);
     }    
     
     if (pathMap!=null)
     { 
       for (String mappedPath:pathMap.keySet())
       {
-        if (path.startsWith(mappedPath))
+        if (rawPath.startsWith(mappedPath))
         { 
           if (debugLevel.canLog(Level.FINE))
           { 
             log.fine
               ("Root = "+pathMap.get(mappedPath)+", "
-              +" resolving "+path.substring(mappedPath.length())
+              +" resolving "+rawPath.substring(mappedPath.length())
               );
             
           }
@@ -139,17 +176,17 @@ public class Authority
           try
           {
             return pathMap.get(mappedPath)
-              .resolve(URIPool.get( new URI(null,path.substring(mappedPath.length()),null)));
+              .resolve(URIPool.create(rawPath.substring(mappedPath.length())));
           }
-          catch (URISyntaxException x)
+          catch (IllegalArgumentException x)
           { throw new IllegalArgumentException
-              ("Path ["+path+"] cannot be URI encoded",x);
+              ("Path ["+rawPath+"] contains invalid URI characters",x);
           }
         }
         else
         { 
           if (debugLevel.canLog(Level.FINE))
-          { log.fine("["+path+"] does not start with ["+mappedPath+"]");
+          { log.fine("["+rawPath+"] does not start with ["+mappedPath+"]");
           }    
           
         }
@@ -162,10 +199,10 @@ public class Authority
       {
         URI pathURI;
         try
-        { pathURI=URIPool.get(new URI(null,path,null));
+        { pathURI=URIPool.create(rawPath);
         }
-        catch (URISyntaxException x)
-        { throw new UnresolvableURIException(path,"Invalid syntax in URI",x);
+        catch (IllegalArgumentException x)
+        { throw new UnresolvableURIException(rawPath,"Invalid syntax in URI",x);
         }
         
         // Important security check
@@ -177,12 +214,10 @@ public class Authority
         }
         
         return new ContextResource
-          (URIPool.get
-            (new URI
-              ("context"
-              ,(authorityName!=null?"//"+authorityName:"")+"/"+path
-              ,null
-              )
+          (URIPool.create
+            ("context:"
+            +(authorityName!=null?"//"+authorityName:"")
+            +"/"+rawPath
             )
           ,Resolver.getInstance().resolve(URIPool.get(defaultRoot.resolve(pathURI)))
           );
@@ -192,9 +227,9 @@ public class Authority
       { return null;
       }
     }
-    catch (URISyntaxException x)
+    catch (IllegalArgumentException x)
     { throw new IllegalArgumentException
-        ("Path ["+path+"] cannot be URI encoded",x);
+        ("Path ["+rawPath+"] contains invalid URI characters",x);
     }    
   }
 
