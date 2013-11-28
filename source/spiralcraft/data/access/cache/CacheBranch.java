@@ -17,6 +17,7 @@ import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.transaction.Transaction.State;
 import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 public class CacheBranch
   implements Branch
@@ -35,6 +36,7 @@ public class CacheBranch
   private final HashMap<Projection<?>,IndexBranch> indices
     =new HashMap<Projection<?>,IndexBranch>();
 
+  private Level logLevel=Level.INFO;
   
   public CacheBranch(Transaction tx,EntityCache cache,CacheResourceManager resourceManager)
   { 
@@ -136,7 +138,9 @@ public class CacheBranch
   private ArrayJournalTuple logInsert(DeltaTuple delta)
     throws DataException
   {
-    log.fine("Logging insert "+delta);
+    if (logLevel.isDebug())
+    { log.fine("Logging insert "+delta);
+    }
     ArrayJournalTuple newData=ArrayJournalTuple.freezeDelta(delta);
     TupleBranch tb=enlist(newData.getId());
     if (tb.redoVersion!=null)
@@ -155,7 +159,9 @@ public class CacheBranch
   private ArrayJournalTuple logUpdate(DeltaTuple delta)
     throws DataException
   {
-    log.fine("Logging update "+delta);
+    if (logLevel.isDebug())
+    { log.fine("Logging update "+delta);
+    }
     Identifier id=delta.getOriginal().getId();
     TupleBranch tb=enlist(id);
     ArrayJournalTuple existing=cache.primary.get(id);
@@ -178,7 +184,9 @@ public class CacheBranch
   private ArrayJournalTuple logDelete(DeltaTuple delta)
     throws DataException
   {
-    log.fine("Logging delete "+delta);
+    if (logLevel.isDebug())
+    { log.fine("Logging delete "+delta);
+    }
     Identifier id=delta.getOriginal().getId();
     TupleBranch tb=enlist(id);
     ArrayJournalTuple existing=cache.primary.get(id);

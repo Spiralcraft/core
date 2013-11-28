@@ -28,6 +28,7 @@ import spiralcraft.data.transaction.Transaction.Requirement;
 import spiralcraft.data.transaction.WorkException;
 import spiralcraft.data.transaction.WorkUnit;
 import spiralcraft.log.ClassLog;
+import spiralcraft.log.Level;
 
 
 
@@ -54,6 +55,8 @@ public class EntityCache
     =new HashMap<Projection<?>,CacheIndex>();
   Object monitor=new Object();
 
+  private Level logLevel=Level.INFO;
+  
   @SuppressWarnings("unchecked")
   public EntityCache(Type<?> t) 
     throws DataException
@@ -79,7 +82,9 @@ public class EntityCache
       CacheIndex ret=indices.get(key);
       if (ret==null)
       { 
-        log.fine("Creating cache index for "+key);
+        if (logLevel.isFine())
+        { log.fine("Creating cache index for "+key);
+        }
         ret
           =new CacheIndex
             (this,key,primary);

@@ -110,9 +110,14 @@ public class IndexBranch
               { list.add(normal);
               }
             }
-            log.fine("Got "+list+" from store");
+            if (logLevel.isFine())
+            { log.fine("Got "+list+" from store");
+            }
             data=entry.fetched(list);
-            log.fine("Normalized to "+data);
+            
+            if (logLevel.isFine())
+            { log.fine("Normalized to "+data);
+            }
           }
           finally
           { cursor.close();
@@ -121,9 +126,8 @@ public class IndexBranch
         else
         { 
           if (logLevel.isFine())
-          { log.fine("Cache hit for "+key.getType().getURI()+" "+keyTuple);
+          { log.fine("Cache hit for "+key.getType().getURI()+" "+keyTuple+" data: "+data);
           }
-          log.fine("Got "+data+" from cache");
         }
         return new ListCursor<ArrayJournalTuple>(data);
       }
@@ -148,7 +152,9 @@ public class IndexBranch
     KeyTuple newKey=keyFunction.key(oldValue);
     IndexBranchEntry entry=entry(newKey);
     entry.movedOut(oldValue);
-    log.fine("Moving out "+oldValue);
+    if (logLevel.isFine())
+    { log.fine("Moving out "+oldValue);
+    }
     
   }
   
