@@ -333,6 +333,23 @@ public class SchemeImpl
   void preprocessKeyDeclarations()
     throws DataException
   {
+    
+    ArrayList<KeyImpl<Tuple>> keys=new ArrayList<KeyImpl<Tuple>>();
+    
+    // Pull in key definitions from the archetype, if any
+    if (archetypeScheme!=null && !getType().isAggregate())
+    {
+      for (Key<Tuple> key: archetypeScheme.keyIterable())
+      { 
+        if (key.getForeignType()==null)
+        { keys.add(((KeyImpl<Tuple>) key).specialize(this));
+        }
+        
+      }
+    }
+    
+    keys.addAll(this.keys);
+    
     for (KeyImpl<Tuple> key:keys)
     {
       if (key.isPrimary())
@@ -343,15 +360,15 @@ public class SchemeImpl
             ("Duplicate primary key: "+key+" in scheme "+toString());
         }
         else
-        { primaryKey=key;
+        { this.primaryKey=key;
         }
       }
       key.setScheme(this);
     
     }
-    if (primaryKey==null && archetypeScheme!=null)
-    { primaryKey=archetypeScheme.getPrimaryKey();
-    }
+    this.keys.clear();
+    this.keys.addAll(keys);
+    
   }
   
   void resolveLocalKeys()
@@ -442,6 +459,12 @@ public class SchemeImpl
   { return primaryKey;
   }
   
+  /**
+   * Return a primary key defined in the base-type (identity) 
+   *   inheritance hierarchy
+   *   
+   * @return
+   */
   @SuppressWarnings("unchecked")
   private Key<Tuple> getInheritedPrimaryKey()
   { 

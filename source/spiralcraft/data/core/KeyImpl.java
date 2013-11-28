@@ -642,4 +642,23 @@ public class KeyImpl<T extends DataComposite>
   public Reflector<Tuple> getReflector()
   { return reflector;
   }
+  
+  /**
+   * Return a copy of this key definition specialized for a subtype
+   * 
+   * @param t
+   * @return
+   */
+  public KeyImpl<Tuple> specialize(Scheme scheme)
+  {
+    KeyImpl<Tuple> specialized=new KeyImpl<Tuple>();
+    specialized.setScheme(scheme);
+    specialized.setFieldNames(fieldNames);
+    specialized.setPrimary(primary);
+    specialized.setUnique(unique);
+    specialized.setTitle(title);
+    specialized.setName(name);
+    return specialized;
+    
+  }
 }

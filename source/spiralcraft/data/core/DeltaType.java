@@ -1,5 +1,5 @@
 //
-// Copyright (c) 1998,2007 Michael Toth
+// Copyright (c) 1998,2013 Michael Toth
 // Spiralcraft Inc., All Rights Reserved
 //
 // This package is part of the Spiralcraft project and is licensed under
@@ -125,7 +125,8 @@ public class DeltaType
           
         }
         
-        copyPrimaryKey();
+        // This is now automatic as part of the archetype mechanism 
+        // copyPrimaryKey();
       }
       catch (DataException x)
       { throw new RuntimeDataException("Error linking "+getURI(),x);
