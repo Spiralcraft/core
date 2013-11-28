@@ -91,8 +91,14 @@ public class TaskCommand<Tcontext,Tresult>
             || Boolean.TRUE.equals(scenario.getWhenX().get())
            )
         {
-          task.run();
-          setException(task.getException());
+          try
+          {
+            task.run();
+            setException(task.getException());
+          }
+          catch (RuntimeException x)
+          { setException(x);
+          }
           onTaskCompletion();
         }
         else
