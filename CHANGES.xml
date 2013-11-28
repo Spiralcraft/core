@@ -13,6 +13,208 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev58
+        </revision>
+      
+        <notes>
+          <scm:Note>Context resources get matched using raw URI paths to
+            prevent excessive and premature path decoding.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/vfs/context
+        </path>
+
+        <resources>
+          <URI>Authority.java
+          </URI>
+          <URI>ContextResourceMap.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev58
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix NPE when finding children of an overlay resource
+            and either the base or the overlay root is null
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/vfs/ovl/OverlayResource.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev58
+        </revision>
+      
+        <notes>
+          <scm:Note>Make BooleanToString a public class and allow the
+            textual representation of true,false and null to be configured.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/util/string
+        </path>
+        
+        <resources>
+          <URI>BooleanToString.java
+          </URI>
+          <URI>StringConverter.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+
+      <scm:Change>
+        <revision>-dev58
+        </revision>
+      
+        <notes>
+          <scm:Note>TaskCommand now catches and registers runtime exceptions
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/task/TaskCommand.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev58
+        </revision>
+      
+        <notes>
+          <scm:Note>New utility function associates a Tuple from an external
+            source to an internal copy, and will create or update the internal
+            copy when assigned a value.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/data/util/StoredCopy.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev58
+        </revision>
+      
+        <notes>
+          <scm:Note>Configurability enhancements to flatfile reader
+          </scm:Note>
+          <scm:Note>Skip n lines in header
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/flatfile
+        </path>
+        
+        <resources>
+          <URI>DelimitedRecordFormat.java
+          </URI>
+          <URI>FieldMapping.java
+          </URI>
+          <URI>Scan.java
+          </URI>
+          <URI>TabDelimitedRecordFormat.assy.xml
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev58
+        </revision>
+      
+        <notes>
+          <scm:Note>Editor.save() is public to allow for finer control
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>editor/AggregateEditor.java
+          </URI>
+          <URI>editor/EditorBase.java
+          </URI>
+          <URI>task/Edit.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev58
+        </revision>
+      
+        <notes>
+          <scm:Note>Inherit key definitions from archetypes
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/core
+        </path>
+        
+        <resources>
+          <URI>DeltaType.java
+          </URI>
+          <URI>KeyImpl.java
+          </URI>
+          <URI>SchemeImpl.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev58
+        </revision>
+      
+        <notes>
+          <scm:Note>Throw an exception in Store.query when a query cannot be 
+            solved
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/access/kit/AbstractStore.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev58
+        </revision>
+      
+        <notes>
+          <scm:Note>Suppress log messages
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/access/cache
+        </path>
+        
+        <resources>
+          <URI>CacheBranch.java
+          </URI>
+          <URI>EntityCache.java
+          </URI>
+          <URI>IndexBranch.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev57
         </revision>
       
