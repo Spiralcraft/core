@@ -17,7 +17,6 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
-import spiralcraft.data.Key;
 import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
@@ -125,8 +124,6 @@ public class DeltaType
           
         }
         
-        // This is now automatic as part of the archetype mechanism 
-        // copyPrimaryKey();
       }
       catch (DataException x)
       { throw new RuntimeDataException("Error linking "+getURI(),x);
@@ -142,39 +139,9 @@ public class DeltaType
     }
     super.link();
     
-//    }
-//    catch (RuntimeException x)
-//    { 
-//      x.printStackTrace();
-//      throw x;
-//    }
-//    catch (DataException x)
-//    { 
-//      x.printStackTrace();
-//      throw x;
-//    }
-//    
-//    log.fine("Done linking DeltaType "+this);
-
-//    addMethods();
-
   }
 
-  
-  @SuppressWarnings({"unchecked","rawtypes"})
-  private void copyPrimaryKey()
-    throws DataException
-  {
-    Key<?> archetypePrimaryKey=archetype.getScheme().getPrimaryKey();
-    
-    if (archetypePrimaryKey!=null)
-    {
-      KeyImpl<DeltaTuple> pkey=new KeyImpl<DeltaTuple>();
-      pkey.setPrimary(true);
-      pkey.setFieldNames(archetypePrimaryKey.getFieldNames());
-      scheme.setKeys(new KeyImpl[]{pkey});
-    }
-  }
+
   
 }
 
