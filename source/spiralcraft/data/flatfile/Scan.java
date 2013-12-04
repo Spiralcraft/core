@@ -76,6 +76,16 @@ public class Scan<C,R>
     this.computeX=computeX;
   }
   
+  
+  
+  /**
+   * The character sequence that separates records (defaults to CRLF)
+   * 
+   * @param recordSeparator
+   */
+  public void setRecordSeparator(String recordSeparator)
+  { this.recordSeparator=recordSeparator;
+  }
 
   public class ScanTask
     extends ChainTask
