@@ -17,6 +17,36 @@
         </revision>
       
         <notes>
+          <scm:Note>Markup attribute name-value pairs use the StringPool
+            to save memory.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/text/xml/AttributeReader.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev58
+        </revision>
+      
+        <notes>
+          <scm:Note>Textual representation of an expression uses the StringPool
+            to save memory.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/lang/Expression.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev58
+        </revision>
+      
+        <notes>
           <scm:Note>Context resources get matched using raw URI paths to
             prevent excessive and premature path decoding.
           </scm:Note>
