@@ -16,6 +16,7 @@ package spiralcraft.text.xml;
 
 import spiralcraft.text.ParseException;
 import spiralcraft.text.LookaheadParserContext;
+import spiralcraft.util.string.StringPool;
 
 /**
  * Reads and XML attribute name/value pair
@@ -55,7 +56,12 @@ public class AttributeReader
     _whitespaceReader.readWhitespace(context);
     _literalReader.readLiteral(context);
     String value=_literalReader.getBuffer();
-    _attribute=new Attribute(name.intern(),value.intern());
+    
+    _attribute
+      =new Attribute
+        (StringPool.INSTANCE.get(name)
+        ,StringPool.INSTANCE.get(value)
+        );
   }
 
   public Attribute getAttribute()
