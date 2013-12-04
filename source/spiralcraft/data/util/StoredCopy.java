@@ -28,6 +28,7 @@ import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.ChannelFactory;
 import spiralcraft.lang.Expression;
@@ -70,7 +71,8 @@ public class StoredCopy
   private ThreadLocalChannel<Tuple> inputChannel;
   private ThreadLocalChannel<Tuple> storeChannel;
   private TupleEditor editor;
-
+  private Binding<?> preSave;
+  
   private Level debugLevel=Level.INFO;
   
   public StoredCopy()
@@ -93,6 +95,10 @@ public class StoredCopy
   
   public void setDebugLevel(Level debugLevel)
   { this.debugLevel=debugLevel;
+  }
+  
+  public void setPreSave(Expression<Void> preSave)
+  { this.preSave=new Binding<Void>(preSave);
   }
   
   public StoredCopy
@@ -130,6 +136,9 @@ public class StoredCopy
 
       editor=new TupleEditor();
       editor.setAutoCreate(true);
+      if (preSave!=null)
+      { editor.setPreSave(preSave);
+      }
       editor.bind(focusChain.chain(storeChannel));
       
     }
