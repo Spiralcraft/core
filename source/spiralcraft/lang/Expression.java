@@ -21,6 +21,7 @@ import spiralcraft.lang.parser.Node;
 import spiralcraft.lang.parser.ExpressionParser;
 import spiralcraft.util.refpool.ReferencePool;
 import spiralcraft.util.string.StringConverter;
+import spiralcraft.util.string.StringPool;
 
 import java.net.URI;
 
@@ -194,10 +195,10 @@ public class Expression<T>
   { 
     _root=root;
     if (text==null)
-    { this._text=root.reconstruct();
+    { this._text=StringPool.INSTANCE.get(root.reconstruct());
     }
     else
-    { this._text=text;
+    { this._text=StringPool.INSTANCE.get(text);
     }
     hashCode=computeHash();
   }
