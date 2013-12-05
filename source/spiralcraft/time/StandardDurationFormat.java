@@ -251,6 +251,34 @@ public class StandardDurationFormat
           }
           buf.append( ((double) count) *0.001).append("S");
           break;
+        case CENTURY:
+          buf.append(100*count).append("Y");
+          break;
+        case DECADE:
+          buf.append(10*count).append("Y");
+          break;
+        case HALFDAY:
+          if (!inTime)
+          { 
+            buf.append("T");
+            inTime=true;
+          }
+          buf.append(12*count).append("H");
+          break;
+        case MILLENIUM:
+          buf.append(1000*count).append("Y");
+          break;
+        case NANOSECOND:
+          if (!inTime)
+          { 
+            buf.append("T");
+            inTime=true;
+          }
+          buf.append( ((double) count) *0.000000001).append("S");
+          break;
+        case QUARTER:
+          buf.append(3*count).append("M");
+          break;
       }
       input=input.getRest();
     }

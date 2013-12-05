@@ -124,6 +124,9 @@ public abstract class AbstractAuthorizer
             return false;
           case GRANT:
             vote=Role.Vote.GRANT;
+            break;
+          case ABSTAIN:
+            break;
         }
         
         if (logLevel.isDebug())

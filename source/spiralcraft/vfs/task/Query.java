@@ -254,6 +254,8 @@ public class Query<Tresult>
         return new GetOperation();
       case DELETE:
         return new DeleteOperation();
+      default:
+        break;
     }
     return null;
 
