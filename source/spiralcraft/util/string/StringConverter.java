@@ -164,8 +164,12 @@ public abstract class StringConverter<T>
   {
     XMLDecoder decoder
       =new XMLDecoder(new ByteArrayInputStream(xml.getBytes()));
-    return (T) decoder.readObject();
-    
+    try
+    { return (T) decoder.readObject();
+    }
+    finally
+    { decoder.close();
+    }
   }
 
   public static String encodeToXml(Object object)
