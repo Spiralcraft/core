@@ -24,10 +24,10 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.TeleFocus;
-import spiralcraft.lang.parser.CurrentFocusNode;
-import spiralcraft.lang.parser.Node;
-import spiralcraft.lang.parser.ParentFocusNode;
-import spiralcraft.log.ClassLog;
+//import spiralcraft.lang.parser.CurrentFocusNode;
+//import spiralcraft.lang.parser.Node;
+//import spiralcraft.lang.parser.ParentFocusNode;
+//import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
 
@@ -51,8 +51,8 @@ public class SetFilter<T>
   extends Query
 {
  
-  private static final ClassLog log
-    =ClassLog.getInstance(SetFilter.class);
+//  private static final ClassLog log
+//    =ClassLog.getInstance(SetFilter.class);
   
   private Expression<?> filterSetX;
   private Expression<T> searchX;
@@ -161,30 +161,30 @@ public class SetFilter<T>
    
   }
   
-  private boolean referencesCurrentFocus(Node node)
-  {
-    if (node instanceof CurrentFocusNode)
-    { return true;
-    }
-    if (node instanceof ParentFocusNode)
-    { return false;
-    }
-    
-    Node[] children=node.getSources();
-    if (children!=null)
-    {
-      for (Node child:children)
-      { 
-        if (child==null)
-        { log.warning(node+" returned null child");
-        }
-        else if (referencesCurrentFocus(child))
-        { return true;
-        }
-      }
-    }
-    return false;
-  }
+//  private boolean referencesCurrentFocus(Node node)
+//  {
+//    if (node instanceof CurrentFocusNode)
+//    { return true;
+//    }
+//    if (node instanceof ParentFocusNode)
+//    { return false;
+//    }
+//    
+//    Node[] children=node.getSources();
+//    if (children!=null)
+//    {
+//      for (Node child:children)
+//      { 
+//        if (child==null)
+//        { log.warning(node+" returned null child");
+//        }
+//        else if (referencesCurrentFocus(child))
+//        { return true;
+//        }
+//      }
+//    }
+//    return false;
+//  }
   
   @Override
   public String toString()

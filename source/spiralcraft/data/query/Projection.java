@@ -22,11 +22,11 @@ import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.BindException;
-import spiralcraft.lang.parser.CurrentFocusNode;
-import spiralcraft.lang.parser.Node;
-import spiralcraft.lang.parser.ParentFocusNode;
+//import spiralcraft.lang.parser.CurrentFocusNode;
+//import spiralcraft.lang.parser.Node;
+//import spiralcraft.lang.parser.ParentFocusNode;
 import spiralcraft.lang.spi.ThreadLocalChannel;
-import spiralcraft.log.ClassLog;
+//import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
 
@@ -48,8 +48,8 @@ public class Projection<T extends Tuple>
   extends Query
 {
  
-  private static final ClassLog log
-    =ClassLog.getInstance(Projection.class);
+//  private static final ClassLog log
+//    =ClassLog.getInstance(Projection.class);
   
   private Expression<T> x;
   
@@ -137,30 +137,30 @@ public class Projection<T extends Tuple>
       new ProjectionBinding(this,focus,store);
   }
   
-  private boolean referencesCurrentFocus(Node node)
-  {
-    if (node instanceof CurrentFocusNode)
-    { return true;
-    }
-    if (node instanceof ParentFocusNode)
-    { return false;
-    }
-    
-    Node[] children=node.getSources();
-    if (children!=null)
-    {
-      for (Node child:children)
-      { 
-        if (child==null)
-        { log.warning(node+" returned null child");
-        }
-        else if (referencesCurrentFocus(child))
-        { return true;
-        }
-      }
-    }
-    return false;
-  }
+//  private boolean referencesCurrentFocus(Node node)
+//  {
+//    if (node instanceof CurrentFocusNode)
+//    { return true;
+//    }
+//    if (node instanceof ParentFocusNode)
+//    { return false;
+//    }
+//    
+//    Node[] children=node.getSources();
+//    if (children!=null)
+//    {
+//      for (Node child:children)
+//      { 
+//        if (child==null)
+//        { log.warning(node+" returned null child");
+//        }
+//        else if (referencesCurrentFocus(child))
+//        { return true;
+//        }
+//      }
+//    }
+//    return false;
+//  }
   
   @Override
   public String toString()
