@@ -832,7 +832,7 @@ public class BufferTuple
     }
       
     this.id=id;
-    Key<?> primaryKey=getType().getScheme().getPrimaryKey();
+    Key<?> primaryKey=getType().getPrimaryKey();
     if (primaryKey!=null && id instanceof KeyIdentifier)
     { 
       KeyIdentifier<?> keyId=(KeyIdentifier<?>) id;

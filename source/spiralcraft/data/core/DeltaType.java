@@ -17,11 +17,11 @@ package spiralcraft.data.core;
 
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
+import spiralcraft.data.Key;
 import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Field;
-
 import spiralcraft.data.core.RelativeField;
 import spiralcraft.data.core.TypeImpl;
 import spiralcraft.data.core.SchemeImpl;
@@ -142,6 +142,10 @@ public class DeltaType
   }
 
 
-  
+  @SuppressWarnings("unchecked")
+  @Override
+  public Key<DeltaTuple> getPrimaryKey()
+  { return (Key<DeltaTuple>) getArchetype().getPrimaryKey();
+  }
 }
 

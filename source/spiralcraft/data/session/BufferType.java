@@ -20,7 +20,6 @@ import spiralcraft.data.Key;
 import spiralcraft.data.Type;
 import spiralcraft.data.TypeResolver;
 import spiralcraft.data.Field;
-
 import spiralcraft.data.core.RelativeField;
 import spiralcraft.data.core.TypeImpl;
 import spiralcraft.data.core.SchemeImpl;
@@ -198,5 +197,11 @@ public class BufferType<T extends Buffer>
     return true;
     
   }
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public Key<T> getPrimaryKey()
+  { return (Key<T>) getArchetype().getPrimaryKey();
+  }  
 }
 
