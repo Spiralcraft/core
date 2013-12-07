@@ -16,39 +16,35 @@ package spiralcraft.data.xml;
 
 import spiralcraft.data.access.EntityAccessor;
 import spiralcraft.data.access.SerialCursor;
-import spiralcraft.data.access.kit.AbstractStore;
 import spiralcraft.data.core.ProjectionImpl;
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.query.BoundQuery;
+import spiralcraft.data.query.EquiJoin;
+import spiralcraft.data.query.Query;
+import spiralcraft.data.query.Queryable;
+import spiralcraft.data.query.Scan;
 import spiralcraft.data.spi.AbstractAggregateQueryable;
-import spiralcraft.data.spi.ArrayDeltaTuple;
 import spiralcraft.data.spi.ArrayJournalTuple;
 import spiralcraft.data.spi.EditableKeyedListAggregate;
 import spiralcraft.data.spi.KeyedListAggregate;
-
+import spiralcraft.data.spi.ListCursor;
 import spiralcraft.data.sax.DataReader;
 import spiralcraft.data.sax.DataWriter;
-import spiralcraft.data.transaction.Branch;
-import spiralcraft.data.transaction.ResourceManager;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.transaction.Transaction.Nesting;
 import spiralcraft.data.transaction.TransactionException;
-import spiralcraft.data.transaction.Transaction.State;
-
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Field;
-import spiralcraft.data.Identifier;
 import spiralcraft.data.JournalTuple;
 import spiralcraft.data.Key;
 import spiralcraft.data.KeyTuple;
+import spiralcraft.data.Projection;
+import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.DataException;
-import spiralcraft.data.UniqueKeyViolationException;
-
 import spiralcraft.time.Clock;
-import spiralcraft.util.KeyFunction;
 import spiralcraft.util.Path;
 import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Container;
@@ -60,13 +56,11 @@ import spiralcraft.vfs.util.RetentionPolicy;
 import spiralcraft.vfs.watcher.ResourceWatcher;
 import spiralcraft.vfs.watcher.WatcherHandler;
 
-
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.io.IOException;
@@ -75,8 +69,11 @@ import org.xml.sax.SAXException;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.SimpleFocus;
+import spiralcraft.lang.kit.ConstantChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.util.LangUtil;
+import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
 /**
@@ -90,22 +87,52 @@ import spiralcraft.log.Level;
  * @author mike
  */
 public class XmlQueryable
-  extends AbstractAggregateQueryable<Tuple>
-  implements EntityAccessor<Tuple>
+  implements Queryable<Tuple>,EntityAccessor<Tuple>
 {
+  protected final ClassLog log
+    =ClassLog.getInstance(getClass());
+
+  protected Level logLevel
+    =ClassLog.getInitialDebugLevel(getClass(),null);
+  
+  ArrayList<Key<?>> uniqueKeys
+    =new ArrayList<Key<?>>();  
+  final Lock setLock=new ReentrantLock(true);
+  ResourceWatcher watcher;
+  Resource resource;
+  ThreadLocalChannel<Tuple> localData;
+  ArrayList<BoundQuery<?,Tuple>> uniqueQueries
+    =new ArrayList<BoundQuery<?,Tuple>>();
+  Type<?> type;
+  XmlResourceManager resourceManager
+    =new XmlResourceManager(this);
+  KeyedListAggregate<Tuple> aggregate;
+  ListCursor<Tuple> emptyCursor;      
+
+  
+  protected Focus<Queryable<Tuple>> selfFocus;
+  {
+    try
+    { 
+      selfFocus
+        =new SimpleFocus<Queryable<Tuple>>
+          (ConstantChannel.<Queryable<Tuple>>forBean(this));
+    }
+    catch (BindException x)
+    { throw new RuntimeDataException("",x);
+    }
+    
+
+  }
   
   private SimpleDateFormat dateFormat
     =new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
   
-  private Resource resource;
   private URI resourceURI;
   private URI resourceContextURI;
   
-  private ResourceWatcher watcher;
   
-  private Type<?> type;
   
-  private KeyedListAggregate<Tuple> aggregate;
 //  private KeyedListAggregate<Tuple> snapshot;
   
   private Exception exception;
@@ -116,23 +143,36 @@ public class XmlQueryable
   private int freezeCount;
   private long lastTransactionId;
   
-  private XmlResourceManager resourceManager
-    =new XmlResourceManager();
   
   private volatile Transaction transaction;
-  private ThreadLocalChannel<Tuple> localData;
   private Focus<Tuple> localFocus;
   private BoundQuery<?,Tuple> originalQuery;
-  private ArrayList<BoundQuery<?,Tuple>> uniqueQueries
-    =new ArrayList<BoundQuery<?,Tuple>>();
-  private ArrayList<Key<?>> uniqueKeys
-    =new ArrayList<Key<?>>();  
   
-  private final Lock setLock=new ReentrantLock(true);
+  
   private XmlStore store;
+  
+  private Queryable<Tuple> backingQueryable
+    =new AbstractAggregateQueryable<Tuple>()
+  {
+
+    @Override
+    protected Aggregate<Tuple> getAggregate()
+      throws DataException
+    { return XmlQueryable.this.getAggregate();
+    }
+
+    @Override
+    protected Type<?> getResultType()
+    { return XmlQueryable.this.getResultType();
+    }
+  };
   
   public void setLogLevel(Level logLevel)
   { this.logLevel=logLevel;
+  }
+  
+  public Level getLogLevel()
+  { return logLevel;
   }
   
   public long getLastTransactionId()
@@ -180,6 +220,37 @@ public class XmlQueryable
   
 
   @Override
+  public boolean containsType(Type<?> type)
+  { return type.isAssignableFrom(getResultType());
+  }
+
+
+
+  @Override
+  public Type<?>[] getTypes()
+  { return new Type<?>[] {getResultType()};
+  }
+  
+  
+  @Override
+  public BoundQuery<?,Tuple> query(Query q, Focus<?> context)
+    throws DataException
+  { 
+    if (q==null)
+    { throw new IllegalArgumentException("Query cannot be null");
+    }
+    
+    BoundQuery<?,Tuple> ret=solve(q,context);
+    if (ret==null)
+    { ret=q.solve(context, this);
+    }
+    ret.resolve();
+    if (logLevel.isDebug())
+    { log.debug(q.toString()+" bound to "+ret);
+    }
+    return ret;
+  }  
+  @Override
   public Focus<?> bind(Focus<?> focusChain)
     throws BindException
   {
@@ -192,7 +263,7 @@ public class XmlQueryable
     if (primaryKey!=null)
     { 
       try
-      { originalQuery=query(primaryKey.getQuery(), localFocus);
+      { originalQuery=backingQueryable.query(primaryKey.getQuery(), localFocus);
       }
       catch (DataException x)
       { throw new BindException("Error resolving identity query",x);
@@ -217,8 +288,7 @@ public class XmlQueryable
             (getResultType().getFieldSet()
             ,fieldNames
             );
-        originalQuery=query(equijoin.getIdentityQuery(), localFocus);
-        //originalQuery.setDebugLevel(Level.FINE);
+        originalQuery=backingQueryable.query(equijoin.getIdentityQuery(), localFocus);
       }
       catch (DataException x)
       { throw new BindException("Error resolving identity query",x);
@@ -283,6 +353,8 @@ public class XmlQueryable
             
         Resource resource=Resolver.getInstance().resolve(qualifiedURI);
         setResource(resource);
+        emptyCursor=new ListCursor<Tuple>
+          (getResultType().getScheme(),new LinkedList<Tuple>());
         try
         {
           if (!resource.exists())
@@ -395,10 +467,9 @@ public class XmlQueryable
     }
   }
   
-  @Override
-  protected synchronized Aggregate<Tuple> getAggregate()
+  void checkUpToDate()
     throws DataException
-  { 
+  {
     checkInit();
 
     if (freezeCount==0)
@@ -417,10 +488,17 @@ public class XmlQueryable
       { throw new DataException("Error loading data from "+resourceURI,exception);
       }
     }
+  }
+  
+  protected synchronized KeyedListAggregate<Tuple> getAggregate()
+    throws DataException
+  { 
+
+    checkUpToDate();
+    
     return aggregate;
   }
   
-  @Override
   // This is the Type of the Queryable, not the data container
   protected Type<?> getResultType()
   { 
@@ -432,6 +510,70 @@ public class XmlQueryable
     }
   }
   
+  /**
+   * Return a cursor over all the data that incorporates data from the 
+   *   current transaction
+   */
+  SerialCursor<Tuple> getCursor()
+    throws DataException
+  {
+    XmlBranch branch=resourceManager.getBranch();
+    if (branch!=null)
+    { return branch.getCursor();
+    }
+    return getPublicCursor();
+  }
+
+  /**
+   * Return a cursor over all the data that incorporates data from the 
+   *   current transaction
+   */
+  SerialCursor<Tuple> getCursor(Projection<Tuple> projection,KeyTuple key)
+    throws DataException
+  {
+    XmlBranch branch=resourceManager.getBranch();
+    if (branch!=null)
+    { return branch.getCursor(projection,key);
+    }
+    return getPublicCursor(projection,key);
+  }
+  
+  SerialCursor<Tuple> getPublicCursor()
+    throws DataException
+  {
+    // TODO: To incorporate TX results, use source.getCursor();    
+    Aggregate<Tuple> aggregate=getAggregate();
+    if (aggregate==null)
+    {
+      throw new DataException
+        ("Aggregate of "+getResultType().getURI()+" from "
+          +getClass().getName()
+          +" is null- cannot perform query"
+        );
+    }
+    return new ListCursor<Tuple>(aggregate);
+    
+  }
+  
+  SerialCursor<Tuple> getPublicCursor(Projection<Tuple> projection,KeyTuple key)
+    throws DataException
+  {
+    KeyedListAggregate<Tuple> aggregate=getAggregate();
+    if (aggregate==null)
+    { throw new DataException("Aggregate is null- cannot perform query");
+    }
+    Aggregate.Index<Tuple> index=aggregate.getIndex(projection, true);
+
+    Aggregate<Tuple> result=index.get(key);
+    if (result==null)
+    { return emptyCursor;
+    }
+    else
+    { return new ListCursor<Tuple>(result);
+    }    
+    
+  }
+    
   public void setResultType(Type<?> type)
   { this.type=Type.getAggregateType(type);
   }
@@ -744,7 +886,7 @@ public class XmlQueryable
   void cleanHistory(RetentionPolicy storePolicy) 
     throws DataException
   {
-    getAggregate();
+    checkUpToDate();
     if (resource==null)
     { 
       log.fine("Resource "+resourceURI+" is null");
@@ -894,718 +1036,36 @@ public class XmlQueryable
     }
   }
   
-  class XmlResourceManager
-    extends ResourceManager<XmlBranch>
+  @Override
+  public BoundQuery<?,Tuple> getAll(Type<?> type) throws DataException
   {
-
-    @Override
-    public XmlBranch createBranch(Transaction transaction)
-      throws TransactionException
-    { return new XmlBranch();
-    }
-    
+    BoundScan scan=new BoundScan(new Scan(getResultType()),selfFocus,this);
+    scan.resolve();
+    return scan;
   }
   
-  class XmlBranch
-    implements Branch
-  {
-    private ArrayList<String> resources=new ArrayList<String>();
-    
-    private ArrayList<Tuple> preparedAdds=new ArrayList<Tuple>();
-    private ArrayList<JournalTuple> preparedUpdates=new ArrayList<JournalTuple>();
-    
-    private ArrayList<DeltaTuple> deltaList=new ArrayList<DeltaTuple>();
-    
-    private EditableKeyedListAggregate<DeltaTuple> deltaKeyedList
-      =new EditableKeyedListAggregate<DeltaTuple>
-        (Type.getAggregateType(Type.getDeltaType(getResultType())));
-    
-    private HashMap<Identifier,DeltaTuple> deltaMap
-      =new HashMap<Identifier,DeltaTuple>();
-    
-    private HashMap<Identifier,DeltaTuple> bufferMap
-       =new HashMap<Identifier,DeltaTuple>();
-    
-    private ArrayList<ArrayJournalTuple> undoList
-      =new ArrayList<ArrayJournalTuple>();
-    
-    private State state=State.STARTED;
-    
-    @SuppressWarnings("unused")
-    private AbstractStore.StoreBranch storeBranch;
-    
-    private long txId;
-    
-    @SuppressWarnings("unchecked")
-    XmlBranch()
-      throws TransactionException
-    { 
-      try
-      {
-        for (Key<?> key: uniqueKeys)
-        { deltaKeyedList.getIndex((Key<DeltaTuple>) key,true);
-        }
-      }
-      catch (DataException x)
-      { throw new TransactionException("Error creating delta indices",x);
-      }
-
-      setLock.lock();
-      // Don't allow reloads or updates during a transaction
-      XmlQueryable.this.freeze();
-      
-
-      
-      // Make sure we have latest copy from disk
-      boolean ok=false;
-      try
-      { 
-        checkInit();
-        watcher.check();
-        ok=true;
-      }
-      catch (DataException x)
-      {
-        throw new TransactionException
-          ("Error syncing with base resource "+resource.getURI(),x);
-      }
-      catch (IOException x)
-      { 
-        throw new TransactionException
-          ("Error syncing with base resource "+resource.getURI(),x);
-      }
-      finally
-      {
-        if (!ok)
-        { XmlQueryable.this.unfreeze();
-        }
-      }
+  @Override
+  public BoundQuery<?,Tuple> solve(Query q, Focus<?> context)
+    throws DataException
+  { 
+    if (q==null)
+    { throw new IllegalArgumentException("Query cannot be null");
     }
     
-    void addResource(String suffix)
-    { resources.add(suffix);
+    BoundQuery<?,Tuple> ret=null;
+    if (q instanceof Scan
+        && q.getType().isAssignableFrom(getResultType())
+        )
+    { ret=new BoundScan((Scan) q,context,this);
     }
-
-    void setStoreBranch(AbstractStore.StoreBranch storeBranch)
-    {       
-      this.storeBranch=storeBranch;
-      this.txId=storeBranch.getTxId();     
+    else if ( (q instanceof EquiJoin)
+        && (q.getSources().get(0) instanceof Scan)
+        && q.getType().isAssignableFrom(getResultType())
+        )
+    { ret=new BoundIndexScan((EquiJoin) q,context,this);
     }
-
-    private Aggregate<DeltaTuple> getUniqueDeltas(int indexNum,DeltaTuple tuple)
-      throws DataException
-    {       
-      @SuppressWarnings("unchecked")
-      Key<DeltaTuple> key=(Key<DeltaTuple>) uniqueKeys.get(indexNum);
-      Aggregate.Index<DeltaTuple> index
-        =deltaKeyedList.getIndex(key,true);
-    
-      Aggregate<DeltaTuple> results
-        =index.get(key.getKeyFunction().key(tuple));
-
-      return results;
-    }
-    
-    private boolean hasSameKey(int indexNum,Tuple t1,Tuple t2)
-    {
-      @SuppressWarnings("unchecked")
-      Key<Tuple> key=(Key<Tuple>) uniqueKeys.get(indexNum);
-      KeyFunction<KeyTuple,Tuple> fn=key.getKeyFunction();
-      return fn.key(t1).equals(fn.key(t2));
-    }
-    
-    /**
-     * Check data integrity constraints for an insert
-     * 
-     * @param tuple
-     * @throws DataException
-     */
-    private void checkInsertIntegrity(DeltaTuple tuple)
-      throws DataException
-    {      
-      // Check unique keys
-      localData.push(tuple);
-      try
-      {
-        int i=0;
-        for (BoundQuery<?,Tuple> query: uniqueQueries)
-        {
-          SerialCursor<Tuple> cursor=query.execute();
-          try
-          {
-            while (cursor.next())
-            { 
-              DeltaTuple txDelta=deltaMap.get(cursor.getTuple().getId());
-              if (txDelta==null || !txDelta.isDelete())
-              {
-                // Make sure the conflicting row hasn't been deleted in this
-                //   transaction.
-                if (logLevel.isFine())
-                { 
-                  log.fine
-                    ("Unique conflict on add: "+tuple+":"+uniqueKeys.get(i));
-                }
-                throw new UniqueKeyViolationException
-                  (tuple,uniqueKeys.get(i));
-              }
-            }
-          }
-          finally
-          { cursor.close();
-          }
-          
-          
-          // XXX This should be folded into the query's current transaction
-          //   visibility
-          Aggregate<DeltaTuple> uniqueDeltas
-            =getUniqueDeltas(i,tuple);
-          
-          if (uniqueDeltas!=null)
-          {
-            for (DeltaTuple txDelta: uniqueDeltas)
-            {
-              if (!txDelta.isDelete()
-                  && !(txDelta.getId().equals(tuple.getId())
-                       && txDelta.getOriginal()==null 
-                       // XXX Allow multiple "inserts" of same id to coalesce 
-                       //   for now
-                      )
-                 )
-              {
-                if (logLevel.isFine())
-                { 
-                  log.fine
-                    ("Unique conflict on add: "+tuple+" conflicts with "+txDelta+": "+uniqueKeys.get(i));
-                }
-                throw new UniqueKeyViolationException
-                  (tuple,uniqueKeys.get(i));
-              }
-            }
-          }
-          
-          i++;
-          
-        }
-      }
-      finally
-      { localData.pop();
-      }
-
-    }
-    
-    
-    
-    /**
-     * Check data integrity constraints for an update
-     * 
-     * @param tuple
-     * @throws DataException
-     */
-    private DeltaTuple checkUpdateIntegrity(DeltaTuple tuple)
-      throws DataException
-    {      
-      localData.push(tuple);
-      try
-      {
-        // Check unique keys
-        int i=0;
-        for (BoundQuery<?,Tuple> query: uniqueQueries)
-        {
-          SerialCursor<Tuple> cursor=query.execute();
-          try
-          {
-            while (cursor.next())
-            { 
-              Identifier storeId=cursor.getTuple().getId();
-              if (!storeId.equals(tuple.getId()) 
-                  && cursor.getTuple()!=tuple.getOriginal() 
-                    // latter case is to avoid error when updating a tuple w/o
-                    //   a primary key (id is based on POJO)
-                  )
-              {
-                DeltaTuple txDelta=deltaMap.get(storeId);
-                if (txDelta==null
-                    || (!txDelta.isDelete()
-                        && hasSameKey(i,tuple,txDelta)
-                       )
-                   )
-                {
-                  if (logLevel.isFine())
-                  { 
-                    log.fine("\r\n  existing="+cursor.getTuple()+" id="+cursor.getTuple().getId()
-                      +"\r\n  new="+tuple.getOriginal()+" id="+(tuple.getOriginal()!=null?tuple.getOriginal().getId():"?")
-                      +"\r\n updated="+tuple+" id="+tuple.getId()
-                      );
-                  }
-                  throw new UniqueKeyViolationException
-                    (tuple,uniqueKeys.get(i));
-                }
-              }
-            }
-          }
-          finally
-          { cursor.close();
-          }
-          
-          // XXX This should be folded into the query's current transaction
-          //   visibility
-          Aggregate<DeltaTuple> uniqueDeltas
-            =getUniqueDeltas(i,tuple);
-        
-          if (uniqueDeltas!=null)
-          {
-            for (DeltaTuple txDelta: uniqueDeltas)
-            {
-              if (!txDelta.getId().equals(tuple.getId()) && !txDelta.isDelete())
-              {
-                if (logLevel.isFine())
-                { 
-                  log.fine("delta id = "+txDelta.getId()+"  id = "+tuple.getId());
-                  log.fine
-                    ("Unique conflict on update: "+tuple+" conflicts with "+txDelta+": "+uniqueKeys.get(i));
-                }
-                throw new UniqueKeyViolationException
-                  (tuple,uniqueKeys.get(i));
-              }
-            }
-          }
-                
-          
-          i++;
-          
-        }
-        return tuple;
-      }
-      finally
-      { localData.pop();
-      }
-    }
-    
-    private void addDelta(DeltaTuple tuple)
-    { 
-      DeltaTuple ot=deltaMap.get(tuple.getId());
-      if (ot!=null)
-      { deltaKeyedList.remove(ot);
-      }
-
-      deltaList.add(tuple);
-      deltaMap.put(tuple.getId(),tuple);
-      deltaKeyedList.add(tuple);
-    }
-    
-    private void removeDelta(DeltaTuple tuple)
-    { 
-      deltaKeyedList.remove(tuple);
-      deltaMap.remove(tuple.getId());
-      deltaList.remove(tuple);
-    }
-    
-    /**
-     * Perform implementation specific insert logic
-     * 
-     * @param tuple
-     */
-    void insert(DeltaTuple tuple)
-      throws DataException
-    { 
-
-      tuple=checkBuffer(tuple);
-      checkInsertIntegrity(tuple);
-      addDelta(tuple);
-    }
-    
-    /**
-     * Perform implementation specific update logic
-     * 
-     * @param tuple
-     */
-    void update(DeltaTuple tuple)
-      throws DataException
-    {
-      tuple=checkBuffer(tuple);
-      checkUpdateIntegrity(tuple);
-      tuple=lockOriginal(tuple);
-      addDelta(tuple);
-    }
-    
-
-    
-    /**
-     * Perform implementation specific delete logic
-     * 
-     * @param tuple
-     */
-    void delete(DeltaTuple tuple)
-      throws DataException
-    {       
-      tuple=checkBuffer(tuple);
-      tuple=lockOriginal(tuple);
-      addDelta(tuple);
-      
-    }
-
-    DeltaTuple checkBuffer(DeltaTuple tuple)
-      throws DataException
-    {
-      if (tuple.isMutable())
-      { 
-        DeltaTuple newTuple=ArrayDeltaTuple.copy(tuple);
-        bufferMap.put(newTuple.getId(),tuple);
-        tuple=newTuple;
-      }
-      return tuple;
-      
-    }
-    
-    void notifyBuffer(Identifier id,Tuple newOriginal)
-      throws TransactionException
-    { 
-      DeltaTuple buffer=bufferMap.get(id);
-      if (buffer!=null)
-      {
-        try
-        { buffer.updateOriginal(newOriginal);
-        }
-        catch (DataException x)
-        { 
-          throw new TransactionException("Error notifying buffer "+buffer+" of "
-            +" new original "+newOriginal,x);
-        }
-      }
-    }
-    
-    
-    /**
-     * Lock the original while we update it
-     * 
-     * @param tuple
-     * @throws DataException
-     */
-    DeltaTuple lockOriginal(DeltaTuple tuple)
-      throws DataException
-    {
-      if (!(tuple.getOriginal() instanceof JournalTuple))
-      { 
-        // TODO: Rebase the original to be friendly
-        throw new DataException("Not a JournalTuple "+tuple.getOriginal());
-      }
-      JournalTuple jt=(JournalTuple) tuple.getOriginal();
-      
-      
-      DeltaTuple prepared=jt.prepareUpdate(tuple);  
-      
-      if (logLevel.isDebug() && prepared!=tuple)
-      { log.fine("Rebase during prepare:\r\n  "+prepared+"  \r\n  was  "+tuple);
-      }
-      
-      if (prepared.getOriginal()!=null)
-      {
-        // Original might be rebased
-        preparedUpdates.add((JournalTuple) prepared.getOriginal());
-      }
-      else
-      { throw new DataException("Original is null for "+tuple);
-      }
-
-//      if (jt!= prepared.getOriginal() )
-//      { log.fine("Added updated original "+prepared.getOriginal());
-//      }
-      return prepared;
-    }
-    
-    @Override
-    public void commit()
-      throws TransactionException
-    {
-      if (state!=State.PREPARED)
-      { 
-        throw new TransactionException
-          ("Commit can only be called when in PREPARED state, not "+state.name());
-      }
-      
-      synchronized (XmlQueryable.this)
-      {        
-        for (String suffix:resources)
-        { 
-          
-          try
-          { 
-            XmlQueryable.this.commit(suffix,txId);
-            if (logLevel.isFine())
-            { log.fine("Committed "+resource.getURI()+": "+suffix+" in "+txId);
-            }
-          }
-          catch (IOException x)
-          { throw new TransactionException("Error committing '"+suffix+"'",x);
-          }
-        }
-        
-        for (JournalTuple jt: preparedUpdates)
-        { jt.commit();
-        }
-
-        state=State.COMMITTED;
-      }
-
-    }
-
-    @Override
-    public void complete()
-    {
-      try
-      {
-        if (state!=State.COMMITTED && state!=State.ABORTED)
-        { rollback();
-        }
-      }
-      catch (TransactionException x)
-      { log.log(Level.WARNING,"Error rolling back incomplete transaction",x);
-      }
-      finally
-      { 
-        XmlQueryable.this.unfreeze();
-        setLock.unlock();
-      }
-      state=State.COMPLETED;
-
-    }
-
-    @Override
-    public State getState()
-    { return state;
-    }
-
-    @Override
-    public boolean is2PC()
-    { return true;
-    }
-
-    @Override
-    public void prepare()
-      throws TransactionException
-    { 
-      if (logLevel.isFine())
-      { log.fine("Preparing "+resource.getURI()+" tx="+txId);
-      }
-
-      ArrayList<DeltaTuple> rebaseList=new ArrayList<DeltaTuple>();
-      ArrayList<DeltaTuple> replaceList=new ArrayList<DeltaTuple>();
-        
-      for (DeltaTuple dt: deltaList)
-      {
-          
-        try
-        {
-            
-          Tuple orig=dt.getOriginal();
-          // Handle case where the Store was reloaded during an edit
-          JournalTuple storeVersion
-            =(JournalTuple) XmlQueryable.this.getStoreVersion
-              (orig!=null
-              ?orig
-              :dt
-              );
-          
-          
-          if (storeVersion!=orig)
-          {
-            if (storeVersion==null 
-                  || (orig!=null && !(orig instanceof JournalTuple))
-                  || (!storeVersion.isPreviousVersion((JournalTuple) orig)
-                      && storeVersion.getTransactionId() 
-                          != Transaction.getContextTransaction().getId()
-                          // storeVersion is from current transaction
-                     )
-                 )
-             
-            { 
-              if (logLevel.isInfo())
-              { 
-                log.info
-                  ("Merging external store changes for "+dt+" to rebase "
-                  +orig+" to "+storeVersion
-                  );
-              }
-            
-              if (orig instanceof JournalTuple)
-              { 
-                if (preparedUpdates.remove(orig))
-                { ((JournalTuple) orig).rollback();
-                }
-              }
-              rebaseList.add(dt);
-              dt=dt.rebase(storeVersion);
-              replaceList.add(dt);
-              
-              if (storeVersion!=null)
-              {  
-                storeVersion.prepareUpdate(dt);
-                if (dt.getOriginal()!=null)
-                {
-                  // Original might be rebased
-                  preparedUpdates.add((JournalTuple) dt.getOriginal());
-                }
-                else
-                { throw new DataException("Original is null: "+dt);
-                }
-              }
-              
-            }
-            else if (orig==null)
-            { 
-              dt=dt.updateOriginal(storeVersion);
-              
-              // An additional insert for a storeVersion that was placed
-              // during this transaction
-            }
-          }
-        }
-        catch (DataException x)
-        { throw new TransactionException("Error merging "+dt,x);
-        }
-        
-          
-        if (dt.getOriginal()!=null)
-        {
-          // 
-          ArrayJournalTuple ot=(ArrayJournalTuple) dt.getOriginal();
-          ArrayJournalTuple nt=ot.getTxVersion();
-          if (nt==null)
-          { 
-            if (logLevel.isFine())
-            { log.fine("Null txversion in "+ot);
-            }
-          }
-          if (!dt.isDelete())
-          { 
-            // log.fine("Replacing "+ot+" with "+nt);
-            replace(ot,nt);
-            undoList.add(ot);
-            
-            notifyBuffer(dt.getId(),nt);
-          }
-          else
-          { 
-            remove(ot);
-            undoList.add(ot);
-            notifyBuffer(dt.getId(),null);
-          }
-        }
-        else
-        { 
-          try
-          { 
-            if (logLevel.isFine())
-            { log.fine("Type="+dt.getType().getURI());
-            }
-            ArrayJournalTuple at=ArrayJournalTuple.freezeDelta(dt);
-            add(at);
-            preparedAdds.add(at);
-            notifyBuffer(dt.getId(),at);
-            
-          }
-          catch (DataException x)
-          { throw new TransactionException("Error adding "+dt,x);
-          }            
-        }
-      }
-        
-      for (DeltaTuple dt: rebaseList)
-      { removeDelta(dt);           
-      }
-      for (DeltaTuple dt: replaceList)
-      { addDelta(dt);           
-      }
-        
-      try
-      { 
-        flushResource();
-      }
-      catch (DataException x)
-      { throw new TransactionException("Error flushing resource .tx"+txId,x);
-      }
-      catch (IOException x)
-      { throw new TransactionException("Error flushing resource .tx"+txId,x);
-      }
-
-      if (logLevel.isFine())
-      { log.fine("Prepared "+resource.getURI()+": "+txId);
-      }
-      
-      
-      this.state=State.PREPARED;
-    }
-
-    @Override
-    public void rollback()
-      throws TransactionException
-    { 
-
-      
-      if (state!=State.COMMITTED && state!=State.ABORTED)
-      { 
-        Collections.reverse(deltaList);
-        for (DeltaTuple dt: deltaList)
-        {
-          if (dt.getOriginal()!=null)
-          {
-            ArrayJournalTuple ot=(ArrayJournalTuple) dt.getOriginal();
-            if (!dt.isDelete())
-            { 
-              notifyBuffer(dt.getId(),ot);
-            }
-            else
-            { 
-              notifyBuffer(dt.getId(),ot);
-            }
-          }
-        }
-        Collections.reverse(undoList);
-        for (ArrayJournalTuple ot:undoList)
-        { 
-          ArrayJournalTuple nt=ot.getTxVersion();
-          if (nt==null || nt.isDeletedVersion())
-          { add(ot);
-          }
-          else
-          { replace(nt,ot);
-          }
-        }
-        
-        Collections.reverse(preparedUpdates);
-        for (JournalTuple jt: preparedUpdates)
-        { jt.rollback();
-        }
-        
-        Collections.reverse(preparedAdds);
-        for (Tuple t: preparedAdds)
-        { remove(t);
-        }
-        
-        for (String suffix:resources)
-        { 
-          try
-          { XmlQueryable.this.rollback(suffix);
-          }
-          catch (IOException x)
-          { log.log(Level.WARNING,"IOException rolling back '"+suffix+"'",x);
-          }
-        }
-      }
-      else
-      { log.warning("Rollback on txid "+txId+" called in inapplicable state "+state);
-      }
-
-      this.state=Transaction.State.ABORTED;
-    }
-    
-    @Override
-    public String toString()
-    { return super.toString()+": "
-        +XmlQueryable.this.type.getURI()+" txid="+txId;
-    }
+    return ret;
   }
-
 
 
 }

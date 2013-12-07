@@ -332,7 +332,7 @@ public class XmlStore
     for (XmlQueryable queryable:xmlQueryables)
     { 
       try
-      { queryable.getAggregate();
+      { queryable.checkUpToDate();
       }
       catch (DataException x)
       { x.printStackTrace();
@@ -588,7 +588,7 @@ public class XmlStore
       super.dataInitialize(fieldSet);
 
       // Make sure queryable has had a chance to init.
-      queryable.getAggregate();
+      queryable.checkUpToDate();
       StoreBranch tx=joinTransaction();
       queryable.joinTransaction().setStoreBranch(tx);
       
