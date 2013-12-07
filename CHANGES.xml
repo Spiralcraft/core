@@ -13,6 +13,59 @@
 
     <detail> 
       <scm:Change>
+        <revision>-dev59
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix regression caused by inheritance of archetype keys-
+            primary key and tuple id were improperly specialized for delta
+            and buffer types.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>core/DeltaType.java
+          </URI>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>session/BufferType.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev59
+        </revision>
+      
+        <notes>
+          <scm:Note>Refactor XML store to add support for querying uncommitted 
+            results in the current transaction, specifically deletes.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/xml
+        </path>
+        
+        <resources>
+          <URI>BoundIndexScan.java
+          </URI>
+          <URI>BoundScan.java
+          </URI>
+          <URI>XmlBranch.java
+          </URI>
+          <URI>XmlQueryable.java
+          </URI>
+          <URI>XmlResourceManager.java
+          </URI>
+          <URI>XmlStore.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev58
         </revision>
       
