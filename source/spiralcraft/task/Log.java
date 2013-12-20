@@ -41,10 +41,14 @@ public class Log<Tcontext,Tmsg>
   public Focus<?> bindImports(Focus<?> focus)
     throws ContextualException
   {
-    message.bind(focus);
-    converter=message.getReflector().getStringConverter();
-    if (converter==null)
-    { converter=(StringConverter<Tmsg>) StringConverter.getOneWayInstance();
+    if (message!=null)
+    { 
+      message.bind(focus);
+    
+      converter=message.getReflector().getStringConverter();
+      if (converter==null)
+      { converter=(StringConverter<Tmsg>) StringConverter.getOneWayInstance();
+      }
     }
     return super.bindImports(focus);
   }
@@ -57,7 +61,14 @@ public class Log<Tcontext,Tmsg>
       @Override
       protected void work()
         throws InterruptedException
-      { log.log(level,getDeclarationInfo()+": "+converter.toString(message.get()));       
+      { 
+        if (message!=null)
+        { 
+          log.log(level,getDeclarationInfo()+": "
+              +converter.toString(message.get())
+              );  
+        }
+
       }
     };
   
