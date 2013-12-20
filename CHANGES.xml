@@ -12,6 +12,56 @@
     
 
     <detail> 
+    
+    
+      <scm:Change>
+        <revision>-dev60
+        </revision>
+      
+        <notes>
+          <scm:Note>When child tasks to a Chain and the list of tasks consists
+            of a single task, the Chain will
+            support returning the results of the child task and no intermediate
+            Sequence task will be used. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task/Chain.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev60
+        </revision>
+      
+        <notes>
+          <scm:Note>When looking up a bean-based type, follow indirection through
+            VFS package links when the "bundle" scheme is used (in addition
+            to the already supported "context" scheme).
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/reflect/BeanTypeModel.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev60
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where nested PlaceContext obscured the data
+          Space for the parent PlaceContext
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/PlaceContext.java
+        </path>
+        
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev59
         </revision>
