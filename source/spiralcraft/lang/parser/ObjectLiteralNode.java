@@ -210,12 +210,13 @@ public class ObjectLiteralNode<Tobject,Treturn>
     }
     
     Reflector<Tobject> reflector=TypeModel.<Tobject>searchType(uri);
-    
-    
-    Focus<?> metaFocus=null;
-    if (reflector!=null)
-    { metaFocus=focus.chain(reflector.getSelfChannel());
+    if (reflector==null)
+    { 
+      throw new BindException
+        ("Type '"+uri+"' not found. ");
     }
+    
+    Focus<?> metaFocus=focus.chain(reflector.getSelfChannel());
     
     if (metaFocus!=null && metaFocus.getSubject()!=null)
     { 
@@ -314,7 +315,7 @@ public class ObjectLiteralNode<Tobject,Treturn>
     else
     { 
       throw new BindException
-        ("Type '"+uri+"' not found. "+TypeModel.getRegisteredModels());
+        ("Type '"+uri+"' is not reflectable.");
     }
   }
 
