@@ -150,6 +150,10 @@ public class AssemblyLoader
         { return true;
         }
         
+        if (logLevel.isFine())
+        { log.fine("Did not find .assy.xml or .class for "+classUri);
+        }
+        
         // Cache negative result
         _classCache.put(classUri,null);
       }
@@ -247,6 +251,9 @@ public class AssemblyLoader
           (URIPool.create(classUri.toString()+".class"));
         if (classResource!=null)
         { classUri=URIUtil.removePathSuffix(classResource.getURI(),".class");
+        }
+        else if (logLevel.isFine())
+        { log.fine("No .class resource for "+classUri);
         }
       }
       catch (ContextualException x)
