@@ -27,7 +27,12 @@ public class BeanTypeModel
   { 
     try
     {
-      if (typeURI.getScheme()!=null && typeURI.getScheme().equals("context"))
+      if (typeURI.getScheme()!=null 
+          && (typeURI.getScheme().equals("context")
+              || typeURI.getScheme().equals("bundle")
+            )
+         ) // TODO: Use a better method of figuring out when to search a
+           //   package
       { 
         Resource classResource=Package.findResource(typeURI+".class");
         if (classResource!=null)
