@@ -38,7 +38,6 @@ import spiralcraft.service.SchedulerService;
 import spiralcraft.service.Service;
 import spiralcraft.service.ServiceGroup;
 import spiralcraft.task.TaskScheduler;
-import spiralcraft.util.ArrayUtil;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resolver;
 import spiralcraft.vfs.Resource;
@@ -80,6 +79,7 @@ public class PlaceContext
   private Authenticator authenticator;
   private Binding<?>[] imports;
   private Binding<?>[] exports;
+  private boolean hasSpace;
   
   public void setId(String id)
   { this.id=id;
@@ -155,7 +155,9 @@ public class PlaceContext
   }
 
   public void setStores(Store[] stores)
-  { this.localStores=stores;
+  { 
+    this.localStores=stores;
+    hasSpace=true;
   }
   
   @Override
@@ -181,6 +183,7 @@ public class PlaceContext
     }
     else
     { 
+      hasSpace=true;
       try
       { 
         dataContainer
@@ -224,14 +227,17 @@ public class PlaceContext
       
     }
 
-    space=new Space();
-    if (localStores!=null)
-    { 
-      for (Store store:localStores)
-      { registerLocalStore(store);
+    if (hasSpace)
+    {
+      space=new Space();
+      if (localStores!=null)
+      { 
+        for (Store store:localStores)
+        { registerLocalStore(store);
+        }
       }
+      localChain.chain(space);
     }
-    localChain.chain(space);
     
     if (authenticator!=null)
     { localChain.chain(authenticator);
@@ -333,7 +339,18 @@ public class PlaceContext
   }
   
   void registerStore(Store store)
-  { space.addStore(store);
+    throws ContextualException
+  { 
+    if (space!=null)
+    { space.addStore(store);
+    }
+    else
+    { 
+      throw new ContextualException
+        ("This Place does not have its own data space. "
+          +getId()+" trying to register store "+store.getName()
+        );
+    }
   }
   
   void registerMount(Authority authority)
@@ -478,7 +495,9 @@ public class PlaceContext
     Lifecycler.start(authorities);
     fileSpace.start();
 
-    space.start();
+    if (space!=null)
+    { space.start();
+    }
     
     if (serviceGroup!=null)
     { serviceGroup.start();
@@ -518,7 +537,11 @@ public class PlaceContext
     if (serviceGroup!=null)
     { serviceGroup.stop();
     }
-    space.stop();
+    
+    if (space!=null)
+    { space.stop();
+    }
+    
     fileSpace.stop();
     Lifecycler.stop(authorities);
     
@@ -546,9 +569,7 @@ public class PlaceContext
   
   @Override
   public String toString()
-  {
-    return super.toString()+": vfs="+vfsMappings+", "
-      +ArrayUtil.format(pluginContexts,"\r\n,","");
+  { return super.toString()+": "+id+" "+version;
   }
   
 }
