@@ -44,6 +44,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+//import spiralcraft.lang.util.LangUtil;
 
 import spiralcraft.log.ClassLog;
 
@@ -81,6 +82,7 @@ public class Space
   }
   
 
+  // private Space parent;
   private final HashMap<URI,Sequence> globalSequences
     =new HashMap<URI,Sequence>();
   
@@ -169,6 +171,9 @@ public class Space
         return new ConcatenationBinding<Concatenation,Tuple>(boundQueries,type,selfFocus);
       }
     }
+//    else if (parent!=null)
+//    { return parent.getAll(type);
+//    }
     return null;
   }
 
@@ -178,6 +183,7 @@ public class Space
     throws ContextualException
   { 
     
+    // parent=LangUtil.findInstance(Space.class,focusChain);
     dataSessionChannel
       =new ThreadLocalChannel<DataSession>
         (BeanReflector.<DataSession>getInstance(DataSession.class)
@@ -333,8 +339,17 @@ public class Space
     }
     else
     { 
-      throw new DataException
-        ("Could not find authoritative store for type "+type.getURI());
+      if (containsType(type))
+      {
+        
+        throw new DataException
+          ("Could not find authoritative store for type "+type.getURI());
+      }
+      else
+      {
+        throw new DataException
+          ("Type not contained in this space "+type.getURI());
+      }
     }    
   }
   
