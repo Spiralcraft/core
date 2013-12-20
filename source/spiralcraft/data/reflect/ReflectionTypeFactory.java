@@ -95,6 +95,14 @@ public class ReflectionTypeFactory
           }
           return new AssemblyType(resolver,uri,assemblyClass);
         }
+        else
+        { 
+          if (debugLevel.canLog(Level.DEBUG))
+          { 
+            log.log
+              (Level.DEBUG,"Excluded AssemblyType for "+uri+" : "+assemblyClass);
+          }
+        }
       }
       else
       { 
