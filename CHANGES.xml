@@ -15,6 +15,21 @@
     
     
       <scm:Change>
+        <revision>-dev61
+        </revision>
+      
+        <notes>
+          <scm:Note>Fixed issue where concatenation operator was very 
+            inefficient when operands were arrays.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/BinaryOpNode.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev60
         </revision>
       
