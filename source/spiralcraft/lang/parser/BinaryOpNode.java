@@ -265,12 +265,14 @@ class CollectionConcatenationChannel<C,T>
   {
     C collection=cd.newCollection();
       
-    for (T val:decorator1)
-    { collection=cd.add(collection,val);
-    }
-    for (T val:decorator2)
-    { collection=cd.add(collection,val);
-    }
+    cd.addAll(collection,decorator1.iterator());
+    cd.addAll(collection,decorator2.iterator());
+//    for (T val:decorator1)
+//    { collection=cd.add(collection,val);
+//    }
+//    for (T val:decorator2)
+//    { collection=cd.add(collection,val);
+//    }
     return collection;
   }
 
