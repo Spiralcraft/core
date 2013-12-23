@@ -15,6 +15,20 @@
     
     
       <scm:Change>
+        <revision>-dev62
+        </revision>
+      
+        <notes>
+          <scm:Note>Re-fix concatenation operator after regressing in dev61
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/BinaryOpNode.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev61
         </revision>
       
