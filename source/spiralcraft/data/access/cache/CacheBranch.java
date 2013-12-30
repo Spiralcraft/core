@@ -170,6 +170,9 @@ public class CacheBranch
       // Tuple was previously inserted during this transaction
       existing=tb.redoVersion;
     }
+    if (existing==null)
+    { throw new DataException("Original not found in primary cache during update. id="+id+" : "+delta);
+    }
     ArrayJournalTuple priorVersion=tb.redoVersion!=null?tb.redoVersion:existing;
     existing.prepareUpdate(delta);
     tb.undoVersion=existing; 

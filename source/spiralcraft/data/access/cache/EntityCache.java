@@ -21,6 +21,7 @@ import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Projection;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
+import spiralcraft.data.access.SerialCursor;
 import spiralcraft.data.spi.ArrayJournalTuple;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.transaction.Transaction.Nesting;
@@ -72,6 +73,24 @@ public class EntityCache
   
   Type<?> getType()
   { return type;
+  }
+  
+  public ArrayJournalTuple cache(Tuple tuple)
+    throws DataException
+  {
+    CacheBranch branch=getBranch();
+    if (branch!=null)
+    { return branch.cache(tuple);
+    }
+    
+    synchronized (monitor)
+    { return primary.cache(tuple);
+    }
+  }
+  
+  public SerialCacheCursor cache(SerialCursor<?> cursor)
+    throws DataException
+  { return new SerialCacheCursor(cursor,this);
   }
   
   public CacheIndex getIndex(Projection<Tuple> key)
