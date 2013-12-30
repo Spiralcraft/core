@@ -15,6 +15,32 @@
     
     
       <scm:Change>
+        <revision>-dev63
+        </revision>
+      
+        <notes>
+          <scm:Note>Facility to wrap a source cursor to interact with
+            the cache and provide canonical tuple instances.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/access
+        </path>
+        
+        <resources>
+          <URI>CacheBranch.java
+          </URI>
+          <URI>EntityCache.java
+          </URI>
+          <URI>SerialCacheCursor.java
+          </URI>
+          <URI>kit/SerialCursorAdapter.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev62
         </revision>
       
