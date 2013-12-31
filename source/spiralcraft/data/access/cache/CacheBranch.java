@@ -190,6 +190,9 @@ public class CacheBranch
     if (logLevel.isDebug())
     { log.fine("Logging delete "+delta);
     }
+    if (delta.getOriginal()==null)
+    { log.warning("Ignoring deleted delta with null original "+delta);
+    }
     Identifier id=delta.getOriginal().getId();
     TupleBranch tb=enlist(id);
     ArrayJournalTuple existing=cache.primary.get(id);
