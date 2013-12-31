@@ -15,6 +15,32 @@
     
     
       <scm:Change>
+        <revision>-dev64
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix NPE when deleted delta tuple has no original- write
+            warning to log in this case
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/access
+        </path>
+        
+        <resources>
+          <URI>CacheBranch.java
+          </URI>
+          <URI>EntityCache.java
+          </URI>
+          <URI>SerialCacheCursor.java
+          </URI>
+          <URI>kit/SerialCursorAdapter.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev63
         </revision>
       
