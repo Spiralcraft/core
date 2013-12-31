@@ -191,7 +191,9 @@ public class CacheBranch
     { log.fine("Logging delete "+delta);
     }
     if (delta.getOriginal()==null)
-    { log.warning("Ignoring deleted delta with null original "+delta);
+    { 
+      log.warning("Ignoring deleted delta with null original "+delta);
+      return null;
     }
     Identifier id=delta.getOriginal().getId();
     TupleBranch tb=enlist(id);
