@@ -46,6 +46,14 @@ public class Sequence<Tresult>
   { importContext=false;
   }
   
+  public Sequence()
+  {
+  }
+  
+  public Sequence(Scenario<?,?>[] scenarios)
+  { setScenarios(scenarios);
+  }
+  
   public void setScenarios(Scenario<?,?>[] scenarios)
   { this.scenarios=scenarios;
   }

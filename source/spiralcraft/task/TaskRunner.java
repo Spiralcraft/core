@@ -133,12 +133,13 @@ public class TaskRunner
   @SuppressWarnings("rawtypes")
   public void setChain(Scenario<?,?>[] chain)
   { 
-
-    Chain<?,?> chainScenario=new Chain();
-    chainScenario.setSequence(chain);
-    scenario=chainScenario;
-    chainLink=chain[chain.length-1];
-  
+    scenario=Scenario.sequential(chain);
+    if (chain.length==1)
+    { chainLink=scenario;
+    }
+    else
+    { chainLink=chain[chain.length-1];
+    }  
   }
   
   /**

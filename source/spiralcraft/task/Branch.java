@@ -14,50 +14,43 @@
 //
 package spiralcraft.task;
 
+import java.util.ArrayList;
+
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
+import spiralcraft.common.Lifecycler;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Focus;
 
 
 
 /**
- * <p>A abstract scenario that has children meant to run in a sequence
+ * <p>A abstract scenario that will run one child
  * </p>
  * 
  * 
  * @author mike
  */
-public abstract class Chain<Tcontext,Tresult>
+public abstract class Branch<Tcontext,Tresult>
   extends Scenario<Tcontext,Tresult>
 {
 
+  protected ArrayList<Scenario<?,?>> children
+    =new ArrayList<Scenario<?,?>>(2);
   
-  protected Scenario<?,?> chain;
-  protected boolean addChainCommandAsResult=false;
-  protected boolean addChainResult;
-  
-  public void setAddChainResult(boolean addChainResult)
-  { this.addChainResult=addChainResult;
-  }
-  
+  protected abstract Scenario<?,?> select();
     
-  protected class ChainTask
+  protected class BranchTask
     extends CommandTask
   {
-    
-    { 
-      addCommandAsResult=addChainCommandAsResult;
-      addCommandResult=addChainResult;
-    }
-    
     @Override
     protected void work()
       throws InterruptedException
     { 
-      if (chain!=null && exception==null)
+      Scenario<?,?> scenario=select();
+      if (scenario!=null && exception==null)
       {
-        command=chain.command();
+        command=scenario.command();
         super.work();
       }
     }
@@ -84,69 +77,31 @@ public abstract class Chain<Tcontext,Tresult>
   protected void bindChildren(Focus<?> focusChain)
     throws ContextualException
   { 
-    if (chain!=null)
-    { chain.bind(focusChain);
+    for (Scenario<?,?> scenario : children)
+    { scenario.bind(focusChain);
     }
-    if (addChainResult)
-    { storeResults=true;
-    }
+
   }
   
   
   @Override
   protected Task task()
-  { return new ChainTask();
+  { return new BranchTask();
   }
-  
-  
-  public void chain(Scenario<?,?> chain)
-  { this.chain=chain;
-  }
-  
-  /**
-   * Wrap a single task. Allows for the result to be returned if 
-   *   addChainResult=true
-   * 
-   * @param chain
-   */
-  public void setChain(Scenario<?,?> chain)
-  { this.chain=chain;
-  }
-  
-  public void setSequence(Scenario<?,?>[] scenarios)
-  {
-    if (scenarios.length==1)
-    { chain(scenarios[0]);
-    }
-    else
-    {
-      Sequence<?> sequence=new Sequence<Object>();
-      chain(sequence);
-      for (Scenario<?,?> scenario: scenarios)
-      { sequence.addScenario(scenario);
-      }
-    }
-  }
-  
- 
-  
+    
   @Override
   public void start()
     throws LifecycleException
   { 
     super.start();
-    if (chain!=null)
-    { chain.start();
-    }
+    Lifecycler.start(children.toArray(new Scenario<?,?>[children.size()]));
   }
 
   @Override
   public void stop()
     throws LifecycleException
   { 
-    if (chain!=null)
-    { chain.stop();
-    }
+    Lifecycler.stop(children.toArray(new Scenario<?,?>[children.size()]));
     super.stop();
   }  
   

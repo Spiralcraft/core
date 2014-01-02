@@ -38,9 +38,7 @@ import spiralcraft.lang.kit.AbstractChainableContext;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ClosureFocus;
 import spiralcraft.lang.spi.SimpleChannel;
-
 import spiralcraft.lang.spi.ThreadLocalChannel;
-
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
@@ -72,6 +70,19 @@ public abstract class Scenario<Tcontext,Tresult>
     ,Declarable
 {
 
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public static final Scenario<?,?> sequential(Scenario<?,?>[] sequence)
+  {
+    if (sequence.length==0)
+    { return null;
+    }
+    if (sequence.length==1)
+    { return sequence[0];
+    }
+    return new Sequence(sequence);
+  }
+  
+  
   protected ClassLog log=ClassLog.getInstance(getClass());
   
   protected ThreadLocalChannel<TaskCommand<Tcontext,Tresult>> commandChannel;
