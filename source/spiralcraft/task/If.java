@@ -28,10 +28,12 @@ import spiralcraft.lang.Focus;
 
  */
 public class If
-  extends Chain<Void,Void>
+  extends Branch<Void,Void>
 {
   
   private Binding<Boolean> x;
+  private Scenario<?,?> thenBranch;
+  private Scenario<?,?> elseBranch;
   
   public If()
   {
@@ -44,20 +46,32 @@ public class If
   public If(Binding<Boolean> x,Scenario<?,?> chain)
   { 
     this.x=x;
-    chain(chain);
+    setThen(chain);
   }
-    
-  @Override
-  public IfTask task()
-  { return new IfTask();
-  }
-  
+      
   /**
    * Provide an expression to resolve the Command object
    */
   public void setX(Binding<Boolean> x)
   { this.x=x;
   }
+  
+  public void setSequence(Scenario<?,?> ... sequence)
+  { setThen(sequence);
+  }
+  
+  public void setThen(Scenario<?,?> ... thenBranch)
+  { 
+    this.thenBranch=Scenario.sequential(thenBranch);
+    children.add(this.thenBranch);
+  }
+  
+  public void setElse(Scenario<?,?> ... elseBranch)
+  { 
+    this.elseBranch=Scenario.sequential(elseBranch);
+    children.add(this.elseBranch);
+  }
+  
   
   @Override
   protected Focus<?> bindExports(Focus<?> focusChain)
@@ -67,36 +81,24 @@ public class If
     return focusChain;
   }
   
-
-  public class IfTask
-    extends ChainTask
+  @Override
+  protected Scenario<?,?> select()
   {
-    @Override
-    public void work()
-      throws InterruptedException
+    if (Boolean.TRUE.equals(x.get()))
     { 
-      try
-      {
-        if (Boolean.TRUE.equals(x.get()))
-        { 
-          if (debug)
-          { log.fine("Expression returned TRUE: "+x.getText());
-          }
-          super.work();
-        }
-        else
-        {
-          if (debug)
-          { log.fine("Expression did not return TRUE: "+x.getText());
-          }
-        }
+      if (debug)
+      { log.fine("Expression returned TRUE: "+x.getText());
       }
-      catch (Exception x)
-      { 
-        addException(x);
-        return;
-      }
+      return thenBranch;
     }
-
+    else
+    {
+      if (debug)
+      { log.fine("Expression did not return TRUE: "+x.getText());
+      }
+      
+      return elseBranch;
+    }
   }
+
 }
