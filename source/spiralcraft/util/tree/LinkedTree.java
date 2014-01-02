@@ -42,6 +42,7 @@ public class LinkedTree<T>
   { this.object=object;
   }
 
+  @SuppressWarnings("unchecked")
   public LinkedTree(T object,LinkedTree<T> ... children)
   { 
     this.object=object;

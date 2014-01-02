@@ -24,6 +24,7 @@ public class IteratorStack<T>
   private final Stack<Iterator<T>> stack=new Stack<Iterator<T>>();
   private boolean done;
   
+  @SuppressWarnings("unchecked")
   public IteratorStack(Iterator<T>... iterators)
   { 
     for (Iterator<T> iter : iterators)

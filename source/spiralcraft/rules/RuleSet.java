@@ -117,7 +117,7 @@ public class RuleSet<Tcontext,Tvalue>
     
   }
   
-  
+  @SuppressWarnings("unchecked")
   public void addRules(Rule<Tcontext,Tvalue> ... rules)
   {
     for (Rule<Tcontext,Tvalue> rule : rules)

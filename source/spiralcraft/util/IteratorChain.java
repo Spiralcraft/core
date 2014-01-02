@@ -37,6 +37,7 @@ public class IteratorChain<T>
   private int pos;
   private boolean done;
   
+  @SuppressWarnings("unchecked")
   public IteratorChain(Iterator<? extends T>... iterators)
   { this.chain=iterators;
   }

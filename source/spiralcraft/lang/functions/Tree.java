@@ -26,11 +26,9 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.CollectionDecorator;
 import spiralcraft.lang.IterationDecorator;
 import spiralcraft.lang.Decorator;
-
 import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.util.FilterIterable;
-
 import spiralcraft.util.IteratorStack;
 import spiralcraft.util.ArrayUtil;
 
@@ -270,6 +268,7 @@ public class Tree<Tcollection, Tsource>
     {
       
       
+      @SuppressWarnings("unchecked")
       public TreeIterator(Iterator<Tsource>... initial)
       { super(initial);
       }

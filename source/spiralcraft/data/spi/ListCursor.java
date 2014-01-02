@@ -73,6 +73,7 @@ public class ListCursor<T extends Tuple>
     
   }
 
+  @SuppressWarnings("unchecked")
   public ListCursor(FieldSet fieldSet,T ... data)
   { 
     this.type=fieldSet.getType();

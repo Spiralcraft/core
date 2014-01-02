@@ -96,6 +96,7 @@ public class TypeImpl<T>
   { this.description=description;
   } 
   
+  @SuppressWarnings("unchecked")
   protected void addRules(Rule<Type<T>,T> ... rules)
   {    
     if (ruleSet==null)
@@ -104,6 +105,7 @@ public class TypeImpl<T>
     ruleSet.addRules(rules);
   }
   
+  @SuppressWarnings("unchecked")
   public void setRules(Rule<Type<T>,T> ... rules)
   { 
     if (linked)

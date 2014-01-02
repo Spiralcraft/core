@@ -29,6 +29,7 @@ public class IterableChain<T>
   
   private final Iterable<T>[] chain;
   
+  @SuppressWarnings("unchecked")
   public IterableChain(Iterable<T>... iterables)
   { this.chain=iterables;
   }
