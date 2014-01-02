@@ -15,6 +15,39 @@
     
     
       <scm:Change>
+        <revision>-dev65
+        </revision>
+      
+        <notes>
+          <scm:Note>Minor refactoring in the task package to support branching
+            tasks.
+          </scm:Note>
+          <scm:Note>Made "If" task a branching task with "then" and "else"
+            children.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task
+        </path>
+        
+        <resources>
+          <URI>Branch.java
+          </URI>
+          <URI>Chain.java
+          </URI>
+          <URI>If.java
+          </URI>
+          <URI>Scenario.java
+          </URI>
+          <URI>Sequence.java
+          </URI>
+          <URI>TaskRunner.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev64
         </revision>
       

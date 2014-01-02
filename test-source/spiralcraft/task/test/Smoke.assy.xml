@@ -96,6 +96,77 @@
           </testX>
       
         </test:Assertion>  
+        
+        <task:If>
+          <x>true
+          </x>
+          <sequence>
+            <test:Assertion>
+        
+              <name>If legacy
+              </name>
+              <subjectX>.
+              </subjectX>
+              <testX>true
+              </testX>
+            </test:Assertion>  
+          </sequence>
+        </task:If>
+        
+        <task:If>
+          <x>true
+          </x>
+          <then>
+            <test:Assertion>
+        
+              <name>If true
+              </name>
+              <subjectX>.
+              </subjectX>
+              <testX>true
+              </testX>
+            </test:Assertion>  
+          </then>
+          <else>
+            <test:Assertion>
+        
+              <name>If true FAIL
+              </name>
+              <subjectX>.
+              </subjectX>
+              <testX>false
+              </testX>
+            </test:Assertion>  
+          </else>
+        </task:If>
+        
+        <task:If>
+          <x>false
+          </x>
+          <then>
+            <test:Assertion>
+        
+              <name>If false FAIL
+              </name>
+              <subjectX>.
+              </subjectX>
+              <testX>false
+              </testX>
+            </test:Assertion>  
+          </then>
+          <else>
+            <test:Assertion>
+        
+              <name>If false
+              </name>
+              <subjectX>.
+              </subjectX>
+              <testX>true
+              </testX>
+            </test:Assertion>  
+          </else>
+        </task:If>
+        
       </scenarios>   
     </task:Sequence>
   </scenarios>

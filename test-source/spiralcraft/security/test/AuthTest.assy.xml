@@ -25,7 +25,7 @@
       </conditionX>
     </test:Stub>
     
-    <task:Chain>
+    <task:Sequence>
       <contextX>[secauth:Authenticator].createSession()
       </contextX>
     
@@ -221,7 +221,7 @@
         
         
       
-    </task:Chain>
+    </task:Sequence>
             
 
   </sequence>
