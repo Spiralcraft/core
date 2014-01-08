@@ -57,4 +57,8 @@ public class ClosureChannel<T>
     }
   }
 
+  @Override
+  public String toString()
+  { return super.toString()+" -> "+enclosedChannel.toString();
+  }
 }
