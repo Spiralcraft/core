@@ -46,6 +46,8 @@ public class InputStreamRecordIterator
   private final BytePatternMatcher forwardMatcher;
   private byte[] recordBuffer;
   private boolean eof;
+  private boolean eofPending;
+  private boolean eofEndsRecord=true;
   
   
   public InputStreamRecordIterator(InputStream in,byte[] delimiter)
@@ -53,6 +55,16 @@ public class InputStreamRecordIterator
     this.in=in;
     this.delimiter=delimiter;
     forwardMatcher=new BytePatternMatcher(delimiter);
+  }
+  
+  /**
+   * Specify whether an EOF will cause the content, if any, after the
+   *   last record terminator to be processed as a record
+   * 
+   * @param eofEndsRecord
+   */
+  public void setEofEndsRecord(boolean eofEndsRecord)
+  { this.eofEndsRecord=eofEndsRecord;
   }
   
   @Override
@@ -136,11 +148,24 @@ public class InputStreamRecordIterator
     tempBuffer.clear();
     while (true)
     {
-      int input=in.read();
+      int input=eofPending?-1:in.read();
       if (input==-1)
       {
-        eof=true;
-        return false;
+        
+        if (eofPending || !eofEndsRecord || tempBuffer.length()==0)
+        { 
+          eof=true;
+          return false;
+        }
+        else
+        { 
+          eofPending=true;
+          recordPointer++;
+          recordBuffer=new byte[tempBuffer.length()];
+          tempBuffer.toArray(recordBuffer);
+          return true;
+          
+        }
       }
       tempBuffer.append(input);
       if (forwardMatcher.match((byte) input))

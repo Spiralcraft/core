@@ -71,6 +71,10 @@ public class RecordCursor
   public FieldSet getFieldSet()
   { return format.getType().getFieldSet();
   }
+  
+  public Type<?> getType()
+  { return format.getType();
+  }
 
   @Override
   public Tuple getTuple()
@@ -127,7 +131,7 @@ public class RecordCursor
         byte[] record=recordIterator.read();
         if (tuple==null)
         { 
-          tuple=new EditableArrayTuple(getFieldSet())
+          tuple=new EditableArrayTuple(getType())
           {
             @Override
             public boolean isVolatile()
