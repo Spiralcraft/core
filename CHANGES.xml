@@ -15,6 +15,28 @@
     
     
       <scm:Change>
+        <revision>-dev66
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where last record in stream with no record
+            terminator before EOF is not processed
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/flatfile/RecordCursor.java
+          </URI>
+          <URI>io/record/InputStreamRecordIterator.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev65
         </revision>
       
