@@ -16,6 +16,7 @@ package spiralcraft.data.task;
 
 import spiralcraft.data.DataComposite;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Space;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.query.EquiJoin;
@@ -32,6 +33,7 @@ import spiralcraft.lang.BindException;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.log.Level;
 import spiralcraft.task.Chain;
 
@@ -265,9 +267,8 @@ public class Fetch<Tcontext>
     throws BindException
   {
     
-    Focus<Queryable<Tuple>> queryableFocus
-      =focusChain.<Queryable<Tuple>>findFocus
-        (Queryable.QUERYABLE_URI);
+    Focus<Space> queryableFocus
+      =LangUtil.findFocus(Space.class,focusChain);
     
     Queryable queryable=this.queryable;
     if (queryable==null && queryableFocus!=null)
