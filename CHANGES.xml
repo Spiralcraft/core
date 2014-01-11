@@ -15,6 +15,23 @@
     
     
       <scm:Change>
+        <revision>-dev67
+        </revision>
+      
+        <notes>
+          <scm:Note>Fetch task queries the nearest Space unless a specific
+            Queryable is supplied, fixing an issue where it mistakenly
+            queried the specific, possibly wrong Store in context 
+            when binding a field default expression.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/task/Fetch.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev66
         </revision>
       
