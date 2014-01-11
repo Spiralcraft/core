@@ -270,10 +270,19 @@ public class TaskRunner
     try
     { 
       if (serviceFocus!=null)
-      { scenario.bind(serviceFocus);
+      { 
+        if (logLevel.isDebug())
+        { log.debug("Binding tasklet in service context "+focus.getFocusChain());
+        }
+        scenario.bind(serviceFocus);
       }
       else
-      { scenario.bind(focus);
+      { 
+        if (logLevel.isDebug())
+        { log.debug("Binding tasklet in context "+focus.getFocusChain());
+        }
+
+        scenario.bind(focus);
       }
     }
     finally
