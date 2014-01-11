@@ -255,7 +255,7 @@ public abstract class AbstractStore
       ret=query.solve(context,this);
     }
     if (ret==null)
-    { throw new DataException("Could not solve query "+query);
+    { throw new DataException("Could not solve query "+query+" in store "+toString());
     }
     ret.resolve();
     
@@ -712,6 +712,11 @@ public abstract class AbstractStore
         ,x
         );
     }
+  }
+  
+  @Override
+  public String toString()
+  { return super.toString()+" in "+getLocalResourceURI();
   }
   
   public class StoreBranch
