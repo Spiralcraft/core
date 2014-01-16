@@ -206,6 +206,26 @@
       </returnType>
       
     </meta:TaskMethod>
+    
+    <meta:Method>
+      <name>testMethod
+      </name>
+      <static>true
+      </static>
+      <parameterTypes>
+        <String.type/>
+        <String.type/>
+      </parameterTypes>
+      <contextX>{ string1:[@j:String], string2:[@j:String] }
+      </contextX>
+      
+      <returnType>
+        <String.type/>
+      </returnType>
+      
+      <x>string1+string2
+      </x>
+    </meta:Method>
   </methods>
 
 </meta:Type>

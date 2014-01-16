@@ -2,7 +2,7 @@
 
   <property name="classpath" value=""/>
   <property name="module" value="core"/>
-  <property name="buildVersion" value="0.4.17-dev67"/>
+  <property name="buildVersion" value="0.4.17-dev68"/>
   <property name="build.status" value="milestone"/>
 
   <property name="logs.dir" location="test/log"/>

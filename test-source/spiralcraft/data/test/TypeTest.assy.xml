@@ -149,7 +149,31 @@
         
           <testX>.description=="This is a new fact"
           </testX>
-        </test:Assertion>               
+        </test:Assertion>       
+ 
+        <test:Assertion>
+          <name>Method call: Two parameters
+          </name>
+          
+          <subjectX>
+            [@example:Customer].@testMethod("first","second")
+          </subjectX>
+        
+          <testX>.=="firstsecond"
+          </testX>
+        </test:Assertion>                  
+
+        <test:Assertion>
+          <name>Method call: Null parameter
+          </name>
+          
+          <subjectX>
+            [@example:Customer].@testMethod("first",null)
+          </subjectX>
+        
+          <testX>.=="first"
+          </testX>
+        </test:Assertion>                  
 
         <test:Assertion>
           <name>Array concat test
@@ -222,6 +246,7 @@
       </sequence>
     </task:Eval>
             
+           
   </scenarios>
   
 </task:Sequence>

@@ -15,6 +15,58 @@
     
     
       <scm:Change>
+        <revision>-dev68
+        </revision>
+      
+        <notes>
+          <scm:Note>Filter the results of another cursor using a pre-bound
+            filter.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/util/ContextualFilter.java
+          </URI>
+          <URI>data/access/kit/FilteringSerialCursor.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev68
+        </revision>
+      
+        <notes>
+          <scm:Note>Make sure that spiralcraft.data method signatures are
+            matched to calls that pass null as a parameter.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/lang/TupleReflector.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev68
+        </revision>
+      
+        <notes>
+          <scm:Note>Make sure that spiralcraft.data method signatures are
+            matched to calls that pass null as a parameter.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/lang/TupleReflector.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev67
         </revision>
       
