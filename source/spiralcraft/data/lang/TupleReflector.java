@@ -474,7 +474,9 @@ public class TupleReflector<T extends Tuple>
           if (debug)
           { log.fine(formalType+" <-- "+paramType);
           }
-          if (!formalType.isAssignableFrom(paramType))
+          if (!formalType.isAssignableFrom(paramType) 
+              && paramReflector.getContentType()!=Void.class
+              )
           { 
             match=false;
             break; // Parameter compare loop
