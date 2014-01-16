@@ -264,8 +264,9 @@ public class ObjectLiteralNode<Tobject,Treturn>
           { innerFocus=((Contextual) object).bind(sourceFocus);
           }
           catch (ContextualException x)
-          { throw new BindException
-              ("Error binding literal contextual '"+source+"'",x);
+          { 
+            throw new BindException
+              ("Error binding literal contextual '"+object+"'",x);
           }
         }
         
