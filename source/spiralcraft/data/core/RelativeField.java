@@ -171,6 +171,9 @@ public class RelativeField<T extends DataComposite>
     if (!generated)
     { 
      
+      if (getType()==null)
+      { throw new DataException("Field type cannot be null: "+getURI());
+      }
       // Generate the key
       if (key==null)
       { key=new KeyImpl(this);
