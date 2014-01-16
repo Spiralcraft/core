@@ -152,10 +152,13 @@ public class PropertySpecifier
    */
   public boolean isStale()
   {
-    for (AssemblyClass ac:_contents)
-    { 
-      if (ac.isStale())
-      { return true;
+    if (_contents!=null)
+    {
+      for (AssemblyClass ac:_contents)
+      { 
+        if (ac.isStale())
+        { return true;
+        }
       }
     }
     return false;
