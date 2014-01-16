@@ -40,7 +40,7 @@ public class LogicalOrNode
   
   @Override
   public String reconstruct()
-  { return reconstruct("!!");
+  { return reconstruct("||");
   }
 
   @Override
