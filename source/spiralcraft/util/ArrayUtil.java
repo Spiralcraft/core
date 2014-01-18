@@ -669,6 +669,17 @@ public class ArrayUtil
     return ret;
   }
   
+  public static final <T> T[] reverse(T[] array)
+  {
+    int len=array.length;
+    @SuppressWarnings("unchecked")
+    T[] ret=(T[]) Array.newInstance(array.getClass().getComponentType(),len);
+    for (int i=0;i<len;i++)
+    { ret[len-i-1]=array[i];
+    }
+    return ret;
+  }
+  
   public static final ArrayKey asKey(final Object[] array)
   { return new ArrayKey(array);
   }
