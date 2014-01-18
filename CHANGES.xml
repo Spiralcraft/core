@@ -13,6 +13,27 @@
 
     <detail> 
     
+      <scm:Change>
+        <revision>-dev69
+        </revision>
+      
+        <notes>
+          <scm:Note>New function and new ArrayUtil.reverse method to support
+            collection reversal from spiralcraft.lang code in a monadic fashion.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/functions/Reverse.java
+          </URI>
+          <URI>util/ArrayUtil.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
     
       <scm:Change>
         <revision>-dev68
