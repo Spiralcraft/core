@@ -14,6 +14,21 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev70
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix error in StringUtil.prepad() function which added
+            character values instead of appending them
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/util/string/StringUtil.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev69
         </revision>
       
