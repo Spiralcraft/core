@@ -410,9 +410,10 @@ public class StringUtil
       case 0:
         return input;
       case 1:
-        return c+input;
+        return Character.toString(c).concat(input);
       case 2:
-        return c+c+input;
+        String chr=Character.toString(c);
+        return chr.concat(chr).concat(input);
       default:
         StringBuilder b=new StringBuilder();
         b.append(repeat(c,diff));
