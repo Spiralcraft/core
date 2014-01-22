@@ -55,7 +55,7 @@ public class Polyview<T>
   }
   
   @Override
-  protected void onCompute(T oldValue,T newValue)
+  protected void onCompute(ValueState<T> state,T oldValue,T newValue)
   {
     log.fine
       ("Subtype is "

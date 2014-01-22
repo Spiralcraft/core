@@ -37,11 +37,16 @@ import spiralcraft.common.ContextualException;
 public abstract class AbstractModelComponent<T>
   extends AbstractComponent
 {
-  private ThreadLocalChannel<T> channel;
+  protected ThreadLocalChannel<T> channel;
   private Channel<T> source;
   private boolean writeThrough;
     
-  { 
+
+  
+  @Override
+  protected void addHandlers()
+  {
+    super.addHandlers();
     addHandler
       (new AbstractMessageHandler()
         {
@@ -56,10 +61,17 @@ public abstract class AbstractModelComponent<T>
           {
             @SuppressWarnings("unchecked")
             ValueState<T> state=(ValueState<T>) dispatcher.getState();
+            boolean computed=false;
+            T oldValue=null;
+            T newValue=null;
             try
             {
               if (state.isNewFrame() || !state.isValid())
-              { state.setValue(compute(state));
+              { 
+                oldValue=state.getValue();
+                newValue=compute(state);
+                state.setValue(newValue);
+                computed=true;
               }
             }
             catch (Exception x)
@@ -67,16 +79,27 @@ public abstract class AbstractModelComponent<T>
             }
             channel.push(state.getValue());
             try
-            { next.handleMessage(dispatcher,message);
+            { 
+              if (computed)
+              { onCompute(state,oldValue,newValue);
+              }
+              next.handleMessage(dispatcher,message);
             }
             finally
             { channel.pop();
             }
           }
         }
-      );
+      );   
   }
-
+  
+  /**
+   * Override to access local value channel after "compute" takes place
+   */
+  protected void onCompute(ValueState<T> state,T oldValue,T newValue)
+  { 
+  }
+  
   @Override
   public void setContents(Component[] contents)
   { super.setContents(contents);
