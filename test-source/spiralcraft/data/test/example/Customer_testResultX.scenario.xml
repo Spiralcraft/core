@@ -1,0 +1,21 @@
+<dtask:Session
+  xmlns:task="class:/spiralcraft/task/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:j="class:/java/lang/"
+  xmlns:dtask="class:/spiralcraft/data/task/"
+  xmlns="default:/"
+  >
+  <contextX>[#in] { description:[@j:String] }
+  </contextX>
+  
+  <resultX>[in].description
+  </resultX>  
+  
+  <sequence>
+    <task:Eval>
+      <x>"ignored"
+      </x>
+    </task:Eval>
+  
+  </sequence>
+</dtask:Session>

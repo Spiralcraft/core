@@ -14,6 +14,28 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev71
+        </revision>
+      
+        <notes>
+          <scm:Note>All Chain task subtypes now accept an optional resultX 
+            expression to return a specific value from the task.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/task
+        </path>
+        
+        <resources>
+          <URI>Chain.java
+          </URI>
+          <URI>Scenario.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev70
         </revision>
       

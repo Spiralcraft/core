@@ -226,6 +226,21 @@
       <x>string1+string2
       </x>
     </meta:Method>
+
+    <meta:TaskMethod>
+      <name>testResultX
+      </name>
+      
+      <parameterTypes>
+        <String.type/>
+      </parameterTypes>
+      
+      <returnType>
+        <String.type/>
+      </returnType>
+      
+    </meta:TaskMethod>
+
   </methods>
 
 </meta:Type>

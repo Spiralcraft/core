@@ -219,7 +219,18 @@
         
           <testX>.#{.nodeId}==[{"1","2","3","4","5","6"}]
           </testX>
-        </test:Assertion>               
+        </test:Assertion>    
+        
+        <test:Assertion>
+          <name>Task Method resultX
+          </name>
+        
+          <subjectX>[@example:Customer].().testResultX("the result")
+          </subjectX>
+        
+          <testX>.=="the result"
+          </testX>
+        </test:Assertion>           
 
 <!--
         <task:Eval>
