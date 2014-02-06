@@ -17,6 +17,7 @@ package spiralcraft.task;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 
 
@@ -36,12 +37,21 @@ public abstract class Chain<Tcontext,Tresult>
   protected Scenario<?,?> chain;
   protected boolean addChainCommandAsResult=false;
   protected boolean addChainResult;
+  protected Binding<Tresult> resultX;
   
   public void setAddChainResult(boolean addChainResult)
   { this.addChainResult=addChainResult;
   }
   
     
+  public void setResultX(Binding<Tresult> resultX)
+  { 
+    this.resultX=resultX;
+    this.storeResults=true;
+    this.addChainResult=false;
+    this.addChainCommandAsResult=false;
+  }
+  
   protected class ChainTask
     extends CommandTask
   {
@@ -59,6 +69,10 @@ public abstract class Chain<Tcontext,Tresult>
       {
         command=chain.command();
         super.work();
+        if (resultX!=null)
+        { 
+          addResult(resultX.get());
+        }        
       }
     }
   }
@@ -92,6 +106,16 @@ public abstract class Chain<Tcontext,Tresult>
     }
   }
   
+  @Override
+  protected void bindResult(Focus<?> focusChain)
+    throws ContextualException
+  {   
+    if (resultX!=null)
+    { 
+      resultX.bind(focusChain);
+      resultReflector=resultX.getReflector();
+    }
+  }
   
   @Override
   protected Task task()

@@ -387,8 +387,9 @@ public abstract class Scenario<Tcontext,Tresult>
   //        (new SimpleChannel(BeanReflector.getInstance(getClass()),this,true))
   //      );
       
+      focusChain=chainContext(focusChain);
       
-  
+      bindResult(focusChain);
       
       Focus<?> exportChain=bindCommand
           (focusChain);
@@ -456,6 +457,18 @@ public abstract class Scenario<Tcontext,Tresult>
   protected Focus<?> bindContext(Focus<?> contextChain)
     throws ContextualException
   { return contextChain;
+  }
+  
+  /**
+   * <p>Override to compute the result type as a function of the context
+   * </p>
+   *  
+   * @param contextChain
+   * @throws ContextualException
+   */
+  protected void bindResult(Focus<?> contextChain)
+    throws ContextualException
+  {
   }
   
   /**
@@ -567,17 +580,7 @@ public abstract class Scenario<Tcontext,Tresult>
   }
   
 
-  /**
-   * Bind the ThreadLocal command channel
-   * 
-   * @param focusChain
-   * @param clazz
-   * @return
-   */
-  private Focus<?> 
-    bindCommand
-      (Focus<?> focusChain
-      )
+  private Focus<?> chainContext(Focus<?> focusChain)
     throws BindException
   {
     if (contextReflector!=null)
@@ -600,6 +603,22 @@ public abstract class Scenario<Tcontext,Tresult>
     }
     
     bindInContext(focusChain);
+    return focusChain;
+  }
+  
+  /**
+   * Bind the ThreadLocal command channel
+   * 
+   * @param focusChain
+   * @param clazz
+   * @return
+   */
+  private Focus<?> 
+    bindCommand
+      (Focus<?> focusChain
+      )
+    throws BindException
+  {
     
     @SuppressWarnings("unchecked")
     Reflector<TaskCommand<Tcontext,Tresult>> reflector
