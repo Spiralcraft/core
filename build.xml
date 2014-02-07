@@ -5,9 +5,7 @@
   <property name="buildVersion" value="0.4.17-dev71"/>
   <property name="build.status" value="milestone"/>
 
-  <property name="logs.dir" location="test/log"/>
-  <property name="spiralcraft.javac.target" value="1.7"/>    
-  <property name="spiralcraft.javac.source" value="1.7"/>    
+  <property name="logs.dir" location="test/log"/>  
     
   <import file="../../build/build-spiralcraft-common.xml"/>
   
