@@ -45,12 +45,20 @@ public class ThreadLocalChannel<T>
     =ClassLog.getInstance(ThreadLocalChannel.class);
   private static final Level debugLevel
     =ClassLog.getInitialDebugLevel(ThreadLocalChannel.class,null);
+  private static final boolean retainInitTrace
+    ="true".equals
+      (System.getProperty
+        ("spiralcraft.lang.spi.ThreadLocalChannel.retainInitTrace")
+      );
   
   private final ThreadLocal<ThreadReference<T>> threadLocal;
   private final boolean inheritable;
   private final Channel<T> sourceChannel;
   private final Exception initTrace
-    =new Exception("ThreadLocal allocation stack:");
+    =retainInitTrace
+    ?new Exception("ThreadLocal allocation stack:")
+    :null;
+    
   private final boolean writeThrough;
 
   class InheritableThreadLocalImpl
@@ -174,7 +182,9 @@ public class ThreadLocalChannel<T>
       AccessException x=new AccessException
         ("ThreadLocal not initialized for "+getReflector().getTypeURI());
       log.log(Level.WARNING,x.getMessage(),x);
-      log.log(Level.WARNING,"ThreadLocal initializer trace: ",initTrace);
+      if (initTrace!=null)
+      { log.log(Level.WARNING,"ThreadLocal initializer trace: ",initTrace);
+      }
       log.log(Level.WARNING,"ThreadLocal channel trace: "+trace(null));
       throw x;
     }
@@ -203,7 +213,9 @@ public class ThreadLocalChannel<T>
     { 
       AccessException x=new AccessException
         ("ThreadLocal not initialized for "+getReflector().getTypeURI());
-      log.log(Level.WARNING,"ThreadLocal initializer trace: ",initTrace);
+      if (initTrace!=null)
+      { log.log(Level.WARNING,"ThreadLocal initializer trace: ",initTrace);
+      }
       log.log(Level.WARNING,x.getMessage(),x);
       throw x;
     }
