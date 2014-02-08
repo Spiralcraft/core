@@ -29,6 +29,7 @@ import spiralcraft.log.Level;
 import spiralcraft.text.markup.MarkupException;
 import spiralcraft.text.markup.MarkupHandler;
 import spiralcraft.text.markup.MarkupParser;
+import spiralcraft.util.string.StringPool;
 
 /**
  * <p>Generates a message from a basic markup template syntax.
@@ -71,7 +72,7 @@ public class MessageFormat
   public MessageFormat(String template)
     throws spiralcraft.text.ParseException,MarkupException
   {
-    this.template=template;
+    this.template=StringPool.INSTANCE.get(template);
     substitutionParser.parse
       (template
       ,new MarkupHandler()
