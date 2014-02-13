@@ -14,6 +14,13 @@ public class ArrayJournalTuple
   implements JournalTuple
 {
   
+  private static final boolean traceTransactionContext
+    ="true".equals
+      (System.getProperty
+        ("spiralcraft.data.spi.ArrayJournalTuple.traceTransactionContext"
+        )
+      );
+  
   public static ArrayJournalTuple freezeDelta(DeltaTuple delta)
     throws DataException
   { 
@@ -254,6 +261,11 @@ public class ArrayJournalTuple
           // Let waiters contend for the next version
           // If we don't notify all, nothing else will be around to
           //   notify remaining waiters.
+          if (transactionContext.forward)
+          { 
+            log.fine("Rolling back forward transaction "+transactionContext.nextVersion);
+            transactionContext.nextVersion.rollback();
+          }
           transactionContext.notifyAll();
           transactionContext=null;
         }
@@ -277,6 +289,11 @@ public class ArrayJournalTuple
         {
           nextVersion=transactionContext.nextVersion;
           delta=transactionContext.delta;
+          if (transactionContext.forward)
+          { 
+            log.fine("Committing forward transaction "+transactionContext.nextVersion);
+            transactionContext.nextVersion.commit();
+          }
           // Let waiters advance to the next version
           // TODO: make this a fifo queue
           transactionContext.notifyAll();
@@ -284,7 +301,7 @@ public class ArrayJournalTuple
         }
       }
       else
-      { log.warning("Nothing to commit in "+this);
+      { log.warning("Nothing to commit in "+this+"  "+(nextVersion!=null?"\r\nnextVersion = "+nextVersion:""));
       }
     }
   }
@@ -340,7 +357,12 @@ public class ArrayJournalTuple
   @Override
   public String toString()
   { return super.toString()+" version="+version+", transaction="+transactionId
-     +(nextVersion!=null?"(nextVersion="+nextVersion.getVersion()+":"+nextVersion.getTransactionId()+")":" (latest version)");
+     +(nextVersion!=null
+       ?"(nextVersion="+nextVersion.getVersion()+":"+nextVersion.getTransactionId()+")"
+       :" (latest version)"
+       )
+     +(transactionContext!=null?" LOCKED BY tx"+transactionContext.transactionId:"")
+     ;
   }
   
   class TransactionContext
@@ -359,7 +381,12 @@ public class ArrayJournalTuple
     { 
       this.nextVersion=nextVersion;
       this.delta=delta;
-      this.trace=new Exception();
+      if (traceTransactionContext)
+      { this.trace=new Exception();
+      }
+      else
+      { this.trace=null;
+      }
       this.threadName=Thread.currentThread().getName();
       this.transactionId=transactionId();
     }

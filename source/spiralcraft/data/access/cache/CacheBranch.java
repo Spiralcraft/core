@@ -143,6 +143,11 @@ public class CacheBranch
     }
     ArrayJournalTuple newData=ArrayJournalTuple.freezeDelta(delta);
     TupleBranch tb=enlist(newData.getId());
+    if (tb.delta==null && tb.storeVersion!=null)
+    { 
+      throw new DataException
+        ("INSERT conflict: existing="+tb.storeVersion+" new:"+newData);
+    }
     if (tb.redoVersion!=null)
     {
       throw new DataException
@@ -164,22 +169,24 @@ public class CacheBranch
     }
     Identifier id=delta.getOriginal().getId();
     TupleBranch tb=enlist(id);
-    ArrayJournalTuple existing=cache.primary.get(id);
-    if (existing==null)
+    
+    ArrayJournalTuple currentVersion
+      =(tb.delta==null?tb.storeVersion:tb.redoVersion);
+    if (currentVersion==null)
     { 
-      // Tuple was previously inserted during this transaction
-      existing=tb.redoVersion;
+      throw new DataException
+        ("UPDATE conflict: Original does not exist. id="+id+" : "+delta);
     }
-    if (existing==null)
-    { throw new DataException("Original not found in primary cache during update. id="+id+" : "+delta);
+    if (tb.delta==null)
+    { tb.undoVersion=tb.storeVersion;
     }
-    ArrayJournalTuple priorVersion=tb.redoVersion!=null?tb.redoVersion:existing;
-    existing.prepareUpdate(delta);
-    tb.undoVersion=existing; 
-    tb.redoVersion=existing.getTxVersion();
-    tb.delta=delta;
+    
+    DeltaTuple actualDelta=currentVersion.prepareUpdate(delta);
+    
+    tb.redoVersion=currentVersion.getTxVersion();
+    tb.delta=actualDelta;
     for (IndexBranch index:indices.values())
-    { index.updated(priorVersion,tb.redoVersion);
+    { index.updated(currentVersion,tb.redoVersion);
     }
     return tb.redoVersion;
   }
@@ -197,20 +204,24 @@ public class CacheBranch
     }
     Identifier id=delta.getOriginal().getId();
     TupleBranch tb=enlist(id);
-    ArrayJournalTuple existing=cache.primary.get(id);
-    if (existing==null)
+    
+    ArrayJournalTuple currentVersion=
+      (tb.delta==null?tb.storeVersion:tb.redoVersion);
+    if (currentVersion==null)
     {
-      // Tuple was previously inserted during this transaction
-      existing=tb.redoVersion;
+      throw new DataException
+        ("DELETE conflict: Original does not exist. id="+id+" : "+delta);
     }
-    existing.prepareUpdate(delta);
-    tb.undoVersion=existing; 
-    tb.redoVersion=existing.getTxVersion();
-    tb.delta=delta;
+    if (tb.delta==null)
+    { tb.undoVersion=tb.storeVersion;
+    }
+    
+    DeltaTuple actualDelta=currentVersion.prepareUpdate(delta);
+    
+    tb.redoVersion=currentVersion.getTxVersion();
+    tb.delta=actualDelta;
     for (IndexBranch index:indices.values())
-    { 
-      log.fine("Sending delete to index "+index.key+": "+existing);
-      index.deleted(existing);
+    { index.deleted(currentVersion);
     }    
     return tb.redoVersion;
     
@@ -226,6 +237,7 @@ public class CacheBranch
       if (tb==null)
       { 
         tb=new TupleBranch();
+        tb.storeVersion=cache.primary.get(id);
         enlisted.put(id,tb);
       } 
       return tb;
@@ -355,7 +367,14 @@ public class CacheBranch
 class TupleBranch
 {
   DeltaTuple delta;
+  
+  // The original public version on which this transaction is based
+  ArrayJournalTuple storeVersion;
+  
+  // The version that will be the end result of this transaction
   ArrayJournalTuple redoVersion;
+  
+  // The first version in the chain that is locked for update or delete
   ArrayJournalTuple undoVersion;
   boolean applied;
 }
