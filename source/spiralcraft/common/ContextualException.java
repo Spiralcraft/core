@@ -86,7 +86,7 @@ public class ContextualException
     buf.append(super.toString());
 
     if (context!=null)
-    { buf.append(" (context: "+context.toString());
+    { buf.append(" (context: "+context.toString()+")");
     }
     
 //    Throwable rootCause=getRootCause();
