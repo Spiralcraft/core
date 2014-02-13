@@ -14,6 +14,58 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev73
+        </revision>
+      
+        <notes>
+          <scm:Note>Traceability enhancements to track down ThreadLocal not
+            initialized issues (when expressions are bound to a context that
+            is not in scope when the expression is evaluated)
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/core/CalculatedFieldImpl.java
+          </URI>
+          <URI>data/core/FieldImpl.java
+          </URI>
+          <URI>data/core/RelativeField.java
+          </URI>
+          <URI>lang/spi/AbstractChannel.java
+          </URI>
+          <URI>lang/spi/ClosureFocus.java
+          </URI>
+          <URI>task/Eval.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev73
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where multiple updates to the same entity in
+            a transaction caused issues holding locks on intermediate copies
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>access/cache/CacheBranch.java
+          </URI>
+          <URI>data/spi/ArrayJournalTuple.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev72
         </revision>
       
