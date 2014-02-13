@@ -18,6 +18,7 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BaseFocus;
 import spiralcraft.lang.Channel;
@@ -56,11 +57,14 @@ public class ClosureFocus<T>
     =ClassLog.getInstance(ClosureFocus.class);
   private static final Level debugLevel
     =ClassLog.getInitialDebugLevel(ClosureFocus.class,null);
+  private static final boolean trace
+    ="true".equals(System.getProperty("spiralcraft.lang.spi.ClosureFocus.trace"));
   
   @SuppressWarnings("rawtypes")
   private LinkedHashMap<URI,EnclosedFocus> foci
     =new LinkedHashMap<URI,EnclosedFocus>();
   private EnclosedFocus<T> subjectFocus;
+  private DeclarationInfo declarationInfo;
   
   public ClosureFocus(Focus<T> focusChain)
   { this(focusChain,focusChain.getSubject());
@@ -82,6 +86,10 @@ public class ClosureFocus<T>
       { setSubject(subject);
       }
     }
+  }
+  
+  public void setDeclarationInfo(DeclarationInfo declarationInfo)
+  { this.declarationInfo=declarationInfo;
   }
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -111,6 +119,7 @@ public class ClosureFocus<T>
 //           )
 //        { return openFocus;
 //        }
+        
         focus=new EnclosedFocus(subject);
         foci.put(focusURI,focus);
       }
@@ -271,6 +280,9 @@ public class ClosureFocus<T>
     extends SimpleFocus<Y>
   { 
     private final Channel<Y> sourceChannel;
+    private Exception allocationStack
+      =trace?new Exception():null;
+    
     
     EnclosedFocus(Channel<Y> channel)
     { 
@@ -293,7 +305,11 @@ public class ClosureFocus<T>
         ((ThreadLocalChannel<Y>) getSubject()).push();
       }
       catch (AccessException x)
-      { throw new AccessException("Error resolving value of "+sourceChannel,x);
+      {
+        if (trace)
+        { log.log(Level.TRACE,"Enclosed focus allocation stack",allocationStack);
+        }
+        throw new AccessException("Error resolving value of "+sourceChannel+" when restoring closure for "+declarationInfo,x);
       }
     }
     

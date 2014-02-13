@@ -1,5 +1,7 @@
 package spiralcraft.task;
 
+import spiralcraft.common.ContextualException;
+import spiralcraft.lang.AccessException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Expression;
@@ -80,18 +82,29 @@ public class Eval<Tcontext,Tresult>
     public void work()
       throws InterruptedException
     {
-      
-      Tresult result=x.get();
-      
-      resultChannel.push(result);
       try
-      { super.work();
+      {
+        Tresult result=x.get();
+      
+        resultChannel.push(result);
+        try
+        { super.work();
+        }
+        finally
+        { resultChannel.pop();
+        }
+        addResult(result);
       }
-      finally
-      { resultChannel.pop();
+      catch (AccessException e)
+      { 
+        addException
+          (new ContextualException
+            ("Error evaluating "+x.getText(),getDeclarationInfo(),e)
+          );
       }
-      addResult(result);
+      
     }
+      
   }
     
 }

@@ -15,6 +15,7 @@
 package spiralcraft.data.core;
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.RuntimeDataException;
 import spiralcraft.data.Scheme;
@@ -25,7 +26,6 @@ import spiralcraft.data.Tuple;
 import spiralcraft.data.EditableTuple;
 import spiralcraft.data.DataException;
 import spiralcraft.data.TypeMismatchException;
-
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
@@ -46,7 +46,6 @@ import spiralcraft.rules.Violation;
 import spiralcraft.ui.MetadataType;
 import spiralcraft.util.refpool.URIPool;
 import spiralcraft.util.thread.BlockTimer;
-
 import spiralcraft.data.lang.DataReflector;
 import spiralcraft.data.reflect.ReflectionType;
 
@@ -94,6 +93,7 @@ public class FieldImpl<T>
   private Reflector contentReflector;
   
   protected FieldSet fieldSet;
+  protected DeclarationInfo declarationInfo;
 
 //  protected boolean debugData;
   
@@ -147,7 +147,13 @@ public class FieldImpl<T>
   { return archetypeField;
   }
   
-
+  public DeclarationInfo getDeclarationInfo()
+  { 
+    if (declarationInfo==null)
+    { declarationInfo=new DeclarationInfo(null,getURI(),null);
+    }
+    return declarationInfo;
+  }
   
   public void setArchetypeField(Field field)
     throws DataException

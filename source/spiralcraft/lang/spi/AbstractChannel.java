@@ -14,6 +14,7 @@
 //
 package spiralcraft.lang.spi;
 
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -73,6 +74,7 @@ public abstract class AbstractChannel<T>
   protected boolean debug;
   protected Focus<?> context;
   protected Channel<?> origin;
+  protected DeclarationInfo declarationInfo;
   
   
 
@@ -199,7 +201,21 @@ public abstract class AbstractChannel<T>
   
   @Override
   public T get()
-  { return retrieve();
+  { 
+    try
+    { return retrieve();
+    }
+    catch (AccessException x)
+    { throw new AccessException("Access error in "+getDeclarationInfo(),x);
+    }
+  }
+  
+  protected DeclarationInfo getDeclarationInfo()
+  { return declarationInfo!=null?declarationInfo:new DeclarationInfo(null,URI.create(getClass().getName()),null);
+  }
+  
+  public void setDeclarationInfo(DeclarationInfo declarationInfo)
+  { this.declarationInfo=declarationInfo;
   }
   
   protected abstract T retrieve();

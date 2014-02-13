@@ -309,6 +309,7 @@ public class RelativeField<T extends DataComposite>
     
     ClosureFocus<Tuple> sourceFocus
       =new ClosureFocus(context,source);
+    sourceFocus.setDeclarationInfo(getDeclarationInfo());
     
     Focus<Tuple> keyFocus
       =sourceFocus.chain

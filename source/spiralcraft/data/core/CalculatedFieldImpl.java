@@ -240,11 +240,16 @@ public class CalculatedFieldImpl<T>
     if (!context.isContext(source))
     { context=context.chain(source);
     }
+    if (debug)
+    { log.fine("Bound "+getURI()+" to "+context);
+    }
     
     ClosureFocus<?> closure
       =new ClosureFocus(context,source);
     
-    return new ClosureChannel<T>(closure,closure.<T>bind(expression));
+    ClosureChannel ret= new ClosureChannel<T>(closure,closure.<T>bind(expression));
+    ret.setDeclarationInfo(getDeclarationInfo());
+    return ret;
   }
   
   
