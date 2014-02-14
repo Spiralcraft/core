@@ -1256,6 +1256,19 @@
       </testX>
     </test:Assertion>
 
+    <test:Assertion>
+      <name>Repeat
+      </name>
+      <subjectX>
+        { i:=0
+        }
+        { (.i=.i+1).[*fn:Repeat{`.==10`}]
+        }
+      </subjectX>
+      
+      <testX>.==10
+      </testX>
+    </test:Assertion>
   </sequence>
         
 </test:TestGroup>
