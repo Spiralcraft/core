@@ -14,6 +14,37 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev74
+        </revision>
+      
+        <notes>
+          <scm:Note>Add a "Repeat" inline function to repeat evaluation of 
+            input until a certain condition is reached.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/functions/Repeat.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev74
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where writing to functor result channel caused
+            a hard exception and not a soft failure. 
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/command/CommandFunctorChannel.java
+        </path>
+        
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev73
         </revision>
       
