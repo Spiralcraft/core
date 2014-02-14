@@ -108,12 +108,12 @@ public class CommandFunctorChannel<Ttarget,Tcontext,Tresult>
     }
       
   }
-
+  
   @Override
   protected boolean store(
     Tresult val)
     throws AccessException
-  { throw new UnsupportedOperationException("Command results are read only");
+  { return false;
   }
 
 }
