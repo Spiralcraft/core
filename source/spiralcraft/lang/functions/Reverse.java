@@ -26,7 +26,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.spi.SourcedChannel;
 
 /**
- * A ChannelFactory which sorts a Collection 
+ * A ChannelFactory which reverses a Collection 
  * 
  * @author mike
  *
