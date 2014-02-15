@@ -128,16 +128,22 @@ public class DataSessionFocus
 //      
 //         bindFocus("spiralcraft.data.buffer",dataBufferFocus);
 
+      Channel<DataComposite> dataChannel
+        =new DataChannel<DataComposite>
+            (dataType
+            ,this.bind(DATA_EXPRESSION)
+            ,false
+            );
+      // Make sure that methods and fields can resolve against this
+      //   DataSession
+      dataChannel.setContext(this);
+      
       // Adapt a data channel to the bean channel returned from
       //   the Data property
       dataFocus
         =new SimpleFocus<DataComposite>
           (this
-          ,new DataChannel<DataComposite>
-            (dataType
-            ,this.bind(DATA_EXPRESSION)
-            ,false
-            )
+          ,dataChannel
           );
     
       addFacet(dataFocus);

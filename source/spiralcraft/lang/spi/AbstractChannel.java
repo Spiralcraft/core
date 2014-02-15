@@ -23,6 +23,7 @@ import spiralcraft.lang.Decorator;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.AccessException;
 import spiralcraft.lang.Signature;
+import spiralcraft.log.ClassLog;
 import spiralcraft.util.tree.LinkedTree;
 
 import java.beans.PropertyChangeSupport;
@@ -66,6 +67,12 @@ public abstract class AbstractChannel<T>
     }
     return ret;
   }
+  protected static final ClassLog log
+    =ClassLog.getInstance(AbstractChannel.class);
+  
+  private static final boolean traceCache
+    ="true".equals
+      (System.getProperty("spiralcraft.lang.spi.AbstractChannel.traceCache"));
   
   private final Reflector<T> _reflector;
   private final boolean _static;
@@ -128,15 +135,27 @@ public abstract class AbstractChannel<T>
     { _cache=new WeakChannelCache();
     }
     _cache.put(key,channel);
+    if (traceCache)
+    { log.fine(toString()+" cached "+channel+" as "+key);
+    }
     if (channel.getContext()==null)
-    { channel.setContext(context);
+    { 
+      if (traceCache)
+      { log.fine("Set context to "+context);
+      }
+      channel.setContext(context);
     }
   }
   
   @Override
   @SuppressWarnings("unchecked")
   public synchronized <X> Channel<X>getCached(Object key)
-  { return _cache!=null?(Channel<X>) _cache.get(key):null;
+  { 
+    final Channel<X> ret= _cache!=null?(Channel<X>) _cache.get(key):null;
+    if (traceCache && ret!=null)
+    { log.fine(toString()+" Hit "+ret+" for "+key);
+    }
+    return ret;
   }
 
   @Override

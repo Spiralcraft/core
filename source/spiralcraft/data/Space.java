@@ -190,11 +190,15 @@ public class Space
         ,true
         );
     
-    selfFocus.addFacet
+    Focus<?> storeFocus=selfFocus.chain(selfFocus.getSubject());
+    
+    // Add a reference to a data session visible only to stores for 
+    //   internal binding of data ops.
+    storeFocus.addFacet
       (new SimpleFocus<DataSession>(selfFocus,dataSessionChannel));
     for (Store store: stores)
     { 
-      store.bind(selfFocus);
+      store.bind(storeFocus);
       storeMap.put(store.getName(),store);      
     }
     computeTypes();

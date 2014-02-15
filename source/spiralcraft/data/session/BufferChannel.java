@@ -128,7 +128,7 @@ public class BufferChannel<Tbuffer extends Buffer>
     }
     sessionChannel=DataSession.findChannel(focus);
     if (sessionChannel==null)
-    { throw new BindException("Can't find a DataSession in Focus chain");
+    { throw new BindException("Can't find a DataSession in Focus chain "+focus.getFocusChain());
     }
     
     
