@@ -13,6 +13,34 @@
 
     <detail> 
     
+
+      <scm:Change>
+        <revision>-dev75
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue where methods and fields on a session data object
+            would bind to the wrong DataSession, causing a ThreadLocal not
+            initialized error.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resouces>
+          <URI>data/Space.java
+          </URI>
+          <URI>data/session/BufferChannel.java
+          </URI>
+          <URI>data/session/DataSessionFocus.java
+          </URI>
+          <URI>lang/spi/AbstractChannel.java
+          </URI>
+        </resouces>
+        
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev74
         </revision>
