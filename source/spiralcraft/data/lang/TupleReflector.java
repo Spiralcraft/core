@@ -308,9 +308,25 @@ public class TupleReflector<T extends Tuple>
           binding=bindMethods(archetype,source,focus,name,params);
           archetype=archetype.getArchetype();
         }
+        
         if (binding!=null)
         { return binding;
         }
+        
+        Type baseType=type.getBaseType();
+        while (baseType!=null && binding==null)
+        {
+          if (debug)
+          { log.fine("Checking methods for name '"+name+"' in "+baseType);
+          }
+          binding=bindMethods(baseType,source,focus,name,params);
+          baseType=baseType.getBaseType();
+        }
+ 
+        if (binding!=null)
+        { return binding;
+        }
+         
       }
     }
         
