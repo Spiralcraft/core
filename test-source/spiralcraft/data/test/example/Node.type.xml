@@ -46,5 +46,18 @@
       </primary>
     </meta:Key>
   </keys>
+  
+  <methods>
+    <meta:Method>
+      <name>baseMethod
+      </name>
+      
+      <returnType><String.type/>
+      </returnType>
+      
+      <x>"base"
+      </x>
+    </meta:Method>
+  </methods>
 
 </meta:Type>

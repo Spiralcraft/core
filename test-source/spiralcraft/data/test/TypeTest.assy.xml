@@ -232,6 +232,18 @@
           </testX>
         </test:Assertion>           
 
+        <test:Assertion>
+          <name>Base type method call
+          </name>
+        
+          <subjectX>[@example:IntegerNode].().baseMethod()
+          </subjectX>
+        
+          <testX>.=="base"
+          </testX>
+        </test:Assertion>           
+          
+
 <!--
         <task:Eval>
         
