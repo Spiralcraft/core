@@ -47,6 +47,7 @@ public class PathContext
   private Binding<URI> codeX;
   protected PathContextMapping[] pathMappings;
   private Boolean publishContent;
+  private Binding<Boolean> guardX;
       
   /**
    * The path from the context root
@@ -79,6 +80,16 @@ public class PathContext
    */
   public void setCodeBaseURI(URI codeBaseURI)
   { this.codeBaseURI=URIUtil.ensureTrailingSlash(codeBaseURI);
+  }
+  
+  /**
+   * An optional condition to allow access to resources in this path and 
+   *   subpaths
+   * 
+   * @param guardX
+   */
+  public void setGuardX(Binding<Boolean> guardX)
+  { this.guardX=guardX;
   }
   
   /**
@@ -317,6 +328,10 @@ public class PathContext
   { // this.parent=parentContext;
   }
   
+  public boolean checkGuard()
+  { return guardX==null || Boolean.TRUE.equals(guardX.get());
+  }
+  
   @Override
   protected Focus<?> bindPeers(Focus<?> focus)
     throws ContextualException
@@ -324,6 +339,9 @@ public class PathContext
     focus=super.bindPeers(focus);
     if (codeX!=null)
     { codeX.bind(focus);
+    }
+    if (guardX!=null)
+    { guardX.bind(focus);
     }
     return focus;
   }
