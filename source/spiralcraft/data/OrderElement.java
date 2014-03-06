@@ -25,7 +25,7 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.ParseException;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.AbstractChannel;
-import spiralcraft.log.ClassLog;
+//import spiralcraft.log.ClassLog;
 import spiralcraft.util.lang.ClassUtil;
 
 /**
@@ -36,8 +36,8 @@ import spiralcraft.util.lang.ClassUtil;
  */
 public class OrderElement<T>
 {
-  private static final ClassLog log
-    =ClassLog.getInstance(OrderElement.class);
+//  private static final ClassLog log
+//    =ClassLog.getInstance(OrderElement.class);
     
   private Expression<T> expression;
   private int weight=1;

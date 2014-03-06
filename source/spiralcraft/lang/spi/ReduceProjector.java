@@ -32,7 +32,7 @@ import spiralcraft.lang.parser.StructField;
 import spiralcraft.lang.parser.StructNode;
 import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.lang.reflect.BeanReflector;
-import spiralcraft.log.ClassLog;
+//import spiralcraft.log.ClassLog;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.lang.ClassUtil;
 
@@ -48,8 +48,8 @@ import spiralcraft.util.lang.ClassUtil;
  */
 public class ReduceProjector<I,P,R,C>
 {
-  private static final ClassLog log
-    =ClassLog.getInstance(ReduceProjector.class);
+//  private static final ClassLog log
+//    =ClassLog.getInstance(ReduceProjector.class);
 
   public final Channel<R> result;
   

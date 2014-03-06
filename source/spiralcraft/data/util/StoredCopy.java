@@ -38,7 +38,7 @@ import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.util.LangUtil;
 
-import spiralcraft.log.ClassLog;
+//import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
 /**
@@ -61,8 +61,8 @@ import spiralcraft.log.Level;
 public class StoredCopy
   implements ChannelFactory<Tuple,Tuple>,Contextual
 {
-  private static final ClassLog log
-    =ClassLog.getInstance(RelationalMap.class);
+//  private static final ClassLog log
+//    =ClassLog.getInstance(RelationalMap.class);
   
   private Type<?> entityType;
   private Queryable<Tuple> queryable;

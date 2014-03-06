@@ -38,7 +38,7 @@ import spiralcraft.lang.reflect.ArrayReflector;
 import spiralcraft.lang.spi.SourcedChannel;
 import spiralcraft.lang.spi.ThreadLocalChannel;
 
-import spiralcraft.log.ClassLog;
+//import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 
 /**
@@ -55,8 +55,8 @@ import spiralcraft.log.Level;
 public class RelationalMap<Tdownstream,TdownstreamItem,Tupstream,TupstreamItem>
   implements ChannelFactory<Tdownstream, Tupstream>,Contextual
 {
-  private static final ClassLog log
-    =ClassLog.getInstance(RelationalMap.class);
+//  private static final ClassLog log
+//    =ClassLog.getInstance(RelationalMap.class);
   
   private Type<?> entityType;
   private String upstreamFieldName;

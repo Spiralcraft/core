@@ -18,7 +18,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.util.LangUtil;
-import spiralcraft.log.ClassLog;
+//import spiralcraft.log.ClassLog;
 
 import spiralcraft.rules.AbstractRule;
 import spiralcraft.rules.RuleChannel;
@@ -29,8 +29,8 @@ public class UniqueRule<T extends Tuple>
   extends AbstractRule<Type<T>,T>
 {
 
-  private static final ClassLog log
-    =ClassLog.getInstance(UniqueRule.class);
+//  private static final ClassLog log
+//    =ClassLog.getInstance(UniqueRule.class);
   
   private Query query;
   private Field<?> field;
