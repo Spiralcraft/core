@@ -73,5 +73,9 @@
       </type>
     </meta:Entity>
     
+    <meta:Entity>
+      <type><example:CityState.type/>
+      </type>
+    </meta:Entity>
   </entities>
 </meta:Schema>

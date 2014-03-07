@@ -14,6 +14,32 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev77
+        </revision>
+      
+        <notes>
+          <scm:Note>Queries against the XmlStore now consider uncommitted
+            data in the current transaction.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>session/DataSession.java
+          </URI>
+          <URI>session/DataSessionBranch.java
+          </URI>
+          <URI>xml/XmlBranch.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev76
         </revision>
       

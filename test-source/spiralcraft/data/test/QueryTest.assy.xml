@@ -785,6 +785,31 @@
         
       </sequence>
     </dtask:Session>
+    
+    <dtask:Session>
+      <transactional>true
+      </transactional>
+      
+      <sequence>
+        <test:Assertion>
+          <name>normalize 1
+          </name>
+          <subjectX>[@example:CityState].@normalize("El Cerrito","CA")
+          </subjectX>
+          <testX>.state=="CA"
+          </testX>
+        </test:Assertion>
+        
+        <test:Assertion>
+          <name>normalize 2
+          </name>
+          <subjectX>[@example:CityState].@normalize("El Cerrito","CA")
+          </subjectX>
+          <testX>.state=="CA"
+          </testX>
+        </test:Assertion>
+      </sequence>
+    </dtask:Session>
 
   </scenarios>
   

@@ -1,0 +1,62 @@
+<dtask:Session
+  xmlns:dtask="class:/spiralcraft/data/task/"
+  xmlns:j="class:/java/lang/"
+  xmlns:example="class:/spiralcraft/data/test/example/"
+  xmlns:task="class:/spiralcraft/task/"
+  >
+  <transactional>true
+  </transactional>  
+  
+  <contextX>
+    [#params] {
+      city:[@j:String]
+      ,state:[@j:String]
+      ,ref:[@example:CityState]=null
+    }
+  </contextX>
+  
+  <resultX>
+    [*dtask:Fetch
+      {[@example:CityState]
+      , [{ `city:=[params].city`
+          ,`state:=[params].state`
+        }]
+      }
+    ].().@log("Result is "+.)
+  </resultX>
+  
+  <sequence>
+    <task:Eval>
+      <x>
+        [params].ref=
+           [*dtask:Fetch
+             {[@example:CityState]
+             , [{ `city:=[params].city`
+                 ,`state:=[params].state`
+               }]
+             }
+           ].().@log("Existing CityState "+.)
+      
+      </x>
+    </task:Eval>
+    <dtask:Edit>
+      <debug>true
+      </debug>
+      <x>[params].ref
+      </x>
+      <whenX>[params].ref==null
+      </whenX>
+      <autoCreate>true
+      </autoCreate>
+      <autoSave>true
+      </autoSave>
+      <preSave>
+        .{
+          .city=[params].city
+          ,.state=[params].state
+          ,.
+        }.@log("Adding "+.)
+      </preSave>
+    </dtask:Edit>
+  </sequence>
+</dtask:Session>
