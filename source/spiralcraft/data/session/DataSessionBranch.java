@@ -11,11 +11,12 @@ import spiralcraft.data.Type;
 import spiralcraft.data.transaction.Branch;
 import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.data.transaction.Transaction.State;
+//import spiralcraft.log.ClassLog;
 
 public class DataSessionBranch
   implements Branch
 {
-
+//  private static ClassLog log=ClassLog.getInstance(DataSessionBranch.class);
   private LinkedHashSet<Buffer> branchBuffers
     =new LinkedHashSet<Buffer>();
   
@@ -30,10 +31,11 @@ public class DataSessionBranch
   { this.dataSession=session;
   }
   
-  public void addBuffer(Buffer buffer)
+  public boolean addBuffer(Buffer buffer)
   { 
-    branchBuffers.add(buffer);
+    boolean first=branchBuffers.add(buffer);
     buffer.joinTransaction();
+    return first;
   }
   
   public  DataConsumer<DeltaTuple> getUpdater(Type<?> type)

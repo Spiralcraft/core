@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 import spiralcraft.data.Aggregate;
@@ -33,7 +34,7 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
 import spiralcraft.util.KeyFunction;
 
-class XmlBranch
+public class XmlBranch
   implements Branch
 {
   private final ClassLog log=ClassLog.getInstance(XmlBranch.class);
@@ -65,6 +66,12 @@ class XmlBranch
   private LinkedHashSet<Identifier> wroteList
     =new LinkedHashSet<Identifier>();
   
+  private EditableKeyedListAggregate<ArrayJournalTuple> txCopy;
+  private KeyFunction<KeyTuple,Tuple> primaryKeyFn;
+  private KeyedListAggregate.Index<ArrayJournalTuple> txPrimaryIndex;
+      
+  private HashSet<KeyTuple> insertedKeys=new HashSet<KeyTuple>();
+  
   private State state=State.STARTED;
   
   @SuppressWarnings("unused")
@@ -83,6 +90,23 @@ class XmlBranch
     deltaKeyedList=new EditableKeyedListAggregate<DeltaTuple>
       (Type.getAggregateType(Type.getDeltaType(queryable.getResultType())));
 
+    txCopy=new EditableKeyedListAggregate<ArrayJournalTuple>
+      (Type.getAggregateType(queryable.getResultType()));
+    Key<Tuple> primaryKey=(Key<Tuple>) queryable.getResultType().getPrimaryKey();
+   
+    try
+    {
+      if (primaryKey!=null)
+      {
+        primaryKeyFn=primaryKey.getKeyFunction();
+        txPrimaryIndex=txCopy.getIndex
+         ((Key<ArrayJournalTuple>) queryable.getResultType().getPrimaryKey(),true);
+      }
+    }
+    catch (DataException x)
+    { throw new TransactionException("Unable to get primary key index from "+queryable.getResultType());
+    }
+        
     try
     {
       for (Key<?> key: queryable.uniqueKeys)
@@ -139,9 +163,24 @@ class XmlBranch
     { 
       DeltaTuple delta=deltaMap.get(tuple.getId());
       if (delta==null || !delta.isDelete())
-      { result.add(tuple);
+      { 
+        tuple=getLatestTxVersion(tuple);
+        result.add(tuple);
+      }
+      
+    }
+    
+    if (primaryKeyFn!=null)
+    {
+      for (KeyTuple key: insertedKeys)
+      {
+        ArrayJournalTuple tuple=txPrimaryIndex.getFirst(key);
+        if (tuple!=null)
+        { result.add(tuple);
+        }
       }
     }
+    
     if (logLevel.isFine())
     { log.fine("Branch query for "+queryable.getResultType());
     }
@@ -157,7 +196,7 @@ class XmlBranch
     { return queryable.getPublicCursor(projection,key);
     }
     
-    // TODO: This only accounts for deletes
+    // TODO: This only accounts for deletes and inserts
     KeyedListAggregate<Tuple> aggregate=queryable.getAggregate();
     Aggregate.Index<Tuple> index=aggregate.getIndex(projection,true);
     Aggregate<Tuple> data=index.get(key);
@@ -169,16 +208,59 @@ class XmlBranch
         DeltaTuple delta=deltaMap.get(tuple.getId());
       
         if (delta==null || !delta.isDelete())
-        { result.add(tuple);
+        { 
+          tuple=getLatestTxVersion(tuple);
+          result.add(tuple);
         }
       }
+      
+      if (primaryKeyFn!=null)
+      {
+        if (logLevel.isFine())
+        { log.fine("Checking for inserts in "+projection+" for "+key);
+        }
+        // Account for inserts in this transaction that match the index key
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Aggregate.Index<ArrayJournalTuple> txIndex=txCopy.getIndex
+          ((Projection) projection,true);
+        Aggregate<ArrayJournalTuple> txResult=txIndex.get(key);
+        if (txResult!=null)
+        { 
+          for (Tuple tuple: txResult)
+          {
+            if (insertedKeys.contains(primaryKeyFn.key(tuple)))
+            { result.add(tuple);
+            }
+          }
+        }
+      }
+      
       if (logLevel.isFine())
       { log.fine("Branch index query for "+projection.toString());
       }
       return new ListCursor<Tuple>(queryable.getResultType().getFieldSet(),result);
     }
     else
-    { return queryable.emptyCursor;
+    { 
+      if (primaryKeyFn!=null)
+      { 
+        // There's nothing in the store prior to this transaction. Check for
+        //   inserts in this transaction.
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Aggregate.Index<ArrayJournalTuple> txIndex=txCopy.getIndex
+          ((Projection) projection,true);
+        Aggregate<ArrayJournalTuple> txResult=txIndex.get(key);
+        if (txResult!=null)
+        { 
+          ArrayList<Tuple> result=new ArrayList<Tuple>(txResult.size());
+          for (Tuple tuple: txResult)
+          { result.add(tuple);
+          }
+          return new ListCursor<Tuple>(queryable.getResultType().getFieldSet(),result);
+        }
+        
+      }
+      return queryable.emptyCursor;
     }
     
     
@@ -242,11 +324,8 @@ class XmlBranch
             {
               // Make sure the conflicting row hasn't been deleted in this
               //   transaction.
-              if (logLevel.isFine())
-              { 
-                log.fine
-                  ("Unique conflict on add: "+tuple+":"+queryable.uniqueKeys.get(i));
-              }
+              log.warning
+                ("Unique conflict on add: "+tuple+":"+queryable.uniqueKeys.get(i)+" conflicts with "+txDelta);
               throw new UniqueKeyViolationException
                 (tuple,queryable.uniqueKeys.get(i));
             }
@@ -254,7 +333,7 @@ class XmlBranch
         }
         finally
         { cursor.close();
-        }
+        } 
         
         
         // XXX This should be folded into the query's current transaction
@@ -274,11 +353,8 @@ class XmlBranch
                     )
                )
             {
-              if (logLevel.isFine())
-              { 
-                log.fine
-                  ("Unique conflict on add: "+tuple+" conflicts with "+txDelta+": "+queryable.uniqueKeys.get(i));
-              }
+              log.warning
+                ("Unique conflict on add: "+tuple+" conflicts with "+txDelta+": "+queryable.uniqueKeys.get(i));
               throw new UniqueKeyViolationException
                 (tuple,queryable.uniqueKeys.get(i));
             }
@@ -360,12 +436,10 @@ class XmlBranch
           {
             if (!txDelta.getId().equals(tuple.getId()) && !txDelta.isDelete())
             {
-              if (logLevel.isFine())
-              { 
-                log.fine("delta id = "+txDelta.getId()+"  id = "+tuple.getId());
-                log.fine
-                  ("Unique conflict on update: "+tuple+" conflicts with "+txDelta+": "+queryable.uniqueKeys.get(i));
-              }
+              log.fine("delta id = "+txDelta.getId()+"  id = "+tuple.getId());             
+              log.warning
+                  ("Unique conflict on update: "+tuple+" conflicts with "
+                    +txDelta+": "+queryable.uniqueKeys.get(i));
               throw new UniqueKeyViolationException
                 (tuple,queryable.uniqueKeys.get(i));
             }
@@ -407,19 +481,67 @@ class XmlBranch
     { baseRevs.remove(tuple.getId());
     }
   }
+
+  Tuple getLatestTxVersion(Tuple storeVersion)
+  {          
+    if (primaryKeyFn!=null)
+    {
+      KeyTuple primaryKey=primaryKeyFn.key(storeVersion);
+      ArrayJournalTuple txVersion=txPrimaryIndex.getFirst(primaryKey);
+      if (txVersion!=null)
+      { return txVersion;
+      }
+      else
+      { return storeVersion;
+      }
+    }
+    // TODO: To be correct, sequentially compare to everything to txVersion
+    return storeVersion;
+  }
+  
+  
+  ArrayJournalTuple findInTx(Tuple original)
+  {
+    ArrayJournalTuple ret=null;
+    if (primaryKeyFn!=null)
+    { ret=txPrimaryIndex.getFirst(primaryKeyFn.key(original));
+    }
+    else
+    { 
+      for (ArrayJournalTuple tuple:txCopy)
+      { 
+        if (tuple.equals(original))
+        { 
+          ret=tuple;
+          break;
+        }
+      }
+      
+    }
+    if (ret!=null)
+    { log.fine("Already in transaction "+original);
+    }
+    return ret;
+  }
   
   /**
    * Perform implementation specific insert logic
    * 
    * @param tuple
    */
-  void insert(DeltaTuple tuple)
+  void insert(DeltaTuple delta)
     throws DataException
   { 
 
-    tuple=checkBuffer(tuple);
-    checkInsertIntegrity(tuple);
-    addDelta(tuple);
+    delta=checkBuffer(delta);
+    checkInsertIntegrity(delta);
+    ArrayJournalTuple newVersion=
+      ArrayJournalTuple.freezeDelta(delta);
+    txCopy.add(newVersion);
+    if (primaryKeyFn!=null)
+    { insertedKeys.add(primaryKeyFn.key(newVersion));
+    }
+    addDelta(delta);
   }
   
   /**
@@ -427,28 +549,47 @@ class XmlBranch
    * 
    * @param tuple
    */
-  void update(DeltaTuple tuple)
+  void update(DeltaTuple delta)
     throws DataException
   {
-    tuple=checkBuffer(tuple);
-    checkUpdateIntegrity(tuple);
-    tuple=lockOriginal(tuple);
-    addDelta(tuple);
+    delta=checkBuffer(delta);
+    checkUpdateIntegrity(delta);
+    delta=lockOriginal(delta);
+    ArrayJournalTuple original=findInTx(delta.getOriginal());
+    if (original!=null)
+    {
+        
+      txCopy.replace
+        (original
+        ,((ArrayJournalTuple) delta.getOriginal()).getTxVersion()
+        );
+    }
+    else
+    { txCopy.add((ArrayJournalTuple) delta.getOriginal());
+    }
+    addDelta(delta);
   }
   
-
   
   /**
    * Perform implementation specific delete logic
    * 
    * @param tuple
    */
-  void delete(DeltaTuple tuple)
+  void delete(DeltaTuple delta)
     throws DataException
   {       
-    tuple=checkBuffer(tuple);
-    tuple=lockOriginal(tuple);
-    addDelta(tuple);
+    delta=checkBuffer(delta);
+    delta=lockOriginal(delta);
+    ArrayJournalTuple original=findInTx(delta.getOriginal());
+    if (original!=null)
+    { 
+      txCopy.remove(original);
+      if (primaryKeyFn!=null)
+      { insertedKeys.remove(primaryKeyFn.key(original));
+      }
+    }
+    addDelta(delta);
     
   }
 

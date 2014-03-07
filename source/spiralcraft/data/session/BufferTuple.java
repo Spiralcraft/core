@@ -33,7 +33,6 @@ import spiralcraft.data.Type;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.TypeMismatchException;
 import spiralcraft.data.UpdateConflictException;
-
 import spiralcraft.data.spi.ArrayTuple;
 import spiralcraft.data.spi.KeyIdentifier;
 import spiralcraft.data.util.StaticInstanceResolver;
@@ -64,11 +63,12 @@ public class BufferTuple
   private BitSet dirtyFlags;
   private boolean delete;
   private boolean dirty;
-  
   private Tuple saveResult;
   
   private WeakReference<Object> behaviorRef;
   private boolean inTransaction;
+
+  DeltaTuple deltaSnapshot;
   
   /**
    * Create a new buffer for editing the latest version of the specified
@@ -927,6 +927,7 @@ public class BufferTuple
     setOriginal(undoOriginal);
     undoOriginal=null;
     saveResult=null;
+    this.deltaSnapshot=null;
     inTransaction=false;
     if (debug)
     { log.fine("Rolled back "+this);
@@ -955,6 +956,7 @@ public class BufferTuple
     }
     reset();
     saveResult=null;
+    this.deltaSnapshot=null;
     if (debug)
     { log.fine("Committed "+this);
     }

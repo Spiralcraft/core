@@ -22,6 +22,8 @@ import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.Space;
 import spiralcraft.data.Type;
+import spiralcraft.data.spi.ArrayDeltaTuple;
+import spiralcraft.data.spi.ArrayJournalTuple;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.PojoIdentifier;
 import spiralcraft.data.transaction.ResourceManager;
@@ -35,7 +37,6 @@ import spiralcraft.log.Level;
 import spiralcraft.util.refpool.URIPool;
 
 import java.util.LinkedHashMap;
-
 import java.net.URI;
 
 /**
@@ -358,6 +359,7 @@ public class DataSession
     }    
   }
   
+  
   private void writeTupleInContext(BufferTuple t)
     throws DataException
   { 
@@ -376,8 +378,16 @@ public class DataSession
 
       DataSessionBranch branch
         =resourceManager.branch(transaction);
-      branch.addBuffer(t);
-      
+      boolean first=branch.addBuffer(t);
+      DeltaTuple delta=t;
+      if (first)
+      { t.deltaSnapshot=ArrayDeltaTuple.copy(t);
+      }
+      else
+      { 
+        log.fine("Multiple updates for buffer "+t+" rebasing");
+        delta=t.rebase(ArrayJournalTuple.freezeDelta(t.deltaSnapshot));
+      }
       
       DataConsumer<DeltaTuple> updater
         =branch.getUpdater(t.getType().getArchetype());
@@ -386,7 +396,7 @@ public class DataSession
         boolean ok=false;
         try
         { 
-          updater.dataAvailable(t);
+          updater.dataAvailable(delta);
           ok=true;
         }
         finally
