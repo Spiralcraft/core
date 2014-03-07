@@ -255,6 +255,9 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
           super.work();
           if (autoSave)
           { 
+            if (debug)
+            { log.fine("Auto-saving "+editor.getBuffer());
+            }
             try
             { editor.save(forceSave);
             }

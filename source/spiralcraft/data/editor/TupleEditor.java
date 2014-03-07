@@ -269,6 +269,9 @@ public class TupleEditor
         }
       }
       
+      if (debug)
+      { log.fine("Saving buffer "+buffer);
+      }
       buffer.save();
       
       writeToModel(buffer);
