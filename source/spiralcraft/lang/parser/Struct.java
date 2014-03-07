@@ -115,7 +115,7 @@ public class Struct
   public String toString()
   { 
     StringBuffer buf=new StringBuffer();
-    buf.append(super.toString()+":("+reflector.getTypeURI()+"):{ ");
+    buf.append(getClass().getName()+"@"+System.identityHashCode(this)+":"+hashCode()+":("+reflector.getTypeURI()+"):{ ");
     
     
     if (baseExtent!=null)
