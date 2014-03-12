@@ -24,7 +24,7 @@ import spiralcraft.data.Projection;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.SerialCursor;
-import spiralcraft.data.spi.ArrayJournalTuple;
+import spiralcraft.data.JournalTuple;
 import spiralcraft.data.spi.ListCursor;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -84,7 +84,7 @@ public class IndexBranch
    * @return
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public SerialCursor<ArrayJournalTuple> fetch(KeyTuple keyTuple,KeyedDataProvider backing)
+  public SerialCursor<JournalTuple> fetch(KeyTuple keyTuple,KeyedDataProvider backing)
     throws DataException
   {
     try
@@ -92,7 +92,7 @@ public class IndexBranch
       IndexBranchEntry entry=entry(keyTuple);
       synchronized (entry)
       {
-        Aggregate<ArrayJournalTuple> data=entry.get();
+        Aggregate<JournalTuple> data=entry.get();
         if (data==null)
         {
           if (logLevel.isTrace())
@@ -101,11 +101,11 @@ public class IndexBranch
           SerialCursor<Tuple> cursor=backing.fetch(keyTuple);
           try
           {
-            LinkedList<ArrayJournalTuple> list=new LinkedList<ArrayJournalTuple>();
+            LinkedList<JournalTuple> list=new LinkedList<JournalTuple>();
             while (cursor.next())
             {
               Tuple tuple=cursor.getTuple();
-              ArrayJournalTuple normal=cacheBranch.cache(tuple);
+              JournalTuple normal=cacheBranch.cache(tuple);
               if (normal!=null)
               { list.add(normal);
               }
@@ -129,7 +129,7 @@ public class IndexBranch
           { log.fine("Cache hit for "+key.getType().getURI()+" "+keyTuple+" data: "+data);
           }
         }
-        return new ListCursor<ArrayJournalTuple>(data);
+        return new ListCursor<JournalTuple>(data);
       }
     }
     finally
@@ -139,7 +139,7 @@ public class IndexBranch
 
 
     
-  void inserted(ArrayJournalTuple newValue)
+  void inserted(JournalTuple newValue)
   {
     KeyTuple newKey=keyFunction.key(newValue);
     IndexBranchEntry entry=entry(newKey);
@@ -147,7 +147,7 @@ public class IndexBranch
     
   }
 
-  void deleted(ArrayJournalTuple oldValue)
+  void deleted(JournalTuple oldValue)
   {
     KeyTuple newKey=keyFunction.key(oldValue);
     IndexBranchEntry entry=entry(newKey);
@@ -158,7 +158,7 @@ public class IndexBranch
     
   }
   
-  void updated(ArrayJournalTuple oldValue,ArrayJournalTuple newValue)
+  void updated(JournalTuple oldValue,JournalTuple newValue)
   {
     KeyTuple oldKey=keyFunction.key(oldValue);
     KeyTuple newKey=keyFunction.key(newValue);

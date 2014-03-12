@@ -24,6 +24,7 @@ import spiralcraft.data.Projection;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.SerialCursor;
+import spiralcraft.data.JournalTuple;
 import spiralcraft.data.spi.ArrayJournalTuple;
 import spiralcraft.data.spi.ListCursor;
 import spiralcraft.log.ClassLog;
@@ -85,7 +86,7 @@ public class CacheIndex
    * @return
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public SerialCursor<ArrayJournalTuple> fetch(KeyTuple keyTuple,KeyedDataProvider backing)
+  public SerialCursor<JournalTuple> fetch(KeyTuple keyTuple,KeyedDataProvider backing)
     throws DataException
   {
     CacheBranch branch=cache.getBranch();
@@ -98,7 +99,7 @@ public class CacheIndex
       IndexEntry entry=entry(keyTuple);
       synchronized (entry)
       {
-        Aggregate<ArrayJournalTuple> data=entry.get();
+        Aggregate<JournalTuple> data=entry.get();
         if (data==null)
         {
           if (logLevel.isTrace())
@@ -107,11 +108,11 @@ public class CacheIndex
           SerialCursor<Tuple> cursor=backing.fetch(keyTuple);
           try
           {
-            LinkedList<ArrayJournalTuple> list=new LinkedList<ArrayJournalTuple>();
+            LinkedList<JournalTuple> list=new LinkedList<JournalTuple>();
             while (cursor.next())
             {
               Tuple tuple=cursor.getTuple();
-              ArrayJournalTuple normal;
+              JournalTuple normal;
               if (primary!=null)
               { normal=primary.cache(tuple);
               }
@@ -132,7 +133,7 @@ public class CacheIndex
           { log.fine("Cache hit for "+key.getType().getURI()+" "+keyTuple);
           }
         }
-        return new ListCursor<ArrayJournalTuple>(data);
+        return new ListCursor<JournalTuple>(data);
       }
     }
     finally
@@ -142,7 +143,7 @@ public class CacheIndex
 
 
     
-  void inserted(ArrayJournalTuple newValue)
+  void inserted(JournalTuple newValue)
   {
     KeyTuple newKey=keyFunction.key(newValue);
     IndexEntry entry=entry(newKey);
@@ -150,7 +151,7 @@ public class CacheIndex
     
   }
 
-  void deleted(ArrayJournalTuple oldValue)
+  void deleted(JournalTuple oldValue)
   {
     KeyTuple newKey=keyFunction.key(oldValue);
     IndexEntry entry=entry(newKey);
@@ -158,7 +159,7 @@ public class CacheIndex
     
   }
   
-  void updated(ArrayJournalTuple oldValue,ArrayJournalTuple newValue)
+  void updated(JournalTuple oldValue,JournalTuple newValue)
   {
     KeyTuple oldKey=keyFunction.key(oldValue);
     KeyTuple newKey=keyFunction.key(newValue);

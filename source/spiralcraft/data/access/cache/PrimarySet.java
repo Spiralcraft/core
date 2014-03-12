@@ -20,6 +20,7 @@ import java.util.HashMap;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.Tuple;
+import spiralcraft.data.JournalTuple;
 import spiralcraft.data.spi.ArrayJournalTuple;
 import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
@@ -68,12 +69,12 @@ public class PrimarySet
    * @return
    * @throws DataException
    */
-  ArrayJournalTuple cache(Tuple tuple)
+  JournalTuple cache(Tuple tuple)
     throws DataException
   { return entry(tuple.getId()).cache(tuple);
   }  
   
-  ArrayJournalTuple get(Identifier id)
+  JournalTuple get(Identifier id)
   {
     synchronized (map)
     {
@@ -88,7 +89,7 @@ public class PrimarySet
     
   }
   
-  ArrayJournalTuple replace(Identifier id,ArrayJournalTuple data)
+  JournalTuple replace(Identifier id,JournalTuple data)
   { return entry(id).replace(data);
   }
     
@@ -101,7 +102,7 @@ public class PrimarySet
 class TupleReference
 {
   final PrimarySet set;
-  volatile WeakReference<ArrayJournalTuple> ref;
+  volatile WeakReference<JournalTuple> ref;
   
   TupleReference(PrimarySet set)
   { this.set=set;
@@ -115,10 +116,10 @@ class TupleReference
    * @return
    * @throws DataException
    */
-  synchronized ArrayJournalTuple cache(Tuple foreign)
+  synchronized JournalTuple cache(Tuple foreign)
     throws DataException
   { 
-    ArrayJournalTuple data;
+    JournalTuple data;
     if (ref!=null)
     {
       data=ref.get();
@@ -127,18 +128,18 @@ class TupleReference
       }
     }
     
-    ArrayJournalTuple normal;
-    if (!(foreign instanceof ArrayJournalTuple))
+    JournalTuple normal;
+    if (!(foreign instanceof JournalTuple))
     { normal=new ArrayJournalTuple(foreign);
     }
     else
-    { normal=(ArrayJournalTuple) foreign;
+    { normal=(JournalTuple) foreign;
     }
-    ref=new WeakReference<ArrayJournalTuple>(normal);
+    ref=new WeakReference<JournalTuple>(normal);
     return normal;
   }  
   
-  synchronized ArrayJournalTuple get()
+  synchronized JournalTuple get()
   {
     if (ref==null)
     { return null;
@@ -146,15 +147,15 @@ class TupleReference
     return ref.get();
   }
   
-  synchronized ArrayJournalTuple replace(ArrayJournalTuple newData)
+  synchronized JournalTuple replace(JournalTuple newData)
   { 
-    ArrayJournalTuple ret=ref!=null?ref.get():null;
+    JournalTuple ret=ref!=null?ref.get():null;
     replaceRef(newData);
     return ret;
   }
   
-  private void replaceRef(ArrayJournalTuple newValue)
-  { ref=new WeakReference<ArrayJournalTuple>(newValue);
+  private void replaceRef(JournalTuple newValue)
+  { ref=new WeakReference<JournalTuple>(newValue);
   }
   
 }

@@ -19,7 +19,7 @@ import java.util.List;
 
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
-import spiralcraft.data.spi.ArrayJournalTuple;
+import spiralcraft.data.JournalTuple;
 import spiralcraft.data.spi.EditableListAggregate;
 
 /**
@@ -35,7 +35,7 @@ public class IndexBranchEntry
 {
 
   private final IndexBranch index;
-  private EditableListAggregate<ArrayJournalTuple> data;
+  private EditableListAggregate<JournalTuple> data;
   
   IndexBranchEntry(IndexBranch index)
   { this.index=index;
@@ -47,7 +47,7 @@ public class IndexBranchEntry
    * @param oldValue
    * @param newValue
    */
-  void updated(ArrayJournalTuple oldValue,ArrayJournalTuple newValue)
+  void updated(JournalTuple oldValue,JournalTuple newValue)
   {    
     if (data==null)
     { 
@@ -58,7 +58,7 @@ public class IndexBranchEntry
     data.add(newValue);
   }
   
-  void movedOut(ArrayJournalTuple oldValue)
+  void movedOut(JournalTuple oldValue)
   {
     if (data==null)
     { 
@@ -68,7 +68,7 @@ public class IndexBranchEntry
     data.remove(oldValue);
   }
 
-  void movedIn(ArrayJournalTuple newValue)
+  void movedIn(JournalTuple newValue)
   {
     if (data==null)
     { 
@@ -85,13 +85,13 @@ public class IndexBranchEntry
    * @return
    * @throws DataException
    */
-  Aggregate<ArrayJournalTuple> fetched(List<ArrayJournalTuple> cursor)
+  Aggregate<JournalTuple> fetched(List<JournalTuple> cursor)
     throws DataException
   { 
     data
-      =new EditableListAggregate<ArrayJournalTuple>
+      =new EditableListAggregate<JournalTuple>
         (index.getAggregateType()
-        ,new LinkedList<ArrayJournalTuple>()
+        ,new LinkedList<JournalTuple>()
         );
     data.addAll(cursor.iterator());
     return data.snapshot();
@@ -100,7 +100,7 @@ public class IndexBranchEntry
 
 
     
-  Aggregate<ArrayJournalTuple> get()
+  Aggregate<JournalTuple> get()
     throws DataException
   { 
     if (data==null)

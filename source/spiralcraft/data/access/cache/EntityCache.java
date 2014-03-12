@@ -22,7 +22,7 @@ import spiralcraft.data.Projection;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
 import spiralcraft.data.access.SerialCursor;
-import spiralcraft.data.spi.ArrayJournalTuple;
+import spiralcraft.data.JournalTuple;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.transaction.Transaction.Nesting;
 import spiralcraft.data.transaction.Transaction.Requirement;
@@ -75,7 +75,7 @@ public class EntityCache
   { return type;
   }
   
-  public ArrayJournalTuple cache(Tuple tuple)
+  public JournalTuple cache(Tuple tuple)
     throws DataException
   {
     CacheBranch branch=getBranch();
@@ -114,15 +114,15 @@ public class EntityCache
   }
 
   
-  public ArrayJournalTuple update(final DeltaTuple delta)
+  public JournalTuple update(final DeltaTuple delta)
     throws DataException
   {
-    return new WorkUnit<ArrayJournalTuple>
+    return new WorkUnit<JournalTuple>
       (Requirement.REQUIRED,Nesting.PROPOGATE)
     {
 
       @Override
-      protected ArrayJournalTuple run()
+      protected JournalTuple run()
         throws WorkException
       {
         try

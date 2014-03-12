@@ -22,7 +22,7 @@ import java.util.List;
 import spiralcraft.data.Aggregate;
 import spiralcraft.data.DataException;
 import spiralcraft.data.EditableAggregate;
-import spiralcraft.data.spi.ArrayJournalTuple;
+import spiralcraft.data.JournalTuple;
 import spiralcraft.data.spi.EditableListAggregate;
 
 /**
@@ -37,7 +37,7 @@ public class IndexEntry
 {
 
   private final CacheIndex index;
-  private volatile Reference<EditableListAggregate<ArrayJournalTuple>> ref;
+  private volatile Reference<EditableListAggregate<JournalTuple>> ref;
   
   IndexEntry(CacheIndex index)
   { this.index=index;
@@ -49,7 +49,7 @@ public class IndexEntry
    * @param oldValue
    * @param newValue
    */
-  void updated(ArrayJournalTuple oldValue,ArrayJournalTuple newValue)
+  void updated(JournalTuple oldValue,JournalTuple newValue)
   {
     if (ref==null)
     { 
@@ -57,7 +57,7 @@ public class IndexEntry
       return;
     }
     
-    EditableAggregate<ArrayJournalTuple> data=ref.get();
+    EditableAggregate<JournalTuple> data=ref.get();
     if (data==null)
     { 
       // This reference has expired
@@ -67,14 +67,14 @@ public class IndexEntry
     data.add(newValue);
   }
   
-  void movedOut(ArrayJournalTuple oldValue)
+  void movedOut(JournalTuple oldValue)
   {
     if (ref==null)
     { 
       // Not yet initialized
       return;
     }
-    EditableAggregate<ArrayJournalTuple> data=ref.get();
+    EditableAggregate<JournalTuple> data=ref.get();
     if (data==null)
     { 
       // This reference has expired
@@ -83,14 +83,14 @@ public class IndexEntry
     data.remove(oldValue);
   }
 
-  void movedIn(ArrayJournalTuple newValue)
+  void movedIn(JournalTuple newValue)
   {
     if (ref==null)
     { 
       // Not yet initialized
       return;
     }
-    EditableAggregate<ArrayJournalTuple> data=ref.get();
+    EditableAggregate<JournalTuple> data=ref.get();
     if (data==null)
     { 
       // This reference has expired
@@ -106,29 +106,29 @@ public class IndexEntry
    * @return
    * @throws DataException
    */
-  Aggregate<ArrayJournalTuple> fetched(List<ArrayJournalTuple> cursor)
+  Aggregate<JournalTuple> fetched(List<JournalTuple> cursor)
     throws DataException
   { 
-    EditableListAggregate<ArrayJournalTuple> data
-      =new EditableListAggregate<ArrayJournalTuple>
+    EditableListAggregate<JournalTuple> data
+      =new EditableListAggregate<JournalTuple>
         (index.getAggregateType()
-        ,new LinkedList<ArrayJournalTuple>()
+        ,new LinkedList<JournalTuple>()
         );
     data.addAll(cursor.iterator());
-    ref=new SoftReference<EditableListAggregate<ArrayJournalTuple>>(data);
+    ref=new SoftReference<EditableListAggregate<JournalTuple>>(data);
     return data.snapshot();
   }
   
 
 
     
-  Aggregate<ArrayJournalTuple> get()
+  Aggregate<JournalTuple> get()
     throws DataException
   { 
     if (ref==null)
     { return null;
     }
-    Aggregate<ArrayJournalTuple> data=ref.get();
+    Aggregate<JournalTuple> data=ref.get();
     if (data==null)
     { return null;
     }

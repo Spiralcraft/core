@@ -7,11 +7,11 @@ import java.util.Map;
 import spiralcraft.data.DataException;
 import spiralcraft.data.DeltaTuple;
 import spiralcraft.data.Identifier;
+import spiralcraft.data.JournalTuple;
 import spiralcraft.data.KeyTuple;
 import spiralcraft.data.Projection;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.access.SerialCursor;
-import spiralcraft.data.spi.ArrayJournalTuple;
 import spiralcraft.data.transaction.Branch;
 import spiralcraft.data.transaction.Transaction;
 import spiralcraft.data.transaction.Transaction.State;
@@ -59,7 +59,7 @@ public class CacheBranch
    * @return
    * @throws DataException
    */
-  SerialCursor<ArrayJournalTuple> 
+  SerialCursor<JournalTuple> 
     fetch(Projection<Tuple> key,KeyTuple tuple,KeyedDataProvider backing)
     throws DataException
   { return getIndex(key).fetch(tuple,backing);
@@ -82,7 +82,7 @@ public class CacheBranch
    * @return
    * @throws DataException
    */
-  ArrayJournalTuple cache(Tuple extData)
+  JournalTuple cache(Tuple extData)
     throws DataException
   { 
     TupleBranch tb=enlisted.get(extData.getId());
@@ -105,7 +105,7 @@ public class CacheBranch
    * @param delta
    * @throws DataException
    */
-  ArrayJournalTuple update(DeltaTuple delta)
+  JournalTuple update(DeltaTuple delta)
     throws DataException
   {
     redoLog.add(delta);
@@ -135,13 +135,13 @@ public class CacheBranch
     return ret;
   }
   
-  private ArrayJournalTuple logInsert(DeltaTuple delta)
+  private JournalTuple logInsert(DeltaTuple delta)
     throws DataException
   {
     if (logLevel.isDebug())
     { log.fine("Logging insert "+delta);
     }
-    ArrayJournalTuple newData=ArrayJournalTuple.freezeDelta(delta);
+    JournalTuple newData=delta.freeze();
     TupleBranch tb=enlist(newData.getId());
     if (tb.delta==null && tb.storeVersion!=null)
     { 
@@ -161,7 +161,7 @@ public class CacheBranch
     return newData;
   }
   
-  private ArrayJournalTuple logUpdate(DeltaTuple delta)
+  private JournalTuple logUpdate(DeltaTuple delta)
     throws DataException
   {
     if (logLevel.isDebug())
@@ -170,7 +170,7 @@ public class CacheBranch
     Identifier id=delta.getOriginal().getId();
     TupleBranch tb=enlist(id);
     
-    ArrayJournalTuple currentVersion
+    JournalTuple currentVersion
       =(tb.delta==null?tb.storeVersion:tb.redoVersion);
     if (currentVersion==null)
     { 
@@ -191,7 +191,7 @@ public class CacheBranch
     return tb.redoVersion;
   }
   
-  private ArrayJournalTuple logDelete(DeltaTuple delta)
+  private JournalTuple logDelete(DeltaTuple delta)
     throws DataException
   {
     if (logLevel.isDebug())
@@ -205,7 +205,7 @@ public class CacheBranch
     Identifier id=delta.getOriginal().getId();
     TupleBranch tb=enlist(id);
     
-    ArrayJournalTuple currentVersion=
+    JournalTuple currentVersion=
       (tb.delta==null?tb.storeVersion:tb.redoVersion);
     if (currentVersion==null)
     {
@@ -369,13 +369,13 @@ class TupleBranch
   DeltaTuple delta;
   
   // The original public version on which this transaction is based
-  ArrayJournalTuple storeVersion;
+  JournalTuple storeVersion;
   
   // The version that will be the end result of this transaction
-  ArrayJournalTuple redoVersion;
+  JournalTuple redoVersion;
   
   // The first version in the chain that is locked for update or delete
-  ArrayJournalTuple undoVersion;
+  JournalTuple undoVersion;
   boolean applied;
 }
 
