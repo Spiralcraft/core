@@ -23,7 +23,6 @@ import spiralcraft.data.Identifier;
 import spiralcraft.data.Space;
 import spiralcraft.data.Type;
 import spiralcraft.data.spi.ArrayDeltaTuple;
-import spiralcraft.data.spi.ArrayJournalTuple;
 import spiralcraft.data.spi.EditableArrayTuple;
 import spiralcraft.data.spi.PojoIdentifier;
 import spiralcraft.data.transaction.ResourceManager;
@@ -380,13 +379,10 @@ public class DataSession
         =resourceManager.branch(transaction);
       boolean first=branch.addBuffer(t);
       DeltaTuple delta=t;
-      if (first)
-      { t.deltaSnapshot=ArrayDeltaTuple.copy(t);
-      }
-      else
+      if (!first)
       { 
         log.fine("Multiple updates for buffer "+t+" rebasing");
-        delta=t.rebase(ArrayJournalTuple.freezeDelta(t.deltaSnapshot));
+        delta=t.rebase(t.deltaSnapshot.freeze());
       }
       
       DataConsumer<DeltaTuple> updater
@@ -397,6 +393,11 @@ public class DataSession
         try
         { 
           updater.dataAvailable(delta);
+          if (first)
+          { 
+            // Snapshot after we set defaults
+            t.deltaSnapshot=ArrayDeltaTuple.copy(t);
+          }
           ok=true;
         }
         finally
