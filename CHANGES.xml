@@ -13,6 +13,84 @@
 
     <detail> 
     
+      
+      <scm:Change>
+        <revision>-dev78
+        </revision>
+      
+        <notes>
+          <scm:Note>Refactor references to ArrayJournalTuple to reference
+            the JournalTuple interface instead.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/access/cache
+        </path>
+        
+        <resources>
+          <URI>CacheBranch.java
+          </URI>
+          <URI>CacheIndex.java
+          </URI>
+          <URI>EntityCache.java
+          </URI>
+          <URI>IndexBranch.java
+          </URI>
+          <URI>IndexBranchEntry.java
+          </URI>
+          <URI>IndexEntry.java
+          </URI>
+          <URI>PrimarySet.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev78
+        </revision>
+      
+        <notes>
+          <scm:Note>Make sure that multiple updates to the same data create
+            a correct journal.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+        
+          <URI>DeltaTuple.java
+          </URI>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>spi/ArrayDeltaTuple.java
+          </URI>
+          <URI>spi/ArrayJournalTuple.java
+          </URI>
+          <URI>xml/XmlBranch.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev78
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix issue when a buffer is saved more than once in the same
+            transaction resulting in an initial insert and an update that
+            fails due to the original not being globally visible.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/session/DataSession.java
+        </path>
+
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev77
         </revision>
