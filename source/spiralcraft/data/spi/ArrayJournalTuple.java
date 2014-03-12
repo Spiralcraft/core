@@ -225,7 +225,7 @@ public class ArrayJournalTuple
             { delta=delta.rebase(this);
             }
             if (!delta.isDelete())
-            { nextVersion=freezeDelta(delta);
+            { nextVersion=(ArrayJournalTuple) delta.freeze();
             }
             transactionContext
               =new TransactionContext(nextVersion,delta);

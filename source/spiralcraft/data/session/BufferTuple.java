@@ -611,6 +611,11 @@ public class BufferTuple
   }
   
   @Override
+  public JournalTuple freeze()
+  { throw new UnsupportedOperationException("Can't freeze a buffer");
+  } 
+  
+  @Override
   public Tuple snapshot()
     throws DataException
   { return ArrayTuple.freezeDelta(this);

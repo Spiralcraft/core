@@ -26,6 +26,7 @@ public class ArrayDeltaTuple
   
   private boolean delete;
   private boolean dirty;
+  private volatile ArrayJournalTuple nextVersion;
 
   /**
    * <p>Constructs a DeltaTuple from another DeltaTuple of a different
@@ -72,6 +73,19 @@ public class ArrayDeltaTuple
     this.dirtyFlags=new BitSet(fieldSet.getFieldCount());
     
     initDelta(original,updated);
+  }
+  
+  /**
+   * Create an ArrayJournalTuple from this delta.
+   */
+  @Override
+  public synchronized ArrayJournalTuple freeze()
+    throws DataException
+  { 
+    if (this.nextVersion==null)
+    { this.nextVersion=ArrayJournalTuple.freezeDelta(this);
+    }
+    return this.nextVersion;
   }
   
   private void initDelta(Tuple original,Tuple updated)

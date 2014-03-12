@@ -92,4 +92,13 @@ public interface DeltaTuple
   DeltaTuple updateOriginal(Tuple latest)
     throws DataException;
   
+  /**
+   * Return a JournalTuple that reflects the application of this Delta to the
+   *   referenced original. 
+   * 
+   * @return
+   */
+  JournalTuple freeze()
+    throws DataException;
+  
 }

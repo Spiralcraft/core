@@ -535,8 +535,7 @@ public class XmlBranch
 
     delta=checkBuffer(delta);
     checkInsertIntegrity(delta);
-    ArrayJournalTuple newVersion=
-      ArrayJournalTuple.freezeDelta(delta);
+    ArrayJournalTuple newVersion=(ArrayJournalTuple) delta.freeze();
     txCopy.add(newVersion);
     if (primaryKeyFn!=null)
     { insertedKeys.add(primaryKeyFn.key(newVersion));
@@ -865,7 +864,7 @@ public class XmlBranch
           if (logLevel.isFine())
           { log.fine("Type="+dt.getType().getURI());
           }
-          ArrayJournalTuple at=ArrayJournalTuple.freezeDelta(dt);
+          ArrayJournalTuple at=(ArrayJournalTuple) dt.freeze();
           queryable.add(at);
           preparedAdds.add(at);
           wrote(dt);
