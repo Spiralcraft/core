@@ -15,6 +15,20 @@
     
       
       <scm:Change>
+        <revision>-dev79
+        </revision>
+      
+        <notes>
+          <scm:Note>Added BatchQueueService to simplify batch data processing
+            functions such as delayed-write logs.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/util/BatchQueueService.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev78
         </revision>
       
