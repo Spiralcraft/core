@@ -1,13 +1,14 @@
 <project name="spiralcraft-core" basedir="." default="build">
 
   <property name="classpath" value=""/>
+  <property name="organization" value="spiralcraft"/>
   <property name="module" value="core"/>
   <property name="buildVersion" value="0.4.17-dev78"/>
   <property name="build.status" value="milestone"/>
 
   <property name="logs.dir" location="test/log"/>  
-    
-  <import file="../../build/build-spiralcraft-common.xml"/>
+  <property name="depends.dir" location="../../repo"/>
+  <import file="../../build/build-common.xml"/>
   
 
 </project>
