@@ -26,6 +26,7 @@ import spiralcraft.data.DataException;
 import spiralcraft.data.Space;
 import spiralcraft.data.Type;
 import spiralcraft.data.session.DataSession;
+import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
@@ -48,6 +49,7 @@ public abstract class AbstractBatchService<Tdata>
   private LinkedList<Tdata> factQueue=new LinkedList<Tdata>();
   private ArrayList<Tdata> factBuffer=new ArrayList<Tdata>();
   private Type<Tdata> dataType;
+  private Expression<Type<Tdata>> dataTypeX;
   
   private long idleDelayMs=1000;
   private long sizeThreshold=1;
@@ -90,6 +92,10 @@ public abstract class AbstractBatchService<Tdata>
   { this.dataType=dataType;
   }
 
+  public void setDataTypeX(Expression<Type<Tdata>> dataTypeX)
+  { this.dataTypeX=dataTypeX;
+  }
+  
   public Type<Tdata> getDataType()
   { return dataType;
   }
@@ -259,6 +265,9 @@ public abstract class AbstractBatchService<Tdata>
     
     focusChain=focusChain.chain(sessionChannel);
     space=LangUtil.assertInstance(Space.class,focusChain);
+    if (dataTypeX!=null)
+    { dataType=focusChain.bind(dataTypeX).get();
+    }
     return focusChain;
   }
 
