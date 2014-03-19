@@ -24,8 +24,15 @@
           </scm:Note>
         </notes>
         
-        <path>source/spiralcraft/data/util/BatchQueueService.java
+        <path>source/spiralcraft/data
         </path>
+        
+        <resources>
+          <URI>kit/AbstractBatchService.java
+          </URI>
+          <URI>util/BatchQueueService.java
+          </URI>
+        </resources>
       </scm:Change>
 
       <scm:Change>
