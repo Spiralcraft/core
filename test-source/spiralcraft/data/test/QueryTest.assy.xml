@@ -503,8 +503,8 @@
       </name>
       <subjectX>
         [*sax:ParseXml
-          { uriX:=[@jnet:URI].@create
-              ("class:/spiralcraft/data/test/example/Customer.data.xml")
+          { uriX:=`[@jnet:URI].@create
+              ("class:/spiralcraft/data/test/example/Customer.data.xml")`
           , type:=[@example:Customer.list].type
           }
         ].()

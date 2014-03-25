@@ -175,8 +175,21 @@ public class BindingChannel<T>
 
       if (targetChannel.getContentType().isAssignableFrom(Binding.class))
       { 
-        // Provide a dynamic reference to the specified source data.
-        sourceBinding=new Binding<T>(source);
+        if (source.getContentType()==Expression.class && source.isConstant())
+        { sourceBinding=new Binding((Expression) source.get());
+        }
+        else
+        { 
+          // Provide a dynamic reference to the specified source data.
+          log.warning("Dynamic Mode Binding for "+source.getContentType().getName()+" applied to "
+                       +targetChannel+" from "+source
+                     );
+          // FIXME: This short circuits too many things- when the target
+          //   wants to accept dynamic data it should be explicit, otherwise
+          //   we should coerce or fail with a type mismatch. Lots of objects
+          //   accept bindings.
+          sourceBinding=new Binding<T>(source);
+        }
       }
       else
       {

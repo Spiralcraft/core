@@ -599,7 +599,7 @@
         [*ju:Date]
         { 
           [*task:Debug
-            {messageX:=[ju:Date].class.name
+            {messageX:=`[ju:Date].class.name`
             ,debug:=true
             }
           ].()
