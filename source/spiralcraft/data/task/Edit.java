@@ -28,11 +28,15 @@ import spiralcraft.data.session.Buffer;
 import spiralcraft.data.session.BufferChannel;
 //import spiralcraft.data.lang.DataReflector;
 
+import spiralcraft.data.session.DataSession;
+import spiralcraft.data.session.DataSessionFocus;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.reflect.BeanReflector;
+import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.util.LangUtil;
 import spiralcraft.task.Chain;
 import spiralcraft.task.Task;
@@ -66,6 +70,8 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   private Binding<?> onSave;
   private Binding<?> preSave;
   private boolean forceSave;
+  private DataSessionFocus localDataSessionFocus;
+  private ThreadLocalChannel<DataSession> localDataSessionChannel;
   
   { storeResults=true;
   }
@@ -117,7 +123,9 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   }
 
   public void setPreSave(Binding<?> preSave)
-  { this.preSave=preSave;
+  {
+    log.fine("Presave "+preSave);
+    this.preSave=preSave;
   }
   
   public void setForceSave(boolean forceSave)
@@ -152,6 +160,16 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   public Focus<?> bindImports(Focus<?> focusChain)
     throws BindException
   {
+    Channel<DataSession> dataSessionChannel
+      =DataSession.findChannel(focusChain);
+    if (dataSessionChannel==null)
+    { 
+      localDataSessionChannel=new ThreadLocalChannel<>
+        (BeanReflector.<DataSession>getInstance(DataSession.class));
+      localDataSessionFocus=new DataSessionFocus(focusChain,localDataSessionChannel,null);
+      focusChain.addFacet(localDataSessionFocus);
+    }
+      
     if (typeX!=null)
     { 
       typeX.bind(focusChain);
@@ -246,7 +264,9 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
       public void work()
         throws InterruptedException
       {
-        
+        if (localDataSessionChannel!=null)
+        { localDataSessionChannel.push(localDataSessionFocus.newDataSession());
+        }
         
         editor.push();
         try
@@ -271,7 +291,11 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
         { addException(x);
         }
         finally
-        { editor.pop();
+        { 
+          editor.pop();
+          if (localDataSessionChannel!=null)
+          { localDataSessionChannel.pop();
+          }
         }
       }
     };
