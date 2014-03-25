@@ -15,6 +15,61 @@
     
       
       <scm:Change>
+        <revision>-dev80
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix silent failure in an object literal constructor when
+            an expression is assigned to a property of
+            type spiralcraft.lang.Binding.
+          </scm:Note>
+          <scm:Note>Fix issue when using object literals in expressions
+            where a constructor assigning an expression literal to a target
+            of type spiralcraft.lang.Binding failed silently due to ambiguous
+            design contract. Expression literals are now coerced to Binding
+            objects and a warning is logged when a type mismatch for a 
+            target of type Binding results in a "dynamic" Binding being
+            created directly from the source channel (injecting a scaffolding
+            construct into the binding process.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/spi/BindingChannel.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev80
+        </revision>
+      
+        <notes>
+          <scm:Note>A new Trigger accumulator function performs an action
+            whenever the source value changes.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/functions/Trigger.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev80
+        </revision>
+      
+        <notes>
+          <scm:Note>The Edit task will create its own DataSession if one is
+            not in scope instead of throwing an exception.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/task/Edit.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev79
         </revision>
       
