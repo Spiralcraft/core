@@ -123,9 +123,7 @@ public class Edit<Titem extends DataComposite,Tbuffer extends Buffer>
   }
 
   public void setPreSave(Binding<?> preSave)
-  {
-    log.fine("Presave "+preSave);
-    this.preSave=preSave;
+  { this.preSave=preSave;
   }
   
   public void setForceSave(boolean forceSave)
