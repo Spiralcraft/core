@@ -15,6 +15,22 @@
     
       
       <scm:Change>
+        <revision>-dev81
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix logic error in evaluation of `!value` when value is null
+            which should always return true, because null is coerced to false
+            when binary logic is used.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/LogicalNegateNode.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev80
         </revision>
       

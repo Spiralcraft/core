@@ -33,6 +33,22 @@
           <conditionX>[example:Customer.list].@size()==3
           </conditionX>
         </test:Stub>
+        <test:Assertion>
+          <name>Boolean post-filter
+          </name>
+          <subjectX>[.][.active]
+          </subjectX>
+          <testX>.@size()==1
+          </testX>
+        </test:Assertion>
+        <test:Assertion>
+          <name>Neg boolean post-filter
+          </name>
+          <subjectX>[.][!.active]
+          </subjectX>
+          <testX>.@size()==2
+          </testX>
+        </test:Assertion>
       </sequence>
     </dtask:Fetch>
 

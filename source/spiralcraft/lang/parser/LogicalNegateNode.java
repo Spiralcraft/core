@@ -56,7 +56,7 @@ public class LogicalNegateNode
         //
         // For a more explicit test, use "x==false"
         //
-        if (val==null || val)
+        if (val!=null && val)
         { return Boolean.FALSE;
         }
         else
