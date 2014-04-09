@@ -17,6 +17,7 @@ package spiralcraft.data.util;
 
 import spiralcraft.common.ContextualException;
 import spiralcraft.data.DataException;
+import spiralcraft.data.Key;
 import spiralcraft.data.Space;
 import spiralcraft.data.Tuple;
 import spiralcraft.data.Type;
@@ -40,13 +41,14 @@ import spiralcraft.lang.util.LangUtil;
 
 //import spiralcraft.log.ClassLog;
 import spiralcraft.log.Level;
+import spiralcraft.util.ArrayUtil;
 
 /**
  * <p>Associates an external copy of an entity with a stored copy.
  * </p>
  * 
  * <p>When connected to an input that provides the external copy, this
- *   channel will output the stored copy with the same primary key value.
+ *   channel will output the stored copy with the same key value.
  * </p>
  * 
  * <p>When assigned a value, this channel will update the stored copy by
@@ -72,6 +74,7 @@ public class StoredCopy
   private ThreadLocalChannel<Tuple> storeChannel;
   private TupleEditor editor;
   private Binding<?> preSave;
+  private String[] keyFields;
   
   private Level debugLevel=Level.INFO;
   
@@ -111,6 +114,15 @@ public class StoredCopy
   { this.entityType=entityType;
   }
   
+  /**
+   * The fields that comprise the candidate key that will be used to lookup
+   *   the stored copy. If not specified, the primary key will be used.
+   *   
+   * @param keyFields
+   */
+  public void setKeyFields(String[] keyFields)
+  { this.keyFields=keyFields;
+  }
 
   @Override
   public Focus<?> bind(
@@ -120,12 +132,28 @@ public class StoredCopy
     queryable=LangUtil.assertInstance(Space.class,focusChain);
     try
     {
-      if (entityType.getPrimaryKey()==null)
-      { 
-        throw new DataException
-          ("Type must have a primary key: "+entityType.getURI());
+      if (keyFields==null)
+      {
+        if (entityType.getPrimaryKey()==null)
+        { 
+          throw new DataException
+            ("Type must have a primary key: "+entityType.getURI());
+        }
+        query=entityType.getPrimaryKey().getQuery();
       }
-      query=entityType.getPrimaryKey().getQuery();
+      else
+      {
+        Key<?> candidateKey=entityType.findKey(keyFields);
+        if (candidateKey==null)
+        { 
+          throw new DataException
+            ("Key ("+ArrayUtil.format(keyFields,",","")
+              +") not found in type "+entityType.getURI()
+            );
+        }
+        query=candidateKey.getQuery();
+        
+      }
 
   
       inputChannel=new ThreadLocalChannel<Tuple>
@@ -148,8 +176,6 @@ public class StoredCopy
     return focusChain;
   }
   
-  
-  @SuppressWarnings("unchecked")
   @Override
   public Channel<Tuple> bindChannel(
     Channel<Tuple> source,
@@ -178,7 +204,6 @@ public class StoredCopy
     private final BoundQuery<?,Tuple> boundQuery;
 
 
-    @SuppressWarnings("unchecked")
     public StoredCopyChannel
       (Channel<Tuple> source
       ,Focus<?> focus
@@ -225,7 +250,6 @@ public class StoredCopy
 
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     protected Tuple retrieve()
     {
@@ -247,7 +271,6 @@ public class StoredCopy
 
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected boolean store(Tuple val)
     {
