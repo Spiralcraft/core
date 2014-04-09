@@ -474,11 +474,11 @@ public abstract class Type<T>
     if (getBaseType()!=null)
     { key=getBaseType().findKey(fieldNames);
     }
-    if (key==null && getArchetype()!=null)
-    { key=(Key<T>) getArchetype().findKey(fieldNames);
-    }
     if (key==null)
     { key=(Key<T>) getScheme().findKey(fieldNames);
+    }
+    if (key==null && getArchetype()!=null)
+    { key=(Key<T>) getArchetype().findKey(fieldNames);
     }
     return key;
   }
