@@ -15,6 +15,28 @@
     
       
       <scm:Change>
+        <revision>-dev82
+        </revision>
+      
+        <notes>
+          <scm:Note>Support the use of candidateKeys in StoredCopy function.
+          </scm:Note>
+          <scm:Note>Make sure that local key definitions in override/hide 
+            keys defined in archetypes.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        <resources>
+          <URI>util/StoredCopy.java
+          </URI>
+          <URI>Type.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev81
         </revision>
       
