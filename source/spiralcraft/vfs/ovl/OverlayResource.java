@@ -22,10 +22,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.LinkedHashMap;
 
 import spiralcraft.common.ContextualException;
 import spiralcraft.log.ClassLog;
-import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.Path;
 import spiralcraft.util.URIUtil;
 import spiralcraft.vfs.Container;
@@ -58,7 +58,7 @@ public class OverlayResource
   @SuppressWarnings("unused")
   private static final ClassLog log=
       ClassLog.getInstance(OverlayResource.class);
-    
+  private static final Resource[] EMPTY_RESOURCES=new Resource[0];
   
   
   public static final Resource wrap(Resource overlay)
@@ -272,9 +272,8 @@ public class OverlayResource
   public Resource[] listContents()
     throws IOException
   {
-    return ArrayUtil.concat
-      (Resource[].class
-      ,overlay.asContainer().listContents()
+    return combineChildren
+      (overlay.asContainer().listContents()
       ,base.asContainer().listContents()
       );
   }
@@ -283,9 +282,8 @@ public class OverlayResource
   public Resource[] listChildren()
     throws IOException
   {
-    return ArrayUtil.concat
-      (Resource[].class
-      ,overlay.asContainer()!=null?overlay.asContainer().listChildren():null
+    return combineChildren
+      (overlay.asContainer()!=null?overlay.asContainer().listChildren():null
       ,base.asContainer()!=null?base.asContainer().listChildren():null
       );
   }
@@ -295,20 +293,57 @@ public class OverlayResource
     ResourceFilter filter)
     throws IOException
   {
-    return ArrayUtil.concat
-      (Resource[].class
-      ,overlay.asContainer()!=null?overlay.asContainer().listChildren(filter):null
+    return combineChildren
+      (overlay.asContainer()!=null?overlay.asContainer().listChildren(filter):null
       ,base.asContainer()!=null?base.asContainer().listChildren(filter):null
       );
   }
 
+  private Resource[] combineChildren
+    (Resource[] overlayChildren
+    ,Resource[] baseChildren
+    )
+  {
+    if (baseChildren==null || baseChildren.length==0)
+    { 
+      if (overlayChildren==null || overlayChildren.length==0)
+      { return EMPTY_RESOURCES;
+      }
+      else
+      { return overlayChildren;
+      }
+    }
+
+    if (overlayChildren==null || overlayChildren.length==0)
+    { return baseChildren;
+    }
+    
+    LinkedHashMap<String,Resource> children
+      =new LinkedHashMap<>();
+    for (Resource r: baseChildren)
+    { children.put(r.getLocalName(),r);
+    }
+
+    for (Resource r: overlayChildren)
+    {
+      String localName=r.getLocalName();
+      Resource base=children.get(localName);
+      if (base!=null && !r.equals(base))
+      { children.put(localName,new OverlayResource(r.getURI(),r,base));
+      }
+      else 
+      { children.put(localName,r);
+      }
+    }
+    return children.values().toArray(new Resource[children.size()]);
+  }
+  
   @Override
   public Resource[] listLinks()
     throws IOException
   {
-    return ArrayUtil.concat
-      (Resource[].class
-      ,overlay.asContainer()!=null?overlay.asContainer().listLinks():null
+    return combineChildren
+      (overlay.asContainer()!=null?overlay.asContainer().listLinks():null
       ,base.asContainer()!=null?base.asContainer().listLinks():null
       );
   }
@@ -349,9 +384,8 @@ public class OverlayResource
   public Resource[] getChildren()
     throws IOException
   { 
-    return ArrayUtil.concat
-      (Resource[].class
-      ,overlay.asContainer().getChildren()
+    return combineChildren
+      (overlay.asContainer().getChildren()
       ,base.asContainer().getChildren()
       );
   }
