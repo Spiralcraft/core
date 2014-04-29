@@ -29,7 +29,6 @@ import spiralcraft.util.thread.CycleDetector;
  */
 public class Package
 {
-  @SuppressWarnings("unused")
   private static final ClassLog log
     =ClassLog.getInstance(Package.class);
   private static final Level staticLogLevel
@@ -51,6 +50,14 @@ public class Package
   { return findResource(Resolver.getInstance().resolve(uri));
   }
   
+  /**
+   * Given a resource path, find a resource that exists in that path, or if
+   *   it cannot be found, search in the packages scoped to this path
+   * 
+   * @param overlay
+   * @return
+   * @throws IOException
+   */
   public static final Resource findResource(Resource overlay)
     throws IOException
   { 
@@ -79,6 +86,35 @@ public class Package
     }  
       
     return overlay;
+  }
+  
+  /**
+   * Find a resource within the packages scoped to this path
+   * 
+   * @param overlay
+   * @return
+   */
+  public static final Resource findBaseResource(Resource overlay)
+    throws IOException
+  {
+    Package pkg=null;
+    try
+    {
+      pkg = Package.fromContainer
+        (overlay.getParent());
+    }
+    catch (ContextualException x)
+    { 
+      log.log
+        (Level.WARNING
+        ,"Error resolving package in "+overlay.getParent().getURI()
+        ,x
+        );
+    }
+    if (pkg!=null)
+    { return pkg.searchForBaseResource(overlay);
+    }
+    return null;
   }
   
   /**
@@ -173,6 +209,13 @@ public class Package
   { this.logLevel=logLevel;
   }
   
+  /**
+   * Map the overlay resource path to a path within this package's container
+   * 
+   * @param overlayResource
+   * @return
+   * @throws IOException
+   */
   public Resource baseResource(Resource overlayResource)
     throws IOException
   {
@@ -196,6 +239,14 @@ public class Package
     }
   }
   
+  /**
+   * Map a resource path into the nearest containing package that can provide
+   *   an existing resource
+   * 
+   * @param overlayResource
+   * @return
+   * @throws IOException
+   */
   public Resource searchForBaseResource(Resource overlayResource)
     throws IOException
   {
