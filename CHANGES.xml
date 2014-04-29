@@ -15,6 +15,34 @@
     
       
       <scm:Change>
+        <revision>-dev83
+        </revision>
+      
+        <notes>
+          <scm:Note>Provide a convenience method to obtain a reference to
+            the base resource corresponding to an overlay resource
+          </scm:Note>
+       </notes>
+        
+        <path>source/spiralcraft/vfs/Package.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev83
+        </revision>
+      
+        <notes>
+          <scm:Note>Combine child containers that exist in both the 
+            base and the overlay 
+          </scm:Note>
+       </notes>
+        
+        <path>source/spiralcraft/vfs/ovl/OverlayResource.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev82
         </revision>
       
