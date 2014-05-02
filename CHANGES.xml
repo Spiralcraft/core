@@ -14,6 +14,34 @@
     <detail> 
     
       
+      
+      <scm:Change>
+        <revision>-dev84
+        </revision>
+      
+        <notes>
+          <scm:Note>Add functionality to the spiralcraft.time library to
+            compute the start of standard calendar periods.
+          </scm:Note>
+       </notes>
+        
+        <path>source/spiralcraft/time
+        </path>
+        
+        <resources>
+          <URI>Calendar.java
+          </URI>
+          <URI>Chronology.java
+          </URI>
+          <URI>Chronom.java
+          </URI>
+          <URI>DayOfWeek.java
+          </URI>
+          <URI>TimeField.java
+          </URI>
+        </resources>
+      </scm:Change>
+
       <scm:Change>
         <revision>-dev83
         </revision>
