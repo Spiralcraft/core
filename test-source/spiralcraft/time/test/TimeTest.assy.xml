@@ -520,6 +520,51 @@
         .endDate==.ifmt.parse("2011-07-01")
       </testX>
     </test:Assertion>                  
+    
+    <test:Assertion>
+      <name>Beginning of this week and this month
+      </name>
+    
+      <subjectX>
+        { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+        , cal:=[@st:Calendar].(.tz)
+        , ifmt:=[@jt:SimpleDateFormat].("yyyy-MM-dd HH:mm:ss")
+        , startDate:=[@st:Instant].@fromDate(.ifmt.parse("2014-05-01 15:05:44")) // Thursday
+        , beginningOfWeek:=.cal.startOfPeriod(.startDate,[@st:TimeField].@WEEK_OF_YEAR)
+        , beginningOfMonth:=.cal.startOfPeriod(.startDate,[@st:TimeField].@MONTH_OF_YEAR)
+        , beginningOfNextWeek:=.cal.startOfNextPeriod(.startDate,[@st:TimeField].@WEEK_OF_YEAR)
+        , beginningOfNextMonth:=.cal.startOfNextPeriod(.startDate,[@st:TimeField].@MONTH_OF_YEAR)
+        }
+      </subjectX>
+      
+      <testX>
+        beginningOfWeek.toDate()==.ifmt.parse("2014-04-27 00:00:00") // Sunday
+        &amp;&amp; beginningOfNextWeek.toDate()==.ifmt.parse("2014-05-04 00:00:00")
+        &amp;&amp; beginningOfMonth.toDate()==.ifmt.parse("2014-05-01 00:00:00") 
+        &amp;&amp; beginningOfNextMonth.toDate()==.ifmt.parse("2014-06-01 00:00:00")
+      </testX>
+    </test:Assertion>                  
+    
+    <test:Assertion>
+      <name>Date parts
+      </name>
+    
+      <subjectX>
+        { tz:=[@ju:TimeZone].@getTimeZone("America/Los_Angeles")
+        , cal:=[@st:Calendar].(.tz)
+        , ifmt:=[@jt:SimpleDateFormat].("yyyy-MM-dd HH:mm:ss.S")
+        , inst:=[@st:Instant].@fromDate(.ifmt.parse("2014-05-01 15:05:44.0123")) // Thursday
+        , dayOfWeek:=[@st:DayOfWeek].@valueOf(.cal.getField(.inst,[@st:TimeField].@DAY_OF_WEEK))
+        , monthInYear:=.cal.getField(.inst,[@st:TimeField].@MONTH_OF_YEAR)
+        , weekInYear:=.cal.getField(.inst,[@st:TimeField].@WEEK_OF_YEAR)
+        , year:=.cal.getField(.inst,[@st:TimeField].@YEAR)
+        }
+      </subjectX>
+      
+      <testX>
+        .dayOfWeek==[@st:DayOfWeek].@THURSDAY
+      </testX>
+    </test:Assertion>                  
   </sequence>
         
 </test:TestGroup>

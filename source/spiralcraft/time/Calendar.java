@@ -167,6 +167,19 @@ public class Calendar
   public TimeX rebase(TimeX original,Instant dest,TimeField field,int offset)
   { return chronology.rebase(timeZone,locale,original,dest,field,offset);
   }
+
+
+  /**
+   * Get the value of a single TimeField from an Instant with respct to the
+   *   time zone and locale of this Calendar.
+   * 
+   * @param instant
+   * @param field
+   * @return
+   */
+  public int getField(Instant instant,TimeField field)
+  { return chronology.getField(timeZone,locale,instant,field);
+  }
   
   /**
    * Convert an Instant to a TimeX using the standard fields of the 
@@ -178,6 +191,7 @@ public class Calendar
   public TimeX toTimeX(Instant instant)
   { return chronology.toTimeX(timeZone,locale,instant);
   }
+  
   
   /**
    * Convert an Instant to a TimeX using the specified fields
@@ -194,6 +208,29 @@ public class Calendar
   { return chronology.toInstant(timeZone,locale,time);
   }
 
+  /**
+   * Return the first Instant of the period that contains the
+   *   specified instant.
+   * 
+   * @param now
+   * @param period
+   * @return
+   */
+  public Instant startOfPeriod(Instant instant,TimeField period)
+  { return chronology.startOfPeriod(timeZone,locale,instant,period);
+  }
+
+  /**
+   * Return the first Instant of the period after the period that contains
+   *   the specified instant.
+   * 
+   * @param now
+   * @param period
+   * @return
+   */
+  public Instant startOfNextPeriod(Instant instant,TimeField period)
+  { return chronology.startOfNextPeriod(timeZone,locale,instant,period);
+  }
   
 //  public abstract Instant add(Instant first,Duration duration);
 //  

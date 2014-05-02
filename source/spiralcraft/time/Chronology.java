@@ -82,6 +82,47 @@ public enum Chronology
     return new FieldIterator(calendar,field,interval,stop);
   };
   
+  public Instant startOfPeriod
+    (TimeZone timeZone
+    ,Locale locale
+    ,Instant instant
+    ,TimeField period
+    )
+  {
+
+    Calendar calendar=newCalendarImpl(timeZone,locale);
+    calendar.setTimeInMillis(instant.getOffsetMillis());
+    period.truncateRest(calendar);
+    return new Instant(calendar.getTimeInMillis());
+  }
+
+  public Instant startOfNextPeriod
+    (TimeZone timeZone
+    ,Locale locale
+    ,Instant instant
+    ,TimeField period
+    )
+  {
+
+    Calendar calendar=newCalendarImpl(timeZone,locale);
+    calendar.setTimeInMillis(instant.getOffsetMillis());
+    period.truncateRest(calendar);
+    calendar.add(period.calendarField,1);
+    return new Instant(calendar.getTimeInMillis());
+  }
+  
+  public int getField
+    (TimeZone timeZone
+    ,Locale locale
+    ,Instant instant
+    ,TimeField timeField
+    )
+  {
+    Calendar calendar=newCalendarImpl(timeZone,locale);
+    calendar.setTimeInMillis(instant.getOffsetMillis());
+    return timeField.get(calendar);
+  }
+  
   public Instant add
     (TimeZone timeZone
     ,Locale locale

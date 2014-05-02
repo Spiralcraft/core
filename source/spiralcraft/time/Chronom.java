@@ -67,6 +67,9 @@ public enum Chronom
     this.calendarField=calendarField;
   }
   
+  public int compareDurationTo(Chronom target)
+  { return standardSeconds.compareTo(target.standardSeconds);
+  }
   
   public BigDecimal getStandardSeconds()
   { return standardSeconds;
