@@ -8,6 +8,16 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
 import spiralcraft.util.tree.LinkedTree;
 
+/**
+ * 
+ * An AbstractChannel bound to a source channel, which may provide access to
+ *   source-specific metadata.
+ * 
+ * @author mike
+ *
+ * @param <Tinput> The type of the source channel
+ * @param <Toutput> The type of this channel
+ */
 public abstract class SourcedChannel<Tinput,Toutput>
   extends AbstractChannel<Toutput>
 {
