@@ -94,7 +94,8 @@ class LastListChannel<T,I>
   public I retrieve()
   { 
     T list=source.get();
-    if (list!=null)
+    int size=list==null?0:decorator.size(list);
+    if (size>0)
     { return decorator.get(list,decorator.size(list)-1);
     }
     else
