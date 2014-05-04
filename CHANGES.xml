@@ -16,6 +16,19 @@
       
       
       <scm:Change>
+        <revision>-dev85
+        </revision>
+      
+        <notes>
+          <scm:Note>Add a Sequence function to generate sequences of values
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/functions/Sequence
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev84
         </revision>
       

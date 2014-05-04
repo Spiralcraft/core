@@ -1269,6 +1269,55 @@
       <testX>.==10
       </testX>
     </test:Assertion>
+    
+    <test:Assertion>
+      <name>Generate
+      </name>
+      <subjectX>
+        { 
+          n:=10
+          ,sequence:=[@j:Integer][{}]
+        }
+        { ( .sequence=.sequence+[{..sequence.@size()}] ).[*fn:Repeat{`.@size()==..n`}]
+        }
+      </subjectX>
+      
+      <testX>.==[{0,1,2,3,4,5,6,7,8,9}]
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Sequence simple
+      </name>
+      <subjectX>
+        [*fn:Sequence{[@j:Integer],`.@size()`,`.@size() &lt; 10`}]
+      </subjectX>
+      
+      <testX>.==[{0,1,2,3,4,5,6,7,8,9}]
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Sequence sum
+      </name>
+      <subjectX>
+        (1).[*fn:Sequence{[@j:Integer],`.@empty()?..:[.]$[ .[*fn:Sum] ]`,`.@size() &lt; 10`}]
+      </subjectX>
+      
+      <testX>.==[{1,1,2,4,8,16,32,64,128,256}]
+      </testX>
+    </test:Assertion>
+
+    <test:Assertion>
+      <name>Sequence map
+      </name>
+      <subjectX>
+        ("hello").[*fn:Sequence{[@j:Integer],`..charAt(.@size()).hashCode()`,`.@size() &lt; ..length()`}]
+      </subjectX>
+      
+      <testX>.==[{104,101,108,108,111}]
+      </testX>
+    </test:Assertion>
   </sequence>
         
 </test:TestGroup>
