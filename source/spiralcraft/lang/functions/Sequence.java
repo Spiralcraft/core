@@ -31,7 +31,7 @@ import spiralcraft.lang.reflect.CollectionReflector;
 import spiralcraft.lang.spi.SourcedChannel;
 
 /**
- * Generates a sequence of values based on an initial value, a generator
+ * Generates a sequence of values based on a generator
  *   function, and a termination function.
  *   
  * 
