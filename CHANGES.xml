@@ -13,6 +13,19 @@
 
     <detail> 
     
+      <scm:Change>
+        <revision>-dev86
+        </revision>
+      
+        <notes>
+          <scm:Note>BufferAggregate.revert() now reverts all the Buffers it
+            contains
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/session/BufferAggregate.java
+        </path>
+      </scm:Change>
       
       
       <scm:Change>
