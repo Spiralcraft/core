@@ -105,6 +105,13 @@ public class BufferAggregate<T extends Buffer,Torig extends DataComposite>
   @Override
   public synchronized void revert()
   { 
+    for (Buffer buffer : buffers)
+    { 
+      if (buffer!=null && buffer.isDirty())
+      { buffer.revert();
+      }
+    }
+
     buffers=null;
     touched=false;
   }
