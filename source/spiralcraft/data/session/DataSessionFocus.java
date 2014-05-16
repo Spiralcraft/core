@@ -193,6 +193,10 @@ public class DataSessionFocus
   { this.debug=debug;
   }
   
+  /**
+   * Creates and initializes a new datasession, and makes it available
+   *   to consumers
+   */
   public void reset()
   {
     getSubject().set(newDataSession());
