@@ -23,7 +23,6 @@ import spiralcraft.data.session.DataSession;
 import spiralcraft.data.transaction.TransactionException;
 import spiralcraft.data.transaction.WorkException;
 import spiralcraft.data.transaction.WorkUnit;
-
 import spiralcraft.lang.Assignment;
 import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
@@ -31,9 +30,9 @@ import spiralcraft.lang.Focus;
 import spiralcraft.lang.Setter;
 import spiralcraft.lang.reflect.BeanReflector;
 import spiralcraft.lang.spi.ThreadLocalChannel;
+import spiralcraft.lang.util.LangUtil;
 import spiralcraft.task.Chain;
 import spiralcraft.task.Task;
-
 import spiralcraft.data.transaction.Transaction;
 
 /**
@@ -61,6 +60,8 @@ public class Session
   protected Setter<?>[] initialSetters;
   protected boolean transactional;
   protected boolean isolate;
+  protected Boolean inheritDataSession;
+  protected boolean usingLocalSession;
   
   public Session()
   {
@@ -79,6 +80,14 @@ public class Session
    */
   public void setIsolate(boolean isolate)
   { this.isolate=isolate;
+  }
+  
+  /**
+   * Use a DataSession from the context, if available, instead of creating
+   *   one.
+   */
+  public void setInherit(boolean inheritDataSession)
+  { this.inheritDataSession=inheritDataSession;
   }
   
   public void setTypeX(Expression<Type<? extends DataComposite>> typeX)
@@ -158,12 +167,18 @@ public class Session
       private void doWork()
         throws InterruptedException
       {
-        sessionChannel.push(null);
-        dataSessionFocus.reset();
-        Setter.applyArray(initialSetters);
+        if (usingLocalSession)
+        {
+          sessionChannel.push(null);
+          dataSessionFocus.reset();
+          Setter.applyArray(initialSetters);
+        }
         
         super.work();
-        sessionChannel.pop();
+        
+        if (usingLocalSession)
+        { sessionChannel.pop();
+        }
       }
     };
   }
@@ -186,12 +201,24 @@ public class Session
       =new DataSessionFocus(focusChain,sessionChannel,type);
     initialSetters=Assignment.bindArray(initialAssignments, dataSessionFocus);
     if (type!=null)
-    { focusChain=dataSessionFocus;
+    {
+      focusChain=dataSessionFocus;
+      usingLocalSession=true;
     }
     else
     {
       focusChain=focusChain.chain(focusChain.getSubject());
-      focusChain.addFacet(dataSessionFocus);
+      Channel<DataSession> inheritedSessionChannel=null;
+      if (Boolean.TRUE.equals(inheritDataSession))
+      { 
+        inheritedSessionChannel
+          =LangUtil.findChannel(DataSession.class,focusChain);
+      }
+      if (inheritedSessionChannel==null)
+      { 
+        focusChain.addFacet(dataSessionFocus);
+        usingLocalSession=true;
+      }
     }
     return super.bindExports(focusChain);
   }
