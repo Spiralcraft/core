@@ -14,6 +14,48 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev87
+        </revision>
+      
+        <notes>
+          <scm:Note>Add config property "inherit" to Session task to allow
+            nested Session tasks to use a common DataSession
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/task/Session.java
+        </path>
+        
+        <resources>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>data/UpdateConflictException.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev87
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix erroneous UpdateConflictException due to non-specific
+            BufferTuple.equals() implementation.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>session/BufferTuple.java
+          </URI>
+          <URI>data/UpdateConflictException.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev86
         </revision>
       
