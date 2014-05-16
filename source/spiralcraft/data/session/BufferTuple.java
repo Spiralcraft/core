@@ -33,6 +33,7 @@ import spiralcraft.data.Type;
 import spiralcraft.data.Identifier;
 import spiralcraft.data.TypeMismatchException;
 import spiralcraft.data.UpdateConflictException;
+import spiralcraft.data.spi.AbstractTuple;
 import spiralcraft.data.spi.ArrayTuple;
 import spiralcraft.data.spi.KeyIdentifier;
 import spiralcraft.data.util.StaticInstanceResolver;
@@ -1016,4 +1017,19 @@ public class BufferTuple
   { dirty=true;
   }  
 
+  @Override
+  public boolean equals(Object o)
+  { 
+    if (o==this)
+    { return true;
+    }
+    if (o==null)
+    { return false;
+    }
+    if (!(o instanceof Tuple))
+    { return false;
+    }
+    return AbstractTuple.tupleEquals(this,(Tuple) o);
+  }
+  
 }

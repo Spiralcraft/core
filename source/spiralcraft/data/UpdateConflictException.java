@@ -27,19 +27,18 @@ public class UpdateConflictException
     StringBuilder buf=new StringBuilder();
     for (Field<?> field:fields)
     { 
-      if (buf.length()>0)
-      { buf.append(",");
-      }
-      buf.append(field.getName());
+      
+      buf.append("\r\n  Field Conflict: ");
+      buf.append(field.getURI());
       
       try
       { 
         buf
-          .append("({")
+          .append("\r\n    New Value: ")
           .append(requested!=null?field.getValue(requested):"")
-          .append ("} != {")
+          .append ("\r\n   Existing Value: ")
           .append(existing!=null?field.getValue(existing):"")
-          .append("})");
+          .append("\r\n    ");
       }
       catch (DataException x)
       {
