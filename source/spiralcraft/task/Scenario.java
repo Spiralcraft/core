@@ -339,6 +339,9 @@ public abstract class Scenario<Tcontext,Tresult>
           ,null
           );
     }
+    if (debug)
+    { log.debug(getDeclarationInfo()+": Binding...");
+    }
     
     try
     {
@@ -414,7 +417,9 @@ public abstract class Scenario<Tcontext,Tresult>
       bindChildren(exportChain);
       
       // 
-      
+      if (debug)
+      { log.debug(getDeclarationInfo()+": Bound");
+      }
       return context.chain(selfChannel);
       
     }
