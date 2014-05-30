@@ -14,6 +14,26 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev88
+        </revision>
+      
+        <notes>
+          <scm:Note>Added logging to assist in debugging the binding process
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>app/components/Trace.java
+          </URI>
+          <URI>task/Scenario.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev87
         </revision>
       
