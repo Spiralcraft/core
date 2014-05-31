@@ -14,6 +14,44 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev89
+        </revision>
+      
+        <notes>
+          <scm:Note>Reflectors now comprehend immutability, primarily to 
+            support the computation of constants at bind-time. A function
+            of immutable constants is guaranteed to be constant.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>lang/Reflector.java
+          </URI>
+          <URI>lang/kit/AbstractReflector.java
+          </URI>
+          <URI>lang/parser/EqualityNode.java
+          </URI>
+          <URI>lang/parser/StructNode.java
+          </URI>
+          <URI>lang/reflect/ArrayReflector.java
+          </URI>
+          <URI>lang/reflect/BeanReflector.java
+          </URI>
+          <URI>lang/reflect/IterableReflector.java
+          </URI>
+          <URI>lang/spi/GenericReflector.java
+          </URI>
+          <URI>lang/spi/NamespaceReflector.java
+          </URI>
+          <URI>lang/spi/VoidReflector.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev88
         </revision>
       
