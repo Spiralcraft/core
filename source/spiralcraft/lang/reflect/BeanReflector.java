@@ -28,7 +28,6 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
 import spiralcraft.lang.TeleFocus;
 import spiralcraft.lang.TypeModel;
-
 import spiralcraft.lang.kit.AbstractReflector;
 import spiralcraft.lang.spi.ArrayEqualityTranslator;
 import spiralcraft.lang.spi.ArrayIndexChannel;
@@ -52,38 +51,32 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 import spiralcraft.lang.spi.Translator;
 import spiralcraft.lang.spi.TranslatorChannel;
 import spiralcraft.lang.spi.VoidReflector;
-
-
 import spiralcraft.beans.BeanInfoCache;
 import spiralcraft.beans.MappedBeanInfo;
 import spiralcraft.builder.AssemblyLoader;
 import spiralcraft.builder.BuildException;
 import spiralcraft.builder.BuilderChannel;
+import spiralcraft.common.Immutable;
 import spiralcraft.common.Indexable;
-
-
 import spiralcraft.util.ArrayUtil;
-
 import spiralcraft.util.lang.ClassUtil;
 import spiralcraft.util.lang.MethodResolver;
 
 import java.beans.Introspector;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.Enumeration;
-
 import java.lang.ref.WeakReference;
-
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -133,6 +126,42 @@ public class BeanReflector<T>
   private static final WeakHashMap<Type,WeakReference<Reflector>> reflectorMap
     =new WeakHashMap<Type,WeakReference<Reflector>>();
   
+  private static final HashSet<Class> standardImmutables
+    =new HashSet<>();
+  
+  static { 
+    standardImmutables.add(String.class);
+    standardImmutables.add(Byte.class);
+    standardImmutables.add(Short.class);
+    standardImmutables.add(Character.class);
+    standardImmutables.add(Integer.class);
+    standardImmutables.add(Long.class);
+    standardImmutables.add(Float.class);
+    standardImmutables.add(Double.class);
+    standardImmutables.add(Boolean.class);
+    
+    standardImmutables.add(java.math.BigInteger.class);
+    standardImmutables.add(java.math.BigDecimal.class);
+    
+    standardImmutables.add(java.io.File.class);
+
+    standardImmutables.add(java.awt.Font.class);
+    standardImmutables.add(java.awt.BasicStroke.class);
+    standardImmutables.add(java.awt.Color.class);
+    standardImmutables.add(java.awt.GradientPaint.class);
+    standardImmutables.add(java.awt.LinearGradientPaint.class);
+    standardImmutables.add(java.awt.RadialGradientPaint.class);
+    standardImmutables.add(java.awt.Cursor.class);
+ 
+    standardImmutables.add(java.util.Locale.class);
+    standardImmutables.add(java.util.UUID.class);
+    
+    standardImmutables.add(java.net.URI.class);
+    standardImmutables.add(java.net.URL.class);
+    standardImmutables.add(java.net.Inet4Address.class);
+    standardImmutables.add(java.net.Inet6Address.class);
+    standardImmutables.add(java.net.InetSocketAddress.class);
+  }  
 
   private static final ArrayLengthTranslator arrayLengthTranslator
     =new ArrayLengthTranslator();
@@ -224,6 +253,9 @@ public class BeanReflector<T>
     }
   };
   
+
+    
+  
   /**
    * Find a BeanReflector which reflects the specified Java class
    */  
@@ -293,6 +325,8 @@ public class BeanReflector<T>
   private URI uri;
   private MethodResolver methodResolver;
   private final Reflector<T> boxedEquivalent;
+  private final boolean immutable;
+
   private boolean traceResolution=false;
   
   public BeanReflector(Type type)
@@ -378,6 +412,20 @@ public class BeanReflector<T>
           , new SimpleChannel<T>(this,enumValue,true)
           );
       }
+    }
+    
+    
+    if (clazz.isEnum())
+    { immutable=true;
+    }
+    else if (standardImmutables.contains(clazz))
+    { immutable=true;
+    }
+    else if (clazz.getAnnotation(Immutable.class)!=null)
+    { immutable=true;
+    }
+    else
+    { immutable=false;
     }
   }
 
@@ -570,6 +618,10 @@ public class BeanReflector<T>
     return reflector;
   }  
   
+  @Override
+  public boolean isImmutable()
+  { return immutable;
+  }
   
   @Override
   public synchronized <X> Channel<X> 
@@ -1620,6 +1672,7 @@ class MethodKey
   public int hashCode()
   { return ArrayUtil.arrayHashCode(instanceSig);
   }
+
 }
 
 

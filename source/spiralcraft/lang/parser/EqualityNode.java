@@ -137,12 +137,11 @@ public class EqualityNode<X>
       }
       
       /**
-       * Equality is not a function because it calls "equals" on
-       *   potentially mutable objects
+       * Equality is only a function if both arguments are immutable
        */
       @Override
       public boolean isFunction()
-      { return false;
+      { return r1.isImmutable() && r2.isImmutable();
       }
   
     };

@@ -498,6 +498,15 @@ public class StructNode
       }
     }
     
+    @Override
+    public boolean isImmutable()
+    { 
+      // TODO: It might be possible to have a version that computes this
+      //   property, but it will require a special-case construction that
+      //   essentially makes all fields "final"
+      return false;
+    }
+    
     /**
      * <p>Determine if a value described by the specified Reflector
      *   can be assigned to a location described by this Reflector.

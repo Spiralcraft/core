@@ -86,4 +86,9 @@ public class VoidReflector
     // Void is not assignable to anything
     return false;
   }
+  
+  @Override
+  public boolean isImmutable()
+  { return true;
+  }
 }

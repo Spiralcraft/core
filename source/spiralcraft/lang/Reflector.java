@@ -241,12 +241,23 @@ public interface Reflector<T>
   public boolean accepts(Object val);
   
   /**
-   * <p>Indicate whether the referenced object is a callable Functor.
+   * <p>Indicate whether the reflected object is a callable Functor.
    * </p>
    * 
    * @return
    */
   public boolean isFunctor();
+  
+  /**
+   * <p>Indicate whether the reflected object is immutable. An object is
+   *   immutable if and only if for the lifetime of the object the values of 
+   *   all accessible properties are constant and all methods return the same
+   *   values for the same inputs.
+   * </p>
+   * 
+   * @return
+   */
+  public boolean isImmutable();
   
   /**
    * Return a Channel that references an enumerated constant of the reflected
@@ -256,4 +267,6 @@ public interface Reflector<T>
    * @return
    */
   public Channel<T> getEnum(String name);
+  
+  
 }

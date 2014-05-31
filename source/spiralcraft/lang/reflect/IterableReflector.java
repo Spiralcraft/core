@@ -405,6 +405,11 @@ public class IterableReflector<I>
     
   }
   
+  @Override
+  public boolean isImmutable()
+  { return false;
+  }
+  
 }
 
 

@@ -154,7 +154,10 @@ public class NamespaceReflector
     return false;
   }
   
-  
+  @Override
+  public boolean isImmutable()
+  { return false;
+  }
 }
 
 

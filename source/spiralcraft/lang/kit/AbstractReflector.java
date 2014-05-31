@@ -526,7 +526,11 @@ public abstract class AbstractReflector<T>
   public Channel<T> getEnum(String name)
   { return null;
   }
-  
+ 
+  @Override
+  public boolean isImmutable()
+  { return false;
+  }
 }
 
 

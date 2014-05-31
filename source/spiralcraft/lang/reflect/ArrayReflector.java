@@ -420,8 +420,13 @@ public class ArrayReflector<I>
     { return null;
     }
   }
-  
-  
+
+  @Override
+  public boolean isImmutable()
+  { 
+    // Arrays are not immutable
+    return false;
+  }
 }
 
 
