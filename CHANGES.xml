@@ -18,6 +18,19 @@
         </revision>
       
         <notes>
+          <scm:Note>Make CoercionChannel bidirectional
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/kit/CoercionChannel.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev90
+        </revision>
+      
+        <notes>
           <scm:Note>Fix NPE when reverting empty BufferAggregate
           </scm:Note>
         </notes>
