@@ -21,7 +21,10 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.SourcedChannel;
 
 /**
- * <p>Implements a unidirectional coercion of one type to another
+ * <p>Implements a unidirectional or bidirectional 
+ *   coercion of one type to another. Bidirectional coercions may result in
+ *   the loss of precision or data if the values used can only be represented
+ *   in one type.
  * </p>
  * 
  * @author mike
@@ -32,30 +35,57 @@ public class CoercionChannel<S,T>
   implements Channel<T>
 {
 
-  private final Coercion<S,T> coercion;
+  private final Coercion<S,T> pullCoercion;
+  private final Coercion<T,S> pushCoercion;
+  private final boolean writable;
 
   
-  public CoercionChannel(Reflector<T> reflector,Channel<S> source,Coercion<S,T> coercion)
+  public CoercionChannel
+    (Reflector<T> reflector
+    ,Channel<S> source
+    ,Coercion<S,T> pullCoercion
+    )
   { 
     super(reflector,source);
-    this.coercion=coercion;
+    this.pullCoercion=pullCoercion;
+    this.pushCoercion=null;
+    writable=false;
+  }
+
+  public CoercionChannel
+    (Reflector<T> reflector
+    ,Channel<S> source
+    ,Coercion<S,T> pullCoercion
+    ,Coercion<T,S> pushCoercion
+    )
+  { 
+    super(reflector,source);
+    this.pullCoercion=pullCoercion;
+    this.pushCoercion=pushCoercion;
+    writable=pushCoercion!=null && !source.isConstant(); 
   }
   
   @Override
   protected T retrieve()
-  { return coercion.coerce(source.get());
+  { return pullCoercion.coerce(source.get());
   }
 
   @Override
   protected boolean store(
     T val)
     throws AccessException
-  { return false;
+  { 
+    if (pushCoercion!=null)
+    { return source.set(pushCoercion.coerce(val));
+    }
+    else
+    { return false;
+    }
   }
 
   @Override
   public boolean isWritable()
-  { return false;
+  { return writable && source.isWritable();
   }
   
   @Override
