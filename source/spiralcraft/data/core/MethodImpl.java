@@ -29,6 +29,7 @@ public abstract class MethodImpl
   private String qualifiedName;
   private boolean locked;
   private URI uri;
+  private String description;
   
   protected boolean debug;
   
@@ -59,6 +60,15 @@ public abstract class MethodImpl
   { this.name=name;
   }
 
+  public void setDescription(String description)
+  { this.description=description;
+  }
+  
+  @Override
+  public String getDescription()
+  { return description;
+  }
+  
   public void setDebug(boolean debug)
   { this.debug=debug;
   }

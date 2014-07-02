@@ -52,6 +52,13 @@ public interface Method
   String getName();
   
   /**
+   * A description of what this method does
+   * 
+   * @return
+   */
+  String getDescription();
+  
+  /**
    * @return This method's URI, which is this method's name in the context of
    *   the Type that it belongs to. 
    */
