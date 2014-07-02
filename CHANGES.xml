@@ -14,6 +14,47 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev91
+        </revision>
+      
+        <notes>
+          <scm:Note>Add a description field to method definitions.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data
+        </path>
+        
+        <resources>
+          <URI>Method.java
+          </URI>
+          <URI>core/MethodImpl.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev91
+        </revision>
+      
+        <notes>
+          <scm:Note>Make sure that URI paths are properly encoded and decoded
+            when converting between URIs and JAR file paths.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>util/URIUtil.java
+          </URI>
+          <URI>vfs/jar/JarFileResource.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev90
         </revision>
       
