@@ -353,6 +353,16 @@ public class URIUtil
   }
   
   /**
+   * Decodes a percent-encoded path string as encoded by the URLEncoder
+   * 
+   * @param raw
+   * @return
+   */
+  public static String decodeURIPath(String raw)
+  { return URLEncoder.decode(raw);
+  }
+  
+  /**
    * Encode a string into an application/x-www-form-urlencoded format suitable
    *   for a parameter value in the query portion of a URI
    */

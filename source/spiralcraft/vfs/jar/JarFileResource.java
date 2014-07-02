@@ -17,6 +17,7 @@ package spiralcraft.vfs.jar;
 import spiralcraft.io.InputStreamWrapper;
 //import spiralcraft.log.ClassLog;
 import spiralcraft.util.Path;
+import spiralcraft.util.URIUtil;
 import spiralcraft.util.refpool.URIPool;
 import spiralcraft.vfs.Container;
 import spiralcraft.vfs.Resource;
@@ -24,15 +25,12 @@ import spiralcraft.vfs.UnresolvableURIException;
 import spiralcraft.vfs.spi.AbstractResource;
 
 import java.net.URI;
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
 import java.io.File;
-
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -54,7 +52,7 @@ public class JarFileResource
       (URIPool.create
         ("jar:"
         +jarFile.toURI()+"!"
-        +(path.isAbsolute()?path:("/"+path))  
+        +URIUtil.encodeURIPath(path.isAbsolute()?path.toString():("/"+path))
         )
       );
     this.file=jarFile;
@@ -68,7 +66,7 @@ public class JarFileResource
     String[] uriParts=uri.getRawSchemeSpecificPart().split("!");
     
     this.file=new File(URIPool.create(uriParts[0]));
-    this.path=new Path(uriParts[1].substring(1),'/');
+    this.path=new Path(URIUtil.decodeURIPath(uriParts[1].substring(1)),'/');
   }
   
   @Override
