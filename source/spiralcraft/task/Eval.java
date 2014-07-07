@@ -102,6 +102,13 @@ public class Eval<Tcontext,Tresult>
             ("Error evaluating "+x.getText(),getDeclarationInfo(),e)
           );
       }
+      catch (RuntimeException e)
+      { 
+        addException
+          (new ContextualException
+            ("Error evaluating "+x.getText(),getDeclarationInfo(),e)
+          );
+      }
       
     }
       
