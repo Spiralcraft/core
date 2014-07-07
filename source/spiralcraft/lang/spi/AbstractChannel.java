@@ -258,7 +258,7 @@ public abstract class AbstractChannel<T>
   public synchronized boolean set(T value)
     throws AccessException
   { 
-    if (_static)
+    if (_static || !isWritable())
     { return false;
     }
     else

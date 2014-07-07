@@ -143,17 +143,23 @@ public class BufferChannel<Tbuffer extends Buffer>
   @Override
   public boolean store(Buffer val)
   { 
-    if (source.isWritable())
+    try
     {
-      if (sourceIsBuffer)
-      { return source.set(val);
+      if (source.isWritable())
+      {
+        if (sourceIsBuffer)
+        { return source.set(val);
+        }
+        else
+        { return source.set(val.getOriginal());
+        }
       }
       else
-      { return source.set(val.getOriginal());
+      { return false;
       }
     }
-    else
-    { return false;
+    catch (RuntimeException e)
+    { throw new RuntimeException("Error writing buffer back to source: "+val,e);
     }
   }
 

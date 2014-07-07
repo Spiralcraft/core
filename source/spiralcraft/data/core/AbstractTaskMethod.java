@@ -264,6 +264,11 @@ public abstract class AbstractTaskMethod<T,C,R>
       throws AccessException
     { return false;
     }
+    
+    @Override
+    public boolean isWritable()
+    { return false;
+    }
   }
        
 }
