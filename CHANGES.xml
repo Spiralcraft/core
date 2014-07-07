@@ -14,6 +14,29 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev92
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix bug where method channels were not marked read-only,
+            causing side effects when used with write-back operations.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/core/AbstractTaskMethod.java
+          </URI>
+          <URI>data/session/BufferChannel.java
+          </URI>
+          <URI>lang/spi/AbstractChannel.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev91
         </revision>
       
