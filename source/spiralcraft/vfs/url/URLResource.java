@@ -49,7 +49,7 @@ public class URLResource
   private int timeoutMS=-1;
   
     
-  private final URL _url;
+  protected final URL _url;
   private int inputBufferLength;
  
 
@@ -216,7 +216,7 @@ public class URLResource
     log.fine(message+": Response headers for "+_url+":"+headerBuf.toString());
   }
   
-  private void setupConnection(URLConnection connection)
+  protected void setupConnection(URLConnection connection)
   {
     if (timeoutMS>-1)
     { 
