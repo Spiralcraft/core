@@ -41,9 +41,7 @@ public class HttpURLResource
     { 
       
       inputStream.close();
-      if (connection instanceof HttpURLConnection)
-      { ((HttpURLConnection) connection).disconnect();
-      }
+      connection.disconnect();
     }
     
   }  
