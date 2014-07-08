@@ -18,6 +18,29 @@
         </revision>
       
         <notes>
+          <scm:Note>Add specific functionality for handling HTTP based 
+            vfs URLResources in order to capture the HTTP response code.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/vfs/url
+        </path>
+        
+        <resources>
+          <URI>HttpURLMessage.java
+          </URI>
+          <URI>HttpURLResource.java
+          </URI>
+          <URI>URLResource.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev92
+        </revision>
+      
+        <notes>
           <scm:Note>Fix bug where method channels were not marked read-only,
             causing side effects when used with write-back operations.
           </scm:Note>
