@@ -19,17 +19,20 @@ import spiralcraft.lang.Reflector;
 import spiralcraft.lang.spi.Translator;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 class BeanFieldTranslator<Tprop,Tbean>
   implements Translator<Tprop,Tbean>
 {
   private final Field _field;
   private final Reflector<Tprop> _reflector;
+  private final boolean _staticField;
   
   public BeanFieldTranslator(Field field)
   { 
     _field=field;
     _reflector=BeanReflector.<Tprop>getInstance(_field.getType());
+    _staticField=Modifier.isStatic(_field.getModifiers());
   }
 
   public Field getField()
@@ -40,6 +43,10 @@ class BeanFieldTranslator<Tprop,Tbean>
   @SuppressWarnings("unchecked") // Field is not generic
   public Tprop translateForGet(Tbean value,Channel<?>[] modifiers)
   { 
+    if (value==null && !_staticField)
+    { return null;
+    }
+    
     try
     { return (Tprop) _field.get(value);
     }
