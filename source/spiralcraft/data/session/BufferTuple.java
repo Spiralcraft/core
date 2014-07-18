@@ -1032,4 +1032,11 @@ public class BufferTuple
     return AbstractTuple.tupleEquals(this,(Tuple) o);
   }
   
+  @Override
+  public int hashCode()
+  { 
+    // figure out what the contract should be for this one
+    return super.hashCode();
+  }
+  
 }
