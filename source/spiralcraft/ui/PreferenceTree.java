@@ -121,7 +121,7 @@ public class PreferenceTree
   }
 
   public void remove(String name,String value)
-  { get().remove(name,value);
+  { get().removeValue(name,value);
   }
   
   public PreferenceTree ensurePath(Path path)
