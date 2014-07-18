@@ -40,7 +40,7 @@ public class AutoListMap<K,T>
   }
   
   public void removeValue(T value)
-  { remove(_keyFunction.key(value),value);
+  { removeValue(_keyFunction.key(value),value);
   }
   
   public void addValue(T value)

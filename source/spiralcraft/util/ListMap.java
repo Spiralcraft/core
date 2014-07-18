@@ -72,7 +72,7 @@ public class ListMap<K,T>
    * </P>
    */
   @Override
-  public void remove(K key,T value)
+  public void removeValue(K key,T value)
   { 
     List<T> list=get(key);
     if (list!=null)

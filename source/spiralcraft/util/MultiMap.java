@@ -37,7 +37,7 @@ public interface MultiMap<K,V>
   /**
    * Remove the value from the collection associated with the specified key.
    */
-  public void remove(K key,V value);
+  public void removeValue(K key,V value);
   
   /**
    *@return the first value from the collection associated with the specified 
