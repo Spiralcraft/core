@@ -18,6 +18,30 @@
         </revision>
       
         <notes>
+          <scm:Note>Fix collision with new Java 8 Map.remove(K,V) method
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>util/ListMap.java
+          </URI>
+          <URI>util/MultiMap.java
+          </URI>
+          <URI>util/AutoListMap.java
+          </URI>
+          <URI>ui/PreferenceTree.java
+          </URI>
+        </resources>
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev93
+        </revision>
+      
+        <notes>
           <scm:Note>Return null instead of throwing an NPE when reading 
             a field of a null bean.
           </scm:Note>
