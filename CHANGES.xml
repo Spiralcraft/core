@@ -14,6 +14,20 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev93
+        </revision>
+      
+        <notes>
+          <scm:Note>Return null instead of throwing an NPE when reading 
+            a field of a null bean.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/reflect/BeanFieldTranslator.java
+        </path>
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev92
         </revision>
       
