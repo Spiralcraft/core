@@ -257,6 +257,7 @@ public abstract class DataReflector<T extends DataComposite>
 
   }
   
+  @SuppressWarnings("rawtypes")
   @Override
   public boolean isAssignableFrom(Reflector<?> other)
   { 
@@ -266,7 +267,10 @@ public abstract class DataReflector<T extends DataComposite>
     else
     { 
       return Void.class==other.getContentType() 
-        || Void.TYPE==other.getContentType();
+        || Void.TYPE==other.getContentType()
+        || (type.getClass()==ReflectionType.class 
+            && type.getNativeClass()==(Class) Object.class
+            );
     }
   }  
   
