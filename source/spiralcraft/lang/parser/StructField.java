@@ -49,6 +49,10 @@ public class StructField
     return copy;
   }
   
+  public String getName()
+  { return name;
+  }
+  
   public Node getSource()
   { return source;
   }

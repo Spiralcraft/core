@@ -19,6 +19,7 @@ import spiralcraft.lang.Channel;
 import spiralcraft.lang.Expression;
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.Reflector;
+import spiralcraft.lang.parser.StructNode;
 import spiralcraft.log.ClassLog;
 
 /**
@@ -100,10 +101,46 @@ public abstract class AbstractFunctorChannel<Tresult>
     }
   }
   
-  protected Channel<?> bindPositionalArgument
+  private Channel<?> bindPositionalArgument
     (Focus<?> contextFocus,int paramIndex,Channel<?> source)
       throws BindException
   {
+    
+    if (contextFocus.getSubject().getReflector() instanceof StructNode.StructReflector)
+    { 
+      StructNode.StructReflector reflector=
+          (StructNode.StructReflector) contextFocus.getSubject().getReflector();
+      if (paramIndex<reflector.getFields().length)
+      {
+        try
+        {
+        
+          return new AssignmentChannel
+            (source
+            ,contextFocus.bind
+              (Expression.create(reflector.getFields()[paramIndex].getName()))
+            );
+        }
+        catch (BindException x)
+        { 
+          throw new BindException
+            ("Error binding argument to functor parameter '"
+              +reflector.getFields()[paramIndex].getName()+"'"
+            ,x
+            );
+        }
+        
+      }
+      else
+      {
+        throw new BindException
+          ("Error binding parameter number "+(paramIndex+1)+"."
+          +" Functor does not accept more than "
+          +reflector.getFields().length+" positional parameters"
+          );
+      }
+    }
+    
     try
     {
       return new AssignmentChannel
