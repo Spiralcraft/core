@@ -456,15 +456,12 @@ class NumberBindingHelper
           @Override
           public Tret get(T1 val1,T2 val2)
           { 
+            if (val1==null || val2==null)
+            { return null;
+            }
+            
             Number n1= val1;
             Number n2= val2;
-
-            if (val1==null)
-            { return val2!=null?box(val2.intValue()):null;
-            }
-            if (val2==null)
-            { return box(val1.intValue());
-            }
             
             switch (oper)
             {
@@ -495,15 +492,12 @@ class NumberBindingHelper
           @Override
           public Tret get(T1 val1,T2 val2)
           { 
+            if (val1==null || val2==null)
+            { return null;
+            }
+
             Number n1=val1;
             Number n2=val2;
-
-            if (val1==null)
-            { return val2!=null?box(val2.floatValue()):null;
-            }
-            if (val2==null)
-            { return box(val1.floatValue());
-            }
             
             switch (oper)
             {
@@ -534,15 +528,12 @@ class NumberBindingHelper
           @Override
           public Tret get(T1 val1,T2 val2)
           { 
+            if (val1==null || val2==null)
+            { return null;
+            }
+
             Number n1= val1;
             Number n2= val2;
-
-            if (val1==null)
-            { return val2!=null?box(val2.longValue()):null;
-            }
-            if (val2==null)
-            { return box(val1.longValue());
-            }
             
             switch (oper)
             {
@@ -574,15 +565,12 @@ class NumberBindingHelper
           @Override
           public Tret get(T1 val1,T2 val2)
           { 
+            if (val1==null || val2==null)
+            { return null;
+            }
+
             Number n1= val1;
             Number n2= val2;
-
-            if (val1==null)
-            { return val2!=null?box(val2.doubleValue()):null;
-            }
-            if (val2==null)
-            { return box(val1.doubleValue());
-            }
             
             switch (oper)
             {
@@ -607,25 +595,13 @@ class NumberBindingHelper
         translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
             
-          private Tret box(Number prim)
-          { 
-            if (prim instanceof BigInteger)
-            { return (Tret) prim;
-            }
-            else
-            { return (Tret) bigIntegerConverter.fromString(prim.toString());
-            }
-          }
           
           @Override
           public Tret get(T1 val1,T2 val2)
           { 
 
-            if (val1==null)
-            { return val2!=null?box(val2):null;
-            }
-            if (val2==null)
-            { return box(val1);
+            if (val1==null || val2==null)
+            { return null;
             }
 
             BigInteger num1;
@@ -667,25 +643,13 @@ class NumberBindingHelper
         translator=new NumericTranslator<Tret,T1,T2>(reflector,operator)
         {
             
-          private Tret box(Number prim)
-          { 
-            if (prim instanceof BigDecimal)
-            { return (Tret) prim;
-            }
-            else
-            { return (Tret) bigDecimalConverter.fromString(prim.toString());
-            }
-          }
           
           @Override
           public Tret get(T1 val1,T2 val2)
           { 
 
-            if (val1==null)
-            { return val2!=null?box(val2):null;
-            }
-            if (val2==null)
-            { return box(val1);
+            if (val1==null || val2==null)
+            { return null;
             }
 
             BigDecimal num1;
