@@ -16,6 +16,7 @@ package spiralcraft.util;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import spiralcraft.common.Immutable;
@@ -364,12 +365,20 @@ public class Path
   { return _elements[index];
   }
   
+  
   /**
    * 
    * @return The number of elements in the path
    */
   public int size()
   { return _elements.length;
+  }
+  
+  /**
+   * @return A copy of the String[] of elements
+   */
+  public String[] getElements()
+  { return Arrays.copyOf(_elements,_elements.length);
   }
   
   /**
