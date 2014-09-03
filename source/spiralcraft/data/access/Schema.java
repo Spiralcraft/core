@@ -15,6 +15,7 @@
 package spiralcraft.data.access;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import spiralcraft.common.ContextualException;
@@ -31,6 +32,9 @@ public class Schema
 {
   private final LinkedHashMap<Type<?>,Entity> entities
     =new LinkedHashMap<Type<?>,Entity>();
+  
+  private final HashMap<String,Entity> entitiesByName
+    =new HashMap<>();
   
   private Entity[] combinedEntities;
   private String name;
@@ -69,6 +73,7 @@ public class Schema
       Entity table=new Entity();
       table.setType(type);
       entities.put(type,table);
+      entitiesByName.put(table.getName(),table);
     }
     
   }
@@ -92,8 +97,11 @@ public class Schema
   public void setEntities(Entity[] entities)
   { 
     this.entities.clear();
+    this.entitiesByName.clear();
     for (Entity entity:entities)
-    { this.entities.put(entity.getType(),entity);
+    { 
+      this.entities.put(entity.getType(),entity);
+      this.entitiesByName.put(entity.getName(),entity);
     }
   }
   
@@ -106,6 +114,14 @@ public class Schema
     return ret;
   }
   
+  public Entity getEntity(String name)
+  { 
+    Entity ret=entitiesByName.get(name);
+    if (ret==null && base!=null)
+    { ret=base.getEntity(name);
+    }
+    return ret;
+  }
   
 
   

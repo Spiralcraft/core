@@ -16,6 +16,7 @@ package spiralcraft.data;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,16 +31,13 @@ import spiralcraft.app.kit.StandardContainer;
 import spiralcraft.common.ContextualException;
 import spiralcraft.common.LifecycleException;
 import spiralcraft.common.Lifecycler;
-
 import spiralcraft.data.access.Store;
-
 import spiralcraft.data.query.BoundQuery;
 import spiralcraft.data.query.Query;
 import spiralcraft.data.query.Queryable;
 import spiralcraft.data.query.Concatenation;
 import spiralcraft.data.query.ConcatenationBinding;
 import spiralcraft.data.session.DataSession;
-
 import spiralcraft.lang.Focus;
 import spiralcraft.lang.SimpleFocus;
 import spiralcraft.lang.reflect.BeanReflector;
@@ -47,7 +45,6 @@ import spiralcraft.lang.spi.ThreadLocalChannel;
 //import spiralcraft.lang.util.LangUtil;
 
 import spiralcraft.log.ClassLog;
-
 import spiralcraft.service.Service;
 import spiralcraft.util.ArrayUtil;
 import spiralcraft.util.ListMap;
@@ -105,6 +102,10 @@ public class Space
 
   public Store getStore(String storeName)
   { return storeMap.get(storeName);
+  }
+  
+  public Store[] getStores()
+  { return Arrays.copyOf(this.stores,this.stores.length);
   }
   
   /**
