@@ -7,6 +7,6 @@
   <contextX>[#in] { _0:[@j:Integer] }
   </contextX>
   
-  <messageX>[example:Customer].score=[example:Customer].score+[in]._0
+  <messageX>[example:Customer].score=[example:Customer].score{.==null?[in]._0:.+[in]._0}
   </messageX>
 </task:Debug>
