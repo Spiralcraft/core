@@ -28,4 +28,8 @@ public class BindException
   public BindException(String message,Throwable cause)
   { super(message,cause);
   }
+  
+  public BindException(String message,Object context,Throwable cause)
+  { super(message,context,cause);
+  }
 }
