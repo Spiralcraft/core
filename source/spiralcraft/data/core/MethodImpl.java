@@ -2,11 +2,12 @@ package spiralcraft.data.core;
 
 import java.net.URI;
 
+import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.data.DataException;
 import spiralcraft.data.Method;
 import spiralcraft.data.Type;
 import spiralcraft.data.lang.DataReflector;
-
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Reflector;
 import spiralcraft.lang.Signature;
@@ -14,7 +15,7 @@ import spiralcraft.log.ClassLog;
 import spiralcraft.util.refpool.URIPool;
 
 public abstract class MethodImpl
-  implements Method
+  implements Method,Declarable
 {
   protected static final ClassLog log
     =ClassLog.getInstance(MethodImpl.class);
@@ -32,6 +33,18 @@ public abstract class MethodImpl
   private String description;
   
   protected boolean debug;
+  
+  protected DeclarationInfo declarationInfo;
+  
+  @Override
+  public void setDeclarationInfo(DeclarationInfo di)
+  { this.declarationInfo=di;
+  }
+  
+  @Override
+  public DeclarationInfo getDeclarationInfo()
+  { return declarationInfo;
+  }
   
   @Override
   public URI getURI()

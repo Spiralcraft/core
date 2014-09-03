@@ -73,7 +73,7 @@ public class TaskMethod<T,C,R>
 
     }
     catch (ContextualException x)
-    { throw new BindException("Error binding task method",x);
+    { throw new BindException("Error binding task method",getDeclarationInfo(),x);
     }
 
 
