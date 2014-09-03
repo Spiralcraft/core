@@ -124,6 +124,16 @@ public class Fetch<Tcontext>
     this.query=new EquiJoin(tupleType,bindings);
   }
 
+  public Fetch(Type<?> resultType)
+  { 
+    Type<?> tupleType
+      =resultType.isAggregate()?resultType.getContentType():resultType;
+    if (resultType==tupleType)
+    { single=true;
+    }
+    this.query=new Scan(tupleType);
+  }
+
   public class FetchTask
     extends ChainTask
   {
