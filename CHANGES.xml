@@ -14,6 +14,73 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev95
+        </revision>
+      
+        <notes>
+          <scm:Note>Arithmetic operations involving null always return null
+            at the language level. Whether null is treated as zero or not in
+            an arithmetic operation 
+            must be decided at a higher level. This may break existing
+            computations that may have taken advantage of the 
+            previous null-treated-as-zero behavior.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/lang/parser/BinaryOpNode.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev95
+        </revision>
+      
+        <notes>
+          <scm:Note>Partial work towards preserving declaration context info
+            for data method definitions.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/
+        </path>
+        
+        <resources>
+          <URI>data/core/MethodImpl.java
+          </URI>
+          <URI>data/core/TaskMethod.java
+          </URI>
+          <URI>lang/BindException.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev95
+        </revision>
+      
+        <notes>
+          <scm:Note>Enhancements to give management tools better access to
+            data storage internals.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/data/
+        </path>
+        
+        <resources>
+          <URI>Space.java
+          </URI>
+          <URI>access/Schema.java
+          </URI>
+          <URI>task/Fetch.java
+          </URI>
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev94
         </revision>
       
