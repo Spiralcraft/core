@@ -14,6 +14,21 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev96
+        </revision>
+      
+        <notes>
+          <scm:Note>MessageFormat can reference other constant MessageFormats
+            to facilitate composeability in messages.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/text/MessageFormat.java
+        </path>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev95
         </revision>
       
