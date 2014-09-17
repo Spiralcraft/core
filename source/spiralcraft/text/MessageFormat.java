@@ -183,6 +183,7 @@ class MarkupRenderer
 {
   
   private Binding<?> binding;
+  private MessageFormat subFormat;
   
   public MarkupRenderer(CharSequence expression) 
     throws ParseException
@@ -193,18 +194,31 @@ class MarkupRenderer
   public void render(Appendable out)
     throws IOException
   { 
-    Object ret=binding.get();
-    if (ret!=null)
-    { out.append(ret.toString());
+    if (subFormat!=null)
+    { subFormat.render(out);
+    }
+    else 
+    {
+      Object ret=binding.get();
+      if (ret!=null)
+      { out.append(ret.toString());
+      }
     }
   }
   
   @Override
   public Focus<?> bind(
     Focus<?> focusChain)
-    throws BindException
+    throws ContextualException
   { 
     binding.bind(focusChain);
+    if (MessageFormat.class.isAssignableFrom(binding.getContentType()) 
+         && binding.isConstant()
+       )
+    { 
+      subFormat=(MessageFormat) binding.get();
+      subFormat.bind(focusChain);
+    }
     return focusChain;
   }
 
