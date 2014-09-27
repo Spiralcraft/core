@@ -14,7 +14,12 @@
 //
 package spiralcraft.app;
 
-
+/**
+ * Controls which children in a Container will receive a message. 
+ * 
+ * @author mike
+ *
+ */
 public interface DispatchFilter
 {
   /**
@@ -23,6 +28,7 @@ public interface DispatchFilter
    *
    * @param context The MessageContext 
    * @param message The message
+   * @return 
    */
   boolean[] childMask
     (Dispatcher context
