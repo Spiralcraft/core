@@ -29,6 +29,9 @@ public abstract class FrameHandler
       if (state.isNewFrame())
       { doHandler(dispatcher,message,next);
       }
+      else
+      { next.handleMessage(dispatcher,message);
+      }
     }
     else
     { next.handleMessage(dispatcher,message);

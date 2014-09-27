@@ -17,16 +17,23 @@ package spiralcraft.app.components;
 import java.lang.reflect.Array;
 
 import spiralcraft.app.Component;
+import spiralcraft.app.DispatchFilter;
+import spiralcraft.app.Dispatcher;
+import spiralcraft.app.Message;
+import spiralcraft.app.MessageHandlerChain;
 import spiralcraft.app.kit.AbstractController;
+import spiralcraft.app.kit.FrameHandler;
 import spiralcraft.app.kit.ValueState;
+import spiralcraft.app.kit.StandardContainer;
 import spiralcraft.common.ContextualException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 import spiralcraft.util.string.StringConverter;
 
 /**
- * Selects from a set of Cases by matching a runtime value against the
- *   bind-time values of several cases 
+ * Selects from a set of Cases or other components by matching a runtime value
+ *   against the constant values of several cases. If a Case component is not
+ *   used, the constant value will be the String id of the child component.
  * 
  * @author mike
  *
@@ -47,8 +54,25 @@ public class Switch<T>
   
   @SuppressWarnings("rawtypes")
   @Override
-  public Class<ValueState> getStateClass()
-  { return ValueState.class;
+  public Class<SwitchState> getStateClass()
+  { return SwitchState.class;
+  }
+  
+  @Override
+  public SwitchState<T> getState()
+  { return (SwitchState<T>) super.getState();
+  }
+  
+  @Override
+  public SwitchState<T> createState()
+  { return new SwitchState<T>(getChildCount(),null);
+  }
+  
+  @Override
+  protected void addHandlers()
+  {
+    super.addHandlers();
+    addHandler(new SwitchHandler());
   }
   
   @SuppressWarnings("unchecked")
@@ -76,6 +100,65 @@ public class Switch<T>
         }
       }
     }
+    
+    ((StandardContainer ) childContainer).setDispatchFilter(new SwitchFilter());
     super.bindComplete(focus);
   }
+  
+  class SwitchFilter
+    implements DispatchFilter
+  {
+    @Override
+    public boolean[] childMask(
+      Dispatcher context,
+      Message message)
+    {return getState().mask;
+    }
+  }
+  
+  class SwitchHandler
+    extends FrameHandler
+  {
+
+    @Override
+    protected void doHandler(
+      Dispatcher dispatcher,
+      Message message,
+      MessageHandlerChain next)
+    {
+      T val=x.get();
+      SwitchState<T> state=getState();
+     
+      if (state.getValue()!=val
+          && (val==null
+             || !val.equals(state.getValue())
+             )
+          )
+      {
+        state.setValue(val);
+        for (int i=0;i<constants.length;i++)
+        { 
+          log.fine(""+constants[i]);
+          state.mask[i]=constants[i]!=null && constants[i].equals(val);
+        }
+      }
+      
+      next.handleMessage(dispatcher,message);
+    }
+  }
+}
+
+class SwitchState<T>
+  extends ValueState<T>
+{
+  boolean[] mask;
+
+  public SwitchState(
+    int childCount,
+    String id)
+  { 
+    super(childCount, id);
+    mask=new boolean[childCount];
+  }
+  
 }
