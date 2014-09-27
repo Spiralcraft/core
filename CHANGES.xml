@@ -14,6 +14,29 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev97
+        </revision>
+      
+        <notes>
+          <scm:Note>Completed the Switch component, fixed dispatch issue in
+            FrameHandler
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app
+        </path>
+        
+        <resources>
+          <URI>components/Switch.java
+          </URI>    
+          <URI>kit/FrameHandler.java
+          </URI>    
+          
+        </resources>
+        
+      </scm:Change>
+        
+      <scm:Change>
         <revision>-dev96
         </revision>
       
