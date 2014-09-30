@@ -15,6 +15,7 @@
 package spiralcraft.app.components;
 
 import java.lang.reflect.Array;
+import java.util.HashMap;
 
 import spiralcraft.app.Component;
 import spiralcraft.app.DispatchFilter;
@@ -31,9 +32,14 @@ import spiralcraft.lang.Focus;
 import spiralcraft.util.string.StringConverter;
 
 /**
- * Selects from a set of Cases or other components by matching a runtime value
+ * <p>Selects from a set of Cases or other components by matching a runtime value
  *   against the constant values of several cases. If a Case component is not
  *   used, the constant value will be the String id of the child component.
+ * </p>
+ * 
+ * <p>Only selected components will receive messages. The new selection takes
+ *   effect on frame change.
+ * </p>
  * 
  * @author mike
  *
@@ -44,6 +50,8 @@ public class Switch<T>
 
   private Binding<T> x;
   private T[] constants;
+  private boolean[] emptyMask;
+  private final HashMap<T,boolean[]> maskMap=new HashMap<>();
   
   public void setX(Binding<T> x)
   { 
@@ -65,7 +73,10 @@ public class Switch<T>
   
   @Override
   public SwitchState<T> createState()
-  { return new SwitchState<T>(getChildCount(),null);
+  { 
+    SwitchState<T> state= new SwitchState<T>(getChildCount(),null);
+    state.mask=emptyMask;
+    return state;
   }
   
   @Override
@@ -81,6 +92,7 @@ public class Switch<T>
     throws ContextualException
   {
     Component[] children=getChildren();
+    emptyMask=new boolean[children.length];
     
     constants=(T[]) Array.newInstance(x.getContentType(),children.length);
     StringConverter<T> converter=x.getReflector().getStringConverter();
@@ -99,7 +111,20 @@ public class Switch<T>
         { constants[i]=(T) children[i].getId();
         }
       }
+      
+      T constant=constants[i];
+      
+      boolean[] mask=maskMap.get(constant);
+      if (mask==null)
+      { 
+        mask=new boolean[children.length];
+        maskMap.put(constant,mask);
+      }
+      mask[i]=true;
+      
     }
+    
+
     
     ((StandardContainer ) childContainer).setDispatchFilter(new SwitchFilter());
     super.bindComplete(focus);
@@ -112,7 +137,7 @@ public class Switch<T>
     public boolean[] childMask(
       Dispatcher context,
       Message message)
-    {return getState().mask;
+    { return getState().mask;
     }
   }
   
@@ -136,13 +161,20 @@ public class Switch<T>
           )
       {
         state.setValue(val);
-        for (int i=0;i<constants.length;i++)
-        { 
-          log.fine(""+constants[i]);
-          state.mask[i]=constants[i]!=null && constants[i].equals(val);
+        boolean[] mask=maskMap.get(val);
+        if (mask==null)
+        { mask=emptyMask;
         }
+        state.setMask(mask);
       }
       
+      if (state.maskChanged)
+      {
+        state.maskChanged=false;
+        //TODO: Send an Activate event to children so the can refresh
+      }
+        
+        
       next.handleMessage(dispatcher,message);
     }
   }
@@ -152,13 +184,23 @@ class SwitchState<T>
   extends ValueState<T>
 {
   boolean[] mask;
+  
+  boolean maskChanged;
 
   public SwitchState(
     int childCount,
     String id)
   { 
     super(childCount, id);
-    mask=new boolean[childCount];
+  }
+  
+  void setMask(boolean[] mask)
+  { 
+    if (this.mask!=mask)
+    { 
+      maskChanged=true;
+      this.mask=mask;
+    }
   }
   
 }
