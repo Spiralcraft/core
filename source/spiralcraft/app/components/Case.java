@@ -18,6 +18,15 @@ import spiralcraft.app.kit.AbstractComponent;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
 
+/**
+ * <p>For use within a Switch component to provide a constant value for
+ *   mapping.
+ * </p>
+ * 
+ * @author mike
+ *
+ * @param <T>
+ */
 public class Case<T>
   extends AbstractComponent
 {
