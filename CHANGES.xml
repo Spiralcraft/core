@@ -18,6 +18,32 @@
         </revision>
       
         <notes>
+          <scm:Note>Added a Flow component and a fsm (finite state machine)
+            package
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>app/components/Flow.java
+          </URI>    
+          <URI>fsm/StateMachine.java
+          </URI>    
+          <URI>fsm/Transition.java
+          </URI>    
+          <URI>fsm/State.java
+          </URI>    
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
+        <revision>-dev97
+        </revision>
+      
+        <notes>
           <scm:Note>Completed the Switch component, fixed dispatch issue in
             FrameHandler
           </scm:Note>
