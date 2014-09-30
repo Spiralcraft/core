@@ -15,8 +15,10 @@
 package spiralcraft.fsm;
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.lang.Binding;
 import spiralcraft.lang.Contextual;
 import spiralcraft.lang.Focus;
+import spiralcraft.lang.spi.SimpleChannel;
 import spiralcraft.lang.util.LangUtil;
 
 /**
@@ -42,6 +44,10 @@ public class Transition
   private String nextStateName;
   private State nextState;
   private StateMachine fsm;
+  private Binding<?> onInvoke;
+  private Binding<?> onComplete;
+  private Binding<Boolean> when;
+  private Focus<Transition> self;
   
   public void setName(String name)
   { this.name=name;
@@ -49,6 +55,35 @@ public class Transition
   
   public String getName()
   { return name;
+  }
+  
+  /**
+   * A condition that must evaluate to true in order for the Transition to
+   *   be invoked.
+   *   
+   * @param when
+   */
+  public void setWhen(Binding<Boolean> when)
+  { this.when=when;
+  }
+
+  /**
+   * Triggered when the transition is successfully invoked.
+   *   
+   * @param when
+   */
+  public void setOnInvoke(Binding<?> onInvoke)
+  { this.onInvoke=onInvoke;
+  }
+
+  /**
+   * Triggered when the transition is completed, after any state change has
+   *   taken place.
+   *   
+   * @param onComplete
+   */
+  public void setOnComplete(Binding<?> onComplete)
+  { this.onComplete=onComplete;
   }
   
   /**
@@ -66,9 +101,23 @@ public class Transition
   public Focus<?> bind(Focus<?> focusChain)
     throws ContextualException
   {
+    focusChain=focusChain.chain(focusChain.getSubject());
+    self=focusChain.chain(new SimpleChannel<Transition>(this,true));
+    focusChain.addFacet(self);
+    
     fsm=LangUtil.findInstance(StateMachine.class,focusChain);
     nextState=fsm.getState(nextStateName);
-    
+    if (when!=null)
+    { 
+      when.bind(focusChain);
+      when.assertContentType(Boolean.class);
+    }
+    if (onInvoke!=null)
+    { onInvoke.bind(focusChain);
+    }
+    if (onComplete!=null)
+    { onComplete.bind(focusChain);
+    }
     return focusChain;
   }
   
@@ -80,7 +129,16 @@ public class Transition
    */
   boolean invoke()
   { 
+    if (when!=null && !Boolean.TRUE.equals(when.get()))
+    { return false;
+    }
+    if (onInvoke!=null)
+    { onInvoke.get();
+    }
     fsm.completeTransition(nextState);
+    if (onComplete!=null)
+    { onComplete.get();
+    }
     return true;
   }
 

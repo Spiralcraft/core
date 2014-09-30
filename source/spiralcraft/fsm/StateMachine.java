@@ -42,6 +42,10 @@ public class StateMachine
   private Focus<StateMachine> self;
   private final HashMap<String,State> stateMap=new HashMap<>();
   private Binding<State> currentState;
+  private Binding<?> beforeStateChange;
+  private Binding<?> afterStateChange;
+  private Binding<?> beforeTransition;
+  private Binding<?> afterTransition;
   
   public void setStates(State[] states)
   { this.states=states;
@@ -55,23 +59,100 @@ public class StateMachine
   { return currentState.get();
   }
   
+  public void restart()
+  { changeState(getInitialState());
+  }
+  
+  /**
+   * Resume execution at a State recorded externally.
+   * 
+   * @param stateName
+   */
+  public void resume(String stateName)
+  { 
+    State state=stateMap.get(stateName);
+    if (state==null)
+    { throw new IllegalArgumentException("No state named '"+state+"'");
+    }
+    changeState(state);
+  }
+  
   public State getInitialState()
   { return states[0];
   }
   
-  void completeTransition(State nextState)
-  { currentState.set(nextState);
-  }
   
   public void setStateX(Binding<State> stateX)
   { currentState=stateX;
   }
   
   public void transition(String transitionName)
-  { currentState.get().transition(transitionName);
+  { 
+    if (beforeTransition!=null)
+    { beforeTransition.get();
+    }
+    if (currentState.get().transition(transitionName))
+    { afterTransition.get();
+    }
+    
   }
   
-    
+  /**
+   * Triggered when the current state is still active before changing to a
+   *   new, different state
+   * @param beforeStateChange
+   */
+  public void setBeforeStateChange(Binding<?> beforeStateChange)
+  { this.beforeStateChange=beforeStateChange;
+  }
+
+  /**
+   * Triggered whenever new, different state becomes active
+   * @param beforeStateChange
+   */
+  public void setAfterStateChange(Binding<?> afterStateChange)
+  { this.afterStateChange=afterStateChange;
+  }
+  
+  /**
+   * Triggered before a transition is attempted, regardless of the outcome
+   * 
+   * @param beforeTransition
+   */
+  public void setBeforeTransition(Binding<?> beforeTransition)
+  { this.beforeTransition=beforeTransition;
+  }
+  
+  /**
+   * Triggered after a successful transition
+   * 
+   * @param beforeTransition
+   */
+  public void setAfterTransition(Binding<?> afterTransition)
+  { this.afterTransition=afterTransition;
+  }
+
+  void completeTransition(State nextState)
+  { changeState(nextState);
+  }
+
+  private void changeState(State newState)
+  {
+    State state=currentState.get();
+    if (state!=newState)
+    {
+      if (beforeStateChange!=null)
+      { beforeStateChange.get();
+      }
+      state.onExit();
+      currentState.set(newState);
+      newState.onEnter();
+      if (afterStateChange!=null)
+      { afterStateChange.get();
+      }
+    }
+  }
+  
   @SuppressWarnings({ "unchecked", "rawtypes"})
   @Override
   public Focus<?> bind(
@@ -99,6 +180,18 @@ public class StateMachine
     
     self=focusChain.chain(new SimpleChannel<StateMachine>(this,true));
     focusChain.addFacet(self);
+    if (beforeStateChange!=null)
+    { beforeStateChange.bind(focusChain);
+    }
+    if (afterStateChange!=null)
+    { afterStateChange.bind(focusChain);
+    }
+    if (beforeTransition!=null)
+    { beforeTransition.bind(focusChain);
+    }
+    if (afterTransition!=null)
+    { afterTransition.bind(focusChain);
+    }
     for (State s:states)
     { s.bind(focusChain);
     }

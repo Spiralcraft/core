@@ -70,6 +70,10 @@ public class Flow<T>
   { fsm.setStates(states);
   }
   
+  public StateMachine getStateMachine()
+  { return fsm;
+  }
+  
   @Override
   protected Class<? extends State> getStateClass()
   { return FlowState.class;
