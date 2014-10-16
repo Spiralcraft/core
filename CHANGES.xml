@@ -14,6 +14,55 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev98
+        </revision>
+      
+        <notes>
+          <scm:Note>the Case component can now be configured with solely an id
+            and no constant expression.
+          </scm:Note>
+          <scm:Note>The Flow component "model" property is now optional.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft/app/components
+        </path>
+        
+        <resources>
+          <URI>Case.java
+          </URI>    
+          <URI>Flow.java
+          </URI>    
+        </resources>
+        
+      </scm:Change>
+          
+      <scm:Change>
+        <revision>-dev98
+        </revision>
+      
+        <notes>
+          <scm:Note>Fix npe in StateMachine when afterTransition binding is
+            null
+          </scm:Note>
+          <scm:Note>Transitions with no next state cycle back to the
+            current state.
+          </scm:Note>
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>fsm/StateMachine.java
+          </URI>    
+          <URI>fsm/Transition.java
+          </URI>    
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev97
         </revision>
       
