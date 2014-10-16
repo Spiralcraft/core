@@ -41,10 +41,16 @@ public class Case<T>
     addParentContextual(this.constantX);
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   public void bindComplete(Focus<?> focus)
   {
-    constant=constantX.get();
+    if (constantX!=null)
+    { constant=constantX.get();
+    }
+    else
+    { constant=(T) getId();
+    }
   }
   
   public T getConstant()
