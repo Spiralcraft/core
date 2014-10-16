@@ -92,7 +92,10 @@ public class StateMachine
     { beforeTransition.get();
     }
     if (currentState.get().transition(transitionName))
-    { afterTransition.get();
+    { 
+      if (afterTransition!=null)
+      { afterTransition.get();
+      }
     }
     
   }
