@@ -112,8 +112,11 @@ public class Flow<T>
   protected Focus<?> bindExports(Focus<?> chain)
     throws ContextualException
   {
-    modelChannel=new ThreadLocalChannel<T>(model,true);
-    chain=chain.chain(modelChannel);
+    if (model!=null)
+    {
+      modelChannel=new ThreadLocalChannel<T>(model,true);
+      chain=chain.chain(modelChannel);
+    }
     try
     {
       fsm.setStateX
@@ -138,9 +141,12 @@ public class Flow<T>
 
   private void onInit()
   { 
-    getState().setValue(model.get());
-    if (logLevel.isFine())
-    { log.fine("Initialized model "+getState().getValue());
+    if (model!=null)
+    {
+      getState().setValue(model.get());
+      if (logLevel.isFine())
+      { log.fine("Initialized model "+getState().getValue());
+      }
     }
   }
   
@@ -171,9 +177,15 @@ public class Flow<T>
       Message message,
       MessageHandlerChain next)
     {
-      modelChannel.push(getState().getValue());
-      next.handleMessage(dispatcher,message);
-      modelChannel.pop();
+      if (modelChannel!=null)
+      {
+        modelChannel.push(getState().getValue());
+        next.handleMessage(dispatcher,message);
+        modelChannel.pop();
+      }
+      else
+      { next.handleMessage(dispatcher,message);
+      }
     }
 
   }
