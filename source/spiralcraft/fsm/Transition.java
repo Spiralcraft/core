@@ -106,7 +106,8 @@ public class Transition
     focusChain.addFacet(self);
     
     fsm=LangUtil.findInstance(StateMachine.class,focusChain);
-    nextState=fsm.getState(nextStateName);
+    State thisState=LangUtil.findInstance(State.class,focusChain);
+    nextState=(nextStateName!=null?fsm.getState(nextStateName):thisState);
     if (when!=null)
     { 
       when.bind(focusChain);
