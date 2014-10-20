@@ -124,14 +124,22 @@ public abstract class AbstractTaskMethod<T,C,R>
 
 
     if (returnCommand)
-    { return commandChannel;
+    { 
+      if (debug)
+      { log.fine("Returning Command Channel for "+getURI());
+      }
+      return commandChannel;
     }
     else
-    { return new ExecChannel(context,commandChannel);
+    { 
+      
+      if (debug)
+      { log.fine("Returning Exec Channel for "+getURI());
+      }
+      return new ExecChannel(context,commandChannel);
     }
 
   }
-  
   
   public class TaskMethodChannel
     extends SourcedChannel<TaskCommand<C,R>,TaskCommand<C,R>>
@@ -194,6 +202,9 @@ public abstract class AbstractTaskMethod<T,C,R>
     { 
       // XXX: Must handle polymorphic method override by binding supertype
       //   method to subtype
+      if (AbstractTaskMethod.this.debug)
+      { log.fine("Marshalling "+getURI());
+      }
       
       TaskCommand<C,R> command=source.get();
       contextChannel.push(command.getContext());
@@ -236,7 +247,11 @@ public abstract class AbstractTaskMethod<T,C,R>
     @Override
     protected Object retrieve()
     { 
+      
       TaskCommand command=source.get();
+      if (AbstractTaskMethod.this.debug)
+      { log.fine("Executing "+getURI());
+      }
       command.execute();
       if (command.getException()!=null)
       { 

@@ -44,8 +44,8 @@ import spiralcraft.data.transaction.Transaction;
  *
  * @param <Tresult>
  */
-public class Session
-  extends Chain<Void,Void>
+public class Session<Tcontext>
+  extends Chain<Tcontext,Void>
 {
 
   

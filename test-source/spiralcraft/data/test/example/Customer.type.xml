@@ -6,6 +6,7 @@
   xmlns:j="class:/java/lang/"
   
   xmlns:dtask="class:/spiralcraft/data/task/"
+  xmlns:st="class:/spiralcraft/time/"
   >
   <archetype><example:Contact.type/>
   </archetype>
@@ -240,6 +241,28 @@
       </returnType>
       
     </meta:TaskMethod>
+    
+    <meta:TransactionMethod>
+      <name>updateLastContact
+      </name>
+      <parameterTypes>
+        <Instant.type/>
+      </parameterTypes>
+      <returnType>
+        <Void.type/>
+      </returnType>
+      <debug>true
+      </debug>
+      <contextX>
+        [#p] { newInstant:[@st:Instant]
+        }
+      </contextX>
+      <x>
+        [example:Customer]
+        .[*dtask:Edit{ forceSave:=true, preSave:=`.lastContact=[p].newInstant` }]
+        .().@log("updateLastContact: Edited "+.)
+      </x>
+    </meta:TransactionMethod>
 
   </methods>
 
