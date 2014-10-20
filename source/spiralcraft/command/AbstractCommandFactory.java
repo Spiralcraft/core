@@ -38,6 +38,13 @@ import spiralcraft.lang.spi.GenericReflector;
  * @param <Tcontext>
  * @param <Tresult>
  */
+
+// TODO: This mechanism needs some design improvements to reflect the fact
+//   the context reflector needs to be consumed by subclasses before the
+//   result reflector and overall command reflector can be completed. Right
+//   now, we allow the commandReflector to be generated multiple times. Ideally
+//   we would put this off until the final stage, but we need to remove
+//   dependencies in client classes first.
 public abstract class AbstractCommandFactory<Ttarget,Tcontext,Tresult>
   implements CommandFactory<Ttarget, Tcontext, Tresult>
 {
@@ -76,8 +83,15 @@ public abstract class AbstractCommandFactory<Ttarget,Tcontext,Tresult>
   }
   
   @Override
-  public Reflector<? extends Command<Ttarget,Tcontext,Tresult>> 
+  public final Reflector<? extends Command<Ttarget,Tcontext,Tresult>> 
     getCommandReflector()
+      throws BindException
+  {
+    return makeCommandReflector();
+  }
+
+  protected Reflector<Command<Ttarget,Tcontext,Tresult>> 
+    makeCommandReflector()
       throws BindException
   { 
     Reflector<Command<Ttarget,Tcontext,Tresult>> commandReflector

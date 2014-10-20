@@ -278,7 +278,7 @@ public abstract class Scenario<Tcontext,Tresult>
   }
   
   @Override
-  protected Reflector<Tresult> getResultReflector()
+  public Reflector<Tresult> getResultReflector()
   { return resultReflector;
   }
 
@@ -289,8 +289,8 @@ public abstract class Scenario<Tcontext,Tresult>
    * @return
    */
   @Override
-  public final Reflector<? extends Command<Task,Tcontext,Tresult>> 
-    getCommandReflector()
+  public final Reflector<Command<Task,Tcontext,Tresult>> 
+    makeCommandReflector()
       throws BindException
   { 
     if (resultReflectorX!=null)
@@ -307,7 +307,7 @@ public abstract class Scenario<Tcontext,Tresult>
       }
     }
     
-    return super.getCommandReflector();
+    return super.makeCommandReflector();
     
   }
   

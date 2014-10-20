@@ -19,7 +19,7 @@ import spiralcraft.common.LifecycleException;
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Binding;
 import spiralcraft.lang.Focus;
-
+import spiralcraft.lang.Reflector;
 
 
 /**
@@ -94,6 +94,7 @@ public abstract class Chain<Tcontext,Tresult>
    * @param focusChain
    * @throws BindException
    */
+  @SuppressWarnings({ "unchecked" })
   @Override
   protected void bindChildren(Focus<?> focusChain)
     throws ContextualException
@@ -102,9 +103,16 @@ public abstract class Chain<Tcontext,Tresult>
     { chain.bind(focusChain);
     }
     if (addChainResult)
-    { storeResults=true;
+    {
+      storeResults=true;
+      if (chain.getResultReflector()!=null && resultReflector==null)
+      {
+        log.fine("Inheriting chain result- result is "+chain.getResultReflector());
+        this.resultReflector=(Reflector<Tresult>) chain.getResultReflector();
+      }
     }
   }
+
   
   @Override
   protected void bindResult(Focus<?> focusChain)
