@@ -122,6 +122,7 @@ public abstract class AbstractTaskMethod<T,C,R>
         ,context
         );
 
+    Scenario<C,R> scenario=scenarioChannel.get();
 
     if (returnCommand)
     { 
@@ -136,8 +137,8 @@ public abstract class AbstractTaskMethod<T,C,R>
       if (debug)
       { log.fine("Returning Exec Channel for "+getURI());
       }
-      return new ExecChannel(context,commandChannel);
-    }
+      return new ExecChannel(scenario,context,commandChannel);
+    } 
 
   }
   
@@ -235,11 +236,13 @@ public abstract class AbstractTaskMethod<T,C,R>
     extends SourcedChannel<TaskCommand,Object>
   {
   
-    public ExecChannel(Focus focus,Channel commandChannel)
+    public ExecChannel(Scenario scenario,Focus focus,Channel commandChannel)
       throws BindException
     { 
       super
-        (commandChannel.resolve(focus,"result",null).getReflector()
+        (scenario.getResultReflector()!=null
+          ?scenario.getResultReflector()
+          :commandChannel.resolve(focus,"result",null).getReflector()
         ,commandChannel
         );
     }
