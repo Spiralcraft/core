@@ -262,6 +262,19 @@
           </testX>
         </test:Assertion>           
             
+        <test:Assertion>
+          <name>TransactionMethodWithReturn
+          </name>
+        
+          <subjectX>
+            [*dtask:Fetch{ [@example:Customer], `.id==1` }].()
+              .updateLastContactWithReturn([@st:Instant].())
+          </subjectX>
+        
+          <testX>[@st:Instant].().offsetMillis
+            -.offsetMillis &lt; 1000
+          </testX>
+        </test:Assertion> 
 <!--
         <task:Eval>
         

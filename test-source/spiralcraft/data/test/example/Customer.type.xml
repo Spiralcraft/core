@@ -264,6 +264,27 @@
       </x>
     </meta:TransactionMethod>
 
+    <meta:TransactionMethod>
+      <name>updateLastContactWithReturn
+      </name>
+      <parameterTypes>
+        <Instant.type/>
+      </parameterTypes>
+      <returnType>
+        <st:Instant.type/>
+      </returnType>
+      <debug>true
+      </debug>
+      <contextX>
+        [#p] { newInstant:[@st:Instant]
+        }
+      </contextX>
+      <x>
+        [example:Customer]
+        .[*dtask:Edit{ forceSave:=true, preSave:=`.lastContact=[p].newInstant` }]
+        .().@log("updateLastContact: Edited "+.).lastContact
+      </x>
+    </meta:TransactionMethod>
   </methods>
 
 </meta:Type>
