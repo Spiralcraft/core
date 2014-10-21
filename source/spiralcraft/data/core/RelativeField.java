@@ -536,12 +536,11 @@ public class RelativeField<T extends DataComposite>
         }
         catch (RuntimeException x)
         { 
-          x.printStackTrace();
-          throw x;
+          throw new RuntimeException("Error retrieving "+getURI(),x);
         }
         catch (DataException x)
         { 
-          throw new AccessException(x.toString(),x);
+          throw new AccessException("Error retrieving "+getURI(),x);
         }
 
       }
