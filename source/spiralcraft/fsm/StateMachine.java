@@ -46,6 +46,7 @@ public class StateMachine
   private Binding<?> afterStateChange;
   private Binding<?> beforeTransition;
   private Binding<?> afterTransition;
+  private Binding<String> initialStateX;
   
   public void setStates(State[] states)
   { this.states=states;
@@ -78,9 +79,23 @@ public class StateMachine
   }
   
   public State getInitialState()
-  { return states[0];
+  { 
+    State initialState=null;
+    if (initialStateX!=null)
+    { 
+      String stateName=initialStateX.get();
+      initialState=this.stateMap.get(stateName);
+    }
+    
+    if (initialState==null)
+    { initialState=states[0];
+    }
+    return initialState;
   }
   
+  public void setInitialStateX(Binding<String> initialStateX)
+  { this.initialStateX=initialStateX;
+  }
   
   public void setStateX(Binding<State> stateX)
   { currentState=stateX;
@@ -194,6 +209,9 @@ public class StateMachine
     }
     if (afterTransition!=null)
     { afterTransition.bind(focusChain);
+    }
+    if (initialStateX!=null)
+    { initialStateX.bind(focusChain);
     }
     for (State s:states)
     { s.bind(focusChain);
