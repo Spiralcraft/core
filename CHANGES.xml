@@ -14,6 +14,55 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev99
+        </revision>
+      
+        <notes>
+          <scm:Note>Allow configuration of the initial state via
+            expression binding supplied to the initialStateX property.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/fsm/StateMachine.java
+        </path>
+
+      </scm:Change>
+      
+      <scm:Change>
+        <revision>-dev99
+        </revision>
+      
+        <notes>
+          <scm:Note>Added a TransactionMethod meta type to simplify creating
+            methods that modify data.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft
+        </path>
+        
+        <resources>
+          <URI>data/types/meta/TransactionMethodType.java
+          </URI>    
+          <URI>data/task/Session.java
+          </URI>    
+          <URI>data/TransactionMethod.java
+          </URI>    
+          <URI>data/AbstractTaskMethod.java
+          </URI>    
+          <URI>task/Chain.java
+          </URI>    
+          <URI>task/Scenario.java
+          </URI>    
+          <URI>command/AbstractCommandFactory.java
+          </URI>    
+        </resources>
+        
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev98
         </revision>
       
