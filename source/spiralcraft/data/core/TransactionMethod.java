@@ -69,7 +69,7 @@ public class TransactionMethod<T,C,R>
     }
     
     Session<C> session=new Session<C>();
-    session.setDebug(true);
+    session.setDebug(debug);
     session.setContextX(contextX);
     session.setContextAliasURI
       (URIUtil.addPathSuffix(this.getDataType().getURI(),"_"+this.getName()));
