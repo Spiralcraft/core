@@ -80,6 +80,7 @@ public class PlaceContext
   private Binding<?>[] imports;
   private Binding<?>[] exports;
   private boolean hasSpace;
+  private Binding<?> afterStart;
   
   public void setId(String id)
   { this.id=id;
@@ -154,6 +155,10 @@ public class PlaceContext
   { this.postUpgrade=postUpgrade;
   }
 
+  public void setAfterStart(Binding<?> afterStart)
+  { this.afterStart=afterStart;
+  }
+  
   public void setStores(Store[] stores)
   { 
     this.localStores=stores;
@@ -334,6 +339,9 @@ public class PlaceContext
     }
     if (postUpgrade!=null)
     { postUpgrade.bind(chain);
+    }
+    if (afterStart!=null)
+    { afterStart.bind(chain);
     }
     return chain;
   }
@@ -516,6 +524,10 @@ public class PlaceContext
     }
     catch (IOException x)
     { throw new LifecycleException("Error starting place "+id,x);
+    }
+    
+    if (afterStart!=null)
+    { afterStart.get();
     }
     if (logLevel.isDebug())
     { log.fine("Done starting place "+id);
