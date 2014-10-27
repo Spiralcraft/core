@@ -14,6 +14,22 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev101
+        </revision>
+      
+        <notes>
+          <scm:Note>Add an "afterStart" binding to PlaceContext so that
+            various conditions can be checked and normalized on startup.
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/apps/PlaceContext.java
+        </path>
+
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev100
         </revision>
       
