@@ -15,6 +15,7 @@
 package spiralcraft.lang;
 
 import spiralcraft.common.ContextualException;
+import spiralcraft.common.declare.DeclarationInfo;
 
 public class BindException
   extends ContextualException
@@ -31,5 +32,9 @@ public class BindException
   
   public BindException(String message,Object context,Throwable cause)
   { super(message,context,cause);
+  }
+
+  public BindException(String message,DeclarationInfo context)
+  { super(message,context);
   }
 }
