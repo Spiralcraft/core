@@ -14,7 +14,11 @@ class ArrayLengthTranslator<S>
     
   @Override
   public Integer translateForGet(S source,Channel<?>[] params)
-  { return Array.getLength(source);
+  { 
+    if (source==null)
+    { return null;
+    }
+    return Array.getLength(source);
   }
   
   @Override
