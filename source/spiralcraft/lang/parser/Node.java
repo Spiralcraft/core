@@ -15,6 +15,8 @@
 package spiralcraft.lang.parser;
 
 
+import spiralcraft.common.declare.Declarable;
+import spiralcraft.common.declare.DeclarationInfo;
 import spiralcraft.common.namespace.NamespaceContext;
 import spiralcraft.common.namespace.PrefixResolver;
 import spiralcraft.common.namespace.UnresolvedPrefixException;
@@ -33,12 +35,15 @@ import java.util.List;
  * A Node in an Expression parse tree
  */
 public abstract class Node
+  implements Declarable
 {
 
   protected final ClassLog log
     =ClassLog.getInstance(getClass());
   
   protected int hashCode=super.hashCode();
+  
+  protected DeclarationInfo declarationInfo;
   
   /**
    * Stubbed bind method for unimplemented nodes.
@@ -351,5 +356,13 @@ public abstract class Node
   { throw new UnsupportedOperationException(getClass().getName()+"."+msg+"(...)");
   }
   
+  @Override
+  public DeclarationInfo getDeclarationInfo()
+  { return declarationInfo;
+  }
   
+  @Override
+  public void setDeclarationInfo(DeclarationInfo declarationInfo)
+  { this.declarationInfo=declarationInfo;
+  }
 }

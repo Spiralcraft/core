@@ -24,7 +24,7 @@ public class StructField
 {
   int index;
   String name;
-  TypeFocusNode type;
+  Node type;
   Node source;
   boolean passThrough;
   boolean anonymous;
@@ -36,7 +36,7 @@ public class StructField
     copy.index=index;
     copy.name=name;
     if (type!=null)
-    { copy.type=(TypeFocusNode) type.copy(visitor);
+    { copy.type=type.copy(visitor);
     }
     if (source!=null)
     { copy.source=source.copy(visitor);

@@ -340,12 +340,12 @@ public class ExpressionParser
 
   
   /**
-   * AssignmentExpression -> ConditionalExpression ( "=" Expression )
+   * AssignmentExpression -> LeftHandExpression ( "=" Expression )
    */
   private Node parseAssignmentExpression()
     throws ParseException
   { 
-    Node node=this.parseConditionalExpression();
+    Node node=this.parseLeftHandExpression();
     if (_tokenizer.ttype=='=')
     {
       if (node==null)
@@ -383,6 +383,19 @@ public class ExpressionParser
       consumeToken();
       node=node.assignCoercive(this.parseExpression());
     }
+    return node;
+  }    
+
+  /**
+   * LeftHandExpression -> ConditionalExpression
+   * 
+   * @return
+   * @throws ParseException
+   */
+  private Node parseLeftHandExpression()
+    throws ParseException
+  { 
+    Node node=this.parseConditionalExpression();
     return node;
   }
 
@@ -1438,7 +1451,7 @@ public class ExpressionParser
   
   /**
    * FieldDefinition -> 
-   *     [ FieldName ":" (TypeSpecifier) ( [ '=' | '~' ] FieldExpression ) ]
+   *     [ FieldName ":" (Expression) ( [ '=' | '~' ] FieldExpression ) ]
    *   | FieldExpression
    * 
    * @param struct
@@ -1462,15 +1475,10 @@ public class ExpressionParser
       expect(':');
       
       
-      if (_tokenizer.ttype=='[')
+      if (_tokenizer.ttype!='=')
       {
-        Node typeNode=parseFocusSpecifier();
-        if (!(typeNode instanceof TypeFocusNode))
-        { 
-          throw newException
-            ("Expected a type literal here (eg. '[@mylib:mytype]' ).");
-        }
-        field.type=(TypeFocusNode) typeNode;
+        Node typeNode=parseLeftHandExpression();
+        field.type=typeNode;
       }
       
       switch (_tokenizer.ttype)

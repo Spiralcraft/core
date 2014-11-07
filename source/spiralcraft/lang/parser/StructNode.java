@@ -384,8 +384,23 @@ public class StructNode
           
           if (field.type!=null)
           { 
+            Channel<Reflector> typeChannel
+              =(Channel<Reflector>) field.type.bind(focus);
+            if (!typeChannel.isConstant())
+            { 
+              throw new BindException
+                ("Type expression for field "+field.name+" must be constant"
+                ,field.type.getDeclarationInfo()
+                );
+            }
+            else if (!Reflector.class.isAssignableFrom(typeChannel.getContentType()))
+            { 
+              throw new BindException
+                ("Type expression for field "+field.name+" must reflect a type");
+            }
             // Set up field with a different declared type
-            Reflector type=(Reflector) field.type.bind(focus).get();
+            Reflector type=typeChannel.get();
+            
             Coercion coercion=null;
             
             if (!type.isAssignableFrom(channels[i].getReflector()))
@@ -416,8 +431,24 @@ public class StructNode
         }
         else if (field.type!=null)
         { 
-          channels[i]= new SimpleChannel
-            ((Reflector) field.type.bind(focus).get());
+          Channel<Reflector> typeChannel
+            =(Channel<Reflector>) field.type.bind(focus);
+          if (!typeChannel.isConstant())
+          { 
+            throw new BindException
+              ("Type expression for field "+field.name+" must be constant"
+              ,field.type.getDeclarationInfo()
+              );
+          }
+          else if (!Reflector.class.isAssignableFrom(typeChannel.getContentType()))
+          { 
+            throw new BindException
+              ("Type expression for field "+field.name+" must reflect a type");
+          }
+          // Set up field with a different declared type
+          Reflector type=typeChannel.get();
+          
+          channels[i]= new SimpleChannel(type);
         }
         else
         {
