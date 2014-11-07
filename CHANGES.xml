@@ -14,6 +14,35 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev102
+        </revision>
+      
+        <notes>
+          <scm:Note>Any constant expression reflecting a Reflector can be
+            used to declare the type of a struct field. 
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/lang
+        </path>
+        
+        <resources>
+          <URI>BindException.java
+          </URI>
+          <URI>parser/ExpressionParser.java
+          </URI>
+          <URI>parser/Node.java
+          </URI>
+          <URI>parser/StructField.java
+          </URI>
+          <URI>parser/StructNode.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev101
         </revision>
       
