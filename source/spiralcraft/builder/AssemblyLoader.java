@@ -682,6 +682,9 @@ public class AssemblyLoader
         else if (name=="collection")
         { prop.setCollectionClassName(attribs[i].getValue());
         }
+        else if (name=="replaceCollection")
+        { prop.setReplaceCollection(readBoolean(attribs[i]));
+        }
         else if (name=="export")
         { prop.setExport(readBoolean(attribs[i]));
         }

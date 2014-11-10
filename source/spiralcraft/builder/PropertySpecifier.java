@@ -82,6 +82,8 @@ public class PropertySpecifier
   
   private boolean contextualize=true;
   private URI declarationLocation;
+  
+  private boolean replaceCollection;
 
   public PropertySpecifier
     (AssemblyClass container
@@ -142,6 +144,15 @@ public class PropertySpecifier
   
   public URI getDeclarationLocation()
   { return this.declarationLocation;
+  }
+  
+  /**
+   * Specify that a collection should be replaced instead of combined. 
+   * 
+   * @param replace
+   */
+  public void setReplaceCollection(boolean replaceCollection)
+  { this.replaceCollection=replaceCollection;
   }
   
   /**
@@ -823,7 +834,7 @@ public class PropertySpecifier
   public List<AssemblyClass> getCombinedContents()
   { 
     List<AssemblyClass> ret=new ArrayList<AssemblyClass>();
-    if (_baseMember!=null)
+    if (_baseMember!=null && !replaceCollection)
     { 
       ret.addAll(_baseMember.getCombinedContents());
       if (debugLevel.isDebug())
@@ -883,7 +894,7 @@ public class PropertySpecifier
   public List<String> getTextDataList()
   { 
     LinkedList<String> list=new LinkedList<String>();
-    if (this._baseMember!=null)
+    if (this._baseMember!=null && !replaceCollection)
     { list.addAll(_baseMember.getTextDataList());
     }
     if (lastLocalInstance!=null)
