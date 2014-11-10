@@ -14,6 +14,30 @@
     <detail> 
     
       <scm:Change>
+        <revision>-dev103
+        </revision>
+      
+        <notes>
+          <scm:Note>Allow spiralcraft.builder to replace an inherited collection
+            instead of augmenting it via a new PropertySpecifier 
+            "replaceCollection" attribute
+          </scm:Note>
+
+        </notes>
+        
+        <path>source/spiralcraft/builder
+        </path>
+        
+        <resources>
+          <URI>PropertySpecifier.java
+          </URI>
+          <URI>AssemblyLoader.java
+          </URI>
+        </resources>
+
+      </scm:Change>
+
+      <scm:Change>
         <revision>-dev102
         </revision>
       
