@@ -77,5 +77,15 @@
       <type><example:CityState.type/>
       </type>
     </meta:Entity>
+
+    <meta:Entity>
+      <type><example:ToDoList.type/>
+      </type>
+    </meta:Entity>
+
+    <meta:Entity>
+      <type><example:ToDoListItem.type/>
+      </type>
+    </meta:Entity>
   </entities>
 </meta:Schema>

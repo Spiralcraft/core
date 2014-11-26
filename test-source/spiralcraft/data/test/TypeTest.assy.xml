@@ -297,6 +297,58 @@
         
         </task:Eval>
 -->            
+        <test:Assertion>
+          <name>parametric relation type
+          </name>
+          <subjectX>[@example:GenericList].type
+          </subjectX>
+          <testX>true
+          </testX>
+        
+        </test:Assertion>
+        <test:Assertion>
+          <name>parametric relation type
+          </name>
+          <subjectX>[@example:ToDoList].type.archetype
+          </subjectX>
+          <testX>true
+          </testX>
+        
+        </test:Assertion>
+        <test:Assertion>
+          <name>parametric relation type
+          </name>
+          <subjectX>[@example:ToDoList].().@type.type
+          </subjectX>
+          <testX>true
+          </testX>
+        
+        </test:Assertion>
+        <test:Assertion>
+          <name>parametric relation type
+          </name>
+          <subjectX>[@example:ToDoList].().items.@type
+          </subjectX>
+          <testX>.==[@example:ToDoListItem.list]
+          </testX>
+        
+        </test:Assertion>
+        <test:Assertion>
+          <name>parametric relation type
+          </name>
+          <subjectX>[*dtask:Edit{[@example:ToDoList]}].()
+          </subjectX>
+          <testX>true
+          </testX>
+        </test:Assertion>
+        <test:Assertion>
+          <name>parametric relation type
+          </name>
+          <subjectX>[*dtask:Edit{[@example:ToDoListItem.list]}].()
+          </subjectX>
+          <testX>true
+          </testX>
+        </test:Assertion>
       </sequence>
     </task:Eval>
             

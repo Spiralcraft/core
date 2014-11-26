@@ -1149,6 +1149,22 @@
     </test:Assertion>     
 
     <test:Assertion>
+      <name>Function no context
+      </name>
+      
+      <subjectX>
+      {
+        value:=10
+        ,get:=[#{}]{..value}
+      }.get()
+      </subjectX>
+      
+      <testX>.==10
+      </testX>
+    
+    </test:Assertion>     
+
+    <test:Assertion>
       <name>Public field write
       </name>
       
