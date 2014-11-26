@@ -29,8 +29,9 @@ import spiralcraft.util.lang.ClassUtil;
 import spiralcraft.util.refpool.URIPool;
 
 /**
- * An expression node which resolves a Focus from somewhere in the hierarchy
- *   using a qualified name (ie. <code>[<I>namespace</I>:<I>name</I>]</code>)
+ * An expression node which resolves a Reflector instance from one of the
+ *   available type systems
+ *   using a qualified name (ie. <code>[@<I>namespace</I>:<I>name</I>]</code>)
  * 
  * @author mike
  *
