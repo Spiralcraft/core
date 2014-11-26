@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:example="class:/spiralcraft/data/test/example"
+  >
+
+  <parameters>
+    <meta:TypeParameter>
+      <name>listItemType
+      </name>
+    </meta:TypeParameter>
+  </parameters>
+  
+  <fields>
+
+    <meta:Field>
+      <name>id
+      </name>
+      
+      <type><LSID.type/>
+      </type>
+    
+    </meta:Field>
+        
+    <meta:RelativeField>
+
+      <name>items
+      </name>
+      
+      <description>The items in the list
+      </description>
+
+      <template>true
+      </template>
+      
+      <typeX>listItemType
+      </typeX>
+      
+      <referencedFieldList>listId
+      </referencedFieldList>
+
+    </meta:RelativeField>
+        
+
+  </fields>
+      
+  <keys>
+    <meta:Key>
+
+      <fieldList>id
+      </fieldList>
+          
+      <primary>true
+      </primary>
+          
+    </meta:Key>
+    
+  </keys>
+      
+</meta:Type>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:example="class:/spiralcraft/data/test/example"
+  >
+
+  <fields>
+
+    <meta:Field>
+      <name>id
+      </name>
+      
+      <type><LSID.type/>
+      </type>
+    
+    </meta:Field>
+    
+    <meta:Field>
+      <name>listId
+      </name>
+
+      <type><LSID.type/>
+      </type>
+    </meta:Field>
+        
+        
+
+  </fields>
+      
+  <keys>
+    <meta:Key>
+
+      <fieldList>id
+      </fieldList>
+          
+      <primary>true
+      </primary>
+          
+    </meta:Key>
+    
+  </keys>
+      
+</meta:Type>

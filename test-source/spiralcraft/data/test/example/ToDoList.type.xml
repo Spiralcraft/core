@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<meta:Type
+  xmlns:meta="class:/spiralcraft/data/types/meta/"
+  xmlns:example="class:/spiralcraft/data/test/example"
+  >
+  <archetype>
+    <example:GenericList.type>
+      <listItemType><example:ToDoListItem.list.type/>
+      </listItemType>
+    </example:GenericList.type>
+  </archetype>
+  
+  <fields>
+  </fields>
+</meta:Type>
