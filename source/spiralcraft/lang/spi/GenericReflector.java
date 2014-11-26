@@ -16,6 +16,7 @@ package spiralcraft.lang.spi;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import spiralcraft.lang.BindException;
 import spiralcraft.lang.Channel;
@@ -238,10 +239,8 @@ public class GenericReflector<T>
     //   local name->reflector map to augment type for use context
     
     
-    if (result!=null && enhancerMap!=null)
+    if (enhancerMap!=null)
     { 
-
-      
       if (params==null)
       { 
         ChannelFactory<X,X> functor
@@ -295,5 +294,15 @@ public class GenericReflector<T>
   { return super.toString()+(base!=null?" base="+base.toString():"");
   }
 
-
+  @Override
+  public LinkedList<Signature> getSignatures(Channel<?> chan)
+    throws BindException 
+  { 
+    LinkedList<Signature> sigs=super.getSignatures(chan);
+    if (enhancerMap!=null)
+    { sigs.addAll(enhancerMap.keySet());
+    }
+    return sigs;
+  }
+  
 }
