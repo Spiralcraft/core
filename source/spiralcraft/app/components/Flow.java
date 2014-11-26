@@ -114,7 +114,7 @@ public class Flow<T>
   {
     if (model!=null)
     {
-      modelChannel=new ThreadLocalChannel<T>(model,true);
+      modelChannel=new ThreadLocalChannel<T>(model.getReflector(),true);
       chain=chain.chain(modelChannel);
     }
     try
@@ -171,6 +171,9 @@ public class Flow<T>
   class ModelHandler
     extends AbstractMessageHandler
   {
+    { contextual=true;
+    }
+    
     @Override
     protected void doHandler(
       Dispatcher dispatcher,
